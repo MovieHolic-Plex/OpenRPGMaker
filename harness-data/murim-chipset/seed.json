@@ -4,10 +4,10 @@
  "family": "oprn-murim",
  "tileset": {
   "id": "murim_wuxia",
-  "status": "planned",
+  "status": "bake-ready",
   "tile": 16,
   "view": "정면-위 3/4. 윗면(수평 면)은 보이는 면, 앞면은 전체 높이, 옆면 없음. 빛은 왼쪽 위, 그림자는 오른쪽 아래.",
-  "note": "아직 번들에 굽지 않는다. 사람이 고른 것만 다음 단계로 간다."
+  "note": "굽기는 `bake` 단계만 한다 — 고른 것(현재 해시)만, 조각마다 공용 오브젝트 게이트(require_pass, bundle 맥락)를 거친다. 산출물은 손으로 고치지 않는다."
  },
  "palette": {
   "file": "harness-data/murim-chipset/palette.json",
@@ -255,7 +255,13 @@
     "w": 1,
     "h": 2,
     "label": "조선 큰 항아리 in_hangari_tall"
-   }
+   },
+   "gateKind": "column",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "round_table_stools",
@@ -769,7 +775,11 @@
       1,
       2
      ],
-     "kind": "wall"
+     "kind": "wall",
+     "walkGrid": [
+      "X",
+      "X"
+     ]
     },
     {
      "id": "m",
@@ -783,7 +793,11 @@
       2
      ],
      "kind": "wall",
-     "tileable": "x"
+     "tileable": "x",
+     "walkGrid": [
+      "XXX",
+      "XXX"
+     ]
     },
     {
      "id": "win",
@@ -796,7 +810,11 @@
       3,
       2
      ],
-     "kind": "wall"
+     "kind": "wall",
+     "walkGrid": [
+      "XXX",
+      "XXX"
+     ]
     },
     {
      "id": "door",
@@ -809,7 +827,11 @@
       4,
       2
      ],
-     "kind": "wall"
+     "kind": "wall",
+     "walkGrid": [
+      "XXXX",
+      "XFFX"
+     ]
     },
     {
      "id": "r",
@@ -822,7 +844,11 @@
       1,
       2
      ],
-     "kind": "wall"
+     "kind": "wall",
+     "walkGrid": [
+      "X",
+      "X"
+     ]
     }
    ],
    "joins": [
@@ -1128,7 +1154,19 @@
    ],
    "extraRamps": [
     "jin"
-   ]
+   ],
+   "walkGrid": [
+    "XX",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)",
+   "entrance": {
+    "dx": 0,
+    "dy": 1,
+    "w": 2,
+    "h": 1,
+    "note": "문짝 칸(아래 줄)은 막힘 — 이동 이벤트는 문짝 칸에 두고(접촉) 플레이어는 그 아래 바닥 칸에서 들어간다"
+   }
   },
   {
    "id": "stairs_wood",
@@ -1151,7 +1189,14 @@
     "inn_floor_wood",
     "inn_wall_pillar"
    ],
-   "outlineClass": "structure"
+   "outlineClass": "structure",
+   "gateKind": "structure",
+   "walkGrid": [
+    "FF",
+    "FF",
+    "FF"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "railing_upper",
@@ -1174,7 +1219,12 @@
    "styleRef": [
     "inn_wall_pillar"
    ],
-   "outlineClass": "structure"
+   "outlineClass": "structure",
+   "gateKind": "frame",
+   "walkGrid": [
+    "XXX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "table_round",
@@ -1215,7 +1265,13 @@
      28
     ],
     "note": "윗면 타원 12~20행(윤곽 포함) → 가운데 16행 = 두 칸 사이 경계. 두께 띠 맨 아래 22행, 받침 발 31행(칸 아래 경계 = 받침판·다리 발의 맨 아래 화소). 다리는 두께 띠 아래(23행~)만. 윗면 소품은 타원 안."
-   }
+   },
+   "gateKind": "low_furniture",
+   "walkGrid": [
+    "XX",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "stool_drum",
@@ -1253,7 +1309,12 @@
      12
     ],
     "note": "앉는 면 타원 8~11행(윤곽 포함, 가운데 9.5) · 발 15행(칸 아래 경계) · 폭 3~12열(가운데 7.5 = 탁자 가운데 15.5 와 반 칸 차)."
-   }
+   },
+   "gateKind": "round_body",
+   "walkGrid": [
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "set_table_four",
@@ -1351,7 +1412,7 @@
     ],
     "rules": {
      "sideSeatTol": 2,
-    "sideSeatOffset": 5,
+     "sideSeatOffset": 5,
      "backSeatVisible": 0.5,
      "frontGap": [
       2,
@@ -1359,7 +1420,14 @@
      ],
      "frontGapNote": "앞 걸상 앉는 면 위 행 − 탁자 맨 아래 화소(받침) 행 − 1 = 바닥 틈 px. 앞 걸상은 탁자와 한 화소도 겹치지 않는다."
     }
-   }
+   },
+   "gateKind": "low_furniture",
+   "walkGrid": [
+    ".XX.",
+    "XXXX",
+    ".XX."
+   ],
+   "walkNote": "X 막힘 · . 빈 칸 — 뒤·앞 걸상과 탁자는 가운데 두 열, 좌·우 걸상은 가운데 줄 양 끝 칸(배치 견본 화소 덮임으로 정함)."
   },
   {
    "id": "counter_inn",
@@ -1382,7 +1450,13 @@
     "inn_wall_pillar",
     "inn_floor_wood"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "low_furniture",
+   "walkGrid": [
+    "XXX",
+    "XXX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "kitchen_stove",
@@ -1410,7 +1484,13 @@
     "huang",
     "jin"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "XX",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "wine_jars",
@@ -1434,7 +1514,12 @@
    "extraRamps": [
     "huang"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "round_body",
+   "walkGrid": [
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "menu_board",
@@ -1459,7 +1544,12 @@
     "inn_wall_pillar",
     "inn_floor_wood"
    ],
-   "contrastGround": "inn_wall_pillar"
+   "contrastGround": "inn_wall_pillar",
+   "gateKind": "wall_mounted",
+   "walkGrid": [
+    "UU"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "lantern_paper",
@@ -1496,7 +1586,11 @@
       1,
       1
      ],
-     "kind": "object"
+     "kind": "object",
+     "gateKind": "round_body",
+     "walkGrid": [
+      "U"
+     ]
     },
     {
      "id": "stand",
@@ -1510,7 +1604,11 @@
       1
      ],
      "kind": "object",
-     "footOnEdge": true
+     "footOnEdge": true,
+     "gateKind": "round_body",
+     "walkGrid": [
+      "X"
+     ]
     }
    ]
   },
@@ -1528,7 +1626,8 @@
    "brief": "style 판에서 고른 목인장 정식판 + 방향 변형.",
    "criteria": [
     "통나무 윗면"
-   ]
+   ],
+   "gateKind": "column"
   },
   {
    "id": "weapon_rack",
@@ -1545,7 +1644,8 @@
    "criteria": [
     "거치대 윗면",
     "병기 끝이 실루엣 위로 나온다"
-   ]
+   ],
+   "gateKind": "frame"
   },
   {
    "id": "archery_target",
@@ -1562,7 +1662,8 @@
    "criteria": [
     "과녁 위 테두리 윗면",
     "받침 윗면"
-   ]
+   ],
+   "gateKind": "frame"
   },
   {
    "id": "sandbags",
@@ -1578,7 +1679,8 @@
    "brief": "매단 모래주머니와 쌓은 모래주머니.",
    "criteria": [
     "쌓은 것은 윗면이 보인다"
-   ]
+   ],
+   "gateKind": "frame"
   },
   {
    "id": "meditation_mats",
@@ -1594,7 +1696,8 @@
    "brief": "둥근 부들 방석.",
    "criteria": [
     "바닥에 붙은 판 — 윗면만, 두께 1~2px"
-   ]
+   ],
+   "gateKind": "seat"
   },
   {
    "id": "stone_lions",
@@ -1611,7 +1714,8 @@
    "criteria": [
     "받침대 윗면",
     "사자 머리 윗면"
-   ]
+   ],
+   "gateKind": "figure"
   },
   {
    "id": "mountain_gate",
@@ -1629,7 +1733,8 @@
     "지붕 윗면",
     "편액은 색 판(글자 금지)",
     "가운데를 걸어 지나간다"
-   ]
+   ],
+   "gateKind": "structure"
   },
   {
    "id": "bamboo_grove",
@@ -1646,7 +1751,8 @@
    "criteria": [
     "잎 덩이 윗면 빛",
     "줄기 마디"
-   ]
+   ],
+   "gateKind": "organic"
   },
   {
    "id": "training_yard_edge",
@@ -1679,7 +1785,8 @@
    "criteria": [
     "지붕돌 윗면",
     "받침 윗면"
-   ]
+   ],
+   "gateKind": "column"
   },
   {
    "id": "stele",
@@ -1696,7 +1803,8 @@
    "criteria": [
     "비석 머리 윗면",
     "거북 등 윗면"
-   ]
+   ],
+   "gateKind": "column"
   },
   {
    "id": "prop_weapon_rack",
@@ -1721,7 +1829,13 @@
    ],
    "footOnEdge": true,
    "overlaps": "weapon_rack",
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "frame",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_archery_target",
@@ -1748,7 +1862,13 @@
     "huang"
    ],
    "footOnEdge": true,
-   "overlaps": "archery_target"
+   "overlaps": "archery_target",
+   "gateKind": "frame",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_sandbag_frame",
@@ -1776,7 +1896,13 @@
     "shi"
    ],
    "footOnEdge": true,
-   "overlaps": "sandbags"
+   "overlaps": "sandbags",
+   "gateKind": "frame",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_meditation_mats",
@@ -1804,7 +1930,12 @@
    ],
    "contrastGround": "inn_floor_wood",
    "footOnEdge": true,
-   "overlaps": "meditation_mats"
+   "overlaps": "meditation_mats",
+   "gateKind": "seat",
+   "walkGrid": [
+    "FF"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_stone_lions",
@@ -1840,7 +1971,11 @@
       1,
       2
      ],
-     "kind": "object"
+     "kind": "object",
+     "walkGrid": [
+      "U",
+      "X"
+     ]
     },
     {
      "id": "r",
@@ -1853,12 +1988,17 @@
       1,
       2
      ],
-     "kind": "object"
+     "kind": "object",
+     "walkGrid": [
+      "U",
+      "X"
+     ]
     }
    ],
    "extraRamps": [
     "bai"
-   ]
+   ],
+   "gateKind": "figure"
   },
   {
    "id": "prop_stone_lantern",
@@ -1883,7 +2023,13 @@
     "jin"
    ],
    "footOnEdge": true,
-   "overlaps": "stone_lantern"
+   "overlaps": "stone_lantern",
+   "gateKind": "column",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_stele",
@@ -1905,7 +2051,13 @@
     "yard_floor_stone"
    ],
    "footOnEdge": true,
-   "overlaps": "stele"
+   "overlaps": "stele",
+   "gateKind": "column",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_censer_small",
@@ -1931,7 +2083,12 @@
     "zhu"
    ],
    "contrastGround": "inn_floor_wood",
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_bamboo_pot",
@@ -1959,7 +2116,13 @@
     "huang"
    ],
    "contrastGround": "inn_floor_wood",
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_bamboo_thicket",
@@ -1986,7 +2149,13 @@
    ],
    "footOnEdge": true,
    "tileable": "x",
-   "overlaps": "bamboo_grove"
+   "overlaps": "bamboo_grove",
+   "gateKind": "organic",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_plum_bonsai",
@@ -2014,7 +2183,12 @@
     "zhu"
    ],
    "contrastGround": "inn_floor_wood",
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_garden_rock",
@@ -2035,7 +2209,13 @@
    "styleRef": [
     "yard_floor_stone"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "organic",
+   "walkGrid": [
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_well",
@@ -2061,7 +2241,13 @@
     "wa",
     "mu"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "XX",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_water_jar",
@@ -2087,7 +2273,12 @@
    "footOnEdge": true,
    "extraRamps": [
     "song"
-   ]
+   ],
+   "gateKind": "container",
+   "walkGrid": [
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_tea_table",
@@ -2115,7 +2306,12 @@
    "extraRamps": [
     "wa",
     "bai"
-   ]
+   ],
+   "gateKind": "low_furniture",
+   "walkGrid": [
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_writing_desk",
@@ -2144,7 +2340,12 @@
     "bai",
     "shi",
     "huang"
-   ]
+   ],
+   "gateKind": "low_furniture",
+   "walkGrid": [
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_folding_screen",
@@ -2171,7 +2372,13 @@
    ],
    "contrastGround": "inn_floor_wood",
    "footOnEdge": true,
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "tall_furniture",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_scroll_shelf",
@@ -2198,7 +2405,13 @@
    ],
    "contrastGround": "inn_floor_wood",
    "footOnEdge": true,
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "tall_furniture",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_medicine_cabinet",
@@ -2224,7 +2437,13 @@
    ],
    "contrastGround": "inn_floor_wood",
    "footOnEdge": true,
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "tall_furniture",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_herb_stove",
@@ -2252,7 +2471,12 @@
     "zhu"
    ],
    "contrastGround": "inn_floor_wood",
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "container",
+   "walkGrid": [
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_war_drum",
@@ -2279,7 +2503,13 @@
     "jin",
     "zhu"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "round_body",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_gong_frame",
@@ -2304,7 +2534,13 @@
    "extraRamps": [
     "jin"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "frame",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_banner_pole",
@@ -2329,7 +2565,14 @@
    "footOnEdge": true,
    "extraRamps": [
     "jin"
-   ]
+   ],
+   "gateKind": "column",
+   "walkGrid": [
+    "U",
+    "U",
+    "X"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_hand_cart",
@@ -2356,7 +2599,13 @@
     "bai",
     "mu"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "box",
+   "walkGrid": [
+    "UU",
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_firewood_pile",
@@ -2382,7 +2631,12 @@
     "mu",
     "shi"
    ],
-   "footOnEdge": true
+   "footOnEdge": true,
+   "gateKind": "organic",
+   "walkGrid": [
+    "XX"
+   ],
+   "walkNote": "X 막힘 · U 지나감(그림이 사람 위, ★ — 아래층 통행을 따른다) · F 지나감(바닥 높이 그림, 사람 밑)"
   },
   {
    "id": "prop_sect_gate",
@@ -2421,7 +2675,8 @@
     "XXUUXX"
    ],
    "walkNote": "X 막힘(기둥·받침·옆 칸 돌난간) · U 지나감 — 그림이 사람 위(보·지붕 아래로 지나감). 맨 아래 줄 가운데 두 칸이 문간.",
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "structure"
   },
   {
    "id": "prop_stone_pavilion",
@@ -2454,10 +2709,11 @@
     "UUUUU",
     "XUUUX",
     "XXUXX",
-    "XX.XX"
+    "XXFXX"
    ],
-   "walkNote": "X 막힘(기단 가장자리·모서리 기둥·앞 난간) · U 지나감 — 지붕·처마·기둥 윗부분이 사람 위 · . 계단(지나감). 정자 안은 둘째 줄 가운데 세 칸 + 셋째 줄 가운데(난간 사이 들어가는 자리).",
-   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+   "walkNote": "X 막힘(기단 가장자리·모서리 기둥·앞 난간) · U 지나감 — 지붕·처마·기둥 윗부분이 사람 위 · F 계단(지나감, 바닥 높이 그림 — 사람 밑). 정자 안은 둘째 줄 가운데 세 칸 + 셋째 줄 가운데(난간 사이 들어가는 자리).",
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "gateKind": "structure"
   },
   {
    "id": "prop_bronze_ding",
@@ -2489,7 +2745,8 @@
     "XXXX",
     "XXXX"
    ],
-   "walkNote": "X 막힘 · U 지나감 — 귀 끝이 사람 위."
+   "walkNote": "X 막힘 · U 지나감 — 귀 끝이 사람 위.",
+   "gateKind": "container"
   }
  ],
  "forbidden": [
@@ -2515,11 +2772,51 @@
   },
   {
    "id": "bake",
-   "rule": "이 하네스는 번들(src/assets/bundled.ts 등)에 굽지 않는다. 굽기는 고른 뒤 별도 작업."
+   "rule": "번들 산출물(src/assets/murimWuxia*.json·public/assets/murim-wuxia*/·장소 스냅샷)을 손으로 쓰지 않는다. 굽기는 `bake` 단계만 — 고른 것(현재 해시)만, 기물은 조각마다 공용 오브젝트 게이트(require_pass, bundle)를 통과해야 하고 하나라도 거절이면 아무것도 쓰지 않는다. 게이트 건너뛰기 옵션을 만들지 않는다."
   },
   {
    "id": "ink-outline",
    "rule": "먹(ink·밝기 0.09 이하 0단) 윤곽 금지 — 지형·기물·큰 구조 모두 재질 자신의 명암으로(outlineRule). 작은 기물의 그늘 쪽도 재질 가장 어두운 단 + 접지 그림자까지. 사람(Actor1)만 외곽선."
   }
- ]
+ ],
+ "gateKindNote": "gateKind = 공용 오브젝트 게이트(src/harnesses/_core/object_gate) 종류. kind object(기물)와 object 조각에만 쓴다 — 바닥·벽·지붕(tile·wall·roof)은 게이트 kind 가 없어 기존 관문(P·Z·Q·F·S·J·Y)만. 애매하면 더 엄격한 쪽(예: 화분은 organic 이 아니라 container — 흙 윗면이 보여야 한다, 밀봉 술독은 round_body).",
+ "walkGridNote": "walkGrid(칸 통행, 위 → 아래): X 막힘 · U 지나감(그림이 사람 위 ★, 그 칸 통행은 아래층이 정한다) · F 지나감(바닥 높이 그림, 사람 밑) · . 빈 칸(그림 없음). 굽기는 X → 불투명 벽·문(wall kind)은 아래층 막힘, 기물은 위층 막힘 / U → 위층 ★ / F → 불투명이면 아래층 바닥, 투명이 있으면 2층 덧그림. 지붕은 위층 막힘, 바닥 타일은 아래층 바닥.",
+ "bake": {
+  "$comment": "bake 단계(harness.py bake)가 읽는다. 사람·감독이 고른 (항목, 줄) 중 현재 해시와 맞는 것만 굽는다.",
+  "tilesetId": "murim_wuxia",
+  "textureKey": "tex_murim_wuxia",
+  "name": "무림 · 중국 무협 (손 도트)",
+  "family": "oprn-murim",
+  "familyLabel": "무림(중국 무협)",
+  "tilesPerRow": 48,
+  "prefix": "mur-",
+  "groupPrefix": "mur:",
+  "rounds": [
+   "style-r1",
+   "frame-r1",
+   "inn-r1",
+   "props-r1"
+  ],
+  "supersededStyle": {
+   "inn_floor_wood": "floor_wood_inn",
+   "yard_floor_stone": "floor_stone_yard",
+   "inn_wall_pillar": "wall_inn_set",
+   "roof_tile_eave": "roof_set",
+   "round_table_stools": "set_table_four"
+  },
+  "supersededNote": "화풍 판(style-r1)의 바닥·벽·지붕·탁자는 정식판(frame-r1·inn-r1)이 대신한다 — 굽지 않는다. 목인장(training_dummy)은 정식판이 없어 style-r1 고른 것을 굽는다. style 바닥(inn_floor_wood·yard_floor_stone)은 정식판 섞어 깔기 변형으로만 들어간다(mur-<줄>-floor-…-style).",
+  "styleFloorMix": {
+   "floor_wood_inn": "inn_floor_wood",
+   "floor_stone_yard": "yard_floor_stone"
+  },
+  "lineCommon": "줄 B 후보가 없는 기물은 줄 A 것 하나만 굽고(id mur-a-…) 태그 「줄 공통」 — 줄 B 장면에도 그대로 쓴다.",
+  "gate": {
+   "module": "src/harnesses/_core/object_gate",
+   "context": "bundle",
+   "labelFormat": "murim:<판>:<항목>:<후보>[:<조각>]",
+   "review": "npm run harness -- object-gate review --batch <items.jsonl>",
+   "receipts": "harness-data/object-gate/receipts/",
+   "noSkip": "게이트를 건너뛰는 옵션은 없다. 하나라도 거절이면 아무것도 쓰지 않는다."
+  }
+ }
 }
