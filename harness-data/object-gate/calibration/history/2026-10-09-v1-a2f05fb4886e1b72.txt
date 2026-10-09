@@ -54,4 +54,4 @@
 
 프로필 a2f05fb4886e1b72: 위반 17/18 잡음, 정상 10/28 통과 → rejected
 놓친 위반: murim/prop_bronze_ding__A1
-프로필 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/profiles/a2f05fb4886e1b72.json · 상세 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/calibration/run-a2f05fb4886e1b72.json
+프로필 harness-data/object-gate/profiles/a2f05fb4886e1b72.json · 상세 harness-data/object-gate/calibration/run-a2f05fb4886e1b72.json

@@ -120,4 +120,4 @@
 
 프로필 c69574d8ced1cdf8: 위반 45/59 잡음, 정상 38/53 통과 → rejected
 놓친 위반: interior/chopping_block__v5, interior/altar_E__w21-G, interior/pew__v5, interior/pew_E3__w45-A, interior/pulpit__w32-A, interior/coffin__w73-A, interior/column_dwarf__w51-A, interior/sofa__v5, interior/firewood_bundle__w9-B, interior/rune_stone__w45-A, interior/safe__w72-A, interior/hay_bale__w44-A, interior/spiral_stair__v5, interior/patient_bed__w74-A
-프로필 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/profiles/c69574d8ced1cdf8.json · 상세 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/calibration/run-c69574d8ced1cdf8.json
+프로필 harness-data/object-gate/profiles/c69574d8ced1cdf8.json · 상세 harness-data/object-gate/calibration/run-c69574d8ced1cdf8.json
