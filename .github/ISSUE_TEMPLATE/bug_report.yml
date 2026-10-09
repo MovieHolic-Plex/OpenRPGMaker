@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a reproducible problem in OPRN Studio
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include secrets, private project files, or personal data. Use the private security channel for vulnerabilities.
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: List the smallest set of steps that reproduces the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      placeholder: e.g. 0.184.2
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, browser or Electron build, and Node.js version.

@@ -1,8 +1,0 @@
-{
-  "scope": "Revision546 read-only player copy, actual third-badge checkpoint. Walk to healer, confirm new capture advice renders and dialogue closes normally.",
-  "errors": [],
-  "walkedSteps": 13,
-  "adviceText": "파티의 체력과 상태 이상이 모두 말끔히 회복되었습니다. 신전의 그림릿은 물\n타입 동료로 체력을 낮추고 마비 등 상태 이상을 걸면 포획에 유리하지만\n확정은 아닙니다. 전투 중 위험해지면 즉시 회복하거나 언제든 이 야영지로\n돌아오세요.\n야영 치료사\n■\n기록",
-  "passed": true,
-  "automaticSeconds": 3.65
-}

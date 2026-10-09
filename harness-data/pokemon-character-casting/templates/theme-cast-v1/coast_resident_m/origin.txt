@@ -1,1 +1,0 @@
-Emerald fisherman template derivative (coast theme). Original artwork Nintendo / Game Freak / Creatures. Claude (Opus 5.5) authored head/clothing row edits and palette choices listed in recipe.json; original body/gait/face retained. Context image is a ground-tile placement mockup, not runtime QA. Not independently drawn from scratch.
