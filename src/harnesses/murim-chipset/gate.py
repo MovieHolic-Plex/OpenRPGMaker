@@ -292,6 +292,7 @@ def check_layout(item, set_im, parts):
     lay = item['layout']
     rules = lay.get('rules', {})
     tol = rules.get('sideSeatTol', 2)
+    side_off = rules.get('sideSeatOffset', 0)  # 옆 걸상을 윗면 가운데보다 이 px 만큼 내려 앉힌다(감독 2026-10-09)
     vis_min = rules.get('backSeatVisible', 0.5)
     g0, g1 = rules.get('frontGap', [2, 4])
     place = lay['place']
@@ -318,8 +319,9 @@ def check_layout(item, set_im, parts):
     for side in ('left', 'right'):
         sx, sy = place[side]['px']
         sc = sy + (s0 + s1 - 1) / 2
-        d = sc - tc
-        (bad if abs(d) > tol else ok_msgs).append(f'{side} 앉는 면 {sc:.1f} vs 탁자 윗면 가운데 {tc:.1f} ({d:+.1f})')
+        d = sc - tc - side_off
+        off_note = f' − 내림 {side_off}' if side_off else ''
+        (bad if abs(d) > tol else ok_msgs).append(f'{side} 앉는 면 {sc:.1f} vs 탁자 윗면 가운데 {tc:.1f}{off_note} ({d:+.1f})')
     # 3) 뒤 걸상 앉는 면이 보이는 비율
     bx, by = place['back']['px']
     W, Hh = item['size'][0] * T, item['size'][1] * T
