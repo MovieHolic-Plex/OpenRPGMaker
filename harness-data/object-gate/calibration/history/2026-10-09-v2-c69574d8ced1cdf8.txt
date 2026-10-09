@@ -1,0 +1,123 @@
+
+> oprn@0.183.1 harness
+> vite-node --script scripts/harness.mts -- object-gate calibrate --concurrency 10
+
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:2794086) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+위반  FAIL  box            dungeon/props.chest__A1                  6d4c0e4a30dc  윗면 1.5행 < 4
+위반  FAIL  container      dungeon/props.brazier__A1                0b2532211c88  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+위반  FAIL  frame          dungeon/props.cell_bars__A1              7a832a4ab850  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  round_body     dungeon/props.barrel__A1                 3fd519dd09a9  윗면 2행 < 3
+위반  FAIL  box            dungeon/props.crate_stack__A1            c67c7e88cec0  윗면 2행 < 4
+위반  FAIL  column         dungeon/props.pillar_broken__A1          52b3738ed78f  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__A1          c43a89461ea0  윗면 2행 < 3
+위반  FAIL  column         dungeon/props.pillar_broken__B1          c410277dd57b  판정자 과반 fail · 윗면 0행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__B1          e57e44af04c8  윗면 1.5행 < 3
+위반  FAIL  column         dungeon/props.pillar_broken__C1          a385f32bd36e  판정자 과반 fail · 윗면 1.5행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__C1          3abf2899b743  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+정상  PASS  wall_mounted   dungeon/props.torch_wall__A1             88c534ebcab5  
+정상  PASS  debris         dungeon/props.bones__A1                  8120954e22ce  
+정상  PASS  wall_mounted   dungeon/props.cobweb__A1                 65b853b317f4  
+정상  FAIL  other          dungeon/props.lever__A1                  b02c8291c08f  윗면 2행 < 3
+정상  PASS  flat           dungeon/props.pressure_plate__A1         09c35612c2a9  
+정상  PASS  flat           dungeon/props.spike_trap__A1             b656cf208da8  
+정상  PASS  flat           dungeon/props.magic_circle__A1           99fa50fc7404  
+정상  FAIL  container      dungeon/props.mine_cart__A1              28bcc6d75d36  아가리 2.5행 < 4
+정상  PASS  organic        dungeon/props.mushrooms__A1              98e5ff683b0c  
+정상  PASS  organic        dungeon/props.crystal__A1                200279abc969  
+정상  PASS  organic        dungeon/props.roots__A1                  3e0e1fed5e4b  
+정상  PASS  debris         dungeon/props.broken_pots__A1            584ff61b954e  
+정상  PASS  box            dungeon/props.sarcophagus__A1            7ae3bdb48d21  
+정상  FAIL  column         dungeon/props.tombstones__A1             8b95187f34c0  판정자 과반 fail · 정면 입면도 · 윗면 0.5행 < 3
+정상  PASS  container      dungeon/props.fountain__A1               f0c43a6c5f1f  
+정상  PASS  structure      dungeon/props.altar_guardians__A1        5951bab86781  
+정상  PASS  box            dungeon/props.sarcophagus__B1            ebc501ce8abc  
+정상  FAIL  column         dungeon/props.tombstones__B1             c8c0a40e6bf7  판정자 과반 fail · 정면 입면도 · 윗면 0.5행 < 3
+정상  PASS  container      dungeon/props.fountain__B1               31dc4d04eccb  
+정상  PASS  structure      dungeon/props.altar_guardians__B1        9bafe617cbba  
+정상  PASS  box            dungeon/props.sarcophagus__C1            f45cb1bc84f4  
+정상  FAIL  column         dungeon/props.tombstones__C1             dbc0b0832bae  옆면(아이소) · 윗면 2.5행 < 3
+정상  PASS  container      dungeon/props.fountain__C1               fa407e393a79  
+정상  PASS  structure      dungeon/props.altar_guardians__C1        a743c786fd84  
+위반  FAIL  tall_furniture interior/cake_display_case__w8-C         e2ed444584bf  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  round_body     interior/chopping_block__v5              012b90c21dfa  
+위반  PASS  box            interior/altar_E__w21-G                  5b24c8f8c184  
+위반  PASS  seat           interior/pew__v5                         bf804381e68f  
+위반  FAIL  seat           interior/pew_E2__w45-A                   de06f37c00dc  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  seat           interior/pew_E3__w45-A                   99e5f875c971  
+위반  PASS  tall_furniture interior/pulpit__w32-A                   0acb45cd528b  
+위반  FAIL  low_furniture  interior/votive_stand__v5                80661d0fd369  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  box            interior/coffin__w73-A                   e42885bcb82a  
+위반  PASS  column         interior/column_dwarf__w51-A             efe4345b4d32  
+위반  FAIL  column         interior/column_marble__w51-A            ee0f01781bf3  윗면 1.5행 < 3
+위반  FAIL  column         interior/column_steel__w51-A             607ee85527d6  윗면 2행 < 3
+위반  FAIL  column         interior/column_stone__w51-A             3497f50fb146  윗면 2행 < 3
+위반  FAIL  column         interior/column_wood__w51-A              7bfbe652a3dc  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  seat           interior/armchair__w9-B                  01a911a3eb56  판정자 과반 fail · 정면 입면도 · 윗면 1행 < 3
+위반  FAIL  round_body     interior/barrel__w2-A                    29b19d181c31  윗면 2행 < 3
+위반  FAIL  seat           interior/chair_E__v5                     d97103df8569  윗면 1행 < 3
+위반  FAIL  seat           interior/chair_N__v5                     0ae0255caaf5  윗면 1.5행 < 3
+위반  FAIL  seat           interior/chair_S__v5                     860646bc3230  윗면 2.5행 < 3
+위반  FAIL  seat           interior/chair_W__v5                     908ab1d92277  윗면 1.5행 < 3
+위반  FAIL  low_furniture  interior/cradle__w29-F                   06224d8beac4  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  seat           interior/sofa__v5                        e470fafbcd0e  
+위반  PASS  other          interior/firewood_bundle__w9-B           880c5015fce7  
+위반  FAIL  tall_furniture interior/magitek_engine__w46-A           66e42f83960e  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  container      interior/mine_cart__w2-C                 8ffad8f962c0  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+위반  FAIL  round_body     interior/powder_kegs__w9-B               9e05a1a4c59d  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  column         interior/rune_stone__w45-A               1a5f3fcb70b9  
+위반  FAIL  seat           interior/stone_throne__w52-A             b518aa5e3b49  윗면 2행 < 3
+위반  FAIL  seat           interior/theater_seat__w10-C             e7aa957aabd0  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  frame          interior/hammock__w72-A                  7635f98e316c  판정자 과반 fail · 윗면 2행 < 3
+위반  PASS  box            interior/safe__w72-A                     81e74111268f  
+위반  FAIL  frame          interior/spear_rack__w70-A               c030a2303d68  윗면 1.5행 < 3
+위반  PASS  box            interior/hay_bale__w44-A                 fd8e282a2dd4  
+위반  FAIL  frame          interior/saddle_rack__w26-D              36c64542f6e7  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  frame          interior/loom__w43-A                     8e8e8e9351ac  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  PASS  structure      interior/spiral_stair__v5                2539f957738e  
+위반  FAIL  tall_furniture interior/slot_machine__w46-A             c653564d43e5  윗면 2행 < 3
+위반  FAIL  seat           interior/choir_stall__w45-A              ac5f32311564  윗면 2.5행 < 3
+위반  FAIL  tall_furniture interior/fish_tank__w44-A                2b54f674a8bf  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  tall_furniture interior/kitchen_range__v5               31039b9b2e15  판정자 과반 fail · 윗면 2.5행 < 3
+위반  PASS  low_furniture  interior/patient_bed__w74-A              eb91d929a698  
+정상  FAIL  container      interior/holy_water_font__w7-A           2af07e8b8cc2  아가리 3행 < 4
+정상  FAIL  container      interior/slop_bucket__w3-C               eaaa8f17b98d  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+정상  PASS  container      interior/bathtub__w22-F                  17b252edcc29  
+정상  PASS  low_furniture  interior/nightstand__w8-C                737e9f1f0039  
+정상  PASS  low_furniture  interior/roundtable__v5                  b194b8c74b6a  
+정상  PASS  seat           interior/stool__v5                       44914cf6ece8  
+정상  PASS  low_furniture  interior/straw_bed__w44-A                4186ce619ed2  
+정상  PASS  frame          interior/timber_prop__w53-B              621b45c200a7  
+정상  PASS  low_furniture  interior/conductor_podium__w31-F         090660019722  
+정상  FAIL  other          interior/anvil__w7-B                     3b61923b41e4  윗면 1행 < 3
+정상  FAIL  container      interior/coal_bin__w10-B                 5f84a5f6802d  판정자 과반 fail · 아가리 2행 < 4
+정상  FAIL  container      interior/quench_barrel__w5-C             92feda718108  아가리 3.5행 < 4
+정상  FAIL  container      interior/feed_trough__w4-B               d6779db2e4c5  판정자 과반 fail · 정면 입면도 · 아가리 안쪽이 안 보임
+정상  PASS  container      interior/water_trough__w4-A              20a7a61e78ea  
+정상  PASS  seat           interior/bar_stool__w5-C                 d2bc628590e4  
+정상  PASS  round_body     interior/cheese_wheels__v5               8784a8d7da32  
+정상  PASS  tall_furniture interior/dresser__w71-A                  c8838fd0f38c  
+정상  PASS  tall_furniture interior/wardrobe__w42-A                 5ddb17aa3a32  
+정상  PASS  tall_furniture interior/stove__w44-A                    de154cecb302  
+정상  FAIL  structure      interior/forge__w44-A                    172edb858500  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+정상  PASS  tall_furniture interior/bookshelf_1w__w41-A             730c20cd166c  
+정상  FAIL  frame          interior/keg_rack__w48-A                 08f5ab666b0a  윗면 2행 < 3
+정상  FAIL  container      interior/mortar_and_pestle__w1-B         79532ed97e6b  아가리 1.5행 < 4
+정상  PASS  organic        interior/potted_fern__w7-B               c26049ac1ab2  
+정상  FAIL  debris         interior/treasure_pile__w5-C             c29989f3a3ff  종류 불일치
+위반  FAIL  container      murim/prop_bronze_ding__A1               65b0f45844e4  아가리 1.5행 < 4
+위반  FAIL  frame          murim/prop_gong_frame__A1                3f7ae7749df9  윗면 1행 < 3
+위반  FAIL  tall_furniture murim/prop_scroll_shelf__A1              f219989bd90d  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  tall_furniture murim/prop_scroll_shelf__B1              91a43bae139f  판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3
+위반  FAIL  tall_furniture murim/prop_medicine_cabinet__A1          f39302762868  판정자 과반 fail · 정면 입면도 · 윗면 1행 < 3
+위반  FAIL  tall_furniture murim/prop_medicine_cabinet__B1          6f7522447deb  판정자 과반 fail · 정면 입면도 · 윗면 0.5행 < 3
+위반  FAIL  frame          murim/prop_weapon_rack__A1               d3c1b82f7254  윗면 1행 < 3
+정상  PASS  round_body     murim/prop_war_drum__A1                  26a2289d249a  
+정상  PASS  container      murim/prop_well__A1                      0f8015ac9527  
+정상  PASS  low_furniture  murim/prop_tea_table__A1                 ef92c4ad77d4  
+정상  PASS  low_furniture  murim/prop_tea_table__B1                 2b829ded6ec3  
+
+프로필 c69574d8ced1cdf8: 위반 45/59 잡음, 정상 38/53 통과 → rejected
+놓친 위반: interior/chopping_block__v5, interior/altar_E__w21-G, interior/pew__v5, interior/pew_E3__w45-A, interior/pulpit__w32-A, interior/coffin__w73-A, interior/column_dwarf__w51-A, interior/sofa__v5, interior/firewood_bundle__w9-B, interior/rune_stone__w45-A, interior/safe__w72-A, interior/hay_bale__w44-A, interior/spiral_stair__v5, interior/patient_bed__w74-A
+프로필 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/profiles/c69574d8ced1cdf8.json · 상세 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/calibration/run-c69574d8ced1cdf8.json

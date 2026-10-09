@@ -1,0 +1,57 @@
+
+> oprn@0.183.1 harness
+> vite-node --script scripts/harness.mts -- object-gate calibrate --concurrency 8
+
+[oprn] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요.
+(node:2667713) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+위반  FAIL  box            dungeon/props.chest__A1                  134683c3a721  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 4
+위반  FAIL  container      dungeon/props.brazier__A1                e6321c7b3163  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 아가리 안쪽이 안 보임
+위반  FAIL  frame          dungeon/props.cell_bars__A1              bd4fb29655ad  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 2행 < 3
+위반  FAIL  round_body     dungeon/props.barrel__A1                 3f9d2d570346  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 1행 < 3
+위반  FAIL  box            dungeon/props.crate_stack__A1            b450646a80ce  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 2행 < 4
+위반  FAIL  column         dungeon/props.pillar_broken__A1          8f41d8e7518a  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__A1          95f2c92fbadc  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 1행 < 3
+위반  FAIL  column         dungeon/props.pillar_broken__B1          3addda0c55fe  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__B1          5fb2a9d0e7a0  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  column         dungeon/props.pillar_broken__C1          8345baeb3408  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  figure         dungeon/props.statue_fallen__C1          d108371b8818  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 1행 < 3
+정상  FAIL  wall_mounted   dungeon/props.torch_wall__A1             e05abdcf0d3d  gpt#2 판정자 fail
+정상  FAIL  flat           dungeon/props.bones__A1                  a7bcb6cb6615  gemini#1 판정자 fail
+정상  PASS  wall_mounted   dungeon/props.cobweb__A1                 65b853b317f4  
+정상  FAIL  other          dungeon/props.lever__A1                  a424309abfd4  gemini#1 판정자 fail · gemini#1 옆면(아이소) · gemini#1 윗면 1행 < 3
+정상  PASS  flat           dungeon/props.pressure_plate__A1         1255c858e7ef  
+정상  PASS  flat           dungeon/props.spike_trap__A1             ad9ec8b47b18  
+정상  PASS  flat           dungeon/props.magic_circle__A1           7fc448897c7a  
+정상  FAIL  container      dungeon/props.mine_cart__A1              385b49f739ba  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 아가리 안쪽이 안 보임
+정상  FAIL  organic        dungeon/props.mushrooms__A1              288eb1592d91  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#2 판정자 fail
+정상  FAIL  organic        dungeon/props.crystal__A1                b95537a395c7  gpt#1 옆면(아이소) · gpt#2 옆면(아이소)
+정상  FAIL  organic        dungeon/props.roots__A1                  deebb5e9811b  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#2 판정자 fail
+정상  FAIL  organic        dungeon/props.broken_pots__A1            41c33f7d5739  gemini#1 판정자 fail · gemini#1 종류 불일치 · gemini#1 정면 입면도
+정상  FAIL  box            dungeon/props.sarcophagus__A1            23a724f8c05e  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 4
+정상  FAIL  column         dungeon/props.tombstones__A1             c865af5ad833  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+정상  PASS  container      dungeon/props.fountain__A1               789aa02059d8  
+정상  PASS  structure      dungeon/props.altar_guardians__A1        f7d4b9f9cef8  
+정상  FAIL  box            dungeon/props.sarcophagus__B1            6f1367e07bf7  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 4
+정상  FAIL  column         dungeon/props.tombstones__B1             3793e51ab6bf  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 1행 < 3
+정상  PASS  container      dungeon/props.fountain__B1               bacb03a517ab  
+정상  FAIL  structure      dungeon/props.altar_guardians__B1        411f9436dbce  gpt#1 판정자 fail · gpt#1 정면 입면도 · gpt#1 윗면 0행 < 3
+정상  FAIL  box            dungeon/props.sarcophagus__C1            772ce7fe07f3  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 4
+정상  FAIL  column         dungeon/props.tombstones__C1             e5f289b65a3c  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 2행 < 3
+정상  FAIL  container      dungeon/props.fountain__C1               525f14f13d16  gpt#1 옆면(아이소)
+정상  FAIL  structure      dungeon/props.altar_guardians__C1        8a42a3fc3d4f  gpt#2 판정자 fail · gpt#2 옆면(아이소)
+위반  PASS  container      murim/prop_bronze_ding__A1               0f76b8fe59fa  
+위반  FAIL  frame          murim/prop_gong_frame__A1                0e0aac2c094d  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  tall_furniture murim/prop_scroll_shelf__A1              a5346d7514b8  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  tall_furniture murim/prop_scroll_shelf__B1              5ed4fe6f8353  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 2행 < 3
+위반  FAIL  tall_furniture murim/prop_medicine_cabinet__A1          2a9b660efa82  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+위반  FAIL  tall_furniture murim/prop_medicine_cabinet__B1          6f7522447deb  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 1행 < 3
+위반  FAIL  frame          murim/prop_weapon_rack__A1               813776324b45  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+정상  PASS  round_body     murim/prop_war_drum__A1                  f608d2fb5334  
+정상  PASS  container      murim/prop_well__A1                      574b2ecc6d9b  
+정상  FAIL  low_furniture  murim/prop_tea_table__A1                 3f9723c522cc  gemini#1 판정자 fail · gemini#1 정면 입면도 · gemini#1 윗면 0행 < 3
+정상  PASS  low_furniture  murim/prop_tea_table__B1                 ca0b3bb5d758  
+
+프로필 a2f05fb4886e1b72: 위반 17/18 잡음, 정상 10/28 통과 → rejected
+놓친 위반: murim/prop_bronze_ding__A1
+프로필 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/profiles/a2f05fb4886e1b72.json · 상세 /home/main/.t3/worktrees/rpg-zzu/t3code-d3a1dbb7/harness-data/object-gate/calibration/run-a2f05fb4886e1b72.json
