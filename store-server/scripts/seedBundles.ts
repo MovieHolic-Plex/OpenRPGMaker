@@ -106,9 +106,9 @@ export const SEED_BUNDLES: readonly BundleSeed[] = [
   {
     create: createJpCityTileset, sheet: "assets/jp-city/jp-city-chipset.png",
     title: "일본 도시 — 상가·주택·역·신사", summary: "현대 일본 거리의 주택가·역·공원·신사를 그리는 도트 칩셋.",
-    description: "3/4 시점 현대 일본 도시 타일셋입니다. 건물 외형·소품·바닥 타일과 조립 참고문서, 집·가게·공공 실내(편의점·라멘·이자카야·센토·파출소 등 21곳)와 거리 문을 실내로 잇는 예제가 들어 있습니다.",
+    description: "3/4 시점 현대 일본 도시 타일셋입니다. 건물 외형·소품·바닥 타일과 조립 참고문서, 집·가게·공공 실내(편의점·라멘·이자카야·센토·파출소 등 21곳), 학교(교실·교무실·음악실·옥상)·체육관·유치원·지상역(개찰·승강장·전철 차내)·사무 빌딩·우체국·맨션 공용부 7곳, 현대 던전 8곳(지하철 보선 터널·하수도·폐병원·폐교·공사 중 빌딩·지하 주차장·밤의 지하상가·항만 창고 — 잠긴 문·보물 자리)과 거리 문을 실내로 잇는 예제가 들어 있습니다.",
     tags: ["현대", "일본", "도시"],
-    previews: ["assets/store-covers/jp-city-street.png", "assets/region-references/jp-city-konbini.png", "assets/region-references/jp-city-sento.png", "assets/region-references/jp-city-house.png", "assets/region-references/jp-city-tramstreet.png"],
+    previews: ["assets/store-covers/jp-city-street.png", "assets/region-references/jp-city-konbini.png", "assets/region-references/jp-city-school-1f.png", "assets/region-references/jp-city-abandoned-hospital-1f.png", "assets/region-references/jp-city-tramstreet.png"],
   },
   {
     // 원작 이름(해리포터·호그와트·퀴디치 등)은 상품 글에 쓰지 않는다 — 공개 장터라 상표 신고 대상이 된다. 사람 칩도 원작 인물이 아닌 역할(교수·학생·관리인)이다.

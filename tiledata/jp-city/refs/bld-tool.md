@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 도구 `build_jp_city_building` 사용법
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 가변 폭·층수 **상가 건물**(상가·아파트·사무소·마치야·L자 별채)을 **부품 사전 + 순수 조립기 + 맵 도구**로 짓는다. 건물을 낱칸으로 칠하지 않는다. **오류가 하나라도 있으면 맵을 한 칸도 바꾸지 않는다**(복제본에 찍어 엔진 통행으로 다시 확인한 뒤에만 반영). jp_city 맵에서만 동작한다.
 관련 도구: `list_jp_city_building_parts`(읽기 — 부품 사전·`example` 로 완성 예제 입력). 코드: `src/editor/tools/jpCityTools.ts` · 조립기 `src/editor/jpCity/builder.ts` · 사전 `src/assets/jpCityBuildingSpec.json`.

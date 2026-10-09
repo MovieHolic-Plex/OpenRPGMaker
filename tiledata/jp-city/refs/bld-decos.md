@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 부착물 사전 (73종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 부착물(`decos[].deco`) 한 종의 **칸 번호 배열**이다. 항목: `deco` id · `ko` · `group` · `w`×`h` · `avoidsWindows`(창 위에 얹으면 `DECO_CLASH`) · `cells`(줄마다 칸 번호, 비면 null). 건물 위층에 얹히므로 통행: 문(`door.*`)은 맨 아래 두 줄이 막힘, 나머지는 걸어 지나갈 수 있다(★).
 `col`·`floor`·`row` 로 건물 띠 위에 놓는다(「건물 조립 도구」 문서). 그림은 이 용도의 `jp-img-parts-decos-*`.

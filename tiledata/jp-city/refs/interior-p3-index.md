@@ -1,6 +1,6 @@
 # 일본 도시 — 일본 학교·역·사무실 실내 장소 7곳
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 **가져오기**: `import_region_reference({id:"<장소 id>"})` → 맵 여러 장(층·승강장·차내 — 서로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({door:{x,y}, width, place:"<장소 id>"})` 한 번 — 첫 맵(1층·역사·로비)에만 거리 문을 잇는다.
 층이 여럿인 장소의 위층·승강장·전철 차내는 거리와 잇지 않는다(맨 아래 줄이 막혀 있다). 층 이동은 계단(올라가는 계단 발칸 ↔ 위층 계단통 아랫줄)·엘리베이터 문 앞 칸·승강장 승차 칸의 `links` 다.

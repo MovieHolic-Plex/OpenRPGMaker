@@ -169,6 +169,26 @@ def contact_sheet(ids, cols, scale, label=True, bg=(46, 46, 54, 255), pad=3):
 IMAGES = collections.OrderedDict()      # 이름 → (분류, 기록)
 
 
+def keep_img(name, caption, cat):
+    """실측 화면(verify-shots)이 없는 체크아웃에서 이미 구운 그림을 그대로 등록한다(공개 저장소는 verify-shots 를 싣지 않는다)."""
+    assert os.path.exists(os.path.join(IMG_DIR, f'{name}.png')), name
+    rec = dict(id=f'{PFX}img-{name}', name=f'{name}.png', caption=caption, dataUrl=f'{IMG_URL}/{name}.png')
+    IMAGES[name] = (cat, rec)
+    return rec['id']
+
+
+def runtime_shot(*parts):
+    """출하 플레이어 실측 화면 verify-shots/jp-city/<parts>. 없으면 None."""
+    p = os.path.join(ROOT, 'verify-shots', 'jp-city', *parts)
+    return Image.open(p).convert('RGBA') if os.path.exists(p) else None
+
+
+def shot_img(name, shot, label, caption, cat):
+    """실측 화면 한 장을 ¾ 로 줄여 패널로 굽는다. 실측이 없으면 이미 구운 그림을 그대로 쓴다."""
+    if shot is None: return keep_img(name, caption, cat)
+    return save_img(name, panels([(label, shot.resize((shot.width * 3 // 4, shot.height * 3 // 4), Image.NEAREST))]), caption, cat)
+
+
 def save_img(name, im, caption, cat):
     """긴 변 820 초과는 만들지 않는다(호출자가 쪼갠다)."""
     assert max(im.size) <= 820, (name, im.size)
@@ -2384,16 +2404,16 @@ def img_trn():
     save_img('transit-concourse', full, f'さくら町駅 콘코스 {W}×{H}칸(원본 해상도): 매표기·출구 계단·역무실·개찰구+칸막이·승강장 계단·점자 유도 블록. 배열 `jp-transit-ex`.', C_TRN)
     pl = render({'1': _PLAT['lowerTiles'], '2': _PLAT['lowerOverlayTiles'], '3': _PLAT['upperTiles'], '4': _PLAT['upperOverlayTiles']}, _PLAT['width'], _PLAT['height'])
     save_img('transit-platform', pl, f'さくら町駅 승강장 {_PLAT["width"]}×{_PLAT["height"]}칸(원본 해상도): 뒷벽·선로 2줄·승강장 끝·기둥·LED·매단 역명판·올라가는 계단. 지하철은 런타임이 그린다(`jp-img-transit-runtime`).', C_TRN)
-    rt = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 'subway-stop.png')).convert('RGBA')
-    rt2 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'transit-runtime', 't0.png')).convert('RGBA')
+    rt = runtime_shot('transit-runtime', 'subway-stop.png')
+    rt2 = runtime_shot('transit-runtime', 't0.png')
     tm = render({'1': _TRAM['lowerTiles'], '2': _TRAM['lowerOverlayTiles'], '3': _TRAM['upperTiles'], '4': _TRAM['upperOverlayTiles']}, _TRAM['width'], _TRAM['height'])
     save_img('transit-tramstreet', tm, f'노면전차 거리 {_TRAM["width"]}×{_TRAM["height"]}칸(원본 해상도): 건물·보도·동쪽행 차로·복선 레일+센터 전주+가선·서쪽행 안전지대 섬·서쪽행 차로·보도, 4칸 횡단보도+보행 신호기, 지하철 출입구. 배열 `jp-transit-ex` 맨 아래.', C_TRN)
-    rt3 = Image.open(os.path.join(ROOT, 'verify-shots', 'jp-city', 'tram-runtime', 'tram-stop.png')).convert('RGBA')
-    save_img('transit-runtime-tram', panels([('안전지대 섬 옆에 선 서쪽행 노면전차(문 연 그림) — 섬 위에서 위를 보고 「조사」로 탄다', rt3.resize((rt3.width * 3 // 4, rt3.height * 3 // 4), Image.NEAREST))]),
+    rt3 = runtime_shot('tram-runtime', 'tram-stop.png')
+    shot_img('transit-runtime-tram', rt3, '안전지대 섬 옆에 선 서쪽행 노면전차(문 연 그림) — 섬 위에서 위를 보고 「조사」로 탄다',
              '출하 플레이어 실제 화면(scripts/content/jp-city/qa/tram-street.probe.mjs): 노면전차 거리. 위는 동쪽행 전차, 아래 차로는 서쪽행 택시, 전차 집전기가 가선에 닿는다.', C_TRN)
-    save_img('transit-runtime', panels([('승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다', rt.resize((rt.width * 3 // 4, rt.height * 3 // 4), Image.NEAREST))]),
+    shot_img('transit-runtime', rt, '승강장에 선 지하철(문 연 그림) — 승강장 끝에서 위를 보고 「조사」로 탄다',
              '출하 플레이어 실제 화면(scripts/qa/runtime/transit.probe.mjs): 승강장에 선 지하철. 노선은 승강장 맵 `transit`.', C_TRN)
-    save_img('transit-runtime-road', panels([('学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스', rt2.resize((rt2.width * 3 // 4, rt2.height * 3 // 4), Image.NEAREST))]),
+    shot_img('transit-runtime-road', rt2, '学校前 길 — 차 흐름(좌측통행 두 방향)·정류장에 선 시내버스',
              '출하 플레이어 실제 화면: 小学校 앞 생활도로에 `set_map_transit auto` 로 깐 차 흐름과 学校前 버스 정류장. 동쪽행은 위 두 줄, 서쪽행은 아래 두 줄.', C_TRN)
     er = EBT['errors']
     for key, nm in (('fenceGap', 'fence'), ('stairsBench', 'stairs')):

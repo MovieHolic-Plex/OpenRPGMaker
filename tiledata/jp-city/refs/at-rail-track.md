@@ -1,6 +1,6 @@
 # 일본 도시 — 오토타일 · 선로 (`jp-rail-track`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 선로. **불투명 1층 땅**(걸을 수 있음). T·십자는 분기기 없이 평면 교차로 그렸다.
 
@@ -10,7 +10,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | 오토타일 id · 그룹 이름 | `jp-rail-track` · `선로`(fill_region·lay_path 의 material) |
 | 타일 그룹 | `jp:rail-track`(16칸, role `terrain`) |
 | 이웃 | 4방(N E S W) |
-| 칸 번호 범위 | 3544~3559(16칸, 열 40·행 73 ~ 열 7·행 74) |
+| 칸 번호 범위 | 3544~3559(16칸, 열 88·행 36 ~ 열 7·행 37) |
 | 칠하는 층 | **1층(lowerTiles)** (정의의 `layer`: lower — 도구 실측으로 정한 칠하는 층) |
 | 몸통 칸(맵에 칠하는 칸) | **3559**(선로 · 십자) = `variantMap[15]` |
 | 통행·그림 순서(몸통 칸, 엔진) | 아래층(1층)·걸음·캐릭터 아래 |

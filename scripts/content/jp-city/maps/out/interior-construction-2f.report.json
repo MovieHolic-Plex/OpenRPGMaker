@@ -1,0 +1,56 @@
+{
+ "map": {
+  "id": "jp-city-construction-2f",
+  "size": [
+   22,
+   14
+  ]
+ },
+ "start": [
+  11,
+  4
+ ],
+ "summary": "손 도트 실내 '공사 중 빌딩 2층(기둥 층·철골 구역)' 22×14 (jp-city-construction-2f, jp_city) — 출입구에서 닿는 칸 128, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-construction-2f",
+  "tilesetId": "jp_city",
+  "width": 22,
+  "height": 14,
+  "reachable": 128,
+  "floorCells": 171,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 11,
+    "y": 4
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 3,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 9,
+   "y": 4,
+   "to": "jp-city-construction-1f",
+   "reached": true
+  },
+  {
+   "x": 10,
+   "y": 4,
+   "to": "jp-city-construction-1f",
+   "reached": true
+  },
+  {
+   "x": 20,
+   "y": 12,
+   "to": "jp-city-construction-1f",
+   "reached": true
+  }
+ ],
+ "reach": 128,
+ "ok": true
+}

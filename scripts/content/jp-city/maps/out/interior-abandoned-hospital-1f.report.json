@@ -1,0 +1,68 @@
+{
+ "map": {
+  "id": "jp-city-abandoned-hospital-1f",
+  "size": [
+   24,
+   16
+  ]
+ },
+ "start": [
+  11,
+  14
+ ],
+ "summary": "손 도트 실내 '폐병원 1층(로비·외래·약제실)' 24×16 (jp-city-abandoned-hospital-1f, jp_city) — 출입구에서 닿는 칸 141, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-abandoned-hospital-1f",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 16,
+  "reachable": 141,
+  "floorCells": 193,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 11,
+    "y": 14
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 11,
+    "y": 15,
+    "width": 2
+   }
+  ],
+  "links": 4,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 21,
+   "y": 3,
+   "to": "jp-city-abandoned-hospital-2f",
+   "reached": true
+  },
+  {
+   "x": 22,
+   "y": 3,
+   "to": "jp-city-abandoned-hospital-2f",
+   "reached": true
+  },
+  {
+   "x": 18,
+   "y": 4,
+   "to": "jp-city-abandoned-hospital-b1",
+   "reached": true
+  },
+  {
+   "x": 19,
+   "y": 4,
+   "to": "jp-city-abandoned-hospital-b1",
+   "reached": true
+  }
+ ],
+ "reach": 141,
+ "ok": true
+}

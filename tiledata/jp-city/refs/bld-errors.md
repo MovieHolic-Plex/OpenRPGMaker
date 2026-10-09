@@ -1,6 +1,6 @@
 # 일본 도시 — 건물 조립 · 정상/오류 · 자동 좌표 검증
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 `build_jp_city_building` 은 일부러 틀린 입력을 **정확한 코드와 맵 좌표로 거부**하고(맵 불변), 정상 입력은 짓는다. 아래는 실제 도구를 호출한 결과다(`engine_dump.mts`, 시험판 맵 건물 폭+4 × 높이+5, 사각형 (2,1) 시작 — 좌표는 맵 칸 0 기준).
 저장 전에 실패하면 **부분 배치가 남지 않는다**: 도구는 복제본에 찍어 엔진 통행으로 다시 검사한 뒤에만 반영한다(변조 11건 모두 「맵 불변」 확인, 아래 표).

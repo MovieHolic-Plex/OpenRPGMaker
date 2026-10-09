@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-parking-b2",
+  "size": [
+   24,
+   14
+  ]
+ },
+ "start": [
+  21,
+  4
+ ],
+ "summary": "손 도트 실내 '지하 주차장 B2(침수 구역·방재 창고)' 24×14 (jp-city-parking-b2, jp_city) — 출입구에서 닿는 칸 157, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-parking-b2",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 14,
+  "reachable": 157,
+  "floorCells": 199,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 21,
+    "y": 4
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 2,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 21,
+   "y": 3,
+   "to": "jp-city-parking-b1",
+   "reached": true
+  },
+  {
+   "x": 22,
+   "y": 3,
+   "to": "jp-city-parking-b1",
+   "reached": true
+  }
+ ],
+ "reach": 157,
+ "ok": true
+}

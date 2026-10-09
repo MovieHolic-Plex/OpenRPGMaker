@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-harbor-warehouse-1",
+  "size": [
+   30,
+   22
+  ]
+ },
+ "start": [
+  2,
+  20
+ ],
+ "summary": "손 도트 실내 '항만 창고 1층 — 컨테이너 미로·랙 통로·사무 칸·보세 구역' 30×22 (jp-city-harbor-warehouse-1, jp_city) — 출입구에서 닿는 칸 291, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-harbor-warehouse-1",
+  "tilesetId": "jp_city",
+  "width": 30,
+  "height": 22,
+  "reachable": 291,
+  "floorCells": 425,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 20
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [
+   {
+    "x": 2,
+    "y": 21,
+    "width": 1
+   }
+  ],
+  "links": 1,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 20,
+   "y": 3,
+   "to": "jp-city-harbor-warehouse-2",
+   "reached": true
+  }
+ ],
+ "reach": 291,
+ "ok": true
+}

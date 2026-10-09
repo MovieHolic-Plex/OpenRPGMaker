@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-sewer-2",
+  "size": [
+   22,
+   14
+  ]
+ },
+ "start": [
+  2,
+  4
+ ],
+ "summary": "손 도트 실내 '하수 본관 — 합류 수조·펌프실·맨홀 탈출구' 22×14 (jp-city-sewer-2, jp_city) — 출입구에서 닿는 칸 105, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-sewer-2",
+  "tilesetId": "jp_city",
+  "width": 22,
+  "height": 14,
+  "reachable": 105,
+  "floorCells": 171,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 4
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 2,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 2,
+   "y": 3,
+   "to": "jp-city-sewer-1",
+   "reached": true
+  },
+  {
+   "x": 20,
+   "y": 8,
+   "to": "jp-city-sewer-1",
+   "reached": true
+  }
+ ],
+ "reach": 105,
+ "ok": true
+}

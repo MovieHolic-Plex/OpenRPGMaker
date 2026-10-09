@@ -1,6 +1,6 @@
 # 일본 도시 — 오토타일 · 중앙선 (`jp-lane-center`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **11385칸**, 16px 칸, 시트 768×3808px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 중앙선(노란 이중선). 투명·걸을 수 있음·캐릭터 밑.
 
@@ -10,7 +10,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | 오토타일 id · 그룹 이름 | `jp-lane-center` · `중앙선`(fill_region·lay_path 의 material) |
 | 타일 그룹 | `jp:lane-center`(16칸, role `terrain`) |
 | 이웃 | 4방(N E S W) |
-| 칸 번호 범위 | 3560~3575(16칸, 열 8·행 74 ~ 열 23·행 74) |
+| 칸 번호 범위 | 3560~3575(16칸, 열 8·행 37 ~ 열 23·행 37) |
 | 칠하는 층 | **2층(lowerOverlayTiles)** (정의의 `layer`: lower — 도구 실측으로 정한 칠하는 층) |
 | 몸통 칸(맵에 칠하는 칸) | **3575**(중앙선 · 십자) = `variantMap[15]` |
 | 통행·그림 순서(몸통 칸, 엔진) | 위층(3층)·걸음·캐릭터 아래 |

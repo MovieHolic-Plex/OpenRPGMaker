@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 11385,
-  "tilesPerRow": 48,
-  "rows": 238,
+  "count": 13224,
+  "tilesPerRow": 96,
+  "rows": 138,
   "sheetPx": [
-   768,
-   3808
+   1536,
+   2208
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 7882,
+  "block_cells": 9721,
   "legacy": 366,
   "legacy_ids": [
    5137,
@@ -45,40 +45,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 7882
+   "block": 9721
   }
  },
  "pc_counts": {
-  "star": 5324,
-  "solid": 2293,
-  "floor": 2091,
-  "solidfloor": 596,
-  "flat": 560,
+  "star": 5588,
+  "solid": 2589,
+  "floor": 3007,
+  "solidfloor": 903,
+  "flat": 616,
   "blank": 155
  },
  "kits": {
-  "total": 860,
+  "total": 1049,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 684
+   "block-kit": 873
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 684
+  "block_kit": 873
  },
  "groups": {
-  "total": 281,
+  "total": 315,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 128
+   "block": 162
   }
  },
  "autotiles": {
@@ -134,7 +134,12 @@
    "dungeon_hospital",
    "dungeon_school",
    "dungeon_construction",
-   "dungeon_warehouse"
+   "dungeon_warehouse",
+   "interior_amuse",
+   "interior_karaoke",
+   "interior_famires",
+   "interior_hotel",
+   "interior_mall"
   ],
   "merged": [
    "autotiles_ground",
@@ -161,14 +166,19 @@
    "interior_gym",
    "interior_station",
    "interior_office",
-   "interior_post"
-  ],
-  "missing": [
+   "interior_post",
    "dungeon_underground",
    "dungeon_hospital",
    "dungeon_school",
    "dungeon_construction",
    "dungeon_warehouse"
+  ],
+  "missing": [
+   "interior_amuse",
+   "interior_karaoke",
+   "interior_famires",
+   "interior_hotel",
+   "interior_mall"
   ],
   "on_disk_not_in_order": [],
   "detail": [
@@ -371,11 +381,51 @@
     "groups": 7,
     "kits": 26,
     "notes": "우체국·맨션 공용부 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 4 · 벽면 3 · 천장 0 · 가구 26 · 탁자 0 · 탁상 4"
+   },
+   {
+    "name": "dungeon_underground",
+    "cells": 341,
+    "autotiles": 0,
+    "groups": 6,
+    "kits": 30,
+    "notes": "지하 던전 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 3 · 천장 0 · 가구 30 · 탁자 3 · 탁상 0"
+   },
+   {
+    "name": "dungeon_hospital",
+    "cells": 339,
+    "autotiles": 0,
+    "groups": 6,
+    "kits": 34,
+    "notes": "폐병원 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 3 · 천장 0 · 가구 34 · 탁자 0 · 탁상 0"
+   },
+   {
+    "name": "dungeon_school",
+    "cells": 291,
+    "autotiles": 0,
+    "groups": 5,
+    "kits": 28,
+    "notes": "폐교 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 2 · 천장 0 · 가구 28 · 탁자 0 · 탁상 0"
+   },
+   {
+    "name": "dungeon_construction",
+    "cells": 384,
+    "autotiles": 0,
+    "groups": 8,
+    "kits": 42,
+    "notes": "공사장·주차장 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 3 · 벽면 5 · 천장 0 · 가구 42 · 탁자 0 · 탁상 0"
+   },
+   {
+    "name": "dungeon_warehouse",
+    "cells": 484,
+    "autotiles": 0,
+    "groups": 9,
+    "kits": 55,
+    "notes": "지하상가·창고 — 일본 실내(손 도트 실내 조립 규칙, tileset jp_city). 바닥 4 · 벽면 5 · 천장 0 · 가구 55 · 탁자 0 · 탁상 0"
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 860,
+  "kits_checked": 1049,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -432,7 +482,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 420
+   "in": 609
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -442,9 +492,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 11385,
-  "kits_checked": 860,
-  "groups_checked": 281,
+  "tiles_checked": 13224,
+  "kits_checked": 1049,
+  "groups_checked": 315,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -459,10 +509,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "a4ac26f90f87cc84b586500cead9956938c2a42b",
+ "sheet_hash": "544e5e58009daddf1bb4d618be5c0a9e06ba0148",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 860,
+  "kits_checked": 1049,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -519,7 +569,7 @@
    "pool": 1,
    "tram": 15,
    "subway": 37,
-   "in": 420
+   "in": 609
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -529,9 +579,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 11385,
-  "kits_checked": 860,
-  "groups_checked": 281,
+  "tiles_checked": 13224,
+  "kits_checked": 1049,
+  "groups_checked": 315,
   "autotiles_checked": 17
  },
  "files": {
