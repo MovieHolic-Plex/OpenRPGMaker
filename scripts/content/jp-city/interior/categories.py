@@ -141,18 +141,38 @@ CATEGORIES = [
     # (창고 끝)
     # ── 5묶음(2026-10-09~): 오락·숙박·상업 실내. 블록마다 자기 칸 아래에만. ──
     # [interior_amuse am-]
+    ('amusement', '게임 센터', ['am-crane', 'am-crane-big', 'am-arcade-n', 'am-arcade-back', 'am-arcade-stool', 'am-rhythm', 'am-racing',
+                             'am-medal-pusher', 'am-photo-booth', 'am-exchange', 'am-prize-shelf', 'am-neon-sign']),
+    ('pachinko', '파친코', ['am-pachinko-n', 'am-pachinko-back', 'am-pachinko-stool', 'am-pachinko-island-end', 'am-ball-box', 'am-counter', 'am-register',
+                         'am-ashtray-stand', 'am-ball-counter', 'am-smoke-eater']),
     # (오락실 끝)
 
     # [interior_karaoke kr-]
+    ('karaoke', '노래방', ['kr-front', 'kr-front-register', 'kr-drink-bar', 'kr-room-door', 'kr-sofa-n', 'kr-sofa-e', 'kr-sofa-w', 'kr-sofa-sw',
+                         'kr-sofa-se', 'kr-screen', 'kr-speaker', 'kr-mic-stand', 'kr-mirror-ball', 'kr-poster', 'kr-speaker-hang', 'kr-rental-shelf']),
+    ('mangacafe', '만화 카페', ['kr-manga-shelf', 'kr-manga-island', 'kr-booth', 'kr-booth-n', 'kr-reclining-seat', 'kr-pc-desk', 'kr-shower-door',
+                             'kr-ice-cream']),
     # (노래방 끝)
 
     # [interior_famires fr-]
+    ('famires', '패밀리 레스토랑', ['fr-booth-s', 'fr-booth-n', 'fr-booth-divider', 'fr-drink-bar', 'fr-soup-bar', 'fr-dessert-case',
+                                  'fr-register', 'fr-waiting-bench', 'fr-kids-chair', 'fr-pass-window']),
+    ('gyudon', '규동집', ['fr-counter-stool', 'fr-gyu-pot', 'fr-rice-jar']),
     # (패밀리 레스토랑 끝)
 
     # [interior_hotel ht-]
+    ('hotel', '비즈니스 호텔', ['ht-front', 'ht-lobby-sofa-e', 'ht-lobby-sofa-w', 'ht-elevator', 'ht-room-door', 'ht-single-bed', 'ht-desk-tv',
+                              'ht-unit-bath-door', 'ht-luggage-rack', 'ht-ice-machine']),
+    ('ryokan', '료칸·온천', ['ht-genkan-step', 'ht-slipper-rack', 'ht-ryokan-front', 'ht-noren-onsen-m', 'ht-noren-onsen-f', 'ht-guest-futon',
+                          'ht-tea-set-table', 'ht-engawa-chairs', 'ht-bamboo-fence', 'ht-stone-lantern']),
     # (숙박 끝)
 
     # [interior_mall ml-]
+    ('mall', '쇼핑몰', ['ml-shopfront-clothes', 'ml-shopfront-goods', 'ml-shopfront-tech', 'ml-clothes-rack', 'ml-shelf-goods', 'ml-display-table',
+                     'ml-torso-stand', 'ml-fitting-room', 'ml-tv-shelf', 'ml-gadget-table', 'ml-escalator-up', 'ml-escalator-down', 'ml-bench',
+                     'ml-info-board', 'ml-food-stall', 'ml-food-stall-b', 'ml-food-stall-c', 'ml-food-stall-d', 'ml-tray-return']),
+    ('cinema', '영화관', ['ml-ticket-counter', 'ml-concession', 'ml-concession-counter', 'ml-poster', 'ml-poster-b', 'ml-poster-c', 'ml-screen',
+                       'ml-seat-row', 'ml-step', 'ml-aisle-light', 'ml-ticket-gate', 'ml-cinema-entrance', 'ml-mall-passage']),
     # (쇼핑몰 끝)
 ]
 

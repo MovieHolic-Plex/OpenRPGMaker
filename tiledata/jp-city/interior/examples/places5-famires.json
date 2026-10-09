@@ -1,0 +1,88 @@
+[
+ {
+  "file": "famires",
+  "maps": [
+   "famires"
+  ],
+  "placeId": "jp-city-famires-18x13",
+  "name": "일본 패밀리 레스토랑(ファミレス) 실내",
+  "kind": "famires",
+  "kindKo": "패밀리 레스토랑",
+  "alias": [
+   "ファミレス",
+   "ファミリーレストラン",
+   "패밀리 레스토랑",
+   "패미레스",
+   "family restaurant"
+  ],
+  "building": "jp_famires",
+  "roomKinds": {
+   "famiresdining": [
+    "패밀리 레스토랑 객석",
+    [
+     "客席",
+     "객석",
+     "홀",
+     "박스석"
+    ]
+   ],
+   "famireskitchen": [
+    "패밀리 레스토랑 주방",
+    [
+     "厨房",
+     "キッチン",
+     "주방"
+    ]
+   ]
+  },
+  "rules": [
+   "남서쪽 출입구(2칸) → 바로 옆 맨 아래 벽 줄에 계산대(사탕 통)·디저트 냉장 진열장, 입구 서쪽에 대기 의자. 계산대 손님 쪽(입구 쪽) 두 칸은 비운다.",
+   "입구에서 북쪽으로 곧은 2칸 통로 → 서쪽 벽을 따라 박스석 두 개를 세로로 쌓는다(남향 벤치 — 박스석 탁자 — 북향 벤치, 두 박스석 사이에 칸막이 화분 한 줄). 벤치 동쪽 끝이 통로에 닿아 앉는다.",
+   "가운데는 1×2 세로 탁자 + 동·서 의자 4인석이 위아래 두 줄(두 칸씩), 사이에 2줄 가로 통로. 4인석 하나 남쪽 끝에 아이 의자.",
+   "북동쪽은 주방(가로 칸막이 + 동쪽 끝 1칸 직원 문, 안은 냉장고·조리대·튀김기·솥·싱크 한 줄 + 작업대). 칸막이 벽 객석 쪽 첫 줄에 드링크 바(3칸)와 주방 내주는 창(2칸, 직원 문 옆), 드링크 바 앞에 수프 바 섬.",
+   "평면·가구는 tiledata/jp-city/interior/examples/famires.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-famires-18x13\"})."
+  ]
+ },
+ {
+  "file": "gyudon",
+  "maps": [
+   "gyudon"
+  ],
+  "placeId": "jp-city-gyudon-11x10",
+  "name": "일본 규동집(牛丼屋) 실내",
+  "kind": "gyudon",
+  "kindKo": "규동집",
+  "alias": [
+   "牛丼屋",
+   "牛丼",
+   "규동",
+   "규동집",
+   "덮밥집",
+   "gyudon"
+  ],
+  "building": "jp_gyudon",
+  "roomKinds": {
+   "gyudoncounter": [
+    "규동집 카운터석",
+    [
+     "カウンター席",
+     "카운터석"
+    ]
+   ],
+   "gyudonkitchen": [
+    "규동집 주방",
+    [
+     "厨房",
+     "주방",
+     "카운터 안쪽"
+    ]
+   ]
+  },
+  "rules": [
+   "남동쪽 출입구(2칸) → 입구 동쪽 바로 옆에 식권기(fd-ticket-machine) → ㄷ자 카운터(가로 7칸 + 양 끝에서 위로 꺾인 1칸, 북쪽이 열려 주방과 이어진다).",
+   "스툴은 카운터 바깥 칸에 빈틈없이(남쪽 줄 6개 + 동쪽 끝 2개), 의자 뒤 1칸 통로. 남서쪽 구석은 기둥(평면 #)으로 막아 막다른 칸을 없앤다. 카운터 위에 규동 그릇·찻주전자·양념 통.",
+   "카운터 안쪽(직원 2줄)은 북쪽 벽 주방 줄(냉장고·싱크·소고기 냄비대 둘·밥 보온통·조리대)과 붙어 있고, 동쪽 카운터 끝 한 칸 틈 → 동쪽 벽 곁 직원 길로 손님 쪽과 이어진다.",
+   "평면·가구는 tiledata/jp-city/interior/examples/gyudon.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-gyudon-11x10\"})."
+  ]
+ }
+]

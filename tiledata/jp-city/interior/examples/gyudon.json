@@ -1,0 +1,216 @@
+{
+ "name": "일본 규동집(牛丼屋) 실내",
+ "plan": [
+  "###########",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "##........#",
+  "##........#",
+  "#######..##"
+ ],
+ "exitWidth": 2,
+ "floor": "fr-gyudon-floor",
+ "wall": "fd-plaster",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 9,
+   "y1": 5,
+   "floor": "fr-kitchen-floor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "fd-menu-board",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "fd-fridge",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fd-sink",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fr-gyu-pot",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "fr-gyu-pot",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "fr-rice-jar",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "fd-prep",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "fr-counter-stool",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "fd-ticket-machine",
+   "x": 9,
+   "y": 8
+  }
+ ],
+ "tables": [
+  {
+   "style": "fr-u-counter",
+   "x": 1,
+   "y": 5,
+   "w": 1,
+   "h": 1
+  },
+  {
+   "style": "fr-u-counter",
+   "x": 1,
+   "y": 6,
+   "w": 7,
+   "h": 1
+  },
+  {
+   "style": "fr-u-counter",
+   "x": 7,
+   "y": 5,
+   "w": 1,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fr-gyudon",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fr-tea-pot",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fr-gyudon",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "fr-condiment",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "fr-gyudon",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "fr-tea-pot",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "fr-condiment",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "fr-gyudon",
+   "x": 7,
+   "y": 5
+  }
+ ],
+ "start": [
+  7,
+  8
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "gyudonkitchen",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 4
+  },
+  {
+   "room": "gyudoncounter",
+   "x0": 0,
+   "y0": 5,
+   "x1": 10,
+   "y1": 9
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 2,
+   "y0": 8,
+   "x1": 6,
+   "y1": 8,
+   "why": "카운터석 의자 뒤 손님 통로(규동집 그대로)"
+  },
+  {
+   "x0": 7,
+   "y0": 3,
+   "x1": 9,
+   "y1": 7,
+   "why": "카운터 끝 틈 → 동쪽 벽 곁 직원 길(주방·카운터 안쪽 ↔ 손님 쪽)"
+  }
+ ]
+}

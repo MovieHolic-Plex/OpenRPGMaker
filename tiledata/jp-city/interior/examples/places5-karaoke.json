@@ -1,0 +1,134 @@
+[
+ {
+  "file": "karaoke",
+  "maps": [
+   "karaoke"
+  ],
+  "placeId": "jp-city-karaoke-20x17",
+  "name": "일본 노래방(カラオケボックス) 실내",
+  "kind": "karaoke",
+  "kindKo": "노래방",
+  "alias": [
+   "カラオケボックス",
+   "노래방",
+   "karaoke box"
+  ],
+  "building": "jp_karaoke",
+  "roomKinds": {
+   "karaokefront": [
+    "노래방 프런트",
+    [
+     "フロント",
+     "프런트",
+     "접수",
+     "로비"
+    ]
+   ],
+   "karaokecorridor": [
+    "노래방 복도",
+    [
+     "カラオケ廊下",
+     "복도",
+     "드링크 바"
+    ]
+   ],
+   "karaokeroom": [
+    "노래방 방",
+    [
+     "カラオケルーム",
+     "노래방 룸",
+     "방"
+    ]
+   ],
+   "karaokeparty": [
+    "노래방 파티룸",
+    [
+     "パーティールーム",
+     "파티룸",
+     "큰 방"
+    ]
+   ]
+  },
+  "rules": [
+   "남쪽 자동문(2칸) → 2칸 폭 입구 통로 → 로비: 북쪽에 프런트 카운터 줄(kr-front · 가운데 kr-front-register, 서쪽 끝 한 칸은 직원 길), 손님 자리 두 줄 비움, 카운터 뒤 직원 쪽 벽에 대여품 선반(kr-rental-shelf). 로비 남쪽에 대기 소파.",
+   "로비에서 동쪽으로 동서 복도(2칸): 복도 북쪽에 파티룸(6칸 폭)·드링크 바 벽감(kr-drink-bar)·2인실, 복도 남쪽에 방 둘과 화장실. 방마다 가로 칸막이 1칸 틈에 방 문(kr-room-door), 문 틈 바로 안쪽 칸은 비운다.",
+   "방 안: 북쪽 벽면 윗줄에 대형 화면(kr-screen, 3칸) — 소파·탁자가 화면을 본다. 파티룸은 ㄷ자 소파(kr-sofa-e · kr-sofa-sw · kr-sofa-n · kr-sofa-se · kr-sofa-w)를 탁자 둘레에 놓고 남쪽 가운데를 들어가는 틈으로 비운다. 화면 앞 줄(노래하는 자리)에 마이크 스탠드, 구석에 스피커(벽 앞 kr-speaker 또는 벽걸이 kr-speaker-hang).",
+   "소파 조각은 한 칸씩이고, 조수 도구는 소파 칸마다 걸어서 닿는 칸이 옆에 있거나 그런 소파 칸이 옆에 있어야 쓸 수 있다고 본다 — 소파를 세 겹으로 깊게 두르지 말고 다리 뻗는 빈 칸(통로)을 남긴다. 2줄짜리 작은 방은 화면 아래 한 줄을 통로로 두고 남쪽 줄에 소파·탁자.",
+   "평면·가구는 tiledata/jp-city/interior/examples/karaoke.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-karaoke-20x17\"})."
+  ]
+ },
+ {
+  "file": "manga-cafe",
+  "maps": [
+   "manga-cafe"
+  ],
+  "placeId": "jp-city-manga-cafe-17x14",
+  "name": "일본 만화 카페(漫画喫茶·ネットカフェ) 실내",
+  "kind": "mangacafe",
+  "kindKo": "만화 카페",
+  "alias": [
+   "漫画喫茶",
+   "ネットカフェ",
+   "만화 카페",
+   "넷카페",
+   "manga cafe"
+  ],
+  "building": "jp_manga_cafe",
+  "roomKinds": {
+   "mangareception": [
+    "만화 카페 접수",
+    [
+     "受付",
+     "접수",
+     "프런트"
+    ]
+   ],
+   "mangashelves": [
+    "만화 서가",
+    [
+     "漫画コーナー",
+     "서가",
+     "만화책 코너"
+    ]
+   ],
+   "mangabooth": [
+    "개인 부스 구역",
+    [
+     "個室ブース",
+     "부스",
+     "개인실"
+    ]
+   ],
+   "mangaopenseat": [
+    "오픈석",
+    [
+     "オープン席",
+     "PC석",
+     "오픈 좌석"
+    ]
+   ],
+   "mangadrink": [
+    "드링크 바·로커",
+    [
+     "ドリンクバー",
+     "드링크 바",
+     "코인 로커"
+    ]
+   ],
+   "mangashower": [
+    "샤워실",
+    [
+     "シャワールーム",
+     "샤워 부스"
+    ]
+   ]
+  },
+  "rules": [
+   "남쪽 자동문(2칸, 서쪽) → 서쪽 2칸 길 → 북서쪽 접수(kr-front 줄 · 가운데 kr-front-register, 동쪽 끝 한 칸은 직원 길, 앞 손님 자리 두 줄 비움, 카운터 뒤 직원 쪽 선반). 입구 옆에 PC 오픈석(kr-pc-desk 바로 남쪽에 북향 kr-reclining-seat).",
+   "가운데 북쪽 벽에 만화 서가(kr-manga-shelf) 한 줄, 그 앞 두 줄 통로, 바닥에 양면 서가(kr-manga-island) 줄 — 양면 서가 줄과 남쪽 부스 줄 사이도 두 줄 통로(양면 서가 윗부분이 북쪽 줄을 덮으므로 1줄 통로는 가려진다).",
+   "개인 부스(1×2)는 문이 통로를 본다: 북쪽 통로를 보는 줄은 kr-booth-n, 남쪽 통로를 보는 줄은 kr-booth. 부스 줄 사이는 2칸 길로 잇는다.",
+   "동쪽 위 샤워실(가로 칸막이 1칸 틈에 kr-shower-door, 바닥 bathtile·벽 bathwall, 세면대·샤워 수전) — 그 아래 칸막이 벽 앞에 드링크 바(kr-drink-bar)·코인 로커, 서가 쪽 벽 끝에 소프트아이스크림 기계(kr-ice-cream).",
+   "평면·가구는 tiledata/jp-city/interior/examples/manga-cafe.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-manga-cafe-17x14\"})."
+  ]
+ }
+]

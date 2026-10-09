@@ -1,0 +1,377 @@
+{
+ "name": "일본 게임 센터(ゲームセンター) 실내",
+ "plan": [
+  "##################",
+  "#...........#....#",
+  "#...........#....#",
+  "#...........#....#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#.......##########",
+  "######..##########"
+ ],
+ "exitWidth": 2,
+ "floor": "am-carpet",
+ "wall": "am-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "am-rhythm",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "am-rhythm",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "am-racing",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "am-racing",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "am-photo-booth",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "am-exchange",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "am-arcade-back",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "am-arcade-n",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "am-arcade-back",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "am-arcade-n",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "am-arcade-back",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "am-arcade-n",
+   "x": 3,
+   "y": 9
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "am-arcade-back",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "am-arcade-n",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "am-arcade-back",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "am-arcade-n",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "am-neon-sign",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "am-neon-sign",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "am-medal-pusher",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cv-trash",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "houseplant",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "am-arcade-stool",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "houseplant",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "am-prize-shelf",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "am-register",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "am-counter",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "am-counter",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "am-crane",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "am-crane",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "am-crane-big",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "am-crane",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "am-crane",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "am-crane-big",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "am-crane",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "am-crane",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "am-crane",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 6,
+   "y": 13
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "am-prize-box",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "am-medal-cup",
+   "x": 16,
+   "y": 5
+  }
+ ],
+ "start": [
+  6,
+  12
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "gccounter",
+   "x0": 13,
+   "y0": 0,
+   "x1": 17,
+   "y1": 5
+  },
+  {
+   "room": "medalzone",
+   "x0": 8,
+   "y0": 0,
+   "x1": 12,
+   "y1": 7
+  },
+  {
+   "room": "videozone",
+   "x0": 0,
+   "y0": 0,
+   "x1": 7,
+   "y1": 10
+  },
+  {
+   "room": "cranezone",
+   "x0": 0,
+   "y0": 6,
+   "x1": 17,
+   "y1": 13
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 13,
+   "y0": 4,
+   "x1": 16,
+   "y1": 5,
+   "why": "카운터 안쪽 직원 길(경품 선반 앞 한 줄과 카운터 줄 끝 틈)"
+  }
+ ]
+}
