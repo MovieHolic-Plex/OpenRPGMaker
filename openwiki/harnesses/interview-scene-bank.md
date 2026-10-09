@@ -59,6 +59,7 @@ npm run harness -- interview-scene-bank status
 
 - `build` 뒤에 `node scripts/content/sync-interview-scenes.mjs push` 로 새 배경·편집 원본을 올린다(키: `.env` 또는 `~/.config/oprn-r2/env` 의 `R2_*`). 올리지 않으면 앱에서 그 배경이 안 뜬다.
 - 새 체크아웃에서 gate/build 를 다시 돌리려면 먼저 `pull` 로 목록의 배경을 받아 둔다(키 불필요, 해시 확인). `check` 는 CDN 에 다 있는지만 본다.
+- (2026-10-09) 이관 전 복구 체크아웃에 남아 있던 배치 271–275 결과(1,076장: 새 27·교체 3·앞 단계 교체로 빠진 4)를 목록·ledger·요청 사본째 옮기고 그림은 R2 에 올렸다. 빠른 인터뷰 160장 중 없는 것은 `adventure--mission--battle--mystic` 하나(앞 장면으로 대신 보인다).
 - CDN 에는 PNG 원본 말고 미리보기 두 벌도 있다: `full/<같은 이름>.webp`(원본 크기, q88) · `thumb/<같은 이름>.webp`(640px, q82). 새 화면은 이것을 쓴다(`interviewSceneImage(key, "full"|"thumb")`). 새 배경을 올리면 두 벌도 같이 만들어 올린다.
 - 새 게임의 빠른 인터뷰(「골라서 만들기」)는 장르 + 앞 세 질문만 묻는다 → 깊이 3 이하(장르 4 + 12 + 36 + 108 = 160장)만 화면에 나온다. 없는 장면은 가장 가까운 앞 장면으로 대신한다. 깊이 4·5 는 「기획 수정」의 5문항 창에서만 쓴다.
 - 판정 근거 화면(`verify-shots/interview-scene-bank*`)은 공개 저장소에 없다 — 이관 전 체크아웃·백업에만 있다.

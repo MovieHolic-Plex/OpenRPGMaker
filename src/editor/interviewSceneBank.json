@@ -4464,6 +4464,11 @@
       "sha256": "065f4d50d9773d2285a70247d966f0e5a6c0bc3879afa44162b0fdf8b51565f5",
       "promptSha256": "37f702b4965037b17fa46dfcc131013b585a7e7e3e9504c8d6177bd01cdb39a3"
     },
+    "adventure--mission--explore--bright--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests--episode-eae6f28782ee.png",
+      "sha256": "eae6f28782ee9d69ff25f172987ffc9d81704db1aa910a4d6a7608aef0aa6b2e",
+      "promptSha256": "04cecaa5afed0c9b67421fdb5c0acd29b828310bf4c4ef91d2b3af05ba6814ec"
+    },
     "adventure--mission--explore--bright--quests--short": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests--short-2b4f38cd9a53.png",
       "sha256": "2b4f38cd9a5306a0f1544122089c6fcf4e5eeda1e6b48854333e9dc5c4ed9493",
@@ -4514,6 +4519,26 @@
       "sha256": "809d54006bb1ffda866f744bf874eb3ac003b1de360dfd566120c2ef0d54e7f7",
       "promptSha256": "36d0753fd49719d092322cd750720baf222071966d814614bf1e3f90a0cae478"
     },
+    "adventure--mission--explore--mystic--quests": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests-9d9512a3f712.png",
+      "sha256": "9d9512a3f7121dfc3fcedfb42411a9ea73ba689d87f27ad9989295b40cee6ae8",
+      "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830"
+    },
+    "adventure--mission--explore--mystic--quests--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests--scene-a17fd1801862.png",
+      "sha256": "a17fd180186222f8336990f657f6cff0603bea541eb8ca7f45d80a1727a5d00a",
+      "promptSha256": "e7f65da3be1bd172a4dd59508631002afea4db3dba834f42331bec3670782ea7"
+    },
+    "adventure--mission--explore--mystic--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests--episode-b941f6db61cd.png",
+      "sha256": "b941f6db61cd9c24ce4cfbf704f8da3df7d49a39f13a24bc4743dff206672215",
+      "promptSha256": "c0cba11e42e4aecfa8a266c2543a66b586e95aeb1f2fef88454ee73250592010"
+    },
+    "adventure--mission--explore--mystic--quests--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests--short-01f8fc0a2648.png",
+      "sha256": "01f8fc0a2648fabd1d29b76f189aa863a42a19a7341bb034b02e1e99dee4a95e",
+      "promptSha256": "dfec8cccaac7880eb7eb8127f230833aaf230696d1df4863a973dd9687de435f"
+    },
     "adventure--mission--explore--mystic--chapters": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic--chapters-e4df5a123899.png",
       "sha256": "e4df5a12389930f7fba94737fa5ce3b87b4b6175b159c80a8d6136a542062ae7",
@@ -4534,9 +4559,74 @@
       "sha256": "d8205a799ebcd502e58bc17d40bf4544a4431f6ef0bb84cf09319c7f4ef10894",
       "promptSha256": "f0adeae2f99d698332d89897a3c3866c5755489de38b38b8074e7775dd27a77e"
     },
+    "adventure--mission--explore--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm-43269f560feb.png",
+      "sha256": "43269f560febd616611b4a9a7863669c559d58b8fcdf8f295cca8546fd2d395f",
+      "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265"
+    },
+    "adventure--mission--explore--warm--journey": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--journey-040ab19b1bc6.png",
+      "sha256": "040ab19b1bc6dd4a15dad0a458195e4153177dacc64280ab6b260225327de69a",
+      "promptSha256": "28829c57b45ffcebc23bd072fe29d1b91e88b70314fce53688edcb5f4ce33e75"
+    },
+    "adventure--mission--explore--warm--journey--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--journey--scene-6d7e07d466e1.png",
+      "sha256": "6d7e07d466e1405a17d0cdcef5c26420aab7fd470b9c9736fd960e8e0a9cbdce",
+      "promptSha256": "1a2a6b68d93fbbae430fe1cdc42af664848b1d5d2917385c0d2bc67688735631"
+    },
+    "adventure--mission--explore--warm--journey--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--journey--episode-323e8e3d1e12.png",
+      "sha256": "323e8e3d1e123139a6ac1bf519e0c4cb9872ca9514f94ea171b36fbf798da604",
+      "promptSha256": "5466cda2fdd44708999b8a320672db866dab53af01dbcd55b3ed38ffbf24ed55"
+    },
+    "adventure--mission--explore--warm--journey--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--journey--short-de22f63b55c5.png",
+      "sha256": "de22f63b55c5d4c0de10d4832273eaeefa98e3c09d2747acf0176b429ddb6f1c",
+      "promptSha256": "ec2f60ae930d9415a405d83223322ba64943de03c95d67c88f39f17cb5d22864"
+    },
+    "adventure--mission--explore--warm--quests": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests-f158954cbfa0.png",
+      "sha256": "f158954cbfa0f64a0d175ea35d6a6da62d1dadc241f849e57cfa3df559351afe",
+      "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3"
+    },
+    "adventure--mission--explore--warm--quests--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests--scene-471ebd1b5f33.png",
+      "sha256": "471ebd1b5f3332694aee8f9ca5ccd1d41706c72fe47aee99279b3d922f9b8068",
+      "promptSha256": "98d725298fb54dc5ed672c8eb20eb22ffa8f4a6fbafbe644b266087d91586d17"
+    },
+    "adventure--mission--explore--warm--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests--episode-c9274a1a8da4.png",
+      "sha256": "c9274a1a8da4c74dd55489523966e5c3ca41213f4aa0ec26a687c8ca027aa9a9",
+      "promptSha256": "756aeab42740b15291320953b0b1a1d8629e30007e89367a540fec6ea335849c"
+    },
+    "adventure--mission--explore--warm--quests--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests--short-4c52f1dd69d1.png",
+      "sha256": "4c52f1dd69d1cc6cc19dd0e62c1ca1a4a2ae2fa0de6a0ef829a5472aba2e764f",
+      "promptSha256": "2285eb5c8ca94e190b4d910d0c0e69f73c08994fa0d1a1a10f2b6287b2438f51"
+    },
+    "adventure--mission--explore--warm--chapters": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters-13355d7242e6.png",
+      "sha256": "13355d7242e652e52f7c7cb6754a2ed5e0b010641886446bf9c6c11f4c88b286",
+      "promptSha256": "7a890fcfbee35c7bbcbd53eee629d2e2a806c6163842fe3ecea65ef177df7e15"
+    },
+    "adventure--mission--explore--warm--chapters--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--scene-18dd90daaa14.png",
+      "sha256": "18dd90daaa14e91e7cd52db8dc3aa7e27d34b782a56ce5ba8b6640586c7f990b",
+      "promptSha256": "073dc211316c817e55baaec0c7fb1fc62fa227aa835c898512a5fd991571c376"
+    },
+    "adventure--mission--explore--warm--chapters--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--episode-d4ec9f32d310.png",
+      "sha256": "d4ec9f32d310542ab7380c1f49882163b4c32a8d0db90e765c6dfb7a218ec005",
+      "promptSha256": "1ec1d714e07f0688c3d0be03c06ce33349643c8c9b5439273dc70e0c28a2abc2"
+    },
+    "adventure--mission--explore--warm--chapters--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--short-ca060651cd34.png",
+      "sha256": "ca060651cd3441d9f4f60956e0e1af99656b9fcce6a844402bec14ea6a703197",
+      "promptSha256": "648cf264b985a98d3f9df62d1d94c1a71f136bf134f3a6c8f896067fc3129443"
+    },
     "adventure--mission--battle": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle-619e65ac73bf.png",
-      "sha256": "619e65ac73bf03ac2afb49f7abcd3258c619a23096200afd6514d17b09a45e2e",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle-5e251831a25f.png",
+      "sha256": "5e251831a25ff47972bf4f2daf5e5478e33f08ba6c6a46e70d2dd989419d43b3",
       "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1"
     },
     "adventure--mission--battle--bright": {
@@ -4545,39 +4635,64 @@
       "promptSha256": "a7122f95fd278ed3aaa9ceaf8468dd944712cd090f7a2f3c83ff9e380e350208"
     },
     "adventure--mission--battle--bright--journey": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey-8b26308c3668.png",
-      "sha256": "8b26308c3668cffcef3a3b350f20374ea1be9dc41385ab45f125085bd4879af0",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey-8ddc83b88af7.png",
+      "sha256": "8ddc83b88af78ff2cc832e1a3860800afa9a88f5a3bda64b7b9a74e3fc368587",
       "promptSha256": "07b30579e9f5bd6ecd94b459e34e0d24ab0f0286b28dc74877b727936bb848dc"
     },
+    "adventure--mission--battle--bright--journey--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--scene-7976a654af26.png",
+      "sha256": "7976a654af26a01b588cf180a5385167b782c0fa38c0dea8959a6946dd35e095",
+      "promptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8"
+    },
+    "adventure--mission--battle--bright--journey--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--episode-2d0d047a7d8d.png",
+      "sha256": "2d0d047a7d8d1481c77d31695742caf417117576ceb0fdedd8a04293cfcbaaee",
+      "promptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6"
+    },
+    "adventure--mission--battle--bright--journey--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--short-5d6e1ab06060.png",
+      "sha256": "5d6e1ab06060d0344c8b2b26e1e80cb5271800d4ab4b4856e1c1739244644c72",
+      "promptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850"
+    },
     "adventure--mission--battle--bright--quests": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests-fd5e1f8550b9.png",
-      "sha256": "fd5e1f8550b91cd8233d10a5da07912cd9ef7a357cd3843f39b1398eff544cf4",
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests-1c457b2e8c12.png",
+      "sha256": "1c457b2e8c12079d9f41dfca23ee33571766bcae56bfcafdc254bf68fb29c0e5",
       "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837"
+    },
+    "adventure--mission--battle--bright--quests--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--scene-50ffe1d9a2f7.png",
+      "sha256": "50ffe1d9a2f7f8e3482f38df3e61609d80a2021f23f3ed5abf2ff55ba30031be",
+      "promptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a"
+    },
+    "adventure--mission--battle--bright--quests--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--episode-dbed28421027.png",
+      "sha256": "dbed284210275d830231156abad5b704ddfcc1565d3dfbf456b30da7ac89a7d0",
+      "promptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf"
+    },
+    "adventure--mission--battle--bright--quests--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--short-f77dfd174aaa.png",
+      "sha256": "f77dfd174aaadcdbdf2b5a4db2bafc6eb9827a382fadee23f4f99a738fe4e347",
+      "promptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c"
     },
     "adventure--mission--battle--bright--chapters": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters-7d43d8c58bb3.png",
       "sha256": "7d43d8c58bb33fca4be4f4b11909c5f6f0a8be942fd5ff0c117f22ebc7fcdbc4",
       "promptSha256": "2c0c7c4648f6a47db8ca16faa108f6f79055f648192b10367028ba12468fdee5"
     },
-    "adventure--mission--battle--mystic": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--mystic-827068238a13.png",
-      "sha256": "827068238a134ab36306868ae8783f0570f340fe61e1364d0146c2956a91a1a2",
-      "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236"
+    "adventure--mission--battle--bright--chapters--scene": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--scene-a75acc7a0adf.png",
+      "sha256": "a75acc7a0adf41b0a9144f3c1886739c38b9ecfc6ac8ee304ef1a19cf1c2675b",
+      "promptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf"
     },
-    "adventure--mission--battle--mystic--journey": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--mystic--journey-b54d269a40b4.png",
-      "sha256": "b54d269a40b49e5223c34afbc67805194be28f53112ae2ae1cfe2f7abd45e716",
-      "promptSha256": "c144327a79dc8a54ffe21b34965233a0b1efdf331b80d64d922ef29221df576e"
+    "adventure--mission--battle--bright--chapters--episode": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--episode-cbeaf81182a2.png",
+      "sha256": "cbeaf81182a2df3a7bc7511742c6ca7832aa3fc6e4f47b72bedb900e5c64b3e9",
+      "promptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb"
     },
-    "adventure--mission--battle--mystic--quests": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--mystic--quests-113af7415832.png",
-      "sha256": "113af74158326f88bea5b7daaf2091c162a149ef763729c61163081c007075ea",
-      "promptSha256": "1972f6876aa0fe5f5faa7522c132569c8c3ca0f880e9f24349d3a7d445d2b725"
-    },
-    "adventure--mission--battle--mystic--chapters": {
-      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--mystic--chapters-a2e59570ad65.png",
-      "sha256": "a2e59570ad65c99d63a1985adc19cf43dccf37ce20d98d322a10ff632d86569e",
-      "promptSha256": "eb842ad2800c06aaf41a3b8a00bb61f24e22f94525a87f2863796241a81699d9"
+    "adventure--mission--battle--bright--chapters--short": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--short-6e1b23a82314.png",
+      "sha256": "6e1b23a82314d83f39a0a578680b1696f2ba05e7a328a71a69e773993eac00cf",
+      "promptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0"
     },
     "adventure--mission--battle--warm": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--warm-75c0f4a43629.png",

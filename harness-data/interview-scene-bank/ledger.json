@@ -3001,7 +3001,40 @@
         "review": {
           "sourceSha256": "619e65ac73bf03ac2afb49f7abcd3258c619a23096200afd6514d17b09a45e2e",
           "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
-          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/actual parent sources163165 after immutable272 ROOTsix",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL original005 OWN/WHOLE personallyseen. Exactoriginal FINAL CRAFT CHECK explicitly No banners, emblems ...; native has TWOactualblue/cream hangingbanner/pennants above nearshieldrack/trainingground. Violates originalunqualified noBANNERS; allChoices/noText pendingF, not imposingnew59flagsban. Native paintedquarteredSHIELDS are notfailurebasis withoutseparateoriginalshieldpaintban. Originalsealedparcel/provisions/plainrack/actualtacticaltrainingyardbarriers/covers/multiplelanes/targets present latestBattleP. DoNOTnewwholebarriers/EXACTcounts/780/cup/moodrequirements retro. Actual CURRENTdepth1Mission6af2bf30 FULL exactORIGINAL OWN/WHOLE personally opened: near open doorway/barrel plainsealederrand and diagonaloutgoingroad versus Battle elevated widecoveredtrainingfloor/shieldrack/barriers/target lanes changesactualviewpoint/approachgeometry distinctShot independentlyP; no official mutation, source165notcounted. Wait FULL272 ROOTsix before dependentledger mutation.",
+            "noText: ROOT FULL original005 OWN/WHOLE personallyseen. Exactoriginal FINAL CRAFT CHECK explicitly No banners, emblems ...; native has TWOactualblue/cream hangingbanner/pennants above nearshieldrack/trainingground. Violates originalunqualified noBANNERS; allChoices/noText pendingF, not imposingnew59flagsban. Native paintedquarteredSHIELDS are notfailurebasis withoutseparateoriginalshieldpaintban. Originalsealedparcel/provisions/plainrack/actualtacticaltrainingyardbarriers/covers/multiplelanes/targets present latestBattleP. DoNOTnewwholebarriers/EXACTcounts/780/cup/moodrequirements retro. Actual CURRENTdepth1Mission6af2bf30 FULL exactORIGINAL OWN/WHOLE personally opened: near open doorway/barrel plainsealederrand and diagonaloutgoingroad versus Battle elevated widecoveredtrainingfloor/shieldrack/barriers/target lanes changesactualviewpoint/approachgeometry distinctShot independentlyP; no official mutation, source165notcounted. Wait FULL272 ROOTsix before dependentledger mutation."
+          ],
+          "notes": "ROOT FULL original005 OWN/WHOLE personallyseen. Exactoriginal FINAL CRAFT CHECK explicitly No banners, emblems ...; native has TWOactualblue/cream hangingbanner/pennants above nearshieldrack/trainingground. Violates originalunqualified noBANNERS; allChoices/noText pendingF, not imposingnew59flagsban. Native paintedquarteredSHIELDS are notfailurebasis withoutseparateoriginalshieldpaintban. Originalsealedparcel/provisions/plainrack/actualtacticaltrainingyardbarriers/covers/multiplelanes/targets present latestBattleP. DoNOTnewwholebarriers/EXACTcounts/780/cup/moodrequirements retro. Actual CURRENTdepth1Mission6af2bf30 FULL exactORIGINAL OWN/WHOLE personally opened: near open doorway/barrel plainsealederrand and diagonaloutgoingroad versus Battle elevated widecoveredtrainingfloor/shieldrack/barriers/target lanes changesactualviewpoint/approachgeometry distinctShot independentlyP; no official mutation, source165notcounted. Wait FULL272 ROOTsix before dependentledger mutation. Official correction after completed immutable272 and ROOT personally inspected six whole screenshots."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 392696,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle-3-5e251831a25f.png",
+        "sha256": "5e251831a25ff47972bf4f2daf5e5478e33f08ba6c6a46e70d2dd989419d43b3",
+        "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+        "generationPromptSha256": "fbe60444ab05c782d9eb41ae19ebc3525a726e63c9b30a4d0605617ba9adf0f8",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "5e251831a25ff47972bf4f2daf5e5478e33f08ba6c6a46e70d2dd989419d43b3",
+          "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -3012,13 +3045,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Sealed plain errand parcels retained at foreground empty defense yard; shield rack, barriers and targets make battle explicit."
+          "notes": "ROOT FULL exact2741 OWN/WHOLE personally inspected. Complete smallEMPTYstone tacticalfloor/wall/ALLstairs EXACT TWOplainstonecovers and walkingapproach; separate wholeFOURlegWOOD MISSIONtable EXACT ONEsealedparcel/unusedsack ANDroll directlybeside. Ordinaryneutraldaylight/no unselectedmood/progression/scope/HOME/rest/BASE/MYSTICmonument. Entirechosen native/before1008/sharppixels/noidentity/text, functionalblueparcelstrap notemblem. ActualCURRENTdepth1Mission6af2 FULL originalOWN/WHOLE personally reopened: near openDOOR/barrel/parcel/diagonalpath versus new HIGH SOUTHWEST open foothill MIDtable/UPcourt/continuousSTONEpath true actualcamera/worldgeometry different distinctP. All7independentP."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 392696,
+          "colors": 564945,
           "findings": []
         }
       }
@@ -9432,6 +9465,42 @@
           "colors": 606490,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm-5-43269f560feb.png",
+        "sha256": "43269f560febd616611b4a9a7863669c559d58b8fcdf8f295cca8546fd2d395f",
+        "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+        "generationPromptSha256": "f48cd5f3eb26e58b39e52f2825fb78729dc58fb1ca57bcafe77d7d7f24c59788",
+        "attempt": 5,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+          "sourceSha256": "2432c97e3a71077764514bdcf27cd5521244e6d5858db47e7e93fb2c3bc6c37f"
+        },
+        "review": {
+          "sourceSha256": "43269f560febd616611b4a9a7863669c559d58b8fcdf8f295cca8546fd2d395f",
+          "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2712 OWN + WHOLE unchangednative personallyopened. RebuiltSMALLDOWNpit fullouterwalls/innerfloor/allstairs/lowerdarkSIDEopening completelyinsetLEFTwithgrassbuffer; roadatTOPLIP/surroundinggroundabovefloor. FullMISSIONfourlegWOODtableONESEALEDunusedsuppliesUPLEFT, WARMstonebackWALLlanternEXACT1OPENcupunusedsuppliesMIDLEFT latestWARMP. Allchosenwholebefore1008/hardpixel/noidentity/text/no nearframingcurtain; foregroundforestordinarylandscapenotoccludingselectedobjects. ActualCURRENTdepth2MissionExplorea1a498e4 FULLOWN/WHOLE personallyseen eyelevelruralthreshold/tableparcel/RIGHTraisedarch vsHIGHWESTvalley missionUP/pitLOW/nookMID/curvingroad changesactualworldcamera/geometry distinctP. Allseven independentlyP; newWarmdepth3parentP requiresoriginalWarmJ/WarmCH andnewWarmQ independentFULLrecomparison beforepublication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 595758,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--battle--bright": [
@@ -9444,7 +9513,7 @@
         "review": {
           "sourceSha256": "075fc172ece21940f574217798828bed3fa09f71c1bff94d256c1e7617d83fe5",
           "promptSha256": "a7122f95fd278ed3aaa9ceaf8468dd944712cd090f7a2f3c83ff9e380e350208",
-          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new274parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -9455,7 +9524,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Delivery parcel and travel kit at fortified approach with plain shields and barricades retain mission/battle in energetic daylight. Cloth is unmarked two-color pennant, not heraldry or writing."
+          "notes": "ROOT FULL original075fc172 OWN/WHOLE against actualnew2741 depth2 FULL OWN/WHOLE personallyseen. OriginalOWN selectedmissionparcel/provisionsLEFT/barricades/tacticalapproaches/plainshieldrack/BRIGHTclear daylight allpresent; plainbluecream flag has NOemblem and originalonlyforbids flagemblems, no later165 noBANNERS retro. Functionalwaxseal/strap/joints notwriting; sharpclusters/noidentity. Originalnear-corner ruralporch/largeparcel/fourshieldrack/diagonalapproach vsnew2741 HIGH SOUTHWEST openfoothill smallMIDtable/UPcourt is realcamera/roadgeometry change distinctP. No newwholeALL/count/780/moodrequirements retro. Sevenchecks independentlyP."
         },
         "gate": {
           "ok": true,
@@ -9540,24 +9609,60 @@
         "review": {
           "sourceSha256": "827068238a134ab36306868ae8783f0570f340fe61e1364d0146c2956a91a1a2",
           "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
-          "reviewer": "Codex direct original visual inspection: v2-production-060",
+          "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/actual parent sources163165 after immutable272 ROOTsix",
           "checks": {
             "pixelArt": true,
-            "composition": true,
-            "allChoices": true,
+            "composition": false,
+            "allChoices": false,
             "latestChoice": true,
             "identityUnset": true,
             "noText": true,
             "distinctShot": true
           },
-          "findings": [],
-          "notes": "Root directly opened full native replacement and rejected actual original parent: entrusted plain unmarked SEALED wrapped village-errand parcel/provisions LEFT rural threshold. TWO actual UNPAINTED bare brown wood/gray metal shields with functional metal boss/rivets only, no quartered fields/paint/heraldry. TWO actual crossed-spike timber barriers/stone cover/several approach lanes, monumental ancient ruins LEFT/CENTER and discrete mysterious depth. Fresh high-oblique sheltered departure/defense floor versus old single quarter-painted shield/gate scene. Right distant terrain supports depth; no primary far-right furniture. Native hard square clusters all planes/no signs/flags/text/heraldry/humanoids/identity. No unselected progression/scope. Approved replacement for rejected afd1b9ea4672 source."
+          "findings": [
+            "composition: ROOT FULL ORIGINAL60 replacement OWN/WHOLE plus actualCURRENTdepth2Battle619e65ac FULL OWN/WHOLE personallyopened. Originalexplicit TWOcrossedspikebarriers nearLEFT/CENTER, chosengearvisibleLEFT60 and no LARGE RIGHT foregroundgear. Actual second crossedspikebarrier is LARGE RIGHTforeground x1430-1672 behindcontrols, only one actualcrossbarLEFT/CENTER. composition/allChoicesF under ORIGINALOWN, not new wholeALLbarriers/fararch/fullfloor/780 retro. Missionsealedparcel/provisionsLEFT, TWOactualplainbrown-gray shields and MYSTIC monumentalruinsLEFT discrete depth latestP. Functionalshieldboss/parcelclosure notwriting/noidentity. ActualCURRENTdepth2 coveredtrainingfloor/targets/squareWOODbarriers vsoriginalMystic highobliquenearstonefloor/twoSHIELDS/crossbar and nearlayeredforgottenruins differentactualcamera/approachgeometry distinctP; parent possibleownfailure notinherited. NOledger mutation until FULL272 immutableQA/ROOTsix saved.",
+            "allChoices: ROOT FULL ORIGINAL60 replacement OWN/WHOLE plus actualCURRENTdepth2Battle619e65ac FULL OWN/WHOLE personallyopened. Originalexplicit TWOcrossedspikebarriers nearLEFT/CENTER, chosengearvisibleLEFT60 and no LARGE RIGHT foregroundgear. Actual second crossedspikebarrier is LARGE RIGHTforeground x1430-1672 behindcontrols, only one actualcrossbarLEFT/CENTER. composition/allChoicesF under ORIGINALOWN, not new wholeALLbarriers/fararch/fullfloor/780 retro. Missionsealedparcel/provisionsLEFT, TWOactualplainbrown-gray shields and MYSTIC monumentalruinsLEFT discrete depth latestP. Functionalshieldboss/parcelclosure notwriting/noidentity. ActualCURRENTdepth2 coveredtrainingfloor/targets/squareWOODbarriers vsoriginalMystic highobliquenearstonefloor/twoSHIELDS/crossbar and nearlayeredforgottenruins differentactualcamera/approachgeometry distinctP; parent possibleownfailure notinherited. NOledger mutation until FULL272 immutableQA/ROOTsix saved."
+          ],
+          "notes": "ROOT FULL ORIGINAL60 replacement OWN/WHOLE plus actualCURRENTdepth2Battle619e65ac FULL OWN/WHOLE personallyopened. Originalexplicit TWOcrossedspikebarriers nearLEFT/CENTER, chosengearvisibleLEFT60 and no LARGE RIGHT foregroundgear. Actual second crossedspikebarrier is LARGE RIGHTforeground x1430-1672 behindcontrols, only one actualcrossbarLEFT/CENTER. composition/allChoicesF under ORIGINALOWN, not new wholeALLbarriers/fararch/fullfloor/780 retro. Missionsealedparcel/provisionsLEFT, TWOactualplainbrown-gray shields and MYSTIC monumentalruinsLEFT discrete depth latestP. Functionalshieldboss/parcelclosure notwriting/noidentity. ActualCURRENTdepth2 coveredtrainingfloor/targets/squareWOODbarriers vsoriginalMystic highobliquenearstonefloor/twoSHIELDS/crossbar and nearlayeredforgottenruins differentactualcamera/approachgeometry distinctP; parent possibleownfailure notinherited. NOledger mutation until FULL272 immutableQA/ROOTsix saved. Official correction after completed immutable272 and ROOT personally inspected six whole screenshots."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
           "colors": 417985,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic-4-a526e89a6d53.png",
+        "sha256": "a526e89a6d5314bf59c25a4c19c7a5501fd19c7c1368ad76fe3521b5a74cac2d",
+        "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+        "generationPromptSha256": "c9acf394d86957ff092e85164da32330170d7710b0a4b9411b2d1084839061f2",
+        "attempt": 4,
+        "review": {
+          "sourceSha256": "a526e89a6d5314bf59c25a4c19c7a5501fd19c7c1368ad76fe3521b5a74cac2d",
+          "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2742 OWN/WHOLE and actualnew2741 depth2parent FULL OWN/WHOLE personallyseen. Tacticalcourtyard LEFTouterwall/floor cut atnativeLEFT edge despite WHOLEcourt mandatory; lowLEFT dark closefoliagecurtain also contradicts OWN no near framingfoliage. composition/allChoicesF; not treatingordinary distantterrain asselectedfloor. MISSIONONEtable/sack ANDroll present, tacticalEXACTTWOcovers, MYSTICmonumental forgottenarches/violetdepth latestP, no progression/scope/identity/text; functionalparcelcordP. Comparedactualnew2741 HIGH SOUTHWEST shallowfoothill MIDtable/UPcourt facingdiagonal vs new NORTHWEST nearSTONEplatform LOWtable/widerhorizontalcourt and steeparchcliffs actualcamera/roadgeometrychanges distinctP. Repair ENTIREcourt halfsizeRIGHTinset and removewholeLOWLEFTleafcurtain only, preserveactualmood.",
+            "allChoices: ROOT FULL exact2742 OWN/WHOLE and actualnew2741 depth2parent FULL OWN/WHOLE personallyseen. Tacticalcourtyard LEFTouterwall/floor cut atnativeLEFT edge despite WHOLEcourt mandatory; lowLEFT dark closefoliagecurtain also contradicts OWN no near framingfoliage. composition/allChoicesF; not treatingordinary distantterrain asselectedfloor. MISSIONONEtable/sack ANDroll present, tacticalEXACTTWOcovers, MYSTICmonumental forgottenarches/violetdepth latestP, no progression/scope/identity/text; functionalparcelcordP. Comparedactualnew2741 HIGH SOUTHWEST shallowfoothill MIDtable/UPcourt facingdiagonal vs new NORTHWEST nearSTONEplatform LOWtable/widerhorizontalcourt and steeparchcliffs actualcamera/roadgeometrychanges distinctP. Repair ENTIREcourt halfsizeRIGHTinset and removewholeLOWLEFTleafcurtain only, preserveactualmood."
+          ],
+          "notes": "ROOT FULL exact2742 OWN/WHOLE and actualnew2741 depth2parent FULL OWN/WHOLE personallyseen. Tacticalcourtyard LEFTouterwall/floor cut atnativeLEFT edge despite WHOLEcourt mandatory; lowLEFT dark closefoliagecurtain also contradicts OWN no near framingfoliage. composition/allChoicesF; not treatingordinary distantterrain asselectedfloor. MISSIONONEtable/sack ANDroll present, tacticalEXACTTWOcovers, MYSTICmonumental forgottenarches/violetdepth latestP, no progression/scope/identity/text; functionalparcelcordP. Comparedactualnew2741 HIGH SOUTHWEST shallowfoothill MIDtable/UPcourt facingdiagonal vs new NORTHWEST nearSTONEplatform LOWtable/widerhorizontalcourt and steeparchcliffs actualcamera/roadgeometrychanges distinctP. Repair ENTIREcourt halfsizeRIGHTinset and removewholeLOWLEFTleafcurtain only, preserveactualmood."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 369610,
           "findings": []
         }
       }
@@ -9572,7 +9677,7 @@
         "review": {
           "sourceSha256": "75c0f4a43629d2503572a2b57aa73c904fbc537e56ab9c909269fc37c94ff5c0",
           "promptSha256": "bdbbb6cf2f586fa0e4cfc7c0c35df0bb70b248a886aa944f24a608538164cc57",
-          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new274parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -9583,7 +9688,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Tied parcel and kit at palisade settlement defenses with shield rack, covered doorstep and warm protected dusk retain mission, battle and warmth. No marked flags or script."
+          "notes": "ROOT FULL original75c0f4a Warmdepth3 OWN/WHOLE and actualnew2741 depth2 FULL OWN/WHOLE personallyseen. OriginalMISSIONplainsealedparcel/provisionsLEFT, actualplainshieldrack/barricades/stonecover/multiplelanes plus protected welcominglamp-lit nook/supplies warmP. No identity/text/hardpixels; functionalboss/cords only. OriginalLOWdiagonalcloseporch/door/palisade/warmgear vsactualnew2741 HIGH SOUTHWEST openfoothill smalltableMID/courtUP/stonepath differentactualcamera/approachgeometry distinctP. No newwholeALL/EXACTcovercount/cup/780/duskretro. SevenindependentP."
         },
         "gate": {
           "ok": true,
@@ -34902,6 +35007,42 @@
           "colors": 587754,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--mystic--quests-4-9d9512a3f712.png",
+        "sha256": "9d9512a3f7121dfc3fcedfb42411a9ea73ba689d87f27ad9989295b40cee6ae8",
+        "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+        "generationPromptSha256": "1233b999549e787dae5c93839b2a22ab5da908611003c33ced6459aca3812313",
+        "attempt": 4,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+          "sourceSha256": "c4e491b3688f5cc883e6d65018f07f0c17035dd24213c15847ec2d0e9a45b577"
+        },
+        "review": {
+          "sourceSha256": "9d9512a3f7121dfc3fcedfb42411a9ea73ba689d87f27ad9989295b40cee6ae8",
+          "promptSha256": "994cbe6770faf34cb08c324d806b351b4be3c5c0cbbfda923a2c92696b54a830",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2710 OWN + WHOLE unchangednative personallyopened. BASEtable EXACTTHREE clearlyseparateSEALEDparcels inONErowwithWOODgaps, separateMISSIONsmalltableONEabove. FullrealDOWNfloorpit/TOPLIP/allstairs/lowerdarkSIDEentry, BASEY TWOdifferentgenuineEMPTYplotsUP/MID, wholeancientLEFTmonument/skybuffers MYSTIC latestQUESTSP. Allselectedfloor/walls/props/stairs entirelynative/before1008, hardpixels/noidentity/text. ActualCURRENTdepth3Mystic ed3f5056 FULLexactOWN/WHOLE personallyseen CLOSEpavedruinsquare vsHIGH SOUTHWESTbluevalley missionMID/BASELOW/pitMID/YtwoUP differentactualworldcamera/geometry distinctP. Allseven independentlyP, newparentP requires threeprevious269Qchildren FULLindependentrecomparison beforepublication."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 611813,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--explore--mystic--chapters": [
@@ -35011,7 +35152,7 @@
         "review": {
           "sourceSha256": "040ab19b1bc6dd4a15dad0a458195e4153177dacc64280ab6b260225327de69a",
           "promptSha256": "28829c57b45ffcebc23bd072fe29d1b91e88b70314fce53688edcb5f4ce33e75",
-          "reviewer": "Codex direct original visual inspection: v2-production-058",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -35022,7 +35163,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native and applicable parent: plain SEALED entrusted parcel and ordinary provisions LEFT sheltered rural threshold, actual near LEFT below-floor opening/top lip with weathered DESCENDING steps into lower dark side passage. Warm protected lantern preparations preserved. Actual continuous near stone route traverses visible village midpoint and connected bridge toward different far empty cliff settlement. Latest journey and chosen supplies/opening readable LEFT/CENTER before controls, right terrain secondary. Fresh elevated departure-floor/recess camera versus old right-foreground parcel table parent, hard native square clusters all planes/no signs/flags/text/heraldry/identity. Parent original sign/hidden preparations separately rejected; replace before combined publication."
+          "notes": "ROOT reopened FULL ORIGINAL OWN/WHOLE040ab19b and actual271Warm depth3 OWN/WHOLE. Apply ONLY original58 requirements: plain sealed parcel/unused ordinary provisions at covered rural LEFT threshold, actual LEFT below-floor recess/TOPLIP/DOWNsteps/lower dark side passage, protected warm lantern nook, continuous road via village midpoint/bridge toward different far destination. No new missionONE/fourlegs/cupONE/WALL/fullallpitwalls/allfarcastle/780 requirements retroactively; far destination onRIGHT alone is not failure. Functional clasp/wax closure and rolled provision pack not writing/unselected team. Chosen architectural shelter itself is not added near leafy/candle framing curtain. Hardclusters/noidentity/noText/allchoices/latest independentlyP. Original INSIDE covered near broad stone threshold/large foreground recess/village midpoint versus271 OUTSIDE high west valley missionUP/nookMID/pitLOW curved road gives actual camera/approach geometry distinctP. Allseven P."
         },
         "gate": {
           "ok": true,
@@ -35100,6 +35241,42 @@
           "colors": 542419,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm--quests-3-f158954cbfa0.png",
+        "sha256": "f158954cbfa0f64a0d175ea35d6a6da62d1dadc241f849e57cfa3df559351afe",
+        "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+        "generationPromptSha256": "12f882d41e976e82bfd66549e31b7b93d7c5e83fe0bba4ca361dad6538dd77d4",
+        "attempt": 3,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+          "sourceSha256": "20ce6d934bfe867d5c61c89e79042e6736f762bed2c58ad3114b72db1ee7649f"
+        },
+        "review": {
+          "sourceSha256": "f158954cbfa0f64a0d175ea35d6a6da62d1dadc241f849e57cfa3df559351afe",
+          "promptSha256": "6c02986e436a93540e414d2bf1101f89ba07393b64a7aa5dfdbca29004f332c3",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2713 OWN + WHOLE unchangednative personallyopened. DOWNfloorpit reduced/rebuiltfullyinside LEFTground withgrassbelow/allouterwalls/innerfloor/allstairs/lowerdarkSIDEopening/TOPLIP complete. SeparateMISSIONfourlegWOODtableONEsealedLOWLEFT andBASEfourlegWOODtableEXACT3plainSEALEDclosedcratesMID/BASEY TWOdifferentgenuineEMPTYsitesUP. WARMnookWALLlanternEXACT1OPENcup/unusedsupplies complete native/before1008; latestQUESTSP. Crateclosedlid/slats/crossbraces functionalnotwriting/emblem. Hardpixels/noidentity/text. Actualnew2712Warmdepth3 FULLOWN/WHOLE personallyseen highWEST missionUP/pitLOW/nookMID/curvingroad vs THISmissionLOW/pitMID/BASEMID/nookLEFT/YtwoUPsites distinctrealroad/geometry/camera P; current2704WarmF alsopersonallyseen noinheritance. AllsevenP; newparent needs3children independentlyFULLrecompared."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 536143,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--explore--warm--chapters": [
@@ -35112,7 +35289,7 @@
         "review": {
           "sourceSha256": "13355d7242e652e52f7c7cb6754a2ed5e0b010641886446bf9c6c11f4c88b286",
           "promptSha256": "7a890fcfbee35c7bbcbd53eee629d2e2a806c6163842fe3ecea65ef177df7e15",
-          "reviewer": "Codex direct original visual inspection: v2-production-058",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -35123,7 +35300,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native and applicable parent: plain SEALED entrusted parcel/provisions near LEFT worktable, actual near LEFT floor recess/top lip below main level with weathered DESCENDING steps into lower dark side passage. Protected welcoming helpful lantern preparations. BARE chapter arch shows actual arid ochre desert/red rock through visible central opening before panel, green forest/ground before threshold; coherent new region. Primary latest contrast/opening/parcel LEFT/CENTER, quiet right settlement/terrain supporting depth. Fresh elevated rural rest-floor/recess/arch versus original right-foreground supply table, hard native square clusters all planes/no signs/flags/text/heraldry/identity. Parent original sign/hidden preparations separately rejected; replace before combined publication."
+          "notes": "ROOT FULL original OWN/WHOLE13355d72 and actual271Warm depth3 OWN/WHOLE personally reopened. Original58 core parcel/provisionsLEFT covered threshold, real below-floor recess/TOPLIP/DOWNstairs/lower side entry and protected warm lanterns present. Near regional arch center around43%, bare ochre/red-rock region actually visible THROUGH opening aroundx740-920 before1008 with green nearLEFT and continuous path GREEN→OCHRE; original latestCHAPTERS P. No original fullALLarch/allpitfloors/ALLstairs/missionONE/cupONE/WALL/780 requirement; right arch column behind controls alone is not invented F. Selected regional arch itself is original staging, not added foreground framing foliage. Functional bedrolls/case closures not writing/unselected companion identities. Original INSIDEcoveredarch close worktable/pitfront vs actual271 OUTSIDE highWEST forestvalley missionUP/nookMID/pitLOW curved road different actual camera/geometry. Allseven independently P under ONLY original OWN."
         },
         "gate": {
           "ok": true,
@@ -35144,7 +35321,39 @@
         "review": {
           "sourceSha256": "8b26308c3668cffcef3a3b350f20374ea1be9dc41385ab45f125085bd4879af0",
           "promptSha256": "07b30579e9f5bd6ecd94b459e34e0d24ab0f0286b28dc74877b727936bb848dc",
-          "reviewer": "Codex direct original visual inspection: v2-production-059",
+          "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/actual parent source162 correction after immutable270 ROOTsix",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: Original OWN requires at least TWO actual bare shields; native has ONE shield. Lantern cage is not second shield."
+          ],
+          "notes": "ROOT FULL exactORIGINAL OWN/WHOLE original native personallyopenedTHISsegment. Originalexplicit atLEASTTWOactualbareBROWN/GRAYshields onnearLEFTracks; actualONElargeplainroundshield onLEFT rack. Darkcage belowroll isactualLANTERNwithloop/glasspanels, notsecondshield. allChoicesF ONLY Originalatleast2crossedspikebarricades LEFT+RIGHT present; doNOTnewwholeALLbarricades/wholefarCASTLE/780/1mission4leg/countretro orcompositionFsolelyrightfarendpoint/barrier. Missionplainsealedparcel/provisions/continuousrouteviaemptyMID/bridge/farcastle/BRIGHT present. Functionalshieldboss/rivets andcrateclasp notwriting. Noledger mutation untilFULL270immutableQA/ROOTsix saved; originalcounter162 notyetofficial. ActualCURRENTdepth3BattleBright075fc172 FULLexactORIGINAL OWN/WHOLE native personallyopened: elevatednearcorner covereddoorLEFT/largeparcelnearLEFT/fourSHIELDSMID/flowerworkfloor vsoriginal162sideonruralthreshold doorMIDLEFT/ONEshieldLEFT/parcelMID/continuouslongtravelroad changesactualforegroundviewpoint andapproachgeometry distinctP. Plainunmarkedbluecream pennant allowedbyoriginal15 noFLAGemblems; no new59blanketFLAG/foregroundflower/wholebarrier ban onparent. Source162onlyallChoices shieldcount fromOWN. FULL270 actual0/ROOTsix pass and committed checkpoint preserved before correction."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 475692,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey-2-8ddc83b88af7.png",
+        "sha256": "8ddc83b88af78ff2cc832e1a3860800afa9a88f5a3bda64b7b9a74e3fc368587",
+        "promptSha256": "07b30579e9f5bd6ecd94b459e34e0d24ab0f0286b28dc74877b727936bb848dc",
+        "generationPromptSha256": "2d21d39e087f104de2976cb7dcacc301553ef6895085915051be71d1a9a50e8d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8ddc83b88af78ff2cc832e1a3860800afa9a88f5a3bda64b7b9a74e3fc368587",
+          "promptSha256": "07b30579e9f5bd6ecd94b459e34e0d24ab0f0286b28dc74877b727936bb848dc",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -35155,13 +35364,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened full native and actual native parent: plain unmarked SEALED entrusted parcel/provisions LEFT rural departure; TWO actual bare wood/gray metal shields with functional boss/reinforcement only; at least TWO actual crossed-spike timber barriers/stone cover/multiple lanes. Actual continuous near road leads through EMPTY village midpoint and bridge toward different EMPTY far castle. Departure/gear/near route readable LEFT/CENTER, right distant destination/terrain and secondary barrier support connected journey. Fresh closer sheltered workfloor/road versus parent four-shield rack/parcel introduction, native hard square clusters all planes/no actual signs/flags/painted quarters/writing/identity."
+          "notes": "ROOT FULL exact2723 OWN/WHOLE personally opened + actual CURRENT depth3 BattleBright075fc172 FULL ORIGINAL OWN/WHOLE reopened. MISSION fourleg table EXACT ONE sealed/plain parcel and actual unused sack/rolled blanket DIRECTLY beside; separate complete EMPTY tactical courtyard EXACT TWO plain stone cover blocks, separate genuinely EMPTY MID travelground, different whole ancient EMPTY main destination/allcolumns/floor/ALLstairs and actual continuous STONE walking road; no sea gap/no EXPLORATIONpit/boat/WARM/identity/text. All chosen structures/floors/props nativewhole/before1008, coarsehard pixelplanes/bright latest JOURNEYP. CURRENTparent near rural porch/largeparcel/shieldracks and close roadside barriers vs new HIGH NORTHWEST expansive valley tableLOW/tacticalUPLEFT/MIDMIDDLE/mainDESTUP changes actual viewpoint/road/terrain geometry distinctP. Allseven independently P; future272 JOURNEY3children require compare against THIS actual newly passing parent, not original162F."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 475692,
+          "colors": 678194,
           "findings": []
         }
       }
@@ -35176,7 +35385,72 @@
         "review": {
           "sourceSha256": "fd5e1f8550b91cd8233d10a5da07912cd9ef7a357cd3843f39b1398eff544cf4",
           "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
-          "reviewer": "Codex direct original visual inspection: v2-production-059",
+          "reviewer": "Codex ROOT FULL ORIGINAL OWN/WHOLE/actual parent sources163165 after immutable272 ROOTsix",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact ORIGINAL OWN/WHOLE personally opened. Original explicit actual clearly visible near-midground Yfork/two different EMPTY nearby destinations and quietRIGHT35; actual Ysplitx1150-1220 behind actual1008 controls, ends occupied village/castle/bridge approach, not two genuinely EMPTY nearby travel grounds. composition/allChoices/latestQUESTS F under ONLYoriginalOWN. THREEsealed wrapped parcelsLEFT/TWOactualplainbrown-gray shields/atleastTWOcrossedspikebarriers/provisions/BRIGHT present. No newwholeALLbarriers/fullfarcastle/missionONE/fourleg/BASEYLEFT780/canvas/cup counts retroactively. Functionalshieldboss/parcelcords/crateclasp not text. ActualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseen elevatednear-corner shelteredporch fourshields/largeparcelLEFT vs originalQuest closerecedingwideforegroundworktable3parcels/twoLEFTshields/pavedfork differentactualcamera/approach geometry distinctP. NO official mutation until FULL272 immutable QA and ROOTsix saved; pendingoriginalcounter163 only.",
+            "allChoices: ROOT FULL exact ORIGINAL OWN/WHOLE personally opened. Original explicit actual clearly visible near-midground Yfork/two different EMPTY nearby destinations and quietRIGHT35; actual Ysplitx1150-1220 behind actual1008 controls, ends occupied village/castle/bridge approach, not two genuinely EMPTY nearby travel grounds. composition/allChoices/latestQUESTS F under ONLYoriginalOWN. THREEsealed wrapped parcelsLEFT/TWOactualplainbrown-gray shields/atleastTWOcrossedspikebarriers/provisions/BRIGHT present. No newwholeALLbarriers/fullfarcastle/missionONE/fourleg/BASEYLEFT780/canvas/cup counts retroactively. Functionalshieldboss/parcelcords/crateclasp not text. ActualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseen elevatednear-corner shelteredporch fourshields/largeparcelLEFT vs originalQuest closerecedingwideforegroundworktable3parcels/twoLEFTshields/pavedfork differentactualcamera/approach geometry distinctP. NO official mutation until FULL272 immutable QA and ROOTsix saved; pendingoriginalcounter163 only.",
+            "latestChoice: ROOT FULL exact ORIGINAL OWN/WHOLE personally opened. Original explicit actual clearly visible near-midground Yfork/two different EMPTY nearby destinations and quietRIGHT35; actual Ysplitx1150-1220 behind actual1008 controls, ends occupied village/castle/bridge approach, not two genuinely EMPTY nearby travel grounds. composition/allChoices/latestQUESTS F under ONLYoriginalOWN. THREEsealed wrapped parcelsLEFT/TWOactualplainbrown-gray shields/atleastTWOcrossedspikebarriers/provisions/BRIGHT present. No newwholeALLbarriers/fullfarcastle/missionONE/fourleg/BASEYLEFT780/canvas/cup counts retroactively. Functionalshieldboss/parcelcords/crateclasp not text. ActualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseen elevatednear-corner shelteredporch fourshields/largeparcelLEFT vs originalQuest closerecedingwideforegroundworktable3parcels/twoLEFTshields/pavedfork differentactualcamera/approach geometry distinctP. NO official mutation until FULL272 immutable QA and ROOTsix saved; pendingoriginalcounter163 only."
+          ],
+          "notes": "ROOT FULL exact ORIGINAL OWN/WHOLE personally opened. Original explicit actual clearly visible near-midground Yfork/two different EMPTY nearby destinations and quietRIGHT35; actual Ysplitx1150-1220 behind actual1008 controls, ends occupied village/castle/bridge approach, not two genuinely EMPTY nearby travel grounds. composition/allChoices/latestQUESTS F under ONLYoriginalOWN. THREEsealed wrapped parcelsLEFT/TWOactualplainbrown-gray shields/atleastTWOcrossedspikebarriers/provisions/BRIGHT present. No newwholeALLbarriers/fullfarcastle/missionONE/fourleg/BASEYLEFT780/canvas/cup counts retroactively. Functionalshieldboss/parcelcords/crateclasp not text. ActualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseen elevatednear-corner shelteredporch fourshields/largeparcelLEFT vs originalQuest closerecedingwideforegroundworktable3parcels/twoLEFTshields/pavedfork differentactualcamera/approach geometry distinctP. NO official mutation until FULL272 immutable QA and ROOTsix saved; pendingoriginalcounter163 only. Official correction after completed immutable272 and ROOT personally inspected six whole screenshots."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 479183,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests-2-cac9bab71aa4.png",
+        "sha256": "cac9bab71aa4eadd6f05cdb81a5d479498e93077c38961d5567cc45649434339",
+        "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
+        "generationPromptSha256": "21989567d618ddb0ac9f747dca15cb5c0ec9e33e5d5ce3831563fce1c0af9f90",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "cac9bab71aa4eadd6f05cdb81a5d479498e93077c38961d5567cc45649434339",
+          "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2736 OWN/WHOLE personallyopened; actualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseenTHISsegment. BASEtable has FOURsealedparcels (frontLEFTbrown/backCENTERbrown/frontCENTERwhite/backRIGHTbrown), exactOWN requires THREE; separateMISSIONLOWLEFTONE notBASEthird. allChoicesFONLY. WholeMISSIONtable/sackANDrollDIRECTLYbeside, fullEMPTYtacticalcourt EXACT TWOcoverblocks/allfloor/ALLstairs, LEFTBASEY to TWOdistinctgenuineEMPTYgrounds/fullboundaries before1008, welcomingBRIGHT latestQUESTSP. Hardpixel/noidentity/text; parcelcords notwriting. HIGHNORTHWEST open layeredvalley missionLOW/arenaUP/baseMID vsactualcurrentnear-cornerruralporch/fourshieldrack changesactualviewpoint androads distinctP. Repair ONLY BASE: removeALLFOUR, rebuild EXACT THREE inONEsingleROWwithWOODgaps, MISSIONONE tablepreserved. Not inheriting source163F."
+          ],
+          "notes": "ROOT FULL exact2736 OWN/WHOLE personallyopened; actualCURRENTdepth3BattleBright075fc172 FULL OWN/WHOLE personallyseenTHISsegment. BASEtable has FOURsealedparcels (frontLEFTbrown/backCENTERbrown/frontCENTERwhite/backRIGHTbrown), exactOWN requires THREE; separateMISSIONLOWLEFTONE notBASEthird. allChoicesFONLY. WholeMISSIONtable/sackANDrollDIRECTLYbeside, fullEMPTYtacticalcourt EXACT TWOcoverblocks/allfloor/ALLstairs, LEFTBASEY to TWOdistinctgenuineEMPTYgrounds/fullboundaries before1008, welcomingBRIGHT latestQUESTSP. Hardpixel/noidentity/text; parcelcords notwriting. HIGHNORTHWEST open layeredvalley missionLOW/arenaUP/baseMID vsactualcurrentnear-cornerruralporch/fourshieldrack changesactualviewpoint androads distinctP. Repair ONLY BASE: removeALLFOUR, rebuild EXACT THREE inONEsingleROWwithWOODgaps, MISSIONONE tablepreserved. Not inheriting source163F."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests-3-1c457b2e8c12.png",
+        "sha256": "1c457b2e8c12079d9f41dfca23ee33571766bcae56bfcafdc254bf68fb29c0e5",
+        "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
+        "generationPromptSha256": "d4ca24913f014aa44fa5fd3990808c1fe4f3631ab702d6e2c18d835a9939d68f",
+        "attempt": 3,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
+          "sourceSha256": "cac9bab71aa4eadd6f05cdb81a5d479498e93077c38961d5567cc45649434339"
+        },
+        "review": {
+          "sourceSha256": "1c457b2e8c12079d9f41dfca23ee33571766bcae56bfcafdc254bf68fb29c0e5",
+          "promptSha256": "38081890f1b147f833e94d327ab5d59a27ae9e1a3abdaead33739e2464dfd837",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -35187,13 +35461,13 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "Root directly opened native and applicable native parent plus exact parent request: THREE distinct plain SEALED wrapped parcels prominently on near LEFT worktable with entrusted errand provisions, TWO actual bare brown wood/gray metal shields with functional boss/brace only, at least TWO actual crossed-spike timber barriers/stone tactical cover/multiple approach lanes. Actual CLEAR Y-road fork to different EMPTY nearby village/bridge destinations, no signs or flags in current candidate. Bright welcoming daylight, latest quest parcels visible LEFT and right terrain/fork supports depth. Fresh closer sheltered workfloor/fork versus parent four-shield/door/parcel supplies introduction, hard native square clusters all planes/no quartered paint/text/heraldry/body."
+          "notes": "ROOT FULL exact2740 OWN/WHOLE personally inspected. BASE now EXACT THREE in singleROW with visibleWOODgaps, nofourth/stack; separateMISSIONONEparcel/sack ANDroll. Whole tacticalcourt EXACT TWOcovers/allwalls/floor/ALLstairs and visibleBASEY to TWOgenuinelyEMPTYgrounds before1008/native. BRIGHTwelcomingdaylight, noHOME/scope/identity/text, functionalcords allowed. ActualCURRENT075fc172 Brightdepth3 FULL originalOWN/WHOLE personally reopened nearcornerporch/fourshields/largeparcel vs new HIGH NORTHWEST openvalley MISSIONLOW/arenaUP/BASEMID/twoYplots actualcamera/roadgeometry different distinctP. All7 independentlyP."
         },
         "gate": {
           "ok": true,
           "width": 1672,
           "height": 941,
-          "colors": 479183,
+          "colors": 594772,
           "findings": []
         }
       }
@@ -83545,6 +83819,42 @@
           "colors": 657277,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--bright--quests--episode-3-eae6f28782ee.png",
+        "sha256": "eae6f28782ee9d69ff25f172987ffc9d81704db1aa910a4d6a7608aef0aa6b2e",
+        "promptSha256": "04cecaa5afed0c9b67421fdb5c0acd29b828310bf4c4ef91d2b3af05ba6814ec",
+        "generationPromptSha256": "510eb966489c34086d4212c6981a2a79e631280cb05b47e8e5dd6eaf72559099",
+        "attempt": 3,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "04cecaa5afed0c9b67421fdb5c0acd29b828310bf4c4ef91d2b3af05ba6814ec",
+          "sourceSha256": "9fbf29cc0100c95f3e3f898b903c244b3ef1621c846dc54d8ac4f2befd174fed"
+        },
+        "review": {
+          "sourceSha256": "eae6f28782ee9d69ff25f172987ffc9d81704db1aa910a4d6a7608aef0aa6b2e",
+          "promptSha256": "04cecaa5afed0c9b67421fdb5c0acd29b828310bf4c4ef91d2b3af05ba6814ec",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2711 OWN + WHOLE unchangednative personallyopened. BASEtable nowEXACTTHREEseparateplainSEALEDparcels inONEclearROWwithWOODgaps; separateMISSIONLOWLEFT ONEsealednotBASEthird. BASEY TWOgenuineEMPTYquestplots/fullDOWNfloorpit TOPLIP/allstairs/lowerdarkSIDEopening/separateTHIRDclearedEMPTYruin EXACT2EMPTYstoneRESTbenches/actualSIDEroad latestEPISODEP. Allchosenroofs/walls/floors/stairs/props fullynativeinside/before1008, functionalparcelcordsnotwriting. Coarsehardpixel/noidentity/text. ActualCURRENTBrightMissionQbd947156 FULLexactOWN/WHOLE personallyseen coveredruralnear3parcels/recess/Y vsdistantNORTHvalley missionLOW/BASEMID/pitLEFT/restMID realcamera/worldgeometrydifferent distinctP. AllsevenindependentlyP; previous2669falseP/2703F retainedhistory, no inheritededitpass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 637550,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--explore--bright--quests--short": [
@@ -83924,7 +84234,7 @@
         "review": {
           "sourceSha256": "a17fd180186222f8336990f657f6cff0603bea541eb8ca7f45d80a1727a5d00a",
           "promptSha256": "e7f65da3be1bd172a4dd59508631002afea4db3dba834f42331bec3670782ea7",
-          "reviewer": "Codex direct original visual inspection: v2-production-269",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -83935,7 +84245,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact269 OWN/WHOLE editednative personallyseen; currentoriginalMysticMissionQuestsfae9bb44 FULL OWN/WHOLE seen in chain; failure158notinherited. RepairedMAINLEFTancientarch/tower nowhalfsize/lower/complete withlargeSKYbuffer; actualLEFTmainmonumentwholeinside/before1008. WholeMISSIONtableONESEALED/BASEtableTHREESEALED/fullFLOORPIT/TOPLIP/weatheredDOWNstairs/lowerdarkSIDEopening; BASEYtoTWOgenuineEMPTYplots anddistinctFIRSTmain/SIDEfork nearMISSION latestSCENEP. Allchosenfullnative/before1008; ordinaryRIGHTsupportingancientlandscape allowed. Hardpixels/noidentity/text. ActualNORTHbluevalley/tableLOW/baseMID/pitUP/downsizedmonumentUP geometry differscurrentcoveredruralworkthreshold distinctP. Independentlyall7P againstcurrentoriginalparent; ifparentreplacementpasses mustFULLrecompare beforedeploy."
+          "notes": "ROOT FULL exact269scene OWN/WHOLE and actual271MysticQ OWN/WHOLE personally reopened. Full pitUPLEFT/missionLOWLEFT/BASE3MID/whole monumentUPMID/BASEY two EMPTY plots and independent FIRST fork all whole native/before1008; coarsepixels/no identity/text/allchoices/latest P. Parent271 missionUP/BASELOW/pitLOW monumentUPLEFT with different HIGHsouthwest view vs child northern cliff platform pitUP/missionLOW/baseMID and different road approach geometry; not recolor/added scope only. Allseven independently P."
         },
         "gate": {
           "ok": true,
@@ -83995,7 +84305,7 @@
         "review": {
           "sourceSha256": "b941f6db61cd9c24ce4cfbf704f8da3df7d49a39f13a24bc4743dff206672215",
           "promptSha256": "c0cba11e42e4aecfa8a266c2543a66b586e95aeb1f2fef88454ee73250592010",
-          "reviewer": "Codex direct original visual inspection: v2-production-269",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -84006,7 +84316,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact269 OWN/WHOLE editednative personallyseen; currentoriginalMysticMissionQuestsfae9bb44 FULL OWN/WHOLE seen in chain, failure158 not inherited. MAINLEFT ancientarch/tower now SMALL/fullybelownativeTOP withlargeSKYbuffer, whole chosenMYSTICarchitecture. WholeMISSIONONESEALEDtable/BASETHREESEALEDtable/realFLOORPIT/toplip/DOWNstairs/lowerdarkSIDEopening/YtoTWOgenuineEMPTYplots; separateTHIRDsmallclearedEMPTYruin EXACT2EMPTYstoneRESTseats/actualSIDEroad latestEPISODEP. Everychosenwall/floor/prop nativewhole/before1008; hardpixels/noidentity/text. HighSOUTHvioletmeadow/tableUP/baseLOW/pitMID/restLOW worldcamera/roads differscurrentprotectedruralparent distinctP. Independentlyall7P; ifnewparentpasses requirecurrentparentfullrecompare beforedeploy."
+          "notes": "ROOT FULL exact269episode OWN/WHOLE and actual271MysticQ OWN/WHOLE personally reopened. Mission ONE UPLEFT, BASE exactTHREE LOWLEFT, full DOWNpit MIDLEFT and Y to TWO genuine EMPTY grounds UPMID/MIDRIGHT before1008, THIRD cleared EMPTY ruin with exactly TWO distinct EMPTY benches and SIDE route; all hardpixels/noidentity/text/latest P. Child highSOUTH layered close cliff platforms missionUP/pitMID/baseLOW/restLOW versus parent highSOUTHWEST bluevalley missionMID/baseLOW/pitRIGHT and monumentUPLEFT differs actual foreground viewpoint, pit approach and route geometry beyond adding rest site. Allseven independently P."
         },
         "gate": {
           "ok": true,
@@ -84067,7 +84377,7 @@
         "review": {
           "sourceSha256": "01f8fc0a2648fabd1d29b76f189aa863a42a19a7341bb034b02e1e99dee4a95e",
           "promptSha256": "dfec8cccaac7880eb7eb8127f230833aaf230696d1df4863a973dd9687de435f",
-          "reviewer": "Codex direct original visual inspection: v2-production-269",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -84078,7 +84388,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact269 OWN/WHOLE editednative personallyseen; currentoriginalMysticMissionQuestsfae9bb44 FULL OWN/WHOLE seen in chain; failure158 not inherited. LEFTpit nowrebuiltSMALLwithgrassbuffer/allwalls/floor/ALLweatheredDOWNstairs/lowerdarkSIDEopening nativewhole. TWOquestplots upperfencedEMPTY andMIDDLEcolumnEMPTY remain distinct, NEWTHIRDsmallclearedEMPTYruin LOWLEFT differentbothplots. WholeMISSIONONESEALEDtable/BASETHREEclosedSEALEDtable(functionalrecessedlidnotopenF), fullHOME/openentry/BAREBLUEfoldclothtable andactualreturnroads latestSHORTP. Everyactualchosenroof/wall/innerfloor/stairs/prop nativewhole/before1008; ordinaryRIGHTbackgroundancientlandscape notchosenpitcrop. Hardpixels/noidentity/text; EASTopenvalley/tableMID/baseLOW/homeLOW actualcamera/roads differscoveredruralcurrentparent distinctP. Independentlyall7P; newpassingparentrequiresFULLrecompare."
+          "notes": "ROOT FULL exact269short OWN/WHOLE and actual271MysticQ OWN/WHOLE personally reopened. BASE THREE separate sealed parcels LOWLEFT, mission ONE MIDLEFT, two genuine EMPTY quest grounds upper fenced/middle column plot, additional THIRD cleared EMPTY ruin left of HOME; whole DOWNpit upper left, whole HOME/open entry/BAREBLUE folds return table all before1008. Functional WOOD exposed strips and cyanBLUE folds not ornaments. Return roads connect all; latest/allchoices/pixel/noidentity/noText independentlyP. Child highEAST road through small pitUP/missionMID/homeLOW on descending meadows versus parent highSOUTHWEST paved baseLOW/largepitMIDRIGHT and monumentUPLEFT: actual camera/platform/road geometry different beyond home addition. Allseven P."
         },
         "gate": {
           "ok": true,
@@ -84361,7 +84671,7 @@
         "review": {
           "sourceSha256": "471ebd1b5f3332694aee8f9ca5ccd1d41706c72fe47aee99279b3d922f9b8068",
           "promptSha256": "98d725298fb54dc5ed672c8eb20eb22ffa8f4a6fbafbe644b266087d91586d17",
-          "reviewer": "Codex direct original visual inspection: v2-production-270",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -84372,7 +84682,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact2702 OWN + WHOLE unchangednative personallyopened. BASEtable nowEXACTTHREEseparateplainSEALEDparcels MID; separateMISSIONfourlegWOODtableONELOWLEFT. ActualfullDOWNpit TOPLIP/stairs/lowerdarkSIDEopening, WARMnookWALLlanternEXACT1OPENcup/unusedsupplies, BASEY TWOdifferentgenuineEMPTYplotsUP/LOW plusdistinctFIRSTforknearMISSION. Allchosenarchitecture/walls/floors/ALLstairs/props nativewhole andbefore1008. Landscapeforest notnearblurredframingcurtain/doesnotobscurechosenobjects; hardpixelallplanes/noidentity/text. Other6P. Need FULL actualnew270WarmQparent OWN/native before finaldistinctShot; doNOTinheritsource160F orfutureparentP. Actualnew270WarmQ FULLexactOWN/WHOLE personallyopened: BASEMIDLOW/YtwoUPsites/pitLOW/nookMID/missionLOW versus childdifferentcoastalhighNORTH camera/pitUPLEFT/nookUPLEFT/BASEMID/EMPTYUP+LOW/missionLOW changesworldcamera/geometry distinctP. IndependentlyallsevenP despiteparentF, eligiblepublicationmustwaitvalidparent."
+          "notes": "ROOT FULL exact270WarmQscene OWN/WHOLE and actual271WarmQ OWN/WHOLE personally reopened. ExactlyTHREE separate sealed BASE parcels and separate missionONE, whole DOWNpit/toplip/allstairs/lower side entry, full warm nook WALLlantern EXACTONE open cup/unused supplies, BASEY to two genuine EMPTY grounds upper clearing/lower broad travel ground plus separate FIRST mission fork; all selected geometry nativewhole before1008, hardpixels/noidentity/noText/latest P. Child NORTH cliff view nookUPLEFT/pitUPLEFT/BASEMIDRIGHT/missionLOW, versus parent SOUTHEAST nookMIDLEFT/pitLOWMID/BASEUPMID/YtwoUP; differs actual camera/approach and occupied level layout, not simply added fork. Allseven independently P."
         },
         "gate": {
           "ok": true,
@@ -84393,7 +84703,7 @@
         "review": {
           "sourceSha256": "c9274a1a8da4c74dd55489523966e5c3ca41213f4aa0ec26a687c8ca027aa9a9",
           "promptSha256": "756aeab42740b15291320953b0b1a1d8629e30007e89367a540fec6ea335849c",
-          "reviewer": "Codex direct original visual inspection: v2-production-269",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -84404,7 +84714,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact269 OWN/WHOLE unchanged-native and actualCURRENT originalWarmMissionQuests33c8aba8 FULL exactOWN/WHOLE personallyseen. WholeMISSIONfourlegWOODtableONEplainSEALEDparcel; BASEfourlegWOODtable EXACTTHREESEALEDparcels/BASEYtoTWOgenuineEMPTYplots; fullactualFLOORPIT/TOPLIP/weatheredDOWNsteps/lowerdarkSIDEopening. WARMnookwholeoutsidegrassbuffer atnativeLEFT(readonlyNEARESTcrop ROOTpersonallyopened confirms leftpostinside/notcropped), actualWALLlantern EXACT1OPENcup/unusedsupplies. SeparateTHIRDsmallclearedEMPTYruin EXACT2EMPTYstoneRESTseats/actualSIDEroad latestEPISODEP. Allchosenwalls/floors/props nativewhole/before1008; hardpixels/noidentity/text. HighSOUTHopenwoodland/tableUP/baseLOW/pitMID/nookLOW/restLOW actualcamera/roadgeometry differscurrentcoveredruralparent. Independentlyall7P, no parentinheritance."
+          "notes": "ROOT FULL exact269WarmQepisode OWN/WHOLE against actual271WarmQ OWN/WHOLE reopened. Mission ONEUP/BASE exactTHREELOW distincttables, full DOWNpit/TOPLIP/stairs/lower side opening, complete lowerLEFT warm nook WALLlantern ONEopen cup/unusedsupplies, BASEY to two genuinely EMPTY plots UP/MID, separate THIRD EMPTYruin TWO distinct EMPTY benches/SIDEroad. NearLEFT nook outermost post/floor inside native edge; ordinary near terrain not selected floor crop. Hardpixels/noidentity/text/allChoices/latest P. Child SOUTH woodland high terraced viewpoint missionUP/baseLOW/pitMID/nookLOW/restLOW versus parent SOUTHEAST missionLOW/baseMID/pitLOW/nookMID/YtwoUP actual foreground viewpoint, approach and levels differ beyond adding rest. Allseven independently P."
         },
         "gate": {
           "ok": true,
@@ -84425,7 +84735,7 @@
         "review": {
           "sourceSha256": "4c52f1dd69d1cc6cc19dd0e62c1ca1a4a2ae2fa0de6a0ef829a5472aba2e764f",
           "promptSha256": "2285eb5c8ca94e190b4d910d0c0e69f73c08994fa0d1a1a10f2b6287b2438f51",
-          "reviewer": "Codex direct original visual inspection: v2-production-270",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new271parent independently sevenchecks",
           "checks": {
             "pixelArt": true,
             "composition": true,
@@ -84436,7 +84746,7 @@
             "distinctShot": true
           },
           "findings": [],
-          "notes": "ROOT FULL exact2706 OWN + WHOLE unchangednative personallyopened. FullHOMEroof/chimney/OPENblackwalkingentry/thresholdLOWLEFT and separatefourlegWOODtableBAREBLUEclothONLYbluefoldshades/exposedWOODcornersnotornament. SeparateTHIRDclearedEMPTYruin fullMID distinctfrom TWOEMPTYquestplotsUP atactualBASEY, BASEtableEXACT3SEALED LOWmiddle/separateMISSIONONE MIDLEFT. Fullpitwalls/floor/DOWNstairs/TOPLIP/lowerdarkSIDEopening fullyinsetnative/before1008. FullWARMnookbackWALLattachedlantern/EXACT1OPENcupunusedsuppliesUP; actualcontinuousreturnroads latestSHORTP. Hardpixel/noidentity/text/allchosenbeforecontrols. Actualnew270WarmQ FULL exactOWN/WHOLE personallyseen sunsetforestvalley BASEMID/pitLOW/YtwoUP vs THISdaylightNORTHEASTcoast HOMELOW/pitMID/BASELOW/ruinMID worldgeometry/camera differs distinctP. CurrentoriginalWarmQ33c8aba8 FULLOWN/WHOLE seen protectedcoveredthreshold/3parcels/villagewell alsoactualdifferent. Allseven independentlyP; parentF doesnotcancelchildvisualP, publicationmustwaitvalidparent."
+          "notes": "ROOT FULL exact270WarmQshort OWN/WHOLE and actual271WarmQ OWN/WHOLE personally reopened. BASE THREE LOWMID and separate missionONE MIDLEFT; two genuinely EMPTY quest grounds UP/MID with actual Y, whole lowerLEFT DOWNpit/TOPLIP/stairs/lower side opening, whole WARM nook WALLlantern ONEcup and unused supplies UPLEFT; HOME roof/chimney/open entry/BAREBLUE folded return table, additional THIRD cleared EMPTYruin and connected returnroads all nativewhole/before1008. Blue/cyan fold highlight/exposed WOOD corners not motifs; no identity/text, latest/allChoices P. Child highNORTHEAST terraces nookUP/pitLEFT/missionMID/baseLOW/rightvalley road approach versus parent SOUTHEAST nookMID/pitLOW/missionLOW/baseMID/YUP differs actual camera, platform orientation and roads beyond added HOME. Allseven independently P."
         },
         "gate": {
           "ok": true,
@@ -84480,6 +84790,42 @@
           "colors": 673002,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--scene-2-18dd90daaa14.png",
+        "sha256": "18dd90daaa14e91e7cd52db8dc3aa7e27d34b782a56ce5ba8b6640586c7f990b",
+        "promptSha256": "073dc211316c817e55baaec0c7fb1fc62fa227aa835c898512a5fd991571c376",
+        "generationPromptSha256": "462f514ecf303a1b2fed9db3f6b8500d404e7e7be75f4d05ff4b455b10c5367e",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "073dc211316c817e55baaec0c7fb1fc62fa227aa835c898512a5fd991571c376",
+          "sourceSha256": "34489130a9a0f3d55bc1a10173e06ea9991d2a15ac6560513d6b2f80f03911b5"
+        },
+        "review": {
+          "sourceSha256": "18dd90daaa14e91e7cd52db8dc3aa7e27d34b782a56ce5ba8b6640586c7f990b",
+          "promptSha256": "073dc211316c817e55baaec0c7fb1fc62fa227aa835c898512a5fd991571c376",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2714 OWN + WHOLE unchangednative personallyopened. RebuiltWARMnook complete nativeinside/beforeactual1008controls, outerrightwallends~990 withvisiblebuffer; WALLattachedlanternEXACT1OPENcupunusedsupplies, originalcutLEFTfootprintgrass. Numericpositionguidance notnew780mandatorybound; actualwhole/before1008 satisfied. FullMISSIONONEseal/unusedsupplies/fullDOWNfloorpit TOPLIP/allstairs/lowerdarkSIDEopening/fullOPENregionalarch/OCHREUPthroughopening/GREENLOW/distinctFIRSTmainSIDEfork latestSCENEP. Hardpixel/noidentity/text/allselectedcomplete. ActualCURRENTWarmCHoriginal13355d72 FULLexactOWN/WHOLE personallyseen insidecoveredarch/parcelLEFT/pitfront vs THISdistantcoastalplateau archUP/pitMID/nookMIDright/missionMIDLEFT newcamera/worldgeometry distinctP. Allseven independentlyP; don'tretrofullARCH/counts ontooriginalparent."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 681095,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--explore--warm--chapters--episode": [
@@ -84516,6 +84862,42 @@
           "colors": 683742,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--episode-2-d4ec9f32d310.png",
+        "sha256": "d4ec9f32d310542ab7380c1f49882163b4c32a8d0db90e765c6dfb7a218ec005",
+        "promptSha256": "1ec1d714e07f0688c3d0be03c06ce33349643c8c9b5439273dc70e0c28a2abc2",
+        "generationPromptSha256": "1782bfe86cdb34dac028acae6b2169e16414de6f61ea353786a875dadb1f4600",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "1ec1d714e07f0688c3d0be03c06ce33349643c8c9b5439273dc70e0c28a2abc2",
+          "sourceSha256": "360302c65696073f077579d68416ffce6b0103f47ef8eef3dbf38e5af5355f3c"
+        },
+        "review": {
+          "sourceSha256": "d4ec9f32d310542ab7380c1f49882163b4c32a8d0db90e765c6dfb7a218ec005",
+          "promptSha256": "1ec1d714e07f0688c3d0be03c06ce33349643c8c9b5439273dc70e0c28a2abc2",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2715 OWN + WHOLE unchangednative personallyopened. Selectedpit rebuiltSMALLinsetLEFT withgrassbuffer/fullouterwalls/innerfloor/allDOWNstairs/TOPLIP/lowerdarkSIDEopening. SeparateTHIRDclearedEMPTYruin nowEXACTTWOdistinctEMPTYstoneRESTbenches oppositefloor withrealSIDEroad latestEPISODEP. WholeMISSIONONEplainSEALEDunusedsupplies/WARMnookWALLlanternEXACT1OPENcup/fullOPENregionalarch/allcols/stairs/substantialbaretreelessOCHREUPthroughopening/GREENLOW allselectedwholebefore1008. Hardpixel/noidentity/text. ActualCURRENTWarmCHoriginal13355d72 FULLOWN/WHOLE personallyseen insidecoveredarch/parcelLEFT/pitfront versus THISoutsidehighNORTHWESTplateau archUP/pitUP/nookMID/restLOW differentworldcamera/geometry distinctP. AllsevenindependentlyP, originalnewwhole/countretro avoided."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 694304,
+          "findings": []
+        }
       }
     ],
     "adventure--mission--explore--warm--chapters--short": [
@@ -84549,6 +84931,994 @@
           "width": 1672,
           "height": 941,
           "colors": 694024,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm--chapters--short-2-ca060651cd34.png",
+        "sha256": "ca060651cd3441d9f4f60956e0e1af99656b9fcce6a844402bec14ea6a703197",
+        "promptSha256": "648cf264b985a98d3f9df62d1d94c1a71f136bf134f3a6c8f896067fc3129443",
+        "generationPromptSha256": "21737519de1e7d47512227aef6c2fb320a23f241f2babf75afe8c3f1f7dda764",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "648cf264b985a98d3f9df62d1d94c1a71f136bf134f3a6c8f896067fc3129443",
+          "sourceSha256": "39f9f3519abae6be99d485a7ed819deb56f618664faaef7d4f8291a16b5dc1f5"
+        },
+        "review": {
+          "sourceSha256": "ca060651cd3441d9f4f60956e0e1af99656b9fcce6a844402bec14ea6a703197",
+          "promptSha256": "648cf264b985a98d3f9df62d1d94c1a71f136bf134f3a6c8f896067fc3129443",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2716 OWN + WHOLE unchangednative personallyopened. WARMnook rebuiltinsetLEFT/fullouterwalls/floor/actualWALLlanternEXACT1OPENcupunusedsupplies; returnWOODtable reduced/movedLEFT nowwholefourlegs/topplank/BAREBLUEcloth before1008 withvisiblegrassbuffer. Bluefoldshades/exposedWOODrear/rightstrips notgoldclothornament. FullHOMEroof/chimney/OPENblackwalkingentry/THIRDclearedEMPTYruin/continuousreturnroads latestSHORTP. MISSIONONESEALED/fullDOWNpitallwalls/floor/stairs/TOPLIP/lowerdarkSIDEentry/fullregionalarch/baretreelessOCHREUPthroughopening/GREENLOW allcomplete native/before1008; hardpixels/noidentity/text. ActualCURRENTWarmCHoriginal13355d72 FULLOWN/WHOLE seen insidearch/parcelLEFT/pitfront vs THISoutsidehighEASTplateau HOMELOWRIGHT/pitLOWLEFT/archUP/nookUP actualworldcamera/geometrydifferent distinctP. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 678478,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--journey--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--scene-1-b59d77286e54.png",
+        "sha256": "b59d77286e54c3ddddd53995fb4968a801ec56870da3b0b63aadb5c0206702a1",
+        "promptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8",
+        "generationPromptSha256": "cd9fc43022a57a9553a3185ef610b9d2c63d5a28c4afdac4073bd6c7302cefff",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b59d77286e54c3ddddd53995fb4968a801ec56870da3b0b63aadb5c0206702a1",
+          "promptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2717 OWN + WHOLE unchangednative personallyopened. ActualwideDEPLOYEDwhitecanopy nearMISSION; THISexactOWN inheritedmarginexplicit CanvasONLYcompacthorizontalFURLEDroll, canopyviolates it allChoicesFONLY. FutureMISSIONfresh briefs shouldomitirrelevantboatcanvasconstraint; neverrewritegeneratedOWN afterward. ActualMISSIONONESEALED/ordinarysupplies, separateEMPTYtacticalcourtyard TWOplainstonecoverblocks/fullfloor/clearapproach, actualcontinuousSTONEdeparture→genuineEMPTYMID→differentfullancientEMPTYmainDEST/allcols/stairs plusFIRSTmainSIDEfork latestSCENEP; allselectedwholebefore1008. Functionalstoneblockmasonry joints notrunes; hardpixels/noidentity/text. ActualCURRENTBattleBrightJ8b26308c FULLexactOWN/WHOLE personallyopened sideonruralthreshold/gear/frontroad/farcastleRIGHT vs THISdistantmountainarenaLOW/MIDMID/ancientDESTUP/missionMID truecamera/worldgeometrydifferent distinctP. No original59shieldcount/wholefarDESTretro."
+          ],
+          "notes": "ROOT FULL exact2717 OWN + WHOLE unchangednative personallyopened. ActualwideDEPLOYEDwhitecanopy nearMISSION; THISexactOWN inheritedmarginexplicit CanvasONLYcompacthorizontalFURLEDroll, canopyviolates it allChoicesFONLY. FutureMISSIONfresh briefs shouldomitirrelevantboatcanvasconstraint; neverrewritegeneratedOWN afterward. ActualMISSIONONESEALED/ordinarysupplies, separateEMPTYtacticalcourtyard TWOplainstonecoverblocks/fullfloor/clearapproach, actualcontinuousSTONEdeparture→genuineEMPTYMID→differentfullancientEMPTYmainDEST/allcols/stairs plusFIRSTmainSIDEfork latestSCENEP; allselectedwholebefore1008. Functionalstoneblockmasonry joints notrunes; hardpixels/noidentity/text. ActualCURRENTBattleBrightJ8b26308c FULLexactOWN/WHOLE personallyopened sideonruralthreshold/gear/frontroad/farcastleRIGHT vs THISdistantmountainarenaLOW/MIDMID/ancientDESTUP/missionMID truecamera/worldgeometrydifferent distinctP. No original59shieldcount/wholefarDESTretro."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--scene-2-7976a654af26.png",
+        "sha256": "7976a654af26a01b588cf180a5385167b782c0fa38c0dea8959a6946dd35e095",
+        "promptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8",
+        "generationPromptSha256": "63a5f5802f91c0cb402413557e2dc736b2680026e2ed27a407d412bbcf9e1a4d",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8",
+          "sourceSha256": "b59d77286e54c3ddddd53995fb4968a801ec56870da3b0b63aadb5c0206702a1"
+        },
+        "review": {
+          "sourceSha256": "7976a654af26a01b588cf180a5385167b782c0fa38c0dea8959a6946dd35e095",
+          "promptSha256": "43f69bb5f7b9fa89627440b4d4244ad441dbbc672ab9d283b5c16f5f7f41b8e8",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2720 OWN/WHOLE + newly passing actual2723 BattleBrightJ OWN/WHOLE personally seen. Deployed WHITEcanopy/support entirely removed, replaced ordinary ground and unused provisions nearmissiontable; missionONE/tacticalEMPTYcourtyard EXACT TWOplain stone covers/fullfloor and allstairs/continuous STONEroad via separate genuineEMPTYMID to different wholeancientEMPTYmainDEST preserved. FIRST actual TWOway fork nearMISSION toMID/arena latestP; no WARM/EXPLORATION/boat/HOME/rest/third/identity/text. Functional blockmasonry not writing; nativeallwhole/before1008. Actualnewparent highNORTHWEST tableLOW/arenaUP/MIDMID vschild highSOUTHWEST tableMID/arenaLOW/EMPTYMIDUP and foregroundlevel/courtyardorientation/roadgeometrydifferent beyond FIRSTfork addition. Allseven independentlyP; not inherited old edit pass."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 658437,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--journey--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--episode-1-7c60250e26fd.png",
+        "sha256": "7c60250e26fd41d8de05f231856223dc79d99914124ad5a55a56b6c2e645064d",
+        "promptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6",
+        "generationPromptSha256": "b7d3a46de259c3ef87e836d97845b3b04e5767a9ed1d74bc370ff12df7e3e9f8",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7c60250e26fd41d8de05f231856223dc79d99914124ad5a55a56b6c2e645064d",
+          "promptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2718 OWN + WHOLE unchangednative andreadonlyNEARESTMISSIONcrop personallyopened. MISSIONtable bears ONLYONEsealedparcel; requestedunusedordinaryprovisions/supplies absent on/arounddeparturetable (onlynaturalrocks/grass/tree), allChoicesFONLY. No inventedexactpackcount; visiblyunusedordinarysupplies requiredbyTHISOWN. WholeEMPTYtacticalcourtyard/fullfloor/TWOplainstonecoverblocks/approachroute, continuousSTONEdeparture→distinctgenuineEMPTYMIDclearing→differentwholeancientEMPTYmainDEST/allcols/floor/ALLstairs, THIRDclearedEMPTYruin EXACT2EMPTYstoneRESTbenches/SIDEroute latestEPISODEP. Allselectedwholebefore1008/hardpixels/noidentity/text/functionalmasonrynotrunes. ActualCURRENTBattleBrightJ8b26308c FULLOWN/WHOLE personallyseen sideonruralthreshold/gear/frontroad/castleRIGHT versusTHIShighEASTridge arenaMID/restLOW/MIDLOW/mainDESTUP/tableUP changedrealcamera/worldgeometry distinctP; no original59shieldcountsretro."
+          ],
+          "notes": "ROOT FULL exact2718 OWN + WHOLE unchangednative andreadonlyNEARESTMISSIONcrop personallyopened. MISSIONtable bears ONLYONEsealedparcel; requestedunusedordinaryprovisions/supplies absent on/arounddeparturetable (onlynaturalrocks/grass/tree), allChoicesFONLY. No inventedexactpackcount; visiblyunusedordinarysupplies requiredbyTHISOWN. WholeEMPTYtacticalcourtyard/fullfloor/TWOplainstonecoverblocks/approachroute, continuousSTONEdeparture→distinctgenuineEMPTYMIDclearing→differentwholeancientEMPTYmainDEST/allcols/floor/ALLstairs, THIRDclearedEMPTYruin EXACT2EMPTYstoneRESTbenches/SIDEroute latestEPISODEP. Allselectedwholebefore1008/hardpixels/noidentity/text/functionalmasonrynotrunes. ActualCURRENTBattleBrightJ8b26308c FULLOWN/WHOLE personallyseen sideonruralthreshold/gear/frontroad/castleRIGHT versusTHIShighEASTridge arenaMID/restLOW/MIDLOW/mainDESTUP/tableUP changedrealcamera/worldgeometry distinctP; no original59shieldcountsretro."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--episode-2-2d0d047a7d8d.png",
+        "sha256": "2d0d047a7d8d1481c77d31695742caf417117576ceb0fdedd8a04293cfcbaaee",
+        "promptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6",
+        "generationPromptSha256": "821d90869e7ebedc33eeb273d1897b0ffad7bafc1413650ab08ef7a8cfa89081",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6",
+          "sourceSha256": "7c60250e26fd41d8de05f231856223dc79d99914124ad5a55a56b6c2e645064d"
+        },
+        "review": {
+          "sourceSha256": "2d0d047a7d8d1481c77d31695742caf417117576ceb0fdedd8a04293cfcbaaee",
+          "promptSha256": "36c26e9a18e1c62f9f1cc53bf9dd80bb5493db773a40be3a85678887efa8c7e6",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2721 OWN/WHOLE + actual newly passing2723 BattleBrightJ OWN/WHOLE personally seen. Added plain UNUSED provisions sack and rolled blanket directly besideMISSIONtable ONEplainsealedparcel; tacticalEMPTYcourtyard EXACT TWOplainstone covers/allwalls/floor/stairs, separate genuineEMPTYMID lower travelground, different wholeancientEMPTYmainDEST/fullcolumns/floor/ALLstairs and continuousSTONEwalkingroad. THIRD separate clearedEMPTYruin LOWERLEFT EXACT TWOseparate usable EMPTYstoneRESTbenches/SIDEroad latestP. Allselected architecture whollynative/before1008; functionalmasonry/plain parcelstrap not writing/noidentity. Foregroundordinary rocky terrain/shrubs are not added nearfocus blurry leaf curtain. Child highEAST levels missionUP/arenaMID/restLOW/MIDLOW vsnewparent highNORTHWEST missionLOW/arenaUP/MIDMID gives realcamera/terrain/roadgeometrydifference beyond adding REST. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 642299,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--journey--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--short-1-a9010fdfb856.png",
+        "sha256": "a9010fdfb8564e75791b6b06ed196cbeeff45040e12a68cc4aa38be8f60a186a",
+        "promptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850",
+        "generationPromptSha256": "28da7edce35b8141eae4ff6a88f7eaece89311f499c60a41a8d6f4b7304bec3d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a9010fdfb8564e75791b6b06ed196cbeeff45040e12a68cc4aa38be8f60a186a",
+          "promptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850",
+          "reviewer": "Codex direct original visual inspection: v2-production-271",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2719 OWN + WHOLE unchangednative personallyopened. MISSIONdeparturefourlegWOODtable onlyONEsealedparcel; requestedunusedordinaryprovisions/supplies visiblyabsent atdeparturetable. SuppliesnextHOME a differentselectedsite notMISSIONpreparations; allChoicesFONLY, no inventedexactpackcount. FullHOMEroof/chimney/openblackwalkingentry/BAREBLUEfoldclothWOODreturntable/separateTHIRDclearedEMPTYruin/continuousreturnroads latestSHORTP. SeparateEMPTYtacticalcourtyard TWOstonecoverblocks/fullfloor/approach, continuousSTONEvia genuineEMPTYMID towarddifferentfullancientEMPTYmainDEST/cols/floor/ALLstairs allwholebefore1008. Cyan/lightBLUEclothfoldplanes notinventedgoldornament; functionalwalljointsnotwriting; hardpixels/noidentity/text. ActualCURRENTBattleBrightJ8b26308c FULLexactOWN/WHOLE personallyseen sideoncoveredruralgear/frontroad/farcastleRIGHT vsdistanthighNORTHcoast arenaUP/HOMELOW/MIDMID/ancientDESTUP/missionLOW genuinecamera/worldgeometrydiff distinctP. Other6independentlyP."
+          ],
+          "notes": "ROOT FULL exact2719 OWN + WHOLE unchangednative personallyopened. MISSIONdeparturefourlegWOODtable onlyONEsealedparcel; requestedunusedordinaryprovisions/supplies visiblyabsent atdeparturetable. SuppliesnextHOME a differentselectedsite notMISSIONpreparations; allChoicesFONLY, no inventedexactpackcount. FullHOMEroof/chimney/openblackwalkingentry/BAREBLUEfoldclothWOODreturntable/separateTHIRDclearedEMPTYruin/continuousreturnroads latestSHORTP. SeparateEMPTYtacticalcourtyard TWOstonecoverblocks/fullfloor/approach, continuousSTONEvia genuineEMPTYMID towarddifferentfullancientEMPTYmainDEST/cols/floor/ALLstairs allwholebefore1008. Cyan/lightBLUEclothfoldplanes notinventedgoldornament; functionalwalljointsnotwriting; hardpixels/noidentity/text. ActualCURRENTBattleBrightJ8b26308c FULLexactOWN/WHOLE personallyseen sideoncoveredruralgear/frontroad/farcastleRIGHT vsdistanthighNORTHcoast arenaUP/HOMELOW/MIDMID/ancientDESTUP/missionLOW genuinecamera/worldgeometrydiff distinctP. Other6independentlyP."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--journey--short-2-5d6e1ab06060.png",
+        "sha256": "5d6e1ab06060d0344c8b2b26e1e80cb5271800d4ab4b4856e1c1739244644c72",
+        "promptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850",
+        "generationPromptSha256": "f319ee69d08698f7582728dc5196e75bc967c56171a57e9cf168d65ca3d59f9a",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850",
+          "sourceSha256": "a9010fdfb8564e75791b6b06ed196cbeeff45040e12a68cc4aa38be8f60a186a"
+        },
+        "review": {
+          "sourceSha256": "5d6e1ab06060d0344c8b2b26e1e80cb5271800d4ab4b4856e1c1739244644c72",
+          "promptSha256": "c9fa712093a6cacedd76869a0114cc6800176c2b4432b734c3b00149166ad850",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2722 OWN/WHOLE + actual newly passing2723 BattleBrightJ OWN/WHOLE personally seen. Added unused plain sack/rolled blanket directly besideMISSION table ONEsealedparcel; ordinary supplies nearHOME do not substitute. Whole EMPTY tactical courtyard EXACT TWOstonecovers, separate genuinelyEMPTYMID travelground, different wholeancientEMPTYmainDEST/fullcolumns/floor/ALLstairs, continuousSTONEroads/noSEA gap. WholeHOMEroof/chimney/openentry/BAREBLUE folds table allfourlegs/empty top, separateTHIRDclearedEMPTYruin/returnroads latestP; allchosen nativewhole/before1008, no text/identity/unselectedWARM/pit/boat. FunctionalBLUEcyanfolds not ornaments. NORTH coastalheadland actual wider open round tacticalapproach/neargrasscoast and roadjunction geometry vsactualNORTHWEST woodlandvalley rectangulararena/steepMIDDLEplain/longupperdestination changes camera/worldgeometry, not only HOME addition or recolor. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 609581,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--quests--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--scene-1-31bb6b7126c6.png",
+        "sha256": "31bb6b7126c605bb0c98265f564044b48d26a14faa27f989611fb9d03a40ea98",
+        "promptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a",
+        "generationPromptSha256": "cbba10f13213712a022f6a91936fbb8dd0ecdac362c0e381602edba7de2d3eaa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "31bb6b7126c605bb0c98265f564044b48d26a14faa27f989611fb9d03a40ea98",
+          "promptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2724 OWN/WHOLE and actual CURRENT BattleBrightQ fd5e1f85 FULL ORIGINAL OWN/WHOLE personally opened. Unselected BLUE pennants at BASELEFT carry explicit GOLDcrest/emblem: violates OWN no signs/symbols/emblems and invents faction identity; allChoices/noText F. FunctionalSTONEcovermasonry/cubeparcel cords not text, do not confuse. BASE exactTHREE/MISSIONseparateONE +unused gear, TWOgenuineEMPTYquestgrounds/BASEY, fullEMPTYtacticalcourtyard EXACT TWOstonecovers and independent actualFIRST main/SIDEfork latestP, allnativewhole/before1008 compositionP. Hardclusters/nohuman identityP. HighSOUTHWEST cliff levels baseUP/missionMID/arenaLOW/questtwoMID vsactual original closecoveredruralworktable/shields/YbehindRIGHT truecamera/worldgeometrydifferent distinctP regardless parent pendingF. Remove ONLY emblem pennants/flagpoles before next review.",
+            "noText: ROOT FULL exact2724 OWN/WHOLE and actual CURRENT BattleBrightQ fd5e1f85 FULL ORIGINAL OWN/WHOLE personally opened. Unselected BLUE pennants at BASELEFT carry explicit GOLDcrest/emblem: violates OWN no signs/symbols/emblems and invents faction identity; allChoices/noText F. FunctionalSTONEcovermasonry/cubeparcel cords not text, do not confuse. BASE exactTHREE/MISSIONseparateONE +unused gear, TWOgenuineEMPTYquestgrounds/BASEY, fullEMPTYtacticalcourtyard EXACT TWOstonecovers and independent actualFIRST main/SIDEfork latestP, allnativewhole/before1008 compositionP. Hardclusters/nohuman identityP. HighSOUTHWEST cliff levels baseUP/missionMID/arenaLOW/questtwoMID vsactual original closecoveredruralworktable/shields/YbehindRIGHT truecamera/worldgeometrydifferent distinctP regardless parent pendingF. Remove ONLY emblem pennants/flagpoles before next review."
+          ],
+          "notes": "ROOT FULL exact2724 OWN/WHOLE and actual CURRENT BattleBrightQ fd5e1f85 FULL ORIGINAL OWN/WHOLE personally opened. Unselected BLUE pennants at BASELEFT carry explicit GOLDcrest/emblem: violates OWN no signs/symbols/emblems and invents faction identity; allChoices/noText F. FunctionalSTONEcovermasonry/cubeparcel cords not text, do not confuse. BASE exactTHREE/MISSIONseparateONE +unused gear, TWOgenuineEMPTYquestgrounds/BASEY, fullEMPTYtacticalcourtyard EXACT TWOstonecovers and independent actualFIRST main/SIDEfork latestP, allnativewhole/before1008 compositionP. Hardclusters/nohuman identityP. HighSOUTHWEST cliff levels baseUP/missionMID/arenaLOW/questtwoMID vsactual original closecoveredruralworktable/shields/YbehindRIGHT truecamera/worldgeometrydifferent distinctP regardless parent pendingF. Remove ONLY emblem pennants/flagpoles before next review."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 685311,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--scene-2-50ffe1d9a2f7.png",
+        "sha256": "50ffe1d9a2f7f8e3482f38df3e61609d80a2021f23f3ed5abf2ff55ba30031be",
+        "promptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a",
+        "generationPromptSha256": "15e55b64ee475946352e5142d90eed0b652ac63ea3c806a1fcdb91f1742d67f9",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a",
+          "sourceSha256": "31bb6b7126c605bb0c98265f564044b48d26a14faa27f989611fb9d03a40ea98"
+        },
+        "review": {
+          "sourceSha256": "50ffe1d9a2f7f8e3482f38df3e61609d80a2021f23f3ed5abf2ff55ba30031be",
+          "promptSha256": "ba81c06391d956e18e53141b1ceea1c50d13cf6b3b81bea632c7fff2dcab587a",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new274parent independently sevenchecks",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2730 OWN/WHOLE personally inspected. Removed gold crest flags/poles, plain grass. BASE EXACT THREE row/separate MISSIONONE table+unused sack/roll beside; whole tactical floor/ALLstairs/TWOstone covers; Y to TWO genuinelyEMPTY plots/FIRST mission fork; allbefore1008/no HOME/REST/THIRD. Hardclusters/noidentity/noText. ActualCURRENTfd5e QUESTS parent FULL originalOWN/WHOLE personally reopened: near porch/worktable/shields/large rightY vs new HIGH SOUTHWEST open coast/arenaLOW/BASEUP/MISSIONMID changes actual camera and road geometry; distinctP independently, no inherited original163F. Recompared personally FULL exactOWN/native against ACTUALnew2740 repairedQ parent FULL OWN/native seen after273, not oldfd5e. Parent HIGH NORTHWEST missionLOW/diamondcourtUP/BASEMID/righttwoquestgrounds. ChildSOUTHWEST courtLOW/BASEUP/missionMID and descending coastalledgefork distinctactualcamera/geometry. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 655898,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--quests--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--episode-1-355943ccb693.png",
+        "sha256": "355943ccb6931eee84c11c6f291238847756e63695252af6d357a2ea25ce6977",
+        "promptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf",
+        "generationPromptSha256": "d53ebcae114507644d3915b01657ab7a18880616ff96b4a7812009b2fdfa5978",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "355943ccb6931eee84c11c6f291238847756e63695252af6d357a2ea25ce6977",
+          "promptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2725 OWN/WHOLE + actualCURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen; readonly unchanged native slice before actual1008 personallyopened for bounds. Chosen SECOND genuineEMPTYquestground extendsRIGHTpast1008; separateTHIRD clearedrest ruin RIGHT retainingwall/posts and floor extendpast1008, hiddenbyactualcontrols. Exact OWN requires all selected floors/walls whole before1008 -> composition/allChoices F. Not ordinary continuing terrain/path: actual selected boundedplot and built ruin wall. MissionONE +unused actual sack/rollDIRECTLYbeside, BASEEXACTTHREE, full tacticalEMPTYcourtyard EXACT TWOcoverblocks, BASEY and THIRD EXACT TWOdistinctEMPTYrestbenches/SIDEroute latestEPISODEP. Coarsepixels/noidentity/text; functionalparcelcords/stonejoints notwriting. HIGH EAST layered openvalley versus originalclosecoveredruralworktable/shields/rightY actualcamera/worldgeometrydifferent distinctP, no parentF inheritance. Repair ONLY entiresecondquestplot and entireTHIRDruin footprints smaller LEFT before900.",
+            "allChoices: ROOT FULL exact2725 OWN/WHOLE + actualCURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen; readonly unchanged native slice before actual1008 personallyopened for bounds. Chosen SECOND genuineEMPTYquestground extendsRIGHTpast1008; separateTHIRD clearedrest ruin RIGHT retainingwall/posts and floor extendpast1008, hiddenbyactualcontrols. Exact OWN requires all selected floors/walls whole before1008 -> composition/allChoices F. Not ordinary continuing terrain/path: actual selected boundedplot and built ruin wall. MissionONE +unused actual sack/rollDIRECTLYbeside, BASEEXACTTHREE, full tacticalEMPTYcourtyard EXACT TWOcoverblocks, BASEY and THIRD EXACT TWOdistinctEMPTYrestbenches/SIDEroute latestEPISODEP. Coarsepixels/noidentity/text; functionalparcelcords/stonejoints notwriting. HIGH EAST layered openvalley versus originalclosecoveredruralworktable/shields/rightY actualcamera/worldgeometrydifferent distinctP, no parentF inheritance. Repair ONLY entiresecondquestplot and entireTHIRDruin footprints smaller LEFT before900."
+          ],
+          "notes": "ROOT FULL exact2725 OWN/WHOLE + actualCURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen; readonly unchanged native slice before actual1008 personallyopened for bounds. Chosen SECOND genuineEMPTYquestground extendsRIGHTpast1008; separateTHIRD clearedrest ruin RIGHT retainingwall/posts and floor extendpast1008, hiddenbyactualcontrols. Exact OWN requires all selected floors/walls whole before1008 -> composition/allChoices F. Not ordinary continuing terrain/path: actual selected boundedplot and built ruin wall. MissionONE +unused actual sack/rollDIRECTLYbeside, BASEEXACTTHREE, full tacticalEMPTYcourtyard EXACT TWOcoverblocks, BASEY and THIRD EXACT TWOdistinctEMPTYrestbenches/SIDEroute latestEPISODEP. Coarsepixels/noidentity/text; functionalparcelcords/stonejoints notwriting. HIGH EAST layered openvalley versus originalclosecoveredruralworktable/shields/rightY actualcamera/worldgeometrydifferent distinctP, no parentF inheritance. Repair ONLY entiresecondquestplot and entireTHIRDruin footprints smaller LEFT before900."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 687560,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--episode-2-dbed28421027.png",
+        "sha256": "dbed284210275d830231156abad5b704ddfcc1565d3dfbf456b30da7ac89a7d0",
+        "promptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf",
+        "generationPromptSha256": "31f3e407aa2a69470abd2fefac651d020a378bd776459faa33817dfeb0d1fb69",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf",
+          "sourceSha256": "355943ccb6931eee84c11c6f291238847756e63695252af6d357a2ea25ce6977"
+        },
+        "review": {
+          "sourceSha256": "dbed284210275d830231156abad5b704ddfcc1565d3dfbf456b30da7ac89a7d0",
+          "promptSha256": "80a5acb47c2491406c80d40ede1325b291d8debc4d5edf65b47e462d34838faf",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new274parent independently sevenchecks",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. Both EMPTY quest plots now wholly LEFT before1008; third rest ruin FULLwall/floor/EXACT TWO EMPTY benches movedLEFT before1008, SIDE road connected. MISSIONONE table/sack AND roll directlybeside; BASE EXACT THREE singleROW; full tactical floor/ALLstairs/TWOcovers. No HOME/FIRST/identity/text; sharp pixelclusters. ActualCURRENTfd5e parent FULL OWN/WHOLE reopened THISsegment near porch/large foregroundworktable vs HIGH EAST descending terrain MISSIONUP/arenaMID/BASELOW/restLOWright different actualcamera/roadgeometry distinctP independently of source163. Recompared personally FULL exactOWN/native against ACTUALnew2740 repairedQ parent FULL OWN/native seen after273, not oldfd5e. Parent HIGH NORTHWEST missionLOW/diamondcourtUP/BASEMID/righttwoquestgrounds. ChildHIGH EAST courtMID/BASELOW/missionUP and separatedrestledge withdifferentmainroadtiers changesactualcamera/geometry. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 646948,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--quests--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--short-1-87c88abe574f.png",
+        "sha256": "87c88abe574f809b1aa80f2f1b923f8e2c695bb0526ac2d7187374529168c6d2",
+        "promptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c",
+        "generationPromptSha256": "2cb4917981683d303bc1eb44c62f7015358634f566b938d53c32565d6e3ce770",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "87c88abe574f809b1aa80f2f1b923f8e2c695bb0526ac2d7187374529168c6d2",
+          "promptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2726 OWN/WHOLE and actual CURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen. Readonly beforeactual1008 slice personallyopened: separate THIRD built clearedruin RIGHT outer retainingstone/floor edge extends past1008 behindcontrols, exactOWN requires wholeselectedstructures/ALLfloor beforecontrols -> composition/allChoices F. MissionONE with unused sack/roll beside, BASE exactTHREE, two genuineEMPTYquestplots/BASEY, tactical EMPTY courtyard EXACTTWOcovers, full HOMEroof/chimney/openentry/BAREBLUE table and returnroads/latestSHORT present. readonlyNEARESTblue table personallyopened: bright cyan/bluefold highlights and exposedWOOD/clothphysicaledge are not inventedwhite/goldornament, noText remainsP. Hardpixels/noidentityP; HIGH NORTH coastalheadland largeopenlevels/missionLOW/BASEMID/arenaUP vsoriginalclosecoveredworktable/shields/rightY truecamera/worldgeometrydifferent distinctP. Move ENTIRE THIRDruin footprint smallerLEFT before900, preserve otherselectedsites.",
+            "allChoices: ROOT FULL exact2726 OWN/WHOLE and actual CURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen. Readonly beforeactual1008 slice personallyopened: separate THIRD built clearedruin RIGHT outer retainingstone/floor edge extends past1008 behindcontrols, exactOWN requires wholeselectedstructures/ALLfloor beforecontrols -> composition/allChoices F. MissionONE with unused sack/roll beside, BASE exactTHREE, two genuineEMPTYquestplots/BASEY, tactical EMPTY courtyard EXACTTWOcovers, full HOMEroof/chimney/openentry/BAREBLUE table and returnroads/latestSHORT present. readonlyNEARESTblue table personallyopened: bright cyan/bluefold highlights and exposedWOOD/clothphysicaledge are not inventedwhite/goldornament, noText remainsP. Hardpixels/noidentityP; HIGH NORTH coastalheadland largeopenlevels/missionLOW/BASEMID/arenaUP vsoriginalclosecoveredworktable/shields/rightY truecamera/worldgeometrydifferent distinctP. Move ENTIRE THIRDruin footprint smallerLEFT before900, preserve otherselectedsites."
+          ],
+          "notes": "ROOT FULL exact2726 OWN/WHOLE and actual CURRENT originalBattleBrightQ fd5e1f85 FULL OWN/WHOLE personally seen. Readonly beforeactual1008 slice personallyopened: separate THIRD built clearedruin RIGHT outer retainingstone/floor edge extends past1008 behindcontrols, exactOWN requires wholeselectedstructures/ALLfloor beforecontrols -> composition/allChoices F. MissionONE with unused sack/roll beside, BASE exactTHREE, two genuineEMPTYquestplots/BASEY, tactical EMPTY courtyard EXACTTWOcovers, full HOMEroof/chimney/openentry/BAREBLUE table and returnroads/latestSHORT present. readonlyNEARESTblue table personallyopened: bright cyan/bluefold highlights and exposedWOOD/clothphysicaledge are not inventedwhite/goldornament, noText remainsP. Hardpixels/noidentityP; HIGH NORTH coastalheadland largeopenlevels/missionLOW/BASEMID/arenaUP vsoriginalclosecoveredworktable/shields/rightY truecamera/worldgeometrydifferent distinctP. Move ENTIRE THIRDruin footprint smallerLEFT before900, preserve otherselectedsites."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 735453,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--quests--short-2-f77dfd174aaa.png",
+        "sha256": "f77dfd174aaadcdbdf2b5a4db2bafc6eb9827a382fadee23f4f99a738fe4e347",
+        "promptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c",
+        "generationPromptSha256": "595005d7e195db874f3a4f7cbc9cc3eaa2cca7659c20906d8ddb9219e9bdfb85",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c",
+          "sourceSha256": "87c88abe574f809b1aa80f2f1b923f8e2c695bb0526ac2d7187374529168c6d2"
+        },
+        "review": {
+          "sourceSha256": "f77dfd174aaadcdbdf2b5a4db2bafc6eb9827a382fadee23f4f99a738fe4e347",
+          "promptSha256": "08b3e5eed036a6104e510a07bfcb8d76a6e00d45d0ce594269e6ee0e0122817c",
+          "reviewer": "Codex ROOT FULL child exactOWN/WHOLE against actual new274parent independently sevenchecks",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. THIRD clearedruin now FULLwalls/floor/ALLstairs LEFT before1008; whole HOME roof/chimney/openentry and bare BLUE returncloth only blue foldshades, wood corners functional. MISSIONONE+sack AND roll beside/BASETHREE row/full tacticalcourt TWOcovers and allstairs/TWO EMPTY Y questplots/returnroads. Allchosen beforecontrols/native. No ornaments/writing/identity; coarsepixels. ActualCURRENTfd5e fullOWN/WHOLE personallyreopened near shelterworkfloor vs HIGH NORTH openheadland floorUP/BASEMID/HOMELOW changesactualcamera/approach distinctP; no inherited163F. Recompared personally FULL exactOWN/native against ACTUALnew2740 repairedQ parent FULL OWN/native seen after273, not oldfd5e. Parent HIGH NORTHWEST missionLOW/diamondcourtUP/BASEMID/righttwoquestgrounds. ChildHIGH NORTH coastalheadland front-facingcourt/frontSOUTHstairs/verticalsouthapproach vsparentdiamondcourt/diagonalRIGHTstairs andforestvalleylake terraces changesactualcamera/approach beyondHOMEaddition. Allseven independentlyP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 697076,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--chapters--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--scene-1-031f163e0c3b.png",
+        "sha256": "031f163e0c3bf31e78a869358488137c4e5c90212d5e8d10b9c53be12a55c505",
+        "promptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf",
+        "generationPromptSha256": "e1f9e4483cfa89e2cc5e1bf8b7ab0ecc23d6018881f9a02508675c58827f888e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "031f163e0c3bf31e78a869358488137c4e5c90212d5e8d10b9c53be12a55c505",
+          "promptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2727 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personally seen. Selected regionalarch TOP archstone cropped atnativeTOP/noSKYbuffer; selected tactical courtyard LEFT outerwall/floor cropped atnativeLEFT. Exactnew OWN wholecolumns/floor/ALLstairs and complete tacticalcourtyard nativeinside mandatory -> composition/allChoices F. Not ordinaryterrain continuation. MissionONE actual unused sack/roll beside; tacticalEXACTTWOstonecovers, realFIRST main/SIDEfork, substantial treelessOCHREthroughopenarchUP joinsGREENLOW latestFIRSTP; hardpixels/noidentity/text. HIGHWESTopencliffworld tableLOW/arenaMID/archUP vsoriginalLOWdiagonalnearshields/crates/largearchMID changesactualcamera/worldgeometrydistinctP. Repair whole arch to halfsizeDOWN withgenerousSKYabove and entirecourtyard halfsizeRIGHT inset grassbuffer.",
+            "allChoices: ROOT FULL exact2727 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personally seen. Selected regionalarch TOP archstone cropped atnativeTOP/noSKYbuffer; selected tactical courtyard LEFT outerwall/floor cropped atnativeLEFT. Exactnew OWN wholecolumns/floor/ALLstairs and complete tacticalcourtyard nativeinside mandatory -> composition/allChoices F. Not ordinaryterrain continuation. MissionONE actual unused sack/roll beside; tacticalEXACTTWOstonecovers, realFIRST main/SIDEfork, substantial treelessOCHREthroughopenarchUP joinsGREENLOW latestFIRSTP; hardpixels/noidentity/text. HIGHWESTopencliffworld tableLOW/arenaMID/archUP vsoriginalLOWdiagonalnearshields/crates/largearchMID changesactualcamera/worldgeometrydistinctP. Repair whole arch to halfsizeDOWN withgenerousSKYabove and entirecourtyard halfsizeRIGHT inset grassbuffer."
+          ],
+          "notes": "ROOT FULL exact2727 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personally seen. Selected regionalarch TOP archstone cropped atnativeTOP/noSKYbuffer; selected tactical courtyard LEFT outerwall/floor cropped atnativeLEFT. Exactnew OWN wholecolumns/floor/ALLstairs and complete tacticalcourtyard nativeinside mandatory -> composition/allChoices F. Not ordinaryterrain continuation. MissionONE actual unused sack/roll beside; tacticalEXACTTWOstonecovers, realFIRST main/SIDEfork, substantial treelessOCHREthroughopenarchUP joinsGREENLOW latestFIRSTP; hardpixels/noidentity/text. HIGHWESTopencliffworld tableLOW/arenaMID/archUP vsoriginalLOWdiagonalnearshields/crates/largearchMID changesactualcamera/worldgeometrydistinctP. Repair whole arch to halfsizeDOWN withgenerousSKYabove and entirecourtyard halfsizeRIGHT inset grassbuffer."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 600143,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--scene-2-a75acc7a0adf.png",
+        "sha256": "a75acc7a0adf41b0a9144f3c1886739c38b9ecfc6ac8ee304ef1a19cf1c2675b",
+        "promptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf",
+        "generationPromptSha256": "28a4227196f4170082fa9bf5c1fccad574631a0bd0e0c4f419e60321be3aa9c8",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf",
+          "sourceSha256": "031f163e0c3bf31e78a869358488137c4e5c90212d5e8d10b9c53be12a55c505"
+        },
+        "review": {
+          "sourceSha256": "a75acc7a0adf41b0a9144f3c1886739c38b9ecfc6ac8ee304ef1a19cf1c2675b",
+          "promptSha256": "223be0b7a26c0284a0b8f4b8aa14995b9fb7e1df7792883edbe8aea0427811bf",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. Rebuilt regionalarch TOP now entire arch/columns/floor/ALLstairs withSKYbuffer/OCHREthroughopening joining GREENlower. Tacticalcourt LEFT now wholewall/floor/ALLstairs/EXACT TWOcovers safelyinset. MISSIONONE table/sack AND roll DIRECTLYbeside/FIRST forkmainarch/SIDEarena; allbefore1008. Coarsepixels/noidentity/text. ActualCURRENT7d43 parent FULL originalOWN/WHOLE reopened personally: near ground-level shieldsupplies/croppedhugearch vs new HIGH WEST full smallerarch/arenaLEFT/MISSIONLOW and fork roads differentactualcamera/geometry distinctP. Original parent onlyownrequirements,no new wholearch/780 retro."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 597477,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--chapters--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--episode-1-80db7ba0fe6a.png",
+        "sha256": "80db7ba0fe6a456e7095f0c1c325df8bea0ee78a66521269185fb5a9633d28d9",
+        "promptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb",
+        "generationPromptSha256": "b4dc2a57ee68ae7d62247d3d79418574dd0fdc18dba2029b6d421875f34e9855",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "80db7ba0fe6a456e7095f0c1c325df8bea0ee78a66521269185fb5a9633d28d9",
+          "promptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2728 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL OWN/WHOLE personallyseen; readonly actual1008slice personallyopened. THIRD clearedEMPTYrest ruin RIGHT outercolumn/retainingwall/floor extends beyond1008 hiddenbycontrols -> composition/allChoicesF under exactnewOWN. MissionONE with unused plainpreparationbags beside, fullEMPTYtacticalcourt EXACTTWOstonecovers, completeOPENregionalarch/ALLstairs/SKYbuffer substantialbareOCHRE visiblethroughopeningUP with GREENLOW, separateTHIRD EXACT TWOEMPTYrestbenches/SIDEroad latestEPISODEP. Missiondeparture area currently onOCHREupper side; nextedit explicitly place itsground GREEN joininglowerdeparture towardarch, no blanketcancelregionvisibility. Functionalparcelcords/masonry notwriting/noidentity/hardpixelP. HIGH SOUTHEAST steppedregionalplateau missionUP/arenaLOW/archMID vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydistinctP. Repair ENTIRE THIRD footprint smallerLEFT before900; keepregionarch and two actual restbenches.",
+            "allChoices: ROOT FULL exact2728 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL OWN/WHOLE personallyseen; readonly actual1008slice personallyopened. THIRD clearedEMPTYrest ruin RIGHT outercolumn/retainingwall/floor extends beyond1008 hiddenbycontrols -> composition/allChoicesF under exactnewOWN. MissionONE with unused plainpreparationbags beside, fullEMPTYtacticalcourt EXACTTWOstonecovers, completeOPENregionalarch/ALLstairs/SKYbuffer substantialbareOCHRE visiblethroughopeningUP with GREENLOW, separateTHIRD EXACT TWOEMPTYrestbenches/SIDEroad latestEPISODEP. Missiondeparture area currently onOCHREupper side; nextedit explicitly place itsground GREEN joininglowerdeparture towardarch, no blanketcancelregionvisibility. Functionalparcelcords/masonry notwriting/noidentity/hardpixelP. HIGH SOUTHEAST steppedregionalplateau missionUP/arenaLOW/archMID vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydistinctP. Repair ENTIRE THIRD footprint smallerLEFT before900; keepregionarch and two actual restbenches."
+          ],
+          "notes": "ROOT FULL exact2728 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL OWN/WHOLE personallyseen; readonly actual1008slice personallyopened. THIRD clearedEMPTYrest ruin RIGHT outercolumn/retainingwall/floor extends beyond1008 hiddenbycontrols -> composition/allChoicesF under exactnewOWN. MissionONE with unused plainpreparationbags beside, fullEMPTYtacticalcourt EXACTTWOstonecovers, completeOPENregionalarch/ALLstairs/SKYbuffer substantialbareOCHRE visiblethroughopeningUP with GREENLOW, separateTHIRD EXACT TWOEMPTYrestbenches/SIDEroad latestEPISODEP. Missiondeparture area currently onOCHREupper side; nextedit explicitly place itsground GREEN joininglowerdeparture towardarch, no blanketcancelregionvisibility. Functionalparcelcords/masonry notwriting/noidentity/hardpixelP. HIGH SOUTHEAST steppedregionalplateau missionUP/arenaLOW/archMID vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydistinctP. Repair ENTIRE THIRD footprint smallerLEFT before900; keepregionarch and two actual restbenches."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 623593,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--episode-2-cbeaf81182a2.png",
+        "sha256": "cbeaf81182a2df3a7bc7511742c6ca7832aa3fc6e4f47b72bedb900e5c64b3e9",
+        "promptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb",
+        "generationPromptSha256": "4f3f84518f4a98a8b1c1a181548bb167201c8fec7ae683863c7aee2ec91d04e1",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb",
+          "sourceSha256": "80db7ba0fe6a456e7095f0c1c325df8bea0ee78a66521269185fb5a9633d28d9"
+        },
+        "review": {
+          "sourceSha256": "cbeaf81182a2df3a7bc7511742c6ca7832aa3fc6e4f47b72bedb900e5c64b3e9",
+          "promptSha256": "d656448d1e8f05135f20377d6925cf902026dfffcd870ed25d5df8bf1a7bc6bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. THIRDruin moved LEFT/fullwalls/floor TWOseparate EMPTYstoneRESTbenches before1008; MISSIONONEtable/unusedsack-roll beside now GREENsurroundings continuouslyjoinedGREENlower path; whole OPENarch columns/floor/ALLstairs/SKYbuffer with substantialOCHRE visible THROUGHopening. Full tacticalcourt EXACT TWO stonecoverblocks with physicalstoneedges/joints not decorativewriting; SIDEroad. No HOME/BASE/identity/text/coarsepixels. ActualCURRENT7d43 FULLoriginalOWN/WHOLE personallyreopened near lowground shieldrack/hugecroppedarch vs new HIGH SOUTHEAST tiers/archMID/arenaLOW/MISSIONUP different actualcamera/roadgeometry distinctP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 615552,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright--chapters--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--short-1-e1517a407797.png",
+        "sha256": "e1517a407797c6ad7ec945328cbc3a0f74ec6e2176a463d81cbfd0fe86a5960d",
+        "promptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0",
+        "generationPromptSha256": "89dd04bd72866ce24c415d54964888d83895a2c353c6432c61ea3405555f53e4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "e1517a407797c6ad7ec945328cbc3a0f74ec6e2176a463d81cbfd0fe86a5960d",
+          "promptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0",
+          "reviewer": "Codex direct original visual inspection: v2-production-272",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2729 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personallyseen; readonlyNEARESTreturntable crop personallyopened. ReturnBLUEcloth has actual GOLD diagonal crossed ribbon over CENTER of BLUEtop, GOLDvertical strap downfront with rosette/medallion motif, not exposed WOODrear/rightcorners or bluecyan fold highlights. Violates exactBAREBLUE/zeroothercolorobjects/border/ornaments; allChoices/latestSHORT/noText F. FunctionalWOODlegs and ordinaryBLUEfolds not wronglyrejected (old263 falsegold failure not reused). WholeMISSIONONE/unusedprovisions, tacticalEMPTYcourt EXACTTWOcovers, fullOPENregionalarch/ALLstairs/SKYbuffer/OCHREthroughopeningUP/GREENLOW, wholeHOMEopenentry/THIRDclearedEMPTYruin/returnroads allnativewhole/before1008 compositionP. Coarsepixels/nohumanidentityP. HIGH NORTHEAST multilayeropenregionalmeadow missionMID/arenaUP/homeLOW/archUP vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydifferent distinctP. Remove ENTIRE crossedgoldribbon/frontstrap/rosettemotif, use ONE continuous plain BLUEfoldcloth with only bluecyan shades on bareWOODtable; no symbols or gifts.",
+            "latestChoice: ROOT FULL exact2729 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personallyseen; readonlyNEARESTreturntable crop personallyopened. ReturnBLUEcloth has actual GOLD diagonal crossed ribbon over CENTER of BLUEtop, GOLDvertical strap downfront with rosette/medallion motif, not exposed WOODrear/rightcorners or bluecyan fold highlights. Violates exactBAREBLUE/zeroothercolorobjects/border/ornaments; allChoices/latestSHORT/noText F. FunctionalWOODlegs and ordinaryBLUEfolds not wronglyrejected (old263 falsegold failure not reused). WholeMISSIONONE/unusedprovisions, tacticalEMPTYcourt EXACTTWOcovers, fullOPENregionalarch/ALLstairs/SKYbuffer/OCHREthroughopeningUP/GREENLOW, wholeHOMEopenentry/THIRDclearedEMPTYruin/returnroads allnativewhole/before1008 compositionP. Coarsepixels/nohumanidentityP. HIGH NORTHEAST multilayeropenregionalmeadow missionMID/arenaUP/homeLOW/archUP vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydifferent distinctP. Remove ENTIRE crossedgoldribbon/frontstrap/rosettemotif, use ONE continuous plain BLUEfoldcloth with only bluecyan shades on bareWOODtable; no symbols or gifts.",
+            "noText: ROOT FULL exact2729 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personallyseen; readonlyNEARESTreturntable crop personallyopened. ReturnBLUEcloth has actual GOLD diagonal crossed ribbon over CENTER of BLUEtop, GOLDvertical strap downfront with rosette/medallion motif, not exposed WOODrear/rightcorners or bluecyan fold highlights. Violates exactBAREBLUE/zeroothercolorobjects/border/ornaments; allChoices/latestSHORT/noText F. FunctionalWOODlegs and ordinaryBLUEfolds not wronglyrejected (old263 falsegold failure not reused). WholeMISSIONONE/unusedprovisions, tacticalEMPTYcourt EXACTTWOcovers, fullOPENregionalarch/ALLstairs/SKYbuffer/OCHREthroughopeningUP/GREENLOW, wholeHOMEopenentry/THIRDclearedEMPTYruin/returnroads allnativewhole/before1008 compositionP. Coarsepixels/nohumanidentityP. HIGH NORTHEAST multilayeropenregionalmeadow missionMID/arenaUP/homeLOW/archUP vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydifferent distinctP. Remove ENTIRE crossedgoldribbon/frontstrap/rosettemotif, use ONE continuous plain BLUEfoldcloth with only bluecyan shades on bareWOODtable; no symbols or gifts."
+          ],
+          "notes": "ROOT FULL exact2729 OWN/WHOLE + actualCURRENT originalBattleBrightCH7d43d8c5 FULL originalOWN/WHOLE personallyseen; readonlyNEARESTreturntable crop personallyopened. ReturnBLUEcloth has actual GOLD diagonal crossed ribbon over CENTER of BLUEtop, GOLDvertical strap downfront with rosette/medallion motif, not exposed WOODrear/rightcorners or bluecyan fold highlights. Violates exactBAREBLUE/zeroothercolorobjects/border/ornaments; allChoices/latestSHORT/noText F. FunctionalWOODlegs and ordinaryBLUEfolds not wronglyrejected (old263 falsegold failure not reused). WholeMISSIONONE/unusedprovisions, tacticalEMPTYcourt EXACTTWOcovers, fullOPENregionalarch/ALLstairs/SKYbuffer/OCHREthroughopeningUP/GREENLOW, wholeHOMEopenentry/THIRDclearedEMPTYruin/returnroads allnativewhole/before1008 compositionP. Coarsepixels/nohumanidentityP. HIGH NORTHEAST multilayeropenregionalmeadow missionMID/arenaUP/homeLOW/archUP vsoriginalLOWdiagonalcloseSHIELDS/crates/archMID actualcamera/worldgeometrydifferent distinctP. Remove ENTIRE crossedgoldribbon/frontstrap/rosettemotif, use ONE continuous plain BLUEfoldcloth with only bluecyan shades on bareWOODtable; no symbols or gifts."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 738413,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright--chapters--short-2-6e1b23a82314.png",
+        "sha256": "6e1b23a82314d83f39a0a578680b1696f2ba05e7a328a71a69e773993eac00cf",
+        "promptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0",
+        "generationPromptSha256": "25dd065bc1966663d859723b3ae47c5411ff2dd742aa40a89fceae125400b54f",
+        "attempt": 2,
+        "requestContract": {
+          "version": 1,
+          "kind": "native-edit",
+          "specPromptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0",
+          "sourceSha256": "e1517a407797c6ad7ec945328cbc3a0f74ec6e2176a463d81cbfd0fe86a5960d"
+        },
+        "review": {
+          "sourceSha256": "6e1b23a82314d83f39a0a578680b1696f2ba05e7a328a71a69e773993eac00cf",
+          "promptSha256": "efa55bfb86f78353724cee6e6d04df56ab9567033fab88cfeca53354f00da3f0",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. ActualGOLDcrossedribbon/frontstrap/rosette entirelyremoved; ONEcontinuous BAREBLUEcloth onlyBLUE foldshades/functionalWOODlegs. Full HOME/openentry/chimney/THIRD clearedEMPTYruin/returnroads. MISSIONONEtable+unusedrolledprovisions directlybeside, full tacticalcourt TWOcovers/allstairs; fullregionalarch/columns/floor/ALLstairs/OCHREthroughopening GREENlower, wholechosen before1008/native. No identity/text/hardpixel. ActualCURRENT7d43 full originalOWN/native personallyreopened near lowdiagonalgear/croppedarch vsnew HIGH NORTHEAST open tiers arenaUP/missionMID/homeLOW distinct actualcamera/geometry. No falsely treatingBLUEfolds/WOODcorners as ornament."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 679666,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--journey--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--journey--scene-1-f2bcc890b625.png",
+        "sha256": "f2bcc890b62573d6b5e26ca9d0f1ce34692922d6970d534728db16c17af3417a",
+        "promptSha256": "0e1e69df12132823b12d646833a26d7cfd4b0a2b62ea6445b6f65e1b32f4489e",
+        "generationPromptSha256": "43ba8626ad636b019e09518d0e43677475e84913e124b658b27da6eea9e04055",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f2bcc890b62573d6b5e26ca9d0f1ce34692922d6970d534728db16c17af3417a",
+          "promptSha256": "0e1e69df12132823b12d646833a26d7cfd4b0a2b62ea6445b6f65e1b32f4489e",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. WholeMISSION ONE sealedparcel+actualsack ANDroll, separate emptytacticalcourt EXACT TWOcovers/fullfloor/ALLwalls/stairs; separate EMPTYMID terrace and DIFFERENTwholeancientmaindest/allcolumns/floor/ALLstairs withskybuffer and continuousSTONEroad. FIRSTmain/SIDEfork atMISSION, allchosen before1008/native; bluevioletspatialwonder/hardclusters/noidentity/text. ActualCURRENTb54d parent FULL originalOWN/WHOLE reopened personally: near porch/shields/LOWroad MIDvillage/farRIGHTruins versus new HIGH WEST openclifftiers fullsmallmainDESTUPLEFT/courtLOW/MISSIONMID/FIRSTfork distinct actualcamera/roadgeometry. Original only itsOWN, no new farleft/fullfarDEST/EMPTYMID retro."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 499098,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--journey--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--journey--episode-1-6a3e987a0cf5.png",
+        "sha256": "6a3e987a0cf515ba705cb3b12d3e9448ea2e8ef79c1811152f72c46abbd4a688",
+        "promptSha256": "c819add265b76f51d199663806f25c3505d30d8c0e8fb6de96c0eda02e789da5",
+        "generationPromptSha256": "e25ea743dc35d75d8588d4847583038d7dadd6b02d8bdf01492c42c785148a7c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "6a3e987a0cf515ba705cb3b12d3e9448ea2e8ef79c1811152f72c46abbd4a688",
+          "promptSha256": "c819add265b76f51d199663806f25c3505d30d8c0e8fb6de96c0eda02e789da5",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. MISSIONONE+sack ANDroll, whole separateEMPTY tacticalcourt EXACT TWOstonecovers/allstairs; genuinelyEMPTYMID travelground distinct from wholeancientmainDEST/ALLcolumns/floor/stairs linked continuousSTONEroad. THIRDclearedruin/TWO distinct EMPTYstoneRESTseats (longLEFTbench plus shortRIGHTseat bywall)/actualSIDEroute. Allchosenbuiltfloors/posts/props before1008/native. Blueviolet monumentaldepth/hardpixels/noidentity/text. ActualCURRENTb54d full originalOWN/WHOLE personally reopened nearporch/villageMID/farRIGHTdestination vsHIGH NORTH terraced ancientLEFT mainDEST/arenaMID/restLOW altersactualcamera/roadgeometry distinctP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 574013,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--journey--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--journey--short-1-3b6359e9462a.png",
+        "sha256": "3b6359e9462ac98c619802041160c92d3f90f9e6a0255f35c5bb735196759f85",
+        "promptSha256": "33400d5ada8681e4d9170b0105fa5c44b3eea2edf77ba11db07fb4914a7e9ed8",
+        "generationPromptSha256": "e18ce07ed6e4ff88e3b2f7e5cce498c3343885e5451e192815188eb91abd6b39",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3b6359e9462ac98c619802041160c92d3f90f9e6a0255f35c5bb735196759f85",
+          "promptSha256": "33400d5ada8681e4d9170b0105fa5c44b3eea2edf77ba11db07fb4914a7e9ed8",
+          "reviewer": "Codex direct original visual inspection: v2-production-273",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exactOWN/WHOLE personally inspected. MISSIONONE plainparcel+sack ANDroll directlybeside; whole tacticalcourt EXACT TWOcovers/fullfloor/ALLstairs, separate EMPTYMIDgrass travelground between approaches, wholeancientmaindest ALLcolumns/floor/ALLstairs withcontinuousSTONEroad. Distinct THIRD clearedEMPTYruin MIDright/fullfloor/stairs, wholeHOME roof/chimney/openentry+BAREBLUEfoldtable+returnroads. Wholechosen native/before1008. ExposedbrownWOODtablecorners not clothmotifs; BLUEfoldsallowed. Hardclusters/violetwonder/noidentity/text. ActualCURRENTb54d originalOWN/nativeFULL personallyreopened nearporch/farRIGHT ruins/villageMID vsHIGH SOUTHEAST opencliffs ancientUP/tacticalUPLEFT/HOMELOW true actualcamera/roadgeometry distinctP."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 573390,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--quests--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--quests--scene-1-fb7e1f27148c.png",
+        "sha256": "fb7e1f27148cc44777bc5d691f1a4b1611a6bf031c08e5a827306031f139c42f",
+        "promptSha256": "9d834706623a2c327b153d4202c896c1552e332c13060ab70d556d1342d600af",
+        "generationPromptSha256": "22f4eaabea6fdf2b804558ce2d5e3c21ae8e1b0c6ab1d2889dd524530d02ef2e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "fb7e1f27148cc44777bc5d691f1a4b1611a6bf031c08e5a827306031f139c42f",
+          "promptSha256": "9d834706623a2c327b153d4202c896c1552e332c13060ab70d556d1342d600af",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2743 OWN/WHOLE personally inspected. Dominant selectedmonumental TOPLEFT arch/columns cropped atnativeTOP, violates current wholearches/columns notzoom-to-crop; composition/allChoicesF. Two EMPTYplots sit serially alongone approach instead of clearlyseparate BASEYbranches; needsactualBASEYtoeach distinctground. BASE EXACT THREE row/MISSIONONE actualsack ANDroll/wholecourt TWOcovers/stairs/FIRSTmission mainSIDEfork latestP, noidentity/text/hardpixels. ActualCURRENT113af741 originalQ FULL OWN/WHOLE personally reopened nearoverhead shelteredtable/shields/RIGHTY vsHIGH SOUTHEAST openLEFTsmallBASE/arenaMID/missionLOW actualcamera/roadgeometry different distinctP. Parent original possibleF not inherited.",
+            "allChoices: ROOT FULL exact2743 OWN/WHOLE personally inspected. Dominant selectedmonumental TOPLEFT arch/columns cropped atnativeTOP, violates current wholearches/columns notzoom-to-crop; composition/allChoicesF. Two EMPTYplots sit serially alongone approach instead of clearlyseparate BASEYbranches; needsactualBASEYtoeach distinctground. BASE EXACT THREE row/MISSIONONE actualsack ANDroll/wholecourt TWOcovers/stairs/FIRSTmission mainSIDEfork latestP, noidentity/text/hardpixels. ActualCURRENT113af741 originalQ FULL OWN/WHOLE personally reopened nearoverhead shelteredtable/shields/RIGHTY vsHIGH SOUTHEAST openLEFTsmallBASE/arenaMID/missionLOW actualcamera/roadgeometry different distinctP. Parent original possibleF not inherited."
+          ],
+          "notes": "ROOT FULL exact2743 OWN/WHOLE personally inspected. Dominant selectedmonumental TOPLEFT arch/columns cropped atnativeTOP, violates current wholearches/columns notzoom-to-crop; composition/allChoicesF. Two EMPTYplots sit serially alongone approach instead of clearlyseparate BASEYbranches; needsactualBASEYtoeach distinctground. BASE EXACT THREE row/MISSIONONE actualsack ANDroll/wholecourt TWOcovers/stairs/FIRSTmission mainSIDEfork latestP, noidentity/text/hardpixels. ActualCURRENT113af741 originalQ FULL OWN/WHOLE personally reopened nearoverhead shelteredtable/shields/RIGHTY vsHIGH SOUTHEAST openLEFTsmallBASE/arenaMID/missionLOW actualcamera/roadgeometry different distinctP. Parent original possibleF not inherited."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 522076,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--quests--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--quests--episode-1-c1d10a049393.png",
+        "sha256": "c1d10a049393ded7018cbf58c7c1fa9cfb06b3ab59f0b2db3868f0400093813f",
+        "promptSha256": "46d537e79afe97e07fa445fe3045f0a76359be05d306b95dadbdbb3c60dd697c",
+        "generationPromptSha256": "ae61c4a0f8b481f2142fd9e0704a030fab40926141c42729cff023ed2edc6809",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "c1d10a049393ded7018cbf58c7c1fa9cfb06b3ab59f0b2db3868f0400093813f",
+          "promptSha256": "46d537e79afe97e07fa445fe3045f0a76359be05d306b95dadbdbb3c60dd697c",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "ROOT FULL exact2744 OWN/WHOLE personally inspected. MISSIONONE+sack ANDroll directlybeside, BASE EXACT THREE singleROW/WOODgaps functionalstrapclasps notemblems; actualBASEY to TWOdistinct genuinelyEMPTY grounds upperLEFT/upperRIGHT. WholeEMPTYtacticalcourt EXACT TWOcovers/ALLwalls/floor/stairs. THIRDfullclearedruin/TWO EMPTYRESTbenches/SIDEroad latestEPISODEP. Primary monumentalancientarch/columns behindplots complete native and before1008; far cliffterrain silhouettes not primarychosencroppedarch. Allchosenfloor/props beforecontrols, violetmystery/hardpixels/noidentity/text. ActualCURRENT113af741 originalQ FULL OWN/WHOLE personallyseen nearoverheadshelter/table/rightfork vs HIGH WEST openclifftiers MISSIONUP/arenaLOW/BASEMID/restLOWright changesactualcamera/roads distinctP. Not inheritedsource166pendingF."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 592490,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--quests--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--quests--short-1-bcf0c2c9d766.png",
+        "sha256": "bcf0c2c9d766a1476d27b530a196a735800473caa4ced2dcba3ab1b75c68e462",
+        "promptSha256": "855b0ea29410083092faf75e4e298c524f83c5dbbdf28b68bbbd8c34475ac1cd",
+        "generationPromptSha256": "a398177d5e54392ec111c90a5f736ac653f054048750670bd026fa6e40722265",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bcf0c2c9d766a1476d27b530a196a735800473caa4ced2dcba3ab1b75c68e462",
+          "promptSha256": "855b0ea29410083092faf75e4e298c524f83c5dbbdf28b68bbbd8c34475ac1cd",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2745 OWN/WHOLE personallyinspected. Primarychosen tallforgottenTOPLEFTstonecolumn cut atnativeTOP (x100), violatescomplete selectedcolumns currentOWN; composition/allChoicesF. MISSION sack ANDroll ONdeparturetable instead of DIRECTLYBESIDEtable asrequired; allChoicesF independently. BASE EXACT THREE row/wholecourt TWOcovers/stairs/TWOEMPTYYplots, fullHOME/openentry/chimney/BAREBLUEfoldreturntable/THIRDEMPTYruin/returnroads latestSHORTP and beforecontrols. Bluefolds notmotifs; noidentity/text/hardpixels. ActualCURRENT113af741 fulloriginalOWN/WHOLE personallyread nearoverhead large sheltertable/shields/rightfork vsnew HIGH NORTHEAST openmeadow/courtUP/MISSIONMID/BASELOW/HOMELOW differentactualcamera/geometry distinctP. Repair ENTIRE croppedprimarycolumns halfsizeDOWNwithSKYbuffer and moveunusedsackroll OFFtable ontoGROUNDdirectlybeside, keepONLYONEparcel ontable.",
+            "allChoices: ROOT FULL exact2745 OWN/WHOLE personallyinspected. Primarychosen tallforgottenTOPLEFTstonecolumn cut atnativeTOP (x100), violatescomplete selectedcolumns currentOWN; composition/allChoicesF. MISSION sack ANDroll ONdeparturetable instead of DIRECTLYBESIDEtable asrequired; allChoicesF independently. BASE EXACT THREE row/wholecourt TWOcovers/stairs/TWOEMPTYYplots, fullHOME/openentry/chimney/BAREBLUEfoldreturntable/THIRDEMPTYruin/returnroads latestSHORTP and beforecontrols. Bluefolds notmotifs; noidentity/text/hardpixels. ActualCURRENT113af741 fulloriginalOWN/WHOLE personallyread nearoverhead large sheltertable/shields/rightfork vsnew HIGH NORTHEAST openmeadow/courtUP/MISSIONMID/BASELOW/HOMELOW differentactualcamera/geometry distinctP. Repair ENTIRE croppedprimarycolumns halfsizeDOWNwithSKYbuffer and moveunusedsackroll OFFtable ontoGROUNDdirectlybeside, keepONLYONEparcel ontable."
+          ],
+          "notes": "ROOT FULL exact2745 OWN/WHOLE personallyinspected. Primarychosen tallforgottenTOPLEFTstonecolumn cut atnativeTOP (x100), violatescomplete selectedcolumns currentOWN; composition/allChoicesF. MISSION sack ANDroll ONdeparturetable instead of DIRECTLYBESIDEtable asrequired; allChoicesF independently. BASE EXACT THREE row/wholecourt TWOcovers/stairs/TWOEMPTYYplots, fullHOME/openentry/chimney/BAREBLUEfoldreturntable/THIRDEMPTYruin/returnroads latestSHORTP and beforecontrols. Bluefolds notmotifs; noidentity/text/hardpixels. ActualCURRENT113af741 fulloriginalOWN/WHOLE personallyread nearoverhead large sheltertable/shields/rightfork vsnew HIGH NORTHEAST openmeadow/courtUP/MISSIONMID/BASELOW/HOMELOW differentactualcamera/geometry distinctP. Repair ENTIRE croppedprimarycolumns halfsizeDOWNwithSKYbuffer and moveunusedsackroll OFFtable ontoGROUNDdirectlybeside, keepONLYONEparcel ontable."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 585718,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--chapters--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--chapters--scene-1-276f6d79c0f7.png",
+        "sha256": "276f6d79c0f7dc9dbf09313743107895c728a1496fd96bc4a022307e2b83dc18",
+        "promptSha256": "5b0e78889782cc2ef5e7727c4cefbd836fb39bd536bff723f4e6178efd720a85",
+        "generationPromptSha256": "952ba52ed33df0127013a40f42dc3e9283f2b2b83c9939a1db1b31f69a09598a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "276f6d79c0f7dc9dbf09313743107895c728a1496fd96bc4a022307e2b83dc18",
+          "promptSha256": "5b0e78889782cc2ef5e7727c4cefbd836fb39bd536bff723f4e6178efd720a85",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2746 OWN/WHOLE personallyinspected. Tacticalcourt selectedLEFTouterwall/floor clipped nativeLEFT, violates wholecourtyard currentOWN composition/allChoicesF. WholeOPENregionalarch/fullcolumns/floor/ALLstairs withSKYbuffer actualbareOCHREthroughopening joinsGREENlower, MISSIONONE+sack ANDroll/FIRSTfork/tacticalEXACTTWOcovers latestFIRSTP. NoBASE/quest/HOME/identity/text; coarsepixels. ActualCURRENTa2e59570 CHparent FULL originalOWN/WHOLE personallyreopened nearLOWdiagonal shieldrack/hugearch OCHREthrough opening vs new HIGH EAST openclifftiers arenaUP/missionLOW/fullsmallarchMID differentactualcamera/roads distinctP. Original onlyown LEFTvisibleOCHREthroughopening,no laterwholearch/780retro.",
+            "allChoices: ROOT FULL exact2746 OWN/WHOLE personallyinspected. Tacticalcourt selectedLEFTouterwall/floor clipped nativeLEFT, violates wholecourtyard currentOWN composition/allChoicesF. WholeOPENregionalarch/fullcolumns/floor/ALLstairs withSKYbuffer actualbareOCHREthroughopening joinsGREENlower, MISSIONONE+sack ANDroll/FIRSTfork/tacticalEXACTTWOcovers latestFIRSTP. NoBASE/quest/HOME/identity/text; coarsepixels. ActualCURRENTa2e59570 CHparent FULL originalOWN/WHOLE personallyreopened nearLOWdiagonal shieldrack/hugearch OCHREthrough opening vs new HIGH EAST openclifftiers arenaUP/missionLOW/fullsmallarchMID differentactualcamera/roads distinctP. Original onlyown LEFTvisibleOCHREthroughopening,no laterwholearch/780retro."
+          ],
+          "notes": "ROOT FULL exact2746 OWN/WHOLE personallyinspected. Tacticalcourt selectedLEFTouterwall/floor clipped nativeLEFT, violates wholecourtyard currentOWN composition/allChoicesF. WholeOPENregionalarch/fullcolumns/floor/ALLstairs withSKYbuffer actualbareOCHREthroughopening joinsGREENlower, MISSIONONE+sack ANDroll/FIRSTfork/tacticalEXACTTWOcovers latestFIRSTP. NoBASE/quest/HOME/identity/text; coarsepixels. ActualCURRENTa2e59570 CHparent FULL originalOWN/WHOLE personallyreopened nearLOWdiagonal shieldrack/hugearch OCHREthrough opening vs new HIGH EAST openclifftiers arenaUP/missionLOW/fullsmallarchMID differentactualcamera/roads distinctP. Original onlyown LEFTvisibleOCHREthroughopening,no laterwholearch/780retro."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 488060,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--chapters--episode": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--chapters--episode-1-08845a2ab882.png",
+        "sha256": "08845a2ab882018b1b3045b941d7a894f5d94c9ffc3637c9af7cb2fd63bf7db9",
+        "promptSha256": "be12e8bea8a7f6a5a90ba5533d77e160ccde244fcf88bbec5a19092e1edd6659",
+        "generationPromptSha256": "e1b72a61dba8dead905eada8a39d580669462e7d0d98d62c6a7b89c07c79c738",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "08845a2ab882018b1b3045b941d7a894f5d94c9ffc3637c9af7cb2fd63bf7db9",
+          "promptSha256": "be12e8bea8a7f6a5a90ba5533d77e160ccde244fcf88bbec5a19092e1edd6659",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2747 OWN/WHOLE personally inspected. MISSION unusedsack ANDrolledblanket are ONtable, not DIRECTLYBESIDEdeparturetable; exactcurrent inventory requires plainsealedparcel ontable with unusedsupplies beside table -> allChoicesFONLY. Woodenparcel functionalXbracing not text. Whole tacticalcourt EXACT TWOcovers/fullfloor/ALLstairs, primaryOPENregionalarch whole/ALLcolumns/stairs/SKYbuffer OCHREthroughopening GREENlower, separateTHIRD clearedruin/TWOEMPTYRESTbenches/SIDEroad latestEPISODEP. Allprimarychosen floors/props before1008/native; farterrain silhouette notnewprimarycroppingconstraint. Coarsepixels/noidentity/text/compP. ActualCURRENTa2e59570 originalCH fullOWN/WHOLE seen nearlowdiagonalshieldfloor/hugearch vs HIGH SOUTHWEST tiers arenaLOW/missionMID/archUP/restMIDright changesactualcamera/approach distinctP. Repair moveONLYunusedsack ANDroll togrounddirectlybeside table, keepONE sealedparcel ontop."
+          ],
+          "notes": "ROOT FULL exact2747 OWN/WHOLE personally inspected. MISSION unusedsack ANDrolledblanket are ONtable, not DIRECTLYBESIDEdeparturetable; exactcurrent inventory requires plainsealedparcel ontable with unusedsupplies beside table -> allChoicesFONLY. Woodenparcel functionalXbracing not text. Whole tacticalcourt EXACT TWOcovers/fullfloor/ALLstairs, primaryOPENregionalarch whole/ALLcolumns/stairs/SKYbuffer OCHREthroughopening GREENlower, separateTHIRD clearedruin/TWOEMPTYRESTbenches/SIDEroad latestEPISODEP. Allprimarychosen floors/props before1008/native; farterrain silhouette notnewprimarycroppingconstraint. Coarsepixels/noidentity/text/compP. ActualCURRENTa2e59570 originalCH fullOWN/WHOLE seen nearlowdiagonalshieldfloor/hugearch vs HIGH SOUTHWEST tiers arenaLOW/missionMID/archUP/restMIDright changesactualcamera/approach distinctP. Repair moveONLYunusedsack ANDroll togrounddirectlybeside table, keepONE sealedparcel ontop."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 573782,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic--chapters--short": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic--chapters--short-1-b13fb37f4d61.png",
+        "sha256": "b13fb37f4d6104e31b2de7a89279d37c781e3d8b1a1ef9c7587bb7089efaa7e8",
+        "promptSha256": "2653af41507cb2c2ce82c08794295e4395854c2c93359c5e778e6826523722b0",
+        "generationPromptSha256": "81e6f7367c3599af3874e1631b32e95f4314fbffa8f01760fb63ab7479bedb95",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b13fb37f4d6104e31b2de7a89279d37c781e3d8b1a1ef9c7587bb7089efaa7e8",
+          "promptSha256": "2653af41507cb2c2ce82c08794295e4395854c2c93359c5e778e6826523722b0",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "allChoices: ROOT FULL exact2748 OWN/WHOLE personallyinspected. ActualMISSIONdeparture table+sack ANDroll on UPPER OCHREside, while exactCHAPTERS selected GREENlowerdeparture joined OCHREupper througharch; allChoicesFONLY. Nextrepair changeonlymissionimmediatesurround/continuousgrassapproach to GREENjoiningexistingGREENlower; preserveupperOCHRE visibleTHROUGHarch, no blanketregionrecolor. FullEMPTYcourt EXACT TWOcovers/allstairs, primaryOPENarch/fullcolumns/floor/ALLstairs/SKYbuffer/OCHREthroughopening, HOMEfullroof/chimney/openentry/BAREBLUEtable/THIRDEMPTYruin/returnroads latestSHORTP and entirechosenbuiltfootprints before1008/native. PlainBLUEfoldshades notmotifs; noidentity/text/hardpixels. ActualCURRENTa2e59570 CH originalFULLown/native nearLOWdiagonalshieldgear/hugearch vsnewHIGH NORTH openvalley missionUP/arenaMID/HOMELOW truecamera/approachgeometry different distinctP. Farclifftop silhouettes notprimaryselectedcroppingfailure."
+          ],
+          "notes": "ROOT FULL exact2748 OWN/WHOLE personallyinspected. ActualMISSIONdeparture table+sack ANDroll on UPPER OCHREside, while exactCHAPTERS selected GREENlowerdeparture joined OCHREupper througharch; allChoicesFONLY. Nextrepair changeonlymissionimmediatesurround/continuousgrassapproach to GREENjoiningexistingGREENlower; preserveupperOCHRE visibleTHROUGHarch, no blanketregionrecolor. FullEMPTYcourt EXACT TWOcovers/allstairs, primaryOPENarch/fullcolumns/floor/ALLstairs/SKYbuffer/OCHREthroughopening, HOMEfullroof/chimney/openentry/BAREBLUEtable/THIRDEMPTYruin/returnroads latestSHORTP and entirechosenbuiltfootprints before1008/native. PlainBLUEfoldshades notmotifs; noidentity/text/hardpixels. ActualCURRENTa2e59570 CH originalFULLown/native nearLOWdiagonalshieldgear/hugearch vsnewHIGH NORTH openvalley missionUP/arenaMID/HOMELOW truecamera/approachgeometry different distinctP. Farclifftop silhouettes notprimaryselectedcroppingfailure."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 635594,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--warm--journey--scene": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--warm--journey--scene-1-2cac99120d14.png",
+        "sha256": "2cac99120d149329a998c02a6304e481beb9baf2b882392a8df6a010304a3e7d",
+        "promptSha256": "01c39fac0d536b0866397e122568e66d44decfebaeb2778273a0d9002ea5fc94",
+        "generationPromptSha256": "ecb56b1e22a5a1fe0c188d64566e82b8da77c35253970460e105c2ed41bf6e6e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2cac99120d149329a998c02a6304e481beb9baf2b882392a8df6a010304a3e7d",
+          "promptSha256": "01c39fac0d536b0866397e122568e66d44decfebaeb2778273a0d9002ea5fc94",
+          "reviewer": "Codex direct original visual inspection: v2-production-274",
+          "checks": {
+            "pixelArt": true,
+            "composition": false,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "composition: ROOT FULL exact2749 OWN/WHOLE personallyinspected. Large darknearLOWLEFT framingfoliage curtain contradicts explicit no near framingfoliage -> compositionF. STONEpath fromMISSION splits into UPRIGHT EMPTYMID deadend and DOWNRIGHTmainDEST, so not required continuous departure→MID→differentmainDEST; allChoicesF independently (MID must be on actualconnected journey). WholeMISSIONONE/sack ANDroll/tacticalcourt EXACT TWOcovers/allstairs, mainDESTwholecolumns/floor/ALLstairs, completeWARMnookwall/walllantern/stonebench/EXACTONEcup. ActualFIRSTmain/SIDEfork latestP; noidentity/text/hardpixels. ActualCURRENT24521d73 WarmJ FULL originalOWN/WHOLE personally reopened insideprotectedthreshold gearworkfloor/villageMID/farCASTLE vs new HIGH EAST openvalley fullcourtUP/nookLOW/missionMID/mainDESTLOWright truecamera/roadgeometry different distinctP. Onlycurrent childOWN applied,no inheritedparentverdict.",
+            "allChoices: ROOT FULL exact2749 OWN/WHOLE personallyinspected. Large darknearLOWLEFT framingfoliage curtain contradicts explicit no near framingfoliage -> compositionF. STONEpath fromMISSION splits into UPRIGHT EMPTYMID deadend and DOWNRIGHTmainDEST, so not required continuous departure→MID→differentmainDEST; allChoicesF independently (MID must be on actualconnected journey). WholeMISSIONONE/sack ANDroll/tacticalcourt EXACT TWOcovers/allstairs, mainDESTwholecolumns/floor/ALLstairs, completeWARMnookwall/walllantern/stonebench/EXACTONEcup. ActualFIRSTmain/SIDEfork latestP; noidentity/text/hardpixels. ActualCURRENT24521d73 WarmJ FULL originalOWN/WHOLE personally reopened insideprotectedthreshold gearworkfloor/villageMID/farCASTLE vs new HIGH EAST openvalley fullcourtUP/nookLOW/missionMID/mainDESTLOWright truecamera/roadgeometry different distinctP. Onlycurrent childOWN applied,no inheritedparentverdict."
+          ],
+          "notes": "ROOT FULL exact2749 OWN/WHOLE personallyinspected. Large darknearLOWLEFT framingfoliage curtain contradicts explicit no near framingfoliage -> compositionF. STONEpath fromMISSION splits into UPRIGHT EMPTYMID deadend and DOWNRIGHTmainDEST, so not required continuous departure→MID→differentmainDEST; allChoicesF independently (MID must be on actualconnected journey). WholeMISSIONONE/sack ANDroll/tacticalcourt EXACT TWOcovers/allstairs, mainDESTwholecolumns/floor/ALLstairs, completeWARMnookwall/walllantern/stonebench/EXACTONEcup. ActualFIRSTmain/SIDEfork latestP; noidentity/text/hardpixels. ActualCURRENT24521d73 WarmJ FULL originalOWN/WHOLE personally reopened insideprotectedthreshold gearworkfloor/villageMID/farCASTLE vs new HIGH EAST openvalley fullcourtUP/nookLOW/missionMID/mainDESTLOWright truecamera/roadgeometry different distinctP. Onlycurrent childOWN applied,no inheritedparentverdict."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 517273,
           "findings": []
         }
       }
