@@ -4,7 +4,7 @@
 // 20분짜리 버전 제안과 분리한다. 패키징은 CPU 를 한 차례 다 쓴다.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -138,8 +138,7 @@ try {
   execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildRoot, stdio: "inherit", env });
   execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildRoot, stdio: "inherit", env });
   // icon-tool.js is CJS. Without this, Node walks up to ~/package.json ("type":"module") and dies on require.
-  writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}
-");
+  writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
     ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "--x64"],
@@ -152,8 +151,18 @@ try {
     .map((name) => join(outDir, name));
   if (files.length < 2) throw new Error(`산출물이 부족합니다: ${files.join(", ") || "(없음)"}`);
 
-  runInherit("gh", ["release", "upload", tag, ...files, "--clobber"], repo);
-  console.log(`[release-desktop] ${tag} 업로드 완료: ${files.map((file) => file.split("/").pop()).join(", ")}`);
+  // README 의 /releases/latest/download/ 주소는 버전 없는 이름을 본다.
+  const stable = [];
+  for (const file of files) {
+    const base = file.endsWith(".AppImage") ? "OPRN.Studio-linux.AppImage" : "OPRN.Studio-windows.zip";
+    const alias = join(outDir, base);
+    if (alias !== file) {
+      copyFileSync(file, alias);
+      stable.push(alias);
+    }
+  }
+  runInherit("gh", ["release", "upload", tag, ...files, ...stable, "--clobber"], repo);
+  console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable].map((file) => file.split("/").pop()).join(", ")}`);
 
   const winZip = files.find((file) => file.endsWith(".zip"));
   if (deliverHost && winZip) {

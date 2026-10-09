@@ -31,7 +31,7 @@
 
 <div align="center">
 
-[作れるもの](#作れるもの) · [特長](#特長) · [クイックスタート](#クイックスタート) · [ギャラリー](#ギャラリー) · [ライセンス](#ライセンス)
+[ダウンロード](#ダウンロード) · [作れるもの](#作れるもの) · [特長](#特長) · [クイックスタート](#クイックスタート) · [ギャラリー](#ギャラリー) · [ライセンス](#ライセンス)
 
 </div>
 
@@ -62,9 +62,19 @@
 | 🛒 **アセットストア** | [store.openrpgmaker.com](https://store.openrpgmaker.com/) でキャラクター、タイルセット、マップ素材を共有・ダウンロード。 |
 | 🌏 **4 言語対応** | エディタは English、中文、日本語、한국어 に対応しています。 |
 
+## ダウンロード
+
+開発ツールなしで受け取れます。[最新リリース](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)。次の2つのリンクは、そのリリースのデスクトップアプリを直接ダウンロードします。
+
+| | |
+|---|---|
+| Windows | [OPRN.Studio-windows.zip](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip) — 展開して `OPRN Studio.exe` を実行 |
+| Linux | [OPRN.Studio-linux.AppImage](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage) — `chmod +x` してから実行 |
+| macOS | パッケージはまだありません。下のソース起動を使います。 |
+
 ## クイックスタート
 
-[Node.js 24 LTS](https://nodejs.org/) が必要です。
+macOS、またはソースから起動する場合です。[Node.js 24 LTS](https://nodejs.org/) が必要です。
 
 ```bash
 npm ci

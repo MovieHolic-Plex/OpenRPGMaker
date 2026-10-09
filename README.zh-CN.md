@@ -31,7 +31,7 @@
 
 <div align="center">
 
-[可以做什么](#可以做什么) · [亮点](#亮点) · [快速开始](#快速开始) · [画廊](#画廊) · [许可](#许可)
+[下载](#下载) · [可以做什么](#可以做什么) · [亮点](#亮点) · [快速开始](#快速开始) · [画廊](#画廊) · [许可](#许可)
 
 </div>
 
@@ -62,9 +62,19 @@
 | 🛒 **素材商店** | 在 [store.openrpgmaker.com](https://store.openrpgmaker.com/) 分享和下载角色、图块和地图物件。 |
 | 🌏 **四种语言** | 编辑器支持 English、中文、日本語 和 한국어。 |
 
+## 下载
+
+无需安装开发工具。[最新发布](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)。下面两个地址会直接下载该发布里的桌面应用。
+
+| | |
+|---|---|
+| Windows | [OPRN.Studio-windows.zip](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip) — 解压后运行 `OPRN Studio.exe` |
+| Linux | [OPRN.Studio-linux.AppImage](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage) — `chmod +x` 后运行 |
+| macOS | 还没有安装包。请用下面的源码命令。 |
+
 ## 快速开始
 
-需要 [Node.js 24 LTS](https://nodejs.org/)。
+适用于 macOS，或从源码运行。需要 [Node.js 24 LTS](https://nodejs.org/)。
 
 ```bash
 npm ci
