@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_pile/w5-A.pxg",
+ "id": "treasure pile",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 29,
+ "v5_colors": 21,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "v5 둥근 더미를 금화 낱개(윗면 밝게·아랫변 어둡게)로 다시 쌓고 왼쪽 위 빛·오른쪽 아래 그늘, 보라 수정 면 나눔, 붉은·청록 보석 모서리 면 살림, 단검 반짝임",
+ "ok": true
+}

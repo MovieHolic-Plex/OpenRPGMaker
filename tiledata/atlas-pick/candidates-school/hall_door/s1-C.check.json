@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_door/s1-C.pxg",
+ "set": "school",
+ "id": "hall_door",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C: 히노키 색 문 + 가로 살대 무늬 위 유리 두 칸(같은 칸수에서 유리 위치·문살 재해석), 벽은 hall_wall C",
+ "ok": true
+}

@@ -1,0 +1,207 @@
+@media (max-width: 1040px) {
+  .actor-classic-sheet .actor-editor-grid {
+    grid-template-columns: 150px minmax(290px, 1fr) minmax(330px, 1fr);
+    gap: 4px;
+  }
+
+  .actor-classic-sheet .actor-panel {
+    padding-inline: 4px;
+  }
+}
+
+.database-modal-body:has(.oprn-record-actors) .oprn-record-identity {
+  display: none;
+}
+
+.database-modal-body .oprn-record-workspace.oprn-record-actors {
+  gap: 8px;
+  grid-template-columns: 258px minmax(0, 1fr);
+}
+
+.oprn-record-actors .oprn-record-list-pane {
+  background: var(--bg-raised);
+  padding: 10px 10px 8px;
+}
+
+.oprn-record-actors .oprn-record-list-pane h3 {
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.oprn-record-actors .db-list {
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+  margin: 0;
+  min-height: 420px;
+}
+
+.oprn-record-actors .db-list-row {
+  background: var(--bg-raised);
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  min-height: 24px;
+  padding: 2px 8px;
+}
+
+.oprn-record-actors .db-list-row.active {
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.oprn-record-actors .db-list-number {
+  min-width: 34px;
+  text-align: right;
+}
+
+.oprn-record-actors .oprn-record-detail-pane {
+  background: var(--bg-raised);
+  min-height: 0;
+  padding: 10px;
+}
+
+.oprn-record-actors .actor-detail-form,
+.oprn-record-actors .actor-classic-sheet {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.oprn-record-actors .actor-editor-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-areas:
+    "basic inspector"
+    "curves inspector";
+  grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.oprn-record-actors .actor-left-stack {
+  grid-area: basic;
+}
+
+.oprn-record-actors .actor-center-stack {
+  grid-area: curves;
+  min-height: 0;
+}
+
+.oprn-record-actors .actor-right-stack {
+  display: grid;
+  gap: 8px;
+  grid-area: inspector;
+  grid-template-columns: minmax(210px, .85fr) minmax(230px, 1fr);
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.oprn-record-actors .actor-inspector-tabs {
+  display: flex;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.oprn-record-actors .actor-inspector-tab {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-1);
+  font: 600 13px/1.2 inherit;
+  height: 32px;
+  min-width: 70px;
+  padding: 0 12px;
+}
+
+.oprn-record-actors .actor-inspector-tab.active {
+  background: var(--bg-raised);
+  border-bottom-color: var(--border-subtle);
+}
+
+.oprn-record-actors .actor-panel {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  padding: 9px 10px 8px;
+}
+
+.oprn-record-actors .actor-identity,
+.oprn-record-actors .actor-class,
+.oprn-record-actors .actor-graphic,
+.oprn-record-actors .actor-basic-stats {
+  min-height: 0;
+}
+
+.oprn-record-actors .actor-basic-stat-grid {
+  display: grid;
+  gap: 4px 14px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.oprn-record-actors .actor-basic-stat-row {
+  display: flex;
+  font-size: 13px;
+  justify-content: space-between;
+}
+
+.oprn-record-actors .actor-sheet-crop {
+  height: var(--crop-height);
+  width: var(--crop-width);
+}
+
+.oprn-record-actors .actor-neutral-resource-slot {
+  height: 64px;
+  width: 64px;
+}
+
+.oprn-record-actors .actor-parameter-curves,
+.oprn-record-actors .actor-experience {
+  min-height: 0;
+}
+
+.oprn-record-actors .actor-starting-equipment {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.oprn-record-actors .actor-right-stack > .field {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.oprn-record-actors .actor-options {
+  grid-column: 1;
+  grid-row: 4;
+}
+
+.oprn-record-actors .actor-rates {
+  grid-column: 1 / -1;
+  grid-row: 5;
+}
+
+.oprn-record-actors .actor-skills {
+  grid-column: 2;
+  grid-row: 2 / span 3;
+}
+
+.oprn-record-actors .actor-curve {
+  background: var(--bg-raised);
+  color: var(--text-1);
+}
+
+.oprn-record-actors .actor-skill-list {
+  min-height: 170px;
+}
+
+@media (max-width: 1120px) {
+  .database-modal-body .oprn-record-workspace.oprn-record-actors {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .oprn-record-actors .actor-editor-grid {
+    grid-template-columns: 288px minmax(0, 1fr);
+  }
+}

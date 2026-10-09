@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_desk/s3-C.pxg",
+ "set": "school",
+ "id": "dorm_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.11
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 34,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "실루엣 다르게: 밝은 편백 책상, 회색 철제 의자(초록 방석), 흰 스탠드, 책 4권 파랑 계열",
+ "ok": true
+}

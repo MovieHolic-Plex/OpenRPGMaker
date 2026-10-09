@@ -1,0 +1,116 @@
+/*
+ * AI 존재감 — 지도 위 이름표 · 지도 아래 상태 줄 · 도크 받은함.
+ * 색 번호(data-tone 0~3)는 이 세 표면과 팝오버가 같이 쓴다: 지도의 파란 상자 = 상태 줄의 파란 칩.
+ */
+.ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox {
+  --tone-0: #3b5bdb; --tone-1: #12a150; --tone-2: #c2410c; --tone-3: #7c3aed;
+  font-family: var(--font-ui);
+}
+
+/* ── 지도 위 이름표 ── */
+.ai-map-presence { position: absolute; inset: 0; pointer-events: none; z-index: var(--z-canvas-chrome, 20); overflow: hidden; }
+.ai-map-region { --tone: var(--tone-0); position: absolute; border: 2px solid var(--tone); border-radius: 4px; background: color-mix(in srgb, var(--tone) 9%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, #fff 55%, transparent); }
+.ai-map-region[data-tone="1"] { --tone: var(--tone-1); }
+.ai-map-region[data-tone="2"] { --tone: var(--tone-2); }
+.ai-map-region[data-tone="3"] { --tone: var(--tone-3); }
+.ai-map-region[data-state="waiting"] { border-style: dashed; }
+.ai-map-region[data-state="review"] { --tone: var(--warning, #d9840d); border-style: solid; border-width: 3px; }
+.ai-map-region[data-state="failed"] { --tone: var(--danger, #d92d20); }
+.ai-map-region[data-state="draft"] { border-style: dashed; }
+.ai-map-region.is-pulse { animation: ai-presence-pulse 1.8s ease-in-out infinite; }
+/* 이름표는 상자 안쪽 왼쪽 위 — 기존 「초안 완료」 말풍선(상자 위쪽 가운데)과 겹치지 않는다. */
+.ai-map-region-tag { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 6px; max-width: 100%; box-sizing: border-box; padding: 3px 9px; border-radius: 0 0 6px 0; background: var(--tone); color: #fff; font: 600 12px/1.4 var(--font-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ai-map-region-tag b { font-weight: 700; }
+.ai-map-region-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; flex: 0 0 auto; }
+/* 영역을 모를 때(도구가 아직 칸을 만지지 않은 구간)는 지도 왼쪽 위에 이름표만 쌓는다. */
+.ai-map-region.is-cornered { position: static; display: inline-flex; border: 0; background: none; box-shadow: none; animation: none; margin: 0 6px 6px 0; }
+.ai-map-region.is-cornered .ai-map-region-tag { position: static; margin: 0; border-radius: 6px; max-width: 320px; }
+.ai-map-presence:has(.is-cornered) { display: flex; flex-wrap: wrap; align-content: flex-start; padding: 10px 12px 0 56px; }
+.ai-map-presence:has(.is-cornered) .ai-map-region:not(.is-cornered) { position: absolute; }
+@keyframes ai-presence-pulse { 50% { background: color-mix(in srgb, var(--tone) 18%, transparent); } }
+
+/* ── 지도 아래 상태 줄 ── */
+.ai-status-bar { position: fixed; z-index: var(--z-popover, 60); display: flex; align-items: center; gap: 8px; min-height: 48px; padding: 6px 8px 6px 10px; box-sizing: border-box; background: color-mix(in srgb, var(--bg-raised, #fff) 97%, transparent); border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop, 0 6px 24px rgba(20, 30, 60, .22)); color: var(--text-1); font-size: 13px; }
+.ai-status-bar[hidden], .ai-status-pop[hidden], .ai-inbox[hidden] { display: none !important; }
+.ai-status-bar[data-attention="review"] { border-color: var(--warning, #d9840d); background: color-mix(in srgb, var(--warning, #d9840d) 12%, var(--bg-raised, #fff)); }
+.ai-status-bar[data-attention="failed"] { border-color: var(--danger, #d92d20); background: color-mix(in srgb, var(--danger, #d92d20) 10%, var(--bg-raised, #fff)); }
+.ai-status-chips { display: flex; gap: 6px; min-width: 0; overflow: hidden; }
+.ai-status-spacer { flex: 1; }
+.ai-status-chip { --tone: var(--tone-0); display: inline-flex; align-items: center; gap: 7px; min-width: 0; padding: 6px 11px; border: 1px solid color-mix(in srgb, var(--tone) 38%, transparent); border-radius: 10px; background: color-mix(in srgb, var(--tone) 9%, var(--bg-raised, #fff)); color: var(--text-1); font: 13px/1.3 var(--font-ui); cursor: pointer; white-space: nowrap; }
+.ai-status-chip[data-tone="1"] { --tone: var(--tone-1); }
+.ai-status-chip[data-tone="2"] { --tone: var(--tone-2); }
+.ai-status-chip[data-tone="3"] { --tone: var(--tone-3); }
+.ai-status-chip[aria-expanded="true"] { border-color: var(--tone); }
+.ai-status-chip:focus-visible, .ai-status-btn:focus-visible { outline: var(--focus-outline); }
+.ai-status-chip .ai-status-action { color: var(--text-2); overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
+.ai-status-dot { width: 10px; height: 10px; flex: 0 0 auto; border-radius: 50%; background: var(--tone-0); }
+.ai-status-dot[data-tone="1"], .ai-status-chip[data-tone="1"] .ai-status-dot { background: var(--tone-1); }
+.ai-status-dot[data-tone="2"], .ai-status-chip[data-tone="2"] .ai-status-dot { background: var(--tone-2); }
+.ai-status-dot[data-tone="3"], .ai-status-chip[data-tone="3"] .ai-status-dot { background: var(--tone-3); }
+.ai-status-dot[data-state="review"] { background: var(--warning, #d9840d) !important; }
+.ai-status-dot[data-state="failed"] { background: var(--danger, #d92d20) !important; }
+.ai-status-dot[data-state="waiting"] { background: var(--text-3) !important; }
+.ai-status-dot.is-pulse { animation: ai-status-dot-pulse 1.4s ease-in-out infinite; }
+@keyframes ai-status-dot-pulse { 50% { opacity: .35; } }
+.ai-status-elapsed { color: var(--text-3); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-status-btn { padding: 5px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-s, 6px); background: var(--bg-raised, #fff); color: var(--text-1); font: 13px var(--font-ui); cursor: pointer; white-space: nowrap; }
+.ai-status-btn:hover { background: var(--bg-inset); }
+.ai-status-btn.is-stop { color: var(--danger, #d92d20); }
+.ai-status-btn[hidden] { display: none; }
+
+.ai-status-pop { position: fixed; z-index: calc(var(--z-popover, 60) + 1); width: 340px; max-width: calc(100vw - 16px); padding: 12px 14px; box-sizing: border-box; background: var(--bg-raised, #fff); border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop, 0 10px 30px rgba(20, 30, 60, .28)); color: var(--text-1); font-size: 13px; }
+.ai-status-pop header { display: flex; align-items: center; gap: 8px; }
+.ai-status-tag { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: var(--accent-muted); color: var(--accent); font-size: 11px; font-weight: 600; }
+.ai-status-tag[data-state="review"] { background: var(--warning-muted, #fff1d6); color: var(--warning, #a65f00); }
+.ai-status-tag[data-state="failed"] { background: var(--danger-muted, #fde8e6); color: var(--danger, #b42318); }
+.ai-status-tag[data-state="applied"], .ai-status-tag[data-state="draft"] { background: var(--success-muted, #e6f6ec); color: var(--success, #0b7a3c); }
+.ai-status-pop p { margin: 6px 0 0; color: var(--text-2); overflow-wrap: anywhere; }
+.ai-status-pop-map { font-size: 12px; color: var(--accent) !important; }
+.ai-status-pop-now b { color: var(--text-3); font-weight: 600; }
+.ai-status-pop-recent { list-style: none; margin: 8px 0 0 5px; padding: 0 0 0 12px; border-left: 2px solid var(--border-subtle); color: var(--text-2); }
+.ai-status-pop-recent li { margin: 3px 0; }
+.ai-status-pop-recent .is-failed { color: var(--danger, #b42318); }
+.ai-status-pop-recent .is-empty { color: var(--text-3); }
+.ai-status-pop-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+/* ── 도크 받은함 ── */
+.ai-inbox { flex: 0 0 auto; padding: 10px 12px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-inset); }
+.ai-inbox-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; color: var(--text-2); font: 600 12px var(--font-ui); }
+.ai-inbox-count { min-width: 18px; padding: 0 6px; border-radius: 999px; background: var(--warning, #d9840d); color: #fff; font-size: 11px; text-align: center; }
+.ai-inbox-list { display: flex; flex-direction: column; gap: 8px; }
+.ai-inbox-card { padding: 10px 12px; border: 2px solid var(--warning, #d9840d); border-radius: 12px; background: color-mix(in srgb, var(--warning, #d9840d) 9%, var(--bg-raised, #fff)); }
+.ai-inbox-card.is-failed { border-color: var(--danger, #d92d20); background: color-mix(in srgb, var(--danger, #d92d20) 8%, var(--bg-raised, #fff)); }
+.ai-inbox-card h4 { margin: 0 0 4px; font: 700 14px var(--font-ui); color: var(--text-1); }
+.ai-inbox-card p { margin: 0 0 8px; color: var(--text-2); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+.ai-inbox-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.ai-inbox-btn { padding: 6px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-s, 6px); background: var(--bg-raised, #fff); color: var(--text-1); font: 13px var(--font-ui); cursor: pointer; }
+.ai-inbox-btn.is-primary { border-color: var(--success, #12a150); background: var(--success, #12a150); color: #fff; font-weight: 600; }
+.ai-inbox-btn:focus-visible { outline: var(--focus-outline); }
+
+/* ── 여러 맵·여러 조수 ── */
+.ai-status-chip .ai-status-map { padding: 0 6px; border-radius: 6px; background: color-mix(in srgb, var(--tone) 16%, transparent); color: var(--text-2); font-size: 11px; max-width: 96px; overflow: hidden; text-overflow: ellipsis; }
+.ai-status-chip[data-elsewhere="true"] { border-style: dashed; }
+.ai-status-chip.is-more { --tone: var(--text-3); }
+.ai-status-chip.is-more[data-attention="true"] { --tone: var(--warning, #d9840d); }
+.ai-status-pop:has(.ai-status-group) { width: 380px; max-height: min(70vh, 520px); overflow: auto; }
+.ai-status-group { margin-top: 10px; }
+.ai-status-group h5 { margin: 0 0 4px; font: 700 12px var(--font-ui); color: var(--accent); }
+.ai-status-group h5 em { font-style: normal; font-weight: 500; color: var(--text-3); }
+.ai-status-row { display: flex; align-items: center; gap: 7px; width: 100%; padding: 6px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--text-1); font: 13px var(--font-ui); text-align: left; cursor: pointer; }
+.ai-status-row:hover { background: var(--bg-inset); }
+.ai-status-row .ai-status-action { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); }
+.ai-status-row .ai-status-tag { margin-left: 0; flex: 0 0 auto; }
+
+/* ── 다른 스레드 트레이 — 메인 대화(로그) 밖에서 도는 실행 ── */
+.ai-side-threads { margin: 6px 10px 0; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-raised); font: 12px/1.5 var(--font-ui); color: var(--text-1); }
+.ai-side-threads[data-attention="review"] { border-color: #c98a1b; }
+.ai-side-threads[data-attention="failed"] { border-color: #b4523e; }
+.ai-side-threads-head { display: flex; align-items: center; gap: 6px; padding: 2px 6px 2px 2px; }
+.ai-side-threads-toggle { flex: 1; min-width: 0; display: flex; gap: 8px; align-items: baseline; cursor: pointer; border: 0; background: none; padding: 6px 8px; font: inherit; color: inherit; text-align: left; }
+.ai-side-threads-toggle::before { content: "▸"; color: var(--text-3); }
+.ai-side-threads[data-open="true"] .ai-side-threads-toggle::before { content: "▾"; }
+.ai-side-threads-title { font-weight: 650; }
+.ai-side-threads-summary { color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-side-threads-clear { cursor: pointer; border: 1px solid var(--border-default); border-radius: 7px; padding: 1px 8px; font: inherit; color: var(--text-2); background: transparent; }
+.ai-side-threads-list { max-height: 38vh; overflow-y: auto; padding: 0 8px 6px; }
+.ai-side-threads-list[hidden], .ai-side-threads[hidden], .ai-side-threads-clear[hidden] { display: none; }

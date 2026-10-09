@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bed_blue/w2-B.pxg",
+ "id": "bed blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "머리판 판재가 더 깊게 들어가고 이불 왼쪽 밝음·오른쪽 짙음 대비를 세게, 발판이 앞으로 튀어나옴",
+ "ok": true
+}

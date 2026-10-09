@@ -1,0 +1,336 @@
+/* 援ъ“臾?寃??紐⑤떖 ???볦? ?붾㈃?먯꽌 洹몃━??+ ??移대뱶濡?AI 異붿륫???뺤씤?쒕떎 */
+.structure-review-grid-row.is-focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.structure-review-card.is-excluded {
+  opacity: 0.45;
+}
+.structure-review-footer {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  padding-top: var(--space-2);
+}
+
+/* ── 이전 대화 목록 모달 (aiConversationHistoryModal) ──────────────────────
+   database-modal-* 껍데기를 그대로 쓰고 목록만 정의한다. 행 하나 = [열기 버튼][삭제].
+   열기 버튼이 행 전체를 먹는 이유: 목표는 "이 대화를 잇는다" 이고 삭제는 부차다. */
+/* 높이를 되찾는다 — DB 스튜디오 기준의 `.database-modal-window` 가 `height: min(820px, …)`
+   (database/desktop.css, @media >=800px)를 박아 목록 3줄짜리 창이 화면 높이를 다 먹었다.
+   그 규칙과 같은 (0,1,0) 으로는 못 이긴다(desktop.css 가 더 늦게 실린다) → 창 클래스를
+   함께 물어 (0,2,0) 으로 올린다. 실측 2026-08-30: height 620px(= 내 max-height 에 걸린 값). */
+.database-modal-window.ai-history-window {
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  max-height: min(86vh, 680px);
+  max-width: min(92vw, 560px);
+  width: 92vw;
+}
+/* 본문은 `database-modal-body` 를 쓰지 않으므로(위 주석) 그 클래스가 주던
+   flex/overflow/padding 을 여기서 직접 갖춘다.
+   스크롤 주인은 `.ai-history-list` 하나 — 필터·검색·복구는 창 안에 고정한다. */
+.ai-history-body {
+  align-content: start;
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow: hidden;
+  padding: var(--space-3);
+}
+.ai-history-filters,
+.ai-history-map-select,
+.ai-history-flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.ai-history-filter,
+.ai-history-map-option,
+.ai-history-recover,
+.ai-history-load-more,
+.ai-history-legacy-inspect {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  padding: 4px 8px;
+}
+.ai-history-filter[aria-pressed="true"],
+.ai-history-map-option[aria-pressed="true"] {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+}
+.ai-history-filter:focus-visible,
+.ai-history-map-option:focus-visible,
+.ai-history-recover:focus-visible,
+.ai-history-load-more:focus-visible,
+.ai-history-legacy-inspect:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.ai-history-map-option {
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-history-recover-row {
+  display: grid;
+  gap: var(--space-1);
+}
+.ai-history-recover {
+  justify-self: start;
+}
+.ai-history-recover[aria-busy="true"] {
+  cursor: default;
+  opacity: 0.7;
+}
+.ai-history-recover-status {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+.ai-history-recover-status[data-state="error"],
+.ai-history-recover-status[data-state="incomplete"] {
+  color: var(--danger);
+}
+.ai-history-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  min-width: 0;
+  padding: 5px 8px;
+  width: 100%;
+}
+.ai-history-search:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.ai-history-note,
+.ai-history-empty,
+.ai-history-recover-status {
+  word-break: keep-all;
+}
+.ai-history-note {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+.ai-history-list {
+  align-content: start;
+  display: grid;
+  gap: var(--space-1);
+  max-height: min(42vh, 360px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.ai-history-load-more {
+  width: 100%;
+}
+.ai-history-row {
+  align-items: stretch;
+  display: flex;
+  gap: var(--space-1);
+}
+.ai-history-legacy-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: grid;
+  flex: 1 1 auto;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 9px;
+  text-align: left;
+}
+.ai-history-legacy-inspect {
+  justify-self: start;
+}
+.ai-history-legacy-body {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+.ai-history-legacy-turn {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+.ai-history-open {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  flex: 1 1 auto;
+  font: inherit;
+  gap: 2px;
+  min-width: 0;
+  padding: 6px 9px;
+  text-align: left;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.ai-history-open:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+.ai-history-open:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+/* 지금 열려 있는 대화는 클릭이 무의미하다 — disabled 대신 aria-disabled 라서 CSS 로 알린다. */
+.ai-history-open[aria-disabled="true"] {
+  cursor: default;
+  opacity: 0.6;
+}
+.ai-history-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-history-preview {
+  color: var(--text-2);
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-history-meta,
+.ai-history-maps,
+.ai-history-flag {
+  color: var(--text-3);
+  font-size: 10px;
+}
+.ai-history-maps {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-history-delete {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-3);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  width: 28px;
+}
+.ai-history-delete:hover {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  color: var(--danger);
+}
+.ai-history-delete:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.ai-history-empty {
+  color: var(--text-3);
+  font-size: 12px;
+  margin: 0;
+  padding: var(--space-3) 0;
+  text-align: center;
+}
+
+/* ── 감독 지침 모달 (aiInstructionsModal) ───────────────────────────────── */
+.database-modal-window.ai-instructions-window {
+  height: auto; /* 위 .ai-history-window 주석과 같은 이유 — (0,2,0) 이어야 이긴다 */
+  max-height: min(86vh, 620px);
+  max-width: min(92vw, 560px);
+  width: 92vw;
+}
+.ai-instructions-body {
+  align-content: start; /* 위와 같은 이유 */
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3);
+}
+.ai-instructions-note {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+.ai-instructions-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.55;
+  min-height: 180px;
+  padding: 8px 10px;
+  resize: vertical;
+  width: 100%;
+}
+.ai-instructions-input:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+.ai-instructions-footer {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+.ai-instructions-counter {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+
+/* ── 턴 되감기 버튼: 사용자 버블 안의 작은 액션 한 줄 ──
+   기본은 흐리게 두고 버블 hover/포커스에서 또렷해진다 — 모든 사용자 버블에 상시로
+   또렷한 버튼이 달리면 대화 로그가 버튼밭이 된다. */
+.ai-turn-rewind-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+.ai-turn-rewind {
+  font-size: 10px;
+  min-height: 0;
+  opacity: 0.45;
+  padding: 2px 6px;
+  transition: opacity var(--transition-fast);
+}
+.ai-command-row:hover .ai-turn-rewind,
+.ai-turn-rewind:focus-visible {
+  opacity: 1;
+}
+

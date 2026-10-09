@@ -1,0 +1,47 @@
+// C: 검보라 구슬의 큰 암부와 보라 테, 장식 없는 굵은 돌기둥; 받침 윗면 3행(y=15~17).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat p purple 0
+@mat q purple 1
+@mat r purple 2
+@mat s purple 3
+@mat t purple 4
+@mat A stone 0
+@mat B stone 1
+@mat C stone 2
+@mat D stone 3
+@mat E stone 4
+@mblock 0 0
+......rrrr......
+....rsstsrqq....
+...rstssrqqpq...
+..rsstsrqqpppq..
+..rssrrqqppppq..
+.qssrqqpppppppq.
+.qsrqqppppppppq.
+.qrqqpppppppppq.
+.qrqppppppppppq.
+.qrqpppppppppqr.
+..rqppppppppqr..
+..qqpppppppqrq..
+...qqpppppqrq...
+....qqqqrrqq....
+...BBBqqqqBBB...
+..DEEEDDDDDDCB..
+.DEEEEDDDDDDDCB.
+.DDDDDDDDDDCCCB.
+.BCCCCCCCCCCBBB.
+..BBBBBBBBBBBA..
+....BDCCCBBA....
+....BDCCCBBA....
+....BDCCCBBA....
+....BDCCCBBA....
+....BDCCCBBA....
+....BDCCCBBA....
+....BDCCCBBA....
+...BDDCCCBBBA...
+..DEDDCCCCCCBB..
+.DDDDCCCCCCCBBB.
+.BCCCCCCCBBBBBA.
+..BBBBBBBBBBAA..

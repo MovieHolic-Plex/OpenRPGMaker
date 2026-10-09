@@ -1,0 +1,26 @@
+/* 농장 건물·집 꾸미기(farm-spatial) 레거시 레이어.
+ *
+ * 2026-08 모던 개편에서 이 탭은 폼 덤프 → db-ws-* 워크스페이스로 옮겨갔다. 예전 마크업
+ * (`db-spatial-hero` / `db-spatial-grid` / `db-spatial-panel` / `db-spatial-record-card` /
+ * `db-spatial-placement-fields` / `db-spatial-check-grid` / `db-spatial-optional-fields`)은
+ * 더 이상 만들어지지 않으므로 관련 규칙을 지웠다. 새 시각 계층은
+ * styles/database/modern/spatial-collections.css 에 있다.
+ *
+ * 여기 남은 `.db-studio-empty` 는 이 탭 전용이 아니다 — 다른 생활 탭들의 빈 상태 카드가
+ * 이 라운드/패딩/정렬을 그대로 쓰고 있어서(11-life-authoring.css 에는 배경/테두리만 있다)
+ * 함께 지우면 그 탭들이 회귀한다. 그래서 남긴다.
+ */
+
+.database-modal-backdrop .db-studio-empty {
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 10px !important;
+  padding: 18px 16px;
+  text-align: center;
+}
+
+.database-modal-backdrop .db-studio-empty .empty-state__action--primary {
+  background: var(--db-studio-accent) !important;
+  border-color: var(--db-studio-accent) !important;
+  color: #fff !important;
+}

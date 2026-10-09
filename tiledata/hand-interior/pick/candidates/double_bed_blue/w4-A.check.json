@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/double_bed_blue/w4-A.pxg",
+ "id": "double bed blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "v5 구도를 두고 머리판 턱·안쪽 패널, 베개의 오목한 가운데와 밝은 윗귀, 접힌 시트 띠, 이불의 파란 3톤 퀼팅 점, 발치 판 3단 나무로 입체를 올렸다.",
+ "ok": true
+}

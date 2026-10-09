@@ -1,0 +1,110 @@
+/* Command-first editor: settings / authored commands / persistent preview. */
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench,
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+  /* 288px = 리사이저가 허용하는 최소 폭(layoutResize.ts columnWidthBounds). 예전 240px 는 그 하한
+     밑이라 리사이저를 처음 잡는 순간 48px 튀었고, 설정 레일 컨트롤이 155px 로 눌렸다(2026-09-27). */
+  --event-editor-settings-track: 288px;
+  display: grid;
+  grid-template-columns: minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+}
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench::after { display: none; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-settings-column { grid-column: 1; grid-row: 1; min-width: 0; overflow: auto; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-column-resizer { display: block; grid-column: 2; grid-row: 1; transform: none; justify-self: stretch; width: 6px; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-commands-column { grid-column: 3; grid-row: 1; min-width: 0; width: auto; padding: 0 12px; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-inspector-column {
+  display: flex;
+  flex-direction: column;
+  position: static;
+  grid-column: 4;
+  grid-row: 1;
+  width: auto;
+  min-width: 0;
+  max-height: none;
+  overflow: auto;
+  border-left: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  box-shadow: none;
+  padding: 12px;
+}
+.event-editor-command-focused .event-preview-heading { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-contents-fieldset { container: evt-command-column / inline-size; }
+.event-editor-command-focused .event-contents-fieldset { overflow: auto; }
+.event-editor-command-focused .event-inspector-body { padding: 12px 0; }
+.event-editor-command-focused .event-editor-inspector-column .event-page-preview { min-height: 0; }
+.event-editor-command-focused .event-script-live-stage { min-width: 0; }
+.event-editor-command-focused .event-editor-inspector-column .event-inspector-preview { padding: 0; }
+.event-editor-command-focused .ai-event-assist:not([open]) { display: none; }
+.event-editor-command-focused .ai-event-assist[open] {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(15 23 42 / 48%);
+  border: 0;
+  margin: 0;
+}
+.event-editor-command-focused .ai-event-assist > summary { display: none; }
+.event-editor-command-focused .ai-event-assist[open] > .ai-event-assist-body {
+  display: grid;
+  grid-template-columns: minmax(260px, .8fr) minmax(0, 1.2fr);
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(980px, calc(100vw - 48px));
+  max-height: calc(100dvh - 80px);
+  overflow: auto;
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: 0 20px 70px rgb(0 0 0 / 24%);
+  padding: 20px;
+  gap: 18px;
+}
+.event-editor-command-focused .ai-event-modal-header { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.event-editor-command-focused .ai-event-modal-header h2 { margin: 0; font-size: 19px; }
+.event-editor-command-focused .ai-event-compose { padding: 0; }
+.event-editor-command-focused .ai-event-result { min-width: 0; padding: 0; }
+.event-editor-command-focused .ai-event-input { min-height: 160px; }
+.event-editor-command-focused .cmd-staged-host { min-width: 0; max-height: 48vh; overflow: auto; }
+.event-editor-command-focused .cmd-staged-head { flex-wrap: wrap; }
+.event-editor-command-focused .ai-event-result[hidden] { display: none; }
+@media (max-width: 1100px) {
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench,
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    grid-template-columns: 200px 6px minmax(0, 1fr) 260px;
+  }
+}
+@media (max-width: 800px) {
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench,
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    overflow: auto;
+  }
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-settings-column { grid-column: 1; grid-row: 1; max-height: 200px; }
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-column-resizer { display: none; }
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-commands-column { grid-column: 1; grid-row: 2; min-height: 320px; }
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench > .event-editor-inspector-column { grid-column: 1; grid-row: 3; min-height: 240px; }
+  .event-editor-command-focused .ai-event-assist[open] > .ai-event-assist-body { grid-template-columns: minmax(0, 1fr); }
+}
+
+.event-editor-command-focused .ai-event-result { display: flex; flex-direction: column; gap: 12px; }
+.event-editor-command-focused .ai-event-result-header { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.event-editor-command-focused .ai-event-preview-actions { margin-top: auto; justify-content: flex-end; }
+/* Keep command rows in one scroll surface. */
+.event-editor-command-focused .event-contents-fieldset { display: block; height: auto; overflow: auto; }
+/* 툴바는 한 줄이 계약이다 — wrap 이 켜지면 보기 전환·AI 버튼이 둘째 줄로 떨어지고
+   위에 빈 밴드가 남는다(2026-09-21 사용자 화면 재현, 1440/1920 실측). */
+.event-editor-command-focused .event-contents-fieldset > .event-editor-command-toolbar { position: sticky; top: 0; z-index: 3; height: auto; min-height: 44px; flex-wrap: nowrap; }
+.event-editor-command-focused .event-contents-fieldset > .cmd-list,
+.event-editor-command-focused .event-contents-fieldset > .event-storyboard-host { height: auto; max-height: none; overflow: visible; }
+.event-editor-command-focused .event-editor-inspector-column .event-command-text-preview-card { margin: 0; padding: 10px; }

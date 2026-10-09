@@ -1,0 +1,106 @@
+/* Conversation workspace: shared controls and resizable conversation/team columns. */
+.ai-assistant-wide-backdrop { position: fixed; inset: 0; z-index: var(--z-modal); display: grid; place-items: center; padding: 24px; background: color-mix(in srgb, var(--text-1) 25%, transparent); backdrop-filter: blur(4px); }
+.ai-assistant-wide { display: flex; flex-direction: column; width: min(1600px, 100%); height: 100%; min-height: 0; overflow: hidden; border: 1px solid var(--border-default); border-radius: 16px; background: var(--bg-raised); color: var(--text-1); box-shadow: 0 24px 80px color-mix(in srgb, var(--text-1) 15%, transparent); font-family: var(--font-ui); }
+.ai-assistant-wide-head { display: flex; align-items: center; gap: 20px; padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); flex: 0 0 auto; }
+.ai-assistant-wide-title { display: flex; align-items: baseline; gap: 12px; flex: 1; }
+.ai-assistant-wide-title strong { font-size: 18px; letter-spacing: -.5px; }
+.ai-assistant-wide-title span { color: var(--text-3); font-size: 12px; }
+.ai-assistant-wide-head > .ai-activity-setting { width: auto; padding: 0; }
+/* Window controls follow the user's OS: macOS traffic lights on the left, Windows caption buttons on the right. */
+.ai-assistant-wide-backdrop.is-maximized { padding: 0; backdrop-filter: none; }
+.ai-assistant-wide-backdrop.is-maximized .ai-assistant-wide { width: 100%; border: 0; border-radius: 0; }
+.ai-wide-controls { display: flex; flex: 0 0 auto; }
+.ai-wide-control { display: grid; place-items: center; padding: 0; cursor: pointer; }
+.ai-wide-control-glyph { display: block; }
+.ai-wide-controls.is-mac { gap: 8px; margin-right: -4px; }
+.ai-wide-controls.is-mac .ai-wide-control { width: 13px; height: 13px; border-radius: 50%; border: .5px solid rgb(0 0 0 / 18%); color: rgb(0 0 0 / 62%); }
+.ai-wide-controls.is-mac .ai-wide-control-glyph { width: 8px; height: 8px; stroke-width: 1.6; stroke-linecap: round; opacity: 0; transition: opacity .12s ease; }
+.ai-wide-controls.is-mac:is(:hover, :focus-within) .ai-wide-control-glyph { opacity: 1; }
+.ai-wide-controls.is-mac .is-close { background: #ff5f57; }
+.ai-wide-controls.is-mac .is-minimize { background: #febc2e; }
+.ai-wide-controls.is-mac .is-maximize { background: #28c840; }
+.ai-wide-controls.is-windows { align-self: stretch; margin: -16px -24px -16px 0; }
+.ai-wide-controls.is-windows .ai-wide-control { width: 46px; border: 0; border-radius: 0; background: transparent; color: var(--text-1); transition: background-color .1s ease; }
+.ai-wide-controls.is-windows .ai-wide-control-glyph { width: 10px; height: 10px; stroke-width: 1; }
+.ai-wide-controls.is-windows .ai-wide-control:hover { background: color-mix(in srgb, var(--text-1) 7%, transparent); }
+.ai-wide-controls.is-windows .ai-wide-control:active { background: color-mix(in srgb, var(--text-1) 11%, transparent); }
+.ai-wide-controls.is-windows .is-close:hover { background: #c42b1c; color: #fff; }
+.ai-wide-controls.is-windows .is-close:active { background: #c83c31; color: rgb(255 255 255 / 80%); }
+.ai-wide-controls.is-windows .is-restore-glyph, .ai-assistant-wide-backdrop.is-maximized .ai-wide-controls.is-windows .is-max-glyph { display: none; }
+.ai-assistant-wide-backdrop.is-maximized .ai-wide-controls.is-windows .is-restore-glyph { display: block; }
+.ai-assistant-wide-head:has(.ai-wide-controls.is-windows) > .ai-activity-setting { margin-right: 4px; }
+.ai-assistant-wide-content { display: grid; grid-template-columns: minmax(0, 1fr) 9px minmax(300px, var(--ai-wide-team-width, 30%)); flex: 1; min-height: 0; }
+.ai-assistant-wide-divider { cursor: col-resize; touch-action: none; background: var(--bg-inset); position: relative; outline-offset: -2px; }
+.ai-assistant-wide-divider::after { content: ""; position: absolute; top: calc(50% - 18px); left: 4px; width: 1px; height: 36px; background: var(--border-default); }
+.ai-assistant-wide-divider:hover, .ai-assistant-wide-divider:focus-visible { background: var(--accent-muted); outline: 1px solid var(--accent); }
+.ai-assistant-wide-content > .ai-chat-panel.is-left-sidebar { min-width: 0; overflow: hidden; }
+.ai-assistant-wide :is([data-testid="ai-wide-open"], [data-testid="ai-collapse"]) { display: none; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail { padding: 12px 28px 6px; }
+.ai-assistant-wide .ai-activity-toolbar { padding: 0 28px 10px; border-bottom: 0; }
+.ai-assistant-wide .ai-activity-history { font-size: 11px; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-log { padding: 22px 32px 28px; gap: 28px; scroll-behavior: auto; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar .ai-work-inline.has-activity { padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.ai-assistant-wide .ai-work-inline > header { padding: 0 0 12px; font-size: 13px; }
+.ai-assistant-wide .ai-work-inline > header strong { font-weight: 600; }
+.ai-assistant-wide .ai-work-inline.has-activity > .ai-team-board { border-radius: 0; box-shadow: none; }
+.ai-assistant-wide .ai-team-board .ai-team-foot { padding: 12px 0 0; border: 0; }
+.ai-assistant-wide .ai-team-board .ai-team-report { line-height: 1.8; font-size: 14px; }
+.ai-assistant-wide .ai-pending-review { padding: 16px 18px; border: 0; border-radius: 10px; background: var(--bg-inset); }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck > .ai-command-bar { padding: 12px 28px 20px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 44px; max-height: 160px; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { padding: 12px 14px; border-radius: 12px; box-shadow: 0 2px 8px color-mix(in srgb, var(--text-1) 3%, transparent); }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: nowrap; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; }
+.ai-assistant-wide .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex-wrap: nowrap; overflow-x: auto; }
+.ai-assistant-wide .ai-conversation-outcome { font-size: 11px; padding-left: 28px; color: var(--text-3); }
+.ai-assistant-wide-content > .ai-team-sidebar { display: flex; width: auto; min-width: 0; z-index: auto; border-left: 0; background: var(--bg-inset); }
+.ai-assistant-wide .ai-team-rail-tabs { padding: 18px 20px 8px; border: 0; display: flex; gap: 12px; }
+.ai-assistant-wide .ai-team-sidebar.is-idle .ai-team-rail-tabs { display: flex; }
+.ai-assistant-wide .ai-team-rail-tab[aria-pressed="true"] { padding: 0; color: var(--text-1); background: transparent; font-size: 14px; font-weight: 600; }
+.ai-assistant-wide .ai-team-settings-button { position: static; display: flex; flex-direction: row; gap: 5px; margin: 0; padding: 2px 0; border: 0; font-size: 11px; }
+.ai-assistant-wide .ai-team-settings-button svg { width: 14px; height: 14px; }
+.ai-assistant-wide .ai-team-avatar-list { gap: 10px; padding: 12px; }
+.ai-assistant-wide .ai-team-avatar-list > .ai-team-member { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 6px 10px; width: 100%; padding: 10px; border: 1px solid transparent; border-radius: 9px; text-align: left; background: var(--bg-surface); }
+.ai-assistant-wide .ai-team-avatar-list > .ai-team-member[aria-pressed="true"] { background: var(--bg-raised); border-color: var(--border-subtle); }
+.ai-assistant-wide .ai-team-member > .ai-team-member-avatar { grid-area: 1 / 1; width: 32px; height: 32px; align-self: center; background: var(--bg-inset); color: var(--text-2); }
+.ai-assistant-wide .ai-team-member-name { grid-area: 1 / 2; font-weight: 600; }
+.ai-assistant-wide .ai-team-member-state { grid-area: 1 / 3; align-self: center; font-size: 11px; }
+.ai-assistant-wide .ai-team-member-task { grid-column: 1 / -1; display: block; color: var(--text-1); font-size: 13px; white-space: normal; overflow-wrap: anywhere; }
+.ai-assistant-wide .ai-team-sidebar .ai-team-member-detail { position: static; width: auto; min-width: 0; min-height: 0; flex: 1; box-shadow: none; border: 0; border-top: 1px solid var(--border-subtle); background: var(--bg-raised); }
+.ai-assistant-wide .ai-team-member-head { padding: 16px 20px 8px; }
+.ai-assistant-wide .ai-team-member-head > .ai-team-member-avatar { display: none; }
+.ai-assistant-wide .ai-team-member-tabs { padding: 0 20px; gap: 18px; }
+.ai-assistant-wide .ai-team-member-tabs button { font-size: 11px; }
+.ai-assistant-wide .ai-team-member-content { padding: 18px 20px; }
+.ai-assistant-wide .ai-team-member-content .ai-activity-setting { display: none; }
+.ai-assistant-wide .ai-team-member-composer { margin: 12px 16px 16px; padding: 10px 12px; border-radius: 10px; }
+.ai-assistant-wide .ai-team-member-composer textarea { min-height: 38px; font-size: 12px; }
+.ai-assistant-wide .ai-team-member-receiver { margin-bottom: 5px; }
+.ai-assistant-wide .ai-team-member-input-hint { font-size: 10px; }
+.ai-assistant-wide .ai-team-member-actions { padding: 0 16px; gap: 5px; }
+.ai-assistant-wide .ai-team-member-actions button { font-size: 11px; padding: 6px 8px; }
+.ai-assistant-wide .ai-team-sidebar-empty { margin: auto; }
+.ai-assistant-wide .ai-team-sidebar:has(.ai-team-member-detail:not([hidden])) .ai-team-sidebar-empty { display: none; }
+.ai-assistant-wide .ai-team-sidebar:not(:has(.ai-team-member-detail:not([hidden]))):has(.ai-team-member)::after { content: "팀원을 선택하면 작업 기록과 후속 대화를 볼 수 있어요."; margin: auto; padding: 24px; color: var(--text-3); font-size: 13px; line-height: 1.8; }
+@media (max-width: 1000px) { .ai-assistant-wide-title span { display: none; } .ai-assistant-wide-head { gap: 12px; padding: 14px 18px; } .ai-wide-controls.is-windows { margin: -14px -18px -14px 0; } }
+@media (max-width: 760px) {
+  .ai-assistant-wide-backdrop { padding: 8px; }
+  .ai-assistant-wide-head { flex-wrap: wrap; padding: 10px 14px; }
+  .ai-wide-controls.is-windows { align-self: flex-start; height: 40px; margin: -10px -14px 0 0; }
+  .ai-assistant-wide-head > .ai-activity-setting { order: 3; width: 100%; }
+  .ai-assistant-wide-content { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(300px, 1fr) minmax(300px, 45%); overflow-y: auto; }
+  .ai-assistant-wide-divider { display: none; }
+  .ai-assistant-wide-content > .ai-team-sidebar { border-top: 1px solid var(--border-subtle); }
+}
+
+.ai-assistant-wide-content:has(> .ai-team-sidebar.is-collapsed) { grid-template-columns: minmax(0, 1fr) 44px; }
+.ai-assistant-wide-content:has(> .ai-team-sidebar.is-collapsed) > .ai-assistant-wide-divider { display: none; }
+.ai-assistant-wide .ai-team-sidebar.is-collapsed .ai-team-rail-tabs { padding: 6px; }
+.ai-assistant-wide .ai-team-sidebar.is-collapsed::after { display: none; }
+@media (max-width: 760px) {
+  .ai-assistant-wide-content:has(> .ai-team-sidebar.is-collapsed) { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(300px, 1fr) 44px; }
+  .ai-assistant-wide .ai-team-sidebar.is-collapsed { min-width: 0; }
+  .ai-assistant-wide .ai-team-sidebar.is-collapsed .ai-team-rail-tabs { flex-direction: row; }
+  .ai-assistant-wide .ai-team-sidebar.is-collapsed .ai-team-rail-tab { writing-mode: horizontal-tb; }
+  .ai-assistant-wide .ai-team-sidebar.is-collapsed .ai-team-collapse { flex-direction: row; }
+}

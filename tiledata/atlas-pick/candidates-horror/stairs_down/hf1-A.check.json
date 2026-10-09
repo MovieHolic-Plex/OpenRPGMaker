@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/stairs_down/hf1-A.pxg",
+ "set": "horror",
+ "id": "stairs_down",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "A(v5 기본): 위 1줄 밝은 바닥 입술 → 단 4개가 한 단계씩 어두워져 void 로 · 1px 투명 테두리 · 양옆 안쪽 모서리 한 단 어둡게 · grave",
+ "ok": true
+}

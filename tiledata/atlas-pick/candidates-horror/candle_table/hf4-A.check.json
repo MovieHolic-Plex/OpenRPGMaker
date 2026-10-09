@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/candle_table/hf4-A.pxg",
+ "set": "horror",
+ "id": "candle_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  5,
+  3,
+  10,
+  15
+ ],
+ "note": "A: candelabra_drip 과 같은 초·불꽃 — 놋쇠 접시(tarn 3·2)·가는 대·밑판 위에 초 한 자루(wax 4·3), 불꽃 2px 폭 3줄(flame 2~4), 둘레에 % 번짐 작게. 밑변 y15 가운데 6px",
+ "ok": true
+}

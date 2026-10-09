@@ -1,0 +1,59 @@
+// library_counter v35-A: 대출 데스크 3/4 — 소나무 윗판 T6(모니터·책 더미·도장)·앞 F16 세 칸 서랍장 (폭 32px)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o vdwood 1
+@mat O vdwood 2
+@mat P vdwood 4
+@mat t vpine 4
+@mat u vpine 5
+@mat a vpine 6
+@mat s vpine 3
+@mat f vpine 2
+@mat m viron 1
+@mat n viron 2
+@mat k viron 4
+@mat g vglass 3
+@mat h vglass 4
+@mat j vglass 5
+@mat r vred 3
+@mat R vred 2
+@mat b vblue 3
+@mat B vblue 2
+@mat e vgreen 3
+@mat E vgreen 2
+@mat H vbrass 5
+@mat c vbrass 3
+@mblock 0 0
+................................
+................................
+....................mmmmmmmmmm..
+....................mggggggggm..
+.....eeeeee.........mgjjjggggm..
+.....EEEEEE.........mghggggggm..
+....BBBBBBBB........mggggggggm..
+....bbbbbbbb........mgggggggge..
+...RRRRRRRRRR.......nnnnnnnnnn..
+...rrrrrrrrrr...........kkk.....
+OOOOOOOOOOOOOOOOOOOOOOnnnnnnnOOO
+uuuuuuuuuuuuuuuuRuuuuunnnnnnnuuu
+uuuuuuutuuuuuuurrrutuuuuuutuuuuu
+uuuuuuuuuuuuuuurrruuuuuuuuuuuuuu
+uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ffffffffffffffffffffffffffffffff
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OssssssssssOsssssssssOsssssssssO
+OPPPPPPPPPPOPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPHHHHPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPccccPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPPOPPPPPPPPPOPPPPPPPPPO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+oooooooooooooooooooooooooooooooo
+oooooooooooooooooooooooooooooooo
+...~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

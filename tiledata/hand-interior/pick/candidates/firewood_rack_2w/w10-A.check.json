@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w10-A.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "밝은 장작 단면(나이테)과 어두운 뒤판·깊이 있는 윗보 그늘로 장작이 앞으로 튀어나와 보이게",
+ "ok": true
+}

@@ -1,0 +1,173 @@
+@layer tokens, base, runtime, overrides;
+
+@import "../styles/tokens.css";
+/* 플레이어는 다크 문서다(아래 `color-scheme: dark`). tokens.css 는 에디터 라이트 팔레트이므로
+   바로 뒤에서 런타임이 쓰는 토큰만 다크로 덮는다. 위 import 와 같은 언레이어라 순서로 이긴다. */
+@import "../styles/runtime/tokens.dark.css";
+@import "../styles/runtime/playerRuntime.css";
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: #000;
+  font-family: var(--font-ui);
+}
+
+/* 익스포트 셸 보정 — 에디터 CSS 없이 단독 구동될 때의 최소 레이아웃. */
+#app {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-layout.system-shell {
+  width: 100%;
+  height: 100vh;
+  cursor: default !important;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+/* Keyboard-only runtime content never participates in hit testing. This also prevents
+   descendant :hover/:active selectors from matching; keyboard focus/click synthesis
+   remains available. Explicit pointer owners opt only their own subtree back in. */
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] > * {
+  pointer-events: none !important;
+}
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *,
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::before,
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::after {
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none;
+}
+.player-layout.system-shell [data-play-input-owner="license-notice"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
+  pointer-events: auto !important;
+}
+.player-layout.system-shell [data-play-input-owner="license-notice"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
+  cursor: pointer !important;
+}
+.player-layout canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+/* 헤드리스 검증용 상태 덤프는 시각적으로 숨긴다(에디터 core.part-1.css 규칙과 동일 의도). */
+.runtime-state-json {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: none;
+  font-size: 1px;
+  z-index: 1;
+  /* 세션 JSON 은 수십 KB 이고 매 갱신마다 이 1px 상자 안에서 줄 상자를 다시 계산했다.
+     content-visibility 는 내용의 레이아웃·페인트를 건너뛴다. 상자(1×1)는 남으므로
+     Playwright 의 toBeVisible 은 그대로 통과하고 textContent 도 그대로 읽힌다. */
+  content-visibility: hidden;
+}
+/* 이벤트 디버그 마커도 동일하게 은닉(헤드리스 검증용 DOM 유지). */
+.runtime-debug-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: none;
+  font-size: 1px;
+  z-index: 6;
+}
+
+html[data-clean-evidence="true"] .runtime-debug-panel,
+html[data-clean-evidence="true"] .runtime-coordinate-debug,
+html[data-clean-evidence="true"] [data-testid="runtime-debug-panel"],
+html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
+  display: none !important;
+}
+
+.oprn-game-file-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: 520px;
+  padding: var(--space-6) var(--space-5);
+  border: var(--stroke-2) dashed var(--border-default);
+  border-radius: var(--radius-l);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  text-align: center;
+}
+
+.oprn-game-file-picker[data-drop-active="true"] {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+}
+
+.oprn-game-file-picker-title {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+.oprn-game-file-picker-help {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button {
+  padding: var(--space-2) var(--space-4);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--control-bg);
+  color: var(--text-1);
+  font: inherit;
+  cursor: pointer;
+}
+
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:focus-visible {
+  outline: var(--focus-outline);
+}
+
+.oprn-game-file-picker[data-play-input-owner="game-file-open"] .oprn-game-file-picker-button:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.oprn-game-file-picker-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.oprn-game-file-picker-status {
+  margin: 0;
+  min-height: 1.4em;
+  color: var(--warning);
+  font-size: var(--font-size-sm);
+}

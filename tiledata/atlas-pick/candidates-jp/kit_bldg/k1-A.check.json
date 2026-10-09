@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_bldg/k1-A.pxg",
+ "set": "jp",
+ "id": "kit_bldg",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.406
+ },
+ "refmap": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.277
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 58,
+ "bbox": [
+  0,
+  0,
+  127,
+  111
+ ],
+ "note": "강남풍 현대 — ALC 패널 회색 벽, 알루미늄 창틀+짙은 유리, 파랑·빨강 가로간판, 청록 세로간판",
+ "ok": true
+}

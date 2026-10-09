@@ -1,0 +1,50 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+const out='output/evidence/emerald-region',saved=process.argv.includes('--saved');
+const expected=JSON.parse(fs.readFileSync(`${out}/${saved?'reloaded':'preview'}-project.json`,'utf8'));
+const mapId='map_field_emerald_basin_20260914',regionId='region_emerald_basin_20260914';
+const browser=await chromium.launch({args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu']});
+let page;
+try{
+ page=await browser.newPage({viewport:{width:1600,height:1000}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',route=>{const r=route.request();return !['GET','HEAD','OPTIONS'].includes(r.method())&&/\/rest\/v1\/|\/rpc\//.test(r.url())?route.abort():route.continue();});
+ await page.addInitScript(()=>{localStorage.setItem('oprn:ai-panel-collapsed','1');localStorage.setItem('oprn:editor-ui-mode','expert');for(const k of ['oprn:editor-welcome-dismissed','oprn:standard-welcome-seen','oprn:coachmarks-basic-v1'])localStorage.setItem(k,'1');});
+ await page.goto(`http://127.0.0.1:9809/?${saved?'project=rpg-zzu-house-template-gallery':'blankProject=1'}&aiBridge=0`,{waitUntil:'domcontentloaded',timeout:120000});
+ await page.waitForFunction(()=>window.__oprnEditorStore?.getCurrent()&&window.__oprnEditWorldToClient,null,{timeout:120000});
+ const result=await page.evaluate(async({expected,saved,regionId,mapId})=>{
+  const store=window.__oprnEditorStore;if(!saved)store.replace(expected,{change:{label:'지역 등록 미리보기',origin:'system',scope:'project'}});
+  const project=store.getCurrent();if(JSON.stringify(project.maps[mapId])!==JSON.stringify(expected.maps[mapId]))throw Error('Map mismatch');
+  if(JSON.stringify(project.spatialAuthoring.library.regions[regionId])!==JSON.stringify(expected.spatialAuthoring.library.regions[regionId]))throw Error('Region mismatch');
+  const {spatialPresentationId}=await import('/src/editor/panels/spatialPresentation.ts');
+  return {cardId:spatialPresentationId('library-region','library',regionId),remote:store.isRemotePersistenceEnabled()};
+ },{expected,saved,regionId,mapId});
+ await page.getByTestId('toolbar-database').click();
+ const group=page.getByTestId('db-tab-group-world');if(await group.getAttribute('aria-expanded')==='false')await group.click();
+ await page.getByTestId('db-tab-spatial-regions').click();
+ await page.waitForFunction(cardId=>document.querySelector('[data-testid="composition-design"]')||[...document.querySelectorAll('[data-card-id]')].some(el=>el.dataset.cardId===cardId),result.cardId,{timeout:60000});
+ if(await page.getByTestId('composition-design').count())await page.getByTestId('composition-design').selectOption(result.cardId);
+ else await page.getByTestId(`spatial-card-${result.cardId}`).click();
+ await page.locator('[data-testid="region-map-preview"][data-painted="atlas"]').waitFor({timeout:60000});
+ await page.getByTestId('spatial-source-own').click();
+ await page.locator('[data-testid="region-map-preview"][data-painted="atlas"]').waitFor({timeout:60000});
+ await page.getByTestId('region-map-open').waitFor();
+ console.log('Region loaded and preview painted');
+ await page.screenshot({path:`${out}/region-${saved?'saved':'preview'}.png`});
+ const pixelMatch=await page.evaluate(async(mapId)=>{
+   const p=window.__oprnEditorStore.getCurrent(),m=p.maps[mapId],ts=p.tilesets[m.tilesetId];
+   const {drawMapTileLayers,loadTilesetImage}=await import('/src/editor/mapTileDraw.ts');
+   const c=document.createElement('canvas');c.width=m.width*m.tileSize;c.height=m.height*m.tileSize;
+   drawMapTileLayers(c.getContext('2d'),await loadTilesetImage(ts),m,ts,1);
+   return c.toDataURL()===document.querySelector('[data-testid="region-map-preview"]').toDataURL();
+ },mapId);assert.equal(pixelMatch,true);
+ await page.getByTestId('spatial-mode-instances').click();
+ await page.getByTestId('spatial-card-region_emerald_basin_map_20260914').click();
+ await page.locator('[data-testid="region-map-preview"][data-painted="atlas"]').waitFor({timeout:60000});
+ await page.getByTestId('region-map-open').click();
+ await page.getByTestId('database-modal').waitFor({state:'detached',timeout:15000});
+ const opened=await page.evaluate(async()=>{const {editorState}=await import('/src/editor/editorState.ts');return editorState.get().currentMapId;});assert.equal(opened,mapId);
+ await page.screenshot({path:`${out}/map-open-${saved?'saved':'preview'}.png`});
+ assert.deepEqual(errors,[]);if(saved)assert.equal(result.remote,true);
+ const proof={saved,remote:result.remote,libraryCard:true,placedCard:true,pixelMatch,mapOpen:true,errors};fs.writeFileSync(`${out}/editor-${saved?'saved':'preview'}-proof.json`,JSON.stringify(proof,null,2));console.log(JSON.stringify(proof));
+}catch(e){await page?.screenshot({path:`${out}/failure.png`});console.error(e);throw e;}finally{await browser.close();}

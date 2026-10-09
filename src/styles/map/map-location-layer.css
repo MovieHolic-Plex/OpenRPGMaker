@@ -1,0 +1,349 @@
+/* 명명 로케이션 편집 레이어 (OPRN-OUT-020).
+ *
+ * 규칙 둘만 지키면 된다.
+ *  1. 레이어가 꺼져 있으면 `pointer-events: none` — 타일 편집 경로를 한 픽셀도 막지 않는다.
+ *  2. 색은 토큰과 `--map-location-color`(TS 가 로케이션별로 결정론적 배정) 뿐이다. hex 리터럴 금지.
+ */
+
+.map-location-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+.map-location-layer.is-active { pointer-events: auto; cursor: crosshair; }
+/* 「화면 밀기」 가 켜지면 이 층의 드래그는 카메라의 것이므로 커서도 캔버스와 같아야 한다
+ * (editor/cameraPanBridge.ts). crosshair 를 그대로 두면 여기서 구역이 그려질 것처럼 보인다. */
+body[data-editor-tool="pan"] .map-location-layer.is-active { cursor: var(--editor-tool-cursor, grab); }
+body[data-editor-tool="pan"] .map-location-layer.is-active:active { cursor: grabbing; }
+
+.map-location-box {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--stroke-2) dashed var(--map-location-color, var(--accent));
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--map-location-color, var(--accent)) 12%, transparent);
+  padding: 0;
+  cursor: move;
+}
+.map-location-box:focus-visible { outline: var(--focus-outline); outline-offset: var(--stroke-2); }
+.map-location-box.is-selected {
+  border-style: solid;
+  background: color-mix(in srgb, var(--map-location-color, var(--accent)) 22%, transparent);
+  box-shadow: var(--shadow-pop);
+}
+
+.map-location-box-label {
+  position: absolute;
+  top: calc(var(--space-4) * -1);
+  left: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-s);
+  background: var(--bg-overlay);
+  color: var(--map-location-color, var(--accent));
+  font: var(--font-weight-bold) var(--font-size-xs) / 1.4 var(--font-ui);
+}
+
+.map-location-resize-handle {
+  position: absolute;
+  right: calc(var(--space-1) * -1);
+  bottom: calc(var(--space-1) * -1);
+  width: var(--space-3);
+  height: var(--space-3);
+  border: var(--stroke-1) solid var(--bg-overlay);
+  border-radius: var(--radius-s);
+  background: var(--map-location-color, var(--accent));
+  cursor: nwse-resize;
+}
+
+.map-location-draw-preview {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--stroke-2) solid var(--accent);
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  pointer-events: none;
+}
+.map-location-draw-size {
+  position: absolute;
+  right: var(--space-1);
+  bottom: var(--space-1);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-s);
+  background: var(--bg-overlay);
+  color: var(--text-1);
+  font: var(--font-size-xs) / 1.4 var(--font-mono);
+}
+
+/* 빌더 설계 영역 참고 표시 — 사람 레이어와 시각적으로 확실히 다르다(점선·흐림). */
+.map-location-region-ghost {
+  position: absolute;
+  box-sizing: border-box;
+  border: var(--stroke-1) dotted var(--text-3);
+  border-radius: var(--radius-s);
+  background: transparent;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.map-location-region-label {
+  position: absolute;
+  top: var(--space-1);
+  left: var(--space-1);
+  color: var(--text-3);
+  font: var(--font-size-xs) / 1.4 var(--font-ui);
+}
+
+/* 켠 직후 0개일 때 맵 위에 다음 행동을 그린다. 포인터는 통과시켜 그 자리 드래그가 구역이 된다. */
+.map-location-empty-ghost {
+  position: absolute;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  border: var(--stroke-2) dashed var(--accent);
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.map-location-empty-ghost-label {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--bg-overlay);
+  color: var(--accent);
+  font: var(--font-weight-bold) var(--font-size-sm) / 1.4 var(--font-ui);
+}
+
+/* 인스펙터 — 캔버스 우상단에 얹히는 비모달 패널. 캔버스를 가리지 않게 폭을 묶는다. */
+.map-location-inspector {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 7;
+  display: none;
+  width: min(320px, calc(100% - var(--space-6)));
+  max-height: calc(100% - var(--space-6));
+  overflow-y: auto;
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--bg-overlay);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  font: var(--font-size-sm) / 1.5 var(--font-ui);
+}
+.map-location-inspector.is-active { display: block; }
+.map-location-inspector-body { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-3); }
+.map-location-inspector-header { display: flex; align-items: center; gap: var(--space-2); }
+.map-location-inspector-header > .btn { margin-left: auto; }
+
+.map-location-hint, .map-location-id, .map-location-refs, .map-location-overlap {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+}
+.map-location-ref-sites {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.map-location-ref-site { justify-content: flex-start; text-align: left; }
+.map-location-overlap { color: var(--warning); }
+
+.map-location-check-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-xs); }
+
+.map-location-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.map-location-empty { color: var(--text-3); font-size: var(--font-size-xs); }
+.map-location-list-button {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-height: var(--space-6);
+  padding: var(--space-1) var(--space-2);
+  border: var(--stroke-1) solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.map-location-list > li.is-selected > .map-location-list-button { border-color: var(--accent); }
+.map-location-list-rect { margin-left: auto; color: var(--text-3); font-size: var(--font-size-xs); }
+
+.map-location-editor { display: flex; flex-direction: column; gap: var(--space-2); border-top: var(--stroke-1) solid var(--border-default); padding-top: var(--space-2); }
+.map-location-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.map-location-field > span, .map-location-rect-field > span { color: var(--text-2); font-size: var(--font-size-xs); }
+.map-location-rect-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-1); }
+.map-location-rect-field { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.map-location-editor :is(input, textarea, select) {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--space-6);
+  padding: var(--space-1) var(--space-2);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: inherit;
+}
+
+.map-location-broken {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: var(--stroke-1) solid var(--danger);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.map-location-broken-row { display: flex; flex-direction: column; gap: var(--space-1); }
+.map-location-broken-row > p { margin: 0; color: var(--text-2); font-size: var(--font-size-xs); }
+.map-location-broken-row > select {
+  min-height: var(--space-6);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: inherit;
+}
+
+.canvas-toolbar .map-location-layer-button.is-active { border-color: var(--accent); color: var(--accent); }
+
+/* 인카운터 조건 안의 끊긴 로케이션 참조 안내. map-props 창 안에 산다. */
+.map-encounter-location-broken {
+  margin: 0;
+  color: var(--danger);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+/* ── 설계 영역 이관 창 (LOC-ADOPT).
+ *
+ * 조사가 먼저 보이고 실행 버튼이 맨 아래에 있다 — 시선 순서가 곧 안전 순서다.
+ * 색은 토큰만 쓴다(hex 리터럴 금지, 위 규칙 2 와 동일). */
+
+.map-location-adopt-survey {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.location-adoption-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: min(46rem, 92vw);
+  max-height: 86vh;
+  overflow: auto;
+  text-align: start;
+}
+.location-adoption-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.location-adoption-lede {
+  margin: var(--space-1) 0 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}
+.location-adoption-empty { margin: 0; color: var(--text-2); }
+.location-adoption-summary {
+  margin: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  font-size: var(--font-size-sm);
+}
+.location-adoption-error { margin: 0; color: var(--danger); font-size: var(--font-size-sm); }
+
+.location-adoption-roles,
+.location-adoption-policy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-roles-why,
+.location-adoption-policy-note {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+.location-adoption-role-row,
+.location-adoption-policy-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+}
+.location-adoption-role-count { color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-role-caution {
+  flex-basis: 100%;
+  color: var(--warning);
+  font-size: var(--font-size-xs);
+  line-height: 1.4;
+}
+.location-adoption-role-row.is-cautious .location-adoption-role-name { color: var(--text-2); }
+
+.location-adoption-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.location-adoption-row {
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-row.is-selected { border-color: var(--accent); }
+.location-adoption-row-main { display: flex; align-items: flex-start; gap: var(--space-2); }
+.location-adoption-row-text { display: flex; flex-direction: column; gap: var(--space-1); }
+.location-adoption-map-name { font-weight: 600; }
+.location-adoption-map-counts,
+.location-adoption-map-roles { color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-collision,
+.location-adoption-orphan {
+  margin: var(--space-1) 0 0;
+  color: var(--warning);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
+.location-adoption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+.location-adoption-receipt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: var(--stroke-1) solid var(--accent);
+  border-radius: var(--radius-s);
+  padding: var(--space-2);
+}
+.location-adoption-receipt-line { margin: 0; font-size: var(--font-size-sm); line-height: 1.5; }
+.location-adoption-receipt-undo { margin: 0; color: var(--text-2); font-size: var(--font-size-xs); }
+.location-adoption-renamed {
+  margin: 0;
+  padding-inline-start: var(--space-4);
+  color: var(--text-2);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+}

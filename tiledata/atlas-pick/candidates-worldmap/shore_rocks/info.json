@@ -1,0 +1,23 @@
+{
+ "id": "shore_rocks",
+ "slug": "shore_rocks",
+ "name": "물가 돌 셋",
+ "scene": "들·길",
+ "kind": "scatter",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 물가·풀밭에 놓는 둥근 회색 돌 한두 알. 왼위 밝게·아래 어둡게, 아래에 반투명 그림자 한 줄.",
+ "palette_hint": "wpebble 4단",
+ "worker": "v6"
+}

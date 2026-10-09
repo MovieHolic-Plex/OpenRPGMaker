@@ -1,0 +1,28 @@
+/* runtime 표면 — database/modern/utility-records.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 runtime 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/modern/utility-records.css:329-332 — [레이어 보존] DB 전투 명령 미리보기가 런타임 .battle-command 를 덮어쓰는 규칙 — runtime 레이어여야 오늘처럼 이긴다(db-battleCommands 샷 실측) */
+.db-command-css-preview .battle-command-menu {
+  display: grid;
+  gap: var(--space-2);
+}
+
+/* database/modern/utility-records.css:333-342 — [레이어 보존] DB 전투 명령 미리보기가 런타임 .battle-command 를 덮어쓰는 규칙 — runtime 레이어여야 오늘처럼 이긴다(db-battleCommands 샷 실측) */
+.db-command-css-preview .battle-command {
+  min-width: 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-surface);
+  border: var(--stroke-1) solid var(--db-studio-border-default);
+  border-radius: var(--radius-s);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+/* database/modern/utility-records.css:343-346 — [레이어 보존] DB 전투 명령 미리보기가 런타임 .battle-command 를 덮어쓰는 규칙 — runtime 레이어여야 오늘처럼 이긴다(db-battleCommands 샷 실측) */
+.db-command-css-preview .battle-command:focus-visible {
+  outline: var(--stroke-2) solid var(--db-studio-accent);
+  outline-offset: var(--stroke-2);
+}

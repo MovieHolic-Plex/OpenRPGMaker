@@ -1,0 +1,104 @@
+// AI 채팅 패널 메타 진입점 도달성 회귀.
+//
+// 왜 이 파일이 필요한가 (실측, 2026-08-30 test/e2e/_aichat-bug-hunt):
+// 기본 도크(glass, DEFAULT_CHAT_DOCK)와 side 에서 `.ai-command-menu-toggle` 이
+// `display:none` 이었다 — rect 0x0. float 만 30x30. ☰ 는 aiComposer 의 문서가 말하는
+// **유일한 메타 진입점**이고(헤더는 2026-08-28 에 제거됐다), 그 안에 되돌리기·내보내기·
+// 도크 전환·전체 기록·툴 브라우저·가르치기 3종·설정이 들어 있다. 즉 기본 상태에서 그
+// 전부가 도달 불가였고, side 로 들어가면 `.ai-dock-mode-btn`(숨은 훅 컨테이너 안)도 없어
+// 도크를 되돌릴 수단조차 없었다.
+//
+// 여기서는 두 층을 함께 못박는다: (1) CSS 가 ☰ 를 다시 숨기지 못한다, (2) 세 도크 모두에서
+// 메뉴 항목이 패널 DOM 에 실재한다.
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { clearConversations } from "@/ai/conversationStore";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { editorState } from "@/editor/editorState";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+
+const DOCK_CSS = path.resolve("src/styles/database/tabs-b-assistant-panel/02-chat-dock.css");
+
+let restoreDom: (() => void) | null = null;
+let storage: Map<string, string>;
+
+beforeEach(async () => {
+  store.replace(createBlankProject());
+  editorState.set({ currentMapId: null, selection: null });
+  restoreDom = installFakeDom();
+  storage = new Map();
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    writable: true,
+    value: {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, String(value)),
+      removeItem: (key: string) => void storage.delete(key),
+      clear: () => storage.clear(),
+    },
+  });
+  await clearConversations();
+});
+
+afterEach(async () => {
+  teardownAiChatPanel();
+  await clearConversations();
+  restoreDom?.();
+  restoreDom = null;
+  Reflect.deleteProperty(globalThis, "localStorage");
+});
+
+function renderPanel(): FakeElement {
+  storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+  return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
+}
+
+describe("☰ 메타 메뉴는 어느 도크에서도 숨지 않는다", () => {
+  it("02-chat-dock.css 의 어떤 display:none 블록도 .ai-command-menu-toggle 을 겨냥하지 않는다", () => {
+    const css = readFileSync(DOCK_CSS, "utf8");
+    const hidingBlocks = [...css.matchAll(/([^{}]+)\{([^}]*)\}/gu)].filter(([, , body]) =>
+      /display\s*:\s*none/u.test(body)
+    );
+    const offenders = hidingBlocks
+      .map(([, selector]) => selector.replace(/\/\*[\s\S]*?\*\//gu, "").trim())
+      .filter((selector) => selector.includes(".ai-command-menu-toggle"));
+    expect(offenders).toEqual([]);
+  });
+
+  it("메뉴 토글과 유일 항목이 패널에 있다", () => {
+    const panel = renderPanel();
+    expect(findByTestId(panel, "ai-command-menu-toggle")).toBeTruthy();
+    for (const testid of [
+      "ai-command-menu-export",
+      "ai-command-menu-tools",
+      "ai-command-menu-compact",
+      "ai-command-menu-instructions",
+    ]) {
+      expect(findByTestId(panel, testid), testid).toBeTruthy();
+    }
+    expect(findByTestId(panel, "ai-command-menu-dock")).toBeNull();
+    expect(findByTestId(panel, "ai-command-menu-settings")).toBeTruthy();
+  });
+});
+
+describe("설정 진입점", () => {
+  it("크롬 설정 단추(ai-settings-toggle·ai-settings-command-bar)는 여전히 만들지 않는다", () => {
+    // 2026-08-30 계약: 조수 패널 크롬에는 설정 단추를 중복해 놓지 않는다. 진입점은
+    // ☰ 메뉴 항목 하나다 — 이 둠이 함게 최종 표대 상태를 정의한다.
+    const panel = renderPanel();
+    expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
+  });
+
+  it("☰ 의 설정 항목은 aria-label 을 갖고 전용 설정 모달을 연다", () => {
+    const panel = renderPanel();
+    const settings = findByTestId(panel, "ai-command-menu-settings") as unknown as FakeElement;
+    expect(settings.getAttribute("aria-label")).toBe("AI 설정 열기");
+    settings.click();
+    expect(findByTestId(document.body as unknown as FakeElement, "ai-settings-modal")).toBeTruthy();
+  });
+});

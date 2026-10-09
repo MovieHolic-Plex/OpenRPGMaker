@@ -1,0 +1,170 @@
+@media (min-width: 901px) {
+  .db-class-dialog-backdrop {
+    background: rgba(60, 48, 32, 0.10);
+    padding: 18px;
+  }
+
+  .db-class-dialog {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    box-shadow: 0 22px 60px rgba(60, 48, 32, 0.14);
+    color: var(--text-1);
+    display: grid;
+    font-family: var(--font-ui);
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    max-height: calc(100vh - 48px);
+    overflow: hidden;
+    width: min(1080px, calc(100vw - 48px));
+  }
+
+  .db-class-dialog header,
+  .db-class-dialog footer {
+    background: var(--bg-raised);
+    border-color: var(--border-subtle);
+    color: var(--text-1);
+    min-height: 48px;
+    padding: 10px 14px;
+  }
+
+  .db-class-dialog header {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .db-class-dialog footer {
+    border-top: 1px solid var(--border-subtle);
+    justify-content: flex-end;
+  }
+
+  .db-class-dialog header strong {
+    font: 700 16px/22px var(--font-ui);
+  }
+
+  .db-class-dialog header button,
+  .db-class-dialog footer button,
+  .db-class-dialog .btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-1);
+    font: 600 13px/1 var(--font-ui);
+    min-height: 32px;
+    min-width: 76px;
+    padding: 6px 12px;
+  }
+
+  .db-class-dialog footer button:first-child {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .db-class-curve-tabs {
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 8px 14px 0;
+  }
+
+  .db-class-curve-tabs button {
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 3px solid transparent;
+    color: var(--text-1);
+    flex: 0 0 auto;
+    font: 600 13px/32px var(--font-ui);
+    min-height: 36px;
+    padding: 0 10px;
+  }
+
+  .db-class-curve-tabs button.active {
+    border-bottom-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .db-class-dialog-body {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  .db-class-curve-dialog-graph {
+    align-items: end;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    display: flex;
+    gap: 1px;
+    height: 320px;
+    min-width: 0;
+    overflow: hidden;
+    padding: 16px 12px 12px;
+  }
+
+  .db-class-curve-dialog-graph button {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border: 0;
+    border-radius: 3px 3px 0 0;
+    flex: 1 1 0;
+    min-height: 6px;
+    min-width: 2px;
+    padding: 0;
+  }
+
+  .db-class-curve-dialog-graph button.active {
+    background: linear-gradient(180deg, var(--bg-inset) 0%, var(--bg-inset) 100%);
+    box-shadow: 0 0 0 2px var(--accent-muted);
+  }
+
+  .db-class-dialog-side {
+    align-content: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .db-class-dialog-number {
+    color: var(--text-1);
+    display: grid;
+    font: 600 13px/18px var(--font-ui);
+    gap: 5px;
+  }
+
+  .db-class-dialog-number input {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-1);
+    font: 400 14px/1.25 var(--font-ui);
+    min-height: 32px;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  .db-class-dialog-side .db-advanced-panel {
+    border: 0;
+    display: grid;
+    gap: 7px;
+    margin: 4px 0 0;
+    padding: 0;
+  }
+
+  .db-class-dialog-side .db-advanced-panel legend {
+    color: var(--text-1);
+    font: 700 14px/20px var(--font-ui);
+    margin: 0 0 2px;
+  }
+
+  .db-class-dialog-side .db-advanced-panel .btn {
+    width: 100%;
+  }
+}

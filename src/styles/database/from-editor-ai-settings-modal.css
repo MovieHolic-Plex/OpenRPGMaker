@@ -1,0 +1,76 @@
+/* database 표면 — editor/ai-settings-modal.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `shell/dialogs/ai-settings-modal.css` 에 있다. */
+
+
+/* editor/ai-settings-modal.css:3-11 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.database-modal-window.ai-settings-window {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(780px, calc(100vh - var(--space-5)));
+  max-height: min(780px, calc(100vh - var(--space-5)));
+  max-width: min(860px, calc(100vw - var(--space-5)));
+  overflow: hidden;
+  width: 760px;
+}
+
+/* editor/ai-settings-modal.css:13-18 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.ai-settings-window .database-modal-header {
+  background: var(--bg-raised);
+  border-bottom: var(--stroke-1) solid var(--border-default);
+  min-height: 48px;
+  padding-block: var(--space-2) var(--space-3);
+  padding-inline: var(--space-4);
+}
+
+/* editor/ai-settings-modal.css:20-26 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+.ai-settings-window .database-modal-header h2 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--space-4);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* [레이어 보존] 로그인 전의 유일한 다음 단계 — 회색 버튼 사이에 묻히지 않게 강조한다. 버튼 바탕은 database 레이어의
+ * 범용 .ai-assistant-action 이 칠하므로 shell 레이어에 두면 레이어 순서에 져서 흰 버튼으로 남는다(실측). */
+.ai-auth-actions .ai-oauth-login.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent, #fff);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-auth-actions .ai-oauth-login.is-primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 88%, black);
+}
+
+/* editor/ai-settings-modal.css:38-47 — [레이어 보존] AI 설정 대화상자가 DB 모달 크롬(.database-modal-*)을 재사용하며 덮어쓰는 규칙 — database 레이어의 범용 .database-modal-header 를 오늘처럼 특이도로 이기려면 같은 레이어여야 한다 */
+/* 레일+페인 리디자인(2026-09): 바디는 스크롤하지 않는다 — 폼이 레일·본문·푸터 그리드로
+   높이를 채우고 스크롤은 .ai-settings-content 가 맡는다. */
+.database-modal-backdrop.ai-settings-modal-backdrop
+  .database-modal-window.ai-settings-window
+  .database-modal-body.ai-settings-body {
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* [레이어 보존] 연결 후 계속 버튼도 database의 범용 버튼 배경을 이겨야 한다. */
+
+.ai-settings-window .ai-config-actions .ai-assistant-action.is-primary:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-settings-window .ai-config-actions .ai-assistant-action:disabled {
+  cursor: default;
+  opacity: .55;
+}

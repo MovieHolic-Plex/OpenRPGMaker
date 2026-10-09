@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>슈퍼하네스</title>
+<style>
+:root{--bg:#141619;--card:#1d2025;--line:#2c3037;--ink:#ececee;--dim:#9a9fa8;--ok:#5cbf83;--run:#5aaed0;--wait:#d6a24a;--bad:#e06a5a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,"Pretendard","Noto Sans KR",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+header h1{font-size:18px;margin:0 8px 0 0}
+#line{color:var(--dim)}
+#pause{margin-left:auto}
+button{background:#2a2e35;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+button:hover{border-color:#4a505a}
+.tabs{display:flex;gap:6px;padding:12px 20px 0;flex-wrap:wrap}
+.tabs button{border-radius:999px}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:16px 20px 40px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.c:hover{border-color:#4a505a}
+.c .pic{position:relative;aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
+.c .pic img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.pic-kind{position:absolute;top:8px;left:8px;padding:3px 7px;background:#161a21e8;color:#f1c66c;border-radius:5px}
+.c .t{padding:10px 12px 12px}
+.c b{font-size:15px}
+.c .s{font-size:12px;margin:2px 0 4px}
+.c .a{font-size:12px;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.s.done{color:var(--ok)} .s.work{color:var(--run)} .s.wait{color:var(--wait)} .s.stop{color:var(--bad)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--run);margin-right:5px;animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.25}}
+.empty{color:var(--dim);padding:40px 20px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 12px}
+#modal.on{display:flex}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;max-width:1000px;width:100%;padding:20px 22px}
+.box h2{margin:0 0 2px;font-size:20px}
+.box .about{color:var(--ink);margin:10px 0}
+.box .muted{color:var(--dim);font-size:13px}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin:12px 0}
+.pics figure{margin:0}
+.pics img{width:100%;border-radius:6px;background:#0e0f11;cursor:zoom-in}
+.pics figcaption{font-size:12px;color:var(--dim)}
+.box h3{font-size:14px;margin:16px 0 6px}
+.box ul{margin:0;padding-left:18px}
+.box li{margin:2px 0}
+textarea{width:100%;min-height:70px;background:#121418;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.primary{background:#2d5d8a;border-color:#2d5d8a}
+.danger{background:#5a2a26;border-color:#5a2a26}
+.close{float:right}
+#big{width:calc(100vw - 24px);height:calc(100dvh - 24px);max-width:none;max-height:none;margin:auto;padding:0;border:1px solid #60748e;border-radius:12px;background:#111821;color:#edf2fa;overflow:hidden}
+#big[open]{display:flex;flex-direction:column}#big::backdrop{background:rgba(0,0,0,.85)}
+.image-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px;border-bottom:1px solid #40526a}.image-toolbar strong{margin-right:auto}.image-toolbar output{min-width:120px;text-align:center;font-size:13px}.image-toolbar button,.image-toolbar a{min-height:38px}.image-toolbar a{padding:8px}
+.image-help{margin:8px 14px;color:#bac8d9;font-size:13px}.image-viewport{flex:1;min-height:0;overflow:auto;touch-action:none;cursor:grab;background:repeating-conic-gradient(#202833 0 25%,#293340 0 50%) 0/24px 24px}.image-viewport.dragging{cursor:grabbing}.image-canvas{display:grid;place-items:center;min-width:100%;min-height:100%}#big img{display:block;max-width:none;max-height:none;image-rendering:pixelated;user-select:none;pointer-events:none}
+@media(max-width:600px){.image-toolbar{gap:5px;padding:8px}.image-toolbar strong{width:100%}.image-toolbar output{min-width:95px}}
+
+a{color:var(--run)}
+
+.header-link,.doc-tools a{display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none}
+.doc-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.doc-tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.document{font-size:16px;line-height:1.8;overflow-wrap:anywhere}
+.document h1{font-size:28px;line-height:1.4;margin:0 0 20px}
+.document h2{font-size:22px;line-height:1.5;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.document h3{font-size:18px;margin:24px 0 10px}
+.document p,.document ul,.document ol{margin:12px 0}
+.document li{margin:6px 0}
+.document blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--wait);background:#25282e}
+.document code{padding:2px 5px;background:#121418;border-radius:4px;font-size:14px}
+.document pre{white-space:pre-wrap;font:14px/1.8 ui-monospace,monospace;background:#121418;padding:16px;border-radius:8px}
+.document pre:has(code){white-space:pre;overflow-wrap:normal;overflow-x:auto}
+.document pre code{padding:0}
+.table-scroll{overflow-x:auto;margin:18px 0}
+.document table{border-collapse:collapse;width:100%;font-size:15px;min-width:620px}
+.document th,.document td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+.document th{background:#272b32}
+.document th{white-space:nowrap}
+.document td:first-child{min-width:160px}
+.document td:nth-child(2),.document td:nth-child(3),.document td:nth-child(5){white-space:nowrap}
+.document td:nth-child(4){min-width:280px}
+.document figure{margin:18px 0}
+.document figure img{display:block;max-width:100%;height:auto;border-radius:8px;cursor:zoom-in}
+.document figcaption{color:var(--dim);font-size:14px;margin-top:6px}
+main.orders{display:block;max-width:1100px;margin:auto}
+@media(max-width:600px){.box{padding:18px 14px}.document{font-size:15px}.document h1{font-size:24px}header{padding:12px}.box h2{font-size:20px}}
+
+.s.pick{color:#efc16c}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-offset:3px}
+.choice-panel h1{font-size:26px;margin:0 0 8px}
+.choice-lead{font-size:19px;margin:0 0 18px}
+.choice-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;color:var(--dim);font-size:13px}
+.choice-steps span{padding:6px 10px;border-radius:6px;background:#141619}
+.choice-steps .done{color:#8dceaa}.choice-steps .current{background:#514027;color:#ffe0a4}
+.choice-notice{background:#242e3c;border:1px solid #3c526e;padding:14px 16px;border-radius:8px;line-height:1.8}
+.choice-notice div{color:#b2bdd0;font-size:13px;margin-top:5px}
+.choice-progress{font-weight:bold;color:#f1c66c}.choice-message{color:#a9d5ff;min-height:20px}
+.choice-message:empty{display:none}
+.choice-group{border-top:1px solid var(--line);padding:20px 0 30px}
+.choice-group h2{font-size:21px}.choice-group>p{color:var(--dim);margin:6px 0 16px}
+.candidate-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.candidate-tabs button{flex:1;min-width:110px;padding:12px;text-align:left}
+.candidate-tabs b,.candidate-tabs span{display:block}.candidate-tabs span{font-size:12px;margin-top:4px}
+.candidate-tabs button[aria-pressed=true]{border:2px solid #86c6ff;background:#263d55}
+.choice-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.choice-states{display:flex;gap:6px}.choice-states [aria-pressed=true]{background:#ececee;color:#141619}
+.scene-open{display:block;padding:0;width:100%;background:#111318;border:1px solid var(--line);overflow:hidden;cursor:zoom-in}
+.choice-scene{display:block;max-width:100%;width:auto;max-height:540px;margin:auto;image-rendering:pixelated}
+.choice-caption{font-size:13px;line-height:1.6}
+.choice-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}.choice-actions .primary{padding:12px 22px;font-weight:bold;background:#315f93}.choice-actions span{color:var(--dim);font-size:13px}
+.choice-reasons{color:#e9b0a7;background:#342824;padding:12px;border-radius:8px;font-size:14px;line-height:1.7}
+.choice-reasons summary,.choice-docs>summary{cursor:pointer;padding:6px 0}
+.choice-error{color:#f1ab94!important}
+.choice-docs{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}.choice-docs>summary{font-size:16px;font-weight:bold}.choice-docs[open]>summary{margin-bottom:18px}
+
+#activity-overview{margin:16px 20px 0;padding:16px;border:1px solid #3c526e;border-radius:10px;background:#1d2835}
+#activity-overview h2{font-size:16px;margin:0 0 8px}
+.live-jobs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}.live-jobs button{text-align:left;padding:10px 12px}.live-jobs small{display:block;color:#b4c5d8}
+.progress-panel{border:1px solid #3c526e;border-radius:10px;background:#192430;padding:18px;margin:12px 0 24px;overflow-wrap:anywhere}
+.progress-panel h2{font-size:20px;margin:0 0 8px}.progress-kicker{font-size:12px;color:#a6c9ea;letter-spacing:.04em}
+.progress-note{margin:8px 0;color:#d1dce8}.progress-timing{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.progress-timing span{background:#111a25;padding:6px 10px;border-radius:6px}
+.progress-job{border-top:1px solid #334254;padding:10px 0}.progress-job p{margin:4px 0;font-size:13px;color:#b8c9da}
+.progress-warning{padding:10px 12px;border-left:3px solid #eab65d;background:#342d20;margin:10px 0}
+.progress-steps{list-style:none!important;display:flex;flex-wrap:wrap;gap:6px;padding:0!important;margin:14px 0!important;font-size:12px;color:#9ba9b8}
+.progress-steps li{border:1px solid #394555;padding:4px 8px;border-radius:6px}.progress-steps [aria-current=step]{color:#d4edff;border-color:#6db9ec;background:#254562}
+.progress-events{padding-left:20px;font-size:13px;color:#c3cbd6}.progress-events time{color:#90abc5;margin-right:8px}
+.progress-footer{color:#9eafc1;font-size:12px;margin-top:12px}.progress-card{font-size:12px;color:#acbdcf;margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}
+.progress-stale{color:#ffd294!important}.progress-action{font-weight:600;margin-top:12px}
+@media(max-width:600px){#activity-overview{margin:12px 12px 0}.progress-panel{padding:12px}.progress-panel h2{font-size:18px}.live-jobs button{width:100%}}
+
+.choice-checklist{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.choice-checklist button{flex:1;min-width:160px;text-align:left;padding:10px}.choice-checklist small{display:block;color:#afbdcd;margin-top:4px}.choice-checklist [aria-current=step]{border-color:#86c6ff;background:#263d55}
+.choice-compare{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.choice-option{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;background:#151a20}.choice-option.selected{border:2px solid #77c799}.choice-option h3{margin:0 0 10px;font-size:18px}.choice-option h4{margin:14px 0 6px}.choice-badge{font-size:12px;float:right;color:#a7d8b8}.unavailable .choice-badge{color:#ecb3a6}
+.choice-part{height:196px;width:100%;display:flex;align-items:center;justify-content:center;background:#20252e;border:0;cursor:zoom-in}.choice-part img{image-rendering:pixelated;max-width:100%;max-height:180px;height:auto;object-fit:contain}.choice-option .choose-candidate{width:100%;padding:12px;margin:8px 0}.choice-option .choice-scene{max-height:300px;object-fit:contain}.choice-only{padding:12px;background:#342f23;border-radius:8px;color:#f5db9b!important}.choice-reject{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}.choice-reject small{color:var(--dim)}.choice-group .choice-states{align-items:center;flex-wrap:wrap;margin:12px 0}.choice-group{padding-top:6px}.choice-option .choice-caption{min-height:40px;margin:6px 0}
+#choice-status{margin-top:18px}#choice-status>summary{cursor:pointer;color:#a9bfd5;padding:8px 0}
+@media(max-width:600px){.choice-compare{grid-template-columns:1fr}.choice-checklist button{min-width:100%;}.choice-lead{font-size:17px}.choice-panel h1{font-size:23px}}
+
+.example-option .choice-scene{width:100%;max-height:none;image-rendering:pixelated}.example-option .scene-open{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}.example-option .scene-open img{height:100%;object-fit:contain}
+.example-option .choose-candidate{margin:8px 0 14px}.example-caption{font-size:12px;color:#b1becd;margin:8px 0;line-height:1.6}.example-guide{color:#e0e7ef!important;font-size:15px;line-height:1.8}.example-evaluation{border-top:1px solid #36414e;padding-top:14px;margin-top:10px}.example-evaluation fieldset{border:0;padding:0;margin:0;min-width:0}.example-evaluation legend{font-weight:600;margin-bottom:10px}.example-ratings,.example-tags{display:flex;flex-wrap:wrap;gap:7px}.example-ratings label,.example-tags label{padding:7px 8px;border:1px solid #42536a;border-radius:7px;cursor:pointer;font-size:13px}.example-ratings label:has(:checked),.example-tags label:has(:checked){background:#284a65;border-color:#8ac8f7}.example-ratings input,.example-tags input{margin:0 5px 0 0;accent-color:#82c7ff}.example-text{display:block;margin:12px 0 8px;font-size:13px}.example-text textarea{margin-top:6px;min-height:80px}.example-evaluation small{display:block;margin:8px 0;color:#aebdce}.save-evaluation{padding:9px 15px}.example-source{border-top:1px solid #36414e;margin-top:16px;padding-top:10px;font-size:12px;color:#aebdce}.example-source summary{cursor:pointer;padding:6px 0}.example-source .choice-part{margin:10px 0}.example-storage-note{color:#aebdce;font-size:13px;margin-top:16px}
+.decision-intro{font-size:18px;line-height:1.7;margin:16px 0;color:#d8e4f1}
+.binary-actions{display:flex;gap:10px;margin-top:14px}.binary-actions button{flex:1;padding:14px 10px;font-size:18px;font-weight:700;min-height:60px}.binary-actions small{display:block;font-size:12px;font-weight:400;margin-top:4px;color:#c6d3df}.binary-actions [data-decision=allow]{background:#204d3a;border-color:#4e916e}.binary-actions [data-decision=deny]{background:#40303a;border-color:#926577}.binary-actions [aria-pressed=true]{outline:2px solid #e2eaf3;outline-offset:2px}.binary-actions button:disabled{opacity:.55;cursor:default}
+.whole-space-demo .choice-compare{grid-template-columns:1fr}.whole-space-demo .choice-option .choice-scene{width:100%;max-height:650px;object-fit:contain}.whole-space-demo .scene-open{width:100%}
+.example-pictures{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}.example-pictures figure{margin:0;min-width:0}.example-pictures figcaption{font-size:12px;color:var(--dim);margin-top:5px}.choice-option.denied{border-style:dashed}.decided-examples>summary{cursor:pointer;padding:14px 0;font-size:16px}.choice-panel form{margin-top:20px}.choice-panel form button{padding:12px 20px}.choice-panel .choice-lead{color:#aec3d8}
+@media(max-width:600px){.example-pictures{grid-template-columns:1fr}.binary-actions button{font-size:16px}}
+.user-inbox{padding:24px 20px 4px}.user-inbox h2{margin:0 0 8px;font-size:24px}.user-inbox p{color:#b7cadd;font-size:16px}#operations{margin:14px 20px;border:1px solid var(--line);border-radius:10px;padding:12px}#operations>summary,.operator-controls>summary{cursor:pointer;color:var(--dim)}.operator-controls{margin-left:auto}.operator-controls[open]{display:flex;gap:8px}.s.stop{color:var(--dim)}
+
+#live-board{padding:22px 20px 8px;max-width:1600px;margin:auto}#live-board>h2{font-size:22px;margin:0 0 5px}#live-board>.live-caption{color:#aab8c9;margin:0 0 18px;font-size:13px}.live-space-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,390px),1fr));gap:16px}.live-space{border:1px solid #40526a;background:#19222e;border-radius:14px;padding:18px;min-width:0}.live-space header{padding:0;background:none;border:0;display:flex;gap:8px;align-items:start;flex-wrap:wrap}.live-space h3{font-size:21px;margin:0}.live-space .live-phase{color:#b5d3ff;font-size:13px;background:#283f58;border-radius:6px;padding:5px 8px;margin-left:auto}.live-space h4{font-size:14px;margin:18px 0 7px}.live-space p{line-height:1.65;overflow-wrap:anywhere}.live-space .doing{font-size:15px;margin:12px 0}.live-space .subtle{font-size:12px;color:#adc0d3}.live-space progress{width:100%;height:9px;accent-color:#7bbcfe}.live-meter{display:flex;justify-content:space-between;font-size:13px;gap:8px}.live-checks{display:grid;grid-template-columns:1fr 1fr;list-style:none;padding:0;gap:5px;margin:10px 0;color:#8fa3b8;font-size:12px}.live-checks .complete{color:#9ad5b5}.live-images{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.live-image{min-width:0;padding:0;overflow:hidden;background:#101721;text-align:left}.live-image img{width:100%;height:165px;object-fit:contain;image-rendering:pixelated;display:block}.live-image:only-child{grid-column:1/-1}.live-image span{display:block;padding:7px;font-size:12px}.live-no-image{padding:16px;border:1px dashed #4e627c;border-radius:8px;color:#c1ccda;font-size:13px;line-height:1.7}.live-no-image b{display:block;color:#e3eaf2}.live-tags{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}.live-tags span{background:#283646;border-radius:5px;padding:5px 7px}.live-event{font-size:12px;color:#b0c0d2;margin:5px 0}.live-space details summary{cursor:pointer;font-size:13px;color:#d3e1f0}.live-space details li{font-size:13px;line-height:1.6;margin:7px 0;overflow-wrap:anywhere}.live-next{border-left:3px solid #79b2ed;padding-left:10px;font-size:13px}.live-open{width:100%;margin-top:12px;padding:10px}.live-problem{color:#f5c09d}.live-space .progress-job{padding:9px;margin:6px 0}.live-space .progress-job b{font-size:12px}.live-space .progress-job p{margin:3px 0;font-size:12px}.live-space .progress-timing{font-size:12px}.live-offline{padding:12px;border:1px solid #d8a666;color:#ffd197;border-radius:8px;margin:8px 0}
+@media(max-width:600px){#live-board{padding:16px 12px 0}.live-space{padding:14px}.live-image img{height:130px}}
+
+
+#keyword-seeds{margin:20px;padding:24px;border:1px solid #587698;background:#1b2b3b;border-radius:14px}#keyword-seeds h2{margin:0 0 10px;font-size:24px}#keyword-seeds p{color:#bdcee0;line-height:1.6}#keyword-seeds label{display:block;font-weight:600;margin:18px 0 8px}.seed-input{display:flex;gap:10px}.seed-input input{flex:1;min-width:0;background:#111c27;border:1px solid #6787a9;border-radius:8px;color:#eef6ff;padding:14px;font-size:17px}.seed-input button{padding:14px 20px;background:#315f93;font-weight:bold}.seed-streams{display:grid;gap:12px;margin:12px 0}.seed-streams article{border-top:1px solid #465b71;padding-top:14px}.seed-title{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.seed-title button:first-child{font-weight:bold}.seed-streams [aria-pressed=true]{outline:2px solid #8ac6ff}.seed-streams p{margin:8px 0}#keyword-seeds small{color:#9bb5cb;line-height:1.6}.seed-error{color:#ffc394!important}.seed-origin{display:block;color:#9dccf3;font-size:12px;margin-bottom:6px}.seed-filter-label{margin:10px 20px;color:#b9dcff}@media(max-width:600px){#keyword-seeds{margin:12px;padding:16px}.seed-input{flex-direction:column}#keyword-seeds h2{font-size:20px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>슈퍼하네스</h1>
+  <span id="line">불러오는 중…</span>
+  <a class="header-link" href="#keyword-seeds">새 키워드·세계관 기획</a>
+<details class="operator-controls"><summary>운영 도구</summary><a class="header-link" id="orders-link" href="/orders">그림 주문서</a><button id="pause"></button></details>
+</header>
+<section id="live-board" aria-label="공간별 제작 진행"><h2>공간별 진행을 확인하고 있습니다…</h2></section>
+<section id="keyword-seeds" aria-label="키워드로 공간 만들기"></section>
+<p id="seed-filter-label" class="seed-filter-label" hidden></p>
+<section class="user-inbox"><h2>그림만 보고 결정하세요.</h2><p id="inbox-summary">확인할 예시와 결과를 찾고 있습니다.</p></section>
+<details id="operations"><summary id="operation-summary">제작·운영 현황 보기</summary><section id="activity-overview" aria-label="실제 작업 현황"><h2>작업 현황 확인 중…</h2></section><div class="tabs" id="operator-tabs"></div></details>
+<div class="tabs" id="tabs"></div>
+<main id="grid"></main>
+<div id="modal"><div class="box" id="box"></div></div>
+<dialog id="big" aria-label="이미지 확대 보기"></dialog>
+<script type="module">
+import { mountKeywordSeeds } from "/keyword-seeds.js";
+import { renderMarkdown } from "/markdown.js";
+import { renderChoices, renderResult, createImageViewer } from "/art-choice.js";
+const ordersPage = location.pathname === "/orders";
+let requestId = 0, modalStage = null;
+let activityState = null, activityFetched = 0, activityBusy = false;
+let outputState = null, outputFetched = 0, outputBusy = false, outputError = '';
+const liveCards = new Map();
+const TABS = [['pick','내가 볼 그림'],['done','완성'],['work','진행 현황']];
+const OPERATOR_TABS = [['all','전체 기록'],['wait','단계 배정 대기'],['stop','운영 점검'],['discarded','폐기 기록']];
+let L = null, tab = 'pick', openId = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
+const cards = new Map();
+const enlargeImage = createImageViewer($('big'));
+let seedFilter = null, seedOrigins = new Map(), selectedSeed = '';
+if (ordersPage) $('keyword-seeds').hidden=true;
+else mountKeywordSeeds($('keyword-seeds'), (seeds, selected, clicked) => {
+  const chosen=seeds.find(s=>s.id===selected);
+  seedFilter=chosen?new Set(chosen.concepts.map(c=>c.id)):null;
+  seedOrigins=new Map(seeds.flatMap(s=>s.concepts.map(c=>[c.id,s.keyword])));
+  $('seed-filter-label').hidden=!chosen;
+  $('seed-filter-label').textContent=chosen?`「${chosen.keyword}」에서 나온 공간 · ${chosen.concepts.length}개`:'';
+  if(clicked || selected!==selectedSeed) tab=chosen?'all':'pick';
+  selectedSeed=selected;
+  if(L)render();
+}, enlargeImage);
+
+function cardHtml(it) {
+  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
+    <div class="t">${seedOrigins.has(it.id)?`<span class="seed-origin">${esc(seedOrigins.get(it.id))}</span>`:''}<b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div><div class="progress-card" data-progress-id="${esc(it.id)}"></div></div>`;
+}
+
+function matchesTab(i,g) { if(seedFilter&&!seedFilter.has(i.id))return false;if(g==='pick')return Boolean(i.needsUser);if(g==='work')return i.running || Boolean(activityState?.items.some(a=>a.id===i.id && a.managed && a.state==='queued'));return g === 'all' || (g === 'discarded' ? i.stage === 'discarded' : g === 'stop' ? i.group === 'stop' && i.stage !== 'discarded' : i.group === g); }
+function render() {
+  const n = (g) => L.items.filter((i) => matchesTab(i,g)).length;
+  $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('operator-tabs').innerHTML=OPERATOR_TABS.map(([k,t])=>`<button class="${k===tab?'on':''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  $('inbox-summary').textContent=n('pick')?`확인할 그림 ${n('pick')}개 · 예시는 Allow / Deny, 결과는 수정 / Allow / Deny로 결정하세요.`:'지금 선택하실 그림은 없습니다. 새 예시나 결과가 준비되면 여기에 표시됩니다.';
+  const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
+  const list = L.items.filter((i) => matchesTab(i,tab))
+    .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
+  const grid = $('grid');
+  if (!list.length) { grid.innerHTML = '<p class="empty">'+(tab==='pick'?'지금 하실 일은 없습니다.':'이 목록에 표시할 공간이 없습니다.')+'</p>'; cards.clear(); return; }
+  if (grid.querySelector('.empty')) grid.innerHTML = '';
+  const keep = new Set(list.map((i) => i.id));
+  for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
+  list.forEach((it, idx) => {
+    const key = JSON.stringify([seedOrigins.get(it.id), it.title, it.status, it.about, it.running, it.thumb?.v, it.group]);
+    let el = cards.get(it.id);
+    if (!el) { el = document.createElement('div'); el.className = 'c'; el.onclick = () => openConcept(it.id); cards.set(it.id, el); }
+    if (el.dataset.k !== key) { el.innerHTML = cardHtml(it); el.dataset.k = key; }
+    if (grid.children[idx] !== el) grid.insertBefore(el, grid.children[idx] || null);
+  });
+}
+
+function setTab(k) { tab = k; render(); }
+
+async function refresh() {
+  if (document.hidden) return;
+  try { L = await (await fetch('/api/list')).json(); } catch { return; }
+  const work = L.items.filter((i) => i.running).length, done = L.items.filter((i) => i.group === 'done').length;
+  $('line').textContent = `${L.paused ? '전체 자동 실행 멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
+  $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
+  $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
+  if (!ordersPage) { render(); paintProgress(); }
+  const opened=L.items.find(i=>i.id===openId);
+  if(opened && modalStage && opened.stage!==modalStage && !$('box').querySelector('[data-busy=true]') && !$('box').querySelector('textarea')?.value.trim()) {
+    modalStage=opened.stage; await openConcept(openId);
+  }
+}
+
+
+const duration = value => value == null ? '확인 불가' : value < 60 ? `${value}초` : value < 3600 ? `${Math.floor(value/60)}분 ${value%60}초` : `${Math.floor(value/3600)}시간 ${Math.floor(value%3600/60)}분`;
+function jobHtml(job) {
+  const quiet = job.outputAgeSeconds != null && job.outputAgeSeconds >= 180;
+  return `<div class="progress-job"><b>${job.alive ? '● 실행 중' : '실행 확인 필요'} · ${esc(job.label)}${job.reviewer ? ` · 검수자 ${esc(job.reviewer)}` : ''}</b>
+    <div class="progress-timing"><span>시작 후 ${duration(job.elapsedSeconds)}</span><span>${esc(job.outputLabel || '마지막 출력')} ${job.outputAgeSeconds == null ? '없음' : duration(job.outputAgeSeconds)+' 전'}</span></div>
+    ${job.model ? `<p>모델 ${esc(job.model)}${job.effort ? ` · ${esc(job.effort)}` : ''}</p>` : ''}
+    ${quiet ? '<p class="progress-stale">최근 3분 이상 새 출력이 없습니다. 프로세스 존재만으로 정상 진행을 보장할 수 없습니다.</p>' : ''}</div>`;
+}
+function outputHtml(item, out) {
+  if (!out || out.error) return `<p class="subtle">${esc(out?.error || '현재 산출물을 확인하고 있습니다…')}</p>`;
+  const count = out.imageCounts;
+  const stale = Date.now()/1000-out.updated > 35;
+  const images = [...out.images].sort((a,b)=>(a.kind==='기획도')-(b.kind==='기획도')).slice(0,4);
+  return `${stale?'<p class="live-offline">산출물 확인이 지연되었습니다. 아래는 마지막 확인 결과입니다.</p>':''}
+    ${out.runtimePreview?`<div class="choice-notice"><a class="header-link" href="${esc(out.runtimePreview.url)}" target="_blank" rel="noopener">▶ ${esc(out.runtimePreview.label)}</a><p>${esc(out.runtimePreview.note)}</p><small>${out.runtimePreview.checks.map(esc).join(' · ')}</small></div>`:''}
+    <h4>${count.spaces?'실제 타일로 조립한 최신 초안':'지금까지 나온 그림'}</h4><div class="live-tags"><span>기획도 ${count.plans}</span><span>칩 이미지 ${count.chips}</span><span>조립 이미지 ${count.spaces}</span></div>
+    ${!count.chips&&!count.spaces?`<p class="live-no-image"><b>실제 칩·공간 이미지: 아직 확인되지 않음</b>${item.jobs.some(j=>j.kind==='art-native')?'칩 제작 중입니다. 출력 파일이 확인되면 이곳에 나타납니다.':'현재는 '+esc(item.label)+' 단계입니다. 기획도는 실제 게임 그림이 아닙니다.'}</p>`:''}
+    <div class="live-images">${images.map(im=>`<button class="live-image" data-live-image="${esc(thumb(im,1200))}"><img loading="lazy" src="${thumb(im,450)}" alt="${esc(im.label)}"><span>${esc(im.kind)} · ${esc(im.label)} · 크게 보기 ↗</span></button>`).join('')}</div><p class="subtle">${esc(out.imageNote)}</p>
+    <div class="live-meter"><span>산출물·검수 확인 ${out.completed}/${out.total}</span><b>${out.percent}%</b></div>
+    <progress max="100" value="${out.percent}" aria-label="산출물·검수 확인률"></progress>
+    <ul class="live-checks">${out.milestones.map(m=>`<li class="${m.done?'complete':''}">${m.done?'✓':'○'} ${esc(m.label)}</li>`).join('')}</ul>
+    <p class="subtle">시간 기준 진행률은 아닙니다. 현재 근거가 확인된 공정 수이며 재수정 시 낮아질 수 있습니다.</p>
+    ${out.nativeAvailable?`<p class="subtle">최근 준비된 후보 큐 · ${Object.entries(out.native).map(([k,n])=>esc(({queued:'대기',running:'제작 중',drawing:'제작 중',reviewing:'검수 중',done:'처리 완료',failed:'실행 실패'})[k]||k)+' '+n).join(' · ')}<br>후보 처리 완료는 품질 합격과 다릅니다.</p>`:''}
+    ${(out.actorActions||[]).map(a=>`<div class="progress-job"><b>인물 동작 · ${esc(a.actor)} · ${esc(a.phase)}</b><p>그림 출력 ${a.rendered}/${a.total}프레임${a.attempt?' · 시도 '+a.attempt:''}${a.outputAgeSeconds!=null?' · 마지막 출력 '+duration(a.outputAgeSeconds)+' 전':''}</p>${a.model?`<p>모델 ${esc(a.model)}</p>`:''}<p>프레임 출력은 공간 검수 합격과 다릅니다.</p></div>`).join('')}
+    ${out.missingCount?`<details data-live-section="materials"><summary>부족한 재료 ${out.missingCount}종</summary><ul>${out.missing.map(m=>`<li>${esc(m)}</li>`).join('')}</ul></details>`:''}`;
+}
+function paintLiveBoard() {
+  const board=$('live-board');
+  if(ordersPage) {board.hidden=true;return;}
+  if(!activityState)return;
+  const list=activityState.items.filter(i=>(i.managed||i.jobs.length)&&!['done','discarded','art-review','result-review'].includes(i.stage));
+  if(!board.querySelector('.live-space-grid'))board.innerHTML='<h2>지금 만들고 있는 공간</h2><p class="live-caption"></p><div class="live-space-grid"></div><p class="live-board-health"></p>';
+  board.querySelector('.live-caption').textContent=`${list.length}개 공간 · 실행 상태 5초 / 산출물 약 10초마다 확인 · 이미지를 누르면 확대됩니다.`;
+  const health=board.querySelector('.live-board-health');
+  health.className='live-board-health '+(outputError?'live-offline':'subtle');
+  health.textContent=outputError || (outputState?`산출물 마지막 확인 ${new Date(outputState.at*1000).toLocaleTimeString('ko-KR')}`:'산출물 읽는 중…');
+  const grid=board.querySelector('.live-space-grid');
+  const ids=new Set(list.map(i=>i.id));
+  for(const [id,el]of liveCards)if(!ids.has(id)){el.remove();liveCards.delete(id);}
+  for(const item of list){
+    const reasons=(item.reasons||[]).map(r=>typeof r==='string'?r:r?.reason||r?.message||JSON.stringify(r));
+    let el=liveCards.get(item.id);
+    if(!el){el=document.createElement('article');el.className='live-space';el.dataset.concept=item.id;liveCards.set(item.id,el);grid.append(el);}
+    const expanded=[...el.querySelectorAll('details[open]')].map(d=>d.dataset.liveSection);
+    const out=outputState?.items.find(o=>o.id===item.id);
+    const events=out?.events?.slice(0,3)||[];
+    el.innerHTML=`<header><h3>${esc(item.title)}</h3><span class="live-phase">${esc(item.label)}</span></header>
+      <p class="doing">${esc(out?.task||item.note||item.label)}</p>
+      ${outputHtml(item,out)}
+      ${item.jobs.map(j=>jobHtml(j.kind==='art-native' && out?.nativeOutputAgeSeconds!=null?{...j,outputAgeSeconds:Math.min(j.outputAgeSeconds??Infinity,out.nativeOutputAgeSeconds),outputLabel:'하위 제작 포함 마지막 출력'}:j)).join('')}
+      ${(!item.jobs.length||item.waitKind==='provider-backoff')?`<p class="live-problem">${esc(item.reason||item.note)}</p>`:''}
+      ${out?.layoutVerdict?`<p class="subtle">최근 제작 전 도면 검수: ${out.layoutVerdict==='PASS'?'통과':out.layoutVerdict==='FAIL'?'반려 · 수정 필요':esc(out.layoutVerdict)}</p>`:''}
+      ${item.reasons.length?`<p class="live-problem">최근 반려 기록: ${esc(reasons[0].slice(0,150))}${reasons[0].length>150?'…':''}</p><details data-live-section="reasons"><summary>반려 근거 ${item.reasons.length}건 보기</summary><ul>${item.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>`:''}
+      <h4>최근 바뀐 점</h4>${events.length?events.map(e=>`<p class="live-event">${esc(e.at.slice(11))} · ${esc(e.text)}</p>`).join(''):'<p class="subtle">처리 기록 확인 중…</p>'}
+      <p class="live-next"><b>다음에 나올 것</b><br>${esc(out?.deliverable||item.next)}</p>
+      <button class="live-open" data-live-open="${esc(item.id)}">그림·기획서·검수 기록 자세히 보기</button>`;
+    for(const d of el.querySelectorAll('details'))d.open=expanded.includes(d.dataset.liveSection);
+    el.querySelector('[data-live-open]').onclick=()=>openConcept(item.id);
+    for(const b of el.querySelectorAll('[data-live-image]'))b.onclick=()=>enlargeImage(b.dataset.liveImage,b.querySelector('img').alt);
+  }
+  if(!list.length)health.textContent=outputError||'현재 제작 중인 공간은 없습니다. 아래에서 준비된 예시나 결과를 확인하세요.';
+}
+async function refreshOutputs(){
+  if(ordersPage||document.hidden||outputBusy)return;
+  outputBusy=true;
+  try{
+    const r=await fetch('/data/monitoring/space-progress/latest.json',{cache:'no-store',signal:AbortSignal.timeout(8000)});
+    if(!r.ok)throw Error('확인 실패');
+    const value=await r.json();
+    if(!Array.isArray(value.items)||!Number.isFinite(value.at))throw Error('형식 오류');
+    outputState=value;outputFetched=Date.now();
+    outputError=Date.now()/1000-value.at>35?'산출물 관측이 지연되고 있습니다. 마지막 확인 결과를 표시합니다.':'';
+  }catch{outputError='산출물 갱신 실패 · '+(outputFetched?'마지막 확인 결과를 유지합니다.':'현재 이미지 출력 여부를 확인하지 못했습니다.')+' 자동으로 다시 확인합니다.';}
+  finally{outputBusy=false;paintLiveBoard();}
+}
+function paintProgress() {
+  const overview = $('activity-overview');
+  if (!activityState) { if ($('concept-progress')) $('concept-progress').textContent = '현재 작업을 확인하고 있습니다…'; return; }
+  paintLiveBoard();
+  const alive = activityState.jobs.filter(j => j.alive);
+  const activeSpaces=new Set(alive.map(j=>j.concept).filter(Boolean)).size;
+  const capacity=activityState.limits?.spaces;
+  $('line').textContent = `공간 ${activeSpaces}${capacity?' / '+capacity:''}개 동시 진행 · 작업 ${alive.length}개 · 칩 제작 묶음 ${activityState.workers?.nativeDrawing ?? 0}개`;
+  const attention=activityState.items.filter(i=>['operator-attention','integration-missing','unassigned'].includes(i.waitKind)).length;
+  $('operation-summary').textContent=`제작·운영 현황 · 실행 ${alive.length}개${attention?' · 운영 점검 '+attention+'개':''}`;
+  const queued = activityState.items.filter(i => i.managed && !i.jobs.length && (i.state === 'queued' || i.waitKind === 'provider-backoff'));
+  overview.innerHTML = `<h2>작업 ${alive.length}개 실행 · 칩 제작 묶음 ${activityState.workers?.nativeDrawing ?? 0}개 · 단계 배정 대기 ${queued.length}개</h2>
+    <p>동시 공간 한도 ${capacity || '확인 중'}개 · 단계 작업 한도 ${activityState.limits?.jobs ?? '확인 중'}개. 칩 제작 묶음 안에서는 후보 제작·검수가 따로 진행됩니다.</p>
+    <div>${activityState.paused ? '전체 자동 큐는 멈춤 상태입니다. 별도 실행기가 맡은 아래 작업은 계속 진행됩니다.' : '전체 자동 큐가 실행 중입니다.'}</div>
+    <div class="live-jobs">${alive.map(j => `<button data-open-concept="${esc(j.concept || '')}"><b>${esc(j.title)}</b> · ${esc(j.label)}<small>시작 후 ${duration(j.elapsedSeconds)} · 마지막 출력 ${j.outputAgeSeconds == null ? '없음' : duration(j.outputAgeSeconds)+' 전'}</small></button>`).join('') || '현재 실행이 확인된 공간 작업이 없습니다.'}</div>
+    ${queued.length ? `<div class="queue-reasons">${queued.map(i => `<p><b>${esc(i.title)}</b> · ${esc(i.label)} 대기<br><small>${esc(i.reason)}</small></p>`).join('')}</div>` : ''}
+    ${activityState.items.filter(i=>i.waitKind==='integration-missing').map(i=>`<p class="progress-warning"><b>${esc(i.title)}</b> · 실행 예약 없음<br>${esc(i.reason)}</p>`).join('')}
+    <div class="progress-footer">5초마다 상태 확인 · 마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 단계별 소요 시간은 달라 남은 시간은 확정할 수 없습니다.</div>`;
+  overview.querySelectorAll('[data-open-concept]').forEach(b => b.onclick = () => b.dataset.openConcept && openConcept(b.dataset.openConcept));
+  for (const el of document.querySelectorAll('[data-progress-id]')) {
+    const item = activityState.items.find(i => i.id === el.dataset.progressId);
+    if (!item) continue;
+    const job = item.jobs.find(j => j.alive);
+    const status = el.parentElement.querySelector('.s');
+    if (status && (job || item.managed || item.jobs.length)) status.textContent = job ? job.label : item.jobs.length ? '실행 확인 필요' : item.state === 'queued' ? '지정 실행기 · 순서 대기' : item.label;
+    el.textContent = job ? `${job.label} · ${duration(job.elapsedSeconds)} 경과` : item.reason || item.label;
+  }
+  const panel = $('concept-progress');
+  const item = activityState.items.find(i => i.id === openId);
+  if (!panel || !item) return;
+  const detail = activityState.detail?.id === openId ? activityState.detail : item;
+  const status = item.jobs.some(j => j.alive) ? '실행 중' : item.stage === 'blocked' ? '운영 점검' : item.stage === 'done' ? '등록 완료' : item.stage === 'discarded' ? '폐기' : item.stage === 'art-review' ? '선택·등록 확인' : item.jobs.length ? '실행 확인 필요' : '대기';
+  const expanded = [...panel.querySelectorAll('details[open]')].map(d => d.dataset.section);
+  const focused = document.activeElement?.parentElement?.dataset.section;
+  panel.innerHTML = `<div class="progress-kicker">${esc(item.title)} · 실시간 진행</div><h2>${status} — ${esc(item.label)}</h2>
+    <p class="progress-note">${esc(item.note)}</p>
+    <ol class="progress-steps" aria-label="제작 단계">${activityState.steps.map((s,i) => `<li ${item.step === i ? 'aria-current="step"' : ''}>${i+1}. ${esc(s)}</li>`).join('')}</ol>
+    <div class="progress-timing"><span>기획 ${item.planAttempt}차</span>${item.artRevision ? `<span>자동 그림 수정 ${item.artRevision} / ${item.artLimit}회</span>` : ''}</div>
+    ${item.jobs.map(jobHtml).join('')}
+    ${item.reason ? `<div class="progress-warning">${esc(item.reason)}</div>` : ''}
+    ${item.reasons.length ? `<details data-section="reasons"><summary>최근 반려 사유</summary><ul>${item.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul></details>` : ''}
+    <p><b>다음:</b> ${esc(item.next)}</p><div class="progress-action">${esc(item.action)}</div>
+    ${detail.events?.length ? `<details data-section="events"><summary>최근 처리 기록 ${detail.events.length}건 보기</summary><ol class="progress-events">${detail.events.map(e => `<li><time>${esc(e.at.slice(11))}</time>${esc(e.text)}</li>`).join('')}</ol></details>` : ''}
+    <div class="progress-footer">마지막 확인 ${new Date(activityState.at*1000).toLocaleTimeString('ko-KR')} · 5초 자동 갱신 · 단계가 바뀌면 아래 자료는 ‘새로고침’으로 불러옵니다.</div>`;
+  for (const d of panel.querySelectorAll('details')) { d.open = expanded.includes(d.dataset.section); if (d.dataset.section === focused) d.querySelector('summary').focus({preventScroll:true}); }
+}
+async function refreshActivity() {
+  if (ordersPage || document.hidden || activityBusy) return;
+  activityBusy = true;
+  const selected = openId;
+  try {
+    const urls = ['/api/activity', ...(selected ? ['/api/activity?id='+encodeURIComponent(selected)] : [])];
+    const results = await Promise.all(urls.map(async url => { const r = await fetch(url, {signal: AbortSignal.timeout(8000)}); if (!r.ok) throw Error('상태 응답 오류'); return r.json(); }));
+    activityState = results[0]; activityState.detail = results[1]?.items[0]; activityFetched = Date.now();
+    paintProgress();
+  } catch {
+    $('live-board').querySelector('.live-board-health')?.classList.add('live-offline');
+    if ($('live-board').querySelector('.live-board-health')) $('live-board').querySelector('.live-board-health').textContent='작업 상태 갱신 실패 · 마지막 확인 결과입니다. 자동으로 다시 확인합니다.';
+    const message = `상태 갱신 실패 · ${activityFetched ? new Date(activityFetched).toLocaleTimeString('ko-KR')+' 이후의 진행은 확인되지 않았습니다.' : '현재 진행 상태를 확인할 수 없습니다.'} 5초 후 다시 확인합니다.`;
+    for (const target of [$('activity-overview'), $('concept-progress')]) {
+      if (!target) continue;
+      let warning = target.querySelector('.connection-error');
+      if (!warning) { warning = document.createElement('p'); warning.className = 'connection-error progress-stale'; warning.setAttribute('role','status'); target.prepend(warning); }
+      warning.textContent = message;
+    }
+  } finally { activityBusy = false; }
+}
+
+async function documentView(target, path, { modal = false } = {}) {
+  target.innerHTML = '<p role="status">문서를 불러오는 중…</p>';
+  const current = ++requestId;
+  try {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error('문서를 불러오지 못했습니다.');
+    const text = await response.text();
+    if (current !== requestId) return;
+    target.innerHTML = `${modal ? '<button class="close" onclick="closeModal()">닫기</button>' : ''}
+      <nav class="doc-tools" aria-label="문서 보기">
+        <button data-view="read" aria-pressed="true">읽기</button>
+        <button data-view="source" aria-pressed="false">Markdown 원문</button>
+        <a href="${esc(path)}" target="_blank" rel="noopener">원문 열기</a>
+        <button id="reload-doc">새로고침</button>
+      </nav><article class="document"></article>`;
+    const article = target.querySelector('article');
+    const show = (mode) => {
+      target.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.view === mode)));
+      if (mode === 'source') {
+        const pre = document.createElement('pre'); pre.textContent = text; article.replaceChildren(pre); return;
+      }
+      const readable = text.replace(/\]\((\/(?!\/)[^)\s]*)\)/g, (_, path) => `](${new URL(path, location.origin).href})`);
+      article.replaceChildren(renderMarkdown(readable));
+      // 공용 표시기가 이미지 문법을 링크로 읽으므로 맵 그림만 figure로 표시한다.
+      article.querySelectorAll('p').forEach((p) => {
+        const imageLinks = [...p.querySelectorAll('a')];
+        if (!imageLinks.length || [...p.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== '!')) return;
+        const pictures = [];
+        for (const link of imageLinks) {
+          const url = new URL(link.href, location.origin);
+          if (url.origin !== location.origin || url.pathname !== '/thumb') return;
+          const figure = document.createElement('figure'), img = document.createElement('img'), caption = document.createElement('figcaption');
+          img.src = url.href; img.alt = link.textContent; img.loading = 'lazy';
+          const full = new URL(url); full.searchParams.set('w', '1600');
+          img.dataset.full = full.href; img.onclick = () => big(img);
+          caption.textContent = link.textContent; figure.append(img, caption); pictures.push(figure);
+        }
+        p.replaceWith(...pictures);
+      });
+      article.querySelectorAll('table').forEach((table) => {
+        const wrap = document.createElement('div'); wrap.className = 'table-scroll'; table.replaceWith(wrap); wrap.append(table);
+      });
+    };
+    target.querySelectorAll('[data-view]').forEach((button) => button.onclick = () => show(button.dataset.view));
+    target.querySelector('#reload-doc')?.addEventListener('click', async () => {
+      const draft = target.querySelector('#fix')?.value;
+      await documentView(target, path, { modal });
+      const field = target.querySelector('#fix'); if (field && draft) field.value = draft;
+    });
+    show('read');
+    if (modal) {
+      const cid = decodeURIComponent(path.slice(4, -3));
+      const progress = document.createElement('section'); progress.id = 'concept-progress'; progress.className = 'progress-panel';
+      target.insertBefore(progress, target.querySelector('.doc-tools'));
+      paintProgress();
+      refreshActivity();
+      const [choiceResponse, detailResponse] = await Promise.all([
+        fetch('/api/art-choices?id=' + encodeURIComponent(cid)), fetch('/api/concept?id=' + encodeURIComponent(cid))]);
+      const choice = choiceResponse.ok ? await choiceResponse.json() : null;
+      const detail = detailResponse.ok ? await detailResponse.json() : null;
+      if (current !== requestId) return;
+      modalStage = detail?.stage || choice?.stage;
+      const docs = document.createElement('details'); docs.className='choice-docs';
+      const summary=document.createElement('summary');summary.textContent='제작 과정·주문서·검수 기록';
+      docs.append(summary, target.querySelector('.doc-tools'), article);target.append(docs);
+      const panel=document.createElement('section');panel.className='choice-panel';target.insertBefore(panel,progress);
+      const enlarge = enlargeImage;
+      if(detail?.resultReview) {
+        renderResult(panel, detail.resultReview, refresh, enlarge);
+      } else if (['art-review','art-layout-review','art-context-review','art-demo','art','blocked'].includes(choice?.stage) && choice.groups.length) {
+        renderChoices(panel, choice, refresh, enlarge);
+      } else {
+        panel.innerHTML=`<h1>${esc(detail?.title || choice?.title || '')}</h1><p class="decision-intro">${detail?.stage==='blocked'?'제작 중 문제가 있어 운영 점검이 필요합니다.':esc(detail?.status || '예시를 준비하고 있습니다.')}</p><p>지금 하실 일은 없습니다. 예시 또는 결과가 준비되면 여기에 표시됩니다.</p><button data-back-inbox>확인할 그림 목록으로</button>`;
+        panel.querySelector('[data-back-inbox]').onclick=()=>{closeModal();setTab('pick');};
+      }
+
+    }
+  } catch (error) {
+    if (current !== requestId) return;
+    target.replaceChildren();
+    if (modal) { const close = document.createElement('button'); close.textContent = '닫기'; close.onclick = closeModal; target.append(close); }
+    const message = document.createElement('p'); message.textContent = error.message; target.append(message);
+    const retry = document.createElement('button'); retry.textContent = '다시 불러오기'; retry.onclick = () => documentView(target, path, { modal }); target.append(retry);
+  }
+}
+
+async function openConcept(id) {
+  openId = id;
+  $('modal').classList.add('on');
+  await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
+}
+
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; modalStage = null; }
+$('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+document.onkeydown = e => { if(e.key==='Escape' && !$('big').open)closeModal(); };
+function big(img) { enlargeImage(img.dataset.full || img.src,img.alt); }
+
+async function act(kind) {
+  const text = $('fix')?.value ?? '';
+  if (kind === 'discard' && !confirm('폐기할까요? 이미 들어간 것이면 에디터에서 뺍니다.')) return;
+  await post({ cid: openId, action: kind, text });
+  closeModal();
+}
+async function post(body) {
+  const r = await (await fetch('/api/action', { method: 'POST', body: JSON.stringify(body) })).json();
+  if (!r.ok) alert(r.error);
+  refresh();
+}
+
+Object.assign(window, { setTab, closeModal, act });
+if (ordersPage) {
+  $('live-board').hidden=true;
+  $('orders-link').textContent = '← 개념 갤러리'; $('orders-link').href = '/';
+  $('activity-overview').hidden = true;
+  $('tabs').hidden = true; $('grid').className = 'orders';
+  documentView($('grid'), '/md/orders.md');
+} else {
+  const selected = new URLSearchParams(location.search).get('concept');
+  if (selected) openConcept(selected);
+}
+refresh();
+setInterval(refresh, 15000);
+refreshActivity();
+setInterval(refreshActivity, 5000);
+document.addEventListener('visibilitychange', refreshActivity);
+document.addEventListener('visibilitychange', refresh);
+if (!ordersPage) { refreshOutputs(); setInterval(refreshOutputs, 10000); }
+</script>
+</body>
+</html>

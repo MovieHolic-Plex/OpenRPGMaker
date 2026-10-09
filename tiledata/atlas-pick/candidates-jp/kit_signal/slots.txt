@@ -1,0 +1,17 @@
+// kit_signal 부품 시트 128x48px (8×3칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+pole_base           0    0  16  16  object  -   X     기둥 밑동
+pole               16    0  16  16  object  y   C     기둥
+pole_btn           32    0  16  16  object  -   C     기둥 + 누름단추 상자
+joint_r            48    0  16  16  object  -   C     이음쇠(오른쪽 팔)
+joint_l            64    0  16  16  object  -   C     이음쇠(왼쪽 팔)
+joint_lr           80    0  16  16  object  -   C     이음쇠(양쪽 팔)
+arm                96    0  16  16  object  x   C     팔
+arm_end_r         112    0  16  16  object  -   C     팔 오른 끝
+arm_end_l           0   16  16  16  object  -   C     팔 왼 끝
+head_g             16   16  32  16  object  -   C     차량등(초록 켜짐)
+head_y             48   16  32  16  object  -   C     차량등(노랑 켜짐)
+head_r             80   16  32  16  object  -   C     차량등(빨강 켜짐)
+ped_r             112   16  16  16  object  -   C     보행등(빨간 사람)
+ped_g               0   32  16  16  object  -   C     보행등(초록 사람)
+plate              16   32  16  16  object  -   C     팔 밑 이름판

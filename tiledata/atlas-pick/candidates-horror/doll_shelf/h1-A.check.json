@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/doll_shelf/h1-A.pxg",
+ "set": "horror",
+ "id": "doll_shelf",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "A: v5 인형장을 낡게 — 마호가니 틀에 먼지가 앉고 유리문 한 장(오른쪽 위)이 깨져 어둠이 드러난다. 세 칸 선반에 작은 인형 머리 아홉 개, 눈만 까맣다. 틀 왼쪽·위는 먼지로 뿌옇다.",
+ "ok": true
+}

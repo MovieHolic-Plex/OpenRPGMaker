@@ -1,0 +1,610 @@
+[
+  {
+    "stem": "brown-headband-expressions",
+    "name": "갈색 머리 머리띠",
+    "baseSheet": "Actor1",
+    "baseCell": 0,
+    "sourceFile": "codex-clipboard-727a04a1-624d-4954-957d-c952e4265c1b.png",
+    "sha256": "408562c495cf7ad639ebace0702fd1ddc6b12266b401e7232f66307a3f344c55"
+  },
+  {
+    "stem": "blue-traveler-expressions",
+    "name": "푸른 머리 여행자",
+    "baseSheet": "Actor1",
+    "baseCell": 1,
+    "sourceFile": "existing-blue-traveler-master",
+    "sha256": "4380fa1156a34ffaacb9118d57aa7a97442981c4d0c8768f3cb66acecf00afde"
+  },
+  {
+    "stem": "helmet-guard-expressions",
+    "name": "투구 병사",
+    "baseSheet": "Actor1",
+    "baseCell": 2,
+    "sourceFile": "codex-clipboard-92e13b42-6bf1-4fd4-a908-1bf3a210ed73.png",
+    "sha256": "86cdb93ad8205eb6cd0b8bbb8e7a1f9ae99bc99dcb0e5f300dab8baba3fb2e5d"
+  },
+  {
+    "stem": "helmet-blonde-expressions",
+    "name": "금발 투구 기사",
+    "baseSheet": "Actor1",
+    "baseCell": 3,
+    "sourceFile": "codex-clipboard-d5fde588-fb02-4224-ab6f-e23e8be1460e.png",
+    "sha256": "6cc94653de7ffa4549dd8ccf6271836271b761522f1e04649dffcd6bad979b77"
+  },
+  {
+    "stem": "blue-headband-expressions",
+    "name": "푸른 머리 머리띠",
+    "baseSheet": "Actor1",
+    "baseCell": 4,
+    "sourceFile": "codex-clipboard-b4a033bc-81b1-454b-a2bf-9dc360d0fa53.png",
+    "sha256": "487037f12a0b203a372ac5576d6446d6afe60ff388f76cbb0b59a566cee5fab1"
+  },
+  {
+    "stem": "purple-mage-expressions",
+    "name": "보라 머리 마법사",
+    "baseSheet": "Actor1",
+    "baseCell": 5,
+    "sourceFile": "codex-clipboard-9cec1206-14f9-4e50-8db7-2e69c0840ed1.png",
+    "sha256": "2dceedfc5b41445d3d5b4e39faa99a553a8b62e30f610861a00b16dd5f8bcc7a"
+  },
+  {
+    "stem": "black-headband-expressions",
+    "name": "검은 머리 머리띠",
+    "baseSheet": "Actor1",
+    "baseCell": 6,
+    "sourceFile": "codex-clipboard-ffbe71ea-c0aa-46a1-a46f-d56d2a000b31.png",
+    "sha256": "66e2bcb25adad3a6572522de5ec66055e300a84ed70063a7ac513c8162292334"
+  },
+  {
+    "stem": "blue-hat-woman-expressions",
+    "name": "푸른 모자 여성",
+    "baseSheet": "Actor1",
+    "baseCell": 7,
+    "sourceFile": "codex-clipboard-52289b46-1ffd-4154-b115-20dc98973428.png",
+    "sha256": "fc626bdab4fbc8085e8522351c12d957e683c0d6ff62a3e239e7b338309c9dba"
+  },
+  {
+    "stem": "black-martial-expressions",
+    "name": "검은 머리 무도가",
+    "baseSheet": "Actor1",
+    "baseCell": 8,
+    "sourceFile": "codex-clipboard-605c69e7-b4db-4957-ac52-c7e2521f7019.png",
+    "sha256": "81e74bbc80088904d9218de53d6b918813c8622bd78028fe9535277a99ad111f"
+  },
+  {
+    "stem": "orange-woman-expressions",
+    "name": "주황 머리 여성",
+    "baseSheet": "Actor1",
+    "baseCell": 9,
+    "sourceFile": "codex-clipboard-9ac0314e-96f5-4436-8fc9-73ac3f906d9c.png",
+    "sha256": "09915e732ab3f73f7e1f0b24b5356a4c2f5d1f8631a4888c3f39a4391ae8f0a3"
+  },
+  {
+    "stem": "green-scholar-expressions",
+    "name": "초록 옷 학자",
+    "baseSheet": "Actor1",
+    "baseCell": 10,
+    "sourceFile": "codex-clipboard-a2ca307c-42d7-423b-b95a-8032c68091f3.png",
+    "sha256": "cd694f1fe125b4903d333cd4dead52352719097d5a77ab4f3c465a1ba075f509"
+  },
+  {
+    "stem": "green-goggles-expressions",
+    "name": "초록 머리 고글",
+    "baseSheet": "Actor1",
+    "baseCell": 11,
+    "sourceFile": "codex-clipboard-4dc76c8e-78be-41e3-8b8e-beec675ba3b0.png",
+    "sha256": "a5224444fb6d35fff660dc06cfd0d4e121d8e3ecd8925e620d3ace85a3e668f9"
+  },
+  {
+    "stem": "bearded-bandana-expressions",
+    "name": "수염 두건 남성",
+    "baseSheet": "Actor1",
+    "baseCell": 12,
+    "sourceFile": "codex-clipboard-318fea62-5b94-4bda-9e36-fea7892adefb.png",
+    "sha256": "ec1cee416480ba944094ab9c421dce8fbbaaa962effc5941d97ba88e62c754c8"
+  },
+  {
+    "stem": "pink-hat-expressions",
+    "name": "분홍 머리 보라 모자 여성",
+    "baseSheet": "Actor1",
+    "baseCell": 13,
+    "sourceFile": "codex-clipboard-d9ef0af7-51fe-4ed7-85eb-81e0aed6bb1c.png",
+    "sha256": "840297cf8d36dfe7d591f2e1b1e33902eab61fd2582e04248d3ed3ed5a0d59b1"
+  },
+  {
+    "stem": "green-bandana-expressions",
+    "name": "초록 머리 두건",
+    "baseSheet": "Actor1",
+    "baseCell": 14,
+    "sourceFile": "codex-clipboard-ce61de40-88e9-4259-a2b3-bd1e5a342b2e.png",
+    "sha256": "9c427c62387957f886d13bd1a2bebee25983c7508c4a4f40e6f61dd93310119c"
+  },
+  {
+    "stem": "green-cap-blonde-expressions",
+    "name": "초록 모자 금발",
+    "baseSheet": "Actor1",
+    "baseCell": 15,
+    "sourceFile": "codex-clipboard-9e110649-5dc5-4088-b0bd-90fbe1352a53.png",
+    "sha256": "76add7eba3e41ae1e268e1374d72a3aca20f0019007719a63cf9eb7b2b5e09af"
+  },
+  {
+    "stem": "actor2-red-helmet-expressions",
+    "name": "붉은 투구",
+    "baseSheet": "Actor2",
+    "baseCell": 0,
+    "sourceFile": "codex-clipboard-68bac922-89ea-4b17-a650-f74be04f030c.png",
+    "sha256": "6062dbe273f2de75af514864e83882319184488149e663c8952f8b91ab7cdb31"
+  },
+  {
+    "stem": "actor2-mustache-expressions",
+    "name": "수염 전사",
+    "baseSheet": "Actor2",
+    "baseCell": 1,
+    "sourceFile": "codex-clipboard-a4f6013a-ccc8-421a-a704-b10f0ae2add1.png",
+    "sha256": "83829e5cd779d7d92329ed540983785894b7d9528873c8300ef8d11bae115299"
+  },
+  {
+    "stem": "actor2-masked-expressions",
+    "name": "복면 전사",
+    "baseSheet": "Actor2",
+    "baseCell": 2,
+    "sourceFile": "codex-clipboard-128d7829-99de-4d3a-a5be-b6df1370eb5a.png",
+    "sha256": "e822168eebd9e8c877fae20c0b79af296d362ecf643b3b59d04bd055e90992fc"
+  },
+  {
+    "stem": "actor2-white-band-expressions",
+    "name": "흰 머리띠 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 3,
+    "sourceFile": "codex-clipboard-365b1a86-af8e-45ff-94ad-c13010d4c917.png",
+    "sha256": "46b87fc75890746eecf35550a1171985781629bf30456a70bd394b633ee00034"
+  },
+  {
+    "stem": "actor2-blonde-expressions",
+    "name": "금발 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 4,
+    "sourceFile": "codex-clipboard-82a3dc12-88bd-455e-8d5f-505249b59f3f.png",
+    "sha256": "01c55109fbba9616ae107dd8e02e58dcf0cd48ea6d76b30220ea1c7170646dec"
+  },
+  {
+    "stem": "actor2-teal-woman-expressions",
+    "name": "청록 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 5,
+    "sourceFile": "codex-clipboard-bdf60ab2-9b07-4830-831d-732c63b94a93.png",
+    "sha256": "72218805ff54523da51586d25dbe60b3e420e5209b67d23a507832454400c5f8"
+  },
+  {
+    "stem": "actor2-brown-youth-expressions",
+    "name": "갈색 머리 청년",
+    "baseSheet": "Actor2",
+    "baseCell": 6,
+    "sourceFile": "codex-clipboard-d1e5d65c-d821-4fb6-80f2-4daf023eb12e.png",
+    "sha256": "baa2b07ad8d99f10834df3ead5450667ec6cf0340cf9d79ffa361091c2341055"
+  },
+  {
+    "stem": "actor2-brown-woman-expressions",
+    "name": "갈색 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 7,
+    "sourceFile": "codex-clipboard-fa40bd04-f795-44bd-aa6f-8213d66e1f0a.png",
+    "sha256": "0a28abf2be94b3bf82b6ff3d06a4266e83c68d033423b04d6f23ab784fe6bed7"
+  },
+  {
+    "stem": "actor2-blue-man-expressions",
+    "name": "푸른 머리 남성",
+    "baseSheet": "Actor2",
+    "baseCell": 8,
+    "sourceFile": "codex-clipboard-c6970947-e90c-49ec-a3f7-02362288c26c.png",
+    "sha256": "7897cc3943dda4b0b8ca80a57f0a41f8dc909f9012c29164f1b06c13b403614f"
+  },
+  {
+    "stem": "actor2-blonde-man-expressions",
+    "name": "금발 남성",
+    "baseSheet": "Actor2",
+    "baseCell": 9,
+    "sourceFile": "codex-clipboard-92f0639d-1d8c-41dd-8063-8bcd54f00629.png",
+    "sha256": "c5ec4a70e8408a7cacaabb87e4824cbebc120bfbf70c7e8884329bd38f9d7489"
+  },
+  {
+    "stem": "actor2-red-band-blonde-expressions",
+    "name": "금발 전사",
+    "baseSheet": "Actor2",
+    "baseCell": 10,
+    "sourceFile": "codex-clipboard-a2f5aab3-bf05-4da2-865b-272ca3fe1128.png",
+    "sha256": "9994ed9f0de7aba03f5339477fab9d8a56c897c746c105c94290192d488ef20f"
+  },
+  {
+    "stem": "actor2-long-blue-expressions",
+    "name": "긴 푸른 머리",
+    "baseSheet": "Actor2",
+    "baseCell": 11,
+    "sourceFile": "codex-clipboard-88ce9690-f684-4303-9bd3-9bbaa4138309.png",
+    "sha256": "0b7a817e1ade87b3c11809b8f6dd5adaee8f208d6ead158b48a1561704013d24"
+  },
+  {
+    "stem": "actor2-mauve-woman-expressions",
+    "name": "자주 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 12,
+    "sourceFile": "codex-clipboard-5eac537b-f000-4114-b1c6-a9ba4aacf18b.png",
+    "sha256": "1248d9e38b1cfc0013de82551313994938c42022ee7d5164cab188901e71e6cf"
+  },
+  {
+    "stem": "actor2-golden-woman-expressions",
+    "name": "황금 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 13,
+    "sourceFile": "codex-clipboard-ef971f0d-5784-40e4-af47-644411df0825.png",
+    "sha256": "a02a259d2fe67fc118f241bcbd65d042209ea7305cdbc9766f586c142e08da1c"
+  },
+  {
+    "stem": "actor2-purple-woman-expressions",
+    "name": "보라 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 14,
+    "sourceFile": "codex-clipboard-55dc3baf-a434-42f6-94e0-612fe50bcb11.png",
+    "sha256": "412f45b35ffd23a1af8f0d3ad5d0feae9c23d6b61536d4b15804ecb5830a31d1"
+  },
+  {
+    "stem": "actor2-blue-hat-woman-expressions",
+    "name": "붉은 모자 푸른 머리 여성",
+    "baseSheet": "Actor2",
+    "baseCell": 15,
+    "sourceFile": "codex-clipboard-395c34f7-ee53-4583-b80e-f198599c52fa.png",
+    "sha256": "c4c83c6c652d3c3e55b51179fc06554ed1ee97942af6443ebfb285d34e90df66"
+  },
+  {
+    "stem": "people1-boy-expressions",
+    "name": "소년",
+    "baseSheet": "People1",
+    "baseCell": 0,
+    "sourceFile": "codex-clipboard-9671bec9-4a2a-4a33-9794-887fce2491d1.png",
+    "sha256": "8ccb9bca788754214e43a0afd8f57e4d3b364d679e1587ee8eb0ea5ebd6c244f"
+  },
+  {
+    "stem": "people1-girl-expressions",
+    "name": "소녀",
+    "baseSheet": "People1",
+    "baseCell": 1,
+    "sourceFile": "codex-clipboard-1d669493-b56b-4ec7-bf3c-81c5f01a2400.png",
+    "sha256": "06c58a91840bb72c30537b026e193c961d88a5b65a9b687f1d94b2b9e8d650c0"
+  },
+  {
+    "stem": "people1-blue-man-expressions",
+    "name": "푸른 머리 남성",
+    "baseSheet": "People1",
+    "baseCell": 2,
+    "sourceFile": "codex-clipboard-380298e5-1f05-4531-aa69-63e2fff39d49.png",
+    "sha256": "dcb89c3e3666829c8ab3e5fa9932f938cf9de5871e8f825678f245dea4367d07"
+  },
+  {
+    "stem": "people1-blonde-woman-expressions",
+    "name": "금발 여성",
+    "baseSheet": "People1",
+    "baseCell": 3,
+    "sourceFile": "codex-clipboard-6faa92ba-583e-407e-8aa7-ee78eb3df7d7.png",
+    "sha256": "bcd8b906f5beea3da9efaba297c9bba359ca637ea13d1a58c3c0669da87fbb91"
+  },
+  {
+    "stem": "people1-mustache-expressions",
+    "name": "콧수염 남성",
+    "baseSheet": "People1",
+    "baseCell": 4,
+    "sourceFile": "codex-clipboard-f0524694-4e8a-4280-8969-88e1e34f329f.png",
+    "sha256": "3472277927faec4fb8033cc677756e95cecfae045fcb9de7b5f2f10b2c4893f9"
+  },
+  {
+    "stem": "people1-village-woman-expressions",
+    "name": "마을 여성",
+    "baseSheet": "People1",
+    "baseCell": 5,
+    "sourceFile": "codex-clipboard-f514e2d4-73e2-457e-8bbf-2dd4a4f6b193.png",
+    "sha256": "09d9bfd82d5250f29dc2f2af9c79ef3c048f331112d8ad3c88db369864b4a254"
+  },
+  {
+    "stem": "people1-old-man-expressions",
+    "name": "할아버지",
+    "baseSheet": "People1",
+    "baseCell": 6,
+    "sourceFile": "codex-clipboard-e9246776-812d-4d0e-9037-fc3b6e4ef8ea.png",
+    "sha256": "dc3044dbbfadc2e421553c493d0da28cf93138069b01bd3c5ebd87e203c23386"
+  },
+  {
+    "stem": "people1-old-woman-expressions",
+    "name": "할머니",
+    "baseSheet": "People1",
+    "baseCell": 7,
+    "sourceFile": "codex-clipboard-30f496b7-dc7f-4729-bc76-0a141fd68eca.png",
+    "sha256": "fd991f19eda69842c4ebaa5bcafcc446188e2615a51cc06633015a768770a447"
+  },
+  {
+    "stem": "people1-black-man-expressions",
+    "name": "검은 머리 남성",
+    "baseSheet": "People1",
+    "baseCell": 8,
+    "sourceFile": "codex-clipboard-bbd3538e-82b9-4fc5-a995-cc6011df7e32.png",
+    "sha256": "d16aaa68f745d0c586a4927f4ee73def1355f2c1099451ee355a1357918dc156"
+  },
+  {
+    "stem": "people1-nun-expressions",
+    "name": "수녀",
+    "baseSheet": "People1",
+    "baseCell": 9,
+    "sourceFile": "codex-clipboard-549776f7-d2b1-4eb4-9567-a4f767b156d9.png",
+    "sha256": "5598757a91b69db6e72df942eabe7c702bd10419a6e9697435bbf99aaff714e2"
+  },
+  {
+    "stem": "people1-bald-man-expressions",
+    "name": "대머리 남성",
+    "baseSheet": "People1",
+    "baseCell": 10,
+    "sourceFile": "codex-clipboard-a879759d-3832-4be2-9975-17e3c913fe4d.png",
+    "sha256": "df244f12c7f504380e5b3e625fd311f1590f2a4e93d9d41c4a3af17f67e6e889"
+  },
+  {
+    "stem": "people1-purple-woman-expressions",
+    "name": "보라 머리 여성",
+    "baseSheet": "People1",
+    "baseCell": 11,
+    "sourceFile": "codex-clipboard-ce48bde5-7fc9-456c-bf83-7a5510f91772.png",
+    "sha256": "3c98dccb6cf08a3bcc00426c42043dfae989b3a2451b7083c5675a16b7574ae1"
+  },
+  {
+    "stem": "people1-black-wave-expressions",
+    "name": "검은 웨이브 머리",
+    "baseSheet": "People1",
+    "baseCell": 12,
+    "sourceFile": "codex-clipboard-3b8a2d56-10cb-46d6-8d44-328da7cc1e96.png",
+    "sha256": "1ffa284b6ade0520f727365ea7059d5f9d1e291918648b747cdc20811075eb8b"
+  },
+  {
+    "stem": "people1-blonde-wave-expressions",
+    "name": "금발 웨이브 머리",
+    "baseSheet": "People1",
+    "baseCell": 13,
+    "sourceFile": "codex-clipboard-f61fb5e3-1c46-4fad-897e-3feb0096da96.png",
+    "sha256": "ff038153ab87f7295a73c946eaf8e02725f406f3852a077ddfff76e08e642c7c"
+  },
+  {
+    "stem": "people1-red-woman-expressions",
+    "name": "붉은 머리 여성",
+    "baseSheet": "People1",
+    "baseCell": 14,
+    "sourceFile": "codex-clipboard-2ad2c496-7ff8-4fb0-9491-4dd819249439.png",
+    "sha256": "3c03e94b3b563109388a552e9e227f0bf42f0b62daad8e0dc3664e57635b2b93"
+  },
+  {
+    "stem": "people1-mint-woman-expressions",
+    "name": "민트 머리 여성",
+    "baseSheet": "People1",
+    "baseCell": 15,
+    "sourceFile": "codex-clipboard-391884d7-4939-4ed6-ad82-ff4ab4a7c3cf.png",
+    "sha256": "de64fe2e84e38d57505af6427f5158d3b95ee99c43fc21e56571494d216555eb"
+  },
+  {
+    "stem": "people2-king-expressions",
+    "name": "왕",
+    "baseSheet": "People2",
+    "baseCell": 0,
+    "sourceFile": "codex-clipboard-42f16272-1fcd-42f3-8568-5388b1c7d0f2.png",
+    "sha256": "61f5fe9c3b09a5f3493f1baec6e8500884ca22af8e48dc33c932971fcbfa413a"
+  },
+  {
+    "stem": "people2-blue-woman-expressions",
+    "name": "푸른 머리 여성",
+    "baseSheet": "People2",
+    "baseCell": 1,
+    "sourceFile": "codex-clipboard-1c28637d-6a66-4c6d-8db3-f5b261576106.png",
+    "sha256": "4380fa1156a34ffaacb9118d57aa7a97442981c4d0c8768f3cb66acecf00afde"
+  },
+  {
+    "stem": "people2-auburn-man-expressions",
+    "name": "적갈색 머리 남성",
+    "baseSheet": "People2",
+    "baseCell": 2,
+    "sourceFile": "codex-clipboard-b3d1d0a8-237f-4090-9896-ca04857512c9.png",
+    "sha256": "10fde352dbee28c7a0451ea1e07d640199b2d319c267c2b3b495b4818bf20808"
+  },
+  {
+    "stem": "people2-blonde-curls-expressions",
+    "name": "금발 곱슬머리",
+    "baseSheet": "People2",
+    "baseCell": 3,
+    "sourceFile": "codex-clipboard-25e8335c-7425-4bb1-81b1-0b788ae84dc3.png",
+    "sha256": "e04329977311ea0c328102dbe8312b7c8938eafd20a700dc22b462b2954346cd"
+  },
+  {
+    "stem": "people2-white-elder-expressions",
+    "name": "백발 장로",
+    "baseSheet": "People2",
+    "baseCell": 4,
+    "sourceFile": "codex-clipboard-b2ffc680-b7ae-408e-a583-ac3505c1882d.png",
+    "sha256": "6457d9d04e70adca511585835c3e82dec9005cdd960d3dca33acdd1bf8571d63"
+  },
+  {
+    "stem": "people2-blue-ribbon-expressions",
+    "name": "푸른 머리 리본",
+    "baseSheet": "People2",
+    "baseCell": 5,
+    "sourceFile": "codex-clipboard-1f8c9cb7-a1cc-4a60-9b87-04ff8b646e67.png",
+    "sha256": "5e26d8b224fe10b99ced547c5c2c3c673649aa23b65bc4eed83bd5cc643dcb63"
+  },
+  {
+    "stem": "people2-mustache-expressions",
+    "name": "콧수염 남성",
+    "baseSheet": "People2",
+    "baseCell": 6,
+    "sourceFile": "codex-clipboard-7fa5943f-4acd-4063-9b91-2191acef9d34.png",
+    "sha256": "2efdb7f7bd731dd0c4554685962de02c31d815ccd9f3f2fdfa3fd738f1c06b90"
+  },
+  {
+    "stem": "people2-blue-guard-expressions",
+    "name": "푸른 투구 병사",
+    "baseSheet": "People2",
+    "baseCell": 7,
+    "sourceFile": "codex-clipboard-11c52aac-e1c9-4195-bc84-9bb87737fa64.png",
+    "sha256": "74184c75bafd2e7ad641d3e10a49bc45d4e900d7b8cf15dd29beceb95dcfa9ec"
+  },
+  {
+    "stem": "people2-dog-expressions",
+    "name": "강아지",
+    "baseSheet": "People2",
+    "baseCell": 8,
+    "sourceFile": "codex-clipboard-eca14ef1-0ef9-4468-b1dc-47940c7ee5cc.png",
+    "sha256": "e0eccbd0aab9b1df8d27ef75ce206cba1c9857046b248c68408c6b8adadc76ff"
+  },
+  {
+    "stem": "people2-cat-expressions",
+    "name": "고양이",
+    "baseSheet": "People2",
+    "baseCell": 9,
+    "sourceFile": "codex-clipboard-500e57cb-86f1-44cc-8596-7d27b32affae.png",
+    "sha256": "f4af5a077c1e6bfa1257c2c3f481a598a4f77a18d3fdce6b066365fcf7ebf6f3"
+  },
+  {
+    "stem": "people2-rooster-expressions",
+    "name": "수탉",
+    "baseSheet": "People2",
+    "baseCell": 10,
+    "sourceFile": "codex-clipboard-94e46acf-6c7b-49c0-9a66-cdd7b7184b57.png",
+    "sha256": "a761ef208ae5215cc3f97d2a3909b0fedcf6f70d37763a4ce3a2ffb1d28a70d5"
+  },
+  {
+    "stem": "people2-sheep-expressions",
+    "name": "양",
+    "baseSheet": "People2",
+    "baseCell": 11,
+    "sourceFile": "codex-clipboard-63fcd27b-a13e-443b-8731-36f451142aea.png",
+    "sha256": "00172ab2be54ca7b496cfe5c0b2a4006996812215fba6a7addd9e899e3f1ac53"
+  },
+  {
+    "stem": "people2-cow-expressions",
+    "name": "소",
+    "baseSheet": "People2",
+    "baseCell": 12,
+    "sourceFile": "codex-clipboard-cfb01f18-300a-453f-9a39-a434e00a1783.png",
+    "sha256": "751690d0a206dca5d89d39b894aed8f6336d02d2e5906a246e4e7321af08aa33"
+  },
+  {
+    "stem": "people2-horse-expressions",
+    "name": "말",
+    "baseSheet": "People2",
+    "baseCell": 13,
+    "sourceFile": "codex-clipboard-ccdec35c-bcaf-40af-8e9c-b3fc62a5fca9.png",
+    "sha256": "fc0a97ca274ad687133ac30ad97f4d5241e50569f98d1514651688d7f2fe484d"
+  },
+  {
+    "stem": "people2-tiger-expressions",
+    "name": "호랑이",
+    "baseSheet": "People2",
+    "baseCell": 14,
+    "sourceFile": "codex-clipboard-5e91505d-43be-4040-9cca-ceb96382e93d.png",
+    "sha256": "5a5fde281ecd14b4d0edfc1a3544b75cf5f7b7547c2adc78b1ff93d7305a2e06"
+  },
+  {
+    "stem": "people2-lion-expressions",
+    "name": "사자",
+    "baseSheet": "People2",
+    "baseCell": 15,
+    "sourceFile": "codex-clipboard-9bf39c0a-f1c5-41da-a0dd-2bf703b57b9a.png",
+    "sha256": "40c12c949c0fb33a2cae9de3b97744fb588da1f560e087db662717791010e43c"
+  },
+  {
+    "stem": "monster-slime-expressions",
+    "name": "슬라임",
+    "baseSheet": "Monster",
+    "baseCell": 0,
+    "sourceFile": "codex-clipboard-94a7bb4e-c9b5-4e61-8f16-1fd32a759d6b.png",
+    "sha256": "6ce14409fa10622cc5cd36c5f1baaa1ad7409728106d3109a7715d16ef70884a"
+  },
+  {
+    "stem": "monster-red-demon-expressions",
+    "name": "붉은 악마",
+    "baseSheet": "Monster",
+    "baseCell": 1,
+    "sourceFile": "codex-clipboard-46b9dbe1-9f55-4af3-b28b-5580059ceab5.png",
+    "sha256": "85b98b5755a4715eb7bfb415bcf5473ed165ea4120b91f849a49dbcfa59184fe"
+  },
+  {
+    "stem": "monster-pig-expressions",
+    "name": "돼지",
+    "baseSheet": "Monster",
+    "baseCell": 2,
+    "sourceFile": "codex-clipboard-17a99c6f-7dae-4527-b509-00882c792d4e.png",
+    "sha256": "c10588179368a07c01633b63fcaeabfba627f6e83a7ac0bf489ce7d359b46894"
+  },
+  {
+    "stem": "monster-ghost-expressions",
+    "name": "유령",
+    "baseSheet": "Monster",
+    "baseCell": 3,
+    "sourceFile": "codex-clipboard-6d11486b-bcc9-43cf-8b09-dcd9202c8112.png",
+    "sha256": "74792280fb467d81e4a0f3e09f5887bdc3a226d15b7bd183b6212d1856fa03e9"
+  },
+  {
+    "stem": "monster-skeleton-expressions",
+    "name": "해골",
+    "baseSheet": "Monster",
+    "baseCell": 4,
+    "sourceFile": "codex-clipboard-d8af8595-fca7-4133-8227-04562c15a5a5.png",
+    "sha256": "462c44266b6ede54e8c761a129caeb44bb1a0507c0d0a9610cae1d18596ac9d6"
+  },
+  {
+    "stem": "monster-green-scar-expressions",
+    "name": "초록 피부 흉터",
+    "baseSheet": "Monster",
+    "baseCell": 5,
+    "sourceFile": "codex-clipboard-aa497982-dfc2-4068-9b9d-4ab1c06a8d40.png",
+    "sha256": "0d330b417c0bb06d347a9f6f8d6c056cdfe6c644cc9d09ea515b46e8b7be06f3"
+  },
+  {
+    "stem": "monster-hood-skeleton-expressions",
+    "name": "후드 해골",
+    "baseSheet": "Monster",
+    "baseCell": 6,
+    "sourceFile": "codex-clipboard-604dcfc3-c0a9-4681-82ef-ba14c7ce3b5c.png",
+    "sha256": "b5e1917e259d23131019827e7d6abf68854d92cd69b1988e74395b4bb7f55cc9"
+  },
+  {
+    "stem": "monster-beast-expressions",
+    "name": "붉은 눈 수인",
+    "baseSheet": "Monster",
+    "baseCell": 7,
+    "sourceFile": "codex-clipboard-b784ea8b-c771-4cd5-b9af-cc66103f989f.png",
+    "sha256": "854bbc4eaf57b3076518b46344e6f47fca59409263fedbc79b492ac65f4149b4"
+  },
+  {
+    "stem": "monster-green-hair-expressions",
+    "name": "초록 머리 마족",
+    "baseSheet": "Monster",
+    "baseCell": 8,
+    "sourceFile": "codex-clipboard-9ad4473f-35b3-42de-b0c8-3cccfc1b2a92.png",
+    "sha256": "ae2cb90cb33fe9d09c19449896877df9bb2a8659c9a4edfb9191d2ba952462b0"
+  },
+  {
+    "stem": "monster-white-dragon-expressions",
+    "name": "흰 용",
+    "baseSheet": "Monster",
+    "baseCell": 9,
+    "sourceFile": "codex-clipboard-dde9c87d-c846-4510-bb8c-f7e40b924897.png",
+    "sha256": "18dbf34366246663c9ce61bd094bb75ae46cfa1a2e5048ab841f9e20e42a0ed7"
+  },
+  {
+    "stem": "monster-white-hair-expressions",
+    "name": "백발 마족",
+    "baseSheet": "Monster",
+    "baseCell": 10,
+    "sourceFile": "codex-clipboard-c4469fa2-26c9-4efe-8599-a46e5314f336.png",
+    "sha256": "42ccdfe874aeb3811aa568d0ee395bde96d5fcb8d5b38e8e7f24e237184f0ffd"
+  },
+  {
+    "stem": "monster-red-helm-expressions",
+    "name": "붉은 투구 기사",
+    "baseSheet": "Monster",
+    "baseCell": 11,
+    "sourceFile": "codex-clipboard-5942ec88-2cec-419a-adbd-35596b963cc2.png",
+    "sha256": "4e14a0c39cda99603a7d22df79d08a57b67262699edd574a8cf99cc854748b0d"
+  }
+]

@@ -1,0 +1,21 @@
+{
+ "id": "skeleton_model",
+ "slug": "skeleton_model",
+ "name": "인체 골격 모형",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "받침대 위에 매달린 골격 모형. 실루엣으로 읽혀야 한다 — 큰 두개골(과장), 갈비 3~4줄, 골반, 팔다리 뼈 1px. 쇠 받침대·바퀴 다리. 섬뜩하지 않게 교과서 모형처럼 흰 뼈 + 연한 그늘.",
+ "palette_hint": "vlinen/vwhite 뼈, mmetal 받침",
+ "pair": [],
+ "worker": "s1"
+}

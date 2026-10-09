@@ -1,0 +1,128 @@
+{
+ "plan": [
+  "##########",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#..#######"
+ ],
+ "exitWidth": 2,
+ "floor": "sh-wood",
+ "wall": "cloth-beige",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "sh-shampoo",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "washbasin",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "washbasin",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-barber-mirror",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "sh-barber-chair-n",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "sh-towel-rack",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "sh-barber-pole",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "sh-counter",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "sh-register",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "sh-waiting-bench",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 1,
+   "y": 8
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-scissors",
+   "x": 4,
+   "y": 7
+  }
+ ],
+ "name": "일본 동네 이발소 실내",
+ "start": [
+  1,
+  7
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "barber",
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 8
+  }
+ ]
+}

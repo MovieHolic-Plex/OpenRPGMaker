@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_wood/hf3-A.pxg",
+ "set": "horror",
+ "id": "door_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "기본 두 패널 문 — 위 2px 비우고 문틀 4px(왼 밝게·오른 어둡게), 문짝은 벽지보다 두 단 아래 3단, 들어간 패널 둘(위 8·아래 12칸), 놋쇠 손잡이 2×2. 얼룩·균열 없음.",
+ "ok": true
+}

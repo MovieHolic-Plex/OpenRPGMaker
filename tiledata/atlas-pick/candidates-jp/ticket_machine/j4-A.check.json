@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/j4-A.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.164
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "강남 결: 노선 요금표 판(파랑·빨강·초록 선) 아래 금속 매표기 두 대, 청록 화면·색 버튼·동전구·지폐구·반환구. 왼쪽 위 빛, 오른쪽 어두움.",
+ "ok": true
+}

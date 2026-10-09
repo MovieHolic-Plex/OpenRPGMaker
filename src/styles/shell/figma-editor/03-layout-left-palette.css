@@ -1,0 +1,148 @@
+  .editor-layout .resizer-left {
+    position: relative;
+    width: 6px;
+  }
+  .editor-layout .resizer-left::after {
+    content: "";
+    inset: 0 -6px 0 -6px;
+    position: absolute;
+  }
+  .editor-layout .resizer-left:hover,
+  .editor-layout .resizer-left:active,
+  .editor-layout .resizer-left:focus-visible {
+    outline-offset: -1px;
+  }
+
+  .editor-layout .resizer-map-tree {
+    box-sizing: border-box;
+    cursor: ns-resize;
+    display: block;
+    height: 6px;
+    min-height: 6px;
+    width: 100%;
+  }
+
+  .editor-layout.no-right-panel .left-panel-stack,
+  .left-panel-stack[data-testid="left-palette-root"],
+  .left-panel-stack[data-testid="left-map-root"] {
+    overflow: hidden;
+    min-height: 0;
+    background-color: var(--editor-panel-bg);
+    background-image: none;
+    color: var(--editor-text);
+  }
+
+  .left-panel-stack {
+    border-bottom: 1px solid var(--editor-line);
+  }
+
+  /* 예전 구조: 1=도구섹션(숨김), 2=타일 팔레트.
+     현재: 단일 .palette-work-shell 이 1번째 자식 — 숨기면 팔레트 전체가 사라진다. */
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell),
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2):not(.palette-work-shell) {
+    background: transparent;
+    border-bottom: 1px solid var(--editor-line);
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell) h3 {
+    display: none;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1):not(.palette-work-shell) {
+    display: none;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2):not(.palette-work-shell) h3 {
+    display: block;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section.palette-work-shell {
+    background: transparent;
+    border-bottom: 0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 0;
+  }
+
+  .panel-section {
+    margin-bottom: 14px;
+  }
+
+  .left-panel-stack .panel-section h3,
+  .left-panel-stack[data-testid="left-map-root"] .panel-section h3 {
+    border: 0;
+    color: var(--editor-text);
+    font-size: 17px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 14px;
+    padding: 0;
+  }
+
+  .left-panel-stack .field.compact-field {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    margin-bottom: 8px;
+  }
+
+  .left-panel-stack .field.compact-field label {
+    display: none;
+  }
+
+  .left-panel-stack select,
+  .left-panel-stack input,
+  .left-panel-stack textarea {
+    appearance: none;
+    background: var(--bg-inset);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 0 rgba(42, 37, 33, 0.06);
+    color: var(--editor-text);
+    font: 500 16px/1.2 var(--font-ui);
+    height: 34px;
+    min-width: 0;
+    padding: 0 12px;
+  }
+
+  .left-panel-stack select {
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--editor-text-muted) 50%),
+      linear-gradient(135deg, var(--editor-text-muted) 50%, transparent 50%);
+    background-position:
+      calc(100% - 17px) 14px,
+      calc(100% - 12px) 14px;
+    background-repeat: no-repeat;
+    background-size: 5px 5px, 5px 5px;
+    padding-right: 34px;
+  }
+
+  .left-panel-stack .field.compact-field::after {
+    align-items: center;
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    content: "⌕";
+    display: inline-flex;
+    font-size: 24px;
+    height: 34px;
+    justify-content: center;
+  }
+
+  .used-location-button {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    font-size: 15px;
+    height: 30px;
+  }
+

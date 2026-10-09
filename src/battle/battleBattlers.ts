@@ -1,0 +1,652 @@
+import { battleRow, type BattleRow } from "@/battle/battleFormation";
+import { effectivePromotionLineage, validActorClassOverride } from '@/project/growth/lineage';
+import { growthEffects } from "@/project/growth/runtime";
+import { resolveActorFaceResourceId } from "@/project/sessionActorCommands";
+import type { GrowthProgress, PromotionLineage } from "@/project/growth/types";
+import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { startStateOf } from "@/project/session";
+import type { MonsterInstance } from "@/project/session";
+import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, ClassBattleCommand, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
+import { resolveBattlerPose } from "@/battle/battlePose";
+import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
+import { classicEnemyFormation } from "@/battle/battlerPlacements";
+import type { EquipmentRecord, TroopMemberRecord, TroopRecord } from "@/project/types/database";
+import { effectiveActorEquipment, logicalEquipmentIds } from "@/project/equipmentRules";
+
+const CHARGE_PER_AGILITY = 0.1 / 43;
+const CHARGE_FLOOR = 0.02;
+// Haste-aware charge: 상태 배율이 0.4~2.5 clamp, 둔화/가속 버프 설계 공간 확보.
+// chargeRateFor는 기본 민첩만 계산; 상태 배율은 battleTurnGauge에서 haste 보정으로 적용.
+// FLOOR는 유지하되, agi 8 이하는 0.02로 뭉개지던 문제를 완화하기 위해
+// agi 기반 선형 + FLOOR 중 큰 값으로 유지 — 상태 둔화 시에도 최소 전진 보장.
+
+// 세션에서 온 액터별 오버라이드. 모두 선택적이며, 없으면 DB 기본값으로 폴백한다.
+export interface ActorBattlerOverrides {
+  readonly rows?: Readonly<Record<string, BattleRow>>;
+  // 이름 오버라이드(enterHeroName 등). actorId → 이름.
+  readonly names?: Readonly<Record<string, string>>;
+  // 현재 faceset(Change Actor Faceset 포함). 전투 HUD가 DB 기본 얼굴로 되돌아가지 않게 한다.
+  readonly faceResourceIds?: Readonly<Record<string, string>>;
+  // 레벨 오버라이드(레벨업 반영값). actorId → 레벨. 없으면 DB initialLevel.
+  readonly levels?: Readonly<Record<string, number>>;
+  // 현재 바이탈(필드에서 이어지는 현재 HP/MP). actorId → {hp, mp}.
+  readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
+  // 런타임 영구 파라미터 보정(Change Parameters). actorId → parameterKey → delta.
+  readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
+  readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
+  readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
+  readonly classOverrides?: Readonly<Record<string, string>>;
+  readonly growthProgress?: GrowthProgress;
+  readonly promotionLineage?: PromotionLineage;
+  // 필드에서 이어지는 런타임 상태 이상(Change State).
+  readonly stateIds?: Readonly<Record<string, readonly string[]>>;
+  // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
+  // 플레이 중 파티가 바뀌면 반드시 라이브 세션 값을 넘겨야 전투 편성이 일치한다.
+  readonly partyActorIds?: readonly ActorId[];
+}
+
+export interface MutableBattler {
+  readonly row?: BattleRow;
+  readonly id: string;
+  readonly recordId: ActorId | EnemyId;
+  // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
+  classId?: string;
+  // Event level changes update the existing battler before refreshing derived stats.
+  level?: number;
+  readonly faceResourceId?: string;
+  readonly battleCharacterResourceId?: string;
+  /** 표시용 걷기 칩. 전투 규칙 계산에는 쓰지 않는다. */
+  readonly characterResourceId?: string;
+  readonly characterIndex?: number;
+  // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
+  // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
+  readonly monsterInstanceId?: string;
+  readonly speciesId?: string;
+  readonly name: string;
+  // 파생 스탯: 전투 중 changeEquipment/promoteActor 가 refreshActorBattlerDerivedStats 로
+  // 재계산할 수 있어 mutable. 생성 산식과 같은 actorDerivedStats 를 공유한다.
+  maxHp: number;
+  maxMp: number;
+  attackPower: number;
+  defense: number;
+  mind: number;
+  agility: number;
+  chargeRate: number;
+  skillIds: SkillId[];
+  /** Remaining PP for authored monster moves. Missing means the legacy MP path. */
+  skillPp?: Record<SkillId, number>;
+  skillCooldowns?: Record<SkillId, number>;
+  readonly enemyActions?: readonly EnemyActionPattern[];
+  /** 다부위 적: 이 부위의 본체 배틀러 id. 본체가 쓰러지면 이 부위도 쓰러진다. */
+  readonly partCoreId?: string;
+  /** 부위 태그(TroopMemberRecord.partTag). 쓰러지면 본체의 requiresPart 행동이 막힌다. */
+  readonly partTag?: string;
+  // 전투 중 moveEnemy(m2)·행동 moveTo 가 옮긴다 — 위치 범위기가 새 좌표를 본다.
+  battleX?: number;
+  battleY?: number;
+  authoredX?: number;
+  authoredY?: number;
+  /** 전투 중 옮겨진 적. 표시 계층은 자동 진형 대신 이 좌표를 쓰고 durationMs 동안 미끄러지듯 옮긴다. */
+  moved?: { readonly durationMs: number; readonly sequence: number };
+  hidden: boolean;
+  captured?: boolean;
+  /** 라이브라로 탐색됨. */
+  scanned?: boolean;
+  hp: number;
+  mp: number;
+  gauge: number;
+  stateIds: string[];
+  equipmentEffects?: EquipmentRuntimeEffects;
+  // 상태별 경과 턴 수(stateId → 턴). 자연 회복/지속 피해 판정용.
+  stateTurns: Record<string, number>;
+  defending: boolean;
+  /** 리미트 게이지 0~100. system.limitGauge 를 켠 전투의 아군만 가진다. */
+  limitGauge?: number;
+  /** 제2 기술 자원(기력). system.resource2 를 켠 전투의 아군만 가진다. */
+  resource2?: number;
+}
+
+export function actorBattlers(
+  project: Project,
+  overrides?: ActorBattlerOverrides
+): MutableBattler[] {
+  const requested = overrides?.partyActorIds ?? startStateOf(project).partyActorIds;
+  // 저장본 파티에 배우가 아닌 칸(null·지워진 배우)이 있으면 그 칸만 빼고 싸운다 — 한 칸 때문에
+  // 전투 전체가 「Missing actor」로 멈췄다(2026-09-24 등대지기 3차, 동료 합류가 null 을 넣음).
+  // 남는 배우가 하나도 없을 때만 예전처럼 실패한다.
+  const partyActorIds = requested.filter((actorId) => project.database.actors.some((record) => record.id === actorId));
+  if (partyActorIds.length !== requested.length) {
+    console.warn(`[battle] 파티의 배우가 아닌 칸을 건너뜁니다: ${JSON.stringify(requested.filter((id) => !partyActorIds.includes(id)))}`);
+    if (partyActorIds.length === 0) throw new Error(`Missing actor: ${requested.map(String).join(", ")}`);
+  }
+  return partyActorIds.map((actorId, index) => {
+    const actor = project.database.actors.find((record) => record.id === actorId);
+    if (!actor) throw new Error(`Missing actor: ${actorId}`);
+    const normalizedActor = normalizeActorRecord(actor);
+    // 세션 레벨(레벨업 반영값)이 있으면 그 레벨로 파라미터 곡선을 조회. 없으면 DB initialLevel.
+    const level = clampLevel(overrides?.levels?.[actorId] ?? normalizedActor.initialLevel);
+    const actorEquipment = effectiveActorEquipment(project, normalizedActor, overrides?.equipment?.[actorId], effectiveActorClassId(project, overrides, actorId));
+    const derived = actorDerivedStats(project, normalizedActor, {
+      level,
+      classOverrides: overrides?.classOverrides,
+      growthProgress: overrides?.growthProgress,
+      promotionLineage: overrides?.promotionLineage,
+      paramBonuses: overrides?.paramBonuses?.[actorId],
+      equipment: actorEquipment,
+    });
+    // 세션 현재 바이탈이 있으면 그 값을 이어받되(필드에서 이어지는 부상 상태 유지),
+    // 이 전투 레벨 기준 최대치로 클램프. 없으면 완충 상태로 시작.
+    const row = battleRow(overrides?.rows?.[actorId]);
+    const sessionVitals = overrides?.vitals?.[actorId];
+    const hp = sessionVitals ? clampVital(sessionVitals.hp, derived.maxHp) : derived.maxHp;
+    const mp = sessionVitals ? clampVital(sessionVitals.mp, derived.maxMp) : derived.maxMp;
+    return {
+      id: actor.id,
+      recordId: actor.id,
+      classId: derived.effectiveClassId,
+      level,
+      faceResourceId: resolveActorFaceResourceId({ actorFaceResourceIds: overrides?.faceResourceIds }, normalizedActor, project),
+      battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
+      characterResourceId: normalizedActor.characterResourceId,
+      characterIndex: normalizedActor.characterIndex,
+      name: overrides?.names?.[actorId] ?? normalizedActor.name,
+      maxHp: derived.maxHp,
+      hp,
+      maxMp: derived.maxMp,
+      mp,
+      row,
+      attackPower: derived.attack,
+      defense: derived.defense,
+      mind: derived.mind,
+      agility: derived.agility,
+      chargeRate: derived.chargeRate,
+      // RM2k3 side-view: party stacks on the RIGHT, facing left into the field.
+      battleX: 252,
+      battleY: 96 + index * 36,
+      gauge: 0,
+      stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
+      equipmentEffects: derived.equipmentEffects,
+      stateTurns: {},
+      defending: false,
+      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves, overrides?.growthProgress, { [actorId]: effectivePromotionLineage(project, overrides ?? {}, actorId) }),
+      skillPp: overrides?.skillPp?.[actorId] ? { ...overrides.skillPp[actorId] } : undefined,
+      hidden: false,
+    };
+  });
+}
+
+// 액터 배틀러의 파생 스탯 단일 산식(장비/클래스/영구 보정 기여 포함).
+// actorBattlers 생성과 전투 중 재계산(refreshActorBattlerDerivedStats)이 이 함수를 공유해
+// 이중 구현을 막는다 — 산식 변경은 반드시 여기서만 한다.
+export interface ActorDerivedStats {
+  readonly effectiveClassId?: string;
+  readonly usesOverrideCurves: boolean;
+  readonly maxHp: number;
+  readonly maxMp: number;
+  readonly attack: number;
+  readonly defense: number;
+  readonly mind: number;
+  readonly agility: number;
+  readonly chargeRate: number;
+  readonly equipmentEffects: EquipmentRuntimeEffects;
+}
+
+export function actorDerivedStats(
+  project: Project,
+  normalizedActor: ReturnType<typeof normalizeActorRecord>,
+  input: {
+    readonly level: number;
+    readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly growthProgress?: GrowthProgress;
+    readonly promotionLineage?: PromotionLineage;
+    readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
+    // 유효 장비 프로젝션(effectiveActorEquipment 통과 값 또는 initialEquipment).
+    readonly equipment: ActorInitialEquipment;
+  }
+): ActorDerivedStats {
+  const session = { classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined };
+  const effectiveClassId = effectiveActorClassId(project, session, normalizedActor.id);
+  const effectiveClass = project.database.classes.find((record) => record.id === effectiveClassId);
+  const usesOverrideCurves = validActorClassOverride(project, session, normalizedActor.id) && effectiveClass !== undefined;
+  const curves = usesOverrideCurves && effectiveClass ? effectiveClass.parameterCurves : normalizedActor.parameterCurves;
+  const growth = growthEffects(project, { variables: {}, classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined, growthProgress: input.growthProgress, promotionLineage: input.promotionLineage }, normalizedActor.id).bonuses;
+  const bonuses = Object.fromEntries(Object.entries(growth).map(([k, v]) => [k, v + (input.paramBonuses?.[k as ActorParameterKey] ?? 0)])) as Record<ActorParameterKey, number>;
+  const equipmentBonuses = totalEquipmentBonuses(project, input.equipment);
+  const agility = parameterWithBonus(curves.agility, input.level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
+  return {
+    effectiveClassId,
+    usesOverrideCurves,
+    maxHp: parameterWithBonus(curves.maxHp, input.level, bonuses?.maxHp, 1),
+    maxMp: parameterWithBonus(curves.maxMp, input.level, bonuses?.maxMp, 0),
+    attack: parameterWithBonus(curves.attack, input.level, (bonuses?.attack ?? 0) + equipmentBonuses.attack, 1),
+    defense: parameterWithBonus(curves.defense, input.level, (bonuses?.defense ?? 0) + equipmentBonuses.defense, 1),
+    mind: parameterWithBonus(curves.mind, input.level, (bonuses?.mind ?? 0) + equipmentBonuses.mind, 1),
+    agility,
+    chargeRate: chargeRateFor(agility),
+    equipmentEffects: equipmentRuntimeEffects(project, input.equipment),
+  };
+}
+
+// 전투 중 장비 변경(changeEquipment)/전직(promoteActor) 후 해당 액터 배틀러의
+// 파생 스탯 필드만 갱신한다 — 재생성이 아니라서 현재 HP/MP·게이지·상태이상·상태턴을 보존하고,
+// 새 최대치로만 클램프한다. 산식은 생성 로직(actorDerivedStats)과 100% 공유.
+export function refreshActorBattlerDerivedStats(
+  project: Project,
+  battler: MutableBattler,
+  input: {
+    readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly growthProgress?: GrowthProgress;
+    readonly promotionLineage?: PromotionLineage;
+    readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
+    // 세션형(raw) 장비 스냅샷. 유효 프로젝션은 이 함수가 생성 경로와 동일하게 계산한다.
+    readonly equipment?: ActorInitialEquipment;
+    // 전직처럼 클래스 스킬 셋이 바뀔 때만 지정: 생성 로직(learnedSkillIds)으로 skillIds 재계산.
+    readonly skills?: { readonly sessionSkillIds?: readonly SkillId[] };
+  }
+): void {
+  const actor = project.database.actors.find((record) => record.id === battler.recordId);
+  if (!actor) return;
+  const normalizedActor = normalizeActorRecord(actor);
+  const level = clampLevel(battler.level ?? normalizedActor.initialLevel);
+  const classOverrideSession = { classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined };
+  const effectiveClassId = effectiveActorClassId(project, classOverrideSession, actor.id);
+  // 생성 경로(runtime.ts)와 동일: raw 세션 장비를 유효 프로젝션으로 통과시킨 뒤 산식에 넣는다.
+  const effectiveEquipment = effectiveActorEquipment(project, actor, input.equipment, effectiveClassId ?? actor.classId);
+  const derived = actorDerivedStats(project, normalizedActor, {
+    level,
+    classOverrides: input.classOverrides,
+    growthProgress: input.growthProgress,
+    promotionLineage: input.promotionLineage,
+    paramBonuses: input.paramBonuses,
+    equipment: effectiveEquipment,
+  });
+  battler.classId = derived.effectiveClassId;
+  battler.maxHp = derived.maxHp;
+  battler.maxMp = derived.maxMp;
+  battler.hp = clampVital(battler.hp, derived.maxHp);
+  battler.mp = clampVital(battler.mp, derived.maxMp);
+  battler.attackPower = derived.attack;
+  battler.defense = derived.defense;
+  battler.mind = derived.mind;
+  battler.agility = derived.agility;
+  battler.chargeRate = derived.chargeRate;
+  battler.equipmentEffects = derived.equipmentEffects;
+  if (input.skills) {
+    battler.skillIds = learnedSkillIds(
+      project,
+      normalizedActor,
+      level,
+      input.skills.sessionSkillIds,
+      derived.effectiveClassId,
+      derived.usesOverrideCurves,
+      input.growthProgress,
+      { [actor.id]: effectivePromotionLineage(project, input, actor.id) }
+    );
+  }
+}
+
+export function learnedSkillIds(
+  project: Project,
+  actor: ReturnType<typeof normalizeActorRecord>,
+  level: number,
+  sessionSkillIds: readonly SkillId[] | undefined,
+  effectiveClassId: string | undefined,
+  overrideClassSkills: boolean,
+  growthProgress?: GrowthProgress,
+  promotionLineage?: PromotionLineage
+): SkillId[] {
+  const growth = growthEffects(project, { variables: {}, classOverrides: effectiveClassId ? { [actor.id]: effectiveClassId } : undefined, growthProgress, promotionLineage }, actor.id);
+  const ids = new Set<SkillId>([...(sessionSkillIds ?? []), ...growth.skillIds]);
+  // TP 문턱 항목은 레벨만으로 열리지 않는다 — 배우면 세션 actorSkillIds 로 들어온다.
+  for (const entry of actor.learnedSkills) if (entry.tp === undefined && entry.level <= level) ids.add(entry.skillId);
+  const classId = overrideClassSkills ? effectiveClassId : actor.classId;
+  for (const skillId of classLearnedSkillIdsUpToLevel(project, classId ?? actor.classId, level)) ids.add(skillId);
+  return [...ids];
+}
+
+export interface AttackSwing {
+  readonly weaponId: string;
+  readonly attackOffset: number;
+  readonly attackElementIds: readonly string[];
+}
+
+export interface EquipmentRuntimeEffects {
+  readonly doubleAttack: boolean;
+  /**
+   * 통상 공격 한 번에 몇 번 치는가(RM2003 이도류, 2026-10-02). 든 무기마다 한 번, 「2회 공격」 무기는 두 번 —
+   * 이도류로 방패 칸에 한손 무기를 든 배우는 두 무기로 각각 친다. 무기가 없으면 장비 「2회 공격」이 있을 때 2, 아니면 1.
+   */
+  readonly attackHits?: number;
+  /**
+   * 이도류로 무기 둘 이상을 든 배우의 타격별 무기(2026-10-02). 한 타격은 그 무기의 공격력·공격 속성만 쓴다 —
+   * 두 무기 공격력을 합친 값으로 두 번 치면 한 자루가 두 번 계산되어 이도류가 두 배로 세졌다.
+   * attackOffset = 다른 무기들의 공격력 보정 합의 음수(통상 공격 능력치에 더한다).
+   */
+  readonly attackSwings?: readonly AttackSwing[];
+  readonly attackAll?: boolean;
+  /** 전투당 1회 자동 부활(최대 HP %). 여러 장비면 가장 큰 값. */
+  readonly autoRevive?: number;
+  readonly accuracy?: number;
+  readonly criticalRate?: number;
+  readonly attackElementIds?: readonly string[];
+  readonly elementalDefenseIds: readonly string[];
+  readonly stateDefenseIds: readonly string[];
+  readonly stateDefenseMode: "resist" | "inflict";
+  readonly stateResistanceChance: number;
+  /** 장비 효과 「MP 소모 절반」. 하나라도 있으면 켜진다. */
+  readonly halfMpCost?: boolean;
+  /** 장착 중에만 쓸 수 있는 스킬(EquipmentRecord.grantsSkillIds 합집합). */
+  readonly grantedSkillIds?: readonly SkillId[];
+  /** 장착 중에만 붙는 전투 명령(EquipmentRecord.grantsCommand). */
+  readonly grantedCommands?: readonly ClassBattleCommand[];
+}
+
+function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipment): { attack: number; defense: number; mind: number; agility: number } {
+  const total = { attack: 0, defense: 0, mind: 0, agility: 0 };
+  for (const equipmentId of logicalEquipmentIds(project, equipment)) {
+    if (!equipmentId) continue;
+    const record = project.database.equipment.find((entry) => entry.id === equipmentId);
+    if (!record) continue;
+    total.attack += record.statBonuses.attack;
+    total.defense += record.statBonuses.defense;
+    total.mind += record.statBonuses.mind;
+    total.agility += record.statBonuses.agility;
+  }
+  return total;
+}
+
+/** 든 무기(무기 칸 + 이도류로 방패 칸에 든 한손 무기). 두손 무기가 방패 칸에 겹쳐 적힌 것은 한 자루다. */
+function heldWeapons(project: Project, equipment: ActorInitialEquipment): EquipmentRecord[] {
+  const find = (id: string | undefined) => (id ? project.database.equipment.find((entry) => entry.id === id) : undefined);
+  const main = find(equipment.weapon);
+  const off = find(equipment.shield);
+  const held: EquipmentRecord[] = [];
+  if (main?.slot === "weapon") held.push(main);
+  if (off?.slot === "weapon" && !(off.twoHanded && off.id === main?.id)) held.push(off);
+  return held;
+}
+
+function attackHitsFor(project: Project, equipment: ActorInitialEquipment, doubleAttack: boolean): number {
+  const weapons = heldWeapons(project, equipment);
+  if (weapons.length === 0) return doubleAttack ? 2 : 1;
+  const hits = weapons.reduce((sum, weapon) => sum + (weapon.effectFlags.doubleAttack ? 2 : 1), 0);
+  // 무기가 아닌 장비(장신구 등)의 「2회 공격」은 한 손 무기 한 자루일 때만 두 번으로 올린다.
+  return doubleAttack ? Math.max(hits, 2) : hits;
+}
+
+function attackSwingsFor(project: Project, equipment: ActorInitialEquipment): AttackSwing[] | undefined {
+  const weapons = heldWeapons(project, equipment);
+  if (weapons.length < 2) return undefined;
+  const totalBonus = weapons.reduce((sum, weapon) => sum + weapon.statBonuses.attack, 0);
+  return weapons.flatMap((weapon) => {
+    const swing: AttackSwing = { weaponId: weapon.id, attackOffset: weapon.statBonuses.attack - totalBonus, attackElementIds: [...weapon.attackElementIds] };
+    return weapon.effectFlags.doubleAttack ? [swing, swing] : [swing];
+  });
+}
+
+function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipment): EquipmentRuntimeEffects {
+  const attackElementIds = new Set<string>();
+  const elementalDefenseIds = new Set<string>();
+  const stateDefenseIds = new Set<string>();
+  let doubleAttack = false;
+  let attackAll = false;
+  let autoRevive = 0;
+  let accuracy = 100;
+  let criticalRate = 0;
+  let stateResistanceChance = 0;
+  let halfMpCost = false;
+  const grantedSkillIds = new Set<SkillId>();
+  const grantedCommands: ClassBattleCommand[] = [];
+  const stateDefenseMode = "resist" as const;
+  for (const equipmentId of logicalEquipmentIds(project, equipment)) {
+    if (!equipmentId) continue;
+    const record = project.database.equipment.find((entry) => entry.id === equipmentId);
+    if (!record) continue;
+    if (record.effectFlags.doubleAttack) doubleAttack = true;
+    if (record.effectFlags.attackAll) attackAll = true;
+    if (record.effectFlags.halfMpCost) halfMpCost = true;
+    for (const skillId of record.grantsSkillIds ?? []) grantedSkillIds.add(skillId);
+    if (record.grantsCommand && !grantedCommands.some((command) => command.id === record.grantsCommand!.id)) {
+      grantedCommands.push(record.grantsCommand);
+      if (record.grantsCommand.skillId) grantedSkillIds.add(record.grantsCommand.skillId);
+    }
+    if ((record.effectFlags.autoRevive ?? 0) > autoRevive) autoRevive = record.effectFlags.autoRevive ?? 0;
+    accuracy = Math.round((accuracy * record.accuracy) / 100);
+    criticalRate += record.criticalRate;
+    for (const elementId of record.attackElementIds) attackElementIds.add(elementId);
+    for (const elementId of record.elementalDefenseIds) elementalDefenseIds.add(elementId);
+    if (record.stateDefenseMode === "resist") {
+      for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
+      stateResistanceChance = Math.max(stateResistanceChance, record.stateResistanceChance);
+    }
+  }
+  return {
+    doubleAttack,
+    attackHits: attackHitsFor(project, equipment, doubleAttack),
+    ...(() => {
+      const attackSwings = attackSwingsFor(project, equipment);
+      return attackSwings ? { attackSwings } : {};
+    })(),
+    attackAll,
+    ...(autoRevive > 0 ? { autoRevive } : {}),
+    accuracy: Math.max(0, Math.min(100, accuracy)),
+    criticalRate: Math.max(0, Math.min(100, criticalRate)),
+    attackElementIds: [...attackElementIds],
+    elementalDefenseIds: [...elementalDefenseIds],
+    stateDefenseIds: [...stateDefenseIds],
+    stateDefenseMode,
+    stateResistanceChance,
+    ...(halfMpCost ? { halfMpCost } : {}),
+    ...(grantedSkillIds.size > 0 ? { grantedSkillIds: [...grantedSkillIds] } : {}),
+    ...(grantedCommands.length > 0 ? { grantedCommands } : {}),
+  };
+}
+
+
+function clampVital(value: number, max: number): number {
+  if (!Number.isFinite(value)) return max;
+  return Math.max(0, Math.min(max, Math.trunc(value)));
+}
+
+function parameterWithBonus(curve: readonly number[], level: number, bonus: number | undefined, min: number): number {
+  const value = parameterValueAtLevel(curve, level) + (Number.isFinite(bonus) ? Math.trunc(bonus ?? 0) : 0);
+  return Math.max(min, value);
+}
+
+// 파티 몬스터(MonsterInstance 배열, 필드 순서대로)를 아군측 배틀러로 합성한다.
+// 액터 파이프라인 대신 이 배틀러들이 필드에 나서면 "내 포켓몬이 싸운다"가 성립한다.
+export function monsterPartyBattlers(project: Project, instances: readonly MonsterInstance[]): MutableBattler[] {
+  return instances.map((instance, index) => {
+    const hydrated = normalizeMonsterInstanceBattleState(project, instance);
+    const stats = monsterBattleStats(project, hydrated);
+    const hp = monsterCurrentHp(project, hydrated);
+    return {
+      // id is the DOM/runtime node key; recordId is the script/command key (instanceId).
+      id: `mon:${hydrated.instanceId}`,
+      recordId: hydrated.instanceId as ActorId,
+      monsterInstanceId: hydrated.instanceId,
+      speciesId: hydrated.speciesId,
+      level: hydrated.level,
+      name: monsterDisplayName(project, hydrated),
+      maxHp: stats.maxHp,
+      hp,
+      maxMp: stats.maxMp,
+      mp: stats.maxMp,
+      attackPower: stats.attack,
+      defense: stats.defense,
+      mind: stats.mind,
+      agility: stats.agility,
+      chargeRate: chargeRateFor(stats.agility),
+      // RM2k3 side-view: monster party also stacks on the RIGHT.
+      battleX: 252,
+      battleY: 96 + index * 36,
+      gauge: 0,
+      stateIds: [...(hydrated.stateIds ?? [])],
+      stateTurns: { ...(hydrated.stateTurns ?? {}) },
+      defending: false,
+      skillIds: monsterSkillIds(project, hydrated),
+      skillPp: hydrated.skillPp ? { ...hydrated.skillPp } : undefined,
+      hidden: false,
+    } satisfies MutableBattler;
+  });
+}
+
+/** Alias kept for tests/docs that still say monsterBattlers. */
+export const monsterBattlers = monsterPartyBattlers;
+
+/**
+ * RM2k3 side-view 적 진형 좌표. 에디터 미리보기·기본 멤버 좌표와 런타임이
+ * 같은 식을 쓰도록 여기서만 정의한다(중복 정의 금지).
+ */
+export { classicEnemyFormation } from "@/battle/battlerPlacements";
+
+/** 몬스터 파티에서 행동이 비어 있으면 종족 습득 기술을 쓴다. 빈 skillIds 를 포획에 복사하면 파티 몬스터가 기술을 잃는다. */
+function enemyBattlerSkillIds(project: Project, enemy: ReturnType<typeof normalizeEnemyRecord>): SkillId[] {
+  if (enemy.skillIds.length > 0) return enemy.skillIds;
+  const monsterParty = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+  if (!monsterParty || !enemy.speciesId) return enemy.skillIds;
+  const species = monsterSpeciesById(project, enemy.speciesId);
+  if (!species) return enemy.skillIds;
+  const learned = monsterSkillIdsAtLevel(species, enemy.level ?? 1);
+  return learned.length > 0 ? learned : enemy.skillIds;
+}
+
+export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
+  const members = troop.members?.length
+    ? troop.members
+    : (troop.enemyIds ?? []).map((enemyId, index) => ({
+        enemyId,
+        // RM2k3 side-view: enemies form on the LEFT.
+        ...classicEnemyFormation(index),
+        hidden: false,
+      }));
+  return members.map((member: TroopMemberRecord, index) => {
+    const enemyId = member.enemyId;
+    const enemy = project.database.enemies.find((record) => record.id === enemyId);
+    if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
+    const normalizedEnemy = normalizeEnemyRecord(enemy);
+    const stats = normalizedEnemy.stats;
+    const authoredX = member.x;
+    const authoredY = member.y;
+    const { x: formationX, y: formationY } = classicEnemyFormation(index);
+    // SC12 (M4): enemy troop coords that sit too far center (x>150) are
+    // recentered into a left-side formation so they don't overlap the party.
+    const recenteredX = authoredX != null && authoredX > 150 ? formationX : authoredX;
+    const needsClassicFormation = recenteredX == null || authoredY == null;
+    return {
+      id: `enemy-${index + 1}`,
+      recordId: enemy.id,
+      level: normalizedEnemy.level,
+      name: normalizedEnemy.name,
+      maxHp: stats.maxHp,
+      hp: stats.maxHp,
+      maxMp: stats.maxMp,
+      mp: stats.maxMp,
+      attackPower: stats.attack,
+      defense: stats.defense,
+      mind: stats.mind,
+      agility: stats.agility,
+      chargeRate: chargeRateFor(stats.agility),
+      battleX: needsClassicFormation ? formationX : recenteredX!,
+      battleY: needsClassicFormation ? formationY : authoredY!,
+      authoredX,
+      authoredY,
+      gauge: 0,
+      stateIds: [],
+      stateTurns: {},
+      defending: false,
+      skillIds: enemyBattlerSkillIds(project, normalizedEnemy),
+      enemyActions: normalizedEnemy.actions,
+      // 몬스터 종 트룹 판별(인트로 "야생의 ○○" 분기)과 포획 UI가 스냅샷에서 읽는다.
+      speciesId: normalizedEnemy.speciesId,
+      hidden: member.hidden ?? false,
+      captured: false,
+      ...(typeof member.partOf === "number" && member.partOf !== index && members[member.partOf]
+        ? { partCoreId: `enemy-${member.partOf + 1}` }
+        : {}),
+      ...(member.partTag ? { partTag: member.partTag } : {}),
+    };
+  });
+}
+
+export function average(values: readonly number[]): number {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+export function battlerSnapshot(
+  battler: MutableBattler,
+  position?: { readonly battleX?: number; readonly battleY?: number },
+  poseContext?: {
+    readonly lastActionResult?: BattleActionResultSnapshot;
+    readonly showActionPose?: boolean;
+    readonly victory?: boolean;
+  }
+): BattleBattlerSnapshot {
+  const base: BattleBattlerSnapshot = {
+    id: battler.id,
+    recordId: battler.recordId,
+    name: battler.name,
+    row: battler.row,
+    classId: battler.classId,
+    level: battler.level,
+    faceResourceId: battler.faceResourceId,
+    battleCharacterResourceId: battler.battleCharacterResourceId,
+    characterResourceId: battler.characterResourceId,
+    characterIndex: battler.characterIndex,
+    monsterInstanceId: battler.monsterInstanceId,
+    speciesId: battler.speciesId,
+    hp: battler.hp,
+    maxHp: battler.maxHp,
+    mp: battler.mp,
+    maxMp: battler.maxMp,
+    gauge: battler.gauge,
+    battleX: position?.battleX ?? battler.battleX,
+    battleY: position?.battleY ?? battler.battleY,
+    authoredX: battler.authoredX,
+    authoredY: battler.authoredY,
+    ...(battler.moved ? { moved: battler.moved } : {}),
+    defeated: battler.hp <= 0,
+    defending: battler.defending,
+    stateIds: [...battler.stateIds],
+    stateTurns: { ...battler.stateTurns },
+    skillIds: [...battler.skillIds],
+    skillCooldowns: battler.skillCooldowns ? { ...battler.skillCooldowns } : undefined,
+    skillPp: battler.skillPp ? { ...battler.skillPp } : undefined,
+    equipmentEffects: battler.equipmentEffects,
+    captured: battler.captured === true ? true : undefined,
+    ...(battler.limitGauge !== undefined ? { limitGauge: battler.limitGauge } : {}),
+    ...(battler.resource2 !== undefined ? { resource2: battler.resource2 } : {}),
+    ...(battler.scanned ? { scanned: true } : {}),
+    effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
+    pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
+  };
+  return {
+    ...base,
+    pose: resolveBattlerPose({
+      battler: base,
+      lastActionResult: poseContext?.lastActionResult,
+      showActionPose: poseContext?.showActionPose,
+      victory: poseContext?.victory,
+    }),
+  };
+}
+
+/** 전투장 좌표(트룹 members 좌표계)로 배틀러를 옮긴다. 위치 범위기(battleX/Y)와 표시(authoredX/Y)가 같은 값을 본다. */
+export function moveBattler(battler: MutableBattler, x: number, y: number, durationMs: number): void {
+  const clampedX = Math.max(0, Math.min(320, Math.round(x)));
+  const clampedY = Math.max(0, Math.min(240, Math.round(y)));
+  battler.battleX = clampedX;
+  battler.battleY = clampedY;
+  battler.authoredX = clampedX;
+  battler.authoredY = clampedY;
+  battler.moved = { durationMs: Math.max(0, Math.min(5000, Math.round(durationMs))), sequence: (battler.moved?.sequence ?? 0) + 1 };
+}
+
+function chargeRateFor(agility: number): number {
+  return Math.max(CHARGE_FLOOR, agility * CHARGE_PER_AGILITY);
+}

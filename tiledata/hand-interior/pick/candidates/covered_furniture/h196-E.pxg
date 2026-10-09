@@ -1,0 +1,36 @@
+// E: 둥근 팔걸이 소파를 비스듬한 천 주름과 긴 치맛단으로 덮음; 꼭대기 윗면 4행(y=9~12)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@layer cloth
+@mblock 1 8
+.....bbbbbbbbbbbbbbbbbbbb.....
+....beeeeeeeeeeeeeeeeeeeeb....
+...befffffeeeefffffeeeeeedb...
+...beffffeeeeefffeeeeeeeddb...
+...beeeeeedeeeeeeeeeedddddb...
+...bddddddcddddddddddcccccb...
+...bdeeeedcdeeeeeedddcccccb...
+...bdeeeedcdeeeeeddcccccccb...
+...bdeeeedcdeeeedddcccccccb...
+.bbbddeeedcdeeeeddddccccccbbb.
+beeeddeeedcdeeeeddddcccccceecb
+beffeedddccdddddddccccccdeedcb
+beffeeeeeeeeeeeeeeeeeddddeedcb
+beeeedeefffffeeeeeeeeddddeddcb
+bdeedcdefffeeeeeeeeeeddddcdcbb
+bdedbcdeeeeeeeeddddddccccbccbb
+bdedbcddddddddddcccccccbbccdbb
+bdedbcdeeedcdddddddccccbccddcb
+bdedbcdeeedcdeeddddcccbccdddcb
+bdcdbcdeedccdeedddcccbccddddcb
+bdcdbcdeedccdeeddcccbccdddddcb
+bccbbcdddcccdeddcccbccddddccbb
+.bbabcccccbbccccccbcccccbbab..
+....abbbba..bbbbbb.bbbbbaa....

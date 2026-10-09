@@ -1,0 +1,23 @@
+# potions_extra 자기 검수 (4~8배 확대 + 예제 3배 판정)
+- wz-pot-vault-arch-2x4: 첨두 볼트 열린 통과. 안쪽 벽돌이 깊이 그라데이션, 아래는 투명. 판정 합격.
+- wz-pot-vault-arch-pillar: 1x4 벽 기둥 아치. 기둥+돌림띠 읽힘. 합격.
+- wz-pot-window-low: 낮은 납살 창, 대각 유리 반사와 돌 턱. 합격.
+- wz-pot-door-closed/open/locked: 2×4 로 다시 그림(검수 FAIL: 문짝 44px·폭 14px). 돌 인방 윗면 3px 보임 + 문설주 3px, 문 열린 곳 x6..25·y24..59 = 20×36px(세 상태 동일, 틀 픽셀 동일). 닫힘=오크 판 5장·쇠띠 2줄·쇠창살 들창·황동 고리(SSSS) / 잠김=문설주 걸쇠에 건 쇠 빗장+황동 자물쇠 / 열림=문짝이 안쪽 왼쪽으로 4px 젖혀지고 저편 어둠·포석, 바닥 높이 통로 18px(SS,SS,CC,FF). 사람 24×32 옆에서 문 높이 36px 로 맞음.
+- wz-pot-hood: 직사각 구리/황동 후드, 굴뚝·리벳 패널·청록 녹. 파고다 느낌 제거 후 합격.
+- wz-pot-floor-wet-a/b: 젖은 석판 반복. 물기 점을 줄여 잔잔함. 합격(약간 푸른 점 남음).
+- wz-pot-drain-h/v/x: 어두운 홈 + 물선, 교차는 쇠살대. 합격.
+- wz-pot-stain-violet/green/teal: f 시약 자국 덧그림. 합격.
+- wz-pot-cauldron-bench-violet/green: 오크 작업대 + 쇠솥 + 아궁이 불빛. 솥 테두리 보강 후 합격.
+- wz-pot-burner: 황동 버너. 합격.
+- wz-pot-cauldron-rod: 교반봉 꽂힌 솥. 합격.
+- wz-pot-scale: 황동 저울 f. 합격.
+- wz-pot-mortar: 절구와 공이 f. 합격.
+- wz-pot-knife-board: 도마·뿌리·칼 f. 합격.
+- wz-pot-basin: 돌 세척 수조, L자 황동 수도꼭지와 물방울. 합격.
+- wz-pot-shelf: 병 진열대 2x3, 위 C. 합격.
+- wz-pot-bottles: 시약병 묶음 f. 합격.
+- wz-pot-herb-hanger: 말린 약초 걸이 1x2 벽. 합격(다발 색 변화 적음).
+- wz-pot-root-basket: 뿌리 바구니. 합격.
+- wz-pot-wall-lamp: 황동 벽 램프(정적). 합격.
+- wz-pot-prep-bench: 예제용 2x2 준비대(도마·뿌리·칼·약초 그릇). 합격.
+- wz-pot-example-prep: 12x9 재료 준비실. 공용 성벽 id 해석 확인, 아치 넷·후드·진열대·수조·솥 작업대가 한 장에서 통일돼 보임. 합격.

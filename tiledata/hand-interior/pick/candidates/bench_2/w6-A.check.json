@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bench_2/w6-A.pxg",
+ "id": "bench 2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "v5 그대로 모양·색: 검정 밑줄(wood:0)을 wood:1 로, 외톨이 결 두 곳을 3~5px 긴 결로 정리",
+ "ok": true
+}

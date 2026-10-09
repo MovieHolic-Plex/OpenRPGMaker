@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lectern/w5-B.pxg",
+ "id": "lectern",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.11
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 11,
+ "bbox": [
+  2,
+  8,
+  13,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  31
+ ],
+ "note": "A 에 빛 대비: 기둥 왼쪽에 밝은 줄, 책갈피 붉은 끈이 판 아래로 늘어짐, 판 밑 그늘, 발 오른쪽 아래로 반투명 그림자",
+ "ok": true
+}

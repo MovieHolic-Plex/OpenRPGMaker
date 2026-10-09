@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/fire_hydrant/s4-B.pxg",
+ "set": "school",
+ "id": "fire_hydrant",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  2,
+  1,
+  14,
+  31
+ ],
+ "note": "명암 강화: 왼쪽 밝은 줄·오른쪽 짙은 그늘, 표시등 % 빛무리, 흰 띠 밝게, 반투명 바닥 그림자",
+ "ok": true
+}

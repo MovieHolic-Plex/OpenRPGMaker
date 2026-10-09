@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_cell/hf7-A.pxg",
+ "set": "horror",
+ "id": "door_cell",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.106
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "A(v5 식구·깨끗): 쇠창살 문. 굵은 기둥 2px + 인방 + 창살 4개(1px)·가로 띠 둘·황동 자물쇠 한 점. 창살 사이 투명",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/loot_sacks/h146-A.pxg",
+ "id": "loot sacks",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "불룩한 황갈색 자루 둘의 묶인 입구와 앞쪽 작은 자루에서 삐져나온 금화를 3/4 시점으로 새로 그림; 꼭대기 윗면 3행(y=0~2).",
+ "ok": true
+}

@@ -1,0 +1,80 @@
+// vending_ice h34-B (H 방법: Tibo 3/4 → C → E)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 0
+@mat b kblue 0
+@mat c lacq 0
+@mat d mdglass 0
+@mat e mwood 0
+@mat f neon 0
+@mat g sakura 0
+@mat h taxi 0
+@mat i washi 0
+@mblock 0 0
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+ibbbbbbbbbbbbbbi
+ibbbbbbbbbbbbbbi
+ibbbbbhhhhbiiiii
+ibbibbheehbiigii
+ibiibbheehbggaii
+ibbabbhaahbiaiii
+ibbabbhhhhbiaibi
+iiidiiiddibidibi
+ibbbbbbbbbbbbbbi
+ibiiibbbbbbiiibi
+iihaebbbibbiiiii
+ibhehbbbbbbiiiii
+ibeegbbbdbbiiibi
+iihegbbbbbbiaiii
+ibiiibbbbbbiiibi
+iiidibiddibidibi
+ibbbbbbbbbbbbbbi
+iiiiiiiiiiiiiiii
+iiiiiiiiiiididdi
+iddddddddiddiddi
+iiiiiiiiiiggiiii
+iiiiiiiiiiiiiddi
+iiiiiiiiiiiiiiii
+iiddddddddddiiii
+iiddddddddddiiii
+iiiidddddddiiiii
+dddddddddddddddd
+@tblock 0 0
+4444444444444444
+4444444444444444
+4444444444444444
+4444444444444444
+4444444444444444
+4555555555555554
+4555555555555554
+4555555555544444
+4554555335544344
+4544555335533544
+4555555555545444
+4555555555545454
+4446444644546454
+4555555555555554
+4544455555544454
+4455355545544444
+4553555555544444
+4533355565544454
+4453355555545444
+4544455555544454
+4444454444544454
+4555555555555554
+4444444444444444
+4444444444464444
+4444444444664444
+4444444444334444
+4444444444444664
+4444444444444444
+4444444444444444
+4444466666444444
+4444666666644444
+4466666666666644

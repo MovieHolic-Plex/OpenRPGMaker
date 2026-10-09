@@ -1,0 +1,182 @@
+/* ============================================================================
+   OPRN 디자인 토큰 — 단일 진실 공급원
+   쿨 화이트 스튜디오 (cool white + indigo). 크림/골드 폐기.
+   전 영역(shell/editor/database/map/resources)은 여기 정의된 변수만 사용한다.
+   가이드: src/styles/TOKENS.md
+   주의: 이 파일은 index.css 최상단에서 가장 먼저 import 된다.
+         레거시 변수(--bg, --surface-panel, --editor-shell-bg 등)는
+         editor/core.part-1.css · database/tabs-b-shell-layout.css ·
+         shell/figma-editor/01-shell-topbar-team.css 의 :root 에서 이 토큰의 별칭으로 리매핑돼 있다.
+   elevation: canvas < inset < base < surface < raised < overlay
+   ========================================================================= */
+
+:root {
+  --bg-base: #F7F8F8;
+  --bg-surface: #F7F8F8;
+  --bg-raised: #FFFFFF;
+  --bg-overlay: #FFFFFF;
+  --bg-inset: #EEF1F4;
+  --bg-canvas: #EEF1F4;
+  --bg-glass: rgba(247, 248, 248, 0.92);
+  /* 조수 패널 유리면 전용 — --bg-glass(셸 칩·상태바용)와 값이 다르므로 별도 토큰이다.
+     알파 0.78 은 감독 선택값이다(2026-08-28).
+
+     saturate 는 1.4 로 시작했다가 1.08 로 내렸다. 실측 근거
+     (scripts/analyze-glass-contrast.mjs, 실제 합성 스크린샷 픽셀):
+     1.4 에서 마을 잔디 위 합성 결과가 rgb(217,240,210) — "색감만 번지는" 프로스티드가 아니라
+     패널 전체가 초록으로 물들었고, 그 초록이 휘도를 끌어올려 보조 텍스트 대비를 4.22:1 로
+     떨어뜨렸다(AA 4.5 미달). 채도를 낮추면 색 캐스트와 대비가 동시에 해결된다.
+
+     ⚠ 알파를 더 내리지 마라: --text-3(#626E89) 은 **순백 위에서도 4.75:1** 뿐이라
+     반투명 여유가 거의 없다. 유리 위 보조 텍스트는 --text-2 를 써야 한다
+     (18-assistant-deck.css 의 유리 위 보조 글자 규칙 참고). */
+  --bg-glass-panel: rgba(255, 255, 255, 0.78);
+  --glass-blur-panel: blur(24px) saturate(1.08);
+  --bg-scrim: rgba(15, 23, 42, 0.40);
+
+  --bg-hover: rgba(15, 23, 42, 0.05);
+  --bg-active: rgba(15, 23, 42, 0.09);
+  --control-bg: rgba(15, 23, 42, 0.04);
+  --control-bg-hover: rgba(15, 23, 42, 0.08);
+  --control-bg-active: rgba(15, 23, 42, 0.12);
+
+  --border-subtle: rgba(15, 23, 42, 0.08);
+  --border-default: rgba(15, 23, 42, 0.127);
+  --border-strong: rgba(15, 23, 42, 0.461);
+
+  --text-1: #0F172A;
+  --text-2: #475569;
+  --text-3: #626E89;
+  --text-placeholder: #626E89;
+  --text-disabled: #94A3B8;
+
+  --accent: #4A57D6;
+  --accent-hover: #3C48C4;
+  --accent-active: #2F3AAE;
+  --accent-muted: rgba(74, 87, 214, 0.12);
+  --accent-border: rgba(74, 87, 214, 0.45);
+  --on-accent: #ffffff;
+
+  /* The author-requested cinematic entry uses its own night/paper pairing over scene art.
+     Keep this palette here; dialog rules derive translucent surfaces from these tokens. */
+  --cinema-night: #101a29;
+  --cinema-paper: #fff9eb;
+  --cinema-accent: #edcea0;
+
+  --danger: #C6403D;
+  --danger-muted: rgba(198, 64, 61, 0.13);
+  --success: #18764F;
+  --success-muted: rgba(24, 118, 79, 0.13);
+  --warning: #8A5E00;
+  --warning-muted: rgba(138, 94, 0, 0.13);
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+  --radius-l: 14px;
+  --radius-pill: 999px;
+
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --line-height-solid: 1;
+  --line-height-tight: 1.2;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --stroke-1: 1px;
+  --stroke-2: 2px;
+  --color-mix-ratio-subtle: 14%;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+
+  --shadow-pop: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.10);
+  --shadow-modal: 0 8px 24px rgba(15, 23, 42, 0.10), 0 24px 64px rgba(15, 23, 42, 0.14);
+
+  --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.45);
+  --focus-outline: 2px solid var(--accent);
+
+  --transition-fast: 120ms ease;
+  --transition-med: 160ms ease;
+
+  /* 글꼴 단일 진실 공급원. 값은 src/project/fontRegistry.ts 의 기본 스택과 글자 단위로 같아야
+     하며 test/systemFontTheme.test.ts 가 그 일치를 검사한다. 저작자가 DB → 시스템 → 폰트에서
+     고른 값은 applyProjectFontTheme 이 :root 인라인 스타일로 이 세 토큰을 덮어쓴다. */
+  --font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --font-pixel: "NeoDunggeunmo", "Galmuri11", "Galmuri9", "GulimChe", "DotumChe", "MS Gothic", monospace;
+  --font-serif: Georgia, "Noto Serif KR", serif;
+
+  /* 브레이크포인트 토큰(--bp-sm/md/lg/xl)은 2026-09-17 에 삭제했다. 참조가 0이었고,
+     0인 이유가 "아직 안 썼다"가 아니라 **쓸 수 없다**이기 때문이다 — CSS 커스텀 속성은
+     `@media` 조건절에서 평가되지 않는다(`@media (max-width: var(--bp-md))` 는 무효 쿼리가
+     되어 규칙 전체가 조용히 죽는다). `@custom-media` 는 아직 어느 브라우저에도 없다.
+     다시 넣지 마라. 브레이크포인트를 한곳에서 관리하려면 빌드 단계(postcss)가 필요하다. */
+
+  --z-below: 0;
+  --z-base: 1;
+  --z-raised: 2;
+  --z-canvas-decor: 3;
+  --z-canvas-raised: 4;
+  --z-canvas-chrome: 5;
+  --z-canvas-chip: 22;
+  /* 맵 전환 크로스페이드의 베일. 캔버스와 그 위 오버레이(로케이션 상자·고스트 마커·활동 칩)를
+     한꺼번에 덮어야 하므로 캔버스 칩보다 위, 캔버스 밖 크롬(툴바)보다 아래다. */
+  --z-canvas-veil: 30;
+  --z-toolbar: 40;
+  --z-rail: 50;
+  --z-flyout: 70;
+  --z-status: 80;
+  --z-popover: 90;
+  --z-app-modal: 2600;
+  --z-welcome: 240;
+  --z-popover-high: 1200;
+  --z-popover-top: 1201;
+  --z-modal: 2100;
+  --z-modal-overlay: 2200;
+  --z-modal-top: 2300;
+  --z-proposal: 2500;
+  /* 토스트는 앱 모달(--z-app-modal 2600)보다 위다. 실제로 가린 것은 테스트 플레이 창의
+     **백드롭** 이다 — `.test-play-modal-backdrop { z-index: 1300 }`
+     (src/styles/map/resource-system.part-1.css:263). 런타임 디버그 마대가 아니다: 그건
+     z-index 60 (src/player/runtimeDebugPanel.ts:65) 으로 백드롭 **안에** 있어 자기가 직접
+     1000 을 이길 수 없다. 그래서 «시작 전 자동 복구» 토스트가 1000 이었을 때 1300 백드롭
+     뒤로 갔다. scripts/qa/testplay-toast-occlusion-probe.mjs 가 elementFromPoint 로 재서 잡았다.
+     눈에 안 보이는 알림은 없는 알림이므로 옷을 올린다.
+     이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
+  --z-toast: 2700;
+  /* 지연 툴팁은 데이터베이스 모달(--z-app-modal 2600) 안의 컨트롤에도 붙는다 —
+     타일셋 편집기 규칙 탭이 롤아웃 대상 다섯 개를 그 안에 두고 있다. 400 이었을 때
+     툴팁이 모달 뒤에 그려져 화면에 아예 보이지 않았다(브라우저 실측 2026-09-10,
+     verify-shots/oprn-024/09-tileset-editor-*.png). 넓은 비교 오버레이(app-modal + 20)
+     보다도 위여야 하고, 토스트보다는 아래다 — 알림이 툴팁에 가리면 안 된다.
+     이 순서는 test/editorZLayerOrder.test.ts 가 고정한다. */
+  --z-tooltip: 2650;
+
+  --brand-blue: #4A57D6;
+  --mix-base: #F7F8F8;
+  /* 셸 액센트(인디고)와 구분되는 보조 강조색 — 조수 패널 1차 액션·보상/보물 크롬.
+     4a732471(2026-08-25)이 "골드 크롬 일괄 폐기"로 이 네 값을 인디고로 눌렀는데,
+     같은 커밋이 DESIGN.md:268/286 에 "Focus ring uses --gold, not indigo" 와
+     "gold filled 보내기" 를 **새로 추가**했다 — 자기모순이라 의도가 아니라 부수 피해다.
+     하루 전 653ff184 이 조수 패널을 일부러 골드로 맞춘 것도 되돌렸고,
+     713f1745 의 CSS 보물상자(.storage-chest-glyph-*)는 파란 상자가 됐다.
+     DESIGN.md:87 이 지금도 캐논 값으로 #8A6B2F 를 명시한다. 89f4cf56 크림 리튠 값으로
+     되돌린다. 인디고 단일 액센트 계약(--mk-*)은 event-editor.mockup.css:11 이
+     .event-editor 스코프에서 이미 --accent 로 고정하므로 영향받지 않는다. */
+  --gold: #8A6B2F;
+  --gold-deep: #6E5424;
+  --gold-soft: #E8D9A8;
+  --gold-wash: rgba(138, 107, 47, 0.12);
+  --bg-well: #EEF1F4;
+  --scrollbar-thumb: rgba(15, 23, 42, 0.18);
+  --scrollbar-thumb-hover: rgba(15, 23, 42, 0.30);
+
+  --empty-icon-bg: rgba(74, 87, 214, 0.10);
+  --empty-icon-border: rgba(74, 87, 214, 0.28);
+  --empty-icon-color: #4A57D6;
+}

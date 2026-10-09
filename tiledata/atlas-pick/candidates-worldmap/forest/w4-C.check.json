@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/forest/w4-C.pxg",
+ "set": "worldmap",
+ "id": "forest",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "스케일 재해석 — 지름 12px 큰 수관을 두 줄로 엇갈려 성기게, 변이 큰 물결로 불룩",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.047
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.061
+  },
+  "seam": 1.41
+ }
+}

@@ -1,0 +1,538 @@
+/* ── 에이전트 레인 (2026-09-15 → 2026-09-17 §11 하단 레인 보드) ───────────────
+   레인 표는 하단 덱(.lane-board > .lane-row), 레인 스레드는 오른쪽 열(.ai-lane-thread),
+   새 레인 폼은 덱 머리띠 위 팝오버(.ai-studio-popover > .ai-lane-pane > .ai-lane-form), 장면 행 칩은 .ai-studio-lane-chip,
+   스튜디오 밖 조수 카드의 요약 줄은 .ai-lane-summary. 색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. */
+
+
+.ai-lane-hint,
+.ai-lane-empty-text {
+  color: var(--text-3);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+.ai-lane-notice {
+  color: var(--warning);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-error {
+  color: var(--danger);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+/* Shared lane status and actions (also used by the live rail and thread). */
+.ai-lane-status {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 8px;
+  text-align: center;
+  white-space: nowrap;
+}
+.ai-lane-status.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.ai-lane-status.is-review { background: var(--warning-muted); color: var(--warning); }
+.ai-lane-status.is-applied { background: var(--success-muted); color: var(--success); }
+.ai-lane-status.is-failed { background: var(--danger-muted); color: var(--danger); }
+.ai-lane-status.is-stopped,
+.ai-lane-status.is-discarded { color: var(--text-3); }
+.ai-lane-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.ai-lane-btn {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+.ai-lane-btn:hover { background: var(--control-bg-hover); }
+.ai-lane-btn:focus-visible { outline: var(--focus-outline); }
+.ai-lane-btn.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.ai-lane-btn.is-primary:hover { background: var(--accent-hover); }
+.ai-lane-btn.is-danger { color: var(--danger); }
+.ai-lane-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+.ai-studio-lane-thread-slot { display: none; min-height: 0; overflow: auto; }
+.ai-studio-chat.is-lane-thread .ai-studio-lane-thread-slot { display: block; }
+.ai-studio-chat.is-lane-thread .ai-studio-briefing,
+.ai-studio-chat.is-lane-thread .ai-studio-chat-log,
+.ai-studio-chat.is-lane-thread .ai-studio-composer { display: none; }
+.ai-lane-follow-up { display: flex; flex-wrap: wrap; gap: var(--space-2); min-width: 0; }
+.ai-lane-follow-up .ai-lane-input { flex: 1 1 0; min-width: 0; }
+
+/* ── 새 레인 폼 ──────────────────────────────────────────── */
+.ai-lane-form {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.ai-lane-form-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-width: 0;
+}
+
+.ai-lane-form-row.is-actions {
+  justify-content: flex-start;
+}
+
+.ai-lane-field {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.ai-lane-form-label {
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-lane-map-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ai-lane-map-chip {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  padding: 3px 10px;
+}
+
+.ai-lane-map-chip:hover {
+  background: var(--control-bg-hover);
+}
+
+.ai-lane-map-chip.is-on {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-lane-input,
+.ai-lane-select,
+.ai-lane-instruction {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  padding: 5px 8px;
+}
+
+.ai-lane-input {
+  min-width: 110px;
+}
+
+.ai-lane-input.is-narrow {
+  min-width: 56px;
+  width: 56px;
+}
+
+.ai-lane-input:focus-visible,
+.ai-lane-select:focus-visible,
+.ai-lane-instruction:focus-visible {
+  border-color: var(--accent-border);
+  outline: var(--focus-ring);
+}
+
+.ai-lane-instruction {
+  font-family: var(--font-ui);
+  min-height: 40px;
+  resize: vertical;
+  width: 100%;
+}
+
+/* ── 오른쪽 열의 레인 스레드 (2026-09-16: 인스펙터가 오른쪽 열로 옴겼다) ── */
+.ai-lane-thread {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 8px;
+  min-height: 0;
+  overflow: auto;
+  padding: 10px 12px;
+}
+
+.ai-lane-thread .ai-lane-inspector-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+}
+
+.ai-lane-inspector-head b {
+  font-size: calc(13px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-inspector-meta {
+  color: var(--text-3);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  gap: 4px 12px;
+}
+
+.ai-lane-instruction-text {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+.ai-lane-steps {
+  background: var(--bg-inset);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 2px;
+  max-height: 220px;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 6px 8px;
+}
+
+.ai-lane-step {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: calc(10.5px * var(--ai-font-scale, 1));
+  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.ai-lane-step.is-tool { color: var(--text-1); }
+.ai-lane-step.is-system { color: var(--text-3); }
+.ai-lane-step.is-assistant { white-space: pre-wrap; }
+
+.ai-lane-result {
+  background: var(--warning-muted);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+}
+
+.ai-lane-result-line {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-lane-result-line.is-warn {
+  color: var(--warning);
+}
+
+/* ── 장면 레일 칩 ────────────────────────────────────────── */
+.ai-studio-lane-chip {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  margin-left: auto;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.ai-studio-lane-chip.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.ai-studio-lane-chip.is-review { background: var(--warning-muted); color: var(--warning); }
+.ai-studio-lane-chip.is-applied { background: var(--success-muted); color: var(--success); }
+.ai-studio-lane-chip.is-failed { background: var(--danger-muted); color: var(--danger); }
+
+
+.ai-lane-pane {
+  display: grid;
+  gap: 8px;
+  max-width: 720px;
+  min-height: 0;
+  padding: 2px 10px 10px;
+}
+
+
+/* ── 오른쪽 열: 스레드 전환 ────────────────────────────────────────────── */
+.ai-studio-back-director { flex: 0 0 auto; margin-right: 2px; }
+.ai-studio-back-director[hidden] { display: none; }
+.ai-studio-team-slot { display: none; min-height: 0; overflow: auto; }
+.ai-studio-chat.is-team-thread .ai-studio-team-slot { display: block; }
+.ai-studio-chat.is-team-thread .ai-studio-briefing,
+.ai-studio-chat.is-team-thread .ai-studio-chat-log,
+.ai-studio-chat.is-team-thread .ai-studio-work-slot,
+.ai-studio-chat.is-team-thread .ai-studio-composer { display: none; }
+.ai-studio-work-slot { border-bottom: 1px solid var(--border-subtle); flex: 0 0 auto; max-height: 40%; overflow: auto; padding: 8px 10px; }
+.ai-studio-work-slot[hidden] { display: none; }
+.ai-lane-receiver {
+  align-self: center;
+  background: var(--accent-muted);
+  border-radius: var(--radius-pill);
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+/* ── 하단 레인 보드 표 ─────────────────────────────────────────────────── */
+.lane-board {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.lane-board-notice { padding: 0 6px 4px; }
+.lane-row {
+  align-items: center;
+  border-radius: var(--radius-s);
+  column-gap: 10px;
+  cursor: pointer;
+  display: grid;
+  /* 에이전트 · 상태 · 묶음 · 턴·툴·경과 · 마지막 줄 · 동작 — 1440 기본 폭(덱 ≈710px)에서 6열이 다 선다. */
+  grid-template-columns: minmax(112px, 1.1fr) 72px minmax(88px, 0.9fr) minmax(120px, 1fr) minmax(96px, 1.3fr) minmax(140px, auto);
+  min-height: 44px;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.lane-row:not(.is-head):hover { background: var(--bg-hover); }
+.lane-row:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
+.lane-row.is-selected { background: var(--accent-muted); }
+.lane-row.is-head {
+  border-bottom: 1px solid var(--border-subtle);
+  border-radius: 0;
+  color: var(--text-3);
+  cursor: default;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  min-height: 26px;
+  padding-bottom: 2px;
+  padding-top: 0;
+  position: sticky;
+  top: -8px;
+  background: var(--bg-raised);
+  z-index: 1;
+}
+.lane-cell { min-width: 0; }
+.lane-cell-agent { align-items: center; display: flex; gap: 8px; }
+.lane-avatar {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  color: var(--text-2);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+.lane-avatar.is-running { background: var(--accent-muted); border-color: var(--accent-border); color: var(--accent); }
+.lane-avatar.is-review { background: var(--warning-muted); color: var(--warning); }
+.lane-avatar.is-applied { background: var(--success-muted); color: var(--success); }
+.lane-avatar.is-failed { background: var(--danger-muted); color: var(--danger); }
+.lane-agent-body { display: grid; min-width: 0; }
+.lane-agent-name { font-size: calc(12.5px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lane-agent-model,
+.lane-bundle-meta,
+.lane-progress-text,
+.lane-row:not(.is-head) .lane-cell-last {
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lane-cell-bundle { display: grid; }
+.lane-bundle-name { font-size: calc(12px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lane-cell-progress { display: grid; gap: 4px; }
+.lane-progress-bar {
+  background: var(--border-subtle);
+  border-radius: 2px;
+  display: block;
+  height: 4px;
+  overflow: hidden;
+  width: min(100%, 140px);
+}
+.lane-progress-fill {
+  background: var(--accent);
+  border-radius: 2px;
+  display: block;
+  height: 100%;
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left center;
+  transition: transform var(--transition-med);
+  width: 100%;
+}
+.lane-row.is-review .lane-progress-fill { background: var(--warning); }
+.lane-row.is-applied .lane-progress-fill { background: var(--success); }
+.lane-row.is-failed .lane-progress-fill,
+.lane-row.is-stopped .lane-progress-fill { background: var(--text-3); }
+.lane-cell-last { font-family: var(--font-mono); }
+.lane-row.is-team .lane-cell-last { font-family: var(--font-ui); }
+.lane-cell-actions { justify-content: flex-end; }
+.lane-row.is-head .lane-cell-actions { display: block; text-align: right; }
+.lane-row.is-head .lane-cell-last { font-family: var(--font-ui); }
+.ai-lane-btn.is-ghost { background: transparent; border-color: transparent; color: var(--text-3); padding: 4px 8px; }
+.ai-lane-btn.is-ghost:hover { background: var(--control-bg-hover); color: var(--text-1); }
+.lane-row.is-team::before { content: none; }
+.lane-row.is-team .lane-avatar { border-style: dashed; }
+.lane-board-empty { padding: 2px 0; }
+
+/* 팝오버(새 레인·기획)가 덱 위로 뜬다 — 공통 판 규칙의 overflow:hidden 을 덱만 푼다(본문 스크롤은 .ai-studio-deck-pane 이 맡는다).
+   z-index 는 모니터(캔버스)보다 위. 좁은 덱은 컨테이너 쿼리로 마지막 줄 열을 감춘다 — 표가 6열로 부서지지 않게. */
+.ai-studio-deck { container-type: inline-size; overflow: visible; z-index: 5; }
+@container (max-width: 660px) {
+  /* 1280 기본 폭(덱 ≈552px): 마지막 줄 열을 감추고 나머지 5열을 조여 잘림 없이 선다. */
+  .lane-row { column-gap: 8px; grid-template-columns: minmax(100px, 1fr) 64px minmax(80px, 0.8fr) minmax(100px, 1fr) minmax(120px, auto); }
+  .lane-cell-last { display: none; }
+  .lane-cell-actions .ai-lane-btn { padding: 4px 7px; }
+  .lane-progress-bar { width: min(100%, 100px); }
+}
+@container (max-width: 560px) {
+  .ai-studio-tab span:not(.ai-studio-tab-badge) { display: none; }
+  .ai-studio-deck-actions .ai-studio-ghost-btn:not(.is-accent) { display: none; }
+}
+@container (max-width: 440px) {
+  .ai-studio-deck-caption { display: none; }
+}
+
+/* ── 덱 팝오버 (새 레인 · 기획) ───────────────────────────────────────── */
+.ai-studio-popover {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  bottom: calc(100% + 6px);
+  box-shadow: var(--shadow-pop);
+  max-height: min(70vh, 560px);
+  overflow: auto;
+  position: absolute;
+  right: 8px;
+  width: min(720px, calc(100% - 16px));
+  z-index: 6;
+}
+.ai-studio-popover[hidden] { display: none; }
+.ai-studio-popover[data-kind="planning"] { width: min(520px, calc(100% - 16px)); padding: 8px 10px; }
+.ai-lane-pane { display: grid; gap: 8px; min-height: 0; padding: 10px 12px 12px; }
+
+/* ── 모니터 모서리: 다른 장면의 레인 썸네일 ───────────────────────────── */
+.ai-studio-monitor-lanes {
+  bottom: 10px;
+  display: flex;
+  gap: 6px;
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  z-index: 3;
+}
+.ai-studio-monitor-lanes[hidden] { display: none; }
+.ai-studio-monitor-lane {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  cursor: pointer;
+  display: grid;
+  gap: 3px;
+  padding: 4px;
+  pointer-events: auto;
+}
+.ai-studio-monitor-lane.is-running { border-color: var(--accent-border); }
+.ai-studio-monitor-lane.is-review { border-color: var(--warning); }
+.ai-studio-monitor-lane-thumb { border-radius: var(--radius-s); display: block; height: 60px; width: 96px; }
+.ai-studio-monitor-lane-label { display: grid; gap: 2px; justify-items: start; width: 96px; }
+.ai-studio-monitor-lane-label b { font-size: calc(11px * var(--ai-font-scale, 1)); max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-studio-monitor-lane-label .ai-studio-lane-chip { margin-left: 0; }
+
+/* ── 나가기 확인 ─────────────────────────────────────────────────────── */
+.ai-studio-exit-dialog {
+  align-items: center;
+  background: rgb(15 18 28 / 45%);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
+  z-index: 8;
+}
+.ai-studio-exit-card {
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: 10px;
+  max-width: calc(100% - 40px);
+  padding: 20px 22px 16px;
+  width: 480px;
+}
+.ai-studio-exit-title { font-size: 17px; margin: 0; }
+.ai-studio-exit-text { color: var(--text-2); font-size: 13px; margin: 0; }
+.ai-studio-exit-lanes { background: var(--bg-inset); border-radius: var(--radius-m); display: grid; gap: 4px; list-style: none; margin: 0; padding: 8px 12px; }
+.ai-studio-exit-lanes li { align-items: center; display: flex; font-size: 12.5px; gap: 8px; }
+.ai-studio-exit-lane-meta { color: var(--text-2); }
+.ai-studio-exit-actions { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* ── 스튜디오 밖: 조수 카드의 레인 요약 줄 ─────────────────────────────── */
+.ai-lane-summary {
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-m);
+  display: flex;
+  font-family: var(--font-ui);
+  gap: 8px;
+  margin: 4px 12px 0;
+  min-width: 0;
+  padding: 7px 10px;
+}
+.ai-lane-summary[hidden] { display: none; }
+.ai-lane-summary-dot { background: var(--accent); border-radius: 50%; flex: none; height: 8px; width: 8px; }
+.ai-lane-summary[data-state="review"] .ai-lane-summary-dot { background: var(--warning); }
+.ai-lane-summary[data-state="idle"] .ai-lane-summary-dot { background: var(--text-3); }
+.ai-lane-summary[data-state="running"] .ai-lane-summary-dot { box-shadow: 0 0 0 3px var(--accent-muted); }
+.ai-lane-summary-body { display: grid; flex: 1 1 auto; min-width: 0; }
+.ai-lane-summary-headline { color: var(--text-1); font-size: calc(12.5px * var(--ai-font-scale, 1)); }
+.ai-lane-summary-detail { color: var(--text-2); font-size: calc(11.5px * var(--ai-font-scale, 1)); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-lane-summary-open {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+.ai-lane-summary-open:hover { text-decoration: underline; }
+.ai-lane-summary-open:focus-visible { outline: var(--focus-outline); }

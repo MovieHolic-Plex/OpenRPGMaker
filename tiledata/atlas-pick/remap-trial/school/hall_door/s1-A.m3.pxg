@@ -1,0 +1,79 @@
+// s1-A.pxg → modern3 자동 재채색(remap_modern3.py)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a conc 0
+@mat b garasu 0
+@mat c kii 0
+@mat d kinari 0
+@mat e lino 0
+@mat f soil 0
+@mat g tekko 0
+@mat h yuka 0
+@mblock 0 0
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddffffffffffffffffffffffffffddd
+dddffffffffffffffffffffffffffddf
+dddffffffffffffffffffffffffffddd
+dddffhhhhhhhhhhhhhhhhhhhhhhfhhhh
+dddffhhhhhhhhhhhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+dddffhhhbbbbbbbhhhhhhhhhhhhffddd
+eeeffhhhbbbbbbbhhhhhhhhhhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhbbbbbbbhhhhhhhchhhhffeee
+eeeffhhhhhhhhhhhhhhhhhchhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+eeeffhhhhhhhhhhhhhhhhhhhhhhffeee
+aaaffhhhhhhhhhhhhhhhhhhhhhhffaaa
+aaaffhhhhhhhhhhhhhhhhhhhhhhffaaa
+gggff......................ffggg
+@tblock 0 0
+11133333333333333333333333333111
+33333333333333333333333333333333
+33322222222222222222222222222333
+33311111111111111111111111111330
+43300000000000000000000000000343
+33321333333333333333333333113333
+33321321111111132222222222110333
+33321321222222232222222222110333
+33321321233355332222222222110333
+43321321244333332222222222110333
+33321321243333332222222222110333
+33321321233333332222222222110333
+33321321233333332222222222110333
+11121321233333332222222222110111
+44421321233333332222222222110444
+33321321233333332222212222110333
+00021321233333332222212222110000
+22221321233333332222212222110220
+22221321233333332222212222110220
+22221321233333332222212222110220
+22221321233333332222212222110220
+22221321333333332222221222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+22221322222222222222222222110220
+33321322222222222222222222110333
+22221322222222222222222222110222
+22221......................10222

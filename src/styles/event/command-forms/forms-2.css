@@ -1,0 +1,986 @@
+/* event 표면 — command-forms/forms-2.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* textarea 필드(문장 내용 등)는 라벨을 위에 두고 입력칸을 전체 너비로 넓힌다. */
+.event-command-edit-body .inline-field:has(textarea) {
+  align-items: start;
+  grid-template-columns: 1fr;
+}
+
+.event-command-edit-body .inline-field textarea {
+  min-height: 96px;
+  width: 100%;
+}
+
+.event-command-face-preview[data-empty="true"] {
+  align-content: center;
+  grid-template-columns: 1fr;
+}
+
+.event-command-edit-body .field:has(.m2-resource-picker) {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(96px, 132px) minmax(0, 1fr);
+}
+
+.event-command-edit-body .m2-resource-picker {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(180px, 1fr) 96px;
+  min-width: 0;
+}
+
+.event-command-edit-body .m2-resource-picker select {
+  grid-column: 1 / -1;
+}
+
+.event-command-edit-body .m2-resource-selected-name {
+  align-self: stretch;
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--text, var(--text-1));
+  font: 600 12px/1.25 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  min-height: 54px;
+  overflow: hidden;
+  padding: 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-command-edit-body .m2-record-selected-name {
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.25 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  overflow: hidden;
+  padding: 4px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-command-edit-body .m2-resource-preview {
+  align-items: center;
+  aspect-ratio: 4 / 3;
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
+  border-radius: 4px;
+  color: var(--text-muted, var(--text-2));
+  display: flex;
+  font: 600 11px/1.2 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  justify-content: center;
+  min-height: 54px;
+  overflow: hidden;
+  padding: 4px;
+  position: relative;
+  text-align: center;
+}
+
+.event-command-edit-body .m2-resource-preview img {
+  image-rendering: pixelated;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* playAudio — 456개 효과음을 검색→선택→미리듣기 하는 하나의 저작 흐름. */
+.event-command-edit-body .play-audio-command-body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.play-audio-channel-row {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.play-audio-channel-btn {
+  background: var(--control-bg, var(--bg-raised));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s, 4px);
+  color: var(--text-2, var(--text-1));
+  cursor: pointer;
+  font: 700 12px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 34px;
+}
+
+.play-audio-channel-btn.active {
+  background: var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent));
+  border-color: var(--accent);
+  color: var(--text-1);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.play-audio-search,
+.play-audio-resource-select {
+  min-width: 0;
+  width: 100%;
+}
+
+.play-audio-resource-select {
+  min-height: 34px;
+}
+
+.play-audio-result-count {
+  color: var(--text-dim, var(--text-2));
+  font: 600 11px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: right;
+}
+
+.play-audio-meta {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
+  border-radius: var(--radius-s, 4px);
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+}
+
+.play-audio-meta-name {
+  font-weight: 700;
+}
+
+.play-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.play-audio-status {
+  color: var(--text-dim, var(--text-2));
+  font-size: 11px;
+  min-height: 1.35em;
+}
+
+.event-command-edit-body .m2-resource-preview-label {
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.event-page-move-route-command-list,
+.transfer-player-tree,
+.event-graphic-resource-list {
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+}
+
+.transfer-command-editor {
+  align-items: center;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.transfer-command-summary {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  box-shadow: inset 0 1px 2px var(--shadow-pop);
+  font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 32px;
+  padding: 6px 9px;
+}
+
+.event-fork-branch-summary {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.event-fork-branch-summary-card {
+  border-radius: 10px;
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  padding: 10px;
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+.event-fork-branch-summary-card.then {
+  border-color: color-mix(in srgb, var(--success, #18764F) 50%, var(--border-default, rgba(42,37,33,.20)));
+  color: var(--success, #18764F);
+}
+
+.event-fork-branch-summary-card.else {
+  border-color: color-mix(in srgb, var(--danger, #C6403D) 50%, var(--border-default, rgba(42,37,33,.20)));
+  color: var(--danger, #C6403D);
+}
+
+.event-fork-branch-summary-card.absent {
+  opacity: 0.55;
+}
+
+.event-condition-error,
+.event-condition-warning,
+.event-command-variable-error,
+.event-command-variable-warning {
+  font: 600 11px/14px Inter, "Segoe UI", sans-serif;
+  margin: 4px 0 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.event-condition-error,
+.event-command-variable-error {
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.event-condition-warning,
+.event-command-variable-warning {
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.event-command-variable-formula {
+  font: 700 12px/16px ui-monospace, monospace;
+  padding: 8px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-raised);
+}
+
+.event-command-variable-hint.compact,
+.event-command-variable-warning.compact {
+  margin-top: 3px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.event-command-variable-field.hidden {
+  display: none;
+}
+
+.event-command-edit-body {
+  background: transparent;
+  border: 0;
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+  padding: 0;
+}
+
+.event-command-edit-body .event-command-edit-summary,
+.cmd-inline-editor .event-command-edit-summary {
+  display: none;
+}
+
+.event-command-edit-body > div {
+  display: grid;
+  gap: 14px;
+}
+
+/* changeFace form — selected card + 낱장 얼굴 갤러리 + option chips */
+.event-command-face-editor {
+  align-items: stretch;
+  background: var(--bg-raised);
+  border: 1px solid var(--event-modern-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.event-command-face-editor[data-face-mode="bust"] .event-command-face-selected-card {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+}
+
+.event-command-face-editor[data-face-mode="bust"] .event-command-face-preview-copy {
+  max-width: none;
+}
+
+.event-command-face-editor .event-command-face-preview {
+  background: transparent;
+  border: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  min-height: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.event-command-face-editor .event-command-face-preview-copy {
+  align-content: start;
+  justify-items: center;
+  max-width: 180px;
+  text-align: center;
+  width: 100%;
+}
+
+/* 배경 그림은 <img> 로드 실패용 폴백이다. 실제 그림이 붙어 있으면 배경을 꺼야 한다.
+   켜 두면 원본 크기 <img> 와 contain 배경이 서로 다른 크기·자리로 같이 보여 얼굴이 두 장으로
+   겹친다(실측: 96px 상자에 48px img). 둘을 같은 크기로 맞추는 것만으로는 부족하다 —
+   nearest-neighbour 래스터화 결과가 미묘하게 달라 배경이 테두리에서 1px 새어나온다.
+   <img> 는 로드 실패 시 스스로 떨어지므로(faceImage), 그때 :has() 가 풀리며 폴백이 되살아난다. */
+.faceset-crop-box {
+  position: relative;
+}
+
+.faceset-crop-box:has(> .faceset-crop-sheet) {
+  background-image: none;
+}
+
+.faceset-crop-box > .faceset-crop-sheet {
+  height: 100%;
+  image-rendering: pixelated;
+  inset: 0;
+  max-width: none;
+  object-fit: contain;
+  position: absolute;
+  width: 100%;
+}
+
+.event-command-face-editor .inline-field {
+  align-content: start;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--event-modern-line);
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.event-command-face-editor .inline-field:last-child {
+  border-right: 0;
+}
+
+.event-command-face-editor .inline-field > span {
+  color: var(--event-modern-text-soft);
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-face-editor .inline-field input,
+.event-command-face-editor .inline-field select {
+  background: var(--bg-raised);
+  border-color: var(--event-modern-border-strong);
+  color: var(--text-1);
+  font-weight: 600;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-face-editor .inline-field:has(input[type="checkbox"]) {
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-face-editor .inline-field input[type="checkbox"] {
+  height: 18px;
+  justify-self: start;
+  margin: 2px 0 0;
+  width: 18px;
+}
+
+/* Transfer inline editor owns its layout; do not force generic stacks on children. */
+.event-command-edit-body:has(.transfer-command-editor-inline) {
+  align-content: start;
+}
+
+.event-command-edit-body > div:has(.transfer-command-editor-inline) {
+  display: block;
+  min-width: 0;
+}
+
+/* 셀프 스위치 세그먼트 컨트롤 (A/B/C/D + ON/OFF) */
+.self-switch-control {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.self-switch-keys {
+  border: 1px solid var(--event-modern-border);
+  border-radius: 5px;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.self-switch-key {
+  background: var(--event-modern-field);
+  border: none;
+  border-right: 1px solid var(--event-modern-border);
+  color: var(--event-modern-text-soft);
+  cursor: pointer;
+  font: 700 11px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  /* 22x19 는 히트타겟 최소선(24px) 미달이었다(2026-08-19 실측 감사). */
+  min-width: 26px;
+  min-height: 24px;
+  padding: 4px 6px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.self-switch-key:last-child {
+  border-right: none;
+}
+
+.self-switch-key:hover {
+  background: color-mix(in srgb, var(--event-modern-accent) 12%, var(--event-modern-field));
+  color: var(--event-modern-text);
+}
+
+.self-switch-key.active {
+  background: var(--event-modern-accent);
+  color: var(--text-1);
+}
+
+.self-switch-value {
+  border: 1px solid var(--event-modern-border);
+  border-radius: 11px;
+  cursor: pointer;
+  font: 700 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 24px;
+  padding: 4px 10px;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.self-switch-value.on {
+  background: var(--event-modern-success, #18764F);
+  border-color: var(--event-modern-success, #18764F);
+  color: var(--text-1);
+}
+
+.self-switch-value.off {
+  background: var(--event-modern-field);
+  color: var(--event-modern-text-soft);
+}
+
+/* 비활성 조건 행에서 컨트롤 흐림 처리 */
+.event-condition-row.disabled .self-switch-key,
+.event-condition-row.disabled .self-switch-value {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 고급 조건 영역에서도 동일 스타일 적용 */
+.event-advanced-condition-control.self-switch .self-switch-control {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-edit-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: 16px;
+  align-items: start;
+}
+
+/* 이동 경로: 본문 폼이 주 작업면. 우측 범용 프리뷰는 접어 버튼 폭을 확보. */
+.event-command-edit-columns:has(.move-route-editor) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 애니메이션 표시: 본문이 진짜 재생 표시면을 직접 갖는다.
+   오른쪽 범용 프리뷰까지 다시 그리면 같은 연출이 한 모달에 둘이 된다. */
+.event-command-edit-columns:has([data-testid="show-animation-command-body"]) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns:has(.event-command-frame-editor) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 장비 변경: 폼 안 장착 미리보기가 있으므로 우측 범용 프리뷰 숨김 */
+.event-command-edit-columns:has(.change-equipment-command-body) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 전용 스테이지가 없는 요약 카드: 빈 우측 칸을 접고 폼을 전폭으로 쓴다. */
+.event-command-edit-columns:has(.event-command-preview.ecp-summary-only) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns > .event-command-edit-body {
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .event-command-edit-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 문장 표시 설정 폼 그룹 */
+.event-command-message-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-settings-group {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 8px;
+  background: var(--bg-inset, rgba(42,37,33,.10));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-command-settings-group > legend {
+  padding: 0 6px;
+  font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--oprn-command-blue, var(--accent));
+}
+
+.event-command-settings-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-2, #5C5348);
+}
+
+.event-command-message-settings .rich-segment-group {
+  display: flex;
+  width: 100%;
+}
+
+.event-command-message-settings .rich-segment {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+/* 숫자 입력 편집 폼 — 자체 세로 스택 (auto-fit 그리드 제외 대상). */
+.event-command-edit-body .input-number-command-body {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .input-number-command-body .input-number-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(56px, 72px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-edit-body .input-number-command-body .input-number-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.input-number-digits-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.input-number-digit-stepper {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.input-number-digit-chip {
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 4px;
+  background: var(--bg-raised, #FFFDF8);
+  color: var(--text-2, #5C5348);
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+  cursor: pointer;
+}
+
+.input-number-digit-chip:hover {
+  border-color: var(--accent);
+  color: var(--text-1, #2A2521);
+}
+
+.input-number-digit-chip.active {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.input-number-digit-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.input-number-digits-mirror {
+  display: none;
+}
+
+.input-number-digits-caption {
+  color: var(--text-3, #6B5F52);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.input-number-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-left: 0;
+}
+
+.input-number-pad-toggle {
+  align-items: center;
+  color: var(--text-1, #2A2521);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  width: fit-content;
+}
+
+.input-number-pad-toggle input[type="checkbox"] {
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.input-number-hint {
+  color: var(--text-3, #6B5F52);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* left-side frame editor form */
+.event-command-frame-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-frame-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-frame-field-label {
+  font: 700 11px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--text-2, #5C5348);
+}
+
+.event-command-frame-field-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-3, #6B5F52);
+}
+
+.event-command-frame-event-select,
+.event-command-frame-editor input[type="number"] {
+  width: 100%;
+  min-width: 0;
+}
+
+.event-command-frame-live-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  background: var(--bg-inset, #EFE9DC);
+}
+
+.event-command-frame-live-label {
+  font: 700 11px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--oprn-command-blue, var(--accent));
+}
+
+.event-command-frame-live {
+  display: grid;
+  place-items: center;
+  min-height: 112px;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 50% 40%, var(--bg-surface), transparent 55%),
+    var(--bg-surface);
+}
+
+.event-command-frame-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.event-command-frame-meta-line {
+  font-size: 11px;
+  color: var(--text-2, #5C5348);
+  word-break: break-all;
+}
+
+.event-command-frame-walk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-frame-walk-chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-muted, rgba(110, 168, 255, 0.16));
+}
+
+.event-command-frame-rm-options {
+  display: grid;
+  gap: 10px;
+}
+
+.event-command-frame-direction-group,
+.event-command-frame-pattern-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-frame-dir.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-muted, rgba(110, 168, 255, 0.16));
+}
+
+.event-command-frame-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-command-frame-sheet-caption {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #5C5348);
+}
+
+.event-command-frame-sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  background: var(--bg-surface);
+  border-radius: 6px;
+  padding: 6px;
+}
+
+.event-command-frame-sheet-cell {
+  display: grid;
+  place-items: center;
+  min-height: 56px;
+  padding: 2px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.event-command-frame-sheet-cell:hover {
+  border-color: var(--border-default);
+}
+
+.event-command-frame-sheet-cell.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--shadow-pop);
+}
+
+.event-command-frame-door-seq {
+  flex-wrap: wrap;
+}
+
+.event-command-frame-target-row {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-frame-target-row select {
+  width: 100%;
+  min-width: 0;
+}
+
+.event-command-frame-door-seq {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-command-frame-door-seq-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-frame-door-step.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-muted, rgba(110, 168, 255, 0.16));
+}
+
+/* Erase Event (플레이 중 이벤트 지우기) */
+.m2-erase-event-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.m2-erase-event-card .m2-command-intent-title {
+  color: var(--oprn-command-blue, var(--accent));
+  font-weight: 700;
+}
+
+.m2-erase-event-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(72px, 88px) minmax(0, 1fr);
+}
+
+.m2-erase-event-label {
+  color: var(--text-2, #5C5348);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 8px;
+}
+
+.m2-erase-event-preview {
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-default, rgba(42,37,33,.20)));
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.m2-erase-event-preview-title {
+  font: 700 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+
+.m2-erase-event-preview-sub {
+  margin-top: 4px;
+  font: 600 11px/1.4 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--text-dim, #6B5F52);
+}
+
+/* ── 값(색) 필드 — 텍스트 단독이던 입력에 네이티브 피커와 프리셋 스와치를 붙인다(D3). ── */
+.m2-screen-color-field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.m2-screen-color-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.m2-screen-color-row input[type="text"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.m2-screen-color-picker {
+  flex: 0 0 auto;
+  inline-size: 40px;
+  block-size: 28px;
+  padding: 0;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  cursor: pointer;
+}
+
+.m2-screen-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+/* 숫자 값 효과(물결·모자이크·기울기·레터박스)는 색 견본을 숨긴다 — display:flex 가 [hidden] 을 이겨 견본이 남아 있었다. */
+.m2-screen-color-swatches[hidden],
+.m2-screen-color-picker[hidden] {
+  display: none;
+}
+
+.m2-screen-color-swatch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.m2-screen-color-swatch:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.m2-screen-color-swatch[aria-pressed="true"] {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.m2-screen-color-swatch::before {
+  content: "";
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: var(--m2-swatch-color, transparent);
+}
+
+.m2-screen-color-swatch:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.m2-field-error {
+  color: var(--danger);
+  font: 600 11px/1.4 var(--font-ui);
+}
+
+.m2-field-note {
+  color: var(--text-3);
+  font: 500 11px/1.4 var(--font-ui);
+}
+
+.m2-field-note.is-invalid {
+  color: var(--danger);
+}
+
+.m2-number-field {
+  display: grid;
+  gap: var(--space-1);
+}

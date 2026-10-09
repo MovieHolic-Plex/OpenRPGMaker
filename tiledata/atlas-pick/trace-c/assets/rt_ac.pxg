@@ -1,0 +1,73 @@
+@size 32 32
+@cell 32
+@palette palette.pal
+@layer main
+@mat a conc 0
+@mat b tekko 0
+@mat c sumi 0
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+..cccccccccccccccccccccccccccc..
+.caaaaaaaaaaaaaaaaaaaaaaaaaaaac.
+.caaaaaaaaabbbbbbaaaaaaaaaaaaac.
+.caaaaaaabbbbbbbbbbaaaaaaabbbac.
+.caaaaaabbbbbbbbbbbbaaaaaaaaaac.
+.caaaaabbbbbbbbbbbbbbaaaaaaaaac.
+.caaaabbbbbbbbbbbbbbbbaaaabbbac.
+.caaaabbbbbbbbbbbbbbbbaaaaaaaac.
+.caaabbbbbbbbbbbbbbbbbbaaaaaaac.
+.caaabbbbbbbbbbbbbbbbbbaaabbbac.
+.caaabbbbbbbbbbbbbbbbbbaaaaaaac.
+.caaabbbbbbbbbbbbbbbbbbaaaaaaac.
+.caaabbbbbbbbbbbbbbbbbbaaaaaaac.
+.caaabbbbbbbbbbbbbbbbbbaaaaaaac.
+.caaaabbbbbbbbbbbbbbbbaaaaaaaac.
+.caaaabbbbbbbbbbbbbbbbaaaaaaaac.
+.caaaaabbbbbbbbbbbbbbaaaaaaaaac.
+.caaaaaabbbbbbbbbbbbaaaaaaaaaac.
+.caaaaaaabbbbbbbbbbaaaaaaaaaaac.
+.caaaaaaaaabbbbbbaaaaaaaaaaaaac.
+.caaaaaaaaaaaaaaaaaaaaaaaaaaaac.
+.caaaaaaaaaaaaaaaaaaaaaaaaaaaac.
+.caaaaaaaaaaaaaaaaaaaaaaaaaaaac.
+..ccbbbbccccccccccccccccbbbbcc..
+...cbbbbc..............cbbbbc...
+...cbbbbc..............cbbbbc...
+....cccc................cccc....
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+..1111111111111111111111111111..
+.166666666666666666666666633331.
+.165555555511111155555555533331.
+.165555551122222211555555522231.
+.165555512222252222155555533331.
+.165555122222252222215555533331.
+.165551222222252222221555522231.
+.165551222222252222221555533331.
+.165512222222252222222155533331.
+.165512222222252222222155522231.
+.165512222222552222222155533331.
+.165512222222555222222155533331.
+.165512222255222552222155533331.
+.165512225522222225522155533331.
+.165551252222222222251555533331.
+.165551222222222222221555533331.
+.165555122222222222215555533331.
+.165555512222222222155555533331.
+.165555551122222211555555533331.
+.133333333311111133333333333331.
+.133333333333333333333333333331.
+.133333333333333333333333333331.
+.133333333333333333333333333331.
+..1122221111111111111111222211..
+...122221..............122221...
+...122221..............122221...
+....1111................1111....

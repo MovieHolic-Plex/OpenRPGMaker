@@ -1,0 +1,841 @@
+/* ── 조수 데크 (2026-09-03, 제안서 docs/2026-09-03-ai-assistant-modern-ui-proposal.html) ──
+   이 파일이 조수 float 표면의 **단일 소유자**다. 13(modern)·14(ux-repair)·15(readable)·
+   16(change-first)·17(modern-shell) 다섯 레이어가 같은 선택자를 덮어 쓰던 적층을 걷고 여기 한 곳에서
+   레일 → 대화 → 작업 타임라인 → 컴포저 → 팝오버 → 접힘 알약을 정한다.
+
+   DOM(aiChatPanel.ts):
+     aside.ai-chat-panel.chat-dock-float            투명 inset:0 (02-chat-dock.css)
+       └ div.ai-deck                                 유리 표면 하나 — 이 파일
+           ├ div.ai-deck-rail                        상태 점 · 조수 · 맵 · 상태 문장 · 아이콘 슬롯 · ⋯ 메뉴
+           ├ div.ai-chat-body > .ai-chat-main > .ai-glass-log > .ai-chat-log   스크롤러
+           └ div.ai-command-bar > (.ai-composer-suggest[흐름] · 팝오버들 · .ai-composer)
+
+   규칙:
+   - 색은 tokens.css 변수만(hex 0). !important 0. 유리는 --bg-raised 78–100%(기본 82%) + blur 20 · saturate 1.08
+     (saturate 1.4 는 잔디 위에서 패널을 초록으로 물들여 대비를 4.22:1 로 떨어뜨렸다 — 2026-08-28 실측).
+   - 유리 위 보조 글자는 --ai-deck-secondary(--text-2 85% + --text-1). 최소 농도와 모드 틴트에서도 AA 유지.
+   - 팝오버는 닫히면 hidden. 투명 전면 레이어 금지(2026-08-19 히트테스트 P0).
+   - 앞 레이어(02·03·04·09·assistant-command-bar·assistant-composer)의 같은 선택자는 특이도로 이긴다 —
+     `.ai-chat-panel.chat-dock-float .ai-deck …` (0,3,0)+ 를 쓴다. import 순서에 기대지 않는다. */
+
+.ai-chat-panel {
+  --ai-float-compact-width: 480px;
+  --ai-deck-open-width: 760px;
+  /* 캔버스 변에 고정된 16px 카메라 스크롤 트랙(CameraScrollbars) 바로 안쪽에 선다.
+     트랙이 가림 사각형 대신 캔버스 변으로 옮겨졌으므로, 예전 우 12px·하 14px 로는
+     데크가 트랙 안쪽 4px·2px 을 덮어 썸을 깎는다. 16px 은 EDGE_FLUSH_PX(24px) 안이라
+     가림 모델은 여전히 이 데크를 "변에 붙은 열"로 본다 — 늘릴 때 그 상한을 확인할 것. */
+  --ai-deck-inset: 16px;
+  --ai-deck-radius: 20px;
+  --ai-deck-log-max: min(660px, 62vh);
+  --ai-deck-glass: color-mix(in srgb, var(--bg-raised) var(--ai-background-opacity, 82%), transparent);
+  --ai-deck-shadow:
+    0 28px 64px -28px color-mix(in srgb, var(--text-1) 38%, transparent),
+    0 2px 8px color-mix(in srgb, var(--text-1) 6%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--text-1) 6%, transparent);
+  --ai-deck-line: color-mix(in srgb, var(--text-1) 6%, transparent);
+}
+
+/* Persistent left AI workspace. Floating geometry is intentionally not applied:
+   the mounted panel has is-left-sidebar, not chat-dock-float. */
+.ai-chat-sidebar {
+  display: flex; flex: 0 0 auto; flex-direction: column; min-width: 280px;
+  max-width: min(400px, 70vw); min-height: 0; padding: 0;
+  background: var(--bg-raised); border-right: 1px solid var(--border-subtle);
+}
+.ai-chat-sidebar-tabs { display: flex; gap: 18px; padding: 0 18px; border-bottom: 1px solid var(--border-subtle); }
+.ai-chat-sidebar-tabs button { border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); padding: 14px 2px; font: 500 12px var(--font-ui); cursor: pointer; }
+.ai-chat-sidebar-tabs button[aria-pressed="true"] { background: transparent; color: var(--accent); box-shadow: inset 0 -2px var(--accent); border-radius: 0; }
+.ai-chat-sidebar-content { position: relative; flex: 1; min-height: 0; display: flex; }
+.ai-chat-sidebar .ai-chat-sidebar-content > .ai-chat-sidebar-tools { width: 100%; min-width: 0; flex: 1; }
+.ai-chat-sidebar-content > [hidden] { display: none; }
+.ai-chat-sidebar-content .ai-chat-float-host.ai-chat-sidebar-host { position: relative; inset: auto; flex: 1; min-width: 0; min-height: 0; pointer-events: auto; z-index: 40; }
+.ai-chat-sidebar-tabs { align-items: center; gap: 12px; }
+.ai-chat-sidebar-tabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse { margin-left: auto; padding: 8px; }
+.ai-chat-sidebar-content[hidden] { display: none; }
+.ai-chat-sidebar.is-collapsed { min-width: 48px; max-width: 48px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs { flex-direction: column; padding: 8px 5px; gap: 8px; border-bottom: 0; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs button { width: 36px; height: 36px; padding: 8px; border-radius: var(--radius-s); }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs button[aria-pressed="true"] { box-shadow: none; background: var(--accent-muted); }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tab-label { display: none; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-collapse { order: -1; margin: 0 0 6px; }
+
+.ai-chat-panel.is-left-sidebar:not(.is-studio) {
+  position: relative; inset: auto; width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0; border-radius: 0; box-shadow: none; gap: 0;
+  background: var(--bg-raised); pointer-events: auto; overflow: visible;
+  /* 한국어는 어절 경계에서만 줄바꿈한다 — 기본값이면 「보스/와」·「타/일셋」처럼 음절 사이가 끊긴다
+     (2026-09-23 도그푸딩). 상속으로 말풍선·작업 카드·완료 보고까지 덮고, 한 줄에 안 들어가는 긴
+     토막은 각 칸의 overflow-wrap: anywhere 가 그대로 받는다. 표 칸(part-2)은 normal 로 되돌린다. */
+  word-break: keep-all;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) > .ai-deck {
+  position: relative; inset: auto; width: 100%; height: 100%; max-width: none; max-height: none;
+  display: flex; flex-direction: column; min-height: 0; border: 0; border-radius: 0;
+  box-shadow: none; background: var(--bg-raised); backdrop-filter: none;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail { cursor: default; flex-wrap: nowrap; gap: 8px; padding: 16px 18px; border-bottom: 0; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-who { flex: 1; min-width: 0; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-name { font-size: 14px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state { max-width: 90px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-spacer { display: none; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions { width: auto; justify-content: flex-end; gap: 4px; flex-shrink: 0; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck > .ai-chat-body {
+  display: flex; flex: 1 1 0; min-height: 0; height: auto; max-height: none; margin: 0;
+  padding: 0; overflow: hidden; pointer-events: auto;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-main,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-glass-log,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-history-log-mount {
+  flex: 1 1 0; min-height: 0; height: 100%; max-height: none; overflow: hidden;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-history-log-mount:empty,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-glass-log:empty { display: none; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-log {
+  display: flex; flex-direction: column; gap: 20px; width: 100%; flex: 1;
+  height: 100%; min-height: 0; max-height: none; overflow-y: auto; padding: 12px 18px 24px;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck > .ai-command-bar {
+  position: relative; inset: auto; width: 100%; max-width: none; flex: 0 0 auto;
+  margin: 0; padding: 12px 14px 16px; background: var(--bg-raised); border-top: 0;
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { border: 1px solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); padding: 8px 10px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: nowrap; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 36px; font-size: 13px; line-height: 1.4; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { flex: 0 0 auto; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-resize-handle { display: none; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-popover { max-width: min(340px, 88vw); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-bubble { max-width: 100%; overflow-wrap: anywhere; font-size: 13px; line-height: 1.85; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-bubble.user { margin-left: 16px; background: var(--bg-inset); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-toolbar { display: none; }
+/* 「빈 대화 첫 화면」 전용 규칙은 2026-09-21 에 걷었다 — 진단 카드가 캔버스 오른쪽 아래
+   느낌표 팝오버로 옮겨 가면서 그 자리를 쓰는 표면이 하나도 없어졌다(.ai-suggestion-peek).
+   남겨 두면 「빈 대화에서만 보이는 무언가」가 있다고 잘못 읽힌다. */
+body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
+
+.ai-work-inline { flex: 0 0 auto; background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-m); padding: 10px 12px; font-size: 12px; }
+.ai-work-inline header { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
+.ai-work-inline header strong { font-weight: 500; overflow-wrap: anywhere; }
+.ai-work-inline-status { flex-shrink: 0; color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ai-work-inline-now { margin: 6px 0 0; color: var(--text-2); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.ai-work-inline-now[hidden] { display: none; }
+.ai-work-inline-changed { margin: 8px 0 0; color: var(--text-1); font-size: 12px; font-weight: 500; overflow-wrap: anywhere; }
+.ai-work-inline[data-state="done"] .ai-work-inline-status { color: var(--success); }
+.ai-work-inline[data-state="failed"] .ai-work-inline-status { color: var(--danger); }
+.ai-work-inline-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.ai-work-inline button { font: 500 12px var(--font-ui); color: var(--accent); border: 1px solid var(--border-subtle); background: var(--bg-raised); border-radius: var(--radius-s); padding: 6px 8px; cursor: pointer; }
+.ai-work-inline details { margin-top: 10px; }
+.ai-work-inline summary { color: var(--text-2); cursor: pointer; }
+.ai-work-inline-steps { margin-top: 10px; }
+
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 0 10px; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header { grid-column: 2; grid-row: 1; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) header strong { display: none; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) details { grid-column: 1; grid-row: 1; margin: 0; }
+.ai-work-inline[data-state="done"]:not(.has-activity):has(details:not([open])) .ai-work-inline-actions { grid-column: 1 / -1; }
+.ai-work-inline-actions:empty, .ai-work-inline-live:empty { display: none; }
+
+/* Sidebar header and overflow retain the original controls and keyboard behavior. */
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-state:empty { display: none; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 130px; }
+.ai-chat-secondary-actions { display: grid; gap: 3px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
+.ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
+.ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex-wrap: wrap; gap: 5px; overflow: visible; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; justify-content: flex-end; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-model { margin-right: auto; font-size: 10px; color: var(--text-3); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-effort-select { border: 0; background: var(--bg-inset); font-size: 11px; }
+/* 켜짐은 왼쪽 사이드바의 납작한 칩 규칙(:not 때문에 명시도가 더 높다)보다 세야 보인다. */
+.ai-chat-panel .ai-composer-stamp-toggle[aria-pressed="true"],
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent);
+  color: var(--accent-active);
+}
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { font-size: 10px; color: var(--text-3); padding: 6px 18px; border: 0; }
+
+/* Minimum glass over black, including the mode segment's 6% ink tint: AA text, not element opacity. */
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open) {
+  --ai-deck-secondary: color-mix(in srgb, var(--text-2) 85%, var(--text-1));
+}
+
+@media (max-width: 1300px) {
+  .ai-chat-panel {
+    --ai-deck-open-width: 640px;
+  }
+}
+
+/* 15 레이어가 들던 값 — 호스트는 클릭을 통과시키고 데크만 받는다. */
+.ai-chat-float-host {
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* ── 1. 데크 표면 ─────────────────────────────────────────────── */
+/* 패널 자신은 투명하다 — 02 의 base(.ai-chat-panel 흰 배경·테두리·패딩)가 inset:0 전면을 크림으로 덮지
+   않게 한다(17 에서 이관). 접힘·기록·스튜디오는 각자 규칙이 있다. */
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  background: var(--ai-deck-glass);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  border-radius: var(--ai-deck-radius);
+  /* 기본은 왼쪽 아래. 저장 위치가 있으면 has-custom-deck-pos 가 right 앵커로 바꾼다.
+     bottom 앵커라 기록이 열려도 위로만 자란다. */
+  bottom: var(--ai-deck-bottom, var(--ai-deck-inset));
+  box-shadow: var(--ai-deck-shadow);
+  display: flex;
+  flex-direction: column;
+  left: var(--ai-deck-inset);
+  max-height: calc(100% - var(--ai-deck-inset) * 2);
+  pointer-events: auto;
+  position: absolute;
+  right: auto;
+  transition: width 200ms ease;
+  /* 폭 상한은 뷰포트가 아니라 패널(=캔버스 영역) 기준이다 — 100vw 로 재면 좁은 창에서 데크가 좌측 도구
+     기둥 위로 넘어간다(e2e assistant-single-dock 900px 실측: x 248 < 캔버스 304). */
+  width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - var(--ai-deck-inset) - 12px));
+}
+
+.ai-chat-panel.chat-dock-float.has-custom-deck-pos:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  left: auto;
+  right: var(--ai-deck-right, var(--ai-deck-inset));
+}
+
+/* 유휴·빈 대화·포커스 없음 = 컴포저만 좁게. 포커스·턴·대화가 있으면 열린 폭. */
+/* 「작업」 탭이 열려 있으면 유휴여도 열린 폭 — 검토 대기는 턴이 없는 유휴인데, 그 순간 팀원 열이 480 으로 접힐 수 없다. */
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed):not(.is-work-tab) .ai-deck {
+  width: min(var(--ai-float-bar-width, var(--ai-float-compact-width)), calc(100% - var(--ai-deck-inset) - 12px));
+}
+
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-deck,
+.ai-chat-panel.chat-dock-float.is-studio > .ai-deck {
+  display: none;
+}
+
+/* Match the open-deck width rule's class specificity. The weaker
+   `.ai-chat-panel.chat-dock-float .ai-deck` selector lost to `transition: width`,
+   so prefers-reduced-motion never actually disabled the animation (F10 e2e). */
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+    transition: none;
+  }
+}
+
+/* Live drag must track the pointer exactly — never ease toward the target mid-gesture. */
+.ai-chat-panel.chat-dock-float.is-resizing:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  transition: none;
+}
+
+/* 레일 위치 드래그도 포인터를 정확히 따라야 한다 — 같은 특이도로 transition 을 죽인다. */
+.ai-chat-panel.chat-dock-float.is-dragging:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  transition: none;
+}
+
+/* 위치 드래그 중에는 텍스트 선택이 아니라 이동이 일어난다. */
+.ai-chat-panel.chat-dock-float.is-dragging {
+  user-select: none;
+}
+
+/* 드래그 중에는 grabbing. 아래 grab 규칙과 **같은 접두사 + is-dragging** 으로 특이도를 한 단계
+   올린다 — 상태 가드(:not 3개)가 붙은 grab 규칙이 이 규칙을 이기면 끄는 동안 손이 grab 이 된다. */
+.ai-chat-panel.chat-dock-float.is-dragging:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck-rail {
+  cursor: grabbing;
+}
+
+/* ── 2. 상태 레일 ─────────────────────────────────────────────── */
+/* 레일은 데크의 드래그 손잡이다(2026-09-12) — 잡을 수 있음을 grab 커서로 알린다.
+   아이콘 줄·팝오버는 손잡이가 아니므로 각자 커서를 되돌린다(버튼은 .ai-composer-menu-btn
+   의 cursor:pointer 가 그대로 이긴다).
+   커서는 **끌 수 있는 상태에서만** grab 이다 — 기록 열림(도킹)·스튜디오·접힘에서는 데크가
+   보여도 pointerdown 이 거절되므로(aiDeckMoveChrome 의 movable 게터) grab 이 거짓말이 된다.
+   2026-09-14 실측: is-history-open 데크(503×835) 위에서 커서는 grab, 끌면 아무 일도 없었다. */
+.ai-deck-rail {
+  align-items: center;
+  border-bottom: 1px solid var(--ai-deck-line);
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  min-height: 38px;
+  padding: 0 8px 0 16px;
+  position: relative;
+}
+
+/* 잡을 수 있다는 신호는 **끌 수 있는 상태에서만** — 기록 열림(도킹)·스튜디오·접힘에서는 데크가
+   보여도 pointerdown 이 거절되므로(aiDeckMoveChrome 의 movable 게터) grab 커서가 거짓말이 된다.
+   2026-09-14 실측: is-history-open 데크(503×835) 위에서 커서는 grab, 끌면 아무 일도 없었다. */
+.ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck-rail {
+  cursor: grab;
+}
+
+.ai-deck-rail-actions,
+.ai-deck-rail .ai-composer-popover {
+  cursor: default;
+}
+
+/* 진행 헤어라인 — 데크 윗변을 따라 흐른다. */
+.ai-deck-rail::before {
+  background: linear-gradient(90deg, var(--accent) 0 40%, var(--accent-muted) 40% 100%);
+  background-size: 200% 100%;
+  border-radius: var(--ai-deck-radius) var(--ai-deck-radius) 0 0;
+  content: "";
+  height: 2px;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.ai-deck-rail[data-ai-state="run"]::before {
+  animation: ai-deck-sweep 1.4s linear infinite;
+  opacity: 1;
+}
+
+@keyframes ai-deck-sweep {
+  from {
+    background-position: 100% 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.ai-deck-rail-who {
+  align-items: center;
+  color: var(--text-1);
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 8px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.ai-deck-rail-dot {
+  background: var(--text-disabled);
+  border-radius: 50%;
+  flex: none;
+  height: 8px;
+  width: 8px;
+}
+
+.ai-deck-rail-dot[data-ai-state="run"] {
+  animation: ai-deck-pulse 1.2s ease-in-out infinite;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-muted);
+}
+
+.ai-deck-rail-dot[data-ai-state="attention"] {
+  background: var(--warning);
+  box-shadow: 0 0 0 4px var(--warning-muted);
+}
+
+.ai-deck-rail-dot[data-ai-state="done"] {
+  background: var(--success);
+}
+
+.ai-deck-rail-dot[data-ai-state="error"] {
+  background: var(--danger);
+  box-shadow: 0 0 0 4px var(--danger-muted);
+}
+
+@keyframes ai-deck-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px var(--accent-muted);
+  }
+
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 6%, transparent);
+  }
+}
+
+.ai-deck-rail-ctx {
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-weight: 400;
+}
+
+.ai-deck-rail-ctx:not(:empty)::before {
+  color: var(--ai-deck-secondary, var(--text-2));
+  content: "·";
+  margin-right: 6px;
+}
+
+/* 상태 문장 — 기존 ai-status 엘리먼트가 이 슬롯에 들어온다. 유휴 톤이면 비운다. */
+.ai-deck-rail-state {
+  color: var(--ai-deck-secondary, var(--text-2));
+  display: inline-flex;
+  flex: 1 1 auto;
+  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ai-deck-rail-state .ai-assistant-status {
+  color: inherit;
+  font-size: inherit;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-deck-rail-state .ai-assistant-status[data-status-tone="idle"] {
+  display: none;
+}
+
+.ai-deck-rail[data-ai-state="run"] .ai-deck-rail-state {
+  color: var(--accent-active);
+}
+
+.ai-deck-rail[data-ai-state="attention"] .ai-deck-rail-state {
+  color: color-mix(in srgb, var(--warning) 60%, var(--text-1));
+  font-weight: 600;
+}
+
+.ai-deck-rail[data-ai-state="done"] .ai-deck-rail-state {
+  color: color-mix(in srgb, var(--success) 60%, var(--text-1));
+}
+
+.ai-deck-rail[data-ai-state="error"] .ai-deck-rail-state {
+  color: color-mix(in srgb, var(--danger) 60%, var(--text-1));
+  font-weight: 600;
+}
+
+.ai-deck-rail-spacer {
+  flex: 0 0 4px;
+}
+
+.ai-deck-rail-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+/* 레일 아이콘 버튼 — 컴포저가 만든 .ai-composer-menu-btn 을 그대로 받는다. 30px, 테두리 없음. */
+.ai-deck-rail-actions .ai-composer-menu-btn,
+.ai-deck-rail-actions .ai-chat-collapse,
+.ai-deck-rail-actions .ai-deck-wide-open {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  height: 30px;
+  min-height: 0;
+  min-width: 30px;
+  padding: 0;
+  width: 30px;
+}
+
+/* 크게 보기 — 레일로 옮겨진 후에는 텍스트 없이 아이콘만(2026-09-21). */
+.ai-deck-rail-actions .ai-deck-wide-open span { display: none; }
+
+.ai-deck-rail-actions .ai-composer-menu-btn:hover,
+.ai-deck-rail-actions .ai-composer-menu-btn:focus-visible,
+.ai-deck-rail-actions .ai-composer-menu-btn.is-active,
+.ai-deck-rail-actions .ai-chat-collapse:hover {
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+  outline: none;
+}
+
+.ai-deck-rail-actions .ai-composer-menu-btn:focus-visible,
+.ai-deck-rail-actions .ai-chat-collapse:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+/* 맥락 게이지는 숫자를 든다 — 정사각형이 아니라 알약. */
+.ai-deck-rail-actions .ai-composer-menu-btn.ai-context-meter {
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 8px;
+  width: auto;
+}
+
+.ai-deck-icon {
+  display: block;
+  flex: none;
+}
+
+/* ── 3. 대화 본문 ─────────────────────────────────────────────── */
+.ai-chat-panel.chat-dock-float .ai-deck > .ai-chat-body {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  bottom: auto;
+  box-shadow: none;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  max-height: var(--ai-deck-log-max);
+  min-height: 0;
+  opacity: 1;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: auto;
+  position: static;
+  right: auto;
+  transition: none;
+  width: auto;
+}
+
+/* 빈 대화에서는 본문이 자리를 먹지 않는다 — 추천은 컴포저 안에서 선다. */
+.ai-chat-panel.chat-dock-float[data-ai-conversation="empty"]:not(.is-history-open) .ai-deck > .ai-chat-body,
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-history-open) .ai-deck > .ai-chat-body {
+  display: none;
+}
+
+.ai-chat-panel[data-ai-conversation="empty"] .ai-history-log-mount {
+  display: none;
+}
+
+.ai-deck .ai-chat-main {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ai-deck .ai-glass-log {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 03 의 .ai-chat-log 는 회색 상자(inset 배경·테두리·46vh)였다 — 데크 안에서는 투명 스크롤러다. */
+.ai-deck .ai-chat-log {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  gap: 12px;
+  max-height: none;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 14px 16px 6px;
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
+}
+
+.ai-deck .ai-chat-log:hover,
+.ai-deck .ai-chat-log:focus-within {
+  scrollbar-color: var(--text-2) transparent;
+}
+
+.ai-deck .ai-chat-log:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: calc(-1 * var(--stroke-2));
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar {
+  width: var(--space-2);
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ai-deck .ai-chat-log::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+.ai-deck .ai-chat-log:hover::-webkit-scrollbar-thumb,
+.ai-deck .ai-chat-log:focus-within::-webkit-scrollbar-thumb {
+  background: var(--text-2);
+}
+
+/* Existing settings display section, never another row on the deck. */
+.ai-settings-window .ai-background-opacity-control {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-settings-window .ai-background-opacity-range {
+  accent-color: var(--accent);
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.ai-settings-window .ai-background-opacity-range:focus-visible {
+  border-radius: var(--radius-s);
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2);
+}
+
+.ai-settings-window .ai-background-opacity-control output {
+  color: var(--text-1);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── AI 미연결 잠금 막 ────────────────────────────────────────────────────────
+   연결이 없으면 채팅창을 덮는다. "읽어야 아는" 안내(placeholder·칩)만으로는 부족했다 —
+   사용자는 지시를 쓰고 보낸 뒤에야 막힌다는 걸 알았다. 이 앱에서 AI 는 핵심 시스템이므로,
+   없으면 그 자리가 비어 보여야 한다.
+
+   입력 자체를 disabled 로 만들지는 않는다: 로그인 후 이어 쓰는 흐름을 끊지 않고,
+   무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다. */
+.ai-deck > .ai-lock-scrim, .ai-chat-body > .ai-lock-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+/* hidden 속성만으로는 위 display 규칙에 밀린다(특이도 함정) — 명시적으로 못박는다. */
+/* 화면 무게. 기본(light)·끄기(off)는 캔버스 위 블러를 끈다. 무겁게(heavy)만 유리 블러를 남긴다. */
+html:is(:not([data-ai-render]), [data-ai-render="light"], [data-ai-render="off"]) :is(
+  .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck,
+  .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore,
+  .ai-work-strip-toggle,
+  .ai-work-card,
+  .ai-ghost-phase-chip,
+  .selection-action-chips,
+  .ai-deck > .ai-lock-scrim,
+  .ai-chat-body > .ai-lock-scrim
+) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-ai-render="off"] {
+  --ai-deck-glass: var(--bg-raised);
+}
+
+.ai-deck > .ai-lock-scrim[hidden], .ai-chat-body > .ai-lock-scrim[hidden] {
+  display: none;
+}
+
+.ai-lock-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 300px;
+  padding: 22px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m, 10px);
+  background: var(--surface);
+  box-shadow: 0 6px 24px #30271914;
+  text-align: center;
+}
+
+.ai-lock-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.ai-lock-title {
+  margin: 0;
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ai-lock-body {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.ai-lock-action {
+  margin-top: 4px;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: var(--radius-s, 6px);
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ai-lock-action:hover {
+  filter: brightness(1.06);
+}
+
+.ai-lock-action:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2, 2px);
+}
+
+/* 사이드바 탭 = 세그먼트 컨트롤(2026-09-24 정리). 「맵 · 그리기 · AI」 세 칸이 한 덩어리로 읽히고,
+   고른 칸만 흰 바탕이 뜬다(macOS 세그먼트). 밑줄 탭은 탭 안의 하위 탭·필터 칩과 같은 무게라 구분이 안 됐다. */
+.ai-chat-sidebar-tabs { gap: 6px; padding: 10px 10px 8px; border-bottom: 0; }
+.ai-chat-sidebar-segments { display: flex; flex: 1; min-width: 0; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 2px); background: var(--bg-well, var(--bg-inset)); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button {
+  flex: 1; min-width: 0; height: 28px; padding: 0 6px; gap: 5px; border-radius: var(--radius-s);
+  color: var(--text-2); font: 500 12.5px var(--font-ui); box-shadow: none;
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button:hover { color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] {
+  background: var(--bg-raised); color: var(--text-1); font-weight: 600; border-radius: var(--radius-s);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent), 0 0 0 .5px color-mix(in srgb, var(--text-1) 8%, transparent);
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments svg { width: 15px; height: 15px; flex: none; }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse { margin-left: 0; width: 30px; height: 30px; padding: 0; display: inline-grid; place-items: center; color: var(--text-2); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse:hover { background: var(--bg-hover); color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse svg { width: 17px; height: 17px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-segments { flex-direction: column; flex: none; background: transparent; padding: 0; gap: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button { flex: none; width: 36px; height: 36px; padding: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] { background: var(--accent-muted); box-shadow: none; color: var(--accent); }
+
+
+/* ── 왼쪽 활동 막대 + 오른쪽 조수 도크 (2026-09-26) ──────────────────────────────
+   왼쪽은 48px 세로 막대(그리기·맵 … 검사)와 패널 하나다. 조수는 캔버스 오른쪽 도크에 항상 있어
+   팔레트와 동시에 쓴다. 막대는 접혀도 같은 자리·같은 모양이다(가로 탭 → 세로 레일 전환 없음). */
+.ai-chat-sidebar.has-activity-bar { flex-direction: row; min-width: 48px; }
+.ai-chat-sidebar.has-activity-bar.is-collapsed { min-width: 48px; max-width: 48px; }
+.ai-chat-sidebar.has-activity-bar > .left-activity-bar {
+  flex: 0 0 48px; width: 48px; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 0; border: 0; border-right: 1px solid var(--border-subtle); background: var(--bg-inset);
+}
+.ai-chat-sidebar.is-collapsed > .left-activity-bar { flex-direction: column; padding: 8px 0; gap: 4px; border-right: 0; }
+.left-activity-group { display: flex; flex-direction: column; gap: 4px; }
+.left-activity-spacer { flex: 1; }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  width: 40px; height: 44px; padding: 0; border: 0; border-radius: var(--radius-s); box-shadow: none;
+  background: transparent; color: var(--text-2); font: 500 11px var(--font-ui);
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item svg { width: 18px; height: 18px; flex: none; }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item:hover { background: var(--bg-hover); color: var(--text-1); }
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item[aria-pressed="true"] {
+  background: var(--bg-raised); color: var(--text-1); box-shadow: none;
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .left-activity-item[aria-pressed="true"]::before {
+  content: ""; position: absolute; left: -4px; top: 10px; bottom: 10px; width: 3px; border-radius: 2px; background: var(--accent);
+}
+.ai-chat-sidebar.has-activity-bar .left-activity-bar .ai-chat-sidebar-tab-label { display: block; font-size: 11px; line-height: 1; }
+.left-activity-badge {
+  position: absolute; top: 2px; right: 0; min-width: 16px; height: 14px; padding: 0 4px; border-radius: 7px;
+  background: var(--warning, var(--accent)); color: var(--on-accent); font: 700 10px/14px var(--font-ui); text-align: center;
+}
+.left-activity-badge[hidden] { display: none; }
+.ai-chat-sidebar.has-activity-bar > .ai-chat-sidebar-content { flex: 1; min-width: 0; }
+
+.ai-right-dock {
+  position: relative; display: flex; flex: 0 0 auto; min-width: 0; min-height: 0;
+  border-left: 1px solid var(--border-subtle); background: var(--bg-raised);
+}
+.ai-right-dock > .ai-chat-float-host.ai-chat-sidebar-host {
+  position: relative; inset: auto; flex: 1; min-width: 0; min-height: 0; pointer-events: auto; z-index: 40; display: flex;
+}
+
+/* Fold the conversation itself, keeping the live deck and draft mounted. */
+.ai-right-dock.is-collapsed { width: 44px; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) {
+  position: relative; inset: auto; display: flex; flex-direction: column; align-items: center;
+  width: 100%; min-width: 0; max-width: none; height: 100%; min-height: 0; padding: 6px 0;
+  background: var(--bg-raised); border: 0; box-shadow: none; pointer-events: auto;
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > :not(.ai-collapsed-restore):not(.ai-collapsed-undo) { display: none; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  flex: 0 0 auto; gap: 8px; width: 40px; height: auto; min-width: 0; min-height: 44px;
+  padding: 8px 4px; border: 0; border-radius: var(--radius-s); box-shadow: none;
+  background: transparent; color: var(--text-1); overflow: hidden;
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-name,
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-state { writing-mode: vertical-rl; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) .ai-collapsed-restore-dot { margin: 0; flex: 0 0 auto; }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-undo:not([hidden]) {
+  position: static; display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  width: 32px; height: 32px; margin-top: 8px; padding: 0; transform: none;
+  border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1);
+}
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:hover { background: var(--bg-hover); }
+.ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) > .ai-collapsed-restore:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
+
+
+/* ── 왼쪽 활동 막대 패널: 진행 · 연결 (2026-09-27) ─────────────────────────────── */
+.left-progress-pane, .left-links-pane {
+  flex: 1; min-width: 0; min-height: 0; overflow-y: auto; padding: 12px 14px 16px;
+  display: flex; flex-direction: column; gap: 14px; font: 400 12px/1.5 var(--font-ui); color: var(--text-1);
+}
+.left-progress-pane[hidden], .left-links-pane[hidden] { display: none; }
+.left-progress-count { font: 600 11px var(--font-ui); color: var(--text-3); }
+.left-links-hint { margin: 0; color: var(--text-3); font-size: 11.5px; line-height: 1.6; }
+
+.left-progress-head, .left-links-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.left-progress-head strong, .left-links-head strong { font: 600 13px var(--font-ui); }
+.left-progress-bar { height: 4px; border-radius: 2px; background: var(--bg-inset); overflow: hidden; }
+.left-progress-bar > span { display: block; height: 100%; background: var(--accent); }
+.left-progress-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.left-progress-step { display: flex; align-items: flex-start; gap: 10px; padding: 8px; border-radius: var(--radius-m); }
+.left-progress-step.is-next { background: var(--accent-muted); }
+.left-progress-mark {
+  flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  border: 1px solid var(--border-default); font: 600 11px var(--font-ui); color: var(--text-2);
+}
+.left-progress-step.is-done .left-progress-mark { background: var(--success, var(--accent)); border-color: transparent; color: var(--on-accent); }
+.left-progress-step.is-next .left-progress-mark { border-color: var(--accent); color: var(--accent); }
+.left-progress-copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.left-progress-copy strong { font: 600 12.5px var(--font-ui); }
+.left-progress-detail { color: var(--text-3); font-size: 11.5px; overflow-wrap: anywhere; }
+.left-progress-hint { color: var(--text-2); font-size: 11.5px; }
+.left-progress-go, .left-progress-ack {
+  flex: none; min-height: 24px; padding: 0 8px; border: 1px solid var(--border-default); border-radius: var(--radius-s);
+  background: var(--bg-raised); color: var(--text-1); font: 500 11.5px var(--font-ui); cursor: pointer;
+}
+.left-progress-step.is-next .left-progress-go { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.left-progress-ack[aria-pressed="true"] { color: var(--text-3); }
+
+.left-links-summary { font: 500 11.5px var(--font-ui); color: var(--text-3); }
+.left-links-summary.has-problems { color: var(--danger); }
+.left-links-list { display: flex; flex-direction: column; gap: 6px; }
+.left-links-card { border: 1px solid var(--border-subtle); border-radius: var(--radius-m); overflow: hidden; }
+.left-links-card.is-current { border-color: var(--accent); }
+.left-links-card.is-isolated, .left-links-card.is-unreachable { border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle)); }
+.left-links-name {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px; width: 100%; min-height: 32px; padding: 6px 10px;
+  border: 0; background: transparent; color: var(--text-1); text-align: left; cursor: pointer; font: inherit;
+}
+.left-links-name:hover { background: var(--bg-hover); }
+.left-links-name strong { font: 600 12.5px var(--font-ui); }
+.left-links-counts { margin-left: auto; color: var(--text-3); font-size: 11px; }
+.left-links-flag { padding: 1px 6px; border-radius: 8px; font: 600 11px var(--font-ui); }
+.left-links-flag.is-start { background: var(--accent-muted); color: var(--accent); }
+.left-links-flag.is-warn { background: var(--danger-muted); color: var(--danger); }
+.left-links-edges { display: flex; flex-direction: column; gap: 2px; padding: 4px 6px 8px; border-top: 1px solid var(--border-subtle); background: var(--bg-inset); }
+.left-links-edges .left-links-hint { padding: 4px 6px; }
+.left-links-edge {
+  display: flex; align-items: center; gap: 6px; min-height: 26px; padding: 2px 6px; border: 0; border-radius: var(--radius-s);
+  background: transparent; color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
+}
+.left-links-edge:hover { background: var(--bg-hover); }
+.left-links-arrow { flex: none; color: var(--text-3); }
+.left-links-target { font-weight: 500; }
+.left-links-via { margin-left: auto; color: var(--text-3); font-size: 11px; }

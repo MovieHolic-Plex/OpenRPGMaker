@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/height_scale/v34-A.pxg",
+ "set": "school",
+ "id": "height_scale",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  0,
+  15,
+  31
+ ],
+ "note": "신장계 3/4 — 흰 눈금 기둥(긴 줄·짧은 줄) 윗면과 처마, 윗면이 밝게 보이는 은색 누름판, 윗면이 보이는 발판",
+ "ok": true
+}

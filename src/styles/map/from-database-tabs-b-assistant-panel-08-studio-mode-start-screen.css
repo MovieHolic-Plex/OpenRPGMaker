@@ -1,0 +1,60 @@
+/* map 표면 — database/tabs-b-assistant-panel/08-studio-mode-start-screen.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:552-570 */
+.ai-studio-monitor-chrome .canvas-toolbar {
+  backdrop-filter: none;
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  height: auto;
+  left: auto;
+  max-width: none;
+  padding: 2px;
+  pointer-events: auto;
+  position: relative;
+  right: auto;
+  top: auto;
+  transform: none;
+  z-index: auto;
+}
+
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:572-574 */
+.ai-studio-monitor-chrome .canvas-toolbar-zoom-group {
+  gap: 2px;
+}
+
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:576-585 */
+.ai-studio-monitor-chrome .canvas-toolbar .zoom-stepper-btn,
+.ai-studio-monitor-chrome .canvas-toolbar .zoom-stepper-current {
+  border-radius: 4px;
+  box-shadow: none;
+  font-size: 12px;
+  height: 26px;
+  min-height: 0;
+  min-width: 26px;
+  padding: 0 6px;
+}
+
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:587-591 */
+.ai-studio-monitor-chrome .canvas-ai-workbench,
+.ai-studio-monitor-chrome .canvas-toolbar-save-group,
+.ai-studio-monitor-chrome .canvas-toolbar-expand {
+  display: none;
+}
+
+/* database/tabs-b-assistant-panel/08-studio-mode-start-screen.css:634-644 */
+body.ai-studio-open .canvas-area .ai-studio-monitor-stage .editor-canvas-scroll-shell {
+  --editor-canvas-chrome-top: 0px;
+  --editor-canvas-chrome-bottom: 0px;
+  bottom: 0;
+  height: auto;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: auto;
+}

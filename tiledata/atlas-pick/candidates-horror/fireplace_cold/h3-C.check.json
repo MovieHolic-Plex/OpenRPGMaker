@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/fireplace_cold/h3-C.pxg",
+ "set": "horror",
+ "id": "fireplace_cold",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "note": "실루엣 재해석: 재와 통나무 사이에 작은 두개골이 놓여 있고 눈구멍 속은 아궁이보다 검다, 갈비 조각이 재 위에",
+ "ok": true
+}

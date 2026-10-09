@@ -1,0 +1,62 @@
+// B: 방의 갈색 가구와 같은 윤곽·성긴 나뭇결, 넓은 지도 상판과 짧은 다리.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A wood 2
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat p linen 4
+@mat q linen 5
+@mat r linen 3
+@mat s pine 3
+@mat t pine 2
+@mat u iron 4
+@mat v iron 5
+@mat z iron 2
+@mat g brass 3
+@mat h brass 4
+@mat j red 2
+@mat k red 4
+@mat l red 3
+@layer shadow
+@block 2 29
+..-------------------------
+.---~~~~~~~~~~~~~~~~~~~~~---
+..----~~~~~~~~~~~~~~~~~-----
+@layer table
+@mblock 0 5
+...BBBBBBBBBBBBBBBBBBBBBBBBBB...
+..BFFFFFFFFFFFFFFFFFFFFFFFFFDB..
+.BFEEEEEEEEEEEEEEEEEEEEEEEEEDCB.
+.BFEEEDDEEEEEEEEEEEEEEEEEEEEDCB.
+.BFEEEqqqqqqqqqqqqqqqqrrEEEEDCB.
+.BFEEEqqpppppssppppppprrEEEEECB.
+.BFEEEqqppppssppppppppprEEEEECB.
+.BFEEqqpppppspppppppppprEEEEECB.
+.BFEEqppssppsspphhppppprEEvzECB.
+.BFEEqppsppppppghhgpppprEvuzECB.
+.BFEEqppsspppppgggpppprEvuzDECB.
+.BFEEqpppssspppppppppprvuzEEECB.
+.BFEEqpppppspkkppppppprzzEEEECB.
+.BFEEqqppppsplljpppppprzggEEECB.
+.BFEEEqqppppjjjjppppprrEEgEEECB.
+.BFEEErrrrrrrrrrrrrrrrrEEEEEDCB.
+.BFFFFFFFFFFFFFFFFFFFFFFFEEEDCB.
+.BEEEEEEEEEEEEEEEEEEEEEEEEEDCCB.
+.BCDDDDDDDDDDDDDDDDDDDDDDDCCCCB.
+..ACCCCCDCCCCCCCCCCCCCCCCCCCBA..
+..ABCCCCCCCCCCCCCCCCCCCCCCCBAA..
+...ABCCBAAAAAAAAAAAAAAAABCCBA...
+...BFCBA................BFCBA...
+...BFDBA................BFDBA...
+...BCDBA................BCDBA...
+...BCCBA................BCCBA...
+...AAAAA................AAAAA...
+// 말 조각의 윗면도 세 행으로 보인다.
+@mblock 15 12
+hh
+@mblock 13 16
+kk

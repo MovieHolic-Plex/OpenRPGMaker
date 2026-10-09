@@ -1,0 +1,37 @@
+{
+ "id": "telescope",
+ "slug": "telescope",
+ "name_ko": "망원경",
+ "category": "서재",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "나무 삼각대에 놋쇠 경통을 비스듬히 올린 망원경. 서재·탑 꼭대기 창 밑 구석에 1개. 책상·별자리표와 같은 방.",
+ "where": "서재·탑 꼭대기 창 밑 구석에 1개. 책상·별자리표와 같은 방.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  13,
+  15
+ ],
+ "v5_colors": 5,
+ "material": "wood",
+ "related": []
+}

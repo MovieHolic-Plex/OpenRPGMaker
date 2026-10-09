@@ -1,0 +1,67 @@
+{
+  "../../../../z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js": {
+    "file": "assets/phaser.min-CwlHMuXa.js",
+    "src": "../../../../z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js"
+  },
+  "_PlayScene-C0oLFE-C.js": {
+    "file": "assets/PlayScene-C0oLFE-C.js",
+    "name": "PlayScene",
+    "isDynamicEntry": true,
+    "imports": [
+      "player.html"
+    ],
+    "dynamicImports": [
+      "src/player/playSceneBattle.ts"
+    ]
+  },
+  "player.html": {
+    "file": "player.js",
+    "name": "player",
+    "src": "player.html",
+    "isEntry": true,
+    "dynamicImports": [
+      "_PlayScene-C0oLFE-C.js"
+    ],
+    "css": [
+      "assets/player-CEU4NWnk.css"
+    ],
+    "assets": [
+      "assets/phaser.min-CwlHMuXa.js",
+      "assets/neodgm-CYAlbkIQ.woff2",
+      "assets/Galmuri9-B9HMP827.woff2",
+      "assets/Galmuri11-DfQIlyDK.woff2",
+      "assets/Galmuri11-Bold-QdFGsJ3v.woff2",
+      "assets/windowskin-warm-CcYC0PVf.png"
+    ]
+  },
+  "public/assets/fonts/Galmuri11-Bold.woff2": {
+    "file": "assets/Galmuri11-Bold-QdFGsJ3v.woff2",
+    "src": "public/assets/fonts/Galmuri11-Bold.woff2"
+  },
+  "public/assets/fonts/Galmuri11.woff2": {
+    "file": "assets/Galmuri11-DfQIlyDK.woff2",
+    "src": "public/assets/fonts/Galmuri11.woff2"
+  },
+  "public/assets/fonts/Galmuri9.woff2": {
+    "file": "assets/Galmuri9-B9HMP827.woff2",
+    "src": "public/assets/fonts/Galmuri9.woff2"
+  },
+  "public/assets/fonts/neodgm.woff2": {
+    "file": "assets/neodgm-CYAlbkIQ.woff2",
+    "src": "public/assets/fonts/neodgm.woff2"
+  },
+  "public/assets/ui/windowskin-warm.png": {
+    "file": "assets/windowskin-warm-CcYC0PVf.png",
+    "src": "public/assets/ui/windowskin-warm.png"
+  },
+  "src/player/playSceneBattle.ts": {
+    "file": "assets/playSceneBattle-D_1Gy-CC.js",
+    "name": "playSceneBattle",
+    "src": "src/player/playSceneBattle.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "player.html",
+      "_PlayScene-C0oLFE-C.js"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/mamachari/j5-A.pxg",
+ "set": "jp",
+ "id": "mamachari",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "강남 옆모습: 낮은 U 프레임(하늘색)·안장·앞 바구니(철망)·뒤 짐받이·양 바퀴 흙받이, 바퀴 안은 뚫려 뒤가 비침",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+.layout-bbox-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+.layout-bbox-region {
+  position: absolute;
+  border: 1.5px dashed var(--layout-bbox-color);
+  background: var(--layout-bbox-fill);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+.layout-bbox-label {
+  position: absolute;
+  top: -16px;
+  left: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--layout-bbox-color);
+  background: rgba(8, 12, 18, 0.85);
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.layout-bbox-empty {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 11px;
+  color: rgb(159 176 199);
+  background: rgba(8, 12, 18, 0.85);
+  padding: 4px 8px;
+  border-radius: 6px;
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/pachinko_sign/j1-C.pxg",
+ "set": "jp",
+ "id": "pachinko_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  15,
+  63
+ ],
+ "note": "재해석: 파랑 판을 감싼 두 줄 전구 띠(노랑 두 톤 바둑)와 흰 굵은 가나 — 멀리서는 노랑 테+흰 글자로 읽힘",
+ "ok": true
+}

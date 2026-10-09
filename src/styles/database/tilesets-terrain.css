@@ -1,0 +1,134 @@
+.database-modal-body .oprn-tileset-terrain-pane {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+  min-height: 0;
+}
+
+.database-modal-body .oprn-tileset-edit-mode {
+  display: grid;
+  gap: 6px;
+}
+
+.database-modal-body .oprn-tileset-autotile {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 36px minmax(0, 1fr);
+}
+
+.database-modal-body .oprn-tileset-autotile legend {
+  grid-column: 1 / -1;
+}
+
+.database-modal-body .oprn-tileset-autotile .tileset-db-resource {
+  align-self: center;
+}
+
+.database-modal-body .oprn-tileset-checker {
+  display: grid;
+  gap: 5px;
+}
+
+.database-modal-body .tileset-checker-status {
+  color: var(--text-dim, var(--text-1));
+  font: 700 11px/1.3 var(--font-ui);
+}
+
+.database-modal-body .tileset-checker-status.ready {
+  color: var(--ok, #1f6f38);
+}
+
+.database-modal-body .tileset-checker-status.missing {
+  color: var(--danger, #9d1f1f);
+}
+
+.database-modal-body .tileset-checker-list {
+  display: grid;
+  gap: 3px;
+}
+
+.database-modal-body .tileset-checker-row {
+  background: var(--bg-panel-2, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
+  display: grid;
+  gap: 2px;
+  padding: 3px 4px;
+}
+
+.database-modal-body .tileset-checker-row strong,
+.database-modal-body .tileset-checker-row span,
+.database-modal-body .tileset-checker-note {
+  font: 400 11px/1.25 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+
+.database-modal-body .tileset-checker-row strong {
+  font-weight: 700;
+}
+
+.database-modal-body .tileset-checker-row.ready strong {
+  color: var(--ok, #1f6f38);
+}
+
+.database-modal-body .tileset-checker-row.missing strong,
+.database-modal-body .tileset-checker-note {
+  color: var(--danger, #9d1f1f);
+}
+
+.database-modal-body .oprn-tileset-terrain-list-wrap {
+  min-height: 0;
+}
+
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-list {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+  min-height: 258px;
+  overflow: auto;
+  padding: 2px;
+}
+
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-row {
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 400 12px/17px var(--font-ui);
+  height: 19px;
+  min-height: 19px;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-row.active {
+  background: var(--accent);
+  color: var(--text-1);
+}
+
+@media (max-width: 1050px) {
+  .database-modal-body .oprn-tileset-workspace,
+  .database-modal-body .oprn-tileset-main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-tileset-properties {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-tileset-layer-tabs {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .oprn-global-terrain-button {
+    grid-row: auto;
+  }
+
+  .database-modal-body .oprn-tileset-list-pane {
+    min-height: 180px;
+  }
+
+  .database-modal-body .oprn-tileset-main .tileset-db-edit-area {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

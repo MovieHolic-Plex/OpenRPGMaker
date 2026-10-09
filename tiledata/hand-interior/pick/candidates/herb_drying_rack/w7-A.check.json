@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/herb_drying_rack/w7-A.pxg",
+ "id": "herb drying rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 16,
+ "v5_colors": 16,
+ "bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "note": "v5 배치 그대로 두고, 묶음 위에 매단 끈(linen)을 몇 개 그려 걸려 있는 느낌을 더함",
+ "ok": true
+}

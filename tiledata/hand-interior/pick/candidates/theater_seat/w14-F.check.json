@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w14-F.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "F: 좁은 등받이 양옆에 나무 팔걸이 윗면(2px)이 삐져나옴. 이으면 팔걸이를 서로 나눠 쓰는 열. 공간감(팔걸이 윗면 노출).",
+ "ok": true
+}

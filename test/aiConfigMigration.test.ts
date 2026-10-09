@@ -1,0 +1,178 @@
+// 저장된 설정 마이그레이션 회귀 스펙.
+//
+// loadAiConfig 는 평문 apiKey·죽은 baseUrl 을 *무시*하지만, **디스크에는 blob 이 덮어써질
+// 때까지 남는다.** 인증 패널이 "브라우저에는 두지 않습니다" 라고 약속하는데 그게 미래 키에만
+// 적용되면 약속이 아니다 — export·디버그 덤프·raw blob 을 읽는 코드에 그대로 실려 나간다.
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import {
+  AI_CONFIG_STORAGE_KEY,
+  AI_CONFIG_VERSION,
+  loadAiConfig,
+  scrubStoredAiCredentials,
+} from "@/ai/llmClient";
+
+let store: Map<string, string>;
+
+beforeEach(() => {
+  store = new Map<string, string>();
+  (globalThis as unknown as { localStorage: unknown }).localStorage = {
+    getItem: (k: string) => (store.has(k) ? store.get(k)! : null),
+    setItem: (k: string, v: string) => void store.set(k, String(v)),
+    removeItem: (k: string) => void store.delete(k),
+    clear: () => store.clear(),
+  };
+});
+
+afterEach(() => {
+  delete (globalThis as unknown as { localStorage?: unknown }).localStorage;
+});
+
+const LEGACY = {
+  authMode: "apiKey",
+  apiKey: "sk-legacy-LEAK",
+  baseUrl: "/api/cliproxy",
+  model: "cpen/gpt-5-6-luna",
+  providerId: "zai",
+  maxTokens: 4096,
+};
+
+describe("scrubStoredAiCredentials", () => {
+  it("평문 키와 죽은 게이트웨이 주소를 디스크에서 지운다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(LEGACY));
+
+    const result = scrubStoredAiCredentials();
+
+    expect(result).toMatchObject({ scrubbed: true, hadApiKey: true, hadBaseUrl: true });
+    const raw = store.get(AI_CONFIG_STORAGE_KEY) ?? "";
+    expect(raw).not.toContain("sk-legacy-LEAK");
+    expect(raw).not.toContain("/api/cliproxy");
+    const blob = JSON.parse(raw);
+    expect(blob.apiKey).toBe("");
+    expect(blob.baseUrl).toBe("");
+    expect(blob.authMode).toBe("chatgpt");
+    expect(blob.configVersion).toBe(AI_CONFIG_VERSION);
+  });
+
+  it("사용자가 고른 제공자와 나머지 설정은 보존한다", () => {
+    // 지우는 것은 비밀과 죽은 주소뿐이다 — 설정을 초기화하는 함수가 아니다.
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(LEGACY));
+
+    scrubStoredAiCredentials();
+
+    const blob = JSON.parse(store.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(blob.providerId).toBe("zai");
+    expect(blob.maxTokens).toBe(4096);
+  });
+
+  it("두 번 불러도 같다 (멱등)", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify(LEGACY));
+
+    const first = scrubStoredAiCredentials();
+    const after = store.get(AI_CONFIG_STORAGE_KEY);
+    const second = scrubStoredAiCredentials();
+
+    expect(first.scrubbed).toBe(true);
+    expect(second.scrubbed).toBe(false);
+    expect(store.get(AI_CONFIG_STORAGE_KEY)).toBe(after);
+  });
+
+  it("저장값이 없으면 아무것도 쓰지 않는다", () => {
+    expect(scrubStoredAiCredentials()).toMatchObject({ scrubbed: false });
+    expect(store.has(AI_CONFIG_STORAGE_KEY)).toBe(false);
+  });
+
+  it("깨진 blob 은 건드리지 않는다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, "{not json");
+    expect(scrubStoredAiCredentials()).toMatchObject({ scrubbed: false });
+    expect(store.get(AI_CONFIG_STORAGE_KEY)).toBe("{not json");
+  });
+
+  it("키가 없던 설정은 hadApiKey=false 로 보고한다 (헛된 토스트 방지)", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
+    expect(scrubStoredAiCredentials()).toMatchObject({ scrubbed: true, hadApiKey: false, hadBaseUrl: false });
+  });
+});
+
+describe("loadAiConfig — 제공자는 Antigravity·Codex 둘뿐이다", () => {
+  it("사라진 제공자(zai)는 기본 제공자로 마이그레이션한다", () => {
+    // zai 는 레지스트리에서 사라진 id 다 — parseOhMyPiProvider 가 기본 제공자로 스냅하고,
+    // 모델 선택은 보존한다. 지원되지 않는 조합은 전송 시 명시적으로 거부한다.
+    // (Codex 는 사라지지 않았으므로 그 선택은 보존된다 — test/aiAntigravityOnly.test.ts)
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "zai", model: "glm-5.3" }));
+
+    const config = loadAiConfig();
+
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("glm-5.3");
+    // 전송 축은 그대로 동반 서비스에 고정된다 — 브라우저에 비밀도 죽은 baseUrl 도 남지 않는다.
+    expect(config.authMode).toBe("chatgpt");
+    expect(config.baseUrl).toBe("");
+    expect(config.apiKey).toBe("");
+  });
+
+  it("모르는 제공자는 기본값으로 떨어진다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "no-such-provider" }));
+    expect(loadAiConfig().providerId).toBe("google-antigravity");
+  });
+
+  it("providerId 없는 새 설정은 Antigravity OAuth 를 쓴다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt" }));
+    const config = loadAiConfig();
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("gemini-3.8-flash");
+  });
+
+  it("providerId 없이 gpt 모델만 남은 옛 blob 도 Antigravity 로 마이그레이션한다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", model: "gpt-5.6-sol" }));
+    const config = loadAiConfig();
+    expect(config.providerId).toBe("google-antigravity");
+    expect(config.model).toBe("gpt-5.6-sol");
+  });
+});
+
+describe("loadAiConfig — 옛 공장 기본 모델을 새 기본으로 소급한다", () => {
+  it("저장된 옛 공장 기본(3.7-flash)은 새 기본(3.8-flash)으로 승격한다", () => {
+    // 2026-09-26 기본 모델 이동 때 상수·카탈로그만 바뀌고 **저장값에는 적용되지 않아**,
+    // 그 전에 앱을 켠 사용자는 3.7 에 그대로 남았다(사용자 보고 2026-10-05).
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      providerId: "google-antigravity",
+      model: "gemini-3.7-flash",
+      liteModel: "gemini-3.7-flash",
+    }));
+
+    const config = loadAiConfig();
+
+    expect(config.model).toBe("gemini-3.8-flash");
+    expect(config.liteModel).toBe("gemini-3.8-flash");
+  });
+
+  it("역할·Ultrabrain 슬롯에 남은 옛 공장 기본도 함께 승격한다", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      providerId: "google-antigravity",
+      roleModels: {
+        writer: { provider: "google-antigravity", model: "gemini-3.7-flash", thinkingLevel: "medium" },
+        vision: { provider: "google-antigravity", model: "gemini-3.7-flash-tiered", thinkingLevel: "medium" },
+      },
+      ultrabrainModel: "gemini-3.7-flash",
+    }));
+
+    const config = loadAiConfig();
+
+    expect(config.roleModels?.writer?.model).toBe("gemini-3.8-flash");
+    expect(config.roleModels?.vision?.model).toBe("gemini-3.8-flash");
+    expect(config.ultrabrainModel).toBe("gemini-3.8-flash");
+  });
+
+  it("사용자가 직접 고른 모델은 그대로 보존한다", () => {
+    for (const kept of ["gemini-9-experimental", "glm-5.3", "gemini-2.5-pro"]) {
+      store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "google-antigravity", model: kept }));
+      expect(loadAiConfig().model, kept).toBe(kept);
+    }
+  });
+
+  it("Codex 제공자의 gemini 모델은 건드리지 않는다(제공자가 다르다)", () => {
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ providerId: "openai-codex", model: "gemini-3.7-flash" }));
+    expect(loadAiConfig().model).toBe("gemini-3.7-flash");
+  });
+});

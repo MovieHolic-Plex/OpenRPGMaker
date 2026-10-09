@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_door/w33-C.pxg",
+ "id": "round door",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "note": "통나무 아치 문틀, 짙은 참나무 널문에 철띠 셋·놋 배꼽에 쇠고리",
+ "ok": true
+}

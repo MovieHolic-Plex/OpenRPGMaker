@@ -1,0 +1,436 @@
+
+.tile-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: var(--space-1);
+  overflow-y: auto;
+  max-width: 100%;
+}
+@media (max-width: 380px) {
+  .tile-palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* paletteVerticalCategoryScroll / paletteSelectKeepsScroll 紐⑤뱶: 移⑹뀑 ?붾젅?몃?
+   compact 怨좎젙 height濡??쒗븳?섏뿬 ?몃줈 ?ㅽ겕濡ㅻ쭔 ?몄텧?쒕떎(媛濡??ㅽ겕濡?湲덉?).
+   移댄뀒怨좊━(諛대뱶) ?꾪솚 ????쇱씠 留롮쑝硫??몃줈濡??ㅽ겕濡ㅻ맂?? */
+body.palette-vertical-category-scroll .chipset-sheet.tile-palette,
+body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
+  height: 320px;
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* tile-palette媛 chipset-sheet?닿린?????? .chipset-sheet??怨좎젙 height
+   (540px)媛 醫뚯륫 ?⑤꼸???섏퀜 map-tree瑜?移⑤쾾?섏? ?딅룄濡?遺紐?flex ?곸뿭留?   李⑥??섍쾶 override. specificity瑜??꾪빐 ???대옒?ㅻ? ?④퍡 吏??
+   flex:1 + min-height:0 ?쇰줈 遺紐??곸뿭??留욎떠 以꾩뼱?ㅺ퀬, ?댁슜???섏튂硫?   .tile-palette ??overflow-y:auto 媛 ?몃줈 ?ㅽ겕濡ㅼ쓣 ?쒓났?쒕떎.
+   height:auto ??chipset-sheet??540px 怨좎젙??臾댄슚?뷀븯??遺紐⑥뿉 留욎텣?? */
+.tile-cell.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+/* ?? ?뚮젅?댁뼱 ?덉씠?꾩썐 ?? */
+.player-layout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+/* ?? ??ъ갹 ?ㅻ쾭?덉씠 ?? */
+/* ??ъ갹: dialogue-frame.png 瑜?9-slice(border-image)濡??곸슜.
+   ?먯뀑? 64x64, slice=16px. 以묒븰? 諛섑닾紐??대몢???ㅼ씠???띿뒪??媛?낆꽦 ?뺣낫. */
+.dialogue-box {
+  border-style: solid;
+  border-width: 16px;
+  /* border-image 誘몄????먯뀑 ?꾨씫 ???대갚. */
+  max-width: 720px;
+  /* ?댁쭩 ?쒕∼ ??꾩슦濡?寃뚯엫 ?붾㈃怨?遺꾨━. */
+  filter: drop-shadow(0 4px 10px rgba(42, 37, 33, 0.10));
+}
+.dialogue-box .speaker {
+  /* 텍스트 그림자으로 가독성 보강(테두리 배경 위). */
+}
+.dialogue-box.has-speaker {
+  position: relative;
+}
+.dialogue-box .continue-hint {
+  margin-top: 6px;
+}
+.choices {
+  max-width: 720px;
+}
+.choices .choice-btn:hover {
+  background: rgba(245, 208, 74, 0.18);
+  border-color: var(--gold);
+}
+
+/* ?? ?대깽???몄쭛湲??? */
+.event-editor .field {
+  margin-bottom: var(--space-2);
+}
+
+.event-editor-sidebar {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-editor-launch {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.event-editor-launch-title {
+  color: var(--text);
+  font: 600 12px/1.35 var(--mono);
+}
+
+.event-editor-launch-meta {
+  font-size: 12px;
+}
+
+.event-editor-launch .btn {
+  justify-self: start;
+}
+
+/* 이벤트 ID 읽기 전용 표시(OPRN-OUT-014).
+ *
+ * 카드 변형 3행: [라벨 | 복사] / [값 전체 폭] / [도움말 전체 폭].
+ * 왜 값이 자기 줄을 갖는가: 왼쪽 패널 열은 실측 249~269px 인데 `ev_`+UUID 는 11px 모노에서
+ * 270px 이 넘는다. 라벨·복사와 한 줄을 나누면 값에 남는 폭이 185px 뿐이었다(실측) —
+ * 줄을 따로 주면 그 폭을 전부 값에 준다. 그래도 남는 초과분은 줄임표로 자르고 전체 값은
+ * input value·title·복사 버튼이 보존한다(입력칸이라 줄바꿈이 불가능하다). */
+
+/* `.event-editor input[type="text"]`(위쪽 279행)이 (0,2,1) 이라 클래스 하나로는 못 이긴다.
+ * `input.` 로 같은 특이도를 만들고 더 뒤에 두어 «편집칸이 아니라 판독값»으로 보이게 한다. */
+
+/* 읽기 전용이어도 포커스는 보여야 한다 — 키보드로 값을 집는 것이 이 상자의 주 용도다. */
+
+/* 글자 라벨 단추 — 아이콘 SVG 는 이 저장소에 전역 크기 규칙이 없어 8×8px 로 찍혔다(실측). */
+
+.event-list {
+  flex: 1 1 auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: var(--space-1);
+}
+
+.event-list-title {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
+  padding: 2px var(--space-1) var(--space-1);
+  text-transform: uppercase;
+}
+
+.event-list-empty {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 16px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.event-list-row {
+  align-items: center;
+  appearance: none;
+  cursor: pointer;
+  display: grid;
+  font-family: inherit;
+  gap: var(--space-1);
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  text-align: left;
+}
+
+.event-list-row:hover,
+.event-list-row:focus-visible {
+  outline: none;
+}
+
+.event-list-id,
+.event-list-name {
+  font: 600 12px/1.35 var(--font-mono);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-list-icon {
+  align-items: center;
+  border: 1px solid var(--border-soft);
+  display: inline-grid;
+  height: 22px;
+  justify-items: center;
+  overflow: hidden;
+  width: 20px;
+}
+
+/* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. cream entry language. */
+.project-load-error-message {
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: var(--radius-s, 6px);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1, #2A2521);
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 1.6;
+  max-width: 640px;
+  overflow-wrap: anywhere;
+  padding: 10px 12px;
+}
+
+.project-load-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 부팅 게이트 레이아웃. #883 이 이 규칙을 database/ 로 옮겼지만 그 시트는
+   databaseModal 을 열 때만 로드된다. 연결 실패 화면은 그 전에 그려지므로
+   항상 적재되는 map 리프에 둔다. */
+.db-required-panel {
+  align-content: center;
+  background: var(--bg-base);
+  color: var(--text-1);
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  min-height: 100%;
+  padding: 32px;
+}
+
+.db-required-panel.db-required-hero {
+  align-content: stretch;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, var(--gold) 8%, transparent), transparent 55%),
+    var(--bg-base, #F7F3EA);
+  gap: 0;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  justify-items: stretch;
+  padding: 0;
+}
+
+.db-required-hero-art {
+  min-height: min(100vh, 720px);
+  overflow: hidden;
+  position: relative;
+}
+
+.db-required-hero-image {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.db-required-hero-art::after {
+  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #F7F3EA) 88%, transparent) 100%);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.db-required-copy {
+  align-content: center;
+  background: transparent;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+  padding: 40px 36px 40px 20px;
+}
+
+.db-required-kicker {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.db-required-panel h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.db-required-hero .db-required-copy h1 {
+  font-size: clamp(26px, 3.2vw, 36px);
+  line-height: 1.2;
+  max-width: 18ch;
+}
+
+.db-required-panel p {
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 560px;
+}
+
+.db-required-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.db-required-chips li {
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  box-shadow: 0 1px 4px rgba(60, 48, 32, 0.06);
+}
+
+.db-required-panel.db-required-hero .db-required-hero-image {
+  filter: saturate(1.02) brightness(1.02);
+}
+
+@media (max-width: 900px) {
+  .db-required-panel.db-required-hero {
+    grid-template-columns: 1fr;
+  }
+  .db-required-hero-art {
+    min-height: 220px;
+  }
+  .db-required-hero-art::after {
+    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #F7F3EA) 92%, transparent) 100%);
+  }
+  .db-required-copy {
+    padding: 20px 24px 32px;
+  }
+}
+
+.project-load-error-actions .btn.primary,
+.db-required-copy .btn.primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent, #fff);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-pop);
+}
+
+.project-load-error-actions .btn.primary:hover,
+.db-required-copy .btn.primary:hover {
+  filter: brightness(0.96);
+}
+
+.db-required-copy .btn,
+.project-load-error-actions .btn {
+  border-radius: 9999px;
+}
+
+/* cream ground + hero image soft veil so JPG edges sit on warm cream */
+
+/* 빈 호스트는 공간을 차지하지 않는다 — :empty면 레이아웃에서 제거. */
+.persistence-banner-host:empty {
+  display: none;
+}
+/* 텍스트 노드만 남아 :empty가 불일치해도 배너 요소가 없으면 숨김. */
+.persistence-banner-host:not(:has(.persistence-mode-banner)) {
+  display: none;
+}
+/* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
+.persistence-mode-banner {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 5px 12px;
+  text-align: center;
+}
+
+/* 임시 세션은 오류가 아니다 — 빨강 대신 중립 정보 톤. */
+.persistence-mode-banner.is-save-skipped {
+  align-items: center;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.persistence-mode-banner-action {
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+
+.persistence-mode-banner-action:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.persistence-mode-banner-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0.7;
+  padding: 1px 6px;
+}
+
+.persistence-mode-banner-close:hover {
+  opacity: 1;
+}
+
+@media (min-width: 1024px) {
+  .persistence-mode-banner-action,
+  .persistence-mode-banner-close {
+    align-items: center;
+    box-sizing: border-box;
+    justify-content: center;
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  .persistence-mode-banner-action {
+    display: inline-flex;
+  }
+
+  .persistence-mode-banner-close {
+    display: inline-flex;
+    line-height: 1;
+  }
+}
+
+.persistence-mode-banner.is-local-only {
+  background: var(--bg-inset);
+  color: var(--text-1);
+}
+
+.persistence-mode-banner.is-recovery {
+  background: var(--bg-inset);
+  color: var(--text-1);
+}
+
+/* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */

@@ -1,0 +1,1525 @@
+[
+  {
+    "id": "pokemon-gb",
+    "title": "Pokémon Red/Blue: 짧은 대결",
+    "category": "official_rerelease_trailer_showing_game_intro",
+    "style": "짧은 몬스터 대결",
+    "techniques": [
+      "배우 대립과 자세 변화",
+      "옆 시점 구도",
+      "밝은 전환"
+    ],
+    "toolRequirements": [
+      "actor.pose",
+      "actor.frameSequence",
+      "actor.transform",
+      "transition.flash",
+      "timeline.cut",
+      "audio.cue"
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=_iybdJCo78Y"
+    ],
+    "sources": [
+      {
+        "id": "gb-official",
+        "url": "https://www.youtube.com/watch?v=_iybdJCo78Y",
+        "title": "Nintendo UK 공식 3DS 재발매 트레일러",
+        "verification": "공식 영상 페이지/업로더 확인 + 무음 seek 표본 프레임 실제 열람",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "서로 마주 선 두 몬스터의 대결로 수집·전투의 약속을 먼저 보여준다. Gengar와 Nidorino 모습이 표본에 보인다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_iybdJCo78Y"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "4/6초 표본에서 자세가 달라지고 8초 표본에서 밝게 사라지는 화면이 보인다. 정확한 컷 수/원본 길이 미측정.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_iybdJCo78Y"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "전투 표본은 고정된 옆 시점의 두 배우 구도.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_iybdJCo78Y"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "독립된 좌우 두 몬스터 실루엣·자세 변화. 트레일러 화면만으로 원본 sprite-sheet 구조는 알 수 없다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_iybdJCo78Y"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "단순 배경+배우+밝은 전환을 분리하는 구현이 적합.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_iybdJCo78Y"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "무음 검증: 팬페어/SE/박자와 컷의 관계 미청취",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "표본 밖 개발사 로고/원본 크레딧 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "타이틀 메뉴로 넘어가는 원본 입력/음악 계약 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "사건을 두 배우의 대립과 반응으로 압축. 설명 문단이 없어도 게임의 동사를 제시할 수 있다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "GB 원본 도입을 보여주는 2016 공식 재발매 트레일러; 원본 boot 전체 아님",
+      "무음 검증: 팬페어/SE/박자와 컷의 관계 미청취",
+      "표본 밖 개발사 로고/원본 크레딧 미검증",
+      "타이틀 메뉴로 넘어가는 원본 입력/음악 계약 미검증"
+    ]
+  },
+  {
+    "id": "pokemon-rse",
+    "title": "Pokémon Ruby/Sapphire: 자연과 여행",
+    "category": "game_intro_unofficial_capture",
+    "style": "자연과 여행 몽타주",
+    "techniques": [
+      "넓은 환경과 배우 근경의 대비",
+      "독립 여행 배우",
+      "환경 스크롤 설계"
+    ],
+    "toolRequirements": [
+      "layer.parallax",
+      "layer.loopScroll",
+      "actor.path",
+      "actor.frameSequence",
+      "camera.keyframes",
+      "timeline.cut"
+    ],
+    "sourceUrls": [
+      "https://www.nintendo.co.jp/n08/axvp/index.html",
+      "https://www.youtube.com/watch?v=LnOfUnzle6w"
+    ],
+    "sources": [
+      {
+        "id": "rse-official",
+        "url": "https://www.nintendo.co.jp/n08/axvp/index.html",
+        "title": "Nintendo Ruby/Sapphire 제품 페이지",
+        "verification": "공식 페이지 본문 열람; 호연/자연/동료 맥락",
+        "official": true
+      },
+      {
+        "id": "rse-video",
+        "url": "https://www.youtube.com/watch?v=LnOfUnzle6w",
+        "title": "Ruby GBA intro 비공식 녹화",
+        "verification": "영상 페이지 + 무음 표본 프레임 실제 열람; 원본 ROM/기기 진위 독립 검증 없음",
+        "official": false
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "공식 자료는 호연의 자연과 새로운 동료를 소개한다. 영상 표본은 숲·물과 자전거 여행을 보여준다.",
+        "status": "document-and-sampled-frame",
+        "sourceUrls": [
+          "https://www.nintendo.co.jp/n08/axvp/index.html",
+          "https://www.youtube.com/watch?v=LnOfUnzle6w"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "10초 초록 환경, 24초 자전거 전신, 40초 인물 상반신이라는 서로 다른 구도. 연속 전환 경로/전체 순서·컷 수는 미검증.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=LnOfUnzle6w"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "넓은 환경→옆모습의 이동 배우→가까운 인물 구도 비교가 가능. 실제 pan/track 속도는 미측정.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=LnOfUnzle6w"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "자전거를 탄 여행자. 특정 파트너를 선택했다는 게임 상태를 이 영상으로 보증하지 않는다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=LnOfUnzle6w"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "숲/하늘 배경과 여행자를 분리하여 서로 다른 속도로 스크롤하는 도구가 필요. 원본 레이어 수는 미확인.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=LnOfUnzle6w"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "무음; GBA 사운드 향상은 공식 제품 맥락이며 intro cue 검증과 별개",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "intro 이후 NewGame 교수/파트너 선택의 정확한 연결 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "배경만 pan하지 말고 환경과 배우의 움직임을 분리해야 여행 장면이 된다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "GBA Ruby 비공식 intro 녹화 + 공식 호연 제품 소개; Emerald 별도 버전은 조사하지 않음",
+      "무음; GBA 사운드 향상은 공식 제품 맥락이며 intro cue 검증과 별개",
+      "이번 조사에서 미검증",
+      "intro 이후 NewGame 교수/파트너 선택의 정확한 연결 미검증"
+    ]
+  },
+  {
+    "id": "pokemon-hgss",
+    "title": "Pokémon HeartGold/SoulSilver: 신화·장소 공개",
+    "category": "game_intro_secondary_description_not_visually_verified",
+    "style": "신화적 생물과 장소 공개 — 직접 시각 검증 부족",
+    "techniques": [
+      "생물의 접근 비행 — 보조 문서",
+      "흰 전환 — 보조 문서",
+      "전경 통과 설계"
+    ],
+    "toolRequirements": [
+      "actor.transform",
+      "layer.occlusion",
+      "transition.flash",
+      "camera.keyframes",
+      "timeline.cut"
+    ],
+    "sourceUrls": [
+      "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+    ],
+    "sources": [
+      {
+        "id": "hgss-secondary",
+        "url": "https://bulbapedia.bulbagarden.net/wiki/Game_intro",
+        "title": "Game intro 백과",
+        "verification": "보조 2차 자료 본문 확인; 영상 관찰과 구분",
+        "official": false
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "보조 자료는 Ho-Oh/Lugia가 하늘/수면 앞에서 화면 쪽으로 날아오는 intro를 설명한다. 공식 상품 문서만으로 이 구도를 확정할 수 없다.",
+        "status": "secondary-document-confirmed",
+        "sourceUrls": [
+          "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "보조 설명에는 흰 전환과 풀 위 이동, 인물/조직/장소 공개가 있다. 완전한 원본 영상 관찰 아님.",
+        "status": "secondary-document-confirmed",
+        "sourceUrls": [
+          "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "보조 설명의 접근 비행을 2D scale/position 키프레임으로 번안할 수 있다; 원작 DS 렌더링 기법 주장 아님.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "Ho-Oh/Lugia와 여행자의 소개; 원본 frame animation은 미검증.",
+        "status": "secondary-document-confirmed",
+        "sourceUrls": [
+          "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "전경 풀 mask와 먼 배경, 배우 scale, 발광 전환을 별도로 저작하는 구조를 제안.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://bulbapedia.bulbagarden.net/wiki/Game_intro"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "편집본은 remade/animated라고 명시되어 원본 타이틀 인계 검증에 쓰지 않음",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "커다란 생물의 접근과 전경 통과로 규모를 만들 수 있다. 이 사례는 후속 직접 검증 우선 대상.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "DS opening; 공식 상품 자료 + 보조 intro 설명. 직접 원본 영상 표본을 확보하지 못한 약한 사례",
+      "이번 조사에서 미검증",
+      "이번 조사에서 미검증",
+      "편집본은 remade/animated라고 명시되어 원본 타이틀 인계 검증에 쓰지 않음",
+      "직접 원본 영상 표본 확보 실패. 보조 설명은 관찰 사실과 분리했다. remade/animated 편집본 및 잘못 발견한 TCG 영상은 공개 프레임에서 제외했다."
+    ]
+  },
+  {
+    "id": "pokemon-bw",
+    "title": "Pokémon Black/White: 의식이라는 질문",
+    "category": "game_intro_unofficial_capture",
+    "style": "소품과 인물로 질문을 만드는 의식",
+    "techniques": [
+      "왕관 근경",
+      "인물의 부분 공개",
+      "광원과 소품의 대비"
+    ],
+    "toolRequirements": [
+      "actor.pose",
+      "actor.attachment",
+      "layer.light",
+      "camera.keyframes",
+      "timeline.cut",
+      "asset.identityReferences"
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+    ],
+    "sources": [
+      {
+        "id": "bw-video",
+        "url": "https://www.youtube.com/watch?v=NNOjHHOeQg0",
+        "title": "Black DS intro 비공식 녹화",
+        "verification": "영상 페이지 + 무음 표본 프레임 실제 열람",
+        "official": false
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "표본에서 빛나는 왕관을 든 인물과 연한 초록 머리의 인물이 보인다. 의식의 의미를 설명문으로 풀기 전에 물건과 인물을 제시하는 구도.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "10초 빛이 있는 어두운 구도, 25초 왕관 근경, 40초 인물 뒷모습. 전체 장면의 사건 인과·컷 수 미검증.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "소품 근경과 인물 근경으로 정보 공개 순서를 조절한다. 연속 카메라 궤적은 미측정.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "손/왕관/인물의 서로 다른 pose가 필요한 장면. 정지 배경 하나를 이동하는 것과 구별된다.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "소품·배우·광원·배경을 독립 layer로 분리하면 컷 사이 동일성 검수가 가능.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=NNOjHHOeQg0"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "답부터 말하지 말고 인물·소품·행동을 차례로 공개하여 질문을 만든다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "DS Black 비공식 intro 녹화; 공식 개발자 인터뷰는 세계/외형 기획 맥락",
+      "이번 조사에서 미검증",
+      "이번 조사에서 미검증",
+      "이번 조사에서 미검증"
+    ]
+  },
+  {
+    "id": "chrono-snes",
+    "title": "Chrono Trigger SNES: 미래 모험의 몽타주",
+    "category": "title_attract_montage_unofficial_capture",
+    "style": "실제 게임 공간을 이용한 모험 예고",
+    "techniques": [
+      "게임 맵과 sprite 배우",
+      "규모 대비",
+      "detached montage 설계"
+    ],
+    "toolRequirements": [
+      "scene.mapSnapshot",
+      "actor.path",
+      "actor.frameSequence",
+      "timeline.montage",
+      "opening.trackMode",
+      "preview.detachedState"
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=6YCVtCx8Obo",
+      "https://www.jp.square-enix.com/chronotrigger/"
+    ],
+    "sources": [
+      {
+        "id": "chrono-video",
+        "url": "https://www.youtube.com/watch?v=6YCVtCx8Obo",
+        "title": "Chrono SNES intro 실제 기기 녹화 주장",
+        "verification": "영상 페이지/표본 실제 열람; 업로더가 NA 카트리지/SNES001/RetroTINK4K 녹화라고 명시, 장비 독립 검증 없음",
+        "official": false
+      },
+      {
+        "id": "chrono-official",
+        "url": "https://www.jp.square-enix.com/chronotrigger/",
+        "title": "Square Enix Chrono Trigger Steam 페이지",
+        "verification": "공식 본문/이미지 alt 열람; 후대 Toei 애니메이션 수록과 버전 구분",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "48초 표본에서 큰 기계/비행선 같은 구조물 옆을 달리는 Crono가 보인다. 플레이 장면을 모험의 약속으로 편집한다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=6YCVtCx8Obo"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "녹화 설명은 0:00 title/0:35 intro sizzle reel로 구분한다. 이번 직접 관찰은 48초 장면 하나이며 전체 몽타주 컷 목록은 미검증.",
+        "status": "uploader-metadata-and-sample",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=6YCVtCx8Obo"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "게임 공간 전체와 작은 배우의 대비. 실제 pan 속도/추적 경로 미측정.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=6YCVtCx8Obo"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "게임 sprite 배우를 사용하는 장면이 확인된다. Steam 공식 페이지는 별도의 Toei 애니메이션 수록을 명시한다.",
+        "status": "document-and-sampled-frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=6YCVtCx8Obo",
+          "https://www.jp.square-enix.com/chronotrigger/"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "게임 맵 snapshot + 임시 연출 배우로 모험 예고를 만들되 실제 저장 상태를 변경하지 않는 preview 장면이 적합.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=6YCVtCx8Obo"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "title pendulum 및 원본 전체 제작자 표기 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "attract demo와 NewGame 실제 사건은 별도 트랙으로 취급해야 함",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "이미 있는 게임 배우/맵을 재사용하는 모험 예고와 실제 시작 사건을 다른 실행 트랙으로 다룬다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "1995 SNES title/attract reel; 후대 Toei anime opening과 구별",
+      "이번 조사에서 미검증",
+      "title pendulum 및 원본 전체 제작자 표기 미검증",
+      "attract demo와 NewGame 실제 사건은 별도 트랙으로 취급해야 함"
+    ]
+  },
+  {
+    "id": "ffvi-snes",
+    "title": "FINAL FANTASY VI: 설원 행군",
+    "category": "in_game_opening_unofficial_capture_and_developer_commentary",
+    "style": "행군 tableau와 크레딧",
+    "techniques": [
+      "지속되는 집단 행군",
+      "낙설과 깊이 구도",
+      "행동 위 크레딧"
+    ],
+    "toolRequirements": [
+      "actor.loopClip",
+      "layer.loopScroll",
+      "layer.particles",
+      "layer.perspectiveApproximation",
+      "text.creditsTrack",
+      "audio.continuity"
+    ],
+    "sourceUrls": [
+      "https://eu.finalfantasy.com/topics/528",
+      "https://www.youtube.com/watch?v=jgRZAGQPJVY",
+      "https://www.jp.square-enix.com/music/en/lineup/item/SEMO-00007-9.html"
+    ],
+    "sources": [
+      {
+        "id": "ffvi-interview",
+        "url": "https://eu.finalfantasy.com/topics/528",
+        "title": "Square Enix FFVI 30주년 Nomura 인터뷰",
+        "verification": "공식 본문 직접 열람; 설원 Magitek 행군과 기계+마법 의도, 컷신 storyboard 작업 확인",
+        "official": true
+      },
+      {
+        "id": "ffvi-video",
+        "url": "https://www.youtube.com/watch?v=jgRZAGQPJVY",
+        "title": "FantasyAnime FFVI SNES Walk to Narshe 녹화",
+        "verification": "영상 페이지 + 무음 표본 프레임 실제 열람; 원본 SNES 녹화라는 업로더 설명",
+        "official": false
+      },
+      {
+        "id": "ffvi-ost",
+        "url": "https://www.jp.square-enix.com/music/en/lineup/item/SEMO-00007-9.html",
+        "title": "Square Enix FFVI OST",
+        "verification": "공식 검색 색인 본문/트랙 목록 확인; 영상 음악 타이밍 청취 근거 아님",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "Nomura는 intro의 설원 Magitek 행군이 기계와 마법의 공존이라는 기획을 대표한다고 직접 설명한다.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://eu.finalfantasy.com/topics/528"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "10/50초 표본은 같은 세 배우 행군과 다른 크레딧을 유지한다. 오래 지속되는 이동 tableau가 가능한 사례; 정확한 전체 길이/중간 컷 미측정.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=jgRZAGQPJVY"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "세 기계는 아래쪽에, 먼 설원과 길은 위쪽에 두어 깊이가 느껴지는 구도. 원본 Mode7 구현 여부는 이번 조사로 확정하지 않는다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=jgRZAGQPJVY"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "세 Magitek 배우의 행군. 단일 평면 이미지 대신 반복 걷기 pose와 지면 이동을 나누는 구현 제안.",
+        "status": "document-and-inference",
+        "sourceUrls": [
+          "https://eu.finalfantasy.com/topics/528",
+          "https://www.youtube.com/watch?v=jgRZAGQPJVY"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "설원/먼 산/행군 배우/낙설/크레딧이 시각적으로 구분된다. 원본 하드웨어 레이어 수와 같다는 주장 아님.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=jgRZAGQPJVY"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "공식 OST에 Omen 등 트랙이 등재되어 있지만 이번 영상은 무음으로 음악 타이밍/SE를 확인하지 않았다.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://www.jp.square-enix.com/music/en/lineup/item/SEMO-00007-9.html"
+        ]
+      },
+      {
+        "aspect": "credits",
+        "statement": "직접 표본에 PRODUCER HIRONOBU SAKAGUCHI와 FIELD PLANNER 이름이 화면 위쪽에 표시된다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=jgRZAGQPJVY"
+        ]
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "Narshe 도착 뒤 조작/음악 연결은 직접 재생하지 않음",
+        "status": "unverified",
+        "sourceUrls": []
+      }
+    ],
+    "designLesson": "지속되는 행동 tableau 위에 크레딧을 겹칠 수 있다. 긴 narration이 연출의 유일한 방법은 아니다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "SNES Magitek 행군/크레딧; Pixel Remaster·PS 애니메이션과 혼합하지 않음",
+      "Narshe 도착 뒤 조작/음악 연결은 직접 재생하지 않음"
+    ]
+  },
+  {
+    "id": "ffvii-remake",
+    "title": "FINAL FANTASY VII REMAKE: 세계의 규모",
+    "category": "official_opening_movie_3d_comparison",
+    "style": "세계의 규모 — 3D 비교 사례",
+    "techniques": [
+      "환경과 개인의 규모 대비 설계",
+      "공식 오케스트라 음악 맥락",
+      "2D 다중 layer 번안"
+    ],
+    "toolRequirements": [
+      "layer.parallax",
+      "actor.transform",
+      "camera.keyframes",
+      "transition.matchCut",
+      "audio.continuity",
+      "handoff.restore"
+    ],
+    "sourceUrls": [
+      "https://na.finalfantasy.com/news/1299",
+      "https://www.youtube.com/watch?v=8IrheLf0Ki0",
+      "https://na.finalfantasy.com/news/1334"
+    ],
+    "sources": [
+      {
+        "id": "ffvii-release",
+        "url": "https://na.finalfantasy.com/news/1299",
+        "title": "Square Enix FFVII Remake opening 공개",
+        "verification": "공식 본문 직접 열람; 공식 opening URL, Midgar, 새 오케스트라 음악 확인",
+        "official": true
+      },
+      {
+        "id": "ffvii-video",
+        "url": "https://www.youtube.com/watch?v=8IrheLf0Ki0",
+        "title": "FINAL FANTASY 공식 Remake opening 영상",
+        "verification": "공식 업로더/페이지 + 30초 표본 프레임 실제 열람; 나머지 seek는 중단되어 미확인",
+        "official": true
+      },
+      {
+        "id": "ffvii-demo",
+        "url": "https://na.finalfantasy.com/news/1334",
+        "title": "Square Enix Inside Making FFVII Remake 공개",
+        "verification": "공식 검색 본문 확인; demo가 opening chapter를 제공함",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "공식 발표는 Midgar와 Shinra의 생명력 통제, Cloud/Avalanche를 opening 맥락으로 소개한다.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1299"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "직접 확인한 30초 표본은 구름 앞 새의 전신. Aerith→도시→열차 같은 이후 연결은 이번 영상 관찰로 검증하지 않았다.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=8IrheLf0Ki0"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "큰 세계를 제시하고 배우로 좁히는 규모 대비는 2D 다중 layer/컷으로 번안할 수 있다. 원본 camera 궤적을 관찰했다는 주장 아님.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1299"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "직접 표본에서 비행 새가 보인다; 공식 서사는 Cloud를 확인한다.",
+        "status": "document-and-sampled-frame",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1299",
+          "https://www.youtube.com/watch?v=8IrheLf0Ki0"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "2D에서는 먼 환경/가까운 실루엣/배우 크기 변화로 세계와 개인의 대비를 제작한다.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1299"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "공식 발표가 새롭게 오케스트레이션한 음악을 명시. 실제 청취/박자별 cue는 미검증.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1299"
+        ]
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "공식 제작 영상 발표는 demo에서 opening chapter를 플레이할 수 있다고 안내. 정확한 영화→조작 인계 프레임은 미검증.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://na.finalfantasy.com/news/1334"
+        ]
+      }
+    ],
+    "designLesson": "규모를 보여주는 컷과 개인의 행동을 연결한다. 전부 3D로 복제할 필요는 없다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "2020 공식 opening; 3D 비교 사례이며 2D RPG 엔진에 3D 제작을 요구하는 근거 아님",
+      "이번 조사에서 미검증"
+    ]
+  },
+  {
+    "id": "octopath-0",
+    "title": "OCTOPATH TRAVELER 0: 일상 파괴가 동기",
+    "category": "game_prologue_documented_and_official_story_trailer",
+    "style": "일상과 파괴의 대비",
+    "techniques": [
+      "같은 마을의 평온/화재 대비",
+      "작은 sprite 배우",
+      "화염과 독립 자막"
+    ],
+    "toolRequirements": [
+      "scene.variants",
+      "layer.particles",
+      "layer.light",
+      "actor.path",
+      "timeline.cut",
+      "caption.safeArea",
+      "handoff.stateContract"
+    ],
+    "sourceUrls": [
+      "https://www.square-enix-games.com/en_US/tagged/platforms%3APC",
+      "https://www.youtube.com/watch?v=-xSyjJSAkWw",
+      "https://www.jp.square-enix.com/octopathtraveler/about/"
+    ],
+    "sources": [
+      {
+        "id": "octopath-demo",
+        "url": "https://www.square-enix-games.com/en_US/tagged/platforms%3APC",
+        "title": "Square Enix OCTOPATH TRAVELER 0 demo 기사 색인",
+        "verification": "공식 검색 색인에서 기사 전체 관련 절 확인; 직접 open은 제한된 shell. 개별 기사 URL 미확보, 색인 기사 제목/날짜 2025-11-12로 식별",
+        "official": true
+      },
+      {
+        "id": "octopath-video",
+        "url": "https://www.youtube.com/watch?v=-xSyjJSAkWw",
+        "title": "Square Enix OCTOPATH TRAVELER 0 Story Trailer",
+        "verification": "공식 영상 페이지/업로더 + 무음 5/20/45초 표본 실제 열람. 게임 프롤로그 자체 전체 재생이 아닌 trailer",
+        "official": true
+      },
+      {
+        "id": "octopath-art",
+        "url": "https://www.jp.square-enix.com/octopathtraveler/about/",
+        "title": "Square Enix HD-2D 설명",
+        "verification": "공식 본문 직접 열람; 픽셀 아트+3DCG 화면효과, 서로 다른 동기의 8인",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "공식 demo 안내는 즐거운 마을 축제가 비극이 되어 복구와 복수의 여정을 시작한다고 설명한다.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://www.square-enix-games.com/en_US/tagged/platforms%3APC"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "공식 trailer 20초 표본의 평온한 마을과 45초 화재 마을이 대비된다. 정확한 game prologue 편집 순서는 별도 확인 필요.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=-xSyjJSAkWw"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "픽셀 배우를 작은 마을 전체 구도에 배치하고 foreground blur/빛으로 공간을 강조한다. 정확한 3D camera/렌즈 수치는 미검증.",
+        "status": "sampled-frame-observation",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=-xSyjJSAkWw"
+        ]
+      },
+      {
+        "aspect": "actors",
+        "statement": "표본에서 주민과 주인공 같은 작은 sprite 배우가 화재/일상 환경에 놓인다. 공식 안내상 플레이어는 먼저 주인공을 만든다.",
+        "status": "document-and-sampled-frame",
+        "sourceUrls": [
+          "https://www.square-enix-games.com/en_US/tagged/platforms%3APC",
+          "https://www.youtube.com/watch?v=-xSyjJSAkWw"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "건물/수목/배우/화염/빛·연기·자막을 별도로 저작하면 같은 장소의 전후 상태를 보존하며 사건을 보여줄 수 있다. HD-2D의 픽셀+3DCG 결합은 공식 설명이 확인한다.",
+        "status": "document-and-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=-xSyjJSAkWw",
+          "https://www.jp.square-enix.com/octopathtraveler/about/"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "trailer 자막은 관찰했지만 노래/음성/게임 cue는 청취하지 않음",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "공식 demo는 캐릭터 생성 후 도입을 플레이하고 chapter로 진행하며 저장 진행을 본편에 넘길 수 있다고 안내. 실제 제어 인계 테스트는 하지 않음.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://www.square-enix-games.com/en_US/tagged/platforms%3APC"
+        ]
+      }
+    ],
+    "designLesson": "같은 장소의 전후를 비교하면 모험의 이유가 사건으로 읽힌다. 예고편 편집과 게임 도입은 구별해야 한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "2025 game prologue의 공식 demo 설명 + story trailer 표본; trailer 컷을 게임 컷 수로 간주하지 않음",
+      "trailer 자막은 관찰했지만 노래/음성/게임 cue는 청취하지 않음",
+      "이번 조사에서 미검증"
+    ]
+  },
+  {
+    "id": "sea-sunset",
+    "title": "Sea of Stars Sunset Edition: 과거의 영웅과 재앙",
+    "category": "new_game_cinematic_documented_and_unofficial_samples",
+    "style": "과거의 영웅과 재앙 — 2026 Sunset",
+    "techniques": [
+      "역사 사건과 현재의 분리 설계",
+      "별 배경과 텍스트",
+      "현재 플레이 복귀 계약"
+    ],
+    "toolRequirements": [
+      "opening.trackMode",
+      "scene.timePeriod",
+      "actor.identity",
+      "layer.particles",
+      "timeline.cut",
+      "caption.track",
+      "handoff.restore"
+    ],
+    "sourceUrls": [
+      "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/",
+      "https://www.youtube.com/watch?v=5Ie1IlYMIgg",
+      "https://www.youtube.com/watch?v=xWbM7YQJEqc"
+    ],
+    "sources": [
+      {
+        "id": "sea-release",
+        "url": "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/",
+        "title": "Sabotage Sunset Edition 공식 발표",
+        "verification": "공식 본문 직접 열람; 2026-06-08 새 opening, 과거 영웅/대재앙 확인",
+        "official": true
+      },
+      {
+        "id": "sea-video",
+        "url": "https://www.youtube.com/watch?v=5Ie1IlYMIgg",
+        "title": "Sunset 새 opening 비공식 녹화",
+        "verification": "영상 페이지 + 15/50초 무음 표본 열람. 어두운 별 배경과 텍스트만 확인; 이후 배우 행동 seek 실패",
+        "official": false
+      },
+      {
+        "id": "sea-director",
+        "url": "https://www.youtube.com/watch?v=xWbM7YQJEqc",
+        "title": "Sabotage Thierry Boulanger 업데이트 해설",
+        "verification": "공식 영상 페이지/설명 확인; NewGame 시작 재생 설명. 영상 전체 시청/청취 아님",
+        "official": true
+      }
+    ],
+    "claims": [
+      {
+        "aspect": "incident",
+        "statement": "공식 발표는 새 opening이 과거 영웅의 얼굴과 그들이 겪은 대재앙을 보여준다고 명시한다.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/"
+        ]
+      },
+      {
+        "aspect": "cuts",
+        "statement": "직접 15/50초 표본은 어두운 별 배경의 짧은 텍스트. 이후 재앙/배우 컷은 seek 실패로 미확인; 공식 설명에 근거한 사건이며 관찰 목록 아님.",
+        "status": "document-and-sampled-frame",
+        "sourceUrls": [
+          "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/",
+          "https://www.youtube.com/watch?v=5Ie1IlYMIgg"
+        ]
+      },
+      {
+        "aspect": "camera",
+        "statement": "배우 장면의 camera를 직접 확인하지 못함",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "actors",
+        "statement": "과거 영웅의 얼굴을 새로 공개한다는 개발사 설명. 구체적 pose/액션은 미확인.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/"
+        ]
+      },
+      {
+        "aspect": "layers",
+        "statement": "별 배경/설명 텍스트는 표본에서 보임. 역사 장면에는 별도 시간대·인물·재앙 VFX를 저작할 수 있도록 제안.",
+        "status": "authoring-inference",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=5Ie1IlYMIgg",
+          "https://sabotagestudio.com/press-release/but-what-a-beautiful-sunset-it-is-sea-of-stars-sunset-edition-marks-the-final-update-for-the-game-available-now/"
+        ]
+      },
+      {
+        "aspect": "sound",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "credits",
+        "statement": "이번 조사에서 미검증",
+        "status": "unverified",
+        "sourceUrls": []
+      },
+      {
+        "aspect": "playHandoff",
+        "statement": "공식 디렉터 업데이트 설명은 NewGame 시작에 새 opening을 재생한다고 안내. 실제 게임에서 입력/skip/인계는 하지 않음.",
+        "status": "document-confirmed",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=xWbM7YQJEqc"
+        ]
+      }
+    ],
+    "designLesson": "과거 사건은 현재 시작 상태와 분리된 연출 세계에서 보여주고 현재 조작으로 안전하게 복귀해야 한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "2026 새 cinematic opening; 2023 원본 도입과 구별",
+      "배우 장면의 camera를 직접 확인하지 못함",
+      "이번 조사에서 미검증",
+      "이번 조사에서 미검증",
+      "공개 참고 PNG는 생략: 실제 열람한 별 배경/텍스트가 어두워 가독성이 낮으며 배우·재앙 장면 seek는 실패했다."
+    ]
+  },
+  {
+    "id": "persona3",
+    "title": "Persona 3 Reload",
+    "category": "official_opening_movie",
+    "style": "노래 중심의 캐릭터 오프닝 — 시각 세부 미확인",
+    "techniques": [
+      "장면/샷 타임라인",
+      "음악 박자·효과음·목소리 큐",
+      "시간 스크럽/프레임 증거"
+    ],
+    "toolRequirements": [
+      "장면/샷 타임라인 — sceneId/start/duration/end 상태와 레이어별 키프레임을 작성하고, 카메라·자막·오디오가 같은 시간축을 사용한다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다.",
+      "시간 스크럽/프레임 증거 — time scrub/장면별 play/mute, deterministic particle seed, 프레임 PNG와 source/shot/time metadata 내보내기를 제공한다."
+    ],
+    "sourceUrls": [
+      "https://www.sega.jp/topics/detail/240105_5/",
+      "https://www.youtube.com/watch?v=746zeHM5EA8",
+      "https://www.atlus.co.jp/gamemusic/discography/agm-001/"
+    ],
+    "claims": [
+      {
+        "statement": "SEGA가 본편 오프닝 공개를 명시하며 ATLUS 공식 채널 영상 제목도 Opening Movie이다.",
+        "status": "official_metadata",
+        "sourceUrls": [
+          "https://www.sega.jp/topics/detail/240105_5/",
+          "https://www.youtube.com/watch?v=746zeHM5EA8"
+        ]
+      },
+      {
+        "statement": "공식 사운드트랙에 Full Moon Full Life -Opening Movie Version-이 등록되어 있다.",
+        "status": "official_text",
+        "sourceUrls": [
+          "https://www.atlus.co.jp/gamemusic/discography/agm-001/"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "이 영상은 현재 브라우저 성인 인증 게이트로 media.readyState=0이었다.",
+      "특정 색상, 컷, 음악 박자, 효과음을 직접 관찰한 것으로 주장하지 않는다.",
+      "타이틀 무입력 자동 재생 및 새 게임 시작 위치는 실제 게임에서 검증하지 않았다."
+    ]
+  },
+  {
+    "id": "persona4",
+    "title": "Persona 4 Golden",
+    "category": "official_opening_movie",
+    "style": "밝은 팝 그래픽 + 캐릭터 전신 구도",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "그래픽/모양 마스크",
+      "타이포/픽셀 자막",
+      "전환과 시간 대비",
+      "음악 박자·효과음·목소리 큐"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "그래픽/모양 마스크 — 원·사선·다각형 clip/mask, 모양 자체 키프레임, 화면 속 화면 asset 교체를 지원한다.",
+      "타이포/픽셀 자막 — 로고와 본문 텍스트를 이미지에 굽지 않고 별도 레이어로 저작하며 폰트·정렬·줄바꿈·행간·safe area·현지화를 제어한다. typewriter는 선택 기능으로 둔다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=t2ZEj8JK2tY"
+    ],
+    "claims": [
+      {
+        "statement": "8초: 노란 배경, 검은 TV 프레임, 굵은 P4G 로고와 여러 색의 사선이 보인다.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=t2ZEj8JK2tY"
+        ],
+        "timesSeconds": [
+          8
+        ]
+      },
+      {
+        "statement": "20초: 연두 바탕, 인물 전신, 원형 검은 테두리와 꽃 모양. 35초: 분홍 바탕, 전신 포즈와 하트·육각형 그래픽.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=t2ZEj8JK2tY"
+        ],
+        "timesSeconds": [
+          20,
+          35
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "2012년 영상은 연령 제한으로 막혔고 별개의 ATLUS 공식 2022년 재게시판에서 유효 프레임을 관찰했다.",
+      "스냅샷만으로 원작이 몇 장의 포즈 또는 몇 fps로 제작됐는지는 알 수 없다.",
+      "음악 청취·BPM/컷의 박자 대응·타이틀 자동 재생은 미검증."
+    ]
+  },
+  {
+    "id": "persona5",
+    "title": "Persona 5 Royal",
+    "category": "official_opening_movie",
+    "style": "붉은색·검정·흰색의 대조 + 과장된 로고/캐릭터",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "그래픽/모양 마스크",
+      "타이포/픽셀 자막",
+      "전환과 시간 대비",
+      "음악 박자·효과음·목소리 큐"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "그래픽/모양 마스크 — 원·사선·다각형 clip/mask, 모양 자체 키프레임, 화면 속 화면 asset 교체를 지원한다.",
+      "타이포/픽셀 자막 — 로고와 본문 텍스트를 이미지에 굽지 않고 별도 레이어로 저작하며 폰트·정렬·줄바꿈·행간·safe area·현지화를 제어한다. typewriter는 선택 기능으로 둔다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=O3dX4tCb_5w"
+    ],
+    "claims": [
+      {
+        "statement": "8초: 붉은 하늘과 회색 건물, 눈 도상이 들어간 여러 전광판. 20초: 붉고 흰 방사형 도형 중앙에 작은 P5R 로고.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=O3dX4tCb_5w"
+        ],
+        "timesSeconds": [
+          8,
+          20
+        ]
+      },
+      {
+        "statement": "35초: 붉은 배경에 고글을 쓴 인물의 상반신과 펼친 팔이 크게 배치된다.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=O3dX4tCb_5w"
+        ],
+        "timesSeconds": [
+          35
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "화면 속 모니터의 존재는 관찰했지만 실제 제작에서 레이어 마스크를 썼다는 뜻은 아니다.",
+      "동작의 전체 프레임수/보간 방식과 음악 박자는 미측정.",
+      "본편 새 게임 프롤로그 및 타이틀 애트랙트와 혼동하지 않는다."
+    ]
+  },
+  {
+    "id": "links-awakening",
+    "title": "The Legend of Zelda: Link’s Awakening (2019)",
+    "category": "official_announcement_trailer",
+    "style": "폭풍·환경의 움직임으로 여는 손그림 시네마틱",
+    "techniques": [
+      "장면/샷 타임라인",
+      "리미티드 포즈·프레임/홀드",
+      "전환과 시간 대비",
+      "투명 조명/안개/환경 FX",
+      "레이어·깊이·움직이는 작은 대상"
+    ],
+    "toolRequirements": [
+      "장면/샷 타임라인 — sceneId/start/duration/end 상태와 레이어별 키프레임을 작성하고, 카메라·자막·오디오가 같은 시간축을 사용한다.",
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "투명 조명/안개/환경 FX — 부드러운 alpha 도형 조명, 발광·비·물보라·안개/빛 먼지 레이어를 캐릭터/배경과 별도 제어한다.",
+      "레이어·깊이·움직이는 작은 대상 — 배경/중경/전경/인물/FX/자막의 z-order, 상대 이동, parallax, 개별 표시/숨김과 프레임 클립을 지원한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=_U-_XfDGgDw"
+    ],
+    "claims": [
+      {
+        "statement": "Nintendo 공식 제목은 Announcement Trailer다. 확인한 영상을 본편 오프닝 전체라고 분류하지 않는다.",
+        "status": "official_metadata",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_U-_XfDGgDw"
+        ]
+      },
+      {
+        "statement": "8초: 파도/물보라. 20초: 비가 내리는 배에서 밧줄을 붙잡은 Link. 35초: 거의 흰색으로 찬 프레임.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=_U-_XfDGgDw"
+        ],
+        "timesSeconds": [
+          8,
+          20,
+          35
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "8초 화면에는 Not Actual Gameplay 표기가 있었다.",
+      "35초가 흰 전환 프레임인 것은 확인했지만 전체 전환 길이와 전후 샷은 미측정.",
+      "발표 트레일러의 애니메이션이 게임의 어느 지점에 들어가는지는 별도 미검증."
+    ]
+  },
+  {
+    "id": "botw",
+    "title": "The Legend of Zelda: Breath of the Wild",
+    "category": "in_game_opening_documented_not_watched",
+    "style": "목소리로 깨운 뒤 작은 행동에서 넓은 세계로 인계",
+    "techniques": [
+      "장면/샷 타임라인",
+      "음악 박자·효과음·목소리 큐",
+      "플레이 인계/시작 목표"
+    ],
+    "toolRequirements": [
+      "장면/샷 타임라인 — sceneId/start/duration/end 상태와 레이어별 키프레임을 작성하고, 카메라·자막·오디오가 같은 시간축을 사용한다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다.",
+      "플레이 인계/시작 목표 — 끝 화면에서 시작 맵/위치/방향/입력 해제/첫 목표를 명시적으로 넘기며 정상 종료와 skip가 같은 게임 상태에 도달한다."
+    ],
+    "sourceUrls": [
+      "https://zelda.nintendo.com/breath-of-the-wild/assets/pdfs/ExplorersGuide.pdf"
+    ],
+    "claims": [
+      {
+        "statement": "Nintendo 공식 가이드의 How to Conquer the Great Plateau 절은 목소리에 깨어남, 받침대 조사, Sheikah Slate 획득, 문 통과, 바깥 세계로 나가는 시작 진행을 설명한다.",
+        "status": "official_document_indexed_excerpt",
+        "sourceUrls": [
+          "https://zelda.nintendo.com/breath-of-the-wild/assets/pdfs/ExplorersGuide.pdf"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "PDF 직접 열기는 타임아웃/크기 제한으로 실패했으며 Nintendo 원문 검색 인덱스의 해당 절을 읽었다.",
+      "플레이 영상을 직접 보거나 효과음·시간코드·카메라 이동을 실측하지 않았다.",
+      "음성 안내에서 실제 입력으로 넘어가는 도구 제안은 문서에 근거한 설계 추론이다."
+    ]
+  },
+  {
+    "id": "hades",
+    "title": "Hades",
+    "category": "official_animated_launch_trailer",
+    "style": "액션 시네마틱: 근접 악역 → 위협/주인공 → 정적인 인물 구도",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "전환과 시간 대비",
+      "음악 박자·효과음·목소리 큐",
+      "투명 조명/안개/환경 FX"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다.",
+      "투명 조명/안개/환경 FX — 부드러운 alpha 도형 조명, 발광·비·물보라·안개/빛 먼지 레이어를 캐릭터/배경과 별도 제어한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=Bz8l935Bv0Y",
+      "https://www.supergiantgames.com/blog/5"
+    ],
+    "claims": [
+      {
+        "statement": "Supergiant 공식 게시물은 animated v1.0 Launch Trailer라고 분류한다.",
+        "status": "developer_text",
+        "sourceUrls": [
+          "https://www.supergiantgames.com/blog/5"
+        ]
+      },
+      {
+        "statement": "8초: 해골 적의 얼굴 클로즈업. 20초: 주인공과 뒤쪽 적의 발광 공격. 35초: 장식된 의자 앞의 주인공과 손을 가까이 배치한 구도.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=Bz8l935Bv0Y"
+        ],
+        "timesSeconds": [
+          8,
+          20,
+          35
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "홍보 시네마틱이며 게임 시작 프롤로그라고 주장하지 않는다.",
+      "컷별 포즈 수, 실제 애니메이션 제작 방식, 효과음 타이밍, 음악 박자는 미검증."
+    ]
+  },
+  {
+    "id": "hollow-knight",
+    "title": "Hollow Knight",
+    "category": "official_gameplay_release_trailer",
+    "style": "레이어로 깊이를 만든 손그림 2D + 분위기 조명",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "타이포/픽셀 자막",
+      "투명 조명/안개/환경 FX",
+      "레이어·깊이·움직이는 작은 대상"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "타이포/픽셀 자막 — 로고와 본문 텍스트를 이미지에 굽지 않고 별도 레이어로 저작하며 폰트·정렬·줄바꿈·행간·safe area·현지화를 제어한다. typewriter는 선택 기능으로 둔다.",
+      "투명 조명/안개/환경 FX — 부드러운 alpha 도형 조명, 발광·비·물보라·안개/빛 먼지 레이어를 캐릭터/배경과 별도 제어한다.",
+      "레이어·깊이·움직이는 작은 대상 — 배경/중경/전경/인물/FX/자막의 z-order, 상대 이동, parallax, 개별 표시/숨김과 프레임 클립을 지원한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=UAO2urG23S4",
+      "https://store.steampowered.com/news/posts/?appids=367520&enddate=1486947375",
+      "https://unity.com/made-with-unity/hollow-knight",
+      "https://www.hollowknight.com/"
+    ],
+    "claims": [
+      {
+        "statement": "8초: 비 오는 푸른 전투 구도. 20초: 게임 화면 위 지도. 35초: 보라색 공간, 밝은 공격 효과와 좌하단 지역 타이포.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=UAO2urG23S4"
+        ],
+        "timesSeconds": [
+          8,
+          20,
+          35
+        ]
+      },
+      {
+        "statement": "개발사가 연결한 Unity 제작 자료는 Photoshop 손그림/전통 애니메이션을 PNG로 저장하고, 부드러운 투명 도형으로 조명을 만들며 2D 자산을 여러 층으로 배치한 과정을 설명한다.",
+        "status": "production_documentation",
+        "sourceUrls": [
+          "https://unity.com/made-with-unity/hollow-knight",
+          "https://www.hollowknight.com/"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "Release Trailer이며 본편 인트로 또는 타이틀 무입력 애트랙트가 아니다.",
+      "일반 게임의 제작 방법을 설명하는 자료다. 확인한 각 컷의 구체적인 레이어 수/파티클 수는 미측정."
+    ]
+  },
+  {
+    "id": "undertale",
+    "title": "Undertale",
+    "category": "official_prologue_image_reference_not_video",
+    "style": "작은 세피아 삽화 + 짧은 픽셀 텍스트",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "타이포/픽셀 자막",
+      "음악 박자·효과음·목소리 큐",
+      "플레이 인계/시작 목표"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "타이포/픽셀 자막 — 로고와 본문 텍스트를 이미지에 굽지 않고 별도 레이어로 저작하며 폰트·정렬·줄바꿈·행간·safe area·현지화를 제어한다. typewriter는 선택 기능으로 둔다.",
+      "음악 박자·효과음·목소리 큐 — BGM 시작/정지/페이드, SFX/voice 큐, gain envelope, beat marker/BPM 입력, 홀드/스킵 시 audio clock 정책을 저작한다.",
+      "플레이 인계/시작 목표 — 끝 화면에서 시작 맵/위치/방향/입력 해제/첫 목표를 명시적으로 넘기며 정상 종료와 skip가 같은 게임 상태에 도달한다."
+    ],
+    "sourceUrls": [
+      "https://undertale.com/about/"
+    ],
+    "claims": [
+      {
+        "statement": "공식 About 페이지의 History of HUMANS and MONSTERS 이미지에는 세피아색 작은 인물 두 명과 검은 바탕의 흰 픽셀 문장이 있다. 바로 옆에는 꽃 위에 쓰러진 사람 이미지가 있다.",
+        "status": "observed_official_image",
+        "sourceUrls": [
+          "https://undertale.com/about/"
+        ]
+      },
+      {
+        "statement": "공식 소개는 유머, 캐릭터 대사, 플레이어 선택을 강조한다.",
+        "status": "developer_text",
+        "sourceUrls": [
+          "https://undertale.com/about/"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "공식 이미지와 소개를 보았으며 전체 프롤로그 재생/텍스트 출력 속도/목소리 효과음은 확인하지 않았다.",
+      "흰 글자가 한 번에 보이는 이미지에서 typewriter 구현을 사실로 추론하지 않는다."
+    ]
+  },
+  {
+    "id": "stardew",
+    "title": "Stardew Valley",
+    "category": "official_gameplay_release_trailer",
+    "style": "생활 목표의 짧은 문장 → 실제 활동/풍경 몽타주",
+    "techniques": [
+      "장면/샷 타임라인",
+      "타이포/픽셀 자막",
+      "전환과 시간 대비",
+      "레이어·깊이·움직이는 작은 대상",
+      "플레이 인계/시작 목표"
+    ],
+    "toolRequirements": [
+      "장면/샷 타임라인 — sceneId/start/duration/end 상태와 레이어별 키프레임을 작성하고, 카메라·자막·오디오가 같은 시간축을 사용한다.",
+      "타이포/픽셀 자막 — 로고와 본문 텍스트를 이미지에 굽지 않고 별도 레이어로 저작하며 폰트·정렬·줄바꿈·행간·safe area·현지화를 제어한다. typewriter는 선택 기능으로 둔다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "레이어·깊이·움직이는 작은 대상 — 배경/중경/전경/인물/FX/자막의 z-order, 상대 이동, parallax, 개별 표시/숨김과 프레임 클립을 지원한다.",
+      "플레이 인계/시작 목표 — 끝 화면에서 시작 맵/위치/방향/입력 해제/첫 목표를 명시적으로 넘기며 정상 종료와 skip가 같은 게임 상태에 도달한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=ot7uXNQskhs",
+      "https://www.stardewvalley.net/release-date-and-trailer/"
+    ],
+    "claims": [
+      {
+        "statement": "8초: 검은 화면 중앙에 계곡으로 이사한다는 짧은 픽셀 문장이 있다. 20초: 나무·돌·잡초가 많은 농장과 인물. 35초: 울타리 안 경작지, 물뿌리개를 든 인물, 꽃잎이 보인다.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=ot7uXNQskhs"
+        ],
+        "timesSeconds": [
+          8,
+          20,
+          35
+        ]
+      },
+      {
+        "statement": "ConcernedApe의 2016년 공식 게시물이 이 영상을 출시 트레일러로 소개한다.",
+        "status": "developer_text",
+        "sourceUrls": [
+          "https://www.stardewvalley.net/release-date-and-trailer/"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "홍보 영상의 문장과 게임플레이 샷이다. 할아버지/회사/버스의 실제 게임 시작 시퀀스는 이번 조사에서 보지 않았다.",
+      "35초 프레임이 실제 플레이 입력을 받았다는 의미는 아니다."
+    ]
+  },
+  {
+    "id": "gris",
+    "title": "GRIS",
+    "category": "official_launch_trailer",
+    "style": "수채 질감·큰 여백·붉은 형태로 감정 표현",
+    "techniques": [
+      "리미티드 포즈·프레임/홀드",
+      "전환과 시간 대비",
+      "투명 조명/안개/환경 FX",
+      "레이어·깊이·움직이는 작은 대상"
+    ],
+    "toolRequirements": [
+      "리미티드 포즈·프레임/홀드 — 자세별 투명 자산, 표정/눈깜빡임 프레임, 프레임별 duration/hold, 피벗과 변환을 각각 저작한다. 전신 그림 한 장의 줌만으로 모든 동작을 대체하지 않는다.",
+      "전환과 시간 대비 — cut/dissolve/shape wipe/색면 전환을 duration과 easing으로 지정하고 다른 장면의 색과 구도를 연결할 수 있게 한다.",
+      "투명 조명/안개/환경 FX — 부드러운 alpha 도형 조명, 발광·비·물보라·안개/빛 먼지 레이어를 캐릭터/배경과 별도 제어한다.",
+      "레이어·깊이·움직이는 작은 대상 — 배경/중경/전경/인물/FX/자막의 z-order, 상대 이동, parallax, 개별 표시/숨김과 프레임 클립을 지원한다."
+    ],
+    "sourceUrls": [
+      "https://www.youtube.com/watch?v=RdrvV25zoA8",
+      "https://www.devolverdigital.com/games/gris"
+    ],
+    "claims": [
+      {
+        "statement": "Devolver 공식 8초 프레임에는 위에서 내려다본 붉은 옷/형태의 인물, 파스텔 수채 바닥, 균열이 보인다.",
+        "status": "observed_frame",
+        "sourceUrls": [
+          "https://www.youtube.com/watch?v=RdrvV25zoA8"
+        ],
+        "timesSeconds": [
+          8
+        ]
+      },
+      {
+        "statement": "퍼블리셔 소개는 상세한 애니메이션, 원본 음악, 고통스러운 경험에서 출발하는 여정과 변화하는 능력을 설명한다.",
+        "status": "publisher_text",
+        "sourceUrls": [
+          "https://www.devolverdigital.com/games/gris"
+        ]
+      }
+    ],
+    "designLesson": "관찰·공식 설명에 맞는 표현을 도구 요구로 번안한다. 원작 내부 제작 방식은 별도 근거가 있는 경우에만 사실로 취급한다.",
+    "verificationLimits": [
+      "전체 영상 연속 시청·원작 오디오 청취·실제 게임 boot/skip/플레이 인계 검증을 하지 않았다.",
+      "표본 이미지로 원작의 프레임수·fps·레이어 수·보간·엔진 구현을 확정하지 않는다.",
+      "toolRequirements와 설계 교훈은 우리 도구의 요구사항 제안이며 원작 구현 사양이 아니다.",
+      "참고 이미지는 출처 연구용이다. 게임 미디어 또는 생성물의 소재로 등록하지 않는다.",
+      "20초 시도는 currentTime=0/readyState=0, 35초는 readyState=0이어서 유효 관찰에서 제외했다.",
+      "본편 오프닝 전체, 애니메이션 프레임수, 음악 청취는 미확인."
+    ]
+  }
+]

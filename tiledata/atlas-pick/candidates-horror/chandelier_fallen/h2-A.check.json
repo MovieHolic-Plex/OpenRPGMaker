@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chandelier_fallen/h2-A.pxg",
+ "set": "horror",
+ "id": "chandelier_fallen",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  1,
+  31,
+  31
+ ],
+ "note": "A: 놋쇠 tarn 고리를 오른쪽 아래에서 눌러 찌그러진 타원으로 만들고 허브에서 다섯 팔·촛대 받침이 뻗는다. 끊어진 사슬이 허브에서 위로 올라가 칸 위 끝까지, 유리 방울(moon/murk)은 둘레에 흩어짐. 바닥엔 void 갈라진 틈 여럿.",
+ "ok": true
+}

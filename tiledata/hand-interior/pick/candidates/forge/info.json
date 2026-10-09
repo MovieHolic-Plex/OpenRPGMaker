@@ -1,0 +1,44 @@
+{
+ "id": "forge",
+ "slug": "forge",
+ "name_ko": "용광로",
+ "category": "대장간",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "돌 후드가 달린 용광로, 숯불이 일렁인다(애니메이션). 대장간 북쪽 벽에 붙인다.",
+ "where": "대장간 북쪽 벽에 붙인다.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_colors": 16,
+ "material": "wood",
+ "related": [
+  "anvil",
+  "quench barrel",
+  "coal bin",
+  "tool wall"
+ ]
+}

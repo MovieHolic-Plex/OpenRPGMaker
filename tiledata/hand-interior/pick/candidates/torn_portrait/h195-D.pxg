@@ -1,0 +1,139 @@
+// 금장 모서리와 상단 문양을 더한 귀부인 초상화, 얼굴에 X자 찢김; 벽걸이 윗면 0행(해당 없음)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat g gold 3
+@mat b blue 0
+@mat h black 2
+@mat s clay 4
+@mat l linen 4
+@mat r red 2
+@mat t dwood 0
+@layer portrait
+@mblock 0 0
+..............gggg..............
+............gggggggg............
+..........gggggggggggg..........
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..ggggbbbbbbbbbbbbbbbbbbbbgggg..
+..ggggbbbbbbbbhhhhbbbbbbbbgggg..
+..ggggbbbbbbhhhhhhhhbbbbbbgggg..
+..ggggbbbbbhhhhhhhhhhbbbbbgggg..
+..ggggbbbbhhhhhsshhhhhbbbbgggg..
+..ggggbbbbhhsssssshhhhbbbbgggg..
+..ggggbbbbhhssssssshhhbbbbgggg..
+..ggggbbbbhhssssssshhhbbbbgggg..
+..ggggbbbbhhssssssshhhbbbbgggg..
+..ggggbbbbhhslssslshhhbbbbgggg..
+..ggggbbbbhhssssssshhhbbbbgggg..
+..ggggbbbbbhssssssshhbbbbbgggg..
+..ggggbbbbbbssssssshbbbbbbgggg..
+..ggggbbbbbbssrrsssbbbbbbbgggg..
+..ggggbbbbbbbsssssbbbbbbbbgggg..
+..ggggbbbbbbbsssssbbbbbbbbgggg..
+..ggggbbbbbrllsssllrbbbbbbgggg..
+..ggggbbbrrrlllllllrrrbbbbgggg..
+..ggggbbrrrrrlllllrrrrrbbbgggg..
+..ggggbrrrrrrrlllrrrrrrrbbgggg..
+..ggggrrrrrrrrrlrrrrrrrrrbgggg..
+..ggggrrrrrrrrrrrrrrrrrrrrgggg..
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+..gggggggggggggggggggggggggggg..
+@tblock 0 0
+..............1111..............
+............12554111............
+..........124554432111..........
+..1111111234554433211111111111..
+..1555544555554444444444444431..
+..1543344444432222344443333431..
+..1532....................2231..
+..1542....................2231..
+..1542....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1532....................2231..
+..1542....................2231..
+..1542....................2231..
+..1532....................2231..
+..1543333333333333333333333231..
+..1444443333333333333333333331..
+..1233332222222222222222222211..
+..1111111111111111111111111111..
+// 금장 모서리 문양: 이어진 큰 덩이
+@tblock 2 4 gold
+15555
+15445
+15335
+15445
+15554
+@tblock 25 4 gold
+44431
+43331
+42231
+43331
+44331
+@tblock 2 25 gold
+15444
+15434
+15334
+15444
+14444
+@tblock 25 25 gold
+33331
+32331
+32231
+33331
+33331
+// 초상화: 왼쪽 위 빛과 절제된 색 덩이
+@tblock 10 8 black
+..3333..
+.332222.
+33222222
+32....22
+22....22
+@tblock 12 11 clay
+554433
+5544433
+5444433
+5444433
+@tblock 12 17 clay
+5444433
+544443
+.44443
+.44443
+.43333
+@tblock 9 24 red
+3333
+33333
+333333
+333333
+// 얼굴 X자 찢김: 어두운 틈과 말려 나온 천 가장자리
+@mat e linen 2
+@mblock 10 12
+tt........tt
+.ett....tte.
+..ett..tte..
+...etttte...
+....tttt....
+....tttt....
+...ttette...
+..tte..tte..
+.tte....tte.
+tte......tte

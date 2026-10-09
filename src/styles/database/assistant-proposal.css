@@ -1,0 +1,159 @@
+.ai-proposal-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-left: 2px solid var(--gold);
+  border-radius: 12px;
+  box-shadow: none;
+  display: grid;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+/* AI busy 중 입력 큐 표시(결함 ⑨). */
+.ai-pending-queue {
+  color: var(--text-2);
+}
+
+/* 0건 프로포절 패시브 알림(결함 ⑤) — 자동 소거. */
+.ai-proposal-card.ai-proposal-empty {
+  border-style: dashed;
+  box-shadow: none;
+  opacity: 0.85;
+}
+
+.ai-proposal-title {
+  color: var(--text-1);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+/* 적용 완료 변경 카드가 쓰는 미니맵 썸네일. */
+.ai-proposal-thumb {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 6px;
+}
+.ai-proposal-thumb-label {
+  color: var(--text-2);
+  font-size: 10px;
+  font-weight: 700;
+}
+.ai-proposal-thumb-canvas {
+  border: 1px solid var(--border-default);
+  image-rendering: pixelated;
+  max-height: 64px;
+  max-width: 100%;
+}
+
+/* 타일 어휘 결과 카드 — 승인 UI가 아니라 채팅의 편집 가능한 도구 결과다. */
+.ai-vocab-cards {
+  display: grid;
+  gap: 6px;
+  margin: 2px 0 4px 20px;
+}
+.ai-vocab-card {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 5px;
+  padding: 7px;
+}
+.ai-vocab-card-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ai-vocab-kind {
+  color: var(--text-2);
+  font-size: 10px;
+}
+.ai-vocab-badge {
+  border-radius: var(--radius-s);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+}
+.ai-vocab-badge.is-estimate {
+  background: color-mix(in srgb, var(--warning) 18%, transparent);
+  color: var(--warning);
+}
+.ai-vocab-badge.is-fact {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+.ai-vocab-badge.is-warn {
+  background: color-mix(in srgb, var(--danger, #C6403D) 15%, transparent);
+  color: var(--danger, #C6403D);
+}
+.ai-vocab-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.ai-vocab-thumb {
+  border: 1px solid var(--border-subtle);
+  display: inline-block;
+  height: 24px;
+  image-rendering: pixelated;
+  width: 24px;
+}
+.ai-vocab-edits {
+  display: grid;
+  gap: 4px 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.ai-vocab-field {
+  align-items: center;
+  display: grid;
+  font-size: 10px;
+  gap: 2px 6px;
+  grid-template-columns: 62px minmax(0, 1fr);
+}
+.ai-vocab-field-label {
+  color: var(--text-2);
+  font-weight: 700;
+}
+.ai-vocab-edit-input,
+.ai-vocab-edit-select {
+  background: var(--input-bg, var(--control-bg));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-size: 11px;
+  min-width: 0;
+  padding: 2px 4px;
+}
+.ai-vocab-facts {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.ai-vocab-fact {
+  color: var(--text-2);
+  font-size: 10px;
+}
+.ai-vocab-warning {
+  color: var(--warning);
+  font-size: 10px;
+}
+
+.ai-proposal-lines {
+  color: var(--text-2);
+  display: grid;
+  gap: 2px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+.ai-proposal-actions {
+  align-items: stretch;
+  display: flex;
+  gap: 8px;
+}

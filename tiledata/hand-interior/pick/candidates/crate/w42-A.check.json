@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate/w42-A.pxg",
+ "id": "crate",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "궤짝: 윗면 판자 4줄 + 앞면 6줄 틀(안쪽 판자). X 보강은 틀로 단순화",
+ "ok": true
+}

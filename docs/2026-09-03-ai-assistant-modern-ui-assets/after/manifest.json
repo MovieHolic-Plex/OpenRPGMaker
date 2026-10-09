@@ -1,0 +1,156 @@
+{
+  "base": "http://127.0.0.1:9861",
+  "at": "2026-09-03T10:34:00.707Z",
+  "shots": [
+    {
+      "file": "01-idle-shell.png",
+      "caption": "빈 대화 · 유휴 캡슐 (1440×900 전체)",
+      "box": null
+    },
+    {
+      "file": "02-idle-capsule.png",
+      "caption": "유휴 캡슐 크롭",
+      "box": {
+        "x": 948,
+        "y": 784,
+        "width": 480,
+        "height": 102
+      }
+    },
+    {
+      "file": "03-focused-suggest.png",
+      "caption": "입력 포커스 · 추천 팝오버(감독 칩 + 다음 할 일)",
+      "box": null
+    },
+    {
+      "file": "04-suggest-popover.png",
+      "caption": "추천 팝오버 크롭",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "05-menu.png",
+      "caption": "☰ 더보기 메뉴",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "06-preference.png",
+      "caption": "⌾ 성향 팝오버",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "07-context-meter.png",
+      "caption": "맥락 게이지 팝오버",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "08-settings.png",
+      "caption": "⚙ 설정 모달",
+      "box": null
+    },
+    {
+      "file": "10-instructions.png",
+      "caption": "감독 지침 모달",
+      "box": null
+    },
+    {
+      "file": "11-history-modal.png",
+      "caption": "🕒 이전 대화 모달",
+      "box": null
+    },
+    {
+      "file": "12-collapsed.png",
+      "caption": "접힘 상태 · 복귀 알약",
+      "box": null
+    },
+    {
+      "file": "13-collapsed-pill.png",
+      "caption": "복귀 알약 크롭",
+      "box": {
+        "x": 1354.265625,
+        "y": 842,
+        "width": 71.734375,
+        "height": 44
+      }
+    },
+    {
+      "file": "11b-history-modal-with-record.png",
+      "caption": "🕒 이전 대화 모달 — 저장된 대화 1건",
+      "box": null
+    },
+    {
+      "file": "14-conversation-shell.png",
+      "caption": "이어받은 대화 · 로그 카드 열림 (전체)",
+      "box": null
+    },
+    {
+      "file": "15-conversation-panel.png",
+      "caption": "대화 패널 크롭",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "17-change-card.png",
+      "caption": "변경 카드(before/after) 마운트",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "18-change-card-crop.png",
+      "caption": "변경 카드 크롭",
+      "box": {
+        "x": 684,
+        "y": 597.65625,
+        "width": 728,
+        "height": 172.34375
+      }
+    },
+    {
+      "file": "19-turn-running-sim.png",
+      "caption": "턴 진행 상태(클래스 토글 시뮬레이션)",
+      "box": {
+        "x": 306,
+        "y": 49,
+        "width": 1134,
+        "height": 851
+      }
+    },
+    {
+      "file": "20-conversation-1280.png",
+      "caption": "1280×800 · 대화 상태",
+      "box": null
+    },
+    {
+      "file": "21-studio.png",
+      "caption": "AI 스튜디오(장면 콘솔) 전체",
+      "box": null
+    }
+  ]
+}

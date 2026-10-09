@@ -1,0 +1,37 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 7
+@mat d wood 3
+@mat e wood 4
+@mat f wood 5
+@mat g wood 6
+@mat h wood 0
+@mat z wood 8
+@mat l leaf 5
+@mat m leaf 3
+@mat n leaf 2
+@mat v leaf 6
+@mat y yellow 5
+@mat o straw 4
+@mat p straw 3
+@mat q straw 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+.D.D..l.E..D.l..D.D..E.D..D.D...
+.DDDlDDDDDElDDDDDDlDDDDEDlDDDDD.
+.DlDDDDDDlDDEDDDlDDDDDDlDEDDDDl.
+.EFDDFDDFDDFDDEDDFDDFDDFDDFEDFD.
+.FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.
+acccccccccccccccccccccccccccccca
+agggggggggggggggggggggggggggggga
+abbbbbbbbbbbbbbbbbbbbbbbbbbbbbba
+agfcefffffeffffffffffefffffeffea
+agffefffffeffffffffffefffffeffea
+adddddddddddddddddddddddddddddda
+................................

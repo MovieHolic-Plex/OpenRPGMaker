@@ -1,0 +1,239 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 2669,
+  "kits_checked": 636,
+  "groups_checked": 158,
+  "autotiles_checked": 6
+ },
+ "reassembly": {
+  "kits": 636,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 2669,
+  "rows": 56,
+  "sheetPx": [
+   768,
+   896
+  ],
+  "strips": 101,
+  "kits": 636,
+  "groups": 158,
+  "autotiles": 6
+ },
+ "adopted": {
+  "pieces": 699,
+  "autotiles": 6,
+  "characters": 35
+ },
+ "by_module": {
+  "boathouse": {
+   "adopted": 32,
+   "total": 33
+  },
+  "carriage": {
+   "adopted": 19,
+   "total": 19
+  },
+  "castle_kit": {
+   "adopted": 52,
+   "total": 54
+  },
+  "characters_a": {
+   "adopted": 0,
+   "total": 13
+  },
+  "characters_b": {
+   "adopted": 0,
+   "total": 12
+  },
+  "clocktower": {
+   "adopted": 29,
+   "total": 29
+  },
+  "creatures": {
+   "adopted": 19,
+   "total": 24
+  },
+  "dorm": {
+   "adopted": 9,
+   "total": 9
+  },
+  "effects": {
+   "adopted": 30,
+   "total": 30
+  },
+  "greenhouse": {
+   "adopted": 40,
+   "total": 40
+  },
+  "honeydukes": {
+   "adopted": 25,
+   "total": 25
+  },
+  "infirmary": {
+   "adopted": 29,
+   "total": 29
+  },
+  "library": {
+   "adopted": 29,
+   "total": 29
+  },
+  "native": {
+   "adopted": 168,
+   "total": 168
+  },
+  "nature": {
+   "adopted": 28,
+   "total": 29
+  },
+  "owlery": {
+   "adopted": 38,
+   "total": 38
+  },
+  "postoffice": {
+   "adopted": 49,
+   "total": 50
+  },
+  "potions_extra": {
+   "adopted": 29,
+   "total": 29
+  },
+  "quidditch": {
+   "adopted": 43,
+   "total": 44
+  },
+  "shared_furniture": {
+   "adopted": 31,
+   "total": 31
+  }
+ },
+ "rejected": [],
+ "load_errors": {},
+ "charsets": {
+  "sheets": 5,
+  "characters": 35
+ },
+ "examples": [
+  {
+   "id": "wz-lake-example-dock",
+   "w": 16,
+   "h": 14,
+   "skipped": []
+  },
+  {
+   "id": "wz-car-example-stop",
+   "w": 16,
+   "h": 14,
+   "skipped": []
+  },
+  {
+   "id": "wz-castle-example-hall",
+   "w": 14,
+   "h": 10,
+   "skipped": []
+  },
+  {
+   "id": "wz-castle-example-corridor",
+   "w": 8,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-clock-example-gears",
+   "w": 14,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-dorm-example",
+   "w": 16,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-gh-example-greenhouse",
+   "w": 14,
+   "h": 11,
+   "skipped": []
+  },
+  {
+   "id": "wz-hd-example-cellar",
+   "w": 12,
+   "h": 10,
+   "skipped": []
+  },
+  {
+   "id": "wz-inf-example-ward",
+   "w": 14,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-lib-example-restricted",
+   "w": 14,
+   "h": 10,
+   "skipped": []
+  },
+  {
+   "id": "wz-wand-example-shop",
+   "w": 10,
+   "h": 9,
+   "skipped": []
+  },
+  {
+   "id": "wz-nat-example-forest-edge",
+   "w": 16,
+   "h": 12,
+   "skipped": []
+  },
+  {
+   "id": "wz-owl-example-tower",
+   "w": 16,
+   "h": 16,
+   "skipped": []
+  },
+  {
+   "id": "wz-post-example-street",
+   "w": 18,
+   "h": 14,
+   "skipped": []
+  },
+  {
+   "id": "wz-post-example-inside",
+   "w": 12,
+   "h": 9,
+   "skipped": []
+  },
+  {
+   "id": "wz-pot-example-prep",
+   "w": 12,
+   "h": 9,
+   "skipped": []
+  },
+  {
+   "id": "wz-qd-example-tunnel",
+   "w": 16,
+   "h": 14,
+   "skipped": []
+  },
+  {
+   "id": "wz-furn-example-common",
+   "w": 12,
+   "h": 9,
+   "skipped": []
+  }
+ ],
+ "roomkit": {
+  "floors": 13,
+  "walls": 8
+ },
+ "reassembly_from_files": 0
+}

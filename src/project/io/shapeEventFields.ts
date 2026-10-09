@@ -1,0 +1,539 @@
+import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
+import { isBlendModeName } from "@/project/blendMode";
+import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import {
+  CHARACTER_FOOTPRINT_AXIS_MAX,
+  CHARACTER_SCALE_MAX,
+  CHARACTER_SCALE_MIN,
+} from "@/project/footprint";
+import { validateCommandArray, validateConditionShape, validateMoveRoute } from "./shapeCommandFields";
+import { validateLightingState } from "./shapeLightingFields";
+import { validateTrigger } from "./shapeReferenceFields";
+import { isSeason, isTimePhase } from "@/project/gameTime";
+import { EXTRA_LAYER_KEYS, malformedExtraLayerKeys } from "@/project/mapLayers";
+import { isMapRoleKind } from "@/project/mapRole";
+import {
+  isMapPlanningItemOrigin,
+  isMapPlanningItemStatus,
+  MAP_PLANNING_ITEMS_MAX,
+} from "@/project/mapPlanningItems";
+
+export function validateCommonEvents(value: unknown): void {
+  for (const [index, entry] of requireArray("commonEvents", value).entries()) {
+    const record = requireRecord(`commonEvents[${index}]`, entry);
+    requireString(`commonEvents[${index}].id`, record.id);
+    requireString(`commonEvents[${index}].name`, record.name);
+    requireString(`commonEvents[${index}].trigger`, record.trigger);
+    validateCommandArray(`commonEvents[${index}].commands`, record.commands);
+  }
+}
+
+export function validateMaps(value: unknown): Record<string, unknown> {
+  const maps = requireRecord("maps", value);
+  for (const [id, mapValue] of Object.entries(maps)) {
+    const map = requireRecord(`map ${id}`, mapValue);
+    requireString(`map ${id}.id`, map.id);
+    requireString(`map ${id}.name`, map.name);
+    const width = requireNumber(`map ${id}.width`, map.width);
+    const height = requireNumber(`map ${id}.height`, map.height);
+    requireString(`map ${id}.tilesetId`, map.tilesetId);
+    requireNumber(`map ${id}.tileSize`, map.tileSize);
+    const expected = width * height;
+    assert(requireArray(`map ${id}.lowerTiles`, map.lowerTiles).length === expected, `map ${id}: lowerTiles 길이 불일치.`);
+    assert(requireArray(`map ${id}.upperTiles`, map.upperTiles).length === expected, `map ${id}: upperTiles 길이 불일치.`);
+    // 1층·3층은 엄격하다. 2층·4층·그림자는 선택 칸이라, 길이가 틀린 배열 하나 때문에 프로젝트 전체가
+    // 안 열리지 않도록 경고하고 버린다(저장 쪽은 projectLint 왕복 검사가 오류로 잡는다).
+    for (const key of EXTRA_LAYER_KEYS) {
+      if (map[key] !== undefined) requireArray(`map ${id}.${key}`, map[key]);
+    }
+    for (const key of malformedExtraLayerKeys(map, expected)) {
+      console.warn(`[맵 층] map ${id}: ${key} 길이 ${(map[key] as unknown[]).length} ≠ ${expected} — 선택 칸이라 버리고 불러온다.`);
+      delete map[key];
+    }
+    if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
+    if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
+    if (map.mapRole !== undefined && !isMapRoleKind(map.mapRole)) {
+      console.warn(`[맵 성격] map ${id}: mapRole ${JSON.stringify(map.mapRole)} 은 모르는 값이라 버리고 불러온다(town/dungeon/field/interior).`);
+      delete map.mapRole;
+    }
+    if (map.encounterRate !== undefined) requireNumber(`map ${id}.encounterRate`, map.encounterRate);
+    if (map.troopIds !== undefined) validateIdArray(`map ${id}.troopIds`, map.troopIds);
+    if (map.encounterTable !== undefined) validateEncounterTable(`map ${id}.encounterTable`, map.encounterTable);
+    if (map.fieldSpawns !== undefined) validateFieldSpawns(`map ${id}.fieldSpawns`, map.fieldSpawns);
+    if (map.roguelikeRoom !== undefined) validateRoguelikeRoom(`map ${id}.roguelikeRoom`, map.roguelikeRoom);
+    if (map.safeZones !== undefined) validateSafeZones(`map ${id}.safeZones`, map.safeZones);
+    if (map.farmableArea !== undefined) validateRectArray(`map ${id}.farmableArea`, map.farmableArea);
+    if (map.locations !== undefined) validateMapNamedLocations(`map ${id}.locations`, map.locations, width, height);
+    if (map.locationRoleProjection !== undefined) validateLocationRoleProjection(`map ${id}.locationRoleProjection`, map.locationRoleProjection);
+    if (map.planningItems !== undefined) validatePlanningItems(`map ${id}.planningItems`, map.planningItems);
+    if (map.background !== undefined) validateMapBackgroundShape(`map ${id}.background`, map.background);
+    if (map.defaultLighting !== undefined) validateLightingState(`map ${id}.defaultLighting`, map.defaultLighting);
+    for (const [eventIndex, eventValue] of requireArray(`map ${id}.events`, map.events).entries()) {
+      validateEventShape(`map ${id}.events[${eventIndex}]`, eventValue);
+    }
+  }
+  return maps;
+}
+
+/** 맵 배경은 타입만 본다 — 범위 클램프는 로드 정규화(`shape.ts`)가 맡는다. */
+function validateMapBackgroundShape(label: string, value: unknown): void {
+  const background = requireRecord(label, value);
+  requireString(`${label}.imageId`, background.imageId);
+  if (background.scrollX !== undefined) requireNumber(`${label}.scrollX`, background.scrollX);
+  if (background.scrollY !== undefined) requireNumber(`${label}.scrollY`, background.scrollY);
+  if (background.loopX !== undefined) requireBoolean(`${label}.loopX`, background.loopX);
+  if (background.loopY !== undefined) requireBoolean(`${label}.loopY`, background.loopY);
+}
+
+function validateEncounterTable(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    requireString(`${label}[${index}].troopId`, entry.troopId);
+    const weight = requireNumber(`${label}[${index}].weight`, entry.weight);
+    assert(Number.isInteger(weight) && weight > 0, `${label}[${index}].weight는 1 이상의 정수여야 합니다.`);
+    if (entry.conditions !== undefined) validateEncounterConditions(`${label}[${index}].conditions`, entry.conditions);
+  }
+}
+
+function validateEncounterConditions(label: string, value: unknown): void {
+  const conditions = requireRecord(label, value);
+  if (conditions.switchId !== undefined) requireString(`${label}.switchId`, conditions.switchId);
+  if (conditions.variableId !== undefined) {
+    requireString(`${label}.variableId`, conditions.variableId);
+    requireNumber(`${label}.atLeast`, conditions.atLeast);
+  } else if (conditions.atLeast !== undefined) {
+    requireNumber(`${label}.atLeast`, conditions.atLeast);
+  }
+  if (conditions.minPartyLevel !== undefined) requireNumber(`${label}.minPartyLevel`, conditions.minPartyLevel);
+  if (conditions.maxPartyLevel !== undefined) requireNumber(`${label}.maxPartyLevel`, conditions.maxPartyLevel);
+  if (conditions.region !== undefined) validateRect(`${label}.region`, conditions.region);
+  if (conditions.locationId !== undefined) {
+    const locationId = requireString(`${label}.locationId`, conditions.locationId);
+    assert(locationId.trim().length > 0, `${label}.locationId는 바울 수 없습니다.`);
+  }
+  if (conditions.timePhase !== undefined) {
+    const phase = requireString(`${label}.timePhase`, conditions.timePhase);
+    assert(isTimePhase(phase), `${label}.timePhase가 잘못되었습니다.`);
+  }
+  if (conditions.season !== undefined) {
+    const season = requireString(`${label}.season`, conditions.season);
+    assert(isSeason(season), `${label}.season이 잘못되었습니다.`);
+  }
+}
+
+function validateFieldSpawns(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    requireString(`${label}[${index}].id`, entry.id);
+    requireString(`${label}[${index}].troopId`, entry.troopId);
+    validateRect(`${label}[${index}].area`, entry.area);
+    if (entry.locationId !== undefined) {
+      const locationId = requireString(`${label}[${index}].locationId`, entry.locationId);
+      assert(locationId.trim().length > 0, `${label}[${index}].locationId는 비울 수 없습니다.`);
+    }
+    if (entry.maxAlive !== undefined) {
+      const maxAlive = requireNumber(`${label}[${index}].maxAlive`, entry.maxAlive);
+      assert(Number.isInteger(maxAlive) && maxAlive > 0, `${label}[${index}].maxAlive는 1 이상의 정수여야 합니다.`);
+    }
+    if (entry.respawnSec !== undefined) {
+      const respawnSec = requireNumber(`${label}[${index}].respawnSec`, entry.respawnSec);
+      assert(respawnSec >= 0, `${label}[${index}].respawnSec는 0 이상이어야 합니다.`);
+    }
+    if (entry.chase !== undefined) requireBoolean(`${label}[${index}].chase`, entry.chase);
+    if (entry.graphic !== undefined) validateEventGraphic(`${label}[${index}].graphic`, entry.graphic);
+    // 스폰도 몸 크기를 싣는다(2차). 페이지와 **같은 경계**로 막아 스폰만 검증을 비켜 가는 구멍을 없앤다.
+    validateCharacterFootprintFields(`${label}[${index}]`, entry);
+  }
+}
+
+function validateRoguelikeRoom(label: string, value: unknown): void {
+  const room = requireRecord(label, value);
+  if (room.roomId !== undefined) {
+    const roomId = requireString(`${label}.roomId`, room.roomId);
+    assert(roomId.trim().length > 0, `${label}.roomId는 비울 수 없습니다.`);
+  }
+  if (room.resetEventState !== undefined) requireBoolean(`${label}.resetEventState`, room.resetEventState);
+  if (room.encounterSlots === undefined) return;
+  const slotIds = new Set<string>();
+  for (const [slotIndex, slotValue] of requireArray(`${label}.encounterSlots`, room.encounterSlots).entries()) {
+    const slotLabel = `${label}.encounterSlots[${slotIndex}]`;
+    const slot = requireRecord(slotLabel, slotValue);
+    const slotId = requireString(`${slotLabel}.id`, slot.id).trim();
+    assert(slotId.length > 0, `${slotLabel}.id는 비울 수 없습니다.`);
+    assert(!slotIds.has(slotId), `${slotLabel}.id가 중복됩니다: ${slotId}`);
+    slotIds.add(slotId);
+    const choices = requireArray(`${slotLabel}.choices`, slot.choices);
+    assert(choices.length > 0, `${slotLabel}.choices는 하나 이상이어야 합니다.`);
+    const choiceIds = new Set<string>();
+    for (const [choiceIndex, choiceValue] of choices.entries()) {
+      const choiceLabel = `${slotLabel}.choices[${choiceIndex}]`;
+      const choice = requireRecord(choiceLabel, choiceValue);
+      const fieldSpawnId = requireString(`${choiceLabel}.fieldSpawnId`, choice.fieldSpawnId).trim();
+      assert(fieldSpawnId.length > 0, `${choiceLabel}.fieldSpawnId는 비울 수 없습니다.`);
+      assert(!choiceIds.has(fieldSpawnId), `${choiceLabel}.fieldSpawnId가 중복됩니다: ${fieldSpawnId}`);
+      choiceIds.add(fieldSpawnId);
+      if (choice.weight !== undefined) {
+        const weight = requireNumber(`${choiceLabel}.weight`, choice.weight);
+        assert(Number.isInteger(weight) && weight > 0, `${choiceLabel}.weight는 1 이상의 정수여야 합니다.`);
+      }
+      for (const key of ["minFloor", "maxFloor"] as const) {
+        if (choice[key] === undefined) continue;
+        const floor = requireNumber(`${choiceLabel}.${key}`, choice[key]);
+        assert(Number.isInteger(floor) && floor >= 1 && floor <= 9_999, `${choiceLabel}.${key}는 1..9999 정수여야 합니다.`);
+      }
+      if (typeof choice.minFloor === "number" && typeof choice.maxFloor === "number") {
+        assert(choice.minFloor <= choice.maxFloor, `${choiceLabel}.minFloor가 maxFloor보다 큽니다.`);
+      }
+    }
+  }
+}
+
+function validateSafeZones(label: string, value: unknown): void {
+  validateRectArray(label, value);
+}
+
+/**
+ * 보존 기획 항목은 JSON 경계에서 fail-closed 다 — 이상한 행을 조용하게 버리면 사용자가
+ * 보존하기로 결정한 문장이 밝힐 이유 없이 사라진다. 섬을 통과한 목록은 로드 후
+ * `normalizeMapPlanningItems` 가 다심 정리한다(공백·상한).
+ */
+function validatePlanningItems(label: string, value: unknown): void {
+  const rows = requireArray(label, value);
+  assert(rows.length <= MAP_PLANNING_ITEMS_MAX, `${label}: 보존 기획 항목은 ${MAP_PLANNING_ITEMS_MAX}개까지입니다.`);
+  const seen = new Set<string>();
+  for (const [index, rowValue] of rows.entries()) {
+    const row = requireRecord(`${label}[${index}]`, rowValue);
+    const rowId = requireString(`${label}[${index}].id`, row.id);
+    assert(rowId.trim().length > 0, `${label}[${index}].id는 빈 보존 기획 항목 id 입니다.`);
+    assert(!seen.has(rowId), `${label}[${index}].id가 중복되었습니다.`);
+    seen.add(rowId);
+    const text = requireString(`${label}[${index}].text`, row.text);
+    assert(text.trim().length > 0, `${label}[${index}].text는 본문이 필요합니다.`);
+    assert(isMapPlanningItemStatus(row.status), `${label}[${index}].status가 잘못되었습니다.`);
+    assert(isMapPlanningItemOrigin(row.origin), `${label}[${index}].origin이 잘못되었습니다.`);
+    for (const key of ["createdAt", "updatedAt", "specAssetId"] as const) {
+      if (row[key] !== undefined) requireString(`${label}[${index}].${key}`, row[key]);
+    }
+  }
+}
+
+/**
+ * 역할 투영 기록 (2026-09-12). 로케이션 ID → 그때 넣은 사각형.
+ *
+ * 알 수 없는 역할 키를 허용하지 않는 이유: 이 기록은 «우리가 넣은 사각형» 을 찾는 용도라,
+ * 모르는 키가 들어오면 그 사각형이 영원히 걷어내지지 않는다(유령).
+ */
+function validateLocationRoleProjection(label: string, value: unknown): void {
+  const record = requireRecord(label, value);
+  for (const role of ["safeZone", "farmable"]) {
+    const entries = record[role];
+    if (entries === undefined) continue;
+    const perLocation = requireRecord(`${label}.${role}`, entries);
+    for (const [locationId, rect] of Object.entries(perLocation)) {
+      assert(locationId.trim().length > 0, `${label}.${role}의 로케이션 ID가 비었습니다.`);
+      validateRect(`${label}.${role}.${locationId}`, rect);
+    }
+  }
+}
+
+function validateRectArray(label: string, value: unknown): void {
+  for (const [index, rectValue] of requireArray(label, value).entries()) {
+    validateRect(`${label}[${index}]`, rectValue);
+  }
+}
+
+/**
+ * 명명 로케션 레이어. **로드 시 맵 밖 사각형을 거부하지 않는다** — 맵 폭이 준 저장본이
+ * 열리지 않으면 사용자가 복구할 수단이 사라진다. 기하 모수는 편집기 통로가 클릨하고
+ * `projectLint` 가 진단으로 알린다. 이곳은 타입·ID 유일성만 보장한다.
+ */
+function validateMapNamedLocations(label: string, value: unknown, _width: number, _height: number): void {
+  const seen = new Set<string>();
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    const locationId = requireString(`${label}[${index}].id`, entry.id);
+    assert(locationId.trim().length > 0, `${label}[${index}].id는 바울 수 없습니다.`);
+    assert(!seen.has(locationId), `${label}[${index}].id가 중복입니다: ${locationId}`);
+    seen.add(locationId);
+    const name = requireString(`${label}[${index}].name`, entry.name);
+    assert(name.trim().length > 0, `${label}[${index}].name은 바울 수 없습니다.`);
+    validateRect(`${label}[${index}]`, entry);
+    if (entry.note !== undefined) requireString(`${label}[${index}].note`, entry.note);
+    if (entry.color !== undefined) requireString(`${label}[${index}].color`, entry.color);
+    if (entry.tags !== undefined) validateIdArray(`${label}[${index}].tags`, entry.tags);
+    if (entry.origin !== undefined) {
+      const origin = requireRecord(`${label}[${index}].origin`, entry.origin);
+      assert(origin.kind === "layoutRegion", `${label}[${index}].origin.kind가 지원되지 않습니다.`);
+      requireString(`${label}[${index}].origin.regionId`, origin.regionId);
+      if (origin.planKind !== undefined) requireString(`${label}[${index}].origin.planKind`, origin.planKind);
+    }
+  }
+}
+
+function validateRect(label: string, value: unknown): void {
+  const rect = requireRecord(label, value);
+  requireNumber(`${label}.x`, rect.x);
+  requireNumber(`${label}.y`, rect.y);
+  requireNumber(`${label}.w`, rect.w);
+  requireNumber(`${label}.h`, rect.h);
+}
+
+function validateEventGraphic(label: string, value: unknown): void {
+  const graphic = requireRecord(label, value);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.appearanceId is blank`);
+  if (graphic.sprite !== undefined) {
+    const sprite = requireRecord(`${label}.sprite`, graphic.sprite);
+    requireString(`${label}.sprite.type`, sprite.type);
+    requireString(`${label}.sprite.id`, sprite.id);
+  }
+  if (graphic.direction !== undefined) {
+    validateDir(`${label}.direction`, graphic.direction);
+  }
+  if (graphic.pattern !== undefined) requireNumber(`${label}.pattern`, graphic.pattern);
+  if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
+  validateCharacterScale(`${label}.scale`, graphic.scale);
+  if (graphic.scaleMode !== undefined) {
+    assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.scaleMode must be auto or manual`);
+  }
+  if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.blendMode must be normal, add, screen or multiply`);
+}
+
+/**
+ * 렌더 배율. 런타임 `normalizeCharacterScale` 과 **같은 경계**로 막는다.
+ *
+ * 왜 로드 시점에 막는가: 정규화만 있으면 `scale: 500` 이 조용히 8 로 잘려 저장된 값과
+ * 화면이 어긋난 상태로 남는다. 작성자는 자기가 500 을 넣은 것을 기억하지 못한다.
+ */
+function validateCharacterScale(label: string, value: unknown): void {
+  if (value === undefined) return;
+  const scale = requireNumber(label, value);
+  assert(
+    Number.isFinite(scale) && scale >= CHARACTER_SCALE_MIN && scale <= CHARACTER_SCALE_MAX,
+    `${label}은 ${CHARACTER_SCALE_MIN}~${CHARACTER_SCALE_MAX} 범위여야 합니다.`
+  );
+}
+
+/**
+ * 몸 크기와 통행 행. 축은 1..8, 통행 행은 1..몸 높이.
+ *
+ * 런타임의 `normalizeCharacterFootprint` / `normalizePassRows` 는 비정규 값을 조용히 굳히지만
+ * (fail-closed), 그것은 **이미 로드된 프로젝트를 지키는 마지막 방어선**이다. `{width: -5}` 가
+ * 로드 검증을 통과하면 작성자는 자기 프로젝트가 왜 1x1 로 보이는지 알 수 없다.
+ */
+function validateCharacterFootprintFields(label: string, page: Record<string, unknown>): void {
+  validateFootprintPair(`${label}.footprint`, page.footprint, `${label}.passRows`, page.passRows);
+}
+
+/**
+ * 필드 이름과 무관한 몸 크기·통행 행 검증. 이벤트 페이지는 `footprint`/`passRows`,
+ * 시스템은 `playerFootprint`/`playerPassRows` 로 키가 다르지만 **경계는 같아야** 한다 —
+ * 한쪽만 검증하면 그쪽으로 비정규 값이 새어 들어간다.
+ */
+export function validateFootprintPair(
+  footprintLabel: string,
+  footprint: unknown,
+  passRowsLabel: string,
+  passRows: unknown
+): void {
+  let height: number | undefined;
+  if (footprint !== undefined) {
+    const record = requireRecord(footprintLabel, footprint);
+    const width = requireNumber(`${footprintLabel}.width`, record.width);
+    height = requireNumber(`${footprintLabel}.height`, record.height);
+    assertFootprintAxis(`${footprintLabel}.width`, width);
+    assertFootprintAxis(`${footprintLabel}.height`, height);
+  }
+  if (passRows !== undefined) {
+    const rows = requireNumber(passRowsLabel, passRows);
+    const max = height ?? 1;
+    assert(
+      Number.isSafeInteger(rows) && rows >= 1 && rows <= max,
+      `${passRowsLabel}는 1~${max}(몸 높이) 범위의 정수여야 합니다.`
+    );
+  }
+}
+
+function assertFootprintAxis(label: string, value: number): void {
+  assert(
+    Number.isSafeInteger(value) && value >= 1 && value <= CHARACTER_FOOTPRINT_AXIS_MAX,
+    `${label}은 1~${CHARACTER_FOOTPRINT_AXIS_MAX} 범위의 정수여야 합니다.`
+  );
+}
+
+function validateDir(label: string, value: unknown): void {
+  const direction = requireString(label, value);
+  assert(direction === "left" || direction === "right" || direction === "up" || direction === "down", `${label}이 잘못되었습니다.`);
+}
+
+function validateIdArray(label: string, value: unknown): void {
+  for (const [index, id] of requireArray(label, value).entries()) {
+    requireString(`${label}[${index}]`, id);
+  }
+}
+
+function validateTileStacks(label: string, value: unknown, cellCount: number): void {
+  const stacks = requireRecord(label, value);
+  for (const [cell, stackValue] of Object.entries(stacks)) {
+    const index = Number(cell);
+    assert(Number.isInteger(index) && index >= 0 && index < cellCount, `${label}[${cell}]: tile stack cell index out of range`);
+    for (const [stackIndex, tile] of requireArray(`${label}[${cell}]`, stackValue).entries()) {
+      requireNumber(`${label}[${cell}][${stackIndex}]`, tile);
+    }
+  }
+}
+
+function validateEventShape(label: string, value: unknown): void {
+  const event = requireRecord(label, value);
+  requireString(`${label}.id`, event.id);
+  if (event.placementRole !== undefined) assert(event.placementRole === "npc", `${label}.placementRole가 잘못되었습니다.`);
+  requireNumber(`${label}.x`, event.x);
+  requireNumber(`${label}.y`, event.y);
+  validateTrigger(`${label}.trigger`, event.trigger);
+  if (event.condition !== undefined) validateConditionShape(`${label}.condition`, event.condition);
+  if (event.moveRoute !== undefined) validateMoveRoute(`${label}.moveRoute`, event.moveRoute);
+  validateCommandArray(`${label}.commands`, event.commands);
+  if (event.schedule !== undefined) validateNpcSchedule(`${label}.schedule`, event.schedule);
+  if (event.giftPrefs !== undefined) validateGiftPrefs(`${label}.giftPrefs`, event.giftPrefs);
+  if (event.giftResponses !== undefined) validateGiftResponses(`${label}.giftResponses`, event.giftResponses);
+  if (event.pages !== undefined) {
+    for (const [index, pageValue] of requireArray(`${label}.pages`, event.pages).entries()) {
+      validatePageShape(`${label}.pages[${index}]`, pageValue);
+    }
+  }
+}
+
+export function validateGiftPrefs(label: string, value: unknown): void {
+  const prefs = requireRecord(label, value);
+  if (prefs.loved !== undefined) validateIdArray(`${label}.loved`, prefs.loved);
+  if (prefs.liked !== undefined) validateIdArray(`${label}.liked`, prefs.liked);
+  if (prefs.disliked !== undefined) validateIdArray(`${label}.disliked`, prefs.disliked);
+}
+
+export function validateGiftResponses(label: string, value: unknown): void {
+  const responses = requireRecord(label, value);
+  for (const key of ["loved", "liked", "neutral", "disliked", "alreadyGifted", "noItems"]) {
+    if (responses[key] !== undefined) requireString(`${label}.${key}`, responses[key]);
+  }
+}
+
+function validateNpcSchedule(label: string, value: unknown): void {
+  for (const [index, entryValue] of requireArray(label, value).entries()) {
+    const entry = requireRecord(`${label}[${index}]`, entryValue);
+    validateNpcScheduleWhen(`${label}[${index}].when`, entry.when);
+    const at = requireRecord(`${label}[${index}].at`, entry.at);
+    requireString(`${label}[${index}].at.mapId`, at.mapId);
+    requireNumber(`${label}[${index}].at.x`, at.x);
+    requireNumber(`${label}[${index}].at.y`, at.y);
+    if (entry.facing !== undefined) validateDir(`${label}[${index}].facing`, entry.facing);
+    if (entry.activity !== undefined) requireString(`${label}[${index}].activity`, entry.activity);
+  }
+}
+
+function validateNpcScheduleWhen(label: string, value: unknown): void {
+  const when = requireRecord(label, value);
+  if (when.timePhase !== undefined) {
+    const phase = requireString(`${label}.timePhase`, when.timePhase);
+    assert(isTimePhase(phase), `${label}.timePhase가 잘못되었습니다.`);
+  }
+  if (when.hourRange !== undefined) validateNumberPair(`${label}.hourRange`, when.hourRange);
+  if (when.season !== undefined) {
+    const season = requireString(`${label}.season`, when.season);
+    assert(isSeason(season), `${label}.season이 잘못되었습니다.`);
+  }
+  if (when.dayRange !== undefined) validateNumberPair(`${label}.dayRange`, when.dayRange);
+}
+
+function validateNumberPair(label: string, value: unknown): void {
+  const pair = requireArray(label, value);
+  assert(pair.length === 2, `${label}는 숫자 2개 배열이어야 합니다.`);
+  requireNumber(`${label}[0]`, pair[0]);
+  requireNumber(`${label}[1]`, pair[1]);
+}
+
+function validatePageShape(label: string, value: unknown): void {
+  const page = requireRecord(label, value);
+  requireString(`${label}.id`, page.id);
+  requireString(`${label}.name`, page.name);
+  for (const [index, condition] of requireArray(`${label}.conditions`, page.conditions).entries()) {
+    validatePageConditionShape(`${label}.conditions[${index}]`, condition);
+  }
+  const graphic = requireRecord(`${label}.graphic`, page.graphic);
+  if (graphic.appearanceId !== undefined) assert(requireString(`${label}.graphic.appearanceId`, graphic.appearanceId).trim().length > 0, `${label}.graphic.appearanceId is blank`);
+  // 페이지 그림은 예전부터 `requireRecord` 만 거쳤다. 전체를 validateEventGraphic 으로
+  // 올리면 sprite.type 이 없는 기존 프로젝트를 새로 거부하게 되므로, 2차가 도입한 배율만
+  // 검증한다 — 새 필드에만 새 계약을 건다.
+  validateCharacterScale(`${label}.graphic.scale`, graphic.scale);
+  if (graphic.scaleMode !== undefined) {
+    assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.graphic.scaleMode must be auto or manual`);
+  }
+  if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.graphic.blendMode must be normal, add, screen or multiply`);
+  validateCharacterFootprintFields(label, page);
+  validateTrigger(`${label}.trigger`, page.trigger);
+  requireString(`${label}.priority`, page.priority);
+  const movement = requireRecord(`${label}.movement`, page.movement);
+  const movementType = requireString(`${label}.movement.type`, movement.type);
+  assert(
+    movementType === "fixed" ||
+      movementType === "random" ||
+      movementType === "approach" ||
+      movementType === "custom" ||
+      movementType === "living" ||
+      movementType === "chase",
+    `${label}.movement.type이 잘못되었습니다.`
+  );
+  requireNumber(`${label}.movement.speed`, movement.speed);
+  requireNumber(`${label}.movement.frequency`, movement.frequency);
+  if (movement.route !== undefined) validateMoveRoute(`${label}.movement.route`, movement.route);
+  if (movement.living !== undefined) validateLivingMovement(`${label}.movement.living`, movement.living);
+  if (movement.sight !== undefined) assert(isNpcSight(movement.sight), `${label}: 잘못된 시야 설정`);
+  if (page.detectionEncounter !== undefined) {
+    assert(isDetectionEncounter(page.detectionEncounter), `${label}: 잘못된 발견 이벤트 설정`);
+    const trigger = requireRecord(`${label}.trigger`, page.trigger);
+    assert(trigger.kind !== "auto" && trigger.kind !== "parallel" && page.interaction === undefined,
+      `${label}: 발견 이벤트는 자동·병렬 실행이나 물체 상호작용과 함께 사용할 수 없습니다.`);
+  }
+  if (movement.sightRange !== undefined) requireNumber(`${label}.movement.sightRange`, movement.sightRange);
+  if (movement.giveUpRange !== undefined) requireNumber(`${label}.movement.giveUpRange`, movement.giveUpRange);
+  if (movement.pathfind !== undefined) requireBoolean(`${label}.movement.pathfind`, movement.pathfind);
+  if (movement.pursuit !== undefined) {
+    const pursuit = requireRecord(`${label}.movement.pursuit`, movement.pursuit);
+    assert(pursuit.scope === "map" || pursuit.scope === "connected", `${label}: 추격 범위 오류`);
+    assert(pursuit.onLost === "wait" || pursuit.onLost === "return", `${label}: 추격 복귀 오류`);
+    assert(pursuit.tracking === undefined || pursuit.tracking === "lastSeen" || pursuit.tracking === "persistent", `${label}: 추격 추적 정책 오류`);
+    if (pursuit.lostSwitchId !== undefined) requireString(`${label}.movement.pursuit.lostSwitchId`, pursuit.lostSwitchId);
+    if (pursuit.followSwitchId !== undefined) requireString(`${label}.movement.pursuit.followSwitchId`, pursuit.followSwitchId);
+    for (const key of ["doorDelayMs", "searchMs"]) {
+      const ms = requireNumber(`${label}.movement.pursuit.${key}`, pursuit[key]);
+      assert(Number.isFinite(ms) && ms >= 0 && ms <= 60000, `${label}: 추격 시간은 0~60000ms`);
+    }
+  }
+  if (page.interaction !== undefined) {
+    const interaction = requireRecord(`${label}.interaction`, page.interaction);
+    assert(interaction.kind === "pushable" || interaction.kind === "hiding", `${label}: 물체 상호작용 오류`);
+    if (interaction.directions !== undefined) {
+      for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);
+    }
+  }
+  validateCommandArray(`${label}.commands`, page.commands);
+}
+
+function validateLivingMovement(label: string, value: unknown): void {
+  const living = requireRecord(label, value);
+  requireBoolean(`${label}.repeat`, living.repeat);
+  for (const [index, destinationValue] of requireArray(`${label}.destinations`, living.destinations).entries()) {
+    const destination = requireRecord(`${label}.destinations[${index}]`, destinationValue);
+    requireString(`${label}.destinations[${index}].mapId`, destination.mapId);
+    requireNumber(`${label}.destinations[${index}].x`, destination.x);
+    requireNumber(`${label}.destinations[${index}].y`, destination.y);
+    if (destination.direction !== undefined) {
+      validateDir(`${label}.destinations[${index}].direction`, destination.direction);
+    }
+    if (destination.switchId !== undefined) requireString(`${label}.destinations[${index}].switchId`, destination.switchId);
+  }
+}
+
+function validatePageConditionShape(label: string, value: unknown): void {
+  // EventPageCondition = Condition 이므로 fork 조건과 같은 검증기를 그대로 쓴다.
+  // (과거 별도 구현이 selfSwitch/gold kind를 누락해 저장/불러오기가 깨졌다.)
+  validateConditionShape(label, value);
+}

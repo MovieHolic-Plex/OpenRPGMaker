@@ -1,0 +1,23 @@
+{
+ "id": "castle_keep",
+ "slug": "castle_keep",
+ "name": "마당 있는 성",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  4,
+  4
+ ],
+ "canvas": [
+  64,
+  64
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 4×4 바깥 성벽·모서리 푸른 원뿔탑·안뜰·푸른 홀·정문.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

@@ -1,0 +1,138 @@
+// ai/sessionToolExposure.ts
+//
+// Shared by the Pi chat entry point and the legacy AssistantSession.
+// The editor assistant keeps a small control plane in the first request and
+// expands it with tools named by intent, the active plan, read contracts and
+// discovery results. The complete catalog remains an explicit fallback for
+// neutral/failed routing and for a discovery miss. This keeps capability
+// reachability without paying for every editor schema on every turn.
+
+import { adventureToolNames, type AdventureRequirements } from "./adventureCompletion";
+import { capabilityEscalationSchemas } from "./capabilityEscalation";
+import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
+import type { IntentDeclaration } from "./intentDeclaration";
+import { toOpenAiTools, type OpenAiTool } from "@/editor/tools";
+import type { WorkPlan } from "./workPlan";
+import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
+
+/** Read/control tools that must remain reachable before any search round. */
+export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
+  "find_tools",
+  "list_authoring_presets",
+  "read_authoring_preset",
+  "read_project_wiki",
+  "get_project_summary",
+  "get_map_region",
+  "find_events",
+  "get_event",
+  "find_layout_regions",
+  "get_database_records",
+  "list_resources",
+  "focus_editor_view",
+];
+
+export interface SessionToolExposureInput {
+  readonly requestText: string;
+  readonly intent: IntentDeclaration | null;
+  readonly discoveredToolNames?: readonly string[];
+  readonly requiredReadTools?: readonly string[];
+  readonly workPlan?: WorkPlan | null;
+  readonly fullCatalogFallback?: boolean;
+  /**
+   * 이 요청을 받을 모델의 컨텍스트 창. 주면 전체 카탈로그가 창에 안 들어갈 때 폴백도 좁힌 목록(코어+발견 도구)을 쓴다.
+   * 실측(2026-10-02): 전체 카탈로그 약 189,000 토큰 + 예비분 16,384 가 claude·glm(200,000)·미지 모델(128,000) 창을 넘어
+   * 폴백 턴이 요청 조립에서 죽었다.
+   */
+  readonly contextWindow?: number;
+}
+
+/** 폴백으로 전체 카탈로그를 보내도 대화가 쓸 자리(약 13,000 토큰)가 남는가. */
+const CONVERSATION_FLOOR_TOKENS = 13_000;
+let fullCatalogTokenCache: { readonly count: number; readonly tokens: number } | undefined;
+export function fullCatalogFitsWindow(full: readonly OpenAiTool[], contextWindow: number): boolean {
+  if (fullCatalogTokenCache?.count !== full.length) {
+    fullCatalogTokenCache = { count: full.length, tokens: estimateContextTokens([{ role: "system", content: JSON.stringify(full) }]) };
+  }
+  return fullCatalogTokenCache.tokens + DEFAULT_COMPACTION_SETTINGS.reserveTokens + CONVERSATION_FLOOR_TOKENS <= contextWindow;
+}
+
+function appendUnique(target: OpenAiTool[], seen: Set<string>, schemas: readonly OpenAiTool[]): void {
+  for (const schema of schemas) {
+    const name = schema.function.name;
+    if (seen.has(name)) continue;
+    seen.add(name);
+    target.push(schema);
+  }
+}
+
+function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
+  if (!intent) return [];
+  const names = [
+    ...intent.tools,
+    ...(intent.adventure ? adventureToolNames(intent.adventure as AdventureRequirements) : []),
+  ];
+  // 마을 시공 도구를 고른 요청에는 버들항 조립 도구·검사 도구를 함께 보인다 — 선언이 고른 도구 8개 안에 검사 도구가 없으면
+  // 모델이 존재를 모른다(2026-10-01). 옛 이름 author_village 를 선언해도 같은 묶음을 보인다(숲마을 시공기는 2026-10-07 삭제).
+  if (names.includes("author_village") || names.includes("author_beodeul_town")) {
+    names.push("author_beodeul_town", "check_city_form", "check_reachability");
+  }
+  return toolSchemasForNames(names) as OpenAiTool[];
+}
+
+/**
+ * Build the registry portion of one AssistantSession request.
+ *
+ * `fullCatalogFallback` is deliberately explicit. A missing declaration or a
+ * search miss must never make a real editor capability unreachable; callers can
+ * flip it for the next round without changing execution/approval policy.
+ */
+export function buildSessionRegistryTools(input: SessionToolExposureInput): OpenAiTool[] {
+  if (input.fullCatalogFallback || input.intent === null || input.intent.source === "fallback") {
+    const full = toOpenAiTools() as OpenAiTool[];
+    // 창이 좁으면 전체를 밀어 넣지 않고 아래 좁힌 목록으로 간다 — 발견 도구가 나머지를 찾아 준다.
+    if (input.contextWindow === undefined || fullCatalogFitsWindow(full, input.contextWindow)) return full;
+  }
+
+  const tools: OpenAiTool[] = [];
+  const seen = new Set<string>();
+  const core = toOpenAiTools(undefined, { domains: new Set(["core"]) });
+  appendUnique(tools, seen, core);
+  appendUnique(tools, seen, toolSchemasForNames(DISCOVERY_CONTROL_TOOL_NAMES) as OpenAiTool[]);
+  appendUnique(tools, seen, schemasForIntent(input.intent));
+  if (/지도|월드맵|초원|사막|설원|산맥|다리|강.*(?:길|숲)|world.?map|overworld/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(['fill_region', 'lay_path', 'tile_erase', 'list_tileset_references',
+      'read_tileset_reference', 'list_worldmap_icons', 'stamp_worldmap_icon', 'inspect_worldmap_icon', 'show_map_region', 'check_reachability']) as OpenAiTool[]);
+  }
+  if (/(월드맵|세계\s*지도|지역\s*지도|포켓몬.*(?:도로|지도)|마리오.*(?:맵|지도)|할로우.*지도|스파이어.*지도|world\s*map|overworld)/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain']) as OpenAiTool[]);
+  }
+  if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);
+  }
+  // 높이 편집에는 읽기·재편집·통행 검사까지 함께 필요하다. 단어 순위 상한에
+  // 걸려 조수가 평면 paint_road로 우회하지 않도록 같은 도구 묶음을 보인다.
+  if (/(절벽|경사로|고지|지붕|입체\s*지형|높이\s*지형|\bterrain\b|\brelief\b)/i.test(input.requestText)
+    || input.intent?.tools.some(name => ["sculpt_relief", "design_terrain", "inspect_terrain", "lay_terrain_road"].includes(name))) {
+    appendUnique(tools, seen, toolSchemasForNames(["read_relief", "sculpt_relief", "check_relief", "design_terrain",
+      "inspect_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof", "check_terrain_access", "show_map_region"]) as OpenAiTool[]);
+  }
+  appendUnique(tools, seen, mentionedToolSchemas(input.requestText) as OpenAiTool[]);
+  appendUnique(tools, seen, input.discoveredToolNames
+    ? toolSchemasForNames(input.discoveredToolNames) as OpenAiTool[]
+    : []);
+  appendUnique(tools, seen, input.requiredReadTools
+    ? toolSchemasForNames(input.requiredReadTools) as OpenAiTool[]
+    : []);
+  appendUnique(tools, seen, input.workPlan
+    ? planRequiredToolSchemas(input.workPlan) as OpenAiTool[]
+    : []);
+
+  // 선언 모델이 이미 도구를 골랐으면 낱말 일치 승격을 얹지 않는다. 승격은 요청 낱말과 설명 낱말의 겹침이라
+  // 설명이 긴 도구가 늘 이긴다 — 실측(2026-10-07 조수 시험 12과제): 「아이템 가격만 바꿔」에 edit_world_terrain·author_village,
+  // 「NPC 이동」에 make_villager(73k자)·upsert_event(69k자)가 붙어 과제마다 평균 6만 자, 최대 18만 자가 매 호출 실렸다.
+  // 빠진 도구는 find_tools 와 이름 호출 구제로 여전히 잡힌다.
+  if (input.intent?.source === "llm" && input.intent.tools.length > 0) return tools;
+  const capability = capabilityEscalationSchemas(input.requestText, seen);
+  appendUnique(tools, seen, capability as OpenAiTool[]);
+  return tools;
+}

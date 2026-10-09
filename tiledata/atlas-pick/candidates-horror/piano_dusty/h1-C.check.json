@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/piano_dusty/h1-C.pxg",
+ "set": "horror",
+ "id": "piano_dusty",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  4,
+  30,
+  31
+ ],
+ "note": "C: 실루엣 재해석 — 촛불 두 개가 눈, 들쭉날쭉한 건반이 웃는 이빨. 뚜껑을 왼쪽으로 비스듬히 열어 실루엣이 한쪽으로 기운다. 어긋난 곳은 웃는 건반.",
+ "ok": true
+}

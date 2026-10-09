@@ -1,0 +1,67 @@
+{
+  "method": "lossless-distinct-original-npc-adoption",
+  "source": {
+    "id": "expert_m",
+    "file": "expert_m.png",
+    "sha256": "b6cfbb12a64c5dbbc67e478d4ead063f90a9817dbd2fdb11cc9e77aac196b280",
+    "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/expert_m.png",
+    "originalArtwork": "Nintendo / Game Freak / Creatures",
+    "sourceUse": "Actual original-game NPC art, adopted losslessly; not independent Codex artwork."
+  },
+  "sourceSha256": "b6cfbb12a64c5dbbc67e478d4ead063f90a9817dbd2fdb11cc9e77aac196b280",
+  "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/expert_m.png",
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "independentlyAuthored": false,
+  "bodyBase": "expert_m",
+  "frameMapping": [
+    [
+      "up",
+      [
+        5,
+        1,
+        6
+      ],
+      false
+    ],
+    [
+      "right",
+      [
+        7,
+        2,
+        8
+      ],
+      true
+    ],
+    [
+      "down",
+      [
+        3,
+        0,
+        4
+      ],
+      false
+    ],
+    [
+      "left",
+      [
+        7,
+        2,
+        8
+      ],
+      false
+    ]
+  ],
+  "seed": {
+    "role": "ranger",
+    "label": "레인저",
+    "variant": "D · 노년대원",
+    "base": "expert_m",
+    "description": "벗겨진 이마 · 흰 수염 · 긴 도복과 낮은 자세",
+    "identity": "노년 · 긴 옷 · 좁은 보폭",
+    "palette": {}
+  },
+  "generatorSha256": "60ddc3a7e0f07cefed039eaa91a4f073d2e97c12a2e0147aa4cdf170d09f74ca",
+  "resizingAuthoredPixels": false,
+  "colorEdits": false,
+  "scope": "Walking only; original-game art adoption. Context is a scale mockup, not runtime play."
+}

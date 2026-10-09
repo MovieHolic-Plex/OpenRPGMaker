@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/floating_book/h152-B.pxg",
+ "id": "floating book",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "기준 마법서의 회갈 종이·보라 표지 결에 맞춰 넓은 펼친 책장과 얇은 앞두께·청록 바닥빛으로 부유감을 표현; 꼭대기 윗면 6행(y=7~12)",
+ "ok": true
+}

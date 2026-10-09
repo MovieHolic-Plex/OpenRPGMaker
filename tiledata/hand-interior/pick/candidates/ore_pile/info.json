@@ -1,0 +1,37 @@
+{
+ "id": "ore pile",
+ "slug": "ore_pile",
+ "name_ko": "광석 더미",
+ "category": "광산",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "회색 바위에 청록 광석이 박힌 더미. 광산 막장·드워프 대장간 바닥에 1~2개. 광차·곡괭이 걸이 곁.",
+ "where": "광산 막장·드워프 대장간 바닥에 1~2개. 광차·곡괭이 걸이 곁.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  6,
+  14,
+  15
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

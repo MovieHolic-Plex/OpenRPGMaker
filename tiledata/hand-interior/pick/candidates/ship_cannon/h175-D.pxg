@@ -1,0 +1,57 @@
+// D: 검은 남향 함포에 넓은 금장 띠와 연결 문양, 나무 바퀴 받침; 포신 윗면을 길게 확보.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a iron 0
+@mat b iron 1
+@mat c iron 2
+@mat d iron 3
+@mat e iron 4
+@mat f iron 5
+@mat g brass 1
+@mat h brass 2
+@mat i brass 3
+@mat j brass 4
+@mat k brass 5
+@mat l brass 6
+@mat m wood 1
+@mat n wood 2
+@mat o wood 3
+@mat p wood 4
+@mat q wood 5
+@mat r wood 6
+@mat s wood 7
+@layer cannon
+@mblock 0 0
+......bbbb......
+.....beddcb.....
+.....bedccb.....
+.....bdcccb.....
+......bccb......
+....beddccbb....
+....bedcccbb....
+....gkkjjihg....
+....gjjiihhg....
+....beddccbb....
+....bedcccbb....
+....bedjjcbb....
+....bdjjicbb....
+....bddihcbb....
+..mnbeedccbbnm..
+.msrbeedccbbrom.
+.msrbeddccbbpom.
+.mrpbdedccbbpom.
+.mrpglkkjjihpom.
+.mrpglkjjihgpom.
+..mnkjccccihnm..
+....jbaaaabh....
+.moomcaaaabmoom.
+msrqmbbaabmqrpom
+msrpogjjihgprpom
+mrpomnnnnnnoroom
+mkjmsrrqqppomjhm
+mkimsrqqppoomihm
+mopmopppooomnoom
+.mnmnooooomnmm..
+.mnm........mm..
+.mmm........mm..

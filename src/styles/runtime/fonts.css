@@ -1,0 +1,3 @@
+/* 픽셀 글꼴 @font-face 는 2026-10-07 저작권 정리로 뺐다(Neo둥근모·갈무리 woff2 삭제).
+   글꼴 이름(NeoDunggeunmo·Galmuri*)은 fontRegistry 스택에 남아, 사용자 컴퓨터에 깔려 있으면 그 글꼴을, 없으면
+   다음 후보(굴림체·돋움체·고정폭)를 쓴다. 이 파일은 들여오는 쪽(runtime/index.css·styles/index.css)을 위해 남긴다. */

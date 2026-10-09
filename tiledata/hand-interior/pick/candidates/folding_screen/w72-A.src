@@ -1,0 +1,48 @@
+// w72-A 병풍
+o pine 1
+f pine 2
+g pine 3
+h pine 4
+i pine 5
+a linen 2
+b linen 3
+c linen 4
+d linen 5
+e linen 6
+k blue 3
+l blue 4
+m blue 5
+@size 32 32
+@grid
+................................
+................................
+................................
+................................
+...........oooooooooo...........
+.ooooooooooohhhhhhhhooooooooooo.
+.oiiiiiiiioohhhhhhhhooiiiiiiiio.
+.oiiiiiiiiooggggggggooiiiiiiiio.
+.oggggggggoocbbbbbbaooggggggggo.
+.odccccccbfocbbbbbbafodccccccbo.
+.odccccccboocbbbkbbaoodccccccbo.
+.odccclccboocbbbkbbaoodccclccbo.
+.odccclccboocblbkbbaoodccclccbo.
+.odcmclccboocbbkkbbaoodcmclccbo.
+.odccllccboocbbbkblaoodccllccbo.
+.odccclcmboocbbbkkbaoodccclcmbo.
+.odcccllcboocbbbkbbaoodcccllcbo.
+.odccclccboocblbkbbaoodccclccbo.
+.odcmclccboocbbkkbbaoodcmclccbo.
+.odccllccboocbbbkblaoodccllccbo.
+.odccclcmboocbbbkkbaoodccclcmbo.
+.odcccllcboocbbbkbbaoodcccllcbo.
+.odccclccboocbbbkbbaoodccclccbo.
+.odccclccboocbbbkbbaoodccclccbo.
+.odccclccbfocbbbkbbafodccclccbo.
+.odccclccboocbbbbbbaoodccclccbo.
+.odccccccboocbbbbbbaoodccccccbo.
+.odccccccbooggggggggoodccccccbo.
+.ohhhhhhhhooffffffffoohhhhhhhho.
+.offffffffooooooooooooffffffffo.
+.oooooooooo..........oooooooooo.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~..

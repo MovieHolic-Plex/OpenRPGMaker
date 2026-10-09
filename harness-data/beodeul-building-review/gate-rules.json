@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "minimumTextureScore": 94,
+  "minimumStructureScore": 90,
+  "requiredTextureAxes": ["roof_grain", "wall_grain", "palette", "light_consistency"],
+  "requiredStructureAxes": ["projection", "roof_joints", "single_door", "wall_consistency", "ground_contact", "complete_silhouette"],
+  "failClosed": true,
+  "requireCalibrationFailures": true,
+  "humanApprovalIsSeparate": true
+}

@@ -1,0 +1,126 @@
+{
+ "plan": [
+  "#########",
+  "#....####",
+  "#....####",
+  "#....####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####..###"
+ ],
+ "exitWidth": 2,
+ "floor": "sh-concrete",
+ "wall": "sh-white",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 12,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sh-flower-cooler",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sh-flower-cooler",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "sh-flower-buckets",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "sh-wrap-table",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "sh-counter",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "sh-register",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 3,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-bouquet",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 6,
+   "y": 9
+  }
+ ],
+ "name": "일본 동네 꽃집 실내",
+ "start": [
+  4,
+  11
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "florist",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 12
+  }
+ ]
+}

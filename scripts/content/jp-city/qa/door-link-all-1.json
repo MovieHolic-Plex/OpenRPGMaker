@@ -1,0 +1,10 @@
+[
+ { "building": "A2", "example": "konbini" },
+ { "building": "B1a", "example": "izakaya" },
+ { "building": "A1b", "example": "kissaten" },
+ { "building": "B1b", "example": "bakery" },
+ { "building": "A1c", "example": "supermarket" },
+ { "building": "B2", "example": "ramen" },
+ { "building": "E1", "place": "jp-city-apartment-1k-12x13", "name": "맨션 1K" },
+ { "building": "A1a", "place": "jp-city-house-interior-21x15", "name": "가게 딸린 집" }
+]

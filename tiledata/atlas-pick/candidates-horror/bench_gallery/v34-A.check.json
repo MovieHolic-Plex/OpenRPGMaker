@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bench_gallery/v34-A.pxg",
+ "set": "horror",
+ "id": "bench_gallery",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  2,
+  2,
+  29,
+  15
+ ],
+ "note": "v34-A: 3/4 시점 — 가죽 시트 윗면 7줄(뒤 그늘·밝은 판·앞 모서리) + 앞 두께 + 쇠다리 둘. 같은 velv/tin 램프",
+ "ok": true
+}

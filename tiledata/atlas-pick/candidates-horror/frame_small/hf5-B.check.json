@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/frame_small/hf5-B.pxg",
+ "set": "horror",
+ "id": "frame_small",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "B: 어둠에서 읽히게 — 밝은 놋쇠 테(vbrass6/3/0) + 밝은 회청 바탕(moon5)에 까만 화병 실루엣(vblack0/1)이 뚜렷이. 세부는 화병 목 하나뿐.",
+ "ok": true
+}

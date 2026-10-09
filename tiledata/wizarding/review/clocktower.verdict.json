@@ -1,0 +1,154 @@
+{
+ "module": "clocktower",
+ "sealed": "2026-10-07T10:21:06.374455+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-clock-gear-l": {
+   "verdict": "PASS",
+   "hash": "61559c1df9460b349336b7b4284b93c3ca9b4aaf93d81f9d46817514d64f838e",
+   "reason": "1배·5배 모두 황동 톱니로 읽힘. 굵은 이빨 열여섯 개, 4살, 허브 구멍, 위쪽 이빨에 밝은 두께 면. 벽에 선 정면 원판이라 시점이 맞고 대칭. 테두리는 유색 윤곽이고 명암은 3~4단. 4×4 크기에 사람 표본보다 커서 큰 톱니 축척으로 맞다."
+  },
+  "wz-clock-gear-m": {
+   "verdict": "PASS",
+   "hash": "4317ec0d4bc93678871c396173dda839881fb486def96058e14e2d72bbbb75bc",
+   "reason": "중간 톱니로 분명히 읽힘. 이빨·살·허브가 있고 빛은 왼쪽 위다. 3×3 축척과 화풍이 큰 톱니와 일관된다."
+  },
+  "wz-clock-gear-s": {
+   "verdict": "PASS",
+   "hash": "a5e087070e74c8957d02945693e634219bb15b023bd79062ce94b580a5f7b5b3",
+   "reason": "2×2 작은 톱니. 이빨이 1배에서도 톱니 실루엣으로 읽힌다. 살·허브가 보이고 명암이 일관된다."
+  },
+  "wz-clock-gear-l-spin": {
+   "verdict": "PASS",
+   "hash": "5fcf52ebf57332c56ad3442b8658de5579d897609dbdad78ff5af87959c138be",
+   "reason": "8프레임이 실제로 회전한다. 4살이 0→~78°로 돌고 이빨 실루엣도 프레임마다 바뀐다(알파 차 454px/프레임, 단순 이동 아님). 4중 대칭 살이 90° 돌아 f7→f0 간격이 같아 루프가 튀지 않는다. 정적판과 같은 크기."
+  },
+  "wz-clock-gear-m-spin": {
+   "verdict": "PASS",
+   "hash": "22a30834de6f0b053af503bc4e3b067cb4c017bef0ae9483b18da81540169f33",
+   "reason": "8프레임 동안 살과 이빨 위치가 실제로 회전한다(알파 차 268~292px). 간격이 대칭이라 루프가 매끄럽다. 화풍은 정적판과 같다."
+  },
+  "wz-clock-gear-s-spin": {
+   "verdict": "PASS",
+   "hash": "ffa60ee0dc5b82827a539bc1fa00c303841633f65ac0b0f66c8dae48e84aca40",
+   "reason": "32px라 이빨에 계단 현상이 조금 있지만 살·이빨이 프레임마다 실제로 돈다(알파 차 108~120px, 단순 이동 아님). 루프 간격이 같고 톱니로 읽힌다."
+  },
+  "wz-clock-axle-h": {
+   "verdict": "PASS",
+   "hash": "a3b5448fbeab089f34d25f54b07aef6f5712ae20754a1a7e009b18f42f813673",
+   "reason": "가로 황동 축에 쇠 고리. 윗면이 밝고 아랫면이 어둡다. 1×1 축으로 읽히고 톱니 사이 연결재로 쓸 만하다."
+  },
+  "wz-clock-axle-v": {
+   "verdict": "PASS",
+   "hash": "590ebf0ebc8f3d075443a883c63100ae3db25f2c5ecc4965f4c1771f3f27038b",
+   "reason": "세로 황동 축에 가로 쇠 고리. 축/파이프로 읽히고 왼쪽 밝은 명암이 맞다."
+  },
+  "wz-clock-crank": {
+   "verdict": "PASS",
+   "hash": "f5389e7247b5245cf417a37be9dd2532730dc65893f1c7f13ad788532ffc73d7",
+   "reason": "황동 원판(사각 축구멍)+팔+쇠 고리+오크 손잡이. 크랭크로 읽힌다. 2×1 축척이 적당하고 재질 구분(금속/나무)이 된다."
+  },
+  "wz-clock-wall": {
+   "verdict": "PASS",
+   "hash": "63553187e088ec003cbded7bf7f7e5f7001033bb394a3280df9f01fc947bdd01",
+   "reason": "윗단 돌갓과 비정형 회색 돌 블록. style-ref 석벽과 같은 돌·색이고 3/4 윗면+정면이 보인다. 1×4 S 이고 반복 이음새가 없다."
+  },
+  "wz-clock-wall-gear": {
+   "verdict": "PASS",
+   "hash": "73590fda14982cbe6a82b73dfeafb09e748a563fd747963ea0ed6f3ec6bb30b6",
+   "reason": "recheck: toothed gear with hub on dark recess; reads as gear opening."
+  },
+  "wz-clock-beam": {
+   "verdict": "PASS",
+   "hash": "a2eab61141993cbb6ffaa9a0abf85988e8e6fef312b2c03a77d6aba3e5573d4b",
+   "reason": "머리 위 오크 들보로 읽힘. 윗면은 밝은 띠, 앞면은 중간, 아래는 어둠(4단). 결 틈·쇠 못이 있다. C 이고 가로 반복 이음새가 없다."
+  },
+  "wz-clock-balcony": {
+   "verdict": "PASS",
+   "hash": "89764c56b8a4ba8e621a1e8fefb6d95b187587499e0d1eb9c4fb795e5413a4dd",
+   "reason": "위 칸은 판재 바닥(F)이다. 아래 칸은 기둥 셋·가로대 둘의 오크 난간(S)이고, 판재가 뒤로 이어지며 아래 받침보에 쇠 볼트가 있다. 정비 발코니로 읽히고 사람 축척에 맞다."
+  },
+  "wz-clock-grate": {
+   "verdict": "PASS",
+   "hash": "524ca80cda06ae102bb63b47bb5d5c51383e894da391c77d680233a2392a4ab8",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-clock-walkway": {
+   "verdict": "PASS",
+   "hash": "cb31e2d62d50778ac8ff683e3e03bdaa99f21cf0b0b450231c3155b0ff8530eb",
+   "reason": "가로 오크 판재. 판마다 명암이 다르고 이음 위치가 다르며 못 자국이 있다. 통로 바닥으로 읽히고 F 통행이다."
+  },
+  "wz-clock-rail": {
+   "verdict": "PASS",
+   "hash": "5311e7ab61200ff6f83fbc48161f3569bf34641649289326bf87f1188e9df506",
+   "reason": "기둥과 가로대 둘, 쇠 고정쇠. 난간으로 읽히고 1×1 S 다."
+  },
+  "wz-clock-rail-end": {
+   "verdict": "PASS",
+   "hash": "6f942ebdbb41821ae6e46d19cd16f74df9df8deec81de9aa8d35fe8d52ba0f50",
+   "reason": "오른쪽 끝 기둥에 윗머리가 있는 난간 끝. 가로 난간과 이어진다."
+  },
+  "wz-clock-stair": {
+   "verdict": "PASS",
+   "hash": "25ae4fc114943c6021a14cd78b16edb9d6ee6faec659f4c0b36fd7ed7a9c3374",
+   "reason": "칸당 8px 디딤판 2단(밝은 디딤면+어두운 챌면에 볼트). 좌우 옆판이 있다. 북쪽으로 오르는 3/4 계단으로 읽히고 FF/FF 로 통행된다."
+  },
+  "wz-clock-door-closed": {
+   "verdict": "PASS",
+   "hash": "9e47cf7684e2031f26939563c1e69b6372ead413ca2c913a6b0ff19437285c3c",
+   "reason": "recheck: emblem now a clear brass cog; door reads correctly."
+  },
+  "wz-clock-door-open": {
+   "verdict": "PASS",
+   "hash": "d59dbdb958578041023b8c9d4aebfec698449bd783839900a0e02297ef31b88c",
+   "reason": "recheck: redrawn with set; open door into dark stairwell reads well."
+  },
+  "wz-clock-door-locked": {
+   "verdict": "PASS",
+   "hash": "6c1ecfe383970419ef7d7987f3a26baa7dde09677e88f8196bf6b13a5ea4a11c",
+   "reason": "recheck: cog emblem fixed, bars and lock read as locked."
+  },
+  "wz-clock-oil-a": {
+   "verdict": "PASS",
+   "hash": "2409dd808d76c6cf0e7938a69abc9609caf28ef7dec106318f9ec8b322d7e803",
+   "reason": "recheck: flat near-black puddle with small reflection; reads as oil spill."
+  },
+  "wz-clock-oil-b": {
+   "verdict": "PASS",
+   "hash": "b473b7b96249f539749ee35688039ab9176f6ec5a8ac8f33bb124858d91726c6",
+   "reason": "recheck: flat dark tapering streak with sheen; reads as oil drip."
+  },
+  "wz-clock-oilcan": {
+   "verdict": "PASS",
+   "hash": "1568f245e80c21cf02fa0bffebbcb752484c31f5502639eb82de852074f08619",
+   "reason": "recheck: round can with long spout reads as oilcan."
+  },
+  "wz-clock-toolchest": {
+   "verdict": "PASS",
+   "hash": "a6364548efb2d89d8bb00ed78d5449b2311ca5457d389e37f68facb6dc1a4290",
+   "reason": "recheck: keyhole gone, top handle and drawers read as tool chest."
+  },
+  "wz-clock-stool": {
+   "verdict": "PASS",
+   "hash": "06ddb1a1c81da17543785f110f38716b18bd87b030a1180233634666158156d3",
+   "reason": "둥근 좌판 윗면(결 있음)과 세 다리·가로대. 작업 발판/스툴로 읽히고 3/4 윗면이 보인다. 1×1 축척이 맞다."
+  },
+  "wz-clock-toolrack": {
+   "verdict": "PASS",
+   "hash": "4ea34fe95236de9deed30ac9fbcb0605537f88a3983a367a0c5fb92b11465e11",
+   "reason": "recheck: wrench/hammer shapes distinguishable; reads as tool rack (gear minor)."
+  },
+  "wz-clock-dial-back": {
+   "verdict": "PASS",
+   "hash": "e0b16bb23eb429473a16c8c230e5f30b3e3376f8f4953bf147be86290f2fcc8a",
+   "reason": "recheck: glass reflection streaks added; reads as clock face behind glass."
+  },
+  "wz-clock-floor-plate": {
+   "verdict": "PASS",
+   "hash": "1952dbfdc253bb880df6a9d892d997338c5cd1f927ed1565ca9c01ce47116439",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  }
+ },
+ "autotiles": {},
+ "characters": {}
+}

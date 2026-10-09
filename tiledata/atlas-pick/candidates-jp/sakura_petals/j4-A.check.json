@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sakura_petals/j4-A.pxg",
+ "set": "jp",
+ "id": "sakura_petals",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  2,
+  5,
+  9,
+  13
+ ],
+ "note": "16px 투명 덧칠. 왼쪽 아래로 몰린 꽃잎 9장(2px 짝 + 1px 점), 밝은 면과 어두운 끝 한 점씩. 가장자리 2px 여백.",
+ "ok": true
+}

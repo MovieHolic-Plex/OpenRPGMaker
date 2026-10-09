@@ -1,0 +1,368 @@
+.runtime-shop-overlay,
+.runtime-gift-overlay,
+.runtime-chest-overlay,
+.runtime-commerce-overlay {
+  pointer-events: auto;
+  z-index: 45;
+}
+
+/* RM2003 여관 창 — 화면 하단 중앙 프레임 창. */
+.runtime-commerce-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  min-width: 320px;
+  max-width: min(560px, 92vw);
+  display: grid;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: none;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-commerce-overlay .runtime-overlay-title {
+  color: var(--runtime-window-muted);
+  border-bottom: 1px solid rgba(242, 251, 255, 0.42);
+  font: 700 var(--runtime-font-size-11)/1.2 var(--runtime-ui-font);
+  padding-bottom: 4px;
+}
+
+.runtime-commerce-note {
+  margin: 0;
+  color: var(--runtime-window-muted);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-commerce-status {
+  margin: 0;
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-commerce-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.runtime-commerce-actions button {
+  min-width: 88px;
+  padding: 4px 12px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: var(--runtime-window-fill-fallback);
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
+  cursor: default;
+}
+
+.runtime-commerce-actions button:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  color: var(--runtime-window-text);
+}
+
+/* 숙박 휴식 연출: 화면 전체가 잠깐 어두워졌다가(fade) 기상 메시지와 함께 밝아진다. */
+.runtime-inn-fade {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 60;
+  animation: runtime-inn-fade-in 480ms ease forwards;
+}
+
+@keyframes runtime-inn-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.96;
+  }
+}
+
+.runtime-inn-wake-view {
+  text-align: center;
+}
+
+.runtime-inn-wake-view .runtime-commerce-status {
+  font-weight: 700;
+}
+
+/* ── 상점 ──
+   가게 창 스타일은 규모가 커서 ./shop.css 로 분리했다(모던 유리 카드 + 윈도스킨 폴백).
+   여기 남은 것은 여관·선물·보관상자 등 나머지 상거래 창이다. ── */
+
+/* ── 선물 선택 창: 대화 중 인벤토리에서 줄 아이템 선택 ── */
+.runtime-gift-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(360px, calc(100% - 24px));
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-gift-window {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  max-height: 190px;
+  overflow: hidden;
+}
+
+.runtime-gift-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+}
+
+.runtime-gift-list {
+  display: grid;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.runtime-gift-item,
+.runtime-gift-cancel {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
+  text-align: left;
+  cursor: default;
+}
+
+.runtime-gift-item:focus-visible,
+.runtime-gift-item.selected,
+.runtime-gift-cancel:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  border-color: rgba(245, 251, 255, 0.76);
+}
+
+.runtime-gift-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime-gift-item-count {
+  color: var(--runtime-window-highlight);
+}
+
+/* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */
+.runtime-chest-overlay {
+  position: absolute;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-11);
+  z-index: 45;
+  pointer-events: auto;
+}
+
+.runtime-chest-overlay.is-bottom {
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(520px, calc(100% - 24px));
+}
+
+.runtime-chest-overlay.is-center {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, calc(100% - 24px));
+}
+
+.runtime-chest-overlay.is-wide {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, calc(100% - 16px));
+}
+
+.runtime-chest-window {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 12px solid transparent;
+  border-image-source: var(--runtime-window-skin);
+  border-image-slice: 24 fill;
+  border-image-repeat: stretch;
+  background: var(--runtime-window-fill-fallback);
+  max-height: min(420px, 80vh);
+  overflow: hidden;
+}
+
+.runtime-chest-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+  font-size: var(--runtime-font-size-13, 13px);
+}
+
+.runtime-chest-status {
+  color: var(--runtime-window-highlight);
+  min-height: 1em;
+}
+
+.runtime-chest-capacity {
+  color: var(--runtime-window-muted);
+  font-size: 10px;
+}
+
+.runtime-chest-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.runtime-chest-tab {
+  padding: 3px 8px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 10px/1 var(--runtime-ui-font);
+}
+
+.runtime-chest-tab.selected,
+.runtime-chest-tab:focus-visible {
+  background: var(--runtime-window-selected-bg);
+}
+
+.runtime-chest-search {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+}
+
+.runtime-chest-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-height: 0;
+}
+
+.runtime-chest-column {
+  display: grid;
+  gap: 4px;
+  min-height: 0;
+}
+
+.runtime-chest-column-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+}
+
+.runtime-chest-list {
+  display: grid;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 96px;
+  max-height: 180px;
+}
+
+.runtime-chest-item,
+.runtime-chest-cancel,
+.runtime-chest-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-ui-font);
+  text-align: left;
+  cursor: default;
+}
+
+.runtime-chest-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.runtime-chest-toolbar .runtime-chest-tool,
+.runtime-chest-toolbar .runtime-chest-cancel {
+  width: auto;
+}
+
+.runtime-chest-qty {
+  width: 52px;
+  padding: 4px 6px;
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  background: transparent;
+  color: var(--runtime-window-text);
+}
+
+.runtime-chest-item:focus-visible,
+.runtime-chest-item.selected,
+.runtime-chest-cancel:focus-visible,
+.runtime-chest-tool:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  border-color: rgba(245, 251, 255, 0.76);
+}
+
+.runtime-chest-item-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.runtime-chest-item-icon-fallback {
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  border: 1px solid var(--runtime-glass-hairline);
+}
+
+.runtime-chest-item-name {
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime-chest-item-count {
+  color: var(--runtime-window-highlight);
+}
+
+.runtime-chest-empty {
+  color: var(--runtime-window-muted);
+  padding: 4px 6px;
+}
+
+.runtime-chest-gold {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+}

@@ -1,0 +1,403 @@
+.play-viewport {
+  --play-logical-width: 320px;
+  --play-logical-height: 240px;
+  --play-logical-half-width: 160px;
+  --play-logical-half-height: 120px;
+  --play-scale: 1;
+  --play-scale-x: 1;
+  --play-scale-y: 1;
+  --play-crop-top: 0px;
+  --play-crop-right: 0px;
+  --play-crop-bottom: 0px;
+  --play-crop-left: 0px;
+  --play-visible-width: 320px;
+  --play-visible-height: 240px;
+  --play-stage-left: 0px;
+  --play-stage-top: 0px;
+  display: grid;
+  height: 100%;
+  min-height: 100%;
+  overflow: hidden;
+  place-items: center;
+  position: relative; /* 호스트 셸 전체화면 토글의 absolute 기준 */
+  width: 100%;
+}
+
+/* 호스트 셸 전체화면 토글(⛶) — hostFeatures에 "fullscreen"이 있을 때만 마운트된다(hostBridge.ts).
+   스테이지는 transform: scale() 이라 버튼을 뷰포트에 붙이고 --play-scale 로 스테이지
+   우상단 모서리(중앙 기준 ±160/120px)를 역산한다. 포인터 전용 — 키보드 포커스 없음. */
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle {
+  align-items: center;
+  background: rgba(8, 10, 18, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  height: 22px;
+  justify-content: center;
+  line-height: 1;
+  opacity: 0.7;
+  padding: 0;
+  position: absolute;
+  right: calc(50% - var(--play-logical-half-width) * var(--play-scale) + 6px);
+  top: calc(50% - var(--play-logical-half-height) * var(--play-scale) + 6px);
+  width: 22px;
+  z-index: 60;
+}
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle:hover,
+[data-play-input-owner="keyboard-only"] .play-viewport > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle[aria-pressed="true"] {
+  opacity: 1;
+}
+.play-stage {
+  background: #000;
+  height: var(--play-logical-height);
+  left: var(--play-stage-left);
+  overflow: hidden;
+  position: absolute;
+  top: var(--play-stage-top);
+  transform: scale(var(--play-scale));
+  transform-origin: top left;
+  width: var(--play-logical-width);
+}
+/* .dialogue-scrim 은 대화창과 같은 화면 영역을 덮어야 한다. 크롭된 바깥까지 어둡게 하면
+   정수 배율에서 잘려 나가는 띠가 보이는 화면과 다르게 칠해진다. */
+.player-layout .play-stage > .dialogue-overlay,
+.player-layout .play-stage > .dialogue-scrim,
+.player-layout .play-stage > .name-entry-overlay,
+.player-layout .play-stage > .touch-pad {
+  bottom: var(--play-crop-bottom);
+  left: var(--play-crop-left);
+  right: var(--play-crop-right);
+  top: var(--play-crop-top);
+}
+.player-layout .play-stage > .dialogue-overlay.position-top {
+  bottom: auto;
+  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
+  top: var(--play-crop-top);
+}
+.player-layout .play-stage > .dialogue-overlay.position-center {
+  bottom: auto;
+  max-height: var(--play-visible-height);
+  top: 50%;
+}
+.player-layout .play-stage > .dialogue-overlay.position-bottom {
+  bottom: var(--play-crop-bottom);
+  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
+  top: auto;
+}
+/* 말풍선은 무대 좌표(카메라 화면 좌표)로 붙는다 — 크롭 여백 없이 무대 전체를 덮는다. */
+.player-layout .play-stage > .dialogue-overlay.balloon-active,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-top,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-center,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-bottom {
+  bottom: 0;
+  height: auto;
+  left: 0;
+  max-height: none;
+  min-height: 0;
+  right: 0;
+  top: 0;
+}
+.player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom {
+  height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+  min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
+}
+.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay):not([data-testid="runtime-error"]) {
+  inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
+    calc(var(--play-crop-bottom) + 12px) calc(var(--play-crop-left) + 12px);
+}
+/* Errors must ship with the player, not depend on editor/core.part-1.css.
+   Inverse-scale the nonmodal notice so long diagnostics remain readable in play. */
+.player-layout .play-stage > .runtime-overlay[data-testid="runtime-error"] {
+  position: absolute;
+  inset: calc(var(--play-crop-top) + 12px / var(--play-scale))
+    calc(var(--play-crop-right) + 12px / var(--play-scale)) auto
+    calc(var(--play-crop-left) + 12px / var(--play-scale));
+  display: block;
+  box-sizing: border-box;
+  padding: calc(10px / var(--play-scale)) calc(12px / var(--play-scale));
+  border: calc(1px / var(--play-scale)) solid var(--runtime-glass-hairline-strong);
+  border-radius: calc(6px / var(--play-scale));
+  background: var(--runtime-glass-panel);
+  color: var(--runtime-glass-text);
+  font-size: calc(14px / var(--play-scale));
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  text-shadow: none;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  z-index: 90;
+}
+.player-layout .play-stage > .game-over-panel {
+  max-width: min(90%, var(--play-visible-width));
+}
+.player-layout .play-stage > .runtime-commerce-overlay {
+  bottom: calc(var(--play-crop-bottom) + 28px);
+  max-width: min(560px, max(1px, calc(var(--play-visible-width) - 16px)));
+  min-width: min(320px, max(1px, calc(var(--play-visible-width) - 16px)));
+}
+.player-layout .phaser-container {
+  height: var(--play-logical-height);
+  width: var(--play-logical-width);
+}
+/* 분수 배율(fit)에서도 픽셀아트가 흐려지지 않아야 한다 — 스테이지 transform 이 정수가 아닐 때
+   브라우저 기본 보간은 캔버스를 뭉갠다. */
+.player-layout .phaser-container canvas {
+  display: block;
+  height: var(--play-logical-height);
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+/* 상점 오버레이는 스케일 밖 .play-viewport 에 마운트된다(playSceneShop). 뷰포트가 스테이지보다
+   크면(전체 창 export 플레이어) 뷰포트가 아니라 스테이지 경계에 맞춰 중앙 정렬한다. */
+.player-layout .play-viewport > .runtime-shop-overlay {
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(calc(100% - 24px), calc(var(--play-logical-width) * var(--play-scale) - 24px));
+  height: min(calc(100% - 24px), calc(var(--play-logical-height) * var(--play-scale) - 24px));
+  align-items: center;
+}
+/* 560px 고정이던 시절에는 1600x1000(재생 영역 1203px)에서 목록 열이 362px 라 긴 이름이
+   잘리고 사이드 열 아래로 600px 가 비었다. 재생 영역을 더 쓰되 상한은 남긴다. */
+.player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-shell {
+  width: min(100%, 720px);
+}
+
+/* ── 컷신 HUD 억제 ───────────────────────────────────────────────────────────────
+   `cutscene-hud-hidden` 은 playSceneScreenEffects.syncCutsceneHudVisibility 가 컷신
+   입력 잠금(또는 Modern `Cutscene Control` 의 `HUD 숨김`)에 맞춰 켠다.
+
+   왜 대화창의 `:has()` 규칙으로 부족한가 (실측): handSlot.css / actionHud.css 는
+   `.play-stage:has(> .dialogue-overlay:not(:empty))` 로 HUD 를 숨긴다. 회상 컷신의
+   카메라 팬·픽처·틴트 비트에는 대사가 없어 오버레이가 비어 있고, 그 구간에서 미니맵과
+   손 슬롯이 그대로 떠 있었다. 그래서 잠금 자체를 보는 클래스가 따로 필요하다.
+
+   규칙을 이 파일에 두는 이유: playSurface.css 는 player.css(playerRuntime.css 경유)와
+   editor/core.part-2.css 양쪽 import 폐포에 모두 들어 있는 유일한 런타임 시트다.
+   handSlot/minimap/actionHud 시트는 플레이어 폐포에만 있어 에디터 테스트플레이에서는
+   규칙이 죽는다. 자식 조합자(`>`)를 쓰지 않는 것은 미니맵·타이머가 스테이지 직계가
+   아닌 마운트 경로도 있기 때문이다. */
+.play-stage.cutscene-hud-hidden .field-hud,
+.play-stage.cutscene-hud-hidden .hand-slot,
+.play-stage.cutscene-hud-hidden .action-hud,
+.play-stage.cutscene-hud-hidden .minimap-root,
+.play-stage.cutscene-hud-hidden .runtime-missing-resource,
+.play-stage.cutscene-hud-hidden .runtime-timer-hud,
+.play-stage.cutscene-hud-hidden .runtime-time-hud,
+.play-stage.cutscene-hud-hidden .touch-pad {
+  display: none;
+}
+
+/* ── 누락 리소스 알림 ─────────────────────────────────────────────────────────────
+   `RuntimeDomOverlay.syncMissingResourceError` 가 붙이는 노드다. 이것은 **실패가 아니라
+   경고**다 — `renderEvents` 는 못 푼 스프라이트를 기본 charset 으로 대체해 그리고 게임은
+   그대로 진행한다. 그러니 화면을 덮을 이유가 없다.
+
+   왜 모든 치수를 --play-scale 로 나누는가 (실측): 이 노드는 `transform: scale(var(--play-scale))`
+   가 걸린 `.play-stage` 의 자식이라 px 가 배율만큼 곱해진다. 1280×960 에서 --play-scale=4 이고,
+   이전 규칙(font-size 13px · padding 8/12px · 붉은 테두리)은 화면에서 **1232×292px, 실효 글자
+   52px** 로 떴다 — 뷰포트의 39% 다. 나누면 배율과 무관하게 화면상 크기가 고정된다.
+
+   왜 이 파일인가: 이전엔 `editor/core.part-1.css` 에만 규칙이 있어서 **출하되는 내보내기
+   플레이어에는 스타일이 아예 없었다**. 실측하면 스타일 없는 노드는 static 블록으로 흘러
+   1280×272px 로 무대 아래(y=960)에 깔리고 `overflow: hidden` 에 잘려 조용히 사라졌다 —
+   저작자에게 필요한 신호가 출하물에선 통째로 죽어 있었다. playSurface.css 는 플레이어와
+   편집기 양쪽 import 폐포에 모두 있으므로 두 표면이 한 규칙을 공유한다. */
+.runtime-missing-resource {
+  background: var(--runtime-glass-inset);
+  border-radius: calc(4px / var(--play-scale));
+  bottom: calc(var(--play-crop-bottom) + 3px / var(--play-scale));
+  color: var(--runtime-glass-muted);
+  font-size: calc(10px / var(--play-scale));
+  left: calc(var(--play-crop-left) + 3px / var(--play-scale));
+  line-height: 1.35;
+  max-width: calc(70% - 6px / var(--play-scale));
+  overflow: hidden;
+  padding: calc(1px / var(--play-scale)) calc(4px / var(--play-scale));
+  pointer-events: none;
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 12;
+}
+
+/* Logical stage pixels: the same surface is used by the shell and authoring preview. */
+.title-preparing { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 10px; color: #f5e7d2; text-shadow: 0 1px 4px #000; }
+.cinematic-sequence,
+.cinematic-terminal {
+  position: absolute;
+  inset: 0;
+  z-index: 65;
+  overflow: hidden;
+  color: var(--runtime-window-text, #f5f8ff);
+  isolation: isolate;
+}
+.cinematic-sequence {
+  box-sizing: border-box;
+  background: #000;
+  font-family: var(--runtime-ui-font, system-ui, sans-serif);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  text-align: center;
+  outline: none;
+}
+.cinematic-image,
+.cinematic-video,
+.cinematic-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: -1;
+}
+.cinematic-background { object-fit: cover; opacity: 0.65; }
+.cinematic-image { object-fit: cover; }
+.cinematic-frame { position: absolute; inset: 0; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+.cinematic-shot { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.cinematic-shot > .cinematic-image { z-index: 0; }
+.cinematic-shot > .cinematic-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.cinematic-narration[hidden] { display: none; }
+.cinematic-narration {
+  max-height: 65%;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.5;
+  text-shadow: 0 1px 3px #000;
+}
+.cinematic-sequence:not([data-scene-kind="text"]) .cinematic-narration {
+  margin-top: auto;
+  padding: 8px;
+  background: rgb(0 0 0 / 80%);
+}
+.cinematic-narration:empty { display: none; }
+.cinematic-status {
+  position: absolute; bottom: 8px; max-width: 90%;
+  z-index: 3;
+  font-size: 9px;
+  line-height: 1.5;
+  padding: 4px;
+  background: rgb(0 0 0 / 80%);
+}
+.cinematic-status:empty { display: none; }
+.cinematic-terminal > .game-over-panel { max-width: 90%; }
+.cinematic-image[data-motion="fade"], .cinematic-effects[data-motion="fade"] { animation: cinematic-fade var(--cinematic-fade-ms, var(--cinematic-motion-ms)) ease-out both; }
+.cinematic-image[data-motion="pan"], .cinematic-effects[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="zoom"], .cinematic-effects[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
+@keyframes cinematic-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cinematic-pan { from { transform: scale(1.1) translateX(-3%); } to { transform: scale(1.1) translateX(3%); } }
+@keyframes cinematic-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-image[data-motion], .cinematic-effects[data-motion] { animation: none; }
+}
+
+/* Enter-paced illustrated story: persistent artwork, immediate readable pages. */
+.cinematic-sequence[data-presentation="storybook"] { padding:0; color:#e8bc72; }
+.cinematic-sequence[data-presentation="storybook"][data-ink="ivory"] { color:#f0e9d7; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-image { inset:6.25% auto auto 12.5%; width:75%; height:56.25%; z-index:0; animation:none; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-narration { position:absolute; top:68.3%; left:5.7%; width:88.6%; max-height:23.6%; margin:0; padding:0; background:none; font-size:14px; line-height:1.6; text-shadow:none; z-index:1; }
+.cinematic-sequence[data-presentation="storybook"][data-scene-kind="text"] .cinematic-narration { top:35%; max-height:45%; }
+.cinematic-book-hint { position:absolute; bottom:3%; width:100%; color:#aba49a; font-size:8px; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-status:not(:empty) { position:absolute; bottom:10%; z-index:2; }
+
+/* Original professor sprite and GBA-style confirmed dialogue, scoped by authored reference. */
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] {
+  background:repeating-linear-gradient(0deg,#e6f1df 0 4px,#dbe9d2 4px 8px);
+  color:#303840;
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"]::before {
+  content:"";position:absolute;left:12%;right:12%;top:12%;height:50%;
+  background:#f3f5e9;border-radius:50%;box-shadow:0 5px 0 #b9cbaa;
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] .cinematic-image {
+  inset:22px auto auto calc(50% - 64px);width:128px;height:128px;object-fit:contain;image-rendering:pixelated;
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-showcase="monster"] .cinematic-image {left:64px;}
+.cinematic-sequence[data-monster-style="emerald"] .cinematic-creature {
+  position:absolute;left:56%;top:26%;width:26%;height:34%;object-fit:contain;image-rendering:pixelated;z-index:1;
+}
+.cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"] .cinematic-narration {
+  top:auto;bottom:5%;left:3%;width:94%;min-height:23%;max-height:27%;padding:10px 14px;
+  border:5px double #55615f;background:#fffef0;color:#303840;
+  font-family:"Galmuri11",monospace;font-size:14px;line-height:1.55;
+  box-shadow:inset 0 0 0 2px #baccc7;white-space:pre-wrap;text-align:left;
+}
+.cinematic-sequence[data-monster-style="emerald"] .cinematic-book-hint {
+  width:auto;right:5%;bottom:6%;font-size:8px;color:#445450;z-index:3;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] {
+  background-color: #0b5264;
+  image-rendering: pixelated;
+  font-family: Galmuri11, monospace;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"]::before {
+  background: transparent;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-screen-title[data-logo-style] {
+  left: 6%; top: 12%; width: 57%; max-width: 57%;
+  margin: 0; font: 800 24px/1.3 Galmuri11, monospace;
+  letter-spacing: 0; color: #f5efc5; text-shadow: 2px 2px #153b48;
+  -webkit-text-stroke: 0; overflow-wrap: anywhere;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-logo-subtitle {
+  left: 6%; top: 34%; width: 58%; color: #e8efce;
+  font: 12px/1.4 Galmuri11, monospace; text-shadow: 1px 1px #153b48;
+  letter-spacing: 0; transform: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] {
+  left: 6% !important; top: 48% !important; width: 42%;
+  min-width: 0; max-width: 42%; padding: 4px 6px; gap: 0;
+  background: #f7f5df; border: 2px solid #384946; border-radius: 0;
+  box-shadow: inset 0 0 0 2px #bbcabc, 2px 2px #153b48;
+  transform: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
+  color: #334940; font: 14px/20px Galmuri11, monospace;
+  min-height: 0; padding: 2px 4px 2px 16px; margin: 0;
+  background: transparent; border: 0; border-radius: 0;
+  text-align: left; letter-spacing: 0; text-shadow: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected {
+  background: transparent; color: #334940; text-shadow: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
+  content: '▶'; left: 2px; color: #334940; font-size: 10px;
+}
+
+/* Authored opening typography uses logical stage pixels, shared with database preview. */
+.cinematic-frame[data-presented="true"] .cinematic-narration {
+  position: relative; z-index: 2; margin: 0; padding: 0; background: none;
+  max-width: 84%; width: max-content; line-height: 1.75; letter-spacing: .025em;
+  text-shadow: 0 2px 12px #000, 0 1px 3px #000;
+}
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 14px); max-height: 35%; text-align: center; padding: 7px 14px; background: linear-gradient(90deg, transparent, #0009 15%, #0009 85%, transparent); }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
+.cinematic-narration[data-font="serif"] { font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', Georgia, serif; }
+.cinematic-narration[data-font="sans"] { font-family: system-ui, sans-serif; }
+.cinematic-narration[data-font="pixel"] { font-family: Galmuri9, var(--runtime-ui-font, monospace); }
+.cinematic-letterbox { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(to bottom, #000 0% var(--cinematic-letterbox), transparent var(--cinematic-letterbox) calc(100% - var(--cinematic-letterbox)), #000 calc(100% - var(--cinematic-letterbox)) 100%); }
+.cinematic-shot .cinematic-layer {
+  position: absolute;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  transform-origin: center;
+  max-width: none;
+}
+.cinematic-shot .cinematic-layer[data-depth='background'] { z-index: 1; }
+.cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasyRPG Retro 마을 타일셋 분류 & HTML 맵 빌더</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --panel: #121824;
+      --panel-hover: #1b2336;
+      --border: #222d42;
+      --text: #f0f4f9;
+      --muted: #8b9bb4;
+      --accent: #4a90e2;
+      --accent-glow: rgba(74, 144, 226, 0.3);
+      --passable: #4caf50;
+      --solid: #f44336;
+      --grid-line: rgba(255, 255, 255, 0.08);
+      --tile-size: 32px; /* 2x scaling for village */
+      --anim-offset-x: 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+      padding: 24px;
+      line-height: 1.6;
+    }
+
+    header {
+      max-width: 1400px;
+      margin: 0 auto 24px;
+      padding: 24px;
+      background: linear-gradient(135deg, #16223f 0%, #0f172a 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #64b5f6, #4a90e2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .section-card {
+      background-color: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-card h2 {
+      font-size: 1.25rem;
+      border-left: 4px solid var(--accent);
+      padding-left: 10px;
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* --- Left Column: HTML Village Map --- */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn {
+      background-color: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background-color: var(--panel-hover);
+      border-color: var(--accent);
+    }
+
+    .btn.active {
+      background-color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .map-outer-wrapper {
+      width: 100%;
+      overflow: auto;
+      background-color: #05070c;
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 520px;
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(20, var(--tile-size));
+      grid-template-rows: repeat(15, var(--tile-size));
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      background: #000;
+    }
+
+    .map-cell {
+      width: var(--tile-size);
+      height: var(--tile-size);
+      position: relative;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .map-grid.show-grid .map-cell::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 1px solid var(--grid-line);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .tile-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('./assets/easyrpg-chipset-retro-house-transparent.png');
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .tile-layer.upper-layer {
+      z-index: 2;
+    }
+
+    .cell-info-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      background-color: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      padding: 8px 12px;
+      z-index: 100;
+      font-size: 0.8rem;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .map-cell:hover .cell-info-tooltip {
+      opacity: 1;
+    }
+
+    /* --- Right Column: Chipset & Classifier --- */
+    .chipset-wrapper {
+      position: relative;
+      background-color: #0e131f;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+    }
+
+    .chipset-container {
+      position: relative;
+      width: 480px;
+      height: 256px;
+      background-image: url('./assets/easyrpg-chipset-retro-house-transparent.png');
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .chipset-grid-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: repeat(30, 16px);
+      grid-template-rows: repeat(16, 16px);
+    }
+
+    .chipset-cell {
+      width: 16px;
+      height: 16px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: background-color 0.1s ease;
+    }
+
+    .chipset-cell:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .chipset-cell.selected {
+      border: 1px solid var(--accent);
+      background-color: rgba(74, 144, 226, 0.2);
+      box-shadow: inset 0 0 4px var(--accent);
+    }
+
+    .chipset-cell.highlighted {
+      background-color: rgba(74, 144, 226, 0.15);
+      border: 1px solid rgba(74, 144, 226, 0.5);
+    }
+
+    .category-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .category-btn {
+      background-color: #1e293b;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-btn:hover {
+      background-color: var(--panel-hover);
+      border-color: var(--accent);
+    }
+
+    .category-btn.active {
+      background-color: #1e3a5f;
+      border-color: var(--accent);
+      font-weight: bold;
+    }
+
+    .category-btn .badge {
+      font-size: 0.72rem;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 12px;
+      color: var(--muted);
+    }
+
+    .category-btn.active .badge {
+      background-color: var(--accent);
+      color: white;
+    }
+
+    .tile-detail-panel {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 16px;
+      min-height: 120px;
+    }
+
+    .detail-tile-preview {
+      width: 64px;
+      height: 64px;
+      background-image: url('./assets/easyrpg-chipset-retro-house-transparent.png');
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .detail-text {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .detail-title {
+      font-weight: bold;
+      font-size: 1.05rem;
+      color: var(--text);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .detail-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .detail-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .badge-tag {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background-color: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .badge-tag.passable {
+      border-color: #2e7d32;
+      color: #81c784;
+    }
+
+    .badge-tag.solid {
+      border-color: #c62828;
+      color: #e57373;
+    }
+
+    .badge-tag.upper {
+      border-color: #f57f17;
+      color: #fbc02d;
+    }
+
+    .badge-tag.lower {
+      border-color: #1565c0;
+      color: #64b5f6;
+    }
+
+    /* --- Classification Table --- */
+    .table-section {
+      max-width: 1400px;
+      margin: 24px auto;
+    }
+
+    .table-wrapper {
+      background-color: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .table-wrapper h2 {
+      padding: 20px 24px;
+      font-size: 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th, td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.25);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    td.tile-id-col {
+      font-family: monospace;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .table-tile-thumb {
+      width: 24px;
+      height: 24px;
+      background-image: url('./assets/easyrpg-chipset-retro-house-transparent.png');
+      background-repeat: no-repeat;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border-radius: 3px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>EasyRPG Retro 마을 타일셋 분류 & HTML 맵 빌더</h1>
+    <p>본 페이지는 easyrpg-chipset-retro-house-transparent.png 타일셋 리소스를 슬라이싱하여 구현한 대화형 타일 카탈로그와 HTML/CSS 기반의 마을 맵 데모입니다.</p>
+  </header>
+
+  <main class="main-container">
+    <!-- Left Column: HTML Village Map -->
+    <section class="section-card">
+      <h2>
+        마을 HTML 렌더러 (Village Map)
+        <span style="font-size: 0.8rem; font-weight: normal; color: var(--muted);">Grid size: 20×15</span>
+      </h2>
+      <div class="controls">
+        <button class="btn active" id="btn-grid" onclick="toggleGrid()">그리드 켜기</button>
+        <button class="btn active" id="btn-upper" onclick="toggleUpperLayer()">상위 레이어 보기</button>
+        <button class="btn" id="btn-zoom-in" onclick="changeZoom(1)">확대 (+)</button>
+        <button class="btn" id="btn-zoom-out" onclick="changeZoom(-1)">축소 (-)</button>
+        <button class="btn active" id="btn-anim" onclick="toggleAnim()">물 애니메이션</button>
+      </div>
+
+      <div class="map-outer-wrapper">
+        <div class="map-grid show-grid" id="village-grid">
+          <!-- Dynamically generated cells -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Interactive Tileset & Classifier -->
+    <section class="section-card">
+      <h2>타일셋 시각 분석기 (Tileset Analyzer)</h2>
+      
+      <div class="chipset-wrapper">
+        <div class="chipset-container" id="chipset-image">
+          <div class="chipset-grid-overlay" id="chipset-overlay">
+            <!-- Dynamically generated overlay cells -->
+          </div>
+        </div>
+      </div>
+
+      <div class="tile-detail-panel" id="detail-panel">
+        <div class="detail-tile-preview" id="detail-preview" style="background-position: -270px -144px; background-size: 960px 512px;"></div>
+        <div class="detail-text">
+          <div class="detail-title" id="detail-title">
+            <span>270 풀밭</span>
+            <span class="badge-tag passable">통행가능</span>
+            <span class="badge-tag lower">하위</span>
+          </div>
+          <div class="detail-desc" id="detail-desc">기본 잔디 지형 타일. 야외의 보행 가능한 기본 바닥면을 형성합니다.</div>
+          <div class="detail-tags" id="detail-tags">
+            <span class="badge-tag">grass</span>
+            <span class="badge-tag">ground</span>
+            <span class="badge-tag">walkable</span>
+          </div>
+        </div>
+      </div>
+
+      <h2>타일 카테고리 분류 (Categories)</h2>
+      <div class="category-list">
+        <button class="category-btn" onclick="selectCategory('ground')">
+          <span>지면 & 물 (Ground & Water)</span>
+          <span class="badge">12</span>
+        </button>
+        <button class="category-btn" onclick="selectCategory('walls')">
+          <span>건물 벽면 (House Walls)</span>
+          <span class="badge">27</span>
+        </button>
+        <button class="category-btn" onclick="selectCategory('roofs')">
+          <span>지붕 (Roofs)</span>
+          <span class="badge">16</span>
+        </button>
+        <button class="category-btn" onclick="selectCategory('fences')">
+          <span>울타리 & 난간 (Fences)</span>
+          <span class="badge">11</span>
+        </button>
+        <button class="category-btn" onclick="selectCategory('furniture')">
+          <span>의자, 탁자, 문 (Props & Furniture)</span>
+          <span class="badge">22</span>
+        </button>
+        <button class="category-btn" onclick="selectCategory('ruins')">
+          <span>성벽 & 묘지 & 마법진 (Ruins & Graves)</span>
+          <span class="badge">21</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <section class="table-section">
+    <div class="table-wrapper">
+      <h2>마을 핵심 타일 분류 일람표 (Core Tiles Definition)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 100px;">미리보기</th>
+            <th style="width: 80px;">타일 ID</th>
+            <th>한글 이름</th>
+            <th>영문 이름 (Key)</th>
+            <th>레이어</th>
+            <th>통행성</th>
+            <th>특이사항 및 설명</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <!-- Dynamically populated from JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    // --- Tile Data Definition ---
+    const TILE_WIDTH = 16;
+    const TILE_HEIGHT = 16;
+    const CHIPSET_COLS = 30;
+
+    // 핵심 타일 목록 정의
+    const tileDatabase = {
+      // Ground / Paths
+      270: { name: "풀밭", key: "grass_ground", layer: "lower", passable: true, category: "ground", desc: "기본 잔디 지형 타일. 야외의 보행 가능한 기본 바닥면을 형성합니다." },
+      304: { name: "키큰 풀 (포켓몬풍)", key: "tall_grass", layer: "lower", passable: true, category: "ground", desc: "몬스터 조우나 전투 스위치와 연결될 수 있는 짙은 풀숲 타일." },
+      421: { name: "흙길 중심", key: "dirt_road_body", layer: "lower", passable: true, category: "ground", desc: "마을 도로의 중심을 이루는 흙길 타일." },
+      391: { name: "흙길 북측 경계", key: "dirt_road_edge_north", layer: "lower", passable: true, category: "ground", desc: "흙길과 잔디가 만나는 북쪽 경계면 타일." },
+      451: { name: "흙길 남측 경계", key: "dirt_road_edge_south", layer: "lower", passable: true, category: "ground", desc: "흙길과 잔디가 만나는 남쪽 경계면 타일." },
+      420: { name: "흙길 서측 경계", key: "dirt_road_edge_west", layer: "lower", passable: true, category: "ground", desc: "흙길과 잔디가 만나는 서쪽 경계면 타일." },
+      422: { name: "흙길 동측 경계", key: "dirt_road_edge_east", layer: "lower", passable: true, category: "ground", desc: "흙길과 잔디가 만나는 동쪽 경계면 타일." },
+      390: { name: "흙길 NW 코너", key: "dirt_road_corner_nw", layer: "lower", passable: true, category: "ground", desc: "흙길의 북서쪽 외곽 모서리 타일." },
+      392: { name: "흙길 NE 코너", key: "dirt_road_corner_ne", layer: "lower", passable: true, category: "ground", desc: "흙길의 북동쪽 외곽 모서리 타일." },
+      450: { name: "흙길 SW 코너", key: "dirt_road_corner_sw", layer: "lower", passable: true, category: "ground", desc: "흙길의 남서쪽 외곽 모서리 타일." },
+      452: { name: "흙길 SE 코너", key: "dirt_road_corner_se", layer: "lower", passable: true, category: "ground", desc: "흙길의 남동쪽 외곽 모서리 타일." },
+      342: { name: "돌 바닥", key: "stone_floor", layer: "lower", passable: true, category: "ground", desc: "성 내외곽이나 광장에 사용되는 paved 석재 바닥." },
+      222: { name: "나무 바닥 (데크)", key: "wood_floor_body", layer: "lower", passable: true, category: "ground", desc: "나무 다리, 테라스, 선착장 등에 쓰이는 나무 판자 바닥." },
+
+      // Water (Animated)
+      120: { name: "호수 물 (애니메이션)", key: "lake_water_body", layer: "lower", passable: false, category: "ground", animated: true, desc: "애니메이션되는 잔잔한 깊은 물 영역 타일. 보행 불가." },
+      30: { name: "호수 서측 해안", key: "lake_shore_west", layer: "lower", passable: false, category: "ground", animated: true, desc: "물과 잔디가 접하는 서측 해안 타일. 물 흐름 애니메이션 포함." },
+      32: { name: "호수 동측 해안", key: "lake_shore_east", layer: "lower", passable: false, category: "ground", animated: true, desc: "물과 잔디가 접하는 동측 해안 타일. 물 흐름 애니메이션 포함." },
+
+      // Wood Cabin Walls
+      102: { name: "나무 집벽 상단 좌", key: "house_wood_wall_upper_l", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 좌상단 기둥 마감 부분." },
+      103: { name: "나무 집벽 상단 중", key: "house_wood_wall_upper_m", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 상단 중앙 반복 섹션." },
+      104: { name: "나무 집벽 상단 우", key: "house_wood_wall_upper_r", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 우상단 기둥 마감 부분." },
+      132: { name: "나무 집벽 중단 좌", key: "house_wood_wall_body_l", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 중간 좌측 기둥." },
+      133: { name: "나무 집벽 중단 중", key: "house_wood_wall_body_m", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 중간 본체 섹션." },
+      134: { name: "나무 집벽 중단 우", key: "house_wood_wall_body_r", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 중간 우측 기둥." },
+      162: { name: "나무 집벽 하단 좌", key: "house_wood_wall_lower_l", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 하단 좌측 모서리." },
+      163: { name: "나무 집벽 하단 중", key: "house_wood_wall_lower_m", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 하단 걸레받이 마감." },
+      164: { name: "나무 집벽 하단 우", key: "house_wood_wall_lower_r", layer: "lower", passable: false, category: "walls", desc: "통나무 가옥 벽면의 하단 우측 모서리." },
+
+      // Plaster (Cream) House Walls
+      15: { name: "흰 집벽 상단 좌", key: "house_white_wall_upper_l", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 좌상단 몰딩 경계." },
+      16: { name: "흰 집벽 상단 중", key: "house_white_wall_upper_m", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 상단 반복 섹션." },
+      17: { name: "흰 집벽 상단 우", key: "house_white_wall_upper_r", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 우상단 몰딩 경계." },
+      45: { name: "흰 집벽 중단 좌", key: "house_white_wall_body_l", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 중간 좌측 마감." },
+      46: { name: "흰 집벽 중단 중", key: "house_white_wall_body_m", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 중간 중심 섹션." },
+      47: { name: "흰 집벽 중단 우", key: "house_white_wall_body_r", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 중간 우측 마감." },
+      75: { name: "흰 집벽 하단 좌", key: "house_white_wall_lower_l", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 하단 좌측 주춧돌 경계." },
+      76: { name: "흰 집벽 하단 중", key: "house_white_wall_lower_m", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 하단 주춧돌 본체." },
+      77: { name: "흰 집벽 하단 우", key: "house_white_wall_lower_r", layer: "lower", passable: false, category: "walls", desc: "크림색 석회벽의 하단 우측 주춧돌 경계." },
+
+      // Roofs
+      374: { name: "지붕 사선 좌하", key: "house_roof_slope_sw", layer: "upper", passable: false, category: "roofs", desc: "붉은색 기와지붕의 경사진 좌하단 끝부분." },
+      375: { name: "지붕 본체 상단", key: "house_roof_body_n", layer: "upper", passable: false, category: "roofs", desc: "붉은색 기와지붕의 윗부분 지붕 마감." },
+      376: { name: "파랑 지붕 본체 상단", key: "house_roof_blue_n", layer: "upper", passable: false, category: "roofs", desc: "파란색 기와지붕의 윗부분 마루 마감." },
+      377: { name: "파랑 지붕 사선 좌하", key: "house_roof_blue_slope_sw", layer: "upper", passable: false, category: "roofs", desc: "파란색 기와지붕의 좌하단 경사 끝부분." },
+      404: { name: "지붕 사선 우하", key: "house_roof_slope_se", layer: "upper", passable: false, category: "roofs", desc: "붉은색 기와지붕의 경사진 우하단 끝부분." },
+      405: { name: "지붕 본체 하단", key: "house_roof_body_s", layer: "upper", passable: false, category: "roofs", desc: "붉은색 기와지붕의 아래쪽 처마마감 타일." },
+      406: { name: "파랑 지붕 본체 하단", key: "house_roof_blue_s", layer: "upper", passable: false, category: "roofs", desc: "파란색 기와지붕의 아래쪽 처마마감 타일." },
+      407: { name: "파랑 지붕 사선 우하", key: "house_roof_blue_slope_se", layer: "upper", passable: false, category: "roofs", desc: "파란색 기와지붕의 우하단 경사 끝부분." },
+
+      // Fences & Rails
+      378: { name: "울타리 모퉁이 NW", key: "fence_corner_nw", layer: "upper", passable: false, category: "fences", desc: "나무 울타리의 북서쪽 모퉁이 기둥." },
+      379: { name: "울타리 가로대", key: "fence_rail_h", layer: "upper", passable: false, category: "fences", desc: "가로로 길게 연결되는 나무 울타리 본체." },
+      380: { name: "울타리 모퉁이 NE", key: "fence_corner_ne", layer: "upper", passable: false, category: "fences", desc: "나무 울타리의 북동쪽 모퉁이 기둥." },
+      408: { name: "울타리 세로대", key: "fence_rail_v", layer: "upper", passable: false, category: "fences", desc: "세로로 내려가는 나무 울타리 본체." },
+      410: { name: "울타리 모퉁이 SE", key: "fence_corner_se", layer: "upper", passable: false, category: "fences", desc: "나무 울타리의 남동쪽 모퉁이 기둥." },
+      438: { name: "울타리 모퉁이 SW", key: "fence_corner_sw", layer: "upper", passable: false, category: "fences", desc: "나무 울타리의 남서쪽 모퉁이 기둥." },
+      468: { name: "장터 레일 좌", key: "market_rail_l", layer: "upper", passable: false, category: "fences", desc: "나무 데크 마감이나 시장 상점가 뒤편의 목재 안전 펜스 좌측 끝." },
+      469: { name: "장터 레일 중", key: "market_rail_m", layer: "upper", passable: false, category: "fences", desc: "나무 데크 펜스의 가로 연결대." },
+      470: { name: "장터 레일 우", key: "market_rail_r", layer: "upper", passable: false, category: "fences", desc: "나무 데크 펜스의 우측 마감 끝." },
+
+      // Furniture & Doors
+      116: { name: "나무 문 상단", key: "wood_door_top", layer: "upper", passable: false, category: "furniture", desc: "전형적인 목조 가옥 문의 상단 부분." },
+      146: { name: "나무 문 하단", key: "wood_door_bottom", layer: "upper", passable: false, category: "furniture", desc: "전형적인 목조 가옥 문의 하단 부분. 문고리가 있음." },
+      329: { name: "집 입구 상단", key: "house_entrance_upper", layer: "upper", passable: false, category: "furniture", desc: "돌출형 가옥 입구/아치형 현관의 상부 쉐도우 아치." },
+      359: { name: "집 입구 하단", key: "house_entrance_lower", layer: "upper", passable: false, category: "furniture", desc: "돌출형 가옥 입구/아치의 하부 디딤돌 영역." },
+      85: { name: "창문 오버레이", key: "house_window_overlay", layer: "upper", passable: false, category: "furniture", desc: "집 벽면(lower) 위에 배치하는 장식용 목조 격자창." },
+      234: { name: "가로 탁자 좌측", key: "table_horizontal_l", layer: "upper", passable: false, category: "furniture", desc: "가로형 나무 탁자의 왼쪽 가장자리." },
+      235: { name: "가로 탁자 중간", key: "table_horizontal_m", layer: "upper", passable: false, category: "furniture", desc: "가로형 나무 탁자의 연장 가능한 중간 본체." },
+      236: { name: "가로 탁자 우측", key: "table_horizontal_r", layer: "upper", passable: false, category: "furniture", desc: "가로형 나무 탁자의 오른쪽 가장자리." },
+      175: { name: "의자 (아래방향)", key: "chair_face_down", layer: "upper", passable: false, category: "furniture", desc: "아래(남쪽)를 바라보는 나무 등받이 의자. 탁자 북쪽에 배치." },
+      176: { name: "의자 (위방향)", key: "chair_face_up", layer: "upper", passable: false, category: "furniture", desc: "위(북쪽)를 바라보는 나무 등받이 의자. 탁자 남쪽에 배치." },
+      205: { name: "의자 (우측방향)", key: "chair_face_right", layer: "upper", passable: false, category: "furniture", desc: "오른쪽(동쪽)을 바라보는 등받이 의자. 탁자 서쪽에 배치." },
+      206: { name: "의자 (좌측방향)", key: "chair_face_left", layer: "upper", passable: false, category: "furniture", desc: "왼쪽(서쪽)을 바라보는 등받이 의자. 탁자 동쪽에 배치." },
+      350: { name: "우편함", key: "mailbox", layer: "upper", passable: false, category: "furniture", desc: "집 앞에 배치하는 작은 목제 우체통 소품." },
+      351: { name: "화분", key: "flower_pot", layer: "upper", passable: false, category: "furniture", desc: "마당이나 벽 옆에 놓는 붉은색 꽃이 심어진 화분." },
+      349: { name: "장작 더미", key: "firewood_pile", layer: "upper", passable: false, category: "furniture", desc: "벽이나 공터에 쌓아두어 시골 분위기를 내는 장작더미." },
+      352: { name: "항아리 / 독", key: "storage_jar", layer: "upper", passable: false, category: "furniture", desc: "집 앞에 보관하는 전통 흙항아리 소품." },
+
+      // Castle & Ruins & Graves
+      18: { name: "성 지붕 NW 코너", key: "castle_roof_nw", layer: "lower", passable: false, category: "ruins", desc: "회색 돌 성벽 상단 보행로(여장)의 북서쪽 코너." },
+      19: { name: "성 지붕 북측 경계", key: "castle_roof_n", layer: "lower", passable: false, category: "ruins", desc: "회색 돌 성벽 상단 보행로의 북측 난간." },
+      20: { name: "성 지붕 NE 코너", key: "castle_roof_ne", layer: "lower", passable: false, category: "ruins", desc: "회색 돌 성벽 상단 보행로의 북동쪽 코너." },
+      49: { name: "성 지붕 바닥 (옅은)", key: "castle_roof_floor_light", layer: "lower", passable: false, category: "ruins", desc: "성벽 위 통행로의 밝은 바닥면 채우기 타일." },
+      21: { name: "성벽 정면 상단", key: "castle_wall_face_top", layer: "lower", passable: false, category: "ruins", desc: "회색 벽돌로 조적된 성벽 입체의 맨 윗단 라인." },
+      51: { name: "성벽 정면 중단", key: "castle_wall_face_mid", layer: "lower", passable: false, category: "ruins", desc: "세로로 높이 조절이 가능한 성벽의 본체 부분." },
+      81: { name: "성벽 정면 하단", key: "castle_wall_face_bottom", layer: "lower", passable: false, category: "ruins", desc: "지면과 닿아 그림자가 들어가는 성벽 하부 기저선." },
+      231: { name: "바닥 마법진", key: "magic_circle", layer: "upper", passable: true, category: "ruins", desc: "바닥에 그려져 있으며 밟고 통과할 수 있는 황금색 마법진." },
+      383: { name: "해골 잔해", key: "ruin_skeleton", layer: "upper", passable: true, category: "ruins", desc: "던전이나 폐허, 묘지에 배치되는 백골 유해." },
+      353: { name: "공동묘지 비석", key: "gravestone", layer: "upper", passable: false, category: "ruins", desc: "묘지에 배치하여 스산한 분위기를 자아내는 오래된 석조 묘비." },
+      323: { name: "묘지 십자가 비석", key: "cemetery_cross", layer: "upper", passable: false, category: "ruins", desc: "십자가 형태의 석조 묘비." },
+      260: { name: "초록 나무 canopy", key: "tree_green_top", layer: "upper", passable: false, category: "furniture", desc: "마을 외곽 숲을 연출하는 대표적인 활엽수 상단 덤불." },
+      290: { name: "초록 나무 trunk", key: "tree_green_bottom", layer: "upper", passable: false, category: "furniture", desc: "활엽수 하단의 나무 몸통 및 기둥." }
+    };
+
+    // --- Interactive Village Map Grid Data ---
+    // 20x15 size map
+    const mapWidth = 20;
+    const mapHeight = 15;
+    
+    // Lower layer grid initialized to Grass (270)
+    const lowerGrid = Array(mapWidth * mapHeight).fill(270);
+    // Upper layer grid initialized to empty (-1)
+    const upperGrid = Array(mapWidth * mapHeight).fill(-1);
+
+    // [Utility] 2D coordinates to 1D index
+    function getIdx(x, y) {
+      return y * mapWidth + x;
+    }
+
+    // --- Design the Village Map ---
+    // 1. Build the Dirt Path network (T-junction)
+    // Vertical Path: col 9 & 10 from row 8 to 14
+    for (let y = 8; y <= 14; y++) {
+      lowerGrid[getIdx(8, y)] = 420; // West Edge
+      lowerGrid[getIdx(9, y)] = 421; // Center Body
+      lowerGrid[getIdx(10, y)] = 421; // Center Body
+      lowerGrid[getIdx(11, y)] = 422; // East Edge
+    }
+    // Horizontal Path: row 9, from col 2 to 17
+    for (let x = 2; x <= 17; x++) {
+      // Avoid overwriting vertical core center
+      if (x !== 9 && x !== 10) {
+        lowerGrid[getIdx(x, 9)] = 421; // Road Body
+      }
+      lowerGrid[getIdx(x, 8)] = 391; // North Edge
+      lowerGrid[getIdx(x, 10)] = 451; // South Edge
+    }
+    // Fill the Junc corners
+    lowerGrid[getIdx(8, 8)] = 390; // NW corner of junction
+    lowerGrid[getIdx(11, 8)] = 392; // NE corner of junction
+    lowerGrid[getIdx(1, 8)] = 390;  // Road ends west edge corner NW
+    lowerGrid[getIdx(1, 9)] = 420;  // Road west end edge
+    lowerGrid[getIdx(1, 10)] = 450; // Road ends west SW
+    lowerGrid[getIdx(18, 8)] = 392; // Road ends east NE
+    lowerGrid[getIdx(18, 9)] = 422; // Road east end edge
+    lowerGrid[getIdx(18, 10)] = 452;// Road ends east SE
+    // Correct junction overlaps
+    lowerGrid[getIdx(8, 9)] = 421; // Keep center road walkable
+    lowerGrid[getIdx(11, 9)] = 421;
+    lowerGrid[getIdx(8, 10)] = 451; // south road junction edges
+    lowerGrid[getIdx(11, 10)] = 451;
+
+    // 2. Build the Animated Pond (Water on left-top)
+    // 3x3 pond at cols 1..3, rows 1..3
+    const waterBaseTiles = {
+      nw: 0,   n: 1,   ne: 2,
+      w: 30,  mid: 120, e: 32,
+      sw: 60,  s: 61,  se: 62
+    };
+    lowerGrid[getIdx(1, 1)] = waterBaseTiles.nw;
+    lowerGrid[getIdx(2, 1)] = waterBaseTiles.n;
+    lowerGrid[getIdx(3, 1)] = waterBaseTiles.ne;
+    lowerGrid[getIdx(1, 2)] = waterBaseTiles.w;
+    lowerGrid[getIdx(2, 2)] = waterBaseTiles.mid;
+    lowerGrid[getIdx(3, 2)] = waterBaseTiles.e;
+    lowerGrid[getIdx(1, 3)] = waterBaseTiles.sw;
+    lowerGrid[getIdx(2, 3)] = waterBaseTiles.s;
+    lowerGrid[getIdx(3, 3)] = waterBaseTiles.se;
+
+    // 3. Wood Cabin (cols 4..8, rows 4..6)
+    // Lower layer walls
+    lowerGrid[getIdx(4, 4)] = 102; lowerGrid[getIdx(5, 4)] = 103; lowerGrid[getIdx(6, 4)] = 103; lowerGrid[getIdx(7, 4)] = 103; lowerGrid[getIdx(8, 4)] = 104;
+    lowerGrid[getIdx(4, 5)] = 132; lowerGrid[getIdx(5, 5)] = 133; lowerGrid[getIdx(6, 5)] = 133; lowerGrid[getIdx(7, 5)] = 133; lowerGrid[getIdx(8, 5)] = 134;
+    lowerGrid[getIdx(4, 6)] = 162; lowerGrid[getIdx(5, 6)] = 163; lowerGrid[getIdx(6, 6)] = 163; lowerGrid[getIdx(7, 6)] = 163; lowerGrid[getIdx(8, 6)] = 164;
+    // Upper layer roof, windows and doors
+    upperGrid[getIdx(4, 3)] = 375; upperGrid[getIdx(5, 3)] = 375; upperGrid[getIdx(6, 3)] = 375; upperGrid[getIdx(7, 3)] = 375; upperGrid[getIdx(8, 3)] = 375;
+    upperGrid[getIdx(4, 4)] = 405; upperGrid[getIdx(5, 4)] = 405; upperGrid[getIdx(6, 4)] = 405; upperGrid[getIdx(7, 4)] = 405; upperGrid[getIdx(8, 4)] = 405;
+    upperGrid[getIdx(5, 5)] = 85;  // window
+    upperGrid[getIdx(7, 5)] = 85;  // window
+    upperGrid[getIdx(6, 5)] = 116; // door top
+    upperGrid[getIdx(6, 6)] = 146; // door bottom
+    // Wood Cabin Props
+    upperGrid[getIdx(3, 6)] = 349; // Firewood on left of door
+    upperGrid[getIdx(9, 6)] = 350; // Mailbox on right of house
+
+    // 4. Plaster Cream House (cols 13..17, rows 4..6)
+    // Lower layer walls
+    lowerGrid[getIdx(13, 4)] = 15; lowerGrid[getIdx(14, 4)] = 16; lowerGrid[getIdx(15, 4)] = 16; lowerGrid[getIdx(16, 4)] = 16; lowerGrid[getIdx(17, 4)] = 17;
+    lowerGrid[getIdx(13, 5)] = 45; lowerGrid[getIdx(14, 5)] = 46; lowerGrid[getIdx(15, 5)] = 46; lowerGrid[getIdx(16, 5)] = 46; lowerGrid[getIdx(17, 5)] = 47;
+    lowerGrid[getIdx(13, 6)] = 75; lowerGrid[getIdx(14, 6)] = 76; lowerGrid[getIdx(15, 6)] = 76; lowerGrid[getIdx(16, 6)] = 76; lowerGrid[getIdx(17, 6)] = 77;
+    // Upper layer blue roof, windows and doors
+    upperGrid[getIdx(13, 3)] = 376; upperGrid[getIdx(14, 3)] = 376; upperGrid[getIdx(15, 3)] = 376; upperGrid[getIdx(16, 3)] = 376; upperGrid[getIdx(17, 3)] = 376;
+    upperGrid[getIdx(13, 4)] = 406; upperGrid[getIdx(14, 4)] = 406; upperGrid[getIdx(15, 4)] = 406; upperGrid[getIdx(16, 4)] = 406; upperGrid[getIdx(17, 4)] = 406;
+    upperGrid[getIdx(14, 5)] = 85;  // window
+    upperGrid[getIdx(16, 5)] = 85;  // window
+    upperGrid[getIdx(15, 5)] = 329; // Entrance door top
+    upperGrid[getIdx(15, 6)] = 359; // Entrance door bottom
+    // Plaster House Props
+    upperGrid[getIdx(12, 6)] = 352; // Storage jar
+    upperGrid[getIdx(18, 6)] = 351; // Flower pot
+
+    // 5. Build Garden & Vegetable Patch (left-bottom, cols 1..4, rows 11..13)
+    // Wood Floor patio for chairs and tables
+    for (let y = 11; y <= 13; y++) {
+      for (let x = 4; x <= 7; x++) {
+        lowerGrid[getIdx(x, y)] = 222; // Wooden Deck
+      }
+    }
+    // Upper Table and chairs
+    upperGrid[getIdx(5, 12)] = 234; // Table left
+    upperGrid[getIdx(6, 12)] = 236; // Table right
+    upperGrid[getIdx(4, 12)] = 205; // Chair facing right
+    upperGrid[getIdx(7, 12)] = 206; // Chair facing left
+    // Tall grass patches around the patio
+    lowerGrid[getIdx(3, 12)] = 304;
+    lowerGrid[getIdx(3, 13)] = 304;
+
+    // 6. Garden Fenced area (x=1..3, y=11..13)
+    upperGrid[getIdx(1, 11)] = 378; // nw fence
+    upperGrid[getIdx(2, 11)] = 379; // rail
+    upperGrid[getIdx(3, 11)] = 380; // ne fence
+    upperGrid[getIdx(1, 12)] = 408; // vertical
+    upperGrid[getIdx(3, 12)] = 408; // vertical
+    upperGrid[getIdx(1, 13)] = 438; // sw fence
+    // Leave (2,13) empty for gate
+    upperGrid[getIdx(3, 13)] = 410; // se fence
+    upperGrid[getIdx(2, 12)] = 288; // Flowers inside garden
+
+    // 7. Stone Ruin & Graves Area (right-bottom, cols 14..18, rows 11..13)
+    for (let y = 11; y <= 13; y++) {
+      for (let x = 14; x <= 18; x++) {
+        lowerGrid[getIdx(x, y)] = 342; // Stone brick floor
+      }
+    }
+    upperGrid[getIdx(16, 12)] = 231; // Magic circle center
+    upperGrid[getIdx(14, 11)] = 353; // Grave 1
+    upperGrid[getIdx(18, 11)] = 323; // Grave 2 (cross)
+    upperGrid[getIdx(15, 12)] = 383; // Skeleton remains
+    upperGrid[getIdx(17, 12)] = 352; // Broken stone jar
+
+    // 8. Place outer pine/deciduous trees on borders (natural bounds)
+    const treePlacements = [
+      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0], [8, 0], [9, 0], [10, 0], [11, 0], [12, 0], [13, 0], [14, 0], [15, 0], [16, 0], [17, 0], [18, 0], [19, 0],
+      [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7], [0, 8], [0, 9], [0, 10], [0, 11], [0, 12], [0, 13], [0, 14],
+      [19, 1], [19, 2], [19, 3], [19, 4], [19, 5], [19, 6], [19, 7], [19, 8], [19, 9], [19, 10], [19, 11], [19, 12], [19, 13], [19, 14]
+    ];
+    treePlacements.forEach(([x, y]) => {
+      // Don't overwrite the pond water body
+      if (y >= 1 && y <= 3 && x >= 1 && x <= 3) return;
+      // Tree canopy on upper layer, grass/dirt on lower
+      upperGrid[getIdx(x, y)] = 260; // top leaf
+      // Set the lower tile underneath trees to grass (270)
+      if (lowerGrid[getIdx(x, y)] === 270) {
+        // Occasionally make a trunk below
+        if (y < mapHeight - 1 && upperGrid[getIdx(x, y+1)] === -1) {
+          upperGrid[getIdx(x, y+1)] = 290; // trunk
+        }
+      }
+    });
+
+    // --- Initialize UI & App State ---
+    let currentZoom = 2; // default scale 2x (32px)
+    let showGrid = true;
+    let showUpper = true;
+    let isAnimated = true;
+    let animFrame = 0;
+    let animInterval = null;
+
+    // Load initial map
+    function initVillageMap() {
+      const grid = document.getElementById("village-grid");
+      grid.innerHTML = "";
+
+      for (let y = 0; y < mapHeight; y++) {
+        for (let x = 0; x < mapWidth; x++) {
+          const idx = getIdx(x, y);
+          const cell = document.createElement("div");
+          cell.className = "map-cell";
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+
+          // Lower Layer
+          const lowerTileIdx = lowerGrid[idx];
+          const lowerDiv = document.createElement("div");
+          lowerDiv.className = "tile-layer lower-layer";
+          if (isAnimatedTile(lowerTileIdx)) {
+            lowerDiv.classList.add("water-cell");
+            lowerDiv.dataset.baseIdx = lowerTileIdx;
+          }
+          applyTileStyle(lowerDiv, lowerTileIdx);
+          cell.appendChild(lowerDiv);
+
+          // Upper Layer
+          const upperTileIdx = upperGrid[idx];
+          if (upperTileIdx !== -1) {
+            const upperDiv = document.createElement("div");
+            upperDiv.className = "tile-layer upper-layer";
+            upperDiv.dataset.baseIdx = upperTileIdx;
+            applyTileStyle(upperDiv, upperTileIdx);
+            cell.appendChild(upperDiv);
+          }
+
+          // Tooltip for inspection
+          const tooltip = document.createElement("div");
+          tooltip.className = "cell-info-tooltip";
+          const lowerLabel = tileDatabase[lowerTileIdx] ? tileDatabase[lowerTileIdx].name : `타일 ${lowerTileIdx}`;
+          const upperLabel = upperTileIdx !== -1 && tileDatabase[upperTileIdx] ? ` / ${tileDatabase[upperTileIdx].name}` : "";
+          tooltip.textContent = `좌표: (${x}, ${y}) | 하위: ${lowerLabel}${upperLabel}`;
+          cell.appendChild(tooltip);
+
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function applyTileStyle(el, index) {
+      const scale = currentZoom;
+      const tileSize = 16 * scale;
+      const col = index % CHIPSET_COLS;
+      const row = Math.floor(index / CHIPSET_COLS);
+      const x = col * tileSize;
+      const y = row * tileSize;
+
+      el.style.width = `${tileSize}px`;
+      el.style.height = `${tileSize}px`;
+      el.style.backgroundSize = `${480 * scale}px ${256 * scale}px`;
+      el.style.backgroundPosition = `-${x}px -${y}px`;
+    }
+
+    function isAnimatedTile(index) {
+      return tileDatabase[index] && tileDatabase[index].animated;
+    }
+
+    // Toggle Grid
+    function toggleGrid() {
+      const grid = document.getElementById("village-grid");
+      const btn = document.getElementById("btn-grid");
+      showGrid = !showGrid;
+      if (showGrid) {
+        grid.classList.add("show-grid");
+        btn.classList.add("active");
+        btn.textContent = "그리드 켜기";
+      } else {
+        grid.classList.remove("show-grid");
+        btn.classList.remove("active");
+        btn.textContent = "그리드 끄기";
+      }
+    }
+
+    // Toggle Upper Layer
+    function toggleUpperLayer() {
+      const btn = document.getElementById("btn-upper");
+      showUpper = !showUpper;
+      const uppers = document.querySelectorAll(".upper-layer");
+      uppers.forEach(el => {
+        el.style.display = showUpper ? "block" : "none";
+      });
+      if (showUpper) {
+        btn.classList.add("active");
+        btn.textContent = "상위 레이어 보기";
+      } else {
+        btn.classList.remove("active");
+        btn.textContent = "상위 레이어 가리기";
+      }
+    }
+
+    // Change Zoom
+    function changeZoom(dir) {
+      if (dir > 0 && currentZoom < 3) currentZoom++;
+      if (dir < 0 && currentZoom > 1) currentZoom--;
+
+      // Update CSS variables & Styles
+      document.documentElement.style.setProperty('--tile-size', `${16 * currentZoom}px`);
+      
+      const layers = document.querySelectorAll(".tile-layer");
+      layers.forEach(el => {
+        // Redraw backgrounds with new scale
+        const cell = el.parentElement;
+        const x = parseInt(cell.dataset.x);
+        const y = parseInt(cell.dataset.y);
+        const idx = getIdx(x, y);
+        const tileIdx = el.classList.contains("upper-layer") ? upperGrid[idx] : lowerGrid[idx];
+        
+        let currentIdx = tileIdx;
+        if (isAnimated && isAnimatedTile(tileIdx)) {
+          currentIdx = tileIdx + animFrame;
+        }
+        applyTileStyle(el, currentIdx);
+      });
+    }
+
+    // Water Shore & Body Animations
+    function toggleAnim() {
+      const btn = document.getElementById("btn-anim");
+      isAnimated = !isAnimated;
+      if (isAnimated) {
+        btn.classList.add("active");
+        btn.textContent = "물 애니메이션";
+        startAnimationLoop();
+      } else {
+        btn.classList.remove("active");
+        btn.textContent = "애니메이션 정지";
+        stopAnimationLoop();
+      }
+    }
+
+    function startAnimationLoop() {
+      if (animInterval) clearInterval(animInterval);
+      animInterval = setInterval(() => {
+        animFrame = (animFrame + 1) % 3;
+        const waterCells = document.querySelectorAll(".water-cell");
+        waterCells.forEach(el => {
+          const baseIdx = parseInt(el.dataset.baseIdx);
+          applyTileStyle(el, baseIdx + animFrame);
+        });
+      }, 333); // 3fps
+    }
+
+    function stopAnimationLoop() {
+      if (animInterval) clearInterval(animInterval);
+      animInterval = null;
+      animFrame = 0;
+      const waterCells = document.querySelectorAll(".water-cell");
+      waterCells.forEach(el => {
+        const baseIdx = parseInt(el.dataset.baseIdx);
+        applyTileStyle(el, baseIdx);
+      });
+    }
+
+    // --- Interactive Chipset Overlay Grid ---
+    function initChipsetOverlay() {
+      const overlay = document.getElementById("chipset-overlay");
+      overlay.innerHTML = "";
+      
+      const totalCells = 30 * 16;
+      for (let i = 0; i < totalCells; i++) {
+        const cell = document.createElement("div");
+        cell.className = "chipset-cell";
+        cell.dataset.index = i;
+        cell.onclick = () => showTileDetails(i);
+        overlay.appendChild(cell);
+      }
+    }
+
+    // Click to show details of selected tile
+    function showTileDetails(index) {
+      // Highlight in overlay
+      const cells = document.querySelectorAll(".chipset-cell");
+      cells.forEach(el => el.classList.remove("selected"));
+      
+      const selectedCell = document.querySelector(`.chipset-cell[data-index='${index}']`);
+      if (selectedCell) selectedCell.classList.add("selected");
+
+      // Update preview and descriptors
+      const preview = document.getElementById("detail-preview");
+      const scale = 4; // 4x for detail panel
+      const col = index % CHIPSET_COLS;
+      const row = Math.floor(index / CHIPSET_COLS);
+      const x = col * 16 * scale;
+      const y = row * 16 * scale;
+      
+      preview.style.backgroundPosition = `-${x}px -${y}px`;
+      preview.style.backgroundSize = `${480 * scale}px ${256 * scale}px`;
+
+      // Get semantic data
+      const info = tileDatabase[index] || { name: `미분류 타일 ${index}`, key: `tile_${index}`, layer: "lower", passable: true, category: "unclassified", desc: "이 타일은 데이터베이스에 기본 정보가 등록되지 않았습니다." };
+
+      const detailTitle = document.getElementById("detail-title");
+      const tagPass = info.passable ? '<span class="badge-tag passable">통행가능</span>' : '<span class="badge-tag solid">통행불가</span>';
+      const tagLayer = info.layer === "upper" ? '<span class="badge-tag upper">상위레이어</span>' : '<span class="badge-tag lower">하위지형</span>';
+      detailTitle.innerHTML = `<span>${index} ${info.name}</span> ${tagPass} ${tagLayer}`;
+
+      document.getElementById("detail-desc").textContent = info.desc;
+
+      const detailTags = document.getElementById("detail-tags");
+      detailTags.innerHTML = "";
+      const categories = {
+        ground: "지면 & 물",
+        walls: "집 벽면",
+        roofs: "지붕",
+        fences: "울타리/난간",
+        furniture: "소품/가구",
+        ruins: "성벽/묘지/유적",
+        unclassified: "미분류"
+      };
+      const catLabel = categories[info.category] || info.category;
+      
+      // Append tags
+      [info.key, catLabel].forEach(text => {
+        const span = document.createElement("span");
+        span.className = "badge-tag";
+        span.textContent = text;
+        detailTags.appendChild(span);
+      });
+    }
+
+    // Highlight categories
+    function selectCategory(cat) {
+      // Toggle button active state
+      const btns = document.querySelectorAll(".category-btn");
+      btns.forEach(btn => btn.classList.remove("active"));
+      
+      // Find matching buttons
+      const activeBtn = Array.from(btns).find(btn => btn.getAttribute("onclick").includes(`'${cat}'`));
+      if (activeBtn) activeBtn.classList.add("active");
+
+      // Highlight matching cells on overlay
+      const cells = document.querySelectorAll(".chipset-cell");
+      cells.forEach(cell => {
+        const idx = parseInt(cell.dataset.index);
+        const info = tileDatabase[idx];
+        if (info && info.category === cat) {
+          cell.classList.add("highlighted");
+        } else {
+          cell.classList.remove("highlighted");
+        }
+      });
+    }
+
+    // Populate classifications table
+    function buildClassificationTable() {
+      const tbody = document.getElementById("table-body");
+      tbody.innerHTML = "";
+
+      Object.entries(tileDatabase).forEach(([idStr, info]) => {
+        const id = parseInt(idStr);
+        const tr = document.createElement("tr");
+
+        // Preview TD
+        const tdPrev = document.createElement("td");
+        const thumb = document.createElement("div");
+        thumb.className = "table-tile-thumb";
+        const scale = 1.5;
+        const col = id % CHIPSET_COLS;
+        const row = Math.floor(id / CHIPSET_COLS);
+        thumb.style.backgroundPosition = `-${col * 16 * scale}px -${row * 16 * scale}px`;
+        thumb.style.backgroundSize = `${480 * scale}px ${256 * scale}px`;
+        tdPrev.appendChild(thumb);
+        tr.appendChild(tdPrev);
+
+        // ID TD
+        const tdId = document.createElement("td");
+        tdId.className = "tile-id-col";
+        tdId.textContent = id;
+        tr.appendChild(tdId);
+
+        // Name TD
+        const tdName = document.createElement("td");
+        tdName.textContent = info.name;
+        tdName.style.fontWeight = "bold";
+        tr.appendChild(tdName);
+
+        // Key TD
+        const tdKey = document.createElement("td");
+        tdKey.innerHTML = `<code>${info.key}</code>`;
+        tr.appendChild(tdKey);
+
+        // Layer TD
+        const tdLayer = document.createElement("td");
+        tdLayer.textContent = info.layer === "upper" ? "상위 (Upper)" : "하위 (Lower)";
+        tdLayer.style.color = info.layer === "upper" ? "#ffb300" : "#29b6f6";
+        tr.appendChild(tdLayer);
+
+        // Passage TD
+        const tdPass = document.createElement("td");
+        tdPass.textContent = info.passable ? "○ 통과" : "× 차단";
+        tdPass.style.color = info.passable ? "#66bb6a" : "#ef5350";
+        tr.appendChild(tdPass);
+
+        // Desc TD
+        const tdDesc = document.createElement("td");
+        tdDesc.textContent = info.desc;
+        tr.appendChild(tdDesc);
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // --- On Load ---
+    window.onload = () => {
+      initVillageMap();
+      startAnimationLoop();
+      initChipsetOverlay();
+      showTileDetails(270); // default show grass
+      buildClassificationTable();
+    };
+  </script>
+</body>
+</html>

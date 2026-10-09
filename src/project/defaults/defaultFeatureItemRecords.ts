@@ -1,0 +1,97 @@
+import { normalizeItemRecord } from "../databaseRecordModel";
+import { normalizeCropRecord } from "@/project/farmModel";
+import type { CropRecord } from "@/project/types";
+import type { ItemRecord } from "../types";
+
+const icon = (slug: string) => `cc0-jetrel-gen2-${slug}`;
+
+function featureItem(record: Parameters<typeof normalizeItemRecord>[0]): ItemRecord {
+  return normalizeItemRecord(record);
+}
+
+/** 기존 카탈로그에서 비어 있던 실행 경로를 실제 기본 아이템으로 연결한다. */
+export function defaultFeatureItemRecords(): ItemRecord[] {
+  return [
+    // 전투 강화와 약화 해제
+    featureItem({ id: "item_gen2_war_draught", name: "전투의 묘약", type: "medicine", scope: "ally", price: 150, description: "전투 중 아군 하나에게 공격 상승 상태를 부여합니다.", iconResourceId: icon("war-draught"), imageResourceId: icon("war-draught"), animationId: "anim_heal", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_attack_up", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_stone_salve", name: "돌가죽 연고", type: "medicine", scope: "ally", price: 150, description: "전투 중 아군 하나에게 방어 상승 상태를 입힙니다.", iconResourceId: icon("stone-salve"), imageResourceId: icon("stone-salve"), animationId: "anim_heal", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_defense_up", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_swift_incense", name: "질풍 향", type: "medicine", scope: "ally", price: 170, description: "전투 중 아군 하나에게 민첩 상승 상태를 더합니다.", iconResourceId: icon("swift-incense"), imageResourceId: icon("swift-incense"), animationId: "anim_heal", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_agility_up", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_life_dew", name: "생명 이슬", type: "medicine", scope: "ally", price: 190, description: "전투 중 아군 하나에게 재생 상태를 걸어 지속 회복시킵니다.", iconResourceId: icon("life-dew"), imageResourceId: icon("life-dew"), animationId: "anim_heal", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_regen", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_nerve_tonic", name: "신경 안정제", type: "medicine", scope: "ally", price: 90, description: "아군 하나에게 걸린 마비 상태를 제거합니다.", iconResourceId: icon("nerve-tonic"), imageResourceId: icon("nerve-tonic"), animationId: "anim_heal", occasion: "always", consumable: true, healStateIds: ["state_paralysis"], stateEffects: [{ stateId: "state_paralysis", chance: 100, operation: "remove" }] }),
+    featureItem({ id: "item_gen2_purifying_serum", name: "정화 혈청", type: "medicine", scope: "ally", price: 130, description: "아군 하나의 맹독 상태를 씻어 냅니다.", iconResourceId: icon("purifying-serum"), imageResourceId: icon("purifying-serum"), animationId: "anim_heal", occasion: "always", consumable: true, healStateIds: ["state_deep_poison"], stateEffects: [{ stateId: "state_deep_poison", chance: 100, operation: "remove" }] }),
+    featureItem({ id: "item_gen2_voice_lozenge", name: "목소리 사탕", type: "medicine", scope: "ally", price: 85, description: "아군 하나의 침묵 상태를 풀어 주문을 되찾게 합니다.", iconResourceId: icon("voice-lozenge"), imageResourceId: icon("voice-lozenge"), animationId: "anim_heal", occasion: "always", consumable: true, healStateIds: ["state_silence"], stateEffects: [{ stateId: "state_silence", chance: 100, operation: "remove" }] }),
+    featureItem({ id: "item_gen2_courage_tea", name: "용기 차", type: "medicine", scope: "ally", price: 95, description: "아군 하나에게 남은 공격 감소 상태를 해제합니다.", iconResourceId: icon("courage-tea"), imageResourceId: icon("courage-tea"), animationId: "anim_heal", occasion: "always", consumable: true, healStateIds: ["state_attack_down"], stateEffects: [{ stateId: "state_attack_down", chance: 100, operation: "remove" }] }),
+
+    // 아군 전체 대상
+    featureItem({ id: "item_gen2_party_potion", name: "연대의 물약", type: "medicine", scope: "allAllies", price: 220, description: "파티의 생존 중인 모든 아군 HP를 60씩 회복합니다.", iconResourceId: icon("party-potion"), imageResourceId: icon("party-potion"), animationId: "anim_heal", occasion: "always", consumable: true, hpRecovery: { flat: 60, percentMax: 0 } }),
+    featureItem({ id: "item_gen2_party_ether", name: "합창의 에테르", type: "medicine", scope: "allAllies", price: 280, description: "파티의 생존 중인 모든 아군 MP를 20씩 채웁니다.", iconResourceId: icon("party-ether"), imageResourceId: icon("party-ether"), animationId: "anim_magic", occasion: "always", consumable: true, mpRecovery: { flat: 20, percentMax: 0 } }),
+    featureItem({ id: "item_gen2_party_elixir", name: "조화의 영약", type: "medicine", scope: "allAllies", price: 520, description: "파티의 생존 중인 모든 아군 HP를 80, MP를 25 회복합니다.", iconResourceId: icon("party-elixir"), imageResourceId: icon("party-elixir"), animationId: "anim_magic", occasion: "always", consumable: true, hpRecovery: { flat: 80, percentMax: 0 }, mpRecovery: { flat: 25, percentMax: 0 } }),
+    featureItem({ id: "item_gen2_party_cleanse", name: "맑은 종", type: "medicine", scope: "allAllies", price: 360, description: "파티 전체의 독, 수면, 마비, 맹독, 침묵과 능력 감소 상태를 지웁니다.", iconResourceId: icon("party-cleanse"), imageResourceId: icon("party-cleanse"), animationId: "anim_heal", occasion: "always", consumable: true, healStateIds: ["state_poison", "state_sleep", "state_paralysis", "state_deep_poison", "state_silence", "state_attack_down", "state_defense_down", "state_agility_down"], stateEffects: ["state_poison", "state_sleep", "state_paralysis", "state_deep_poison", "state_silence", "state_attack_down", "state_defense_down", "state_agility_down"].map((stateId) => ({ stateId, chance: 100, operation: "remove" as const })) }),
+
+    // 몬스터 돌봄
+    featureItem({ id: "item_gen2_monster_kibble", name: "순한 사료", type: "special", scope: "none", price: 35, description: "파티 몬스터에게 먹여 친밀도를 8 올립니다.", iconResourceId: icon("monster-kibble"), imageResourceId: icon("monster-kibble"), occasion: "field", consumable: true, careProfile: { kind: "feed", friendshipDelta: 8, expDelta: 0 } }),
+    featureItem({ id: "item_gen2_monster_feast", name: "영양 특식", type: "special", scope: "none", price: 110, description: "파티 몬스터의 친밀도를 15 높이고 경험치를 20 줍니다.", iconResourceId: icon("monster-feast"), imageResourceId: icon("monster-feast"), occasion: "field", consumable: true, careProfile: { kind: "feed", friendshipDelta: 15, expDelta: 20 } }),
+    featureItem({ id: "item_gen2_growth_feed", name: "성장 배합식", type: "special", scope: "none", price: 180, description: "파티 몬스터에게 경험치 60과 친밀도 5를 함께 줍니다.", iconResourceId: icon("growth-feed"), imageResourceId: icon("growth-feed"), occasion: "field", consumable: true, careProfile: { kind: "feed", friendshipDelta: 5, expDelta: 60 } }),
+    featureItem({ id: "item_gen2_rope_toy", name: "매듭 장난감", type: "special", scope: "none", price: 45, description: "파티 몬스터와 놀아 친밀도를 10 올립니다.", iconResourceId: icon("rope-toy"), imageResourceId: icon("rope-toy"), occasion: "field", consumable: true, careProfile: { kind: "toy", friendshipDelta: 10, expDelta: 0 } }),
+    featureItem({ id: "item_gen2_rattle_ball", name: "방울 공", type: "special", scope: "none", price: 90, description: "파티 몬스터와 공놀이해 친밀도 18과 경험치 5를 얻습니다.", iconResourceId: icon("rattle-ball"), imageResourceId: icon("rattle-ball"), occasion: "field", consumable: true, careProfile: { kind: "toy", friendshipDelta: 18, expDelta: 5 } }),
+    featureItem({ id: "item_gen2_training_frisbee", name: "훈련 원반", type: "special", scope: "none", price: 160, description: "파티 몬스터를 훈련해 경험치 35와 친밀도 12를 더합니다.", iconResourceId: icon("training-frisbee"), imageResourceId: icon("training-frisbee"), occasion: "field", consumable: true, careProfile: { kind: "toy", friendshipDelta: 12, expDelta: 35 } }),
+
+    // 작물 씨앗 — 농사를 켠 프로젝트(농사 데모)의 종자밭에 심는다.
+    featureItem({ id: "item_gen2_turnip_seed", name: "순무 씨앗", type: "seed", scope: "none", price: 25, description: "봄 밭에 심으면 이틀 뒤 다시 심을 순무 씨앗 한 봉지를 거둡니다.", iconResourceId: icon("turnip-seed"), imageResourceId: icon("turnip-seed"), occasion: "never", consumable: true }),
+    featureItem({ id: "item_gen2_moonbean_seed", name: "달콩 씨앗", type: "seed", scope: "none", price: 45, description: "여름 밭에서 사흘 자라 달콩 씨앗 두 봉지로 불어납니다.", iconResourceId: icon("moonbean-seed"), imageResourceId: icon("moonbean-seed"), occasion: "never", consumable: true }),
+    featureItem({ id: "item_gen2_firepepper_seed", name: "불고추 씨앗", type: "seed", scope: "none", price: 55, description: "여름과 가을 밭에서 사흘 뒤 불고추 씨앗 한 봉지를 되찾습니다.", iconResourceId: icon("firepepper-seed"), imageResourceId: icon("firepepper-seed"), occasion: "never", consumable: true }),
+    featureItem({ id: "item_gen2_stargrain_seed", name: "별보리 씨앗", type: "seed", scope: "none", price: 40, description: "가을 밭에서 이틀 자라 별보리 씨앗 세 봉지를 수확합니다.", iconResourceId: icon("stargrain-seed"), imageResourceId: icon("stargrain-seed"), occasion: "never", consumable: true }),
+
+    // 영구 성장 씨앗
+    featureItem({ id: "item_gen2_might_seed", name: "완력의 씨앗", type: "seed", scope: "ally", price: 420, description: "메뉴에서 선택한 아군의 공격력을 영구히 2 올립니다.", iconResourceId: icon("might-seed"), imageResourceId: icon("might-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 2, defense: 0, mind: 0, agility: 0 } }),
+    featureItem({ id: "item_gen2_guard_seed", name: "인내의 씨앗", type: "seed", scope: "ally", price: 420, description: "메뉴에서 선택한 아군의 방어력을 영구히 2 높입니다.", iconResourceId: icon("guard-seed"), imageResourceId: icon("guard-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 2, mind: 0, agility: 0 } }),
+    featureItem({ id: "item_gen2_wisdom_seed", name: "지혜의 씨앗", type: "seed", scope: "ally", price: 460, description: "메뉴에서 선택한 아군의 정신력을 영구히 2 더합니다.", iconResourceId: icon("wisdom-seed"), imageResourceId: icon("wisdom-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 0, mind: 2, agility: 0 } }),
+    featureItem({ id: "item_gen2_haste_seed", name: "민첩의 씨앗", type: "seed", scope: "ally", price: 460, description: "메뉴에서 선택한 아군의 민첩성을 영구히 2 올립니다.", iconResourceId: icon("haste-seed"), imageResourceId: icon("haste-seed"), occasion: "field", consumable: true, seedParameterBonuses: { attack: 0, defense: 0, mind: 0, agility: 2 } }),
+
+    // 이벤트 스위치 기동품
+    featureItem({ id: "item_gen2_sun_relay", name: "태양 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 태양 기동석 전용 스위치를 켭니다.", iconResourceId: icon("sun-relay"), imageResourceId: icon("sun-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_sun_relay" }),
+    featureItem({ id: "item_gen2_moon_relay", name: "달 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 달 기동석 전용 스위치를 켭니다.", iconResourceId: icon("moon-relay"), imageResourceId: icon("moon-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_moon_relay" }),
+    featureItem({ id: "item_gen2_bridge_relay", name: "교량 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 교량 기동석 전용 스위치를 켭니다.", iconResourceId: icon("bridge-relay"), imageResourceId: icon("bridge-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_bridge_relay" }),
+    featureItem({ id: "item_gen2_seal_relay", name: "봉인 기동석", type: "switch", scope: "none", price: 0, description: "메뉴에서 사용해 봉인 기동석 전용 스위치를 켭니다.", iconResourceId: icon("seal-relay"), imageResourceId: icon("seal-relay"), occasion: "field", consumable: true, switchId: "sw_gen2_seal_relay" }),
+
+    // 속성 공격과 상태 공격
+    featureItem({ id: "item_gen2_frost_vial", name: "서리 유리병", type: "special", scope: "enemy", price: 130, description: "전투에서 적 하나에게 얼음 속성 피해를 주는 병입니다.", iconResourceId: icon("frost-vial"), imageResourceId: icon("frost-vial"), animationId: "anim_magic", occasion: "battle", consumable: true, skillId: "skill_item_frost_vial" }),
+    featureItem({ id: "item_gen2_quake_stone", name: "진동석", type: "special", scope: "enemy", price: 170, description: "전투에서 적 하나를 대지 속성 충격으로 공격합니다.", iconResourceId: icon("quake-stone"), imageResourceId: icon("quake-stone"), animationId: "anim_magic", occasion: "battle", consumable: true, skillId: "skill_item_quake_stone" }),
+    featureItem({ id: "item_gen2_gale_fan", name: "돌풍 부채", type: "special", scope: "enemy", price: 125, description: "전투에서 적 하나에게 바람 속성 칼날을 날립니다.", iconResourceId: icon("gale-fan"), imageResourceId: icon("gale-fan"), animationId: "anim_magic", occasion: "battle", consumable: true, skillId: "skill_item_gale_fan" }),
+    featureItem({ id: "item_gen2_shadow_dust", name: "그림자 가루", type: "special", scope: "enemy", price: 160, description: "전투에서 적 하나를 어둠 속성 피해로 덮칩니다.", iconResourceId: icon("shadow-dust"), imageResourceId: icon("shadow-dust"), animationId: "anim_magic", occasion: "battle", consumable: true, skillId: "skill_item_shadow_dust" }),
+    featureItem({ id: "item_gen2_venom_ampoule", name: "심독 앰풀", type: "special", scope: "enemy", price: 145, description: "전투에서 적 하나에게 맹독 상태를 확실히 부여합니다.", iconResourceId: icon("venom-ampoule"), imageResourceId: icon("venom-ampoule"), animationId: "anim_poison", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_deep_poison", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_paralysis_coil", name: "마비 코일", type: "special", scope: "enemy", price: 155, description: "전투에서 적 하나를 마비 상태로 묶는 방전 장치입니다.", iconResourceId: icon("paralysis-coil"), imageResourceId: icon("paralysis-coil"), animationId: "anim_magic", occasion: "battle", consumable: true, stateEffects: [{ stateId: "state_paralysis", chance: 100, operation: "add" }] }),
+
+    // 한 개를 여러 차례 쓰는 유한 충전품
+    featureItem({ id: "item_gen2_twin_dose_kit", name: "이중 약갑", type: "medicine", scope: "ally", price: 110, description: "한 갑으로 두 번, 선택한 아군의 HP를 45씩 회복합니다.", iconResourceId: icon("twin-dose-kit"), imageResourceId: icon("twin-dose-kit"), animationId: "anim_heal", occasion: "always", consumable: true, consumptionLimit: 2, hpRecovery: { flat: 45, percentMax: 0 } }),
+    featureItem({ id: "item_gen2_triple_aegis", name: "삼중 수호패", type: "medicine", scope: "ally", price: 240, description: "세 번까지 사용해 아군 하나에게 방어 상승 상태를 부여합니다.", iconResourceId: icon("triple-aegis"), imageResourceId: icon("triple-aegis"), animationId: "anim_heal", occasion: "battle", consumable: true, consumptionLimit: 3, stateEffects: [{ stateId: "state_defense_up", chance: 100, operation: "add" }] }),
+    featureItem({ id: "item_gen2_five_spark_core", name: "오연 발화핵", type: "special", scope: "enemy", price: 390, description: "다섯 번까지 적 하나에게 화염 속성 피해를 발사합니다.", iconResourceId: icon("five-spark-core"), imageResourceId: icon("five-spark-core"), animationId: "anim_magic", occasion: "battle", consumable: true, consumptionLimit: 5, skillId: "skill_fire" }),
+
+    // 제작·퀘스트·열쇠 재료
+    featureItem({ id: "item_gen2_moonsilver_wire", name: "월은 철사", type: "normalGoods", scope: "none", price: 95, description: "달빛 장신구 제작법에서 도금 골격으로 쓰는 재료입니다.", iconResourceId: icon("moonsilver-wire"), imageResourceId: icon("moonsilver-wire"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_frostglass_shard", name: "서리유리 파편", type: "normalGoods", scope: "none", price: 120, description: "냉기 무기 강화 제작법에 넣어 얼음날을 세우는 소재입니다.", iconResourceId: icon("frostglass-shard"), imageResourceId: icon("frostglass-shard"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_storm_sailcloth", name: "폭풍 돛천", type: "normalGoods", scope: "none", price: 140, description: "비행선 돛 수리 의뢰에 납품하는 방수 천입니다.", iconResourceId: icon("storm-sailcloth"), imageResourceId: icon("storm-sailcloth"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_shadow_resin", name: "그림자 수지", type: "normalGoods", scope: "none", price: 135, description: "은신 망토 제작법의 겉감을 코팅하는 수지입니다.", iconResourceId: icon("shadow-resin"), imageResourceId: icon("shadow-resin"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_golem_core", name: "골렘 동력핵", type: "normalGoods", scope: "none", price: 260, description: "고장 난 광산 골렘을 재가동하는 수리 이벤트 부품입니다.", iconResourceId: icon("golem-core"), imageResourceId: icon("golem-core"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_alchemist_seal", name: "연금술사 인장", type: "normalGoods", scope: "none", price: 0, description: "왕도 연금 공방의 출입 허가를 확인하는 퀘스트 증표입니다.", iconResourceId: icon("alchemist-seal"), imageResourceId: icon("alchemist-seal"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_sluice_key", name: "수문 열쇠", type: "normalGoods", scope: "none", price: 0, description: "침수 지하도의 수문을 여는 이벤트 열쇠입니다.", iconResourceId: icon("sluice-key"), imageResourceId: icon("sluice-key"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_observatory_gear", name: "천문대 톱니", type: "normalGoods", scope: "none", price: 180, description: "멈춘 천문대 망원경을 복구하는 정밀 부품입니다.", iconResourceId: icon("observatory-gear"), imageResourceId: icon("observatory-gear"), occasion: "never", consumable: false }),
+    featureItem({ id: "item_gen2_dragonbone_clasp", name: "용골 죔쇠", type: "normalGoods", scope: "none", price: 210, description: "용 사냥꾼 갑옷 제작법에서 판금을 잇는 죔쇠입니다.", iconResourceId: icon("dragonbone-clasp"), imageResourceId: icon("dragonbone-clasp"), occasion: "never", consumable: false }),
+  ];
+}
+
+const cropStage = (resourceId: string, frame: number) => ({ resourceId, frame });
+
+/**
+ * 위 작물 씨앗이 심어지는 종자밭. 씨앗을 되돌려 주는 밭이라 harvestItemId 가 씨앗과 같다.
+ * 농사는 옵트인이라 기본 DB 는 싣지 않고 농사 데모 레이어가 실어 쓴다. 데모 작물은 단계마다
+ * 스프라이트가 있어야 해서(farmingSprites 계약) 기존 작물 아트를 재사용한다.
+ */
+export function defaultFeatureCropRecords(): CropRecord[] {
+  return [
+    normalizeCropRecord({ id: "crop_gen2_turnip", name: "순무 종자밭", seedItemId: "item_gen2_turnip_seed", harvestItemId: "item_gen2_turnip_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }], seasons: ["spring"], graphicStages: [cropStage("farming-crop-potato", 0), cropStage("farming-crop-potato", 1)] }),
+    normalizeCropRecord({ id: "crop_gen2_moonbean", name: "달콩 종자밭", seedItemId: "item_gen2_moonbean_seed", harvestItemId: "item_gen2_moonbean_seed", harvestCount: 2, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer"], graphicStages: [cropStage("farming-crop-melon", 0), cropStage("farming-crop-melon", 1), cropStage("farming-crop-melon", 2)] }),
+    normalizeCropRecord({ id: "crop_gen2_firepepper", name: "불고추 종자밭", seedItemId: "item_gen2_firepepper_seed", harvestItemId: "item_gen2_firepepper_seed", harvestCount: 1, stages: [{ days: 1 }, { days: 1 }, { days: 1 }], seasons: ["summer", "fall"], graphicStages: [cropStage("farming-crop-tomato", 0), cropStage("farming-crop-tomato", 1), cropStage("farming-crop-tomato", 2)] }),
+    normalizeCropRecord({ id: "crop_gen2_stargrain", name: "별보리 종자밭", seedItemId: "item_gen2_stargrain_seed", harvestItemId: "item_gen2_stargrain_seed", harvestCount: 3, stages: [{ days: 1 }, { days: 1 }], seasons: ["fall"], graphicStages: [cropStage("farming-crop-corn", 0), cropStage("farming-crop-corn", 1)] }),
+  ];
+}

@@ -1,0 +1,21 @@
+{
+ "id": "bd-mpart-low-wall",
+ "name": "낮은 정원 돌담 조각",
+ "w": 1,
+ "h": 1,
+ "walk": [
+  "X"
+ ],
+ "description": "1x1칸 낮은 돌담(턱 돌 얹음). 가로로 이어 붙인다.",
+ "rules": "막힘.",
+ "tags": [
+  "귀족저택",
+  "부품",
+  "정원",
+  "담"
+ ],
+ "role": "part",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

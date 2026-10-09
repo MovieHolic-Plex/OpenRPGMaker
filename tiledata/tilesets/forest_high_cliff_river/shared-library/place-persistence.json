@@ -1,0 +1,76 @@
+{
+  "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+  "sourceMapsUnchanged": true,
+  "places": [
+    {
+      "id": "organic-crescent-lake-80x72",
+      "mapId": "map_village_ten_crescent_lake",
+      "snapshotProjectId": "oprn-place-organic-crescent-lake-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "5f167ae2153433573dcc6b10b76bed7a92ff450b5a86a5457752e78317db2dee"
+    },
+    {
+      "id": "organic-fork-stream-80x72",
+      "mapId": "map_village_ten_fork_stream",
+      "snapshotProjectId": "oprn-place-organic-fork-stream-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "5ce52d97d14b49e06c6ef3d52257de4fa605fe373177eed82e6af010a6f5d7bc"
+    },
+    {
+      "id": "organic-terrace-gardens-80x72",
+      "mapId": "map_village_ten_terrace_gardens",
+      "snapshotProjectId": "oprn-place-organic-terrace-gardens-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "b6d63c035d154e058ee41256083c90e0206edd2ae0d910dceb35db8d9aaff2a6"
+    },
+    {
+      "id": "organic-woodland-lane-80x72",
+      "mapId": "map_village_ten_woodland_lane",
+      "snapshotProjectId": "oprn-place-organic-woodland-lane-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "9b02745b6ab877baa98ecb82046d2a60616ec97328c8bf224d5aed5899a0f2b3"
+    },
+    {
+      "id": "organic-orchard-court-80x72",
+      "mapId": "map_village_ten_orchard_court",
+      "snapshotProjectId": "oprn-place-organic-orchard-court-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "ad170d65ecdb928013cef6b4a3e07637b095a6201beea08c49b366515be98949"
+    },
+    {
+      "id": "organic-fishing-cove-80x72",
+      "mapId": "map_village_ten_fishing_cove",
+      "snapshotProjectId": "oprn-place-organic-fishing-cove-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "3d9c69e5db1dc619defc59f4514173c3aea7be391e1096e6fbb2c9c9013bf8c2"
+    },
+    {
+      "id": "organic-five-groves-80x72",
+      "mapId": "map_village_ten_five_groves",
+      "snapshotProjectId": "oprn-place-organic-five-groves-v1",
+      "saved": true,
+      "reloaded": true,
+      "exactMap": true,
+      "mapCount": 1,
+      "sha256": "dfdb53abae469761a6dbf2478fd0f0c208c709ddb8a8d0dfb988d3deafac1a09"
+    }
+  ]
+}

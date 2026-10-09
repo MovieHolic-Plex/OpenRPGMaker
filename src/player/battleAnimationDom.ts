@@ -1,0 +1,702 @@
+import { cssMixBlendMode } from "@/project/blendMode";
+import type { BattleSnapshot } from "@/battle/runtime";
+import { activeTimingEffects, type ActiveTimingEffects } from "@/battle/animationTiming";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
+import { store } from "@/project/store";
+import { bundledRetroPixelAnimation } from "@/project/defaults/retroPixelAnimationRecords";
+import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
+import {
+  battleAnimationFrameDurationMs,
+  battleAnimationSheetAssetScale,
+  battleAnimationSheetRendering,
+} from "@/player/battleAnimationPlayback";
+import { playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
+import {
+  BATTLE_EFFECT_CSS_VARIABLES,
+  flashCssVariables,
+  screenShakeCssVariables,
+} from "@/player/battleAnimationEffectStyle";
+import { battlerSpriteNode, findBattlerNode } from "@/player/battleFieldDom";
+import { battleAnimationAnchor, type BattleAnchorBox } from "@/player/battleAnimationAnchor";
+import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
+
+type CellSourceRect = {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+};
+
+export interface BattleAnimationPlayback {
+  readonly element: HTMLElement;
+  readonly animationKey: string | undefined;
+  destroy(): void;
+}
+
+export function syncBattleAnimationLayer(
+  layer: HTMLElement,
+  snapshot: BattleSnapshot,
+  sceneRoot: HTMLElement
+): BattleAnimationPlayback | undefined {
+  const lastAnimation = snapshot.lastAnimation;
+  const animationKey = lastAnimation ? `${lastAnimation.animationId}:${lastAnimation.targetId}` : undefined;
+  const existing = layer.querySelector<HTMLElement>("[data-testid='battle-animation']");
+  if (!animationKey) {
+    existing?.remove();
+    sceneRoot.classList.remove("battle-screen-shake", "battle-screen-flash");
+    // 대상 플래시는 배틀러 노드에 붙으므로 씬 클래스만 걷으면 남는다.
+    for (const node of sceneRoot.querySelectorAll(".battle-animation-target-flash")) {
+      node.classList.remove("battle-animation-target-flash");
+    }
+    return undefined;
+  }
+  if (existing?.dataset.animationKey === animationKey) {
+    return {
+      element: existing,
+      animationKey,
+      destroy(): void {
+        /* retained across ticks */
+      },
+    };
+  }
+  existing?.remove();
+  const playback = mountBattleAnimationPlayback(snapshot, sceneRoot);
+  if (!playback) return undefined;
+  playback.element.dataset.animationKey = animationKey;
+  // **먼저 붙이고 나서 잰다.** 순서가 뒤였을 때 레이어의 패딩 박스가 0×0 으로 잡혀
+  // 측정 경로가 통째로 폴백으로 떨어졌다(실측: data-animation-anchor-why "layerRect 0x0").
+  // 요소가 자기 컨테이닝 블록 안에 들어간 뒤에 재는 것이 백분율의 정의와도 맞는다.
+  layer.append(playback.element);
+  positionAnimation(playback.element, layer, lastAnimation!);
+  return playback;
+}
+
+export function mountBattleAnimationPlayback(
+  snapshot: BattleSnapshot,
+  sceneRoot: HTMLElement | null = null
+): BattleAnimationPlayback | undefined {
+  const lastAnimation = snapshot.lastAnimation;
+  if (!lastAnimation) return undefined;
+
+  const record = battleAnimationRecord(lastAnimation.animationId);
+  // 착탄 프레임의 효과음을 마운트 시점에 미리 디코딩한다 — 프레임이 렌더될 때 정시에 난다.
+  preloadBattleSamples(lastAnimation.soundResourceIds);
+  const element = document.createElement("div");
+  element.className = "battle-animation";
+  element.dataset.testid = "battle-animation";
+  element.dataset.animationId = lastAnimation.animationId;
+  // 대상 id 를 그대로 남긴다 — animationKey 를 파싱하지 않고 앵커 계측이 대상 노드를 찾는다.
+  element.dataset.animationTargetId = lastAnimation.targetId;
+  setOptionalDataset(element, "animationName", lastAnimation.name);
+  setOptionalDataset(element, "animationResourceId", lastAnimation.resourceId);
+  setOptionalDataset(element, "animationScope", lastAnimation.scope);
+  setOptionalDataset(element, "animationPosition", lastAnimation.position);
+  element.dataset.animationSoundResourceIds = lastAnimation.soundResourceIds.join(",");
+  element.dataset.animationFlashTargets = lastAnimation.flashTargets.join(",");
+  element.dataset.animationScreenShake = String(lastAnimation.screenShake);
+  element.dataset.animationFrameCount = String(lastAnimation.frameCount);
+  element.dataset.currentFrame = "0";
+  element.setAttribute("aria-label", lastAnimation.name ?? lastAnimation.animationId);
+  element.setAttribute("role", "img");
+
+  const context: AnimationRenderContext = {
+    sceneRoot,
+    targetNode: findBattlerNode(sceneRoot ?? document, lastAnimation.targetId),
+    frameDurationMs: battleAnimationFrameDurationMs(record),
+  };
+
+  const timers = new Set<number>();
+  const url = resolveAssetResourceUrl(record?.resourceId, { project: store.getCurrent() });
+  if (record?.blendMode) {
+    // 노드 자체에 건다 — 이 노드가 스태킹 컨텍스트라 안쪽 셀에 걸면 무대와 섞이지 않는다(타입 주석).
+    // 후속(followUps)은 이 노드 안에 중첩되므로 본체의 섞기를 함께 탄다.
+    element.dataset.blend = record.blendMode;
+    element.style.mixBlendMode = cssMixBlendMode(record.blendMode);
+  }
+  if (url && record?.sheet && record.frames && record.frames.length > 0) {
+    element.dataset.renderedFrameCount = String(record.frames.length);
+    const sheet = animationSheet(record, url);
+    element.append(sheet);
+    const primary: PlaybackHost = { element, frames: frameNodes(sheet), pending: 0 };
+    // 앞 프레임 건너뛰기(씬 루트 data-battle-animation-skip-frames, 포켓몬 스킨이 battleAnimationLeadPlan 으로 정한다) —
+    // approach 안에 다 들어가지 않는 앞 프레임을 건너뛰어야 착탄 프레임의 효과음이 타격과 같은 순간에 난다.
+    // 예전엔 착탄 순간에 0번부터 돌아 효과음이 타격 뒤 160~420ms 에 한 번 더 났다(2026-10-02).
+    const skipRaw = Number(sceneRoot?.dataset.battleAnimationSkipFrames);
+    const skip = Number.isFinite(skipRaw) && skipRaw > 0 ? Math.min(record.frames.length - 1, Math.floor(skipRaw)) : 0;
+    // 후속의 data-start-frame(본체 프레임 기준 시작 위치)과 이름이 겹치지 않게 따로 둔다.
+    element.dataset.playbackStartFrame = String(skip);
+    scheduleFollowUps(primary, record, timers, context, skip);
+    setActiveAnimationFrame(primary, record, skip, context);
+    startPlayback(primary, record, timers, context, skip);
+  }
+
+  return {
+    element,
+    animationKey: `${lastAnimation.animationId}:${lastAnimation.targetId}`,
+    destroy(): void {
+      for (const timer of timers) window.clearInterval(timer);
+      timers.clear();
+      // 중간에 파괴돼도 효과 흔적을 남기지 않는다 — 남으면 다음 액션이 물려받는다.
+      clearEffectClasses(context);
+      element.remove();
+    },
+  };
+}
+
+/**
+ * 애니메이션을 새롭게 잰 앵커에 놓는다.
+ *
+ * 앵커는 저작된 `position`(head/center/feet/screen)과 `scope`(screen 여부)가 정하고, 기준은
+ * 대상 **스프라이트를 실제로 잰** 사각이다. 산식 자신은 순수 함수 `battleAnimationAnchor` 에
+ * 있어 타이밍 없이 단위 테스트된다.
+ *
+ * 재지 못하면(레이아웃이 없는 happy-dom, 아직 로드 전이라 rect 가 0×0 인 스프라이트) 예전
+ * `--battle-node-x/y` 복사 경로로 떨어진다. 어느 경로를 탔는지는 `data-animation-anchor` 에
+ * 남기므로 사후 진단에서 짐작할 필요가 없다.
+ */
+function positionAnimation(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>
+): void {
+  if (applyMeasuredAnchor(element, layer, animation)) return;
+  // 아군 노드 testid 는 battle-actor-<id> 형식 — findBattlerNode 로 통일 조회한다.
+  const target = findBattlerNode(document, animation.targetId);
+  if (!target) {
+    // 대상 노드가 없는 스킨(rm2000 은 파티를 필드에 세우지 않는다)에서 적→아군 이펙트가
+    // left/top 미설정으로 무대 좌상단·배너 뒤에 잘려 그려졌다(2026-09-14 실측). 파티 카드
+    // 행이 있으면 그 행 위에, 없으면 무대 중앙에 놓는다.
+    const row = document.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${CSS.escape(animation.targetId)}"]`)
+      ?? document.querySelector<HTMLElement>(`[data-testid="battle-actor-status-${CSS.escape(animation.targetId)}"]`);
+    const layerRect = layer.getBoundingClientRect();
+    const rowRect = row?.getBoundingClientRect();
+    if (row && rowRect && layerRect.width > 0 && layerRect.height > 0 && rowRect.width > 0) {
+      const x = ((rowRect.left + rowRect.width / 2 - layerRect.left) / layerRect.width) * 100;
+      const y = ((rowRect.top + rowRect.height / 2 - layerRect.top) / layerRect.height) * 100;
+      element.style.left = `${Math.max(0, Math.min(100, x))}%`;
+      element.style.top = `${Math.max(0, Math.min(100, y))}%`;
+      element.dataset.animationAnchor = "party-row";
+    } else {
+      element.style.left = "50%";
+      element.style.top = "50%";
+      element.dataset.animationAnchor = "stage-center";
+    }
+    return;
+  }
+  element.style.setProperty("--battle-node-x", target.style.getPropertyValue("--battle-node-x"));
+  element.style.setProperty("--battle-node-y", target.style.getPropertyValue("--battle-node-y"));
+  element.dataset.animationAnchor = "fallback";
+  // 스프라이트가 아직 로드되지 않아 rect 가 0×0 이면 폴백이 **영구**가 된다 — 앵커를 다시
+  // 계산할 계기가 없기 때문이다. 프레임마다 다시 재서 측정이 되는 순간 승격시킨다.
+  // 고정 대기가 아니라 rAF 이고, 프레임 예산이 있어 무한히 돌지 않는다.
+  retryMeasuredAnchor(element, layer, animation, ANCHOR_RETRY_FRAMES);
+}
+
+/** 폴백에서 승격을 노리는 프레임 예산. 60fps 기준 약 0.5초 — 이미지 디코드가 끝나기에
+ *  충분하고, 애니메이션 자체(기본 프레임 120ms x 프레임 수)보다 오래 매달리지 않는다. */
+const ANCHOR_RETRY_FRAMES = 30;
+
+function applyMeasuredAnchor(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>
+): boolean {
+  const target = findBattlerNode(document, animation.targetId);
+  const spriteBox = measuredSpriteBox(target);
+  const containingBlock = anchorContainingBlock(element, layer);
+  const layerBox = paddingBox(containingBlock);
+  const placement = battleAnimationAnchor({
+    position: animation.position,
+    scope: animation.scope,
+    spriteBox,
+    layerBox,
+  });
+  if (!placement) {
+    // **왜** 못 쟀는지 남긴다. 폴백은 좌표가 눈에 띄게 달라지는 경로이므로, "이상한 자리에
+    // 떴다" 는 신고를 받았을 때 원인을 짐작하지 않고 DOM 에서 바로 읽을 수 있어야 한다.
+    element.dataset.animationAnchorWhy = !target
+      ? "noTarget"
+      : !spriteBox || spriteBox.height <= 0 || spriteBox.width <= 0
+        ? `spriteRect ${Math.round(spriteBox?.width ?? -1)}x${Math.round(spriteBox?.height ?? -1)}`
+        : `layerRect ${Math.round(layerBox.width)}x${Math.round(layerBox.height)}`
+          + ` cb ${containingBlock.className || containingBlock.tagName}`;
+    return false;
+  }
+  delete element.dataset.animationAnchorWhy;
+  element.dataset.animationAnchorCb = containingBlock.className || containingBlock.tagName;
+  element.style.left = placement.left;
+  element.style.top = placement.top;
+  element.dataset.animationAnchor = placement.anchor;
+  return true;
+}
+
+function retryMeasuredAnchor(
+  element: HTMLElement,
+  layer: HTMLElement,
+  animation: NonNullable<BattleSnapshot["lastAnimation"]>,
+  framesLeft: number
+): void {
+  if (framesLeft <= 0) return;
+  requestAnimationFrame(() => {
+    // 재생이 끝나 레이어에서 떼어졌거나 다른 애니메이션으로 교체됐으면 더 볼 것이 없다.
+    if (!element.isConnected) return;
+    if (applyMeasuredAnchor(element, layer, animation)) return;
+    retryMeasuredAnchor(element, layer, animation, framesLeft - 1);
+  });
+}
+
+/**
+ * 백분율이 실제로 풀리는 **컨테이닝 블록**을 고른다.
+ *
+ * 레이어 엘리먼트를 그대로 쓰면 안 된다 — `.battle-animation-layer` 는 절대배치된 그리드
+ * 아이템이고, 그 그리드 영역이 접히는 스킨에서는 자기 박스가 0×0 이 된다(실측 2026-08-30,
+ * 출하 플레이어 + 기본 스킨 rm2000: `client 0x0 offset 0x0 connected true`). 그 0 으로
+ * 나누면 앵커가 통째로 폴백으로 떨어지고, 폴백이 쓰는 `--battle-node-x/y` 백분율도 **같은**
+ * 0×0 박스에서 풀리므로 이펙트가 무대 좌상단으로 끌려간다 — 감독이 신고한 "좌표가 이상함" 의
+ * 실제 모습이다.
+ *
+ * 절대배치 요소의 `offsetParent` 는 정의상 그 요소의 컨테이닝 블록을 만드는 조상이다.
+ * 그래서 CSS 가 레이어를 어떻게 바꾸든 브라우저가 실제로 쓰는 기준과 계산이 어긋나지 않는다.
+ */
+function anchorContainingBlock(element: HTMLElement, layer: HTMLElement): HTMLElement {
+  const parent = element.offsetParent;
+  if (parent instanceof HTMLElement && parent.clientWidth > 0 && parent.clientHeight > 0) return parent;
+  return layer;
+}
+
+/**
+ * 요소의 **패딩 박스**를 시각 px 로 만든다.
+ *
+ * `left`/`top` 백분율은 컨테이닝 블록의 패딩 박스에서 풀리는데 `getBoundingClientRect` 는
+ * 경계 박스다. `clientLeft`/`clientWidth` 는 무대 배율이 곱해지지 않은 레이아웃 px 이므로,
+ * 경계 박스와 `offsetWidth` 의 비로 배율을 구해 같은 좌표계로 옮긴다.
+ */
+function paddingBox(node: HTMLElement): BattleAnchorBox {
+  const rect = node.getBoundingClientRect();
+  const scale = node.offsetWidth > 0 ? rect.width / node.offsetWidth : 1;
+  return {
+    left: rect.left + node.clientLeft * scale,
+    top: rect.top + node.clientTop * scale,
+    width: node.clientWidth * scale,
+    height: node.clientHeight * scale,
+  };
+}
+
+function measuredSpriteBox(node: HTMLElement | null): BattleAnchorBox | undefined {
+  if (!node) return undefined;
+  return battlerSpriteNode(node).getBoundingClientRect();
+}
+
+function setOptionalDataset(element: HTMLElement, key: string, value: string | undefined): void {
+  if (value) element.dataset[key] = value;
+}
+
+function battleAnimationRecord(animationId: string): BattleAnimationRecord | undefined {
+  // 도트 측면 전투가 바꿔 그리는 anim_px_* 는 불러오기 수리를 안 탄 프로젝트(내보낸 플레이어)에도 있어야 한다.
+  return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId)
+    ?? bundledRetroPixelAnimation(animationId);
+}
+
+/**
+ * 착탄까지의 ms — 효과음·플래시·흔들림이 걸린 **첫 프레임**의 시작 시각. 시퀀서가 이펙트
+ * 마운트를 approach 비트 끝에서 이만큼 앞으로 당겨 착탄 프레임과 임팩트 비트(팝업·히트스톱)
+ * 가 같은 순간에 오게 한다. 타이밍이 없는 레코드는 0(즉시 마운트).
+ */
+export function battleAnimationImpactMs(animationId: string): number {
+  const record = battleAnimationRecord(animationId);
+  const impact = record ? impactFrameIndex(record) : undefined;
+  if (!record || impact === undefined) return 0;
+  return impact * battleAnimationFrameDurationMs(record);
+}
+
+/**
+ * 포켓몬 안무의 이펙트 재생 계획. `availableMs`(템포 적용 전 ms) = 착탄 전에 이펙트를 틀 수 있는 시간.
+ * 착탄 프레임까지의 앞 프레임 중 그 시간에 들어가는 만큼(`leadMs`)은 미리 틀고, 들어가지 않는 맨 앞 프레임
+ * (`skipFrames`)만 건너뛴다 — 그래야 착탄 프레임이 타격 순간에 정확히 온다. 접촉·발사체는 몸·빛 덩이가 다가감을
+ * 이미 그리므로 0을 넘겨 착탄 프레임부터 튼다. 현장 발생(번개·가시·운석)은 이펙트 자체가 다가감이라
+ * 다 건너뛰면 내리꽂는 번개·떨어지는 운석이 사라졌다(2026-10-02 적대적 QA).
+ */
+export function battleAnimationLeadPlan(animationId: string, availableMs: number): { leadMs: number; skipFrames: number; skippedMs: number } {
+  const record = battleAnimationRecord(animationId);
+  const impact = record ? impactFrameIndex(record) : undefined;
+  if (!record || impact === undefined || impact <= 0) return { leadMs: 0, skipFrames: 0, skippedMs: 0 };
+  const frameMs = battleAnimationFrameDurationMs(record);
+  const fit = Math.min(impact, Math.max(0, Math.floor(availableMs / frameMs)));
+  return { leadMs: fit * frameMs, skipFrames: impact - fit, skippedMs: (impact - fit) * frameMs };
+}
+
+/** 착탄 프레임 — 효과음·섬광·흔들림이 처음 붙은 프레임. 없으면 undefined. */
+function impactFrameIndex(record: BattleAnimationRecord): number | undefined {
+  return (record.timings ?? [])
+    .filter((timing) => timing.soundResourceId || timing.flash || timing.screenShake)
+    .reduce<number | undefined>((min, timing) => (min === undefined ? timing.frameIndex : Math.min(min, timing.frameIndex)), undefined);
+}
+
+/**
+ * 이펙트(후속 포함)의 효과음을 행동이 시작될 때 미리 디코딩한다. 마운트 순간에 하면 착탄 프레임부터 재생하는
+ * 경로(포켓몬 스킨)에서는 디코딩이 끝나기 전에 첫 소리가 나야 해서, 요소 재생으로 떨어져 0.4초 늦게 났다
+ * (2026-10-02 소리 악보: 화염의 Fog1.wav 착탄 +421ms).
+ */
+export function preloadAllBattleAnimationSounds(): void {
+  const ids = new Set<string>();
+  for (const record of store.getCurrent().database.battleAnimations) {
+    for (const timing of record.timings ?? []) if (timing.soundResourceId) ids.add(timing.soundResourceId);
+  }
+  preloadBattleSamples([...ids]);
+}
+
+export function preloadBattleAnimationSounds(animationId: string | undefined): void {
+  if (!animationId) return;
+  const records = store.getCurrent().database.battleAnimations;
+  const record = records.find((entry) => entry.id === animationId);
+  if (!record) return;
+  const ids = new Set<string>();
+  for (const one of [record, ...(record.followUps ?? []).map((followUp) => records.find((entry) => entry.id === followUp.animationId))]) {
+    for (const timing of one?.timings ?? []) if (timing.soundResourceId) ids.add(timing.soundResourceId);
+  }
+  preloadBattleSamples([...ids]);
+}
+
+/**
+ * 씬 루트에 적힌 전투 속도 배율을 읽는다(battleDom 의 setSpeed 가 `data-battle-speed` 로 쓴다).
+ *
+ * 예전에는 시퀀서만 배율을 적용하고 애니메이션은 상수 120ms 로 돌았다. 그래서 3배속을 켜면
+ * 대사·모션은 빨라지는데 **이펙트만 원속도로 남아** 다음 행동 위로 겹쳤고, 배속을 연출
+ * 검수용으로 쓸 수 없었다.
+ */
+export function battleAnimationFrameMs(
+  sceneRoot: HTMLElement | null,
+  record?: BattleAnimationRecord
+): number {
+  const raw = Number(sceneRoot?.dataset.battleSpeed);
+  // 스킨 동작 템포(data-battle-motion-tempo) — 시퀀서가 행동 비트를 같은 배율로 줄이므로 이펙트도 맞춰 돈다.
+  const tempoRaw = Number(sceneRoot?.dataset.battleMotionTempo);
+  const tempo = Number.isFinite(tempoRaw) && tempoRaw > 0 ? tempoRaw : 1;
+  // 시퀀서와 같은 하한(0.2)을 쓴다 — 여기만 다르면 배속을 올릴수록 서로 어긋난다.
+  const speed = (Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1) * tempo;
+  return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
+}
+
+/**
+ * 재생 단위. 본체와 후속(followUps)이 각자 하나씩 가진다.
+ * `frames` 는 **자기 시트의** 프레임 노드만이다 — 후속이 본체 엘리먼트 안에 중첩되므로 `querySelectorAll`
+ * 로 훑으면 본체가 후속의 프레임까지 숨기고 켠다(같은 클래스). 마운트 때 잡아 둔 목록만 만진다.
+ * `pending` 은 아직 끝나지 않은 후속 수 — 본체는 후속까지 끝난 뒤에야 `data-playback-finished` 를 단다.
+ */
+type PlaybackHost = {
+  readonly element: HTMLElement;
+  readonly frames: readonly HTMLElement[];
+  pending: number;
+  onFinished?: () => void;
+};
+
+function frameNodes(sheet: HTMLElement): HTMLElement[] {
+  return [...sheet.children].filter((node): node is HTMLElement => node instanceof HTMLElement && node.classList.contains("battle-animation-frame"));
+}
+
+/**
+ * 후속 애니메이션(연출 합성)을 본체의 `startFrame` 에 맞춰 같은 앵커에 겹쳐 시작한다.
+ * 본체 엘리먼트의 자식으로 붙이므로 위치 계산(positionAnimation)을 다시 하지 않는다. 후속의 효과음·
+ * 플래시·흔들림은 자기 타이밍대로 같은 대상에 건다. 깊이 1 — 후속의 후속은 재생하지 않는다.
+ */
+function scheduleFollowUps(
+  primary: PlaybackHost,
+  record: BattleAnimationRecord,
+  timers: Set<number>,
+  context: AnimationRenderContext,
+  skipFrames = 0
+): void {
+  const followUps = record.followUps ?? [];
+  if (followUps.length === 0) return;
+  const records = store.getCurrent().database.battleAnimations;
+  const project = store.getCurrent();
+  const frameMs = battleAnimationFrameMs(context.sceneRoot, record);
+  for (const followUp of followUps) {
+    const follow = records.find((entry) => entry.id === followUp.animationId);
+    const url = resolveAssetResourceUrl(follow?.resourceId, { project });
+    if (!follow || !url || !follow.sheet || !follow.frames || follow.frames.length === 0) continue;
+    // 본체가 앞 프레임을 건너뛰었으면 그보다 먼저 시작했어야 할 후속은 그만큼 진행된 프레임부터 튼다 —
+    // 0번부터 틀면 「착탄 전 기 모으기」 같은 후속이 타격 뒤에 나왔다. 이미 끝났어야 할 후속은 틀지 않는다.
+    const behind = Math.max(0, skipFrames - followUp.startFrame);
+    if (behind >= follow.frames.length) continue;
+    primary.pending += 1;
+    const start = (): void => {
+      if (!primary.element.isConnected) return;
+      const node = document.createElement("div");
+      node.className = "battle-animation-followup";
+      node.dataset.testid = "battle-animation-followup";
+      node.dataset.animationId = follow.id;
+      node.dataset.startFrame = String(followUp.startFrame);
+      const sheet = animationSheet(follow, url);
+      node.append(sheet);
+      primary.element.append(node);
+      const host: PlaybackHost = {
+        element: node,
+        frames: frameNodes(sheet),
+        pending: 0,
+        onFinished: () => {
+          primary.pending -= 1;
+          if (primary.pending <= 0 && primary.element.dataset.playbackFinished !== "true" && primary.frames.every((frame) => frame.hidden)) {
+            primary.element.dataset.playbackFinished = "true";
+          }
+        },
+      };
+      setActiveAnimationFrame(host, follow, behind, context);
+      startPlayback(host, follow, timers, context, behind);
+    };
+    const startFrame = followUp.startFrame - skipFrames;
+    if (startFrame <= 0) {
+      start();
+      continue;
+    }
+    const timer = window.setTimeout(() => {
+      timers.delete(timer);
+      start();
+    }, startFrame * frameMs);
+    timers.add(timer);
+  }
+}
+
+function startPlayback(
+  host: PlaybackHost,
+  record: BattleAnimationRecord,
+  timers: Set<number>,
+  context: AnimationRenderContext,
+  startIndex = 0
+): void {
+  const frames = record.frames ?? [];
+  if (frames.length <= 1) {
+    if (frames.length === 1) {
+      // 한 장짜리도 프레임 간격만큼 보이고 걷는다 — 후속(연기 한 컷 등)이 영구히 남지 않게.
+      const timer = window.setTimeout(() => {
+        timers.delete(timer);
+        finishPlayback(host, context);
+      }, battleAnimationFrameMs(context.sceneRoot, record));
+      timers.add(timer);
+    }
+    return;
+  }
+  // 프레임은 흐른 시간으로 정한다 — 틱마다 +1 하면 부하 때 늦은 틱이 쌓여, 앞당겨 튼(앞 프레임이 있는) 이펙트의
+  // 착탄 효과음이 타격보다 100ms 넘게 늦었다(2026-10-02 녹화, 지진 +108ms). 늦은 틱은 밀린 프레임을 한꺼번에 지나가며
+  // 그 프레임들의 소리·섬광도 낸다. 1ms 여유는 경계에 딱 맞춰 온 틱이 앞 프레임으로 내려앉지 않게.
+  const frameMs = battleAnimationFrameMs(context.sceneRoot, record);
+  const startedAt = Date.now();
+  let index = startIndex;
+  const timer = window.setInterval(() => {
+    const due = startIndex + Math.floor((Date.now() - startedAt + 1) / frameMs);
+    while (index < due) {
+      index += 1;
+      if (index >= frames.length) {
+        window.clearInterval(timer);
+        timers.delete(timer);
+        finishPlayback(host, context);
+        return;
+      }
+      setActiveAnimationFrame(host, record, index, context);
+    }
+  }, frameMs);
+  timers.add(timer);
+}
+
+/**
+ * 재생이 끝나면 그림을 걷는다.
+ *
+ * 예전에는 `clearInterval` 만 하고 마지막 프레임을 그대로 뒀다. 엘리먼트 제거는 다음
+ * 엔트리이거나 시퀀스 종료 시점이라, 그 사이 약 1초 동안 **마지막 컷이 화면에 얼어붙어**
+ * 있었다. 감독 눈에는 "이펙트가 안 사라진다" 로 보인다.
+ *
+ * 본체는 후속(followUps)이 모두 끝난 뒤에야 `data-playback-finished` 를 단다 — 시퀀서·프로브가
+ * 이 표식을 "연출 끝" 으로 읽기 때문이다.
+ */
+function finishPlayback(host: PlaybackHost, context: AnimationRenderContext): void {
+  for (const frame of host.frames) frame.hidden = true;
+  if (host.onFinished) {
+    host.element.dataset.playbackFinished = "true";
+    host.onFinished();
+  } else if (host.pending <= 0) {
+    host.element.dataset.playbackFinished = "true";
+  }
+  clearEffectClasses(context);
+}
+
+function animationSheet(record: BattleAnimationRecord, url: string): HTMLElement {
+  const sheet = document.createElement("div");
+  sheet.className = "battle-animation-sheet";
+  sheet.dataset.testid = "battle-animation-sheet";
+  const frames = record.frames ?? [];
+  for (let frameIndex = 0; frameIndex < frames.length; frameIndex += 1) {
+    const frame = frames[frameIndex];
+    if (!frame) continue;
+    sheet.append(animationFrame(record, frame.cells, frameIndex, url));
+  }
+  return sheet;
+}
+
+function animationFrame(
+  record: BattleAnimationRecord,
+  cells: NonNullable<BattleAnimationRecord["frames"]>[number]["cells"],
+  frameIndex: number,
+  url: string
+): HTMLElement {
+  const frameNode = document.createElement("div");
+  frameNode.className = "battle-animation-frame";
+  frameNode.dataset.testid = `battle-animation-frame-${frameIndex + 1}`;
+  frameNode.dataset.frameIndex = String(frameIndex);
+  for (const cell of cells) {
+    if (!cell.visible || !record.sheet) continue;
+    frameNode.append(animationCell(record, cell, url));
+  }
+  return frameNode;
+}
+
+function animationCell(
+  record: BattleAnimationRecord,
+  cell: NonNullable<BattleAnimationRecord["frames"]>[number]["cells"][number],
+  url: string
+): HTMLCanvasElement {
+  const canvas = document.createElement("canvas");
+  if (!record.sheet) return canvas;
+  canvas.className = "battle-animation-cell";
+  canvas.dataset.testid = "battle-animation-cell";
+  canvas.dataset.pattern = String(cell.pattern);
+  canvas.width = record.sheet.frameWidth;
+  canvas.height = record.sheet.frameHeight;
+  // 프레임 비트맵은 **시트 배율**로 논리 px 에 옮긴다 — 320 시대 RM 시트는 2(96px → 192),
+  // 번들 고해상도 시트는 0.5(384px → 같은 192). 축소되는 시트는 보간을 켜야 가장자리가 안 깨진다.
+  const sheetScale = battleAnimationSheetAssetScale(record.sheet);
+  canvas.dataset.rendering = battleAnimationSheetRendering(record.sheet);
+  canvas.style.width = `${record.sheet.frameWidth * sheetScale}px`;
+  canvas.style.height = `${record.sheet.frameHeight * sheetScale}px`;
+  // 셀 좌표는 시트 해상도와 무관하게 **RM px**(320×240 기준 저작 데이터)다. 전투 씬의 논리
+  // 해상도는 640×480 이라 항상 2를 곱한다 — 시트 배율을 여기에 곱하면 고해상도 시트의 오프셋이 1/4 로 준다.
+  const assetScale = BATTLE_ASSET_PIXEL_SCALE;
+  canvas.style.left = `calc(50% + ${cell.x * assetScale}px)`;
+  canvas.style.top = `calc(50% + ${cell.y * assetScale}px)`;
+  canvas.style.opacity = String(Math.max(0, Math.min(255, cell.opacity)) / 255);
+  const zoom = Math.max(1, cell.zoom) / 100;
+  // 뒤집기는 scale 의 x 부호로, 회전은 그 뒤에 — 뒤집힌 그림이 저작한 방향(시계)으로 돈다.
+  canvas.style.transform = `translate(-50%, -50%) rotate(${cell.rotation ?? 0}deg) scale(${cell.mirror ? -zoom : zoom}, ${zoom})`;
+  if (cell.rotation) canvas.dataset.rotation = String(cell.rotation);
+  if (cell.mirror) canvas.dataset.mirror = "true";
+
+  const column = cell.pattern % record.sheet.columns;
+  const row = Math.floor(cell.pattern / record.sheet.columns);
+  drawChromaKeyedCell(canvas, url, {
+    x: column * record.sheet.frameWidth,
+    y: row * record.sheet.frameHeight,
+    width: record.sheet.frameWidth,
+    height: record.sheet.frameHeight,
+  });
+  return canvas;
+}
+
+/**
+ * 프레임을 그릴 때 필요한 대상들.
+ * `targetNode` 는 flash.target === "target" 을 대상에게만 걸기 위해 필요하다 —
+ * 예전에는 대상 지정을 무시하고 무조건 화면 전체를 번쩍였다.
+ */
+type AnimationRenderContext = {
+  readonly sceneRoot: HTMLElement | null;
+  readonly targetNode: HTMLElement | null;
+  readonly frameDurationMs: number;
+};
+
+function setActiveAnimationFrame(
+  host: PlaybackHost,
+  record: BattleAnimationRecord,
+  frameIndex: number,
+  context: AnimationRenderContext
+): void {
+  const { element } = host;
+  element.dataset.currentFrame = String(frameIndex);
+  for (const frame of host.frames) {
+    frame.hidden = frame.dataset.frameIndex !== String(frameIndex);
+  }
+  const timing = record.timings?.find((entry) => entry.frameIndex === frameIndex);
+  // 플래시·흔들림은 시작 프레임이 아니라 durationFrames 창 동안 산다(animationTiming.activeTimingEffects).
+  const effects = activeTimingEffects(record.timings, frameIndex);
+  element.dataset.activeSoundResourceId = timing?.soundResourceId ?? "";
+  element.dataset.activeFlashTarget = effects.flash?.target ?? "";
+  element.dataset.activeScreenShake = String(Boolean(effects.screenShake));
+  element.classList.toggle("battle-animation-flash-active", Boolean(effects.flash));
+  element.classList.toggle("battle-animation-shake-active", Boolean(effects.screenShake));
+  applyTimingEffects(context, effects);
+  playTimingSound(timing?.soundResourceId);
+}
+
+/**
+ * 프레임 타이밍의 flash/screenShake 를 화면에 반영한다.
+ *
+ * flash 는 `target` 이 정한 곳에만 건다 — "screen" 은 씬 전체, "target" 은 대상 배틀러 노드.
+ * 예전에는 존재 여부만 보고 무조건 씬 전체를 번쩍여서, 한 명만 회복해도 화면이 통째로 밝아졌다.
+ * 대상 노드를 못 찾으면(레이아웃/스킨 차이) 씬 플래시로 떨어뜨려 연출이 통째로 사라지지 않게 한다.
+ */
+function applyTimingEffects(context: AnimationRenderContext, effects: ActiveTimingEffects): void {
+  const { sceneRoot, targetNode } = context;
+  const { flash, screenShake } = effects;
+  const flashOnTarget = Boolean(flash) && flash!.target === "target" && targetNode !== null;
+
+  if (targetNode) {
+    setEffectVariables(targetNode, flashOnTarget ? flash : undefined, undefined, context.frameDurationMs);
+    targetNode.classList.toggle("battle-animation-target-flash", flashOnTarget);
+  }
+  if (!sceneRoot) return;
+  // 색 변수는 대상 플래시일 때도 루트에 둔다 — 대상 실루엣을 물들이는 SVG 필터(battleFlashFilter.ts)의
+  // feFlood 는 필터가 걸린 이미지가 아니라 **자기 조상**(씬 루트)에서 var() 를 읽는다.
+  setEffectVariables(sceneRoot, flash, screenShake, context.frameDurationMs);
+  sceneRoot.classList.toggle("battle-screen-shake", Boolean(screenShake));
+  sceneRoot.classList.toggle("battle-screen-flash", Boolean(flash) && !flashOnTarget);
+}
+
+/** 재생 종료·엔트리 교체 시 효과 흔적을 걷는다. 남으면 다음 액션이 물려받는다. */
+function clearEffectClasses(context: AnimationRenderContext): void {
+  context.sceneRoot?.classList.remove("battle-screen-shake", "battle-screen-flash");
+  context.targetNode?.classList.remove("battle-animation-target-flash");
+}
+
+function setEffectVariables(
+  host: HTMLElement,
+  flash: BattleAnimationTiming["flash"],
+  screenShake: BattleAnimationTiming["screenShake"],
+  frameDurationMs: number
+): void {
+  // 효과 없는 프레임에서 걷어내지 않으면 다음 효과가 이전 값을 물려받는다.
+  for (const name of BATTLE_EFFECT_CSS_VARIABLES) host.style.removeProperty(name);
+  const variables = {
+    ...(flash ? flashCssVariables(flash, frameDurationMs) : {}),
+    ...(screenShake ? screenShakeCssVariables(screenShake, frameDurationMs) : {}),
+  };
+  for (const [name, value] of Object.entries(variables)) host.style.setProperty(name, value);
+}
+
+function playTimingSound(soundResourceId: string | undefined): void {
+  // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.
+  if (soundResourceId && playBattleSample(soundResourceId, 0.4, 1, "animation")) return;
+  const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });
+  if (!url) return;
+  const audio = new Audio(url);
+  audio.volume = 0.4;
+  void audio.play().catch((error: unknown) => {
+    if (error instanceof DOMException && error.name === "NotAllowedError") return;
+    throw error;
+  });
+}
+
+function drawChromaKeyedCell(canvas: HTMLCanvasElement, url: string, source: CellSourceRect): void {
+  const image = new Image();
+  image.addEventListener("load", () => {
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const { x, y, width, height } = source;
+    context.clearRect(0, 0, width, height);
+    context.drawImage(image, x, y, width, height, 0, 0, width, height);
+    const pixels = context.getImageData(0, 0, width, height);
+    // 단일 색(마젠타/녹색/검은 등 어떤 단색 배경이든) 을 자동 감지해 키아웃한다.
+    // 투명 PNG 는 테두리가 이미 alpha=0 이라 no-op 이다.
+    applyAutoTransparencyKey(pixels.data, width, height);
+    context.putImageData(pixels, 0, 0);
+    canvas.dataset.rendered = "true";
+  });
+  image.src = url;
+}

@@ -1,0 +1,30 @@
+{
+  "role": "coast_resident_f",
+  "label": "해안 주민 여",
+  "variant": "하나 · 해안 판형 수정",
+  "description": "산호색 리본을 두른 넓은 챙 흰 햇빛모자, 노란 허리끈의 산호색 민소매 원피스",
+  "identity": "산호색 리본을 두른 넓은 챙 흰 햇빛모자, 노란 허리끈의 산호색 민소매 원피스 · 원작 체형과 발 교대 유지",
+  "collection": "theme-cast-v1",
+  "base": "woman_1-coast_resident_f-theme-cast-v1",
+  "templateId": "woman_1",
+  "theme": "coast",
+  "themeGround": [
+    {
+      "sheet": "public/assets/emerald-monster/tiles/coast.png",
+      "tile": [
+        0,
+        0
+      ],
+      "sheetSha256": "dc0c400f3d73807c0be95081d348a1f5c9c0d038adc64122f5298c2269c2ff43"
+    },
+    {
+      "sheet": "public/assets/emerald-monster/tiles/coast.png",
+      "tile": [
+        10,
+        0
+      ],
+      "sheetSha256": "dc0c400f3d73807c0be95081d348a1f5c9c0d038adc64122f5298c2269c2ff43"
+    }
+  ],
+  "sourceNote": "에메랄드 woman_1 원작을 판형으로 삼아 Claude가 해안 테마에 맞게 머리·복장 부분과 팔레트를 수정한 파생 캐릭터입니다. 원작의 몸·얼굴·걷기를 유지했습니다."
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/cafeteria_table/s3-A.pxg",
+ "set": "school",
+ "id": "cafeteria_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.154
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  1,
+  46,
+  30
+ ],
+ "note": "v5 결: 긴 흰 상판 식탁, 소나무 긴 벤치 둘(앞·뒤), 회색 철 다리와 가로대, 상판은 식판 놓을 자리로 비움",
+ "ok": true
+}

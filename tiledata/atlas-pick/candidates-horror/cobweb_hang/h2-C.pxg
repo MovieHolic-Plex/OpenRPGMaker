@@ -1,0 +1,29 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dust 4
+@mat b dust 5
+@mat c dust 3
+@mat d void 3
+@mat e void 1
+@mat f sheet 3
+@mat g sheet 5
+@mat h sheet 6
+@mat i sheet 4
+@mblock 0 0
+.a..b...c..a..b.
+.a..b...c..a..b.
+.a.aa...c..a..b.
+.aab.....c.a..b.
+..ab..cccc.aa.b.
+..abcc.c.c..aaa.
+..ab...c.c..ab..
+..ab.deed...ab..
+..a.bdeed...ab..
+....bd..d...ab..
+....b......a.b..
+....b......afgh.
+....b......afii.
+....b......a....
+...fgh.....a....
+...fii....fgh...

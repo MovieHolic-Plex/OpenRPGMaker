@@ -1,0 +1,544 @@
+/* Shared RM2K3 icon primitives and toolbar PNG bindings. */
+.oprn-icon-map-child::after {
+  background: #216c33;
+  box-shadow: 0 4px 0 #216c33, -2px 2px 0 #216c33, 2px 2px 0 #216c33;
+  height: 2px;
+  left: 11px;
+  top: 7px;
+  width: 2px;
+}
+
+.oprn-icon-map-start::before {
+  background: #f5d04a;
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 14px;
+  left: 1px;
+  top: 1px;
+  width: 14px;
+}
+
+.oprn-icon-map-start::after {
+  background: #7c5e22;
+  height: 2px;
+  left: 5px;
+  top: 13px;
+  width: 6px;
+}
+
+.oprn-icon-trash::before {
+  background: var(--border-default);
+  border: 1px solid var(--bg-raised);
+  box-shadow: inset 3px 0 0 var(--text-2), inset 6px 0 0 var(--border-default);
+  height: 10px;
+  left: 4px;
+  top: 5px;
+  width: 8px;
+}
+
+.oprn-icon-trash::after {
+  background: var(--border-default);
+  box-shadow: 3px -2px 0 var(--border-default);
+  height: 2px;
+  left: 3px;
+  top: 2px;
+  width: 10px;
+}
+
+.oprn-icon-map-menu::before {
+  background: var(--border-default);
+  box-shadow: 0 5px 0 var(--border-default), 0 10px 0 var(--border-default);
+  height: 2px;
+  left: 7px;
+  top: 2px;
+  width: 2px;
+}
+
+.oprn-icon-map-menu::after {
+  background: transparent;
+}
+
+.oprn-icon-map-settings::before {
+  background: var(--border-default);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 2px 0 var(--bg-inset);
+  height: 11px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+.oprn-icon-map-settings::after {
+  background: #7b87f5;
+  box-shadow: 4px 0 0 #7b87f5, 8px 0 0 #7b87f5;
+  height: 2px;
+  left: 4px;
+  top: 7px;
+  width: 2px;
+}
+
+.oprn-icon-map-screenshot::before {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
+  height: 10px;
+  left: 2px;
+  top: 4px;
+  width: 12px;
+}
+
+.oprn-icon-map-screenshot::after {
+  background: #4c7a43;
+  border: 1px solid var(--border-strong);
+  height: 4px;
+  left: 5px;
+  top: 7px;
+  width: 6px;
+}
+
+.oprn-icon-new,
+.oprn-icon-open,
+.oprn-icon-save,
+.oprn-icon-import,
+.oprn-icon-export,
+.oprn-icon-undo,
+.oprn-icon-redo,
+.oprn-icon-database,
+.oprn-icon-resources,
+.oprn-icon-disabled-diamond,
+.oprn-icon-disabled-blocks,
+.oprn-icon-event-test,
+.oprn-icon-lower,
+.oprn-icon-upper,
+.oprn-icon-event,
+.oprn-icon-manual,
+.oprn-icon-sound,
+.oprn-icon-search,
+.oprn-icon-window,
+.oprn-icon-title,
+.oprn-icon-zoom-1,
+.oprn-icon-zoom-2,
+.oprn-icon-zoom-4,
+.oprn-icon-zoom-8,
+.oprn-icon-pencil,
+.oprn-icon-play,
+.oprn-icon-play-window {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+.oprn-icon-new::before,
+.oprn-icon-new::after,
+.oprn-icon-open::before,
+.oprn-icon-open::after,
+.oprn-icon-save::before,
+.oprn-icon-save::after,
+.oprn-icon-import::before,
+.oprn-icon-import::after,
+.oprn-icon-export::before,
+.oprn-icon-export::after,
+.oprn-icon-undo::before,
+.oprn-icon-undo::after,
+.oprn-icon-redo::before,
+.oprn-icon-redo::after,
+.oprn-icon-database::before,
+.oprn-icon-database::after,
+.oprn-icon-resources::before,
+.oprn-icon-resources::after,
+.oprn-icon-disabled-diamond::before,
+.oprn-icon-disabled-diamond::after,
+.oprn-icon-disabled-blocks::before,
+.oprn-icon-disabled-blocks::after,
+.oprn-icon-event-test::before,
+.oprn-icon-event-test::after,
+.oprn-icon-lower::before,
+.oprn-icon-lower::after,
+.oprn-icon-upper::before,
+.oprn-icon-upper::after,
+.oprn-icon-event::before,
+.oprn-icon-event::after,
+.oprn-icon-manual::before,
+.oprn-icon-manual::after,
+.oprn-icon-sound::before,
+.oprn-icon-sound::after,
+.oprn-icon-search::before,
+.oprn-icon-search::after,
+.oprn-icon-window::before,
+.oprn-icon-window::after,
+.oprn-icon-title::before,
+.oprn-icon-title::after,
+.oprn-icon-zoom-1::before,
+.oprn-icon-zoom-1::after,
+.oprn-icon-zoom-2::before,
+.oprn-icon-zoom-2::after,
+.oprn-icon-zoom-4::before,
+.oprn-icon-zoom-4::after,
+.oprn-icon-zoom-8::before,
+.oprn-icon-zoom-8::after,
+.oprn-icon-pencil::before,
+.oprn-icon-pencil::after,
+.oprn-icon-play::before,
+.oprn-icon-play::after,
+.oprn-icon-play-window::before,
+.oprn-icon-play-window::after {
+  display: none;
+}
+
+.oprn-icon-new {
+  background-image: url("/ui/toolbar/new.png");
+}
+
+.oprn-icon-open {
+  background-image: url("/ui/toolbar/open.png");
+}
+
+.oprn-icon-save {
+  background-image: url("/ui/toolbar/save.png");
+}
+
+.oprn-icon-import {
+  background-image: url("/ui/toolbar/import.png");
+}
+
+.oprn-icon-export {
+  background-image: url("/ui/toolbar/export.png");
+}
+
+.oprn-icon-undo {
+  background-image: url("/ui/toolbar/undo.png");
+}
+
+.oprn-icon-redo {
+  background-image: url("/ui/toolbar/redo.png");
+}
+
+.oprn-icon-database {
+  background-image: url("/ui/toolbar/database.png");
+}
+
+.oprn-icon-resources {
+  background-image: url("/ui/toolbar/resources.png");
+}
+
+.oprn-icon-disabled-diamond {
+  background-image: url("/ui/toolbar/disabled-diamond.png");
+}
+
+.oprn-icon-disabled-blocks {
+  background-image: url("/ui/toolbar/disabled-blocks.png");
+}
+
+.oprn-icon-event-test {
+  background-image: url("/ui/toolbar/event-test.png");
+}
+
+.oprn-icon-lower {
+  background-image: url("/ui/toolbar/lower.png");
+}
+
+.oprn-icon-upper {
+  background-image: url("/ui/toolbar/upper.png");
+}
+
+.oprn-icon-event {
+  background-image: url("/ui/toolbar/event.png");
+}
+
+.oprn-icon-manual {
+  background-image: url("/ui/toolbar/manual.png");
+}
+
+.oprn-icon-sound {
+  background-image: url("/ui/toolbar/sound.png");
+}
+
+.oprn-icon-search {
+  background-image: url("/ui/toolbar/search.png");
+}
+
+.oprn-icon-window {
+  background-image: url("/ui/toolbar/window.png");
+}
+
+.oprn-icon-title {
+  background-image: url("/ui/toolbar/title.png");
+}
+
+.oprn-icon-zoom-1 {
+  background-image: url("/ui/toolbar/zoom-1.png");
+}
+
+.oprn-icon-zoom-2 {
+  background-image: url("/ui/toolbar/zoom-2.png");
+}
+
+.oprn-icon-zoom-4 {
+  background-image: url("/ui/toolbar/zoom-4.png");
+}
+
+.oprn-icon-zoom-8 {
+  background-image: url("/ui/toolbar/zoom-8.png");
+}
+
+.oprn-icon-pencil {
+  background-image: url("/ui/toolbar/pencil.png");
+}
+
+.oprn-icon-play,
+.oprn-icon-play-window {
+  background-image: url("/ui/toolbar/play.png");
+}
+
+.oprn-icon-select::before {
+  background: var(--text-2);
+  clip-path: polygon(0 0, 0 15px, 5px 11px, 8px 16px, 11px 14px, 8px 9px, 14px 9px);
+  height: 16px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.oprn-icon-eraser::before {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  height: 7px;
+  left: 2px;
+  top: 6px;
+  transform: rotate(-35deg);
+  width: 13px;
+}
+
+.oprn-icon-eraser::after {
+  background: var(--text-3);
+  height: 2px;
+  left: 8px;
+  top: 9px;
+  transform: rotate(-35deg);
+  width: 5px;
+}
+
+.oprn-icon-bucket::before {
+  background: var(--text-2);
+  border: 1px solid var(--border-strong);
+  height: 9px;
+  left: 3px;
+  top: 3px;
+  transform: rotate(45deg);
+  width: 9px;
+}
+
+.oprn-icon-bucket::after {
+  background: var(--border-subtle);
+  border-radius: 50%;
+  height: 4px;
+  left: 10px;
+  top: 11px;
+  width: 4px;
+}
+
+.oprn-icon-rectangle::before {
+  background: transparent;
+  border: 2px solid var(--text-2);
+  border-radius: 2px;
+  height: 10px;
+  left: 2px;
+  top: 3px;
+  width: 12px;
+}
+
+/* AI 진입점 아이콘. 이벤트 편집기 도크 요약은 자체 SVG(`ee-icon-spark`)를 쓰지만,
+   맵 컨텍스트 메뉴는 `rm-tool-icon oprn-icon-*` 규약만 받으므로 같은 별 모양을
+   여기 한 벌 더 둔다. 별 본체는 ::before, 작은 별은 ::after 다. */
+.oprn-icon-spark::before {
+  background: var(--accent);
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 14px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.oprn-icon-spark::after {
+  background: var(--accent);
+  clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
+  height: 6px;
+  left: 10px;
+  top: 10px;
+  width: 6px;
+}
+
+.oprn-icon-grid::before {
+  background:
+    linear-gradient(var(--text-2), var(--text-2)) 0 0 / 16px 1px,
+    linear-gradient(var(--text-2), var(--text-2)) 0 7px / 16px 1px,
+    linear-gradient(var(--text-2), var(--text-2)) 0 15px / 16px 1px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 0 0 / 1px 16px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 7px 0 / 1px 16px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 15px 0 / 1px 16px;
+  background-repeat: no-repeat;
+  height: 16px;
+  left: 0;
+  top: 0;
+  width: 16px;
+}
+
+.oprn-icon-pin::before {
+  background: transparent;
+  border: 2px solid var(--text-2);
+  border-radius: 50%;
+  height: 8px;
+  left: 3px;
+  top: 1px;
+  width: 8px;
+}
+
+.oprn-icon-pin::after {
+  background: var(--text-2);
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+  height: 7px;
+  left: 5px;
+  top: 8px;
+  width: 6px;
+}
+
+.oprn-icon-link::before,
+.oprn-icon-link::after {
+  background: transparent;
+  border: 2px solid var(--text-2);
+  border-radius: 5px;
+  height: 6px;
+  width: 10px;
+}
+
+.oprn-icon-link::before {
+  left: 0;
+  top: 5px;
+  transform: rotate(-35deg);
+}
+
+.oprn-icon-link::after {
+  left: 6px;
+  top: 5px;
+  transform: rotate(-35deg);
+}
+
+.oprn-icon-layers::before {
+  background: var(--text-2);
+  clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
+  height: 14px;
+  left: 1px;
+  top: 0;
+  width: 14px;
+}
+
+.oprn-icon-layers::after {
+  background: var(--text-3);
+  clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
+  height: 14px;
+  left: 1px;
+  top: 5px;
+  width: 14px;
+}
+
+.oprn-icon-settings::before {
+  background: var(--text-2);
+  border-radius: 50%;
+  box-shadow:
+    0 -6px 0 -2px var(--text-2),
+    0 6px 0 -2px var(--text-2),
+    6px 0 0 -2px var(--text-2),
+    -6px 0 0 -2px var(--text-2);
+  height: 10px;
+  left: 3px;
+  top: 3px;
+  width: 10px;
+}
+
+.oprn-icon-settings::after {
+  background: var(--bg-inset);
+  border-radius: 50%;
+  height: 4px;
+  left: 6px;
+  top: 6px;
+  width: 4px;
+}
+
+.oprn-icon-close::before,
+.oprn-icon-close::after {
+  background: var(--text-2);
+  height: 14px;
+  left: 7px;
+  top: 1px;
+  width: 2px;
+}
+
+.oprn-icon-close::before {
+  transform: rotate(45deg);
+}
+
+.oprn-icon-close::after {
+  transform: rotate(-45deg);
+}
+
+/* 맵 트리 헤더 — 전체 펼치기/접기. mapList.ts 가 요구하지만 시트 어디에도 정의가 없어
+   빈 버튼이었다. 갈매기(셰브런) 한 개를 16x16 중심(8,8)에 맞춰 그린다. */
+.oprn-icon-tree-open::after,
+.oprn-icon-tree-closed::after {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  height: 6px;
+  left: 5px;
+  top: 5px;
+  width: 6px;
+}
+
+/* 펼침 = 아래를 향한 갈매기, 접힘 = 오른쪽을 향한 갈매기. */
+.oprn-icon-tree-open::after {
+  transform: rotate(45deg);
+}
+
+.oprn-icon-tree-closed::after {
+  transform: rotate(-45deg);
+}
+
+/* 맵 분류 폴더. 리소스 매니저 전용 시트(map/resource-system.part-2.css)의
+   .oprn-icon-folder 는 그쪽이 계속 쓰므로 그대로 두고, 맵 패널 쪽 의존만 여기로 끊는다. */
+.oprn-icon-map-folder::before {
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  height: 8px;
+  left: 1px;
+  top: 5px;
+  width: 14px;
+}
+
+.oprn-icon-map-folder::after {
+  background: currentColor;
+  height: 2px;
+  left: 1px;
+  top: 3px;
+  width: 6px;
+}
+
+/* 맵 필터 토글 전용 돋보기. `.oprn-icon-search` 는 컬러 PNG 스프라이트라
+   `color`/hover/disabled 에 반응하지 않고, 육안으로 안경/고글처럼 읽혀 S4 가
+   요구하는 돋보기가 아니다(회귀 테스트도 컬러 스프라이트의 pseudo-element
+   폭이 0이라 검증 불가). `.oprn-icon-map-folder` 선례대로 맵 패널 전용
+   currentColor 도형을 새로 정의한다. 원(렌즈) + 대각 손잡이. */
+.oprn-icon-map-search::before {
+  background: transparent;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  height: 8px;
+  left: 1px;
+  top: 1px;
+  width: 8px;
+}
+
+.oprn-icon-map-search::after {
+  background: currentColor;
+  height: 2px;
+  left: 8px;
+  top: 10px;
+  transform: rotate(45deg);
+  width: 6px;
+}

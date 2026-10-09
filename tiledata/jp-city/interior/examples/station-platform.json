@@ -1,0 +1,254 @@
+{
+ "name": "일본 지상역 승강장",
+ "plan": [
+  "##################",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "###........#######",
+  "##################"
+ ],
+ "floor": "st-platform",
+ "wall": "st-trackside-wall",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "st-edge",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "st-edge",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "st-boarding-mark",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "st-boarding-mark",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "st-boarding-mark",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "st-boarding-mark",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "st-roof-pillar",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "st-platform-bench",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "st-roof-pillar",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "st-sign-pole",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "st-platform-bench",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "st-roof-pillar",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "st-platform-bench",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "st-roof-pillar",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "st-tactile-dot",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "st-tactile-dot",
+   "x": 6,
+   "y": 8
+  }
+ ],
+ "tables": [
+  {
+   "style": "st-track",
+   "x": 1,
+   "y": 3,
+   "w": 16,
+   "h": 2
+  }
+ ],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "platform",
+   "x0": 1,
+   "y0": 1,
+   "x1": 16,
+   "y1": 8
+  }
+ ],
+ "start": [
+  5,
+  7
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 5,
+   "y": 8,
+   "toMapId": "jp-city-station",
+   "toX": 4,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 6,
+   "y": 8,
+   "toMapId": "jp-city-station",
+   "toX": 4,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 5,
+   "y": 6,
+   "toMapId": "jp-city-train-car",
+   "toX": 5,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 6,
+   "y": 6,
+   "toMapId": "jp-city-train-car",
+   "toX": 5,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 14,
+   "y": 6,
+   "toMapId": "jp-city-train-car",
+   "toX": 14,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 15,
+   "y": 6,
+   "toMapId": "jp-city-train-car",
+   "toX": 14,
+   "toY": 4,
+   "direction": "up"
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 3,
+   "y0": 8,
+   "x1": 10,
+   "y1": 8,
+   "why": "의자·기둥 뒤 승강장 뒤쪽 길(역사 건물 앞) — 주 동선은 끝선 앞 두 줄"
+  }
+ ]
+}

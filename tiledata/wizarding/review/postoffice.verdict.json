@@ -1,0 +1,260 @@
+{
+ "module": "postoffice",
+ "sealed": "2026-10-07T10:21:05.890501+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-post-door-closed": {
+   "verdict": "PASS",
+   "hash": "54a39d0953257ac8962bbc641d3936d8b645c85859acec6ad19e02fcbd92b645",
+   "reason": "recheck: door now 1x3, taller than the 24x32 person; closed plank door reads clearly"
+  },
+  "wz-post-door-ajar": {
+   "verdict": "PASS",
+   "hash": "021f9a2d87a13231629d90230c92fe1294ca2f0906771d2e465ed134420f7ef4",
+   "reason": "recheck: door now 1x3 at proper scale; ajar leaf with warm interior light reads"
+  },
+  "wz-post-door-open": {
+   "verdict": "PASS",
+   "hash": "5066ba79189332786149afb9c9f34584d61c68fff07d704d30bff2b9bb6ab736",
+   "reason": "recheck: door now 1x3 at proper scale; dark interior and mat read as open door"
+  },
+  "wz-post-wall-l": {
+   "verdict": "PASS",
+   "hash": "41b307197a5dcc5e73285476891a91f9f99ad7e105917477549e6e70b22c5258",
+   "reason": "recheck: wall now 1x3 storey, fits the taller door and person scale"
+  },
+  "wz-post-wall-m": {
+   "verdict": "PASS",
+   "hash": "6528aaf8ac3b9aa879fbce39580c330fdbb34fa20bcaab06c28bfd1817b1060c",
+   "reason": "recheck: wall now 1x3 storey with X brace, scale fixed"
+  },
+  "wz-post-wall-r": {
+   "verdict": "PASS",
+   "hash": "decbdfdb77640adea71286be1e9ac792cd5fac80c642e53818a553fd4913a92d",
+   "reason": "recheck: wall now 1x3 storey, scale fixed"
+  },
+  "wz-post-wall-w": {
+   "verdict": "PASS",
+   "hash": "e464f59134d7051aecbdb05c7d287e29f396c14d29cbd2a6bfd4122373a0f987",
+   "reason": "recheck: window wall now 1x3 storey, scale fixed"
+  },
+  "wz-post-kit-office": {
+   "verdict": "PASS",
+   "hash": "9393d58829b9570985677618a20b6d405debf1992d411928bb518c8aef0f8aa6",
+   "reason": "recheck: reassembled with 1x3 walls/door and centered chimney; symmetric and readable"
+  },
+  "wz-post-kit-house": {
+   "verdict": "PASS",
+   "hash": "58490a355329dbbfc7a096ff0883bf33e54571c2ae546d11516840787c391f06",
+   "reason": "recheck: reassembled with 1x3 walls/door, chimney centered and snow cap within roof"
+  },
+  "wz-post-gable": {
+   "verdict": "PASS",
+   "hash": "aa20e52ad3af09f2bfafaa6b5f46e74690b0587de6e559cf3d84ed500359e949",
+   "reason": "recheck: dormer window now sits inside the gable triangle"
+  },
+  "wz-post-snow-a": {
+   "verdict": "PASS",
+   "hash": "bdc075f172941c020f45f7d00d4a38552ef4f44c8129c1d294a0f513389dd4fd",
+   "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
+  },
+  "wz-post-snow-b": {
+   "verdict": "PASS",
+   "hash": "bbb115324a02501dfad026642d9d7690de69a0115854dcc6012e074b6736c859",
+   "reason": "recheck: snow now has 3-4 shade drifts and no visible grid pattern"
+  },
+  "wz-post-sack": {
+   "verdict": "PASS",
+   "hash": "346601128a146565020d11f182078621eed65d5584c887e23fda031d5a98611a",
+   "reason": "recheck: two pale sacks hang from a wooden frame, clearly a sack rack"
+  },
+  "wz-post-perch": {
+   "verdict": "PASS",
+   "hash": "ae43e5b49525079bc000bb1e8587665f83048b795640c7954f07a10c4f99148d",
+   "reason": "recheck: wide crossbar with wraps on a stand reads as a perch; acceptable"
+  },
+  "wz-post-sort": {
+   "verdict": "PASS",
+   "hash": "63c1e4ecca8de4692c2d3db161cc2458d7e95be3c8734760a06906a42cab5db9",
+   "reason": "recheck: letter pigeonhole shelf reads well; walk fix accepted"
+  },
+  "wz-post-floor": {
+   "verdict": "PASS",
+   "hash": "6a26f522848f1d91a1d2956bada7280f8818f0fb8b54b8c10ae41e60e4804027",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-post-print-a": {
+   "verdict": "PASS",
+   "hash": "859ea65e2c8d133666984bbe3662dbd46b33adb75c6ca9b4d542829e29189ab6",
+   "reason": "구두 앞창+뒤꿈치 두 덩이, 안쪽이 왼위 그늘·오른아래 흰 테로 눈 위 파인 자국으로 읽힘. f 덧그림."
+  },
+  "wz-post-print-b": {
+   "verdict": "PASS",
+   "hash": "7a435177e3a952717dc30d7ac5c45e306596359bf16dd9b30f0fe6b35f2bb91a",
+   "reason": "좌우 발이 엇갈린 발자국, 파인 명암 방향 맞음. f 덧그림."
+  },
+  "wz-post-puddle": {
+   "verdict": "PASS",
+   "hash": "54b75574c7fb0b005a3706299c27ec8ba4dcd3602f2b9586aeac34a40a0e1ac2",
+   "reason": "얼음 테두리 두른 푸른 타원 웅덩이, 왼위 반사선. 윗면 시점 맞음. f."
+  },
+  "wz-post-threshold": {
+   "verdict": "PASS",
+   "hash": "ecebe1693ae599df13d23f20183c63f1273eb42622de49cfd6b24f49cf2c01f9",
+   "reason": "눈 윗면+앞 돌 문턱 한 줄, 눈→문턱 전이로 읽힘. F."
+  },
+  "wz-post-plinth": {
+   "verdict": "PASS",
+   "hash": "e7c407594cbccb51afecee5dc0bbfd3f4f1f918b045ef78f00880385ac4d8ac3",
+   "reason": "눈 얹은 돌 기단 블록, 이음 엇갈림·마모점·3단 명암. X."
+  },
+  "wz-post-roof-ridge": {
+   "verdict": "PASS",
+   "hash": "906869f174c02b44be60ba5c0924d089d0086e64462a3d485af258d46b8f083c",
+   "reason": "두툼한 눈 능선+아래 슬레이트, 윗면 탑뷰. S."
+  },
+  "wz-post-roof-ridge-l": {
+   "verdict": "PASS",
+   "hash": "7d45c711d7b068cfe24c9ec07bb197770e8204090daa26733f562edb4413fe44",
+   "reason": "용마루 왼끝 눈 처짐·끝 마감. S."
+  },
+  "wz-post-roof-ridge-r": {
+   "verdict": "PASS",
+   "hash": "71944c266941c6a3d94e639c7f80580cbac448ab2bbadc8e0557bb55d15cd7e5",
+   "reason": "용마루 오른끝, 왼끝과 거울. S."
+  },
+  "wz-post-roof-a": {
+   "verdict": "PASS",
+   "hash": "bb59e0bf494106a1ec6a42291f374095f8f60d6940a2c8bb1a92b6a885ec34ed",
+   "reason": "슬레이트 겹 행+눈 덩이 하나, 지붕 윗면 3/4로 읽힘(거리 예제에서 지붕으로 읽힘). S."
+  },
+  "wz-post-roof-b": {
+   "verdict": "PASS",
+   "hash": "07b34c0aec65b166f7dfce31b3aaf2d1fde71b5bd21a2c0c6d904b39f63e3fbc",
+   "reason": "슬레이트 행 변형, 이음 없이 a/c와 이어짐. S."
+  },
+  "wz-post-roof-c": {
+   "verdict": "PASS",
+   "hash": "349ddefa3c861c47a71bd84095647d267a74f61788259ca1936a1ef656fe4510",
+   "reason": "슬레이트 행 변형. S."
+  },
+  "wz-post-roof-l": {
+   "verdict": "PASS",
+   "hash": "ee56c519a9a444ec74401b36d63521ec71f1d330739b15131c87320a13e224f6",
+   "reason": "지붕 왼 가장자리 박공널 1px, 슬레이트와 이어짐. S."
+  },
+  "wz-post-roof-r": {
+   "verdict": "PASS",
+   "hash": "47b7fc2f5b1bdc649e8bd4117f4363fef4cbe6765a8f499a6fad0cd642bc8962",
+   "reason": "지붕 오른 가장자리, roof-l과 거울. S."
+  },
+  "wz-post-eave-l": {
+   "verdict": "PASS",
+   "hash": "cfde5808cce326597bf45a0ec0653dad6e1f9247595b18d416fefbb07a3c589e",
+   "reason": "슬레이트 끝+눈 턱+짙은 처마널, 처마 C 통행 맞음."
+  },
+  "wz-post-eave-m": {
+   "verdict": "PASS",
+   "hash": "64f6dce97bf08fe69098fd458e6bec2ff2ca1de9ff1fba53cf6fc7b0612d823d",
+   "reason": "처마 가운데 반복, 눈 턱 이음 OK. C."
+  },
+  "wz-post-eave-r": {
+   "verdict": "PASS",
+   "hash": "94087f82dd71e484305b854c9baf23abf298cb4b0d815d6aae958a4414297a95",
+   "reason": "처마 오른끝, eave-l과 거울. C."
+  },
+  "wz-post-window": {
+   "verdict": "PASS",
+   "hash": "2ceef77c02bf1d9cc6bc698b982ce1730ad699e612ea79e0c7fa11eb8a900fd7",
+   "reason": "불 켜진 격자창(창살·창턱·불빛 2톤), 1배에서 창으로 읽힘. 정면 대칭."
+  },
+  "wz-post-bay": {
+   "verdict": "PASS",
+   "hash": "5da7e93c71005e6f2b92228dd44a25b49310e8c483dfde4a200fe64ee991059a",
+   "reason": "눈 얹은 창턱+여섯 칸 불빛 진열창, 상점 내닫이창으로 읽힘. 대칭. SS."
+  },
+  "wz-post-sign": {
+   "verdict": "PASS",
+   "hash": "b661151dc6a0433ad8a7eeeba923f25e9556423fe56372ac369b580dcbacea15",
+   "reason": "걸이 쇠대에 매단 판, 흰 눈 동그라미+노란 부리+귀깃 부엉이 얼굴과 붉은 봉랍 봉투 — 문자 없이 우체국 간판으로 읽힘. CC."
+  },
+  "wz-post-slot": {
+   "verdict": "PASS",
+   "hash": "b1c14e2203f0db7764936b4abda3692b649db2549bdf2f33a4cfdb7e167d3716",
+   "reason": "회벽 위 황동 테 우편 투입구, 금속 반사 1px. S."
+  },
+  "wz-post-mailbox": {
+   "verdict": "PASS",
+   "hash": "05da614057288fe044b8e39f98694c9c288a8d1cd243cbad84348ae95fdb4221",
+   "reason": "눈 모자 얹은 빨간 기둥 우체통(투입구·황동 명판), 윗면 눈 캡 보임, 빨강 4단. 높이 약 30px 1×2 적정. S,S."
+  },
+  "wz-post-lamp": {
+   "verdict": "PASS",
+   "hash": "7593a232232d24b9c4ce7ad58f79d13375349263fea69854157f000c284662be",
+   "reason": "눈 얹은 갓·불빛 유리·철 기둥·받침, 3칸 가로등으로 읽힘. C,C,S 맞음. 정적."
+  },
+  "wz-post-barrel": {
+   "verdict": "PASS",
+   "hash": "1010a71f997ecb1b3d6bdcf88889248a81f0a797c0173860979ffa1bf86f8c82",
+   "reason": "윗면 타원에 눈, 앞면 나무 결+쇠테 2줄, 3/4 통으로 읽힘. S."
+  },
+  "wz-post-crate": {
+   "verdict": "PASS",
+   "hash": "bd02d31a530294c86f4feb751e0a0a72504bad5ca4b1e47bab85cf2ae48b24e7",
+   "reason": "눈 덮인 윗면+앞 널 이음, 나무 상자로 읽힘. S."
+  },
+  "wz-post-chimney": {
+   "verdict": "PASS",
+   "hash": "daa1dddaec225e84e55cdef3d56f57cb772e4c06b9f826b515966aa7584c7fc4",
+   "reason": "붉은 벽돌 몸통+윗면 어두운 연도 구멍·눈 모자, 아래 눈 받침 — 지붕 위 굴뚝으로 읽힘, 윗면 보임. S,S."
+  },
+  "wz-post-letters": {
+   "verdict": "PASS",
+   "hash": "4bcce215fd1a0ff2e1872243c53587e10c523a11941a07722838975c6b642f63",
+   "reason": "붉은 봉랍 점 찍힌 흰 봉투 더미, 1배에서 편지 더미. f."
+  },
+  "wz-post-counter": {
+   "verdict": "PASS",
+   "hash": "fcd93e7ef6b9a3268007fb7a27f7445944bfe18b29de3831d2c73781cc66c08c",
+   "reason": "윗면 상판 11px+앞판 17px(허리 높이), 황동 종·펼친 장부·잉크병과 깃펜으로 우체국 카운터로 읽힘, native 카운터와 같은 결. SSS×2."
+  },
+  "wz-post-parcel": {
+   "verdict": "PASS",
+   "hash": "b6d385efcafd6badd54b21a802f89b80033a336693b98b7d6123c586ebb8fa03",
+   "reason": "끈 십자 묶은 소포 두 상자 쌓임, 윗면+앞면. S."
+  },
+  "wz-post-parcels": {
+   "verdict": "PASS",
+   "hash": "fd49fdfd07ba98ef282c85d90e8d684a6a45d87f5f6b284307095a1d5b6fa3eb",
+   "reason": "상자 더미+묶은 꾸러미, 소포 무더기로 읽힘. SS."
+  },
+  "wz-post-iwall": {
+   "verdict": "PASS",
+   "hash": "9ede3844fcf50ec8e8abd42515d3c05fc5581528a8ae2f1fe6fe94ac1c1f15b9",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-post-ibeam": {
+   "verdict": "PASS",
+   "hash": "4c08041f36d73b43551510c2b8e2bba4c4bbe8be8c09086d5b17aa491086c831",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-post-iwall-win": {
+   "verdict": "PASS",
+   "hash": "6696932c055d76f4f121e35cd0d8cd9f699fdabdbe0cc8cf96a50cc11e322b86",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  },
+  "wz-post-wainscot": {
+   "verdict": "PASS",
+   "hash": "a9e62d088893bec73eafb0b615e0d9efc3311ddda2071a527cac78de8c410533",
+   "reason": "recheck 2026-10-07(감독, 벽·바닥 구분 수정): 사람 옆 3배·방 조립 그림에서 벽 정면과 명도가 확실히 갈리고 이음새 없음, 무엇으로 읽히는지 분명."
+  }
+ },
+ "autotiles": {
+  "wz-post-snowcobble": {
+   "verdict": "PASS",
+   "hash": "364a336dfcdfbf420b2c537fcfdf64ec1fa0e575123b6718da9047c89640cc26",
+   "reason": "recheck: outer edge now reads as heaped snow bank, no dark outline"
+  }
+ },
+ "characters": {}
+}

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar/w10-C.pxg",
+ "id": "altar",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.081
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 14,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "윗판이 튀어나오고 몸통이 안으로 들어간 받침단 제단, 천은 좁게 늘어뜨림",
+ "ok": true
+}

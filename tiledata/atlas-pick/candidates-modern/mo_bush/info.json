@@ -1,0 +1,39 @@
+{
+ "id": "mo-bush",
+ "slug": "mo_bush",
+ "name": "둥근 덤불",
+ "scene": "거리 소품",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "둥근 덤불 2×2. 덤불: 공원 나무 발치·산책로 가장자리에 1~2개.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mo-bush"
+ ],
+ "tiles": [
+  3545,
+  3546,
+  3575,
+  3576
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   21,
+   63
+  ]
+ }
+}

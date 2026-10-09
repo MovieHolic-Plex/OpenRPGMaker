@@ -1,0 +1,46 @@
+{
+ "id": "gn-media-pole",
+ "slug": "gn_media_pole",
+ "name": "미디어폴",
+ "scene": "신호·가로 시설",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "미디어폴 a 1×3. 미디어폴: 대로 동쪽 인도 연석 한 줄 안쪽을 따라 3~4칸 간격으로 한 줄(강남역 11번 출구 → 신논현 방향). 가로등을 겸하므로 그 구간엔 가로등을 두지 않는다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-media-pole-a",
+  "gn-media-pole-b",
+  "gn-media-pole-c"
+ ],
+ "tiles": [
+  4538,
+  4539,
+  4540,
+  4568,
+  4569,
+  4570,
+  4598,
+  4599,
+  4600
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   58,
+   6
+  ]
+ }
+}

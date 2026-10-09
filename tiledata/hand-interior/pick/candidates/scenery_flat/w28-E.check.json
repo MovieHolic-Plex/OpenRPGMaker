@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w28-E.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "바다: 수평선 끝의 섬, 흰 구름, 물결, 돛단배와 갈매기. 파란색 하늘/바다 띠.",
+ "ok": true
+}

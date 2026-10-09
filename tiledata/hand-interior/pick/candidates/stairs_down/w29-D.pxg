@@ -1,0 +1,62 @@
+// w29-D
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a stone 0
+@mat b stone 1
+@mat c stone 2
+@mat d stone 3
+@mat e stone 4
+@mat f stone 5
+@mat g stone 6
+@mat h iron 0
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n wood 1
+@mat o wood 2
+@mat p wood 3
+@mat q wood 4
+@mat r wood 5
+@mat s wood 6
+@mat t brass 3
+@mat u brass 4
+@mat v brass 5
+@mat w dwood 1
+@mat x dwood 2
+@mat y black 0
+@mblock 0 0
+fffffffffffffffffffffffffffffffb
+feeeeeeeeeeeeeeeeeeeeeeeeeeeeecb
+feddddddddddddddddddddddddddddcb
+fedbbbbbbbbbbbbbbbbbbbbbbbbbedcb
+fedbyyyyyyyyyyyyyyyyyyyyyyyyedcb
+fedbyyyyyyyyyyyyyyyyyyyyyyyyedcb
+fedbyyyyyyyyyyyyyyyyyyyyyyyyedcb
+fedbaaaaccccccccccccccccaaaaedcb
+fedbaaaaaaaaaaaaaaaaaaaaaaaaedcb
+fedbabbbddddddddddddddddaaaaedcb
+fedbabbbccccccccccccccccaaaaedcb
+fedbabbbaaaaaaaaaaaaaaaaaaaaedcb
+fedbaccceeeeeeeeeeeeeeeeaaaaedcb
+fedbacccddddddddddddddddaaaaedcb
+fedbacccbbbbbbbbbbbbbbbbaaaaedcb
+fedbaddffffffffffffffffffbbbedcb
+fedbaddeeeeeeeeeeeeeeeeeebbbedcb
+fedbaddeeeeeeeeeeeeeeeeeebbbedcb
+fedbaddccccccccccccccccccbbbedcb
+fedbadffffffffffffffffffffbbedcb
+fedbadeeeeeeeeeeeeeeeeeeeebbedcb
+fedbadeeeeeeeeeeeeeeeeeeeebbedcb
+fedbadccccccccccccccccccccbbedcb
+fedbaeggggggggggggggggggggccedcb
+fedbaeffffffffffffffffffffccedcb
+fedbaeffffffffffffffffffffccedcb
+fedbaeffffffffffffffffffffccedcb
+fedbaeddddddddddddddddddddccedcb
+fedeeeeeeeeeeeeeeeeeeeeeeeeeedcb
+feddddddddddddddddddddddddddddcb
+fccccccccccccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_fence/s4-C.pxg",
+ "set": "school",
+ "id": "roof_fence",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "재해석: 기둥 위에서 안쪽으로 꺾인 팔, 윗 레일에 매듭 셋",
+ "ok": true
+}

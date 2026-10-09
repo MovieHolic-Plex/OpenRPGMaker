@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/stairs_up_stone/hf1-B.pxg",
+ "set": "horror",
+ "id": "stairs_up_stone",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.277
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "B(어둠에서 읽힘): 6단 · 윗면 grave 3~5 + 모서리 vstone 5~6 대 앞면 vstone 0 · 볼 뚜껑 vstone 6 · 큰 명암",
+ "ok": true
+}

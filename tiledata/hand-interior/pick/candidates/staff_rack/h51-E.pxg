@@ -1,0 +1,59 @@
+// h51-E staff rack: wall board rack - dark backboard with two pine cross-bars holding 3 staves (orange/blue/green gems), low pine plinth with slots
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A dwood 1
+@mat B dwood 3
+@mat C dwood 4
+@mat D dwood 5
+@mat E pine 3
+@mat F pine 4
+@mat G pine 5
+@mat H pine 2
+@mat I pine 1
+@mat K brass 4
+@mat L blue 1
+@mat M blue 4
+@mat N blue 5
+@mat O blue 6
+@mat P orange 1
+@mat Q orange 3
+@mat R orange 4
+@mat S orange 5
+@mat T green 1
+@mat U green 3
+@mat V green 4
+@mat W green 5
+@mblock 0 0
+................
+.......LL.......
+......LONL......
+......LNML......
+...PP..LL.......
+..PSRP.FH.......
+..PRQP.FH...TT..
+...PP..FH.TWVU..
+...FH..FH.TVUT..
+...FH..FH...UU..
+...FH..FH...FH..
+...FH..FH...FH..
+.AAFHAAFHAAFHAA.
+.ADFHDDFHDDFHDA.
+.ACFHCCFHCCFHBA.
+.AGGGGGGGGGGGGA.
+.AKEEEEEEEEEEKA.
+.AAAAAAAAAAAAAA.
+.ACFHCCFHCCFHBA.
+.ACFHCCFHCCFHBA.
+.ACFHCCFHCCFHBA.
+.AGGGGGGGGGGGGA.
+.AKEEEEEEEEEEKA.
+.AAAAAAAAAAAAAA.
+AGGFHGGFHGGFHGGA
+AFFAAFFAAFFAAFFA
+AEEEEEEEEEEEEEEA
+AEEEEEEEEEEEEEEA
+AEEHEEEEEEHEEEEA
+AHHHHHHHHHHHHHHA
+AIIIHIIIIIIIHIIA
+AAAAAAAAAAAAAAAA

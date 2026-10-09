@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "productionTestHead": "95513f0b009b4f22b106e931072129c07e3f317f",
+  "previousFull": {
+    "startedAt": "2026-09-08T15:31:40.430Z",
+    "total": 15179,
+    "passed": 15164,
+    "failed": 0,
+    "skipped": 15,
+    "success": true
+  },
+  "resumedFull": {
+    "command": "npm run gates",
+    "exitCode": 1,
+    "total": 15179,
+    "passed": 15156,
+    "failed": 8,
+    "skipped": 15,
+    "typecheckExitCode": 0,
+    "cssExitCode": 0,
+    "surfaceExitCode": 0,
+    "failures": [
+      {
+        "file": "test/databaseOverviewDashboard.test.ts",
+        "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+        "durationMs": 15112.035333000003,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/databaseOverviewDashboard.test.ts",
+        "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+        "durationMs": 15027.648852999992,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/databaseOverviewDashboard.test.ts",
+        "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+        "durationMs": 15030.120479999998,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/databaseOverviewTab.test.ts",
+        "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+        "durationMs": 15189.172717000009,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/databaseViewToggle.test.ts",
+        "name": "database per-collection view mode session clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read",
+        "durationMs": 15355.798155000002,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/detsukuruBrandStrings.test.ts",
+        "name": "탈-쯔구르: 출하 문자열 src 안에 RPG Maker 계보 표현이 남아 있지 않다",
+        "durationMs": 17997.428943,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/storePersistence.test.ts",
+        "name": "Project store remote persistence always creates a new fresh project instead of reloading local dev overrides",
+        "durationMs": 15033.596410999999,
+        "message": "Error: STACK_TRACE_ERROR"
+      },
+      {
+        "file": "test/storePersistence.test.ts",
+        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
+        "durationMs": 15003.933920000003,
+        "message": "Error: STACK_TRACE_ERROR"
+      }
+    ]
+  },
+  "focused": {
+    "command": "npm test -- test/databaseOverviewDashboard.test.ts test/databaseOverviewTab.test.ts test/databaseViewToggle.test.ts test/detsukuruBrandStrings.test.ts test/storePersistence.test.ts --maxWorkers=1 --reporter=verbose --reporter=json --outputFile=/tmp/resume0909/focused-failures.json",
+    "exitCode": 0,
+    "total": 44,
+    "passed": 44,
+    "failed": 0,
+    "skipped": 0,
+    "previouslyFailed": [
+      {
+        "name": "database overview dashboard lazy compute: charts container is empty before idle callback, populated after flush",
+        "status": "passed",
+        "durationMs": 2074.967887999999
+      },
+      {
+        "name": "database overview dashboard renders issue cards matching the detector output with jump buttons",
+        "status": "passed",
+        "durationMs": 1498.0505339999945
+      },
+      {
+        "name": "database overview dashboard attack-stagnation jump opens the classes tab, not skills",
+        "status": "passed",
+        "durationMs": 1628.9124169999996
+      },
+      {
+        "name": "database overview tab shell default open tab after modal open is the stored last tab, NOT overview unless stored",
+        "status": "passed",
+        "durationMs": 1587.1457959999998
+      },
+      {
+        "name": "database per-collection view mode session clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read",
+        "status": "passed",
+        "durationMs": 2895.0291199999997
+      },
+      {
+        "name": "탈-쯔구르: 출하 문자열 src 안에 RPG Maker 계보 표현이 남아 있지 않다",
+        "status": "passed",
+        "durationMs": 9259.068521000001
+      },
+      {
+        "name": "Project store remote persistence always creates a new fresh project instead of reloading local dev overrides",
+        "status": "passed",
+        "durationMs": 1530.0095440000005
+      },
+      {
+        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
+        "status": "passed",
+        "durationMs": 2104.7345450000003
+      }
+    ]
+  },
+  "conclusion": "The unchanged one-worker diagnostic passes all eight previously failing tests. This supports resource-sensitive timeouts but does not replace the failed default-worker full gate or prove that command reliably green."
+}

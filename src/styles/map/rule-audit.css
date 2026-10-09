@@ -1,0 +1,136 @@
+.rule-audit-panel {
+  background: var(--editor-panel-bg-2);
+  border: 1px solid var(--editor-line);
+  border-radius: 6px;
+  color: var(--editor-text);
+  flex: 0 0 auto;
+  margin: 0 0 var(--space-2);
+  padding: var(--space-2);
+}
+
+.oprn-tile-tool {
+  position: relative;
+}
+
+.toolbar-badge {
+  align-items: center;
+  background: var(--editor-panel-bg-2);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: 999px;
+  color: var(--editor-text);
+  display: inline-flex;
+  font: 700 10px/1 var(--font-ui);
+  height: 15px;
+  justify-content: center;
+  min-width: 15px;
+  padding: 0 4px;
+  position: absolute;
+  right: -5px;
+  top: -6px;
+}
+
+.toolbar-badge.danger {
+  background: var(--status-error);
+  border-color: var(--status-error);
+  color: var(--text-inverse);
+}
+
+.oprn-rule-audit-dropdown {
+  min-width: 260px;
+}
+
+.oprn-rule-audit-dropdown .rule-audit-panel {
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.rule-audit-panel > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+}
+
+.rule-audit-panel > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rule-audit-list {
+  display: grid;
+  gap: var(--space-2);
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  max-height: 180px;
+  overflow: auto;
+  padding: 0;
+}
+
+.rule-audit-item {
+  align-items: start;
+  border-left: 3px solid var(--editor-line-strong);
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr);
+  padding-left: var(--space-2);
+}
+
+.rule-audit-item.is-hard {
+  border-left-color: var(--status-error);
+}
+
+.rule-audit-item.is-medium {
+  border-left-color: var(--status-warning);
+}
+
+.rule-audit-item.is-soft {
+  border-left-color: var(--editor-text-soft);
+}
+
+.rule-audit-badge {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 5px;
+}
+
+.rule-audit-badge.is-hard {
+  color: var(--status-error);
+}
+
+.rule-audit-badge.is-medium {
+  color: var(--status-warning);
+}
+
+.rule-audit-badge.is-soft {
+  color: var(--editor-text-soft);
+}
+
+.rule-audit-content {
+  min-width: 0;
+}
+
+.rule-audit-message {
+  font-size: 12px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rule-audit-meta,
+.rule-audit-empty {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+}
+
+.rule-audit-empty {
+  padding: var(--space-2) 0 0;
+}

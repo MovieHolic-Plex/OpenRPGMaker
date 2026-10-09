@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/forest/wv5-C.pxg",
+ "set": "worldmap",
+ "id": "forest",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 5≠1, inner_ne↔edge_n 5≠1, inner_se↔edge_s 5≠8, inner_se↔edge_e 5≠1"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "C: 같은 수치에서 다른 해석 — 수관 윗선에 잎 뭉치 톱니를 넣어 실루엣이 오돌토돌한 꽃양배추 결.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.125
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.052
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     1,
+     1,
+     1,
+     0,
+     0,
+     0,
+     1,
+     1,
+     1,
+     1,
+     0,
+     0,
+     1,
+     0,
+     0,
+     1
+    ],
+    "s": [
+     8,
+     7,
+     6,
+     6,
+     6,
+     6,
+     6,
+     7,
+     8,
+     7,
+     6,
+     6,
+     6,
+     6,
+     6,
+     7
+    ],
+    "w": [
+     3,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     2,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5
+    ],
+    "e": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4
+    ]
+   },
+   "strait": 7,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 2,
+    "e": 3
+   },
+   "amp": {
+    "n": 1,
+    "s": 2,
+    "w": 5,
+    "e": 4
+   },
+   "joinWorst": 4
+  },
+  "seam": 0.91
+ }
+}

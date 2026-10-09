@@ -1,0 +1,34 @@
+{
+ "id": "treasure chest",
+ "slug": "treasure_chest",
+ "name_ko": "보물상자",
+ "category": "JRPG 장치",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "JRPG 보물상자(작은 것, 닫힘) — 둥글게 솟은 나무 뚜껑에 금빛 쇠테·가운데 자물쇠. 뚜껑 윗면이 위에서 보이고 앞면에 자물쇠. 던전 막다른 곳·방 구석·여관 창고.",
+ "where": "뚜껑 윗면이 위에서 보이고 앞면에 자물쇠. 던전 막다른 곳·방 구석·여관 창고.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "dungeon"
+}

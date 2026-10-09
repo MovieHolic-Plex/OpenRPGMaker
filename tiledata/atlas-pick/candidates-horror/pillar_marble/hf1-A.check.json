@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/pillar_marble/hf1-A.pxg",
+ "set": "horror",
+ "id": "pillar_marble",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.123
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  14,
+  46
+ ],
+ "note": "A(v5 기본): 흰 vmarble 통기둥 · tarn(금) 띠 위/아래 2줄 + 밑동 1줄 · 원통 명암",
+ "ok": true
+}

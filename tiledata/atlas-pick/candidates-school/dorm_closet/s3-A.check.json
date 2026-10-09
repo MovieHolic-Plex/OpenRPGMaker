@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_closet/s3-A.pxg",
+ "set": "school",
+ "id": "dorm_closet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "v5 결: 소나무 붙박이장, 위칸 문+양문 가운데 틈에 남색 교복 줄, 황동 손잡이 둘, 위 1px 밝은 윗면",
+ "ok": true
+}

@@ -1,0 +1,39 @@
+{
+ "id": "bookshelf 2w",
+ "slug": "bookshelf_2w",
+ "name_ko": "책장 2w",
+ "category": "서재",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  48
+ ],
+ "padTop": 10,
+ "image": {
+  "w": 32,
+  "h": 38
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 22,
+ "surface": null,
+ "description": "책을 빽빽이 꽂은 2칸 폭 키 큰 책장. 서고·서재 북쪽 벽에 1~3개 이어 붙인다. 앞에 책상.",
+ "where": "서고·서재 북쪽 벽에 1~3개 이어 붙인다. 앞에 책상.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 22px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_colors": 32,
+ "material": "wood",
+ "related": []
+}

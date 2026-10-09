@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "repo": "MovieHolic-Plex/OpenRPGMaker",
+  "tag": "stills-v1",
+  "archive": {
+    "fileName": "rpg-zzu-stills-v1.tar",
+    "bytes": 7193600,
+    "sha256": "25fcd864e5243a574a73ce7ef5c75fbc19f31038b95e2fff27ea400dcafe2d0a"
+  },
+  "count": 19,
+  "totalBytes": 7178097,
+  "license": "project-generated",
+  "stills": [
+    {
+      "id": "oprn-pack-still-desert-01",
+      "fileName": "desert-01.jpg",
+      "bytes": 258156,
+      "sha256": "512fa8ef4075cb41655a71a603cae32e713f27e4d68337cb4c87ff8a987f2608"
+    },
+    {
+      "id": "oprn-pack-still-desert-02",
+      "fileName": "desert-02.jpg",
+      "bytes": 440606,
+      "sha256": "9a8ff693ae665c785cead4b2281874b0eadb5e649d7382e42bab5ca9d92a02e2"
+    },
+    {
+      "id": "oprn-pack-still-desert-03",
+      "fileName": "desert-03.jpg",
+      "bytes": 303458,
+      "sha256": "0eac848e964625709466d24f1d135a39e70f4a0001d1d25edaa463a00c2be14b"
+    },
+    {
+      "id": "oprn-pack-still-desert-04",
+      "fileName": "desert-04.jpg",
+      "bytes": 391132,
+      "sha256": "df410cd7e82b1b9d4238f530bb0e8924c4fd5e2a4dedb466a2d207700ccfd883"
+    },
+    {
+      "id": "oprn-pack-still-modern-01",
+      "fileName": "modern-01.jpg",
+      "bytes": 391801,
+      "sha256": "e19c846fd4b9019285a8f3c5337a693f12c48d619e860fb77c72f2d0db708ad8"
+    },
+    {
+      "id": "oprn-pack-still-modern-02",
+      "fileName": "modern-02.jpg",
+      "bytes": 380348,
+      "sha256": "e1ea2839bcd3b989b0c94cd98be9e7a5ad0fc6eda48804a6c05ebfb51262ced0"
+    },
+    {
+      "id": "oprn-pack-still-modern-03",
+      "fileName": "modern-03.jpg",
+      "bytes": 428892,
+      "sha256": "dc379e3f9ea1e3224b6e2167708962b09db201b7bb88694e7f401c9bc1b96d2b"
+    },
+    {
+      "id": "oprn-pack-still-ocean-01",
+      "fileName": "ocean-01.jpg",
+      "bytes": 384825,
+      "sha256": "55b6c6186b13ecb7139801e70b1fd0a620598237588556fd9c3e08e841a8a42c"
+    },
+    {
+      "id": "oprn-pack-still-ocean-02",
+      "fileName": "ocean-02.jpg",
+      "bytes": 328096,
+      "sha256": "adb8e759d4910dcb19e104fedb8e9e0cf82ba6893651c2dd510c56c66761f6a9"
+    },
+    {
+      "id": "oprn-pack-still-ocean-03",
+      "fileName": "ocean-03.jpg",
+      "bytes": 438129,
+      "sha256": "db8168548ed0af81e6f3e1b76d10bfbbbaf646fa5da5de260208c41bdcabde5f"
+    },
+    {
+      "id": "oprn-pack-still-ocean-04",
+      "fileName": "ocean-04.jpg",
+      "bytes": 403999,
+      "sha256": "f5d8c1e04526e2019c37967b62b7c451259814133fb6435cdb5350b4eceaa1dc"
+    },
+    {
+      "id": "oprn-pack-still-sky-01",
+      "fileName": "sky-01.jpg",
+      "bytes": 429266,
+      "sha256": "ad64f0531f36ca95bbfc4a0a259927e17dfc6e90e5cc321c8c9443a7a1c9a710"
+    },
+    {
+      "id": "oprn-pack-still-sky-02",
+      "fileName": "sky-02.jpg",
+      "bytes": 320661,
+      "sha256": "1e524a894ec9c06541fcd2a657e4f9e5c8cc803697b9e0f5bd31cbcfbb9c3a55"
+    },
+    {
+      "id": "oprn-pack-still-sky-03",
+      "fileName": "sky-03.jpg",
+      "bytes": 300984,
+      "sha256": "f1231001a992b996acf32d10d38562b0ea445d0eb21db89f75b908e5e8c60d51"
+    },
+    {
+      "id": "oprn-pack-still-sky-04",
+      "fileName": "sky-04.jpg",
+      "bytes": 407501,
+      "sha256": "248b58187a46f72154e7e77ad184d937c1ad63e633b929bb1f721e8321f6de41"
+    },
+    {
+      "id": "oprn-pack-still-winter-01",
+      "fileName": "winter-01.jpg",
+      "bytes": 397881,
+      "sha256": "512da161e39e93ff55f74d12700ec914de63c349ecdb1882380c2b27a19b761e"
+    },
+    {
+      "id": "oprn-pack-still-winter-02",
+      "fileName": "winter-02.jpg",
+      "bytes": 398042,
+      "sha256": "d63d728e3bafe137ffa6fecdc2d6dae2c5b1a20c7bb889a862dff272b80758ba"
+    },
+    {
+      "id": "oprn-pack-still-winter-03",
+      "fileName": "winter-03.jpg",
+      "bytes": 458813,
+      "sha256": "1839cb4f074613f41bd26974e67d16257f46b7c3ce83687fca383efbbb0e0e8b"
+    },
+    {
+      "id": "oprn-pack-still-winter-04",
+      "fileName": "winter-04.jpg",
+      "bytes": 315507,
+      "sha256": "bb6112a1feeb87fd872d539d9ed28d3fdbcb3025c725c1bbb84f0adec7474046"
+    }
+  ]
+}

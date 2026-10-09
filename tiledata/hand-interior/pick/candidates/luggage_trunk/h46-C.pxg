@@ -1,0 +1,31 @@
+// C 단순·또렷: 납작한 갈색 가죽 트렁크 — 쇠띠 둘(세로)과 놋쇠 걸쇠 하나만, 뚜껑 윗면 4행
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat d dwood 3
+@mat m dwood 5
+@mat l dwood 6
+@mat h wood 5
+@mat j iron 5
+@mat I iron 3
+@mat b brass 4
+@mat B brass 5
+@mat k brass 1
+@mblock 0 0
+................
+................
+................
+................
+..oooooooooooo..
+.ohhjIhhhhjIhmo.
+.ohhjIhhhhjIhmo.
+.ohhjIhhhhjIhmo.
+.ommjImmmmjImmo.
+.ollIjllllIjlmo.
+.ommjImmBbmjImo.
+.oddjIddbbdjIdo.
+.olmjImmBkmjImo.
+.olmjImmmmmjImo.
+.oldIjdddddIjdo.
+..oooooooooooo..

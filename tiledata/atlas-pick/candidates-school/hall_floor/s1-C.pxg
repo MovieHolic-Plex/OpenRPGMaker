@@ -1,0 +1,25 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+// C: 실루엣 재해석 — 8px 사각 타일 체스판(밝은/어두운 두 톤) + 줄눈 한 단
+@mat l lino 5
+@mat d lino 3
+@mat s lino 2
+@mat h lino 6
+@mblock 0 0
+hllllllsddddddds
+lllllllsddddddds
+lllllllsddddddds
+lllllllsddddddds
+lllllllsddddddds
+lllllllsddddddds
+lllllllsddddddds
+ssssssssssssssss
+dddddddsllllllls
+dddddddsllllllls
+dddddddsllllllls
+dddddddsllllllls
+dddddddsllllllls
+dddddddsllllllls
+dddddddsllllllls
+ssssssssssssssss

@@ -1,0 +1,346 @@
+import type { SpriteLook } from "@/project/eventCommands/cinematicStaging";
+// player/types.ts
+// 플레이어 쪽 공용 타입. 인터프리터가 요구하는 세션 인터페이스 등.
+// v2: switches/variables/timers/commonEvents 포함.
+
+import type { BlendModeName } from "@/project/blendMode";
+import type { EasingName } from "@/project/easing";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Dir, EventPageGraphic, MapId, Command, LightingState, MessageWindowSettings, MonsterInstanceId, SkillId } from "@/project/types";
+import type { RelationshipState } from "./relationshipState";
+import type { FactionStanceOverrides } from "@/project/factionRuntime";
+import type { AudioTrackState, FarmPlots, MonsterInstance } from "@/project/session";
+import type { GameTime } from "@/project/gameTime";
+import type { ActorVitals } from "@/project/sessionVitals";
+import type { RngState } from "@/util/rng";
+import type { RoguelikeRunState } from "@/project/roguelikeRun";
+import type { BattleResult } from "@/project/gameTime";
+
+export type RuntimeAudioState = AudioTrackState;
+export type { SystemAudioOverrides } from "./systemAudioOverrides";
+
+export type RuntimePictureState = {
+  readonly pictureId: string;
+  readonly resourceId: string;
+  readonly x: number;
+  readonly y: number;
+  // Move Picture 트윈용 선택 필드(PictureState 와 동일 의미).
+  readonly scale?: number;
+  readonly opacity?: number;
+  readonly rotation?: number;
+  readonly durationMs?: number;
+  readonly easing?: EasingName;
+  readonly blendMode?: Exclude<BlendModeName, "normal">;
+};
+
+export type M2RecordedFallback = {
+  readonly commandId: string;
+  readonly label: string;
+  readonly reason: string;
+};
+
+export type M2ScreenRuntimeState = {
+  flash?: string;
+  /** performance.now() 시각. 이 시각 전까지 syncScreenEffects 가 플래시 오버레이를 유지한다. */
+  flashUntilMs?: number;
+  hidden?: boolean;
+  shake?: number;
+  tint?: string;
+  // 색조 전환에 걸릴 시간(ms). 0/미지정이면 즉시 적용.
+  tintDurationMs?: number;
+  /** Tint Screen 의 색 필터(채도·흑백·세피아, %). 미지정 = 필터 없음. 전환은 tintDurationMs 를 따른다. */
+  filter?: { saturation: number; grayscale: number; sepia: number };
+  /** 화면 왜곡(물결·모자이크·기울기). 미지정 = 없음. `@/project/eventCommands/screenDistortion`. */
+  distortion?: { wave: number; mosaic: number; rotate: number };
+  /** 왜곡 전환 시간(ms). 0/미지정 = 즉시. */
+  distortionDurationMs?: number;
+  /** 레터박스 띠 두께(화면 높이 %, 띠 하나). 미지정 = 없음. `@/project/eventCommands/cinematicStaging`. */
+  letterbox?: number;
+  /** 레터박스 전환 시간(ms). */
+  letterboxDurationMs?: number;
+  /**
+   * 캐릭터 모습 효과(색·뒤집기·기울기·포즈·잔상). 키 = "player" 또는 "<mapId>/<eventId>"
+   * (`spriteLookKey`). 화면에 보이는 지속 상태라 세이브에 함께 남는다.
+   */
+  spriteLooks?: Record<string, SpriteLook>;
+  weather?: string;
+};
+
+export type M2AccessRuntimeState = Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
+
+export type M2SoundLayerState = {
+  readonly fadeMs: number;
+  readonly resourceId: string;
+  readonly volume: number;
+};
+
+export type M2AudioRuntimeState = {
+  memorizedBgm?: string;
+  playedMemorizedBgm?: string;
+} & Record<string, M2SoundLayerState | string | undefined>;
+
+export type M2ActorRuntimeState = {
+  battleCommands?: string;
+  characterGraphic?: string;
+  classId?: string;
+  damage?: number;
+  faceset?: string;
+  name?: string;
+  nickname?: string;
+  parameters?: number;
+  states?: readonly string[];
+};
+
+export type M2EventRuntimeState = {
+  readonly mapId?: string;
+  readonly prefabId?: string;
+  readonly removed?: boolean;
+  readonly value?: string;
+  readonly x?: number;
+  readonly y?: number;
+};
+
+export type M2MapRuntimeState = {
+  readonly mapId?: string;
+  readonly target?: string;
+  readonly value?: string;
+  readonly x?: number;
+  readonly y?: number;
+};
+
+export type M2SessionRuntimeState = {
+  endedEventProcessing?: boolean;
+  eraseEventRequested?: boolean;
+  shellAction?: string;
+  stopAllMovementRequested?: boolean;
+  waitForAllMovementRequested?: boolean;
+  weightedBranch?: { readonly resultVariableId: string; readonly table: string };
+};
+
+export type M2CameraRuntimeState = {
+  durationMs?: number;
+  mode?: string;
+  target?: string;
+  x?: number;
+  y?: number;
+  zoom?: number;
+};
+
+export type M2ScreenEffectState = {
+  readonly durationMs: number;
+  readonly effect: string;
+  readonly value: string;
+};
+
+export type M2PathfindingState = {
+  readonly speed: number;
+  readonly target: string;
+  readonly wait: boolean;
+  readonly x: number;
+  readonly y: number;
+};
+
+export type M2WaitConditionState = {
+  readonly condition: string;
+  readonly target: string;
+  readonly timeoutMs: number;
+  readonly value: string;
+};
+
+export type M2RegionTriggerState = {
+  readonly action: string;
+  readonly eventId: string;
+  readonly regionId: string;
+  readonly switchId: string;
+};
+
+export type M2QuestObjectiveState = {
+  readonly state: string;
+  readonly text: string;
+};
+
+export type M2DialogueState = {
+  readonly autoAdvance: boolean;
+  readonly body: string;
+  readonly emotion: string;
+  readonly portraitId: string;
+  readonly speaker: string;
+};
+
+export type M2CheckpointState = {
+  readonly label: string;
+  readonly restoreOnGameOver: boolean;
+  readonly slotId: string;
+};
+
+export type M2UiCommandState = {
+  readonly durationMs: number;
+  readonly message: string;
+  readonly surface: string;
+};
+
+export type M2DebugLogState = {
+  readonly level: string;
+  readonly message: string;
+};
+
+export type M2ExpressionState = {
+  readonly evaluated: boolean;
+  readonly expression: string;
+  readonly resultVariableId: string;
+};
+
+export type M2RuntimeState = {
+  screen: M2ScreenRuntimeState;
+  access: M2AccessRuntimeState;
+  audio: M2AudioRuntimeState;
+  actors: Record<string, M2ActorRuntimeState>;
+  events: Record<string, M2EventRuntimeState>;
+  map: Record<string, M2MapRuntimeState>;
+  system: Record<string, string | number | boolean>;
+  session: M2SessionRuntimeState;
+  camera: M2CameraRuntimeState;
+  screenEffects: M2ScreenEffectState[];
+  pathfinding: M2PathfindingState[];
+  waits: M2WaitConditionState[];
+  regions: M2RegionTriggerState[];
+  quests: Record<string, Record<string, M2QuestObjectiveState>>;
+  dialogue: M2DialogueState[];
+  cutscene: Record<string, boolean>;
+  checkpoints: M2CheckpointState[];
+  ui: M2UiCommandState[];
+  debug: M2DebugLogState[];
+  expressions: M2ExpressionState[];
+  fallbacks: M2RecordedFallback[];
+};
+
+export type RuntimeEventLocation = {
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
+export type RuntimeCameraTarget =
+  | { readonly kind: "player" }
+  | { readonly kind: "event"; readonly eventId: string }
+  | { readonly kind: "position"; readonly x: number; readonly y: number };
+
+export type RuntimeCameraSessionState = {
+  readonly mode: "follow" | "fixed";
+  readonly target: RuntimeCameraTarget;
+  readonly offsetX?: number;
+  readonly offsetY?: number;
+  readonly zoom?: number;
+};
+
+export type RuntimeSpawnedEventState = {
+  readonly templateMapId: MapId;
+  readonly templateEventId: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
+export type RuntimeRemovedEventIds = Record<MapId, readonly string[]>;
+
+export type RuntimeNpcTravelState = {
+  readonly destinationIndex: number;
+};
+
+export type RuntimeNpcScheduleState = {
+  readonly routeKey?: string;
+  readonly exitTarget?: RuntimeEventLocation;
+};
+
+export type RuntimeFollowerLike = {
+  readonly eventId?: string;
+  readonly graphic: EventPageGraphic;
+  readonly name: string;
+  readonly kind?: "actor" | "monster";
+  readonly monsterInstanceId?: string;
+};
+
+export type RuntimeFollowerTrailPointLike = {
+  readonly x: number;
+  readonly y: number;
+  readonly direction?: Dir;
+};
+
+// 인터프리터가 요구하는 세션 인터페이스.
+// project/session.ts의 PlaySession이 이를 만족.
+export interface PlaySessionLike {
+  mapOverrides?: Record<string, { lower: Record<number, number>; upper: Record<number, number> }>;
+  flags: Record<string, boolean>; // 레거시 호환
+  switches: Record<string, boolean>;
+  selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
+  variables: Record<string, number>;
+  timers: Record<string, number>;
+  gold: number;
+  inventory: Record<string, number>;
+  collections?: Record<string, import("@/project/collections").CollectionProgress>;
+  itemUseCharges?: Record<string, number>;
+  partyActorIds: string[];
+  monsterInstances?: Record<MonsterInstanceId, MonsterInstance>;
+  monsterParty?: MonsterInstanceId[];
+  monsterBox?: MonsterInstanceId[];
+  audio?: Record<string, RuntimeAudioState>;
+  systemAudioOverrides?: import("./systemAudioOverrides").SystemAudioOverrides;
+  pictures?: Record<string, RuntimePictureState>;
+  actorSkillIds?: Record<ActorId, SkillId[]>;
+  actorBattleCommands?: Record<ActorId, string[]>;
+  actorExperience?: Record<string, number>;
+  actorLevels?: Record<string, number>;
+  actorEquipment?: Record<string, ActorInitialEquipment>;
+  actorNames?: Record<ActorId, string>;
+  actorNicknames?: Record<ActorId, string>;
+  actorFaceResourceIds?: Record<ActorId, string>;
+  actorCharacterResourceIds?: Record<ActorId, string>;
+  classOverrides?: Record<ActorId, string>;
+  actorParamBonuses?: Record<ActorId, Partial<Record<ActorParameterKey, number>>>;
+  actorStateIds?: Record<ActorId, string[]>;
+  actorVitals: Record<string, ActorVitals>;
+  eventLocations?: Record<string, RuntimeEventLocation>;
+  horror?: import("./horrorState").HorrorState;
+  erasedEventIds?: readonly string[];
+  removedEventIds?: RuntimeRemovedEventIds;
+  spawnedEvents?: Record<string, RuntimeSpawnedEventState>;
+  camera?: RuntimeCameraSessionState;
+  lighting?: LightingState;
+  npcTravelStates?: Record<string, RuntimeNpcTravelState>;
+  npcActivities?: Record<string, string>;
+  npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
+  farmPlots?: FarmPlots;
+  factionStanceOverrides?: FactionStanceOverrides;
+  friendship?: Record<string, number>;
+  relationships?: Record<string, RelationshipState>;
+  galleryUnlocks?: string[];
+  dailyGifts?: Record<string, string>;
+  followers?: RuntimeFollowerLike[];
+  followerTrail?: RuntimeFollowerTrailPointLike[];
+  vehicle?: import("@/project/vehicles").VehicleSessionState;
+  playTimeSeconds?: number;
+  playerFacing?: import("./types").Dir;
+  stringVariables?: Record<string, string>;
+  stepCount?: number;
+  teleportPoints?: import("./teleportPoints").TeleportPoint[];
+  highScores?: Record<string, number>;
+  /** 키 폴링(Key Poll) 이 매 프레임 쓰는 현재 입력. 세이브에 넣지 않는다. */
+  heldInput?: { readonly dir: number; readonly confirm: boolean; readonly cancel: boolean; readonly dash: boolean };
+  clearHistory?: { count: number; endingIds: string[] };
+  gameTime?: GameTime;
+  currentMapId: MapId;
+  x: number;
+  y: number;
+  messageWindowSettings?: MessageWindowSettings;
+  // 공통 이벤트(callCommonEvent용). Project.commonEvents 참조를 세션에 복사.
+  commonEvents?: { id: string; commands: Command[] }[];
+  m2Runtime?: M2RuntimeState;
+  rng?: RngState;
+  roguelikeRun?: RoguelikeRunState;
+  // 직전 전투 처리 결과. battleProcessing 이 종료된 뒤 인터프리터/필드 스폰/페이지 조건에서 사용.
+  battleResult?: BattleResult;
+  difficultyId?: string;
+  /** 메뉴 «바라보는 대상에 사용»이 발동 중인 아이템 id. 그 한 번의 페이지 판정 동안만 있다. */
+  itemUsedId?: string;
+}

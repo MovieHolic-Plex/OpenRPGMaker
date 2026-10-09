@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cake_display_case/w104-A.pxg",
+ "id": "cake display case",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w104-A.pxg"
+ ],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "3/4 재해석: 유리 돔 아래 받침 윗면 6px(행18~23)을 위에서 본 면으로 깔고 앞 모서리 밝은 줄(24), 서랍 앞면은 한 단 들어가게. 캔버스 32x32 그대로.",
+ "ok": true
+}

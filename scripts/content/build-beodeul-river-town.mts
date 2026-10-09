@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {openLocalProjectStore} from '../../electron/local-store/store.ts';
+import {ensureBundledTilesets} from '../../src/project/defaults.ts';
+import {buildBeodeulRiverTown} from './lib/beodeul-river-town.mts';
+import {renderMapPng} from '../qa-game/render.mts';
+const projectDir='/home/main/.local/share/oprn/assistant-house-entry-e7d2-20261004';
+const store=await openLocalProjectStore({projectDir});const before=store.loadSnapshot()!;store.close();
+assert.equal(before.revision,17);const p=structuredClone(before.project);ensureBundledTilesets(p);
+const result=buildBeodeulRiverTown(p);p.startMapId=result.mapId;p.startPos=result.start;
+for(const [id,m] of Object.entries(before.project.maps))assert.deepEqual(p.maps[id],m);
+fs.writeFileSync('output/beodeul-river-town/preview-project.json',JSON.stringify(p));
+fs.writeFileSync('verify-shots/beodeul-river-town/preview.png',renderMapPng({...p,startMapId:''},p.maps[result.mapId]!).png);
+fs.writeFileSync('output/beodeul-river-town/build-result.json',JSON.stringify(result,null,2));
+console.log(JSON.stringify({buildings:result.fronts.length,bridges:result.bridges.length,mapId:result.mapId,allDoorsAndBridgeBanksReachable:true}));

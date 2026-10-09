@@ -1,0 +1,667 @@
+/* Map settings: fixed navigation, a single reading column, and one scroller. */
+
+.map-props-dialog {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--text-1);
+  background: var(--bg-panel);
+}
+
+.map-props-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px;
+  background: var(--bg-panel);
+  overflow-y: auto;
+}
+
+.map-props-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-props-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  min-height: 48px;
+  text-align: left;
+  font: 500 14px/1.4 var(--font-ui);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.map-props-row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-props-row-sum {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.map-props-previews:empty { display: none; }
+.map-props-previews { display: flex; gap: 4px; flex: none; }
+.map-props-thumb {
+  width: 44px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--bg-inset);
+}
+.map-props-play { flex: none; }
+
+.map-props-body.is-single-view[hidden] { display: none; }
+.map-props-body.is-single-view:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--bg-panel);
+}
+.map-props-sheet-close { align-self: flex-start; }
+
+.map-props-tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.map-props-tab[aria-current="location"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-1);
+  font-weight: 700;
+}
+
+.map-props-dialog :is(button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.map-props-body.is-single-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 20px 24px 32px;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.map-props-section-block {
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  padding: 20px;
+  background: var(--bg-raised);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  scroll-margin-top: 20px;
+}
+
+.map-props-section-block:last-child {
+  min-height: 100%;
+}
+
+.map-props-section-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text-1);
+}
+
+.map-props-section-title + .map-props-hint {
+  margin-top: -10px;
+}
+
+.map-props-save-hint {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px 24px;
+  border-top: 1px solid var(--border-default);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+@media (max-width: 760px) {
+  .map-props-body.is-single-view { padding: 12px; }
+  .map-props-section-block { padding: 14px; }
+  .map-props-tabs { padding: 12px 6px; }
+}
+
+.map-props-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.map-props-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-props-dialog .field > label,
+.map-props-field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-props-dialog input[type="text"],
+.map-props-dialog input[type="number"],
+.map-props-dialog select {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+}
+
+.map-props-size-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.map-props-dialog .map-props-size-row input[type="number"] {
+  width: 72px;
+}
+
+.map-props-size-row span {
+  font-size: 14px;
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-props-dialog .map-props-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  margin: 0;
+  min-height: 38px;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.map-props-dialog input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--accent);
+}
+
+.map-props-hint {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.map-json-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-json-field textarea {
+  width: 100%;
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  padding: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+/* ── 인카운터 탭 ── */
+
+.map-encounter-heading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-encounter-rate-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-encounter-rate-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.map-encounter-rate-row input[type="number"] {
+  width: 72px;
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+}
+
+.map-encounter-troop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 2px 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+}
+
+.map-encounter-table-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.map-encounter-row {
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  padding: 8px;
+  background: var(--bg-raised);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-encounter-row-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-encounter-row-main select {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+}
+
+.map-encounter-weight {
+  width: 64px;
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+}
+
+.map-encounter-share {
+  flex: 0 0 auto;
+  min-width: 46px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.map-encounter-remove {
+  flex: 0 0 auto;
+}
+
+.map-encounter-conditions > summary,
+.map-encounter-advanced > summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-2);
+  padding: 8px 0;
+  line-height: 1.5;
+}
+
+.map-encounter-conditions > summary:hover,
+.map-encounter-advanced > summary:hover {
+  color: var(--text-primary);
+}
+
+.map-encounter-cond-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  padding: 8px 0 4px;
+}
+
+.map-encounter-cond-cell,
+.map-encounter-rect-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.map-encounter-cond-cell label,
+.map-encounter-rect-cell label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.map-encounter-cond-cell select,
+.map-encounter-cond-cell input,
+.map-encounter-rect-cell input {
+  width: 100%;
+  min-width: 0;
+  padding: 5px 6px;
+  font-size: 14px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--input-bg, #FFFFFF);
+  color: var(--text-primary);
+}
+
+.map-encounter-rect-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+@media (max-width: 380px) {
+  .map-encounter-rect-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.map-encounter-advanced {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-default);
+}
+
+/* ── 필드 스폰 탭 ── (인사운터 행 모양을 그대로 재사용하고 제목줄만 더한다) */
+.map-spawn-row-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.map-spawn-row-id {
+  font-family: var(--font-mono, monospace);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.map-spawn-row-meta {
+  font-size: 13px;
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-spawn-row-effect {
+  margin: 0;
+}
+
+.map-spawn-row-warning {
+  color: var(--danger);
+}
+
+/* 하위 추가 + 버튼(초보 전용)은 editor/map-panel.modern.css 의 is-basic-flyout 절로
+   이관됐다(2026-08, Task 6 후속) — 여기서는 스코프 없는 전역 셀렉터였다. */
+
+.map-props-dialog .panel-section {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.map-props-dialog .btn {
+  min-height: 36px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: normal;
+}
+
+.map-props-dialog input[type="range"] {
+  min-width: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.map-props-dialog .map-encounter-rate-row input[type="number"] {
+  width: 80px;
+}
+
+.map-props-dialog input.map-encounter-weight {
+  width: 80px;
+}
+
+.map-props-resource {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--bg-inset);
+}
+
+.map-props-resource-name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.map-props-resource .btn { flex: 0 0 auto; }
+
+/* Delete confirmation dialog — child map options */
+.map-delete-children-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.map-delete-children-option:hover {
+  border-color: var(--accent);
+  background: var(--bg-hover);
+}
+
+.map-delete-children-option.selected {
+  border-color: var(--accent);
+  background: rgba(124, 156, 255, 0.08);
+}
+
+.map-delete-children-option input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+/* ── 맵 배경 탭 미리보기 (캔버스가 배경을 안 그리므로 확인은 여기서) ── */
+.map-bg-preview {
+  display: block;
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  image-rendering: pixelated;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: var(--bg-raised);
+}
+
+/* ── 미니맵 탭 미리보기 ── */
+.map-minimap-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--bg-raised);
+}
+
+.map-minimap-preview-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-minimap-preview-canvas {
+  display: block;
+  max-width: 100%;
+  image-rendering: pixelated;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  background: #EFE9DC;
+}
+
+.map-create-form {
+  display: grid;
+  gap: 10px;
+}
+
+.map-create-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.map-create-field {
+  display: grid;
+  gap: 4px;
+  font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.map-create-field input,
+.map-create-field select {
+  font: 600 13px/1.3 var(--font-ui, system-ui, sans-serif);
+  height: 32px;
+  padding: 0 8px;
+}
+
+.map-create-hint {
+  color: var(--text-secondary, #6B5F52);
+  font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
+  margin: 0;
+}
+
+/* 아래 세 규칙(행 썸네일, 활성 썸네일 보더, 계층 들여쓰기 — 전부 스코프 없는
+   전역 셀렉터였다)은 editor/map-panel.modern.css 의 패널 절로 이관됐다(2026-08,
+   Task 6 후속). 썸네일 클래스는 mapThumbnail.ts 의 생성 함수 한 곳에서만 만들고,
+   그 호출자도 mapList.ts 한 곳뿐이라 맵 트리 행 밖에서 쓰이지 않는다 — 패널
+   스코프로 좁혀도 안전하다. 들여쓰기 규칙은 여백/너비 부분만 모던 레이어에
+   이미 있었고 왼쪽 보더는 여기 한 곳뿐이었다(합쳐서 이관). 이 자리(구
+   442~457행)에 있던 플라이아웃 들여쓰기·말줄임 규칙도 같은 이관에 포함됐다 —
+   바로 위 공용 규칙, 그리고 복사영역·메타 규칙과 완전히 중복이었다. */
+
+/* Map resource pickers share the catalog behavior, with the map window's typography. */
+
+.db-enemy-dialog-backdrop[data-testid^="map-"] .db-enemy-dialog footer .btn {
+  min-width: 72px;
+  min-height: 38px;
+}
+
+/* ── 레이어 세트 카드 피커 (2026-09-21, 드롭다운 대체) ── */
+.map-bg-layer-set-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.map-bg-layer-set-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  overflow: hidden;
+  text-align: left;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.map-bg-layer-set-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.map-bg-layer-set-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.map-bg-layer-set-name {
+  padding: 0 10px;
+  font: 600 13px/1.4 var(--font-ui);
+  color: var(--text-primary);
+}
+
+.map-bg-layer-set-meta {
+  padding: 0 10px;
+  font: 400 12px/1.4 var(--font-ui);
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-bg-layer-set-hint,
+.map-bg-layer-confirm-text {
+  margin: 0 0 10px;
+  font: 400 13px/1.5 var(--font-ui);
+  color: var(--text-secondary, #6B5F52);
+}
+
+.map-bg-layer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-bg-layer-row {
+  font: 400 12px/1.5 var(--font-ui);
+  color: var(--text-secondary, #6B5F52);
+}

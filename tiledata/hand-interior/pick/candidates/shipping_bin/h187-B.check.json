@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shipping_bin/h187-B.pxg",
+ "id": "shipping bin",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "방의 궤짝과 같은 갈색 윤곽·명암·성긴 나무 결로 높이 24px 출하 상자를 새로 그리고, 닫힌 넓은 경첩 뚜껑과 앞 판자를 구분함; 꼭대기 윗면 9행(y=9~17)",
+ "ok": true
+}

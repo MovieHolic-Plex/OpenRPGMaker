@@ -1,0 +1,423 @@
+// editor/tools/changeset.ts
+// 툴은 Project를 직접 수정하지 않고 draft(구조적 복제)에 적용한다.
+// 여기서 draft 생성 / diff 요약 / 커밋 게이트(projectLint)를 순수 함수로 제공한다.
+
+import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
+import { cloneProjectForMutation, finishProjectMutation } from "@/project/projectClone";
+import { assertSpatialToolChange } from "./spatialToolState";
+import { ToolError } from "./types";
+import { ProjectFormatError } from "@/project/io/errors";
+import { SpatialOperationError } from "@/project/spatial/domain";
+import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
+import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
+import { projectLint, type LintIssue } from "@/project/lint/projectLint";
+import type { GameEvent, GameMap, Project } from "@/project/types";
+import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
+import { jsonEqual } from "@/util/structuralJson";
+import type { ChangeSummary } from "./types";
+
+// 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
+// 타일 버퍼는 칸 단위 순회가 비싼 structuredClone 대신 배열 복사로 분리한다.
+//
+// 타일셋은 **도구가 읽는 것만** 복제한다(store.update 와 같은 사전 — projectClone.cloneProjectForMutation).
+// 왜(2026-09-28 실측, 새 프로젝트 149MB 중 타일셋 347개 82MB): 맵 한 칸을 칠하는 도구도 타일셋 전부를
+// structuredClone 해서 createDraft 한 번이 1.4~2.1s 였다(타일셋 복제 1.8s, 나머지 0.2s). 바로 깔기 주문 하나가
+// 도구 두세 개를 돌리면 편집기가 그만큼 멈췄다. 읽힌 타일셋은 그 자리에서 복제되므로 도구가 draft 의 타일셋을
+// 고쳐도 원본은 안전하다. 커밋 직전 finishDraftTilesets 가 사전을 보통 객체로 확정한다.
+export function createDraft(project: Project): Project {
+  const maps: Record<string, GameMap> = {};
+  for (const [id, map] of Object.entries(project.maps)) maps[id] = mapWithoutTileBuffers(map);
+  const clone = cloneProjectForMutation({ ...project, maps });
+  for (const [id, map] of Object.entries(clone.maps)) {
+    const source = project.maps[id];
+    if (source) copyTileBuffers(source, map);
+  }
+  transferDetachedDraftMemory(project, clone);
+  return clone;
+}
+
+/**
+ * createDraft 의 지연 타일셋 사전을 보통 객체로 확정한다. 읽지 않았거나 내용이 같은 타일셋은 원본 객체로 돌아간다.
+ * 도구가 끝난 draft 를 커밋·비교·스토어에 넘기기 전에 부른다. 이미 확정됐거나 지연 사전이 아니면 아무 일도 없다.
+ */
+export function finishDraftTilesets(draft: Project): void {
+  finishProjectMutation(draft);
+}
+
+/**
+ * 커밋할 툴 draft 의 타일셋 중 내용이 원본과 같은 것을 원본 객체로 되돌린다.
+ *
+ * 왜(2026-09-26 앱 실측, 82MB·타일셋 354칸): `createDraft` 는 타일셋까지 통째로 복제한다. 타일 한 칸을
+ * 칠하는 툴도 커밋 뒤 모든 타일셋이 새 객체가 되어, 다음 저장의 diff·커밋 요약이 타일셋
+ * 전부를 다시 직렬화했다. 값 비교(`jsonEqual`)는 같은 객체가 아니어도 첫 차이에서 멈추고 문자열을
+ * 만들지 않는다(실측: 354칸 전부 비교 221ms). 원본 객체는 스토어가 제자리 수정하지 않는다는
+ * 계약(`projectClone.cloneProjectForMutation`) 위에서 공유해도 안전하다.
+ */
+export function shareUnchangedTilesets(before: Project, draft: Project): void {
+  for (const [id, tileset] of Object.entries(draft.tilesets)) {
+    const original = before.tilesets[id];
+    if (original !== undefined && original !== tileset && jsonEqual(tileset, original)) draft.tilesets[id] = original;
+  }
+}
+
+function mapWithoutTileBuffers(map: GameMap): GameMap {
+  const {
+    lowerTiles: _lowerTiles,
+    upperTiles: _upperTiles,
+    lowerTileStacks: _lowerTileStacks,
+    upperTileStacks: _upperTileStacks,
+    ...rest
+  } = map;
+  return { ...rest, lowerTiles: [], upperTiles: [] };
+}
+
+function copyTileBuffers(source: GameMap, target: GameMap): void {
+  target.lowerTiles = source.lowerTiles.slice();
+  target.upperTiles = source.upperTiles.slice();
+  const lowerStacks = copyStacks(source.lowerTileStacks);
+  const upperStacks = copyStacks(source.upperTileStacks);
+  if (lowerStacks) target.lowerTileStacks = lowerStacks;
+  if (upperStacks) target.upperTileStacks = upperStacks;
+}
+
+function copyStacks(source: Record<number, number[]> | undefined): Record<number, number[]> | undefined {
+  if (!source) return undefined;
+  const copy: Record<number, number[]> = {};
+  for (const key of Object.keys(source)) {
+    const stack = source[Number(key)];
+    if (stack) copy[Number(key)] = stack.slice();
+  }
+  return copy;
+}
+
+/** 타일 버퍼가 달라진 맵만. 클러스터 재검사는 이 맵으로 한정한다. */
+export function tileChangedMapIds(before: Project, after: Project): readonly string[] {
+  const ids: string[] = [];
+  for (const [id, afterMap] of Object.entries(after.maps)) {
+    const beforeMap = before.maps[id];
+    if (!beforeMap || tileBuffersDiffer(beforeMap, afterMap)) ids.push(id);
+  }
+  return ids;
+}
+
+export function tileBuffersDiffer(before: GameMap, after: GameMap): boolean {
+  if (before.width !== after.width || before.height !== after.height) return true;
+  if (!sameNumbers(before.lowerTiles, after.lowerTiles)) return true;
+  if (!sameNumbers(before.upperTiles, after.upperTiles)) return true;
+  // 2층·4층·그림자(선택 칸). 없는 칸은 빈칸 배열과 같다 — 옛 맵은 셋 다 undefined 라 바로 같다.
+  if (!sameOptionalNumbers(before.lowerOverlayTiles, after.lowerOverlayTiles, -1)) return true;
+  if (!sameOptionalNumbers(before.upperOverlayTiles, after.upperOverlayTiles, -1)) return true;
+  if (!sameOptionalNumbers(before.shadowBits, after.shadowBits, 0)) return true;
+  return !sameStacks(before.lowerTileStacks, after.lowerTileStacks) || !sameStacks(before.upperTileStacks, after.upperTileStacks);
+}
+
+/** 선택 칸 비교. 한쪽이 없으면 그쪽을 모두 빈칸(empty)으로 본다. */
+function sameOptionalNumbers(before: readonly number[] | undefined, after: readonly number[] | undefined, empty: number): boolean {
+  if (before === after) return true;
+  if (before && after) return sameNumbers(before, after);
+  return (before ?? after)!.every((value) => value === empty);
+}
+
+function sameNumbers(before: readonly number[], after: readonly number[]): boolean {
+  if (before.length !== after.length) return false;
+  for (let index = 0; index < before.length; index += 1) if (before[index] !== after[index]) return false;
+  return true;
+}
+
+function sameStacks(
+  before: Record<number, number[]> | undefined,
+  after: Record<number, number[]> | undefined,
+): boolean {
+  if (!before && !after) return true;
+  if (!before || !after) return false;
+  const beforeKeys = Object.keys(before);
+  if (beforeKeys.length !== Object.keys(after).length) return false;
+  for (const key of beforeKeys) {
+    const left = before[Number(key)];
+    const right = after[Number(key)];
+    if (!left || !right || left.length !== right.length) return false;
+    for (let tile = 0; tile < left.length; tile += 1) if (left[tile] !== right[tile]) return false;
+  }
+  return true;
+}
+
+function emptySummary(): ChangeSummary {
+  return {
+    tilesChanged: 0,
+    mapPropertiesChanged: 0,
+    audioDescriptionsChanged: 0,
+    monsterMetadataChanged: 0,
+    eventsAdded: 0,
+    eventsModified: 0,
+    eventsRemoved: 0,
+    mapsAdded: 0,
+    mapsRemoved: 0,
+    dbRecordsChanged: 0,
+    tilesetsChanged: 0,
+    switchesAdded: 0,
+    variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
+    endingsChanged: 0,
+    sessionChanged: false,
+    systemChanged: false,
+    warnings: [],
+  };
+}
+
+/** 바뀐 칸 수 — 한 칸에서 여러 층이 바뀌어도 1. 2층·4층·그림자는 맵에 그 칸이 있을 때만 본다(옛 맵은 지금과 같은 순회). */
+function countTileChanges(before: GameMap, after: GameMap): number {
+  let changed = 0;
+  const size = Math.max(before.lowerTiles.length, after.lowerTiles.length);
+  const extras = hasExtraLayers(before) || hasExtraLayers(after);
+  for (let i = 0; i < size; i += 1) {
+    if (before.lowerTiles[i] !== after.lowerTiles[i]) changed += 1;
+    else if (before.upperTiles[i] !== after.upperTiles[i]) changed += 1;
+    else if (extras && (layerTileAt(before, 2, i) !== layerTileAt(after, 2, i)
+      || layerTileAt(before, 4, i) !== layerTileAt(after, 4, i)
+      || shadowAt(before, i) !== shadowAt(after, i))) changed += 1;
+  }
+  return changed;
+}
+
+function comparableMapProperties(map: GameMap): string {
+  const {
+    lowerTiles: _lowerTiles,
+    upperTiles: _upperTiles,
+    lowerTileStacks: _lowerTileStacks,
+    upperTileStacks: _upperTileStacks,
+    // 2층·4층·그림자는 타일 칸이다 — countTileChanges 가 센다. 여기 두면 층 칠하기가 「맵 속성 변경」으로 잡혀
+    // 타일만 바꾸는 제안의 안전 검사(proposalSafety ZERO_COUNT_KEYS)에 걸린다.
+    lowerOverlayTiles: _lowerOverlayTiles,
+    upperOverlayTiles: _upperOverlayTiles,
+    shadowBits: _shadowBits,
+    events: _events,
+    ...properties
+  } = map;
+  return JSON.stringify(properties);
+}
+
+function indexEvents(events: readonly GameEvent[]): Map<string, GameEvent> {
+  const map = new Map<string, GameEvent>();
+  for (const event of events) map.set(event.id, event);
+  return map;
+}
+
+function diffMapEvents(before: GameMap | undefined, after: GameMap, summary: ChangeSummary): void {
+  const beforeEvents = indexEvents(before?.events ?? []);
+  const afterEvents = indexEvents(after.events);
+  for (const [id, event] of afterEvents) {
+    const prev = beforeEvents.get(id);
+    if (!prev) summary.eventsAdded += 1;
+    else if (JSON.stringify(prev) !== JSON.stringify(event)) summary.eventsModified += 1;
+  }
+  for (const id of beforeEvents.keys()) {
+    if (!afterEvents.has(id)) summary.eventsRemoved += 1;
+  }
+}
+
+function diffDatabase(before: Project, after: Project, summary: ChangeSummary): void {
+  const keys: Array<keyof Project["database"]> = [
+    "actors",
+    "classes",
+    "skills",
+    "items",
+    "equipment",
+    "enemies",
+    "troops",
+    "states",
+    "battleAnimations",
+    "elements",
+    "terrains",
+    "battleCommands",
+    "monsterSpecies",
+    "crops",
+    "lifeSkills",
+    "farmAnimalSpecies",
+    "fishSpecies",
+    "farmBuildingTypes",
+    "homeDecorationTypes",
+    "skillChoreographies",
+  ];
+  for (const key of keys) {
+    // 같은 배열 객체면 내용도 같다 — 저장 기준본은 바뀌지 않은 가지를 공유한다(electronRepository accepted).
+    if (before.database[key] === after.database[key]) continue;
+    const beforeList = (before.database[key] ?? []) as Array<{ id: string }>;
+    const afterList = (after.database[key] ?? []) as Array<{ id: string }>;
+    const beforeById = new Map(beforeList.map((record) => [record.id, JSON.stringify(record)]));
+    const afterById = new Map(afterList.map((record) => [record.id, JSON.stringify(record)]));
+    for (const [id, json] of afterById) {
+      const prev = beforeById.get(id);
+      if (prev === undefined || prev !== json) summary.dbRecordsChanged += 1;
+    }
+    for (const id of beforeById.keys()) {
+      if (!afterById.has(id)) summary.dbRecordsChanged += 1;
+    }
+  }
+}
+
+function countNamedDefChanges(
+  before: readonly { id: string; name: string }[],
+  after: readonly { id: string; name: string }[]
+): number {
+  const beforeByName = new Map(before.map((entry) => [entry.id, entry.name]));
+  let changed = 0;
+  for (const entry of after) {
+    const prev = beforeByName.get(entry.id);
+    // 이름이 비어있다가 채워졌거나(사용 등록) 새 id면 "추가"로 집계.
+    if (prev === undefined && entry.name !== "") changed += 1;
+    else if (prev !== undefined && prev === "" && entry.name !== "") changed += 1;
+  }
+  return changed;
+}
+
+function diffWorld(before: Project, after: Project, summary: ChangeSummary): void {
+  if (before.world === after.world) return;
+  const beforeEntities = before.world?.entities ?? [];
+  const afterEntities = after.world?.entities ?? [];
+  const beforeById = new Map(beforeEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
+  const afterById = new Map(afterEntities.map((entity) => [entity.id, JSON.stringify(entity)]));
+  for (const [id, json] of afterById) {
+    const prev = beforeById.get(id);
+    if (prev === undefined) summary.worldEntitiesAdded += 1;
+    else if (prev !== json) summary.worldEntitiesModified += 1;
+  }
+}
+
+function diffPalettePresets(before: Project, after: Project, summary: ChangeSummary): void {
+  for (const [tilesetId, afterTileset] of Object.entries(after.tilesets)) {
+    const beforeTileset = before.tilesets[tilesetId];
+    if (beforeTileset === afterTileset) continue;
+    const beforePresets = beforeTileset?.palettePresets ?? [];
+    const afterPresets = afterTileset.palettePresets ?? [];
+    const beforeById = new Map(beforePresets.map((preset) => [preset.id, JSON.stringify(preset)]));
+    for (const preset of afterPresets) {
+      const prev = beforeById.get(preset.id);
+      if (prev === undefined) summary.palettePresetsAdded += 1;
+      else if (prev !== JSON.stringify(preset)) summary.palettePresetsModified += 1;
+    }
+  }
+}
+
+// before → after 변경을 구조화 요약으로 계산한다.
+export function summarizeChanges(before: Project, after: Project): ChangeSummary {
+  const summary = emptySummary();
+  const beforeMapIds = new Set(Object.keys(before.maps));
+  const afterMapIds = new Set(Object.keys(after.maps));
+  for (const id of afterMapIds) {
+    if (!beforeMapIds.has(id)) summary.mapsAdded += 1;
+  }
+  for (const id of beforeMapIds) {
+    if (!afterMapIds.has(id)) summary.mapsRemoved += 1;
+  }
+  for (const [id, afterMap] of Object.entries(after.maps)) {
+    const beforeMap = before.maps[id];
+    if (beforeMap === afterMap) continue;
+    if (beforeMap) {
+      summary.tilesChanged += countTileChanges(beforeMap, afterMap);
+      if (comparableMapProperties(beforeMap) !== comparableMapProperties(afterMap)) {
+        summary.mapPropertiesChanged = (summary.mapPropertiesChanged ?? 0) + 1;
+      }
+    }
+    diffMapEvents(beforeMap, afterMap, summary);
+  }
+  if (JSON.stringify(before.mapTree) !== JSON.stringify(after.mapTree)) {
+    summary.mapPropertiesChanged = (summary.mapPropertiesChanged ?? 0) + 1;
+  }
+  diffDatabase(before, after, summary);
+  if (JSON.stringify(before.spatialAuthoring) !== JSON.stringify(after.spatialAuthoring)) summary.dbRecordsChanged += 1;
+  for (const [id, afterTileset] of Object.entries(after.tilesets)) {
+    // 타일셋은 참고 이미지까지 수 MB 다 — 같은 객체면 직렬화하지 않는다(체크포인트는 타일셋을 객체째 되붙인다).
+    const beforeTileset = before.tilesets[id];
+    if (beforeTileset !== afterTileset && !jsonEqual(beforeTileset, afterTileset)) summary.tilesetsChanged += 1;
+  }
+  summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
+  summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);
+  diffWorld(before, after, summary);
+  diffPalettePresets(before, after, summary);
+  summary.endingsChanged = countRecordChanges(before.endings ?? [], after.endings ?? []);
+  summary.sessionChanged = before.session !== after.session && JSON.stringify(before.session) !== JSON.stringify(after.session);
+  summary.systemChanged = before.system !== after.system && JSON.stringify(before.system) !== JSON.stringify(after.system);
+  summary.audioDescriptionsChanged = countAudioDescriptionChanges(before.audioDescriptions, after.audioDescriptions);
+  summary.monsterMetadataChanged = countMonsterMetadataChanges(before.monsterMetadata, after.monsterMetadata);
+  return summary;
+}
+
+function countRecordChanges(before: readonly { id: string }[], after: readonly { id: string }[]): number {
+  const beforeById = new Map(before.map((record) => [record.id, JSON.stringify(record)]));
+  const afterById = new Map(after.map((record) => [record.id, JSON.stringify(record)]));
+  let changed = 0;
+  for (const [id, json] of afterById) {
+    const prev = beforeById.get(id);
+    if (prev === undefined || prev !== json) changed += 1;
+  }
+  for (const id of beforeById.keys()) {
+    if (!afterById.has(id)) changed += 1;
+  }
+  return changed;
+}
+
+export interface CommitResult {
+  ok: boolean;
+  issues: LintIssue[];
+  blocking: LintIssue[];
+}
+
+export interface CommitOptions {
+  /** 도구 호출마다의 전체 직렬화 왕복을 건너뛴다. 적용 시점 커밋은 그대로 왕복한다. */
+  readonly skipRoundtrip?: boolean;
+  /** 있으면 클러스터 규칙은 이 맵만 검사한다. */
+  readonly clusterMapIds?: readonly string[];
+}
+
+// 커밋 게이트: draft에 projectLint를 돌려 차단 error가 있으면 반영 거부.
+// cluster-rule hard 위반은 배치 시점 강제 + lint 보고 대상이므로 커밋 차단에서는 제외한다.
+// warning/info와 비차단 error는 통과시키되 issues로 함께 반환한다(모델/사람이 참고).
+export function commitChangeset(draft: Project, baseline?: Project, options: CommitOptions = {}): CommitResult {
+  try { assertSpatialToolChange(draft, baseline); }
+  catch (error) {
+    if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
+    const issue: LintIssue = { severity: "error", code: error instanceof ToolError ? error.code : "spatial-invalid", message: error.message };
+    return { ok: false, issues: [issue], blocking: [issue] };
+  }
+  const lintOptions = {
+    ...(options.skipRoundtrip ? { skipRoundtrip: true } : {}),
+    ...(options.clusterMapIds ? { clusterMapIds: options.clusterMapIds } : {}),
+  };
+  const issues = projectLint(draft, lintOptions);
+  const isBlocking = (issue: LintIssue): boolean => issue.severity === "error" && !issue.code.startsWith("cluster-rule:");
+  let blocking = issues.filter(isBlocking);
+  if (baseline && blocking.length > 0) {
+    // 이 변경이 만들지 않은 "기존" 오류는 커밋을 막지 않는다 — 시작 위치 통행 불가 같은
+    // 선재 오류가 있는 프로젝트에서 무관한 편집(건축 팔레트/AI 툴)까지 전부 거부되던 버그의 수정.
+    // 새로 생긴 오류만 차단해 추가 손상은 여전히 막는다.
+    const baselineAtoms = new Set(projectLint(baseline, lintOptions).filter(isBlocking).flatMap(issueAtoms));
+    blocking = blocking.filter((issue) => issueAtoms(issue).some((atom) => !baselineAtoms.has(atom)));
+  }
+  return { ok: blocking.length === 0, issues, blocking };
+}
+
+function issueKey(issue: LintIssue): string {
+  return `${issue.code}|${issue.mapId ?? ""}|${issue.x ?? ""}|${issue.y ?? ""}|${issue.message}`;
+}
+
+/**
+ * 기준선 대조 단위. 대부분의 lint 이슈는 메시지 1개 = 위반 1개라 키가 곧 원자다.
+ *
+ * serialize-roundtrip 은 예외다 — **여러 위반을 개행으로 이어 붙인 한 메시지**를 낸다.
+ * 메시지 전체를 키로 쓰면 위반 하나를 지우는 편집조차 메시지가 달라져 "새 오류"로 분류되고,
+ * 그 결과 **청소가 영구 차단된다**(2026-08-30 실측: 고아 아이템을 지우는
+ * delete_database_record 10건이 연속으로 커밋 거부됨 — 고치려는 조건이 고치는 경로를 막는 교착).
+ * 그래서 이 코드만 줄 단위로 쪼개 원자를 비교한다: 새 줄이 없으면 차단하지 않는다.
+ */
+function issueAtoms(issue: LintIssue): string[] {
+  if (issue.code !== "serialize-roundtrip") return [issueKey(issue)];
+  const lines = issue.message
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line !== "");
+  if (lines.length === 0) return [issueKey(issue)];
+  return lines.map((line) => `${issue.code}|${line}`);
+}

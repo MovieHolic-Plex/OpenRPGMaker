@@ -1,0 +1,236 @@
+.database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
+  display: grid;
+  gap: 6px;
+  grid-column: span 12;
+  grid-template-areas:
+    "base base base acc special special anim anim"
+    "rate rate heal heal restrict restrict hp hp"
+    "rate rate heal heal restrict restrict mp mp"
+    "runtime runtime runtime runtime runtime runtime runtime runtime"
+    "summary summary summary summary refs refs refs refs";
+  grid-template-columns: repeat(8, minmax(86px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-body:has(.oprn-record-states) .oprn-record-identity {
+  display: none;
+}
+
+.database-modal-body .oprn-record-states .oprn-record-detail-pane {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-body .oprn-detail-states {
+  display: grid;
+  gap: 10px;
+  grid-template-rows: 54px minmax(0, 1fr);
+}
+
+.database-modal-body .oprn-detail-states > .db-field:first-child {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--db-modern-line, var(--border-subtle));
+  border-radius: 5px;
+  display: grid;
+  gap: 12px;
+  grid-column: 1 / -1;
+  grid-template-columns: 42px minmax(0, 1fr);
+  margin: 0;
+  min-height: 54px;
+  padding: 10px 12px;
+  width: min(620px, 100%);
+}
+
+.database-modal-body .oprn-detail-states > .db-field:first-child > span {
+  color: var(--text-1);
+  font: 700 14px/20px var(--font-ui);
+}
+
+.database-modal-body .oprn-detail-states > .db-field:first-child > input {
+  height: 32px;
+  min-width: 240px;
+}
+
+.database-modal-body .db-state-oprn-workbench > .db-state-panel {
+  gap: 4px;
+  margin: 0;
+  overflow: hidden;
+  padding: 12px 6px 6px;
+}
+
+/* 배치는 패널이 직접 들고 있는 클래스로 정한다. nth-child(1..9) 매핑이던 시절에는
+   중간에 패널을 하나 끼우면 이후 전부가 다른 영역으로 밀렸고, 소스 쪽에 "이 패널은
+   반드시 맨 뒤에 둘 것" 이라는 주석까지 남아 있었다(감사 A 축 P0). */
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-base { grid-area: base; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-acc { grid-area: acc; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-special { grid-area: special; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-rate { grid-area: rate; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-heal { grid-area: heal; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-restrict { grid-area: restrict; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-hp { grid-area: hp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-mp { grid-area: mp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-anim { grid-area: anim; }
+.database-modal-body .db-state-oprn-workbench > .db-state-reference-panel { grid-area: refs; }
+
+/* Gen1 knob 패널 — DOM 에서는 맨 뒤(요약 앞)지만 화면에서는 HP/MP 아래 전폭 한 줄이다.
+   nth-child 매핑을 쓰지 않는 이유: 중간에 끼우면 이후 패널의 grid-area 가 전부 밀린다. */
+.database-modal-body .db-state-oprn-workbench > .db-state-runtime-panel {
+  align-items: end;
+  column-gap: 10px;
+  display: grid;
+  grid-area: runtime;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  row-gap: 4px;
+}
+
+.database-modal-body .db-state-runtime-panel > legend {
+  grid-column: 1 / -1;
+}
+
+/* 힌트는 패널 폭 전체를 쓰는 한 줄로 둔다. db-state-summary 를 재사용하면
+   그 클래스의 grid-area: summary 때문에 온톨로지 요약 칸으로 튀어간다. */
+.database-modal-body .db-state-runtime-hint {
+  color: var(--text-secondary);
+  font: 400 12px/16px var(--font-ui);
+  grid-column: 1 / -1;
+}
+
+/* 이 패널의 수치 입력은 numberField → .db-field(라벨 위, 입력 아래)다.
+   auto-fit 열마다 하나씩 놓이므로 입력이 0 폭으로 접히지 않게만 막아준다. */
+.database-modal-body .db-state-runtime-panel .db-field {
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-body .db-state-runtime-panel .db-field input {
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-body .db-state-control,
+.database-modal-body .db-state-rate-row {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 72px minmax(0, 1fr);
+  min-height: 22px;
+}
+
+.database-modal-body .db-state-control > span {
+  font: 400 12px/16px var(--font-ui);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .db-state-control input,
+.database-modal-body .db-state-rate-row input {
+  border-style: solid;
+  border-width: 1px;
+  font: 400 12px/16px var(--font-ui);
+  min-height: 20px;
+  min-width: 0;
+  padding: 1px 4px;
+  width: 100%;
+}
+
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-acc .db-state-control {
+  grid-template-columns: 60px minmax(58px, 1fr);
+}
+
+.database-modal-body .db-state-oprn-workbench > .db-state-panel-restrict .db-state-control {
+  grid-template-columns: 64px minmax(190px, 1fr);
+}
+
+.database-modal-body [data-testid="db-state-accuracy"] {
+  min-width: 54px;
+}
+
+.database-modal-body [data-testid="db-state-skill-limit"] {
+  min-width: 186px;
+}
+
+.database-modal-body .db-state-color-control {
+  grid-template-columns: 72px 22px minmax(0, 1fr);
+}
+
+.database-modal-body .db-state-color-control i {
+  border-style: solid;
+  border-width: 1px;
+  display: block;
+  height: 18px;
+  width: 20px;
+}
+
+.database-modal-body .db-state-check {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  min-height: 22px;
+}
+
+.database-modal-body .db-state-check span,
+.database-modal-body .db-state-reference-panel h4,
+.database-modal-body .db-state-summary {
+  font: 400 12px/16px var(--font-ui);
+}
+
+.database-modal-body .db-state-reference-panel h4 {
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+.database-modal-body .db-state-oprn-workbench > .db-state-reference-panel {
+  height: 112px;
+  overflow: auto;
+}
+
+.database-modal-body .db-state-rate-row {
+  grid-template-columns: 20px minmax(0, 1fr);
+}
+
+.database-modal-body .db-state-rate-row b {
+  font: 700 12px/16px var(--font-mono);
+  text-align: center;
+}
+
+/* 등급 A~E 의 색 구분 규칙이 여기 있었다. --oprn-state-rate-a~e 가 정의된 적이 없어
+   다섯 등급이 전부 currentColor(var(--text-1))로 렌더되고 있었다(2026-09-17 브라우저 실측).
+   상태 탭은 그 사이 모던 슬레이트로 재설계됐고 "약함/조금 약함/보통/강함/무효" 라벨이
+   이미 구분을 준다. 색을 되살리면 재설계 이전으로 돌아가므로 죽은 선언만 지운다. */
+
+.database-modal-body .db-state-animation-preview {
+  align-items: center;
+  /* 체크무늬 배경(--oprn-state-preview-a/b/c)은 정의된 적이 없어 두 gradient 가 통째로
+     폐기되고 단색으로 렌더돼 왔다. background-position/size 도 그래서 무의미했다. */
+  border-style: solid;
+  border-width: 1px;
+  display: grid;
+  font: 700 12px/1 var(--font-ui);
+  height: 74px;
+  justify-items: center;
+}
+
+.database-modal-body .db-state-summary {
+  border-style: solid;
+  border-width: 1px;
+  grid-area: summary;
+  height: 112px;
+  overflow: auto;
+  padding: 4px 6px;
+}
+
+@media (max-width: 980px) {
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
+    grid-template-areas:
+      "base base"
+      "acc special"
+      "rate heal"
+      "restrict restrict"
+      "hp mp"
+      "runtime runtime"
+      "anim refs"
+      "summary summary";
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

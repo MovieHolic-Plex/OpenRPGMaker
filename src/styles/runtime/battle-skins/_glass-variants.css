@@ -1,0 +1,43 @@
+/* _glass-variants.css — 유리 뼈대(family glass) 위의 **색 변형** (2026-09-25).
+
+   2026-10-02: 정면 스킨(rm2000·dragonquest·mother·mv·vxace)을 지우면서 그들만 쓰던 HUD 변형(boxes 얼굴 카드·
+   ring 링 게이지·minimal 얇은 줄)도 지웠다. 남은 유리 스킨은 모두 측면 · 줄(rows) HUD 다.
+
+   왜: 지원 종료였던 스킨 9종(먹빛·청람·세피아·검은·코발트·암전·금갈색·밝은·심야)은 각자 CSS 파일(3,500줄 중
+   약 1,400줄)을 들고 있었다. 전투 화면이 바뀔 때마다 활성 3종만 고쳐져서, 2026-09-25 실측으로 9종 대부분이
+   이름표·HP 바가 겹치고 명령창이 깨진 채였다. 파일을 지우고 스킨을 **조합**으로 바꿨다:
+     구도  data-battle-layout  frontview → `_rm2000.css` · sideview → `_rm2003.css` (배치: battlerPlacements)
+     HUD   data-battle-hud     rows(기본 줄) · boxes(얼굴 카드) · ring(링 게이지 카드) · minimal(얇은 줄)
+     색    themeVars           registry.ts 의 스킨별 --battle-* 변수 → 아래에서 --rm-* 별칭으로 흘려 넣는다
+   이제 뼈대에 들어가는 개선(타격감 층 22-hit-feel.css 등)이 12종 모두에 자동으로 들어간다.
+
+   규약: `_rm2000.css` 와 같다 — px 짝수, font-size 26/20/16/12, hex 리터럴 없음(색은 변수·rgb 만),
+   강제 플래그 없음(특정도는 클래스를 겹쳐 올린다: `.battle-party.battle-party`). 이 파일은 `_rm2003.css` 뒤에 로드된다. */
+
+/* ---- 색: 스킨 테마 변수 → 유리 뼈대 별칭 ------------------------------------------------
+   유리 묶음 스킨은 자기 창 색을 쓴다(:not(pokemon) 은 구체도를 옛 :not(rm2003) 과 같게 두려는 것 — pokemon 은 유리 묶음이 아니다). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) {
+  --rm-floor: var(--battle-window-bg);
+  --rm-hud-surface: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 92%, transparent);
+  --rm-card: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 84%, transparent);
+  --rm-card-raised: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 72%, var(--battle-window-edge));
+  --rm-hairline: color-mix(in srgb, var(--battle-window-edge) 42%, transparent);
+  --rm-hairline-strong: color-mix(in srgb, var(--battle-window-edge) 78%, transparent);
+  --rm-inset: color-mix(in srgb, var(--battle-window-bg) 70%, transparent);
+  --rm-glass: color-mix(in srgb, var(--battle-window-bg) 90%, transparent);
+  --rm-scrim: color-mix(in srgb, var(--battle-window-bg) 60%, transparent);
+  --rm-track: color-mix(in srgb, var(--battle-text) 16%, transparent);
+  --rm-shadow-lift: var(--battle-shadow, 0 8px 24px rgba(0, 0, 0, 0.45));
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"])::before {
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--rm-floor) 42%, transparent), color-mix(in srgb, var(--rm-floor) 70%, transparent)), var(--battle-backdrop-url, none);
+}
+/* 필드 바닥 페이드도 창 색으로 — 뼈대는 남색 바닥으로 녹여 내린다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) .battle-field::before {
+  background: linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--rm-floor) 50%, transparent) 84%, color-mix(in srgb, var(--rm-floor) 92%, transparent) 100%);
+}
+/* 배경 그림 보정(스킨 테마의 --battle-backdrop-filter: 검은 창은 어둡게, 암전 창은 채도를 올린다). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="pokemon"]) .battle-backdrop {
+  filter: var(--battle-backdrop-filter, none);
+}
+

@@ -1,0 +1,79 @@
+[
+ {
+  "theme": "monster-climate",
+  "id": "monster_climate",
+  "textureKey": "tex_monster_climate",
+  "name": "몬스터 수집 기후 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-climate.png",
+  "count": 2560,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "v7"
+ },
+ {
+  "theme": "monster-coast",
+  "id": "monster_coast",
+  "textureKey": "tex_monster_coast",
+  "name": "몬스터 수집 해안 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-coast.png",
+  "count": 2528,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "v7"
+ },
+ {
+  "theme": "monster-dungeon",
+  "id": "monster_dungeon",
+  "textureKey": "tex_monster_dungeon",
+  "name": "몬스터 수집 던전 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-dungeon.png",
+  "count": 1920,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "u101"
+ },
+ {
+  "theme": "monster-gyms",
+  "id": "monster_gyms",
+  "textureKey": "tex_monster_gyms",
+  "name": "몬스터 수집 체육관 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-gyms.png",
+  "count": 2144,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "g103"
+ },
+ {
+  "theme": "monster-overworld",
+  "id": "monster_overworld",
+  "textureKey": "tex_monster_overworld",
+  "name": "몬스터 수집 야외 · OPRN 손 도트 (Scarloxy 화풍 연구)",
+  "path": "assets/monster-kit/monster-overworld.png",
+  "count": 2224,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "j10"
+ },
+ {
+  "theme": "monster-rooms",
+  "id": "monster_rooms",
+  "textureKey": "tex_monster_rooms",
+  "name": "몬스터 수집 실내 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-rooms.png",
+  "count": 1136,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "m4"
+ },
+ {
+  "theme": "monster-wild",
+  "id": "monster_wild",
+  "textureKey": "tex_monster_wild",
+  "name": "몬스터 수집 야생 · OPRN 손 도트",
+  "path": "assets/monster-kit/monster-wild.png",
+  "count": 2048,
+  "tilesPerRow": 16,
+  "tileSize": 16,
+  "run": "v7"
+ }
+]

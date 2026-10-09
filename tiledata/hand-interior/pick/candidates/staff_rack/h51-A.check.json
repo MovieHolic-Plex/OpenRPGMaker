@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/staff_rack/h51-A.pxg",
+ "id": "staff rack",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 22,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "보석 지팡이 셋(파랑·빨강·초록, 높이 다름)을 놋쇠 목과 함께 윗면 3줄·앞면 5줄 받침 상자에 꽂음",
+ "ok": true
+}

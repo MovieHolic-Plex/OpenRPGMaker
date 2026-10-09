@@ -1,0 +1,25 @@
+{
+ "id": "cemetery_gate",
+ "slug": "cemetery_gate",
+ "name": "묘지 쇠문",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "iron_fence 와 한 식구: 돌 기둥 둘(위에 둥근 머리 장식) 사이 두 짝 쇠문, 위 반원 아치에 소용돌이 장식, 한 짝이 안쪽으로 반쯤 열림, 문에 감긴 쇠사슬 끊어져 늘어짐. 가운데 칸이 지나갈 길.",
+ "palette_hint": "grave 기둥, tin/rust 문, tarn 사슬",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5",
+ "set_with": [
+  "iron_fence"
+ ]
+}

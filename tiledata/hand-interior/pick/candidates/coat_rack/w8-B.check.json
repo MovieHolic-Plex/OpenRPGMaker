@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coat_rack/w8-B.pxg",
+ "id": "coat rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  13,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  13,
+  31
+ ],
+ "note": "외투를 왼쪽 밝음→오른쪽 아래 어둡게 크게 깎고 모자 밝은 면을 키움, 받침 오른쪽 위에 반투명 접지 그림자",
+ "ok": true
+}

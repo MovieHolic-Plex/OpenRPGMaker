@@ -1,0 +1,21 @@
+총 3936ms
+ 40.6%    1600ms  (program)  :0
+ 10.4%     409ms  cloneJson  guards.ts:25
+  7.1%     278ms  revealBoard  spatialPlaceCanvas.ts?t=1789474120770:40
+  4.1%     162ms  record  guardValues.ts:23
+  3.8%     151ms  compileSpatialOccurrence  compileSpatialOccurrence.ts:19
+  3.6%     140ms  compilePlaces  compilePlaces.ts:15
+  3.1%     121ms  deserialize  serialize.ts:27
+  2.8%     111ms  t.exports  phaser.min.js:1
+  2.3%      92ms  (anonymous)  guardValues.ts:10
+  1.4%      54ms  (garbage collector)  :0
+  1.1%      43ms  getBoundingClientRect  :0
+  0.9%      34ms  batchSprite  phaser.min.js:1
+  0.8%      33ms  scrollIntoView  :0
+  0.7%      27ms  (idle)  :0
+  0.6%      25ms  render  phaser.min.js:1
+  0.6%      25ms  reachable  interiorConceptCompose.ts:175
+  0.5%      20ms  validateLibrary  references.ts:65
+  0.5%      20ms  validateSnapshot  references.ts:181
+  0.4%      17ms  validateTileset  shapeResourceFields.ts:73
+  0.4%      17ms  (anonymous)  references.ts:25

@@ -1,0 +1,705 @@
+/* Title workbench — scoped to .database-modal-backdrop, studio tokens only.
+   No gradients, no heavy shadows, Malgun Gothic. Preview collapses at 1024. */
+
+.database-modal-backdrop .db-title-workbench {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 0.95fr);
+  min-height: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-fields {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-group {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .db-title-workbench-group > legend {
+  color: var(--db-studio-text-1);
+  font: 600 12px/1.2 var(--font-ui);
+  padding: 0 4px;
+}
+
+.database-modal-backdrop .db-title-menu-option-row {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-title-menu-option-row .db-field {
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-field-locked input[type="checkbox"] {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.database-modal-backdrop .db-title-workbench-preview {
+  align-content: start;
+  align-self: start;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  position: sticky;
+  top: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-preview-label {
+  color: var(--db-studio-text-2);
+  font: 600 12px/1.2 var(--font-ui);
+}
+
+.database-modal-backdrop .db-title-workbench-stage {
+  aspect-ratio: 4 / 3;
+  background: #0b1220;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  box-sizing: border-box;
+  /* 글자·메뉴 크기를 무대 너비(논리 320px)에 비례시켜 런타임 비율과 맞춘다. */
+  container-type: inline-size;
+  height: auto;
+  min-height: 164px;
+  min-width: 1px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage::before {
+  color: var(--db-studio-text-3);
+  content: "이미지 없음";
+  display: grid;
+  font: 500 11px/1.2 var(--font-ui);
+  inset: 0;
+  place-items: center;
+  position: absolute;
+  z-index: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[style*="background-image"]::before {
+  content: "이미지 불러오기 실패";
+}
+
+.database-modal-backdrop .db-title-workbench-stage::after {
+  background-image: inherit;
+  background-position: inherit;
+  background-repeat: inherit;
+  background-size: inherit;
+  border-radius: inherit;
+  content: "";
+  image-rendering: inherit;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-effects {
+  display: block;
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-fx {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-bg-layer {
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: 320px 240px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-particles {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-title,
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-logo,
+.database-modal-backdrop .db-title-workbench-stage .db-title-workbench-menu {
+  z-index: 2;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-fade-in {
+  animation: rm-title-intro-fade-in 420ms ease-out both;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-rise-in {
+  animation: rm-title-intro-rise-in 480ms ease-out both;
+}
+
+.database-modal-backdrop .db-title-workbench-stage .rm-title-intro-slide-up {
+  animation: rm-title-intro-slide-up 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-bg-layer,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-fade-in,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-rise-in,
+  .database-modal-backdrop .db-title-workbench-stage .rm-title-intro-slide-up {
+    animation: none !important;
+  }
+}
+
+.database-modal-backdrop .db-title-effects-layers {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-title-layer-row {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px;
+}
+
+.database-modal-backdrop .db-title-density-value {
+  color: var(--db-studio-text-2);
+  font: 400 11px/1.2 var(--font-ui);
+  min-width: 24px;
+  text-align: right;
+}
+
+/* 아래 크기는 런타임(src/styles/runtime/title.css) 논리 px ÷ 320 이다 — 18px → 5.625cqw.
+   런타임처럼 제목·메뉴는 왼쪽 위가 기준점이고, 로고 그림만 가운데 기준이다. */
+.database-modal-backdrop .db-title-workbench-title {
+  color: #fff8e7;
+  font: 400 5.625cqw/1.2 var(--runtime-ui-font, var(--font-ui));
+  letter-spacing: -0.04em;
+  max-width: 72%;
+  position: absolute;
+  text-align: left;
+  text-shadow: 0 0.625cqw 3.125cqw rgb(0 0 0 / 55%);
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d7dde6 38%, #7c8796 52%, #eef2f6 64%, #9aa4b1 100%);
+  --oprn-logo-edge: rgb(10 14 24 / 85%);
+  --oprn-logo-glow: rgb(0 0 0 / 55%);
+  animation: rm-title-logo-shine 6s ease-in-out 1.2s infinite;
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-position: 130% 0, 0 0;
+  background-repeat: no-repeat;
+  background-size: 250% 100%, 100% 100%;
+  color: transparent;
+  filter: drop-shadow(0 0.625cqw 0 var(--oprn-logo-edge)) drop-shadow(0 1.25cqw 3.125cqw var(--oprn-logo-glow));
+  font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  font-size: 7.1875cqw;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  max-width: 88%;
+  text-shadow: none;
+  -webkit-text-stroke: 0.1875cqw var(--oprn-logo-edge);
+  width: max-content;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="plain"] {
+  --oprn-logo-fill: linear-gradient(#fff, #fff);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="gold"] {
+  --oprn-logo-fill: linear-gradient(180deg, #fff6d0 0%, #f2c75c 36%, #9b6a1c 52%, #ffe08a 66%, #b8812a 100%);
+  --oprn-logo-edge: rgb(40 22 4 / 90%);
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="stone"] {
+  --oprn-logo-fill: linear-gradient(180deg, #d9d4c8 0%, #a8a193 45%, #6f695d 55%, #b9b2a3 100%);
+  --oprn-logo-edge: rgb(20 18 14 / 90%);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.database-modal-backdrop .db-title-workbench-stage[data-logo-style] .db-title-workbench-title[data-logo-style="glow"] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d8f3ff 50%, #9fdcff 100%);
+  --oprn-logo-edge: rgb(20 60 110 / 60%);
+  --oprn-logo-glow: rgb(140 210 255 / 75%);
+}
+
+.database-modal-backdrop .db-title-workbench-subtitle {
+  color: rgb(236 240 246 / 88%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, "Noto Serif KR", serif;
+  font-size: 2.5cqw;
+  letter-spacing: 0.32em;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 0 0.3125cqw 1.25cqw rgb(0 0 0 / 80%);
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.database-modal-backdrop .db-title-workbench-subtitle[data-logo-style="gold"] {
+  color: rgb(255 230 170 / 92%);
+}
+
+.database-modal-backdrop .db-title-workbench-logo {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 21.875cqw;
+  image-rendering: pixelated;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 93.75cqw;
+}
+
+.database-modal-backdrop .db-title-workbench-menu {
+  background: rgba(12, 18, 36, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 4px;
+  display: grid;
+  gap: 0.625cqw;
+  min-width: 30cqw;
+  padding: 0.9375cqw 1.25cqw;
+  position: absolute;
+}
+
+.database-modal-backdrop .db-title-workbench-menu-item {
+  color: #f3f6ff;
+  font: 400 3.4375cqw/1.35 var(--runtime-ui-font, var(--font-ui));
+  padding: 0.625cqw 1.875cqw 0.625cqw 3.125cqw;
+  position: relative;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-title-workbench-menu-item.selected {
+  background: rgb(255 255 255 / 14%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] {
+  background: none;
+  border: 0;
+  gap: 0.9375cqw;
+  padding: 0;
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item {
+  color: rgb(226 232 240 / 78%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, var(--runtime-ui-font, var(--font-ui)), serif;
+  letter-spacing: 0.08em;
+  padding: 0.3125cqw 1.25cqw 0.3125cqw 3.75cqw;
+  text-shadow: 0 0.3125cqw 0.9375cqw rgb(0 0 0 / 90%), 0 0 2.5cqw rgb(0 0 0 / 60%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item.selected {
+  background: linear-gradient(90deg, rgb(255 236 180 / 22%), transparent 85%);
+  color: #fff8e6;
+  text-shadow: 0 0 1.875cqw rgb(255 214 130 / 85%), 0 0.3125cqw 0.9375cqw rgb(0 0 0 / 90%);
+}
+
+.database-modal-backdrop .db-title-workbench-menu[data-menu-style="plain"] .db-title-workbench-menu-item.selected::before {
+  background: #ffe7a8;
+  box-shadow: 0 0 1.5cqw rgb(255 214 130 / 90%);
+  content: "";
+  height: 1.25cqw;
+  left: 0.9375cqw;
+  margin-top: -0.625cqw;
+  position: absolute;
+  top: 50%;
+  transform: rotate(45deg);
+  width: 1.25cqw;
+}
+
+.database-modal-backdrop .db-title-workbench-audio {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-title-workbench-music-id {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.4 var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 1024: keep fields, preview may stack */
+@media (max-width: 1099px) {
+  .database-modal-backdrop .db-title-workbench {
+    grid-template-columns: 1fr;
+  }
+  .database-modal-backdrop .db-title-workbench-preview {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-title-menu-option-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 오프닝 효과 — ① 분위기 칩 + 그림 만들기, ② 효과 목록 · 고른 효과 값 · 무대 손잡이 */
+.database-modal-backdrop .db-title-workbench-fields {
+  scroll-padding-top: 44px;
+}
+.db-title-workbench-jump {
+  background: var(--db-studio-surface);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px 0;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.db-title-workbench-jump-link {
+  background: transparent;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text-2, var(--db-studio-text));
+  cursor: pointer;
+  font: 500 12px/1 var(--font-ui);
+  padding: 5px 10px;
+}
+.db-title-workbench-jump-link:hover {
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-text);
+}
+
+.db-title-opening-step {
+  color: var(--db-studio-text);
+  font: 600 12px/1.3 var(--font-ui);
+  margin: 4px 0 0;
+}
+.db-title-opening-ai {
+  display: grid;
+  gap: 8px;
+}
+.db-title-opening-prompt {
+  width: 100%;
+  resize: vertical;
+}
+.db-title-opening-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.db-title-opening-ai [data-state="error"] {
+  color: var(--db-studio-danger, #e06c6c);
+}
+
+.db-title-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.db-title-preset-chip {
+  align-items: center;
+  background: var(--db-studio-surface-2, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1 var(--font-ui);
+  gap: 6px;
+  padding: 6px 10px 6px 8px;
+}
+.db-title-preset-chip:hover {
+  border-color: var(--db-studio-border-strong);
+}
+.db-title-preset-chip[aria-checked="true"] {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+}
+.db-title-preset-dot {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25);
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+}
+.db-title-preset-dot.free {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--db-studio-text-3, #8a94a6);
+}
+
+.db-title-opening-effects {
+  display: grid;
+  gap: 8px;
+}
+.db-title-fx-list {
+  display: grid;
+  gap: 2px;
+}
+.db-title-opening-effect-row {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
+  padding: 3px 6px;
+}
+.db-title-opening-effect-row:hover {
+  background: var(--db-studio-surface-2, rgba(255, 255, 255, 0.04));
+}
+.db-title-opening-effect-row.selected {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+}
+.db-title-opening-effect-row.off .db-title-fx-name {
+  color: var(--db-studio-text-3, #8a94a6);
+  text-decoration: line-through;
+}
+.db-title-fx-swatch {
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2);
+  height: 12px;
+  width: 12px;
+}
+.db-title-fx-swatch.none {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--db-studio-border-strong);
+}
+.db-title-fx-name {
+  font: 500 12px/1.3 var(--font-ui);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-title-fx-add {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.db-title-fx-inspector {
+  background: var(--db-studio-well, rgba(0, 0, 0, 0.18));
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+}
+.db-title-fx-inspector-hint {
+  color: var(--db-studio-text-3, #8a94a6);
+  font: 400 11px/1.4 var(--font-ui);
+  margin: 0;
+}
+/* 이름 | 슬라이더 | 값 을 한 줄에 — `.database-modal-body .db-field` 두 칸 격자(클래스 4개)를 이겨야 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-title-fx-inspector .db-field.db-title-fx-slider {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 56px minmax(0, 1fr) 44px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-title-fx-slider input[type="range"] {
+  height: 18px;
+  accent-color: var(--db-studio-accent, #5b6cf0);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  width: 100%;
+}
+.db-title-fx-color {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 56px auto auto 1fr;
+}
+.db-title-fx-color > span {
+  color: var(--db-studio-text-2, #5c6475);
+  font: 500 12px/1 var(--font-ui);
+}
+.db-title-fx-color input[type="color"] {
+  height: 26px;
+  padding: 2px;
+  width: 44px;
+}
+.db-title-fx-depth {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 56px 1fr;
+}
+.db-title-fx-depth > span {
+  color: var(--db-studio-text-2, #5c6475);
+  font: 500 12px/1.6 var(--font-ui);
+}
+.db-title-fx-depth-status {
+  color: var(--db-studio-text-2, #5c6475);
+  font: 400 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+.db-title-fx-depth-status[data-state="error"] {
+  color: var(--db-danger, #b3261e);
+}
+.db-title-fx-depth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 2;
+}
+.db-title-fx-slider .db-title-density-value {
+  color: var(--db-studio-text-2, #5c6475);
+  font: 500 12px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-title-opening-actions .btn.primary {
+  background: var(--db-studio-accent, #5b6cf0);
+  border-color: var(--db-studio-accent, #5b6cf0);
+  color: #fff;
+  font-weight: 600;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-title-opening-actions .btn.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+/* 무대 위 손잡이 — SVG 는 입력을 통과시키고 손잡이만 잡힌다. */
+.db-title-effect-overlay {
+  height: 100%;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+  z-index: 3;
+}
+.db-title-effect-guide {
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-dasharray: 1.2 1;
+  stroke-width: 0.35;
+  vector-effect: non-scaling-stroke;
+}
+.db-title-effect-region {
+  cursor: move;
+  fill: rgba(255, 255, 255, 0.08);
+  pointer-events: auto;
+  stroke: rgba(255, 255, 255, 0.75);
+  stroke-dasharray: 4 3;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.db-title-effect-handle {
+  cursor: grab;
+  pointer-events: auto;
+}
+.db-title-effect-overlay.dragging .db-title-effect-handle,
+.db-title-effect-overlay.dragging .db-title-effect-region {
+  cursor: grabbing;
+}
+.db-title-effect-hit {
+  fill: transparent;
+}
+.db-title-effect-dot {
+  stroke: rgba(10, 12, 20, 0.85);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.db-title-effect-handle:hover .db-title-effect-dot {
+  stroke: var(--db-studio-accent, #7aa2ff);
+  stroke-width: 2;
+}
+/* 화면 밖 점(광원 등)은 가장자리에 붙여 그리고 점선 테두리로 구분한다. */
+.db-title-effect-handle.outside .db-title-effect-dot {
+  stroke-dasharray: 2 2;
+  opacity: 0.85;
+}
+
+/* ③ 입장·전환 — 네 선택을 두 칸 격자로 */
+.db-title-opening-entrance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+}
+
+/* 「오프닝 다시 보기」 — 런타임 타이틀(320×240)을 그대로 띄우고 배율만 키운다 */
+.db-title-opening-preview-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: rgb(6 8 12 / 96%);
+}
+.db-title-opening-preview-frame {
+  --preview-scale: 2;
+  width: calc(320px * var(--preview-scale));
+  height: calc(240px * var(--preview-scale));
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 18%), 0 12px 40px rgb(0 0 0 / 60%);
+}
+.db-title-opening-preview-frame > .db-title-opening-preview-shell {
+  width: 320px;
+  height: 240px;
+  min-height: 0;
+  transform: scale(var(--preview-scale));
+  transform-origin: 0 0;
+  image-rendering: pixelated;
+}
+.db-title-opening-preview-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgb(255 255 255 / 78%);
+  font-size: 12px;
+}
+/* body 에 붙는 창이라 자료집 안의 .btn 색을 못 받는다. 어두운 바탕용으로 직접 칠한다. */
+.db-title-opening-preview-bar > button {
+  white-space: nowrap;
+  padding: 4px 12px;
+  border: 1px solid rgb(255 255 255 / 32%);
+  border-radius: 6px;
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.db-title-opening-preview-bar > button:hover {
+  background: rgb(255 255 255 / 20%);
+}

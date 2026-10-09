@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/gym_floor/s2-C.pxg",
+ "set": "school",
+ "id": "gym_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "폭 넓은 널 둘, 엇갈린 이음, 잔 결. 농구 코트풍 넓은 마루",
+ "ok": true
+}

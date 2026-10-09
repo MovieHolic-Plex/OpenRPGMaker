@@ -1,0 +1,289 @@
+/* ?? UX ?ㅼ궗 ?쎌뒪(2026-07-05): ?ㅻ뜑 ??? 諛?1以??쒖옉 ?붾㈃ ?뺣룉/鍮??몄뒪???④? ?? */
+
+.ai-chat-tools-button {
+  opacity: 0.9;
+}
+
+.ai-chat-tools-button:hover {
+  opacity: 1;
+}
+
+/* ? 諛붾뒗 ??以?怨좎젙 ???몃줈 怨듦컙???좎떇?섏? ?딅뒗?? */
+
+/* 鍮?蹂댁“ ?몄뒪?몃뒗 ?먮━瑜?李⑥??섏? ?딅뒗?? */
+.ai-quick-replies:empty,
+.ai-context-chips:empty,
+.ai-composer-chips:empty,
+.ai-slash-host:empty {
+  display: none;
+}
+
+/* ?쒖옉 ?붾㈃: ?곷떒 怨좎젙 + ?ㅽ겕濡?(?몃줈 以묒븰 湲덉?). */
+.ai-chat-log:has(.ai-start-screen) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: var(--space-3);
+}
+
+/* ?볦? ?꾪겕/?ㅽ뒠?붿삤: 3??*/
+.ai-chat-panel.is-docked .ai-start-grid,
+.ai-chat-panel.is-history-open .ai-start-grid,
+.ai-chat-panel.is-studio .ai-start-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 420px) {
+  .ai-chat-panel.is-docked .ai-start-grid,
+  .ai-chat-panel.is-history-open .ai-start-grid,
+  .ai-chat-panel.is-studio .ai-start-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ?ㅽ뒠?붿삤: ???而щ읆??以묒븰 ?뺣젹??珥덇킅??뿉???묓븯吏 ?딄쾶. */
+.ai-chat-panel.is-studio .ai-chat-main {
+  margin: 0 auto;
+  max-width: 920px;
+  width: 100%;
+}
+
+/* 1280px 湲?醫곸? ?붾㈃: AI ?꾪궧 ?몄뀑??以꾩뿬 罹붾쾭??醫뚰뙏?덊듃????쓣 ?뚮젮以?? */
+@media (max-width: 1320px) {
+  body.ai-panel-docked {
+    --ai-docked-panel-inset: calc(clamp(360px, 38vw, 520px) + 4px);
+  }
+}
+
+/* ?? 梨꾪똿 愿痢≪꽦(V3C): 湲???ш린 3??+ 異붾줎 ?먮Ц + ?꾧뎄 ?몄텧 ?곸꽭 ????? */
+/* 湲???ш린 ???⑤꼸 data-ai-font-size(?묎쾶/蹂댄넻/?ш쾶)媛 --ai-font-scale 濡?濡쒓렇/?쒖븞 移대뱶/?꾧뎄 濡쒓렇瑜??④퍡 ?ㅼ??? */
+.ai-chat-panel[data-ai-font-size="small"] {
+  --ai-font-scale: 0.85;
+}
+.ai-chat-panel[data-ai-font-size="large"] {
+  --ai-font-scale: 1.2;
+}
+.ai-chat-bubble,
+.ai-command-row,
+.ai-proposal-card {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-title,
+.ai-proposal-summary {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-lines,
+.ai-tool-activity-line,
+.ai-tool-activity-toggle,
+.ai-reasoning-toggle,
+.ai-reasoning-body {
+  font-size: calc(11px * var(--ai-font-scale, 1));
+}
+
+/* 蹂묓빀 異붾줎 釉붾줉 ??媛?異붾줎???먮Ц ?꾩껜瑜??꾩씠?쒖쑝濡?蹂댁〈, 湲??먮Ц? ?ㅽ겕濡?而⑦뀒?대꼫 max-height). */
+.ai-reasoning-item {
+  white-space: pre-wrap;
+}
+.ai-reasoning-item + .ai-reasoning-item {
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* ?꾧뎄 濡쒓렇 ?쇱씤 ?대┃ ???몄텧 ?몄옄 JSON + 寃곌낵 ?먮Ц ?꾩퐫?붿뼵. */
+.ai-tool-entry summary,
+.ai-tool-entry-summary {
+  cursor: pointer;
+}
+.ai-tool-detail {
+  border-left: 2px solid var(--border-subtle);
+  margin: 4px 0 4px 4px;
+  padding-left: 8px;
+}
+.ai-tool-detail-label {
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin-top: 4px;
+}
+.ai-tool-detail-pre {
+  background: var(--bg-inset);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin: 2px 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px 6px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ?? Visual polish (?쒖븞 6): 湲곕줉 ?좎쭨 援щ텇 + ???묎린 ?? */
+.ai-day-divider {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin: 10px 4px 8px;
+  user-select: none;
+}
+.ai-day-divider::before,
+.ai-day-divider::after {
+  background: var(--border-subtle);
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+}
+.ai-day-divider-label {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.ai-turn-group {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: flex;
+  /* `flex: 0 0 auto` 가 없으면 지난 턴 요약이 10px 회색 띠로 눌린다.
+     `.ai-chat-log` 는 column flex 컨테이너이고(03-three-tier-ia.css:276) 이 그룹은
+     flex 아이템이다. 로그가 넘칠 때 기본 `flex-shrink: 1` 이 결손을 전부 이 그룹들에 몰아
+     35px 짜리 요약 버튼을 품은 그룹이 10px 로 눌리고 글자가 잘려 사라졌다
+     (실측: 그룹 h=10 / scrollHeight=43, 15/18 자식이 눌림, glass·side 양쪽).
+     로그는 스크롤러이므로(`overflow: auto`) 자식은 줄지 말고 넘쳐야 맞다.
+
+     **여기서 `overflow: hidden` 을 쓰지 마라 (2026-08-30 실측).** 원래 이 줄이 있었고,
+     그것이 flex 아이템의 자동 최소 크기를 0 으로 떨어뜨려 위 눌림의 원인이었다. 눌림은
+     `flex: 0 0 auto` 로 고쳤지만 클립은 남아 **펼친 이전 턴의 툴 상세를 세로로 371px,
+     코드 블록을 가로로 250px 잘라냈다**(test/e2e/ai-panel-reachability.spec.ts: 그룹은
+     스크롤러가 아니라 스크롤로도 못 본다). 그룹이 클립을 놓으면 로그의 스크롤로 도달한다. */
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0;
+  overflow: visible;
+  padding: 4px;
+}
+.ai-turn-group-toggle {
+  background: color-mix(in srgb, var(--control-bg) 88%, transparent);
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  width: 100%;
+}
+.ai-turn-group-toggle:hover,
+.ai-turn-group-toggle:focus-visible {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+.ai-turn-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+.ai-turn-group.is-collapsed > .ai-turn-group-body {
+  display: none;
+}
+
+/* 이전 턴 그룹은 어느 뷰에서도 보인다 — 오버레이에서 숨기던 규칙은 오버레이가 사이드
+   전용이 된 뒤 죽은 규칙이었다(assistant-rising-overlay.css 의 같은 정리 참조).
+   축약은 .ai-turn-group.is-collapsed 가 담당한다. */
+.ai-chat-log > .ai-turn-group.is-prior-turn {
+  display: flex;
+  opacity: 0.92;
+}
+.ai-chat-log > .ai-day-divider {
+  display: flex;
+}
+
+/* 而ㅻ㎤?쒕컮 ?곹깭 諛곗????숈씪 ???좏겙 ?ъ슜(?ㅻ뜑? 怨듭쑀 ?대옒??. */
+.ai-command-bar .ai-assistant-status {
+  font-size: 11px;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Premium empty-state & start-grid polish (UX overhaul) */
+.ai-start-grid {
+  gap: 10px;
+}
+.ai-start-card {
+  border-radius: 14px;
+  padding: 14px;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+}
+.ai-start-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.14);
+  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-default));
+}
+.ai-start-card .ai-start-mosaic {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Reasoning & tool log readability */
+.ai-reasoning-body {
+  max-height: 420px;
+  line-height: 1.55;
+}
+.ai-tool-activity-line {
+  font-size: 12px;
+  line-height: 1.5;
+  border-left: 2px solid transparent;
+  padding-left: 8px;
+  margin-left: 2px;
+}
+.ai-tool-activity-line.ai-tool-failure {
+  border-left-color: var(--danger, #e5534b);
+  background: color-mix(in srgb, var(--danger, #e5534b) 7%, transparent);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+/* Turn group toggle — larger hit area */
+.ai-turn-group-toggle {
+  padding: 8px 10px;
+  font-size: 12px;
+}
+
+/* Quick replies — premium pills */
+.ai-quick-replies { gap: 8px; }
+.ai-quick-replies.ai-choice-block {
+  padding: 10px;
+  gap: 8px;
+  border-radius: 12px;
+}
+.ai-quick-reply-chip {
+  padding: 6px 14px;
+  font-size: 12px;
+  border-width: 1.5px;
+  border-radius: 999px;
+  transition: background 0.14s, border-color 0.14s, transform 0.1s;
+}
+.ai-quick-reply-chip:hover { transform: translateY(-1px); }
+
+/* Tiles — larger thumbs */
+.ai-tile-thumb { width: 56px; height: 56px; border-radius: 8px; }
+.ai-chat-tiles { gap: 8px; }
+
+/* Assistant status — always visible with pulse */
+.ai-assistant-status { opacity: 1; }
+.ai-assistant-status[data-status-tone="running"]::before,
+.ai-assistant-status[data-status-tone="thinking"]::before {
+  content: "●";
+  margin-right: 6px;
+  color: var(--accent, #4c6ef5);
+  animation: ai-status-pulse 1s ease-in-out infinite;
+}
+@keyframes ai-status-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }

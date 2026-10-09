@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/water_fountain/s4-C.pxg",
+ "set": "school",
+ "id": "water_fountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "재해석: 긴 싱크 대신 둥근 세면 볼 셋을 나란히, 각각 기둥 받침",
+ "ok": true
+}

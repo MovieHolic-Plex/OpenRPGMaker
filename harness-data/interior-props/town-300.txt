@@ -1,0 +1,331 @@
+# group|label|contextRoom (ten distinct objects per group)
+@modern street|현대 거리|manor
+parcel locker|무인 택배 보관함|2,1,3|노란 칸문 여섯 개와 가운데 작은 수령 화면
+bicycle repair post|자전거 수리 거치대|1,1,2|세로 철기둥 옆 펌프와 케이블에 매단 렌치
+parking pay station|주차 요금 정산기|1,1,2|비스듬한 화면 아래 카드 슬롯과 영수증 출구
+road salt bin|제설 모래 보관함|2,1,2|노란 경사 뚜껑과 짙은 회색 통 몸통
+street bollard chain|사슬 연결 볼라드|2,1,2|낮은 금속 기둥 둘 사이 처진 검은 사슬
+hydrant hose cabinet|옥외 소방 호스함|1,1,2|붉은 문 안 둥글게 감긴 호스와 놋쇠 관구
+bus shelter bench|지붕 달린 버스 정류장|3,2,4|청록 얇은 지붕 아래 투명 뒷벽과 일체형 대기 벤치
+public bottle fountain|공공 물병 급수대|1,1,2|곡선 수도꼭지와 물병 홈이 파인 스테인리스 몸통
+traffic signal control box|신호 제어함|1,1,2|회색 방수 철함 옆 세로 통풍 홈과 노란 접지선
+lost umbrella cart|분실 우산 수거 카트|2,1,2|망사 카트 속 색이 다른 접힌 우산 손잡이
+@modern grocery|현대 식료품점|bakery
+produce mist rack|채소 분무 진열대|2,1,2|경사진 초록 채소 트레이 위 가는 분무 배관
+bulk cereal dispenser|곡물 정량 판매통|2,1,2|투명 원통 셋 안 곡물과 아래 계량 손잡이
+bottle return kiosk|빈 병 회수기|1,1,2|큰 둥근 투입구 아래 찌그러진 병 그림 표식
+bakery bread slicer|식빵 절단기|2,1,2|빗살 칼날 가드와 빵 받침 사선 쟁반
+deli ticket dispenser|델리 번호표 기둥|1,1,2|달팽이 모양 붉은 번호표 장치와 작은 종이 끝
+shopping basket stacker|장바구니 적재대|1,1,2|사각 철틀 안 포개진 플라스틱 바구니와 바퀴
+vacuum food sealer|식품 진공 포장기|2,1,2|투명 돔 뚜껑 아래 은색 밀봉 막대와 봉지
+olive brine counter|절임 올리브 판매대|2,1,2|초록 검정 올리브가 담긴 은색 사각 용기 셋
+water refill vending|생수 리필 판매기|1,1,2|큰 물통을 세울 깊은 홈과 위 파란 급수구
+grocery bag carousel|계산대 봉투 회전대|1,1,2|세 갈래 쇠팔에 걸린 종이 봉투와 둥근 받침
+@modern cafe|현대 카페·식당|tavern
+coffee bean roaster|커피 원두 로스터|2,2,3|구리 드럼과 원형 냉각 팬 통 및 굽은 배기관
+pastry cloche trolley|디저트 돔 트롤리|2,1,2|둥근 유리 덮개 둘과 황동 테두리 이동 선반
+restaurant tray return|식판 반납대|2,1,2|회색 식판 쌓임과 찌꺼기 투입 원형 구멍
+ramen noodle boiler|면 삶는 조리기|2,1,2|끓임 통에 꽂힌 손잡이 긴 원형 면 바구니 셋
+rotisserie chicken oven|회전 닭구이 오븐|2,1,3|유리문 안 가로 꼬챙이 두 줄과 갈색 통닭
+bubble tea shaker|밀크티 쉐이커|1,1,2|컵을 잡은 검은 집게 두 개와 둥근 모터 받침
+sushi conveyor corner|초밥 회전 레일 코너|2,2,3|L자 회전 띠 위 서로 다른 작은 접시 네 개
+pizza prep fridge|피자 토핑 냉장 작업대|2,1,2|밀가루 묻은 판 뒤 재료 통과 앞 냉장 서랍
+dish drying trolley|식기 건조 트롤리|2,1,2|접시를 세운 철망 선반 두 단과 물받이
+cafe knock box stand|커피 찌꺼기 수거대|1,1,2|검은 고무 가로봉이 놓인 구멍과 아래 갈색 찌꺼기 통
+@modern clinic|현대 보건·안전|pharmacy
+dental chair unit|치과 진료 체어|2,2,3|누운 청록 의자 옆 회전 기구 팔과 작은 타구대
+optometry lens stand|시력 검안 렌즈대|1,1,2|좌우 렌즈 고리와 턱받침을 묶은 흰 수직 프레임
+blood pressure kiosk|혈압 측정 의자대|2,1,2|팔 넣는 둥근 커프와 작은 화면 및 일체형 의자
+medical centrifuge|검체 원심 분리기|1,1,2|열린 원형 뚜껑 아래 시험관 구멍과 푸른 표시등
+sterilizer autoclave|의료 소독 압력기|1,1,2|굵은 원형 잠금 문과 작은 압력계
+rehab parallel bars|재활 평행봉|2,2,2|미끄럼 방지 발판 좌우 길게 이어진 은색 봉
+oxygen cylinder trolley|산소통 운반대|1,1,3|청록 긴 원통 둘과 압력계 및 바퀴 달린 받침
+ambulance defibrillator|응급 제세동기 카트|1,1,2|주황 장비 가방 위 화면과 감긴 패들 선
+pharmacy pill counter|약 계수 작업대|2,1,2|약을 펼친 삼각 트레이와 작은 계수 기계
+emergency eyewash|비상 세안대|1,1,2|노란 쌍둥이 분사구와 녹색 원형 물받이
+@modern civic|현대 공공시설|scholar
+library book return|도서 자동 반납함|2,1,2|책 넣는 수평 슬롯과 안쪽 완충 천 주머니
+library microfilm reader|도서관 마이크로필름 판독기|2,1,2|큰 사선 화면 밑 필름 릴 두 개와 조절 손잡이
+museum audio guide rack|박물관 음성 안내기 충전대|1,1,2|작은 수화기 여섯 개가 꽂힌 검은 충전 선반
+voting privacy booth|투표 기표 부스|1,1,3|파란 삼면 판막과 안쪽 좁은 필기 선반
+municipal queue kiosk|민원 순번 발급기|1,1,2|기울어진 터치 판과 길게 나온 흰 번호표
+station luggage scale|역 수하물 계량대|2,1,2|낮은 금속 저울판 뒤 세로 표시 기둥
+station drinking urn|대합실 온수 급탕기|1,1,2|은색 큰 보온통 앞 붉은 밸브와 물받이
+coin shoe polisher|공공 구두 광택기|1,1,2|갈색 검정 회전 솔 둘과 발 올리는 홈
+community donation cage|기부 의류 수거함|1,1,3|둥근 회전 투입문과 푸른 철제 몸체
+municipal stamp desk|민원 직인 날인대|2,1,2|큰 스프링 도장과 정렬한 서류 받침
+@modern workshop|현대 정비 공방|smithy
+bench drill press|탁상 드릴 프레스|1,1,3|수직 드릴 축과 옆 삼발 레버 및 구멍 난 받침
+wheel balancing machine|자동차 휠 밸런서|2,1,2|옆으로 꽂힌 타이어와 덮개 및 작은 계기 화면
+hydraulic floor jack|유압 자동차 잭|2,1,1|낮고 긴 붉은 차대와 들어 올리는 원형 받침
+car diagnostic trolley|자동차 진단 카트|1,1,2|청색 이동 선반 위 노트북과 굵게 감긴 케이블
+welding curtain frame|용접 차광막 틀|2,1,3|검붉은 반투명 커튼과 바퀴 달린 쇠 프레임
+paint mixing shaker|도료 혼합기|1,1,2|둥근 통을 고정한 쇠 집게와 진동 받침
+pressure washer reel|고압 세척 호스릴|1,1,2|노란 모터 몸통 위 검은 호스 감개와 분사총
+parts ultrasonic bath|부품 초음파 세척조|2,1,2|금속 수조 안 작은 기어와 옆 열린 덮개
+battery charging cart|공구 배터리 충전 카트|1,1,2|두 단 선반에 꽂힌 붉은 배터리와 작은 표시등
+compressed air dryer|압축 공기 건조기|1,1,2|파란 통 몸체 앞 필터 두 개와 뒤 굽은 배관
+@modern recreation|현대 취미·문화|opera
+pottery glaze booth|도예 유약 분사 부스|2,1,3|뒤 환기 격자와 둥근 회전판 위 백색 도자기
+screen printing rack|실크스크린 인쇄대|2,2,3|십자 회전 팔에 달린 사각 망틀과 잉크 통
+darkroom enlarger|암실 사진 확대기|1,1,3|높은 기둥의 사각 투영 머리와 아래 인화판
+record listening booth|레코드 청음 부스|2,1,3|옆 차음 판 사이 턴테이블과 헤드폰 걸이
+climbing crash pads|클라이밍 착지 패드|2,2,2|접힌 두꺼운 색 매트와 긴 운반 손잡이
+archery target trolley|양궁 과녁 운반대|2,1,3|동심원 과녁판을 받친 바퀴 프레임과 여분 화살통
+table tennis robot|탁구 공 발사기|1,1,2|투명 공통 아래 둥근 발사구와 짧은 삼각 받침
+film editing console|필름 편집 콘솔|2,1,2|두 개의 릴과 중앙 작은 스크린 및 접합판
+music pedalboard case|기타 이펙터 케이스|2,1,1|열린 검은 상자 안 크기 다른 페달과 연결선
+sewing dress steamer|의류 스팀 다리미대|1,1,3|긴 기둥 옷걸이에 걸린 재킷과 아래 물통
+@modern home detail|현대 생활 세부|manor
+robot vacuum dock|로봇 청소기 도크|1,1,1|둥근 납작 청소기와 짧은 벽쪽 충전 받침
+home compost machine|가정용 음식물 처리기|1,1,2|둥근 뚜껑의 흰 통과 앞 작은 상태 창
+folding drying tower|접이식 빨래 건조탑|2,1,3|세 단 금속 날개 위 펼친 수건과 양말
+cat exercise wheel|고양이 운동 바퀴|2,1,3|안쪽 천이 붙은 큰 둥근 바퀴와 낮은 받침
+baby changing station|아기 기저귀 교환대|2,1,2|가장자리가 올라간 패드와 옆 물티슈 상자
+aquarium filter cabinet|수조 여과 장치장|1,1,2|투명 원통 두 개와 휘어진 호스 및 파란 펌프
+balcony grow light rack|베란다 식물 조명대|2,1,3|작은 모종 트레이 위 가로 LED 막대 두 단
+induction hotpot cart|전기 전골 이동상|2,1,2|원형 냄비 아래 검은 인덕션 판과 작은 식기 선반
+water leak detector kit|주택 누수 점검 장비|1,1,1|열린 회색 공구 가방 안 계기와 감긴 탐침선
+shoe drying cabinet|신발 건조 살균함|1,1,2|투명문 안 두 켤레 받침과 푸른 환기 구멍
+@modern logistics|현대 물류·서비스|dwarf
+pallet wrapping turntable|화물 랩 회전 포장기|2,2,3|낮은 둥근 회전판과 세로 필름 롤 기둥
+roller sorting junction|소포 분류 롤러 분기|2,2,2|Y자로 갈라진 은색 롤러 위 작은 상자 둘
+hand pallet jack|수동 팔레트 운반기|2,2,2|노란 두 갈래 포크와 긴 검은 조향 손잡이
+refrigerated delivery box|배달 보냉 박스|1,1,2|두꺼운 청색 단열 뚜껑과 옆 온도 표시
+laundry garment conveyor|세탁소 옷 회전 레일|2,1,3|윗 쇠 레일에 걸린 비닐 포장 코트 셋
+key cutting machine|열쇠 복제 절삭기|1,1,2|옆으로 물린 황동 열쇠 둘과 작은 톱날 덮개
+shoe sole press|구두 밑창 압착기|1,1,2|둥근 압착 패드와 발판 레버 및 갈색 구두
+florist wrapping bench|꽃집 포장 작업대|2,1,2|펼친 포장지와 리본 롤 및 비스듬한 꽃다발
+cash transport cage|현금 운송 보안 케이지|1,1,3|굵은 철망 문 안 봉인 가방과 큰 잠금 걸쇠
+mobile phone repair mat|휴대전화 수리 작업대|2,1,2|푸른 정전기 방지 매트 위 분해 전화기와 확대경
+@medieval cooper|중세 통·목공|smithy
+barrel stave bending fire|통 널판 굽힘 화덕|2,2,2|원형 철띠에 세운 휜 널판과 가운데 작은 숯불
+cooper shaving horse|통장이 깎기 목마|2,1,2|긴 낮은 나무 의자 끝 널판 집게와 양손 대패
+wooden hoop rack|통 테 굽힘 거치대|2,1,2|크기가 다른 원형 나무 테가 겹쳐 선 받침
+log saw trestle|통나무 톱질 받침|2,1,2|X자 받침 두 개 위 반쯤 자른 통나무와 긴 톱
+wood curl hamper|대패밥 수거 광주리|1,1,2|나선 대패밥이 넘치는 넓은 버들 바구니
+peg drying board|나무 못 건조판|2,1,2|작은 목심이 빗살처럼 꽂힌 낮은 판
+wheelwright spoke jig|수레바퀴 살 조립틀|2,2,2|평평한 큰 바퀴 테 안 방사형 나무 살과 고정 쐐기
+wood glue warming pot|아교 데우는 이중 솥|1,1,2|작은 구리 통을 담은 검은 물솥과 숯 받침
+carpenter marking beam|목수 먹줄 작업대|2,1,2|긴 각재 위 먹통과 직각자 및 나무 쐐기
+roof shingle bundle stand|나무 지붕널 묶음대|2,1,2|얇은 판 조각을 계단처럼 쌓아 끈으로 묶은 받침
+@medieval leather|중세 가죽·직물|tailor
+hide scraping beam|가죽 긁는 경사 받침|2,1,2|비스듬한 통나무에 걸친 젖은 가죽과 양손 칼
+leather soaking pit|가죽 불림 돌통|2,2,2|돌 둘레의 얕은 통 안 황갈색 물과 접힌 가죽
+cobbler last tree|구두 골 나무걸이|1,1,3|가지 모양 기둥에 걸린 발 모양 나무 골 여섯 개
+saddle stitching clamp|안장 꿰매기 집게|1,1,2|가죽 안장을 세로로 물린 굵은 나무 집게와 실
+wool carding bench|양털 빗질 작업대|2,1,2|흰 양털 뭉치와 가시 빗판 두 개
+flax breaking frame|아마 줄기 꺾는 틀|2,1,2|긴 나무 레버 아래 홈 파인 틀과 마른 줄기
+linen bleaching frame|아마포 표백 펼침틀|2,2,2|낮은 사각 틀에 핀으로 편 흰 천과 물 바가지
+ribbon weaving loom|좁은 리본 베틀|1,1,2|좁은 수직 프레임에 걸린 긴 색실과 작은 북
+dye pigment grinding slab|염료 안료 갈판|2,1,2|붉고 푸른 안료 더미와 돌 갈이 봉이 놓인 판
+felt hat blocking stand|펠트 모자 성형대|2,1,2|나무 머리틀 세 개 위 마르는 서로 다른 모자
+@medieval food craft|중세 식품 공방|bakery
+malt drying sieve|맥아 건조 체대|2,1,2|얕은 직사각 망 위 황금 곡식과 낮은 화구
+hops drying ladder|홉 건조 사다리|1,1,3|비스듬한 나무 단마다 매달린 녹색 홉 송이
+ale fermenting vat|맥주 발효 큰 통|2,2,3|거품 뜬 둥근 나무 통과 길게 걸친 젓는 주걱
+cheese draining rack|치즈 유청 배수대|2,1,2|천에 싼 치즈 덩어리와 아래 유청 받는 도랑
+fish smoking cabinet|생선 훈연장|2,1,3|검게 그을린 작은 목조 장 안 매단 생선과 아래 숯칸
+sausage filling bench|소시지 충전 작업대|2,1,2|수동 압착통 끝 이어진 창자와 고기 그릇
+honey settling vat|꿀 침전 통|1,1,2|뚜껑 열린 작은 나무 통 안 호박색 꿀과 아래 꼭지
+salt cone molds|소금 원뿔 성형대|2,1,2|뾰족한 토기 틀 셋과 하얀 소금 가루
+vinegar mother crock|식초 발효 단지대|1,1,2|천 덮은 넓은 단지와 옆 작은 나무 국자
+herbal cordial still|허브 시럽 달임대|2,1,2|얕은 구리 솥에 담긴 잎과 걸친 긴 체
+@medieval market|중세 시장·측량|tavern
+grain bushel measure|곡물 부셸 계량대|2,1,2|크기가 다른 원통 나무 말과 평평하게 미는 막대
+cloth measuring rail|포목 길이 재는 대|2,1,2|긴 자 모양 판과 반쯤 풀린 두루마리 천
+market balance beam|시장 대형 막대저울|2,1,3|중앙 기둥 양쪽 매단 큰 바구니와 쇠 추
+toll coin sorting tray|통행세 동전 분류대|1,1,2|칸 나눈 나무 쟁반 속 크기 다른 동전과 봉인 주머니
+merchant sample chest|행상 견본 서랍함|2,1,2|열린 얕은 서랍마다 향신료 천 보석 견본
+market umbrella stone|장터 햇빛 가리개 받침|2,1,3|거친 돌 받침의 목봉과 사각 천 차양
+empty woven panniers|등짐 바구니 한 쌍|2,1,2|가죽 띠로 이어진 큰 버들 바구니 둘
+pot repair stapling bench|깨진 항아리 수리대|2,1,2|금 간 토기를 잇는 쇠 꺾쇠와 작은 드릴
+travelling knife grinder|행상 칼갈이 수레|2,1,2|바퀴 수레 위 발판식 둥근 숫돌과 물 바가지
+market closing chest|장터 접이 판매함|2,1,2|옆판을 펴 진열대로 쓰는 궤짝과 걸쇠
+@medieval harbor|중세 항구·어업|fish
+net mending frame|그물 수선 틀|2,1,3|사각 나무 틀에 편 성긴 그물과 큰 바늘
+lobster creel stack|버들 통발 적재대|2,1,2|입구 좁은 돔형 통발 셋과 연결 밧줄
+oarlock repair bench|노 받침 수리대|2,1,2|U자 쇠 고리와 긴 노 손잡이를 물린 집게
+ropewalk twisting stand|밧줄 꼬기 회전대|2,1,2|세 갈래 회전 고리와 길게 모인 삼실 다발
+sail patching frame|돛천 수선 틀|2,2,2|낮게 펼친 굵은 천 위 덧댄 삼각 패치와 실타래
+pitch caulking furnace|배 틈막이 역청 화로|1,1,2|검은 끈적한 솥과 그을린 긴 바르개
+harbor capstan brake|부두 권양 브레이크|2,1,2|가로 목축의 홈난 톱니와 걸쇠 레버
+quayside cargo sling|부두 짐걸이 삼발대|2,2,3|굵은 세 나무 다리 아래 매단 밧줄 그물
+pearl sorting shells|진주 선별 작업대|2,1,2|벌린 큰 조개와 천 위 작은 진주 및 핀셋
+sailors drying boots|선원 장화 건조틀|1,1,2|위로 향한 나무 막대 넷에 거꾸로 꽂은 가죽 장화
+@medieval rural|중세 농가·마을|stable
+scythe peening anvil|낫날 두드림 받침|1,1,2|낮은 통나무 위 좁은 모루와 긴 휜 낫날
+threshing flail stand|도리깨 걸침대|2,1,2|관절 달린 긴 나무 도리깨 둘과 볏단
+winnowing basket stand|곡식 키질 받침|1,1,2|기울인 넓은 대나무 키 안 곡식과 겨
+root cellar hatch|뿌리채소 저장고 덮개|2,2,2|바닥의 비스듬한 나무 덮개와 굵은 고리 손잡이
+orchard grafting bench|과수 접목 작업대|2,1,2|짧은 나뭇가지 묶음과 접목 칼 및 밀랍 작은 통
+beehive skep shelter|짚 벌집 차양대|2,1,3|초가지붕 아래 둥근 짚 벌집 둘과 앞 작은 비행구
+well bucket balancing arm|우물 두레박 지렛대|2,2,3|갈라진 기둥에 걸친 긴 목봉과 돌 추 및 양동이
+pigeon message loft|전서구 귀환장|2,1,3|작은 구멍 네 개와 밖으로 나온 착륙 판
+village laundry beating stone|마을 빨래 두드림돌|2,1,2|넓고 경사진 돌판에 젖은 흰 천과 방망이
+communal boot scraper|마을 진흙 장화 털이|1,1,1|낮은 두 돌 사이 가로 쇠날과 떨어진 진흙
+@medieval administration|중세 길드·서기|scholar
+wax seal warming desk|봉랍 인장 작업대|2,1,2|작은 초 위 붉은 밀랍 숟가락과 황동 인장
+parchment stretching frame|양피지 펼침틀|2,1,3|사각 틀 안 끈으로 당긴 크림색 가죽
+scribe sand shaker stand|서기 잉크 말림대|1,1,2|모래 뿌리는 작은 통과 젖은 문서 및 털 솔
+guild apprenticeship chest|길드 견습 도구함|2,1,2|칸 나눈 궤짝에 작은 망치 자 바늘과 빈 이름패
+town charter display|마을 헌장 열람함|2,1,2|비탈진 유리 덮개 안 봉인 달린 긴 두루마리
+weighing standard cupboard|도량형 원기 보관장|1,1,3|칸마다 다른 쇠 추와 기준 막대를 세운 잠금 장
+messenger dispatch tubes|전령 문서 관 꽂이|1,1,2|봉랍 찍힌 가죽 문서 관 여섯 개를 세운 원통
+tax tally cutting desk|세금 셈막대 기록대|2,1,2|홈을 새긴 나무 막대와 칼 및 엮은 끈
+surveyors plane table|측량 평판대|1,1,2|삼각 받침 위 평판과 작은 방향침 및 접은 도면
+guild voting urn|길드 투표 항아리|1,1,2|좁은 투입구의 청동 항아리와 옆 흰 검정 돌
+@medieval shrine life|중세 수도원·구호|chapel
+pilgrim staff rack|순례 지팡이 보관대|1,1,3|조개 장식의 긴 지팡이 셋과 작은 물병
+alms bread hatch|구호 빵 배식함|2,1,2|닫을 수 있는 목제 진열함 속 납작한 빵과 천
+herbal infirmary brazier|수도원 약찜 화로|1,1,2|구멍 난 구리 덮개와 향초 잎이 든 작은 솥
+reliquary carrying poles|성물 운반 가마대|2,1,2|긴 두 봉 위 작은 금속 장식 성물함
+illuminator pigment desk|성화 채색 서안|2,1,2|금박 잎과 물감 조개 접시 및 미완성 장식 문서
+monastic silence bell|수도원 식사 알림판|1,1,2|나무판과 작은 망치를 매단 세로 받침
+funeral bier stand|장례 운구대|2,2,2|네 다리 운구 틀 위 빈 수의와 꽃 한 송이
+votive ship model|봉헌 배 모형대|2,1,2|돛 둘 달린 작은 목선과 바다빛 받침
+pilgrim footbath trough|순례자 발 씻는 통|2,1,2|낮은 돌 물통과 가장자리 접힌 수건
+charity garment shelves|구호 의복 분류대|2,1,2|크기별로 묶은 모직 옷과 짚신 바구니
+@medieval defense|중세 경비·마구|throne
+crossbow spanning bench|쇠뇌 장전 작업대|2,1,2|쇠뇌 몸체와 톱니 감개를 고정한 긴 나무 판
+arrow fletching jig|화살 깃 붙임 틀|2,1,2|화살대 셋을 물린 홈과 깃털 부채 및 아교
+mail riveting stump|사슬갑옷 고리 작업대|1,1,2|통나무 위 작은 쇠 고리 더미와 펼친 사슬천
+shield painting easel|방패 채색 거치대|1,1,3|무늬 없는 둥근 방패 반쪽에 칠한 남색과 붓
+saddle soap station|마구 가죽 세척대|2,1,2|펼친 굴레와 비누 통 및 단단한 솔
+horse grooming box|말 빗질 도구함|1,1,2|열린 나무 상자 안 말빗과 발굽 긁개
+watch alarm rattle|파수꾼 경보 딱따기|1,1,2|큰 톱니바퀴와 부딪히는 나무 판 및 손잡이
+gate inspection mirror|성문 짐 검사 거울대|1,1,3|긴 나무 봉 끝 작은 원형 거울과 받침
+lance pennant sewing stand|기사 창기 꿰맴대|2,1,2|삼각 천 깃발과 긴 창대 끝을 얹은 낮은 틀
+campaign map cylinder rack|행군 지도통 보관대|2,1,2|굵은 가죽 원통 넷과 돌돌 말린 지도 끝
+@chrono festival|시간여행풍 축제|tavern
+festival ring toss stall|축제 고리 던지기대|2,1,2|높이가 다른 나무 말뚝 다섯 개와 색 고리
+festival strength bell|축제 힘겨루기 종탑|1,1,4|세로 눈금 홈 위 둥근 종과 아래 망치 타격판
+festival soda barrel pump|축제 탄산 음료 펌프|1,1,2|구리 압력통과 긴 펌프 손잡이 및 빈 컵
+festival candy pulling hook|축제 엿 늘임대|1,1,2|굵은 쇠 고리에 걸친 꼬인 황금 엿과 받침
+festival balloon weights|축제 풍선 추 묶음|1,1,3|줄에 매단 둥근 풍선 셋과 모래 주머니 추
+festival automaton race|축제 태엽 경주판|2,2,2|타원 레일 안 동물 모양 태엽 장난감 둘
+festival prize token booth|축제 경품 토큰 교환대|2,1,2|작은 색 토큰 함과 인형 경품 한 줄
+festival shadow puppet screen|축제 그림자극 상자|2,1,3|밝은 천 화면 양쪽 붉은 막과 뒤 손잡이 막대
+festival fortune wheel|축제 행운 회전판|2,1,3|쐐기 모양 색 면으로 나뉜 원판과 꼭대기 화살표
+festival picnic hamper|축제 소풍 도시락 꾸러미|2,1,1|펼친 체크 천 위 열린 바구니와 과일 샌드위치
+@chrono workshop|시간여행풍 발명 공방|magitek
+clockwork solder station|태엽 장치 납땜대|2,1,2|작은 기어판과 구리 인두 및 굽은 확대경
+pendulum timing rig|진자 시간 측정틀|2,1,3|높이 다른 진자 둘과 눈금 홈난 받침
+spring winding machine|태엽 스프링 감개|1,1,2|황동 축에 감기는 납작 철띠와 손 크랭크
+glass vacuum bell|유리 진공 종 실험대|1,1,2|종 모양 유리 안 깃털과 옆 수동 펌프
+magnetic levitation rig|자석 부양 실험대|2,1,2|U자 자석 둘 사이 떠 있는 작은 쇠 구슬
+clockwork wing model|기계 날개 시험틀|2,1,3|황동 뼈대 양쪽 접힌 천 날개와 아래 크랭크
+telegraph relay practice|전신 계전 연습대|2,1,2|구리 코일 두 개와 짧은 종이 띠 및 키 레버
+gyroscope balancing stand|자이로 균형 실험대|1,1,2|엇갈린 세 고리 안 작은 회전체와 뾰족 받침
+power coil safety cage|실험 코일 보호망|1,1,3|철망 안 구리 나선 코일과 바닥 세라믹 단자
+prototype instruction lectern|발명 도해 회전대|1,1,2|회전 가능한 판에 톱니 그림 도해와 황동 집게
+@chrono medieval border|시간여행풍 변경 마을|inn
+refugee cooking tripod|피난민 공동 취사 삼발대|2,2,3|세 나무 봉 아래 납작한 솥과 옆 배식 국자
+field courier pigeon basket|야전 전령 새 바구니|1,1,2|뚜껑 열린 버들 상자와 작은 편지 관 걸이
+bridge repair winch|목교 수리 도르래대|2,1,3|굵은 목틀에 단 줄 도르래와 묶인 판자
+frontier warning gong|변경 경보 징대|2,1,3|거친 두 기둥 사이 청동 원판과 가죽 망치
+ration biscuit drying|행군 건빵 건조대|2,1,2|두 단 망판 위 구멍 난 납작 비스킷
+battlefield stretcher rack|변경 들것 보관틀|2,1,2|천을 묶은 나무 들것 두 개를 포갠 받침
+frontier ration ledger|변경 배급 기록대|1,1,2|묶은 셈막대와 돌 무게추 및 식량 표식 토큰
+ruined clock dial stand|폐탑 시계판 전시대|2,1,3|금 간 석제 시계 원판과 부러진 금속 바늘
+river ferry fare box|나룻배 삯 보관함|1,1,2|좁은 동전 홈의 나무 상자와 묶인 승선 패
+memorial ribbon pole|변경 추모 리본대|1,1,3|여러 길이 천 리본을 맨 낮은 갈래 나무 기둥
+@chrono future settlement|시간여행풍 미래 거주지|magitek
+nutrient ration dispenser|영양 식량 배급기|1,1,3|누렇게 낡은 패널 아래 은색 식량 봉지 배출구
+seed cryo drawer|씨앗 저온 보관 서랍|2,1,2|서리 낀 작은 투명 서랍 여섯 개와 녹색 표시등
+salvaged solar cooker|재활용 태양열 조리대|2,2,2|조각 거울을 붙인 접시와 중앙 검은 냄비
+water condenser tower|공기 수분 응축탑|1,1,3|층층 금속 냉각판과 아래 물방울 받는 투명 통
+shelter battery exchange|피난처 축전지 교환대|2,1,2|손잡이 큰 낡은 배터리 셋과 충전 접점
+robot spare limb rack|로봇 수리 팔다리 걸이|2,1,3|분리된 기계 팔과 다리를 매단 철제 프레임
+communal air filter|공동 공기 정화장치|2,1,3|먼지 낀 큰 원형 필터와 옆 덧댄 덕트
+salvage wire stripping bench|폐전선 피복 벗김대|2,1,2|전선 다발과 손으로 돌리는 작은 절삭 롤러
+memory cartridge archive|기억 카트리지 보관함|1,1,3|좁은 슬롯마다 색 탭이 달린 작은 데이터 팩
+shelter hand crank radio|피난처 수동 발전 라디오|1,1,2|깨진 안테나와 옆 크랭크 및 녹슨 스피커 망
+@chrono ancient magic|시간여행풍 고대 마법 도시|tower
+levitating incense basin|부유 향연 수반|1,1,2|금색 받침 위 조금 뜬 청자 그릇과 가는 연기
+crystal irrigation valve|수정 관개 조절기|1,1,2|투명 수정 홈 안 물길과 작은 회전 돌고리
+dream recording harp|꿈 기록 현악 장치|2,1,3|반달 금속 틀에 빛나는 현과 아래 수정 기록판
+starlight distillation urn|별빛 응축 단지|1,1,3|청색 유리 단지 위 겹친 금속 고리와 작은 빛 입자
+cloud garden wind chime|구름 정원 바람종|1,1,3|구름 모양 받침에 매단 길이 다른 수정 관
+floating book cradle|부유 서책 고정대|1,1,2|양쪽 곡선 금속 팔 사이 수평으로 뜬 닫힌 책
+mana thread spinning rig|마력 실 방적대|2,1,2|세 수정 실패 사이 팽팽한 빛 실과 작은 축
+astral navigation basin|성좌 항해 수반|2,2,2|남색 둥근 수면 위 점 같은 별과 회전 고리
+levitation ballast blocks|부유 장치 균형추|2,1,2|크기 다른 청동 추 셋과 가는 빛 줄 연결
+sun prism window stand|태양 프리즘 받침|1,1,3|세 갈래 금속 틀 안 삼각 수정과 바닥 작은 빛 무늬
+@chrono prehistoric exchange|시간여행풍 선사 교역|hobbit
+obsidian knapping mat|흑요석 떼기 작업대|2,1,1|가죽 깔개 위 반짝이는 검은 돌과 뿔 망치
+bone bead threading rack|뼈 구슬 꿰기 틀|1,1,2|갈래 나뭇가지 사이 뼈 구슬 줄과 돌 그릇
+reed fish drying dome|갈대 생선 건조돔|2,2,3|갈대 돔 골조에 매단 작은 생선과 나뭇잎 덮개
+clay fermentation jars|선사 발효 진흙 통|2,1,2|잎으로 뚜껑을 묶은 서로 다른 토기 셋
+shell currency sorting|조개 화폐 선별판|1,1,1|평평한 나무판 위 색 조개 무리와 가죽 끈
+stone age toy sled|나무 장난감 썰매|2,1,1|휘어진 나뭇가지 활주대와 작은 돌 인형
+volcanic steam basket|화산 증기 찜 바구니|1,1,2|뜨거운 돌 틈 위 잎을 깐 버들 찜통
+mammoth tusk tool rest|상아 공구 걸침대|2,1,2|작은 휜 상아 두 개 사이 돌도끼와 뼈 송곳
+primitive rain catcher|선사 빗물 받이|2,2,3|큰 잎 차양 중앙으로 물이 모이는 토기 통
+tribal story pebble board|부족 이야기 돌판|2,1,1|평평한 판 위 동물 모양 채색 자갈을 둥글게 배열
+@ff6 industrial town|증기마도풍 공업 마을|dwarf
+steam whistle manifold|증기 호루라기 배관대|2,1,3|높이 다른 황동 호각 셋과 굵은 분기 배관
+factory punch die rack|공장 금형 보관대|2,1,2|무거운 사각 금형과 홈 파인 쇠 받침
+boiler gauge calibration|보일러 압력계 교정대|2,1,2|크기 다른 둥근 계기 셋과 수동 펌프
+riveting press pedestal|리벳 압착 프레스|1,1,3|굵은 C자 철틀과 아래 둥근 리벳 접시
+steam pipe insulation rolls|증기관 보온재 적재대|2,1,2|감긴 회백색 보온 띠와 구리 관 조각
+gear oil settling tray|기어 윤활유 침전대|2,1,2|검은 기름 쟁반 위 분해 기어와 여과 망
+factory shift horn|공장 교대 나팔대|1,1,3|길게 벌어진 금속 나팔과 붉은 수동 레버
+coal briquette press|연탄 압축 성형기|2,1,3|큰 나사 손잡이 아래 사각 틀과 검은 연료 덩이
+industrial safety wash|공장 작업복 세척통|2,1,2|기름 묻은 작업복과 굵은 세척 솔 및 철제 통
+pneumatic message terminal|공압 문서관 수신기|1,1,3|구부러진 황동 관 끝 투명 캡슐 받이와 둥근 밸브
+@ff6 mining town|증기마도풍 설산 광산|mine
+miners lamp charging rack|광부 안전등 충전대|2,1,2|손잡이 달린 안전등 여섯 개와 황동 접점
+ore assaying crucibles|광석 품위 감정대|2,1,2|작은 백색 도가니와 잘게 부순 광석 접시
+mine rescue breathing set|광산 구조 호흡기대|1,1,3|쌍둥이 작은 산소통과 고무 마스크 및 가슴 띠
+snow melt boot grating|광부 장화 눈 녹임판|2,1,1|배관 지나는 철격자 위 눈 묻은 장화 한 켤레
+ore sample core cabinet|광맥 시추 표본장|2,1,2|길쭉한 칸마다 색층 다른 원통 암석
+mine cage signal post|갱도 승강기 신호대|1,1,3|작은 종 둘과 당기는 줄 및 세 색 원형 판
+canary transport warmer|광산 새장 보온상자|1,1,2|작은 철망 상자 바깥 모직 덮개와 아래 온수 통
+frozen drill sharpening|빙결 드릴 연마대|2,1,2|긴 나선 드릴 날과 얼음 조각 및 연마 돌
+miners lunch heating shelf|광부 도시락 보온대|2,1,2|증기관 위 놓인 둥근 금속 도시락 통 넷
+pithead cable splice stand|갱도 강삭 이음대|2,1,2|풀어진 굵은 강철 줄과 압착 집게 및 큰 볼트
+@ff6 port rail|증기마도풍 항구·철도|fish
+railway token exchange|철도 통표 교환대|1,1,3|둥근 통표 고리 세 개와 잠금 장치 판
+station oil lamp service|역 유등 정비대|2,1,2|분해한 등 유리와 황동 기름통 및 심지
+rail switch model desk|철도 분기 모형 제어대|2,1,2|작은 선로 모형과 나란한 짧은 붉은 레버
+baggage weighing beam|철도 짐 막대저울|2,1,3|큰 가죽 가방을 올린 낮은 판과 긴 저울 눈금봉
+harbor foghorn compressor|항구 무적 압축기|2,1,3|굵은 황동 나팔 뒤 둥근 공기통과 벨트 바퀴
+airship mooring clamp|비공정 계류 집게|2,1,2|굵은 쇠 턱 두 개와 밧줄 고리 및 잠금 핸들
+airship canvas gasbag patch|비공정 기낭 수선대|2,1,2|은빛 천 조각과 접착 솔 및 넓은 접합 롤러
+cargo customs seal press|항만 세관 봉인 프레스|1,1,2|큰 나사 프레스 아래 납 봉인과 꼬인 철사
+engineer route slate|기관사 운행 도식대|1,1,2|검은 작은 판에 선로 점선과 옆 회중시계
+dockside pneumatic hoist|부두 공압 작은 기중기|2,2,3|짧은 굽은 쇠팔 아래 체인 갈고리와 공기 호스
+@ff6 opera backstage|증기마도풍 오페라 뒷무대|opera
+opera thunder sheet|오페라 천둥 철판틀|2,1,3|높은 나무 틀에 느슨하게 매단 얇은 금속판
+stage wind machine|무대 바람 효과통|2,1,2|천이 둘러진 가로 원통과 옆 큰 손 크랭크
+stage rain pebble drum|무대 빗소리 회전통|2,1,2|돌이 든 구멍 난 목제 원통과 짧은 손잡이
+opera costume bustle rack|오페라 드레스 골조대|2,1,3|치마를 받치는 둥근 철사 골조와 긴 천 자락
+wig dressing head shelf|무대 가발 손질대|2,1,2|나무 머리틀 셋 위 서로 다른 가발과 빗
+prop sword foam chest|공연 소품 검 보관함|2,1,2|열린 긴 궤짝 안 은빛 가짜 검과 붉은 천
+prompter hood box|오페라 대사 지시함|2,1,2|낮은 조개껍질 모양 덮개 안 작은 악보 판
+stage trapdoor winch|무대 승강문 감개|2,1,2|가로 쇠축에 감긴 밧줄과 발판 잠금 걸쇠
+scenery paint bridge|무대 배경 채색 발판|2,1,2|낮은 긴 발판 위 넓은 붓과 칠 통 셋
+orchestra instrument locker|오케스트라 악기 보관장|2,1,3|열린 세로 장 안 휘어진 관악기와 현악기 케이스
+@ff6 urban nightlife|증기마도풍 도시 야간|casino
+casino chip wash tray|카지노 칩 세척대|2,1,2|색 원판 칩을 담은 망 쟁반과 금속 세척 통
+card shuffling crank|수동 카드 섞기 장치|1,1,2|양쪽 카드 더미 사이 작은 회전 롤러와 크랭크
+hotel pneumatic bell board|호텔 객실 호출 벨판|2,1,3|작은 황동 종 여섯 개와 늘어선 기계 표시창
+rooftop laundry pulley|옥상 빨래 도르래대|2,1,3|두 나무 기둥 사이 돌아가는 줄과 집게 묶음
+alley coal hatch|골목 석탄 투입함|1,1,2|비스듬한 철문 아래 검은 석탄 더미와 삽자루
+street chestnut brazier|거리 군밤 화로수레|2,1,2|바퀴 수레 위 둥근 구이 통과 갈색 밤 바구니
+gas streetlamp service cart|가스등 점검 수레|2,1,3|접힌 작은 사다리와 유리 등갓 및 기름통
+pawn appraisal loupe bench|전당포 감정 작업대|2,1,2|확대 렌즈 받침과 회중시계 및 금속 시험석
+boarding house wash lockers|하숙집 세숫대 보관장|2,1,2|작은 칸마다 대야 물병 수건이 한 벌씩
+rooftop rain cistern|옥상 빗물 저장조|2,2,3|리벳 박힌 둥근 물통과 짧은 사다리 및 배수관
+@ff6 magitek civil|증기마도풍 생활 마도기술|magitek
+magitek prosthetic fitting|마도 의수 조정대|2,1,2|손가락 금속 부품과 수정 동력 셀 및 고정 집게
+crystal streetlight charger|마도 가로등 충전대|1,1,3|작은 수정 등 모듈 셋을 꽂은 황동 기둥
+magitek water purifier|마도 정수 여과기|2,1,3|녹색 수정 통과 맑은 물통 사이 구리 여과관
+domestic heat crystal stove|가정용 열수정 난로|1,1,2|철망 안 붉은 수정과 위 평평한 주전자 받침
+magitek hearing horn|마도 청음 증폭기|1,1,2|작은 청동 나팔과 옆 푸른 수정 및 조절 고리
+crystal tram ticket punch|마도 전차 승차권 천공기|1,1,2|황동 눌림 레버 아래 카드 슬롯과 작은 수정 표시등
+magitek prosthetic charging|마도 보조다리 충전대|1,1,3|긴 금속 보조다리 둘과 바닥 수정 충전 접점
+rural ward maintenance kit|시골 결계 정비함|2,1,2|열린 나무 상자 안 룬 새긴 작은 말뚝과 구리 선
+memory lantern repair|추억 영사등 수리대|2,1,2|분해한 유리 등과 둥근 영상 수정 및 렌즈
+magitek household meter|가정용 마력 계량기|1,1,2|둥근 바늘 계기와 봉인된 수정 창 및 구리 인입관

@@ -1,0 +1,49 @@
+// A: 남쪽 포구의 검은 함포, 긴 포신 윗면과 나무 바퀴 포가를 손 도트로 작도.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a iron 0
+@mat b iron 1
+@mat c iron 2
+@mat d iron 3
+@mat e iron 4
+@mat g wood 1
+@mat h wood 2
+@mat j wood 3
+@mat k wood 4
+@mat l wood 5
+@mat m wood 6
+@mat n wood 7
+@mblock 0 0
+.......bb.......
+.......dc.......
+......bccb......
+.....beddcb.....
+....beddccbb....
+...beddccccbb...
+...beddcccbbb...
+...cedddccbbb...
+...bcddcccbbb...
+....cddcccbb....
+....beddccbb....
+....bdedccbb....
+....bdedccbb....
+...ghdedccbhg...
+..gnkdedccbjhg..
+..gmkdedccbjhg..
+..gmkdedccbjhg..
+..gmbeddccbbhg..
+.gnkcedddccbjhg.
+.gmkdedcccdbkhg.
+.gmkdcaaaacbkhg.
+.gmkdcaaaacbkhg.
+.glkbcaaaabbkhg.
+.gjkjbcccbhjkhg.
+..ggmlkkkkljgg..
+.gmnlgkkkjglkhg.
+gmkkkgjjhjglkkhg
+gmkakgnmkjghakhg
+gmhakgkkkjghakhg
+gmlkkgjjjjgkkhhg
+.gkkgg...ggkhhg.
+..gg.......ggg..

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/bus_stop_jp/j1-C.pxg",
+ "set": "jp",
+ "id": "bus_stop_jp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "재해석: 둥근 판 대신 위가 둥근 큰 사각 판에 정면 버스 그림(노란 전조등), 굵은 기둥, 펼친 시간표",
+ "ok": true
+}

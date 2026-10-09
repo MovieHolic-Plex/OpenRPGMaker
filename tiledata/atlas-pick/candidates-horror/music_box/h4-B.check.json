@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/music_box/h4-B.pxg",
+ "set": "horror",
+ "id": "music_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 21,
+ "bbox": [
+  1,
+  3,
+  15,
+  15
+ ],
+ "note": "왼쪽 위 빛: 왼쪽 면·뚜껑 테 밝게, 거울에 밝은 대각 하이라이트, 무용수 왼쪽이 밝음, 상자 오른쪽 아래로 ~ - 그림자",
+ "ok": true
+}

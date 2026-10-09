@@ -1,0 +1,52 @@
+/* ── 일정 편집기 셸 ───────────────────────────────────────────────────── */
+.event-editor .event-schedule-editor {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  display: block;
+  min-width: 0;
+  overflow: clip;
+  padding: 0;
+}
+
+.event-editor .event-schedule-editor[open] {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+}
+
+.event-editor .event-schedule-summary {
+  align-items: center;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 700 12px/1.2 var(--font-ui);
+  gap: 7px;
+  list-style: none;
+  min-width: 0;
+  padding: 9px 12px;
+  transition: background var(--transition-fast);
+}
+
+.event-editor .event-schedule-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-schedule-summary:hover {
+  background: var(--bg-active);
+}
+
+.event-editor .event-schedule-summary::before {
+  color: var(--text-3);
+  content: "▾";
+  font-size: 9px;
+  transition: transform var(--transition-fast);
+}
+
+.event-editor .event-schedule-editor:not([open]) > .event-schedule-summary::before {
+  transform: rotate(-90deg);
+}
+
+.event-editor .event-schedule-editor[open] > .event-schedule-summary {
+  border-bottom: 1px solid var(--border-subtle);
+}

@@ -1,0 +1,167 @@
+/* shell 표면 — database/tabs-b-shell-layout.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 shell 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* database/tabs-b-shell-layout.css:30-33 */
+.topbar {
+  align-items: stretch;
+  flex-direction: column;
+}
+
+/* database/tabs-b-shell-layout.css:34-39 */
+.topbar .title {
+  font-size: 12px;
+  letter-spacing: 0;
+  margin-right: var(--space-2);
+  min-width: 72px;
+}
+
+/* database/tabs-b-shell-layout.css:40-47 */
+.topbar .mode-badge {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: 0;
+  font-size: 10px;
+  letter-spacing: 0;
+  padding: 2px 6px;
+}
+
+/* database/tabs-b-shell-layout.css:48-51 */
+.oprn-menu-bar {
+  position: relative;
+  z-index: 60;
+}
+
+/* database/tabs-b-shell-layout.css:52-57 */
+.oprn-menu-item {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: default;
+}
+
+/* database/tabs-b-shell-layout.css:58-62 */
+.oprn-menu-item:hover,
+.oprn-menu-item:focus-visible,
+.oprn-menu-item[aria-expanded="true"] {
+  outline: none;
+}
+
+/* database/tabs-b-shell-layout.css:63-69 */
+.oprn-menu-popup {
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  display: none;
+  left: 0;
+  position: fixed;
+  top: 0;
+}
+
+/* database/tabs-b-shell-layout.css:70-72 */
+.oprn-menu-separator {
+  border-top: 1px solid var(--border-default);
+}
+
+/* database/tabs-b-shell-layout.css:73-76 */
+.oprn-toolbar {
+  display: flex;
+  flex-direction: column;
+}
+
+/* database/tabs-b-shell-layout.css:77-82 */
+.oprn-toolbar-row {
+  align-items: center;
+  display: flex;
+  scrollbar-width: thin;
+  width: 100%;
+}
+
+/* database/tabs-b-shell-layout.css:83-85 */
+.oprn-toolbar-row.edit-row {
+  border-top: 1px solid var(--border-default);
+}
+
+/* database/tabs-b-shell-layout.css:86-98 */
+.oprn-tool-button {
+  align-items: center;
+  appearance: none;
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11px/1 var(--font-ui);
+  gap: 3px;
+  justify-content: center;
+  position: relative;
+  transition: background 90ms ease-out, border-color 90ms ease-out, filter 90ms ease-out, transform 70ms ease-out;
+  user-select: none;
+}
+
+/* database/tabs-b-shell-layout.css:99-104 */
+.oprn-tool-button.icon-only {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  padding: 1px 3px;
+}
+
+/* database/tabs-b-shell-layout.css:105-107 */
+.oprn-tool-button:focus-visible {
+  outline-offset: -3px;
+}
+
+/* database/tabs-b-shell-layout.css:108-111 */
+.oprn-tool-button:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+/* database/tabs-b-shell-layout.css:112-114 */
+.oprn-tool-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+/* database/tabs-b-shell-layout.css:115-118 */
+.oprn-tool-button.primary:hover:not(:disabled),
+.oprn-tool-button.primary:focus-visible {
+  background: var(--accent-muted);
+}
+
+/* database/tabs-b-shell-layout.css:119-122 */
+.oprn-tool-button.primary:active:not(:disabled) {
+  background: var(--surface-recessed);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+/* database/tabs-b-shell-layout.css:123-127 */
+.oprn-tool-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  opacity: 0.45;
+}
+
+/* database/tabs-b-shell-layout.css:128-130 */
+.oprn-toolbar-separator {
+  width: 1px;
+}
+
+/* database/tabs-b-shell-layout.css:148-151 */
+.editor-layout .left-panel,
+.editor-layout .right-panel {
+  padding: var(--space-1);
+}
+
+/* database/tabs-b-shell-layout.css:152-156 */
+.editor-layout .left-panel {
+  display: grid;
+  overflow: hidden;
+  width: 252px;
+}
+
+/* database/tabs-b-shell-layout.css:157-163 */
+.editor-layout .right-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  max-width: 420px;
+  overflow: hidden;
+}

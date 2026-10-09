@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/crossing_deck/j5-C.pxg",
+ "set": "jp",
+ "id": "crossing_deck",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "재해석: 밝은 콘크리트 패널(윗 모서리 밝게·아래 이음 어둡게, 손잡이 홈 2개)로 아스팔트와 확실히 구분, 레일 4px(선로 C 와 같은 x)",
+ "ok": true
+}

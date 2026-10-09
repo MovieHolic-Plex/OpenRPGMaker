@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/meat_hooks/w3-C.pxg",
+ "id": "meat hooks",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "C: 다시 해석 - 틀을 없애고 위 대들보 밑에 쇠 갈고리 막대를 달아 통 넓적다리·소시지 두 줄(길이 다르게)·긴 베이컨 판을 끝까지 늘어뜨림. 정육점 벽 전체가 고기로 차 보이게",
+ "ok": true
+}

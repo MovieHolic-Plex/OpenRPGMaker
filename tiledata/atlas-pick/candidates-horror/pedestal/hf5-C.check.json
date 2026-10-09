@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/pedestal/hf5-C.pxg",
+ "set": "horror",
+ "id": "pedestal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  3,
+  3,
+  12,
+  14
+ ],
+ "note": "C: 재료·무늬 — 대리석 받침 앞면에 세로 홈(flute) 무늬와 금(vgold5) 입술줄. 홈은 4/3 을 두 칸씩 번갈아, 옆면은 매끈.",
+ "ok": true
+}

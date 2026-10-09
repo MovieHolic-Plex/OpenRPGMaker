@@ -1,0 +1,207 @@
+/* event 표면 — previews/command-preview-4.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* Page Preview owns its remaining grid row, not a viewport-height approximation.
+   Standalone command previews retain their 4:3 stages and positional settings. */
+.event-page-preview {
+  position: relative;
+  min-width: 0;
+}
+
+.event-page-preview .event-script-live-stage {
+  scrollbar-gutter: stable;
+  overscroll-behavior: contain;
+}
+
+.event-page-preview .event-script-live-stage > .event-command-preview {
+  height: 100%;
+  min-height: 100%;
+  min-width: 0;
+}
+
+.event-page-preview .event-command-preview > .ecp-caption {
+  flex: 0 0 auto;
+}
+
+.event-page-preview .ecp-stage {
+  flex: 1 0 auto;
+  aspect-ratio: auto;
+  min-width: 0;
+  overflow: visible;
+}
+
+.event-page-preview .ecp-stage:has(> .ecp-message-window) {
+  align-content: safe end;
+}
+
+.event-page-preview .ecp-stage.pos-top { align-content: start; }
+
+.event-page-preview .ecp-stage.pos-center { align-content: safe center; }
+
+.event-page-preview .ecp-settings-preview {
+  flex: 1 0 auto;
+}
+
+.event-page-preview .event-script-live-controls {
+  flex-wrap: wrap;
+}
+
+.event-page-preview .btn.event-script-transport-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 5px;
+  min-height: 30px;
+  font: 500 13px/1.3 var(--font-ui);
+  white-space: nowrap;
+}
+
+.event-page-preview .event-script-transport-button:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+  color: var(--text-3);
+}
+
+.event-page-preview .event-script-live-position {
+  min-width: 7ch;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.event-page-preview .event-script-preview-disclaimer,
+.event-page-preview .event-script-live-caption,
+.event-page-preview .event-script-live-context {
+  font-size: 12px;
+}
+
+.event-page-preview .event-script-live-context {
+  min-width: 0;
+  color: var(--text-2);
+  line-height: 1.4;
+}
+
+.event-page-preview .event-script-live-context > summary {
+  cursor: pointer;
+}
+
+.event-page-preview .event-script-live-context-label { font-weight: 600; }
+
+.event-page-preview .event-script-live-caption {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.event-page-preview .event-script-live-context-body {
+  max-height: 5em;
+  overflow: auto;
+  overscroll-behavior: contain;
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+}
+
+.event-page-preview :is(.event-script-live-stage, summary, .event-script-live-context-body, .event-script-transport-button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.event-page-preview .event-script-live-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── 런타임 규격 무대 (2026-09-17) ───────────────────────────────────────────────
+   대사·선택지 프리뷰는 게임과 같은 클래스(.dialogue-overlay/.dialogue-box, dialogue.css 소유)를
+   320×240 논리 화면(.ecp-runtime-viewport) 안에 그리고, 무대 폭에 맞춰 통째로 축소한다.
+   배율 = 무대 폭 / 320px. CSS 는 길이끼리 나눌 수 없어서 tan(atan2(y, x)) 로 단위 없는 비율을 얻는다
+   (atan2 는 같은 종류의 길이 둘을 받고, tan 은 수를 돌려준다). JS 없이 컨테이너 폭을 따라간다.
+   왜: 예전 프리뷰는 자기 폰트·패딩·폭으로 그려서 같은 대사가 게임 3줄 / 프리뷰 4~5줄로 갈렸다. */
+.ecp-runtime-frame {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.ecp-stage.ecp-stage-runtime {
+  aspect-ratio: 4 / 3;
+  /* 게임 화면 자리. 맵은 그리지 않지만 유리창이 게임에서처럼 읽히도록 중간 밝기 무대를 깐다. */
+  background:
+    repeating-linear-gradient(0deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px),
+    repeating-linear-gradient(90deg, transparent 0 15px, rgba(255, 255, 255, 0.05) 15px 16px),
+    linear-gradient(180deg, #3d4655, #2f3642);
+  border-radius: 6px;
+  container-type: inline-size;
+  display: block;
+  image-rendering: pixelated;
+  overflow: hidden;
+  padding: 0;
+  place-items: initial;
+  position: relative;
+  width: 100%;
+}
+
+.ecp-runtime-viewport {
+  --ecp-runtime-scale: tan(atan2(100cqw, 320px));
+  bottom: 0;
+  height: 240px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: scale(var(--ecp-runtime-scale));
+  transform-origin: 0 100%;
+  width: 320px;
+}
+
+/* 프리뷰는 정착 상태를 보인다 — 게임의 진입 애니메이션은 replay 요청(data-dialogue-phase) 때만. */
+.ecp-runtime-viewport .dialogue-box.page-ready .dialogue-page-cursor {
+  animation: none;
+  opacity: 1;
+}
+
+/* 이 페이지 미리보기(스크립트 둘러보기)에서는 남은 높이에 맞춘다: 높이가 무대를 정하고 폭은 4:3 으로 따라온다. */
+.event-page-preview .ecp-runtime-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.event-page-preview .ecp-stage.ecp-stage-runtime {
+  aspect-ratio: 4 / 3;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  width: auto;
+}
+
+/* 대화창 그릇 견본(말풍선·흘림) — 머리 위에 붙을 인물 자리표시. 16×24 논리 픽셀, 화면 아래 띠 안. */
+.ecp-runtime-viewport .ecp-container-actor {
+  background: linear-gradient(180deg, rgb(244 206 160) 0 38%, rgb(84 120 196) 38% 100%);
+  border: 1px solid rgb(20 24 36);
+  border-radius: 6px 6px 2px 2px;
+  height: 24px;
+  left: 142px;
+  position: absolute;
+  top: 206px;
+  width: 16px;
+}
+
+.ecp-runtime-viewport .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon {
+  min-height: 0;
+}

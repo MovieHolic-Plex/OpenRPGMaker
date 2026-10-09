@@ -1,0 +1,20 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....AAAAAA.....
+...AABEEEEBAA...
+..ABEEEEEEECBA..
+..ACEEEEEEDDCA..
+..ABCCDDDDCBBA..
+..FAABBBBBAAAF..
+..FHIIIIIIIHHF..
+.FJDEDDBDDBBAJF.
+.FJEEDDBDDBBAJF.
+.FJDEDDBDDBBAJF.
+..FHIIIIIIIHHF..
+..FABDDDDDBAAF-.
+..FAABCCCBAAAF--
+...FFAAAAAAAF-~~
+....---~~~~~~~~~

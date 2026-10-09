@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/big_tree/wv5-C.pxg",
+ "set": "worldmap",
+ "id": "big_tree",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.174
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  2,
+  0,
+  31,
+  31
+ ],
+ "note": "C: 다른 해석 — 옆으로 넓게 퍼진 층층 구름형 수관과 낮고 넓은 밑동.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.289
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.101
+  }
+ }
+}

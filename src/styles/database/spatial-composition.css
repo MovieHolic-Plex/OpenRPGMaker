@@ -1,0 +1,41 @@
+.database-modal-body .spatial-mixed-workspace { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; overflow: hidden; }
+.spatial-mixed-workspace .asset-browser-top > select { max-width: 340px; margin-bottom: 12px; }
+.spatial-mixed-body { display: grid; grid-template-columns: 215px minmax(180px, 1fr) 250px; min-height: 0; overflow: hidden; }
+.spatial-mixed-palette { display: flex; flex-direction: column; min-height: 0; min-width: 0; padding: 14px 10px; gap: 12px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
+.spatial-mixed-palette h3 { margin: 0; font-size: 14px; }
+.spatial-mixed-tabs, .spatial-mixed-tools { display: flex; flex-wrap: wrap; gap: 5px; }
+.spatial-mixed-workspace .asset-browser-button.is-selected { background-color: var(--db-studio-accent-soft); border-color: var(--db-studio-accent); }
+.spatial-mixed-assets { min-height: 0; overflow: auto; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-content: start; gap: 8px; }
+.spatial-mixed-assets > p, .spatial-mixed-assets > .asset-browser-button, .spatial-mixed-brush { grid-column: 1 / -1; }
+.spatial-mixed-assets > p { font-size: 12px; line-height: 1.6; }
+.spatial-mixed-brush { width: 96px; height: 96px; margin: 14px auto; image-rendering: pixelated; }
+.spatial-mixed-asset { display: flex; flex-direction: column; min-width: 0; padding: 8px; gap: 6px; background-color: var(--db-studio-surface); border: 1px solid var(--db-studio-border-default); border-radius: 8px; cursor: grab; color: var(--db-studio-text-1); }
+.spatial-mixed-asset > div { height: 72px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.spatial-mixed-asset canvas, .spatial-mixed-asset img { max-width: 100%; max-height: 72px; object-fit: contain; image-rendering: pixelated; }
+.spatial-mixed-asset strong { font-size: 12px; overflow-wrap: anywhere; }
+.spatial-mixed-asset small { font-size: 10px; }
+.spatial-mixed-asset:disabled { opacity: .45; cursor: default; }
+.spatial-mixed-asset.is-selected { border-color: var(--db-studio-accent); box-shadow: inset 0 0 0 1px var(--db-studio-accent); }
+.spatial-mixed-stage { min-width: 0; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.spatial-mixed-tools { padding: 10px; border-bottom: 1px solid var(--db-studio-border-subtle); }
+.spatial-mixed-camera { min-height: 0; overflow: auto; flex: 1; padding: 24px; background-color: var(--db-studio-inset); }
+.spatial-mixed-board { position: relative; background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%,var(--spatial-checker-b) 0% 50%) 0 0 / var(--mixed-cell,24px) var(--mixed-cell,24px); outline: 1px solid var(--db-studio-border-default); touch-action: none; }
+.spatial-mixed-board > canvas { position: absolute; inset: 0; image-rendering: pixelated; }
+.spatial-mixed-member { position: absolute; padding: 0; border: 1px dashed var(--db-studio-accent-border); background: transparent; cursor: move; }
+.spatial-mixed-member:hover, .spatial-mixed-member.is-selected { border: 2px solid var(--db-studio-accent); background: transparent; }
+.spatial-mixed-error { padding: 12px; margin: 0; color: var(--db-studio-danger); background-color: var(--db-studio-surface); font-size: 12px; overflow-wrap: anywhere; }
+.spatial-mixed-hint { color: var(--db-studio-text-3); }
+.spatial-mixed-size { display: flex; gap: 8px; margin: 14px 0; }
+.spatial-mixed-size label { min-width: 0; flex: 1; font-size: 12px; }
+.spatial-mixed-size input { width: 100%; box-sizing: border-box; margin-top: 6px; }
+.spatial-mixed-selection { display: flex; flex-direction: column; gap: 10px; padding: 12px 0; font-size: 12px; }
+.spatial-mixed-workspace .asset-browser-detail > p { font-size: 12px; color: var(--db-studio-text-3); }
+.database-modal-body .spatial-mixed-workspace .spatial-inspector { display: block; position: static; width: auto; max-height: none; margin: 12px 0 0; padding: 0; border: 0; overflow: visible; box-shadow: none; }
+@container db-modal (max-width: 1199px) {
+  .spatial-mixed-body { grid-template-columns: 160px minmax(140px,1fr) 205px; }
+  .spatial-mixed-camera { padding: 12px; }
+  .spatial-mixed-tools .asset-browser-button { padding: 6px; }
+}
+
+.spatial-mixed-palette .asset-browser-search { flex: none; }
+.spatial-mixed-assets { flex: 1; }

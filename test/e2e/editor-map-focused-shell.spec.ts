@@ -1,0 +1,87 @@
+import { expect, test } from "@playwright/test";
+
+test("edit mode restores existing chrome, removes the bottom bar, and exposes scrollable AI settings", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.goto("/?freshProject=1");
+
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("topbar-ai-settings")).toBeVisible();
+
+  // 맵 메뉴(2026-08-26)·게임 메뉴·클래식 툴바 행·작업 칩(2026-09-03)은 없다. 전문가의 도구 창은 인라인 버튼.
+  for (const testId of [
+    "menu-project",
+    "toolbar-save",
+    "toolbar-database",
+    "toolbar-resource-manager",
+    "toolbar-world",
+    "menu-help",
+    "workspace-panels-button",
+    "workspace-command-palette-button",
+    "topbar-test-play",
+    "topbar-battle-test",
+  ]) {
+    await expect(page.getByTestId(testId)).toBeVisible();
+  }
+
+  for (const testId of [
+    "editor-statusbar",
+    "db-connection-status",
+    "toggle-layout-bboxes",
+    "ai-connection-status",
+    "ai-settings-toggle",
+    "ai-settings-command-bar",
+  ]) {
+    await expect(page.getByTestId(testId)).toHaveCount(0);
+  }
+
+  await page.getByTestId("topbar-ai-settings").click();
+  await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
+  await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("position", "fixed");
+  await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("display", "grid");
+  await expect(page.getByTestId("ai-settings-modal").locator(".database-modal-window")).toHaveCSS("display", "grid");
+  await expect(page.getByTestId("ai-settings-advanced")).toHaveAttribute("open", "");
+
+  // 역할 표의 추론 강도 셀렉트가 페인 오른쪽 끝에서 잘리지 않는다(열 최소폭 합이 페인 폭을 넘던 회귀).
+  await page.getByTestId("ai-settings-tab-models").click();
+  const paneRight = await page.locator(".ai-settings-content").evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return rect.left + element.clientWidth;
+  });
+  for (const role of ["ultrabrain", "vision", "writer", "deep"]) {
+    const effort = page.getByTestId(`ai-config-${role}-reasoning`);
+    await expect(effort).toBeVisible();
+    const box = await effort.boundingBox();
+    expect(box, role).not.toBeNull();
+    expect((box?.x ?? 0) + (box?.width ?? 0), role).toBeLessThanOrEqual(paneRight + 0.5);
+  }
+
+  const body = page.getByTestId("ai-settings-body");
+  await expect(body).toHaveCSS("overflow-y", "hidden");
+  const content = body.locator(".ai-settings-content");
+  await expect(content).toHaveCSS("overflow-y", "auto");
+  const scroll = await content.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+    return {
+      top: element.scrollTop,
+      clientHeight: element.clientHeight,
+      scrollHeight: element.scrollHeight,
+    };
+  });
+  expect(scroll.scrollHeight).toBeGreaterThan(scroll.clientHeight);
+  expect(scroll.top).toBeGreaterThan(0);
+  // 수동 「지금 저장」은 없다 — 푸터는 자동 저장 상태만 보여 준다.
+  await expect(page.getByTestId("ai-config-saved-hint")).toBeVisible();
+
+  // The assistant is mounted during editor bootstrap, before database.css is
+  // lazy-loaded. Its first paint still needs a real flex workspace instead of
+  // a block-flow panel below the canvas.
+  await page.getByTestId("ai-settings-modal").getByTestId("ai-settings-close").click();
+  const aiPanel = page.locator(".ai-chat-panel").first();
+  await expect(aiPanel).toHaveCSS("display", "flex");
+  await expect(aiPanel).toHaveCSS("position", "relative");
+  const aiPanelBox = await aiPanel.boundingBox();
+  expect(aiPanelBox).not.toBeNull();
+  expect(aiPanelBox?.width ?? 0).toBeGreaterThan(0);
+  expect(aiPanelBox?.height ?? 0).toBeGreaterThan(0);
+});

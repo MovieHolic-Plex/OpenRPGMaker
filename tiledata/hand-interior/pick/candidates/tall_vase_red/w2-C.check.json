@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_vase_red/w2-C.pxg",
+ "id": "tall vase red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "note": "재해석: 병 모양을 호리병(위 몸통·잘록한 허리·아래 몸통)으로, 두 개의 하이라이트",
+ "ok": true
+}

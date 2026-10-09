@@ -1,0 +1,86 @@
+.palette-view-button.active {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+
+.tile-palette-clusters {
+  --cluster-tile-size: 32px;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 220px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.db-connection-status {
+  gap: 7px;
+}
+
+.db-connection-status-group {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: 4px;
+  margin-left: auto;
+  max-width: min(330px, 42vw, 100%);
+  min-width: 0;
+}
+
+.db-connection-status-group .editor-statusbar-cell.db-connection-status {
+  flex: 1 1 auto;
+  margin-left: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.db-connection-label,
+.db-autosave-state {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-connection-status.autosave-pending .db-autosave-state,
+.db-connection-status.autosave-saving .db-autosave-state {
+  color: var(--status-warning);
+}
+
+.db-connection-status.autosave-saved .db-autosave-state {
+  color: var(--status-success);
+}
+
+.db-connection-status .db-autosave-state.persistence-mirror-warning {
+  color: var(--status-warning);
+}
+
+.db-connection-status.autosave-error .db-autosave-state {
+  color: var(--status-error);
+}
+
+/* DB 연동 칩(결함 ⑫): 항상 클릭 가능한 버튼 — 맵 잠금 '가져오기'와 시각 구분. */
+.db-connection-chip-button {
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.db-connection-chip-button:hover {
+  background: rgba(42, 37, 33, 0.06);
+}
+
+.db-autosave-retry-button {
+  background: var(--status-error, #C6403D);
+  border: none;
+  border-radius: 3px;
+  color: var(--on-accent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 10px;
+  line-height: 16px;
+  padding: 0 6px;
+  white-space: nowrap;
+}

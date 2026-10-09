@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/vanity_mirror/w47-A.pxg",
+ "id": "vanity mirror",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "화장대: 거울(세로 판, 윗면 없음)을 상판 뒤로 올리고, 상판 T5(뚜껑 단 5)+앞가장자리 하이라이트+처마그늘+서랍 앞면(원래 서랍·색 그대로). 향수병·단지는 상판 위에",
+ "ok": true
+}

@@ -1,0 +1,43 @@
+// frame_small hf5-C (hf5)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat t tarn 0
+@mat d damask 0
+@mat s sheet 0
+@mat g vgreen 0
+@mblock 0 0
+................
+................
+..tttttttttttt..
+..tttttttttttt..
+..ttddddddddtt..
+..ttdddggdddtt..
+..ttddddddddtt..
+..ttdddssdddtt..
+..ttddssssddtt..
+..ttddssssddtt..
+..ttdddsssddtt..
+..ttddddddddtt..
+..ttddddddddtt..
+..tttttttttttt..
+..tttttttttttt..
+................
+@tblock 0 0
+................
+................
+..000000000000..
+..055455455410..
+..052323232310..
+..053232232310..
+..052323212310..
+..053235523210..
+..052353353210..
+..053253352310..
+..052322223210..
+..051313131310..
+..053131313110..
+..051111111110..
+..000000000000..
+................

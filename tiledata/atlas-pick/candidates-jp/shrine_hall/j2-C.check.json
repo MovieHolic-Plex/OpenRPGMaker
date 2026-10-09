@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/shrine_hall/j2-C.pxg",
+ "set": "jp",
+ "id": "shrine_hall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.23
+ },
+ "refmap": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.114
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 36,
+ "bbox": [
+  9,
+  3,
+  72,
+  62
+ ],
+ "note": "실루엣 재해석: 폭을 좁히고 지붕을 가파르게 세운 소형 배전, 굵은 히노키 기둥 셋과 시메나와가 크게 처지는 모습.",
+ "ok": true
+}

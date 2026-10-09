@@ -1,0 +1,149 @@
+{
+ "plan": [
+  "##########",
+  "####.....#",
+  "####.....#",
+  "####.....#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "######...#"
+ ],
+ "exitWidth": 3,
+ "floor": "sh-concrete",
+ "wall": "sh-white",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 11,
+   "floor": "sh-concrete",
+   "wall": "sh-white"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sh-basket-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sh-basket-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "sh-stock-shelf",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sh-veg-stand",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sh-counter",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-counter",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sh-register",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "sh-fruit-box",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "sh-crate-stack",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "sh-shutter",
+   "x": 6,
+   "y": 11
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-scale",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sh-price-dots",
+   "x": 2,
+   "y": 8
+  }
+ ],
+ "name": "일본 동네 채소가게 실내",
+ "start": [
+  7,
+  10
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "yaoya",
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 11
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 7,
+   "x1": 5,
+   "y1": 7,
+   "why": "계산대 안쪽 직원 줄(재고 선반 앞)"
+  }
+ ]
+}

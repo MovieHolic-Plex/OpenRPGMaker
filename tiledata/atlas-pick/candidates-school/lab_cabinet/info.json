@@ -1,0 +1,23 @@
+{
+ "id": "lab_cabinet",
+ "slug": "lab_cabinet",
+ "name": "약품장",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "과학실 유리문 약품장(키 큰 장) — 유리 두 짝 뒤에 갈색·투명 병이 두 선반, 아래 나무 문 서랍. 앞면이 주인공, 윗판 1~2px.",
+ "palette_hint": "vwood 틀, mglass 유리, & 반사, vbrass 병",
+ "pair": [
+  "lab_bench"
+ ],
+ "worker": "s5"
+}

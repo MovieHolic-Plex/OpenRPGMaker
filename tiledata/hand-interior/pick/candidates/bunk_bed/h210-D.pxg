@@ -1,0 +1,112 @@
+// D: 가로 2층 침대, 금장 난간과 마름모 상감; 흰 침구 두 층, 동쪽 사다리.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat s wood 1
+@mat d wood 3
+@mat w wood 5
+@mat h wood 6
+@mat t wood 7
+@mat a linen 3
+@mat b linen 4
+@mat c linen 5
+@mat e linen 6
+@mat g gold 3
+@mat j gold 4
+@mat l gold 5
+@layer bed
+// 기둥 덮개 윗면 y0~3
+@mblock 1 0
+hhhh.....................hhh
+httw.....................htw
+htww.....................hww
+hwww.....................www
+@mblock 1 4
+ljgs.....................jgs
+hwws.....................wws *40
+hjgs.....................jgs
+hjgs.....................jgs
+ssss.....................sss
+// 위 침상 윗면 y6~13; 베개는 서쪽
+@layer upper_linen
+@mblock 5 5
+bbbbbbbbbbbbbbbbbbbbb
+ceeeecccccccccccccccb
+eeeeecceeeeeeeeeeeeecc
+eeeeecceeeeeeeeeeeeecc
+ccccbcceeeeeeeeeeeeccc
+bbbbbcceeeeeeeeeeeeccc
+ccccccceeeeeeeeccccccb
+ccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbba
+bbbbaabbbbbbbbaabbbba
+aaaaaaabbbbbbaaaaaaaa
+// 금장 난간과 연결 마름모 상감
+@layer upper_rail
+@mblock 4 15
+hhhhhhhhhhhhhhhhhhhhhhh
+twwwwwwwwwwwwwwwwwwwwwd
+ljjjjjjjjjjjjjjjjjjjjjg
+hwwwwwwwwjjjwwwwwwwwwwd
+hwwwwwwwjjwjjwwwwwwwwwd
+hwwwwwwjjwwwjjwwwwwwwwd
+hwwwwwwwjjwjjwwwwwwwwwd
+hwwwwwwwwjjjwwwwwwwwwwd
+ggggggggggggggggggggggg
+ddddddddddddddddddddddd
+sssssssssssssssssssssss
+// 아래 침상 윗면 y31~37
+@layer lower_linen
+@mblock 5 30
+bbbbbbbbbbbbbbbbbbbbb
+ceeeecccccccccccccccb
+eeeeecceeeeeeeeeeeeecc
+eeeeecceeeeeeeeeeeeecc
+ccccbcceeeeeeeeeeeeccc
+bbbbbcceeeeeeeeeeeeccc
+ccccccceeeeeeeeccccccb
+ccccccccccccccccccccb
+bbbbbbbbbbbbbbbbbbbba
+bbbbaabbbbbbbbaabbbba
+aaaaaaabbbbbbaaaaaaaa
+@layer lower_rail
+@mblock 4 41
+hhhhhhhhhhhhhhhhhhhhhhh
+ljjjjjjjjjjjjjjjjjjjjjg
+wwwwwwwwwwwwwwwwwwwwwwd
+ddddddddddddddddddddddd
+sssssssssssssssssssssss
+// 동쪽 끝 사다리
+@layer ladder
+@mblock 27 17
+htsht
+hwswd
+hwswd
+hwswd
+ttttt
+wwwwd
+sssss
+hwswd
+hwswd
+hwswd
+ttttt
+wwwwd
+sssss
+hwswd
+hwswd
+hwswd
+ttttt
+wwwwd
+sssss
+hwswd
+hwswd
+hwswd
+ttttt
+wwwwd
+sssss
+hwswd
+hwswd
+hwswd
+ttttt
+wwwwd
+sssss

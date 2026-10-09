@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/j4-B.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 23,
+ "bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "빛 구조: 몸체를 어둡게 눌러 청록 화면이 후광으로 뜨고, 두 기계 사이 틈으로 빛이 번진다. 밤 역 매표소 느낌.",
+ "ok": true
+}

@@ -1,0 +1,78 @@
+// C: 넓고 조용한 지도 덩어리, 말 두 개와 단검, 굵고 짧은 다리; 상판 윗면 16행(y=7~22)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat p linen 3
+@mat q linen 4
+@mat r linen 5
+@mat s linen 2
+@mat t pine 2
+@mat u pine 3
+@mat v iron 3
+@mat R red 2
+@mat S red 4
+@mat J brass 3
+@mat K brass 5
+@mat m iron 3
+@mat n iron 4
+@mat o iron 5
+@layer shadow
+@block 7 30
+--~~~~~~~~~~~~~~~~--
+@block 7 31
+--~~~~~~~~~~~~~~~~~~--
+@layer table
+@mblock 1 7
+..cffffffffffffffffffffffffc..
+.cgggeeeeeeeeeeeeeeeeeeeeeedc.
+cgeeeeeeeeeeeeeeeeeeeeeeeeeedb
+cgeerrrrrrrrrrrrrrrrrrrreeeedb
+cgeerqqqqqqqqqqqqqqqqqqqpeeedb
+cgeerqqquuuqqqqqqqqqqqqqpeeedb
+cgeerqqutttuqqqqqqqqqqqqpeeedb
+cgeerqutttttuqqvqqqqqqqqpeeedb
+cgeerqquttttuqqvvqqqqqqqpeeedb
+cgeerqqquttuqquqvqqqqqqqpeeedb
+cgeerqqqquuqqqqqqvvqqqqqpeeedb
+cgeerqqqqqqqqqqqqqvqqqqqpeeedb
+cgeerqqqqqqqqqqqqvvqqqqqpeeedb
+cgeerqqqqqqqqqqqqvqqqqqqpeeedb
+cgeessssssssssssssssssssdeeedb
+.cdeeeeeeeeeeeeeeeeeeeeeeeedb.
+@mblock 1 23
+.cffffffffffffffffffeeeeeeec..
+.bdddddddddddddddddddddddddb..
+..cddddccddddddddddddccdddca..
+@mblock 3 26
+cedb..................cddb
+cedb..................cddb
+cedb..................cddb
+cedb..................cddb
+cddb..................cddb
+baaa..................baaa
+@layer pieces
+@mblock 9 11
+.SS.
+SRRS
+.RR.
+SRRR
+.RR.
+@mblock 19 13
+.KK.
+KJJK
+.JJ.
+KJJJ
+.JJ.
+@mblock 24 18
+...o
+..on
+.onm
+bJm.
+Jbc.

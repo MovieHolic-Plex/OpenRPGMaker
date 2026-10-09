@@ -1,0 +1,914 @@
+/* src/styles/shell/studio-bar.modern.css
+   ─────────────────────────────────────────────────────────────────────────────────────────
+   스튜디오 바 — 표준·전문가(그리고 초보) 셸의 톱바 한 줄, 그 메뉴 팝업, 「보기」 메뉴, 캔버스 플로팅 툴바.
+   2026-09-03 개편의 마지막 발언자다. 앞선 세대(figma-editor/01·02·05·07, editor-ui-modes,
+   shell-density, responsive-a, database/tabs-b-shell-layout)가 같은 선택자에 남긴 값은 여기서 덮는다.
+
+   원칙
+   · 토큰만 쓴다(hex 0 · !important 0). 색은 tokens.css 의 cool white + indigo 사다리.
+   · 32px 컨트롤 하나의 리듬. 글자 버튼(메뉴·도구)도, 아이콘 버튼도, 명령 팔레트도 32px.
+   · 무게는 셋뿐 — 채운 인디고(▶ 테스트) / 테두리(스튜디오·명령 팔레트) / 고스트(나머지).
+   · 그리드 3열: 왼쪽(파일·자료) | 가운데(명령 팔레트) | 오른쪽(실행·화면·세션).
+   ───────────────────────────────────────────────────────────────────────────────────────── */
+
+/* ── 1. 바 ─────────────────────────────────────────────────────────────────────────────── */
+.topbar {
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.oprn-menu-bar.studio-bar {
+  align-items: center;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+  box-sizing: border-box;
+  column-gap: 12px;
+  display: grid;
+  flex-wrap: nowrap;
+  /* 양 끝은 내용 폭(max-content) — 왼쪽 묶음이 길어져도 가운데 칩 밑으로 흘러들지 않는다.
+     (1280 전문가에서 찾기 버튼 위에 명령 팔레트가 얹혀 클릭을 가로챈 실측 — 2026-09-03.)
+     가운데 칩은 남는 폭 안에서 중앙, 폭이 모자라면 칩이 먼저 줄어든다. */
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  height: 48px;
+  min-height: 48px;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.studio-bar-lead,
+.studio-bar .editor-topbar-trailing {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  min-width: 0;
+}
+
+.studio-bar-lead {
+  justify-self: start;
+}
+
+.studio-bar-center {
+  display: flex;
+  justify-content: center;
+  justify-self: stretch;
+  min-width: 0;
+}
+
+.studio-bar .editor-topbar-trailing {
+  gap: 6px;
+  justify-self: end;
+}
+
+/* ── 2. 브랜드 ─────────────────────────────────────────────────────────────────────────── */
+.studio-bar .editor-product-brand {
+  color: var(--text-1);
+  font: 700 13px/1 var(--font-ui);
+  gap: 6px;
+  letter-spacing: 0;
+  margin-right: 4px;
+  padding: 0 4px;
+}
+
+.studio-bar .editor-product-brand-mark {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+/* ── 3. 글자 버튼(메뉴 트리거·도구) ───────────────────────────────────────────────────────── */
+.studio-bar .oprn-menu-item,
+.studio-tool-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 13px/1 var(--font-ui);
+  gap: 6px;
+  height: 32px;
+  margin: 0;
+  min-height: 32px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.studio-bar .oprn-menu-item:hover,
+.studio-bar .oprn-menu-item:focus-visible,
+.studio-tool-button:hover,
+.studio-tool-button:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+
+.studio-bar .oprn-menu-item:focus-visible,
+.studio-tool-button:focus-visible,
+.studio-icon-button:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-bar .oprn-menu-item[aria-expanded="true"] {
+  background: var(--bg-active);
+}
+
+.studio-bar .oprn-menu-item-chevron {
+  align-items: center;
+  color: var(--text-3);
+  display: inline-flex;
+  margin-left: -2px;
+}
+
+.studio-bar .oprn-menu-item-chevron svg {
+  height: 14px;
+  width: 14px;
+}
+
+.studio-tool-button svg,
+.studio-bar .oprn-menu-item > svg {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.studio-tool-button {
+  padding: 0 10px 0 8px;
+}
+
+/* 프로젝트 이름 — 굵게, 길면 말줄임. 톱바가 「지금 어느 프로젝트인가」를 말하는 유일한 자리다. */
+.studio-project-button .oprn-menu-item-label {
+  font-weight: 700;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 자료 묶음은 저장 버튼 뒤 헤어라인 하나로 나눈다. */
+.studio-bar-lead > [data-testid="toolbar-database"] {
+  margin-left: 10px;
+  position: relative;
+}
+
+.studio-bar-lead > [data-testid="toolbar-database"]::before {
+  background: var(--border-subtle);
+  bottom: 8px;
+  content: "";
+  left: -7px;
+  position: absolute;
+  top: 8px;
+  width: 1px;
+}
+
+/* ── 4. 아이콘 버튼 ────────────────────────────────────────────────────────────────────── */
+.studio-icon-button,
+.studio-bar .team-history-button,
+.studio-bar .team-identity-button {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0;
+  height: 32px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 32px;
+}
+
+.studio-icon-button:hover,
+.studio-icon-button:focus-visible,
+.studio-icon-button[aria-expanded="true"],
+.studio-bar .team-history-button:hover,
+.studio-bar .team-history-button:focus-visible,
+.studio-bar .team-history-button[aria-expanded="true"],
+.studio-bar .team-identity-button:hover,
+.studio-bar .team-identity-button:focus-visible,
+.studio-bar .team-identity-button[aria-expanded="true"] {
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+  outline: none;
+}
+
+.studio-icon-button svg,
+.studio-bar .team-topbar-icon {
+  height: 18px;
+  width: 18px;
+}
+
+.studio-icon-button[aria-pressed="true"] {
+  background: var(--bg-active);
+  color: var(--text-1);
+}
+
+/* 저장 버튼 + 자동 저장 점. 점의 폭은 고정이라 어떤 상태에서도 옆 버튼이 움직이지 않는다. */
+.studio-save-button {
+  position: relative;
+}
+
+.studio-save-dot {
+  background: var(--text-3);
+  border-radius: 50%;
+  bottom: 6px;
+  box-shadow: 0 0 0 2px var(--bg-base);
+  height: 7px;
+  position: absolute;
+  right: 6px;
+  transition: background var(--transition-fast);
+  width: 7px;
+}
+
+.studio-save-button[data-autosave-kind="saved"] .studio-save-dot {
+  background: var(--success);
+}
+
+.studio-save-button[data-autosave-kind="pending"] .studio-save-dot,
+.studio-save-button[data-autosave-kind="saving"] .studio-save-dot {
+  background: var(--warning);
+}
+
+.studio-save-button[data-autosave-kind="error"] .studio-save-dot {
+  background: var(--danger);
+}
+
+.studio-bar .topbar-save-status {
+  box-sizing: border-box;
+  flex: 0 1 200px;
+  max-width: 200px;
+  min-width: 0;
+  margin-left: 2px;
+  overflow: visible;
+}
+
+.studio-bar .topbar-save-status .db-connection-status-group {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow: visible;
+}
+
+.studio-bar .topbar-save-status .db-connection-status {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 톱바 칩은 「무슨 일이 났나」 한 마디만 — 연결 라벨까지 붙이면 110px 에 두 문장이 들어가
+   「온라… 이 …」 처럼 둘 다 잘렸다(2026-09-24 visual QA). 연결 상태는 칩 title 이 말한다. */
+.studio-bar .topbar-save-status .db-connection-label {
+  display: none;
+}
+
+.studio-bar .topbar-save-status .db-autosave-state {
+  white-space: nowrap;
+}
+
+.studio-bar .topbar-save-status .db-autosave-retry-button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.studio-bar .topbar-ai-studio-icon {
+  display: none;
+}
+
+/* AI 연결 상태 칩 — 톱바에 상시 붙는다.
+   저장 칩(.topbar-save-status)은 조용할 때 접지만, 이 칩은 ready 에서도 남는다:
+   연결 여부는 "처음 한 번 반드시 물어봐야 하는 것" 이고, 안 보이면 정상이라는 학습이
+   끝난 사용자는 진짜 문제일 때도 못 본다. */
+.studio-bar .ai-connection-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 auto;
+  max-width: 220px;
+  min-width: 0;
+  margin-left: 2px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* 누를 수 있는 상태(ready 아님)에서만 손가락 커서와 hover 를 준다 —
+   누를 수 없는데 hover 가 반응하면 "눌렀는데 아무 일도 안 일어난다" 로 읽힌다. */
+.studio-bar .ai-connection-chip.is-actionable {
+  cursor: pointer;
+}
+
+.studio-bar .ai-connection-chip.is-actionable:hover {
+  background: var(--surface);
+  border-color: var(--text-muted);
+}
+
+.studio-bar .ai-connection-chip:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--accent));
+  outline-offset: 1px;
+}
+
+.studio-bar .ai-connection-chip .ai-connection-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-bar .ai-connection-chip .ai-connection-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* 상태별 색. 확인 중(회색)과 정상(초록)이 확실히 갈려야 한다 —
+   둘 다 회색이면 "확인 중" 에서 영영 기다리는 것처럼 보인다. */
+.studio-bar .ai-connection-chip[data-kind="ready"] {
+  color: var(--status-success);
+  border-color: color-mix(in srgb, var(--status-success) 35%, var(--border));
+}
+
+.studio-bar .ai-connection-chip[data-kind="ready"] .ai-connection-dot {
+  opacity: 1;
+}
+
+.studio-bar .ai-connection-chip[data-kind="checking"] {
+  color: var(--status-warning);
+}
+
+.studio-bar .ai-connection-chip[data-kind="disconnected"],
+.studio-bar .ai-connection-chip[data-kind="offline"],
+.studio-bar .ai-connection-chip[data-kind="error"] {
+  color: var(--status-error);
+  border-color: color-mix(in srgb, var(--status-error) 35%, var(--border));
+}
+
+.studio-bar .topbar-ai-studio-label {
+  display: inline;
+}
+
+/* ── 5. 명령 팔레트(가운데) ───────────────────────────────────────────────────────────── */
+.studio-bar .studio-command-center {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-3);
+  flex: 0 1 240px;
+  font: 500 12.5px/1 var(--font-ui);
+  gap: 8px;
+  justify-content: flex-start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0 8px 0 10px;
+}
+
+/* 저장 상태 폭은 1500px 이하에서 먼저 줄인다. */
+@media (max-width: 1500px) {
+  .studio-bar .topbar-save-status {
+    flex-basis: 165px;
+    max-width: 165px;
+  }
+}
+
+/* 1599px까지 명령 칩은 아이콘으로 유지한다. 1501px 경계에서 키캡만 남기면
+   표준 모드에서 키캡이 버튼 밖으로 흘러 실행 묶음과 겹친다. 1600px부터
+   아이콘·라벨·키캡을 함께 보여 줄 수 있는 폭이 생긴다. */
+@media (max-width: 1599px) {
+  .studio-bar .studio-command-center {
+    flex: 0 0 32px;
+    justify-content: center;
+    min-width: 32px;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-command-center .workspace-command-chip-label,
+  .studio-command-center .workspace-command-chip-key {
+    display: none;
+  }
+}
+
+.studio-bar .studio-command-center:hover,
+.studio-bar .studio-command-center:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--border-strong);
+  color: var(--text-2);
+}
+
+.studio-command-center .workspace-command-chip-icon {
+  align-items: center;
+  display: inline-flex;
+  font-size: inherit;
+}
+
+.studio-command-center .workspace-command-chip-icon svg {
+  height: 16px;
+  width: 16px;
+}
+
+.studio-command-center .workspace-command-chip-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studio-command-center .workspace-command-chip-key {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--text-3);
+  font: 600 10.5px/1 var(--font-mono);
+  padding: 3px 5px;
+}
+
+/* ── 6. 실행 묶음: ▶ 테스트 | ⚔ ─────────────────────────────────────────────────────── */
+.studio-run-group {
+  align-items: stretch;
+  display: inline-flex;
+  height: 32px;
+}
+
+.studio-run-group .topbar-test-play-wrap {
+  display: inline-flex;
+}
+
+.studio-run-group .topbar-test-play {
+  border: 0;
+  border-radius: var(--radius-s) 0 0 var(--radius-s);
+  font: 700 13px/1 var(--font-ui);
+  height: 32px;
+  padding: 0 12px;
+}
+
+.studio-run-group .topbar-test-play:hover,
+.studio-run-group .topbar-test-play:focus-visible {
+  filter: none;
+  background: var(--accent-hover);
+  outline: none;
+}
+
+.studio-run-group .topbar-test-play:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
+.studio-run-group .topbar-test-play-glyph {
+  font-size: 10px;
+}
+
+.studio-run-group .quick-battle-test-button {
+  background: var(--accent-muted);
+  border: 0;
+  border-left: 1px solid var(--bg-base);
+  border-radius: 0 var(--radius-s) var(--radius-s) 0;
+  color: var(--accent);
+}
+
+.studio-run-group .quick-battle-test-button:hover,
+.studio-run-group .quick-battle-test-button:focus-visible {
+  background: var(--accent-border);
+  border-color: var(--bg-base);
+  color: var(--accent);
+}
+
+/* 스튜디오 토글 — 테두리 무게. 켜지면 인디고(01-shell-topbar-team.css 의 .is-on 유지). */
+.studio-bar .topbar-ai-studio {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  font: 600 13px/1 var(--font-ui);
+  height: 32px;
+  padding: 0 10px;
+}
+
+.studio-bar .topbar-ai-studio:hover,
+.studio-bar .topbar-ai-studio:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+/* 위 두 규칙(0,2,0)이 01-shell-topbar-team.css 의 .is-on 배경을 덮어 켜진 상태가 연회색 바탕에
+   흰 글씨(--on-accent)가 되어 읽을 수 없었다(2026-09-24 visual QA). 켜짐은 여기서 다시 말한다. */
+.studio-bar .topbar-ai-studio.is-on {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+}
+
+.studio-bar .topbar-ai-studio.is-on:hover,
+.studio-bar .topbar-ai-studio.is-on:focus-visible {
+  background: var(--accent-hover);
+  border-color: transparent;
+}
+
+/* ── 7. 「보기 ▾」 버튼 ────────────────────────────────────────────────────────────────── */
+.studio-bar .workspace-panels-button {
+  gap: 5px;
+  padding: 0 8px;
+}
+
+.workspace-panels-icon {
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+}
+
+.workspace-panels-icon svg {
+  height: 18px;
+  width: 18px;
+}
+
+/* 세션 묶음(도움말·기록·신원·AI 설정·전체화면)은 헤어라인으로 나눈다. */
+.studio-icon-cluster {
+  align-items: center;
+  border-left: 1px solid var(--border-subtle);
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 2px;
+  padding-left: 8px;
+}
+
+/* ── 8. 메뉴 팝업 ─────────────────────────────────────────────────────────────────────── */
+.oprn-menu-popup {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  box-sizing: border-box;
+  color: var(--text-1);
+  max-height: calc(100vh - 24px);
+  max-width: calc(100vw - 24px);
+  min-width: 232px;
+  overflow: auto;
+  padding: 6px;
+  z-index: var(--z-popover);
+}
+
+.oprn-menu-popup.open {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.oprn-menu-command {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 500 13px/1.3 var(--font-ui);
+  gap: 10px;
+  min-height: 32px;
+  overflow-wrap: normal;
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.oprn-menu-command:hover:not(:disabled),
+.oprn-menu-command:focus-visible:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: transparent;
+  color: var(--text-1);
+  outline: none;
+}
+
+.oprn-menu-command:focus-visible:not(:disabled) {
+  box-shadow: var(--focus-ring);
+}
+
+.oprn-menu-command:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.oprn-menu-command-icon {
+  align-items: center;
+  color: var(--text-3);
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.oprn-menu-command-icon svg {
+  height: 16px;
+  width: 16px;
+}
+
+.oprn-menu-command-label {
+  flex: 1 1 auto;
+}
+
+/* 하위 메뉴(예제 프로젝트 ▸) */
+.oprn-menu-command[aria-haspopup="menu"]::after {
+  color: var(--text-3);
+  content: "›";
+  font-size: 15px;
+  line-height: 1;
+  margin-left: auto;
+}
+
+.oprn-menu-separator {
+  background: var(--border-subtle);
+  border: 0;
+  box-shadow: none;
+  height: 1px;
+  margin: 4px 6px;
+}
+
+/* ── 9. 「보기」 메뉴 — 패널 토글 + 편집 모드 라디오 ────────────────────────────────────── */
+.workspace-panels-menu {
+  gap: 1px;
+  min-width: 296px;
+}
+
+.workspace-menu-group {
+  color: var(--text-3);
+  font: 700 11px/1 var(--font-ui);
+  letter-spacing: 0.02em;
+  padding: 8px 10px 4px;
+  text-transform: none;
+}
+
+.workspace-menu-group + .workspace-menu-group,
+.workspace-ui-mode-item + .workspace-menu-group,
+.workspace-panel-row + .workspace-menu-group {
+  margin-top: 6px;
+}
+
+.workspace-panel-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+.workspace-panel-row .workspace-panel-toggle {
+  flex: 1 1 auto;
+}
+
+.workspace-panel-check {
+  align-items: center;
+  border: 1.5px solid var(--border-strong);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--on-accent);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.workspace-panel-toggle.is-active .workspace-panel-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.workspace-panel-check svg {
+  height: 12px;
+  width: 12px;
+}
+
+.workspace-panel-dock-chip {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 11px/1 var(--font-ui);
+  margin-right: 4px;
+  padding: 5px 8px;
+}
+
+.workspace-panel-dock-chip:hover,
+.workspace-panel-dock-chip:focus-visible {
+  background: var(--bg-hover);
+  border-color: var(--border-strong);
+  color: var(--text-1);
+  outline: none;
+}
+
+.workspace-ui-mode-item {
+  align-items: flex-start;
+  padding: 8px 10px;
+  white-space: normal;
+}
+
+.workspace-ui-mode-radio {
+  border: 1.5px solid var(--border-strong);
+  border-radius: 50%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: 16px;
+  margin-top: 1px;
+  position: relative;
+  width: 16px;
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-radio {
+  border-color: var(--accent);
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-radio::after {
+  background: var(--accent);
+  border-radius: 50%;
+  content: "";
+  height: 8px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+}
+
+.workspace-ui-mode-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.workspace-ui-mode-label {
+  font-weight: 600;
+}
+
+.workspace-ui-mode-item.is-active .workspace-ui-mode-label {
+  color: var(--accent);
+}
+
+/* ── 10. 캔버스 플로팅 툴바(배율 · ⋯ · AI 빠른 작업 · 맵 저장) ──────────────────────────── */
+
+/* ── 11. 전문가 = 촘촘하게 ───────────────────────────────────────────────────────────── */
+
+/* ── 12. 좁은 뷰포트(1024~1439) — 폭은 줄이고 클릭 경로는 남긴다 ───────────────────────── */
+@media (max-width: 1439px) {
+  /* 명령 아이콘의 32px을 먼저 확보하고, 왼쪽 저장 상태가 남은 폭 안에서 줄어든다. */
+  .oprn-menu-bar.studio-bar {
+    column-gap: 4px;
+    grid-template-columns: minmax(0, 1fr) 32px minmax(0, max-content);
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .studio-bar-center {
+    display: flex;
+    width: 32px;
+  }
+
+  .studio-bar-lead {
+    /* justify-self:start의 내용 폭이 그리드를 넘으면 찾기를 명령 아이콘이 덮는다.
+       컨트롤을 자르지 않고 flex 항목(저장 상태)을 실제 그리드 폭 안에서 줄인다. */
+    width: 100%;
+  }
+
+  .studio-run-group .topbar-test-play-label {
+    display: none;
+  }
+
+  .studio-run-group .topbar-test-play {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .topbar-ai-studio {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .topbar-ai-studio-label {
+    display: none;
+  }
+
+  .studio-bar .topbar-ai-studio-icon {
+    display: inline-flex;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .studio-bar .workspace-panels-label {
+    display: none;
+  }
+
+  .studio-bar .workspace-panels-button {
+    gap: 0;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    width: 32px;
+  }
+
+  .studio-bar .workspace-panels-button .oprn-menu-item-chevron {
+    display: none;
+  }
+
+}
+
+@media (max-width: 1279px) {
+  .studio-bar .editor-product-brand-text {
+    display: none;
+  }
+
+  .studio-bar .editor-product-brand {
+    margin-right: 0;
+  }
+
+  .studio-project-button .oprn-menu-item-label {
+    max-width: 140px;
+  }
+
+}
+
+@media (max-width: 1119px) {
+  .studio-tool-button .studio-tool-button-label,
+  .studio-bar .workspace-panels-label {
+    display: none;
+  }
+
+  .studio-tool-button {
+    flex: 0 0 32px;
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-bar .workspace-panels-button {
+    padding: 0;
+  }
+
+  .studio-bar .topbar-save-status {
+    flex-basis: 145px;
+    max-width: 145px;
+  }
+}
+
+/* ── 13. 태블릿 폭(<960) — 세 묶음이 한 줄에 들어가야 한다 ────────────────────────────────
+   왼쪽 401px + 오른쪽 441px 이 900px 아래로 내려가면 그리드의 minmax(0,1fr) 왼쪽 칸이 내용을
+   못 담아 도구·저장·검색·테스트·이벤트 버튼이 한 자리에 포개졌다(2026-09-24 visual QA, 768px).
+   이름표를 먼저 걷는다 — AI 연결 칩은 점만(title 이 이름), 간격은 2px, 전체화면은
+   브라우저가 이미 제공하므로 숨긴다. */
+@media (max-width: 959px) {
+  .studio-bar .ai-connection-chip {
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-bar .ai-connection-chip .ai-connection-label {
+    display: none;
+  }
+
+  .studio-bar-lead,
+  .studio-bar .editor-topbar-trailing {
+    gap: 2px;
+  }
+
+  .studio-bar .oprn-window-control {
+    display: none;
+  }
+}
+
+/* 키보드 포커스 링 — 01-shell-topbar-team.css 가 이 버튼들의 :focus-visible 에서 outline 을 지우고
+   대신할 표시를 안 줘서 Tab 으로 어디 있는지 보이지 않았다(2026-09-24 visual QA). 다른 톱바 버튼과 같은 링. */
+.studio-bar .topbar-ai-studio:focus-visible,
+.studio-bar .team-history-button:focus-visible,
+.studio-bar .team-identity-button:focus-visible,
+.studio-bar .ai-connection-chip:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}

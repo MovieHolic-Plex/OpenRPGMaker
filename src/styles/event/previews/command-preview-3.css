@@ -1,0 +1,913 @@
+/* event 표면 — previews/command-preview-3.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 라벨은 오버레이(검정~흰색 무엇이든) 위에 얹히니 자체 배경으로 대비를 확보한다. */
+.ecp-screen-effect-stage .ecp-fx-label {
+  z-index: 2;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 999px;
+  background: var(--bg-glass);
+  box-shadow: 0 0 0 1px var(--border-subtle);
+}
+
+.ecp-screen-effect-play {
+  appearance: none;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-1);
+  font: 700 12px/1 var(--font-ui);
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.ecp-screen-effect-play:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.ecp-screen-effect-play:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.ecp-screen-effect-stage[data-play-state="playing"] .ecp-screen-effect-play {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ecp-screen-effect-error {
+  max-width: 240px;
+  color: var(--danger);
+  font: 600 11px/1.4 var(--font-ui);
+  text-align: center;
+}
+
+/* ── 의도 카드 + 시간 프리셋 칩 (D6) ─────────────────────────────────
+   `날씨 설정` 모달은 의도 카드·프리셋 칩·슬라이더를 갖는데 화면 효과는 필드 3줄뿐이었다.
+   카드 자체는 기존 `.m2-command-intent-card` 를 그대로 쓰고, 여기서는 배치만 얹는다. */
+.m2-screen-effect-intent {
+  margin-bottom: var(--space-3);
+}
+
+.m2-screen-effect-duration-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.m2-screen-effect-duration-chip {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.m2-screen-effect-duration-chip:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.m2-screen-effect-duration-chip[aria-pressed="true"] {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.m2-screen-effect-duration-chip:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+/* 값을 읽지 않는 효과(fadeIn/fadeOut)에서는 `값` 행을 감춘다 — .field 는 flex/grid 라
+   [hidden] 이 display 규칙에 져서 그냥 두면 계속 보인다(D9). */
+.event-editor .field[data-testid="m2-screen-effect-value-field"][hidden] {
+  display: none;
+}
+
+.event-editor .event-inspector-preview .event-command-preview {
+  max-inline-size: 100%;
+}
+
+/* 빠른 저작(탭 1) 저작면 — 말하기 샘플 무대 / 숫자 입력 칩 / 대기 타임라인 / 상점 카탈로그 접기.
+   계획: .omo/plans/event-editor-quick-authoring-adversarial-review.md
+   원칙: 미리보기는 식별 가능해야 한다. 같은 숫자를 두 번 쓴 요약 카드는 미리보기가 아니다. */
+/* ── 말하기: 빈 본문이어도 샘플 대사가 창에 보인다 ─────────────── */
+.ecp-message-sample-note {
+  margin-top: 6px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px dashed var(--border-strong, rgba(42, 37, 33, 0.4));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, transparent);
+  color: var(--text-2, #5B5347);
+  font: 600 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+.ecp-message-window[data-sample="true"] .ecp-message-body {
+  opacity: 0.92;
+}
+
+/* ── 고르기: 변수 표시명이 자리수 미리보기를 삼키지 않는다 ───────── */
+.ecp-number-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ecp-number-meta-digits {
+  flex: 0 0 auto;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ecp-number-meta-variable {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.18));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 90%, transparent);
+  color: var(--text-2, #5B5347);
+}
+
+/* ── 흐름: 대기는 타임라인이다 ───────────────────────────────── */
+.ecp-wait-timeline {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ecp-wait-rail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ecp-wait-node {
+  flex: 0 0 auto;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
+  background: var(--bg-raised, #FFFDF8);
+  color: var(--text-2, #5B5347);
+  font: 600 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.ecp-wait-span {
+  flex: 1 1 auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong, rgba(42, 37, 33, 0.4));
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent, #C2703D) 26%, transparent) var(--wait-span, 40%),
+    color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, transparent) var(--wait-span, 40%)
+  );
+}
+
+.ecp-wait-span.is-variable {
+  border-style: dashed;
+}
+
+.ecp-wait-span-label {
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+
+.ecp-wait-ticks {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  color: var(--text-3, #7A705F);
+  font: 500 10px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.ecp-wait-tick.is-passed {
+  color: var(--text-1, #2A2521);
+  font-weight: 700;
+}
+
+/* 지도 · 화면 효과(탭 3) 저작면 — 효과 프레임 무대 / 카메라 뷰포트 / 칩셋 지형 변경.
+   계획: .omo/plans/event-editor-map-screen-effects-adversarial-review.md
+   원칙: 화면을 칠하는 명령은 화면을 보여 준다. 파라미터를 나열한 토큰 카드는 미리보기가 아니다. */
+/* ── 효과 프레임: 시작 → 중간 → 끝 미니 캔버스 ─────────────────── */
+.ecp-fx-frames-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 8px 12px;
+}
+
+.ecp-fx-frames {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.ecp-fx-frame {
+  /* 세 프레임이 한 줄에 들어간다 — 좁은 프리뷰 열에서도 시작/중간/끝을 나란히 본다. */
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.ecp-fx-canvas {
+  display: block;
+  width: 100%;
+  max-width: 128px;
+  height: auto;
+  border-radius: 5px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.28));
+  background: var(--bg-inset, #EFE9DC);
+  image-rendering: pixelated;
+}
+
+.ecp-fx-frame-label {
+  font: 600 10px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+  letter-spacing: 0.01em;
+}
+
+.ecp-fx-warning {
+  margin-top: 2px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--warn-border, rgba(176, 96, 24, 0.45));
+  background: color-mix(in srgb, var(--warn-bg, #F7E4C9) 80%, transparent);
+  color: var(--warn-text, #7A4408);
+  font: 700 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+/* 1024px 셸에서도 세 프레임을 유지한다 — 프레임 폭만 줄어든다. */
+@media (max-width: 1180px) {
+  .ecp-fx-frames {
+    gap: 4px;
+  }
+}
+
+/* ── 지형 변경: 칩셋 크롭 + 같은 줄 팔레트 ─────────────────────── */
+.ecp-tile-chipsel-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px 14px;
+}
+
+.ecp-tile-chipsel-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ecp-tile-chipsel-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ecp-tile-chipsel-title {
+  font: 700 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-1, #2A2521);
+}
+
+.ecp-tile-chipsel-place {
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--text-2, #5C5348);
+}
+
+.ecp-tile-chip {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.28));
+  background-color: var(--bg-inset, #EFE9DC);
+  image-rendering: pixelated;
+}
+
+.ecp-tile-chip.is-selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.ecp-tile-chip.is-empty {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--bg-surface, #FFFDF8) 0 5px,
+    var(--bg-inset, #EFE9DC) 5px 10px
+  );
+  color: var(--text-2, #5C5348);
+  width: 56px;
+  height: 56px;
+}
+
+.ecp-tile-chip-empty-mark {
+  font: 700 18px/1 Tahoma, "Malgun Gothic", sans-serif;
+}
+
+.ecp-tile-chip-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 6px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.18));
+}
+
+.ecp-tile-chip-strip-item.is-empty {
+  width: 28px;
+  height: 28px;
+}
+
+.event-command-text-preview-canvas .event-command-preview {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  gap: 7px;
+  min-height: 0;
+  padding: 0;
+}
+
+.event-command-text-preview-canvas .ecp-caption {
+  display: none;
+}
+
+.event-command-text-preview-canvas .ecp-stage {
+  aspect-ratio: 16 / 10;
+  min-height: 150px;
+}
+
+.event-command-edit-columns:has(.event-command-text-editor) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-page-preview {
+  display: grid;
+  gap: 8px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+  padding: 10px 2px 12px;
+}
+
+.event-page-preview > .event-script-live-stage {
+  min-height: 0;
+  overflow: auto;
+}
+
+.event-script-preview-disclaimer {
+  background: color-mix(in srgb, var(--status-warning, var(--warning)) 10%, var(--surface-recessed, var(--bg-raised)));
+  border: 1px solid color-mix(in srgb, var(--status-warning, var(--warning)) 42%, var(--border-soft, var(--border-subtle)));
+  border-radius: 6px;
+  color: var(--text-2);
+  font: 600 11px/1.45 var(--font-ui);
+  padding: 7px 9px;
+}
+
+.event-script-live-controls {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.event-script-live-position {
+  color: var(--text-dim, var(--text-2));
+  font: 700 11px/16px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  margin-left: auto;
+}
+
+.event-script-live-stage {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  min-height: 150px;
+  padding: 8px;
+}
+
+.event-script-live-caption {
+  color: var(--text-dim, var(--text-2));
+  font: 600 11px/1.4 "Malgun Gothic", sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- [P2] 이동 경로: 실제 맵 캔버스 위 경로 오버레이 ---- */
+.ecp-move-map-overlay {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  max-height: 240px;
+  overflow: auto;
+  padding: 6px 6px 20px;
+  /* .ecp-map-caption 이 absolute 로 잡히는 프리뷰 스킨과 함께 쓰여도 밖으로 새지 않게 */
+  position: relative;
+}
+
+.ecp-move-map-overlay .ecp-map-caption {
+  bottom: 2px;
+  left: 6px;
+  position: absolute;
+}
+
+.ecp-move-map-canvas {
+  image-rendering: pixelated;
+}
+
+.inn-command-dialog-mock,
+.ecp-inn-window {
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, rgba(42,37,33,.20));
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 var(--shadow-pop);
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.inn-command-dialog-title,
+.ecp-inn-title {
+  color: var(--oprn-command-blue, var(--accent));
+  font: 700 13px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-dialog-note,
+.ecp-inn-note {
+  color: var(--text-2, #5C5348);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-dialog-question,
+.ecp-inn-question {
+  color: var(--text-1, #2A2521);
+  font: 600 13px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+.inn-command-dialog-actions,
+.ecp-inn-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.inn-command-dialog-choice,
+.ecp-inn-choice {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 6px;
+  color: var(--text-2, #5C5348);
+  font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 56px;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+.inn-command-dialog-choice.selected,
+.ecp-inn-choice.selected {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ecp-inn-stage {
+  align-items: center;
+  display: grid;
+  justify-items: stretch;
+  min-height: 140px;
+}
+
+.ecp-inn-price-chip {
+  color: var(--text-1);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 2px;
+}
+
+.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: block;
+}
+
+/* 미리보기·플로우는 같은 콘텐츠 트랙을 쓰는 파생 보기다. 플로우는 예전에 도구 팝오버
+   안에서 미리보기 **위에** 떠 재생 컨트롤을 덮었다 — 이제 형제 보기라 겹치지 않는다. */
+.event-editor .event-contents-fieldset > .event-page-preview-host,
+.event-editor .event-contents-fieldset > .event-page-flow-host {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* `[hidden]` 은 (0,4,0) 이라 위 display:grid 규칙 (0,3,0) 을 이미 이긴다 — 중요 플래그는 불필요했다. */
+.event-editor .event-contents-fieldset > .event-page-preview-host[hidden],
+.event-editor .event-contents-fieldset > .event-page-flow-host[hidden] {
+  display: none;
+}
+
+.shop-editor-preview-slot > .event-command-preview-panel { display: block; width: 100%; max-height: none; padding: 0; border: 0; background: transparent; }
+
+.event-command-edit-body .change-parameters-main,
+.event-command-edit-body .actor-m2-main,
+.event-command-edit-body .page3-command-main,
+.event-command-edit-body .change-equipment-preview,
+.event-command-edit-body .change-parameters-preview,
+.event-command-edit-body .actor-m2-preview,
+.event-command-edit-body .page3-command-preview {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.actor-m2-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.actor-m2-preview-line {
+  color: var(--text-1, #2A2521);
+  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.actor-m2-preview-actor,
+.actor-m2-preview-copy {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.actor-m2-preview-copy {
+  align-items: flex-start;
+  display: grid;
+  gap: 2px;
+}
+
+.actor-m2-preview-stage {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  min-height: 88px;
+  overflow: hidden;
+  position: relative;
+}
+
+.actor-m2-stage-label {
+  color: var(--text-2);
+  font: 700 10px/1 var(--font-ui);
+  text-transform: none;
+  z-index: 1;
+}
+
+.actor-m2-preview-error {
+  color: var(--danger);
+  font: 600 11px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+/* 색조 — 프리셋 색은 06-page-modern-forms.css 의 .page3-tint-preview[data-tint] 규칙을 재사용하고,
+   직접 입력 색만 인라인 변수로 얹는다. */
+.actor-m2-preview-stage .actor-m2-effect-swatch[data-tint="custom"] {
+  background: var(--actor-m2-effect-color, var(--accent));
+}
+
+/* 날씨 — 강도를 오버레이 불투명도로 반영(06 의 고정 opacity 를 덮어쓴다). */
+.actor-m2-preview-stage .actor-m2-weather-overlay[data-weather] {
+  opacity: calc(0.2 + var(--actor-m2-weather-intensity, 0.5) * 0.75);
+  transition: opacity var(--transition-med);
+}
+
+.actor-m2-preview-stage .actor-m2-weather-overlay[data-weather="none"] {
+  opacity: 0;
+}
+
+.actor-m2-preview-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.actor-m2-preview-badge {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 600 11px/1.7 var(--font-ui);
+  padding-inline: var(--space-2);
+  white-space: nowrap;
+}
+
+/* 동작 최소화 — 색·강도 정보는 유지하고 움직임만 멈춘다. */
+@media (prefers-reduced-motion: reduce) {
+  .actor-m2-fog-layer,
+  .actor-m2-preview-stage .actor-m2-weather-overlay[data-weather] {
+    animation: none;
+    transition: none;
+  }
+}
+
+.page3-command-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+/* 미정의 --bg-sunken 크림 fallback 을 쓰면 쿨 화이트 테마에서 무대만 누렇게 떴다 — 토큰으로 정리. */
+.page3-preview-stage {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-inset) 70%, var(--bg-raised)), var(--bg-inset));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
+  border-radius: 6px;
+  min-height: 88px;
+  overflow: hidden;
+  position: relative;
+}
+
+.page3-preview-stage-label {
+  color: var(--text-2, #5C5348);
+  font: 600 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 8px;
+  letter-spacing: 0.04em;
+  position: absolute;
+  text-transform: uppercase;
+  top: 8px;
+}
+
+.page3-preview-lighting,
+.page3-preview-light,
+.page3-preview-weather,
+.page3-preview-animation,
+.page3-preview-picture {
+  min-height: 96px;
+}
+
+.page3-preview-lighting-veil {
+  inset: 0;
+  position: absolute;
+}
+
+.page3-preview-lighting-label,
+.page3-preview-weather-label {
+  color: var(--text-1, #2A2521);
+  font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 8px;
+  letter-spacing: 0.05em;
+  position: absolute;
+  text-shadow: 0 1px 2px color-mix(in srgb, rgba(60,48,32,.55) 100%, transparent);
+  top: 8px;
+}
+
+.page3-preview-light-glow {
+  border-radius: 999px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.page3-preview-weather-none {
+  background: linear-gradient(180deg, #2a3344, #171c26);
+}
+
+.page3-preview-weather-rain {
+  background:
+    repeating-linear-gradient(
+      -18deg,
+      transparent 0 10px,
+      color-mix(in srgb, #8ec8ff 35%, transparent) 10px 11px
+    ),
+    linear-gradient(180deg, #243147, #121820);
+}
+
+.page3-preview-weather-storm {
+  background:
+    repeating-linear-gradient(
+      -22deg,
+      transparent 0 8px,
+      color-mix(in srgb, #b8d8ff 45%, transparent) 8px 9px
+    ),
+    radial-gradient(circle at 70% 20%, color-mix(in srgb, #fff 35%, transparent), transparent 28%),
+    linear-gradient(180deg, #1c2434, #0e1218);
+}
+
+.page3-preview-weather-snow {
+  background-color: #1a2230;
+  background-image:
+    radial-gradient(circle at 20% 30%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 50%, #fff 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 40% 75%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 20%, #fff 0 1px, transparent 2px);
+}
+
+.page3-preview-weather-fog {
+  background: linear-gradient(180deg, color-mix(in srgb, #c9d4e8 30%, #1d2533), color-mix(in srgb, #9aabbf 40%, #121820));
+}
+
+/* 편집 폼의 그림 마커.
+   규칙이 아예 없어서 position: static 이었고, TS 가 넣는 marker.style.left/top 이 무효였다 —
+   좌표를 바꿔도 미리보기가 움직이지 않았다.
+   앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
+   확대·회전·투명도는 TS 가 인라인으로 얹는다. */
+.page3-preview-picture-marker {
+  max-height: 70%;
+  max-width: 70%;
+  position: absolute;
+  transform-origin: top left;
+}
+
+.page3-preview-picture-marker.is-missing {
+  border: 1px dashed var(--border-default, #C9BFAE);
+  border-radius: 4px;
+  display: grid;
+  min-height: 40px;
+  place-items: center;
+  width: 56px;
+}
+
+.page3-preview-picture-img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.page3-preview-picture-missing {
+  color: var(--text-2, #5C5348);
+  font: 700 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ---- showAnimation 단일 표시면 ----
+   고르는 곳과 재생되는 곳이 한 표면에 있다. 스테이지 바탕은 데이터베이스 애니메이션
+   스테이지와 같은 어두운 작업 캔버스를 쓴다(같은 애니메이션이 두 얼굴을 갖지 않게).
+   셀 배치 프리미티브(.db-animation-stage-cells / -cell-sprite)도 그쪽과 공유한다. */
+.page3-anim-surface {
+  --page3-anim-ground: #1d2024;
+  --page3-anim-line: rgba(255, 255, 255, 0.12);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.page3-anim-stage {
+  background: var(--page3-anim-ground);
+  background-image:
+    linear-gradient(90deg, transparent calc(50% - 1px), var(--page3-anim-line) 50%, transparent calc(50% + 1px)),
+    linear-gradient(0deg, transparent calc(50% - 1px), var(--page3-anim-line) 50%, transparent calc(50% + 1px));
+  border-color: var(--border-default);
+  min-height: 136px;
+}
+
+.page3-anim-stage .page3-preview-stage-label {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.page3-anim-stage-note {
+  bottom: var(--space-2);
+  color: rgba(255, 255, 255, 0.72);
+  font: 600 10px/1.2 var(--font-ui);
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.ecp-storage-chest-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 4px;
+}
+
+.ecp-storage-chest-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--text-2);
+  font-size: 10px;
+}
+
+.ecp-storage-chest-heading strong {
+  color: var(--text-1);
+  font-size: 11px;
+}
+
+.ecp-storage-chest-heading span {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ecp-storage-chest-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+.ecp-storage-chest-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  min-height: 106px;
+  padding: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+}
+
+.ecp-storage-chest-pane > strong {
+  overflow: hidden;
+  color: var(--text-1);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ecp-storage-chest-item {
+  overflow: hidden;
+  padding: 4px 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ecp-storage-chest-item.selected {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.ecp-storage-chest-item.empty {
+  border-style: dashed;
+  color: var(--text-3);
+}
+
+.ecp-storage-chest-transfer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ecp-storage-chest-note {
+  color: var(--text-3);
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}

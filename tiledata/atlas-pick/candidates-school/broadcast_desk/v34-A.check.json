@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/broadcast_desk/v34-A.pxg",
+ "set": "school",
+ "id": "broadcast_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 24,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "방송 책상 3/4 — 회청색 상판(믹서 슬라이더·헤드폰·고개 숙인 마이크)이 밝은 윗면으로 보이고, 앞면에 서랍, 뒤에 모니터 둘",
+ "ok": true
+}

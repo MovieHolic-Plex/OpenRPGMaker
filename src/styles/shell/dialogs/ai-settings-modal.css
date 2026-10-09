@@ -1,0 +1,1121 @@
+/* AI 설정 모달 — 레일 + 페인 구조의 전용 레이아웃.
+ * 2026-09 리디자인: 긴 단일 스크롤(섹션 7개+)을 연결|모델|동작|표시 페인으로 나누고,
+ * 제공자 카드가 선택과 상태 표시를 겸한다. */
+
+.ai-settings-body {
+  max-height: none;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 폼이 곧 레일 + 본문 + 푸터의 그리드다 — 모달 바디는 스크롤하지 않고 본문 페인만 스크롤한다. */
+.ai-settings-form {
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  min-height: 0;
+}
+
+/* ── 헤더 부제(연결 상태 요약) ─────────────────────────────────────────── */
+
+/* 닫기 버튼은 DOM 순서상 첫 번째다(Tab 경계 계약) — order 로 화면상 오른쪽 끝에 둔다. */
+.ai-settings-window .database-modal-close {
+  order: 1;
+}
+
+.ai-settings-titleblock {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-settings-subtitle {
+  align-items: center;
+  display: flex;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.ai-settings-connection-summary {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.ai-settings-status-mark {
+  background: currentColor;
+  border-radius: var(--radius-pill);
+  flex: 0 0 auto;
+  height: var(--space-2);
+  width: var(--space-2);
+}
+
+.ai-settings-connection-summary[data-tone="ready"] {
+  color: var(--success);
+}
+
+.ai-settings-connection-summary[data-tone="warning"] {
+  color: var(--warning);
+}
+
+.ai-settings-connection-summary[data-tone="error"] {
+  color: var(--danger);
+}
+
+.ai-settings-check {
+  font-size: 11px;
+  padding-block: 3px;
+  padding-inline: var(--space-2);
+  white-space: nowrap;
+}
+
+.ai-settings-save-now {
+  white-space: nowrap;
+}
+
+/* ── 왼쪽 레일(tablist) ────────────────────────────────────────────────── */
+
+.ai-settings-rail {
+  background: var(--bg-inset);
+  border-right: var(--stroke-1) solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-2);
+}
+
+.ai-settings-tab {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-left: 2px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.ai-settings-tab:hover {
+  background: var(--bg-raised);
+  color: var(--text-1);
+}
+
+.ai-settings-tab:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  outline: none;
+}
+
+.ai-settings-tab[aria-selected="true"] {
+  background: var(--bg-raised);
+  border-left-color: var(--accent);
+  color: var(--text-1);
+}
+
+/* ── 본문 페인 ─────────────────────────────────────────────────────────── */
+
+.ai-settings-content {
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4);
+  scrollbar-gutter: stable;
+}
+
+.ai-settings-pane {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.ai-settings-pane[hidden] {
+  display: none;
+}
+
+/* 데크(2026-09-03): 3단 중첩 상자 → 헤어라인 절. 테두리가 정보보다 많던 설정 모달을 정리한다. */
+.ai-settings-section {
+  background: transparent;
+  border: 0;
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  border-radius: 0;
+  overflow: visible;
+  padding-top: var(--space-3);
+}
+
+/* 페인 첫 절은 위 헤어라인이 없다 — 탭 경계가 이미 나누고 있다. */
+.ai-settings-pane > .ai-settings-section:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.ai-settings-section-header {
+  background: transparent;
+  border-bottom: 0;
+  display: grid;
+  gap: 2px;
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+.ai-settings-section-header h3,
+.ai-settings-section-header p {
+  margin: 0;
+}
+
+.ai-settings-section-header h3 {
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-section-header p {
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+}
+
+.ai-settings-section-body {
+  display: grid;
+  padding: 0 var(--space-2);
+}
+
+.ai-settings-form .ai-config-row {
+  align-items: center;
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(180px, 0.8fr) minmax(220px, 1.2fr);
+  margin: 0;
+  padding-block: var(--space-3);
+}
+
+.ai-settings-form .ai-config-row:last-child {
+  border-bottom: 0;
+}
+
+.ai-settings-form .ai-config-row[hidden] {
+  display: none;
+}
+
+.ai-config-row-copy {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ai-settings-form .ai-config-label {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+}
+
+.ai-settings-form .ai-config-help,
+.ai-settings-form .ai-model-help {
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+}
+
+.ai-config-control {
+  display: block;
+  min-width: 0;
+}
+
+.ai-config-control > .ai-config-input,
+.ai-config-control > .ai-config-select {
+  width: 100%;
+}
+
+/* 셀렉트 + 파생값 캡션(자율성) 같은 수직 컨트롤 묶음. */
+.ai-config-stack {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.ai-config-stack > .ai-config-select {
+  width: 100%;
+}
+
+.ai-config-derived {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* ── 모델 품질 프리셋(radiogroup) ──────────────────────────────────────── */
+
+.ai-model-presets {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding-block: var(--space-2);
+}
+
+.ai-model-preset-card {
+  align-items: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  position: relative;
+  text-align: left;
+}
+
+.ai-model-preset-card > strong {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-model-preset-card > small {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ai-model-preset-card:hover {
+  border-color: var(--accent-border);
+}
+
+.ai-model-preset-card:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  outline: none;
+}
+
+.ai-model-preset-card[aria-checked="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+/* ●/○ 텍스트 불릿 대신 진짜 체크 아이콘 — 선택된 카드에서만 보인다. */
+.ai-model-preset-check {
+  color: var(--accent);
+  display: none;
+  position: absolute;
+  right: var(--space-2);
+  top: var(--space-2);
+}
+
+.ai-model-preset-card[aria-checked="true"] .ai-model-preset-check {
+  display: inline-flex;
+}
+
+/* ── 역할별 직접 지정(고급 표) ─────────────────────────────────────────── */
+
+.ai-settings-roles {
+  border-top: var(--stroke-1) solid var(--border-subtle);
+}
+
+.ai-settings-roles > summary,
+.ai-settings-subdetails > summary {
+  align-items: center;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  padding: var(--space-3) var(--space-2);
+}
+
+.ai-settings-roles > summary::-webkit-details-marker,
+.ai-settings-subdetails > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* 텍스트 화살표(▸/▾) 대신 테두리 셰브론 — 글리프는 폰트마다 달라 보인다. */
+.ai-settings-roles > summary::before,
+.ai-settings-subdetails > summary::before {
+  border-bottom: 1.5px solid var(--text-3);
+  border-right: 1.5px solid var(--text-3);
+  content: "";
+  flex: 0 0 auto;
+  height: 6px;
+  transform: rotate(-45deg);
+  width: 6px;
+}
+
+.ai-settings-roles[open] > summary::before,
+.ai-settings-subdetails[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.ai-settings-roles > summary:focus-visible,
+.ai-settings-subdetails > summary:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  outline: none;
+}
+
+.ai-settings-roles-summary {
+  display: grid;
+  gap: 1px;
+}
+
+.ai-settings-roles-summary strong {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-settings-roles-summary small {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.ai-roles-table {
+  display: grid;
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+.ai-roles-head,
+.ai-role-row {
+  align-items: center;
+  display: grid;
+  gap: var(--space-3);
+  /* 열 최소폭 합이 기본 모달 페인 폭(약 560px)을 넘으면 추론 강도 열이 오른쪽에서 잘린다 —
+   * 최소폭은 추론 셀렉트(한국어 두 글자 + 셰브론)만 지키고 나머지는 비율로 줄어들게 한다. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1.4fr) minmax(76px, 0.6fr);
+  padding-block: var(--space-2);
+}
+
+.ai-roles-head {
+  border-bottom: var(--stroke-1) solid var(--border-default);
+  color: var(--text-3);
+  font-size: 10.5px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.02em;
+  padding-block: var(--space-1) var(--space-2);
+}
+
+.ai-role-row {
+  border-bottom: var(--stroke-1) solid var(--border-subtle);
+}
+
+.ai-role-row:last-child {
+  border-bottom: 0;
+}
+
+.ai-role-name {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ai-role-name strong {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-role-name small {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.ai-role-cell {
+  min-width: 0;
+}
+
+.ai-role-cell .ai-config-select,
+.ai-role-cell .ai-config-input {
+  width: 100%;
+}
+
+/* 표 셀 안의 모델 컨트롤은 좁다 — 프리셋과 입력을 세로로 쌓아 각자 전폭을 쓰게 한다. */
+.ai-role-model .ai-model-control {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ai-roles-help {
+  margin: 0;
+  padding: 0 var(--space-2) var(--space-2);
+}
+
+/* ── 동작 페인의 고급(파생 컨트롤) ─────────────────────────────────────── */
+
+.ai-settings-subdetails {
+  border-top: var(--stroke-1) solid var(--border-subtle);
+}
+
+.ai-settings-subdetails > summary {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-settings-subdetails-body {
+  display: grid;
+  padding: 0 var(--space-2);
+}
+
+/* ── 연결 페인: 제공자 카드 ────────────────────────────────────────────── */
+
+.ai-settings-section-connection .ai-settings-section-body {
+  padding-block: var(--space-4);
+}
+
+.ai-settings-section-connection .ai-auth-settings {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.ai-settings-section-connection .ai-auth-panel {
+  background: var(--bg-inset);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  display: grid;
+  font-size: var(--font-size-sm);
+  gap: var(--space-2);
+  line-height: 1.5;
+  padding: var(--space-3);
+}
+
+.ai-auth-panel[hidden] {
+  display: none;
+}
+
+.ai-auth-panel > .ai-config-help {
+  display: block;
+}
+
+.ai-oauth-status {
+  align-items: center;
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  gap: var(--space-2);
+}
+
+.ai-oauth-status::before {
+  background: currentColor;
+  border-radius: var(--radius-pill);
+  content: "";
+  height: var(--space-2);
+  width: var(--space-2);
+}
+
+.ai-oauth-status[data-tone="connected"] {
+  color: var(--success);
+}
+
+.ai-oauth-status[data-tone="offline"] {
+  color: var(--warning);
+}
+
+.ai-oauth-status[data-tone="disconnected"] {
+  color: var(--text-2);
+}
+
+.ai-model-control {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(180px, 1.15fr) minmax(150px, 1fr);
+  min-width: 0;
+}
+
+.ai-model-control .ai-config-input,
+.ai-model-control .ai-config-select {
+  min-width: 0;
+}
+
+.ai-model-warning {
+  color: var(--danger);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+/* ── 푸터(자동 저장 상태) ──────────────────────────────────────────────── */
+
+.ai-config-actions {
+  align-items: center;
+  background: var(--bg-raised);
+  border-top: var(--stroke-1) solid var(--border-default);
+  display: flex;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-4);
+}
+
+.ai-config-saved-hint {
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+  margin-right: auto;
+}
+
+/* [hidden] 이 항상 이긴다.
+ *
+ * 실측(2026-08-21 브라우저 프로브): .ai-oauth-device 에 display:grid 를 주는 순간 UA 기본 규칙
+ * `[hidden]{display:none}` 이 특이도에서 밀려, DOM 은 hidden 인데 화면에는 기기 로그인 블록이
+ * 그대로 보였다. 자손 선택자로 (0,2,0) 을 만들어 이 파일의 단일 클래스 display 규칙 전부를 덮는다. */
+.ai-auth-settings [hidden] {
+  display: none;
+}
+
+/* ── 제공자 카드(radiogroup) ─────────────────────────────────────────────
+ * 카드가 곧 선택 + 상태 표시다 — 옛 「연결 방식」카드와 「제공자」드롭다운의 3중 중복을 합쳤다. */
+
+.ai-auth-quick {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: 1fr 1fr;
+}
+
+.ai-auth-quick-card {
+  align-items: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  position: relative;
+  text-align: left;
+}
+
+.ai-auth-card-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  width: 100%;
+}
+
+.ai-auth-card-brand {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+/* 제목(계정 이름) 아래에 제품명 보조 줄 — 사용자가 따로 들어 본 이름(Gemini·Antigravity·Codex)을 찾게 한다. */
+.ai-auth-card-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ai-auth-card-name > strong {
+  color: var(--text-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.ai-auth-card-sub {
+  color: var(--text-3);
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
+.ai-auth-card-check {
+  color: var(--accent);
+  display: none;
+  flex: 0 0 auto;
+}
+
+.ai-auth-quick-card[aria-checked="true"] .ai-auth-card-check {
+  display: inline-flex;
+}
+
+.ai-auth-quick-card > small {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* 카드별 자격 상태 필 — 카드가 곧 상태 표시다. */
+.ai-auth-card-pill {
+  align-self: flex-start;
+  border-radius: var(--radius-pill);
+  font-size: 10.5px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  padding: 2px var(--space-2);
+}
+
+.ai-auth-card-pill[data-tone="connected"] {
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--success);
+}
+
+.ai-auth-card-pill[data-tone="checking"],
+.ai-auth-card-pill[data-tone="idle"] {
+  background: var(--bg-inset);
+  color: var(--text-3);
+}
+
+.ai-auth-card-pill[data-tone="offline"] {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+.ai-auth-quick-card:hover {
+  border-color: var(--accent-border);
+}
+
+.ai-auth-quick-card:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  outline: none;
+}
+
+.ai-auth-quick-card[aria-checked="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ai-config-help {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* 그림 모델 추천("그림은 GPT 를 강력히 추천") — 도움말 회색 글씨에 묻히지 않게 강조 색 테두리 상자로 둔다.
+ * 이미 GPT 를 골랐으면(data-state=active) 바꾸기 버튼은 숨고 문구만 남는다. */
+.ai-config-recommend {
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-m);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+}
+
+.ai-config-recommend-text {
+  color: var(--text-2);
+  flex: 1 1 240px;
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.ai-config-recommend-text strong {
+  color: var(--text-1);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-config-recommend-action[hidden] {
+  display: none;
+}
+
+/* ── 연결 상태 ─────────────────────────────────────────────────────────── */
+
+.ai-auth-state {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+/* 로그인 버튼 강조(.ai-oauth-login.is-primary)는 database 레이어의 .ai-assistant-action 을 이겨야 해서
+ * database/from-editor-ai-settings-modal.css 에 [레이어 보존] 으로 둔다. */
+
+.ai-auth-actions[hidden] {
+  display: none;
+}
+
+/* 부차 경로(서버 환경 변수 키)는 버튼 줄에 끼우지 않고 조용한 글자 버튼으로 둔다. */
+.ai-auth-link-action {
+  background: none;
+  border: 0;
+  color: var(--text-3);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  justify-self: start;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ai-auth-link-action:hover {
+  color: var(--text-1);
+}
+
+.ai-auth-link-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.ai-auth-link-action[hidden],
+.ai-auth-link-action[data-flow-hidden="true"] {
+  display: none;
+}
+
+/* 조회 중임을 색으로도 말한다. */
+.ai-oauth-status[data-tone="checking"] {
+  color: var(--text-3);
+}
+
+.ai-auth-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-auth-env-scan {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2, 8px);
+  background: var(--surface-2, transparent);
+}
+
+.ai-auth-env-scan-copy {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* ── 기기 로그인 ───────────────────────────────────────────────────────── */
+
+.ai-oauth-device {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.ai-oauth-device-steps {
+  color: var(--text-2);
+  display: grid;
+  font-size: 11px;
+  gap: 4px;
+}
+
+/* 로그인 주소는 글자로 보이지 않는다 — 링크 글자는 「로그인 창 다시 열기」 뿐이다. */
+.ai-oauth-device-link-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ai-oauth-device-url {
+  color: var(--accent);
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+}
+
+.ai-oauth-device-code-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-oauth-paste-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-oauth-paste-row[hidden] {
+  display: none;
+}
+
+.ai-oauth-paste-row > .ai-oauth-paste-url {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 코드는 사람이 손으로 옮겨 적는 값이다 — 자간을 벌리고 줄바꿈을 막는다. */
+.ai-oauth-device-usercode {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 4px var(--space-2);
+  white-space: nowrap;
+}
+
+.ai-oauth-device-foot {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.ai-oauth-device-poll {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* 로그인 대기 시간 초과 — 멈춘 이유와 재시도를 한 줄에. */
+.ai-oauth-timeout {
+  align-items: center;
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: flex;
+  font-size: 11px;
+  gap: var(--space-2);
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ── 안내(A) 와 오류(B) 는 눈으로도 달라야 한다 ────────────────────────── */
+
+.ai-auth-hint {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-3);
+  font-size: 11px;
+  padding-top: var(--space-2);
+}
+
+/* 옛 구현은 서버 오류를 안내와 똑같은 회색 11px 로 그려서 구분이 되지 않았다. */
+.ai-auth-error {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-s);
+  color: var(--danger);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  padding: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  /* 좁은 창: 레일을 위 가로 스트립으로 내리고 페인만 남긴다. */
+  .ai-settings-form {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .ai-settings-rail {
+    border-bottom: var(--stroke-1) solid var(--border-subtle);
+    border-right: 0;
+    flex-direction: row;
+    gap: var(--space-1);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: var(--space-2);
+  }
+
+  .ai-settings-tab {
+    border-bottom: 2px solid transparent;
+    border-left: 0;
+    flex: 0 0 auto;
+  }
+
+  .ai-settings-tab[aria-selected="true"] {
+    border-bottom-color: var(--accent);
+  }
+
+  .ai-settings-content {
+    padding: var(--space-3);
+  }
+
+  .ai-settings-form .ai-config-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-model-presets,
+  .ai-auth-quick {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-model-control {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 역할 표는 2열로 접는다 — 역할명이 한 줄을 통째로 쓰고 나머지 세 컨트롤이 둘씩 나뉜다. */
+  .ai-roles-head {
+    display: none;
+  }
+
+  .ai-role-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .ai-role-name,
+  .ai-role-model {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  /* 폰 폭(390): 가로 탭 다섯 개가 한 줄에 다 들어가지 않아 "사용량" 이 잘려 보였다 —
+     아이콘 위·라벨 아래로 쌓고 폭을 균등 분배해 스크롤 없이 모두 보이게 한다. */
+  .ai-settings-rail {
+    gap: 2px;
+    overflow-x: visible;
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .ai-settings-tab {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    justify-content: center;
+    min-width: 0;
+    padding: var(--space-1) 2px;
+    text-align: center;
+  }
+
+  .ai-oauth-device-foot {
+    flex-direction: column;
+  }
+}
+
+.ai-tool-usage-stats {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ai-tool-usage-stat {
+  background: var(--bg-inset);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+}
+
+.ai-tool-usage-stat strong {
+  font-size: 18px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-tool-usage-stat span,
+.ai-tool-usage-name small,
+.ai-tool-usage-meta {
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+}
+
+.ai-tool-usage-split {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.ai-tool-usage-rows {
+  display: grid;
+  gap: 4px;
+  max-height: 320px;
+  overflow: auto;
+}
+
+.ai-tool-usage-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  padding: var(--space-2);
+  text-align: left;
+  width: 100%;
+}
+
+.ai-tool-usage-row.is-active,
+.ai-tool-usage-row:hover {
+  background: var(--bg-inset);
+}
+
+.ai-tool-usage-name {
+  display: grid;
+  min-width: 0;
+}
+
+.ai-tool-usage-name strong,
+.ai-tool-usage-name small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-tool-usage-count {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-tool-usage-detail {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ai-tool-usage-detail h4 {
+  margin: 0;
+}
+
+.ai-tool-usage-queries,
+.ai-tool-usage-calls {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+.ai-tool-usage-calls li {
+  display: grid;
+  gap: 2px;
+}
+
+.ai-tool-usage-calls .is-failed {
+  color: var(--danger);
+}
+
+.ai-tool-usage-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .ai-tool-usage-stats,
+  .ai-tool-usage-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

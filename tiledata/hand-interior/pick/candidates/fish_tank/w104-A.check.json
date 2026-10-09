@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fish_tank/w104-A.pxg",
+ "id": "fish tank",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w104-A.pxg"
+ ],
+ "resized": {
+  "canvas": [
+   32,
+   48
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "3/4 윗면 자리: 위로 16px(애니 마스크는 아래 정렬 그대로)"
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 23,
+ "bbox": [
+  0,
+  16,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "note": "윗면: 뒤 테두리 2행 + 위에서 본 물 수면 5행(뒤 그림자 줄·잔물결 하이라이트) + 앞 테두리 윗면 1행 + 앞 면 2행 + 처마 그림자(어두운 줄) / 앞 유리·물속은 v5 그대로, 캔버스 32x48(+16)",
+ "ok": true
+}

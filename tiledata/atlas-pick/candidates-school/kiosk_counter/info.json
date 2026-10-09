@@ -1,0 +1,21 @@
+{
+ "id": "kiosk_counter",
+ "slug": "kiosk_counter",
+ "name": "매점 판매대",
+ "scene": "급식실·매점",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "매점 판매대 — 유리 진열장 안 빵 봉지·삼각김밥 흰 삼각 점, 위에 과자 상자, 옆 작은 계산대. 봉지 색은 작고 낮은 채도.",
+ "palette_hint": "vpine/cream 대, mglass 진열, vyellow·vred 봉지",
+ "pair": [],
+ "worker": "s5"
+}

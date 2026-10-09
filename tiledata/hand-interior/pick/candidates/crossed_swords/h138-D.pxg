@@ -1,0 +1,45 @@
+// D: 금테 붉은 방패에 굵은 금십자 문양, 은빛 교차검에 금장 가드와 붉은 감개. 벽걸이 평면.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat A iron 2
+@mat B iron 4
+@mat C iron 6
+@mat H gold 1
+@mat J gold 3
+@mat K gold 5
+@mat R red 1
+@mat S red 2
+@mat T red 3
+@layer swords
+@mblock 4 0
+..A..................A..
+..CBA..............ABC..
+....CBA..........ABC....
+......CBA......ABC......
+........CBA..ABC........
+..........CBBC..........
+..........ABBA..........
+........ABC..CBA........
+......ABC......CBA......
+....ABC..........CBA....
+..ABC..............CBA..
+.HKKH..............HJJH.
+..KH................HJ..
+.HR..................RH.
+.RH..................HR.
+HKKH................HJJH
+@layer shield
+@mblock 11 3
+.HKKKKKKH.
+HKTTTTSSJH
+HKTTHHTSJH
+HKTHKKHTJH
+HKTTHHTSJH
+HKHHKKHHJH
+HKTTHHTSJH
+.HTTHHTJH.
+.HJTHHSJH.
+..HJTSJH..
+...HJJH...
+....HH....

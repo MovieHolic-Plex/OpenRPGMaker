@@ -1,0 +1,295 @@
+.actor-classic-sheet {
+  min-width: 0;
+  padding: 2px;
+  overflow: hidden;
+}
+
+.database-modal-body .oprn-record-workspace:has(.actor-classic-sheet) {
+  grid-template-columns: 178px minmax(0, 1fr);
+}
+
+.actor-classic-sheet .actor-editor-grid {
+  display: grid;
+  grid-template-columns: 142px 260px minmax(0, 1fr);
+  gap: 6px;
+  align-items: stretch;
+}
+
+.actor-classic-sheet .actor-column {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.actor-classic-sheet .actor-right-stack {
+  display: grid;
+  grid-template-columns: minmax(166px, 1fr) minmax(158px, .9fr);
+  gap: 5px;
+  align-content: start;
+}
+
+.actor-classic-sheet .actor-panel {
+  min-width: 0;
+  margin: 0;
+  padding: 7px 5px 5px;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  background: var(--oprn-surface, var(--bg-raised));
+}
+
+.actor-classic-sheet .actor-panel legend {
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--oprn-text, var(--text-1));
+}
+
+.actor-classic-sheet label,
+.actor-classic-sheet .field {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 4px;
+  align-items: center;
+  margin: 0 0 2px;
+  font-size: 12px;
+}
+
+.actor-classic-sheet input,
+.actor-classic-sheet select {
+  min-width: 0;
+  height: 20px;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  border-radius: 0;
+  background-color: var(--bg-raised);
+  font: inherit;
+}
+
+.actor-classic-sheet input[type="checkbox"] {
+  width: 13px;
+  height: 13px;
+}
+
+.actor-classic-sheet .actor-level-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.actor-classic-sheet .actor-level-row .field {
+  grid-template-columns: 54px minmax(0, 1fr);
+}
+
+.actor-classic-sheet .actor-check {
+  display: inline-flex;
+  grid-template-columns: none;
+  gap: 4px;
+  margin-right: 8px;
+}
+
+.actor-classic-sheet .actor-class-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 62px;
+  gap: 6px;
+  align-items: end;
+}
+
+.actor-classic-sheet .actor-class-row .field {
+  margin: 0;
+}
+
+.actor-classic-sheet .actor-graphic-preview {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 2px;
+  font-size: 12px;
+}
+
+.actor-classic-sheet .actor-sheet-crop {
+  background-color: var(--bg-inset);
+  box-sizing: border-box;
+  min-height: max(24px, var(--crop-height));
+  min-width: max(24px, var(--crop-width));
+  overflow: hidden;
+  position: relative;
+  width: var(--crop-width);
+  height: var(--crop-height);
+}
+
+.actor-classic-sheet .actor-sheet-crop::before {
+  color: var(--text-dim);
+  content: "이미지 불러오기 실패";
+  display: grid;
+  font-size: 9px;
+  inset: 0;
+  place-items: center;
+  pointer-events: none;
+  position: absolute;
+  text-align: center;
+  z-index: 0;
+}
+
+.actor-classic-sheet .actor-sheet-crop::after {
+  background-image: inherit;
+  background-position: inherit;
+  background-repeat: inherit;
+  background-size: inherit;
+  content: "";
+  image-rendering: inherit;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.actor-classic-sheet .actor-neutral-resource-slot {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  border-radius: 0;
+  background-color: var(--bg-raised);
+}
+
+.actor-classic-sheet .actor-neutral-resource-slot {
+  display: grid;
+  place-items: center;
+}
+
+.actor-classic-sheet .actor-resource-set-button,
+.actor-classic-sheet .btn.small {
+  height: 22px;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  border-radius: 0;
+  background: var(--oprn-surface-raised, var(--bg-raised));
+  color: var(--oprn-text, var(--text-1));
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.actor-classic-sheet .actor-curves-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.actor-classic-sheet .actor-curve {
+  min-height: 58px;
+  padding: 4px;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  border-radius: 0;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font-size: 11px;
+}
+
+.actor-classic-sheet .actor-curve strong,
+.actor-classic-sheet .actor-curve span {
+  position: relative;
+  z-index: 1;
+}
+
+.actor-classic-sheet .actor-curve-graph {
+  height: 34px;
+  margin-top: -4px;
+}
+
+.actor-classic-sheet .actor-exp-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 60px;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.actor-classic-sheet .actor-battle {
+  display: contents;
+}
+
+.actor-classic-sheet .actor-battle > legend {
+  display: none;
+}
+
+.actor-classic-sheet .actor-starting-equipment,
+.actor-classic-sheet .actor-options,
+.actor-classic-sheet .actor-skills,
+.actor-classic-sheet .actor-rates {
+  width: auto;
+}
+
+.actor-classic-sheet .actor-right-stack > .field,
+.actor-classic-sheet .actor-starting-equipment,
+.actor-classic-sheet .actor-options,
+.actor-classic-sheet .actor-rates {
+  grid-column: 1;
+}
+
+.actor-classic-sheet .actor-skills {
+  grid-column: 2;
+  grid-row: 1 / span 5;
+}
+
+.actor-classic-sheet .actor-options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+.actor-classic-sheet .actor-options-grid .actor-check span {
+  white-space: nowrap;
+}
+
+.actor-classic-sheet .actor-rate-manual-note {
+  display: none;
+}
+
+.actor-classic-sheet .actor-rate-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px;
+}
+
+.actor-classic-sheet .actor-rate-list {
+  max-height: 98px;
+  overflow-y: auto;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  background: var(--bg-raised);
+}
+
+.actor-classic-sheet .actor-rate-list > strong,
+.actor-classic-sheet .actor-skill-header {
+  display: grid;
+  min-height: 18px;
+  align-items: center;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--oprn-border-dark, var(--border-default));
+  background: var(--oprn-surface-raised, var(--bg-raised));
+  font-size: 12px;
+}
+
+.actor-classic-sheet .actor-rate-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 4px;
+  padding: 2px 4px;
+  margin: 0;
+}
+
+.actor-classic-sheet .actor-skill-list {
+  min-height: 286px;
+  max-height: 286px;
+  overflow-y: auto;
+  border: 1px solid var(--oprn-border-dark, var(--border-default));
+  border-top: 0;
+  background: var(--bg-raised);
+}
+
+.actor-classic-sheet .actor-skill-row,
+.actor-classic-sheet .actor-skill-header {
+  grid-template-columns: 52px minmax(96px, 1fr) max-content;
+}
+
+.actor-classic-sheet .actor-skill-row {
+  display: grid;
+  gap: 4px;
+  padding: 2px;
+}

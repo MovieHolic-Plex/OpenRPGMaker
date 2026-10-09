@@ -1,0 +1,31 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a mmetal 5
+@mat b mmetal 6
+@mat c mmetal 3
+@mat d mdglass 1
+@mat e mdglass 3
+@mat f mdglass 6
+@mat g vred 4
+@mat h cream 4
+@mat i cream 5
+@mat j cream 2
+@mat k cream 1
+@mblock 0 0
+................................
+................................
+..bbbbbbbbbbbbbbbbbbbb..........
+.baaaaaaaaaaaaaaaaaaaac.........
+.baeeeeeeeeeeeeeeeeeeac...iiii..
+.baddddddddddddddfdddac..ihhhhj.
+.badddddddddddddfddddac..ihkhhj.
+.baddddddddddddfdddddac..ihhhhj.
+.badddddddddddfddddddac..ihkhhj.
+.baddddddddddfdddddddac..ihhhhj.
+.badddddddddfddddddddac..ihhhhj.
+.baddddddddfdddddddddac..jjjjjj.
+.baaaaaaaaaaaaaaaaaaaac.........
+..cccccccccgcccccccccc..........
+................................
+................................

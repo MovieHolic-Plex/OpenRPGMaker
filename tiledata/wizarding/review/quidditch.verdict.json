@@ -1,0 +1,230 @@
+{
+ "module": "quidditch",
+ "sealed": "2026-10-07T09:17:26.581585+09:00",
+ "reviewer": "sonnet adversarial",
+ "pieces": {
+  "wz-qd-grass-a": {
+   "verdict": "PASS",
+   "hash": "d07910b53f43daea25e1e90d2f8277f03d4c1bb2dd491d8d16c773ba82e0c521",
+   "reason": "가로 줄무늬 깎은 잔디, 명·암 두 띠 + 잎 눈금 3단. 16 주기 반복 이음 무난, 1배에서 경기장 잔디로 읽힘. F 맞음."
+  },
+  "wz-qd-grass-b": {
+   "verdict": "PASS",
+   "hash": "5a8ae395c14f8e49c89ff6ceedd8c7d622d3114f9d6b026425aaf4ca22306ae8",
+   "reason": "세로 줄무늬 잔디, grass-a 와 같은 램프·잎 눈금. 반복 이음 무난. F."
+  },
+  "wz-qd-flag": {
+   "verdict": "PASS",
+   "hash": "eb82caada3f544b0a701ccbc7b5df2613fcdedaf8a3a7305ab74703850a2a961",
+   "reason": "이름대로 터널 포석(큰 돌 블록 4개 + 유색 줄눈, 마모점). 1배에서 돌바닥으로 읽힘, 반복 시 줄눈 격자 정상. F. (작업자 메모의 '코너 깃발' 설명은 틀렸지만 그림·이름은 포석으로 일치. 오른쪽 아래 블록 속이 너무 어두워 구멍처럼 보일 수 있음 — 선택 개선.)"
+  },
+  "wz-qd-mark-circle": {
+   "verdict": "PASS",
+   "hash": "a5f63e4757c8097eddadaf80b13dbd09f72e7b2236d48ef157aaf2c59619a472",
+   "reason": "재검: 끊김 없는 2px 흰 정수 원(계단 고름), 튀는 연청 픽셀 제거, 가운데 점·짧은 대시 유지. 1배·8배 모두 깨끗한 훈련 원으로 읽힘. fff."
+  },
+  "wz-qd-mark-line-h": {
+   "verdict": "PASS",
+   "hash": "7d54894df65288843397a83889a93b00237e7ee4d022b2b265ee0cb60ea541e6",
+   "reason": "재검: '+' 눈금 제거, 2px 흰 실선 + 칸 끝 짧은 틈 → 반복하면 16 주기 균일 대시. 바늘땀/철조망 느낌 사라짐, 훈련선으로 읽힘. f."
+  },
+  "wz-qd-mark-line-v": {
+   "verdict": "PASS",
+   "hash": "e5b873c4c2555351bbc14a316ad780706b032acf20b3bbc9591d8f025af4092b",
+   "reason": "재검: '+' 제거, line-h 와 같은 굵기·색의 세로 실선 + 끝 틈으로 균일 대시. 이어 칠해도 잡음 없음. f."
+  },
+  "wz-qd-tunnel-wall4": {
+   "verdict": "PASS",
+   "hash": "9fe83ed022fafc7fbcef330af3b1794a607a1f472fba9a08c6ce75da3f559b34",
+   "reason": "석조 벽 1×4: 위 밝은 갓돌 윗면 + 엇갈린 돌 블록 3단 명암, 마모점 드묾. 예제에서 가로 이음 무난. S."
+  },
+  "wz-qd-tunnel-wall1": {
+   "verdict": "PASS",
+   "hash": "1e631f4a4f2398f6148485488f7fb65c7a739a5a9562a7b1d8fb121eff74da13",
+   "reason": "1×1 석벽 토막(갓돌+블록). 화풍 wall4 와 같음, S."
+  },
+  "wz-qd-tunnel-arch": {
+   "verdict": "PASS",
+   "hash": "4d0517a5cd16726a5e8d4ccf2bda77213be1099181a0d72776c1bffca9899e6f",
+   "reason": "재검: 그림은 그대로(대칭 쐐기돌 아치·횃불·갓돌), walk 가 SCS/SCS/S.S/S.S 로 바뀌어 가운데 열을 아치 머리 밑으로 끝까지 지나갈 수 있음 — 주문의 '열린 통과' 충족. 양옆 기둥 S."
+  },
+  "wz-qd-door-g": {
+   "verdict": "PASS",
+   "hash": "19feff18ac82d65177e059f708fb2bd85461ec72a0345acee3cb87a82a7a4d40",
+   "reason": "아치형 오크 문(긴 나무 결·쇠띠·고리 손잡이) + 돌 쐐기 아치, 위 갓돌 윗면. 붉은·금 사자 방패 문양으로 기숙사 구분. 문짝 높이 약 42px(아치 꼭대기 포함, 직선부 ~36)로 사람 대비 큰 팀 문, 허용. 상태 묶음 2×4 같은 크기."
+  },
+  "wz-qd-door-s": {
+   "verdict": "PASS",
+   "hash": "b52d2796a5fc0cb1cb504e3c604e00000260667c2a18797800f8d50d93c875c4",
+   "reason": "아치형 오크 문(긴 나무 결·쇠띠·고리 손잡이) + 돌 쐐기 아치, 위 갓돌 윗면. 은·초록 뱀 방패 문양으로 기숙사 구분. 문짝 높이 약 42px(아치 꼭대기 포함, 직선부 ~36)로 사람 대비 큰 팀 문, 허용. 상태 묶음 2×4 같은 크기."
+  },
+  "wz-qd-door-r": {
+   "verdict": "PASS",
+   "hash": "c3358ee40737093bd23cf727a4a57c3a18cfa43fe3cb63883ffa9b37967bc612",
+   "reason": "아치형 오크 문(긴 나무 결·쇠띠·고리 손잡이) + 돌 쐐기 아치, 위 갓돌 윗면. 청·흑 독수리 방패 문양으로 기숙사 구분. 문짝 높이 약 42px(아치 꼭대기 포함, 직선부 ~36)로 사람 대비 큰 팀 문, 허용. 상태 묶음 2×4 같은 크기."
+  },
+  "wz-qd-door-h": {
+   "verdict": "PASS",
+   "hash": "89fdaa6e8670b4f79f6ba89b10df19224a72e113316dd6f3e299fdf7f6cbf7ab",
+   "reason": "아치형 오크 문(긴 나무 결·쇠띠·고리 손잡이) + 돌 쐐기 아치, 위 갓돌 윗면. 노랑·흑 오소리 방패 문양으로 기숙사 구분. 문짝 높이 약 42px(아치 꼭대기 포함, 직선부 ~36)로 사람 대비 큰 팀 문, 허용. 상태 묶음 2×4 같은 크기."
+  },
+  "wz-qd-door-open": {
+   "verdict": "PASS",
+   "hash": "e23d35d36aaaf64c58a0221f04dfeaef39bceb4920eb0b730a578381d1cb87d4",
+   "reason": "같은 2×4·같은 피벗, 왼쪽에 열린 문짝 옆면, 안은 어두운 터널(상단 짙은 남색→한 단 밝은 띠)이고 아래는 바닥이 보임. 열린 문으로 읽힘. 하단 2행 C 로 통행 가능. 안쪽이 다소 납작하지만 기준 위반은 아님."
+  },
+  "wz-qd-door-locked": {
+   "verdict": "PASS",
+   "hash": "4286e4f971489d355ac0c503c2d266534675461c2d9b1fb223f74673656f1e70",
+   "reason": "닫힌 오크 문 위에 X 쇠사슬 + 금빛 자물쇠(좁은 반사). 잠김이 1배에서 읽힘. 같은 크기·피벗, S."
+  },
+  "wz-qd-fence-g": {
+   "verdict": "PASS",
+   "hash": "a23d4f5513dece97d08d2d99abec925b6b7f3feac9bd70dc17fb3968260ecfdc",
+   "reason": "목조 판 울타리(굵은 기둥·갓 윗면·상하 가로대) + 적색 기숙사 천 띠와 금 테. 예제에서 가로 반복 이음 맞고 경계로 읽힘. S/S."
+  },
+  "wz-qd-fence-s": {
+   "verdict": "PASS",
+   "hash": "9cf1545d482a9b4cc3c9a451ac45adb805f798da88e1217dfc9357f83d29a218",
+   "reason": "목조 판 울타리(굵은 기둥·갓 윗면·상하 가로대) + 녹색 기숙사 천 띠와 금 테. 예제에서 가로 반복 이음 맞고 경계로 읽힘. S/S."
+  },
+  "wz-qd-fence-r": {
+   "verdict": "PASS",
+   "hash": "02094ee7e8e54332025f645dbe1a996c83756a33a146ac9121dee3ec4b396f0d",
+   "reason": "목조 판 울타리(굵은 기둥·갓 윗면·상하 가로대) + 청색 기숙사 천 띠와 금 테. 예제에서 가로 반복 이음 맞고 경계로 읽힘. S/S."
+  },
+  "wz-qd-fence-h": {
+   "verdict": "PASS",
+   "hash": "5f0ab044d3f7eeb03cfe68c83337fd046334326babce6dde80af18622f036037",
+   "reason": "목조 판 울타리(굵은 기둥·갓 윗면·상하 가로대) + 황색 기숙사 천 띠와 금 테. 예제에서 가로 반복 이음 맞고 경계로 읽힘. S/S."
+  },
+  "wz-qd-fence-v": {
+   "verdict": "PASS",
+   "hash": "5aca129d2517930ce586f409a4fedd4d73f1a79644c0270cb60bc6dc8a3d841b",
+   "reason": "세로 울타리: 3/4 에서 좁게 보이는 기둥·가로대 윗선, 위아래 반복 시 예제에서 기둥 열로 이어짐. S."
+  },
+  "wz-qd-fence-corner-sw": {
+   "verdict": "PASS",
+   "hash": "c0b3526293b4d9d1389766eddee37ab82c6a86b140a5e476bd747b3d02c0c235",
+   "reason": "모서리 방향 맞음(왼쪽 기둥이 위로 이어지고 오른쪽으로 천 띠). 기둥 갓 둥근 마감, 가로·세로 조각과 같은 램프. S."
+  },
+  "wz-qd-fence-corner-se": {
+   "verdict": "PASS",
+   "hash": "7bf77c537c1ee3525dd5721f4534c738f68e7baa17ab1d433f73bfe41210afcc",
+   "reason": "모서리 방향 맞음(오른쪽 기둥이 위로, 왼쪽으로 천 띠). 기둥 갓 둥근 마감, 가로·세로 조각과 같은 램프. S."
+  },
+  "wz-qd-fence-corner-nw": {
+   "verdict": "PASS",
+   "hash": "479c61e9a8a6cc7ee5a051e6e08afa8c18d4625ecce9e697a67b500dcad9f297",
+   "reason": "모서리 방향 맞음(왼쪽 기둥이 아래로 이어짐). 기둥 갓 둥근 마감, 가로·세로 조각과 같은 램프. S."
+  },
+  "wz-qd-fence-corner-ne": {
+   "verdict": "PASS",
+   "hash": "663a1bc4c94d1577d84384283a9a5e505cef7554c797d6017900ab98c066fe0a",
+   "reason": "모서리 방향 맞음(오른쪽 기둥이 아래로 이어짐). 기둥 갓 둥근 마감, 가로·세로 조각과 같은 램프. S."
+  },
+  "wz-qd-fence-end-w": {
+   "verdict": "PASS",
+   "hash": "1bcec20dea059309d037dbf3a1525eb045616e2b08f9cf7d46350a2235cd122b",
+   "reason": "왼쪽 끝 기둥 마감, 천 띠가 기둥에서 끝남. S."
+  },
+  "wz-qd-fence-end-e": {
+   "verdict": "PASS",
+   "hash": "5608f40aba7f9c0c8bcb6dbacccaadeb4a9ab35bfd1caf28879bcd6871853daa",
+   "reason": "오른쪽 끝 기둥 마감, end-w 와 대칭. S."
+  },
+  "wz-qd-stands-front": {
+   "verdict": "PASS",
+   "hash": "a8f443b1157ee561a9a8295b59a8c9a03ec26c21d057605b5cbbfec3529ca51b",
+   "reason": "관중석 하단 정면: 위 판재 윗면 + X 버팀 나무 패널, 못 점. 좌우 대칭, 1×2 반복 이음 맞음. 걷지 못하는 하부 구조라 S/S 맞음."
+  },
+  "wz-qd-goal-4": {
+   "verdict": "PASS",
+   "hash": "92970572b4ac56a7e943113a67a67e175ac3d273c477aee8e44400f181e1acd9",
+   "reason": "2×6: 정면을 향한 황동 링(지름 ~23px, 좌상 밝음·우하 어두움 3단) + 가는 황동 기둥(칸마다 이음 눈금) + 윗면 보이는 돌 받침. 3/4 에서 기둥 위 골대 링으로 분명히 읽힘. 링·기둥 C, 받침 줄 S 로 주문 일치."
+  },
+  "wz-qd-goal-5": {
+   "verdict": "PASS",
+   "hash": "d1ea4d8ce395f5fec81b6b7992f400bef1a662b33bb1385249dbc6e8665f57fb",
+   "reason": "2×7: 정면을 향한 황동 링(지름 ~23px, 좌상 밝음·우하 어두움 3단) + 가는 황동 기둥(칸마다 이음 눈금) + 윗면 보이는 돌 받침. 3/4 에서 기둥 위 골대 링으로 분명히 읽힘. 링·기둥 C, 받침 줄 S 로 주문 일치."
+  },
+  "wz-qd-goal-6": {
+   "verdict": "PASS",
+   "hash": "33388630f857d9000b4868e0dbd3ecb0491497f24eaf4409b58d64ea1313d101",
+   "reason": "2×8: 정면을 향한 황동 링(지름 ~23px, 좌상 밝음·우하 어두움 3단) + 가는 황동 기둥(칸마다 이음 눈금) + 윗면 보이는 돌 받침. 3/4 에서 기둥 위 골대 링으로 분명히 읽힘. 링·기둥 C, 받침 줄 S 로 주문 일치."
+  },
+  "wz-qd-goal-kit": {
+   "verdict": "PASS",
+   "hash": "e81abb1c1ee5e6b664dbf5c62f2382bca107f4e360d400754d45f1fe39657b62",
+   "reason": "골대 4·5·6 을 한 틀(6×8)에 나란히, 받침 줄 S·나머지 C, 빈 윗칸 '.' 정확. 세 높이가 서로 달라야 하는 주문상 엄밀한 대칭은 불가. (선택 개선: 가장 높은 6 을 가운데 두면 원작 배치·균형에 더 가깝다.)"
+  },
+  "wz-qd-broom-rack": {
+   "verdict": "PASS",
+   "hash": "10e3956361dfbdf56df271f5afde8876f4c7729c35aaaa21bfc0cb8d2bcf5f2c",
+   "reason": "재검: 서랍 블록 제거, 윗가로대(윗면 밝은 띠)에 빗자루 4자루를 자루 위·짚 다발 아래로 세워 걸음. 짚은 3단 황토 + 묶은 띠로 부채꼴 실루엣. 1배·2배에서 빗자루 랙으로 읽힘. SS/SS."
+  },
+  "wz-qd-locker-g": {
+   "verdict": "PASS",
+   "hash": "934d9ff08ea4ed76cafdeb0576156709c19fb67ffc4a36b9823ca54b52436306",
+   "reason": "적색 선수 사물함: 윗면 3~4px, 환기 슬릿·이름판·손잡이, 오른쪽 모서리 어둡게. 1배에서 사물함으로 읽힘. S/S."
+  },
+  "wz-qd-locker-s": {
+   "verdict": "PASS",
+   "hash": "9ce828efa1514dfdf82cd1931766f3ccbee40e640e1be663e99940d11d3a4039",
+   "reason": "녹색 선수 사물함: 윗면 3~4px, 환기 슬릿·이름판·손잡이, 오른쪽 모서리 어둡게. 1배에서 사물함으로 읽힘. S/S."
+  },
+  "wz-qd-locker-r": {
+   "verdict": "PASS",
+   "hash": "880c592bf93209549f3cc63f5f10ba3af05808d4aa633419aa422611261f9792",
+   "reason": "청색 선수 사물함: 윗면 3~4px, 환기 슬릿·이름판·손잡이, 오른쪽 모서리 어둡게. 1배에서 사물함으로 읽힘. S/S."
+  },
+  "wz-qd-locker-h": {
+   "verdict": "PASS",
+   "hash": "355cedf07c121e8968da42b3756d36552767ff5379d15b379107ea1e56e4cd6e",
+   "reason": "황색 선수 사물함: 윗면 3~4px, 환기 슬릿·이름판·손잡이, 오른쪽 모서리 어둡게. 1배에서 사물함으로 읽힘. S/S."
+  },
+  "wz-qd-ball-crate": {
+   "verdict": "PASS",
+   "hash": "9cdee90c020ed93f9b58c74a620e8e1420ff6ea8619f8497dccf9f427a207066",
+   "reason": "닫힌 가죽 끈 상자 2×1: 나무 결 뚜껑 윗면 + 세로 끈 2줄, 정면 황동 버클·잠금판. 상자로 읽힘. 열림과 같은 크기·피벗."
+  },
+  "wz-qd-ball-crate-open": {
+   "verdict": "PASS",
+   "hash": "7887bb8c45d75491cc963c487687d81085dd0bf03ce4f3043b14e74799803088",
+   "reason": "재검: 진한 칸막이로 4칸 고르게 분리 — 붉은 퀘이플, 거의 검은 쇠 블러저 둘(좁은 반사), 금 스니치 + 양옆 흰·은 날개. 칸마다 둥근 공 실루엣이 달라 1배에서도 구분됨. 뚜껑 띠의 튀는 흰 점 제거. 닫힘과 같은 2×1·피벗."
+  },
+  "wz-qd-target": {
+   "verdict": "PASS",
+   "hash": "85b9cf1de2027a34c74b0e1ad322d240eb20bc00de49797be7b7918cac0c7b6d",
+   "reason": "받침 기둥 위 원판 표적(적·백 동심원 + 금빛 중심), 받침대 윗면. 1배에서 훈련 표적으로 읽힘. S/S."
+  },
+  "wz-qd-broom-lying": {
+   "verdict": "PASS",
+   "hash": "5a633ed24f0cef8f23aebf84fa69f09a48e8ccf5bfdde2fa12e2730caed23e3c",
+   "reason": "바닥에 누운 빗자루: 나무 자루 + 끈 묶은 짚 다발, 아래 진한 그림자가 떠 있는 빗자루 느낌(원작상 무방). 1배에서 빗자루로 읽힘. ff 덧그림."
+  },
+  "wz-qd-ball-quaffle": {
+   "verdict": "PASS",
+   "hash": "21c41b68e5dded10d0709c6b65e249e24b1cf4e1bddcb7bea119586080caed06",
+   "reason": "재검: 주황 제거, 몸 전체 붉은 가죽 램프(진한 적갈 윤곽·진홍 몸·왼쪽 위 밝은 적 반사) + 짙은 적 손잡이 홈 점, 아래 그림자. 복숭아·구슬 아닌 붉은 가죽 공으로 읽힘. f."
+  },
+  "wz-qd-ball-bludger": {
+   "verdict": "PASS",
+   "hash": "fcb3b6dfe58aeecf8e98f009d606132a6389702d76ce7823d04c006a644a6227",
+   "reason": "재검: 거의 검은 쇠 램프 + 왼쪽 위 좁은 금속 반사, 쇠 띠 1줄, 끈은 대각선 1줄만. 회색 돌공 느낌 사라지고 어두운 쇠공으로 읽힘. f."
+  },
+  "wz-qd-ball-snitch": {
+   "verdict": "PASS",
+   "hash": "db52f85d59b42f81da57b2131d61afa1a2607b39fe04aa4bc4fb33534ab60bb6",
+   "reason": "금빛 달걀형 몸(3단 금) + 좌우 대칭 은빛 날개 + 아래 그림자. 날개가 분명해 1배에서 골든 스니치로 읽힘, 구슬 아님. f."
+  }
+ },
+ "autotiles": {
+  "wz-qd-pitch": {
+   "verdict": "PASS",
+   "hash": "7c89d8b98b69bb268380db29217530e4862f77a3ea4c8b604d9194fcb30e5529",
+   "reason": "줄무늬 깎은 잔디 + 바깥 포석 테두리, patch·icorner 모두 불투명(알파 최소 255). 무작위 맵에서 16 주기 줄무늬가 칸 사이 이어지고 바깥/안쪽 모서리·1칸 통로 끊김 없음. 잔디 가장자리 유색(짙은 녹) 1px 윤곽, 검은 칸 두르기 아님."
+  }
+ },
+ "characters": {}
+}

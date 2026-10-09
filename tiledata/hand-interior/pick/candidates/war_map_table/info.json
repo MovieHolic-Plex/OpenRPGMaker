@@ -1,0 +1,34 @@
+{
+ "id": "war map table",
+ "slug": "war_map_table",
+ "name_ko": "작전 지도 탁자",
+ "category": "성",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "작전 지도 탁자(2×2) — 넓은 상판(윗면 14~16행)에 펼친 지도와 말 조각·단검, 짧은 다리.",
+ "where": "",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "throne"
+}

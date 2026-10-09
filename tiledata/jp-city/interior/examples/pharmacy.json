@@ -1,0 +1,163 @@
+{
+ "plan": [
+  "###########",
+  "#....#....#",
+  "#....#....#",
+  "#....#....#",
+  "#....#....#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "###..######"
+ ],
+ "exitWidth": 2,
+ "floor": "sh-wood",
+ "wall": "cloth-beige",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 6,
+   "floor": "pb-linoleum",
+   "wall": "sh-white"
+  },
+  {
+   "x0": 0,
+   "y0": 7,
+   "x1": 10,
+   "y1": 12,
+   "floor": "sh-wood",
+   "wall": "cloth-beige"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sh-drug-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sh-drug-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "pb-med-cabinet",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "washbasin",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "sh-dispense-counter",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "sh-register",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "sh-drug-island",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "sh-drug-island",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "sh-consult",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "sh-waiting-bench",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "sh-drug-island",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "sh-shutter-2",
+   "x": 3,
+   "y": 12
+  },
+  {
+   "id": "pb-scale",
+   "x": 4,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "sh-medicine",
+   "x": 7,
+   "y": 6
+  }
+ ],
+ "name": "일본 동네 약국 실내",
+ "start": [
+  3,
+  11
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "pharmacy",
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 12
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 6,
+   "y0": 5,
+   "x1": 6,
+   "y1": 7,
+   "why": "조제실 직원 틈(조제 카운터 끝)"
+  }
+ ]
+}

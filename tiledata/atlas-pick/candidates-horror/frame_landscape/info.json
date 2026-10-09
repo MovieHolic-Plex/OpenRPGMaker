@@ -1,0 +1,59 @@
+{
+ "id": "frame_landscape",
+ "slug": "frame_landscape",
+ "name": "풍경화 액자(가로)",
+ "scene": "미술관",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽면 윗줄에 거는 가로 액자: 금테(tarn, 윗·왼 한 단 밝게) + 속 평범한 풍경(하늘·들판 두세 덩이, 탁한 색). 이상한 것 없이 — 연출판은 2단계. 위 2px 비움.",
+ "palette_hint": "tarn 테, vgreen/vblue/paper 그림(탁하게)",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "액자(가로)",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "rope_barrier",
+  "bench_gallery"
+ ],
+ "v5_ref": [
+  {
+   "id": "picture",
+   "name_ko": "그림",
+   "atlas": {
+    "x": 592,
+    "y": 352,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

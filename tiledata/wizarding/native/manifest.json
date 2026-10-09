@@ -1,0 +1,305 @@
+{
+ "version": 1,
+ "spaces": {
+  "wandshop": {
+   "concept": "seed-3e7ac64c5c-4127fabc14a1",
+   "title": "다이애건 앨리 지팡이 가게 시험실",
+   "demo": "5ee75ddcf3c1d09d",
+   "items": [
+    {
+     "name": "brass_measure_and_record",
+     "kind": "tiles",
+     "slots": 2
+    },
+    {
+     "name": "deep_display_window",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "stock_ladder",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "wand_response_extra",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "wand_third_and_rack",
+     "kind": "tiles",
+     "slots": 2
+    },
+    {
+     "name": "wood_service_counter",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "elder-wandmaker/actions-production-shelf-lift-r2",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/elder-wandmaker/production-shelf-lift-r2/views/sheet.png",
+     "sha256": "8555ba19c839648f2da5f053b68c64192399f07f5af2552b262cc7a88fa88201"
+    },
+    {
+     "name": "trial-student/actions-production-shelf-lift-r2",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/trial-student/production-shelf-lift-r2/views/sheet.png",
+     "sha256": "a0763b2603819c15de2790548b076cf461e12659db79d092d5c3d64736e4e1de"
+    },
+    {
+     "name": "elder-wandmaker/walk",
+     "kind": "actor",
+     "source": "art-output/native-actors/runs/wandshop-theme-walk-r1/_batches/01/characters/elder-wandmaker__gpt-r1/views/sheet_rgba.png",
+     "sha256": "404af75df0f0fd3ca77c31b33d8d5d70874fc3ebaef9e7b67c0429111ca5732d"
+    },
+    {
+     "name": "trial-student/walk",
+     "kind": "actor",
+     "source": "art-output/native-actors/runs/wandshop-theme-walk-r1/_batches/02/characters/trial-student__gpt-r1/views/sheet_rgba.png",
+     "sha256": "1d01cdc7de68f9ec36280469b7a09c959213000c8ff5eef98305714b6469c8be"
+    },
+    {
+     "name": "wandtrial_boxes",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "wandtrial_lights",
+     "kind": "tiles",
+     "slots": 2
+    },
+    {
+     "name": "wandtrial_response",
+     "kind": "tiles",
+     "slots": 5
+    },
+    {
+     "name": "wandtrial_shelves",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "wandtrial_target",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "wandtrial_traces",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "wandtrial_wands",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "dark_timber_wall",
+     "kind": "tiles",
+     "slots": 28
+    },
+    {
+     "name": "dark_timber_wall__scene-coverage-preparation-r9",
+     "kind": "tiles",
+     "slots": 30
+    },
+    {
+     "name": "dark_timber_wall__scene-junction-repair-rev7",
+     "kind": "tiles",
+     "slots": 30
+    },
+    {
+     "name": "aged_dark_boards",
+     "kind": "tiles",
+     "slots": 4
+    },
+    {
+     "name": "wandtrial_shelves__scene-spec-repair-r3",
+     "kind": "tiles",
+     "slots": 2
+    },
+    {
+     "name": "timber_ceiling_cutaway",
+     "kind": "tiles",
+     "slots": 16
+    },
+    {
+     "name": "wood_shop_doors_r2",
+     "kind": "tiles",
+     "slots": 6
+    },
+    {
+     "name": "dark_timber_wall__scene-spec-repair-r4-prep-rev4",
+     "kind": "tiles",
+     "slots": 25
+    },
+    {
+     "name": "wand_testing_table_height16",
+     "kind": "tiles",
+     "slots": 1
+    }
+   ]
+  },
+  "potions": {
+   "concept": "seed-3e7ac64c5c-0657a3ba3e24",
+   "title": "호그와트 지하 마법약 교실과 재료 준비실",
+   "demo": "5f5688e8e5c8e1ca",
+   "items": [
+    {
+     "name": "potions-assistant/actions-production-r1",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/potions-assistant/production-r1/views/sheet.png",
+     "sha256": "c0d2fdb30b3086f3bf8d6eb1dac824025b40a72c8f9ea7837e146c6809aafa54"
+    },
+    {
+     "name": "potions-master/actions-production-r1",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/potions-master/production-r1/views/sheet.png",
+     "sha256": "42e5fb34bbb769bc4e98db49328787ad0b2889f26ac3699f5f54118bb999ec35"
+    },
+    {
+     "name": "potions-master/actions-production-r4-rim-clear",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/potions-master/production-r4-rim-clear/views/sheet.png",
+     "sha256": "fdd57da639d34a69a10a7a1f471f563a44daff7bce03d343a368fcefbfe454bd"
+    },
+    {
+     "name": "potions-student/actions-production-r2",
+     "kind": "actor",
+     "source": "art-output/native-actors/actions/potions-student/production-r2/views/sheet.png",
+     "sha256": "2880dc48afaa067aaf326fd1fa7a0668d438203da62d03615a38728ed39435f5"
+    },
+    {
+     "name": "potions-master/walk",
+     "kind": "actor",
+     "source": "art-output/native-actors/runs/potions-theme-walk-r1/_batches/01/characters/potions-master__gpt-r1/views/sheet_rgba.png",
+     "sha256": "323e573eb055486ec1dfcf73aabc1021ecf05bb5e00073b9c711ef2ce1f8fce2"
+    },
+    {
+     "name": "potions-student/walk",
+     "kind": "actor",
+     "source": "art-output/native-actors/runs/potions-theme-walk-r1/_batches/02/characters/potions-student__gpt-r1/views/sheet_rgba.png",
+     "sha256": "f6419b5f58d5958cd4bfec7f4d74477d41fef1cf9cbf2a92ba14adce3cb958b1"
+    },
+    {
+     "name": "potions-assistant/walk",
+     "kind": "actor",
+     "source": "art-output/native-actors/runs/potions-theme-walk-r1/_batches/03/characters/potions-assistant__gpt-r1/views/sheet_rgba.png",
+     "sha256": "368b15b3642a03698f5f4e005e08d486c06cb6e77d3d3e2de02ab372034e86fb"
+    },
+    {
+     "name": "theme_potions_repair_r7_low_vault_exhaust",
+     "kind": "tiles",
+     "slots": 12
+    },
+    {
+     "name": "theme_potions_botanical_ingredients",
+     "kind": "tiles",
+     "slots": 4
+    },
+    {
+     "name": "theme_potions_glass_reagents",
+     "kind": "tiles",
+     "slots": 7
+    },
+    {
+     "name": "theme_potions_hood_lighting",
+     "kind": "tiles",
+     "slots": 9
+    },
+    {
+     "name": "theme_potions_ingredient_storage",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "theme_potions_iron_cauldrons",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "theme_potions_low_window",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "theme_potions_mixing_tools",
+     "kind": "tiles",
+     "slots": 4
+    },
+    {
+     "name": "theme_potions_prep_bench",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "theme_potions_stone_wash",
+     "kind": "tiles",
+     "slots": 6
+    },
+    {
+     "name": "theme_potions_teaching_kit",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "theme_potions_work_benches",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "theme_potions_potion_response",
+     "kind": "tiles",
+     "slots": 36
+    },
+    {
+     "name": "theme_potions_stair_transition",
+     "kind": "tiles",
+     "slots": 3
+    },
+    {
+     "name": "theme_potions_repair_r5_joined_low_vault",
+     "kind": "tiles",
+     "slots": 10
+    },
+    {
+     "name": "theme_potions_repair_r7_low_vault_exhaust__repair-r7-material-lineage-prep",
+     "kind": "tiles",
+     "slots": 12
+    },
+    {
+     "name": "theme_potions_repair_r9_arched_prep_door",
+     "kind": "tiles",
+     "slots": 4
+    },
+    {
+     "name": "theme_potions_repair_v2_low_vault",
+     "kind": "tiles",
+     "slots": 6
+    },
+    {
+     "name": "theme_potions_repair_v2_stone_floor",
+     "kind": "tiles",
+     "slots": 20
+    },
+    {
+     "name": "theme_potions_south_stair",
+     "kind": "tiles",
+     "slots": 1
+    },
+    {
+     "name": "theme_potions_repair_v2_scene_stone_wall",
+     "kind": "tiles",
+     "slots": 26
+    },
+    {
+     "name": "theme_potions_repair_v3_connected_stone_wall",
+     "kind": "tiles",
+     "slots": 29
+    }
+   ]
+  }
+ }
+}

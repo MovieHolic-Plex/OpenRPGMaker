@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_gacha/r2-C.pxg",
+ "set": "jp",
+ "id": "vending_gacha",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 47,
+ "bbox": [
+  1,
+  0,
+  31,
+  30
+ ],
+ "note": "실루엣 재해석: 붉은 머리 간판 상자가 좌우 1px 튀어나오고 창 안엔 3×3 큰 캡슐 2단×3, 은색 다이얼 || 식구 공통(r1 치수 그대로): 머리 간판 상자 x=1..30·y=0..7(4줄), 몸통 y=9..26, 옆면 4px, 나머지 A 와 같음",
+ "ok": true
+}

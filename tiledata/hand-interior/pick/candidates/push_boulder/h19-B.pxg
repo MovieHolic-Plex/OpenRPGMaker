@@ -1,0 +1,39 @@
+// h19-B 같은 방 화풍: 돌기둥·광석 더미 stone 램프 결(윤곽 0단, 윗면 5~6, 앞면 4→1), 왼쪽 위 빛. 둥근 윗면 + 어두운 남쪽 면 + 금 간 자국.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 16
+....ssssssss....
+..ssssssssssss..
+.ssssssssssssss.
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+.ssssssssssssss.
+.ssssssssssssss.
+..ssssssssssss..
+...ssssssssss...
+@tblock 0 16 stone
+....00000000....
+..066666555440..
+.06666665554430.
+0666666555544430
+0666665555544330
+0666555554444330
+0555555544443330
+0444444433333220
+0444444133332220
+0444443313322220
+0344433313222210
+0333333331222110
+.02222222211110.
+.02222222111110.
+..011111111110..
+...0000000000...

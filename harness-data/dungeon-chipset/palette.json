@@ -1,0 +1,443 @@
+{
+ "note": "자동 생성 — src/harnesses/dungeon-chipset/palette.py. 손으로 고치지 말 것. 단 0 = 가장 어두움(그 재료의 윤곽).",
+ "sheet": "public/assets/beodeul-city/beodeul-city-chipset.png",
+ "method": "램프 출처 조각의 불투명 화소를 밝기순 화소 수 k등분 → 칸마다 최빈 실제색 → 공용 시트 존재 대조",
+ "ramps": {
+  "void": [
+   "#0e0a14",
+   "#14101c",
+   "#1b1024"
+  ],
+  "rim": [
+   "#30242a",
+   "#604e48",
+   "#806a5d",
+   "#8d7766",
+   "#aa947a",
+   "#b5aa9a",
+   "#dee0dd"
+  ],
+  "cfloor": [
+   "#463a3a",
+   "#6c5c54",
+   "#887664",
+   "#8b7868",
+   "#9c8872",
+   "#a28e76",
+   "#ab967d",
+   "#baa488"
+  ],
+  "crock": [
+   "#1e161a",
+   "#393b36",
+   "#434b46",
+   "#585a55",
+   "#626460",
+   "#777975",
+   "#929491"
+  ],
+  "stone": [
+   "#2b3934",
+   "#3e403d",
+   "#595b58",
+   "#898a96",
+   "#929491",
+   "#c4c6c3"
+  ],
+  "cata": [
+   "#3e403d",
+   "#565855",
+   "#5f615e",
+   "#6f716e",
+   "#80827f",
+   "#8a8c89",
+   "#8e908d"
+  ],
+  "brick": [
+   "#131815",
+   "#202825",
+   "#2c3632",
+   "#4c534f",
+   "#595f5c",
+   "#696f6a",
+   "#929491"
+  ],
+  "water": [
+   "#123460",
+   "#1e5482",
+   "#3c7aa4",
+   "#78b0c8",
+   "#c8e4ec"
+  ],
+  "pool": [
+   "#0e2c2e",
+   "#16403e",
+   "#245c58",
+   "#5b5d5a",
+   "#428078",
+   "#828987"
+  ],
+  "lava": [
+   "#5a1410",
+   "#b8280e",
+   "#f06a14",
+   "#ffc83a"
+  ],
+  "ice": [
+   "#3e84b8",
+   "#6cb4d8",
+   "#9ce0ee",
+   "#cff4f8",
+   "#f2ffff"
+  ],
+  "vrock": [
+   "#161b23",
+   "#242c38",
+   "#384454",
+   "#566577",
+   "#7a7f86"
+  ],
+  "wood": [
+   "#312210",
+   "#452a17",
+   "#633712",
+   "#6f4725",
+   "#885a26",
+   "#b77541"
+  ],
+  "iron": [
+   "#202430",
+   "#3a4050",
+   "#5e6678",
+   "#757a90",
+   "#8c94a6",
+   "#bec6d4"
+  ],
+  "fire": [
+   "#9e2514",
+   "#dd2912",
+   "#bc7a00",
+   "#ec9900",
+   "#fbc10d",
+   "#ffec96"
+  ],
+  "bone": [
+   "#6e6264",
+   "#928489",
+   "#9e8d83",
+   "#bcaaa0",
+   "#ecd6c6"
+  ],
+  "moss": [
+   "#242c29",
+   "#313b37",
+   "#525a56",
+   "#5a615e",
+   "#7c875d",
+   "#89976e"
+  ],
+  "glow": [
+   "#187878",
+   "#2e9c9a",
+   "#36beaa",
+   "#84a3ab",
+   "#84c3bc",
+   "#a0fad2"
+  ],
+  "gold": [
+   "#431d00",
+   "#714210",
+   "#845c1f",
+   "#aa7a08",
+   "#fbc10d",
+   "#ecdb95"
+  ],
+  "red": [
+   "#562945",
+   "#9e2514",
+   "#a40100",
+   "#dd2912",
+   "#e0482a"
+  ]
+ },
+ "sources": {
+  "void": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/ceiling_cave.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/ceiling.png"
+   ],
+   "pixels": 1164,
+   "why": "천장 너머 어둠(버들항 동굴·지하묘지 천장 가운데)"
+  },
+  "rim": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/ceiling_cave.png"
+   ],
+   "pixels": 1792,
+   "why": "동굴 벽 윗면 테두리(버들항 바다 동굴 천장 띠)"
+  },
+  "cfloor": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/floor_cave.png"
+   ],
+   "pixels": 1024,
+   "why": "동굴 흙바닥(버들항 바다 동굴 바닥 8색 그대로)"
+  },
+  "crock": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/face_cave_3h.png",
+    "tiledata/beodeul-variants/sea-cave/parts/face_cave_2h.png"
+   ],
+   "pixels": 3840,
+   "why": "동굴 벽 앞면 녹회색 암반"
+  },
+  "stone": {
+   "from": [
+    "tiledata/beodeul-variants/mining-valley/parts/ground-rock.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/stairs_down.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/coffin.png"
+   ],
+   "pixels": 3130,
+   "why": "다듬은 회색 돌(계단·석관·바위 바닥)"
+  },
+  "cata": {
+   "from": [
+    "tiledata/beodeul-variants/castle-catacombs/parts/floor_cata.png"
+   ],
+   "pixels": 1024,
+   "why": "지하묘지 판석 바닥"
+  },
+  "brick": {
+   "from": [
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_cata_3h.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/face_cata_2h.png"
+   ],
+   "pixels": 3840,
+   "why": "지하묘지 벽돌 앞면"
+  },
+  "water": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/water_sea.png"
+   ],
+   "pixels": 1198,
+   "why": "동굴 바닷물"
+  },
+  "pool": {
+   "from": [
+    "tiledata/beodeul-variants/aqueduct-sewer/parts/water_sew.png"
+   ],
+   "pixels": 1404,
+   "why": "하수 수로 물(검푸른 청록)"
+  },
+  "lava": {
+   "from": [
+    "tiledata/beodeul-variants/volcano-cave/parts/lava-strip.png",
+    "tiledata/beodeul-variants/volcano-cave/parts/fire_crystal.png"
+   ],
+   "pixels": 4181,
+   "why": "용암(화산 동굴)"
+  },
+  "ice": {
+   "from": [
+    "tiledata/beodeul-variants/snowfield/parts/ground-ice.png"
+   ],
+   "pixels": 2304,
+   "why": "얼음판(설원)"
+  },
+  "vrock": {
+   "from": [
+    "tiledata/beodeul-variants/volcano-cave/parts/stalagmite.png",
+    "tiledata/beodeul-variants/volcano-cave/parts/spike_tall.png"
+   ],
+   "pixels": 395,
+   "why": "검푸른 화산암·석순"
+  },
+  "wood": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/crate.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/door_wood.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/barrel.png"
+   ],
+   "pixels": 616,
+   "why": "나무(상자·문·통)"
+  },
+  "iron": {
+   "from": [
+    "tiledata/beodeul-variants/temple-ruins/parts/door_wood.png",
+    "tiledata/beodeul-variants/sea-cave/parts/torch_wall.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/brazier.png"
+   ],
+   "pixels": 131,
+   "why": "쇠(문 띠·횃불 받침·화로)"
+  },
+  "fire": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/torch_wall.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/brazier.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/candles.png"
+   ],
+   "pixels": 102,
+   "why": "불꽃"
+  },
+  "bone": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/bones.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/skulls.png",
+    "tiledata/beodeul-variants/castle-catacombs/parts/bone_heap.png"
+   ],
+   "pixels": 454,
+   "why": "뼈"
+  },
+  "moss": {
+   "from": [
+    "tiledata/beodeul-variants/temple-ruins/parts/face_temple_3h.png",
+    "tiledata/beodeul-variants/aqueduct-sewer/parts/face_sewer_3h.png",
+    "tiledata/beodeul-variants/temple-ruins/parts/vines_2.png"
+   ],
+   "pixels": 1874,
+   "why": "이끼·덩굴"
+  },
+  "glow": {
+   "from": [
+    "tiledata/beodeul-variants/sea-cave/parts/glow_moss_floor.png",
+    "tiledata/beodeul-variants/sea-cave/parts/glow_mushroom.png"
+   ],
+   "pixels": 147,
+   "why": "발광 이끼·수정 청록"
+  },
+  "gold": {
+   "from": [
+    "scripts/content/lib/city_v6/palette.py RAMPS_CHIP"
+   ],
+   "why": "금장(버들항 칩 straw 램프)"
+  },
+  "red": {
+   "from": [
+    "scripts/content/lib/city_v6/palette.py RAMPS_CHIP"
+   ],
+   "why": "붉은 천·장식(버들항 칩 red 램프)"
+  }
+ },
+ "shadow": {
+  "rgb": [
+   12,
+   14,
+   20
+  ],
+  "alpha": 88,
+  "why": "버들항 조각에서 가장 흔한 반투명 바닥 그림자(윗층 기물 전용)"
+ },
+ "allowed": [
+  "#0e0a14",
+  "#0e2c2e",
+  "#123460",
+  "#131815",
+  "#14101c",
+  "#161b23",
+  "#16403e",
+  "#187878",
+  "#1b1024",
+  "#1e161a",
+  "#1e5482",
+  "#202430",
+  "#202825",
+  "#242c29",
+  "#242c38",
+  "#245c58",
+  "#2b3934",
+  "#2c3632",
+  "#2e9c9a",
+  "#30242a",
+  "#312210",
+  "#313b37",
+  "#36beaa",
+  "#384454",
+  "#393b36",
+  "#3a4050",
+  "#3c7aa4",
+  "#3e403d",
+  "#3e84b8",
+  "#428078",
+  "#431d00",
+  "#434b46",
+  "#452a17",
+  "#463a3a",
+  "#4c534f",
+  "#525a56",
+  "#562945",
+  "#565855",
+  "#566577",
+  "#585a55",
+  "#595b58",
+  "#595f5c",
+  "#5a1410",
+  "#5a615e",
+  "#5b5d5a",
+  "#5e6678",
+  "#5f615e",
+  "#604e48",
+  "#626460",
+  "#633712",
+  "#696f6a",
+  "#6c5c54",
+  "#6cb4d8",
+  "#6e6264",
+  "#6f4725",
+  "#6f716e",
+  "#714210",
+  "#757a90",
+  "#777975",
+  "#78b0c8",
+  "#7a7f86",
+  "#7c875d",
+  "#806a5d",
+  "#80827f",
+  "#828987",
+  "#845c1f",
+  "#84a3ab",
+  "#84c3bc",
+  "#885a26",
+  "#887664",
+  "#898a96",
+  "#89976e",
+  "#8a8c89",
+  "#8b7868",
+  "#8c94a6",
+  "#8d7766",
+  "#8e908d",
+  "#928489",
+  "#929491",
+  "#9c8872",
+  "#9ce0ee",
+  "#9e2514",
+  "#9e8d83",
+  "#a0fad2",
+  "#a28e76",
+  "#a40100",
+  "#aa7a08",
+  "#aa947a",
+  "#ab967d",
+  "#b5aa9a",
+  "#b77541",
+  "#b8280e",
+  "#baa488",
+  "#bc7a00",
+  "#bcaaa0",
+  "#bec6d4",
+  "#c4c6c3",
+  "#c8e4ec",
+  "#cff4f8",
+  "#dd2912",
+  "#dee0dd",
+  "#e0482a",
+  "#ec9900",
+  "#ecd6c6",
+  "#ecdb95",
+  "#f06a14",
+  "#f2ffff",
+  "#fbc10d",
+  "#ffc83a",
+  "#ffec96"
+ ],
+ "count": 110
+}

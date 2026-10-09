@@ -1,0 +1,49 @@
+// 씨앗 자루 셋에 금빛 묶음끈과 금테 씨앗 그림 표; 입구 윗면 각 3행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat g gold 3
+@mat h gold 5
+@mat l linen 4
+@mat v leaf 2
+@mat w leaf 4
+@layer sacks
+@mblock 5 0
+.bddb.
+bdeedb
+bddccb
+.ghhg.
+.bddc.
+bdhhcb
+bdlvhb
+bdvvhb
+bdcccb
+.bbbb.
+@mblock 0 5
+..bddb..
+.bdeedb.
+.bddccb.
+..ghhg..
+.bddccb.
+bddddccb
+bdhhhdcb
+bdlvhdcb
+bdvvhccb
+bddcccbb
+.bbbbbbs
+@mblock 8 6
+..bddb..
+.bdeedb.
+.bddccb.
+..ghhg..
+.bddccb.
+bddddccb
+bdhhhdcb
+bdwlhccb
+bdvvhccb
+.bbbbbbs

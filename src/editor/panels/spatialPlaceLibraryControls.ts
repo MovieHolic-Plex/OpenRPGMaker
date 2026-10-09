@@ -1,0 +1,52 @@
+import { el } from '@/util/dom';
+import type { SpatialGalleryCard } from './spatialCatalog';
+import { classifyPlaceCard, matchesPlaceClassification, PLACE_CATEGORIES, PLACE_ENVIRONMENTS, placeLibraryFilters } from './spatialPlaceClassification';
+import { openNewPlaceDialog } from './spatialNewPlaceDialog';
+import { patchSpatialSession } from './spatialAuthoringSession';
+import { openDialog } from './databaseEnemyRecordSupport';
+import { renderSpatialFilterDrawer } from './spatialFilterDrawer';
+import './spatialPlaceLibrary.css';
+const customCategories = new Set<string>();
+/** `extra` 는 셸이 가진 출처·쓰임 칩이다 — 같은 「필터」 서랍 안에 넣는다. `onSearch` 는 검색 칸을 남긴 채 목록만 다시 그린다. */
+export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void, extra: { readonly nodes: readonly HTMLElement[]; readonly activeCount: number; readonly onSearch?: () => void } = { nodes: [], activeCount: 0 }): HTMLElement {
+  const values = cards.map(classifyPlaceCard), f = placeLibraryFilters;
+  const update = () => { patchSpatialSession({ listView: true }); refresh(); };
+  const select = (label: string, key: 'style' | 'environment' | 'purpose', options: readonly string[]) => {
+    const input = el('select', { attrs: { 'aria-label': label }, dataset: { testid: `place-filter-${key}` }, children: [el('option', { text: `모든 ${label}`, attrs: { value: '' } }), ...[...new Set([...options, ...(f[key] ? [f[key]] : [])])].map(value => el('option', { text: value, attrs: { value } }))] });
+    input.value = f[key]; input.addEventListener('change', () => { f[key] = input.value; update(); }); return input;
+  };
+  const search = el('input', { value: f.search, attrs: { type: 'search', placeholder: '장소 이름·용도로 검색', 'aria-label': '장소 검색' }, dataset: { testid: 'place-filter-search' } });
+  // 셸 전체를 다시 그리면 입력 칸이 교체된다. 한글 IME 는 조합 중에 칸이 사라지면 글자를 잃는다.
+  search.addEventListener('input', () => { f.search = search.value; (extra.onSearch ?? update)(); });
+  const tabs = el('div', { class: 'place-library-tabs', attrs: { role: 'tablist', 'aria-label': '장소 유형' } });
+  for (const value of ['', ...new Set([...PLACE_CATEGORIES, ...customCategories, ...values.map(v => v.category)])]) {
+    tabs.append(el('button', { text: value || '전체', class: value === f.category ? 'is-active' : '', attrs: { type: 'button', role: 'tab', 'aria-selected': String(value === f.category) }, on: { click: () => { f.category = value; update(); } } }));
+  }
+  tabs.append(el('button', { text: '＋ 분류', attrs: { type: 'button' }, on: { click: () => {
+    let close = () => {}; const input = el('input', { attrs: { maxlength: '40', 'aria-label': '새 장소 유형', placeholder: '예: 교통시설' } });
+    const form = el('form', { children: [input, el('button', { text: '추가', attrs: { type: 'submit' } })] });
+    form.addEventListener('submit', e => { e.preventDefault(); const name = input.value.trim(); if (!name) return; customCategories.add(name); f.category = name; close(); update(); });
+    close = openDialog('place-category-dialog', '장소 유형 추가', [form, el('p', { text: '이 유형으로 만든 장소를 저장하면 분류도 함께 저장됩니다.' })], [{ label: '취소', testid: 'place-category-cancel' }]);
+  } } }));
+  return el('section', { class: 'place-library-controls', children: [
+    // 두 줄로 접는다 — 제목줄과 도구줄. 69장짜리 목록에서 네 줄짜리 머리는 그냥 세로 손실이었다.
+    el('div', { class: 'place-library-heading', children: [
+      el('div', { class: 'place-library-title', children: [
+        el('strong', { text: '장소 라이브러리' }),
+        el('span', { class: 'place-library-count', text: `${cards.filter(matchesPlaceClassification).length}개`, dataset: { testid: 'place-library-count' } }),
+      ] }),
+      el('button', { text: '＋ 장소 만들기', class: 'spatial-action is-primary', on: { click: () => openNewPlaceDialog(refresh) } }),
+    ] }),
+    // 검색과 분류 탭만 늘 보인다. 나머지 좁히기는 「필터」 서랍 안 — 켜진 개수는 서랍 머리에 뜬다.
+    el('div', { class: 'place-library-filters', children: [
+      search,
+      tabs,
+      renderSpatialFilterDrawer([f.style, f.environment, f.purpose].filter(Boolean).length + extra.activeCount, [
+        select('그림체', 'style', values.map(v => v.style)),
+        select('공간 형태', 'environment', PLACE_ENVIRONMENTS),
+        select('용도', 'purpose', values.flatMap(v => v.purposes)),
+        ...extra.nodes,
+      ]),
+    ] }),
+  ] });
+}

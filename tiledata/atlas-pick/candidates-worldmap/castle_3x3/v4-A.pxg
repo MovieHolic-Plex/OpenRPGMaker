@@ -1,0 +1,69 @@
+// castle_3x3 v4-A (4판: 3판 색·물 그대로, 모양 다시)
+@size 48 48
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wink 0
+@mat b wgold 3
+@mat c wroofb 3
+@mat d wroofb 4
+@mat e wroofb 2
+@mat f wbark 1
+@mat g wroofr 3
+@mat h wroofr 2
+@mat i wstone 4
+@mat j wstone 5
+@mat k wstone 3
+@mat l wroofr 4
+@mat m wgold 2
+@mat n wstone 2
+@mat o wbark 2
+@mblock 0 0
+........................a.......................
+.......................aba......................
+.......................aca......................
+......................adcea.....................
+.....aaaa.............adcea................aaaa.
+....afggga...........addceea..............afggga
+....afhhha..........adddceeea.............afhhha
+....afaaa..........addddceeeea............afaaa.
+....afa........aa.adddddceeeeeaaa.........afa...
+....afa.......aiiaddddddceeeeeeiia........afa...
+....aba.......ajjikjjiijiiiiiikiia........aba...
+....aga.......ajiiiiiiiiiiiiiiiika........aga...
+...algha......ajiiiiiiiiiiiiiiiika.......algha..
+...algha......ajkkkkkkkkkkkkkkkkka.......algha..
+..allghha.....ajiiiiikiiiiikiiiika......allghha.
+..allghha.....ajiiaiiiiiiiiiiaiika......allghha.
+.alllghhha....ajiimiiiiiiiiiimiika.....alllghhha
+allllghhhha...ajkkkkkkkkkkkkkkkkka....allllghhhh
+lllllghhhhha..ajiikijiiiniikiikika...alllllghhhh
+aajiiiikaaa...ajiiiijiiiiiikiiiika....aajiiiikaa
+.ajiiiika.....ajiiiijiiaiiikiiiika.....ajiiiika.
+.ajkkkkka.....ajkkkkjnnmnnnkkkkkka.....ajkkkkka.
+.ajkiiika.....ajiiiijniiiiikiiiika.....ajiiiika.
+.ajiiiika.....ajiiiijiiiiiikiiiika.....ajiiiika.
+.ajiiiika.aa..ajiiiijiiiiiikiiiikaaa..aajiiiika.
+.ajkkkkkaaiiaaijkkkkjnnnnnnkkkkkkaiiaaiijkkkkka.
+.ajiiikkiijjkijjiikijiiiniikiikikiiikiiijikiika.
+.ajiiiikiiiiiiijiiiijiiiiiikiiiikiiiiiiijiiiika.
+.ajiiiikiiiiiiijiiiijiiiiiikiiiikiiiiiiijiiiika.
+.ajkkkkkkkkkkkkjkkkkjnnnnnnkkkkkkkkkkkkkjkkkkka.
+.ajkiiikikiiiiikiiiiikiiiiikiiiiikiiiiikjiiiika.
+.ajiiiikiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiijiiiika.
+.ajiiiikiiiiiiiiiiiiiiooooiiiiiiiiiiiiiijiiiika.
+.ajkkkkkkkkkkkkkkkkkkffffffkkkkkkkkkkkkkjkkkkka.
+.ajiiikkiiiikiiiiikiiffffffiiikiiiiikiiijikiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+.ajkkkkkkkkkkkkkkkkkkffffffkkkkkkkkkkkkkjkkkkka.
+.ajkiiikikiiiiikiiiiiffffffkiiiiikiiiiikjiiiika.
+.ajiiiikiiiiiiiiiiiiiffffffiiiiiiiiiiiiijiiiika.
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+................................................
+................................................
+................................................
+.----------------------------------------------.
+...-------------------------------------------..
+................................................
+................................................

@@ -1,0 +1,17 @@
+// w9-B.pxg 평탄화 격자 16x16
+................
+..GGGGGGGGGGG...
+.GAECCCCCCCBDG..
+.GAECCCCCCCBDG..
+.GABCCCCCCCBDG..
+.GABBBBBBBBBDG..
+.GEEGGGGGGGGGG..
+.GEAEEEEEEEACG..
+.GCAECCCCCEADG..
+.GBABBBBBBBADG..
+.GDADDDDDDDADG..
+.GGGGGGGGGGGGG..
+..22........22..
+..12.-------21..
+...-~~~~~~~~~-..
+....---------...

@@ -1,0 +1,249 @@
+/* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
+body.ai-command-bar-active {
+  /* 폴백만. 실제 값은 aiChatPanel 의 syncCommandBarClearance 가 실측해 덮어쓴다
+     (144px 하드코딩은 칩 행이 붙었다 떼질 때마다 실제 바 높이와 어긋났다). */
+  --ai-command-bar-inset: 112px;
+}
+
+body.ai-command-bar-active .editor-layout {
+  padding-bottom: var(--ai-command-bar-inset);
+}
+
+body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
+  padding-bottom: 0;
+}
+
+/* float 모드 셸: 위 규칙의 inset/width 를 되살린다.
+   0 폭 셸이 containing block 이 되면 absolute 커맨드바가 화면 밖으로 나간다.
+   ⚠️ 특이도를 반드시 위 규칙보다 높게 유지할 것. "같은 특이도 + 후순위" 라고 적혀
+   있었지만 실제로는 위 규칙이 (0,6,0), 이 규칙이 (0,5,0) 이라 **지고 있었다** —
+   실측(2026-08-21, HEAD 7bb7f851): float 에서 panel 0×0, 바 rect x=-322 로 화면 밖.
+   그래서 :not(.chat-dock-side):not(.chat-dock-glass) 를 더해 (0,7,0) 로 올린다
+   (float 에서는 항상 참이므로 선택 대상은 그대로다). */
+
+.ai-command-bar {
+  align-items: end;
+  bottom: 18px;
+  display: grid;
+  gap: 10px;
+  /* 단일 열 — ☰ 와 상태줄이 모두 컴포저 액션 행으로 들어갔다(구 `40px … auto` 3열). */
+  grid-template-columns: minmax(0, 820px);
+  /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
+     (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
+  justify-content: center;
+  left: calc(var(--editor-left-safe, 264px) + 12px);
+  position: fixed;
+  right: 24px;
+  z-index: 40; /* z-layers: bar 40 < overlay 41 */
+}
+
+/* 팝오버(슬래시·추천·메뉴)가 열리면 rising overlay(41) 위로 올라간다. */
+.ai-command-bar.has-popover {
+  z-index: 42;
+}
+
+/* float 도크의 바 절대 배치 규칙은 데크(18-assistant-deck.css)로 흡수됐다 — 바는 `.ai-deck` 안에서
+   흐름으로 선다(2026-09-03). */
+
+/* 대기/새 대화 등 idle 상태는 하단 점유를 줄인다 */
+.ai-command-bar .ai-assistant-status[data-status-tone="idle"] {
+  display: none;
+}
+
+.ai-command-bar .ai-status-group:not(:has(.ai-abort-button:not([hidden]))):not(:has(.ai-assistant-status:not([data-status-tone="idle"]))) {
+  display: none;
+}
+
+/* 스튜디오 입력줄 기하는 08-studio-mode-start-screen.css 가 소유한다.
+   여기서 left/right 를 주면 채팅 열 안 relative 배치를 덮어 바가 다시 캔버스를 가로지른다. */
+
+/* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 액션 행의 .ai-composer-menu-btn
+   (assistant-composer.css)이 크기·상태를 소유한다. */
+
+/* 32px 정사각 아이콘 버튼은 이제 헤더 전용이다. `.ai-command-settings-button` 은
+   ☰ 메뉴의 "설정" 항목이 되었으므로 여기서 빼야 한다 — 남겨 두면 width:32px 에 걸려
+   라벨이 "설/정" 으로 세로 줄바꿈됐다(실측 스샷 h4-action-menu). */
+.ai-chat-icon-btn {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-grid;
+  font-size: 16px;
+  font-weight: 700;
+  height: 32px;
+  place-items: center;
+  width: 32px;
+}
+
+.ai-chat-icon-btn:hover,
+.ai-chat-icon-btn:focus-visible {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+}
+
+.ai-more-wrap {
+  position: relative;
+}
+
+.ai-more-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: 2px;
+  min-width: 160px;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 60;
+}
+
+/* 사이드 호스트는 레이아웃 경계를 위해 overflow:hidden 이다. 메뉴만 뷰포트에 고정해
+   호스트 밖에서도 잘리지 않게 한다(aiChatPanel 이 앵커 좌표를 인라인으로 넣는다). */
+.ai-more-menu.is-viewport-anchored {
+  bottom: auto;
+  position: fixed;
+  right: auto;
+}
+
+.ai-more-menu[hidden] {
+  display: none;
+}
+
+.ai-more-menu-item {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.ai-more-menu-item:hover,
+.ai-more-menu-item:focus-visible {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+/* 더보기 액션은 접힌 작업 안.
+   details 에 display:grid 를 주면 접기 위젯이 깨지니 기본 display 를 유지한다. */
+.ai-more-actions {
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 4px;
+  padding-top: 2px;
+}
+
+.ai-more-actions-summary {
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  list-style: none;
+  padding: 6px 8px;
+}
+
+.ai-more-actions-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ai-more-actions[open] > .ai-more-actions-summary {
+  color: var(--text-1);
+}
+
+.ai-chat-toolbar.is-empty,
+.ai-chat-toolbar[hidden] {
+  display: none !important;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-status-group {
+  flex-wrap: wrap;
+}
+
+.tool-browser-frequent {
+  margin-bottom: 12px;
+}
+
+.tool-browser-show-all,
+.tool-browser-show-frequent {
+  margin: 8px 0 12px;
+}
+
+.ai-command-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 2px;
+  left: 0;
+  min-width: 170px;
+  padding: 6px;
+  /* 위치(bottom/position/z-index)는 .ai-composer-popover 가 소유한다. */
+}
+
+.ai-command-menu-item {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 9px;
+  text-align: left;
+}
+
+.ai-command-menu-item:hover,
+.ai-command-menu-item:focus-visible {
+  background: var(--control-bg-hover);
+  outline: none;
+}
+
+/* 구 `.ai-command-input-stack`(입력창 위 4겹 흐름 스택)과 감독 칩 스타일은
+   assistant-composer.css 의 `.ai-composer` / `.ai-composer-suggest` 로 이전했다. */
+
+.ai-command-bar .ai-status-group {
+  align-self: center;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  gap: 6px;
+  min-height: 0;
+  padding: 0;
+}
+
+.ai-command-bar .ai-assistant-status {
+  color: var(--text-2);
+  line-height: 1.2;
+}
+
+@media (max-width: 720px) {
+  body.ai-command-bar-active {
+    --ai-command-bar-inset: 118px;
+  }
+
+  .ai-command-bar {
+    bottom: 10px;
+    grid-template-columns: minmax(0, calc(100vw - 24px));
+    width: calc(100vw - 20px);
+  }
+}
+
+/* 「고급·진단」 접힘 — 자주 안 쓰는 메뉴 줄을 한 칸으로. */
+.ai-command-menu-advanced { display: grid; gap: 2px; border-top: 1px solid var(--border-default); margin-top: 4px; padding-top: 4px; }
+.ai-command-menu-advanced-summary { cursor: pointer; padding: 6px 9px; font-size: 11px; color: var(--text-3); list-style: none; }
+.ai-command-menu-advanced-summary::-webkit-details-marker { display: none; }
+.ai-command-menu-advanced-summary::before { content: "▸ "; }
+.ai-command-menu-advanced[open] > .ai-command-menu-advanced-summary::before { content: "▾ "; }

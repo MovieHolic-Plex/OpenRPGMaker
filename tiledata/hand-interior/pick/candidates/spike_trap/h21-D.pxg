@@ -1,0 +1,41 @@
+// h21-D: 장식 — 금장 테·리벳 네 모서리, 가시 밑 구멍에 붉은 불씨 빛, 앞 두께 어두운 쇠
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 2
+@mat g brass 4
+@mat r red 3
+@mblock 0 0
+gggggggggggggggg
+ggiiiiiiiiiiiigg
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+girriiirriiirrig
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+giiiiiiiiiiiiiig
+ggiirriiiirriigg
+gggggggggggggggg
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+iiiiiiiiiiiiiiii
+@tblock 0 0
+6555555555555553
+5622222222222243
+5262222622226223
+5253222532225323
+5253222532225323
+5253222532225323
+5243222432224323
+5222622222622223
+5222532222532223
+5222532222532223
+5222532222532223
+5622432222432243
+4333333333333332
+3222222222222221
+1111111111111111
+0000000000000000

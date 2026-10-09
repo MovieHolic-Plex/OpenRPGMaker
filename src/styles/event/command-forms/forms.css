@@ -1,0 +1,947 @@
+/* event 표면 — command-forms/forms.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* ?? Database ?⑤꼸 ?? */
+.db-field {
+  display: grid;
+  gap: 3px;
+  margin-bottom: var(--space-2);
+}
+
+.db-field-hint {
+  color: var(--text-muted, unset);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
+  border-left: 2px solid var(--accent);
+  background: var(--bg-panel-2, unset);
+}
+
+/* 열 개수를 `--curve-samples` 로 받는다 — 예전에는 `repeat(9, 1fr)` 로 하드코딩돼 있었고
+   렌더러는 막대 33개를 발행해서, 33개가 9열에 4행으로 접히며 막대 높이가 4~7px 로 뭉개졌다.
+   CSS 는 TS 상수를 읽을 수 없으므로 렌더러(`databaseCurvePreview.ts`)가 인라인 스타일로
+   샘플 수를 내려보내고 여기서 받는다. 폴백 9는 옛 마크업 안전망이다. */
+/* `min-height: 4px` 는 40px 안에서 하위 10% 값을 전부 같은 높이로 뭉갰다 — 1px 로 낮춰
+   곡선의 동적 범위를 살린다(막대 최소 비율은 렌더러가 6% 로 이미 보장한다). */
+/* 6개 스탯이 3색을 돌려써서 색이 스탯을 식별하지 못했다(최대HP=방어력, 최대MP=민첩성,
+   공격력=정신력). 스탯별로 갈라 카드를 색으로도 구분할 수 있게 한다. */
+
+/* 명령 편집(moveEvent) 이동 경로 폼 — 페이지 자율 이동 다이얼로그와 유사한 2열 구조.
+   auto-fit 범용 그리드(.event-command-edit-body > div > div)에서 제외되어야 한다. */
+.event-command-edit-body .move-route-editor,
+.move-route-editor {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-dialog {
+  display: grid;
+  min-width: 0;
+}
+
+.event-command-edit-body {
+  background: var(--event-rm-chrome);
+  border-color: var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid);
+  border-style: solid;
+  border-width: 1px;
+}
+
+.event-command-edit-body textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.event-command-edit-body input,
+.event-command-edit-body select,
+.event-command-edit-body textarea {
+  max-width: 100%;
+}
+
+.event-command-choices-inline {
+  display: grid;
+  min-width: 0;
+}
+
+.event-command-choices-panel {
+  align-items: start;
+  background: var(--event-rm-chrome);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(148px, 176px);
+  max-width: none;
+  min-width: 0;
+}
+
+.event-command-choices-options {
+  border-color: var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light);
+  border-style: solid;
+  border-width: 1px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 12px 12px;
+}
+
+/* index | text | delete — 3 children. Prompt row overrides to 2 columns. */
+.event-command-choice-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.event-command-choice-row-prompt {
+  grid-template-columns: 44px minmax(0, 1fr);
+}
+
+.event-command-choice-row-index {
+  color: var(--event-rm-text);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+  text-align: center;
+  user-select: none;
+}
+
+.event-command-choice-row-label {
+  color: var(--event-rm-text);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-choice-row span,
+.event-command-cancel-row span,
+.event-command-choice-branch-title {
+  color: var(--event-rm-text);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+}
+
+.event-command-choice-row input {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-choice-remove {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.event-command-choices-option-actions {
+  display: grid;
+  gap: 6px;
+  margin-top: 2px;
+  min-width: 0;
+}
+
+.event-command-choice-add {
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.event-command-choices-hint {
+  color: var(--text-2, #5C5348);
+  font: 400 11px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+.event-command-cancel-fieldset > legend {
+  padding: 0 2px;
+  white-space: nowrap;
+}
+
+.event-command-cancel-row {
+  align-items: center;
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 16px minmax(0, 1fr);
+  min-height: 20px;
+  min-width: 0;
+}
+
+.event-command-cancel-row span {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+.event-command-cancel-row input {
+  margin: 0;
+  min-height: 0;
+}
+
+.event-command-choices-branches {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-command-choices-branches-header {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-width: 0;
+}
+
+.event-command-choices-branches-header > strong {
+  color: var(--event-rm-text);
+  font: 700 12px/16px "Malgun Gothic", sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-choices-branches-header > .event-command-choices-hint {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.event-command-choice-branch {
+  background: color-mix(in srgb, var(--event-rm-chrome) 86%, var(--bg-raised));
+  border-color: var(--border-default) var(--event-rm-light) var(--event-rm-light) var(--border-default);
+  border-style: solid;
+  border-width: 1px 1px 1px 3px;
+  display: grid;
+  gap: 6px;
+  max-width: none;
+  min-width: 0;
+  padding: 6px;
+}
+
+.event-command-choice-branch-title {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-default);
+  cursor: pointer;
+  list-style: none;
+  min-width: 0;
+  overflow-wrap: break-word;
+  padding: 4px 6px;
+  word-break: keep-all;
+}
+
+.event-command-choice-branch-title::-webkit-details-marker {
+  display: none;
+}
+
+.event-command-choice-branch .cmd-list {
+  min-height: 24px;
+}
+
+.event-command-choice-branch-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-command-choice-branch-actions > select {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.event-command-choice-branch-actions > .btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.event-command-choices-rm-note {
+  color: var(--text-2, #5C5348);
+  font: 400 11px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.event-command-wait-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-wait-time-panel,
+.event-command-wait-variable-panel {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-command-wait-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-wait-ms-hint {
+  color: var(--text-2, #5C5348);
+  font: 400 11px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
+
+.event-command-comment-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.m2-command-body {
+  min-width: 0;
+}
+
+.weighted-branch-command-body {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.weighted-branch-toolbar,
+.weighted-branch-destination {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.weighted-branch-toolbar {
+  justify-content: space-between;
+}
+
+.weighted-branch-label {
+  color: var(--text-2);
+  font: var(--font-weight-semibold) var(--font-size-sm)/1.5 var(--font-ui);
+}
+
+.weighted-branch-rows,
+.weighted-branch-name-field,
+.weighted-branch-chance-field {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.weighted-branch-rows {
+  gap: var(--space-3);
+}
+
+.weighted-branch-command-body .weighted-branch-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 7em) var(--space-6);
+  align-items: end;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  min-width: 0;
+  background: var(--bg-raised);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+}
+
+.weighted-branch-command-body .weighted-branch-label-input,
+.weighted-branch-command-body .weighted-branch-chance-input {
+  min-width: 0;
+  min-height: var(--space-6);
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-raised);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 500 14px/1.5 var(--font-ui);
+}
+
+.weighted-branch-command-body .weighted-branch-chance-input {
+  font: 600 13px/1.5 var(--font-mono);
+  text-align: right;
+}
+
+.weighted-branch-percent-control {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-2);
+}
+
+.weighted-branch-command-body input:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2);
+}
+
+.weighted-branch-command-body input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+
+.weighted-branch-command-body input:disabled {
+  background: var(--bg-inset);
+  color: var(--text-2);
+}
+
+.weighted-branch-remove,
+.weighted-branch-add {
+  min-height: var(--space-6);
+}
+
+.weighted-branch-remove {
+  min-width: var(--space-6);
+  padding-inline: 0;
+}
+
+.weighted-branch-meter {
+  grid-column: 1 / -1;
+  background: var(--bg-inset);
+  height: var(--space-1);
+  overflow: hidden;
+}
+
+.weighted-branch-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.weighted-branch-mapping {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--text-2);
+  font: 500 var(--font-size-sm)/1.5 var(--font-ui);
+}
+
+.weighted-branch-index {
+  padding-inline: var(--space-2);
+  border-radius: var(--space-1);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-semibold);
+}
+
+.weighted-branch-error {
+  grid-column: 1 / -1;
+  color: var(--danger);
+  font: 500 var(--font-size-sm)/1.5 var(--font-ui);
+}
+
+.weighted-branch-error[hidden] {
+  display: none;
+}
+
+.weighted-branch-destination {
+  padding-top: var(--space-3);
+  border-top: var(--stroke-1) solid var(--border-default);
+}
+
+.weighted-branch-destination .event-record-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.m2-command-intent-card {
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, var(--accent) 12%);
+  border: 1px solid color-mix(in srgb, var(--border-subtle, rgba(42,37,33,.12)) 70%, var(--accent) 30%);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.m2-command-intent-title {
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.m2-command-intent-body {
+  color: var(--text-2, #6B5F52);
+  font: 500 12px/1.5 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.m2-command-intent-list {
+  color: var(--text-2, #6B5F52);
+  display: grid;
+  font: 500 12px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 4px;
+  margin: 0;
+  padding-left: 1.15em;
+}
+
+.m2-command-intent-list li {
+  margin: 0;
+}
+
+.m2-command-no-params {
+  margin: 0;
+}
+
+.event-command-comment-textarea {
+  min-height: 110px;
+  resize: vertical;
+  width: 100%;
+}
+
+.event-command-comment-preview-wrap {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-comment-preview {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  font: 600 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-height: 36px;
+  padding: 8px 10px;
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+.event-command-comment-preview[data-comment-color="green"],
+.cmd-item-comment[data-comment-color="green"] .cmd-kind {
+  color: var(--text-1);
+}
+
+.event-command-comment-preview[data-comment-color="yellow"],
+.cmd-item-comment[data-comment-color="yellow"] .cmd-kind {
+  color: var(--text-1);
+}
+
+.event-command-comment-preview[data-comment-color="cyan"],
+.cmd-item-comment[data-comment-color="cyan"] .cmd-kind {
+  color: var(--text-1);
+}
+
+.event-command-comment-preview[data-comment-color="pink"],
+.cmd-item-comment[data-comment-color="pink"] .cmd-kind {
+  color: var(--text-1);
+}
+
+.event-command-comment-preview[data-comment-color="gray"],
+.cmd-item-comment[data-comment-color="gray"] .cmd-kind {
+  color: var(--text-2);
+}
+
+.event-command-comment-preview[data-comment-color="white"],
+.cmd-item-comment[data-comment-color="white"] .cmd-kind {
+  color: var(--text-1);
+}
+
+/* Transfer Player command picker */
+.transfer-command-editor {
+  gap: 6px;
+  min-width: 0;
+}
+
+.transfer-command-editor-inline {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.transfer-command-summary-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.transfer-command-summary {
+  background: var(--event-rm-field, var(--bg-raised));
+  border-color: var(--event-rm-mid, var(--border-default)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-light, var(--border-subtle)) var(--event-rm-mid, var(--border-default));
+  border-style: solid;
+  border-width: 1px;
+  color: var(--event-rm-text, var(--text-1));
+  flex: 1 1 12rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Transfer inline command editor — stable 2-col layout (map list | preview), options below. */
+.event-command-edit-body .transfer-command-editor-inline {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  width: 100%;
+}
+
+.event-command-edit-columns:has(.transfer-command-editor-inline) {
+  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 300px);
+}
+
+/* Prevent parent auto-fit/grid from collapsing the transfer picker into a single narrow column. */
+.event-command-edit-body > div:has(.transfer-command-editor-inline),
+.event-command-edit-body .transfer-command-editor-inline,
+.event-command-edit-body .transfer-command-editor-inline > * {
+  min-width: 0;
+}
+
+.event-command-edit-body .transfer-command-summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.event-command-edit-body .transfer-command-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.event-command-edit-dialog {
+  gap: 12px;
+}
+
+.event-command-edit-body,
+.event-command-choices-panel,
+.event-command-choices-options,
+.event-command-choice-branch,
+.event-page-move-route fieldset,
+.event-page-move-route-delete-box,
+.transfer-player-tree,
+.transfer-player-direction,
+.transfer-player-status,
+.event-graphic-picker-frame,
+.event-graphic-resource-list,
+.event-graphic-radio-group,
+.event-graphic-direct-box {
+  background: color-mix(in srgb, var(--event-popup-surface-2, var(--bg-raised)) 94%, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 var(--shadow-pop);
+}
+
+.event-command-edit-body > div,
+.event-command-choices-inline {
+  gap: 10px;
+}
+
+/* [치명-1] 선택지 인라인 에디터: 패널/가지 편집 영역을 세로 스택으로 강제.
+   auto-fit 트랙에 얹혀 가지 패널이 취소 라디오 위로 겹치던 결함 수정. */
+.event-command-edit-body .event-command-choices-inline {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-edit-body .event-command-choices-panel {
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(148px, 176px);
+  max-width: none;
+  min-width: 0;
+}
+
+.event-command-edit-body .event-command-choices-panel > * {
+  min-width: 0;
+}
+
+.event-command-edit-body .event-command-choice-row {
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+}
+
+.event-command-edit-body .event-command-choice-row-prompt {
+  grid-template-columns: 44px minmax(0, 1fr);
+}
+
+.event-command-edit-body .event-command-choice-branch {
+  max-width: none;
+  min-width: 0;
+}
+
+/* 긴 커맨드 줄이 가지 패널 보더 밖으로 삐져나가지 않게 가둔다. */
+.event-command-choice-branch .cmd-list {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* 좌측 폼이 좁아지면 선택지 입력 + 취소 패널을 세로 스택으로 바꿔 글자 깨짐 방지. */
+@media (max-width: 920px) {
+  .event-command-edit-body .event-command-choices-panel,
+  .event-command-choices-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* [치명-1/치명-2] auto-fit 그리드는 단순 폼에만 적용한다.
+   선택지/레코드/문장/상점/이동경로/숫자입력 등 자체 레이아웃 폼은 제외 — 트랙 폭보다 넓은 자식이
+   이웃 위로 겹치거나 듀얼 리스트가 가로로 찢어지던 원인. */
+.event-command-edit-body > div > span,
+.event-command-edit-body > div > div:not(.event-command-choices-inline):not(.event-command-record-form):not(.event-command-text-editor):not(.commerce-command-body):not(.shop-processing-command-body):not(.event-command-edit-summary):not(.event-command-face-editor):not(.move-route-editor):not(.event-command-frame-editor):not(.transfer-command-editor):not(.transfer-command-editor-inline):not(.input-number-command-body):not(.play-audio-command-body):not(.event-command-fork-form):not(.event-condition-form):not(.party-member-command-body):not(.change-equipment-command-body):not(.change-parameters-command-body):not(.actor-m2-command-body):not(.page3-command-body):not(.actor-amount-command-body):not(.rich-command-form):not(.m2-command-body):not(.weighted-branch-command-body) {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  min-width: 0;
+}
+
+/* 그리드 트랙 오버플로 방지: 자식은 트랙 폭을 넘지 않는다. */
+.event-command-edit-body > div > span > *,
+.event-command-edit-body > div > div > * {
+  min-width: 0;
+}
+
+/* [치명-2] 스위치/변수 레코드 셀렉트 + ... 피커 버튼 수평 배치.
+   기존에는 스타일이 전무해 셀렉트가 찌그러지고 버튼과 수직으로 겹쳤다. */
+.event-record-select {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(72px, 0.8fr) minmax(120px, 1.4fr) auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-record-inline-filter {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-record-select select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-record-select .btn.small {
+  flex: 0 0 auto;
+  min-width: 30px;
+}
+
+/* [치명-2] 스위치/변수 조작 폼: 셀렉트 최소폭 보장 + 값 컨트롤 수평 정렬 + 참조 요약 줄. */
+.event-command-edit-body .event-command-record-form {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+}
+
+.event-command-edit-body .event-command-record-form .inline-field {
+  min-width: 0;
+}
+
+.event-command-record-usage {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.event-command-switch-value-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-switch-value-row:not(.is-variable) {
+  grid-template-columns: minmax(120px, 200px);
+}
+
+.event-command-switch-value-row select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-switch-hint {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+/* 변수 조작: 스위치 폼과 같은 세로 필드 스택 + 세그먼트 연산/소스 */
+.event-command-edit-body .event-command-variable-form,
+.event-command-variable-form {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .event-command-variable-form .event-command-variable-field,
+.event-command-variable-form .event-command-variable-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(72px, 88px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-variable-form .event-command-variable-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.event-command-variable-form .rich-segment-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-variable-formula {
+  color: var(--text-1, #2A2521);
+  word-break: break-word;
+}
+
+.event-command-variable-hint {
+  color: var(--text-dim, var(--text-1));
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  margin: 0;
+}
+
+/* 조건 분기 / 조건 폼 */
+.event-command-edit-body .event-command-fork-form,
+.event-command-fork-form {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .event-condition-field,
+.event-condition-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(72px, 92px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.fork-branch {
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent);
+}
+
+.fork-branch-then {
+  border-color: color-mix(in srgb, var(--success, #18764F) 45%, var(--border-default, rgba(42,37,33,.20)));
+}
+
+.fork-branch-else {
+  border-color: color-mix(in srgb, var(--danger, #C6403D) 45%, var(--border-default, rgba(42,37,33,.20)));
+}
+
+.fork-branch-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fork-branch-title {
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.fork-branch-then .fork-branch-title {
+  color: var(--success, #18764F);
+}
+
+.fork-branch-else .fork-branch-title {
+  color: var(--danger, #C6403D);
+}
+
+.fork-branch-meta {
+  color: var(--text-dim, #6B5F52);
+  font: 600 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+}
+
+.fork-branch-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fork-branch-empty {
+  border: 1px dashed var(--border-default, rgba(42,37,33,.20));
+  border-radius: 8px;
+  color: var(--text-dim, #6B5F52);
+  font: 600 11px/1.4 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  padding: 10px;
+  text-align: center;
+}
+
+.fork-branch-item {
+  align-items: start;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(72px, auto) minmax(0, 1fr) auto;
+  padding: 8px;
+}
+
+.fork-branch-item-kind {
+  color: var(--accent);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 4px;
+}
+
+.fork-branch-item-note {
+  color: var(--text-dim, #6B5F52);
+  font: 600 11px/1.35 Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
+  padding-top: 4px;
+}
+
+.fork-branch-text {
+  min-height: 48px;
+  resize: vertical;
+  width: 100%;
+}
+
+.fork-branch-delete {
+  white-space: nowrap;
+}
+
+.fork-branch-add-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.fork-branch-add-label {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-edit-body > div > span > textarea,
+.event-command-edit-body > div > div > textarea {
+  grid-column: 1 / -1;
+  min-height: 128px;
+  width: 100%;
+}
+
+.event-command-edit-body > div > span > input,
+.event-command-edit-body > div > span > select,
+.event-command-edit-body > div > div > input,
+.event-command-edit-body > div > div > select {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .inline-field {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
+}
+
+/* Named terminal commands must keep long definition names readable. */
+.game-over-command-editor { display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
+.game-over-command-editor .inline-field { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+.game-over-command-editor select, .game-over-command-editor input { width: 100%; min-width: 0; }
+.game-over-command-editor .empty-hint { margin: 0; text-align: left; max-width: none; }

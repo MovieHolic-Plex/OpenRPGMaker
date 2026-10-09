@@ -1,0 +1,34 @@
+{
+ "id": "bench_gallery",
+ "slug": "bench_gallery",
+ "name": "관람 의자",
+ "scene": "미술관",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "등받이 없는 긴 의자: 윗면(가죽 짙은 색) ¾ + 앞 두께 + 다리 넷 중 둘 보임. 전시실 가운데.",
+ "palette_hint": "velv/rot 가죽, tin 다리",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "관람 의자",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "rope_barrier"
+ ]
+}

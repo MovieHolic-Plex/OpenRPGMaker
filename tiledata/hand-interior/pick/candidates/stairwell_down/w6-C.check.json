@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairwell_down/w6-C.pxg",
+ "id": "stairwell down",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "계단을 위로 갈수록 좁고 어둡게 좁아지는 6단 깔때기로 다시 그려 깊이를 주고 난간 기둥과 아래 문턱을 굵게 세움",
+ "ok": true
+}

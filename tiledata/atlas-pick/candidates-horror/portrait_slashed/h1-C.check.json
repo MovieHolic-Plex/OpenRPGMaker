@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/portrait_slashed/h1-C.pxg",
+ "set": "horror",
+ "id": "portrait_slashed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "C: portrait_eyes C 의 타원 액자 — 세로로 길게 X 를 긋고 긴 얼굴 조각이 아래로 흘러내려 걸려 있다. 얼굴이 원래보다 더 길어 보이는 것이 어긋난 곳.",
+ "ok": true
+}

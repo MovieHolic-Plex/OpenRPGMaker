@@ -1,0 +1,103 @@
+/*
+ * runtimeJuice.ts 의 모션 절반.
+ *
+ * emitRuntimeJuice 는 예전부터 소리를 내고 모션 클래스를 얹었지만, 이 클래스들에는
+ * CSS 규칙이 어디에도 없었다 — 즉 모션은 선언만 있고 죽어 있었다. e2e 는 클래스
+ * '부착'만 검사해서 이 사실이 드러나지 않았다.
+ *
+ * 거절 피드백에는 특히 모션이 필요하다. 소리는 볼륨 0·무음 환경·자동재생 차단에서
+ * 사라지므로, 소리만으로 거절을 알리면 그 환경에서는 아무 일도 안 일어난 것과 같다.
+ */
+
+/* 거절 — 좌우로 짧게 튕긴다(RM2003 버저의 시각 대응). */
+@keyframes juice-menu-invalid-shake {
+  0% { transform: translateX(0); }
+  18% { transform: translateX(-4px); }
+  38% { transform: translateX(4px); }
+  58% { transform: translateX(-3px); }
+  78% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.juice-menu-invalid {
+  animation: juice-menu-invalid-shake 140ms ease-in-out;
+  /* 흔들림만으로는 '거절'인지 '움직였다'인지 애매하다 — 붉은 테두리를 함께 준다. */
+  outline: 2px solid color-mix(in oklab, var(--danger) 78%, transparent);
+  outline-offset: 1px;
+}
+
+/* 결정 — 눌린 느낌으로 살짝 가라앉는다. */
+@keyframes juice-menu-confirm-press {
+  0% { transform: scale(1); }
+  42% { transform: scale(0.972); }
+  100% { transform: scale(1); }
+}
+
+.juice-menu-confirm,
+.juice-title-confirm {
+  animation: juice-menu-confirm-press 180ms ease-out;
+}
+
+/*
+ * 커서 이동 — 소리는 runtimeJuice 가 낸다. 예전에는 오버레이 전체에
+ * filter:brightness(1.14) 를 걸었는데, .oprn-status-menu::after 가
+ * backdrop-filter 를 써서 매 화살표마다 무대가 재합성·번쩍였다.
+ * 선택 표시는 .selected 배경만으로 충분하다. 클래스는 소리·e2e
+ * (클래스 부착) 계약으로 남긴다. 부모에 filter/transform 을 다시 넣지 말 것.
+ */
+.juice-menu-select,
+.juice-title-select {
+  animation: none;
+}
+
+/* 뒤로·닫기 — 뒤로 물러나는 방향. */
+@keyframes juice-menu-back-slide {
+  0% { transform: translateX(0); opacity: 1; }
+  50% { transform: translateX(3px); opacity: 0.86; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.juice-menu-back,
+.juice-menu-close {
+  animation: juice-menu-back-slide 160ms ease-out;
+}
+
+/* 열림 — 살짝 커지며 나타난다. */
+@keyframes juice-menu-open-pop {
+  0% { transform: scale(0.988); opacity: 0.82; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.juice-menu-open,
+.juice-title-enter {
+  animation: juice-menu-open-pop 160ms ease-out;
+}
+
+/*
+ * ESC 메뉴 오버레이는 켜고 끌 때만 움직인다. 결정·뒤로·거절 모션을 이 루트에
+ * 얹으면 backdrop-filter 가 맵을 같이 흔든다. 상점 행의 juice-menu-invalid
+ * 흔들림은 행 노드에 붙으므로 여기 선택자에 안 걸린다.
+ */
+.oprn-status-menu.juice-menu-select,
+.oprn-status-menu.juice-menu-confirm,
+.oprn-status-menu.juice-menu-back,
+.oprn-status-menu.juice-menu-invalid {
+  animation: none;
+  outline: none;
+}
+
+/*
+ * 모션 민감 사용자에게는 흔들림이 실제로 해롭다. 다만 거절 신호 자체를 없애면
+ * '왜 안 되는지' 알 수 없으므로, 움직임만 끄고 붉은 테두리는 남긴다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .juice-menu-invalid,
+  .juice-menu-confirm,
+  .juice-menu-back,
+  .juice-menu-close,
+  .juice-menu-open,
+  .juice-title-confirm,
+  .juice-title-enter {
+    animation: none;
+  }
+}

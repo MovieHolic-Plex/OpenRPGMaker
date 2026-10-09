@@ -1,0 +1,805 @@
+/* ---- 데이터 구동 타이틀 연출: 배경 레이어 · 파티클 · 등장 애니메이션 ---- */
+/* fx 스택은 배경(루트 background-image) 위, UI(z-index:2 타이틀/로고/메뉴/힌트) 아래. */
+.rm-title-screen .rm-title-fx {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.rm-title-screen .rm-title-bg-layer {
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: 320px 240px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.rm-title-screen .rm-title-particles {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial {
+  --oprn-title-text: #f8fafc;
+  --oprn-title-shadow: rgba(5, 12, 28, 0.72);
+  isolation: isolate;
+}
+
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial::before {
+  background:
+    linear-gradient(90deg, rgba(4, 10, 23, 0.84) 0%, rgba(4, 10, 23, 0.46) 34%, transparent 62%),
+    linear-gradient(0deg, rgba(4, 10, 23, 0.36), transparent 42%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.player-layout.system-shell .rm-title-editorial-copy {
+  position: static;
+}
+
+.player-layout.system-shell .rm-title-kicker {
+  color: rgba(226, 232, 240, 0.72);
+  display: block;
+  font-family: var(--runtime-ui-font);
+  font-size: 7px;
+  /* 400 고정 — 픽셀 글꼴은 400 페이스 하나만 등록돼 있어서, 그보다 굵게 요구하면
+     브라우저가 합성 볼드로 격자를 뭉갠다. 위계는 크기·색·자간이 담당한다. */
+  font-weight: 400;
+  left: 10%;
+  letter-spacing: 0.16em;
+  line-height: 1.2;
+  position: absolute;
+  top: 12%;
+  z-index: 3;
+}
+
+.player-layout.system-shell .rm-title-subtitle {
+  color: rgba(248, 250, 252, 0.86);
+  display: block;
+  font-family: var(--runtime-ui-font);
+  font-size: 10px;
+  font-weight: 400;
+  left: 10%;
+  line-height: 1.3;
+  margin-top: 0;
+  position: absolute;
+  top: 34%;
+  word-break: keep-all;
+  z-index: 3;
+}
+
+/* 한 주기 = 논리 타일 한 장(320×240) 이동. 주기(duration)는 저작 속도로 인라인 주입된다. */
+@keyframes rm-title-layer-scroll-x {
+  from { background-position-x: 0; }
+  to { background-position-x: -320px; }
+}
+
+@keyframes rm-title-layer-scroll-y {
+  from { background-position-y: 0; }
+  to { background-position-y: -240px; }
+}
+
+/* 등장 연출 — both(backwards)로 delay 동안 from 상태를 유지한다. */
+@keyframes rm-title-intro-fade-in {
+  from { opacity: 0; }
+}
+
+/* 타이틀/로고는 translate(-50%, -50%) 기준 배치 — rise 는 그 기준점에서 시작해야 한다. */
+@keyframes rm-title-intro-rise-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px));
+  }
+}
+
+@keyframes rm-title-intro-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.rm-title-screen .rm-title-intro-fade-in {
+  animation: rm-title-intro-fade-in 420ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-rise-in {
+  animation: rm-title-intro-rise-in 480ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-slide-up {
+  animation: rm-title-intro-slide-up 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-bg-layer,
+  .rm-title-screen .rm-title-intro-fade-in,
+  .rm-title-screen .rm-title-intro-rise-in,
+  .rm-title-screen .rm-title-intro-slide-up {
+    animation: none !important;
+  }
+}
+
+/* 타이틀 메뉴 「크레딧」이 연다 — 편집기 셸 위에 떠도 동작은 같다(dialog는 문서 레이어를 쓴다). */
+.rm-license-dialog {
+  width: min(560px, 86vw);
+  max-height: 78vh;
+  padding: 12px;
+  color: var(--text-1);
+  background: var(--bg-canvas);
+  border: 1px solid rgb(255 255 255 / 22%);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 55%);
+}
+
+.rm-license-dialog-title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rm-license-dialog::backdrop {
+  background: rgb(0 0 0 / 65%);
+}
+
+.rm-license-dialog-body {
+  margin: 0 0 10px;
+  max-height: calc(78vh - 58px);
+  overflow: auto;
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.player-layout.system-shell .rm-title-screen.rm-title-screen-editorial .rm-title-screen-title {
+  font-family: var(--runtime-ui-font);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  /* 1.05 는 18px 픽셀 글꼴에서 상하 2px 을 잘라먹었다(scrollHeight 21 vs clientHeight 19, 실측). */
+  line-height: 1.2;
+  max-width: 72%;
+  text-align: left;
+  transform: none;
+  word-break: keep-all;
+  z-index: 3;
+  -webkit-text-stroke: 0;
+  text-shadow: 0 2px 10px var(--oprn-title-shadow);
+}
+
+.player-layout.system-shell .rm-title-screen .rm-title-screen-title::before,
+.player-layout.system-shell .rm-title-screen .rm-title-screen-title::after {
+  display: none;
+}
+
+.player-layout.system-shell .rm-title-screen .rm-title-screen-title::before {
+  top: -12px;
+}
+
+.player-layout.system-shell .rm-title-screen .rm-title-screen-title::after {
+  bottom: -10px;
+}
+
+.player-layout.system-shell .rm-title-screen .rm-title-screen-logo {
+  height: 70px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  z-index: 2;
+}
+
+/* 타이틀 메뉴는 자료집 System 윈도스킨을 쓴다 — 필드 메뉴·상점·전투와 같은 변수다.
+   단, 창은 **내용 크기**만 생긴다(min-width 96px). 전면 루트에 fill 을 걸지 않으므로
+   DB 타이틀 그래픽은 메뉴 밖 전역에서 그대로 보이고, 레터박스 RM 타이틀로 돌아가지도 않는다. */
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: none;
+  gap: 2px;
+  min-width: 96px;
+  padding: 3px 4px;
+  transform: none;
+  z-index: 3;
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu-button {
+  background: transparent;
+  border: 0;
+  color: var(--runtime-window-muted);
+  cursor: default;
+  font-family: var(--runtime-ui-font);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+  min-height: 16px;
+  padding: 2px 6px 2px 10px;
+  pointer-events: none;
+  text-align: left;
+  text-shadow: 0 1px 6px rgba(4, 10, 23, 0.7);
+}
+
+.player-layout.system-shell .rm-title-menu-button.selected {
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 3px 0 0 var(--runtime-window-focus);
+  color: var(--runtime-window-text);
+}
+
+.player-layout.system-shell .rm-title-menu-button.selected::before {
+  display: none;
+}
+
+.player-layout.system-shell .rm-title-menu-button:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
+  outline: none;
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-input-hint {
+  background: rgba(4, 10, 23, 0.28);
+  border: 0;
+  bottom: 10px;
+  box-shadow: none;
+  color: rgba(248, 250, 252, 0.8);
+  font-family: var(--runtime-ui-font);
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 1.4;
+  min-width: 0;
+  padding: 4px 6px;
+  right: 10px;
+  text-shadow: 0 1px 8px rgba(4, 10, 23, 0.8);
+  z-index: 3;
+}
+
+.player-layout.system-shell .oprn-load-panel.system-panel {
+  align-items: center;
+  background-color: #101820;
+  border: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--oprn-title-text);
+  display: flex;
+  gap: 0;
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
+}
+
+.player-layout.system-shell .oprn-load-window {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: none;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-ui-font);
+  gap: 4px;
+  max-height: calc(100% - 28px);
+  padding: 2px 4px;
+  position: relative;
+  text-shadow:
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
+  /* 세이브 카드 2행(Lv · 플레이타임 · 저장시각)이 잘리지 않는 폭. 320 논리폭 안에서 유지. */
+  width: min(264px, calc(100% - 28px));
+  z-index: 2;
+}
+
+.player-layout.system-shell .oprn-load-title {
+  flex: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+  color: var(--oprn-title-text);
+  font: inherit;
+  line-height: 1.25;
+  margin: 0;
+  padding: 0 0 4px;
+  text-align: center;
+}
+
+.player-layout.system-shell .oprn-load-message,
+.player-layout.system-shell .oprn-load-corrupt {
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 10px;
+  line-height: 1.25;
+  min-height: 14px;
+  overflow-wrap: anywhere;
+}
+
+.player-layout.system-shell .oprn-load-corrupt {
+  color: #ffd7d0;
+}
+
+.player-layout.system-shell .oprn-load-slots {
+  display: grid;
+  grid-auto-rows: max-content;
+  gap: 3px;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.player-layout.system-shell .oprn-load-slot,
+.player-layout.system-shell .oprn-load-back {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--runtime-glass-radius-small);
+  color: var(--oprn-title-text);
+  cursor: default;
+  font: inherit;
+  min-height: 18px;
+  overflow: hidden;
+  padding: 2px 5px 2px 18px;
+  position: relative;
+  text-align: left;
+  text-shadow:
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
+}
+
+/* 세이브 슬롯 카드 — 중첩 tight 9-slice 윈도우 + 2행 그리드.
+   border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
+   배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
+.player-layout.system-shell .oprn-load-slot {
+  border: 1px solid var(--runtime-glass-hairline);
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 2px 6px 2px 18px;
+}
+
+.player-layout.system-shell .oprn-load-slot-row {
+  align-items: baseline;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.player-layout.system-shell .oprn-load-slot-title {
+  flex: none;
+}
+
+/* 320px 논리폭 스테이지 안에서 긴 맵 이름은 말줄임 처리. */
+.player-layout.system-shell .oprn-load-slot-map {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-layout.system-shell .oprn-load-slot-meta {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--runtime-font-size-9);
+}
+
+.player-layout.system-shell .oprn-load-slot-meta > span + span::before {
+  content: "\00b7";
+  margin-right: 4px;
+  opacity: 0.7;
+}
+
+.player-layout.system-shell .oprn-load-back {
+  border-top: 1px solid rgba(255, 255, 255, 0.38);
+  flex: none;
+  margin-top: 2px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player-layout.system-shell .oprn-load-slot:focus-visible,
+.player-layout.system-shell .oprn-load-back:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
+  outline: none;
+}
+
+.player-layout.system-shell .oprn-load-slot:focus-visible::before {
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--oprn-title-cursor);
+  border-top: 5px solid transparent;
+  content: "";
+  filter: drop-shadow(1px 1px 0 var(--oprn-title-window-shadow));
+  height: 0;
+  left: 5px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+}
+
+.player-layout.system-shell .oprn-load-slot.is-empty {
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.player-layout.system-shell .oprn-load-slot.is-corrupt {
+  color: #ffd7d0;
+}
+
+/* Event-command load screens occupy the logical play stage, like the status menu. */
+.player-layout.system-shell .play-stage > .oprn-load-panel.system-panel {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+}
+
+.player-layout.system-shell .play-stage > .oprn-load-panel .oprn-load-window {
+  max-height: calc(100% - 16px);
+  overflow-y: auto;
+}
+
+/* ── 오프닝 영역 효과 (WebGL) ─────────────────────────────────────────────
+   배경 그림 자체를 다시 그리는 canvas 라 어두운 막(::before, z1) 아래 z0 에 둔다.
+   WebGL 이 없으면 canvas 는 투명하게 남고 CSS 배경이 그대로 보인다. */
+.rm-title-screen > .rm-title-effects {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+}
+
+/* ── 로고 질감 ─────────────────────────────────────────────────────────────
+   글꼴은 번들하지 않는다(CDN 금지) — 설치돼 있으면 Cinzel/Trajan, 아니면 세리프. */
+.rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d7dde6 38%, #7c8796 52%, #eef2f6 64%, #9aa4b1 100%);
+  --oprn-logo-edge: rgb(10 14 24 / 85%);
+  --oprn-logo-glow: rgb(0 0 0 / 55%);
+  font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  width: max-content;
+  max-width: 88%;
+  color: transparent;
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-stroke: 0.6px var(--oprn-logo-edge);
+  text-shadow: none;
+  filter: drop-shadow(0 2px 0 var(--oprn-logo-edge)) drop-shadow(0 4px 10px var(--oprn-logo-glow));
+  animation: rm-title-logo-shine 6s ease-in-out 1.2s infinite;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="plain"] {
+  --oprn-logo-fill: linear-gradient(#fff, #fff);
+  animation: none;
+  background-image: var(--oprn-logo-fill);
+  background-size: 100% 100%;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="gold"] {
+  --oprn-logo-fill: linear-gradient(180deg, #fff6d0 0%, #f2c75c 36%, #9b6a1c 52%, #ffe08a 66%, #b8812a 100%);
+  --oprn-logo-edge: rgb(40 22 4 / 90%);
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="stone"] {
+  --oprn-logo-fill: linear-gradient(180deg, #d9d4c8 0%, #a8a193 45%, #6f695d 55%, #b9b2a3 100%);
+  --oprn-logo-edge: rgb(20 18 14 / 90%);
+  animation: none;
+  background-size: 100% 100%, 100% 100%;
+  background-image: var(--oprn-logo-fill);
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style="glow"] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d8f3ff 50%, #9fdcff 100%);
+  --oprn-logo-edge: rgb(20 60 110 / 60%);
+  --oprn-logo-glow: rgb(140 210 255 / 75%);
+}
+
+.rm-title-screen .rm-title-screen-logo[data-logo-style]:not([data-logo-style="plain"]) {
+  filter: drop-shadow(0 3px 8px rgb(0 0 0 / 55%));
+}
+
+.rm-title-screen .rm-title-logo-subtitle {
+  position: absolute;
+  z-index: 3;
+  font-family: "Cinzel", "Trajan Pro", Georgia, "Noto Serif KR", serif;
+  font-size: 8px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgb(236 240 246 / 88%);
+  text-shadow: 0 1px 4px rgb(0 0 0 / 80%);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-logo-subtitle[data-logo-style="gold"] {
+  color: rgb(255 230 170 / 92%);
+}
+
+@keyframes rm-title-logo-shine {
+  0%, 62% { background-position: 130% 0, 0 0; }
+  100% { background-position: -30% 0, 0 0; }
+}
+
+/* ── 메뉴: 창 없는 글자 메뉴 (키아트 위에 떠 있는 형태) ────────────────────── */
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"],
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] {
+  background: none;
+  border: 0;
+  box-shadow: none;
+  gap: 3px;
+  padding: 0;
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
+  background: none;
+  box-shadow: none;
+  color: rgb(226 232 240 / 78%);
+  font-family: "Cinzel", "Trajan Pro", Georgia, var(--runtime-ui-font), serif;
+  letter-spacing: 0.08em;
+  padding: 1px 4px 1px 12px;
+  position: relative;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 90%), 0 0 8px rgb(0 0 0 / 60%);
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected {
+  background: linear-gradient(90deg, rgb(255 236 180 / 22%), transparent 85%);
+  box-shadow: none;
+  color: #fff8e6;
+  text-shadow: 0 0 6px rgb(255 214 130 / 85%), 0 1px 3px rgb(0 0 0 / 90%);
+}
+
+.player-layout.system-shell .rm-title-screen-editorial .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before,
+.rm-title-screen .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0;
+  padding: 0;
+  border: 0;
+  box-sizing: content-box;
+  filter: none;
+  animation: none;
+  font-size: 0;
+  line-height: 0;
+  transform: rotate(45deg);
+  background: #ffe7a8;
+  box-shadow: 0 0 5px rgb(255 214 130 / 90%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-screen-title[data-logo-style] {
+    animation: none !important;
+  }
+}
+
+/* ── 로고 반짝임 설정(logoShine) ─────────────────────────────────────────────
+   설정이 있으면 루트에 data-logo-shine 이 붙고 CSS 기본 반복은 끈다 — 재생은 인라인 animation 이 맡는다. */
+.rm-title-screen.rm-title-screen-editorial[data-logo-shine][data-logo-style] .rm-title-screen-title[data-logo-style] {
+  animation: none;
+}
+
+.rm-title-screen .rm-title-screen-title[data-logo-style][data-logo-shine] {
+  background-image:
+    linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 85%) 48%, transparent 56% 100%),
+    var(--oprn-logo-fill);
+  background-size: 250% 100%, 100% 100%;
+  background-position: 130% 0, 0 0;
+}
+
+@keyframes rm-title-logo-shine-once {
+  0% { background-position: 130% 0, 0 0; }
+  100% { background-position: -30% 0, 0 0; }
+}
+
+/* 그림 로고: 로고 알파로 가린 띠가 지나간다. */
+.rm-title-screen .rm-title-screen-logo .rm-title-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 0 40%, rgb(255 255 255 / 80%) 48%, transparent 56% 100%);
+  background-size: 250% 100%;
+  background-position: 130% 0;
+  background-repeat: no-repeat;
+  -webkit-mask-image: var(--logo-mask);
+  mask-image: var(--logo-mask);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  mix-blend-mode: screen;
+}
+
+@keyframes rm-title-shine-band {
+  0%, 62% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+@keyframes rm-title-shine-band-once {
+  0% { background-position: 130% 0; }
+  100% { background-position: -30% 0; }
+}
+
+/* ── 입장 시퀀스(sequence) ───────────────────────────────────────────────────
+   모든 키프레임 이름은 rm-title-seq- 로 시작한다(건너뛰기가 이 접두사만 finish 한다).
+   로고 그림은 transform 을 이미 쓰므로 scale·translate 개별 속성만 움직인다. */
+.rm-title-screen .rm-title-seq-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-seq-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #000;
+  pointer-events: none;
+}
+
+.rm-title-screen .rm-title-seq-sweep {
+  position: absolute;
+  inset: -10% -40%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 38%, rgb(255 244 214 / 42%) 50%, transparent 62%);
+  mix-blend-mode: screen;
+}
+
+@keyframes rm-title-seq-veil {
+  from { opacity: 1; }
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes rm-title-seq-push {
+  from { scale: var(--seq-push, 1.08); }
+  to { scale: 1; }
+}
+
+@keyframes rm-title-seq-sweep {
+  from { translate: -70% 0; opacity: 0; }
+  20% { opacity: 1; }
+  to { translate: 70% 0; opacity: 0; visibility: hidden; }
+}
+
+@keyframes rm-title-seq-logo-bloom {
+  from { opacity: 0; scale: 1.08; filter: blur(6px) brightness(2.2); }
+  55% { opacity: 1; filter: blur(0) brightness(1.5); }
+  to { opacity: 1; scale: 1; }
+}
+
+@keyframes rm-title-seq-logo-rise {
+  from { opacity: 0; translate: 0 8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes rm-title-seq-logo-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-seq-logo-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes rm-title-seq-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-seq-item {
+  from { opacity: 0; translate: 0 6px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* 건너뛰기 폴백: finish() 가 못 잡은 것도 끝 상태로. */
+.rm-title-screen.rm-title-seq-skipped .rm-title-seq-veil,
+.rm-title-screen.rm-title-seq-skipped .rm-title-seq-sweep {
+  display: none;
+}
+
+/* ── 「새 게임」 전환(transition) ──────────────────────────────────────────── */
+.rm-title-screen.rm-title-transitioning .rm-title-menu,
+.rm-title-screen.rm-title-transitioning .rm-title-logo-subtitle {
+  transition: opacity calc(var(--transition-ms, 800ms) * 0.4) ease-out;
+  opacity: 0;
+}
+
+.rm-title-screen .rm-title-transition {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  animation: rm-title-transition-fade var(--transition-ms, 800ms) ease-in both;
+  background: #000;
+}
+
+.rm-title-screen .rm-title-transition[data-kind="flash"] {
+  animation-name: rm-title-transition-flash;
+  animation-timing-function: linear;
+}
+
+.rm-title-screen .rm-title-transition[data-kind="mist"] {
+  animation-name: rm-title-transition-mist;
+  background: rgb(230 236 244);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+
+.rm-title-screen .rm-title-transition[data-kind="zoom"] {
+  animation-name: rm-title-transition-zoom-veil;
+  animation-timing-function: cubic-bezier(.6, 0, .9, .4);
+}
+
+.rm-title-screen.rm-title-transitioning[data-transition="zoom"] > :not(.rm-title-transition) {
+  animation: rm-title-transition-zoom var(--transition-ms, 1000ms) cubic-bezier(.5, 0, .9, .5) both;
+}
+
+@keyframes rm-title-transition-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rm-title-transition-flash {
+  0% { opacity: 0; background: #fff; }
+  12% { opacity: 1; background: #fff; }
+  45% { opacity: 1; background: #fff4dc; }
+  100% { opacity: 1; background: #000; }
+}
+
+@keyframes rm-title-transition-mist {
+  0% { opacity: 0; background: rgb(230 236 244); }
+  60% { opacity: 0.92; background: rgb(230 236 244); }
+  100% { opacity: 1; background: #000; }
+}
+
+@keyframes rm-title-transition-zoom-veil {
+  0%, 55% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes rm-title-transition-zoom {
+  from { scale: 1; filter: blur(0); }
+  to { scale: 1.25; filter: blur(3px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen.rm-title-seq *,
+  .rm-title-screen.rm-title-seq {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+  .rm-title-screen .rm-title-seq-veil,
+  .rm-title-screen .rm-title-seq-sweep,
+  .rm-title-screen .rm-title-shine {
+    display: none !important;
+  }
+  .rm-title-screen.rm-title-transitioning[data-transition="zoom"] > :not(.rm-title-transition) {
+    animation: none !important;
+  }
+}

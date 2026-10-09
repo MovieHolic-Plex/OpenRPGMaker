@@ -1,0 +1,5868 @@
+{
+ "version": 1,
+ "rule": "modern-style-bible.md §12 (1칸=16px=1m, 주인공 16x24 는 1.5m 축척 모순 기록)",
+ "scope": "modern·jp·school·horror 물체층 기물(월드맵·지형·조립 킷 제외)",
+ "verdicts": "ok=칸수 일치 / too_small=가로·세로 모두 표보다 작음 / too_big=모두 큼 / mixed=한쪽 작고 한쪽 큼 / unclear=표 종류 미정. exempt=차·가로등·전봇대·가로수 등 축약이 관례라 따로 센다.",
+ "summary": {
+  "by_set": {
+   "modern": {
+    "total": 30,
+    "ok": 10,
+    "too_small": 10,
+    "too_big": 0,
+    "mixed": 0,
+    "unclear": 10,
+    "exempt": 5
+   },
+   "jp": {
+    "total": 36,
+    "ok": 9,
+    "too_small": 13,
+    "too_big": 6,
+    "mixed": 0,
+    "unclear": 8,
+    "exempt": 4
+   },
+   "school": {
+    "total": 44,
+    "ok": 17,
+    "too_small": 2,
+    "too_big": 11,
+    "mixed": 1,
+    "unclear": 13,
+    "exempt": 0
+   },
+   "horror": {
+    "total": 52,
+    "ok": 25,
+    "too_small": 3,
+    "too_big": 3,
+    "mixed": 0,
+    "unclear": 21,
+    "exempt": 0
+   }
+  },
+  "total": {
+   "total": 162,
+   "ok": 61,
+   "too_small": 28,
+   "too_big": 20,
+   "mixed": 1,
+   "unclear": 52,
+   "exempt": 9
+  }
+ },
+ "items": [
+  {
+   "set": "modern",
+   "slug": "gn_bus",
+   "name": "시내버스(간선·지선·광역)",
+   "current": [
+    2,
+    5
+   ],
+   "canvas": [
+    32,
+    80
+   ],
+   "spec": [
+    3,
+    10
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "veh_v",
+    "W": 2.5,
+    "D": 10.5,
+    "H": 3.1,
+    "table": "bus_v",
+    "name": "시내버스(세로)",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 40,
+    "F": 50,
+    "T": 109,
+    "total": 159,
+    "spec_canvas": [
+     48,
+     160
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 79
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_bus_led",
+   "name": "버스 도착 안내 전광판",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 29
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_car_h",
+   "name": "승용차·택시(가로)",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    5,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "veh_h",
+    "W": 4.4,
+    "D": 1.8,
+    "H": 1.45,
+    "table": "car_h",
+    "name": "승용차·택시(가로)",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 70,
+    "F": 23,
+    "T": 9,
+    "total": 32,
+    "spec_canvas": [
+     80,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 48,
+    "h": 29
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_car_v",
+   "name": "승용차·택시(세로)",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    2,
+    4
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "veh_v",
+    "W": 1.8,
+    "D": 4.4,
+    "H": 1.45,
+    "table": "car_v",
+    "name": "승용차·택시(세로)",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 29,
+    "F": 23,
+    "T": 41,
+    "total": 64,
+    "spec_canvas": [
+     32,
+     64
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 30,
+    "h": 45
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_delivery_scooter",
+   "name": "배달 오토바이",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.8,
+    "D": 0.6,
+    "H": 1.1,
+    "table": null,
+    "name": "배달 오토바이",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 29,
+    "F": 18,
+    "T": 6,
+    "total": 24,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 12
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_media_pole",
+   "name": "미디어폴",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.5,
+    "D": 0.4,
+    "H": 2.5,
+    "table": null,
+    "name": "미디어폴",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 40,
+    "T": 3,
+    "total": 43,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 12,
+    "h": 47
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_route_board",
+   "name": "노선 안내판",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 32
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_signal_arm",
+   "name": "가로형 신호등",
+   "current": [
+    5,
+    1
+   ],
+   "canvas": [
+    80,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 69,
+    "h": 14
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_ped_signal",
+   "name": "보행 신호등",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.4,
+    "D": 0.3,
+    "H": 2.5,
+    "table": "ped_signal",
+    "name": "보행 신호기",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 6,
+    "F": 40,
+    "T": 3,
+    "total": 43,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 8,
+    "h": 29
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_island_roof",
+   "name": "버스 정류장 섬 지붕",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_vent",
+   "name": "지하철 환기구",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.6,
+    "D": 0.8,
+    "H": 0.9,
+    "table": null,
+    "name": "지하철 환기구",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 26,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 30,
+    "h": 11
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_air_sign",
+   "name": "에어 간판",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 10,
+    "h": 30
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_vsign",
+   "name": "세로 돌출 간판",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 15,
+    "h": 46
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_bench",
+   "name": "벤치(강남)",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 30
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_bike_share",
+   "name": "공공자전거 거치대",
+   "current": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "spec": [
+    3,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.7,
+    "D": 0.6,
+    "H": 1.0,
+    "table": null,
+    "name": "공공자전거 거치대(3대)",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 43,
+    "F": 16,
+    "T": 6,
+    "total": 22,
+    "spec_canvas": [
+     48,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 48,
+    "h": 15
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_fishbun_cart",
+   "name": "붕어빵 노점",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.2,
+    "D": 0.8,
+    "H": 1.6,
+    "table": null,
+    "name": "붕어빵 노점 수레",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 19,
+    "F": 26,
+    "T": 6,
+    "total": 32,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 30,
+    "h": 30
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_ginkgo",
+   "name": "은행나무 가로수(그림자)",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    3,
+    6
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "flat",
+    "W": 3.0,
+    "D": 3.0,
+    "H": 6.0,
+    "table": "tree_street",
+    "name": "가로수",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 48,
+    "F": 96,
+    "T": 0,
+    "total": 96,
+    "spec_canvas": [
+     48,
+     96
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 26,
+    "h": 47
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_hoarding",
+   "name": "공사 가림막",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 31
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_people",
+   "name": "행인 무리",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 7,
+    "h": 13
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_plane_tree",
+   "name": "플라타너스 가로수(그림자)",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    3,
+    6
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "flat",
+    "W": 3.0,
+    "D": 3.0,
+    "H": 6.0,
+    "table": "tree_street",
+    "name": "가로수",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 48,
+    "F": 96,
+    "T": 0,
+    "total": 96,
+    "spec_canvas": [
+     48,
+     96
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 32,
+    "h": 47
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_street_stall",
+   "name": "포장마차",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 1.2,
+    "H": 2.0,
+    "table": null,
+    "name": "포장마차",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 32,
+    "F": 32,
+    "T": 11,
+    "total": 43,
+    "spec_canvas": [
+     32,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 30,
+    "h": 30
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_trash_bags",
+   "name": "종량제 봉투 더미",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 0.5,
+    "table": null,
+    "name": "종량제 봉투 더미",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 8,
+    "T": 5,
+    "total": 13,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 13
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "gn_wall_ac",
+   "name": "벽걸이 실외기",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.3,
+    "H": 0.6,
+    "table": null,
+    "name": "벽걸이 실외기",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 10,
+    "T": 4,
+    "total": 14,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_bench",
+   "name": "벤치",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 0.5,
+    "H": 0.85,
+    "table": "bench",
+    "name": "벤치(2인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 28,
+    "h": 13
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_bush",
+   "name": "둥근 덤불",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v0",
+    "w": 30,
+    "h": 27
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_cone",
+   "name": "라바콘",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.35,
+    "D": 0.35,
+    "H": 0.7,
+    "table": null,
+    "name": "라바콘",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 6,
+    "F": 11,
+    "T": 4,
+    "total": 15,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 15
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_hydrant",
+   "name": "소화전",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.3,
+    "D": 0.3,
+    "H": 0.7,
+    "table": "hydrant",
+    "name": "소화전",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 5,
+    "F": 11,
+    "T": 3,
+    "total": 14,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 16
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_planter",
+   "name": "화분 상자",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.4,
+    "H": 0.5,
+    "table": null,
+    "name": "화분 상자",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 8,
+    "T": 4,
+    "total": 12,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v0",
+    "w": 14,
+    "h": 15
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_sculpture",
+   "name": "광장 조형물",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 1.0,
+    "H": 1.8,
+    "table": null,
+    "name": "광장 조형물",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 16,
+    "F": 29,
+    "T": 10,
+    "total": 39,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 32
+   }
+  },
+  {
+   "set": "modern",
+   "slug": "mo_trash",
+   "name": "쓰레기통",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.5,
+    "D": 0.5,
+    "H": 0.9,
+    "table": "street_trash",
+    "name": "가로 쓰레기통",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 8,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 15
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "vending_drink",
+   "name": "음료 자판기(흰)",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_1",
+    "name": "자판기(1대)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "alt": {
+    "table": "vending_pair",
+    "name": "자판기 2대 나란히",
+    "spec": [
+     2,
+     2
+    ],
+    "verdict": "ok",
+    "note": "쌍(두 대) 해석"
+   },
+   "drawn": {
+    "file": "r1-A",
+    "w": 30,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "vending_cig",
+   "name": "담배 자판기",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_1",
+    "name": "자판기(1대)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "alt": {
+    "table": "vending_pair",
+    "name": "자판기 2대 나란히",
+    "spec": [
+     2,
+     2
+    ],
+    "verdict": "ok",
+    "note": "쌍(두 대) 해석"
+   },
+   "drawn": {
+    "file": "r1-A",
+    "w": 30,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "vending_coffee",
+   "name": "커피 자판기(붉은 몸통)",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_1",
+    "name": "자판기(1대)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "alt": {
+    "table": "vending_pair",
+    "name": "자판기 2대 나란히",
+    "spec": [
+     2,
+     2
+    ],
+    "verdict": "ok",
+    "note": "쌍(두 대) 해석"
+   },
+   "drawn": {
+    "file": "r1-A",
+    "w": 30,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "vending_ice",
+   "name": "아이스크림 자판기",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_1",
+    "name": "자판기(1대)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "alt": {
+    "table": "vending_pair",
+    "name": "자판기 2대 나란히",
+    "spec": [
+     2,
+     2
+    ],
+    "verdict": "ok",
+    "note": "쌍(두 대) 해석"
+   },
+   "drawn": {
+    "file": "r2-A",
+    "w": 30,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "vending_gacha",
+   "name": "캡슐토이(가샤폰) 두 대",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_pair",
+    "name": "자판기 2대 나란히",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 32,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "r2-A",
+    "w": 30,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "konbini_pole",
+   "name": "콘비니 기둥 간판",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    4
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.5,
+    "D": 0.5,
+    "H": 4.0,
+    "table": null,
+    "name": "콘비니 기둥 간판",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 62,
+    "T": 2,
+    "total": 64,
+    "spec_canvas": [
+     16,
+     64
+    ]
+   },
+   "drawn": {
+    "file": "j3-C",
+    "w": 12,
+    "h": 48
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "station_gate",
+   "name": "역 개찰구",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "movedTo": "kit_gate",
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 48,
+    "h": 32
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "ticket_machine",
+   "name": "매표기",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "r2-A",
+    "w": 47,
+    "h": 32
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "taxi_black",
+   "name": "검정 택시",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    2,
+    4
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "veh_v",
+    "W": 1.8,
+    "D": 4.4,
+    "H": 1.45,
+    "table": "car_v",
+    "name": "승용차·택시(세로)",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 29,
+    "F": 23,
+    "T": 41,
+    "total": 64,
+    "spec_canvas": [
+     32,
+     64
+    ]
+   },
+   "drawn": {
+    "file": "j2-B",
+    "w": 31,
+    "h": 45
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "taxi_yellow",
+   "name": "노랑 택시",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    2,
+    4
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "veh_v",
+    "W": 1.8,
+    "D": 4.4,
+    "H": 1.45,
+    "table": "car_v",
+    "name": "승용차·택시(세로)",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 29,
+    "F": 23,
+    "T": 41,
+    "total": 64,
+    "spec_canvas": [
+     32,
+     64
+    ]
+   },
+   "drawn": {
+    "file": "j2-B",
+    "w": 31,
+    "h": 45
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "jp_signal",
+   "name": "가로형 신호등",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "movedTo": "kit_signal",
+   "spec": [
+    3,
+    5
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 2.5,
+    "D": 0.4,
+    "H": 5.0,
+    "table": null,
+    "name": "가로형 신호등",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 40,
+    "F": 78,
+    "T": 2,
+    "total": 80,
+    "spec_canvas": [
+     48,
+     80
+    ]
+   },
+   "drawn": {
+    "file": "j5-A",
+    "w": 29,
+    "h": 47
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "ped_signal",
+   "name": "보행 신호기",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "movedTo": "kit_signal",
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.4,
+    "D": 0.3,
+    "H": 2.5,
+    "table": "ped_signal",
+    "name": "보행 신호기",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 6,
+    "F": 40,
+    "T": 3,
+    "total": 43,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "j5-A",
+    "w": 12,
+    "h": 32
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "bicycle_parking",
+   "name": "자전거 주차장",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    3,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.5,
+    "D": 1.8,
+    "H": 1.0,
+    "table": null,
+    "name": "자전거 주차(3대)",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 40,
+    "F": 16,
+    "T": 16,
+    "total": 32,
+    "spec_canvas": [
+     48,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "j1-C",
+    "w": 48,
+    "h": 23
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "mamachari",
+   "name": "마마챠리 한 대",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.8,
+    "D": 0.55,
+    "H": 1.0,
+    "table": "bicycle",
+    "name": "자전거",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 29,
+    "F": 16,
+    "T": 5,
+    "total": 21,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "j5-B",
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "utility_pole",
+   "name": "전봇대",
+   "current": [
+    1,
+    4
+   ],
+   "canvas": [
+    16,
+    64
+   ],
+   "movedTo": "kit_pole",
+   "spec": [
+    1,
+    10
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "thin",
+    "W": 0.3,
+    "D": 0.3,
+    "H": 10.0,
+    "table": "utility_pole",
+    "name": "전봇대",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 5,
+    "F": 158,
+    "T": 2,
+    "total": 160,
+    "spec_canvas": [
+     16,
+     160
+    ]
+   },
+   "drawn": {
+    "file": "j5-A",
+    "w": 14,
+    "h": 62
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "ac_unit",
+   "name": "실외기",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.3,
+    "H": 0.6,
+    "table": null,
+    "name": "실외기",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 10,
+    "T": 4,
+    "total": 14,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "j5-A",
+    "w": 15,
+    "h": 16
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "potted_plants",
+   "name": "골목 화분 줄",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.8,
+    "D": 0.4,
+    "H": 0.7,
+    "table": null,
+    "name": "화분 줄",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 29,
+    "F": 11,
+    "T": 4,
+    "total": 15,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "j2-A",
+    "w": 31,
+    "h": 14
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "block_wall",
+   "name": "블록 담장(이어 붙이기)",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 15
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "curve_mirror",
+   "name": "도로 반사경",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.7,
+    "D": 0.2,
+    "H": 3.0,
+    "table": null,
+    "name": "도로 반사경",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 11,
+    "F": 46,
+    "T": 2,
+    "total": 48,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "j4-A",
+    "w": 14,
+    "h": 47
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "tomare_sign",
+   "name": "「止まれ」 표지판",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.6,
+    "D": 0.1,
+    "H": 2.5,
+    "table": "road_sign",
+    "name": "도로 표지(기둥+판)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 40,
+    "T": 2,
+    "total": 42,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "j5-A",
+    "w": 16,
+    "h": 32
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "garbage_station",
+   "name": "쓰레기 집하장",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.8,
+    "D": 0.8,
+    "H": 1.0,
+    "table": null,
+    "name": "쓰레기 집하장",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 29,
+    "F": 16,
+    "T": 8,
+    "total": 24,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "mailbox_red",
+   "name": "빨간 우체통",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.5,
+    "D": 0.5,
+    "H": 1.1,
+    "table": "mailbox",
+    "name": "우체통(원통)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 8,
+    "F": 18,
+    "T": 5,
+    "total": 23,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 13,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "phone_booth",
+   "name": "공중전화",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.8,
+    "H": 2.0,
+    "table": null,
+    "name": "공중전화 부스",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 32,
+    "T": 8,
+    "total": 40,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 13,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "railway_crossing",
+   "name": "건널목 차단기",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "movedTo": "kit_crossing",
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "j2-A",
+    "w": 32,
+    "h": 47
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "bus_stop_jp",
+   "name": "버스 정류장 표지",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.6,
+    "D": 0.1,
+    "H": 2.5,
+    "table": "road_sign",
+    "name": "도로 표지(기둥+판)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 40,
+    "T": 2,
+    "total": 42,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "j1-A",
+    "w": 12,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "standing_sign",
+   "name": "A형 입간판(메뉴 칠판)",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 1.0,
+    "table": "a_frame_sign",
+    "name": "A형 입간판",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 16,
+    "T": 5,
+    "total": 21,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "j4-A",
+    "w": 15,
+    "h": 15
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "torii",
+   "name": "도리이",
+   "current": [
+    4,
+    4
+   ],
+   "canvas": [
+    64,
+    64
+   ],
+   "movedTo": "kit_torii",
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "j3-A",
+    "w": 62,
+    "h": 59
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "stone_lantern",
+   "name": "석등",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.8,
+    "H": 1.6,
+    "table": null,
+    "name": "석등",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 26,
+    "T": 6,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "komainu_a",
+   "name": "고마이누(아형·입 벌림)",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.5,
+    "D": 0.7,
+    "H": 0.9,
+    "table": null,
+    "name": "고마이누",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "j1-A",
+    "w": 16,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "komainu_un",
+   "name": "고마이누(음형·입 다묾)",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.5,
+    "D": 0.7,
+    "H": 0.9,
+    "table": null,
+    "name": "고마이누",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "omikuji_rack",
+   "name": "오미쿠지 묶는 곳",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 28,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "ema_rack",
+   "name": "에마 걸이",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 30
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "saisen_box",
+   "name": "새전함·방울",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 0.8,
+    "H": 1.3,
+    "table": null,
+    "name": "새전함",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 24,
+    "F": 21,
+    "T": 8,
+    "total": 29,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 25,
+    "h": 31
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "temizuya",
+   "name": "데미즈야(손 씻는 곳)",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "movedTo": "kit_shrine",
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "j1-A",
+    "w": 45,
+    "h": 45
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "sakura_tree",
+   "name": "벚나무(만개)",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": [
+    3,
+    6
+   ],
+   "verdict": "too_small",
+   "exempt": true,
+   "basis": {
+    "kind": "flat",
+    "W": 3.0,
+    "D": 3.0,
+    "H": 6.0,
+    "table": "tree_street",
+    "name": "가로수",
+    "scale_exempt": true,
+    "src": "표",
+    "wpx": 48,
+    "F": 96,
+    "T": 0,
+    "total": 96,
+    "spec_canvas": [
+     48,
+     96
+    ]
+   },
+   "drawn": {
+    "file": "j4-A",
+    "w": 48,
+    "h": 47
+   }
+  },
+  {
+   "set": "jp",
+   "slug": "fox_statue",
+   "name": "여우 석상(이나리)",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.6,
+    "H": 1.0,
+    "table": null,
+    "name": "여우 석상",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 16,
+    "T": 6,
+    "total": 22,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "j2-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "desk_set",
+   "name": "학생 책상·의자",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.9,
+    "H": 0.9,
+    "table": null,
+    "name": "학생 책상+의자",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s4-B",
+    "w": 15,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "desk_pair",
+   "name": "두 사람 책상(짝꿍)",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.2,
+    "D": 0.5,
+    "H": 0.75,
+    "table": null,
+    "name": "두 사람 책상",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 19,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s4-B",
+    "w": 31,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "lectern",
+   "name": "교탁",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.3,
+    "D": 0.6,
+    "H": 1.0,
+    "table": null,
+    "name": "교탁",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 21,
+    "F": 16,
+    "T": 6,
+    "total": 22,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s4-B",
+    "w": 29,
+    "h": 22
+   }
+  },
+  {
+   "set": "school",
+   "slug": "teacher_platform",
+   "name": "교단",
+   "current": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s4-A",
+    "w": 48,
+    "h": 15
+   }
+  },
+  {
+   "set": "school",
+   "slug": "locker_row",
+   "name": "교실 뒤 사물함",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.8,
+    "D": 0.5,
+    "H": 1.8,
+    "table": "locker_row6",
+    "name": "사물함 줄(6문)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 29,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s3-A",
+    "w": 32,
+    "h": 29
+   }
+  },
+  {
+   "set": "school",
+   "slug": "cleaning_locker",
+   "name": "청소도구함",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 1.8,
+    "table": "locker_2door",
+    "name": "사물함(2칸 문)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s5-A",
+    "w": 14,
+    "h": 32
+   }
+  },
+  {
+   "set": "school",
+   "slug": "shoe_locker",
+   "name": "신발장(실내화장)",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.8,
+    "D": 0.35,
+    "H": 1.0,
+    "table": null,
+    "name": "신발장",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 29,
+    "F": 16,
+    "T": 4,
+    "total": 20,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 31,
+    "h": 32
+   }
+  },
+  {
+   "set": "school",
+   "slug": "slippers",
+   "name": "실내화 한 켤레",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s5-B",
+    "w": 12,
+    "h": 12
+   }
+  },
+  {
+   "set": "school",
+   "slug": "genkan_step",
+   "name": "현관 발판(스노코)",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s5-A",
+    "w": 32,
+    "h": 15
+   }
+  },
+  {
+   "set": "school",
+   "slug": "water_fountain",
+   "name": "복도 세면대",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.5,
+    "H": 0.9,
+    "table": null,
+    "name": "복도 세면대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 16,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 32
+   }
+  },
+  {
+   "set": "school",
+   "slug": "lab_bench",
+   "name": "과학실 실험대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.9,
+    "H": 0.9,
+    "table": null,
+    "name": "실험대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 32,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s5-B",
+    "w": 47,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "lab_cabinet",
+   "name": "약품장",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.5,
+    "D": 0.45,
+    "H": 1.8,
+    "table": "lab_cabinet",
+    "name": "약품장(4문)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s5-A",
+    "w": 28,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "skeleton_model",
+   "name": "인체 골격 모형",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.5,
+    "D": 0.5,
+    "H": 1.7,
+    "table": null,
+    "name": "골격 모형",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 27,
+    "T": 4,
+    "total": 31,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s1-A",
+    "w": 13,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "grand_piano",
+   "name": "음악실 그랜드 피아노",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 2.0,
+    "H": 1.0,
+    "table": null,
+    "name": "그랜드 피아노",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 24,
+    "F": 16,
+    "T": 16,
+    "total": 32,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s2-A",
+    "w": 44,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "music_stand",
+   "name": "보면대",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.5,
+    "D": 0.4,
+    "H": 1.2,
+    "table": null,
+    "name": "보면대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 8,
+    "F": 19,
+    "T": 3,
+    "total": 22,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s2-B",
+    "w": 15,
+    "h": 15
+   }
+  },
+  {
+   "set": "school",
+   "slug": "easel",
+   "name": "미술실 이젤",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.6,
+    "D": 0.6,
+    "H": 1.6,
+    "table": null,
+    "name": "이젤",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 26,
+    "T": 5,
+    "total": 31,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s1-A",
+    "w": 16,
+    "h": 29
+   }
+  },
+  {
+   "set": "school",
+   "slug": "plaster_bust",
+   "name": "석고상",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.4,
+    "D": 0.4,
+    "H": 1.4,
+    "table": null,
+    "name": "석고상 받침 포함",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 6,
+    "F": 22,
+    "T": 3,
+    "total": 25,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s1-A",
+    "w": 13,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "library_shelf",
+   "name": "도서실 책장",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "mixed",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.9,
+    "D": 0.35,
+    "H": 2.2,
+    "table": "bookshelf_tall",
+    "name": "책장(천장 닿는 것)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 14,
+    "F": 35,
+    "T": 4,
+    "total": 39,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "s4-A",
+    "w": 32,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "library_counter",
+   "name": "대출 데스크",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.6,
+    "H": 1.0,
+    "table": "counter",
+    "name": "카운터·판매대",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 32,
+    "F": 16,
+    "T": 6,
+    "total": 22,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s4-A",
+    "w": 48,
+    "h": 28
+   }
+  },
+  {
+   "set": "school",
+   "slug": "nurse_bed",
+   "name": "보건실 침대",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 0.5,
+    "table": "bed_single",
+    "name": "침대(1인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 8,
+    "T": 16,
+    "total": 24,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s3-A",
+    "w": 14,
+    "h": 32
+   }
+  },
+  {
+   "set": "school",
+   "slug": "privacy_screen",
+   "name": "보건실 칸막이 커튼",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s3-C",
+    "w": 30,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "height_scale",
+   "name": "신장계",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 1.9,
+    "table": null,
+    "name": "신장계",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 30,
+    "T": 2,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s4-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "staff_desks",
+   "name": "교무실 책상 섬",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    3,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.8,
+    "D": 1.4,
+    "H": 0.75,
+    "table": null,
+    "name": "교무실 책상 섬",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 45,
+    "F": 12,
+    "T": 13,
+    "total": 25,
+    "spec_canvas": [
+     48,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s2-A",
+    "w": 31,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "copier",
+   "name": "복사기",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.7,
+    "D": 0.7,
+    "H": 1.0,
+    "table": null,
+    "name": "복사기",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 11,
+    "F": 16,
+    "T": 7,
+    "total": 23,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s2-A",
+    "w": 15,
+    "h": 27
+   }
+  },
+  {
+   "set": "school",
+   "slug": "broadcast_desk",
+   "name": "방송실 조정대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.8,
+    "H": 0.9,
+    "table": null,
+    "name": "방송실 조정대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 32,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s1-A",
+    "w": 46,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "basketball_hoop",
+   "name": "농구 골대",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s3-A",
+    "w": 28,
+    "h": 47
+   }
+  },
+  {
+   "set": "school",
+   "slug": "gym_mat",
+   "name": "체육 매트",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "이름만으로 표 종류를 못 고른다(조립형·복합 구조물·지형 성격)",
+   "drawn": {
+    "file": "s3-A",
+    "w": 28,
+    "h": 19
+   }
+  },
+  {
+   "set": "school",
+   "slug": "vaulting_box",
+   "name": "뜀틀",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.2,
+    "D": 0.6,
+    "H": 1.1,
+    "table": null,
+    "name": "뜀틀",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 19,
+    "F": 18,
+    "T": 6,
+    "total": 24,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s5-A",
+    "w": 28,
+    "h": 28
+   }
+  },
+  {
+   "set": "school",
+   "slug": "ball_basket",
+   "name": "공 바구니",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.6,
+    "H": 0.8,
+    "table": null,
+    "name": "공 바구니",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s1-C",
+    "w": 14,
+    "h": 13
+   }
+  },
+  {
+   "set": "school",
+   "slug": "roof_fence",
+   "name": "옥상 펜스",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s4-A",
+    "w": 16,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "water_tank",
+   "name": "옥상 물탱크",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "이름만으로 표 종류를 못 고른다(조립형·복합 구조물·지형 성격)",
+   "drawn": {
+    "file": "s3-C",
+    "w": 44,
+    "h": 44
+   }
+  },
+  {
+   "set": "school",
+   "slug": "school_gate",
+   "name": "교문",
+   "current": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "이름만으로 표 종류를 못 고른다(조립형·복합 구조물·지형 성격)",
+   "drawn": {
+    "file": "s4-A",
+    "w": 64,
+    "h": 46
+   }
+  },
+  {
+   "set": "school",
+   "slug": "bike_rack",
+   "name": "자전거 거치대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s2-A",
+    "w": 48,
+    "h": 18
+   }
+  },
+  {
+   "set": "school",
+   "slug": "soccer_goal",
+   "name": "축구 골대",
+   "current": [
+    4,
+    2
+   ],
+   "canvas": [
+    64,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s5-A",
+    "w": 60,
+    "h": 24
+   }
+  },
+  {
+   "set": "school",
+   "slug": "assembly_podium",
+   "name": "조회대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s1-A",
+    "w": 44,
+    "h": 28
+   }
+  },
+  {
+   "set": "school",
+   "slug": "cafeteria_table",
+   "name": "급식 식탁",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    3,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.4,
+    "D": 0.9,
+    "H": 0.72,
+    "table": null,
+    "name": "급식 식탁",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 38,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     48,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s3-B",
+    "w": 46,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "meal_tray",
+   "name": "식판",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "s3-A",
+    "w": 14,
+    "h": 14
+   }
+  },
+  {
+   "set": "school",
+   "slug": "serving_counter",
+   "name": "배식대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    3,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.4,
+    "D": 0.7,
+    "H": 1.0,
+    "table": null,
+    "name": "배식대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 38,
+    "F": 16,
+    "T": 7,
+    "total": 23,
+    "spec_canvas": [
+     48,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s1-A",
+    "w": 48,
+    "h": 30
+   }
+  },
+  {
+   "set": "school",
+   "slug": "kiosk_counter",
+   "name": "매점 판매대",
+   "current": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.6,
+    "H": 1.0,
+    "table": "counter",
+    "name": "카운터·판매대",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 32,
+    "F": 16,
+    "T": 6,
+    "total": 22,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s5-A",
+    "w": 48,
+    "h": 29
+   }
+  },
+  {
+   "set": "school",
+   "slug": "milk_crate",
+   "name": "우유 상자",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.5,
+    "D": 0.5,
+    "H": 0.5,
+    "table": "crate",
+    "name": "상자(작은 것)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 8,
+    "F": 8,
+    "T": 5,
+    "total": 13,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s2-A",
+    "w": 15,
+    "h": 13
+   }
+  },
+  {
+   "set": "school",
+   "slug": "vending_school",
+   "name": "급식실 음료 자판기",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "table": "vending_1",
+    "name": "자판기(1대)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s2-A",
+    "w": 15,
+    "h": 31
+   }
+  },
+  {
+   "set": "school",
+   "slug": "bunk_bed",
+   "name": "이층 침대",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    1,
+    3
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 1.7,
+    "table": null,
+    "name": "이층 침대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 16,
+    "F": 27,
+    "T": 19,
+    "total": 46,
+    "spec_canvas": [
+     16,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 48
+   }
+  },
+  {
+   "set": "school",
+   "slug": "dorm_desk",
+   "name": "기숙사 책상",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.4,
+    "D": 0.7,
+    "H": 0.75,
+    "table": "office_desk",
+    "name": "사무 책상",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 22,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "s3-A",
+    "w": 32,
+    "h": 32
+   }
+  },
+  {
+   "set": "school",
+   "slug": "dorm_closet",
+   "name": "기숙사 옷장",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.0,
+    "D": 0.6,
+    "H": 2.0,
+    "table": "wardrobe_1",
+    "name": "옷장(1인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "s3-A",
+    "w": 16,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "stairs_up_wood",
+   "name": "오름 나무 계단",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "hf1-A",
+    "w": 48,
+    "h": 48
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "stairs_up_stone",
+   "name": "오름 돌계단",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "hf1-A",
+    "w": 48,
+    "h": 48
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "pillar_stone",
+   "name": "돌기둥",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    4
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.8,
+    "H": 3.0,
+    "table": null,
+    "name": "돌기둥",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 13,
+    "F": 48,
+    "T": 8,
+    "total": 56,
+    "spec_canvas": [
+     16,
+     64
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 47
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "pillar_marble",
+   "name": "대리석 기둥(미술관)",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 47
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "grandfather_clock",
+   "name": "멈춘 괘종시계",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.5,
+    "D": 0.35,
+    "H": 2.0,
+    "table": "grandfather_clock",
+    "name": "괘종시계",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 8,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "candelabra_drip",
+   "name": "촛농 흘린 촛대",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "table_wood",
+   "name": "나무 탁자",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 0.9,
+    "H": 0.72,
+    "table": "table_dining",
+    "name": "식탁",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "chair_wood",
+   "name": "나무 의자(앞)",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.45,
+    "D": 0.45,
+    "H": 0.9,
+    "table": "chair",
+    "name": "의자(등받이)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 7,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "chair_wood_back",
+   "name": "나무 의자(뒤)",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.45,
+    "D": 0.45,
+    "H": 0.9,
+    "table": "chair",
+    "name": "의자(등받이)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 7,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 16
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "bookshelf_manor",
+   "name": "책장",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.9,
+    "D": 0.3,
+    "H": 1.8,
+    "table": "bookshelf",
+    "name": "책장(보통)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 14,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "bed_manor",
+   "name": "저택 침대",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 0.5,
+    "table": "bed_single",
+    "name": "침대(1인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 8,
+    "T": 16,
+    "total": 24,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 38
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "dresser",
+   "name": "서랍장",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 0.5,
+    "H": 1.0,
+    "table": "chest_dresser",
+    "name": "서랍장(3단 높은 것)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 16,
+    "T": 5,
+    "total": 21,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "h34-A",
+    "w": 16,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "side_table",
+   "name": "협탁",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.8,
+    "D": 0.8,
+    "H": 0.7,
+    "table": "table_small",
+    "name": "작은 탁자",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 13,
+    "F": 11,
+    "T": 5,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "hf4-A",
+    "w": 14,
+    "h": 11
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "candle_table",
+   "name": "탁상 촛대",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "hf4-A",
+    "w": 6,
+    "h": 13
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "pedestal",
+   "name": "전시 받침대",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 13
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "rope_barrier",
+   "name": "줄 울타리(이어 붙이기)",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 14
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "bench_gallery",
+   "name": "관람 의자",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 0.5,
+    "H": 0.85,
+    "table": "bench",
+    "name": "벤치(2인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 28,
+    "h": 14
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "hosp_bed",
+   "name": "녹슨 병원 침대",
+   "current": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 0.5,
+    "table": "bed_single",
+    "name": "침대(1인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 8,
+    "T": 16,
+    "total": 24,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 38
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "hosp_screen",
+   "name": "병상 칸막이 커튼",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 28,
+    "h": 30
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "iv_stand",
+   "name": "링거 걸이",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 30
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "medicine_cabinet",
+   "name": "약장(깨진 유리)",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.7,
+    "D": 0.3,
+    "H": 1.2,
+    "table": null,
+    "name": "약장",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 11,
+    "F": 19,
+    "T": 4,
+    "total": 23,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 13,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "bedside_cabinet",
+   "name": "병상 협탁",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_small",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.1,
+    "D": 0.45,
+    "H": 0.8,
+    "table": "low_dresser",
+    "name": "서랍장(낮은 것)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 18,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 14
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "hosp_chair",
+   "name": "병원 쇠 의자",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.45,
+    "D": 0.45,
+    "H": 0.9,
+    "table": "chair",
+    "name": "의자(등받이)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 7,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "hf6-A",
+    "w": 12,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "ward_sink",
+   "name": "세면대",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 0.85,
+    "table": null,
+    "name": "세면대",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "shelf_cellar",
+   "name": "지하 선반",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.9,
+    "D": 0.3,
+    "H": 1.8,
+    "table": "bookshelf",
+    "name": "책장(보통)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 14,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "mirror_cracked",
+   "name": "금 간 거울",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "doll_sitting",
+   "name": "앉은 인형",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.4,
+    "D": 0.4,
+    "H": 0.5,
+    "table": null,
+    "name": "앉은 인형",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 6,
+    "F": 8,
+    "T": 4,
+    "total": 12,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 12,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "doll_shelf",
+   "name": "인형 진열장",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "piano_dusty",
+   "name": "먼지 덮인 피아노",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 0.6,
+    "H": 1.25,
+    "table": "piano_upright",
+    "name": "업라이트 피아노",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 20,
+    "T": 6,
+    "total": 26,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 24
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "sofa_sheet",
+   "name": "흰 천 덮인 소파",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.6,
+    "D": 0.9,
+    "H": 0.85,
+    "table": "sofa",
+    "name": "소파(2인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 26,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "armchair_sheet",
+   "name": "천 덮인 안락의자",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.9,
+    "D": 0.85,
+    "H": 0.9,
+    "table": null,
+    "name": "안락의자",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 14,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "canopy_bed_rot",
+   "name": "낡은 닫집 침대",
+   "current": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "spec": [
+    2,
+    3
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 1.5,
+    "D": 2.0,
+    "H": 2.2,
+    "table": "canopy_bed_rot",
+    "name": "캐노피 침대(썩은 천개)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 24,
+    "F": 35,
+    "T": 13,
+    "total": 48,
+    "spec_canvas": [
+     32,
+     48
+    ]
+   },
+   "drawn": {
+    "file": "h5-A",
+    "w": 32,
+    "h": 48
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "wardrobe_ajar",
+   "name": "반쯤 열린 옷장",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.0,
+    "D": 0.6,
+    "H": 2.0,
+    "table": "wardrobe_1",
+    "name": "옷장(1인)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "h34-A",
+    "w": 14,
+    "h": 30
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "bookshelf_fallen",
+   "name": "쓰러진 책장·흩어진 책",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "이름만으로 표 종류를 못 고른다(조립형·복합 구조물·지형 성격)",
+   "drawn": {
+    "file": "h4-A",
+    "w": 29,
+    "h": 27
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "candle_floor",
+   "name": "바닥 촛불 무리",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h3-A",
+    "w": 14,
+    "h": 14
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "fireplace_cold",
+   "name": "꺼진 벽난로",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 1.6,
+    "D": 0.5,
+    "H": 1.2,
+    "table": "fireplace",
+    "name": "벽난로",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 26,
+    "F": 19,
+    "T": 5,
+    "total": 24,
+    "spec_canvas": [
+     32,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 30,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "chandelier_fallen",
+   "name": "떨어진 샹들리에",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h2-A",
+    "w": 31,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "stairs_broken",
+   "name": "부서진 나무 계단",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h1-A",
+    "w": 48,
+    "h": 48
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "music_box",
+   "name": "오르골",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.3,
+    "D": 0.2,
+    "H": 0.2,
+    "table": null,
+    "name": "오르골",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 5,
+    "F": 3,
+    "T": 4,
+    "total": 7,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "h4-A",
+    "w": 14,
+    "h": 11
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "wheelchair",
+   "name": "휠체어",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.85,
+    "D": 1.0,
+    "H": 0.9,
+    "table": "wheelchair",
+    "name": "휠체어",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 14,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "operating_table",
+   "name": "수술대·무영등",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "too_big",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 2.0,
+    "D": 0.6,
+    "H": 0.9,
+    "table": "operating_table",
+    "name": "수술대",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 32,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "h5-A",
+    "w": 31,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "instrument_tray",
+   "name": "수술 도구 수레",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h5-A",
+    "w": 14,
+    "h": 13
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "specimen_jar",
+   "name": "표본 병",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h2-A",
+    "w": 15,
+    "h": 14
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "broken_desk",
+   "name": "부서진 책상·의자",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.45,
+    "H": 0.75,
+    "table": "school_desk",
+    "name": "학생 책상",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 16,
+    "h": 12
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "broken_locker",
+   "name": "찌그러진 사물함",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "wall",
+    "W": 0.6,
+    "D": 0.5,
+    "H": 1.8,
+    "table": "locker_2door",
+    "name": "사물함(2칸 문)",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 10,
+    "F": 28,
+    "T": 4,
+    "total": 32,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 32
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "broken_anatomy",
+   "name": "반쯤 부서진 인체 모형",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "gravestone_cross",
+   "name": "십자 비석",
+   "current": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "spec": [
+    1,
+    2
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.7,
+    "D": 0.2,
+    "H": 1.1,
+    "table": null,
+    "name": "십자 비석",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 11,
+    "F": 18,
+    "T": 4,
+    "total": 22,
+    "spec_canvas": [
+     16,
+     32
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 31
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "gravestone_round",
+   "name": "둥근 비석(금 간)",
+   "current": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "spec": [
+    1,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "free",
+    "W": 0.6,
+    "D": 0.2,
+    "H": 0.8,
+    "table": null,
+    "name": "둥근 비석",
+    "scale_exempt": false,
+    "src": "통상 치수 추정(표 밖)",
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "total": 16,
+    "spec_canvas": [
+     16,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 14,
+    "h": 15
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "dead_tree",
+   "name": "죽은 나무",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h2-A",
+    "w": 40,
+    "h": 46
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "iron_fence",
+   "name": "녹슨 쇠 울타리(이어 붙이기)",
+   "current": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "spec": [
+    2,
+    1
+   ],
+   "verdict": "ok",
+   "exempt": false,
+   "basis": {
+    "kind": "thin",
+    "W": 2.0,
+    "D": 0.1,
+    "H": 0.8,
+    "table": "guardrail",
+    "name": "가드레일 한 마디",
+    "scale_exempt": false,
+    "src": "표",
+    "wpx": 32,
+    "F": 13,
+    "T": 2,
+    "total": 15,
+    "spec_canvas": [
+     32,
+     16
+    ]
+   },
+   "drawn": {
+    "file": "v34-A",
+    "w": 32,
+    "h": 16
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "cemetery_gate",
+   "name": "묘지 쇠문",
+   "current": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "v34-A",
+    "w": 48,
+    "h": 48
+   }
+  },
+  {
+   "set": "horror",
+   "slug": "old_well",
+   "name": "낡은 우물",
+   "current": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "spec": null,
+   "verdict": "unclear",
+   "basis": null,
+   "reason": "표 종류를 정하지 않음(장면 조각·조립 부품 성격)",
+   "drawn": {
+    "file": "h1-A",
+    "w": 31,
+    "h": 25
+   }
+  }
+ ]
+}

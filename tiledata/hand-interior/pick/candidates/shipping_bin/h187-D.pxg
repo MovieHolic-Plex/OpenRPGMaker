@@ -1,0 +1,41 @@
+// 금장 경첩띠와 출하 표식으로 장식한 판자 상자; 꼭대기 윗면 10행(y=9~18)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat h wood 7
+@mat G brass 2
+@mat H brass 3
+@mat I brass 4
+@mat J brass 5
+@layer bin
+@mblock 0 8
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..afffGGffffffffbfffffffGGfffa..
+.ahhhhJIhhhhhhhhbhhhhhhhJIhhhha.
+.ahfffJIffffffffbffffffJIfffffa.
+.ahfffJIffffffffbffffffJIfffffa.
+.ahfffJIfffeeeffbffffffJIfffffa.
+.ahfffJIffffffffbffffffJIfffffa.
+.ahfffJIffffffffbffeeefJIfffffa.
+.ahfffJIffffffffbffffffJIfffffa.
+.ahfffJIffffffffbffffffJIfffffa.
+.ahhhhJIhhhhhhhhbhhhhhhhJIhhhha.
+.abbbbHGbbbbbbbbbbbbbbbHGbbbbba.
+.ahfffJIfffffffffffffffJIffffba.
+.aedddIHdddddddddddddddIHddddba.
+.aedddIHddddGGGGGGGGdddIHddddba.
+.aedddIHddddGccJJccHdddIHddddba.
+.aecccccddddGcJJJJcHdddccccccba.
+.aedddddddddGccJJccHdddddddddba.
+.aedddddddddGGGGGGGGdddddddddba.
+.aeddddddddddddddddddddddddddba.
+.aeccccccccccccccccccccccccccba.
+.aeddddddddddddddddddddddddddba.
+.aeeeeeedddeeeeeeddddeeeeeeddba.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.

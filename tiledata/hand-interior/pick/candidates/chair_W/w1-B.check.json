@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_W/w1-B.pxg",
+ "id": "chair W",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  3,
+  1,
+  11,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  11,
+  15
+ ],
+ "note": "빛 구조 강화: 앉음판 윗면을 가장 밝은 단으로, 등받이 왼쪽 테 밝게·오른쪽 한 단 더 어둡게, 앉음판 밑면 어둡게, 발밑 오른쪽 아래 접지 그림자 한 줄. 다리는 한 줄 짧게 해 그림자 자리를 냄.",
+ "ok": true
+}

@@ -1,0 +1,372 @@
+/* 얼굴·역할·ATB 수치 등 선택 노드 — 기본은 숨기고 스킨 CSS 가 필요할 때만 display 를 되돌린다
+   (유리 뼈대 `_rm2000.css` 는 얼굴, 얼굴 카드 HUD `_glass-variants.css` 는 얼굴·역할). */
+.battle-actor-status .battle-actor-face,
+.battle-actor-status .battle-actor-role,
+.battle-actor-status .battle-atb-value,
+.battle-enemy .battle-enemy-index-badge,
+.battle-enemy-hud .battle-enemy-mp-bar,
+.battle-enemy-hud .battle-enemy-atb-bar {
+  display: none;
+}
+
+/* HP/MP 는 `HP`(라벨) · ` 514`(현재값) · `/514`(최대값) 세 조각으로 쪼개져 있다
+   (battleFieldDom: vitalNode). 기본 11종 스킨은 셋을 이어 붙여 한 줄로 읽히게만 하면 되고,
+   vxace 만 라벨을 배지로 띄우고 최대값을 감춘다. */
+.battle-actor-hp .battle-vital-label,
+.battle-actor-hp .battle-vital-value,
+.battle-actor-hp .battle-vital-max,
+.battle-actor-mp .battle-vital-label,
+.battle-actor-mp .battle-vital-value,
+.battle-actor-mp .battle-vital-max,
+.battle-actor-level .battle-vital-label,
+.battle-actor-level .battle-vital-value {
+  font: inherit;
+  white-space: pre;
+}
+
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-actor-hp {
+  text-align: right;
+}
+
+.battle-actor-gauge {
+  gap: 6px;
+  grid-column: 1 / -1;
+}
+
+.battle-atb-bar {
+  background: var(--oprn-battle-window-shadow);
+  border: 2px solid var(--oprn-battle-window-light);
+  display: inline-block;
+  min-width: 0;
+  position: relative;
+}
+
+.battle-atb-bar::before {
+  /* System2 AT palette (sampled from System2C blue fill strip). */
+  background: linear-gradient(
+    180deg,
+    var(--system2-at-fill-hi, #82caf2),
+    var(--system2-at-fill-lo, #60bcee)
+  );
+  content: "";
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  width: var(--battle-atb);
+}
+
+.battle-command::before,
+.battle-enemy-list-row::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+}
+
+.battle-command:focus-visible,
+.battle-command[data-battle-command-cursor="true"],
+.battle-enemy-list-row:focus-visible {
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+  color: #fff;
+}
+
+.battle-target-menu .battle-command[data-battle-command-cursor="true"] {
+  border-color: transparent;
+}
+
+.battle-target-menu .battle-command[data-battle-command-cursor="true"]::before {
+  content: "";
+}
+
+.battle-target-menu .battle-command.battle-target-selected,
+.battle-target-menu .battle-command:focus-visible {
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+}
+
+.battle-target-menu .battle-command.battle-target-selected::before,
+.battle-target-menu .battle-command:focus-visible::before {
+  content: ">";
+}
+
+.battle-command:focus-visible::before,
+.battle-command[data-battle-command-cursor="true"]::before,
+.battle-enemy-list-row:focus-visible::before {
+  content: ">";
+}
+
+.battle-enemy-list {
+  background: transparent;
+  padding: 0;
+}
+
+/* 직계 자식 선택자였는데 `.battle-enemy-chrome` 겹이 들어와서 안 먹었다.
+   배틀러 목록(.battle-enemy-list) 안의 아이콘과는 여전히 구분해야 하므로 chrome 으로 스코프한다. */
+.battle-enemy-chrome > .battle-status-icons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.battle-enemy-hud {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  min-width: 104px;
+}
+
+.battle-enemy-name {
+  color: var(--oprn-battle-text);
+  display: block;
+  font-size: 18px;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.battle-enemy-hp-text {
+  color: var(--oprn-battle-text);
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.battle-enemy-hp-bar {
+  display: block;
+  height: 8px;
+}
+
+.battle-enemy-list-hp {
+  color: var(--oprn-battle-muted);
+  font-size: 16px;
+}
+
+.battle-field {
+  position: relative;
+}
+
+/* 상태이상 배지 — battleFieldDom.statusIconCluster 는 빈 <span> 에 클래스와
+   data-status-icon 만 붙인다. 여기 규칙이 없어서 상태이상을 걸어도 화면에서
+   구별이 전혀 안 됐다(감독 검수 불가). 토큰은 stateIconToken() 의 8종:
+   poison / sleep / paralysis / blind / silence / confuse / death / burst.
+   Gen1 관례대로 3글자 약어로 읽히게 한다. 능력 증감(atk/def/agi/mag × up/down)과
+   재생(regen)은 아래 전용 규칙에서 방향까지 붙인다. */
+.battle-status-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+/* 배우 배지는 이웃 스프라이트 아래에 깔렸다. 파티 노드는 서로 거치게 배치되고
+   `.battle-actor` 자신이 filter + z-index 로 쓰택 문맥을 만들어서 자식의 z-index 로는 다음 배우
+   스프라이트 위로 나갈 수 없다(실측: ATK↑ 배지가 마도사 망토 뒤에 가려 한 글자만 보였다).
+   그래서 곹치는 발밑 대슴 **머리 위**에 달아 이웃과 상자가 안 섮이게 한다. */
+.battle-actor > .battle-status-icons {
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  z-index: 4;
+}
+
+/* 정면 스킨(필드 노드 없음)의 파티 상태 행 — 배지는 행의 직계 자식으로 달린다.
+   이름 셀 안에 넣으면 rm2000 계열 명명 영역 그리드의 overflow:hidden + 고정 폭 열에 잘려
+   2px 조각만 보였다(실측). 기본 배치는 1행 1열(이름 칸)의 오른쪽 끝 — 이름/수치 격자를
+   쓰는 dragonquest·mother·mv·컴팩트 행에서는 이름 끝, 게이지 직전 자리다.
+   스킨 파일이 자기 행 구조에 맞게 grid-area/절대배치로 재지정한다(rm2000·vxace). */
+.battle-actor-status > .battle-status-icons {
+  align-self: center;
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  z-index: 2;
+}
+
+.battle-status-icon {
+  align-items: center;
+  background: var(--battle-status-icon-bg, #4a4a4a);
+  border: 1px solid rgb(0 0 0 / 45%);
+  border-radius: 3px;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 25%);
+  color: #fff;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  justify-content: center;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  min-width: 22px;
+  padding: 2px 3px;
+  text-shadow: 0 1px 0 rgb(0 0 0 / 55%);
+}
+
+.battle-status-icon::before {
+  content: attr(data-status-icon);
+}
+
+.battle-status-icon-poison {
+  --battle-status-icon-bg: #8a3fa0;
+}
+.battle-status-icon-poison::before {
+  content: "PSN";
+}
+
+.battle-status-icon-burn {
+  --battle-status-icon-bg: #c2543a;
+}
+.battle-status-icon-burn::before {
+  content: "BRN";
+}
+
+.battle-status-icon-freeze {
+  --battle-status-icon-bg: #4aa3c8;
+}
+.battle-status-icon-freeze::before {
+  content: "FRZ";
+}
+
+.battle-status-icon-sleep {
+  --battle-status-icon-bg: #5566a8;
+}
+.battle-status-icon-sleep::before {
+  content: "SLP";
+}
+
+.battle-status-icon-paralysis {
+  --battle-status-icon-bg: #b8901f;
+}
+.battle-status-icon-paralysis::before {
+  content: "PAR";
+}
+
+.battle-status-icon-blind {
+  --battle-status-icon-bg: #3d4450;
+}
+.battle-status-icon-blind::before {
+  content: "BLD";
+}
+
+.battle-status-icon-silence {
+  --battle-status-icon-bg: #2f7d76;
+}
+.battle-status-icon-silence::before {
+  content: "SIL";
+}
+
+.battle-status-icon-confuse {
+  --battle-status-icon-bg: #c05a86;
+}
+.battle-status-icon-confuse::before {
+  content: "CNF";
+}
+
+.battle-status-icon-death {
+  --battle-status-icon-bg: #8f2b2b;
+}
+.battle-status-icon-death::before {
+  content: "KO";
+}
+
+/* burst = stateIconToken 의 폴백. 저작자가 만든 이름 없는 상태가 여기 떨어지므로
+   약어를 만들지 않고 점으로 표시한다(거짓 라벨 금지). */
+.battle-status-icon-burst {
+  --battle-status-icon-bg: #6b6f76;
+}
+.battle-status-icon-burst::before {
+  content: "●";
+}
+
+/* 능력 증감·재생 — 폴백(●)으로 뭉개지면 공격 상승과 방어 상승이 화면에서 같은 회색 점이라
+   스크린샷으로 구별이 안 된다. 상승은 파랑 계열 + `↑`, 하락은 붉은 계열 + `↓` 로 갈라
+   한 글자만 봐도 방향이 읽히게 한다. */
+.battle-status-icon-atk-up,
+.battle-status-icon-def-up,
+.battle-status-icon-agi-up,
+.battle-status-icon-mag-up {
+  --battle-status-icon-bg: #2f6db8;
+}
+
+.battle-status-icon-atk-down,
+.battle-status-icon-def-down,
+.battle-status-icon-agi-down,
+.battle-status-icon-mag-down {
+  --battle-status-icon-bg: #a8552f;
+}
+
+.battle-status-icon-atk-up::before {
+  content: "ATK↑";
+}
+.battle-status-icon-atk-down::before {
+  content: "ATK↓";
+}
+.battle-status-icon-def-up::before {
+  content: "DEF↑";
+}
+.battle-status-icon-def-down::before {
+  content: "DEF↓";
+}
+.battle-status-icon-agi-up::before {
+  content: "AGI↑";
+}
+.battle-status-icon-agi-down::before {
+  content: "AGI↓";
+}
+.battle-status-icon-mag-up::before {
+  content: "MAG↑";
+}
+.battle-status-icon-mag-down::before {
+  content: "MAG↓";
+}
+
+.battle-status-icon-regen {
+  --battle-status-icon-bg: #2f8f5b;
+}
+.battle-status-icon-regen::before {
+  content: "REG";
+}
+
+/* 기믹 상태(2차 로스터, 2026-09-29): 스톱·프로텍트·실드·버서크·석화·젖음·기름 */
+.battle-status-icon-stop { --battle-status-icon-bg: #6c5bb0; }
+.battle-status-icon-stop::before { content: "STP"; }
+.battle-status-icon-protect { --battle-status-icon-bg: #3f7fb8; }
+.battle-status-icon-protect::before { content: "PRT"; }
+.battle-status-icon-shell { --battle-status-icon-bg: #8a5fb8; }
+.battle-status-icon-shell::before { content: "SHL"; }
+.battle-status-icon-berserk { --battle-status-icon-bg: #b83a3a; }
+.battle-status-icon-berserk::before { content: "BSK"; }
+.battle-status-icon-petrify { --battle-status-icon-bg: #7d7568; }
+.battle-status-icon-petrify::before { content: "STN"; }
+.battle-status-icon-wet { --battle-status-icon-bg: #3a78a8; }
+.battle-status-icon-wet::before { content: "WET"; }
+.battle-status-icon-oiled { --battle-status-icon-bg: #8a6a2a; }
+.battle-status-icon-oiled::before { content: "OIL"; }
+
+/* 반응·표적 상태(2026-10-01): 도발·반격·감싸기·회피·리플렉·리레이즈·선고 */
+.battle-status-icon-transform { --battle-status-icon-bg: #6a8a3a; }
+.battle-status-icon-transform::before { content: "FRM"; }
+.battle-status-icon-taunt { --battle-status-icon-bg: #c0602a; }
+.battle-status-icon-taunt::before { content: "TNT"; }
+.battle-status-icon-counter { --battle-status-icon-bg: #b0782a; }
+.battle-status-icon-counter::before { content: "CTR"; }
+.battle-status-icon-cover { --battle-status-icon-bg: #4f7f9a; }
+.battle-status-icon-cover::before { content: "CVR"; }
+.battle-status-icon-evade { --battle-status-icon-bg: #3a9a8a; }
+.battle-status-icon-evade::before { content: "EVA"; }
+.battle-status-icon-reflect { --battle-status-icon-bg: #5f9ab8; }
+.battle-status-icon-reflect::before { content: "RFL"; }
+.battle-status-icon-reraise { --battle-status-icon-bg: #b89a3a; }
+.battle-status-icon-reraise::before { content: "RR"; }
+.battle-status-icon-doom { --battle-status-icon-bg: #4a2a5a; }
+.battle-status-icon-doom::before { content: "DOM"; }

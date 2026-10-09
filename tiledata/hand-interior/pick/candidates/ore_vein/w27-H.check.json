@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w27-H.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  3,
+  12,
+  12
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "변형 5 — 성긴 반짝임: 작은 청록 결정 둘과 금 알갱이 셋만 흩어 놓은 가장 조용한 판. 이어 놓을 때 쉬는 칸 역할.",
+ "ok": true
+}

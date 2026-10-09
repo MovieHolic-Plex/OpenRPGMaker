@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w22-D.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "방향 C: 위에서 내려다본 둥근 욕조 — 뒤 안벽 한 줄·물면(옅은 파랑)·앞 테 두께·앞면 세 단, 차가운 도기 흰색과 놋 발",
+ "ok": true
+}

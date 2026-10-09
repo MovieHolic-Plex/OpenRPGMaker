@@ -1,0 +1,1249 @@
+:root {
+  --runtime-dialogue-border: var(--runtime-dialogue-glass-border-strong);
+  --runtime-dialogue-border-mid: var(--runtime-dialogue-glass-border);
+  --runtime-dialogue-shadow: var(--runtime-dialogue-glass-shadow);
+  --runtime-dialogue-text: var(--runtime-window-text);
+  --runtime-dialogue-muted: var(--runtime-window-muted);
+  --runtime-dialogue-font: var(--runtime-ui-font);
+  --runtime-dialogue-font-size: var(--runtime-font-size-9);
+  --runtime-dialogue-panel-height: 29%;
+  --runtime-choice-panel-height: 34%;
+  --runtime-dialogue-face-size: 48px;
+  --runtime-dialogue-speaker-inset: 8px;
+  --runtime-dialogue-bust-text-reserve: 96px;
+  --runtime-dialogue-full-text-reserve: 100px;
+  --runtime-dialogue-bust-height: 112px;
+  --runtime-dialogue-bust-width: 88px;
+  --runtime-dialogue-full-height: 164px;
+  --runtime-dialogue-full-width: 92px;
+
+  /* 연출 지속시간은 src/player/dialoguePresentation.ts 가 상자에 인라인으로 심는다.
+     여기 값은 폴백일 뿐이다 — 없으면 var() 가 무효가 되어 animation-duration 이 0s 로
+     떨어지고 연출이 통째로 죽는다(battleTransition 의 TS/CSS 이중 기재 실수 회피). */
+  --dialogue-enter-ms: 170ms;
+  --dialogue-exit-ms: 120ms;
+  --dialogue-nameplate-delay-ms: 40ms;
+  --dialogue-portrait-ms: 200ms;
+  --dialogue-scrim-ms: 180ms;
+  --dialogue-scrim-opacity: 0.28;
+
+  /* 이름표 길이는 감정에 따라 변하지 않는다(지연만 변한다) — 그래서 TS 가 아니라 여기 있다. */
+  --runtime-dialogue-nameplate-ms: 150ms;
+
+  /* 글자 한 칸이 밝아지는 시간. 감정별로 변하는 것은 글자 *간격*(charDelayScale) 쪽이고
+     한 글자의 페이드 길이는 고정이라 이름표와 같은 이유로 CSS 가 갖는다.
+     기본 간격 24ms 보다 길어서 4~5 자가 겹쳐 밝아지며 부드러운 선두가 생긴다. */
+  --runtime-dialogue-char-ms: 110ms;
+
+  /* 흔들림 길이도 감정에 따라 변하지 않는다 — 흔드느냐 마느냐만 프로파일이 정한다. */
+  --runtime-dialogue-shake-ms: 120ms;
+  --runtime-dialogue-flash-ms: 140ms;
+
+  /* 이징은 CSS 만의 것이다 — TS 는 길이만 정하고 곡선은 여기서 고른다. */
+  --runtime-dialogue-enter-ease: cubic-bezier(0.16, 0.84, 0.3, 1);
+  --runtime-dialogue-enter-ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --runtime-dialogue-exit-ease: cubic-bezier(0.4, 0, 1, 1);
+}
+
+/* 런타임 z-index 밴드: 픽처 레이어 26 < 화면 효과(색조·플래시·페이드) 27 < 타이머 29
+   < 미니맵·핸드 슬롯·존 피드백 30 < 대사 스크림 38 < 대사창 39 < action-hud 40. 이 값이 없으면
+   대사창은 인라인 z-index 를 갖는 픽처 슬롯이 대사를 덮는다(스프링 초상·이벤트 CG 전부 해당). */
+.dialogue-overlay {
+  align-items: stretch;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  left: 0;
+  padding: 0 10px 8px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 39;
+}
+
+.dialogue-overlay.position-top {
+  bottom: auto;
+  height: var(--runtime-dialogue-panel-height);
+  padding: 8px 10px 0;
+  top: 0;
+  transform: none;
+}
+
+.dialogue-overlay.position-center {
+  bottom: auto;
+  min-height: var(--runtime-dialogue-panel-height);
+  padding: 0 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dialogue-overlay.position-bottom {
+  bottom: 0;
+  height: var(--runtime-dialogue-panel-height);
+  padding: 0 10px 8px;
+  top: auto;
+  transform: none;
+}
+
+.dialogue-gold-window {
+  align-items: center;
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
+  bottom: calc(100% + 4px);
+  color: var(--runtime-dialogue-text);
+  display: flex;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 92px;
+  padding: 4px 6px;
+  pointer-events: none;
+  position: absolute;
+  right: 6px;
+  box-shadow: var(--runtime-dialogue-glass-shadow);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
+}
+
+.dialogue-overlay.position-top .dialogue-gold-window {
+  bottom: auto;
+  top: calc(100% + 4px);
+}
+
+.dialogue-gold-label {
+  color: var(--runtime-dialogue-muted);
+}
+
+.dialogue-gold-value {
+  color: var(--runtime-dialogue-text);
+  font: inherit;
+}
+
+.dialogue-overlay.choices-active {
+  align-items: stretch;
+  gap: 0;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+.dialogue-overlay.choices-active.position-bottom {
+  height: var(--runtime-choice-panel-height);
+  min-height: var(--runtime-choice-panel-height);
+  padding: 0 10px 8px;
+}
+
+.dialogue-overlay.choices-active.position-top {
+  height: var(--runtime-choice-panel-height);
+  min-height: var(--runtime-choice-panel-height);
+  padding: 8px 10px 0;
+}
+
+.dialogue-box {
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  background:
+    linear-gradient(180deg, rgba(73, 105, 148, 0.12), rgba(8, 15, 28, 0.04)),
+    var(--runtime-dialogue-glass-surface);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius);
+  box-shadow: var(--runtime-dialogue-glass-shadow);
+  box-sizing: border-box;
+  cursor: default;
+  image-rendering: pixelated;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 5px 8px;
+  pointer-events: auto;
+  position: relative;
+  width: 100%;
+}
+
+.dialogue-box.has-speaker {
+  overflow: visible;
+  padding-top: var(--runtime-dialogue-speaker-inset);
+}
+
+.dialogue-box:has(.dialogue-face) {
+  min-height: max(100%, 63px);
+}
+
+.dialogue-box.transparent {
+  background: transparent;
+  backdrop-filter: none;
+  border-image: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.dialogue-box.choices-prompt {
+  align-self: flex-end;
+  cursor: default;
+  flex: 0 0 auto;
+  min-height: 0;
+  max-width: min(280px, calc(100vw - 16px));
+  min-width: 168px;
+  padding: 4px 8px;
+  pointer-events: none;
+  width: auto;
+}
+
+.dialogue-box.choices-prompt .body {
+  font-size: var(--runtime-font-size-11);
+  line-height: 1.1;
+  min-height: 0;
+  overflow: visible;
+}
+
+.dialogue-overlay.choices-active .dialogue-box.choices {
+  cursor: default;
+  min-height: 100%;
+  overflow: hidden;
+  padding: 5px;
+}
+
+.dialogue-box.choices::after {
+  display: none;
+}
+
+.dialogue-overlay.choices-active .choice-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 0;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--runtime-dialogue-radius-small);
+  box-sizing: border-box;
+  color: var(--runtime-dialogue-text);
+  display: block;
+  font-size: var(--runtime-dialogue-font-size);
+  line-height: 1;
+  margin: 0;
+  min-height: 12px;
+  padding: 1px 8px 1px 14px;
+  position: relative;
+  text-align: left;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
+  width: 100%;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn.selected,
+.dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border);
+  box-shadow: var(--runtime-dialogue-glass-focus-shadow);
+  outline: 0;
+}
+
+.dialogue-overlay.choices-active .choice-list .choice-btn.selected::before {
+  color: var(--runtime-dialogue-glass-accent);
+  content: "◆";
+  font-size: 5px;
+  left: 5px;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dialogue-overlay.choices-active .choice-prompt-row {
+  border-bottom: 1px solid var(--runtime-dialogue-glass-border);
+  color: var(--runtime-dialogue-muted);
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 2px;
+  overflow-wrap: anywhere;
+  padding: 2px 8px 4px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
+}
+
+.dialogue-overlay.choices-compact {
+  bottom: 0;
+  gap: 0;
+}
+
+.dialogue-overlay.choices-compact .dialogue-box.choices-prompt {
+  padding: 0 4px;
+}
+
+.dialogue-overlay.choices-compact .dialogue-box.choices-prompt .body {
+  font-size: var(--runtime-font-size-9);
+  line-height: 1;
+}
+
+.dialogue-overlay.choices-compact .choice-list {
+  gap: 0;
+}
+
+.dialogue-overlay.choices-compact .choice-list .choice-btn {
+  font-size: var(--runtime-font-size-9);
+  line-height: 0.95;
+  min-height: 9px;
+  padding: 0 8px;
+}
+
+.dialogue-overlay.choices-compact .choice-prompt-row {
+  font-size: var(--runtime-font-size-9);
+  line-height: 0.95;
+  margin-bottom: 0;
+  padding: 0 4px 2px;
+}
+
+.dialogue-box.transparent::after,
+.dialogue-box.transparent::before {
+  display: none;
+}
+
+.dialogue-box::after {
+  display: none;
+}
+
+/* ── 자료집 System 윈도스킨 프레임 ──────────────────────────────
+   메시지·선택지 창은 이제 하드코드 hex 유리만 쓰지 않고 프로젝트의
+   `system.systemResourceId` 윈도스킨을 같이 소모한다(dialogue.ts 가
+   `--runtime-window-skin` 을 상자에 집어넣는다). 전투/상점/필드 메뉴와
+   **같은 변수**를 쓰및, 표면은 플레이 톤(유리)을 유지한다 — 그래서 fill 이
+   없는 slice 로 **테두리만** 가지오고, 그것도 border 가 아니라 오버레이
+   의사요소로 얻는다. 상자 지오밌트리(padding/clientHeight)를 그대로 둔다 —
+   페이지네이서어이 본및 칸 높이를 재오서 계산하기 때밑이다(dialoguePagination.ts). */
+.dialogue-box::before {
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-dialogue-radius);
+  content: "";
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+/* format: transparent 는 “창 없이 글자만” 이다 — 프레임도 없다. */
+.dialogue-box.transparent::before {
+  display: none;
+}
+
+.dialogue-box .speaker {
+  color: var(--runtime-dialogue-text);
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 2px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+}
+
+.dialogue-box .speaker.speaker-nameplate {
+  position: absolute;
+  left: 10px;
+  top: -9px;
+  z-index: 3;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 20px);
+  margin: 0;
+  padding: 3px 10px;
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
+  background:
+    linear-gradient(180deg, rgba(105, 147, 201, 0.16), rgba(8, 15, 28, 0.02)),
+    var(--runtime-dialogue-glass-surface-strong);
+  box-shadow:
+    0 3px 8px rgba(0, 4, 13, 0.42),
+    inset 0 0 0 1px rgba(187, 219, 255, 0.08);
+  color: var(--runtime-dialogue-text);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.dialogue-content {
+  align-items: start;
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.dialogue-content:has(.dialogue-face) {
+  grid-template-columns: var(--runtime-dialogue-face-size) minmax(0, 1fr);
+}
+
+.dialogue-content.face-right:has(.dialogue-face) {
+  grid-template-columns: minmax(0, 1fr) var(--runtime-dialogue-face-size);
+}
+
+.dialogue-content.face-right .dialogue-face {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dialogue-content.face-right .dialogue-text-column {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.dialogue-text-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.dialogue-face {
+  background-color: var(--runtime-dialogue-glass-surface-soft);
+  border-color: var(--runtime-dialogue-glass-border);
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 4, 13, 0.42);
+  image-rendering: pixelated;
+  align-self: start;
+  overflow: hidden;
+}
+
+/**
+ * 얼굴 낱장 파일(48×48 한 장) 자체를 그리는 규칙.
+ *
+ * **왜 여기 있어야 하나:** `dialogue.ts`의 `renderFace()`는 얼굴을
+ * `<div class="dialogue-face dialogue-face-image">` + 인라인 `--face-*` 커스텀 속성으로 만든다.
+ * 예전에는 이 상자의 배경·크기 선언이 `.actor-sheet-crop` 이라는 이름으로
+ * `src/styles/editor/event-editor-legacy.part-1.css` **에디터 전용 CSS 에만** 있었다.
+ * 익스포트한 단독 플레이어(`src/player/player.css` → tokens + runtime/playerRuntime)는 그
+ * 파일을 불러오지 않으므로, **얼굴이 배경 없는 높이 0 의 빈 테두리로 그려졌다.**
+ * 에디터 테스트 플레이에서는 에디터 CSS 가 같이 로드돼 보였기 때문에 e2e 도 이걸 못 잡았다.
+ * 그래서 런타임 대사창의 얼굴은 런타임 CSS 가 직접 책임진다.
+ *
+ * 얼굴은 이제 시트가 아니라 파일 한 장이다 — background-position 으로 칸을 잘라내지 않고
+ * 상자 크기에 이미지 한 장을 그대로 맞춘다(`.actor-sheet-crop` 은 진짜 시트인 charset 전용).
+ */
+.dialogue-face.dialogue-face-image {
+  background-image: var(--face-url);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: var(--face-height, var(--runtime-dialogue-face-size));
+  width: var(--face-width, var(--runtime-dialogue-face-size));
+}
+
+/* 뒤집기를 변수로 둔다. 진입 연출의 translateX 가 transform 을 통째로 덮어써서
+   200ms 동안 초상화가 제자리로 펴지는 것을 막는 유일한 방법이다 —
+   keyframe 이 scaleX(var(--face-flip)) 로 같이 실어야 한다. */
+.dialogue-face {
+  --face-flip: 1;
+}
+
+.dialogue-face.flipped {
+  --face-flip: -1;
+  transform: scaleX(var(--face-flip));
+}
+
+.dialogue-face.missing {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--runtime-dialogue-text);
+  display: flex;
+  font-size: 12px;
+  height: var(--runtime-dialogue-face-size);
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+  width: var(--runtime-dialogue-face-size);
+}
+
+/* Large portrait (bust / full-body) above the message window. */
+.dialogue-overlay.has-bust-face {
+  overflow: visible;
+}
+
+.dialogue-box.has-bust-face,
+.dialogue-overlay.has-bust-face .dialogue-box {
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+
+.dialogue-face.dialogue-face-bust {
+  background-color: transparent;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 0;
+  bottom: calc(100% - 6px);
+  box-shadow: none;
+  height: var(--runtime-dialogue-bust-height);
+  image-rendering: pixelated;
+  left: 12px;
+  pointer-events: none;
+  position: absolute;
+  right: auto;
+  width: var(--runtime-dialogue-bust-width);
+  z-index: 3;
+}
+
+.dialogue-face.dialogue-face-full {
+  height: var(--runtime-dialogue-full-height);
+  width: var(--runtime-dialogue-full-width);
+}
+
+/* 하단 대사창의 전신 초상: 화면 하단에 선 입상이 **대사창 뒤**에 선다. 상자 밖(오버레이의 형제)에 있고
+   크기·내림·글 여백은 dialogue.ts 가 화면 높이로 계산해 심는다. 오버레이 아래 모서리 = 화면 아래. */
+.dialogue-overlay .dialogue-face.dialogue-face-behind {
+  bottom: calc(-1 * var(--runtime-dialogue-full-drop));
+  left: 22px;
+  right: auto;
+  z-index: 0;
+}
+
+.dialogue-overlay .dialogue-face.dialogue-face-behind.dialogue-face-side-right {
+  left: auto;
+  right: 22px;
+}
+
+.dialogue-box.portrait-full-tall {
+  z-index: 1;
+}
+
+.dialogue-box[data-dialogue-phase="exit"] ~ .dialogue-face-behind {
+  opacity: 0;
+  transition: opacity var(--dialogue-exit-ms) var(--runtime-dialogue-exit-ease);
+}
+
+/* Position is relative to the message window, not the whole screen. */
+.dialogue-box.bust-left .dialogue-face.dialogue-face-bust,
+.dialogue-face.dialogue-face-side-left {
+  left: 12px;
+  right: auto;
+}
+
+.dialogue-box.bust-right .dialogue-face.dialogue-face-bust,
+.dialogue-overlay.bust-right .dialogue-face.dialogue-face-bust,
+.dialogue-face.dialogue-face-side-right {
+  left: auto;
+  right: 12px;
+}
+
+.dialogue-face.dialogue-face-bust.flipped {
+  transform: scaleX(-1);
+}
+
+.dialogue-content.has-bust {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.dialogue-box.bust-left .dialogue-content.has-bust {
+  padding-inline-start: var(--runtime-dialogue-bust-text-reserve);
+}
+
+.dialogue-box.bust-right .dialogue-content.has-bust {
+  padding-inline-end: var(--runtime-dialogue-bust-text-reserve);
+}
+
+.dialogue-box.portrait-full.bust-left .dialogue-content.has-bust {
+  padding-inline-start: var(--runtime-dialogue-full-text-reserve);
+}
+
+.dialogue-box.portrait-full.bust-right .dialogue-content.has-bust {
+  padding-inline-end: var(--runtime-dialogue-full-text-reserve);
+}
+
+/* 초상이 상자 뒤에 있으므로 글은 왼쪽 끝부터 — 다른 초상 모드의 글 여백을 쓰지 않는다. */
+.dialogue-box.portrait-full-tall.bust-left .dialogue-content.has-bust,
+.dialogue-box.portrait-full-tall.bust-right .dialogue-content.has-bust {
+  padding-inline: 0;
+}
+
+.dialogue-box .body {
+  color: var(--runtime-dialogue-text);
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  flex: 1 1 auto;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.5;
+  min-height: 0;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  white-space: pre-wrap;
+}
+
+.dialogue-color-1 { color: #7fd3ff; }
+.dialogue-color-2 { color: #ff7777; }
+.dialogue-color-3 { color: #80ff8f; }
+.dialogue-color-4 { color: #ffe66d; }
+.dialogue-color-5 { color: #c99cff; }
+.dialogue-color-6 { color: #ff9bd6; }
+.dialogue-color-7 { color: #b7c4d8; }
+.dialogue-color-8,
+.dialogue-color-9,
+.dialogue-color-10,
+.dialogue-color-11,
+.dialogue-color-12,
+.dialogue-color-13,
+.dialogue-color-14,
+.dialogue-color-15,
+.dialogue-color-16,
+.dialogue-color-17,
+.dialogue-color-18,
+.dialogue-color-19 { color: var(--runtime-dialogue-text); }
+
+.dialogue-box .continue-hint {
+  color: transparent;
+  font-size: 0;
+  height: 0;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  pointer-events: auto;
+  width: 100%;
+}
+
+.choices .choice-btn {
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius-small);
+  color: var(--runtime-dialogue-text);
+  cursor: default;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-18);
+  font-weight: 700;
+  padding: 6px 10px;
+  text-align: left;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.choices .choice-btn:focus-visible {
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border-strong);
+}
+
+.number-input-box {
+  align-items: center;
+  cursor: default;
+  gap: 10px;
+  justify-content: center;
+  min-height: 100%;
+  padding: 8px 10px;
+}
+
+.number-input-title {
+  color: var(--runtime-dialogue-muted);
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-18);
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.82);
+}
+
+/* 자릿수 슬롯 — 단일 text 필드 대신 셀 단위로 그려 숫자가 깨지지 않게 한다. */
+.number-input-slots {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  justify-content: center;
+  image-rendering: pixelated;
+}
+
+.number-input-slot {
+  align-items: center;
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
+  box-sizing: border-box;
+  color: transparent;
+  display: inline-flex;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-22);
+  font-weight: 700;
+  height: 30px;
+  justify-content: center;
+  line-height: 1;
+  min-width: 22px;
+  padding: 0 4px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+}
+
+.number-input-slot.empty {
+  color: transparent;
+}
+
+.number-input-slot.filled {
+  border-color: var(--runtime-window-focus);
+  color: var(--runtime-dialogue-text);
+}
+
+.number-input-slot.cursor {
+  border-color: var(--runtime-window-highlight);
+  box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.45);
+}
+
+/* 포커스/타이핑용 숨김 입력 (Playwright fill 호환). */
+.number-input-typing {
+  height: 1px;
+  left: -9999px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.number-input-pad {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(3, minmax(28px, 1fr));
+  max-width: 160px;
+  width: 100%;
+}
+
+.number-input-pad-key {
+  background: var(--runtime-dialogue-glass-surface-soft);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
+  color: var(--runtime-dialogue-text);
+  cursor: default;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-18);
+  font-weight: 700;
+  min-height: 26px;
+  padding: 2px 4px;
+}
+
+.number-input-pad-key:focus-visible {
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border-strong);
+}
+
+.number-input-pad-key.ok {
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
+}
+
+.number-input-pad-key.back {
+  color: var(--runtime-window-highlight);
+}
+
+.number-input-ok {
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius-small);
+  color: var(--runtime-dialogue-text);
+  cursor: default;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-font-size-18);
+  font-weight: 700;
+  min-width: 56px;
+  padding: 2px 8px;
+}
+
+.number-input-ok:focus-visible {
+  background: var(--runtime-dialogue-glass-accent-soft);
+}
+
+/* === dialogue pagination cursor === */
+.dialogue-page-cursor {
+  background: var(--runtime-dialogue-text);
+  bottom: 8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  color: transparent;
+  font-size: 0;
+  height: 6px;
+  left: auto;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 10px;
+  width: 8px;
+}
+
+.dialogue-box.page-ready .dialogue-page-cursor {
+  animation: dialogue-page-cursor-pulse 0.9s ease-in-out infinite;
+  opacity: 1;
+}
+
+/* 다음 장이 있으면 ▼ 가 위아래로 깜박인다(RPG 만들기식). 마지막 장은 dialogueStyles.css 의 .is-end 가 제자리 점멸. */
+@keyframes dialogue-page-cursor-pulse {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translateY(-1px);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(1px);
+  }
+}
+
+/* === 대화창 등장/퇴장 연출 ===
+   상태는 상자의 data-dialogue-* 에 있다. 오버레이가 아니다 — resetOverlay() 가
+   className 을 통짜로 대입해서(dialogue.ts) 오버레이에 얹은 연출 클래스는 매 대사마다 지워진다.
+
+   오버슈트는 세로에만 준다. 전폭 상자에서 가로 확대는 좌우 끝이 몇 px 대칭으로 벌어질 뿐
+   지각되지 않는 반면, 1280 뷰포트에서 상자 좌우 여백의 16px 하한을 깨서
+   test/e2e/dialogue-modern-skin.spec.ts 의 leftGutter/rightGutter 단정을 무너뜨린다.
+   그래서 scaleX 는 어떤 프레임에서도 1 을 넘지 않는다(축소는 여백을 넓히므로 안전). */
+.dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 100%;
+}
+
+.dialogue-overlay.position-top .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 0%;
+}
+
+.dialogue-overlay.position-center .dialogue-box[data-dialogue-phase] {
+  transform-origin: 50% 50%;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] {
+  animation: dialogue-box-enter var(--dialogue-enter-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+.dialogue-box[data-dialogue-emotion="happy"][data-dialogue-phase="enter"],
+.dialogue-box[data-dialogue-emotion="surprised"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-pop;
+}
+
+.dialogue-box[data-dialogue-emotion="sad"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-soft;
+  animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+}
+
+.dialogue-box[data-dialogue-phase="exit"] {
+  animation: dialogue-box-exit var(--dialogue-exit-ms) var(--runtime-dialogue-exit-ease) both;
+  /* 퇴장 중인 상자는 유령 클릭을 먹지 않는다 — 기본값이 pointer-events: auto 다. */
+  pointer-events: none;
+}
+
+/* 움직임을 끈 자리: 창은 그대로 떠야 한다. opacity 만 남기고 이동·신축을 없앤다.
+   src/styles/runtime/juice.css 의 원칙 — 움직임만 끄고 의미 신호는 남긴다. */
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] {
+  animation-name: dialogue-box-enter-fade;
+  animation-timing-function: linear;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="exit"] {
+  animation-name: dialogue-box-exit-fade;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-box-enter {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.35;
+    transform: translate3d(0, 8px, 0) scaleY(0.86);
+  }
+
+  58% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -3px, 0) scaleY(1.05);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-pop {
+  0% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease);
+    opacity: 0.3;
+    transform: translate3d(0, 10px, 0) scaleY(0.82);
+  }
+
+  56% {
+    animation-timing-function: var(--runtime-dialogue-enter-ease-soft);
+    opacity: 1;
+    transform: translate3d(0, -4px, 0) scaleY(1.075);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-enter-soft {
+  0% {
+    opacity: 0.2;
+    transform: translate3d(0, 10px, 0) scaleY(0.94);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+}
+
+@keyframes dialogue-box-exit {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleY(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 4px, 0) scaleY(0.96);
+  }
+}
+
+/* === 화자 이름표·초상화 진입 ===
+   상자의 진입 단계에만 걸린다 — 세션 첫 창에서만 phase="enter" 가 나타나므로
+   연속 대사에서 이름표가 매 줄 다시 튀어나오지 않는다.
+
+   transform 과 opacity 만 건드린다. 레이아웃 속성은 절대 애니메이션하지 않는다 —
+   .dialogue-box.has-speaker 의 padding-top 은 페이지당 줄 수 계산(dialogueMaxLines)에
+   직접 들어가서, 움직이면 대사가 페이지 중간에서 잘린다. */
+.dialogue-box[data-dialogue-phase="enter"] .speaker.speaker-nameplate {
+  animation:
+    dialogue-nameplate-enter var(--runtime-dialogue-nameplate-ms)
+    var(--runtime-dialogue-enter-ease) var(--dialogue-nameplate-delay-ms) both;
+}
+
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face {
+  animation: dialogue-face-enter var(--dialogue-portrait-ms) var(--runtime-dialogue-enter-ease) both;
+}
+
+/* 초상화는 자기 쪽에서 들어온다. 오른쪽 배치는 오른쪽에서. */
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-face.dialogue-face-side-right,
+.dialogue-box[data-dialogue-phase="enter"] .dialogue-content.face-right .dialogue-face {
+  animation-name: dialogue-face-enter-right;
+}
+
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .speaker.speaker-nameplate,
+.dialogue-box[data-dialogue-motion="off"][data-dialogue-phase="enter"] .dialogue-face {
+  animation-name: dialogue-child-enter-fade;
+  animation-delay: 0s;
+  animation-timing-function: linear;
+}
+
+@keyframes dialogue-nameplate-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialogue-face-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-face-enter-right {
+  0% {
+    opacity: 0;
+    transform: translateX(10px) scaleX(var(--face-flip));
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scaleX(var(--face-flip));
+  }
+}
+
+@keyframes dialogue-child-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === 글자별 등장 ===
+   src/player/dialogueTextRenderer.ts 가 글자를 하나씩 append 하고 이미 붙은 노드는
+   절대 건드리지 않는다. 그래서 각 span 은 삽입될 때 딱 한 번 재생된다 — 예전처럼
+   본문을 매 틱 전량 재생성하면 이 애니메이션이 프레임마다 되감겼다.
+
+   phase 게이트를 걸지 않는다. 이름표·초상화와 달리 글자 연출은 "세션 첫 창"이 아니라
+   **글자가 새로 붙을 때마다** 일어나는 것이 정상이다. 대신 프로파일이 켰을 때만
+   돈다 — reducedMotion 이면 TS 가 data-dialogue-char-reveal 을 아예 심지 않는다.
+
+   opacity 만 쓴다. span 은 인라인 박스이고 인라인 박스는 transform 을 무시한다.
+   inline-block 으로 바꾸면 픽셀 폰트의 베이스라인·줄높이와 줄바꿈 단위가 흔들린다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char {
+  animation: dialogue-char-enter var(--runtime-dialogue-char-ms) linear both;
+}
+
+/* 건너뛰기로 한꺼번에 붙은 글자. 수십 자가 동시에 밝아지면 어수선하다. */
+.dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char.dialogue-char-instant {
+  animation: none;
+}
+
+@keyframes dialogue-char-enter {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* === 화면 단위 연출: 스크림과 흔들림 ===
+   스크림은 .dialogue-overlay 의 **형제**다. 오버레이는 position-top/bottom 에서 높이가
+   화면의 27% 뿐이라 그 안에 두면 화면을 덮을 수 없다.
+
+   평평하게 깔지 않고 창이 있는 쪽으로 몰린 비네트를 쓴다. 전면 28% 디밍은 모든 대사에서
+   맵을 통째로 탁하게 만든다 — 대비만 얻고 화면은 잃는다. 그래서 창 쪽이 짙고 반대쪽은
+   완전히 투명하다.
+
+   불투명도와 길이는 dialoguePresentation.ts 가 --dialogue-scrim-* 로 심는다. */
+.dialogue-scrim {
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 38;
+}
+
+/* 디밍과 플래시를 각각 자기 레이어에 둔다. 스크림 자체의 opacity 를 애니메이션하면
+   플래시가 그 값에 눌려 흐려진다(놀람은 스크림 페이드와 플래시가 동시에 시작한다). */
+.dialogue-scrim::before,
+.dialogue-scrim::after {
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.dialogue-scrim::before {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+  opacity: 0;
+  transition: opacity var(--dialogue-scrim-ms) ease;
+}
+
+.dialogue-scrim.position-top::before {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 0%,
+    rgba(0, 0, 0, calc(var(--dialogue-scrim-opacity) * 0.45)) 24%,
+    rgba(0, 0, 0, 0) 56%
+  );
+}
+
+/* 화면 가운데 창은 가장자리에서 안쪽으로 좁혀 온다. */
+.dialogue-scrim.position-center::before {
+  background: radial-gradient(
+    ellipse 72% 68% at 50% 50%,
+    rgba(0, 0, 0, 0) 38%,
+    rgba(0, 0, 0, var(--dialogue-scrim-opacity)) 100%
+  );
+}
+
+.dialogue-scrim[data-dialogue-scrim="on"]::before {
+  opacity: 1;
+}
+
+.dialogue-scrim::after {
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+}
+
+.dialogue-scrim[data-dialogue-flash="1"]::after {
+  animation: dialogue-scrim-flash var(--runtime-dialogue-flash-ms) ease-out both;
+}
+
+@keyframes dialogue-scrim-flash {
+  0% {
+    opacity: 0.85;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 분노는 창이 자리잡은 **뒤에** 한 번 튄다. phase="shown" 을 게이트로 쓰면 세션 첫 창은
+   진입 → 흔들림 순서로 이어지고, 세션 중간의 분노 대사는(진입 없이 shown 으로 뜬다)
+   삽입 즉시 흔들린다. 진입 연출과 같은 규칙에 넣으면 둘이 transform 을 다투고
+   세션 중간 대사는 아예 흔들리지 않는다.
+
+   화면 흔들기를 Phaser 카메라(playSceneMapCommands.ts)로 하면 DOM 대화창에는 안 먹는다.
+   좌우 진폭은 3px 로 묶는다 — 전폭 상자의 좌우 여백 하한이 16px 이고
+   test/e2e/dialogue-modern-skin.spec.ts 가 그 값을 잰다. */
+.dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"] {
+  animation: dialogue-box-shake var(--runtime-dialogue-shake-ms) ease-in-out both;
+}
+
+@keyframes dialogue-box-shake {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  22% {
+    transform: translate3d(-3px, 0, 0);
+  }
+
+  48% {
+    transform: translate3d(3px, 0, 0);
+  }
+
+  74% {
+    transform: translate3d(-2px, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes dialogue-box-enter-fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dialogue-box-exit-fade {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogue-box.page-ready .dialogue-page-cursor {
+    animation: none;
+  }
+
+  /* TS 가 reducedMotion 을 못 읽는 경로(명시 override 등)의 안전망이다.
+     [data-dialogue-emotion] 을 함께 붙여야 감정별 animation-name 규칙(특이도 0,3,0)을
+     이긴다 — 이게 없으면 happy·sad 는 안전망을 통과해 버린다. */
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="enter"] {
+    animation-name: dialogue-box-enter-fade;
+    animation-timing-function: linear;
+  }
+
+  .dialogue-box[data-dialogue-emotion][data-dialogue-phase="exit"] {
+    animation-name: dialogue-box-exit-fade;
+    animation-timing-function: linear;
+  }
+
+  /* 흔들림·글자 등장·플래시는 통째로 없앤다. 스크림 디밍은 남긴다 —
+     움직임이 아니라 분위기·대비 신호다 (src/styles/runtime/juice.css 의 원칙). */
+  .dialogue-box[data-dialogue-shake="1"][data-dialogue-phase="shown"],
+  .dialogue-box[data-dialogue-char-reveal="1"] .body .dialogue-char,
+  .dialogue-scrim[data-dialogue-flash="1"]::after {
+    animation: none;
+  }
+}
+
+/* 명작 공백 #1(2026-09-27) — 제한시간 선택지 막대·퀵타임 입력 오버레이. */
+.timed-choice-bar {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: calc(var(--dialogue-window-height, 30%) + 12px);
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 40;
+  pointer-events: none;
+}
+.timed-choice-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f2c14e, #e0605e);
+  transform-origin: left center;
+}
+.qte-overlay {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 16px 22px;
+  border-radius: 12px;
+  background: rgba(10, 12, 20, 0.82);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  z-index: 45;
+  pointer-events: none;
+  font-family: inherit;
+  color: #fff;
+}
+.qte-keys { display: flex; gap: 8px; }
+.qte-key {
+  min-width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #2b3242;
+  border: 2px solid #9aa3b2;
+  font-size: 20px;
+  font-weight: 700;
+}
+.qte-key-hit { background: #1f6f4a; border-color: #3fb27f; }
+.qte-key-miss { background: #7a2426; border-color: #e0605e; }
+.qte-mash { padding: 0 14px; }
+.qte-meter { width: 180px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.2); overflow: hidden; }
+.qte-meter-fill { width: 100%; height: 100%; background: #f2c14e; transform-origin: left center; }
+.qte-count { font-size: 22px; font-weight: 700; min-height: 1em; }
+@media (prefers-reduced-motion: reduce) {
+  .timed-choice-bar-fill, .qte-meter-fill { transition: none; }
+}

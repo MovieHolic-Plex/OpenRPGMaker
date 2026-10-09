@@ -1,0 +1,457 @@
+{
+ "id": "kit_house",
+ "slug": "kit_house",
+ "kind": "kit",
+ "name": "킷: 주택(기와지붕·외벽·현관)",
+ "scene": "주택가 골목",
+ "cells": [
+  8,
+  4
+ ],
+ "canvas": [
+  128,
+  64
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "기와지붕(용마루·비탈·처마 × 왼·가운데·오른, 비탈은 세로 반복) + 층 벽(끝·민벽·창 세 종 1×2) + 1층 위 작은 차양 지붕(층 사이 띠) + 현관 미닫이(걸음) + 현관 차양. 단층·2층, 4~8칸. (부품 20 · 조립 예 4)",
+ "palette_hint": "kawara 기와, washi·mwhite·mtile 외벽, hinoki·sumi 나무, mglass 창, mmetal 난간",
+ "worker": "k6",
+ "replaces": [
+  "house_wall",
+  "house_roof"
+ ],
+ "aliases": {},
+ "contract": [
+  "사용자 집 외형 규칙: 벽 면 3칸 이상, 창은 벽 가운데 칸에만(문 바로 옆 금지), 지붕 사선 뒤 빈칸 금지(지붕 줄은 벽 폭과 같은 칸 수).",
+  "기와 가로 골 줄 주기 8px — 가로·세로로 이어 붙여도 골이 맞는다. 처마(rf_e*) 아래 3px = 벽에 떨어지는 처마 그늘.",
+  "벽 부품 1×2 의 아래 3px = 기초(mconc). 1층·2층 벽 부품이 같다(2층은 기초 대신 hisashi 가 밑에 온다).",
+  "hisashi_* = 1층 위에 두르는 작은 기와 차양 1줄(층 사이 띠). 윗면 기와 + 앞 끝 테."
+ ],
+ "parts": [
+  {
+   "slug": "rf_tl",
+   "name": "용마루 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "지붕 꼭대기 용마루 왼 끝(오니가와라 작은 덩이).",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "rf_tm",
+   "name": "용마루",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "용마루(굵은 기와 줄 + 그 아래 비탈 시작).",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "rf_tr",
+   "name": "용마루 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "용마루 오른 끝.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "rf_sl",
+   "name": "비탈 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "지붕 비탈 왼 끝(박공 테).",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "rf_sm",
+   "name": "비탈",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "기와 비탈(가로 골).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "rf_sr",
+   "name": "비탈 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "비탈 오른 끝.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "rf_el",
+   "name": "처마 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 끝 왼(기와 끝 둥근 막새 줄).",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "rf_em",
+   "name": "처마",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "처마(막새 줄 + 아래 그늘).",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "rf_er",
+   "name": "처마 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 오른.",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "wall_l",
+   "name": "외벽 왼 끝(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "외벽 왼 모서리(밝게).",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "wall_m",
+   "name": "민벽(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "창 없는 외벽(사이딩 가로 결 또는 회벽).",
+   "at": [
+    2,
+    1
+   ]
+  },
+  {
+   "slug": "wall_r",
+   "name": "외벽 오른 끝(한 층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "외벽 오른 모서리(한 단 어둡게).",
+   "at": [
+    3,
+    1
+   ]
+  },
+  {
+   "slug": "win_slide",
+   "name": "미닫이 유리창",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "알루미늄 미닫이 창(두 짝) + 방충망 반쪽 + 창턱.",
+   "at": [
+    4,
+    1
+   ]
+  },
+  {
+   "slug": "win_small",
+   "name": "작은 젖빛 창",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "욕실·화장실 작은 젖빛 창 + 방범 격자.",
+   "at": [
+    5,
+    1
+   ]
+  },
+  {
+   "slug": "win_veranda",
+   "name": "베란다(2층)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "2층 큰 창 앞 쇠 난간 베란다(가로 반복 — 빨래 기물을 걸 수 있게).",
+   "at": [
+    6,
+    1
+   ]
+  },
+  {
+   "slug": "genkan",
+   "name": "현관 미닫이",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "격자 유리 현관 미닫이, 아래 디딤돌 한 줄. 아랫칸이 드나드는 칸.",
+   "at": [
+    7,
+    1
+   ]
+  },
+  {
+   "slug": "genkan_hisashi",
+   "name": "현관 차양",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "현관 위 작은 차양(윗 6~8px, 투명 배경).",
+   "at": [
+    0,
+    3
+   ]
+  },
+  {
+   "slug": "hisashi_l",
+   "name": "1층 차양 지붕 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "1층 위 작은 기와 차양 왼 끝.",
+   "at": [
+    1,
+    3
+   ]
+  },
+  {
+   "slug": "hisashi_m",
+   "name": "1층 차양 지붕",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "층 사이 기와 차양(윗면 기와 + 앞 테 + 아래 그늘).",
+   "at": [
+    2,
+    3
+   ]
+  },
+  {
+   "slug": "hisashi_r",
+   "name": "1층 차양 지붕 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "층 사이 차양 오른 끝.",
+   "at": [
+    3,
+    3
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "hira5",
+   "name": "단층 5칸",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "rf_tl rf_tm rf_tm rf_tm rf_tr",
+     "rf_el rf_em rf_em rf_em rf_er",
+     "wall_l genkan wall_m win_slide wall_r",
+     "+ + + + +"
+    ],
+    "upper": [
+     ". . . . .",
+     ". . . . .",
+     ". genkan_hisashi . . ."
+    ]
+   }
+  },
+  {
+   "id": "two5",
+   "name": "2층 5칸(층 사이 차양)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "rf_tl rf_tm rf_tm rf_tm rf_tr",
+     "rf_sl rf_sm rf_sm rf_sm rf_sr",
+     "rf_el rf_em rf_em rf_em rf_er",
+     "wall_l win_slide wall_m win_small wall_r",
+     "+ + + + +",
+     "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_r",
+     "wall_l genkan wall_m win_slide wall_r",
+     "+ + + + +"
+    ],
+    "upper": [
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     ". . . . .",
+     ". genkan_hisashi . . ."
+    ]
+   }
+  },
+  {
+   "id": "two6v",
+   "name": "2층 6칸(베란다·오른 현관)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "rf_tl rf_tm rf_tm rf_tm rf_tm rf_tr",
+     "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sr",
+     "rf_el rf_em rf_em rf_em rf_em rf_er",
+     "wall_l win_veranda win_veranda wall_m win_small wall_r",
+     "+ + + + + +",
+     "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_m hisashi_r",
+     "wall_l win_slide wall_m wall_m genkan wall_r",
+     "+ + + + + +"
+    ],
+    "upper": [
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . genkan_hisashi ."
+    ]
+   }
+  },
+  {
+   "id": "wide8",
+   "name": "넓은 2층 8칸(지붕 깊이 4)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "rf_tl rf_tm rf_tm rf_tm rf_tm rf_tm rf_tm rf_tr",
+     "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sm rf_sm rf_sr",
+     "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sm rf_sm rf_sr",
+     "rf_el rf_em rf_em rf_em rf_em rf_em rf_em rf_er",
+     "wall_l win_slide wall_m win_veranda win_veranda wall_m win_slide wall_r",
+     "+ + + + + + + +",
+     "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_m hisashi_m hisashi_m hisashi_r",
+     "wall_l win_slide win_slide wall_m genkan wall_m win_small wall_r",
+     "+ + + + + + + +"
+    ],
+    "upper": [
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . . . . .",
+     ". . . . genkan_hisashi . . ."
+    ]
+   }
+  }
+ ]
+}

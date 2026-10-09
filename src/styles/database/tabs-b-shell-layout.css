@@ -1,0 +1,34 @@
+:root {
+  /* (UI-0) 과거 Win2k 라이트 스킨 변수 → 전역 다크 토큰 브리지로 통일.
+     이 :root 는 전역 스코프라 앱 전체 변수를 덮어쓰므로 tokens.css 별칭만 남긴다.
+     (--accent / --accent-hover / --danger 는 tokens.css 정의를 그대로 사용) */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+  --accent-soft: var(--accent-muted);
+  --ok: var(--success);
+  /* --gold 재정의 삭제: tokens.css 가 단독 소유한다(TOKENS.md §4.3 — :root 에서 공용
+     이름 재정의 금지). 이 줄이 import 순서상 마지막 전역 :root 라 tokens.css 를 이겨
+     var(--gold) 55곳을 전부 인디고로 렌더시키고 있었다. */
+  --surface-app: var(--bg-base);
+  --accent-secondary: var(--gold);
+  --accent-editor: var(--success);
+  --accent-blue: var(--accent);
+  --bg-recessed: var(--bg-inset);
+  --surface-button: var(--control-bg);
+  --mono: var(--font-mono);
+  --status-warning: var(--warning);
+  --status-success: var(--success);
+  --pixel-grid: rgba(42, 37, 33, 0.08);
+}
+/* button.btn 은 editor/core.part-1.css:97 이 단독 소유한다. 여기 있던 블록은 삭제된
+   RM2K3/Win2k 셸 스킨(0864daf9)의 잔재인데, 이 파일이 index.css 상 core 보다 뒤에
+   import 되는 것만으로 앱 전역 버튼 룩을 뒤집고 있었다(둘 다 특정도 (0,1,1) → 순서 승부).
+   TOKENS.md §3 버튼 패턴과 어긋났고, .primary 대비는 2.53:1 로 AA 미달이었다.
+   이 파일에는 database 선택자가 하나도 없어 스코프를 좁힐 대상 자체가 없다 — 그래서 삭제다. */

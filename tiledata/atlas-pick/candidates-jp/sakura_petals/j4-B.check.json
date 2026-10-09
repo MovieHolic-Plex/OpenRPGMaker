@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sakura_petals/j4-B.pxg",
+ "set": "jp",
+ "id": "sakura_petals",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  1,
+  2,
+  11,
+  11
+ ],
+ "note": "B 방향: 바람 따라 오른쪽 위에서 왼쪽 아래로 흐르는 대각선 흐름. 꽃잎 7장, 하이라이트가 도는 짝 꽃잎.",
+ "ok": true
+}

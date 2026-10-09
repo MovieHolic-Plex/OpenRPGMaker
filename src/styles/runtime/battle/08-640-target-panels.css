@@ -1,0 +1,317 @@
+.battle-emphasis-green {
+  color: var(--battle-green);
+}
+
+.battle-emphasis-orange {
+  color: var(--battle-orange);
+}
+
+.battle-weakness-chips {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  left: 30%;
+  position: absolute;
+  top: 54%;
+  z-index: 4;
+}
+
+.battle-weakness-label,
+.battle-weakness-chip {
+  border: 4px solid rgba(255, 219, 124, 0.9);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.7);
+  color: #fff7d2;
+  font-weight: 700;
+  padding: 8px 18px;
+}
+
+.battle-weakness-label {
+  background: #7a3614;
+}
+
+.battle-weakness-chip {
+  align-items: center;
+  display: inline-grid;
+  height: 60px;
+  justify-items: center;
+  min-width: 60px;
+}
+
+.battle-weakness-chip-fire {
+  background: radial-gradient(circle, #ffde7b, #ff742f 55%, #7d160a);
+}
+
+.battle-weakness-chip-leaf {
+  background: radial-gradient(circle, #ccff9d, #59a83c 58%, #1d4a22);
+}
+
+.battle-target-analysis,
+.battle-expected-result {
+  display: none;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-analysis {
+  background: linear-gradient(180deg, #173d86, #06143a);
+  border: 4px solid var(--battle-metal);
+  box-shadow: 16px 0 0 rgba(0, 0, 0, 0.25), inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  color: #fff;
+  display: grid;
+  font-size: 38px;
+  gap: 24px;
+  left: 48px;
+  padding: 40px 48px;
+  position: absolute;
+  top: 236px;
+  width: 600px;
+  z-index: 5;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-analysis::after {
+  border-bottom: 28px solid transparent;
+  border-left: 36px solid var(--battle-metal);
+  border-top: 28px solid transparent;
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: 50%;
+}
+
+.battle-analysis-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.battle-analysis-line strong,
+.battle-analysis-badge {
+  color: var(--battle-gold);
+}
+
+.battle-analysis-badge {
+  background: #8d4218;
+  border: 2px solid rgba(255, 224, 139, 0.9);
+  justify-self: start;
+  padding: 8px 24px;
+}
+
+.battle-analysis-small {
+  border-top: 2px dashed rgba(216, 229, 255, 0.45);
+  color: #e8f1ff;
+  font-size: 30px;
+  padding-top: 20px;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-expected-result {
+  background: linear-gradient(180deg, #173d86, #071637);
+  border: 4px solid var(--battle-metal);
+  bottom: 20px;
+  color: #fff8c0;
+  display: block;
+  font-size: 36px;
+  left: 50%;
+  padding: 16px 68px;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.battle-target-brackets {
+  position: absolute;
+}
+
+.battle-target-brackets::before {
+  border: 8px solid #fff;
+  clip-path: polygon(0 0, 26% 0, 26% 8%, 8% 8%, 8% 26%, 0 26%, 0 0, 74% 0, 100% 0, 100% 26%, 92% 26%, 92% 8%, 74% 8%, 74% 0, 100% 74%, 100% 100%, 74% 100%, 74% 92%, 92% 92%, 92% 74%, 100% 74%, 26% 100%, 0 100%, 0 74%, 8% 74%, 8% 92%, 26% 92%, 26% 100%);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.battle-target-brackets::after {
+  border-left: 22px solid transparent;
+  border-right: 22px solid transparent;
+  border-top: 48px solid #fff;
+  content: "";
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.battle-command-panel,
+.battle-party,
+.battle-enemy-list-panel,
+.battle-message-window,
+.battle-result-panel {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: none;
+}
+
+.battle-command-panel {
+  gap: 16px;
+  overflow: hidden;
+}
+
+.battle-active-actor-card {
+  border-right: 2px solid rgba(221, 234, 255, 0.42);
+  display: grid;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  grid-template-columns: 192px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-width: 0;
+  padding: 12px 24px 16px 12px;
+}
+
+.battle-active-actor-card h3 {
+  color: #fff;
+  font-size: 40px;
+  grid-column: 1 / -1;
+  margin: 0 0 16px;
+}
+
+.battle-actor-portrait {
+  align-self: start;
+  background:
+    radial-gradient(circle at 50% 30%, #f3b47a 0 16%, transparent 17%),
+    linear-gradient(135deg, #263d70, #07142e);
+  border: 4px solid rgba(223, 235, 255, 0.7);
+  height: 188px;
+  image-rendering: pixelated;
+  width: 164px;
+}
+
+.battle-actor-card-stats {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.battle-actor-card-stat {
+  display: grid;
+  gap: 8px 16px;
+  grid-template-columns: 68px minmax(140px, auto);
+}
+
+.battle-stat-bar {
+  background: #081126;
+  border: 2px solid rgba(213, 228, 255, 0.55);
+  display: block;
+  grid-column: 1 / -1;
+  height: 16px;
+  position: relative;
+}
+
+.battle-stat-bar::before {
+  /* System2 HP palette (sampled from System2C red fill strip). */
+  background: linear-gradient(
+    180deg,
+    var(--system2-hp-fill-hi, #e7874e),
+    var(--system2-hp-fill-lo, #e0671f)
+  );
+  content: "";
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  width: var(--battle-stat, 100%);
+}
+
+.battle-stat-bar-mp::before {
+  background: linear-gradient(
+    180deg,
+    var(--system2-sp-fill-hi, #6dc145),
+    var(--system2-sp-fill-lo, #46b013)
+  );
+}
+
+.battle-stat-bar-tp::before {
+  background: linear-gradient(
+    180deg,
+    var(--system2-at-fill-hi, #82caf2),
+    var(--system2-at-fill-lo, #60bcee)
+  );
+}
+
+.battle-active-actor-card p {
+  color: #e5eeff;
+  font-size: 28px;
+  grid-column: 1 / -1;
+  margin: 16px 0 0;
+}
+
+.battle-command {
+  align-items: center;
+  background: linear-gradient(180deg, rgba(26, 64, 136, 0.96), rgba(5, 20, 52, 0.98));
+  border: 4px solid rgba(154, 180, 220, 0.72);
+  color: #fff;
+  display: grid;
+  font-size: 32px;
+}
+
+.battle-command[data-battle-command-cursor="true"],
+.battle-command:focus-visible,
+.battle-command.battle-target-selected {
+  background: linear-gradient(180deg, #f5c95d, #9e5a1f);
+  border-color: #fff2a8 #5b3515 #5b3515 #fff2a8;
+  color: #10152a;
+  outline: 0;
+  text-shadow: none;
+}
+
+.battle-command-icon {
+  align-items: center;
+  background: #081126;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  color: #fff;
+  font-size: 48px;
+  height: 76px;
+  justify-items: center;
+  width: 76px;
+}
+
+.battle-command-icon-fire {
+  background: radial-gradient(circle, #ffe487, #ff7028 55%, #621404);
+}
+
+.battle-command-text {
+  gap: 8px;
+  min-width: 0;
+}
+
+.battle-command-text small {
+  color: #e5eeff;
+}
+
+.battle-command[data-battle-command-cursor="true"] small,
+.battle-command:focus-visible small,
+.battle-command:focus-visible small,
+.battle-command.battle-target-selected small {
+  color: #17203a;
+}
+
+
+/* 리미트·기력·파티 공용 게이지(battleGauges). 막대 채움은 위 .battle-stat-bar-tp 를 그대로 쓴다. */
+.battle-resource-gauge {
+  align-items: center;
+  display: grid;
+  gap: 0 4px;
+  grid-column: 1 / -1;
+  grid-template-columns: auto auto 1fr;
+}
+
+.battle-resource-gauge-label,
+.battle-resource-gauge-value {
+  font-size: 0.75em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.battle-resource-gauge .battle-resource-gauge-bar {
+  grid-column: auto;
+  height: 6px;
+}
+
+.battle-resource-gauge.is-full .battle-resource-gauge-label {
+  font-weight: 700;
+}

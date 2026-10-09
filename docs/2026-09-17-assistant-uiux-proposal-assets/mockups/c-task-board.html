@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+.deck{position:absolute;right:16px;bottom:16px;width:620px;overflow:hidden}
+.head{display:flex;align-items:center;gap:10px;height:42px;padding:0 10px 0 16px;border-bottom:1px solid rgba(20,24,40,.08)}
+.head .title{font-weight:800}.head .sp{flex:1}
+.tabs{display:flex;gap:4px;padding:8px 12px 0}
+.tab{padding:7px 12px;border-radius:9px 9px 0 0;font-weight:700;color:#6b7280;font-size:13px}
+.tab.on{color:#1c1f26;background:#fff;border:1px solid rgba(20,24,40,.10);border-bottom-color:#fff}
+.list{background:#fff;border-top:1px solid rgba(20,24,40,.10);margin:0 12px;border-radius:0 12px 12px 12px;border:1px solid rgba(20,24,40,.10)}
+.task{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:12px 14px;border-top:1px solid rgba(20,24,40,.07)}
+.task:first-child{border-top:0}
+.task .n{width:28px;height:28px;border-radius:8px;background:#eef0f5;display:flex;align-items:center;justify-content:center;font-weight:800;color:#55607a;font-size:12px}
+.task .n.run{background:#fff4e0;color:#9a5b00}
+.task .t{font-weight:700;font-size:13.5px}
+.task .d{color:#6b7280;font-size:12px;margin-top:2px}
+.prog{display:flex;align-items:center;gap:4px;font-size:11.5px;color:#55607a}
+.prog .st{padding:2px 8px;border-radius:999px;background:#eef0f5}
+.prog .st.done{background:#e6f6ee;color:#137a4b}.prog .st.now{background:#fff4e0;color:#9a5b00}
+.open{grid-column:1/-1;padding:10px 12px;border-radius:10px;background:#fafbfd;border:1px solid rgba(20,24,40,.07);font-size:13px;line-height:1.5}
+.open .who{display:flex;gap:6px;margin-bottom:6px}
+.open .who .chip{height:22px;font-size:11.5px}
+.open .acts{display:flex;gap:6px;margin-top:8px}
+.comp{padding:12px}
+</style>
+<div class="stage">
+  <div class="note"><div class="t">C · 작업 목록형</div>
+    요청 하나 = 작업 한 줄. <b>계획 → 시공 → 검수</b> 진행이 보이고, 혼자든 팀이든 <b>같은 목록</b>에 담당자 칩만 다르다. 팀 막대·탭·검토 보드를 하나로 합친다.
+  </div>
+  <div class="deck glass">
+    <div class="head"><span class="dot busy"></span><span class="title">조수</span><span class="muted">시장 마을 · 작업 1개 진행 중</span><span class="sp"></span><span class="btn ghost">🕘 기록</span><span class="icon">⋯</span><span class="icon">⌄</span></div>
+    <div class="tabs"><span class="tab on">작업 3</span><span class="tab">대화</span><span class="tab">이 맵의 변경</span></div>
+    <div class="list">
+      <div class="task">
+        <div class="n run">3</div>
+        <div><div class="t">두리를 무기 상인으로, 검·방패만</div><div class="d">시공 중 · 상점 창 붙이기 · 12초</div></div>
+        <div class="prog"><span class="st done">계획</span><span class="st now">시공 2/3</span><span class="st">검수</span></div>
+      </div>
+      <div class="task">
+        <div class="n">2</div>
+        <div><div class="t">광장 북쪽 우물 1 · 상인 2</div><div class="d">완료 · 타일 9칸 · 이벤트 +2</div></div>
+        <div class="prog"><span class="st done">계획</span><span class="st done">시공</span><span class="st done">검수</span></div>
+        <div class="open">
+          <div class="who"><span class="chip info">건축가</span><span class="chip">시장 마을</span><span class="chip ok">검수 통과</span></div>
+          우물은 돌길과 맞닿게 두었고, 상인 <b>하나</b>·<b>두리</b>는 마주보게 세웠습니다. 다음으로 상점 창을 붙일까요?
+          <div class="acts"><span class="btn">🗺 맵에서 보기</span><span class="btn">↶ 되돌리기</span><span class="btn ghost">단계 3개 보기</span></div>
+        </div>
+      </div>
+      <div class="task">
+        <div class="n">1</div>
+        <div><div class="t">남쪽 돌길 정리</div><div class="d">어제 · 정원사 · 타일 41칸</div></div>
+        <div class="prog"><span class="st done">계획</span><span class="st done">시공</span><span class="st done">검수</span></div>
+      </div>
+    </div>
+    <div class="comp"><div class="input">다음 작업을 한 문장으로<span class="mode" style="margin-left:auto">알아서 ▾</span><span class="mode">👥 팀 끔</span><span class="send">↑</span></div></div>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w43-A.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "3/4: 윗가로대·바닥판 윗면+앞가장자리, 처마 그림자 아래 눕혀 쌓은 통나무 4단(윗면 밝게, 마구리 나이테)",
+ "ok": true
+}

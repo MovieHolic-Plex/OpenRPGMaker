@@ -1,0 +1,76 @@
+{
+ "map": {
+  "id": "jp-city-office-1f",
+  "size": [
+   16,
+   10
+  ]
+ },
+ "start": [
+  7,
+  8
+ ],
+ "summary": "손 도트 실내 '사무 빌딩 1층 로비' 16×10 (jp-city-office-1f, jp_city) — 출입구에서 닿는 칸 60, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 일본 학교·역·사무실 실내 예제 · 사무 빌딩 1층 로비」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다",
+ "tool": {
+  "mapId": "jp-city-office-1f",
+  "tilesetId": "jp_city",
+  "width": 16,
+  "height": 10,
+  "reachable": 60,
+  "floorCells": 75,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 7,
+    "y": 8
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 7,
+    "y": 9,
+    "width": 2
+   }
+  ],
+  "links": 5,
+  "warnings": [
+   "평면이 참고 예제 「일본 도시 · 일본 학교·역·사무실 실내 예제 · 사무 빌딩 1층 로비」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다"
+  ]
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 14,
+   "y": 3,
+   "to": "jp-city-office-floor",
+   "reached": true
+  },
+  {
+   "x": 4,
+   "y": 3,
+   "to": "jp-city-office-floor",
+   "reached": true
+  },
+  {
+   "x": 5,
+   "y": 3,
+   "to": "jp-city-office-floor",
+   "reached": true
+  },
+  {
+   "x": 7,
+   "y": 3,
+   "to": "jp-city-office-floor",
+   "reached": true
+  },
+  {
+   "x": 8,
+   "y": 3,
+   "to": "jp-city-office-floor",
+   "reached": true
+  }
+ ],
+ "reach": 60,
+ "ok": true
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_snow/w1-A.pxg",
+ "set": "worldmap",
+ "id": "coast_snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "생성 계열 결: 푸른 흰 얼음 판 2px(윗면 밝게)+어두운 물 테 한 줄, 거품 없음, 몸통은 풀 해안 A 와 동일",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "seam": 1.03
+ }
+}

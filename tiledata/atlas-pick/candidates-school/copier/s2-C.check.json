@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/copier/s2-C.pxg",
+ "set": "school",
+ "id": "copier",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  0,
+  15,
+  31
+ ],
+ "note": "실루엣 재해석: 뚜껑 위 자동급지기 혹과 종이 더미가 위로 튀고, 서랍이 세 줄 굵은 띠로 쌓임. 한 색 실루엣만 봐도 급지기 달린 복합기. staff_desks C 처럼 키를 높인 덩어리.",
+ "ok": true
+}

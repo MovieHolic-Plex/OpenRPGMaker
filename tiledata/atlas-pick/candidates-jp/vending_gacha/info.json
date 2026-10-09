@@ -1,0 +1,20 @@
+{
+ "id": "vending_gacha",
+ "slug": "vending_gacha",
+ "name": "캡슐토이(가샤폰) 두 대",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "2×2 칸에 캡슐토이 기계 두 대 위아래 한 단(또는 나란히 두 대): 투명 둥근 창 속 색 캡슐 알(2px 점 여럿), 앞 은색 손잡이 다이얼, 아래 캡슐 나오는 입. 기계 윗면 보이게.",
+ "palette_hint": "mwhite·mred 몸통, mglass 창, taxi·sakura·kblue·kgreen 캡슐, mmetal 다이얼",
+ "worker": "r2",
+ "added": "2026-09-30 자판기 여러 종류(사용자 메모)"
+}

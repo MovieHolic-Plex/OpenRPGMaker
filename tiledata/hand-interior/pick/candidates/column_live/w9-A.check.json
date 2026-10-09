@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_live/w9-A.pxg",
+ "id": "column live",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "note": "A 다듬기: 머리 잎 구멍·낱알 픽셀 제거, 잎 덩어리를 밝음→어둠 한 방향으로, 줄기 옹이 몇 곳, 밑동 귀퉁이 둥글림",
+ "ok": true
+}

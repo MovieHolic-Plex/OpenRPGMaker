@@ -1,0 +1,79 @@
+[
+  {
+    "theme": "emerald-monster-overworld",
+    "id": "emerald_monster_overworld",
+    "sourceTextureKey": "tex_monster_overworld",
+    "textureKey": "tex_emerald_monster_overworld",
+    "name": "에메랄드 몬스터 · overworld",
+    "path": "assets/emerald-monster/tiles/overworld.png",
+    "count": 2192,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-wild",
+    "id": "emerald_monster_wild",
+    "sourceTextureKey": "tex_monster_wild",
+    "textureKey": "tex_emerald_monster_wild",
+    "name": "에메랄드 몬스터 · wild",
+    "path": "assets/emerald-monster/tiles/wild.png",
+    "count": 2048,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-coast",
+    "id": "emerald_monster_coast",
+    "sourceTextureKey": "tex_monster_coast",
+    "textureKey": "tex_emerald_monster_coast",
+    "name": "에메랄드 몬스터 · coast",
+    "path": "assets/emerald-monster/tiles/coast.png",
+    "count": 2528,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-climate",
+    "id": "emerald_monster_climate",
+    "sourceTextureKey": "tex_monster_climate",
+    "textureKey": "tex_emerald_monster_climate",
+    "name": "에메랄드 몬스터 · climate",
+    "path": "assets/emerald-monster/tiles/climate.png",
+    "count": 2560,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-rooms",
+    "id": "emerald_monster_rooms",
+    "sourceTextureKey": "tex_monster_rooms",
+    "textureKey": "tex_emerald_monster_rooms",
+    "name": "에메랄드 몬스터 · rooms",
+    "path": "assets/emerald-monster/tiles/rooms.png",
+    "count": 1136,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-dungeon",
+    "id": "emerald_monster_dungeon",
+    "sourceTextureKey": "tex_monster_dungeon",
+    "textureKey": "tex_emerald_monster_dungeon",
+    "name": "에메랄드 몬스터 · dungeon",
+    "path": "assets/emerald-monster/tiles/dungeon.png",
+    "count": 1920,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  },
+  {
+    "theme": "emerald-monster-gyms",
+    "id": "emerald_monster_gyms",
+    "sourceTextureKey": "tex_monster_gyms",
+    "textureKey": "tex_emerald_monster_gyms",
+    "name": "에메랄드 몬스터 · gyms",
+    "path": "assets/emerald-monster/tiles/gyms.png",
+    "count": 2144,
+    "tilesPerRow": 16,
+    "tileSize": 16
+  }
+]

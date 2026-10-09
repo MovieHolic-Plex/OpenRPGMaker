@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/star_chart/w24-D.pxg",
+ "id": "star chart",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   16,
+   32
+  ],
+  "footprint": {
+   "w": 1,
+   "h": 0
+  },
+  "why": "사용자 메모: 1x2 로 만들것"
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 4,
+ "bbox": [
+  1,
+  0,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  13
+ ],
+ "note": "D: 액자 성도. 나무 틀 안 짙은 남색 하늘에 초승달, 이은 별자리 일곱 별(큰 별 셋), 위에 걸이 못.",
+ "ok": true
+}

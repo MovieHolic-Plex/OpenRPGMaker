@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/vanity_mirror/w1-A.pxg",
+ "id": "vanity mirror",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "v5 화장대 다듬기: 거울 타원을 좌우 대칭 금테로 정돈(v5 는 오른쪽 아래가 무너져 있었음), 유리 반사선은 왼쪽 위 한 줄로, 상판 첫 줄을 밝은 분홍(M)으로 올려 윗면 빛, 서랍 윗선에 밝은 점(M)",
+ "ok": true
+}

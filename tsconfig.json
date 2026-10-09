@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowArbitraryExtensions": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+    "verbatimModuleSyntax": false,
+    "types": [],
+    // baseUrl 은 쓰지 않는다 — TS 7 이 제거한 옵션이라, 남겨 두면 tsc 가 파일 하나 읽기
+    // 전에 TS5102 로 죽는다(즉 `npm run gates` 의 typecheck 게이트가 통째로 무력화된다).
+    // paths 는 tsconfig 위치 기준 상대 경로로 적으면 5.x·7 양쪽에서 같게 해석된다.
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src", "test", "electron"],
+  "exclude": ["node_modules", "dist", "src/harnesses/*/node"]
+}

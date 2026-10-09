@@ -1,0 +1,59 @@
+// ticket_machine A — 강남 결: 노선 요금표 판 + 금속 매표기 두 대(청록 화면·버튼·동전구·지폐구·반환구)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o mmetal 1
+@mat a mmetal 3
+@mat m mmetal 4
+@mat l mmetal 5
+@mat h mmetal 6
+@mat K mmetal 2
+@mat k mout 0
+@mat d mdglass 1
+@mat S neonc 3
+@mat T neonc 4
+@mat U neonc 5
+@mat r akachin 4
+@mat b kblue 4
+@mat g kgreen 4
+@mat y taxi 4
+@mat w mwhite 3
+@mat W mwhite 3
+@mat V mwhite 2
+@mat B kblue 3
+@mat R akachin 3
+@mat G kgreen 3
+@mat x mconc 1
+@mblock 0 0
+................................
+.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+.xVVVVVVVVVVVVVVVVVVVVVVVVVVVVx.
+.xWBBBwBBBBBwBBBBBwBBBBBwBWWWWx.
+.xWWWWWWWWWWWWWWWWWWWWWWWWWWWWx.
+.xWWWWWRRRwRRRRRwRRRRRwRRRRwRWx.
+.xWWWWWWWWWWWWWWWWWWWWWWWWWWWWx.
+.xWWGGGwGGGGGwGGGGGwGGGWWWWWWWx.
+.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.
+..oooooooooooo....oooooooooooo..
+.ohhhhhhhhhhllo..ohhhhhhhhhhllo.
+.ollllllllllmmo..ollllllllllmmo.
+.olddddddddddmo..olddddddddddmo.
+.oldTTTTTTTTdmo..oldTTTTTTTTdmo.
+.oldSSSSSSSSdmo..oldSSSSSSSSdmo.
+.oldSSSSSSSSdmo..oldSSSSSSSSdmo.
+.olddddddddddmo..olddddddddddmo.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmrmbmgmymmao..olmrmbmgmymmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmwmrmbmgmmao..olmwmrmbmgmmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmmkkkmmmmmao..olmmkkkmmmmmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olmKKKKKKKKmao..olmKKKKKKKKmao.
+.olmkkkkkkkkmao..olmkkkkkkkkmao.
+.olmKKKKKKKKmao..olmKKKKKKKKmao.
+.olmmmmmmmmmmao..olmmmmmmmmmmao.
+.olkkkkkkkkkkao..olkkkkkkkkkkao.
+.oooooooooooooo..oooooooooooooo.
+.-~~~~~~~~~~~~~~~~~~~~~~~~~~~~-.
+................................

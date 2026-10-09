@@ -1,0 +1,74 @@
+// 유리 돔의 넓은 정수리 반사광, 점박이 알 하나, 타원형 놋쇠 받침; 꼭대기 윗면 4행(y=1~4).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat g glass 4
+@mat e linen 5
+@mat s green 2
+@mat b brass 3
+@mblock 0 0
+......gggg......
+....gggggggg....
+...gggggggggg...
+...gggggggggg...
+..gggggggggggg..
+..gggggggggggg..
+.gggggggggggggg.
+.gggggggggggggg.
+.gggggeeeeggggg.
+.ggggeeeeeegggg.
+.gggggeeeeggggg.
+.ggggeeeeeegggg.
+.ggggeesseegggg.
+.gggeeesseeeggg.
+.gggeeeeeeeeggg.
+.gggeeeeeeeeggg.
+.gggeeeeeeseggg.
+.gggeeeseeseggg.
+.gggeeeseeeeggg.
+.gggeeeeeeeeggg.
+.gggeesseeeeggg.
+.ggggeeeeeegggg.
+.ggggeeeeeegggg.
+.ggbbbeeeebbbgg.
+.bbbbbbbbbbbbbb.
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+...bbbbbbbbbb...
+...bbb....bbb...
+@tblock 0 0
+......2222......
+....24554321....
+...2566554321...
+...5665544321...
+..256554444321..
+..255444444321..
+.24554444444321.
+.25654444444321.
+.25654554344321.
+.24545555434321.
+.24544555444321.
+.24545655444321.
+.24545622544321.
+.24556522534421.
+.24556555534421.
+.24556555434421.
+.24556555423321.
+.24556525423321.
+.24456525433421.
+.24455554433421.
+.24455224433421.
+.24445554334321.
+.24444443333321.
+.23555433343221.
+.24565544443321.
+1455554444333221
+1566555555443221
+1345555555432210
+.12333333332210.
+..122222221100..
+...1222111100...
+...110....100...

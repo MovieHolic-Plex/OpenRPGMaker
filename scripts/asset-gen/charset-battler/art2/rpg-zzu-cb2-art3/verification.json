@@ -1,0 +1,287 @@
+{
+  "actor4-0": {
+    "sourceCells": 45,
+    "castCells": 21,
+    "uniqueCastSilhouettesWithoutLight": 21,
+    "combatCells": 24,
+    "groundY": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "extraColors": [
+      [
+        74,
+        225,
+        224
+      ],
+      [
+        158,
+        240,
+        88
+      ],
+      [
+        172,
+        95,
+        235
+      ],
+      [
+        255,
+        85,
+        40
+      ],
+      [
+        255,
+        155,
+        212
+      ],
+      [
+        255,
+        225,
+        76
+      ]
+    ],
+    "sheetsMatchSources": true,
+    "gif": {
+      "size": [
+        1344,
+        212
+      ],
+      "frames": 3,
+      "frameMs": 160,
+      "exactNearest4x": true
+    },
+    "weapon": "dagger",
+    "lightPixelCounts": [
+      3,
+      6,
+      9
+    ],
+    "maximumLightDistanceFromHand": 6
+  },
+  "actor2-2": {
+    "sourceCells": 45,
+    "castCells": 21,
+    "uniqueCastSilhouettesWithoutLight": 21,
+    "combatCells": 24,
+    "groundY": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "extraColors": [
+      [
+        74,
+        225,
+        224
+      ],
+      [
+        158,
+        240,
+        88
+      ],
+      [
+        172,
+        95,
+        235
+      ],
+      [
+        215,
+        183,
+        255
+      ],
+      [
+        255,
+        85,
+        40
+      ],
+      [
+        255,
+        155,
+        212
+      ]
+    ],
+    "sheetsMatchSources": true,
+    "gif": {
+      "size": [
+        1344,
+        212
+      ],
+      "frames": 3,
+      "frameMs": 160,
+      "exactNearest4x": true
+    },
+    "weapon": "bow",
+    "lightPixelCounts": [
+      3,
+      6,
+      9
+    ],
+    "maximumLightDistanceFromHand": 6
+  },
+  "actor2-3": {
+    "sourceCells": 45,
+    "castCells": 21,
+    "uniqueCastSilhouettesWithoutLight": 21,
+    "combatCells": 24,
+    "groundY": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "extraColors": [
+      [
+        74,
+        225,
+        224
+      ],
+      [
+        158,
+        240,
+        88
+      ],
+      [
+        172,
+        95,
+        235
+      ],
+      [
+        255,
+        85,
+        40
+      ],
+      [
+        255,
+        155,
+        212
+      ],
+      [
+        255,
+        225,
+        76
+      ]
+    ],
+    "sheetsMatchSources": true,
+    "gif": {
+      "size": [
+        1344,
+        212
+      ],
+      "frames": 3,
+      "frameMs": 160,
+      "exactNearest4x": true
+    },
+    "weapon": "bow",
+    "lightPixelCounts": [
+      3,
+      6,
+      9
+    ],
+    "maximumLightDistanceFromHand": 6
+  },
+  "actor2-4": {
+    "sourceCells": 45,
+    "castCells": 21,
+    "uniqueCastSilhouettesWithoutLight": 21,
+    "combatCells": 24,
+    "groundY": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "extraColors": [
+      [
+        74,
+        225,
+        224
+      ],
+      [
+        158,
+        240,
+        88
+      ],
+      [
+        176,
+        215,
+        255
+      ],
+      [
+        215,
+        183,
+        255
+      ],
+      [
+        255,
+        155,
+        212
+      ]
+    ],
+    "sheetsMatchSources": true,
+    "gif": {
+      "size": [
+        1344,
+        212
+      ],
+      "frames": 3,
+      "frameMs": 160,
+      "exactNearest4x": true
+    },
+    "weapon": "sword",
+    "lightPixelCounts": [
+      3,
+      6,
+      9
+    ],
+    "maximumLightDistanceFromHand": 6
+  },
+  "actor2-5": {
+    "sourceCells": 45,
+    "castCells": 21,
+    "uniqueCastSilhouettesWithoutLight": 21,
+    "combatCells": 24,
+    "groundY": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "extraColors": [
+      [
+        74,
+        225,
+        224
+      ],
+      [
+        158,
+        240,
+        88
+      ],
+      [
+        215,
+        183,
+        255
+      ],
+      [
+        255,
+        225,
+        76
+      ]
+    ],
+    "sheetsMatchSources": true,
+    "gif": {
+      "size": [
+        1344,
+        212
+      ],
+      "frames": 3,
+      "frameMs": 160,
+      "exactNearest4x": true
+    },
+    "weapon": "dagger",
+    "lightPixelCounts": [
+      3,
+      6,
+      9
+    ],
+    "maximumLightDistanceFromHand": 6
+  }
+}

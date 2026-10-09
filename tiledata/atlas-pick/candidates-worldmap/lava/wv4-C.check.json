@@ -1,0 +1,138 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/lava/wv4-C.pxg",
+ "set": "worldmap",
+ "id": "lava",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.088
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "용암: 큰 식은 판이 갈라져 틈마다 불빛이 새는 다른 해석, 울퉁불퉁한 덩어리 윤곽.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.06
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.057
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     4,
+     4,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     4,
+     3
+    ],
+    "e": [
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     2,
+     2,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.82
+ }
+}

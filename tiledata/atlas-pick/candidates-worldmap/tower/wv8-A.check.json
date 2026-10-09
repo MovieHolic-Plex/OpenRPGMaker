@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/tower/wv8-A.pxg",
+ "set": "worldmap",
+ "id": "tower",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "World.png 구조를 우리 팔레트로 — 1×2 원통 탑, 톱니 머리 위 푸른 뾰족 지붕, 층 띠와 창 점, 밑 문",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.086
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.16
+  }
+ }
+}

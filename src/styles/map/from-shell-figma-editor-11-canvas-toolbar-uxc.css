@@ -1,0 +1,158 @@
+/* map 표면 — shell/figma-editor/11-canvas-toolbar-uxc.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:1-8 */
+.canvas-toolbar,
+.persistence-mode-banner ~ .canvas-toolbar {
+  left: auto;
+  max-width: calc(100% - 24px);
+  right: 12px;
+  top: 8px;
+  transform: none;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:10-12 — 2026-09-18 변경.
+   구 선택자(.persistence-mode-banner ~ .canvas-toolbar)는 배너가
+   .persistence-banner-host 안에 있어 성립하지 않는다 — 플로팅 툴바가 배너의
+   닫기 버튼을 가려 Playwright 클릭이 인터셉트됐다. :has 로 고치고 top 은
+   배너 실측 42px + 8px 간격. 도크 툴바(beginner, is-docked-chrome)는 제외 —
+   같은 레이어 문서 순서상 :has 규칙이 top:0 을 이겨 도크 바가 밀리는 회귀
+   확인(2026-09-18 beginner 실측 overlap:true). */
+.canvas-area:has(.persistence-mode-banner) .canvas-toolbar {
+  top: 50px;
+}
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:14-19 */
+.canvas-toolbar-zoom-group,
+.canvas-toolbar-save-group {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:21-24 */
+.canvas-toolbar .zoom-button,
+.canvas-toolbar .canvas-toolbar-save-group {
+  display: none;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:27-30 */
+.canvas-toolbar.is-expanded .zoom-button,
+.canvas-toolbar.is-expanded .canvas-toolbar-save-group {
+  display: inline-flex;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:34-36 */
+.canvas-toolbar .canvas-toolbar-zoom-menu {
+  display: none;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:37-42 */
+.canvas-toolbar.is-expanded .canvas-toolbar-zoom-menu,
+.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:43-45 */
+.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .zoom-button {
+  display: inline-flex;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:47-51 */
+.canvas-toolbar-save-group {
+  border-left: 1px solid var(--editor-line);
+  margin-left: 4px;
+  padding-left: 6px;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:53-66 */
+.canvas-toolbar-expand {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 14px;
+  height: 30px;
+  justify-content: center;
+  min-width: 30px;
+  padding: 0;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:68-70 */
+.map-save-button {
+  min-width: 66px;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:72-88 */
+.map-lock-banner {
+  align-items: center;
+  background: var(--danger);
+  border: 1px solid rgba(198, 64, 61, 0.24);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop);
+  color: var(--bg-surface);
+  display: flex;
+  gap: 8px;
+  left: 12px;
+  max-width: min(560px, calc(100% - 380px));
+  min-height: 32px;
+  padding: 5px 8px;
+  position: absolute;
+  top: 8px;
+  z-index: var(--z-canvas-chip);
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:90-92 */
+.map-lock-banner.is-hidden {
+  display: none;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:94-100 */
+.map-lock-banner-text {
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:102-112 */
+.map-lock-takeover-button {
+  background: var(--control-bg);
+  border: 1px solid rgba(42, 37, 33, 0.18);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  min-height: 26px;
+  padding: 3px 8px;
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:133-135 */
+@media (max-width: 1320px) {
+  .map-lock-banner {
+      max-width: calc(100% - 260px);
+    }
+}
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:137-139 */
+
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:146-155 — 2026-09-18 변경.
+   고정 top 예약(48px, 배너 있을 때 74px)은 배너 실측(42px)과 어긋나
+   canvas-area 상단에 빈 띠를 남겼다. dense(standard/expert, 플로팅 툴바)에서만
+   셸을 normal flow + flex:1 로 배너 뒤에 바로 붙인다(resource-system.part-1.css).
+   beginner(도크 툴바)는 absolute 예약을 유지한다. */
+body .editor-canvas-scroll-shell {
+  bottom: auto;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  top: auto;
+}

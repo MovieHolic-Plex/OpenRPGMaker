@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>RPG ZZU 이벤트 에디터 — 냉정한 UI·UX / 게임 제작성 비평</title>
+  <style>
+    :root {
+      --ink: #171713;
+      --muted: #68675f;
+      --paper: #f3f0e7;
+      --paper-2: #e7e2d4;
+      --card: #fffdf6;
+      --line: #c9c3b4;
+      --red: #d9352b;
+      --red-dark: #8d1f19;
+      --orange: #ef7d32;
+      --yellow: #ffd65a;
+      --green: #218c62;
+      --blue: #315bd6;
+      --violet: #7048d8;
+      --black: #121212;
+      --radius: 18px;
+      --shadow: 0 18px 60px rgba(34, 31, 23, .13);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 3%, rgba(239,125,50,.13), transparent 24rem),
+        radial-gradient(circle at 90% 11%, rgba(49,91,214,.10), transparent 28rem),
+        var(--paper);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+      line-height: 1.68;
+      word-break: keep-all;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .22;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+    }
+
+    a { color: inherit; }
+    img { max-width: 100%; display: block; }
+    button { font: inherit; }
+    code, .mono {
+      font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+      font-size: .9em;
+    }
+    code {
+      padding: .16rem .42rem;
+      border: 1px solid rgba(23,23,19,.12);
+      border-radius: 6px;
+      background: rgba(255,255,255,.62);
+    }
+
+    .skip {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 100;
+      padding: .75rem 1rem;
+      background: white;
+    }
+    .skip:focus { left: 1rem; top: 1rem; }
+
+    .rail {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      min-height: 54px;
+      padding: .65rem max(1rem, calc((100vw - 1220px) / 2));
+      color: #f9f6ed;
+      background: rgba(18,18,18,.94);
+      border-bottom: 1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(14px);
+    }
+    .rail__brand { font-weight: 900; letter-spacing: -.02em; white-space: nowrap; }
+    .rail__brand b { color: var(--yellow); }
+    .rail nav { display: flex; gap: .4rem; overflow-x: auto; }
+    .rail nav a {
+      padding: .35rem .64rem;
+      color: #d8d5ca;
+      border-radius: 999px;
+      font-size: .76rem;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .rail nav a:hover, .rail nav a:focus-visible { color: white; background: #34342f; outline: none; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(4.8rem, 11vw, 9.5rem) 1.2rem clamp(4rem, 8vw, 7.3rem);
+      color: #fffdf6;
+      background: #171713;
+      isolation: isolate;
+    }
+    .hero::after {
+      content: "EVENT";
+      position: absolute;
+      right: -1.7rem;
+      bottom: -5.8rem;
+      z-index: -1;
+      color: rgba(255,255,255,.035);
+      font-size: clamp(8rem, 25vw, 26rem);
+      font-weight: 1000;
+      letter-spacing: -.09em;
+      line-height: .8;
+    }
+    .hero__inner { width: min(1220px, 100%); margin: 0 auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      margin: 0 0 1.2rem;
+      color: var(--yellow);
+      font-size: .83rem;
+      font-weight: 950;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 2rem; height: 3px; background: currentColor; }
+    h1 {
+      max-width: 1000px;
+      margin: 0;
+      font-size: clamp(3rem, 7.6vw, 7.6rem);
+      line-height: .95;
+      letter-spacing: -.075em;
+      font-weight: 1000;
+    }
+    h1 em { color: var(--orange); font-style: normal; }
+    .hero__lead {
+      max-width: 790px;
+      margin: 2rem 0 0;
+      color: #d8d5ca;
+      font-size: clamp(1.08rem, 1.7vw, 1.42rem);
+      font-weight: 650;
+      letter-spacing: -.025em;
+    }
+    .hero__lead strong { color: white; }
+    .verdict {
+      display: grid;
+      grid-template-columns: 1.5fr .9fr;
+      gap: 1rem;
+      margin-top: 3rem;
+    }
+    .verdict__main, .verdict__score {
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.055);
+      box-shadow: inset 0 1px rgba(255,255,255,.08);
+    }
+    .verdict__main { padding: clamp(1.4rem, 3vw, 2.4rem); }
+    .verdict__main .label { color: #ff9d79; font-weight: 900; }
+    .verdict__main p { margin: .6rem 0 0; font-size: clamp(1.22rem, 2vw, 1.85rem); font-weight: 900; line-height: 1.35; }
+    .verdict__score { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+    .big-score { display: grid; place-content: center; padding: 1.3rem; border-right: 1px solid rgba(255,255,255,.12); text-align: center; }
+    .big-score b { color: var(--yellow); font-size: 3.4rem; line-height: 1; letter-spacing: -.08em; }
+    .big-score span { margin-top: .35rem; color: #b8b5ab; font-size: .78rem; font-weight: 800; }
+    .ship { display: grid; place-content: center; padding: 1.3rem; text-align: center; }
+    .ship b { color: #ff7e74; font-size: 1.35rem; }
+    .ship span { color: #b8b5ab; font-size: .78rem; font-weight: 800; }
+    .hero__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+      margin-top: 1.15rem;
+      color: #aaa79d;
+      font-size: .73rem;
+      font-weight: 750;
+    }
+    .hero__meta span { padding: .36rem .62rem; border: 1px solid #393934; border-radius: 999px; }
+
+    main { overflow: clip; }
+    .section {
+      width: min(1220px, calc(100% - 2.2rem));
+      margin: 0 auto;
+      padding: clamp(4.6rem, 9vw, 8.4rem) 0;
+    }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section--full { width: 100%; padding-inline: max(1.1rem, calc((100% - 1220px) / 2)); }
+    .section--dark {
+      width: 100%;
+      max-width: none;
+      color: #f8f5eb;
+      background: #171713;
+      border-top: 0 !important;
+      padding-inline: max(1.1rem, calc((100% - 1220px) / 2));
+    }
+    .section--red {
+      width: 100%;
+      max-width: none;
+      color: white;
+      background: var(--red-dark);
+      border-top: 0 !important;
+      padding-inline: max(1.1rem, calc((100% - 1220px) / 2));
+    }
+    .section-head { display: grid; grid-template-columns: 112px 1fr; gap: 1.2rem; align-items: start; margin-bottom: 2.4rem; }
+    .section-no { color: var(--red); font-size: .82rem; font-weight: 1000; letter-spacing: .12em; }
+    .section--dark .section-no, .section--red .section-no { color: var(--yellow); }
+    h2 { margin: -.15rem 0 0; max-width: 920px; font-size: clamp(2rem, 4.4vw, 4.35rem); line-height: 1.03; letter-spacing: -.06em; }
+    .section-intro { max-width: 790px; margin: .9rem 0 0; color: var(--muted); font-size: 1.08rem; font-weight: 620; }
+    .section--dark .section-intro, .section--red .section-intro { color: #c9c6bc; }
+    .plain { max-width: 780px; }
+    .plain p { margin: .7rem 0; }
+
+    .brutal {
+      position: relative;
+      margin: 2rem 0 3rem;
+      padding: clamp(1.4rem, 4vw, 3rem);
+      border: 3px solid var(--ink);
+      border-radius: var(--radius);
+      background: var(--yellow);
+      box-shadow: 12px 12px 0 var(--ink);
+    }
+    .brutal::before {
+      content: "한 줄 결론";
+      position: absolute;
+      top: -.8rem;
+      left: 1.4rem;
+      padding: .18rem .6rem;
+      color: white;
+      background: var(--ink);
+      font-size: .72rem;
+      font-weight: 950;
+      letter-spacing: .08em;
+    }
+    .brutal p { margin: 0; font-size: clamp(1.4rem, 3vw, 2.6rem); font-weight: 1000; line-height: 1.28; letter-spacing: -.04em; }
+
+    .score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .85rem; }
+    .score-card { padding: 1.2rem; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .score-card__top { display: flex; align-items: end; justify-content: space-between; gap: .6rem; }
+    .score-card h3 { margin: 0; font-size: .9rem; }
+    .score-card b { font-size: 1.7rem; line-height: 1; }
+    .score-card .bar { height: 7px; margin-top: 1rem; overflow: hidden; border-radius: 999px; background: #ddd7c8; }
+    .score-card .bar i { display: block; width: var(--score); height: 100%; background: var(--tone, var(--red)); }
+    .score-card small { display: block; margin-top: .65rem; color: var(--muted); line-height: 1.45; }
+
+    .fault-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2rem; }
+    .fault { padding: 1.45rem; border-top: 5px solid var(--red); background: rgba(255,255,255,.58); }
+    .fault:nth-child(2) { border-color: var(--orange); }
+    .fault:nth-child(3) { border-color: var(--blue); }
+    .fault:nth-child(4) { border-color: var(--violet); }
+    .fault__tag { color: var(--red); font-size: .72rem; font-weight: 1000; letter-spacing: .08em; }
+    .fault h3 { margin: .35rem 0 .5rem; font-size: 1.35rem; letter-spacing: -.03em; }
+    .fault p { margin: 0; color: #55534d; }
+
+    .evidence-note {
+      display: flex;
+      gap: .8rem;
+      align-items: flex-start;
+      margin: 1rem 0;
+      padding: .85rem 1rem;
+      color: #55534d;
+      border-left: 4px solid var(--blue);
+      background: #e9edf8;
+      font-size: .82rem;
+    }
+    .evidence-note b { color: var(--blue); white-space: nowrap; }
+
+    .annotated {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #31333e;
+      border-radius: 14px;
+      background: #11131a;
+      box-shadow: var(--shadow);
+    }
+    .annotated img { width: 100%; }
+    .pin {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      display: grid;
+      place-items: center;
+      width: clamp(24px, 3vw, 42px);
+      aspect-ratio: 1;
+      color: var(--ink);
+      border: 3px solid white;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 3px 14px rgba(0,0,0,.5);
+      font-size: clamp(.7rem, 1.3vw, 1rem);
+      font-weight: 1000;
+      transform: translate(-50%, -50%);
+    }
+    .pin--red { color: white; background: var(--red); }
+    .pin--blue { color: white; background: var(--blue); }
+    .legend-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .7rem; margin-top: 1rem; }
+    .legend-item { padding: .9rem; border: 1px solid var(--line); border-radius: 12px; background: var(--card); font-size: .82rem; }
+    .legend-item b { display: block; margin-bottom: .3rem; font-size: .9rem; }
+    .legend-num { display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; margin-right: .35rem; border-radius: 50%; background: var(--yellow); font-weight: 1000; }
+    .legend-item.bad .legend-num { color: white; background: var(--red); }
+
+    .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.1rem; margin-top: 2.3rem; }
+    .shot {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: 0 8px 30px rgba(34,31,23,.07);
+    }
+    .shot--wide { grid-column: 1 / -1; }
+    .shot button {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: #11131a;
+      cursor: zoom-in;
+    }
+    .shot button:focus-visible { outline: 4px solid var(--blue); outline-offset: -4px; }
+    .shot img { width: 100%; transition: transform .28s ease; }
+    .shot button:hover img { transform: scale(1.012); }
+    .shot__copy { padding: 1.1rem 1.2rem 1.3rem; }
+    .shot__copy .badge { display: inline-block; margin-bottom: .55rem; padding: .18rem .48rem; border-radius: 999px; color: #3e4d8c; background: #e8ebfb; font-size: .68rem; font-weight: 950; }
+    .shot__copy h3 { margin: 0; font-size: 1.15rem; }
+    .shot__copy p { margin: .45rem 0 0; color: var(--muted); font-size: .9rem; }
+    .shot__copy strong { color: var(--red-dark); }
+
+    .journey-shell { padding: 1.4rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow); }
+    .journey { display: grid; grid-template-columns: repeat(8, minmax(120px, 1fr)); gap: .7rem; overflow-x: auto; padding: .2rem .1rem 1rem; }
+    .step { position: relative; min-height: 174px; padding: 1rem .85rem; color: #f8f5eb; border-radius: 12px; background: var(--ink); }
+    .step:not(:last-child)::after { content: "→"; position: absolute; right: -.66rem; top: 44%; z-index: 3; display: grid; place-items: center; width: 1.3rem; height: 1.3rem; color: var(--ink); border-radius: 50%; background: var(--yellow); font-weight: 1000; }
+    .step__n { color: var(--yellow); font-size: .68rem; font-weight: 1000; letter-spacing: .08em; }
+    .step h3 { margin: .35rem 0; font-size: .95rem; line-height: 1.3; }
+    .step p { margin: .45rem 0 0; color: #bdbab0; font-size: .75rem; line-height: 1.45; }
+    .step .pain { position: absolute; left: .85rem; bottom: .8rem; padding: .14rem .4rem; border-radius: 999px; color: #ffd0cc; background: #60241f; font-size: .63rem; font-weight: 900; }
+    .step.ok .pain { color: #bcebd8; background: #184d39; }
+    .journey-summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .8rem; margin-top: .8rem; }
+    .journey-summary div { padding: 1rem; border-radius: 10px; background: var(--paper); }
+    .journey-summary b { display: block; font-size: 1.4rem; letter-spacing: -.04em; }
+    .journey-summary span { color: var(--muted); font-size: .76rem; }
+
+    .p0-banner { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem 1.2rem; color: white; border: 2px solid #ffb7b1; border-radius: 12px; background: #5e1410; }
+    .p0-banner strong { padding: .25rem .55rem; color: #5e1410; border-radius: 6px; background: var(--yellow); font-size: .8rem; }
+    .p0-banner span { font-weight: 850; }
+    .sequence {
+      overflow-x: auto;
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: var(--radius);
+      background: #0d0d0b;
+    }
+    .sequence svg { display: block; min-width: 980px; width: 100%; height: auto; }
+    .sequence text { font-family: Pretendard, "Malgun Gothic", sans-serif; }
+    .sequence .lane { fill: #1e1e1a; stroke: #48483f; }
+    .sequence .lane-title { fill: #f6f2e8; font-size: 16px; font-weight: 800; }
+    .sequence .line { stroke: #5b5a52; stroke-dasharray: 5 6; }
+    .sequence .arrow { stroke: #ffd65a; stroke-width: 3; marker-end: url(#arrow); }
+    .sequence .danger-arrow { stroke: #ff5f54; stroke-width: 5; marker-end: url(#dangerArrow); }
+    .sequence .copy { fill: #d8d5ca; font-size: 14px; }
+    .sequence .danger-copy { fill: #ff8178; font-size: 15px; font-weight: 900; }
+    .sequence .safe { fill: #58cf9c; font-size: 13px; font-weight: 800; }
+    .p0-copy { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.2rem; }
+    .p0-copy article { padding: 1.2rem; border: 1px solid rgba(255,255,255,.17); border-radius: 12px; background: rgba(255,255,255,.05); }
+    .p0-copy h3 { margin: 0 0 .45rem; color: var(--yellow); }
+    .p0-copy p { margin: 0; color: #c9c6bc; }
+
+    .numbers { display: grid; grid-template-columns: 1.1fr 1fr; gap: 1rem; }
+    .numbers__hero { min-height: 360px; padding: 2rem; color: white; border-radius: var(--radius); background: var(--blue); box-shadow: var(--shadow); }
+    .numbers__hero .huge { margin-top: .5rem; font-size: clamp(6rem, 14vw, 11rem); font-weight: 1000; line-height: .82; letter-spacing: -.11em; }
+    .numbers__hero h3 { margin: 1.2rem 0 .3rem; font-size: 1.7rem; }
+    .numbers__hero p { max-width: 550px; margin: 0; color: #dbe3ff; }
+    .numbers__grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+    .number-tile { display: flex; flex-direction: column; justify-content: space-between; min-height: 174px; padding: 1.2rem; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .number-tile b { font-size: 3rem; line-height: 1; letter-spacing: -.08em; }
+    .number-tile span { color: var(--muted); font-size: .82rem; font-weight: 800; }
+    .number-tile.danger { color: white; border-color: var(--red); background: var(--red); }
+    .number-tile.danger span { color: #ffd5d2; }
+
+    .design-debt { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; }
+    .debt-card { padding: 1.35rem; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.55); }
+    .debt-card .icon { font-size: 2rem; }
+    .debt-card h3 { margin: .45rem 0; }
+    .debt-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .versus { display: grid; grid-template-columns: 1fr 70px 1fr; align-items: stretch; }
+    .versus-card { padding: clamp(1.3rem, 3vw, 2.3rem); border-radius: var(--radius); }
+    .versus-card.bad { color: #25221d; background: #f0c757; }
+    .versus-card.good { color: white; background: var(--green); }
+    .versus-card .mini-tag { font-size: .72rem; font-weight: 1000; letter-spacing: .08em; }
+    .versus-card h3 { margin: .4rem 0 1rem; font-size: 1.75rem; }
+    .versus-card ul { margin: 0; padding-left: 1.2rem; }
+    .versus-card li { margin: .65rem 0; }
+    .vs { display: grid; place-items: center; font-size: 1.15rem; font-weight: 1000; }
+    .truth { margin-top: 1rem; padding: 1rem 1.2rem; color: #ffd0cc; border: 1px solid #613934; border-radius: 12px; background: #2b1512; }
+
+    .good-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .good-card { position: relative; overflow: hidden; min-height: 210px; padding: 1.35rem; border: 1px solid var(--line); border-radius: 14px; background: var(--card); }
+    .good-card::after { content: attr(data-num); position: absolute; right: -.15rem; bottom: -1.2rem; color: rgba(33,140,98,.10); font-size: 7rem; font-weight: 1000; line-height: 1; }
+    .good-card h3 { margin: .6rem 0; }
+    .good-card p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .check { display: inline-grid; place-items: center; width: 2rem; height: 2rem; color: white; border-radius: 50%; background: var(--green); font-weight: 1000; }
+
+    .before-after { display: grid; grid-template-columns: .82fr 1.18fr; gap: 1rem; }
+    .mock-label { margin-bottom: .5rem; font-size: .75rem; font-weight: 1000; letter-spacing: .08em; }
+    .mock-label.bad { color: #ff8c84; }
+    .mock-label.good { color: #8de0bb; }
+    .mock-window { overflow: hidden; min-height: 470px; border: 1px solid #464740; border-radius: 14px; background: #1d1f29; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+    .mock-title { display: flex; justify-content: space-between; padding: .75rem 1rem; color: white; border-bottom: 1px solid #353743; font-size: .84rem; font-weight: 850; }
+    .mock-body { display: grid; grid-template-columns: 34% 66%; min-height: 365px; }
+    .mock-body--new { grid-template-columns: 26% 48% 26%; }
+    .mock-pane { padding: .8rem; border-right: 1px solid #353743; }
+    .mock-pane:last-child { border: 0; }
+    .fake-field, .fake-row, .fake-empty, .fake-issue { border-radius: 6px; }
+    .fake-field { height: 28px; margin-bottom: .55rem; background: #0d0f15; border: 1px solid #323541; }
+    .fake-row { display: flex; align-items: center; gap: .5rem; min-height: 36px; margin-bottom: .4rem; padding: .45rem .55rem; color: #d6d9e8; background: #252837; font-size: .68rem; }
+    .fake-row b { color: #8090ff; }
+    .fake-empty { display: grid; place-items: center; height: 265px; color: #5d6172; background: #0c0e14; font-size: .76rem; }
+    .fake-issue { margin-bottom: .5rem; padding: .6rem; color: #ffc7c3; border: 1px solid #643630; background: #39201e; font-size: .65rem; }
+    .fake-ok { color: #a8e6cb; border-color: #315c49; background: #1d392d; }
+    .mock-footer { display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 62px; padding: .8rem 1rem; border-top: 1px solid #353743; }
+    .mock-state { color: #8b8f9e; font-size: .63rem; }
+    .mock-state strong { color: #ffc75c; }
+    .mock-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: .35rem; }
+    .fake-btn { padding: .38rem .65rem; color: #d9dce7; border: 1px solid #414454; border-radius: 5px; background: #252834; font-size: .65rem; font-weight: 800; }
+    .fake-btn.primary { color: white; border-color: #7581ee; background: #4f5dcc; }
+    .fake-btn.test { color: #15251e; border-color: #6fd0a2; background: #6fd0a2; }
+    .fix-notes { display: grid; grid-template-columns: repeat(4, 1fr); gap: .7rem; margin-top: 1rem; }
+    .fix-note { padding: .9rem; color: #c9c6bc; border: 1px solid #3d3e38; border-radius: 10px; background: #20201c; font-size: .78rem; }
+    .fix-note b { display: block; margin-bottom: .25rem; color: var(--yellow); }
+
+    .roadmap { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .priority { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--card); }
+    .priority__head { padding: 1.1rem 1.2rem; color: white; background: var(--red); }
+    .priority:nth-child(2) .priority__head { background: var(--orange); }
+    .priority:nth-child(3) .priority__head { background: var(--blue); }
+    .priority__head span { font-size: .72rem; font-weight: 1000; letter-spacing: .08em; }
+    .priority__head h3 { margin: .2rem 0 0; font-size: 1.4rem; }
+    .priority ol { margin: 0; padding: 1.2rem 1.2rem 1.3rem 2.5rem; }
+    .priority li { margin: 0 0 .8rem; padding-left: .25rem; }
+    .priority li:last-child { margin-bottom: 0; }
+    .priority small { display: block; color: var(--muted); }
+
+    .evidence-table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; background: var(--card); font-size: .83rem; }
+    .evidence-table th, .evidence-table td { padding: .82rem .9rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .evidence-table th { color: white; background: var(--ink); }
+    .evidence-table tr:last-child td { border-bottom: 0; }
+    .evidence-table td:first-child { width: 27%; font-weight: 850; }
+    .evidence-table td:last-child { color: var(--muted); }
+    .method-box { margin-top: 1.2rem; padding: 1.2rem; border: 1px dashed #918c7d; border-radius: 12px; color: #55534d; background: rgba(255,255,255,.46); }
+    .method-box h3 { margin: 0 0 .5rem; color: var(--ink); }
+    .method-box p { margin: .35rem 0; }
+
+    .final {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 2rem;
+      align-items: end;
+      padding: clamp(3rem, 7vw, 6rem) max(1.1rem, calc((100% - 1220px) / 2));
+      color: white;
+      background: var(--ink);
+    }
+    .final h2 { max-width: 850px; margin: 0; }
+    .final p { max-width: 700px; color: #bdbab0; }
+    .final__stamp { display: grid; place-items: center; width: 180px; aspect-ratio: 1; color: #ff776d; border: 7px double #ff776d; border-radius: 50%; font-size: 1.2rem; font-weight: 1000; text-align: center; transform: rotate(-8deg); }
+    footer { padding: 1.2rem; color: #77746a; background: #0e0e0d; text-align: center; font-size: .72rem; }
+
+    dialog {
+      width: min(96vw, 1450px);
+      max-height: 94vh;
+      padding: 0;
+      border: 1px solid #4b4b46;
+      border-radius: 12px;
+      background: #111;
+      box-shadow: 0 24px 100px rgba(0,0,0,.65);
+    }
+    dialog::backdrop { background: rgba(8,8,8,.84); backdrop-filter: blur(6px); }
+    .lightbox__bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .65rem .8rem; color: white; background: #191917; }
+    .lightbox__bar span { font-size: .8rem; font-weight: 800; }
+    .lightbox__bar button { width: 34px; height: 34px; color: white; border: 1px solid #555; border-radius: 6px; background: #292926; cursor: pointer; }
+    #lightbox img { max-height: calc(94vh - 56px); margin: auto; object-fit: contain; }
+
+    @media (max-width: 920px) {
+      .rail nav { display: none; }
+      .verdict, .numbers, .before-after { grid-template-columns: 1fr; }
+      .score-grid { grid-template-columns: repeat(2, 1fr); }
+      .score-card:last-child { grid-column: 1 / -1; }
+      .legend-grid { grid-template-columns: repeat(2, 1fr); }
+      .fault-grid, .gallery, .p0-copy, .design-debt, .good-grid, .roadmap { grid-template-columns: 1fr; }
+      .shot--wide { grid-column: auto; }
+      .versus { grid-template-columns: 1fr; gap: .7rem; }
+      .vs { min-height: 36px; }
+      .journey-summary { grid-template-columns: 1fr; }
+      .fix-notes { grid-template-columns: repeat(2, 1fr); }
+      .final { grid-template-columns: 1fr; }
+      .final__stamp { width: 130px; }
+    }
+    @media (max-width: 620px) {
+      body { word-break: normal; }
+      .section-head { grid-template-columns: 1fr; gap: .3rem; }
+      .hero { padding-top: 4rem; }
+      .verdict__score { grid-template-columns: 1fr; }
+      .big-score { border-right: 0; border-bottom: 1px solid rgba(255,255,255,.12); }
+      .score-grid, .legend-grid, .numbers__grid, .fix-notes { grid-template-columns: 1fr; }
+      .score-card:last-child { grid-column: auto; }
+      .mock-body, .mock-body--new { grid-template-columns: 1fr; }
+      .mock-pane { min-height: 150px; border-right: 0; border-bottom: 1px solid #353743; }
+      .mock-empty { height: 140px; }
+      .evidence-table { font-size: .74rem; }
+      .evidence-table th:nth-child(2), .evidence-table td:nth-child(2) { display: none; }
+    }
+    @media print {
+      .rail { display: none; }
+      body { background: white; }
+      .hero, .section--dark, .section--red, .final { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+      .section { break-inside: avoid; }
+      .shot, .annotated, .priority { break-inside: avoid; box-shadow: none; }
+      .shot button { cursor: default; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">본문으로 건너뛰기</a>
+  <div class="rail">
+    <div class="rail__brand">RPG ZZU / <b>EVENT EDITOR</b></div>
+    <nav aria-label="보고서 목차">
+      <a href="#verdict">총평</a>
+      <a href="#screens">화면</a>
+      <a href="#journey">제작 흐름</a>
+      <a href="#save">P0 저장 문제</a>
+      <a href="#gameplay">게임 제작성</a>
+      <a href="#preview">미리보기</a>
+      <a href="#redesign">개선안</a>
+      <a href="#evidence">근거</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <div class="hero__inner">
+      <p class="eyebrow">Critical product review · 2026.07.30</p>
+      <h1>기능은 백화점.<br /><em>제작자는 길을 잃는다.</em></h1>
+      <p class="hero__lead">
+        RPG ZZU의 이벤트 에디터는 <strong>무려 123개 명령을 꺼낼 수 있는 강력한 도구</strong>다.
+        그런데 저장 상태는 모호하고, 검증은 약하고, 실제 테스트는 화면 밖에 숨어 있다.
+        결과적으로 “만들 수 있는 것”은 많지만 “안전하게 완성할 수 있는 것”은 적다.
+      </p>
+      <div class="verdict" id="verdict">
+        <div class="verdict__main">
+          <div class="label">냉정한 판정</div>
+          <p>좋은 이벤트 <u>언어</u>는 갖췄다. 하지만 좋은 이벤트 <u>제작 경험</u>은 아직 아니다.</p>
+        </div>
+        <div class="verdict__score" aria-label="총점 및 출시 판정">
+          <div class="big-score"><b>4.8</b><span>종합 UX / 10</span></div>
+          <div class="ship"><b>NO SHIP</b><span>P0 수정 전 팀 제작 비추천</span></div>
+        </div>
+      </div>
+      <div class="hero__meta">
+        <span>현행 소스 정적 추적</span>
+        <span>제품 내 도움말 이미지 5장 분석</span>
+        <span>게임 제작자 관점</span>
+        <span>UI·UX / 오류 예방 / 반복 속도</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="section" aria-labelledby="summary-title">
+      <div class="section-head">
+        <div class="section-no">01 / VERDICT</div>
+        <div>
+          <h2 id="summary-title">문제는 “못 만든다”가 아니라<br />“틀리게 만들어도 모른다”다.</h2>
+          <p class="section-intro">이 에디터의 가장 큰 위험은 기능 부족이 아니다. 복잡한 이벤트를 만든 뒤, 그것이 저장됐는지·안전한지·실제로 같은 방식으로 도는지를 한 화면에서 확신할 수 없다는 점이다.</p>
+        </div>
+      </div>
+
+      <div class="brutal">
+        <p>툴박스는 프로급인데, 계기판과 브레이크는 프로토타입 수준이다.</p>
+      </div>
+
+      <div class="score-grid" aria-label="영역별 평가">
+        <article class="score-card" style="--score:80%;--tone:var(--green)">
+          <div class="score-card__top"><h3>표현력</h3><b>8/10</b></div>
+          <div class="bar"><i></i></div><small>조건·분기·연출·전투·현대 명령까지 폭이 넓다.</small>
+        </article>
+        <article class="score-card" style="--score:60%;--tone:var(--blue)">
+          <div class="score-card__top"><h3>기본 구조</h3><b>6/10</b></div>
+          <div class="bar"><i></i></div><small>설정/실행 2열, 페이지 탭, 복구 장치는 괜찮다.</small>
+        </article>
+        <article class="score-card" style="--score:50%;--tone:var(--orange)">
+          <div class="score-card__top"><h3>발견성</h3><b>5/10</b></div>
+          <div class="bar"><i></i></div><small>검색은 좋지만 숫자 탭과 외부 테스트가 발목을 잡는다.</small>
+        </article>
+        <article class="score-card" style="--score:30%;--tone:var(--red)">
+          <div class="score-card__top"><h3>테스트 루프</h3><b>3/10</b></div>
+          <div class="bar"><i></i></div><small>모달 안에서 실제 실행까지 이어지지 않는다.</small>
+        </article>
+        <article class="score-card" style="--score:20%;--tone:var(--red)">
+          <div class="score-card__top"><h3>오류 예방</h3><b>2/10</b></div>
+          <div class="bar"><i></i></div><small>복잡도에 비해 저장 전 통합 검증이 사실상 비어 있다.</small>
+        </article>
+      </div>
+
+      <div class="fault-grid">
+        <article class="fault">
+          <span class="fault__tag">P0 · DATA SEMANTICS</span>
+          <h3>취소할 작업이 이미 정본처럼 흐를 수 있다</h3>
+          <p>작업 중 본문은 live project에 있고 autosave 투영에도 들어간다. draft 표지만 떼면, 다른 세션은 중간 결과를 완성본으로 볼 수 있다.</p>
+        </article>
+        <article class="fault">
+          <span class="fault__tag">P0 · ERROR PREVENTION</span>
+          <h3>123개 명령에 비해 저장 게이트가 없다</h3>
+          <p>잘못된 참조, 끊긴 goto, 무한 자동 실행, 보이지 않는 충돌 이벤트를 “확인” 버튼이 막아 주지 않는다.</p>
+        </article>
+        <article class="fault">
+          <span class="fault__tag">P1 · FEEDBACK LOOP</span>
+          <h3>테스트 버튼이 작업 화면 밖에 있다</h3>
+          <p>모달의 하단은 삭제·취소·적용·확인·도움말뿐이다. 실제 이벤트 테스트는 외부 툴바에서 다시 찾아야 한다.</p>
+        </article>
+        <article class="fault">
+          <span class="fault__tag">P1 · FALSE CONFIDENCE</span>
+          <h3>“미리보기”라는 이름이 너무 자신만만하다</h3>
+          <p>선택지는 전부 펼치고, loop는 한 번만 돌며, goto는 점프하지 않는다. 실행기가 아니라 설명용 시뮬레이터에 가깝다.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="screens" aria-labelledby="screen-title">
+      <div class="section-head">
+        <div class="section-no">02 / SCREEN</div>
+        <div>
+          <h2 id="screen-title">첫 화면부터 “무엇을 해야 하지?”가 남는다.</h2>
+          <p class="section-intro">기본 2열 구조는 합리적이다. 문제는 우선순위다. 가장 큰 면적은 비어 있고, 가장 중요한 검증·테스트·저장 상태는 가장 약하게 보인다.</p>
+        </div>
+      </div>
+
+      <div class="evidence-note">
+        <b>이미지 성격</b>
+        <span>아래 화면은 저장소의 제품 내 도움말 자산이다. 실제 UI 구조를 설명하는 근거로 사용했지만, 2026-07-30 현재 빌드를 새로 캡처한 픽셀 QA 자료로 과장하지 않는다.</span>
+      </div>
+
+      <figure style="margin:1.4rem 0 0">
+        <div class="annotated">
+          <img src="../public/assets/help/event-editor/pages.png" alt="RPG ZZU 이벤트 에디터 기본 화면. 왼쪽에는 페이지와 이벤트 속성, 오른쪽에는 큰 실행 내용 영역, 아래에는 저장 관련 버튼이 있다." data-lightbox-title="기본 이벤트 에디터 화면" />
+          <span class="pin" style="--x:5%;--y:10%">1</span>
+          <span class="pin" style="--x:28%;--y:20%">2</span>
+          <span class="pin pin--red" style="--x:69%;--y:49%">3</span>
+          <span class="pin pin--blue" style="--x:52%;--y:88%">4</span>
+          <span class="pin pin--red" style="--x:86%;--y:96%">5</span>
+        </div>
+        <figcaption class="legend-grid">
+          <div class="legend-item"><b><span class="legend-num">1</span>맥락 표시는 좋다</b>ID·좌표·페이지를 제목에서 바로 본다.</div>
+          <div class="legend-item"><b><span class="legend-num">2</span>설정은 접힌다</b>조건/이동의 점진 공개는 좋은 선택이다.</div>
+          <div class="legend-item bad"><b><span class="legend-num">3</span>가장 큰 면적이 빈다</b>다음 행동 안내도, 오류 요약도 없다.</div>
+          <div class="legend-item"><b><span class="legend-num">4</span>보조 도구는 아래</b>AI·미리보기·플로우가 핵심 흐름과 분리된다.</div>
+          <div class="legend-item bad"><b><span class="legend-num">5</span>실제 테스트가 없다</b>저장 버튼은 3개인데 실행 버튼은 0개다.</div>
+        </figcaption>
+      </figure>
+
+      <div class="gallery">
+        <figure class="shot">
+          <button type="button" data-lightbox-src="../public/assets/help/event-editor/conditions.png" data-lightbox-label="조건 패널을 펼친 이벤트 에디터">
+            <img src="../public/assets/help/event-editor/conditions.png" loading="lazy" alt="스위치, 변수, 아이템, 주인공, 타이머, 시간대, 계절, 활동, 호감도, 셀프 스위치가 한 패널에 밀집된 조건 화면" />
+          </button>
+          <figcaption class="shot__copy">
+            <span class="badge">화면 증거 01</span>
+            <h3>조건 15종: 강력하지만 “벽”처럼 보인다</h3>
+            <p>표현력은 훌륭하다. 그러나 펼치는 순간 폼이 화면을 압도한다. <strong>조건을 고르는 경험보다 데이터베이스를 작성하는 경험</strong>에 가깝다.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <button type="button" data-lightbox-src="../public/assets/help/event-editor/commands.png" data-lightbox-label="이벤트 명령 선택기">
+            <img src="../public/assets/help/event-editor/commands.png" loading="lazy" alt="숫자 1부터 4까지의 탭과 명령 검색, 여러 명령 그룹이 보이는 이벤트 명령 선택기" />
+          </button>
+          <figcaption class="shot__copy">
+            <span class="badge">화면 증거 02</span>
+            <h3>검색은 좋다. 숫자 탭은 나쁘다.</h3>
+            <p>123개를 검색하는 기능은 필수이고 잘했다. 반면 <strong>1·2·3·4는 분류 의미를 기억시키지 못한다.</strong> 툴팁을 보기 전까지 탐색 지도는 없다.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <button type="button" data-lightbox-src="../public/assets/help/event-editor/graphics.png" data-lightbox-label="이벤트 그래픽 선택기">
+            <img src="../public/assets/help/event-editor/graphics.png" loading="lazy" alt="캐릭터셋 목록, 스프라이트 시트, 방향과 패턴 선택을 보여 주는 그래픽 선택기" />
+          </button>
+          <figcaption class="shot__copy">
+            <span class="badge">화면 증거 03</span>
+            <h3>그래픽 선택은 눈으로 확인할 수 있다</h3>
+            <p>목록·시트·방향·프레임을 한곳에 둔 점은 명확하다. 다만 별도 모달이므로, 한 줄 대사 이벤트도 왕복 단계가 늘어난다.</p>
+          </figcaption>
+        </figure>
+
+        <figure class="shot">
+          <button type="button" data-lightbox-src="../public/assets/help/event-editor/move-route.png" data-lightbox-label="이동과 기타 설정을 펼친 이벤트 에디터">
+            <img src="../public/assets/help/event-editor/move-route.png" loading="lazy" alt="이동 유형, 빈도, 애니메이션 유형, 이동 속도 설정이 펼쳐진 이벤트 에디터" />
+          </button>
+          <figcaption class="shot__copy">
+            <span class="badge">화면 증거 04</span>
+            <h3>접기는 맞다. 요약의 역할이 더 커야 한다.</h3>
+            <p>이동 설정을 접은 것은 좋은 밀도 조절이다. 하지만 제작자는 접힌 상태에서도 <strong>이 NPC가 실제로 어떻게 움직이는지</strong> 더 즉각적으로 읽어야 한다.</p>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section section--full" id="journey" aria-labelledby="journey-title">
+      <div class="section-head">
+        <div class="section-no">03 / JOURNEY</div>
+        <div>
+          <h2 id="journey-title">한 줄 대사도 제작 → 확인 → 테스트가 한 호흡이 아니다.</h2>
+          <p class="section-intro">초보자가 “NPC에게 말을 걸면 한 문장 말하기”를 만든다고 하자. 가장 단순한 이벤트도 최소 약 6번의 클릭과 입력, 그리고 테스트를 위한 화면 이탈이 필요하다.</p>
+        </div>
+      </div>
+
+      <div class="journey-shell">
+        <div class="journey" aria-label="초보 이벤트 제작 여정">
+          <article class="step ok"><span class="step__n">STEP 01</span><h3>빈 타일 선택</h3><p>새 이벤트가 live map에 바로 들어간다.</p><span class="pain">진입은 빠름</span></article>
+          <article class="step"><span class="step__n">STEP 02</span><h3>이름 입력</h3><p>페이지/이벤트 이름의 관계를 처음부터 이해해야 한다.</p><span class="pain">개념 학습</span></article>
+          <article class="step"><span class="step__n">STEP 03</span><h3>그래픽 모달</h3><p>목록 → 시트 → 방향 → 프레임 → 확인.</p><span class="pain">모달 왕복</span></article>
+          <article class="step"><span class="step__n">STEP 04</span><h3>명령 추가</h3><p>+ 버튼 또는 숨은 더블클릭/Enter affordance.</p><span class="pain">발견성</span></article>
+          <article class="step"><span class="step__n">STEP 05</span><h3>명령 찾기</h3><p>4개 숫자 탭/10개 그룹/검색 안에서 문장 표시를 찾는다.</p><span class="pain">분류 학습</span></article>
+          <article class="step"><span class="step__n">STEP 06</span><h3>문장 편집</h3><p>별도 명령 dialog에서 입력 후 확인한다.</p><span class="pain">또 모달</span></article>
+          <article class="step"><span class="step__n">STEP 07</span><h3>적용/확인</h3><p>자동 저장·적용·확인의 차이가 데이터 의미와 일치하지 않는다.</p><span class="pain">상태 모호</span></article>
+          <article class="step"><span class="step__n">STEP 08</span><h3>외부에서 테스트</h3><p>모달을 나가 이벤트를 선택하고 툴바의 테스트를 다시 찾는다.</p><span class="pain">루프 단절</span></article>
+        </div>
+        <div class="journey-summary">
+          <div><b>약 6+</b><span>단순 한 줄 대사의 최소 클릭 제스처 + 타이핑</span></div>
+          <div><b>3단계</b><span>명령 1개당 추가 열기 → 선택 → 편집 확인</span></div>
+          <div><b>1회 이탈</b><span>실제 테스트를 위해 이벤트 에디터 밖으로 이동</span></div>
+        </div>
+      </div>
+
+      <div class="brutal" style="margin-top:2.4rem">
+        <p>이벤트 에디터가 작업의 중심이어야 하는데, 지금은 작업을 “준비하는 창”에 가깝다.</p>
+      </div>
+    </section>
+
+    <section class="section section--red" id="save" aria-labelledby="save-title">
+      <div class="section-head">
+        <div class="section-no">04 / P0 DEFECT</div>
+        <div>
+          <h2 id="save-title">“취소 가능”과 “원격 저장됨”이 동시에 참일 수 있다.</h2>
+          <p class="section-intro">이건 문구 하나 고칠 문제가 아니다. 편집 트랜잭션의 경계가 무너진 구조적 결함이다.</p>
+        </div>
+      </div>
+
+      <div class="p0-banner"><strong>P0</strong><span>팀 제작·멀티 세션·원격 저장을 생각하면 가장 먼저 고쳐야 한다.</span></div>
+
+      <div class="sequence" role="img" aria-label="작업 중 이벤트 본문이 live project와 autosave를 거쳐 LegacyDb로 갈 수 있는 흐름을 보여 주는 시퀀스 다이어그램">
+        <svg viewBox="0 0 1180 560" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ffd65a" /></marker>
+            <marker id="dangerArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ff5f54" /></marker>
+          </defs>
+          <g>
+            <rect class="lane" x="20" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="100" y="57" text-anchor="middle">제작자 UI</text>
+            <rect class="lane" x="215" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="295" y="57" text-anchor="middle">Live Project</text>
+            <rect class="lane" x="410" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="490" y="57" text-anchor="middle">복구 Vault</text>
+            <rect class="lane" x="605" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="685" y="57" text-anchor="middle">Autosave 투영</text>
+            <rect class="lane" x="800" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="880" y="57" text-anchor="middle">LegacyDb</text>
+            <rect class="lane" x="995" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="1075" y="57" text-anchor="middle">다른 세션</text>
+            <line class="line" x1="100" y1="88" x2="100" y2="520"/><line class="line" x1="295" y1="88" x2="295" y2="520"/><line class="line" x1="490" y1="88" x2="490" y2="520"/><line class="line" x1="685" y1="88" x2="685" y2="520"/><line class="line" x1="880" y1="88" x2="880" y2="520"/><line class="line" x1="1075" y1="88" x2="1075" y2="520"/>
+          </g>
+          <line class="arrow" x1="100" y1="135" x2="286" y2="135"/><text class="copy" x="192" y="123" text-anchor="middle">타이핑 즉시 본문 변경</text>
+          <line class="arrow" x1="295" y1="190" x2="481" y2="190"/><text class="copy" x="388" y="178" text-anchor="middle">원본 snapshot / checkpoint</text><text class="safe" x="490" y="214" text-anchor="middle">같은 세션 복구는 강함</text>
+          <line class="danger-arrow" x1="304" y1="275" x2="676" y2="275"/><text class="danger-copy" x="490" y="256" text-anchor="middle">확인 전 working body도 투영 가능</text>
+          <line class="danger-arrow" x1="694" y1="330" x2="871" y2="330"/><text class="danger-copy" x="782" y="312" text-anchor="middle">draft 표지만 제거</text>
+          <line class="danger-arrow" x1="889" y1="385" x2="1066" y2="385"/><text class="danger-copy" x="977" y="367" text-anchor="middle">완성본처럼 reload</text>
+          <rect x="805" y="423" width="350" height="88" rx="12" fill="#4a1713" stroke="#ff5f54" stroke-width="2"/>
+          <text class="danger-copy" x="980" y="454" text-anchor="middle">사용자 인식: “아직 편집 중 / 취소 가능”</text>
+          <text class="danger-copy" x="980" y="482" text-anchor="middle">데이터 인식: “이미 저장된 이벤트 본문”</text>
+        </svg>
+      </div>
+
+      <div class="p0-copy">
+        <article><h3>왜 위험한가?</h3><p>같은 창에서는 취소가 원본을 복원하므로 멀쩡해 보인다. 그러나 reload·다른 클라이언트·충돌 상황에서는 draft metadata 없이 중간 본문만 정본처럼 남을 수 있다.</p></article>
+        <article><h3>어떻게 고쳐야 하나?</h3><p>마지막 Apply/OK snapshot만 canonical project에 둔다. working body는 local draft store 또는 명시적인 remote draft namespace로 분리하고, UI에 작업 중·적용됨·원격 저장됨을 따로 표시한다.</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="gameplay" aria-labelledby="game-title">
+      <div class="section-head">
+        <div class="section-no">05 / GAME DESIGN</div>
+        <div>
+          <h2 id="game-title">게임을 만들 언어는 풍부하다.<br />게임을 다듬을 도구는 빈약하다.</h2>
+          <p class="section-intro">이벤트 에디터는 명령 개수로 보면 강력하다. 하지만 재미는 명령 개수에서 나오지 않는다. 반복 속도, 상태 파악, 실패 원인 추적, 재사용에서 나온다.</p>
+        </div>
+      </div>
+
+      <div class="numbers">
+        <article class="numbers__hero">
+          <div class="huge">123</div>
+          <h3>맵 이벤트 피커 노출 명령</h3>
+          <p>대화·분기·이동·상점·전투·사운드·조명·날씨·제작·도구·상자 등 폭은 좋다. 122개는 metadata 기준 runtime-full이며 1개는 editor-only 주석이다.</p>
+        </article>
+        <div class="numbers__grid">
+          <div class="number-tile"><b>15</b><span>페이지 조건 종류</span></div>
+          <div class="number-tile"><b>10</b><span>피커 명령 그룹</span></div>
+          <div class="number-tile"><b>32</b><span>빠른 명령 버튼</span></div>
+          <div class="number-tile danger"><b>0</b><span>저장 시 통합 검증 게이트</span></div>
+        </div>
+      </div>
+
+      <div class="design-debt">
+        <article class="debt-card"><div class="icon">🧩</div><h3>명령 중심, 의도 중심이 아니다</h3><p>제작자는 “보물상자”, “문 이동”, “보스전”을 만들고 싶다. UI는 “스위치 조작”, “조건 분기”, “이벤트 삭제”를 조립하라고 한다. 자주 쓰는 게임 패턴을 매번 저수준 명령으로 재건한다.</p></article>
+        <article class="debt-card"><div class="icon">🕳️</div><h3>위험한 기본 조합</h3><p>그래픽 없음 + 캐릭터와 같은 우선순위 + 겹침 금지는 ‘보이지 않는 벽’을 만들기 쉽다. 이것이 의도한 투명 트리거인지 실수인지 UI는 구분하지 않는다.</p></article>
+        <article class="debt-card"><div class="icon">🔁</div><h3>자동 이벤트 안전 검사가 얕다</h3><p>auto/parallel 경고가 switch/variable 중심의 top-level 조건만 본다. self-switch·timer·all/any/not 등 나머지 조건과 실제 종료 가능성은 충분히 판단하지 못한다.</p></article>
+        <article class="debt-card"><div class="icon">🧭</div><h3>상태 그래프가 없다</h3><p>페이지가 언제 켜지고 꺼지는지, 어떤 스위치가 어디서 바뀌는지 한눈에 볼 수 없다. 복잡해질수록 제작자는 머릿속에 상태 머신을 들고 있어야 한다.</p></article>
+        <article class="debt-card"><div class="icon">📦</div><h3>재사용 단위가 약하다</h3><p>페이지 복사는 있지만 대화 NPC·보물상자·컷신·상점 같은 검증된 템플릿과 최근 사용/즐겨찾기 흐름이 부족하다. 반복 제작 비용이 누적된다.</p></article>
+        <article class="debt-card"><div class="icon">🎮</div><h3>재미 검증이 너무 멀다</h3><p>이벤트를 만들고 곧바로 플레이해 리듬·대사 길이·연출 타이밍을 확인해야 한다. 현재는 모달을 벗어나 외부 테스트를 찾아야 하므로 미세 조정 횟수가 줄어든다.</p></article>
+      </div>
+    </section>
+
+    <section class="section section--dark" id="preview" aria-labelledby="preview-title">
+      <div class="section-head">
+        <div class="section-no">06 / PREVIEW ≠ PLAY</div>
+        <div>
+          <h2 id="preview-title">미리보기는 “실행”처럼 생겼지만<br />실행기가 아니다.</h2>
+          <p class="section-intro">이름과 컨트롤은 신뢰를 만든다. 그런데 실제 동작이 그 신뢰를 받쳐 주지 못하면, 없는 기능보다 더 위험한 오해를 만든다.</p>
+        </div>
+      </div>
+
+      <div class="versus">
+        <article class="versus-card bad">
+          <span class="mini-tag">현재 보조 미리보기</span>
+          <h3>스크립트 둘러보기</h3>
+          <ul>
+            <li>선택지의 모든 branch를 복제 상태로 펼침</li>
+            <li>loop는 한 번만 순회</li>
+            <li>label/goto는 기록하지만 실제 점프 없음</li>
+            <li>대부분 명령은 상태 변화 없는 기본 처리</li>
+            <li>이전/다음/자동 재생 UI가 실행기처럼 보임</li>
+          </ul>
+        </article>
+        <div class="vs">VS</div>
+        <article class="versus-card good">
+          <span class="mini-tag">실제 선택 이벤트 테스트</span>
+          <h3>PlayScene.runEvent</h3>
+          <ul>
+            <li>새 PlaySession 생성</li>
+            <li>player/createPlayGame registry 전달</li>
+            <li>대화 준비 후 실제 runEvent(eventId) 호출</li>
+            <li>실제 scene/interpreter 경로 사용</li>
+            <li>하지만 이 버튼은 모달 밖 툴바에 있음</li>
+          </ul>
+        </article>
+      </div>
+      <div class="truth"><strong>정직한 해결:</strong> 지금 기능은 “스크립트 둘러보기”로 이름을 바꾸고 한계를 적어라. 또는 실제 interpreter를 격리 세션에서 돌리는 sandbox preview로 교체하라.</div>
+    </section>
+
+    <section class="section" aria-labelledby="good-title">
+      <div class="section-head">
+        <div class="section-no">07 / WHAT WORKS</div>
+        <div>
+          <h2 id="good-title">다 나쁜 건 아니다.<br />살릴 뼈대는 분명하다.</h2>
+          <p class="section-intro">좋은 결정을 정확히 보존해야 개선이 리라이트가 아니라 진화가 된다.</p>
+        </div>
+      </div>
+      <div class="good-grid">
+        <article class="good-card" data-num="1"><span class="check">✓</span><h3>설정 / 실행의 2열 분리</h3><p>이벤트의 “언제·어떻게 보이는가”와 “무엇을 하는가”를 공간적으로 나눈 기본 IA는 맞다.</p></article>
+        <article class="good-card" data-num="2"><span class="check">✓</span><h3>검색 가능한 대규모 피커</h3><p>100개가 넘는 명령을 검색하고 그룹으로 볼 수 있다. list/grid 기억과 runtime badge도 실용적이다.</p></article>
+        <article class="good-card" data-num="3"><span class="check">✓</span><h3>조건·이동의 점진 공개</h3><p>기본 접힘과 요약 badge/chip은 복잡도를 늦게 노출한다. 방향은 옳고 요약 품질을 더 높이면 된다.</p></article>
+        <article class="good-card" data-num="4"><span class="check">✓</span><h3>취소 복원과 crash vault</h3><p>같은 세션의 원본 복원, 즉시 checkpoint, 사라진 이벤트 복구는 방어적으로 잘 구현되어 있다.</p></article>
+        <article class="good-card" data-num="5"><span class="check">✓</span><h3>명령 편집 도구</h3><p>undo/redo·이동·복사·잘라내기·명시적 추가 버튼이 있어 더블클릭 하나에만 의존하지 않는다.</p></article>
+        <article class="good-card" data-num="6"><span class="check">✓</span><h3>실제 런타임 테스트 경로</h3><p>선택 이벤트 테스트는 mock이 아니라 최종적으로 실제 PlayScene.runEvent로 이어진다. 위치만 제대로 옮기면 강한 기반이다.</p></article>
+      </div>
+    </section>
+
+    <section class="section section--dark" id="redesign" aria-labelledby="redesign-title">
+      <div class="section-head">
+        <div class="section-no">08 / REDESIGN</div>
+        <div>
+          <h2 id="redesign-title">새 기능을 더 넣기 전에<br />작업 루프를 닫아라.</h2>
+          <p class="section-intro">핵심은 화려한 재디자인이 아니다. 편집 → 검증 → 실제 실행 → 수정 → 원격 저장을 한 창에서 이해할 수 있게 만드는 것이다.</p>
+        </div>
+      </div>
+
+      <div class="before-after">
+        <div>
+          <div class="mock-label bad">BEFORE · 현재 정보 구조 요약</div>
+          <div class="mock-window" aria-label="현재 이벤트 에디터를 단순화한 모형">
+            <div class="mock-title"><span>이벤트 편집</span><span>×</span></div>
+            <div class="mock-body">
+              <div class="mock-pane">
+                <div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div><div class="fake-field"></div>
+                <div class="fake-row">조건</div><div class="fake-row">그래픽</div><div class="fake-row">트리거</div><div class="fake-row">이동/기타</div>
+              </div>
+              <div class="mock-pane"><div class="fake-empty">◆<br />실행 내용이 없습니다</div><div class="fake-row" style="margin-top:.6rem">AI 명령　 미리보기　 플로우</div></div>
+            </div>
+            <div class="mock-footer"><span class="mock-state">편집 중 내용은 자동 저장됩니다</span><div class="mock-actions"><span class="fake-btn">취소</span><span class="fake-btn">적용</span><span class="fake-btn primary">확인</span></div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mock-label good">AFTER · 권장 구조</div>
+          <div class="mock-window" aria-label="검증과 테스트 패널을 포함한 개선 이벤트 에디터 모형">
+            <div class="mock-title"><span>EV0021 · 상자 이벤트 · 페이지 1</span><span>작업 중 ●</span></div>
+            <div class="mock-body mock-body--new">
+              <div class="mock-pane">
+                <div class="fake-row"><b>1</b> 상자 · 활성</div><div class="fake-row">언제 실행? <b>조건 1</b></div><div class="fake-row">어떻게 보임? <b>상자</b></div><div class="fake-row">어떻게 시작? <b>결정키</b></div><div class="fake-row">어떻게 움직임? <b>정지</b></div>
+              </div>
+              <div class="mock-pane">
+                <div class="fake-row"><b>01</b> 문장 표시 · “상자를 열었다.”</div><div class="fake-row"><b>02</b> 아이템 +1 · 회복약</div><div class="fake-row"><b>03</b> 셀프 스위치 A · ON</div><div class="fake-row" style="border:1px dashed #626778;background:transparent">＋ 명령 검색 또는 템플릿 삽입</div>
+              </div>
+              <div class="mock-pane">
+                <div class="fake-issue fake-ok">✓ 참조 정상<br />✓ 종료 가능<br />✓ 런타임 지원</div>
+                <div class="fake-issue">! 시작 타일이 통행 불가일 수 있음</div>
+                <div class="fake-row">상태 흐름 보기</div><div class="fake-row">변경 사항 3개</div>
+              </div>
+            </div>
+            <div class="mock-footer"><span class="mock-state"><strong>작업 중</strong> · 로컬 복구됨 · 원격 미반영</span><div class="mock-actions"><span class="fake-btn">취소</span><span class="fake-btn">검증</span><span class="fake-btn test">▶ 이 이벤트 테스트</span><span class="fake-btn primary">적용 및 저장</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fix-notes">
+        <div class="fix-note"><b>① 상태를 말로 보여 준다</b>작업 중 / 적용됨 / 원격 저장됨 / 충돌을 분리한다.</div>
+        <div class="fix-note"><b>② 테스트를 같은 창에 둔다</b>현재 draft snapshot으로 즉시 실제 interpreter를 연다.</div>
+        <div class="fix-note"><b>③ 오류를 옆에서 보여 준다</b>페이지·명령·필드로 바로 이동 가능한 검증 목록을 둔다.</div>
+        <div class="fix-note"><b>④ 제작 의도로 시작한다</b>대화 NPC·상자·문·상점·보스전 템플릿을 우선 제공한다.</div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="roadmap-title">
+      <div class="section-head">
+        <div class="section-no">09 / PRIORITY</div>
+        <div>
+          <h2 id="roadmap-title">고칠 순서가 중요하다.</h2>
+          <p class="section-intro">색·간격·아이콘부터 만지면 실패한다. 데이터 의미 → 검증 → 테스트 루프 → 반복 생산성 순서로 가야 한다.</p>
+        </div>
+      </div>
+      <div class="roadmap">
+        <article class="priority">
+          <div class="priority__head"><span>P0 · TRUST</span><h3>먼저 신뢰를 복구</h3></div>
+          <ol>
+            <li>working draft를 canonical project에서 분리<small>Apply/OK snapshot만 정본으로 저장</small></li>
+            <li>Apply/OK/Test 전 통합 validator<small>fatal 차단, warning 위치 링크</small></li>
+            <li>저장 상태를 5단계로 분리 표시<small>로컬 복구 / 작업 중 / 적용 / 원격 / 충돌</small></li>
+          </ol>
+        </article>
+        <article class="priority">
+          <div class="priority__head"><span>P1 · LOOP</span><h3>제작 루프를 닫기</h3></div>
+          <ol>
+            <li>footer에 “이 이벤트 테스트” 추가<small>중복 flush 제거, draft sandbox 실행</small></li>
+            <li>미리보기의 이름과 진실성 교정<small>둘러보기로 변경 또는 실제 sandbox화</small></li>
+            <li>passability-aware 테스트 spawn<small>시작 좌표와 방향을 미리 표시</small></li>
+            <li>숫자 탭을 상시 텍스트 탭으로<small>대화·조건 / 배우·전투 / 맵·연출 / 시스템</small></li>
+          </ol>
+        </article>
+        <article class="priority">
+          <div class="priority__head"><span>P2 · SPEED</span><h3>반복 비용을 줄이기</h3></div>
+          <ol>
+            <li>검증된 이벤트 템플릿<small>대화, 상자, 문, 상점, 보스전, 컷신</small></li>
+            <li>최근 사용·즐겨찾기·키보드 검색<small>명령당 3단계 비용 축소</small></li>
+            <li>focus/caret/open state 보존<small>전체 동적 재렌더의 입력 단절 방지</small></li>
+            <li>페이지별 문제 badge와 상태 그래프<small>복잡한 이벤트를 머리 대신 화면에 저장</small></li>
+          </ol>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="evidence" aria-labelledby="evidence-title">
+      <div class="section-head">
+        <div class="section-no">10 / EVIDENCE</div>
+        <div>
+          <h2 id="evidence-title">주장과 코드 근거.</h2>
+          <p class="section-intro">이 보고서는 느낌만으로 욕하지 않았다. 현재 코드의 편집·저장·테스트·실행 경로를 따라가며 화면 문제와 구조 문제를 연결했다.</p>
+        </div>
+      </div>
+
+      <table class="evidence-table">
+        <thead><tr><th>주장</th><th>핵심 코드</th><th>확인한 내용</th></tr></thead>
+        <tbody>
+          <tr><td>이벤트 편집 진입</td><td><code>src/editor/EditScene.ts:881–885</code><br /><code>src/editor/eventDraftActions.ts:18–64</code></td><td>기존/신규 이벤트가 modal로 들어가고, 신규 이벤트는 live map 배열에 먼저 삽입된다.</td></tr>
+          <tr><td>P0 draft 의미 불일치</td><td><code>src/project/eventDrafts.ts:30–56</code><br /><code>src/project/legacyDbProjectSync.ts:159–163</code></td><td>working body는 투영에 남고 열린 draft metadata는 제거될 수 있다.</td></tr>
+          <tr><td>취소·적용·확인</td><td><code>src/editor/panels/eventEditor/modal.ts:170–214</code><br /><code>src/editor/eventDraftActions.ts:66–79</code></td><td>footer에 실제 테스트가 없고 saveEventDraft는 통합 lint 결과를 gate하지 않는다.</td></tr>
+          <tr><td>2열 정보 구조</td><td><code>src/editor/panels/eventEditor/content.ts:72–200</code></td><td>왼쪽 페이지 속성, 오른쪽 실행 내용과 보조 도구로 구성된다.</td></tr>
+          <tr><td>명령 추가 비용</td><td><code>src/editor/panels/eventEditor/content.ts:234–398</code></td><td>명령 선택 후 다시 command edit dialog를 거쳐 확인해야 한다.</td></tr>
+          <tr><td>4탭 명령 피커</td><td><code>src/editor/panels/eventEditor/commandPicker.ts:208–374</code></td><td>검색·list/grid·그룹·runtime badge는 좋지만 탭 가시명은 숫자 1–4다.</td></tr>
+          <tr><td>조건과 안전 경고</td><td><code>src/editor/panels/eventEditor/pageProps.ts:481–531, 698–705</code></td><td>조건/이동은 접히지만 auto/parallel 경고는 switch/variable 중심으로 얕다.</td></tr>
+          <tr><td>제한적 미리보기</td><td><code>src/editor/panels/eventEditor/previewSimulation.ts</code><br /><code>eventScriptModernViews.ts</code></td><td>선택지·loop·goto 등 실제 interpreter 의미를 완전히 재현하지 않는다.</td></tr>
+          <tr><td>외부 이벤트 테스트</td><td><code>src/editor/panels/menu.ts:397–474</code><br /><code>testPlayModal.ts:54–82</code></td><td>외부 툴바에서 진입하며 menu와 modal 양쪽에 flush가 있어 중복 준비 경로가 보인다.</td></tr>
+          <tr><td>실제 런타임 연결</td><td><code>src/editor/panels/testPlayModal.ts:278–287</code><br /><code>src/player/PlayScene.ts:203–206, 464–481</code></td><td>최종적으로 실제 PlaySession과 PlayScene.runEvent를 사용한다.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="method-box">
+        <h3>검토 범위와 한계</h3>
+        <p><b>확인함:</b> OpenWiki 편집 라우팅/이벤트 저작/명령/수정/검증 문서, 현행 소스의 modal→draft→autosave→test→PlayScene 경로, 제품 내 도움말 이미지 5장.</p>
+        <p><b>이번 보고서에서 실행하지 않음:</b> 현재 빌드의 신규 브라우저 픽셀 캡처, 실제 LegacyDb 다중 세션 재현, 대형 프로젝트에서 중복 flush 시간 측정.</p>
+        <p><b>따라서:</b> 저장 의미 문제는 코드 경로상 P0 위험으로 판정했지만, 원격 재현 동영상이 있는 실측 버그 보고서라고 주장하지 않는다. UI 화면도 제품 내 도움말 자산임을 명시했다.</p>
+      </div>
+    </section>
+  </main>
+
+  <section class="final" aria-label="최종 결론">
+    <div>
+      <p class="eyebrow">Final call</p>
+      <h2>명령을 더 추가하지 마라.<br />먼저 제작자가 믿을 수 있게 만들어라.</h2>
+      <p>RPG ZZU 이벤트 에디터는 버릴 물건이 아니다. 오히려 표현력은 이미 충분하다. 지금 필요한 것은 기능 폭이 아니라 <strong>정본의 경계, 저장 전 검증, 같은 창의 실제 테스트, 게임 패턴 단위의 재사용</strong>이다. 이 네 가지가 해결되면 “복잡한 툴”이 “강력한 제작 도구”로 바뀐다.</p>
+    </div>
+    <div class="final__stamp">P0 수정 전<br />팀 제작<br />비추천</div>
+  </section>
+
+  <footer>RPG ZZU Event Editor · UI/UX &amp; Game Authoring Critique · Generated from repository evidence · 2026-07-30</footer>
+
+  <dialog id="lightbox" aria-label="화면 이미지 확대 보기">
+    <div class="lightbox__bar"><span id="lightbox-title">화면 확대</span><button type="button" id="lightbox-close" aria-label="닫기">×</button></div>
+    <img id="lightbox-image" alt="" />
+  </dialog>
+
+  <script>
+    (() => {
+      const dialog = document.querySelector('#lightbox');
+      const image = document.querySelector('#lightbox-image');
+      const title = document.querySelector('#lightbox-title');
+      const close = document.querySelector('#lightbox-close');
+      if (!(dialog instanceof HTMLDialogElement) || !(image instanceof HTMLImageElement)) return;
+
+      const open = (src, label) => {
+        image.src = src;
+        image.alt = label;
+        title.textContent = label;
+        dialog.showModal();
+      };
+
+      document.querySelectorAll('[data-lightbox-src]').forEach((button) => {
+        button.addEventListener('click', () => open(button.dataset.lightboxSrc, button.dataset.lightboxLabel || '화면 확대'));
+      });
+      document.querySelectorAll('.annotated img[data-lightbox-title]').forEach((target) => {
+        target.style.cursor = 'zoom-in';
+        target.tabIndex = 0;
+        const show = () => open(target.getAttribute('src'), target.dataset.lightboxTitle || '화면 확대');
+        target.addEventListener('click', show);
+        target.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); show(); }
+        });
+      });
+      close.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vpine 3
+@mat b vdwood 3
+@mat c vgreen 3
+@mat d vred 3
+@mat e vblue 3
+@mat f washi 3
+@mat g vyellow 3
+@mat h vbrass 3
+@mat i vwhite 3
+@mblock 0 0
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbcccbbbbbbbbbbccbbbbbbbbbb
+aadddbbcccbbeeeddbbbccdddbbcccbb
+aadddeefffbbeeeddgggccdddeeccgbb
+aafffeecccggfffddgggccdddeecggbb
+aadddeecccggeeeddfffccdddffcggbb
+aadddeecccggeeeddgggccdddeeggcbb
+aadddeecccggeeeddgggccdddeeggcbb
+aadddeecccggeeeddgggccdddeegccbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaahaaahaaaaaaaaaaaaaa
+aaaaaaaaaaaaahaaahaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaiaaaaiaaaaiaaaaiaaaaiaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@tblock 0 0
+................................
+66666666666666666666666666666666
+55555555555555555555555555555555
+22222222222222222222222222222222
+53000000000000000000000000000000
+53111111111111111111111111111111
+53111111111111111111111111111111
+53111114441111111111331111111111
+53444114321133333111314441144411
+53432443331132131444314324443311
+53333424324433331432314324243311
+53432424324232131333314323343311
+53432424324232131432314324243211
+53432424324232131432314324243211
+53432424324232131432314324243211
+55555555555555555555555555555555
+33333333333333333333333333333333
+53555555555555555555555555555555
+53444444444444425444444444444444
+53433333333333325333333333333334
+53435555555555325355555555555534
+53434444444444325344444444444434
+53434444444444325344444444444434
+53434444444445325544444444444434
+53434444444443325344444444444434
+53434444444444325344444444444434
+53434444444444325344444444444434
+53433333333333325333333333333334
+53444454444544425444454444544444
+55555555555555555555555555555555
+22222222222222222222222222222222
+................................

@@ -1,0 +1,96 @@
+.rm-asset-row {
+  border-bottom: 1px solid var(--border-soft);
+}
+.rm-preview {
+  width: 48px;
+  height: 48px;
+  background:
+    linear-gradient(45deg, var(--bg-raised) 25%, transparent 25%, transparent 75%, var(--bg-raised) 75%),
+    linear-gradient(45deg, var(--bg-raised) 25%, var(--bg-inset) 25%, var(--bg-inset) 75%, var(--bg-raised) 75%);
+  background-position: 0 0, 6px 6px;
+  background-size: 12px 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+}
+.rm-asset-info {
+  flex: 1;
+}
+.rm-asset-name {
+  font-size: 12px;
+  color: var(--text);
+}
+.rm-asset-kind {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+.rm-asset-dims {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+.rm-asset-actions {
+  flex: 0 0 92px;
+}
+.rm-asset-actions .btn {
+  font-size: 11px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 2px 4px;
+}
+.rm-profile-row {
+  font-size: 11px;
+  line-height: 1.35;
+  margin-bottom: var(--space-1);
+}
+.rm-profile-thumb {
+  width: 48px;
+  height: 48px;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-soft);
+}
+.rm-tile-grid {
+  grid-template-columns: repeat(8, 1fr);
+  margin-top: var(--space-1);
+}
+.rm-tile-cell {
+  aspect-ratio: 1;
+  align-items: center;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  justify-content: center;
+}
+body.resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+.system-shell {
+  align-items: center;
+  background: var(--bg-canvas);
+  color: var(--text-1);
+  display: flex;
+  justify-content: center;
+  min-height: 100%;
+  position: relative;
+}
+.system-panel {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: min(320px, calc(100vw - 32px));
+  padding: 14px;
+}
+.title-screen {
+  align-items: stretch;
+  height: 100%;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}

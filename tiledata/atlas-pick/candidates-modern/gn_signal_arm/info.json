@@ -1,0 +1,58 @@
+{
+ "id": "gn-signal-arm",
+ "slug": "gn_signal_arm",
+ "name": "가로형 신호등",
+ "scene": "신호·가로 시설",
+ "cells": [
+  5,
+  1
+ ],
+ "canvas": [
+  80,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "가로형 신호등(e 쪽으로 뻗음) 5×1. 대로 교차로 차량 신호: 모퉁이 인도 연석 칸에 기둥(S), 팔(C)은 그 모퉁이로 들어오는 차로 위로 멈춤선 줄에. 보행 신호(mo-traffic-light)와 같은 모퉁이에 두지 않는다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-signal-arm-e",
+  "gn-signal-arm-w",
+  "gn-signal-arm-s",
+  "gn-signal-arm-n"
+ ],
+ "tiles": [
+  4853,
+  4854,
+  4855,
+  4856,
+  4857,
+  4890,
+  4891,
+  4892,
+  4893,
+  4894,
+  4895,
+  4896,
+  4925,
+  4926,
+  4955,
+  4956,
+  4985,
+  4986,
+  5015,
+  5016
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   33,
+   60
+  ]
+ }
+}

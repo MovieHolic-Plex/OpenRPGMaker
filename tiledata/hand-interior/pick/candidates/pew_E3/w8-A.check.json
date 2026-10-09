@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E3/w8-A.pxg",
+ "id": "pew E3",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  63
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  63
+ ],
+ "note": "등판·좌석·회중석 칸 이음을 또렷하게, 찬송가집 셋과 앞 받침대를 더한 다듬은 회중석",
+ "ok": true
+}

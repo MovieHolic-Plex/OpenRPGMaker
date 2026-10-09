@@ -1,0 +1,69 @@
+// B: 같은 방의 은빛 쇠 명암과 목재 받침, 닫힌 윗면 3행, 거울 안의 보랏빛 소용돌이.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a iron 2
+@mat b iron 3
+@mat c iron 4
+@mat d iron 5
+@mat e iron 6
+@mat p purple 1
+@mat q purple 2
+@mat r purple 3
+@mat s purple 4
+@mat t purple 5
+@mat u purple 6
+@mat w wood 4
+@mat x wood 6
+@mat y wood 7
+@mat z dwood 3
+@layer mirror
+@mblock 0 0
+...bbbbbbbbbb...
+..deedddddddcb..
+..edddcddddcccb..
+..dddccccccccb..
+..cddddcccccbab..
+..depqqqqqqpca..
+..depstqqqqpca..
+..deptsqqqqpca..
+..deqqtsqqqpca..
+..ddqqqssqqpca..
+..ddqqqqsqqpca..
+..ddqqqqqqqpca..
+..ddqqqqqqqpca..
+..ddqqqqqqqpca..
+..dcqqqrrqqpca..
+..dcqqrssrqpca..
+..dcqrsttsrpca..
+..ddqrtrqrspca..
+..ddqssqqqrpca..
+..ddqsrqqqqpca..
+..ddqtrqqqqpca..
+..ddqsrqrqqpca..
+..dcqstrrsqpca..
+..dcqrsttsqpca..
+..dcqqrssrqpca..
+..dcqqqrrqqpca..
+..ddqqqrqqqpca..
+..ddqqrrqqqpca..
+..ddqrrqqqqpca..
+..ddqrqqqqqpca..
+..ddqqqqqqqpca..
+..dcqqqqqqqpca..
+..dcqqqqqqqpca..
+..dcqqsqqqqpca..
+..dcqssqqqqpca..
+..ddqstqqqqpca..
+..ddqqtsqqqpca..
+..ddqqqsqqqpca..
+..ddqqqqqqqpca..
+..dcqqqqqqqpca..
+..dcppppppppca..
+..cddddcccccbab..
+..bddcccccccbab..
+..xyyxxxxxxxww..
+..yxxxxxxwxxww..
+.xxxxxwwwwwwwww.
+.xwwwwwwwwwwwwz.
+.zzzzzzzzzzzzzz.

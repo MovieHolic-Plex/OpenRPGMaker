@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_window/s1-B.pxg",
+ "set": "school",
+ "id": "hall_window",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  5,
+  31,
+  27
+ ],
+ "note": "B: 명암 강화 — 교실 안쪽 어두운 3단, 반사 사선 셋, 얇은 창턱 접지 그림자",
+ "ok": true
+}

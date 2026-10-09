@@ -1,0 +1,40 @@
+{
+ "id": "basket:tomato",
+ "slug": "basket_tomato",
+ "name_ko": "토마토 바구니",
+ "category": "채소",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "토마토 바구니 — 엮은 바구니, 담긴 상품만 다른 변형. 채소가게·시장·부엌·식료품 방의 바닥·진열 탁자 곁에 1~2개.",
+ "where": "채소가게·시장·부엌·식료품 방의 바닥·진열 탁자 곁에 1~2개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_colors": 9,
+ "material": "cloth",
+ "related": [
+  "basket:fish",
+  "basket:apple"
+ ]
+}

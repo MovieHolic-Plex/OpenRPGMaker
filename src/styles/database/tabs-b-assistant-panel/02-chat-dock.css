@@ -1,0 +1,136 @@
+/* LLM 어시스턴트 채팅 dock (Phase 2) ─────────────────────────────── */
+.ai-chat-float-host {
+  inset: 0;
+  position: absolute;
+}
+
+/* 사이드 도크 폭: --ai-chat-side-width — editor.ts 의 레이아웃 코드가 발행한다
+   (editor.ts:115·209, 부팅 폭 + 리사이즈 시 갱신). 여기서 다시 계산하지 않는다.
+   transition 을 걸지 않는 것은 의도다 — 폭 애니메이션이 캔버스 fitCanvas 재계산과
+   경합해 도크 전환마다 맵이 흔들린다(editor.ts:944 fitCanvas). */
+
+.ai-chat-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  color: var(--text-1);
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  width: 390px;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 31;
+  padding: var(--space-2);
+  box-shadow: var(--shadow-modal);
+}
+
+.ai-chat-panel.chat-dock-float {
+  inset: 0;
+  max-height: none;
+  max-width: none;
+  pointer-events: none;
+  position: absolute;
+  width: auto;
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar,
+.ai-chat-panel.chat-dock-float .ai-chat-resize-handle,
+.ai-chat-panel.chat-dock-float.is-assistant-log-open .ai-chat-body,
+.ai-chat-panel.chat-dock-float.is-history-open .ai-chat-body {
+  pointer-events: auto;
+}
+
+/* 주의: .ai-rising-overlay 를 여기에 넣으면 안 된다(실측 재발 사고 2026-08-19).
+   오버레이는 캔버스 폭 전체를 덮는 fixed 밴드라, 컨테이너를 auto 로 뒤집으면
+   보이지 않는 빈 틈이 맵 클릭을 삼키고 z-41 아래의 커맨드 바(보내기 버튼)·
+   슬래시 팝업 클릭까지 죽는다. base(assistant-rising-overlay.css)가 컨테이너
+   none + 인터랙티브 자식만 auto 로 복원하므로 float 에서도 그대로 둔다.
+   회귀 스펙: test/e2e/_ai-assistant-hostile-eval.spec.ts (H 히트테스트). */
+
+/* 접힘 상태: float 은 inset:0 이라 그대로 접으면 투명 패널이 캔버스 전체를 덮어
+   맵 클릭을 삼킨다. 접히면 inset 을 왼쪽 아래로 되돌리고 복원 pill 만 남긴다.
+   끌어 둔 자리는 has-custom-deck-pos 의 right/bottom 을 따른다. */
+.ai-chat-panel.chat-dock-float.is-collapsed {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  inset: auto auto var(--ai-deck-bottom, var(--ai-deck-inset, 16px)) var(--ai-deck-inset, 16px);
+  padding: 0;
+  pointer-events: none;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed.has-custom-deck-pos {
+  inset: auto var(--ai-deck-right, var(--ai-deck-inset, 16px)) var(--ai-deck-bottom, var(--ai-deck-inset, 16px)) auto;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
+  pointer-events: auto;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed > .ai-command-bar {
+  display: none;
+}
+
+/* 저작 예제 칩. 예전에는 유리·사이드 카드 본문의 `ai-next-steps` 안에 있었고, 2026-08-31 에
+   컴포저 추천 팝오버로 옮겼다 — 칩 자체의 모양은 그대로라 규칙은 여기 남는다. */
+
+.ai-authoring-examples {
+  display: grid;
+  gap: 7px;
+}
+
+.ai-authoring-examples-title {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ai-authoring-example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-authoring-example-chip {
+  background: color-mix(in srgb, var(--surface-1) 82%, transparent);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui);
+  padding: 7px 9px;
+}
+
+.ai-authoring-example-chip:hover,
+.ai-authoring-example-chip:focus-visible {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+
+.ai-next-steps-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+}
+
+/* 입력창만 보기: 대기 중에는 맵을 가리는 카드 본문을 접되, 하단 ⋯ 메뉴로 언제든
+   다른 대기 화면을 고를 수 있게 한다. */
+/* 리소스 관리자 창도 .database-modal-backdrop 이라 첫 선택자가 이미 덮는다. */
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel {
+  display: none;
+}
+/* 숨겨 둔(부팅 때 미리 지은) 자료집 창은 약 3,800개 요소다. visibility:hidden 이라도 레이아웃·스타일 대상이라,
+   `:has()` 규칙이 300여 개인 문서에서 다른 곳의 DOM 변이 한 번마다 이 서브트리가 재계산됐다(맵 전환·레이어 전환 프레임마다 약 30ms).
+   content-visibility:hidden 은 자손의 스타일·레이아웃을 건너뛴다(변이 프레임 33ms -> 8ms 실측). 열리면(is-parked 제거) 그대로 낸다. */
+.database-modal-backdrop.is-parked {
+  content-visibility: hidden;
+}
+.ai-status-group {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}

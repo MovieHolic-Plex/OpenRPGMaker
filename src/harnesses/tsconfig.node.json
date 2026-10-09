@@ -1,0 +1,7 @@
+{
+  // 하네스의 노드 쪽(node/ 폴더: 파일·이미지 서버·CLI) 타입 검사. 앱 tsconfig 는 node/ 를 뺀다.
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "noEmit": true, "types": ["node"] },
+  "include": ["./**/*.ts", "../../scripts/harness.mts"],
+  "exclude": []
+}

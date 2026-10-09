@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chest/w3-B.pxg",
+ "id": "chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "note": "같은 모양에 빛을 세게 — 뚜껑 윗면 한 단 밝게, 앞면은 위→아래로 한 단씩 어둡게, 왼 쇠띠는 밝게·오른 쇠띠는 어둡게, 발 칸 오른쪽 아래 반투명 그림자",
+ "ok": true
+}

@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_map/w23-D.pxg",
+ "id": "wall map",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 24,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  1,
+  28,
+  27
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "note": "짙은 나무 액자(테 3칸, 위왼 밝고 아래오른 어두움) 안에 종이 여백 + 바다·땅·점선 길·깃발·나침반, 못+짚끈 V 로 걸고 그림자 한 줄. 2x2(26x23)",
+ "ok": true
+}

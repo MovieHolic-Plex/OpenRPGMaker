@@ -1,0 +1,11 @@
+.map-parent-sel {
+  background: var(--bg);
+  color: var(--text-dim);
+  border: 1px solid var(--border-soft);
+  border-radius: 2px;
+  font-size: 10px;
+  padding: 1px 3px;
+  margin-left: auto;
+  max-width: 70px;
+  font-family: inherit;
+}

@@ -1,0 +1,47 @@
+// E: 넓은 처마판과 낮은 받침의 3×3 목록함, 놋쇠 이름표 아홉 개; 꼭대기 윗면 3행(y=0~2)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat s wood 2
+@mat r wood 3
+@mat w wood 5
+@mat l wood 6
+@mat h wood 7
+@mat b brass 4
+@mat g brass 1
+@mat p brass 5
+@layer cabinet
+@mblock 0 0
+.slllllllllllls.
+shllwwlllwwlllls
+shllllllllllllls
+swhhhllllllwwwrs
+arrrrrrrrrrrrrra
+.slllrlwwrlwwws.
+.swllrwllrwwlrs.
+.swlwrwlwrwwwrs.
+.swpbrwpbrwbbrs.
+.swggrwggrwggrs.
+.swwwrwwwrwwwrs.
+.srrrsrrrsrrrss.
+.slllrlwwrlwwws.
+.swllrwllrwwlrs.
+.swlwrwlwrwwwrs.
+.swpbrwpbrwbbrs.
+.swggrwggrwggrs.
+.swwwrwwwrwwwrs.
+.srrrsrrrsrrrss.
+.slllrlwwrlwwws.
+.swllrwllrwwlrs.
+.swlwrwlwrwwwrs.
+.swpbrwpbrwbbrs.
+.swggrwggrwggrs.
+.swwwrwwwrwwwrs.
+.srrrsrrrsrrrss.
+.slllwwwwwwwrrs.
+.swwwwrrwwwwrrs.
+.srrrrrrrrrrrrs.
+.sllllllwwwwwws.
+.swwwrrrrrrrrrs.
+.srs........srs.

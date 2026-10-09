@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/portrait_large/w71-A.pxg",
+ "id": "portrait large",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 30,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  30,
+  29
+ ],
+ "v5_bbox": null,
+ "note": "금 액자(picture w5 결)+붉은 예복 흉상 초상, 위 가장자리 장식·아래 1px 그림자. 관문 X, 눈 O, 이유: 걸이 형식은 윗면 감사 대상 아님",
+ "ok": true
+}

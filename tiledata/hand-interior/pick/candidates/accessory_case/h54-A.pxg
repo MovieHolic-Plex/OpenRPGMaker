@@ -1,0 +1,46 @@
+// A 설명 충실: 유리 윗면(8행) 아래 붉은 벨벳 위 반지·목걸이(파란 보석)·붉은 부적, 앞 유리, 나무 서랍 몸통과 짧은 다리
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat u glass 1
+@mat j glass 2
+@mat g glass 3
+@mat h glass 4
+@mat i glass 5
+@mat t red 1
+@mat r red 2
+@mat s red 3
+@mat k red 5
+@mat v gold 2
+@mat z gold 4
+@mat w gold 5
+@mat p blue 4
+@mat q blue 5
+@mat m red 2
+@mblock 0 13
+.oooooooooooooo.
+oeffffffffffffco
+oehhhgggggggggco
+orrrrrrrrrrrrrro
+oesvzvsswzzwssco
+oeszszsswsswkkco
+oesvzvssspqsmkco
+oetttttttpttttco
+oeffffffffffffco
+oeihgjjjjjjjjjco
+oejjhigjjjjjjjco
+oejjjhijjjjjjjco
+oeuuuuuuuuuuuuco
+oeddddddddddddco
+.odccccccccccbo.
+.odcbbbzzbbbcbo.
+.odcbbbbbbbbcbo.
+.oaaaaaaaaaaaao.
+.odo~~~~~~~~odo.

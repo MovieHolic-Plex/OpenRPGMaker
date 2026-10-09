@@ -1,0 +1,89 @@
+{
+  "recordedAt": "2026-09-06T02:34:50.108Z",
+  "task": 28,
+  "sourceAudit": {
+    "command": [
+      "git",
+      "diff",
+      "--exit-code",
+      "87de73785d1c309bbbe975636414f70bbc73a4b9",
+      "4e2d1762264533a5826c48686648093c3fe69ebd",
+      "--",
+      "test/aiActivityLiveRow.test.ts",
+      "test/aiChatObservability.test.ts",
+      "test/aiChatPanelTransportError.test.ts",
+      "test/aiSelectionChipScope.test.ts",
+      "test/databaseItemInspector.test.ts",
+      "test/databaseModalDirtySession.test.ts",
+      "test/databaseNavMode.test.ts",
+      "test/databaseOverviewDashboard.test.ts",
+      "test/databaseOverviewTab.test.ts",
+      "test/databaseRadioCustomGuard.test.ts",
+      "test/databaseSidebarKeyboard.test.ts",
+      "test/databaseSidebarNav.test.ts",
+      "test/databaseTabIcons.test.ts",
+      "test/debugSession.test.ts",
+      "test/editorProjectE2EBridge.test.ts",
+      "test/eventEditorM2Surface.baseline.test.ts",
+      "test/eventEditorPortalSurface.baseline.test.ts",
+      "test/forestDensity.test.ts",
+      "test/gen1DemoContent.test.ts",
+      "test/modalEscapeLayerGate.test.ts",
+      "test/moveRouteCatalogPersistence.test.ts",
+      "test/noLocalProjectDb.test.ts",
+      "test/regionSelectionPastePreview.test.ts",
+      "test/roleNameComparisonGate.test.ts",
+      "test/uxcLoadFailure.test.ts",
+      "src/editor",
+      "src/ai",
+      "src/styles",
+      "src/project/defaults",
+      "src/project/io",
+      "src/project/lint/postTileVerify.ts",
+      "src/project/collision.ts",
+      "scripts/check-surface-gates.mjs",
+      "scripts/check-css-live-classes.mjs",
+      "scripts/verify-gates.mjs",
+      "scripts/run-vitest.mjs",
+      "vitest.config.ts",
+      "package.json",
+      "package-lock.json",
+      "test/fixtures/eventEditorFormSurface.baseline.json",
+      "test/fixtures/eventEditorM2Surface.baseline.json",
+      "test/fixtures/eventEditorPortalSurface.baseline.json",
+      "test/fixtures/eventEditorCommitProbe.baseline.json",
+      "test/fixtures/eventEditorInteractionSurface.baseline.json"
+    ],
+    "diff": {
+      "stdout": "",
+      "stderr": "",
+      "exit": 0
+    },
+    "objects": {
+      "stdout": "11a12a0259f646c77d4011a5ca536bd9bcaa0400\n11a12a0259f646c77d4011a5ca536bd9bcaa0400\nfeba8e5080d9723ad7c2de0eee3594c80b7f566e\nfeba8e5080d9723ad7c2de0eee3594c80b7f566e\n12b9e85d4abc5308c13aab4b0997890fbe90ade1\n12b9e85d4abc5308c13aab4b0997890fbe90ade1\n8d8cd0564ade35cc74c8adc1a14889a9050039df\n8d8cd0564ade35cc74c8adc1a14889a9050039df\ndef3d053c54a10a3ae9e6919c10e580ae6b97b61\ndef3d053c54a10a3ae9e6919c10e580ae6b97b61\n9f271cce8c1e55e15c64c8f4e987a66409302e6c\n9f271cce8c1e55e15c64c8f4e987a66409302e6c\n7a88123566792f5bf54726e5a26a243fd05fcabb\n7a88123566792f5bf54726e5a26a243fd05fcabb\n4606b663cc0fe5754a47e962ce61725e86bcf2d1\n4606b663cc0fe5754a47e962ce61725e86bcf2d1\nf6547991c0cc2ed90a2fbc81fcaa8e2b5f8b6a82\nf6547991c0cc2ed90a2fbc81fcaa8e2b5f8b6a82\n799d4e7ce6ac250532458a91b6a4656d8faf65fd\n799d4e7ce6ac250532458a91b6a4656d8faf65fd\n7de06e8a4b7fead71b47068681c3d6ab4c7e292a\n7de06e8a4b7fead71b47068681c3d6ab4c7e292a\n29450cdb7cd62bad71b31f5cf9c4c6909a630329\n29450cdb7cd62bad71b31f5cf9c4c6909a630329\n2fde7b312ee40fb94d59ac767202818602a09b40\n2fde7b312ee40fb94d59ac767202818602a09b40\n78bb8cbcbac4ee8e11553fee5ca8631d77fa2a8d\n78bb8cbcbac4ee8e11553fee5ca8631d77fa2a8d\n285e7f6ec7aab035ac464a6c3023205c862fec70\n285e7f6ec7aab035ac464a6c3023205c862fec70\nb7f110ebe6f23739daa2a94dd6fb2ae7f0d7bb91\nb7f110ebe6f23739daa2a94dd6fb2ae7f0d7bb91\n298486e30d0be2753fc6a83144a1fd6a18ecedf9\n298486e30d0be2753fc6a83144a1fd6a18ecedf9\nef4519e093603b38987e80324db5fbd270735952\nef4519e093603b38987e80324db5fbd270735952\nd775eb29120f02b6cd05f6a70141983b872acaf7\nd775eb29120f02b6cd05f6a70141983b872acaf7\n121b4265a2746d291a78c5944367e91422d752b8\n121b4265a2746d291a78c5944367e91422d752b8\n14c1ef1380e4c9cca0d82ff5cc4cd72c34ac6001\n14c1ef1380e4c9cca0d82ff5cc4cd72c34ac6001\n8232ecdbca7446f257fad3c64252f792573a9ebf\n8232ecdbca7446f257fad3c64252f792573a9ebf\ne13ebb7159a698c2204e172e3c42e16013464c21\ne13ebb7159a698c2204e172e3c42e16013464c21\n3dfeebf3438b6df4f2053c78bac3d34d7f867a7c\n3dfeebf3438b6df4f2053c78bac3d34d7f867a7c\n43a8269479a26ee2ec6f36c7be2105685691a1fe\n43a8269479a26ee2ec6f36c7be2105685691a1fe\n03f86ce30588874f9b302cd9f5847466c0541ed8\n03f86ce30588874f9b302cd9f5847466c0541ed8\n03a481a9980f8f475ad8ed964852a26883252322\n03a481a9980f8f475ad8ed964852a26883252322\n34c085bff5566a58c337a754d69a1a337de96302\n34c085bff5566a58c337a754d69a1a337de96302\n3ec35d7719b376efb97d164416359272efae09e2\n3ec35d7719b376efb97d164416359272efae09e2\nd15f56ef55f9e4db9ce2dc2bbf6fa01db2cb6a02\nd15f56ef55f9e4db9ce2dc2bbf6fa01db2cb6a02\nedd6d3713fd58a34ddfceb01af292896bcdac035\nedd6d3713fd58a34ddfceb01af292896bcdac035\na07290fbda6b307a36c136aa8cc47e50cbeadea8\na07290fbda6b307a36c136aa8cc47e50cbeadea8\n2eeadbb8bbb2246a63e7b2d0fb3b652c3ac1a389\n2eeadbb8bbb2246a63e7b2d0fb3b652c3ac1a389\n0cd98c242210de1194ecd24fa25109a732a989c5\n0cd98c242210de1194ecd24fa25109a732a989c5\n5a4d49e1afd6b55c511a44663ac89e7b2a7e07bf\n5a4d49e1afd6b55c511a44663ac89e7b2a7e07bf\nf37e9e9a1d060e8e41a7b581405add50d19184ca\nf37e9e9a1d060e8e41a7b581405add50d19184ca\n1b76124dbc5020af562e5baf372371b15b5d85de\n1b76124dbc5020af562e5baf372371b15b5d85de\na4a612dd75f79f37b5a0cdb8eae04d52ebe15066\na4a612dd75f79f37b5a0cdb8eae04d52ebe15066\ndcec58c1cbf16f178c49b6f01cf8fc9e9889c1f1\ndcec58c1cbf16f178c49b6f01cf8fc9e9889c1f1\ne2e5b625592610402e8523828df5dfdbe97886c9\ne2e5b625592610402e8523828df5dfdbe97886c9\ne079c263a92870188b9c3930d6ed37c4304c217c\ne079c263a92870188b9c3930d6ed37c4304c217c\n0fa4644a584f0af4f11dda53e4e19d009ab4244d\n0fa4644a584f0af4f11dda53e4e19d009ab4244d\n5f707a254869c3bb58892985e75a886cb6071eae\n5f707a254869c3bb58892985e75a886cb6071eae\nf52b73f26d800b63248d03b95cc05a473e88cd9e\nf52b73f26d800b63248d03b95cc05a473e88cd9e\n",
+      "stderr": "",
+      "exit": 0
+    },
+    "all88ObjectHashesMatch": true
+  },
+  "counts": {
+    "files": 25,
+    "collected": 183,
+    "failed": 43,
+    "passed": 140,
+    "pendingOrSkipped": 0
+  },
+  "validationAndCleanup": {
+    "command": "python3 .omo/evidence/life-full-20260906/28/validate.py && git worktree remove /home/main/z-project/rpg-zzu-life-full-p2-gate-base && git worktree remove /home/main/z-project/rpg-zzu-life-full-p2-gate-current",
+    "exit": 0,
+    "actualOutput": "status: completed exit_code: 0\n{\n  \"completeFileRows\": 25,\n  \"originalCollectedTests\": 183,\n  \"originalFailedTests\": 43,\n  \"originalPassedTests\": 140,\n  \"originalReportSha256Verified\": true,\n  \"preservedEvidenceFiles\": 37,\n  \"pairedCollectedTests\": 183,\n  \"sharedExactFailureValues\": 24,\n  \"surfaceAxes\": 9,\n  \"surfaceExactFailureBlocks\": 6,\n  \"confirmedIntroducedFocusedFailures\": 0,\n  \"sourceEqualityPathsVerified\": 44,\n  \"pinnedTreesClean\": true,\n  \"taskProcessGroupExited\": true,\n  \"evidenceJsonAndPythonSyntaxValid\": true\n}\nCOMPARISON_TREES_REMOVED"
+  },
+  "classification": {
+    "stablePreExistingFiles": 17,
+    "baselineTimeoutFiles": 1,
+    "unresolvedHistoricalTimingFiles": 7,
+    "confirmedIntroducedFocusedFailures": 0,
+    "surfaceFailuresMatchingBase": 6
+  },
+  "boundary": "Attribution task completed, not a green whole gate; unresolved historical full-suite timing remains explicit. Comparison branches/commits and evidence retained; clean temporary worktrees removed."
+}

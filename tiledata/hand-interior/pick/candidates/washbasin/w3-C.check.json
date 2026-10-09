@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/w3-C.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "실루엣 재해석 — 기둥형 도자 세면대: 넓은 둥근 대야, 흰 기둥과 넓은 받침, 왼쪽 림에 걸친 푸른 줄무늬 수건, 놋 수전. 받침장이 아니라 기둥이라 아래가 비어 보임.",
+ "ok": true
+}

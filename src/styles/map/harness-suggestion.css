@@ -1,0 +1,428 @@
+/* 팔레트 "내 구조물" 선반 + DB 구조물 탭 스타일. (조용한 제안 카드는 제거됨) */
+
+.structure-kit-shelf {
+  padding: 8px 10px;
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
+}
+
+.structure-kit-shelf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #5C5348);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+/* 내장 집 킷 접이식 — summary 가 곧 제목. 접힌 상태에서 한 줄만 차지해야 한다. */
+.structure-kit-shelf-fold > summary.structure-kit-shelf-title {
+  cursor: pointer;
+  margin-bottom: 0;
+  padding: 2px 0;
+  user-select: none;
+}
+.structure-kit-shelf-fold[open] > summary.structure-kit-shelf-title {
+  margin-bottom: 6px;
+}
+.structure-kit-shelf-fold > summary.structure-kit-shelf-title:hover {
+  color: var(--text-1, #2A2521);
+}
+
+.structure-kit-shelf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.structure-kit-cell {
+  padding: 4px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.structure-kit-cell:hover {
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.20));
+  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
+}
+
+.structure-kit-cell.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--accent-muted, var(--accent-muted));
+}
+
+.structure-kit-icon {
+  display: block;
+  width: 72px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+/* ── 팔레트 「조합」 선반 (Combo Brush) ────────────────────────────────────
+   구조 킷 선반과 같은 어학이다: 그림이 주인공, 이름은 그 아래 한 줄.
+   다른 점 하나 — 조합은 «기능 단위» 이므로 이름을 반드시 같이 보여준다.
+   타일 번호는 어느 칸에도 없다. */
+.combo-brush-shelf {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-brush-shelf-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-2, #5C5348);
+}
+
+.combo-brush-shelf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #5C5348);
+  letter-spacing: 0.04em;
+}
+
+.combo-brush-shelf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.combo-brush-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 84px;
+  padding: 4px;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.combo-brush-cell:hover {
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.20));
+  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
+}
+
+.combo-brush-cell.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--accent-muted, var(--accent-muted));
+}
+
+.combo-brush-icon {
+  display: block;
+  width: 100%;
+  max-width: 72px;
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.combo-brush-cell-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-1, #2A2521);
+  text-align: center;
+}
+
+.combo-brush-cell-size {
+  font-size: 9px;
+  color: var(--text-3, #8A7F70);
+}
+
+/* ── 데이터베이스 '구조물' 탭 — 구조 킷 관리(타일 실렌더가 주인공) ── */
+
+/* 담는 그릇을 세로 flex 로 만든다. sidebar.css 의 .db-body.db-shared-workspace 는
+   display 를 지정하지 않는 block + overflow:auto 라서, 앨범이 앞선 h3+p(실측 67px)를
+   없는 것처럼 높이를 잡고 그만큼 아래로 삐져나갔다. 인스펙터 액션 줄은 margin-top:auto 로
+   그 바닥에 붙으므로 [편집] 이 정확히 67px 밖으로 밀려 elementFromPoint 가 푸터 상태줄을
+   돌려줬다(1366×768·1440×900·1920×1080 모두 동일). 형제 탭은 tabs-a.part-2.css:25 /
+   desktop.css:20 에서 :has(.tileset-db-workspace) 로 같은 문제를 이미 고쳐 뒀고 구조물 탭만
+   빠져 있었다. TS 에서 마커 클래스를 붙이면 안 된다 — renderActiveTab 이 body 를
+   replaceChildren 만 해서 className/dataset 이 탭 전환 후에도 남아 다른 탭으로 샌다.
+   sidebar.css 쪽이 특이도가 높지만 display 를 건드리지 않으므로 충돌하지 않는다. */
+
+.structure-kit-album-workspace {
+  display: flex;
+  /* height:100% 를 두면 안 된다 — 위 그릇 높이(= h3+p 포함)를 그대로 받아 잘림이 되살아난다.
+     세로 flex 안에서는 flex:1 이 남은 높이를 정확히 준다. */
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: 12px;
+}
+
+.structure-kit-album-rail {
+  width: 176px;
+  flex: none;
+  border-right: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  background: var(--bg-inset, #FAF8F5);
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-y: auto;
+}
+
+.structure-kit-album-rail-title {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--text-3, #6B5F52);
+  padding: 0 8px 8px;
+  font-weight: 700;
+}
+
+.structure-kit-album-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12.5px;
+  font-family: inherit;
+}
+
+.structure-kit-album-item:hover {
+  background: var(--bg-hover, rgba(42, 37, 33, 0.05));
+  color: var(--text-1, #2A2521);
+}
+
+.structure-kit-album-item.active {
+  background: #fff;
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 0 0 1px var(--accent-muted, rgba(74, 87, 214, 0.2)), 0 1px 2px rgba(20, 26, 45, 0.06);
+}
+
+.structure-kit-album-count {
+  font-size: 11px;
+  color: var(--text-3, #6B5F52);
+  font-variant-numeric: tabular-nums;
+}
+
+.structure-kit-album-item.active .structure-kit-album-count {
+  color: var(--accent);
+}
+
+.structure-kit-album-item.zero .structure-kit-album-count {
+  color: var(--text-disabled, #A39789);
+}
+
+.structure-kit-table-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.structure-kit-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+}
+
+.structure-kit-search {
+  width: 220px;
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--text-1, #2A2521);
+}
+
+.structure-kit-hint-chip {
+  margin-left: auto;
+  font-size: 11.5px;
+  color: var(--text-3, #6B5F52);
+}
+
+.structure-kit-hint-chip b {
+  color: var(--accent);
+}
+
+.structure-kit-table-wrap {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.structure-kit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.structure-kit-table th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--text-3, #6B5F52);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  background: var(--bg-inset, #FAF8F5);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.structure-kit-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.08));
+  color: var(--text-2, #5C5348);
+  vertical-align: middle;
+}
+
+.structure-kit-row {
+  cursor: pointer;
+}
+
+.structure-kit-row:hover td {
+  background: var(--bg-hover, rgba(42, 37, 33, 0.03));
+}
+
+.structure-kit-row.active td {
+  background: var(--accent-subtle, #EEF0FD);
+}
+
+.structure-kit-row.active td:first-child {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.structure-kit-row-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+  color: var(--text-1, #2A2521);
+}
+
+.structure-kit-row.active .structure-kit-row-name {
+  color: var(--accent);
+}
+
+.structure-kit-row-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex: none;
+  box-shadow: 0 0 0 1px rgba(20, 26, 45, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.structure-kit-row-thumb canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.structure-kit-row-meta {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-3, #6B5F52);
+  font-size: 12px;
+}
+
+/* 행 hover 액션 — mapList 의 `.map-tree-action` 규약을 그대로 따른다.
+   `display:none` 으로 숨기지 않는 이유: 숨기면 키보드 포커스가 못 닿고,
+   유닛 테스트의 FakeDom 은 `:hover` 를 몰라 요소를 아예 찾지 못한다. */
+.structure-kit-action-col {
+  text-align: right;
+  white-space: nowrap;
+  width: 104px;
+}
+
+.structure-kit-row-actions {
+  display: flex;
+  gap: 2px;
+  justify-content: flex-end;
+}
+
+.structure-kit-row-action {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  height: 22px;
+  justify-content: center;
+  opacity: 0.55;
+  padding: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast), opacity var(--transition-fast);
+  width: 22px;
+}
+
+.structure-kit-row:hover .structure-kit-row-action,
+.structure-kit-row:focus-within .structure-kit-row-action,
+.structure-kit-row-action:focus-visible {
+  background: var(--bg-inset);
+  border-color: var(--border-default);
+  opacity: 1;
+}
+
+.structure-kit-row-action:hover { background: var(--control-bg-hover); }
+.structure-kit-row-action:focus-visible { outline: var(--focus-outline); }
+
+/* 지우기만 위험한 색으로 — 아이콘 넷이 나란히 있어 글리프만으로는 구분이 약하다. */
+.structure-kit-row-action.structure-kit-delete { color: var(--danger); }
+
+.structure-kit-part-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 10.5px;
+  margin-right: 4px;
+  background: #eef0fd;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.structure-kit-part-badge.teal {
+  background: #e6f4f2;
+  color: #0f8f86;
+}
+
+.structure-kit-part-badge.gray {
+  background: #f1f2f6;
+  color: #5b6373;
+}
+
+/* 「부위 없음」은 오류가 아니라 아직 나누지 않은 정상 상태다. 목록 전체가 이 상태인데
+   빨강으로 칠하면 모든 줄이 경고처럼 보이고, 정작 진짜 문제를 표시할 색이 남지 않는다. */
+.structure-kit-part-badge.none {
+  color: var(--text-2, #5b6373);
+  background: var(--bg-inset, #f1f2f6);
+  font-weight: 600;
+}
+
+.structure-kit-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  color: var(--text-3, #6B5F52);
+  font-size: 12px;
+}

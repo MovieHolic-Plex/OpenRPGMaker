@@ -1,0 +1,259 @@
+/* RM @> 커맨드 로 — 인간 로그는 버블이 아니라 명령 줄이다. */
+.ai-command-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  padding: 2px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-1);
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  line-height: 1.55;
+}
+.ai-command-prefix {
+  font-weight: 700;
+  user-select: none;
+}
+.ai-command-row-body {
+  min-width: 0;
+  white-space: pre-wrap;
+  /* break-word(= normal + anywhere)는 한국어를 음절 사이에서 끊었다(「보스/와」, 2026-09-23).
+     어절 경계에서만 줄바꿈하고, 안 들어가는 긴 토막만 anywhere 로 자른다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.ai-command-row-body.is-discarded,
+.ai-command-row-body.is-reverted {
+  opacity: 0.62;
+}
+.ai-command-attachment {
+  grid-column: 2;
+  min-width: 0;
+}
+/* [선택지] 칩은 `renderQuickReplies` 가 **본문의 형제로** 줄 안에 꽂는다(`lastAssistant.after`).
+   두 칸 그리드에서 배치 규칙이 없으면 1열(프리픽스 칸)로 자동 배치돼 그 칸이 칩 폭(358px)만큼
+   벌어지고 `minmax(0, 1fr)` 본문 칸이 0px 로 눌린다 — 답이 오른쪽 끝에서 한 글자씩 세로로 쓰인다.
+   실측 근거: verify-shots/ai-panel-clip/reachability (본문 rect 0×485). 두 칸을 다 쓰게 못 박는다. */
+.ai-command-row > .ai-quick-replies {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+/* 그리고 배치를 칩 하나에 맡기지 않는다 — 줄의 두 칸을 **주인이 직접** 잡는다.
+   프리픽스는 1열, 본문은 2열로 못 박으면 나중에 무엇이 어디로 꽂히든(칩·첨부·미래의 무엇)
+   자동 배치는 새 행으로 밀려나고 본문 칸을 훔칠 수 없다. 실측 근거: 칩을 본문의 형제로
+   꽂는 경로(`lastAssistant.after`)가 1열을 358px 로 벌려 본문을 0px 로 눌렀다. */
+.ai-command-row > .ai-command-prefix {
+  grid-column: 1;
+}
+.ai-command-row > .ai-command-row-body {
+  grid-column: 2;
+  min-width: 0;
+}
+/* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
+.ai-chat-bubble {
+  border-radius: 14px;
+  line-height: 1.6;
+  max-width: 72%;
+  padding: 10px 14px;
+  white-space: pre-wrap;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+}
+.ai-chat-user {
+  align-self: flex-end;
+  background: var(--accent, #4c6ef5);
+  border: none;
+  border-radius: 14px 14px 4px 14px;
+  color: #fff;
+  max-width: 72%;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent, #4c6ef5) 30%, transparent);
+}
+.ai-chat-assistant {
+  align-self: flex-start;
+  background: var(--bg-raised, #1a1d27);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px 14px 14px 4px;
+  color: var(--text-1);
+  max-width: 78%;
+}
+.ai-chat-assistant.is-discarded,
+.ai-chat-assistant.is-reverted {
+  opacity: 0.62;
+}
+.ai-msg-badge {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 0 6px 2px 0;
+  padding: 3px 7px;
+  vertical-align: 1px;
+}
+.ai-msg-badge.is-proposal {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+.ai-msg-badge.is-applied {
+  background: var(--success-muted);
+  color: var(--success);
+}
+.ai-msg-badge.is-discarded,
+.ai-msg-badge.is-reverted {
+  background: var(--bg-inset);
+  color: var(--text-3);
+}
+.ai-chat-tool {
+  align-self: flex-start;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.ai-chat-system {
+  align-self: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-3);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  padding: 4px 10px;
+}
+/* 입력행(.ai-chat-input-row)·입력창·전송 버튼 스타일은 컴포저로 이전했다 —
+   assistant-composer.css 의 `.ai-composer` / `.ai-composer-actions`. */
+
+/* ?쒖븞(changeset) 移대뱶 */
+
+/* ?먰꺆 ?듬? 移?留??명꽣酉?[?좏깮吏] ?묐떟) */
+.ai-quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ai-quick-replies.ai-choice-block {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+}
+.ai-quick-reply-chip {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  cursor: pointer;
+  font: inherit;
+}
+.ai-quick-reply-chip:hover {
+  background: var(--gold-wash);
+  border-color: var(--gold-soft);
+  color: var(--gold-deep);
+}
+.ai-skill-prompt-details {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-size: 11px;
+  margin-top: 6px;
+  padding-top: 5px;
+}
+.ai-skill-prompt-details > summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.ai-skill-prompt-raw {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  margin: 6px 0 0;
+  max-height: 160px;
+  overflow: auto;
+  padding: 6px;
+  white-space: pre-wrap;
+}
+
+/* ????몃꽕??踰꾨툝(show_tiles) ???대뼡 ??쇱쓣 留먰븯?붿? 洹몃┝?쇰줈 蹂댁뿬以??*/
+.ai-chat-tiles {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ai-tile-thumb-item {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  margin: 0;
+}
+.ai-tile-thumb {
+  border: 1px solid var(--border-default);
+  image-rendering: pixelated;
+}
+.ai-tile-thumb-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* 留??곸뿭 洹몃━??踰꾨툝(show_tile_grid) ??援ъ“臾쇱쓣 洹몃┝?쇰줈 蹂댁뿬以??*/
+.ai-chat-tile-grid {
+  display: grid;
+  gap: var(--space-1);
+}
+.ai-tile-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  overflow-x: auto;
+  width: max-content;
+  max-width: 100%;
+}
+.ai-tile-grid-row {
+  display: flex;
+}
+.ai-tile-grid-cell {
+  flex: 0 0 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 24px;
+}
+.ai-tile-grid-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.ai-tile-grid-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+.ai-error-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.ai-error-detail {
+  box-sizing: border-box;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+  max-height: 320px;
+  overflow: auto;
+  padding: 8px;
+  user-select: text;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: var(--bg-sunken, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+}
+

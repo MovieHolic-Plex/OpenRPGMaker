@@ -1,0 +1,33 @@
+/* runtime 표면 — map/resource-system.part-1.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 runtime 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `map/resource-system.part-1.css` 에 있다. */
+
+
+/* map/resource-system.part-1.css:384-388 — [레이어 보존] 테스트 플레이 모달이 런타임 레이아웃을 덮어쓰는 규칙 — runtime 레이어의 .play-viewport/.player-layout 을 오늘처럼 이기려면 같은 레이어여야 한다 */
+.test-play-modal-body > .player-layout {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+/* map/resource-system.part-1.css:390-395 — [레이어 보존] 테스트 플레이 모달이 런타임 레이아웃을 덮어쓰는 규칙 — runtime 레이어의 .play-viewport/.player-layout 을 오늘처럼 이기려면 같은 레이어여야 한다 */
+.test-play-modal-body > .player-layout.system-shell {
+  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  justify-items: stretch;
+}
+
+/* map/resource-system.part-1.css:397-404 — [레이어 보존] 테스트 플레이 모달이 런타임 레이아웃을 덮어쓰는 규칙 — runtime 레이어의 .play-viewport/.player-layout 을 오늘처럼 이기려면 같은 레이어여야 한다 */
+.test-play-modal-body > .player-layout.system-shell .play-viewport,
+.test-play-modal-body > .player-layout.system-shell .title-screen {
+  align-self: stretch;
+  justify-self: stretch;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}

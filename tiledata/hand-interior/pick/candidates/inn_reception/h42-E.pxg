@@ -1,0 +1,72 @@
+// h42-E: 짙은 나무 접수대 — 3칸 판자 앞판(기둥 둘 사이), 펼친 숙박부+잉크병+깃펜, 놋쇠 종
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat d dwood 3
+@mat b brass 4
+@mat l linen 4
+@mat i iron 4
+@mblock 0 6
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+@mblock 0 4
+......................bb........
+.....................bbbb.......
+...................lbbbbbb......
+...lllllllllll....l.bbbbbb......
+...lllllllllll...iibbbbbbbb.....
+...lllllllllll...ii.bbbbbb......
+...lllllllllll...ii.............
+@tblock 0 4
+......................54........
+.....................4655.......
+12223222322223222326465532223220
+14444444344444445454354432445440
+14455255355255445564544443244540
+14455525325555445434233332445440
+14433333233333445214445444544440
+16666665666666666566666666666560
+12222222222222222222222222222220
+15422222225422222222542222222430
+15443332325443332332544333232430
+15443332325443332332544333232430
+15443332325443332332544333232430
+15443332325443332332544333232430
+15443232325443332332544323232430
+15443332325443332332544333232430
+15443332325443233332544333232430
+15443332325443332332544333232430
+15443333325443332332544333332430
+15443332325443332332544333232430
+15443322325443332332544332232430
+15443332325443332332544333232430
+15443332325443332332544333232430
+15443332325443332332544333232430
+15422222225422222222542222222430
+13333333333333333333333333333330
+12222222222222222222222222222220
+00000000000000000000000000000000

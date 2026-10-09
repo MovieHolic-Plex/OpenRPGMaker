@@ -1,0 +1,108 @@
+// mo_sculpture v35-A 3/4 (1칸=16px=1m)
+@size 16 48
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a conc 0
+@mat b hodo 0
+@mat c kinari 0
+@mat d sumi 0
+@mat e tekko 0
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+dddddddddddddddd
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaadddddaaaaad
+daaadddddddaaaad
+daaddaaaaaaaaaad
+daaddaaaaaddaaad
+daaddaaaaaaaaaad
+daaaddaaaaaaaaad
+daaaadddaaaaaaad
+daaaaaadddaaaaad
+daaaaaaadddaaaad
+daaaaaaaaddaaaad
+daaaaaaaaddaaaad
+daaaaaaaddaaaaad
+daaaaadddaaaaaad
+daaaaddaaaaaaaad
+daaaaddaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaccccccccaaad
+daaaccccccccaaad
+daaaccccccccaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+daaaaaaaaaaaaaad
+dddddddddddddddd
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+0000000000000000
+0666666666666660
+0655555555555550
+0655555555555550
+0655544555555550
+0655555553355550
+0655355555555550
+0655555555555550
+0655555555555550
+0666666666666660
+0111111111111110
+0453333333333210
+0453333333333210
+0453311111333210
+0453100000133210
+0451033332222210
+0451033333013210
+0451033333333210
+0453103333333210
+0453310033333210
+0453333101333210
+0453333310133210
+0452223331033210
+0453333331033210
+0453333310222210
+0453331103333210
+0453310333333210
+0453310333333210
+0453222333333210
+0453333333333210
+0453333333333210
+0222222222222220
+0111444444441110
+0111311111131110
+0111111111111110
+0222222222222220
+0444444444444440
+0333333333333330
+0000000000000000

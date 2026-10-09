@@ -1,0 +1,74 @@
+// B: 작업대의 따뜻한 테와 짙은 하부 결에 맞춘 흰 실험대, 내려다본 현미경·서류·포획 구슬
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A linen 6
+@mat B linen 5
+@mat C linen 4
+@mat D linen 3
+@mat E linen 2
+@mat P pine 4
+@mat Q pine 5
+@mat R pine 3
+@mat d dwood 1
+@mat e dwood 2
+@mat f dwood 0
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat m iron 6
+@mat r red 1
+@mat s red 3
+@mat t red 4
+@layer bench
+@mblock 1 17
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAC
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBC
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBC
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBC
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBC
+ABBBBBBBBBBBBBBBBBBBBBBBCCBBBC
+ABBBBBBBCCBBBBBBBBBBBBBBBBBBBC
+ACCCCCCCCCCCCCCCCCCCCCCCCCCCCE
+CDDDDDDDDDDDDDDDDDDDDDDDDDDDDE
+RPPPPPPPPPPPPPPPPPPPPPPPPPPPRe
+RQPPPPPPPPPPPReRQPPPPPPPPPPPRe
+RPPPPddPPPPPPReRPPPPddPPPPPPRe
+ReRRRRRRRRRRReeReRRRRRRRRRRRee
+RPe........................Ree
+Ref........................eff
+@layer equipment
+// 현미경 접안부의 윗면 y7~9, 오른쪽으로 굽은 암과 왼쪽을 향한 대물렌즈
+@mblock 6 7
+mmmli
+mllki
+lkkji
+.iji
+..ijj
+...jkkji
+...jlkkji
+...jl..ki
+...jl..ki
+..ijj..ki
+..lki..ki
+..iji..ki
+.mmmmkkki
+.ijjjjjki
+.......ki
+..mllkkki
+.ijjjjiii
+// 실험 기록지: 위에서 보이는 밝은 종이와 세 줄 필기, 오른 아래 겹침
+@mblock 16 19
+AAAAAA
+AAkkAAC
+AAkkkAC
+BCCCCCE
+// 포획 구슬: 정수리 하이라이트와 3행 붉은 윗면, 가운데 잠금쇠
+@mblock 24 14
+.ttt.
+tsstr
+tsssr
+ijmji
+lmmki
+.jji.

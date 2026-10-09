@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w9-B.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "왼쪽 위 광원: 하늘 밝은 그라데이션, 성 왼면 밝고 오른면 어둡게, 성 오른쪽 풀밭에 그림자.",
+ "ok": true
+}

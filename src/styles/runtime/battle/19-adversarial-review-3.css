@@ -1,0 +1,152 @@
+/* ═══════════ 적대 리뷰 3차(2026-08-02) 수정 ═══════════ */
+
+/* 죽은 배틀러 퇴장 연출 — 임팩트 순간 회색 석상으로 굳어 영구히 서 있던 것을,
+   포켓몬처럼 주저앉으며 사라지게 한다. 노드는 남으므로(팝업 좌표 기준) 이미지만 보낸다. */
+/* 예전에는 여기서 `opacity: 1`(+ pointer-events)로 06 의 정적 `opacity: 0.42` 를
+   되돌렸다. 그 되돌림이 **pokemon 스킨에만** 걸려 있어서 기본 rm2000 을 포함한 나머지
+   스킨은 계속 반투명이었다. 이제 06 이 스프라이트에 정적 opacity 를 두지 않고,
+   pointer-events 는 15 가 스킨 공통으로 끄므로 이 되돌림은 불필요하다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated .battle-enemy-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-skin-actor-image {
+  animation: pkmn-battler-faint 0.55s ease-in forwards;
+}
+@keyframes pkmn-battler-faint {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(26px); filter: saturate(0) brightness(1.4); }
+}
+
+/* 아군 정보 카드의 strict 대기열 텍스트("대기 1"/"입력 완료")는 카드 바닥에 반쯤 잘려
+   보였고, 포켓몬 HUD 에는 이름/Lv/HP/MP 외의 텍스트가 없다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-strict-order {
+  display: none;
+}
+
+/* 좌상단 적 정보 패널 압축 — 2줄(이름/HP바) 행이 3마리에서 필드의 절반을 덮어 아군
+   스프라이트 머리를 가렸다. 한 줄(이름|바) 행으로 줄이고, 죽은 적 행은 걷어낸다. */
+/* 초기 구조의 이름/HP 2행을 한 줄 [이름|HP|바]로 눌러 같은 정보를 절반 높이에 담는다.
+   이 리뷰 partial은 앞선 pokemon 레이아웃보다 뒤에서 로드되어 같은 특이성의 규칙을 이긴다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  display: grid;
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 0 6px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  grid-column: 1;
+  grid-row: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::after {
+  grid-column: 2;
+  grid-row: 1;
+  margin-top: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  grid-column: 3;
+  grid-row: 1;
+  height: 10px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row.defeated {
+  display: none;
+}
+/* 마지막 적이 쓰러지면 죽은 행이 걷힌 빈 패널 껍데기만 남는다 — 패널째 숨긴다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel:not(:has(.battle-enemy-list-row:not(.defeated))) {
+  visibility: hidden;
+}
+
+/* 스킬/아이템 서브메뉴 행 잘림(코덱스 리뷰 C3): 행 콘텐츠(제목 18px + 설명 13px +
+   패딩 12 + 테두리 8 ≈ 54px)가 최소 행 높이 42px 를 넘겨 설명 줄이 깎였고,
+   설명 자체도 line-height 1 + overflow hidden 으로 한글 하단이 잘렸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  line-height: 1.4;
+}
+/* 헤더는 자기 트랙(auto), 행은 이름·MP 한 줄(20층 flex) 기준 34px. 예전 54px 행에 헤더까지 같은
+   규칙을 받아 121px 스크롤포트에 기술이 **1개**만 보였다(2026-09-14 실측). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-auto-rows: minmax(34px, auto);
+  grid-template-rows: auto;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  cursor: default;
+  pointer-events: auto;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] [data-battle-targetable="true"] {
+  cursor: default;
+  pointer-events: auto;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
+  > .battle-command[data-testid="actor-command-back"] small {
+  display: none;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
+  > .battle-command[data-testid="actor-command-back"],
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu
+  > .battle-command[data-testid="battle-target-cancel"] {
+  flex: 0 0 auto;
+  min-height: 42px;
+}
+
+/* 대상 메뉴는 1열 — 2열이면 ↓ 가 오른쪽 칸(다음 적)으로 가서 방향키 의미가 메뉴와 어긋났고,
+   이름이 두 줄로 꺾여 순번이 둘째 줄로 밀렸다(2026-09-14 실측). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu:has(.battle-command:nth-of-type(2)) {
+  grid-auto-rows: minmax(34px, auto);
+  grid-template-columns: minmax(0, 1fr);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text strong {
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-submenu-header {
+  grid-column: 1 / -1;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command {
+  padding: 2px 8px;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text strong {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text small {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-line {
+  font-size: 17px;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel {
+  grid-template-rows: auto auto auto auto;
+  max-height: none;
+  overflow: visible;
+  width: 380px;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-cards {
+  overflow: visible;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  bottom: auto;
+  left: auto;
+  position: static;
+  transform: none;
+}
+
+/* 결과 화면에서 죽은 적 노드에 깔리던 반짝이(radial-gradient 반복 타일)가 148×152
+   영역 전체에 흰 점 격자로 보였다(4차 리뷰) — 포켓몬 스킨은 faint 연출로 충분하다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-enemy.defeated::after {
+  content: none;
+}

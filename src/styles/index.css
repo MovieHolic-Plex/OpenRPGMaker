@@ -1,0 +1,32 @@
+/* CSS 진입점. 승자는 아래 레이어 순서로 정해지는 것이 **목표**다 — import 순서·!important 로
+   이기지 않는다. 스펙: docs/superpowers/specs/2026-09-11-css-surface-isolation-design.md
+
+   ── 다만 실태는 아직 그 목표가 아니다 (2026-09-17 실측) ──────────────────────────
+   아래 한 줄이 유일한 우선순위 원천이라는 것은 맞다. 그러나 이 선형 순서는 의미에서
+   **도출된** 것이 아니라, 이미 존재하던 승자 관계에 사후적으로 끼워 맞춘 근사치다.
+   맞지 않는 곳은 규칙을 **다른 표면 파일로 옮겨서** 때웠다. 그 영수증이 이것이다:
+
+       from-*.css 39개 · 5,870줄 · `[레이어 보존]` 마커 135개
+
+   근본 원인은 **두 표면 사이에 단일한 우선순위 관계가 없다**는 것이다. 실제로 map 과
+   database 사이에서 규칙이 양방향으로 오간다(map→database 도, database→map 도 있다).
+   선형 10단으로 표현할 수 없는 관계를 선형 10단으로 표현하려니 5,870줄이 나왔다.
+
+   그러니 이 파일만 읽고 「승자는 레이어 순서가 정한다」고 결론 내리면 **틀린다.**
+   실제 승자는 `node scripts/check-css-winners.mjs` 가 답한다. 레이어 순서를 바꾸거나
+   from-* 파일을 옮기기 전에 그 게이트로 먼저 재라.
+
+   구조 자체를 고치는 선택지(역할 기반 레이어 / 중첩 레이어)는 별도 스펙 과제다 —
+   docs/superpowers/plans/2026-09-17-css-untangle.md 의 Phase 6 참조. */
+@layer tokens, base, components, shell, map, event, database, resources, runtime, overrides;
+
+@import "./tokens.css" layer(tokens);
+@import "./base/index.css";
+@import "./components/index.css";
+@import "./shell/index.css";
+@import "./map/index.css";
+@import "./database/editor-startup-ai.css" layer(database);
+@import "./resources/index.css";
+/* 런타임 시트는 플레이·테스트 플레이·런타임 미리보기를 여는 순간 src/app/runtimeStyles.ts 가 지연 로드한다. */
+@import "./runtime/fonts.css" layer(runtime);
+@import "./overrides.css";

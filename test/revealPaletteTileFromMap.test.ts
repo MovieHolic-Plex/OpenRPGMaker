@@ -1,0 +1,87 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { editorState } from "@/editor/editorState";
+import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { installFakeDom } from "./fakeDom";
+
+describe("revealPaletteTileFromMap (eyedropper → chipset)", () => {
+  let restoreDom: (() => void) | null = null;
+  let storage: Map<string, string>;
+
+  beforeEach(() => {
+    restoreDom = installFakeDom();
+    Object.defineProperty(globalThis, "window", {
+      configurable: true,
+      value: {
+        requestAnimationFrame: (cb: (t: number) => void) => {
+          cb(0);
+          return 0;
+        },
+        setTimeout: (cb: () => void) => {
+          cb();
+          return 0;
+        },
+        clearTimeout: globalThis.clearTimeout.bind(globalThis),
+        scrollTo: () => {},
+        scrollX: 0,
+        scrollY: 0,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => true,
+      },
+    });
+    storage = new Map();
+    Object.defineProperty(globalThis, "localStorage", {
+      configurable: true,
+      value: {
+        getItem: (k: string) => storage.get(k) ?? null,
+        setItem: (k: string, v: string) => {
+          storage.set(k, v);
+        },
+        removeItem: (k: string) => {
+          storage.delete(k);
+        },
+        clear: () => storage.clear(),
+        key: () => null,
+        length: 0,
+      },
+    });
+    store.replace(createBlankProject());
+    editorState.set({
+      currentMapId: store.getCurrent().startMapId,
+      layer: "lower",
+      tool: "paint",
+      selectedTile: 0,
+    });
+    document.body.replaceChildren();
+  });
+
+  afterEach(() => {
+    document.body.replaceChildren();
+    restoreDom?.();
+    restoreDom = null;
+  });
+
+  it("re-renders the palette root when present", () => {
+    const root = document.createElement("div");
+    root.dataset.testid = "left-palette-root";
+    document.body.append(root);
+    editorState.set({ selectedTile: 105, layer: "lower" });
+    revealPaletteTileFromMap(105);
+    expect(root.childElementCount).toBeGreaterThan(0);
+  });
+
+  // 좌패널 1면 통합(2026-08-21) 회귀 방지: 예전에는 스포이트가 작업 탭을 "칠하기"로
+  // 강제하고 localStorage 에 썼다 — 감독이 고른 탭이 조용히 덮였다. 탭 자체가 없어졌으니
+  // 이 함수는 저장소를 건드릴 이유가 없다.
+  it("does not write any palette tab state to storage", () => {
+    const root = document.createElement("div");
+    root.dataset.testid = "left-palette-root";
+    document.body.append(root);
+    editorState.set({ selectedTile: 105, layer: "lower" });
+    revealPaletteTileFromMap(105);
+    expect(localStorage.getItem("oprn:palette-work-tab")).toBeNull();
+    expect([...storage.keys()].filter((key) => key.includes("palette-work-tab"))).toEqual([]);
+  });
+});

@@ -1,0 +1,42 @@
+// 물 찬 나무 빨래 통과 기대어 잠긴 빨래판; 물 윗면 5행(y=6~10), 빨래판 머리 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood
+@mat p pine
+@mat i iron
+@mat a water
+@mblock 0 0
+..........ppp...
+.........ppppp..
+.........ppppp..
+.........piiip..
+.........piiip..
+....wwwwwpiiip..
+..wwaaaaapiiipw.
+.wwaaaaaapiiipw.
+.waaaaaapiiipaw.
+.waaaaaapppppaw.
+.wwaaaaaaaaaaww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+...wwwwwwwwww...
+@tblock 0 0
+..........222...
+.........46542..
+.........34332..
+.........34442..
+.........42222..
+....5655434442..
+..6512222422221.
+.65124442344421.
+.64224434222221.
+.64233333333221.
+.65322222222341.
+.56665555444431.
+.46545445434321.
+..454644543432..
+..354555443332..
+...2333333322...

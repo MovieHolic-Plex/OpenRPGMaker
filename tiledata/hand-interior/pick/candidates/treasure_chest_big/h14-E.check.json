@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_chest_big/h14-E.pxg",
+ "id": "treasure chest big",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  3,
+  29,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "검은 호두색 궤+놋 띠 두 줄·정수리 파란 보석 판·큰 놋 자물쇠로 새로 그림(큰 보물상자 E)",
+ "ok": true
+}

@@ -1,0 +1,129 @@
+{
+  "sourceSha256": "f33ec07a5fd17f4422455f8bc55cd3d3522fa65c3bf740ecbdc00da705eaa0d1",
+  "sourceUrl": "https://github.com/pret/pokeemerald/blob/master/graphics/object_events/pics/people/brendan/walking.png",
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "method": "explicit-native-head-row-edits-and-palette-substitution",
+  "seed": {
+    "role": "rival",
+    "label": "라이벌",
+    "variant": "A",
+    "head": "hair",
+    "description": "갈색 짧은 머리 · 남색 재킷 · 초록 가방",
+    "palette": {
+      "5": "57433b",
+      "9": "9a6844",
+      "E": "c09262",
+      "A": "769950",
+      "B": "466c43",
+      "C": "7497b9",
+      "D": "46688b"
+    }
+  },
+  "headRows": {
+    "down": [
+      [
+        4,
+        "55555555"
+      ],
+      [
+        3,
+        "5999999995"
+      ],
+      [
+        3,
+        "59EEE99995"
+      ],
+      [
+        2,
+        "5999EEE99995"
+      ],
+      [
+        2,
+        "F5999999955F"
+      ],
+      [
+        2,
+        "F5999999955F"
+      ],
+      [
+        2,
+        "F8111111118F"
+      ],
+      [
+        2,
+        "F8111111118F"
+      ]
+    ],
+    "up": [
+      [
+        4,
+        "55555555"
+      ],
+      [
+        3,
+        "5999999995"
+      ],
+      [
+        3,
+        "59EEE99995"
+      ],
+      [
+        2,
+        "599EEE999995"
+      ],
+      [
+        2,
+        "F5999999995F"
+      ],
+      [
+        2,
+        "F5999999995F"
+      ],
+      [
+        2,
+        "F5999999995F"
+      ],
+      [
+        2,
+        "F8999999998F"
+      ]
+    ],
+    "left": [
+      [
+        4,
+        "5555555"
+      ],
+      [
+        3,
+        "599999995"
+      ],
+      [
+        2,
+        "59EEE99995"
+      ],
+      [
+        2,
+        "59EE9999995"
+      ],
+      [
+        2,
+        "F599999995F"
+      ],
+      [
+        2,
+        "F599999995F"
+      ],
+      [
+        2,
+        "F911188995F"
+      ],
+      [
+        2,
+        "F111188885F"
+      ]
+    ]
+  },
+  "generatorSha256": "d977f97a555edea3e7829441f5f9d704568e8c868cf39fde62b0fb3fcbe2698a",
+  "resizingAuthoredPixels": false,
+  "mapContext": "Placement mockup. Existing hero above; candidate below. Not runtime QA."
+}

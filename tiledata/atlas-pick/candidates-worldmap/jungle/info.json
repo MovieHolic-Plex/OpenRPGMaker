@@ -1,0 +1,60 @@
+{
+ "id": "jungle",
+ "slug": "jungle",
+ "name": "밀림",
+ "scene": "숲·늪",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "남쪽 섬의 열대 밀림. 활엽수 숲보다 어둡고 채도 높은 초록, 수관 사이로 **야자 잎 갈래(가는 잎 5갈래 별꼴)** 가 섞여 윤곽이 들쭉날쭉. 숲(forest)과 한눈에 구분되게 — 잎 끝이 뾰족하게 삐져나온다. 남쪽 변 줄기는 가늘고 휜다.",
+ "palette_hint": "wmead 짙은 단·wleaf, wbark",
+ "worker": "wv5",
+ "style": "mass",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

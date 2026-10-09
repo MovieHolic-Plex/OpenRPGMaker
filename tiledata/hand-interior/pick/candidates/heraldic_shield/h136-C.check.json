@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/heraldic_shield/h136-C.pxg",
+ "id": "heraldic shield",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  12,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "큰 파랑·금 사분면과 금빛 사자 한 마리, 얇은 쇠테·뾰족한 하단으로 단순하고 또렷한 벽걸이 방패를 새로 그림; 꼭대기 윗면 0행(y=해당 없음, 지시서의 평평한 벽걸이 예외).",
+ "ok": true
+}

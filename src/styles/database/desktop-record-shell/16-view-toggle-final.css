@@ -1,0 +1,26 @@
+/* Database view toggle final owner.
+   studio-v2.css supplies the modern base button. This late slice owns the
+   active and focus states so earlier party fixes cannot be overridden by the
+   later studio shell. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle {
+  appearance: none;
+  cursor: pointer;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle:hover {
+  border-color: var(--accent-primary, var(--accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle.active,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle[aria-pressed="true"] {
+  background: var(--accent-primary, var(--accent));
+  border-color: var(--accent-primary, var(--accent));
+  color: var(--on-accent);
+  font-weight: 700;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle:focus-visible,
+.database-modal-body .oprn-record-list-pane input:focus-visible {
+  outline: 2px solid var(--accent-primary, var(--accent));
+  outline-offset: 1px;
+}

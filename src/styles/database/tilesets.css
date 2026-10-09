@@ -1,0 +1,367 @@
+/* 모던 레이어(새 규칙 전용). index.css 에 따로 넣지 말 것 — 여기서 한 번만 로드한다.
+   셀렉터가 workspace-modern.css 보다 한 클래스 더 구체적이라 순서에 의존하지 않는다. */
+
+/* 2026-08 모던 개편: 타일셋 탭은 databaseWorkspace 프리미티브(workspaceShell/listPane/
+   detailPane)를 쓴다. 예전 손조립 셸(`.oprn-tileset-workspace` 2열 그리드,
+   `.oprn-tileset-list-pane` 3행 그리드, `.oprn-maximum-button` 전폭 바,
+   `.oprn-tileset-editor` 2행 그리드에 자식 3개)은 전부 지웠다 — 그 3행/2행 불일치가
+   게이트의 clipped:9 overlap:1 을 만들던 원인이다. 새 규칙은
+   `database/modern/tilesets.css` 에 있다. */
+
+/* 이 다이얼로그는 DB 모달 안에서만 열리는데(tilesetSettingsPanel → openTilesetSettingsModal)
+   body 직속이라 .database-modal-backdrop 과 같은 스택 컨텍스트의 형제다.
+   --z-popover(90) 는 모달 배경보다 낮아 다이얼로그가 자기를 띄운 모달 뒤로 숨었다.
+   같은 패널에서 뜨는 다른 다이얼로그들과 동일하게 모달 사다리로 올린다. */
+.tileset-modal-backdrop {
+  z-index: var(--z-modal-overlay);
+}
+
+.database-modal-body .oprn-tileset-properties {
+  align-items: end;
+  background: var(--bg-raised);
+  border: 0;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(120px, 0.28fr) minmax(180px, 0.5fr) minmax(88px, auto) minmax(200px, auto);
+  padding: 0;
+}
+
+.database-modal-body .oprn-tileset-properties .oprn-db-fieldset {
+  padding: 4px 6px 3px;
+}
+
+.database-modal-body .oprn-tileset-properties .oprn-db-fieldset legend {
+  font-size: 11px;
+  padding: 0 2px;
+}
+
+.database-modal-body .oprn-tileset-name-field .db-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-body .oprn-tileset-name-field .db-field > span {
+  display: none;
+}
+
+.database-modal-body .oprn-tileset-name-field input {
+  width: 100%;
+}
+
+.database-modal-body .oprn-tileset-graphic-field {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 24px;
+}
+
+.database-modal-body .oprn-tileset-graphic-value {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-1);
+  font: 400 12px/18px var(--font-ui);
+  min-height: 20px;
+  overflow: hidden;
+  padding: 1px 4px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* "설정..." 세 글자짜리 라벨을 24px(모던 레이어에서는 34px) 정사각형에 못박아 두어
+   글자가 두 줄로 접히며 버튼과 fieldset 밖으로 흘렀다. 내용 폭을 쓴다. */
+.database-modal-body .oprn-browse-button {
+  min-width: 0;
+  padding: 0 10px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.database-modal-body .oprn-tileset-transparent-field {
+  min-width: 192px;
+}
+
+.database-modal-body .oprn-transparent-row {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 26px minmax(76px, 1fr) auto;
+}
+
+.database-modal-body .oprn-transparent-color {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  height: 22px;
+  padding: 1px;
+  width: 26px;
+}
+
+.database-modal-body .oprn-transparent-hex {
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-body .oprn-transparent-reset {
+  min-height: 22px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+.database-modal-body .oprn-tileset-layer-tabs {
+  align-self: end;
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.database-modal-body .oprn-global-terrain-button {
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .oprn-global-terrain-button.primary {
+  min-width: 86px;
+}
+
+/* 세로 크기는 상세 창 본문(`.db-ws-detail-body`)이 정한다. 예전의
+   `min-height: min(72vh,720px)` 은 자기 그리드 트랙보다 커져서 형제(AI 런처)와
+   69px 겹치고 조상 overflow:hidden 에 189px 잘리던 원인이라 뺐다. */
+.database-modal-body .oprn-tileset-main {
+  display: grid;
+  gap: 6px;
+  /* 칩셋 시트가 주인공 — 우측 보조 패널은 읽을 수 있는 최소 폭만 */
+  grid-template-columns: minmax(0, 1fr) minmax(196px, 232px);
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.database-modal-body .oprn-tileset-main.no-side-pane {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 좌측 편집 도구/선택 타일 열은 128px 이었다 — "자동 / 하위 / 상위" 세 버튼 중 셋째가
+   통째로 잘리고 의미 입력이 한 줄에 6~7자만 들어가던 폭이다. */
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(212px, 244px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.passage-paint {
+  grid-template-columns: minmax(0, 1fr) minmax(168px, 196px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.autotile-compose {
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 340px);
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.autotile-compose > .tileset-autotile-toolbar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.autotile-compose > .tileset-db-preview-wrap {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-area.autotile-compose > .tileset-db-edit-sidebar {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-edit-sidebar {
+  gap: 6px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-tools {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr;
+  padding: 10px 7px 7px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-tools::before {
+  color: var(--text-1);
+  content: "편집 도구";
+  font: 400 11px/1 var(--font-ui);
+  margin-top: -16px;
+  padding: 0 4px;
+  width: max-content;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-tools button,
+.database-modal-body .oprn-tileset-terrain-pane .database-footer-button {
+  font: 400 12px/18px var(--font-ui);
+  min-height: 24px;
+}
+
+.database-modal-body .oprn-tileset-terrain-pane .database-footer-button {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-body .oprn-tileset-terrain-pane .database-footer-button:disabled,
+.database-modal-body .oprn-tileset-terrain-pane .database-footer-button.disabled {
+  color: var(--text-2);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.database-modal-body .oprn-browse-button:disabled,
+.database-modal-body .oprn-tileset-layer-tabs button:disabled {
+  color: var(--text-2);
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-tools button.active,
+.database-modal-body .oprn-tileset-edit-mode .database-footer-button.active {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+.database-modal-body .oprn-tileset-main .tileset-db-selected-tile {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  padding: 7px;
+  display: grid;
+  gap: 6px;
+  max-height: min(52vh, 420px);
+  overflow: auto;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit {
+  margin: 0;
+  padding: 6px 8px 8px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit textarea,
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit input {
+  min-height: 2.6em;
+  width: 100%;
+  resize: vertical;
+  font: 400 12px/1.35 var(--font-ui, system-ui, sans-serif);
+}
+
+.database-modal-body .oprn-tileset-main .tileset-advanced-details {
+  margin-top: 6px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-advanced-details > summary {
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-tile-meaning-edit textarea[data-testid="tileset-field-ai-description"] {
+  min-height: 4.5em;
+}
+
+.database-modal-body .oprn-tileset-main .tileset-selected-source-badge {
+  color: var(--text-dim, var(--text-1));
+  font-size: 11px;
+}
+
+/* 칩셋 우클릭 메뉴 — map-context-menu 그리드(아이콘|라벨|단축키)에 맞춤 */
+.tileset-tile-context-menu {
+  z-index: var(--z-modal);
+  min-width: 260px;
+  max-width: min(360px, calc(100vw - 16px));
+  width: max-content;
+}
+
+.tileset-tile-context-menu .tileset-tile-context-item {
+  /* 라벨이 잘리지 않게 */
+  grid-template-columns: 12px minmax(12rem, 1fr) 0;
+}
+
+.tileset-tile-context-menu .map-context-menu-label {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.tileset-meaning-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-overlay);
+  display: grid;
+  place-items: center;
+  background: rgba(60, 48, 32, 0.12);
+  padding: 16px;
+}
+
+.tileset-meaning-dialog-panel {
+  width: min(420px, 100%);
+  background: var(--bg-elev, var(--bg-raised, #1e1e24));
+  border: 1px solid var(--border-default, #444);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(60, 48, 32, 0.12);
+  color: var(--text, #eee);
+  display: grid;
+  gap: 0;
+}
+
+.tileset-meaning-dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-soft, #333);
+}
+
+.tileset-meaning-dialog-close {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+/* 이름 붙일 칩을 창 안에서 바로 보여준다(창이 시트를 가리기 때문에 필수). */
+.tileset-meaning-dialog-thumb {
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  flex: 0 0 auto;
+  image-rendering: pixelated;
+}
+
+.tileset-meaning-dialog-header strong {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 「적용」이 기본 동작이다. 예전에는 취소와 배경·테두리·글자색이 완전히 같고
+   font-weight 만 400/600 으로 달라서 어느 쪽이 기본인지 알 수 없었다. */
+.tileset-meaning-dialog-footer .database-footer-button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.tileset-meaning-dialog-footer .database-footer-button.primary:hover {
+  filter: brightness(1.08);
+}

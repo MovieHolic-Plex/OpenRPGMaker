@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하네싱·타일셋 설정 실패 사례집 (2026-07-12 ~ 07-18)</title>
+<style>
+:root{
+  --bg:#faf9f6; --surface:#ffffff; --ink:#1f2430; --ink-2:#4a5265; --ink-3:#8089a0;
+  --line:#e3e1da; --accent:#4c78c9; --accent-2:#d9822b; --good:#3f8f5f; --warn:#b98a1f; --bad:#c05555; --code-bg:#f0eee8;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#14161c; --surface:#1b1e26; --ink:#e8eaf0; --ink-2:#aeb4c4; --ink-3:#79819a;
+    --line:#2c3040; --accent:#7ba3e8; --accent-2:#e8a05c; --good:#6dc493; --warn:#d9b25c; --bad:#e08585; --code-bg:#232734;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.75 "Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:32px 20px 96px}
+h1{font-size:1.8rem;line-height:1.3;margin:.2em 0 .3em}
+h2{font-size:1.35rem;margin:0 0 .3em;padding-top:1.2em}
+h3{font-size:1.02rem;margin:1.2em 0 .3em;color:var(--ink-2)}
+p{margin:.6em 0}
+code{background:var(--code-bg);padding:.08em .35em;border-radius:4px;font-size:.86em;font-family:Consolas,"Cascadia Mono",monospace}
+.meta{color:var(--ink-3);font-size:.9rem;margin-bottom:1.4em}
+section{border-top:2px solid var(--line);margin-top:2.2em}
+.lead{color:var(--ink-2)}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;padding:.1em .55em;border-radius:99px;vertical-align:middle;white-space:nowrap}
+.b-fixed{color:var(--good);border:1px solid var(--good)}
+.b-part{color:var(--warn);border:1px solid var(--warn)}
+.b-open{color:var(--bad);border:1px solid var(--bad)}
+.b-p0{background:var(--bad);color:#fff}
+.b-p1{background:var(--accent-2);color:#fff}
+.b-p2{background:var(--ink-3);color:#fff}
+.case{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:14px 18px;margin:12px 0}
+.case.sev0{border-left-color:var(--bad)}
+.case.sev1{border-left-color:var(--accent-2)}
+.case h4{margin:0 0 6px;font-size:1rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.case dl{display:grid;grid-template-columns:64px 1fr;gap:4px 12px;margin:.4em 0 0;font-size:.92em}
+.case dt{color:var(--ink-3);font-weight:600}
+.case dd{margin:0}
+.case .lesson{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--code-bg);font-size:.9em}
+.case .lesson b{color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:.88em;margin:.8em 0}
+.tablewrap{overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--code-bg);white-space:nowrap}
+.rules{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 22px;margin:1em 0}
+.rules li{margin:.55em 0}
+.rules b{color:var(--accent)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:.8em 0 0}
+.toc a{text-decoration:none;color:var(--accent);border:1px solid var(--line);border-radius:99px;padding:.15em .8em;font-size:.85rem;background:var(--surface)}
+footer{margin-top:56px;color:var(--ink-3);font-size:.84rem;border-top:1px solid var(--line);padding-top:14px}
+.dim{color:var(--ink-3)}
+</style>
+</head>
+<body>
+<main>
+
+<h1>하네싱·타일셋 설정 실패 사례집</h1>
+<p class="meta">rpg-zzu · 기록 기간 2026-07-12 ~ 07-18 · 작성 2026-07-18 ·
+근거: 세션 메모리(실내/던전 칩셋 감사, combined_town 정본, 마을 적대 리뷰, 100×100 리뷰, 성 문법 정본, main 단일화) +
+docs/2026-07-16-village-harness-adversarial-review.md · docs/2026-07-18-castle-grammar.html · docs/2026-07-18-castle-variants.html</p>
+
+<p class="lead">타일셋 설정과 절차 시공 하네스를 만들며 실제로 밟은 실패들을 도메인별로 정리했다.
+각 사례는 <b>증상 → 근본 원인 → 해소 → 교훈</b> 구조이고, 마지막 절에 반복 패턴에서 뽑은 재발 방지 수칙을 모았다.
+심각도: <span class="badge b-p0">P0</span> 데이터 손실/전면 오작동 · <span class="badge b-p1">P1</span> 품질 훼손 ·
+<span class="badge b-p2">P2</span> 미관/부분 결함. 상태: <span class="badge b-fixed">해소</span>
+<span class="badge b-part">부분 해소</span> <span class="badge b-open">미해소</span></p>
+
+<div class="toc">
+<a href="#tileset">① 타일셋/칩셋 설정</a>
+<a href="#autotile">② 오토타일</a>
+<a href="#village">③ 마을 하네스</a>
+<a href="#castle">④ 성 하네스</a>
+<a href="#evalgate">⑤ 평가 게이트의 구조적 함정</a>
+<a href="#rules">⑥ 재발 방지 수칙</a>
+</div>
+
+<!-- ══════════════════ ① 타일셋/칩셋 ══════════════════ -->
+<section id="tileset">
+<h2>① 타일셋/칩셋 설정 실패</h2>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 옛 칩셋 이미지 기준 매핑이 코드에 잔존 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>실내 "바닥" 타일(270/271/300/301)이 실제로는 잔디, "벽"(1~3/31~33)이 연못 물 — 스탬프 실내가 시각적으로 전혀 다른 것을 그림. 던전도 동일: 옛 하네스 4그룹 중 3개가 물 타일 오답(석벽 자리 1~3/31~33 = 물웅덩이·수로).</dd>
+<dt>원인</dt><dd>칩셋 이미지가 교체된 적이 있는데 타일 ID 매핑은 옛 이미지 기준으로 남음. 던전 그룹은 실내 것을 복붙한 흔적까지 있었음 — <b>이미지가 바뀌면 같은 번호가 전혀 다른 그림이 된다</b>는 사실을 시스템이 어디서도 강제하지 않음.</dd>
+<dt>해소</dt><dd>vision 8~14x 업스케일로 480타일 전수 감사 → 정본 시맨틱 테이블 신설(<code>tileSemanticsInterior.ts</code> / <code>tileSemanticsDungeon.ts</code> / <code>tileSemanticsCombinedTown.ts</code>), 하네스 그룹 재작성(던전 4→28그룹 pack v2).</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 칩셋을 쓰기 전에 반드시 전수 감사부터. 타일 번호는 좌표일 뿐 의미가 아니다 — 의미의 정본은 코드 상수가 아니라 시맨틱 테이블 한 곳에만 둔다.</div>
+</div>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 시트 PNG 오염 — 작업 부산물이 원본을 덮음 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>실내 시트의 4타일(233/234/257/258)에 벽 오토타일 작업의 그림자 라벨이 덧그려져 있었음. 이 오염 시트로 픽셀 경계 전수 대조를 돌리는 바람에 "긴 탁자는 상단 캡이 없다" 같은 <b>2차 오판</b>까지 생산(234가 그림자로 덮여 있었음).</dd>
+<dt>원인</dt><dd>렌더 실험이 소스 에셋을 직접 수정 + 그 상태로 판독 파이프라인을 돌림.</dd>
+<dt>해소</dt><dd>git restore로 복원, 라벨 타일은 시트 픽셀을 절대 쓰지 않는 전체 쿼터 합성 규칙(<code>INTERIOR_WALL_LABEL_TILES</code>)으로 대체. 234=세로 긴 탁자 상단 캡으로 재판정.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 경계/배경 검사는 반드시 <b>복원(정상) 시트</b>에서. 배경색은 가정하지 말고 실측(실제 배경 255,103,139는 B&lt;140이라 "B&gt;140" 임계값이 통째로 실패했다). 에셋은 읽기 전용 — 보완 작화는 사용자 승인 후 별도 커밋.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> vision 판독 오판 모음 — 사용자 교정으로 잡힌 것들 <span class="badge b-fixed">해소</span></h4>
+<div class="tablewrap"><table>
+<tr><th>오판</th><th>실제 (사용자 확정)</th></tr>
+<tr><td>444/445/474/475 = 유리 진열장/오르간</td><td>1칸 계단 4종(대각 오르막↗·내리막↘·어둠 하강 좌/우)</td></tr>
+<tr><td>465~467 = 카펫 술</td><td>붉은 카펫 <b>대계단</b>(좌·몸통 반복·우) — 귀족 전용</td></tr>
+<tr><td>388|418 = 가시덩굴 → 바닥 균열</td><td><b>벽 균열</b>(벽면 오버레이) — 2차 교정까지 감</td></tr>
+<tr><td>93 = 폭포</td><td>수로(석축 물)의 <b>오목 코너</b> — 수로는 호수와 같은 4분할 물 시스템의 스킨</td></tr>
+<tr><td>273/333 = 잔디</td><td>키큰 풀 NW/SW 모서리(잔디 그룹에서 제거)</td></tr>
+<tr><td>카운터 408~469 = 고정 블록</td><td>ㄱ/ㄷ자 <b>경로 키트</b>(가로/세로 반복 조각)</td></tr>
+<tr><td>412 = 밴 / 443 = 밴</td><td>412 = 하위 돌바닥(노두는 "412 패치+바위" 문법) · 443 = 밴 유지 → 후에 INN 간판 <b>이식 슬롯</b>으로 재활용</td></tr>
+<tr><td>378/380을 울타리 가로줄 끝캡으로 사용</td><td>둘레 세트의 <b>코너</b> — 끝캡으로 쓰면 아치 조각처럼 보임. 런의 시작/끝은 409/439</td></tr>
+</table></div>
+<div class="lesson"><b>교훈:</b> vision 단독 판정은 임시 라벨이다. 인접 판정은 픽셀 경계 diff로 정량화하되(연속쌍 ~40 vs 무관 1000+), <b>투명 vs 투명 변은 diff=0이어도 증거가 아니다</b>. 최종 정본은 사용자 확정을 거쳐야 하고, 교정은 그때마다 시맨틱 테이블에 즉시 반영한다.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> 라벨 이중 소스 — 큐레이션 정본과 에디터 표기 불일치 458/480 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>에디터 DB→타일셋 라벨이 "실내 나무 바닥 72"류의 그룹명 조립 문자열 — 큐레이션 정본과 458/480 타일이 불일치.</dd>
+<dt>원인</dt><dd>에디터는 <code>tileset.tileMeta</code>만 읽는데, tileMeta 시드는 하네스 그룹명 조립이었고 큐레이션 테이블은 검색 2곳에서만 소비 — <b>같은 지식의 소스가 두 개</b>.</dd>
+<dt>해소</dt><dd>시드가 큐레이션 테이블을 조회하도록 통일(+그룹 밖 타일 시드 패스, 사용자 수기 라벨만 우선). RTP 원판 결손(피아노 357 왼칸·왕좌 좌열 447/477 — 클론 오프셋 실수)은 미러 보완 작화로 채움.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 지식은 한 곳에 쓰고 나머지는 전부 파생시킬 것. "표시용 조립 문자열"이 정본을 이기는 순간 감사 결과가 증발한다.</div>
+</div>
+
+<div class="case">
+<h4><span class="badge b-p2">P2</span> 잔디 240 오토타일 승격 시도 <span class="badge b-fixed">해소(금지 규칙화)</span></h4>
+<dl>
+<dt>증상</dt><dd>잔디를 지형 오토타일 그룹으로 승격하면 전 맵이 그룹 멤버가 되어 성형 대상이 됨 — 회귀 위험.</dd>
+<dt>해소</dt><dd><code>TILE.GRASS=240</code>은 기본 바닥이므로 승격 영구 금지로 정본화. (유사 함정: <code>TILE.GRASS=240 ≠ 마을 잔디 270</code> — estate 울타리 판정에서 실제로 밟음.)</dd>
+</dl>
+</div>
+</section>
+
+<!-- ══════════════════ ② 오토타일 ══════════════════ -->
+<section id="autotile">
+<h2>② 오토타일 실패</h2>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 멤버 ≠ variantMap 출력 — 성형이 손마감 벽을 파괴 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>실내 벽(105 브러시) 옆 셀을 편집하면 손으로 마감한 트림(104)이 397로 덮여 벽이 깨짐.</dd>
+<dt>원인</dt><dd>104/106(트림)·396/398(문 알코브)이 오토타일 <b>멤버</b>였는데 variantMap은 이 타일들을 절대 생성하지 않음 → 성형은 이들을 <b>파괴만</b> 할 수 있음. 또 connect가 바닥 72만 알아서 테마 리틴트된 바닥(돗자리 139 등)을 공허로 오판.</dd>
+<dt>해소</dt><dd>불변식 확립: <b>멤버 = variantMap이 생성할 수 있는 타일만</b>(본체·4변·4모서리). 그 외는 connect 전용 동반 타일로 강등. connect에 전 바닥 재질+러그 등록. 시드는 seed-if-missing → 계약 갱신형으로 바꿔 저장된 옛 프로젝트도 재로드 시 치유.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 오토타일 그룹의 멤버십은 "관련 있어 보이는 타일 모음"이 아니라 성형 엔진의 입출력 계약이다. connect에 가구를 열거하는 식의 거대 집합도 금물(사용자 노출 목록이자 자동 연결 후보 입력).</div>
+</div>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 같은 타일 ID를 3계층이 해석 — 복원 불가능 상태 <span class="badge b-fixed">해소(Option B)</span></h4>
+<dl>
+<dt>증상</dt><dd>397이 "저장 오토타일의 edgeS"이자 "문턱"이자 "렌더 쿼터 소스"로 동시에 해석돼, 벽 편집이 서로를 되돌리는 복원 불가 상태.</dd>
+<dt>원인</dt><dd>저장 오토타일 / 쿼터 렌더 / 주택 셸 스탬프가 같은 숫자 공간을 각자 소유.</dd>
+<dt>해소</dt><dd><b>Option B</b>: 주택 셸 = 완성 통타일 writer(저장 오토타일 폐지) · 다크월은 366만 저장 · 368/396~458은 렌더 전용 아틀라스 소스 · 233/257/258 영구 금지. <code>paintHouseShellWalls</code>·<code>HOUSE_WALL_BRUSH</code>(105)·257 등 삭제 — <b>되살리면 그 버그가 그대로 돌아온다</b>.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 저장 계층의 좌표계는 하나여야 한다. "저장 타일 = 의미, 렌더 = 그 의미의 합성"으로 계층을 갈라야 안전하다. 렌더 개선은 저장 데이터 무변경으로 전 맵에 소급된다(다크월 쿼터 엔진 사례).</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> isMass 분류 누락 → 벽 뒤 공허로 조각 누출 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>다크월 자리에 크림 회벽을 놓으면 뒤쪽 공허 칸에 벽 조각(428/368)이 흘러나옴("매우 많이 망가짐").</dd>
+<dt>원인</dt><dd>합성 트리거(중심 게이트)와 이웃-벽 판정이 <code>INTERIOR_DARK_MASS_TILES</code> 한 집합에 섞여 있어, 회벽면이 "열림"으로 분류됨.</dd>
+<dt>해소</dt><dd><code>INTERIOR_WALL_FACE_TILES</code> 신설 — <b>isMass(이웃 판정)에만</b> 포함, 중심 게이트에는 불포함. 잔여: 벽면 바로 아래 고형 가구(화덕 하단 51, 책장) 셀 위를 편집하면 저장 성형이 여전히 깸 <span class="badge b-part">부분 해소</span>.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> "이 타일은 벽인가"라는 질문은 문맥이 두 개다(내가 합성을 시작하는가 / 이웃이 나를 막는가). 하나의 집합으로 두 역할을 겸하게 하면 반드시 한쪽이 틀린다.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> 에디터 증분 리렌더가 이웃 셀을 빼먹음 — 잔상 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>430 펜으로 칠할 때 계단식 프레임 조각 잔상. 맵 데이터·스크립트 렌더는 정상(화면 전용 오염).</dd>
+<dt>원인</dt><dd>증분 리렌더가 "칠한 셀만" 다시 그림 — 쿼터 합성(다크월 랩·9-슬라이스·호수·길)은 이웃 의존이라 이웃 셀의 낡은 조각이 남음.</dd>
+<dt>해소</dt><dd>하위 레이어 변경 시 8방 이웃도 재렌더.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 이웃 의존 렌더에서 더티 영역은 "변경 셀 + 영향 반경"이다. 스크린샷 검증 시 데이터 버그와 화면 버그를 먼저 분리할 것.</div>
+</div>
+
+<div class="case">
+<h4><span class="badge b-p2">P2</span> 템플릿에 없는 형상 — 얇은 런·오목 대각 <span class="badge b-part">부분 해소</span></h4>
+<dl>
+<dt>증상</dt><dd>폭/높이 1칸 런은 3×4 템플릿에 전용 타일이 없어 형상이 뭉개짐. 오목(inner) 코너의 대각 결손도 통짜 근사.</dd>
+<dt>해소</dt><dd>얇은 런은 8×8 쿼터 합성(모래·흙길 전용이던 것)을 내장 11종 전체로 확장. 오목 대각의 정본 RM2K식 쿼터 4장 합성은 개선 후보로 남음.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> RM2K 오토타일의 원리는 셀당 8×8 쿼터 4장 독립 합성 — 템플릿 타일이 모자라면 타일을 늘리는 게 아니라 쿼터 합성으로 푸는 게 정석.</div>
+</div>
+</section>
+
+<!-- ══════════════════ ③ 마을 하네스 ══════════════════ -->
+<section id="village">
+<h2>③ 마을 하네스 실패 <span class="dim" style="font-size:.7em">(2026-07-16 적대 리뷰 + 07-17 100×100 리뷰)</span></h2>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 재시도가 프로젝트 전체 맵을 삭제 (wipeProjectMaps) <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd><code>run_village_pipeline</code> 재시도가 <code>draft.maps={}</code>로 사용자의 무관한 기존 맵까지 전부 삭제.</dd>
+<dt>해소</dt><dd>진입 시점 스냅샷 기준선(<code>snapshotProjectMaps</code>) + 이번 attempt가 만든 맵만 지우고 트리·시작점을 기준선으로 복원(<code>wipeAttemptMaps</code>). PR #26이 독립적으로 만든 동등 수정(prunePipelineMaps)과 병합 시 이쪽을 정본 채택, 회귀 테스트 <code>villagePipelineMapPrune.test.ts</code>.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 파괴 연산은 "내가 만든 것"으로 범위를 증명 가능하게 한정하라. 전역 초기화는 절대 되살리지 말 것("예전 wipeProjectMaps 절대 부활 금지" — 코드 주석에도 명시됨).</div>
+</div>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 심판이 피고의 자기신고를 믿음 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>평가기의 자연 검사 전체가 builder가 직접 쓴 <code>layoutPlan.kind</code>에 게이팅 — builder가 안 썼다고 하면 검사 자체가 안 돎. doorFronts가 빈 배열이면 도달성 무검사 통과. settlement 레이어는 검증 없이 done. 랜드마크(호수·숲)는 실측 없이 성공 처리.</dd>
+<dt>해소</dt><dd>orphanDoor·exitRoads 검사를 게이팅 밖으로, doorFronts=0 → 평가 실패, settlement verifyLayer 접속, 랜드마크는 <code>countWaterCells</code>/<code>countTreeCells</code> 실측 게이트(물&lt;30·나무&lt;15 → ToolError), 집 0채 → ToolError.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 평가기는 시공기의 메타데이터가 아니라 <b>맵 타일 실측</b>으로 판정해야 한다. "검사할 것이 없다"는 통과가 아니라 실패다.</div>
+</div>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 100×100 시공 1,065초 + houseCount 무시 + 밀도 붕괴 <span class="badge b-fixed">해소(v2)</span></h4>
+<dl>
+<dt>증상</dt><dd>면적 4배에 시간 ~60배(초선형). houseCount 18 요청이 무경고로 8채. 집 수·광장이 면적과 무관해 중앙 25×40 공백.</dd>
+<dt>원인</dt><dd>진범은 <code>place_props</code> 후보 전수 재채점(모든 배치마다 전 후보 재계산). 인자는 별칭 경로가 계획기에서 소비되지 않았음. 레이아웃은 "작은 맵 상수"가 대형에 그대로.</dd>
+<dt>해소</dt><dd>후보 512 캡 → <b>9.9초</b>. houseCount 별칭+면적 비례 기본. 대로 우선 재설계(대로→접면 필지→가지치기)로 22채·도로 성분 1.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 시공 파이프라인은 맵 면적 스케일 테스트를 함께 잡아라. 인자는 받는 것보다 "소비되는 경로"를 검증해야 한다(무시된 인자는 무경고가 최악).</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> 지붕 침범 — 보호구역을 모르는 범용 도구들 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>스크린샷에서 "지붕 위에 길". 용마루 위 나무 밑동, 울타리가 용마루 행 침범.</dd>
+<dt>원인</dt><dd>bright 킷이 용마루 upper를 <b>bbox.y-1(bbox 밖)</b>에 그리는데 모든 회피 마스크는 bbox만 봄. <code>place_props</code>는 houseBlocked 개념 자체가 없는 범용 도구.</dd>
+<dt>해소</dt><dd>houseBlockedCells가 y-1 포함, 울타리 앞마당 전용화+기존 upper 보존, <code>clearHouseRidgeRowProps</code> 후처리(잔디 복원+용마루 재스탬프), audit.ridgeInvaded 신설. 길은 <b>시공 전 스냅샷 → 침범 점검 → 롤백 재시도 최대 100회</b> 훅(paintVillageRoadsChecked)으로 원천 차단.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 구조물의 실제 점유는 bbox가 아니라 "그린 칸 전부"다. 보호구역을 모르는 범용 도구가 지나간 뒤엔 결정적 후처리 복원이 필요하다.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> CI가 라이브 LegacyDb에 업서트 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd><code>lakeVillageRebuildFinal.test.ts</code>가 테스트 실행마다 라이브 DB에 마을을 저장.</dd>
+<dt>해소</dt><dd>기본 vitest에서 exclude, 라이브 검증은 <code>vitest.live.config.ts</code>로 분리(옵트인).</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 네트워크 부수효과가 있는 테스트는 기본 스위트에서 격리. "마을 스크립트 31개 중 네트워크 없이 재현 가능 0개"였던 상태 자체가 경보였다.</div>
+</div>
+
+<div class="case">
+<h4><span class="badge b-p2">P2</span> 기타 드리프트·함정 모음 <span class="badge b-fixed">해소</span></h4>
+<div class="tablewrap"><table>
+<tr><th>사례</th><th>내용/해소</th></tr>
+<tr><td>MAX_HOUSES 드리프트</td><td>plan 12 vs builder 32 — villagePlan 단일 소스로 통일</td></tr>
+<tr><td>호수 침수</td><td>buildable 마스크가 lakeRect 미제외 → 물 마스크 셀 집 배치 제외. 단 <b>숲은 의도적으로 제외 안 함</b>(막으면 기존 시드 배치가 바뀌어 look 게이트 회귀 — seed 77 실증)</td></tr>
+<tr><td>모래 = ROAD_TILES 겹침</td><td>백사장을 도로로 오검출 → "물 접안 순수 모래" 필터로만 구분</td></tr>
+<tr><td>최소 템플릿 폭 강등</td><td>집 형태 최소 폭 4가 slotWidth를 끌어내려 대형 맵 전원 초소형 — "8폭 한 열이라도 서면 8"로 수정</td></tr>
+<tr><td>수로 발원 문법 부재</td><td>민가 문앞 발원·양끝 데드엔드 → landscape 모듈에 물의 발원→하구 논리 신설</td></tr>
+</table></div>
+</div>
+</section>
+
+<!-- ══════════════════ ④ 성 하네스 ══════════════════ -->
+<section id="castle">
+<h2>④ 성 하네스 실패 <span class="dim" style="font-size:.7em">(2026-07-17 ~ 07-18, 문법 정본 확정까지)</span></h2>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> "데크 없는 맨 성벽" — 성벽 위 통행면 누락 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>커튼월이 정면 3단(21/51/81)만으로 서 있음. 실제 정본(사용자 손그림)은 <b>성벽 위에 반드시 통행 데크</b>(19→49→109)가 얹히고 정면은 그 아래 2층(51/81)뿐. 캔버스 견본판 (C)도 같은 위반. 1차로 07-17 남쪽 커튼이 데크를 덮어쓰는 회귀(9d8dd89로 교정), 2차로 07-18 실측에서 <b>타일 21은 사용 0회</b>(상단 마감은 109 담당)까지 확정.</dd>
+<dt>원인</dt><dd>초기 성 킷이 "성벽 = 세로 3단 벽"이라는 잘못된 모델로 출발 — 코드에서 문법을 역산한 분석 보고서가 그 오류를 그대로 정본화하기까지 함.</dd>
+<dt>해소</dt><dd>정본 문법 역공학(docs/2026-07-18-castle-grammar.html) → castleKit 전면 정본화(main 8b7c77b): <code>paintDeckBlock</code>이 데크+정면을 원자적으로 시공(맨 벽 경로 자체 삭제), <code>paintWallFace*</code> 제거, 문법 린트 (a) "정면 열 위 데크 존재"가 게이트로 상시 검사.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 문법의 정본은 조립 코드가 아니라 <b>사용자가 직접 찍은 실측 맵</b>이다. 코드에서 역산한 문법 문서는 코드의 버그까지 정본화한다.</div>
+</div>
+
+<div class="case sev0">
+<h4><span class="badge b-p0">P0</span> 원형 타워 겹침 — 캡·베이스가 밑 타일을 잔디로 강제 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>타워를 데크/포석 위에 스탬프하면 캡·베이스 자리에 잔디 구멍. 재구성 스크립트는 타워 4기를 데크 모서리에 찍어 데크 행 절단.</dd>
+<dt>원인</dt><dd>구 <code>paintRoundTower</code>가 캡·베이스 행 lower를 GRASS로 강제(상위 레이어 뒤 비침 설계를 무시). 정본은 <b>벽선 매립</b>: 캡 24|25(상위)가 데크 하변 위에 얹히고 밑 타일은 보존, 데크 상변·보행면은 절대 절단 금지.</dd>
+<dt>해소</dt><dd><code>paintTowerEmbedded</code> 신설 — 자리 검증(캡=데크 하변, 아래=정면 51) + 몸통 경로에 다른 데크 있으면 <b>시공 거부</b>, 캡·베이스 upper 전용. 창도 "중앙 1행"이 아니라 몸통과 한 행 걸러 교대(실측), 데크 명암 교대(48/79/50)도 단일톤으로 교정. 린트 (c)(d)(e)가 게이트.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 상위 레이어 소품은 "밑을 지운다"가 아니라 "밑을 보존한 채 얹는다"가 기본값이어야 한다. 배치 함수는 자리가 문법에 맞지 않으면 조용히 찍지 말고 거부해야 한다.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> 반쪽 배너 — 세로 페어를 단독 타일로 취급 <span class="badge b-fixed">해소</span></h4>
+<dl>
+<dt>증상</dt><dd>179(현수막 상)와 209(걸개 하)를 별개 소품으로 걸어 반쪽 배너가 양산됨(칩셋 알파로 상/하반부임이 확증됨).</dd>
+<dt>해소</dt><dd><code>paintBanners</code>가 179+209 세로 페어만 시공(순정 109+51+빈 upper 가드), 린트 (f)가 반쪽을 잡음.</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 멀티타일 소품(세로/가로 페어, 2×2)은 개별 타일이 아니라 세트가 배치 단위다 — 석상 266+296, 돌기둥 267+297, 나무 수관+밑동도 동일 계열.</div>
+</div>
+
+<div class="case sev1">
+<h4><span class="badge b-p1">P1</span> 잘못된 문법을 정본화한 1차 분석 보고서 <span class="badge b-fixed">폐기·재작성</span></h4>
+<dl>
+<dt>증상</dt><dd>확장 전략 보고서(scale-analysis)가 "단독 정면 벽 합법", "창 중앙 1행", "데크 2행 명암 리듬", 겹친 타워 렌더를 정상례로 게재 — 사용자 오답 판정.</dd>
+<dt>원인</dt><dd>분석의 신뢰 순서가 거꾸로: castleKit 코드 → 문법. 코드가 피고인데 판례로 삼음.</dd>
+<dt>해소</dt><dd>신뢰 순서를 (1) 사용자 손그림 실측 (2) 금본 커밋 diff (3) 재구성 맵 (4) 코드(피의자)로 뒤집어 재분석 — 오류 8건을 실측 반증과 함께 표로 남김(grammar.html ⑦절).</dd>
+</dl>
+<div class="lesson"><b>교훈:</b> 분석 에이전트에게는 소스 신뢰 우선순위를 명시적으로 줘야 한다. "구현이 이렇다"와 "문법이 이렇다"는 다른 명제다.</div>
+</div>
+
+<div class="case">
+<h4><span class="badge b-p2">P2</span> 잔여 <span class="badge b-open">미해소(낮은 우선)</span></h4>
+<dl>
+<dt>내용</dt><dd>스크립트 3종의 구본 견본 위반 잔존(build-castle-canvas.mts 견본판 (C) 맨 성벽 · save-castle-rebuilt.mts 데크 0행+타워 절단+반쪽 배너 · build-castle-showcase.mts 동계열). 하네스 경로가 정본화됐으므로 실해악은 없으나, 캔버스 재생성 시 견본판이 위반 예시를 다시 심는다.</dd>
+</dl>
+</div>
+</section>
+
+<!-- ══════════════════ ⑤ 평가 게이트 ══════════════════ -->
+<section id="evalgate">
+<h2>⑤ 평가 게이트의 구조적 함정 <span class="dim" style="font-size:.7em">(도메인을 가로지르는 반복 패턴)</span></h2>
+
+<div class="tablewrap"><table>
+<tr><th>패턴</th><th>사례 (반복 횟수)</th><th>처방</th></tr>
+<tr><td><b>자기신고 심판</b></td><td>마을 평가기가 builder의 layoutPlan.kind에 게이팅 · doorFronts=0 무검사 통과 · settlement 무검증 done</td><td>평가기는 맵 타일 실측만 믿는다. "검사 대상 없음"은 실패다.</td></tr>
+<tr><td><b>실패의 warning 강등</b></td><td>마을 평가 이슈가 warning으로만 흘러 시공은 성공 처리 · 구 evaluateCastle도 소프트</td><td>게이트는 하드로 — 불합격이면 저장/성공을 막는다(방 연습 프로젝트에서 게이트를 넣자마자 구조 버그 3개가 즉시 드러난 사례가 증명).</td></tr>
+<tr><td><b>통행 판정 어휘 부족</b></td><td>실내 isWalkFloor가 리틴트 바닥(돌12/널102/짚139)을 벽 취급 → 방 통째 고립 오판 · evaluateCastle walkable이 잔디 전용 → 포석 마당 오판 (<b>같은 실수 2회</b>)</td><td>통행 어휘는 재질 확장과 함께 갱신되는 단일 집합으로 관리.</td></tr>
+<tr><td><b>무의미한 폴백</b></td><td>성 도달성 폴백 <code>reachableGrass ≥ courtyard.w×2</code>가 대형에서 사실상 무조건 통과</td><td>폴백은 규모에 불변인 목표 지점 도달로 — 정본화 때 제거 완료.</td></tr>
+<tr><td><b>시드 미사용/고정</b></td><td>plan.seed가 장식(재생성이 픽셀 동일) · 데모 seed 777 하드코딩 · parsePlan 기본 seed 상수 1</td><td>시드는 실제 RNG에 주입하고 산출물에 기록(재현 가능), 기본값은 가변으로.</td></tr>
+<tr><td><b>동기 빌드의 타임아웃 잠식</b></td><td>build_village 동기 1,065초가 Playwright 타임아웃을 다 먹어 "백지 부트 실패"로 <b>2회 오진</b></td><td>대형 빌드는 JSON 저장 후 로더 스펙으로 분리. 느린 원인 규명이 먼저.</td></tr>
+<tr><td><b>기준선 없는 회귀 판정</b></td><td>전체 스위트 실패 수만 보고 새 변경 탓으로 오판(기존 부채 ~28건+typecheck, 07-18 기준 314줄)</td><td><code>git stash push -u</code> → 해당 테스트만 → <code>stash pop</code> 왕복으로 클린 HEAD와 파일별 실패 수 대조. 필요 시 임시 워크트리 기준선.</td></tr>
+<tr><td><b>놓고-검증-되돌리기 부재</b></td><td>자가수리가 복도를 막아 85→60 개악</td><td>수리 배치는 반드시 배치→재평가→불합격 시 철회 루프로.</td></tr>
+</table></div>
+</section>
+
+<!-- ══════════════════ ⑥ 수칙 ══════════════════ -->
+<section id="rules">
+<h2>⑥ 재발 방지 수칙 (요약)</h2>
+<ol class="rules">
+<li><b>정본의 위치:</b> 타일 의미 = 시맨틱 테이블 한 곳 · 구조물 문법 = 사용자 실측 맵(캔버스) · 조립 코드는 언제나 피의자. 분석/에이전트에게 소스 신뢰 우선순위를 명시할 것.</li>
+<li><b>칩셋 도입 절차:</b> 전수 vision 감사 → 사용자 확정 → 시맨틱 테이블 → 하네스 그룹 → 오토타일 → 검증 렌더. 시트는 읽기 전용, 검사는 복원본에서, 배경색은 실측.</li>
+<li><b>오토타일 불변식:</b> 멤버 = variantMap 출력 가능 타일만 · 트리거는 멤버 한정 · connect는 사용자 노출 목록임을 기억 · 저장 좌표계는 한 계층만 소유(렌더는 합성으로).</li>
+<li><b>파괴 연산:</b> 스냅샷 기준선 + "이번 실행이 만든 것"만 삭제. 전역 초기화 금지(wipeProjectMaps를 되살리지 말 것).</li>
+<li><b>평가 게이트:</b> 실측 기반 · 하드 실패 · 통행 어휘 최신화 · 규모 불변 목표 · 폴백 의심. 게이트 도입은 빠를수록 싸다 — 게이트가 없던 기간의 버그는 게이트를 넣는 순간 한꺼번에 청구된다.</li>
+<li><b>보호구역:</b> 구조물 점유 = 그린 칸 전부(bbox 밖 용마루 포함). 범용 배치 도구 뒤에는 결정적 후처리 복원. 길/조경은 시공 전 스냅샷→침범 점검→롤백 재시도.</li>
+<li><b>멀티타일 소품:</b> 페어/세트가 배치 단위(배너 179+209, 석상, 돌기둥, 나무 수관+밑동, 울타리 둘레 세트). 자리가 문법에 안 맞으면 조용히 찍지 말고 거부.</li>
+<li><b>스케일 테스트:</b> 시공 파이프라인은 최소/기본/최대 면적을 같이 재라(1,065초·밀도 붕괴는 전부 대형에서만 드러났다). 인자는 소비 경로까지 검증.</li>
+<li><b>검증 방법:</b> 시각 증거는 손으로 그리지 말고 실제 API를 호출하는 렌더 스크립트로 재생성(inline assert 동반). 회귀 판정은 stash 왕복 기준선 대조.</li>
+<li><b>부수효과 격리:</b> 라이브 DB 쓰기는 옵트인 설정으로 분리. 배포 보고에는 projectId 명시(에디터가 다른 프로젝트를 보고 있던 혼선 사례).</li>
+</ol>
+</section>
+
+<footer>
+2026-07-18 · rpg-zzu 하네싱·타일셋 실패 사례집 · 관련 문서:
+docs/2026-07-16-village-harness-adversarial-review.md ·
+docs/2026-07-18-castle-grammar.html ·
+docs/2026-07-18-castle-variants.html ·
+openwiki/autotiles.md
+</footer>
+
+</main>
+</body>
+</html>

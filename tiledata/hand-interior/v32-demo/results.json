@@ -1,0 +1,270 @@
+{
+ "objects": [
+  {
+   "id": "double bed red",
+   "ko": "2인 침대",
+   "file": "obj-double-bed-red.png",
+   "size16": [
+    32,
+    38
+   ],
+   "size32": [
+    64,
+    76
+   ],
+   "colors": {
+    "v5": 22,
+    "v6": 14,
+    "v32": 19
+   }
+  },
+  {
+   "id": "bed blue",
+   "ko": "1인 침대",
+   "file": "obj-bed-blue.png",
+   "size16": [
+    16,
+    38
+   ],
+   "size32": [
+    32,
+    76
+   ],
+   "colors": {
+    "v5": 22,
+    "v6": 14,
+    "v32": 19
+   }
+  },
+  {
+   "id": "bookshelf 2w",
+   "ko": "책장 2칸",
+   "file": "obj-bookshelf-2w.png",
+   "size16": [
+    32,
+    38
+   ],
+   "size32": [
+    64,
+    76
+   ],
+   "colors": {
+    "v5": 32,
+    "v6": 22,
+    "v32": 43
+   }
+  },
+  {
+   "id": "wardrobe",
+   "ko": "옷장",
+   "file": "obj-wardrobe.png",
+   "size16": [
+    16,
+    32
+   ],
+   "size32": [
+    32,
+    64
+   ],
+   "colors": {
+    "v5": 10,
+    "v6": 8,
+    "v32": 10
+   }
+  },
+  {
+   "id": "clock",
+   "ko": "괘종시계",
+   "file": "obj-clock.png",
+   "size16": [
+    16,
+    32
+   ],
+   "size32": [
+    32,
+    64
+   ],
+   "colors": {
+    "v5": 13,
+    "v6": 10,
+    "v32": 19
+   }
+  },
+  {
+   "id": "barrel",
+   "ko": "통",
+   "file": "obj-barrel.png",
+   "size16": [
+    16,
+    16
+   ],
+   "size32": [
+    32,
+    32
+   ],
+   "colors": {
+    "v5": 10,
+    "v6": 12,
+    "v32": 13
+   }
+  },
+  {
+   "id": "water jar",
+   "ko": "항아리",
+   "file": "obj-water-jar.png",
+   "size16": [
+    16,
+    16
+   ],
+   "size32": [
+    32,
+    32
+   ],
+   "colors": {
+    "v5": 8,
+    "v6": 9,
+    "v32": 17
+   }
+  },
+  {
+   "id": "sofa",
+   "ko": "소파",
+   "file": "obj-sofa.png",
+   "size16": [
+    32,
+    16
+   ],
+   "size32": [
+    64,
+    32
+   ],
+   "colors": {
+    "v5": 5,
+    "v6": 6,
+    "v32": 9
+   }
+  },
+  {
+   "id": "armchair",
+   "ko": "안락의자",
+   "file": "obj-armchair.png",
+   "size16": [
+    16,
+    16
+   ],
+   "size32": [
+    32,
+    32
+   ],
+   "colors": {
+    "v5": 7,
+    "v6": 6,
+    "v32": 9
+   }
+  },
+  {
+   "id": "chair S",
+   "ko": "의자(남향)",
+   "file": "obj-chair-S.png",
+   "size16": [
+    16,
+    16
+   ],
+   "size32": [
+    32,
+    32
+   ],
+   "colors": {
+    "v5": 8,
+    "v6": 5,
+    "v32": 7
+   }
+  },
+  {
+   "id": "chair N",
+   "ko": "의자(북향)",
+   "file": "obj-chair-N.png",
+   "size16": [
+    16,
+    16
+   ],
+   "size32": [
+    32,
+    32
+   ],
+   "colors": {
+    "v5": 7,
+    "v6": 5,
+    "v32": 6
+   }
+  },
+  {
+   "id": "fireplace",
+   "ko": "벽난로",
+   "file": "obj-fireplace.png",
+   "size16": [
+    32,
+    32
+   ],
+   "size32": [
+    64,
+    64
+   ],
+   "colors": {
+    "v5": 21,
+    "v6": 17,
+    "v32": 21
+   }
+  },
+  {
+   "id": "dining 2x2",
+   "ko": "식탁 2×2",
+   "file": "obj-dining-2x2.png",
+   "size16": [
+    32,
+    32
+   ],
+   "size32": [
+    64,
+    64
+   ],
+   "colors": {
+    "v5": 7,
+    "v6": 7,
+    "v32": 7
+   }
+  }
+ ],
+ "total": {
+  "v5": 84,
+  "v6": 61,
+  "v32": 75,
+  "v32InRamp": 75,
+  "v32OffRamp": 0
+ },
+ "rampSize": {
+  "wood": 7,
+  "red": 7,
+  "blue": 7,
+  "green": 7,
+  "linen": 7,
+  "iron": 7,
+  "brass": 6,
+  "stone": 7,
+  "clay": 7,
+  "straw": 6,
+  "fire": 6,
+  "glass": 5
+ },
+ "rampTotal": 79,
+ "wallFloor32": 58,
+ "room": {
+  "v5": 214,
+  "v6": 194,
+  "v32": 137
+ },
+ "pixels": {
+  "v16": 7904,
+  "v32": 31616
+ }
+}

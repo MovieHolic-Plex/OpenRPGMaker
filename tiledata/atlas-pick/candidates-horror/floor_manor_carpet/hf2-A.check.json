@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_manor_carpet/hf2-A.pxg",
+ "set": "horror",
+ "id": "floor_manor_carpet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구): 자줏빛 회 카펫(damask 2) + 16px 반복 작은 마름모 한 단 밝게(3) + 귀퉁이 점, 짙은 점 하나",
+ "ok": true
+}

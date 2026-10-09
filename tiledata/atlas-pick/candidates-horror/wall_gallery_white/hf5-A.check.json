@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_gallery_white/hf5-A.pxg",
+ "set": "horror",
+ "id": "wall_gallery_white",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.34
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A: v5 흰 벽 식구 — 얇은 몰딩(어둠·하이라이트·그늘) + 바랜 흰 칠 넓은 면(dust5) + 짙은 회 걸레받이 4px. 32px 마다 옅은 이음 한 줄, 회벽 얼룩은 한 단 차만.",
+ "ok": true
+}

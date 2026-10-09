@@ -1,0 +1,913 @@
+@media (min-width: 800px) {
+  .database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-body {
+    min-height: 0;
+    overflow: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .oprn-record-workspace,
+  .database-modal-body .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-list-pane {
+    min-height: 0;
+  }
+
+  /* header/footer sticky so the user never loses primary actions at 1024 */
+  .database-modal-backdrop .database-modal-window .database-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+  }
+
+  .database-modal-body .oprn-detail-form,
+  .database-modal-body .db-detail-form {
+    box-sizing: border-box;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 22px;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-classic-sheet {
+    box-sizing: border-box;
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-left-stack,
+  .database-modal-body .oprn-record-actors .actor-right-stack {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  /* 좁은 폭에서도 같은 이유로 고정 px 를 쓰지 않는다(위 브레이크포인트 주석 참고). */
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+    padding: 9px 10px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-skill-table {
+    max-height: 220px;
+  }
+
+  .database-modal-body .oprn-detail-skills,
+  .database-modal-body .oprn-detail-items,
+  .database-modal-body .oprn-detail-equipment {
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .oprn-detail-equipment .db-advanced-panel:has(.actor-check) {
+    max-height: 196px;
+    overflow: auto;
+    padding-bottom: 14px;
+  }
+
+  .database-modal-body .oprn-detail-equipment .actor-check {
+    min-height: 30px;
+  }
+
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 5px;
+    box-shadow: none;
+  }
+
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane h3 {
+    background: transparent;
+    color: var(--text-1);
+    font: 700 17px/1.2 var(--font-ui);
+    margin: 0 0 12px;
+  }
+
+  .database-modal-body .oprn-record-enemies .db-list {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft, var(--border-subtle));
+    border-radius: 4px;
+  }
+
+  .database-modal-body .oprn-record-enemies .oprn-detail-form {
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-enemy-rate-row {
+    min-height: 28px;
+  }
+
+  .database-modal-body .oprn-tileset-main {
+    grid-template-columns: minmax(520px, 1fr) minmax(220px, 260px);
+  }
+
+  .database-modal-body .oprn-tileset-main.no-side-pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-tileset-terrain-pane,
+  .database-modal-body .oprn-tileset-main > :last-child {
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 12px;
+  }
+
+  .database-modal-body .db-body:has(:is(.db-system-form, .animation-detail-form, .db-state-oprn-workbench, .tileset-db-workspace)) {
+    overflow: hidden;
+  }
+
+  .database-modal-body :is(.db-system-form, .db-terms-form, .db-utility-form, .animation-detail-form) {
+    box-sizing: border-box;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 24px;
+  }
+
+
+
+  .database-modal-body .animation-detail-form {
+    align-content: start;
+    display: grid;
+    gap: 12px;
+  }
+
+  /* 옛 4행 3열 맵(top/frames·stage·timing/cells/strip)은 제거했다. 지금 DOM 은
+     animationEditor() 가 stage / inspector / timeline 세 섹션으로 감싸므로 그 영역
+     이름들은 어디에도 존재하지 않는다. 실제 배치는 battle-studio.css:157 이 잡는다. */
+
+  .database-modal-body .db-animation-top-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    min-height: 0;
+  }
+
+  .database-modal-body .db-animation-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 10px;
+  }
+
+  .database-modal-body .db-animation-panel legend {
+    color: var(--text-1);
+    font: 700 14px/18px var(--font-ui);
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  .database-modal-body .db-animation-top-grid > .field,
+  .database-modal-body .db-animation-panel .field {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(84px, 0.3fr) minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .database-modal-body .db-animation-top-grid :is(input, select),
+  .database-modal-body .db-animation-panel :is(input, select) {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 4px;
+    box-sizing: border-box;
+    min-height: 30px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .database-modal-body .db-animation-setup-panel {
+    max-height: 156px;
+  }
+
+  .database-modal-body .db-animation-sheet-fields {
+    display: grid;
+    gap: 7px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .database-modal-body .db-animation-frame-list-panel { grid-area: frames; max-height: 242px; }
+  .database-modal-body .db-animation-stage-panel { grid-area: stage; max-height: 242px; }
+  .database-modal-body .db-animation-timing-panel { grid-area: timing; max-height: 242px; }
+  /* `grid-area: cells` 는 사라진 맵의 이름이라 인스펙터에 유령 열을 하나 더 만들었다.
+     셀 표는 폭이 넓으므로(작성 시 min-width 620px) 가로 스크롤로 도달 가능하게 둔다. */
+  .database-modal-body [data-testid="db-animation-cell-table"] { max-height: 164px; min-width: 0; overflow: auto; }
+  .database-modal-body .db-animation-pattern-strip-panel { grid-area: strip; max-height: 96px; }
+
+  .database-modal-body [data-testid="db-animation-cell-table"] .db-animation-table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .database-modal-body [data-testid="db-animation-cell-table"] :is(th, td) {
+    min-width: 70px;
+    overflow: hidden;
+    padding: 4px 8px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
+    height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 20px;
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .db-enemy-graphic-stage {
+    min-height: 96px;
+  }
+
+  /* 칩셋 전체(예: 480칸 16행): 부모 높이에 맞추고 프리뷰 박스 안에서만 스크롤.
+     min-height:0 만 두면 뷰포트가 0에 가까워져 하단 행이 잘려 보이던 문제 방지. */
+  .database-modal-body .oprn-tileset-main .tileset-db-preview-wrap {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .oprn-tileset-main .tileset-db-preview {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body {
+    display: grid;
+    gap: 10px;
+    grid-template-rows: auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .database-modal-body:has(:is(.db-parity-form, .db-common-events-workspace)) .db-body > h3 {
+    color: var(--text-1);
+    font: 700 16px/1.2 var(--font-ui);
+    margin: 0;
+  }
+
+  /* align-items 기본값(stretch)이면 grid 자식 fieldset이 행 트랙 높이에 맞춰 늘어나며
+     내용(레코드 목록)이 트랙보다 클 때 압착되어 legend까지 잘려 보였다(P9, qa-battle #7).
+     align-items:start 로 각 fieldset이 자기 콘텐츠 높이만큼만 차지하게 하고, 목록류만
+     별도 max-height+overflow:auto 로 스스로 스크롤하게 한다. */
+  .database-modal-body .db-parity-form {
+    align-content: start;
+    align-items: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    box-sizing: border-box;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 16px 16px 28px;
+  }
+
+  .database-modal-body .db-parity-form .oprn-db-fieldset {
+    align-content: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    display: grid;
+    gap: 8px 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    min-height: max-content;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .database-modal-body .db-parity-form .oprn-db-fieldset:first-child,
+  .database-modal-body .db-parity-form .oprn-db-fieldset:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-parity-form .oprn-db-fieldset:nth-child(2) {
+    max-height: 420px;
+    overflow: auto;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .db-parity-form .oprn-db-fieldset legend {
+    background: var(--bg-raised);
+    color: var(--text-1);
+    font: 700 15px/1.2 var(--font-ui);
+    padding: 0 4px;
+  }
+
+  /* 지형 레코드(9필드/레코드, 홀수)를 레코드 단위 래퍼로 감싸 구분선을 그린다 —
+     예전엔 필드가 flat 2열에 순서대로 흘러들어가 레코드 0001의 마지막 필드와 0002의
+     첫 필드가 같은 행 좌/우에 나란히 섞여 보였다(P9). */
+  .database-modal-body .db-parity-form .db-terrain-record {
+    border-top: 1px solid var(--db-modern-line-soft);
+    display: grid;
+    gap: 8px 14px;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 10px;
+  }
+
+  .database-modal-body .db-parity-form .db-terrain-record:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .database-modal-body .db-parity-form .db-readonly-row {
+    align-items: center;
+    box-sizing: border-box;
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 500 13px/1.25 var(--font-ui);
+    gap: 8px;
+    grid-template-columns: minmax(72px, 0.28fr) minmax(0, 1fr);
+    margin: 0;
+    min-height: 32px;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-parity-form .db-readonly-row > span {
+    color: var(--text-1);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-parity-form :is(input, select, code) {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--db-modern-text);
+    font: 400 14px/1.25 var(--font-ui);
+    min-height: 30px;
+    min-width: 0;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-parity-form select {
+    padding-right: 24px;
+  }
+
+  .database-modal-body .db-parity-form code {
+    align-items: center;
+    display: flex;
+    font-family: var(--font-mono, "Cascadia Mono", Consolas, monospace);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-parity-form input[type="checkbox"] {
+    height: 16px;
+    min-height: 16px;
+    padding: 0;
+    width: 16px;
+  }
+
+  .database-modal-body .db-common-events-workspace {
+    background: transparent;
+    border: 0;
+    box-sizing: border-box;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(250px, 304px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body .db-common-event-list-pane,
+  .database-modal-body .db-common-event-detail-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-common-event-list-pane {
+    display: grid;
+    gap: 10px;
+    grid-template-rows: auto minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .database-modal-body .db-common-event-list-pane > .btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--text-1);
+    font: 600 13px/1 var(--font-ui);
+    min-height: 34px;
+  }
+
+  .database-modal-body .db-common-event-list {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: block;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row {
+    align-items: center;
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    box-sizing: border-box;
+    color: var(--text-1);
+    display: grid;
+    font: 500 14px/1.25 var(--font-ui);
+    gap: 8px;
+    grid-template-columns: 54px minmax(0, 1fr) minmax(58px, auto);
+    min-height: 34px;
+    padding: 0 10px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row:hover {
+    background: var(--bg-raised);
+  }
+
+  .database-modal-body .db-common-event-list .db-list-row.active {
+    background: var(--accent-muted);
+    color: var(--text-1);
+  }
+
+  .database-modal-body .db-common-event-list :is(.db-list-number, .db-list-name, .db-list-meta) {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-common-event-detail-pane {
+    display: grid;
+    padding: 14px;
+  }
+
+  .database-modal-body .db-common-event-editor {
+    align-content: start;
+    display: grid;
+    gap: 10px;
+    grid-auto-rows: max-content;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 0 4px 22px 0;
+  }
+
+  .database-modal-body .db-common-event-editor .db-row,
+  .database-modal-body .db-common-event-editor .db-field {
+    align-items: center;
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 500 13px/1.25 var(--font-ui);
+    gap: 10px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    margin: 0;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-common-event-editor .db-row {
+    grid-template-columns: 52px minmax(0, 1fr) minmax(72px, auto) 76px;
+  }
+
+  .database-modal-body .db-common-event-editor :is(input, select, button, .btn) {
+    box-sizing: border-box;
+    font-family: var(--font-ui);
+    min-width: 0;
+  }
+
+  .database-modal-body .db-common-event-editor :is(input, select) {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--db-modern-text);
+    font-size: 14px;
+    min-height: 32px;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+  /* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+  .database-modal-body .db-common-event-editor select {
+    padding-right: 24px;
+  }
+
+  .database-modal-body .db-common-event-editor .btn {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--text-1);
+    min-height: 32px;
+  }
+
+  .database-modal-body .db-common-event-editor .btn.danger {
+    color: var(--danger);
+  }
+
+  .database-modal-body .db-common-event-editor .db-meta,
+.database-modal-body .db-common-event-editor .db-id {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-common-event-editor .db-checkbox-field {
+    grid-template-columns: 156px 18px minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-common-event-editor input[type="checkbox"] {
+    height: 16px;
+    min-height: 16px;
+    padding: 0;
+    width: 16px;
+  }
+
+  .database-modal-body .db-common-event-editor .db-field:has(.cmd-list) {
+    align-items: stretch;
+    grid-template-columns: 72px minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .database-modal-body .db-common-event-editor .cmd-list {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    max-height: 420px;
+    min-height: 230px;
+    min-width: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
+    grid-template-columns: minmax(340px, 480px) minmax(520px, 1fr);
+  }
+
+  .database-modal-body .oprn-record-actors .actor-left-stack,
+  .database-modal-body .oprn-record-actors .actor-right-stack {
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-right-stack {
+    grid-template-columns: minmax(250px, 0.95fr) minmax(280px, 1fr);
+    grid-template-rows: 226px 112px 44px minmax(0, 136px);
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-starting-equipment {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-battle > .field {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-options {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-skills {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-panel {
+    padding: 10px 12px 8px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-panel legend {
+    font-size: 15px;
+    margin: -1px 0 7px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-options {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-options-grid {
+    gap: 1px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-check {
+    font-size: 14px;
+    min-height: 25px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-skills {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-skill-header {
+    font-size: 14px;
+    min-height: 28px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-skill-list {
+    max-height: 238px;
+    min-height: 238px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-skill-row {
+    min-height: 32px;
+    padding: 2px 6px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rates {
+    grid-column: 1 / -1;
+    grid-row: 4;
+    max-height: 136px;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 12px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-columns {
+    gap: 8px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-list {
+    max-height: 84px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-list > strong {
+    font-size: 14px;
+    min-height: 26px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-row {
+    font-size: 13px;
+    min-height: 28px;
+    padding: 2px 8px;
+  }
+
+  /* 고정 px 행은 안 된다 — 이 파일은 03-class-panels.css 보다 늦게 import 되므로 여기서
+     px 를 못 박으면 그쪽의 내용 기반 행 수정이 조용히 무효가 된다(실측: 여기 값이 이겼다).
+     행이 내용보다 작으면 패널이 자기 행을 넘겨 **아래 행 위에 겹쳐 그려진다**:
+       1행 92px  대 `.db-class-panel-animation{min-height:108px}`  → 16px 초과,
+         `전투 애니메이션` 필드 라벨(y440)과 `전투 명령` legend(y444)가 합성돼 판독 불가
+       3행 122px 대 `.db-class-panel-promotion{min-height:220px}` → 98px 초과,
+         `속성 유효도` legend 를 덮음
+     px 값은 "이 정도면 들어간다"는 추측이었고 패널의 min-height 와 어긋나 있었다.
+     하한을 내용으로 두고 넘치는 총높이는 `.oprn-detail-form{overflow-y:auto}` 가 받는다. */
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
+    grid-template-rows: repeat(4, minmax(min-content, auto)) minmax(64px, auto);
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-animation,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-commands {
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-curves {
+    overflow: hidden;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curves-grid {
+    gap: 8px 10px;
+    grid-auto-rows: minmax(78px, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  /* `align-content` 는 grid/flex 전용이다 — `display` 를 세우지 않아 이 규칙 자체가 무효였고,
+     카드가 block 으로 흘러 `<strong>최대 HP</strong><span>Lv1:40</span>` 가 인라인 같은 줄에
+     gap 0 으로 붙어 화면에 `최대 HPLv1:40` 으로 렌더됐다(실측 gap 0px, 6장 전부).
+     라벨/값/그래프를 각자 행에 세운다 — 주인공 쪽 `.actor-curve` 와 같은 해부구조다. */
+  .database-modal-body .oprn-record-classes .db-class-curve {
+    align-content: center;
+    box-sizing: border-box;
+    display: grid;
+    gap: 2px;
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 78px;
+    padding: 8px 10px 7px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curve strong,
+  .database-modal-body .oprn-record-classes .db-class-curve span {
+    line-height: 18px;
+  }
+
+  /* 이 그래프에는 `height` 외의 규칙이 저장소 어디에도 없었다 — `display` 도 막대 배경도
+     없어서 `<i>` 막대가 인라인·무배경으로 렌더돼 **막대가 한 번도 보인 적이 없었다**.
+     주인공 쪽 `.actor-curve-graph` 와 같은 해부구조를 세우고, 열 개수는 렌더러가 내려주는
+     `--curve-samples` 로 받아 막대 수와 어긋나지 않게 한다. */
+  .database-modal-body .oprn-record-classes .db-class-curve-graph {
+    align-items: end;
+    background: var(--surface-recessed, rgba(15, 23, 42, 0.06));
+    display: grid;
+    gap: 1px;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(var(--curve-samples, 9), minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr);
+    height: 26px;
+    overflow: hidden;
+    padding: 2px;
+    width: 100%;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curve-graph i {
+    background: var(--accent-primary, var(--accent));
+    border-radius: 1px 1px 0 0;
+    display: block;
+    min-height: 1px;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-curve-graph i.active {
+    background: var(--accent-editor, #0f7a4a);
+  }
+
+  .database-modal-body .oprn-record-classes :is(.db-class-command-rows, .db-class-command-list) {
+    max-height: none;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 14px;
+  }
+
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-enemies .oprn-detail-form {
+    background: var(--bg-raised);
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 5px;
+    padding: 10px;
+  }
+
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row {
+    border-bottom: 1px solid var(--border-subtle);
+    min-height: 32px;
+  }
+
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row span {
+    color: var(--text-1);
+    font: 400 13px/18px var(--font-ui);
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row select {
+    height: 28px;
+    min-height: 28px;
+  }
+
+  .database-modal-body .oprn-record-enemies .db-enemy-critical-row {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-record-enemies .db-enemy-critical-row .db-field {
+    grid-template-columns: 28px minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-record-troops .db-troops-classic-workbench {
+    grid-template-rows: auto minmax(250px, 0.48fr) minmax(224px, 0.52fr);
+    overflow: hidden;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-preview-panel {
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-member-buttons {
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 4px;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-member-rows,
+  .database-modal-body .oprn-record-troops .db-troop-enemy-list {
+    min-height: 0;
+  }
+
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) {
+    box-sizing: border-box;
+    max-height: 100%;
+    overflow: auto;
+    padding-bottom: 28px;
+  }
+
+  .database-modal-body .oprn-detail-items > .db-items-oprn-workbench {
+    align-content: start;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 22px;
+  }
+
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child {
+    display: grid;
+    gap: 8px 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child legend {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child :is(.field, .db-field) {
+    grid-template-columns: minmax(74px, 0.24fr) minmax(0, 1fr);
+  }
+
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel {
+    margin-bottom: 0;
+  }
+
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel:has(.actor-check) {
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 16px;
+  }
+
+
+
+
+
+
+
+
+
+}

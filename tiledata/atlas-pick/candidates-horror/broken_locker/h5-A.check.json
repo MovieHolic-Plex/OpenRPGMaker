@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_locker/h5-A.pxg",
+ "set": "horror",
+ "id": "broken_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.199
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.238
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "쇠 사물함: 윗문이 오른쪽부터 떠서 비스듬히 반쯤 열리고 안이 새까맘, 아랫문은 닫혀 통풍 줄 셋과 손잡이, 녹 점",
+ "ok": true
+}

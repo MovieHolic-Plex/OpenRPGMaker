@@ -1,0 +1,180 @@
+{
+ "name": "일본 파출소(交番) 실내",
+ "plan": [
+  "##############",
+  "#......#.....#",
+  "#......#.....#",
+  "#......#.....#",
+  "#......#.....#",
+  "#............#",
+  "#............#",
+  "#............#",
+  "####.#########"
+ ],
+ "floor": "pb-linoleum",
+ "wall": "pb-office-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 7,
+   "y0": 0,
+   "x1": 13,
+   "y1": 8,
+   "floor": "tatami",
+   "wall": "juraku"
+  }
+ ],
+ "objects": [
+  {
+   "id": "pb-map-board",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "calendar",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "pb-bicycle",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "pb-lost-found-shelf",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "pb-police-desk",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-police-desk",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "pb-office-chair-s",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "genkan-mat",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "genkan-door",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "fridge",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "bed-single",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "calendar",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "low-table",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "zabuton",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "zabuton",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
+   "y": 7
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "pb-documents",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "pb-documents",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "kettle",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "mug",
+   "x": 10,
+   "y": 6
+  }
+ ],
+ "start": [
+  4,
+  7
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "koban",
+   "x0": 0,
+   "y0": 0,
+   "x1": 13,
+   "y1": 8
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 2,
+   "y1": 6,
+   "why": "접수 책상 안쪽 경관 자리로 가는 길"
+  }
+ ]
+}

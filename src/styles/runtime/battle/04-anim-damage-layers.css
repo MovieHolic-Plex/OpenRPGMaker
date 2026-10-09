@@ -1,0 +1,156 @@
+/* 무대 상단 여백은 `--battle-stage-inset-top`(01-scene-base.css 의 단일 선언) 하나만 산다.
+   스킨은 그 변수를 다시 선언하지 않고 스킨 노브 `--battle-stage-skin-inset-top` 만 재정의하며
+   (rm2000 = 8px — battle-skins/_rm2000.css), 배틀러 그룹(07-640-scene-turn-ribbon.css:184)·
+   애니메이션 레이어·이펙트 레이어가 모두 그 한 값을 읽어 같은 박스로 풀린다. */
+
+/* 애니메이션 레이어는 `.battle-scene`(그리드 컨테이너)의 직계 자식이고, 배틀러 그룹은
+   `.battle-field` 안에 있다(battleDom.ts: root.append(field, animationLayer, …)). DOM 을 바꿀
+   수 없으므로 **레이어 박스를 배틀러 무대 박스와 같게** 만들어 백분율 앵커가 같은 점으로
+   풀리게 한다.
+
+   왜 예전에 어긋났나(실측 근거):
+   - `grid-row: 1` 은 시작선만 1 이고 끝선은 auto 다. 정적 그리드 아이템(`.battle-field`)에서
+     auto 끝선은 span 1 이지만, **절대배치** 그리드 아이템의 auto 끝선은 그리드 컨테이너의
+     **패딩 끝선**으로 풀린다(CSS Grid §9.1 abspos items). 그래서 레이어의 컨테이닝 블록은
+     행 1 이 아니라 씬 전체가 됐다: layer=[top 0, height 480] vs 행 1 = [0, 344](vxace).
+   - 거기서 65% → 312 로 풀리는 반면, 그룹은 [top 50, height 292] 기준이라 240 으로 풀렸다.
+     72px 차이가 그대로 오프셋이 되어 애니메이션이 적 스프라이트(y 88~200) 아래 바깥(y 308)에
+     찍혔다.
+
+   고침:
+   - `grid-row: 1 / 2` — 끝선을 명시해 필드와 **같은 그리드 영역**(행 1)을 차지한다.
+     필드는 battle.css 2009~2013 에서 `grid-column: 1 / -1; grid-row: 1`
+     라 12종 스킨 전부에서 행 1 · 전체 열이다(스킨의 열/행 정의가 무엇이든 동일).
+   - inset — 그리드 영역(= 필드의 **테두리 박스**)에서 테두리만큼 들어가 필드의 **패딩 박스**
+     가 되고, 상단에 무대 여백을 더해 그룹 박스와 일치시킨다. 하드코딩 오프셋이 아니라
+     필드/그룹이 실제로 쓰는 같은 변수다.
+   검증(vxace, 논리 640×480): 행 1 = [0, 344] → 패딩 박스 [2, 340] → +48 → [50, 292]
+   = `.battle-enemy-group` 실측값과 동일. */
+.battle-animation-layer {
+  grid-column: 1 / -1;
+  grid-row: 1 / 2;
+  inset:
+    calc(var(--battle-field-border-width) + var(--battle-stage-inset-top))
+    var(--battle-field-border-width)
+    var(--battle-field-border-width);
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+/* 데미지 팝업 레이어는 `.battle-field` 의 자식(battleFieldDom.appendEffectsLayer)이라
+   테두리 보정은 필요 없지만, 팝업도 `--battle-node-y` 백분율을 쓰므로 같은 무대 여백을
+   적용해야 배틀러와 같은 기준으로 풀린다. */
+.battle-effects-layer {
+  inset: var(--battle-stage-inset-top) 0 0 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 9;
+}
+
+.battle-damage-popup {
+  animation: battle-damage-float 0.9s ease-out forwards;
+  color: #fff6a8;
+  font-size: 28px;
+  font-weight: 700;
+  left: var(--battle-node-x);
+  position: absolute;
+  text-shadow: 2px 2px 0 #4a1200, -2px -2px 0 #4a1200;
+  top: calc(var(--battle-node-y) - 12%);
+  transform: translate(-50%, -100%);
+  z-index: 6;
+}
+
+.battle-damage-popup-critical {
+  color: #ff8a4d;
+  font-size: 32px;
+}
+
+.battle-damage-popup-heal {
+  color: #8df064;
+}
+
+.battle-animation {
+  background: transparent;
+  border: 0;
+  color: transparent;
+  font-size: 0;
+  /* 시트(.battle-animation-sheet 240×240)와 같은 크기여야 translate(-50%, -50%) 퍼센트가
+     동작한다. 0×0 이면 퍼센트 translate 가 (0, 0) 으로 무효가 되어, 셀이 앵커에서
+     시트 50% = +120, +120 논리 px 어긋난 곳에 그려졌다(실측). */
+  height: 240px;
+  left: var(--battle-node-x);
+  overflow: visible;
+  pointer-events: none;
+  position: absolute;
+  top: var(--battle-node-y);
+  /* 시트 중심 = 앵커. 예전엔 -55% 로 12px(240×5%) 위로 밀어 뒀다 — 앵커가 배틀러의 발
+     (`.battle-enemy`/`.battle-actor` 는 translate(-50%, -100%))이던 시절의 보정이고, 그
+     보정으로도 144px 급 스프라이트의 몸통 중심에는 못 미쳤다. 이제 세로 위치는 저작된
+     `position`(head/center/feet/screen) 하나가 정한다 — battleAnimationAnchor.ts.
+     left/top 은 battleAnimationDom.positionAnimation 이 실측해 인라인으로 심고, 재지 못하는
+     환경에서만 아래 `--battle-node-x/y` 복사 경로가 폴백으로 남는다. */
+  transform: translate(-50%, -50%);
+  width: 240px;
+  z-index: 4;
+}
+
+/* 폴백 경로(스프라이트를 잴 수 없어 --battle-node-x/y 를 복사한 경우)는 앵커가 배틀러의
+   **발** 이다. 시트 중심을 그 위에 그대로 두면 이펙트가 접지선에 깔리므로, 고침 전과 같은
+   -55% 보정을 되살린다 — 퇴화 경로가 변경 전보다 나빠지지 않게 하는 것이 목적이다.
+   측정 경로에서는 battleAnimationDom.positionAnimation 이 인라인 left/top 을 심고
+   data-animation-anchor 에 저작된 position 을 찍으므로 이 규칙에 걸리지 않는다. */
+.battle-animation[data-animation-anchor="fallback"] {
+  transform: translate(-50%, -55%);
+}
+
+.battle-animation-sheet {
+  height: 240px;
+  overflow: visible;
+  position: relative;
+  width: 240px;
+}
+
+.battle-animation-frame {
+  inset: 0;
+  position: absolute;
+}
+
+/* 후속 애니메이션(followUps)은 본체 엘리먼트 안에 중첩된다. 흐름에 두면 본체 시트(240px) **아래**로
+   밀려 연기가 대상 발밑 240px 지점에 떴다(실측). 본체 시트와 같은 자리에 겹친다. */
+.battle-animation-followup {
+  inset: 0;
+  position: absolute;
+}
+
+.battle-animation-cell {
+  image-rendering: pixelated;
+  position: absolute;
+}
+
+/* 축소해 그리는 고해상도 시트(assetScale < 1, battleAnimationDom 이 data-rendering 으로 표시).
+   pixelated 로 384px 를 192px 에 넣으면 가장자리가 계단으로 깨진다 — 보간을 켠다. */
+.battle-animation-cell[data-rendering="smooth"] {
+  image-rendering: auto;
+}
+
+/* 무대 펀치 — heavy/crushing 타격 순간 필드를 살짝 확대했다 놓는다(battleHitIntensityDom.punchStage).
+   `.battle-field` 의 animation 슬롯은 아래 흔들림이 쓰므로 별도 속성 `scale` 을 transition 으로 움직인다.
+   두 효과가 같은 타격에 겹쳐도 서로를 지우지 않는다. */
+.battle-scene .battle-field {
+  scale: 1;
+  transform-origin: 50% 60%;
+  transition: scale 220ms ease-out;
+}
+.battle-scene.battle-field-punch .battle-field {
+  scale: var(--hit-punch, 1.03);
+  transition-duration: 70ms;
+}
+
+/* 주기와 반복 횟수는 screenShake.speed / durationFrames 에서 온다.
+   불투명 배경인 씬 루트를 움직이면 가장자리로 맵이 새므로 필드만 흔든다. */
+.battle-scene.battle-screen-shake .battle-field {
+  animation: battle-field-shake var(--battle-shake-period, 0.3s) ease-out
+    var(--battle-shake-iterations, 1);
+}
+

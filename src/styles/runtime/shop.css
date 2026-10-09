@@ -1,0 +1,1147 @@
+/* In-game trade counter. Local tokens are documented in DESIGN.md.
+   Mounted in .play-viewport, outside the 320x240 stage transform.
+   Keyboard/gamepad selection only; no pointer-only presentation. */
+.runtime-shop-overlay {
+  --shop-ink: var(--runtime-glass-text);
+  --shop-ink-dim: var(--runtime-glass-muted);
+  --shop-surface: var(--runtime-glass-surface);
+  --shop-surface-flat: var(--runtime-glass-panel);
+  --shop-inset: var(--runtime-glass-inset);
+  --shop-card: var(--runtime-glass-card);
+  --shop-line: var(--runtime-glass-hairline);
+  --shop-line-strong: var(--runtime-glass-hairline-strong);
+  --shop-accent: var(--runtime-glass-accent);
+  --shop-accent-soft: var(--runtime-glass-accent-soft);
+  --shop-gain: color-mix(in srgb, var(--success) 55%, var(--shop-ink));
+  --shop-loss: color-mix(in srgb, var(--danger) 55%, var(--shop-ink));
+  --shop-material: var(--warning);
+  --shop-radius: var(--runtime-glass-radius);
+  --shop-radius-small: var(--runtime-glass-radius-small);
+  --shop-ui-font: var(--runtime-ui-font);
+  --shop-space-1: 4px;
+  --shop-space-2: 8px;
+  --shop-space-3: 12px;
+  --shop-space-4: 16px;
+  --shop-space-6: 24px;
+  --shop-space-8: 32px;
+  --shop-line-width: 1px;
+  --shop-focus-width: 2px;
+  --shop-text-small: 12px;
+  --shop-text-body: 14px;
+  --shop-text-section: 16px;
+  --shop-text-title: 24px;
+  --shop-text-entry: 32px;
+  --shop-art-row: 48px;
+  --shop-art-display: 112px;
+  --shop-art-party: 32px;
+  --shop-control: 32px;
+  --shop-display-column: 38%;
+  --shop-counter-width: 1200px;
+  --shop-entry-width: 560px;
+  --shop-enter-ms: 180ms;
+  --shop-bump-ms: 420ms;
+  --shop-float-ms: 900ms;
+  position: absolute;
+  box-sizing: border-box;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--shop-space-6);
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(ellipse at top, var(--shop-surface-flat), var(--runtime-glass-scrim));
+  color: var(--shop-ink);
+  font: var(--shop-text-body)/1.45 var(--shop-ui-font);
+  overflow: hidden;
+  animation: runtime-shop-in var(--shop-enter-ms) ease-out;
+}
+.runtime-shop-overlay *,
+.runtime-shop-overlay *::before,
+.runtime-shop-overlay *::after { box-sizing: border-box; }
+.runtime-shop-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: min(var(--shop-counter-width), 100%);
+  margin-inline: auto;
+}
+.runtime-shop-items-shell {
+  flex: 1 1 auto;
+  background: var(--shop-surface);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius);
+  box-shadow: var(--runtime-glass-shadow);
+  overflow: hidden;
+}
+/* Author-selected shop surfaces. The data model keeps the same commerce flow;
+   these presets only rearrange the existing list/detail components. */
+.runtime-shop-preset-grid .runtime-shop-item-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--shop-space-2);
+  padding: var(--shop-space-3);
+}
+.runtime-shop-preset-grid .runtime-shop-item-row {
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--shop-space-2);
+  text-align: center;
+}
+.runtime-shop-preset-grid .runtime-shop-item-icon { margin-inline: auto; }
+.runtime-shop-preset-grid .runtime-shop-item-price { margin-left: 0; }
+.runtime-shop-preset-compare .runtime-shop-detail-panel { border-left: 2px solid var(--shop-accent); }
+.runtime-shop-preset-compare .runtime-shop-comparison-summary { display: block; }
+.runtime-shop-preset-compare .runtime-shop-item-row { border-left: 3px solid var(--shop-accent); }
+.runtime-shop-preset-compare .runtime-shop-detail-panel::before {
+  content: "장비 비교 모드";
+  display: block;
+  margin-bottom: var(--shop-space-2);
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+.runtime-shop-preset-cart .runtime-shop-item-row::after {
+  content: "담기";
+  margin-left: auto;
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+  font-weight: 700;
+}
+.runtime-shop-preset-cart .runtime-shop-item-row { padding-right: var(--shop-space-5); }
+.runtime-shop-preset-cart .runtime-shop-item-row.selected::after { content: "담김 ✓"; }
+.runtime-shop-preset-cart .runtime-shop-prompt-panel::before {
+  content: "장바구니에서 여러 상품을 확인한 뒤 결제하세요";
+  color: var(--shop-accent);
+  font-size: var(--shop-text-small);
+}
+/* Override only the legacy 720px shop cap in playSurface.css, not stage geometry. */
+.player-layout .play-viewport > .runtime-shop-overlay > .runtime-shop-items-shell.runtime-shop-shell {
+  width: min(var(--shop-counter-width), 100%);
+}
+.runtime-shop-menu-shell { align-items: center; }
+.runtime-shop-panel { min-height: 0; }
+.runtime-shop-panel:empty { display: none; }
+.runtime-shop-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--shop-space-4);
+  padding: var(--shop-space-4) var(--shop-space-6);
+  border-bottom: var(--shop-line-width) solid var(--shop-line-strong);
+  flex: 0 0 auto;
+}
+.runtime-shop-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--shop-space-3);
+  min-width: 0;
+}
+.runtime-shop-topbar > .runtime-shop-brand { flex: 1 1 auto; }
+.runtime-shop-merchant-avatar {
+  width: var(--shop-art-row);
+  height: var(--shop-art-row);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-inset);
+  color: var(--shop-accent);
+}
+.runtime-shop-merchant-avatar svg { width: var(--shop-space-6); height: var(--shop-space-6); }
+.runtime-shop-brand-copy { min-width: 0; }
+.runtime-shop-brand-title { font-size: var(--shop-text-title); font-weight: 700; }
+.runtime-shop-brand-sub { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-tabs {
+  display: flex;
+  gap: var(--shop-space-1);
+  padding: var(--shop-space-1);
+  background: var(--shop-inset);
+  border-radius: var(--shop-radius);
+  flex: 0 0 auto;
+}
+.runtime-shop-tab,
+.runtime-shop-chip,
+.runtime-shop-confirm,
+.runtime-shop-cancel,
+.runtime-shop-menu-choice,
+.runtime-shop-detail-open,
+.runtime-shop-actor,
+.runtime-shop-slot-choice {
+  appearance: none;
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-card);
+  color: var(--shop-ink-dim);
+  font: 600 var(--shop-text-small)/1.3 var(--shop-ui-font);
+  cursor: default;
+}
+.runtime-shop-tab { padding: var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-tab.is-active,
+.runtime-shop-chip.is-active {
+  background: var(--shop-accent-soft);
+  color: var(--shop-ink);
+  border-color: var(--shop-accent);
+}
+.runtime-shop-gold-panel { flex: 0 0 auto; padding-left: var(--shop-space-4); border-left: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-gold { display: flex; flex-direction: column; gap: var(--shop-space-1); }
+.runtime-shop-gold-line { display: flex; align-items: center; gap: var(--shop-space-2); position: relative; }
+.runtime-shop-gold-line svg { width: var(--shop-space-4); height: var(--shop-space-4); color: var(--shop-accent); }
+.runtime-shop-gold-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-gold-value { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 700; }
+.runtime-shop-gold-line.is-primary .runtime-shop-gold-value { font-size: var(--shop-text-title); color: var(--shop-ink); }
+.runtime-shop-merchant-gold .runtime-shop-gold-value { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-main { display: flex; flex: 1 1 auto; min-height: 0; }
+.runtime-shop-list-panel {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--shop-space-4);
+  gap: var(--shop-space-3);
+}
+.runtime-shop-catbar {
+  display: flex;
+  gap: var(--shop-space-1);
+  flex-wrap: wrap;
+  padding-bottom: var(--shop-space-3);
+  border-bottom: var(--shop-line-width) solid var(--shop-line);
+  flex: 0 0 auto;
+}
+.runtime-shop-chip { display: inline-flex; align-items: center; gap: var(--shop-space-2); padding: var(--shop-space-2); }
+.runtime-shop-chip-count { font-variant-numeric: tabular-nums; color: var(--shop-ink-dim); }
+.runtime-shop-item-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--shop-space-1);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Re-snap the keyboard selection when resizing changes the list viewport. */
+  scroll-snap-type: y mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shop-line-strong) var(--shop-inset);
+  padding: var(--shop-space-1);
+}
+.runtime-shop-item-row {
+  appearance: none;
+  display: grid;
+  grid-template-columns: var(--shop-art-row) minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  column-gap: var(--shop-space-3);
+  align-items: center;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: var(--shop-space-2) var(--shop-space-3);
+  border: var(--shop-line-width) solid transparent;
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-card);
+  color: var(--shop-ink);
+  font: var(--shop-text-body)/1.4 var(--shop-ui-font);
+  text-align: left;
+  cursor: default;
+  position: relative;
+}
+.runtime-shop-overlay .runtime-shop-item-row.rm-nav-item { padding-left: var(--shop-space-3); }
+.runtime-shop-item-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: var(--shop-space-2);
+  bottom: var(--shop-space-2);
+  width: var(--shop-space-1);
+  background: transparent;
+}
+.runtime-shop-overlay .runtime-shop-item-row.selected {
+  scroll-snap-align: start;
+  background: var(--shop-accent-soft);
+  border-color: var(--shop-accent);
+  box-shadow: inset 0 0 0 var(--shop-line-width) var(--shop-line-strong);
+  color: var(--shop-ink);
+}
+.runtime-shop-overlay .runtime-shop-item-row.selected::before {
+  content: "";
+  background: var(--shop-accent);
+  left: 0;
+  top: var(--shop-space-2);
+  height: auto;
+  transform: none;
+  filter: none;
+  animation: none;
+}
+.runtime-shop-item-icon {
+  width: var(--shop-art-row);
+  height: var(--shop-art-row);
+  grid-row: 1 / 3;
+  background-color: var(--shop-inset);
+  background-position: center;
+  background-size: 85%;
+  background-repeat: no-repeat;
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  display: grid;
+  place-items: center;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+.runtime-shop-item-icon-fallback { color: var(--shop-ink-dim); font-size: var(--shop-text-title); font-weight: 700; }
+.runtime-shop-item-main { grid-row: 1 / 3; display: flex; flex-direction: column; gap: var(--shop-space-1); min-width: 0; }
+.runtime-shop-item-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.runtime-shop-item-type { font-size: var(--shop-text-small); color: var(--shop-ink-dim); }
+.runtime-shop-item-owned { grid-column: 3; grid-row: 2; text-align: right; color: var(--shop-ink-dim); font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; }
+.runtime-shop-item-price { grid-column: 3; grid-row: 1; text-align: right; color: var(--shop-ink); font-size: var(--shop-text-section); font-weight: 700; font-variant-numeric: tabular-nums; }
+.runtime-shop-item-row.is-unaffordable .runtime-shop-item-price { color: var(--shop-loss); }
+.runtime-shop-item-lock { position: absolute; right: var(--shop-space-1); bottom: var(--shop-space-1); color: var(--shop-loss); pointer-events: none; }
+.runtime-shop-item-lock svg { width: var(--shop-space-2); height: var(--shop-space-2); }
+.runtime-shop-empty { padding: var(--shop-space-6); color: var(--shop-ink-dim); text-align: center; }
+.runtime-shop-side {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 var(--shop-display-column);
+  min-width: 0;
+  min-height: 0;
+  border-left: var(--shop-line-width) solid var(--shop-line-strong);
+  background: var(--shop-inset);
+}
+.runtime-shop-detail-panel { flex: 1 1 auto; min-height: 0; padding: var(--shop-space-6); overflow-y: auto; scrollbar-width: thin; }
+.runtime-shop-detail { display: flex; flex-direction: column; gap: var(--shop-space-4); }
+.runtime-shop-detail-hero {
+  --shop-category-light: var(--shop-accent);
+  display: flex;
+  align-items: center;
+  gap: var(--shop-space-4);
+}
+.runtime-shop-detail-hero[data-category="consumable"] { --shop-category-light: var(--shop-gain); }
+.runtime-shop-detail-hero[data-category="material"] { --shop-category-light: var(--shop-material); }
+.runtime-shop-detail-hero[data-category="special"] { --shop-category-light: var(--shop-ink-dim); }
+.runtime-shop-detail-icon {
+  position: relative;
+  isolation: isolate;
+  width: var(--shop-art-display);
+  height: var(--shop-art-display);
+  background-size: auto 70%;
+  border-color: var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background-color: var(--shop-inset);
+  box-shadow: inset 0 0 var(--shop-space-8) var(--shop-card), var(--runtime-glass-shadow);
+}
+.runtime-shop-detail-icon::before,
+.runtime-shop-detail-icon::after { content: ""; position: absolute; pointer-events: none; z-index: -1; }
+.runtime-shop-detail-icon::before {
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 70%, color-mix(in srgb, var(--shop-category-light) 24%, transparent), transparent 70%);
+}
+.runtime-shop-detail-icon::after { inset: var(--shop-space-2); border: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-detail-name { font-size: var(--shop-text-title); font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.runtime-shop-detail-type { margin-top: var(--shop-space-1); color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-detail-hero > :last-child { min-width: 0; }
+.runtime-shop-detail > .runtime-shop-help-line { order: 2; }
+.runtime-shop-detail > .runtime-shop-owned-panel { order: 3; }
+.runtime-shop-help-line { color: var(--shop-ink-dim); font-size: var(--shop-text-body); line-height: 1.6; padding-block: var(--shop-space-3); border-block: var(--shop-line-width) solid var(--shop-line); overflow-wrap: anywhere; }
+.runtime-shop-statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-stat,
+.runtime-shop-stat-line { display: flex; align-items: baseline; justify-content: space-between; gap: var(--shop-space-2); font-size: var(--shop-text-small); }
+.runtime-shop-stat-key,
+.runtime-shop-stat-line { color: var(--shop-ink-dim); }
+.runtime-shop-stat-value,
+.runtime-shop-stat-line > span:last-child { font-weight: 700; font-variant-numeric: tabular-nums; color: var(--shop-ink); }
+.runtime-shop-stat.is-up .runtime-shop-stat-value { color: var(--shop-gain); }
+.runtime-shop-stat.is-down .runtime-shop-stat-value { color: var(--shop-loss); }
+.runtime-shop-owned { display: flex; flex-direction: column; gap: var(--shop-space-2); }
+.runtime-shop-party-panel { padding: var(--shop-space-3) var(--shop-space-6); border-top: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-party { display: flex; align-items: center; gap: var(--shop-space-2); }
+.runtime-shop-party { flex-wrap: wrap; }
+.runtime-shop-party-caption { font-size: var(--shop-text-small); color: var(--shop-ink-dim); margin-right: auto; }
+.runtime-shop-party-sprite {
+  width: var(--shop-art-party);
+  height: var(--shop-art-party);
+  border: var(--shop-line-width) solid var(--shop-line);
+  border-radius: var(--shop-radius-small);
+  background-color: var(--shop-card);
+  background-position: center top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  display: grid;
+  place-items: center;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+.runtime-shop-party-sprite-fallback { color: var(--shop-ink-dim); }
+.runtime-shop-prompt-panel { flex: 0 0 auto; padding: var(--shop-space-3) var(--shop-space-6); border-top: var(--shop-line-width) solid var(--shop-line-strong); background: var(--shop-surface-flat); }
+.runtime-shop-prompt { display: flex; align-items: center; gap: var(--shop-space-3); flex-wrap: wrap; }
+.runtime-shop-status { flex: 1 1 0; min-width: 0; font-size: var(--shop-text-body); overflow-wrap: anywhere; }
+.runtime-shop-prompt-actions { display: flex; gap: var(--shop-space-2); flex: 0 1 auto; flex-wrap: wrap; min-width: 0; }
+.runtime-shop-confirm,
+.runtime-shop-detail-open,
+.runtime-shop-actor,
+.runtime-shop-slot-choice,
+.runtime-shop-cancel { padding: var(--shop-space-2) var(--shop-space-4); min-height: var(--shop-control); }
+.runtime-shop-confirm { color: var(--shop-ink); background: var(--shop-accent-soft); border-color: var(--shop-accent); }
+.runtime-shop-quantity-wrap { display: flex; align-items: center; gap: var(--shop-space-1); flex: 0 0 auto; }
+.runtime-shop-quantity-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-overlay .runtime-commerce-quantity-input {
+  width: var(--shop-art-row);
+  height: var(--shop-control);
+  padding: var(--shop-space-1);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius-small);
+  background: var(--shop-inset);
+  color: var(--shop-ink);
+  font: 700 var(--shop-text-body)/1 var(--shop-ui-font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.runtime-shop-overlay .runtime-commerce-quantity-input::-webkit-inner-spin-button,
+.runtime-shop-overlay .runtime-commerce-quantity-input::-webkit-outer-spin-button { appearance: none; margin: 0; }
+.runtime-shop-quantity-total { font-size: var(--shop-text-section); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--shop-ink); margin-left: var(--shop-space-2); white-space: nowrap; }
+.runtime-shop-overlay .runtime-commerce-quantity-hint { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-keyhints { display: flex; gap: var(--shop-space-4); flex-wrap: wrap; align-items: center; padding-top: var(--shop-space-2); }
+.runtime-shop-keyhint { display: inline-flex; align-items: center; gap: var(--shop-space-1); }
+.runtime-shop-key { padding: 0 var(--shop-space-1); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius-small); background: var(--shop-card); color: var(--shop-ink-dim); font: 600 var(--shop-text-small)/1.4 var(--shop-ui-font); }
+.runtime-shop-keyhint-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-greeting-panel { width: min(var(--shop-entry-width), 100%); padding: var(--shop-space-8); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius); background: var(--shop-surface); box-shadow: var(--runtime-glass-shadow); }
+.runtime-shop-menu { display: flex; flex-direction: column; gap: var(--shop-space-6); }
+.runtime-shop-menu .runtime-shop-brand-title { font-size: var(--shop-text-entry); }
+.runtime-shop-message { font-size: var(--shop-text-body); line-height: 1.6; }
+.runtime-shop-menu-choices { display: flex; gap: var(--shop-space-2); }
+.runtime-shop-menu-choice { display: flex; flex: 1 1 0; flex-direction: column; gap: var(--shop-space-1); align-items: center; text-align: center; padding: var(--shop-space-4) var(--shop-space-2); color: var(--shop-ink); }
+.runtime-shop-overlay .runtime-shop-menu-choice.rm-nav-item { padding-left: var(--shop-space-2); }
+.runtime-shop-overlay .runtime-shop-menu-choice.selected { background: var(--shop-accent-soft); border-color: var(--shop-accent); box-shadow: inset 0 0 0 var(--shop-line-width) var(--shop-accent); color: var(--shop-ink); }
+.runtime-shop-overlay .runtime-shop-menu-choice.selected::before { content: none; }
+.runtime-shop-menu-choice:disabled { opacity: 0.5; }
+.runtime-shop-menu-choice-label { font-size: var(--shop-text-section); font-weight: 700; }
+.runtime-shop-menu-choice-hint { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-entry-purse { padding-block: var(--shop-space-3); border-block: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-haggle-shell { background: var(--shop-surface); border: var(--shop-line-width) solid var(--shop-line-strong); border-radius: var(--shop-radius); }
+.runtime-shop-haggle { min-width: 0; }
+.runtime-shop-haggle-item { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-haggle-offer-row { display: flex; align-items: baseline; gap: var(--shop-space-3); flex-wrap: wrap; }
+.runtime-shop-haggle-offer-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-haggle-offer { font-size: var(--shop-text-title); font-variant-numeric: tabular-nums; }
+.runtime-shop-haggle-offer-total,
+.runtime-shop-haggle-patience { color: var(--shop-ink-dim); font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; }
+.runtime-shop-haggle-actions { gap: var(--shop-space-2); }
+.runtime-shop-haggle-step { flex: 0 0 auto; min-width: var(--shop-control); padding-inline: var(--shop-space-2); }
+.runtime-shop-overlay .runtime-shop-haggle-actions .runtime-shop-menu-choice.selected { background: var(--shop-accent-soft); border-color: var(--shop-accent); }
+.runtime-shop-overlay :is(button, input, .runtime-shop-detail-scroll):focus-visible { outline: var(--shop-focus-width) solid var(--shop-ink); outline-offset: var(--shop-line-width); }
+/* One complete preview ledger; the existing inline flex containment remains
+   structural only. No trade action lives in this shell. */
+.runtime-shop-comparison {
+  padding: var(--shop-space-4);
+  gap: var(--shop-space-3);
+  background: var(--shop-surface);
+  border: var(--shop-line-width) solid var(--shop-line-strong);
+  border-radius: var(--shop-radius);
+  box-shadow: var(--runtime-glass-shadow);
+  min-width: 0;
+}
+.runtime-shop-detail-scroll {
+  padding: var(--shop-space-2);
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--shop-line-strong) var(--shop-inset);
+  scroll-padding-block: var(--shop-space-2);
+  overflow-wrap: anywhere;
+}
+.runtime-shop-detail-scroll > *,
+.runtime-shop-comparison-summary > * { margin: 0; }
+.runtime-shop-detail-scroll > * + * { margin-top: var(--shop-space-3); }
+.runtime-shop-detail-scroll > h2 { font-size: var(--shop-text-title); line-height: 1.25; }
+.runtime-shop-detail-scroll > p { color: var(--shop-ink-dim); }
+.runtime-shop-detail-scroll > p + p {
+  border-left: var(--shop-focus-width) solid var(--shop-accent);
+  padding-left: var(--shop-space-2);
+  color: var(--shop-ink);
+}
+.runtime-shop-actor-choices,
+.runtime-shop-slot-choices { display: flex; flex-wrap: wrap; gap: var(--shop-space-2); }
+.runtime-shop-actor,
+.runtime-shop-slot-choice { max-width: 100%; min-width: 0; overflow-wrap: anywhere; text-align: left; }
+.runtime-shop-actor[aria-pressed="true"],
+.runtime-shop-slot-choice[aria-pressed="true"] { background: var(--shop-accent-soft); border-color: var(--shop-accent); color: var(--shop-ink); }
+.runtime-shop-comparison-summary { display: flex; flex-direction: column; gap: var(--shop-space-2); overflow-wrap: anywhere; }
+.runtime-shop-comparison-heading { font-size: var(--shop-text-section); line-height: 1.4; }
+.runtime-shop-replacement { color: var(--shop-ink-dim); }
+.runtime-shop-preview-reason { color: var(--shop-loss); }
+.runtime-shop-same-equipment { color: var(--shop-ink-dim); }
+.runtime-shop-comparison-stats { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.runtime-shop-comparison-stats > .runtime-shop-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+  padding-block: var(--shop-space-2);
+  border-bottom: var(--shop-line-width) solid var(--shop-line);
+  font-size: var(--shop-text-body);
+}
+.runtime-shop-comparison-stats .runtime-shop-stat-value,
+.runtime-shop-stat-delta { text-align: right; font-variant-numeric: tabular-nums; }
+.runtime-shop-stat-delta { font-weight: 700; }
+.runtime-shop-stat.is-up .runtime-shop-stat-delta { color: var(--shop-gain); }
+.runtime-shop-stat.is-down .runtime-shop-stat-delta { color: var(--shop-loss); }
+.runtime-shop-stat.is-same .runtime-shop-stat-delta { color: var(--shop-ink-dim); }
+.runtime-shop-displaced,
+.runtime-shop-effects {
+  padding-top: var(--shop-space-3);
+  border-top: var(--shop-line-width) solid var(--shop-line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--shop-space-2);
+}
+.runtime-shop-comparison-summary :is(.runtime-shop-displaced, .runtime-shop-effects) > * { margin: 0; }
+.runtime-shop-comparison-summary :is(.runtime-shop-displaced, .runtime-shop-effects) > h3 { font-size: var(--shop-text-body); }
+.runtime-shop-effects-gained > h3 { color: var(--shop-gain); }
+.runtime-shop-effects-lost > h3 { color: var(--shop-loss); }
+.runtime-shop-detail-close { align-self: flex-end; }
+.runtime-shop-comparison > .runtime-shop-keyhints { padding-top: 0; flex: 0 0 auto; }
+.runtime-shop-comparison .runtime-shop-keyhint { min-width: 0; flex-wrap: wrap; }
+.runtime-shop-comparison .runtime-shop-key { overflow-wrap: anywhere; }
+.runtime-shop-balance-after { font-size: var(--shop-text-small); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.runtime-shop-balance-after[data-shortage] { color: var(--shop-loss); }
+.runtime-shop-overlay :is(.runtime-shop-confirm, .runtime-shop-detail-open):disabled { color: var(--shop-ink-dim); background: var(--shop-card); border-color: var(--shop-line); }
+/* Flex display must not override the semantic hidden stock/detail state. */
+.runtime-shop-overlay [hidden] { display: none; }
+.runtime-shop-gold-value.is-bumped { animation: runtime-shop-bump var(--shop-bump-ms) ease; }
+.runtime-shop-gold-delta { position: absolute; right: 0; top: 0; font-size: var(--shop-text-body); font-weight: 700; pointer-events: none; animation: runtime-shop-float var(--shop-float-ms) ease-out forwards; }
+.runtime-shop-gold-delta.is-gain { color: var(--shop-gain); }
+.runtime-shop-gold-delta.is-loss { color: var(--shop-loss); }
+@keyframes runtime-shop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes runtime-shop-bump { 0%, 100% { transform: scale(1); } 38% { transform: scale(1.12); } }
+@keyframes runtime-shop-float { 0% { opacity: 0; transform: translateY(var(--shop-space-1)); } 22% { opacity: 1; } 100% { opacity: 0; transform: translateY(calc(-1 * var(--shop-space-6))); } }
+
+/* Compact viewport keeps one-dimensional stock navigation and a real display. */
+@media (max-width: 860px), (max-height: 600px) {
+  /* The overlay padding supplies the compact gutter; do not subtract the
+     legacy stage margin a second time before laying out the shop. */
+  .player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay {
+    width: min(100%, calc(var(--play-logical-width) * var(--play-scale)));
+    height: min(100%, calc(var(--play-logical-height) * var(--play-scale)));
+  }
+  .runtime-shop-overlay {
+    --shop-art-row: 32px;
+    --shop-art-display: 96px;
+    --shop-text-title: 16px;
+    --shop-text-entry: 24px;
+    --shop-text-body: 12px;
+    --shop-text-section: 14px;
+    padding: var(--shop-space-2);
+  }
+  .runtime-shop-topbar { padding: var(--shop-space-2) var(--shop-space-3); gap: var(--shop-space-2); }
+  .runtime-shop-list-panel { padding: var(--shop-space-2); gap: var(--shop-space-1); }
+  .runtime-shop-item-row { column-gap: var(--shop-space-2); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-3); }
+  .runtime-shop-detail-hero { flex-direction: column; align-items: stretch; }
+  .runtime-shop-detail-icon { width: 100%; }
+  .runtime-shop-comparison { padding: var(--shop-space-2); gap: var(--shop-space-2); }
+  .runtime-shop-detail,
+  .runtime-shop-detail-hero { gap: var(--shop-space-2); }
+  .runtime-shop-catbar { padding-bottom: var(--shop-space-2); }
+  .runtime-shop-chip { padding: var(--shop-space-1); }
+  .runtime-shop-party-panel { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-2) var(--shop-space-3); }
+  .runtime-shop-status { flex-basis: 100%; }
+  .runtime-shop-prompt-actions { margin-left: auto; }
+  .runtime-shop-keyhints { gap: var(--shop-space-2); }
+  /* Comparison must fit before optional duplicated item presentation. */
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > :is(
+    [data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel
+  ) { display: none; }
+}
+@media (max-width: 460px), (max-height: 360px) {
+  .runtime-shop-overlay {
+    --shop-text-small: 10px;
+    --shop-text-title: 14px;
+    --shop-art-row: 24px;
+    --shop-control: 24px;
+    padding: var(--shop-space-1);
+  }
+  .runtime-shop-topbar { gap: var(--shop-space-1); padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-merchant-avatar { display: none; }
+  .runtime-shop-topbar .runtime-shop-brand-sub { font-size: var(--shop-text-small); }
+  .runtime-shop-tab { padding: var(--shop-space-1); }
+  .runtime-shop-gold-panel { padding-left: var(--shop-space-1); }
+  .runtime-shop-gold-line { gap: var(--shop-space-1); }
+  .runtime-shop-list-panel { padding: var(--shop-space-1); gap: 0; }
+  .runtime-shop-catbar { padding-bottom: 0; }
+  .runtime-shop-main { flex-direction: column; }
+  /* 본문이 세로로 쌓이는 크기에서는 상세 패널이 목록을 짓누르면 선택 행이 한 줄도 안 보인다
+     (320x240 실측: 'selected row clipped by list viewport'). 목록에 최소 두 행 분량을
+     보장하고 상세는 나머지에서 잘린다 — 상세는 요약 슬롯만 보이면 충분하다. */
+  .runtime-shop-side { flex: 0 1 auto; max-height: 42%; overflow: hidden; border-left: 0; border-top: var(--shop-line-width) solid var(--shop-line); }
+  .runtime-shop-item-list { min-height: calc(var(--shop-art-row) * 2 + var(--shop-space-1)); }
+  .runtime-shop-detail-panel { padding: var(--shop-space-1) var(--shop-space-2); overflow: hidden; }
+  .runtime-shop-detail { display: grid; grid-template-columns: 1fr 1fr; gap: var(--shop-space-2); align-items: center; }
+  .runtime-shop-detail-hero { flex-direction: row; align-items: center; gap: var(--shop-space-2); }
+  .runtime-shop-detail-icon { width: var(--shop-art-row); height: var(--shop-art-row); background-size: 85%; box-shadow: none; }
+  .runtime-shop-detail-icon::after { display: none; }
+  .runtime-shop-detail-name { font-size: var(--shop-text-body); }
+  .runtime-shop-help-line { border: 0; padding: 0; margin: 0; font-size: var(--shop-text-small); line-height: 1.3; max-height: 2.6em; overflow: hidden; }
+  .runtime-shop-owned-panel,
+  .runtime-shop-detail [data-testid="shop-stat-slot"] { display: none; }
+  .runtime-shop-item-row { padding-block: 0; line-height: 1.2; }
+  .runtime-shop-item-type { display: none; }
+  .runtime-shop-prompt-panel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-prompt { gap: var(--shop-space-1); }
+  .runtime-shop-status { font-size: var(--shop-text-small); }
+  .runtime-shop-confirm,
+  .runtime-shop-detail-open,
+  .runtime-shop-cancel { padding: var(--shop-space-1) var(--shop-space-2); }
+  .runtime-shop-quantity-label { display: none; }
+  .runtime-shop-quantity-total { font-size: var(--shop-text-body); margin-left: var(--shop-space-1); }
+  .runtime-shop-keyhints { padding-top: var(--shop-space-1); gap: var(--shop-space-1); }
+  .runtime-shop-keyhint { gap: 0; }
+  .runtime-shop-greeting-panel { padding: var(--shop-space-3); }
+  .runtime-shop-menu { gap: var(--shop-space-3); }
+  .runtime-shop-menu-choice { padding-block: var(--shop-space-2); }
+  .runtime-shop-topbar .runtime-shop-brand { overflow: hidden; }
+  .runtime-shop-topbar .runtime-shop-brand-title,
+  .runtime-shop-topbar .runtime-shop-brand-sub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .runtime-shop-prompt-actions { margin-left: 0; }
+  /* 이 크기에서 프롬프트 패널은 이미 화면의 1/3 이상 — 키 힌트는 입구 메뉴가 이미 가르쳤다. */
+  .runtime-shop-prompt-panel .runtime-shop-keyhints { display: none; }
+  /* 상인 지갑은 보조 정보 — 한 줄이라도 아끼는 크기에서는 버린다. */
+  .runtime-shop-merchant-gold { display: none; }
+  .runtime-shop-comparison { --shop-text-small: 12px; }
+  .runtime-shop-comparison .runtime-shop-key { font-size: var(--shop-text-small); }
+  .runtime-shop-comparison > .runtime-shop-keyhints { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+  .runtime-shop-comparison .runtime-shop-keyhint:nth-child(2) { grid-column: 1 / -1; grid-row: 2; }
+  .runtime-shop-comparison .runtime-shop-keyhint-label { display: none; }
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats),
+  .runtime-shop-detail:has(.runtime-shop-comparison-stats) > [data-testid="shop-stat-slot"] { display: block; }
+  .runtime-shop-detail .runtime-shop-comparison-summary { gap: 0; }
+  .runtime-shop-detail :is(.runtime-shop-comparison-heading, .runtime-shop-preview-reason) {
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .runtime-shop-detail :is(.runtime-shop-replacement, .runtime-shop-same-equipment) { display: none; }
+  .runtime-shop-detail .runtime-shop-comparison-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--shop-space-1);
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    font-size: var(--shop-text-small);
+    line-height: 1.2;
+  }
+  .runtime-shop-detail .runtime-shop-comparison-stats > .runtime-shop-stat > span { text-align: center; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--shop-space-1);
+    align-items: center;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt { display: contents; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-status { grid-column: 1 / -1; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-quantity-wrap { grid-column: 1; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-balance-after { grid-column: 2; grid-row: 2; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-prompt-actions { grid-column: 1; grid-row: 3; }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhints {
+    grid-column: 2;
+    grid-row: 3;
+    padding-top: 0;
+    justify-self: end;
+  }
+  .runtime-shop-items-shell:has(.runtime-shop-comparison-stats) .runtime-shop-keyhint-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .runtime-shop-overlay,
+  .runtime-shop-gold-value.is-bumped,
+  .runtime-shop-gold-delta { animation: none; }
+}
+
+/* Preset overrides come last so they win over the compact/mobile layout rules. */
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--shop-space-2);
+  padding: var(--shop-space-3);
+}
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-row {
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--shop-space-2);
+  text-align: center;
+}
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-icon { margin-inline: auto; }
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-item-price { margin-left: 0; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-list-panel::before { content: "전체   무기   방어구   아이템   기타"; display:block; padding:var(--shop-space-3); color:var(--shop-accent); font-weight:800; border-bottom:1px solid var(--shop-line); }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-main { grid-template-columns: 1fr 1fr; }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-side { border-left:2px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-item-row { border-left:3px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-item-row::before { content:"재고 3 · 오늘 할인"; color:var(--shop-gain); font-size:var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-gold-panel { box-shadow: inset 0 -3px 0 var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-topbar::after { content:"어서 오세요. 오늘은 특별 추천 상품이 있습니다."; display:block; max-width:16rem; padding:var(--shop-space-2) var(--shop-space-3); color:var(--shop-ink-dim); background:var(--shop-inset); border-radius:var(--shop-radius-small); font-size:var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-tabs { --shop-accent:#6c8de8; --shop-accent-soft:#202b55; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-topbar { flex-wrap:wrap; }
+.runtime-shop-overlay.runtime-shop-preset-tabs .runtime-shop-list-panel { order:2; }
+.runtime-shop-overlay.runtime-shop-preset-grid { --shop-accent:#d49a54; --shop-accent-soft:#49351e; }
+.runtime-shop-overlay.runtime-shop-preset-grid .runtime-shop-main { grid-template-columns: minmax(0,1.4fr) minmax(17rem,.8fr); }
+.runtime-shop-overlay.runtime-shop-preset-compare { --shop-accent:#71c6a1; --shop-accent-soft:#193d36; }
+.runtime-shop-overlay.runtime-shop-preset-compare .runtime-shop-main { grid-template-columns:minmax(16rem,.8fr) minmax(0,1.4fr); }
+.runtime-shop-overlay.runtime-shop-preset-compare .runtime-shop-side { order:-1; }
+.runtime-shop-overlay.runtime-shop-preset-split { --shop-accent:#d87862; --shop-accent-soft:#48251f; }
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-topbar { background:#25191c; }
+.runtime-shop-overlay.runtime-shop-preset-cart { --shop-accent:#c9a35d; --shop-accent-soft:#453719; }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-prompt-panel { background:#292218; }
+.runtime-shop-overlay.runtime-shop-preset-stock { --shop-accent:#8fc36c; --shop-accent-soft:#243a23; }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-topbar { border-bottom:3px solid var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story { --shop-accent:#d88bba; --shop-accent-soft:#432b44; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-topbar { min-height:7.5rem; align-items:flex-start; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-main { grid-template-columns:1fr; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-side { display:grid; grid-template-columns:1fr 1fr; }
+
+/* Final layout corrections for the authored presets. */
+.runtime-shop-overlay.runtime-shop-preset-split .runtime-shop-brand { flex:0 0 auto; min-width:12rem; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-side { display:flex; flex-direction:column; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-detail-name { white-space:normal; overflow-wrap:anywhere; }
+
+/* The three authored archetypes have different information hierarchies, not just
+   different colors. Simple shops deliberately remove the secondary panes. */
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-party-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-items-shell { width:min(680px,100%); }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-help-line { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-classic .runtime-shop-detail-open { display:none; }
+
+.runtime-shop-story-actions { display:flex; gap:var(--shop-space-2); padding:var(--shop-space-3) var(--shop-space-4); border-bottom:1px solid var(--shop-line); background:var(--shop-inset); }
+.runtime-shop-story-actions button { flex:1; border:1px solid var(--shop-line); background:var(--shop-card); color:var(--shop-ink); padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-story-actions button:hover, .runtime-shop-story-actions button:focus-visible { border-color:var(--shop-accent); color:var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-party-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-story .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-cart .runtime-shop-item-row::after { content:none; }
+.runtime-shop-overlay.runtime-shop-preset-stock .runtime-shop-item-row::before { content:none; }
+.runtime-shop-overlay.runtime-shop-preset-split { --shop-accent:#c99f98; --shop-accent-soft:#654e4f; }
+.runtime-shop-overlay.runtime-shop-preset-cart { --shop-accent:#c8b58b; --shop-accent-soft:#665e49; }
+.runtime-shop-overlay.runtime-shop-preset-stock { --shop-accent:#adc09d; --shop-accent-soft:#526651; }
+.runtime-shop-overlay.runtime-shop-preset-story { --shop-accent:#c7a9bf; --shop-accent-soft:#655465; }
+.runtime-shop-overlay.runtime-shop-preset-baram {
+  --shop-surface:#24344b; --shop-surface-flat:#19263a; --shop-inset:#162236;
+  --shop-card:#304664; --shop-line:#5d789b; --shop-line-strong:#8ea8c5;
+  --shop-ink:#eef5ff; --shop-ink-dim:#b9c9de; --shop-accent:#d3b16e; --shop-accent-soft:#4c4d51;
+}
+.runtime-shop-overlay.runtime-shop-preset-baram { background:#101722; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-items-shell { width:min(560px,100%); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-topbar { padding:var(--shop-space-3) var(--shop-space-4); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-brand-sub,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-detail-panel,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-party-panel,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-gold-panel { display:none; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-main { display:block; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-list-panel { border:0; }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-list { padding:var(--shop-space-2); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-row { border-radius:0; min-height:36px; padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-item-row.selected { background:var(--shop-accent-soft); border-color:var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-prompt-panel { padding:var(--shop-space-2) var(--shop-space-4); }
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-help-line,
+.runtime-shop-overlay.runtime-shop-preset-baram .runtime-shop-keyhints { display:none; }
+
+/* Each authored preset owns its full surface palette. These are opaque, deliberate
+   materials rather than the shared purple glass defaults. */
+.runtime-shop-overlay.runtime-shop-preset-classic {
+  --shop-surface:#29313d; --shop-surface-flat:#202732; --shop-inset:#1b222c;
+  --shop-card:#333d4b; --shop-line:#566170; --shop-line-strong:#778492;
+  --shop-ink:#edf0f2; --shop-ink-dim:#b5bec6; --shop-accent:#a9b7c4; --shop-accent-soft:#46515d;
+}
+.runtime-shop-overlay.runtime-shop-preset-tabs {
+  --shop-surface:#293737; --shop-surface-flat:#202d2d; --shop-inset:#1a2525;
+  --shop-card:#354747; --shop-line:#617473; --shop-line-strong:#82918f;
+  --shop-ink:#edf2f0; --shop-ink-dim:#b5c1bf; --shop-accent:#9ab6af; --shop-accent-soft:#465b58;
+}
+.runtime-shop-overlay.runtime-shop-preset-grid {
+  --shop-surface:#3a3328; --shop-surface-flat:#2d271f; --shop-inset:#231f1a;
+  --shop-card:#50483b; --shop-line:#817667; --shop-line-strong:#a79580;
+  --shop-ink:#f2eee5; --shop-ink-dim:#c8beae; --shop-accent:#c5aa7c; --shop-accent-soft:#645640;
+}
+.runtime-shop-overlay.runtime-shop-preset-compare {
+  --shop-surface:#2b3b39; --shop-surface-flat:#202f2d; --shop-inset:#182522;
+  --shop-card:#3a514c; --shop-line:#68827a; --shop-line-strong:#8da79b;
+  --shop-ink:#edf3ef; --shop-ink-dim:#b7c8c0; --shop-accent:#9bc0ae; --shop-accent-soft:#4b665c;
+}
+.runtime-shop-overlay.runtime-shop-preset-split {
+  --shop-surface:#3b3031; --shop-surface-flat:#2d2425; --shop-inset:#241c1d;
+  --shop-card:#504044; --shop-line:#806a6d; --shop-line-strong:#a78c8c;
+  --shop-ink:#f2eded; --shop-ink-dim:#c8babb; --shop-accent:#c99f98; --shop-accent-soft:#654e4f;
+}
+.runtime-shop-overlay.runtime-shop-preset-cart {
+  --shop-surface:#3a372d; --shop-surface-flat:#2d2a23; --shop-inset:#24221d;
+  --shop-card:#504b3d; --shop-line:#817968; --shop-line-strong:#a79c86;
+  --shop-ink:#f1efe7; --shop-ink-dim:#c8c1ae; --shop-accent:#c8b58b; --shop-accent-soft:#665e49;
+}
+.runtime-shop-overlay.runtime-shop-preset-stock {
+  --shop-surface:#304033; --shop-surface-flat:#253126; --shop-inset:#1d271e;
+  --shop-card:#405545; --shop-line:#708573; --shop-line-strong:#93a895;
+  --shop-ink:#edf1eb; --shop-ink-dim:#bbc6b9; --shop-accent:#adc09d; --shop-accent-soft:#526651;
+}
+.runtime-shop-overlay.runtime-shop-preset-story {
+  --shop-surface:#3b3440; --shop-surface-flat:#2e2832; --shop-inset:#241f28;
+  --shop-card:#514854; --shop-line:#827584; --shop-line-strong:#a392a4;
+  --shop-ink:#f1edf2; --shop-ink-dim:#c7bdc9; --shop-accent:#c7a9bf; --shop-accent-soft:#655465;
+}
+.runtime-shop-preset-tabs-nav { display:flex; gap:4px; flex:1 0 100%; order:3; padding-top:var(--shop-space-2); }
+.runtime-shop-preset-tabs-nav button { border:0; border-bottom:2px solid transparent; background:transparent; color:var(--shop-ink-dim); padding:var(--shop-space-2) var(--shop-space-3); }
+.runtime-shop-preset-tabs-nav button.is-active { color:var(--shop-ink); border-color:var(--shop-accent); }
+.runtime-shop-grid-heading,.runtime-shop-compare-heading { display:flex; justify-content:space-between; align-items:center; padding:var(--shop-space-3) var(--shop-space-4); border-bottom:1px solid var(--shop-line); }
+.runtime-shop-grid-heading span,.runtime-shop-compare-heading span { color:var(--shop-ink-dim); font-size:var(--shop-text-small); }
+.runtime-shop-compare-heading { grid-column:1 / -1; flex-direction:column; align-items:flex-start; }
+.runtime-shop-story-dialogue { display:flex; gap:var(--shop-space-3); align-items:center; padding:var(--shop-space-3) var(--shop-space-5); background:var(--shop-inset); color:var(--shop-ink-dim); }
+.runtime-shop-story-dialogue strong { color:var(--shop-accent); }
+
+/* ── 도트 비교 상점(pixel) — 명령에 프리셋이 없을 때의 기본값 ─────────────────────────
+   RM2003 상점(EasyRPG Window_ShopParty)의 창 배치 + 영웅별 실제 수치. 기준 목업:
+   왼쪽 목록 창 · 오른쪽 위 파티 창(네 명이 걷고 변화 두 줄) · 그 아래 비교 창(현재 → 변경 후)
+   · 아래 설명 창과 소지금 창. 창은 파랑 그라데이션 + 흰 테두리, 글꼴은 픽셀 글꼴.
+   수치는 전부 previewShopEquipment 에서 오고, 이 블록은 표현만 소유한다. 색은 rgba 만 쓴다(§4.1). */
+.runtime-shop-overlay.runtime-shop-preset-pixel {
+  --shop-ui-font: var(--runtime-pixel-font);
+  --shop-surface:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 2px),
+    linear-gradient(180deg, rgba(51, 70, 176, 0.97) 0%, rgba(35, 48, 138, 0.97) 45%, rgba(24, 33, 106, 0.97) 100%);
+  --shop-surface-flat: rgba(24, 33, 106, 0.97);
+  --shop-inset: rgba(4, 6, 30, 0.35);
+  --shop-card: rgba(0, 0, 30, 0.3);
+  --shop-line: rgba(150, 170, 240, 0.45);
+  --shop-line-strong: rgba(223, 227, 246, 1);
+  --shop-ink: rgba(244, 246, 255, 1);
+  --shop-ink-dim: rgba(184, 196, 240, 1);
+  --shop-accent: rgba(255, 226, 122, 1);
+  --shop-accent-soft: rgba(255, 226, 122, 0.12);
+  --shop-gain: rgba(126, 242, 166, 1);
+  --shop-loss: rgba(255, 96, 96, 1);
+  --shop-radius: 4px;
+  --shop-radius-small: 2px;
+  /* 글자와 행 높이는 게임 화면 배율(--play-scale)을 따른다 — 목업의 「창에 글자가 꽉 찬」 밀도.
+     320×240 논리 화면에서 본문 6.2px 상당 = 3배 확대 시 18.6px. */
+  --shop-gap: calc(var(--play-scale, 2) * 4px);
+  /* NeoDunggeunmo 는 같은 px 에서 Galmuri11 보다 작게 보인다 — 목업(Galmuri11 12px × 2배)과 같은 체감이 되게 올린다. */
+  --shop-text-body: max(12px, calc(var(--play-scale, 2) * 7.4px));
+  --shop-text-small: max(10px, calc(var(--play-scale, 2) * 5.6px));
+  --shop-text-title: max(13px, calc(var(--play-scale, 2) * 8.6px));
+  --shop-art-row: max(16px, calc(var(--play-scale, 2) * 8px));
+  --shop-window-edge: 0 0 0 1px rgba(10, 14, 48, 1), inset 0 0 0 1px rgba(10, 14, 48, 1), inset 0 0 0 2px rgba(120, 140, 220, 0.5);
+  justify-content: stretch;
+  padding: var(--shop-gap);
+  background: radial-gradient(ellipse at 30% 20%, rgba(28, 34, 80, 1) 0%, rgba(11, 14, 36, 1) 70%);
+  font-family: var(--shop-ui-font);
+  font-size: var(--shop-text-body);
+  text-shadow: 1px 1px 0 rgba(7, 10, 38, 1);
+}
+/* 공용 행·버튼 규칙이 font 단축 속성으로 UI 글꼴을 다시 박는다 — 이 프리셋 안에서는 전부 픽셀 글꼴로 되돌린다
+   (실측: 목록 이름·파티 이름만 system-ui 로 남아 목업과 결이 달랐다). */
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(button, input, .runtime-shop-item-row, .runtime-shop-party-card) { font-family: var(--shop-ui-font); }
+/* 게임 화면을 가장자리까지 덮는다 — 목업처럼 창 뒤가 맵이 아니라 어두운 무대다. */
+.player-layout .play-viewport > .runtime-overlay.runtime-shop-overlay.runtime-shop-preset-pixel {
+  width: min(100%, calc(var(--play-logical-width) * var(--play-scale)));
+  height: min(100%, calc(var(--play-logical-height) * var(--play-scale)));
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-greeting-panel, .runtime-shop-list-panel, .runtime-shop-detail-panel,
+  .runtime-shop-party-panel, .runtime-shop-desc-panel, .runtime-shop-purse-panel, .runtime-shop-comparison, .runtime-shop-haggle-shell) {
+  background: var(--shop-surface);
+  border: 2px solid var(--shop-line-strong);
+  border-radius: var(--shop-radius);
+  box-shadow: var(--shop-window-edge);
+}
+/* 창 격자 — 목업 640×360 비율 그대로: 목록 250 · 오른쪽 358 / 파티 66 · 비교 194 / 아래 60. */
+.player-layout .play-viewport > .runtime-shop-overlay.runtime-shop-preset-pixel > .runtime-shop-items-shell.runtime-shop-shell { width: 100%; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell {
+  display: grid;
+  grid-template-columns: 41% minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: var(--shop-gap);
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  overflow: visible;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-main { display: contents; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel { grid-column: 1; grid-row: 1; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-side {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--shop-gap);
+  min-height: 0;
+  border: 0;
+  background: transparent;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-footer {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24%;
+  gap: var(--shop-gap);
+  min-height: 17%;
+}
+/* 상단 바·프롬프트는 목업에 없다. 요소는 남긴다 — 탭·결정·수량·키 힌트가 포커스 링과 테스트의 계약이다.
+   화면에서만 치우고(시각적 숨김), 키보드 동작은 그대로 산다. */
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-topbar, .runtime-shop-prompt-panel) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-detail-panel { min-height: 0; padding: 0.9em 1.1em; overflow: hidden; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-detail > :is([data-testid="shop-hero-slot"], .runtime-shop-help-line, .runtime-shop-owned-panel) { display: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-tab, .runtime-shop-chip, .runtime-shop-confirm, .runtime-shop-cancel,
+  .runtime-shop-menu-choice, .runtime-shop-detail-open, .runtime-shop-actor, .runtime-shop-slot-choice, .runtime-shop-key) {
+  font-family: var(--shop-ui-font);
+  font-weight: 400;
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-brand-title, .runtime-shop-item-name, .runtime-shop-item-price,
+  .runtime-shop-gold-value, .runtime-shop-detail-name, .runtime-shop-quantity-total, .runtime-shop-menu-choice-label, .runtime-shop-stat-value,
+  .runtime-shop-stat-delta) { font-weight: 400; }
+
+/* 목록 창 — 가게 이름 머리, 아이콘 · 이름 · 보유 · 가격, 커서는 손가락. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel { display: flex; flex-direction: column; min-height: 0; padding: 0.5em 0.4em; gap: 0.2em; }
+.runtime-shop-list-caption { padding: 0 0.6em 0.2em; color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-catbar { padding: 0 0.4em 0.3em; border-color: var(--shop-line); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip { padding: 0 0.5em; font-size: var(--shop-text-small); background: transparent; border-color: var(--shop-line); color: var(--shop-ink-dim); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active { background: var(--shop-accent); border-color: var(--shop-accent); color: rgba(26, 20, 48, 1); text-shadow: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-chip.is-active .runtime-shop-chip-count { color: rgba(26, 20, 48, 0.72); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-list { gap: 0; padding: 0; scrollbar-width: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row {
+  grid-template-columns: var(--shop-art-row) minmax(0, 1fr) auto 3em;
+  grid-template-rows: auto;
+  column-gap: 0.4em;
+  min-height: calc(var(--play-scale, 2) * 12px);
+  padding: 0.1em 0.6em 0.1em 2.3em;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: var(--shop-text-body);
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.rm-nav-item { padding-left: 2.3em; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-icon { grid-row: 1; width: var(--shop-art-row); height: var(--shop-art-row); background-color: transparent; border: 0; background-size: contain; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-icon-fallback { font-size: var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-main { grid-row: 1; justify-content: center; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-type { display: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-owned { grid-column: 3; grid-row: 1; color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-owned[data-count="0"] { display: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-price { grid-column: 4; grid-row: 1; font-size: var(--shop-text-body); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.is-unaffordable .runtime-shop-item-name { opacity: 0.6; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-lock { display: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.selected { background: transparent; border: 0; box-shadow: none; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row:focus-visible { outline: 0; }
+/* 손가락 커서 — 글리프가 아니라 도트 그림(흰 장갑). */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.selected::before {
+  content: "";
+  top: 50%;
+  bottom: auto;
+  left: 0.1em;
+  width: 2.1em;
+  height: 1.4em;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' shape-rendering='crispEdges'%3E%3Cpath fill='%2330303c' d='M2 0h5v1h5v1h1v1h-1v1H8v1H7v1H6v1H2V6H1V1h1z'/%3E%3Cpath fill='%23f8f8f8' d='M2 1h5v1h4v1H6v1H5v1H2V4h1V3H2z M2 5h4v1H2z'/%3E%3Cpath fill='%238a8aa0' d='M3 3h1v1H3z M3 5h1v1H3z'/%3E%3C/svg%3E");
+  image-rendering: pixelated;
+  transform: translateY(-50%);
+  animation: runtime-shop-poke 500ms ease-in-out infinite alternate;
+}
+@keyframes runtime-shop-poke { to { transform: translate(2px, -50%); } }
+
+/* 파티 창 — 네 명이 한 줄로 걷는다. 이름 아래 가장 큰 변화 두 줄. 장비할 수 없는 동료는 회색으로 멈춘다. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { padding: 0; overflow: hidden; }
+.runtime-shop-party-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; }
+.runtime-shop-overlay .runtime-shop-party-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 0.4em;
+  align-items: center;
+  min-width: 0;
+  padding: 0.35em 0.4em 0.35em 0.5em;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--shop-ink);
+  font: var(--shop-text-body)/1.3 var(--shop-ui-font);
+  text-align: left;
+  cursor: default;
+}
+.runtime-shop-party-card > :is(.runtime-shop-party-walker, .runtime-shop-party-sprite) { grid-row: 1 / 4; }
+.runtime-shop-party-walker { display: block; image-rendering: pixelated; animation: runtime-shop-walk 720ms steps(1, end) infinite; }
+/* 걷기 그림은 1배 크롭(24×32)이다 — 창 배율에 맞춰 키운다(zoom 은 배경 위치 변수까지 같이 키운다). */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1.5; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement-portrait > .runtime-shop-party-walker { zoom: 1.75; }
+.runtime-shop-party-card.is-blocked > .runtime-shop-party-walker { animation: none; filter: grayscale(1) brightness(0.5); }
+.runtime-shop-overlay .runtime-shop-party-card.is-focus { background: var(--shop-accent-soft); box-shadow: inset 0 0 0 1px rgba(255, 226, 122, 0.75); }
+.runtime-shop-overlay .runtime-shop-party-card:focus-visible { outline: 1px solid var(--shop-accent); outline-offset: -2px; }
+.runtime-shop-party-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.runtime-shop-party-fit { overflow: hidden; min-height: 1.3em; color: var(--shop-ink-dim); font-size: var(--shop-text-small); white-space: nowrap; text-overflow: ellipsis; }
+.runtime-shop-party-fit[data-tone="up"] { color: var(--shop-gain); }
+.runtime-shop-party-fit[data-tone="down"] { color: var(--shop-loss); }
+.runtime-shop-party-fit[data-tone="equipped"] { color: var(--shop-accent); }
+@keyframes runtime-shop-walk {
+  0%, 100% { background-position: var(--party-walk-0); }
+  25%, 75% { background-position: var(--party-walk-1); }
+  50% { background-position: var(--party-walk-2); }
+}
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-sprite { width: 24px; height: 24px; border: 0; background-color: var(--shop-inset); }
+@media (max-width: 860px), (max-height: 600px) {
+  /* 공용 압축 규칙(.runtime-shop-party-panel { display: none })을 이긴다 — 이 프리셋의 비교는 파티 창이 주인공이다. */
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { display: block; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 1; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement-portrait { display: none; }
+}
+
+/* 비교 창 — 고른 영웅 한 명의 명세서. 「현재 → 변경 후 ▲▼ ±차이」, 떨어지면 빨강. */
+.runtime-shop-statement { display: flex; flex-direction: column; gap: 0.3em; }
+.runtime-shop-statement-head { display: flex; align-items: center; gap: 0.8em; padding-bottom: 0.5em; border-bottom: var(--shop-line-width) solid var(--shop-line); }
+.runtime-shop-statement-portrait {
+  display: grid;
+  place-items: center;
+  width: 3.2em;
+  height: 4em;
+  flex: none;
+  border-radius: var(--shop-radius-small);
+  background: linear-gradient(180deg, rgba(90, 26, 42, 1), rgba(42, 10, 24, 1));
+}
+.runtime-shop-statement-portrait > .runtime-shop-party-walker { animation: runtime-shop-walk 720ms steps(1, end) infinite; }
+.runtime-shop-statement-who { display: flex; flex-direction: column; min-width: 0; }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-statement .runtime-shop-comparison-heading { color: var(--shop-ink); font-size: var(--shop-text-title); font-weight: 400; line-height: 1.25; }
+.runtime-shop-statement-level { color: var(--shop-ink-dim); }
+.runtime-shop-statement-slot { display: flex; flex-direction: column; align-items: flex-end; margin-left: auto; min-width: 0; font-size: var(--shop-text-small); text-align: right; }
+.runtime-shop-statement-slot > :last-child { overflow: hidden; max-width: 100%; white-space: nowrap; text-overflow: ellipsis; }
+.runtime-shop-statement-slot strong { color: var(--shop-accent); font-weight: 400; }
+.runtime-shop-statement-slot-label { color: var(--shop-ink-dim); }
+.runtime-shop-statement-reason { color: var(--shop-ink-dim); }
+.runtime-shop-statement-same { color: var(--shop-accent); }
+.runtime-shop-statement-rows { display: flex; flex-direction: column; }
+.runtime-shop-statement-row {
+  display: grid;
+  grid-template-columns: 5.5em 2.8em 1.8em 2.8em 1.4em minmax(0, 1fr);
+  align-items: center;
+  min-height: 1.6em;
+  font-variant-numeric: tabular-nums;
+}
+.runtime-shop-statement-key { color: var(--shop-ink-dim); }
+:is(.runtime-shop-statement-current, .runtime-shop-statement-next) { text-align: right; }
+.runtime-shop-statement-delta { text-align: left; }
+/* 안 바뀌는 능력치는 현재 값만 — 목업처럼 「53 → 53」 잡음을 지운다. 장착 불가(다음 값 없음)는 「―」를 남긴다. */
+.runtime-shop-statement-row.is-same[data-next] :is(.runtime-shop-statement-arrow, .runtime-shop-statement-next) { visibility: hidden; }
+.runtime-shop-statement-row .runtime-shop-statement-arrow { color: var(--shop-ink-dim); text-align: center; }
+.runtime-shop-statement-mark { font-size: 0.75em; text-align: center; }
+.runtime-shop-statement-delta { font-size: var(--shop-text-small); }
+.runtime-shop-statement-row.is-up :is(.runtime-shop-statement-next, .runtime-shop-statement-mark, .runtime-shop-statement-delta) { color: var(--shop-gain); }
+.runtime-shop-statement-row.is-down :is(.runtime-shop-statement-next, .runtime-shop-statement-mark, .runtime-shop-statement-delta) { color: var(--shop-loss); }
+.runtime-shop-statement[data-preview-kind="blocked"] .runtime-shop-statement-next { color: var(--shop-ink-dim); }
+
+/* 아래 창 — 설명 + 보유/장착 수, 소지금. */
+.runtime-shop-desc-panel { display: flex; flex-direction: column; justify-content: center; gap: 0.3em; min-width: 0; padding: 0.6em 1.1em; }
+.runtime-shop-desc-text { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.runtime-shop-desc-owned { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-purse-panel { display: flex; flex-direction: column; justify-content: center; align-items: flex-end; padding: 0.5em 1.1em; }
+.runtime-shop-purse-label { color: var(--shop-ink-dim); font-size: var(--shop-text-small); }
+.runtime-shop-purse-value { font-size: var(--shop-text-title); font-variant-numeric: tabular-nums; }
+.runtime-shop-purse-unit { color: var(--shop-accent); }
+
+/* 회복 요약 — HP/MP 막대. */
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-comparison-heading { font-size: var(--shop-text-body); font-weight: 400; color: var(--shop-accent); }
+.runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-recovery-summary .runtime-shop-comparison-stats > .runtime-shop-stat {
+  grid-template-columns: 5em minmax(0, 1fr) auto 3em;
+  align-items: center;
+  column-gap: 0.6em;
+  padding-block: 0.25em;
+  border-bottom: 0;
+  font-size: var(--shop-text-body);
+}
+.runtime-shop-stat-bar { position: relative; display: block; height: 0.5em; overflow: hidden; border-radius: 1px; background: rgba(255, 255, 255, 0.1); }
+.runtime-shop-stat-bar > i { position: absolute; top: 0; bottom: 0; }
+.runtime-shop-stat-bar-base { left: 0; background: rgba(224, 104, 138, 0.95); }
+.runtime-shop-stat-bar-change.is-gain { background: var(--shop-gain); }
+.runtime-shop-stat-bar-change.is-loss { background: repeating-linear-gradient(90deg, var(--shop-loss) 0 2px, transparent 2px 3px); }
+.runtime-shop-effect-tags { display: flex; flex-wrap: wrap; gap: 0.3em; }
+.runtime-shop-effect-tag { padding: 0 0.5em; border-radius: var(--shop-radius-small); background: var(--shop-card); font-size: var(--shop-text-small); }
+.runtime-shop-effect-tag.is-gain { color: var(--shop-gain); }
+.runtime-shop-effect-tag.is-loss { color: var(--shop-loss); }
+
+/* 320×240 급 — 파티 창을 한 줄(걷는 그림 + 한 마디)로, 명세서는 「상세 / 장비 비교」 창에 맡긴다. */
+@media (max-width: 460px), (max-height: 360px) {
+  .runtime-shop-overlay.runtime-shop-preset-pixel { --shop-gap: 2px; padding: 2px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-walker { zoom: 0.75; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-items-shell { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto auto; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-side { grid-column: 1; grid-row: 2; display: block; min-height: 38px; overflow: visible; }
+  /* 파티 창은 줄어들지 않는다 — 목록이 남는 높이를 가져간다(320x240 실측: 창이 테두리만 남았다). */
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-panel { flex: none; min-height: 34px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-panel { overflow: hidden; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-footer { grid-row: 3; min-height: 0; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-detail-panel,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-desc-owned,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-purse-label,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-list-caption,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-name,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-fit.is-second { display: none; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-card { grid-template-columns: 1fr; grid-template-rows: auto auto; justify-items: center; padding: 0 1px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-card > .runtime-shop-party-walker { grid-row: auto; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-party-fit { max-width: 100%; min-height: 1.1em; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel :is(.runtime-shop-desc-panel, .runtime-shop-purse-panel) { padding: 2px 6px; }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-purse-value { font-size: var(--shop-text-body); }
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row,
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.rm-nav-item { padding: 0 6px 0 22px; min-height: var(--shop-art-row); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .runtime-shop-overlay.runtime-shop-preset-pixel .runtime-shop-item-row.selected::before,
+  .runtime-shop-party-walker,
+  .runtime-shop-statement-portrait > .runtime-shop-party-walker { animation: none; }
+}
+
+
+/* Collector supply shop: white pixel windows; native keyboard trade controls. */
+.runtime-shop-preset-collector {
+  --shop-ink:#242936; --shop-ink-dim:#515967; --shop-surface:#fffdf1; --shop-surface-flat:#fffdf1;
+  --shop-inset:#f1eee2; --shop-card:#fffdf1; --shop-line:#85909a; --shop-line-strong:#293346;
+  --shop-accent:#344767; --shop-accent-soft:#e5e9ed; --shop-radius:0px; --shop-radius-small:0px;
+  --shop-line-width:3px; --shop-ui-font:var(--runtime-pixel-font,monospace); --shop-counter-width:880px;
+  --shop-entry-width:450px; --shop-text-entry:24px; --shop-art-display:80px; --shop-display-column:38%;
+  background:rgb(16 25 40 / 55%); animation:none;
+}
+.runtime-shop-preset-collector .runtime-shop-window,
+.runtime-shop-preset-collector .runtime-shop-items-shell { background:#fffdf1; border:3px solid #293346; border-radius:0; box-shadow:inset 0 0 0 2px #fffdf1,inset 0 0 0 3px #8c97a1; }
+.runtime-shop-preset-collector .runtime-shop-topbar { background:#fffdf1; border-bottom:3px solid #293346; }
+.runtime-shop-preset-collector .runtime-shop-item-row { border-radius:0; min-height:44px; }
+.runtime-shop-preset-collector .runtime-shop-item-row.selected { background:#e5e9ed; outline:2px solid #344767; outline-offset:-2px; }
+.runtime-shop-preset-collector .runtime-shop-item-row.selected::before { content:'▶'; color:#293346; margin-right:6px; }
+.runtime-shop-preset-collector button,
+.runtime-shop-preset-collector input { color:#242936; background:#fffdf1; border-radius:0; }
+.runtime-shop-preset-collector button.selected,
+.runtime-shop-preset-collector button:focus-visible { outline:2px solid #344767; outline-offset:2px; }
+.runtime-shop-preset-collector .runtime-shop-side { background:#fffdf1; }
+@media(max-width:600px){.runtime-shop-preset-collector{padding:8px;--shop-space-6:12px;--shop-text-title:18px;--shop-art-display:48px;}.runtime-shop-preset-collector .runtime-shop-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,36%);}.runtime-shop-preset-collector .runtime-shop-side{flex:none;width:auto;}}
+
+@media(max-width:600px){
+ .runtime-shop-preset-collector .runtime-shop-detail-hero{flex-direction:column;align-items:flex-start;gap:8px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-name{font-size:18px;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;}
+ .runtime-shop-preset-collector .runtime-shop-detail-panel{padding:12px;}
+}
+
+.runtime-shop-preset-collector .runtime-shop-detail {display:flex;flex-direction:column;gap:16px;}
+/* The collector keeps its two columns on the 320x240 stage: do not inherit
+   the generic stacked shop's 42% detail crop or two-line description cap. */
+@media(max-width:600px){
+ .runtime-shop-preset-collector .runtime-shop-side{max-height:none;overflow:hidden;border-top:0;border-left:3px solid var(--shop-line-strong);}
+ .runtime-shop-preset-collector .runtime-shop-detail-panel{padding:4px 6px;overflow:hidden;}
+ .runtime-shop-preset-collector .runtime-shop-detail{gap:4px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-hero{flex-direction:row;align-items:center;gap:4px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-icon{width:20px;height:20px;flex:0 0 20px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-name{font-size:12px;line-height:1.2;}
+ .runtime-shop-preset-collector .runtime-shop-detail-type{display:none;}
+ .runtime-shop-preset-collector .runtime-shop-help-line{max-height:none;overflow:visible;font-size:10px;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere;}
+ .runtime-shop-preset-collector .runtime-shop-owned-panel{display:block;font-size:10px;}
+}

@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "collection": "distinct-v2",
+  "reference": "Six different actual Emerald NPC bodies, faces, outfits and original walking poses. Original-game art adoption, not independent redraw.",
+  "candidates": [
+    {
+      "role": "rival",
+      "label": "라이벌",
+      "variant": "C · 소년",
+      "base": "wally",
+      "description": "작은 체형 · 내려오는 녹색 머리 · 흰 셔츠와 멜빵",
+      "identity": "소년 · 짧은 보폭 · 좁은 어깨",
+      "palette": {}
+    },
+    {
+      "role": "rival",
+      "label": "라이벌",
+      "variant": "D · 소녀",
+      "base": "may-walking",
+      "description": "양갈래 머리 · 머리띠 · 허리와 치마가 드러나는 옷",
+      "identity": "소녀 · 머리 양옆 돌출 · 가벼운 걸음",
+      "palette": {}
+    },
+    {
+      "role": "explorer",
+      "label": "탐험가",
+      "variant": "C · 산악인",
+      "base": "hiker",
+      "description": "넓은 어깨와 배 · 등산모 · 조끼와 큰 배낭",
+      "identity": "성인 · 넓은 몸통 · 무게감 있는 보폭",
+      "palette": {}
+    },
+    {
+      "role": "explorer",
+      "label": "탐험가",
+      "variant": "D · 선원",
+      "base": "sailor",
+      "description": "넓은 흰 모자 · 세일러복 · 굵은 팔과 짧은 바지",
+      "identity": "성인 · 팔 노출 · 넓은 발",
+      "palette": {}
+    },
+    {
+      "role": "ranger",
+      "label": "레인저",
+      "variant": "C · 야영소년",
+      "base": "camper",
+      "description": "작은 녹색 모자 · 조끼 · 야영 장비와 반바지",
+      "identity": "소년 · 작은 등짐 · 가벼운 걸음",
+      "palette": {}
+    },
+    {
+      "role": "ranger",
+      "label": "레인저",
+      "variant": "D · 노년대원",
+      "base": "expert_m",
+      "description": "벗겨진 이마 · 흰 수염 · 긴 도복과 낮은 자세",
+      "identity": "노년 · 긴 옷 · 좁은 보폭",
+      "palette": {}
+    }
+  ]
+}

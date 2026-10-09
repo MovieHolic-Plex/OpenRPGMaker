@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/grandfather_clock/h3-A.pxg",
+ "set": "horror",
+ "id": "grandfather_clock",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  2,
+  0,
+  13,
+  31
+ ],
+ "note": "v5 시계를 묵힘: 멈춘 바늘·왼쪽으로 기운 채 멈춘 추, 유리에 금 한 줄, 머리·받침 위에 먼지",
+ "ok": true
+}

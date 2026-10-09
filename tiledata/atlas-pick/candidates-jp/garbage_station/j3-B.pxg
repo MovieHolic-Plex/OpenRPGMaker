@@ -1,0 +1,42 @@
+// garbage_station j3-B
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kblue 3
+@mat b mmetal 3
+@mat c mwhite 3
+@mblock 0 0
+................................
+................................
+................................
+.....ccccccccccc................
+....ccccacacccacc...............
+...ccacacccacacccc...bbbbbbbbb..
+..ccccacccccacccccc.bbbbbbbbbbb.
+.ccccacacccacacccaccbbbbbbbbbbb.
+ccacacccacacccacaccccbbbbbbbbbb.
+cccacccccacccccacccccbbbbbbbbbb.
+ccacacccacacccacaccc-bbbbbbbbbb.
+cacccacacccacacccaca-bbbbbbbbbb.
+ccccccacccccacccccac-bbbbbbbbbb.
+cacccacacccacacccaca-bbbbbbbbbb.
+cac-cacacacacacacacacbbbbbbbbb..
+.c~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+@tblock 0 0
+................................
+................................
+................................
+.....00000000000................
+....0555454555450...............
+...054343321414250...000000000..
+..05324333241442350.06666666610.
+.052242122212122215006020202010.
+0543424414133312133506020202010.
+0534324441233331333106020202010.
+05431244141333121331.6222222210.
+04222121222121222121.6020202010.
+05444213332313324411.6020202010.
+04111111111111111111.6111111110.
+010.01010101010101010000000000..
+.0..............................

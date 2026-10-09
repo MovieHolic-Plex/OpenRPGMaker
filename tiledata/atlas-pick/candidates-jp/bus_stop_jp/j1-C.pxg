@@ -1,0 +1,75 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a kgreen 3
+@mat b mwhite 3
+@mat c myellow 3
+@mat d mout 3
+@mat e mmetal 3
+@mat f lacq 3
+@mblock 0 0
+....aaaaaaaa....
+..aaaaaaaaaaaa..
+.aabbbbbbbbbbaa.
+.aabbaaaaaabbaa.
+.aababbbbbbabaa.
+.aababbbbbbabaa.
+.aabaaaaaaaabaa.
+.aabacaaaacabaa.
+.aabbdbbbbdbbaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+......eeee......
+......eeee......
+......eeee......
+..eeeeeeeeeeee..
+..ebbbbebbbbbe..
+..eeeeeeeeeebe..
+..ebbbbebbbbbe..
+..eeeeeeeeeebe..
+..ebbbbebbbbbe..
+..eeeeeeeeeebe..
+..eeeeeeeeeeee..
+......eeee......
+......eeee......
+......eeee......
+.....ffffff.....
+...ffffffffff...
+..ffffffffffff..
+..ffffffffffff..
+...ffffffffff...
+...ffffffffff...
+@tblock 0 0
+....00000000....
+..044444444440..
+.04444443333320.
+.04443333333320.
+.04435555553320.
+.04435555553320.
+.04433333333320.
+.04434333343320.
+.04441443313320.
+.04222222222220.
+.04222222222220.
+.00000000000000.
+......5421......
+......5421......
+......5421......
+..455555555551..
+..444442444441..
+..433332333341..
+..444442444441..
+..433332333341..
+..444442444441..
+..433332333341..
+..411111111111..
+......5421......
+......5421......
+......5421......
+.....444444.....
+...4444544444...
+..333333222222..
+..333333222222..
+...1111111111...
+...0000000000...

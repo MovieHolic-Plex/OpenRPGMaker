@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG ZZU · 가중 분기(Weighted Branch) 작동 방식</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1f2e;
+      --ink-soft: #3d4659;
+      --muted: #6b7385;
+      --paper: #f3efe6;
+      --paper-2: #e8e2d4;
+      --card: #fffcf5;
+      --line: #d4ccb8;
+      --teal: #0d7a6f;
+      --teal-deep: #08574f;
+      --teal-soft: #d5f0ec;
+      --amber: #c47a12;
+      --amber-soft: #fce8c4;
+      --rose: #b8454a;
+      --rose-soft: #f8dfe0;
+      --indigo: #3b4f9c;
+      --indigo-soft: #e2e7f7;
+      --violet: #6b4fa0;
+      --violet-soft: #ebe3f7;
+      --sky: #2a6f9c;
+      --sky-soft: #dceef8;
+      --editor: #1b2233;
+      --editor-panel: #242c40;
+      --editor-line: #3a4560;
+      --editor-text: #d7deef;
+      --editor-muted: #8b95ad;
+      --editor-accent: #7aa2ff;
+      --editor-btn: #6d7dff;
+      --shadow: 0 12px 40px rgba(26, 31, 46, 0.08);
+      --radius: 14px;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans KR", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(ellipse 80% 50% at 10% -10%, #d9efe9 0%, transparent 55%),
+        radial-gradient(ellipse 60% 40% at 100% 0%, #f5e6c8 0%, transparent 50%),
+        linear-gradient(180deg, #f7f3ea 0%, var(--paper) 40%, #ebe5d7 100%);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image:
+        linear-gradient(var(--ink) 1px, transparent 1px),
+        linear-gradient(90deg, var(--ink) 1px, transparent 1px);
+      background-size: 32px 32px;
+      z-index: 0;
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 5rem;
+    }
+
+    header.hero { margin-bottom: 2.25rem; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      background: var(--teal-soft);
+      border: 1px solid color-mix(in srgb, var(--teal) 25%, white);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .eyebrow .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 25%, transparent);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(1.9rem, 4vw, 2.6rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.85rem;
+      color: var(--ink);
+    }
+    .lede {
+      font-size: 1.05rem;
+      color: var(--ink-soft);
+      max-width: 42rem;
+      margin: 0;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.1rem;
+    }
+    .chip {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.28rem 0.7rem;
+    }
+    .chip strong { color: var(--indigo); font-family: var(--mono); font-weight: 600; }
+
+    nav.toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.55rem;
+      margin: 1.75rem 0 2.25rem;
+    }
+    nav.toc a {
+      text-decoration: none;
+      color: var(--ink);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.7rem 0.85rem;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, border-color .15s ease;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    nav.toc a:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+    }
+    nav.toc a span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.15rem;
+      font-family: var(--mono);
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: calc(var(--radius) + 2px);
+      box-shadow: var(--shadow);
+      padding: 1.35rem 1.35rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    section h2 {
+      font-family: var(--display);
+      font-size: 1.45rem;
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.01em;
+    }
+    section .sub {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin: 0 0 1.1rem;
+    }
+    p { margin: 0 0 0.85rem; color: var(--ink-soft); }
+    p:last-child { margin-bottom: 0; }
+    code, .mono {
+      font-family: var(--mono);
+      font-size: 0.88em;
+    }
+    code {
+      background: var(--paper-2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.08rem 0.35rem;
+      color: var(--ink);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1rem;
+    }
+    @media (max-width: 820px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Mock editor dialog (matches screenshot spirit) ── */
+    .editor-shell {
+      background: linear-gradient(180deg, #1f2740 0%, var(--editor) 100%);
+      border: 1px solid #343f5c;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow:
+        0 20px 50px rgba(15, 20, 35, 0.35),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      color: var(--editor-text);
+    }
+    .editor-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--editor-line);
+      background: rgba(255,255,255,0.02);
+    }
+    .editor-top h3 {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .x-btn {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--editor-line);
+      display: grid; place-items: center;
+      color: var(--editor-muted);
+      font-size: 0.85rem;
+      background: transparent;
+    }
+    .editor-body {
+      display: grid;
+      grid-template-columns: 1.15fr 0.95fr;
+      gap: 0.9rem;
+      padding: 1rem;
+    }
+    @media (max-width: 720px) {
+      .editor-body { grid-template-columns: 1fr; }
+    }
+    .field-label {
+      font-size: 0.72rem;
+      color: var(--editor-muted);
+      margin-bottom: 0.35rem;
+      font-weight: 500;
+    }
+    .select-fake, .textarea-fake, .input-fake {
+      border: 1px solid #4a5a7d;
+      border-radius: 10px;
+      background: #1a2235;
+      color: var(--editor-text);
+      padding: 0.55rem 0.7rem;
+      font-family: var(--sans);
+      font-size: 0.88rem;
+    }
+    .select-fake {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.9rem;
+    }
+    .select-fake::after { content: "▾"; color: var(--editor-muted); }
+    .textarea-fake {
+      min-height: 78px;
+      font-family: var(--mono);
+      line-height: 1.55;
+      white-space: pre;
+      margin-bottom: 0.9rem;
+      color: #c7d4ff;
+    }
+    .input-fake {
+      min-height: 38px;
+      color: #9fd7c2;
+      font-family: var(--mono);
+    }
+    .hint {
+      color: var(--editor-muted);
+      font-size: 0.78rem;
+      margin: 0.2rem 0 0.8rem;
+    }
+    .preview-card {
+      background: #151b2b;
+      border: 1px solid #33405d;
+      border-radius: 12px;
+      padding: 0.85rem;
+      min-height: 100%;
+    }
+    .preview-title {
+      color: var(--editor-accent);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.55rem;
+      border-bottom: 1px solid #2d3852;
+    }
+    .preview-body {
+      color: #9eb0d8;
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+    .preview-body strong {
+      color: #d9e4ff;
+      font-weight: 600;
+    }
+    .editor-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding: 0 1rem 1rem;
+    }
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 0.55rem 1rem;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: default;
+    }
+    .btn.ghost {
+      background: transparent;
+      color: var(--editor-muted);
+      border: 1px solid var(--editor-line);
+    }
+    .btn.primary {
+      background: linear-gradient(180deg, #7f8dff, var(--editor-btn));
+      color: white;
+      box-shadow: 0 6px 16px rgba(109, 125, 255, 0.35);
+    }
+
+    /* callouts on mock */
+    .anno {
+      position: relative;
+    }
+    .callout {
+      margin-top: 0.75rem;
+      display: grid;
+      gap: 0.5rem;
+    }
+    .call {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.55rem;
+      align-items: start;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem;
+    }
+    .call .n {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: white;
+      background: var(--teal);
+      margin-top: 1px;
+    }
+    .call.amber .n { background: var(--amber); }
+    .call.rose .n { background: var(--rose); }
+    .call.indigo .n { background: var(--indigo); }
+    .call b { display: block; font-size: 0.88rem; margin-bottom: 0.1rem; }
+    .call span { font-size: 0.84rem; color: var(--ink-soft); }
+
+    /* ── Flow pipeline ── */
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.45rem;
+      margin: 0.4rem 0 0.9rem;
+    }
+    @media (max-width: 820px) {
+      .pipeline { grid-template-columns: 1fr 1fr; }
+    }
+    .pipe {
+      background: linear-gradient(180deg, #fff, var(--paper));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.75rem 0.7rem;
+      text-align: center;
+      position: relative;
+    }
+    .pipe::after {
+      content: "→";
+      position: absolute;
+      right: -0.42rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-weight: 700;
+      z-index: 2;
+      background: var(--card);
+      border-radius: 50%;
+      width: 16px;
+      font-size: 0.75rem;
+    }
+    .pipe:last-child::after { content: none; }
+    .pipe .icon {
+      width: 36px; height: 36px;
+      margin: 0 auto 0.45rem;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 1rem;
+    }
+    .pipe .icon.t { background: var(--teal-soft); color: var(--teal-deep); }
+    .pipe .icon.a { background: var(--amber-soft); color: var(--amber); }
+    .pipe .icon.i { background: var(--indigo-soft); color: var(--indigo); }
+    .pipe .icon.r { background: var(--rose-soft); color: var(--rose); }
+    .pipe .icon.v { background: var(--violet-soft); color: var(--violet); }
+    .pipe strong {
+      display: block;
+      font-size: 0.82rem;
+      margin-bottom: 0.15rem;
+    }
+    .pipe small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+
+    /* ── Roulette / weight bar ── */
+    .viz-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      align-items: stretch;
+    }
+    @media (max-width: 820px) {
+      .viz-row { grid-template-columns: 1fr; }
+    }
+    .viz-card {
+      background: linear-gradient(180deg, #fff, #f7f3ea);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    .viz-card h3 {
+      margin: 0 0 0.75rem;
+      font-size: 0.95rem;
+    }
+    .bar-track {
+      height: 34px;
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      border: 1px solid var(--line);
+      background: #ddd6c5;
+      margin-bottom: 0.75rem;
+    }
+    .bar-seg {
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+    .legend {
+      display: grid;
+      gap: 0.4rem;
+    }
+    .legend-row {
+      display: grid;
+      grid-template-columns: 14px 1fr auto auto;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.84rem;
+    }
+    .swatch {
+      width: 14px; height: 14px;
+      border-radius: 4px;
+    }
+    .legend-row .pct {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .legend-row .idx {
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .roulette-wrap {
+      display: grid;
+      place-items: center;
+      padding: 0.4rem 0 0.2rem;
+    }
+    .roulette {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      position: relative;
+      background: conic-gradient(
+        #0d7a6f 0 36deg,
+        #c47a12 36deg 360deg
+      );
+      box-shadow:
+        inset 0 0 0 8px #fff,
+        0 10px 24px rgba(26,31,46,0.12),
+        0 0 0 1px var(--line);
+      animation: spin-idle 12s linear infinite;
+    }
+    @keyframes spin-idle {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .roulette::after {
+      content: "";
+      position: absolute;
+      inset: 58px;
+      background: radial-gradient(circle at 35% 30%, #fff, #f0ebe0 70%);
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .roulette-label {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 2;
+      text-align: center;
+      pointer-events: none;
+    }
+    .roulette-label strong {
+      display: block;
+      font-size: 0.95rem;
+      color: var(--ink);
+      position: relative;
+      z-index: 3;
+      margin-top: 0;
+    }
+    .roulette-label span {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--muted);
+      position: relative;
+      z-index: 3;
+    }
+    .needle {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 14px solid var(--rose);
+      z-index: 4;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+    }
+    .roulette-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.55rem;
+    }
+
+    /* ── Parse table visual ── */
+    .parse-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin: 0.3rem 0 0.9rem;
+    }
+    .parse-table th, .parse-table td {
+      padding: 0.55rem 0.7rem;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+    .parse-table th {
+      background: var(--paper-2);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .parse-table tr:last-child td { border-bottom: 0; }
+    .parse-table td.mono { font-family: var(--mono); }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 0.12rem 0.45rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      font-family: var(--mono);
+    }
+    .tag.ok { background: var(--teal-soft); color: var(--teal-deep); }
+    .tag.skip { background: var(--rose-soft); color: var(--rose); }
+    .tag.idx { background: var(--indigo-soft); color: var(--indigo); }
+
+    /* ── Code / algorithm ── */
+    .algo {
+      background: #172033;
+      color: #d7deef;
+      border-radius: 14px;
+      padding: 1rem 1.05rem;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      border: 1px solid #2c3855;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .algo .c { color: #7f8da8; }
+    .algo .k { color: #9dbaff; }
+    .algo .n { color: #f0b56a; }
+    .algo .s { color: #8fd6b5; }
+    .algo .f { color: #e8a0b0; }
+
+    /* ── Event list mock ── */
+    .event-list {
+      background: #1a2133;
+      border-radius: 14px;
+      border: 1px solid #33405d;
+      overflow: hidden;
+      color: #d5dcef;
+      font-size: 0.86rem;
+    }
+    .event-list .head {
+      padding: 0.7rem 0.9rem;
+      border-bottom: 1px solid #2f3b57;
+      color: #9eb0d8;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .ev {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 0.4rem;
+      padding: 0.55rem 0.9rem;
+      border-bottom: 1px solid #263147;
+      align-items: start;
+    }
+    .ev:last-child { border-bottom: 0; }
+    .ev .ln {
+      font-family: var(--mono);
+      color: #6f7d9b;
+      font-size: 0.75rem;
+      padding-top: 0.15rem;
+    }
+    .ev.indent { padding-left: 1.6rem; }
+    .ev.highlight {
+      background: linear-gradient(90deg, rgba(109,125,255,0.18), transparent 70%);
+    }
+    .ev .kind { color: #9eb7ff; font-weight: 600; }
+    .ev .arg { color: #b7c3de; }
+    .ev .var { color: #8fd6b5; font-family: var(--mono); }
+    .ev .msg { color: #f0d39a; }
+
+    /* ── Cursor walkthrough ── */
+    .cursor-demo {
+      background: linear-gradient(180deg, #fff, #f6f1e6);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+    }
+    .cursor-track {
+      position: relative;
+      height: 52px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      border: 1px solid var(--line);
+      margin: 0.6rem 0 0.75rem;
+    }
+    .cursor-seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 0.8rem;
+      font-family: var(--mono);
+      position: relative;
+    }
+    .cursor-pointer {
+      position: absolute;
+      top: -2px;
+      bottom: -2px;
+      width: 3px;
+      background: var(--ink);
+      box-shadow: 0 0 0 3px rgba(26,31,46,0.15);
+      border-radius: 2px;
+      animation: cursor-scan 4.5s ease-in-out infinite;
+      z-index: 3;
+    }
+    @keyframes cursor-scan {
+      0%, 100% { left: 8%; }
+      45% { left: 72%; }
+      70% { left: 42%; }
+    }
+    .steps {
+      display: grid;
+      gap: 0.45rem;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 0.55rem;
+      align-items: start;
+      font-size: 0.88rem;
+      color: var(--ink-soft);
+    }
+    .step i {
+      width: 24px; height: 24px;
+      border-radius: 8px;
+      display: grid; place-items: center;
+      font-style: normal;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: white;
+      background: var(--indigo);
+      font-family: var(--mono);
+    }
+
+    /* ── Formula card ── */
+    .formula {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.6rem;
+      align-items: center;
+      margin: 0.5rem 0 0.9rem;
+    }
+    @media (max-width: 720px) {
+      .formula { grid-template-columns: 1fr; }
+      .formula .op { justify-self: center; transform: rotate(90deg); }
+    }
+    .formula .box {
+      background: var(--paper);
+      border: 1px dashed color-mix(in srgb, var(--indigo) 35%, var(--line));
+      border-radius: 12px;
+      padding: 0.75rem;
+      text-align: center;
+    }
+    .formula .box strong {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+    .formula .box span {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .formula .op {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--indigo);
+    }
+
+    .note {
+      background: var(--amber-soft);
+      border: 1px solid color-mix(in srgb, var(--amber) 30%, white);
+      border-radius: 12px;
+      padding: 0.8rem 0.9rem;
+      color: #6b4510;
+      font-size: 0.88rem;
+    }
+    .note strong { color: #5a3808; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+    @media (max-width: 720px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 0.8rem;
+      background: linear-gradient(180deg, #fff, var(--paper));
+    }
+    .mini h4 {
+      margin: 0 0 0.4rem;
+      font-size: 0.9rem;
+    }
+    .mini p {
+      font-size: 0.84rem;
+      margin: 0;
+    }
+
+    footer.foot {
+      margin-top: 1.5rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+    }
+    footer.foot code {
+      background: transparent;
+      border: 0;
+      padding: 0;
+      color: var(--indigo);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="eyebrow"><span class="dot"></span> M2 Modern Command · index 211</div>
+      <h1>가중 분기<br/>이 에디터에서 어떻게 도는지</h1>
+      <p class="lede">
+        스크린샷의 <strong>가중 분기</strong> 창은 “확률 분기 블록”이 아니라,
+        <strong>가중치 표를 굴려 결과 인덱스를 변수에 쓰는 명령</strong>이다.
+        실제 if/else 갈래는 그 다음 <strong>조건 분기</strong>가 맡는다.
+      </p>
+      <div class="meta-row">
+        <span class="chip">영문 이름 <strong>Weighted Branch</strong></span>
+        <span class="chip">필드 <strong>table</strong> + <strong>resultVariableId</strong></span>
+        <span class="chip">RNG 스트림 <strong>misc</strong></span>
+        <span class="chip">런타임 파일 <strong>m2ModernRuntime.ts</strong></span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="목차">
+      <a href="#ui"><span>01</span>에디터 창 해부</a>
+      <a href="#flow"><span>02</span>실행 파이프라인</a>
+      <a href="#math"><span>03</span>가중 선택 시각화</a>
+      <a href="#runtime"><span>04</span>코드가 하는 일</a>
+      <a href="#pattern"><span>05</span>이벤트 작성 패턴</a>
+      <a href="#pitfalls"><span>06</span>함정 / FAQ</a>
+    </nav>
+
+    <!-- 1. UI -->
+    <section id="ui">
+      <h2>1. 에디터 창 해부</h2>
+      <p class="sub">스크린샷 UI를 그대로 재구성. 왼쪽이 입력, 오른쪽이 미리보기 요약이다.</p>
+
+      <div class="editor-shell anno">
+        <div class="editor-top">
+          <h3>가중 분기</h3>
+          <div class="x-btn">×</div>
+        </div>
+        <div class="editor-body">
+          <div>
+            <div class="field-label">명령 카탈로그</div>
+            <div class="select-fake">M2/현대 명령</div>
+
+            <div class="field-label">가중치 표 · <span class="mono">table</span></div>
+            <div class="textarea-fake">success=1
+failure=1</div>
+            <p class="hint">한 줄 = 한 선택지. 이름=가중치 형식.</p>
+
+            <div class="field-label">결과 변수 · <span class="mono">resultVariableId</span></div>
+            <div class="input-fake">loot_roll</div>
+            <p class="hint">비우면 롤은 하지만 변수에 안 남김.</p>
+          </div>
+          <div class="preview-card">
+            <div class="preview-title">M2/현대 명령</div>
+            <div class="preview-body">
+              <strong>가중 분기</strong> : table: success=1 failure=1
+              <br/><br/>
+              확인을 누르면 이벤트 목록에 한 줄 명령으로 들어간다.
+              이 순간에는 아직 난수를 굴리지 않는다 — <em>플레이/테스트 실행 시</em> 굴린다.
+            </div>
+          </div>
+        </div>
+        <div class="editor-footer">
+          <button class="btn ghost" type="button">취소</button>
+          <button class="btn primary" type="button">확인</button>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="call">
+          <div class="n">1</div>
+          <div>
+            <b>가중치 표 (table)</b>
+            <span>줄바꿈으로 분리된 <code>label=weight</code> 목록. 라벨은 사람용, 엔진은 <code>=</code> 오른쪽 숫자만 읽는다.</span>
+          </div>
+        </div>
+        <div class="call amber">
+          <div class="n">2</div>
+          <div>
+            <b>결과 변수 (resultVariableId)</b>
+            <span>선택된 줄의 <strong>0-based 인덱스</strong>가 들어간다. success면 0, failure면 1.</span>
+          </div>
+        </div>
+        <div class="call indigo">
+          <div class="n">3</div>
+          <div>
+            <b>미리보기 패널</b>
+            <span>저장 직전 요약 문자열. 실제 확률 계산/검증 UI는 아니다.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Flow -->
+    <section id="flow">
+      <h2>2. 실행 파이프라인</h2>
+      <p class="sub">이벤트 인터프리터가 이 명령에 도달했을 때의 경로.</p>
+
+      <div class="pipeline">
+        <div class="pipe">
+          <div class="icon t">①</div>
+          <strong>이벤트 도달</strong>
+          <small>페이지 커맨드 목록에서 Weighted Branch 실행</small>
+        </div>
+        <div class="pipe">
+          <div class="icon a">②</div>
+          <strong>표 파싱</strong>
+          <small>줄 분리 → <span class="mono">=</span> 뒤 숫자 → 양수만 유지</small>
+        </div>
+        <div class="pipe">
+          <div class="icon i">③</div>
+          <strong>misc RNG</strong>
+          <small><span class="mono">nextSessionRandom(session, "misc")</span></small>
+        </div>
+        <div class="pipe">
+          <div class="icon v">④</div>
+          <strong>가중 선택</strong>
+          <small>누적 감산 커서로 인덱스 결정</small>
+        </div>
+        <div class="pipe">
+          <div class="icon r">⑤</div>
+          <strong>변수 기록</strong>
+          <small><span class="mono">variables[id] = index</span></small>
+        </div>
+      </div>
+
+      <div class="formula">
+        <div class="box">
+          <strong>weights = [1, 1]</strong>
+          <span>success, failure</span>
+        </div>
+        <div class="op">→</div>
+        <div class="box">
+          <strong>total = 2</strong>
+          <span>양수 가중치 합</span>
+        </div>
+      </div>
+      <div class="formula">
+        <div class="box">
+          <strong>r = misc() × total</strong>
+          <span>0 ≤ r &lt; total (사실상)</span>
+        </div>
+        <div class="op">→</div>
+        <div class="box">
+          <strong>index ∈ {0, 1}</strong>
+          <span>변수에 저장되는 값</span>
+        </div>
+      </div>
+
+      <p>
+        세션 RNG는 <code>encounter / battle / movement / misc</code> 네 갈래다.
+        가중 분기는 <strong>misc</strong>만 소모한다. 그래서 전투 난수·인카운트 난수와 섞이지 않고,
+        세이브/로드 후에도 같은 시퀀스를 이어갈 수 있다.
+      </p>
+    </section>
+
+    <!-- 3. Math viz -->
+    <section id="math">
+      <h2>3. 가중 선택 시각화</h2>
+      <p class="sub">기본 표 50:50 과 테스트에서 쓰는 rare/common 10:90 비교.</p>
+
+      <div class="viz-row">
+        <div class="viz-card">
+          <h3>기본값 · success=1 / failure=1</h3>
+          <div class="bar-track">
+            <div class="bar-seg" style="flex:1; background:#0d7a6f;">success 50%</div>
+            <div class="bar-seg" style="flex:1; background:#b8454a;">failure 50%</div>
+          </div>
+          <div class="legend">
+            <div class="legend-row">
+              <div class="swatch" style="background:#0d7a6f"></div>
+              <div>success</div>
+              <div class="pct">1 / 2</div>
+              <div class="idx">→ 변수 0</div>
+            </div>
+            <div class="legend-row">
+              <div class="swatch" style="background:#b8454a"></div>
+              <div>failure</div>
+              <div class="pct">1 / 2</div>
+              <div class="idx">→ 변수 1</div>
+            </div>
+          </div>
+          <div class="roulette-wrap" style="margin-top:1rem;">
+            <div style="position:relative;">
+              <div class="needle"></div>
+              <div class="roulette" style="background: conic-gradient(#0d7a6f 0 180deg, #b8454a 180deg 360deg);"></div>
+              <div class="roulette-label" style="position:absolute; inset:0; display:grid; place-items:center;">
+                <div>
+                  <strong>1:1</strong>
+                  <span>균등 분기</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="roulette-note">바늘이 멈추는 구간 = 선택 인덱스</p>
+        </div>
+
+        <div class="viz-card">
+          <h3>전리품 예 · rare=1 / common=9</h3>
+          <div class="bar-track">
+            <div class="bar-seg" style="flex:1; background:#6b4fa0;">rare 10%</div>
+            <div class="bar-seg" style="flex:9; background:#c47a12;">common 90%</div>
+          </div>
+          <div class="legend">
+            <div class="legend-row">
+              <div class="swatch" style="background:#6b4fa0"></div>
+              <div>rare</div>
+              <div class="pct">1 / 10</div>
+              <div class="idx">→ 변수 0</div>
+            </div>
+            <div class="legend-row">
+              <div class="swatch" style="background:#c47a12"></div>
+              <div>common</div>
+              <div class="pct">9 / 10</div>
+              <div class="idx">→ 변수 1</div>
+            </div>
+          </div>
+          <div class="roulette-wrap" style="margin-top:1rem;">
+            <div style="position:relative;">
+              <div class="needle"></div>
+              <div class="roulette" style="background: conic-gradient(#6b4fa0 0 36deg, #c47a12 36deg 360deg); animation-duration: 9s;"></div>
+              <div class="roulette-label" style="position:absolute; inset:0; display:grid; place-items:center;">
+                <div>
+                  <strong>1:9</strong>
+                  <span>희귀 드롭</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="roulette-note">테스트 픽스처: <code>loot_roll</code> ∈ {0, 1}</p>
+        </div>
+      </div>
+
+      <div class="cursor-demo" style="margin-top:1rem;">
+        <h3 style="margin:0 0 0.35rem; font-size:0.95rem;">커서가 가중치를 깎아 먹는 방식</h3>
+        <p style="margin:0; font-size:0.86rem; color:var(--muted);">
+          <code>cursor = random × total</code> 후, 앞에서부터 weight를 빼며 0 이하가 되는 순간 그 인덱스를 고른다.
+        </p>
+        <div class="cursor-track">
+          <div class="cursor-seg" style="flex:1; background:#6b4fa0;">0 · rare=1</div>
+          <div class="cursor-seg" style="flex:9; background:#c47a12;">1 · common=9</div>
+          <div class="cursor-pointer"></div>
+        </div>
+        <div class="steps">
+          <div class="step"><i>1</i><div>총합 10, 난수 0.73 → cursor = 7.3</div></div>
+          <div class="step"><i>2</i><div>index 0 (1) 차감 → 6.3 &gt; 0, 계속</div></div>
+          <div class="step"><i>3</i><div>index 1 (9) 차감 → −2.7 ≤ 0 → <strong>선택 1 (common)</strong></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Runtime code -->
+    <section id="runtime">
+      <h2>4. 코드가 실제로 하는 일</h2>
+      <p class="sub"><code>src/player/interpreter/m2ModernRuntime.ts</code> — 에디터 필드를 런타임 값으로 환원하는 핵심.</p>
+
+      <div class="algo" aria-label="가중 분기 의사코드">
+<span class="c">// 1) 명령 디스패치</span>
+<span class="k">case</span> <span class="s">"Weighted Branch"</span>:
+  recordWeightedBranch(session, runtime, fields);
+  <span class="k">return</span> <span class="n">true</span>;
+
+<span class="c">// 2) 표 → 가중치 배열 → 인덱스</span>
+<span class="k">function</span> <span class="f">selectWeightedIndex</span>(session, table) {
+  weights = table
+    .split(<span class="s">/\r?\n/</span>)
+    .map(line =&gt; Number(line.split(<span class="s">"="</span>).at(<span class="n">1</span>) ?? <span class="n">0</span>))
+    .filter(v =&gt; Number.isFinite(v) &amp;&amp; v &gt; <span class="n">0</span>);
+
+  <span class="k">if</span> (weights.length === <span class="n">0</span>) <span class="k">return</span> <span class="n">0</span>;
+
+  total = sum(weights);
+  cursor = <span class="f">nextSessionRandom</span>(session, <span class="s">"misc"</span>) * total;
+
+  <span class="k">for</span> (index, weight <span class="k">of</span> weights) {
+    cursor -= weight;
+    <span class="k">if</span> (cursor &lt;= <span class="n">0</span>) <span class="k">return</span> index;
+  }
+  <span class="k">return</span> lastIndex;
+}
+
+<span class="c">// 3) 부작용</span>
+runtime.session.weightedBranch = { table, resultVariableId };
+<span class="k">if</span> (variableId) session.variables[variableId] = selectedIndex;
+      </div>
+
+      <table class="parse-table" style="margin-top:1rem;">
+        <thead>
+          <tr>
+            <th>입력 줄</th>
+            <th>파싱 결과</th>
+            <th>처리</th>
+            <th>인덱스</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">success=1</td>
+            <td class="mono">1</td>
+            <td><span class="tag ok">KEEP</span></td>
+            <td><span class="tag idx">0</span></td>
+          </tr>
+          <tr>
+            <td class="mono">failure=1</td>
+            <td class="mono">1</td>
+            <td><span class="tag ok">KEEP</span></td>
+            <td><span class="tag idx">1</span></td>
+          </tr>
+          <tr>
+            <td class="mono">broken</td>
+            <td class="mono">0 (NaN→0)</td>
+            <td><span class="tag skip">DROP</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="mono">zero=0</td>
+            <td class="mono">0</td>
+            <td><span class="tag skip">DROP</span></td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td class="mono">bonus=2.5</td>
+            <td class="mono">2.5</td>
+            <td><span class="tag ok">KEEP</span></td>
+            <td><span class="tag idx">n</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <strong>중요:</strong> 라벨 문자열(<code>success</code>/<code>failure</code>)은 런타임 분기 키로 쓰이지 않는다.
+        엔진은 오직 <strong>줄 순서 인덱스</strong>만 변수에 넣는다. 줄 순서를 바꾸면 기존 조건 분기 값이 어긋난다.
+      </div>
+    </section>
+
+    <!-- 5. Authoring pattern -->
+    <section id="pattern">
+      <h2>5. 이벤트 작성 패턴</h2>
+      <p class="sub">가중 분기 단독으로는 대사가 안 갈라진다. “롤 → 변수 비교 → 본문” 3단이 정석.</p>
+
+      <div class="grid-2">
+        <div class="event-list">
+          <div class="head">이벤트 커맨드 목록 · 도박 / 보물상자 예</div>
+          <div class="ev highlight">
+            <div class="ln">00</div>
+            <div>
+              <span class="kind">◆ 가중 분기</span>
+              <div class="arg">table: success=1 / failure=1</div>
+              <div>결과 변수 <span class="var">chest_roll</span></div>
+            </div>
+          </div>
+          <div class="ev">
+            <div class="ln">01</div>
+            <div>
+              <span class="kind">◆ 조건 분기</span>
+              <div class="arg">변수 <span class="var">chest_roll</span> == 0</div>
+            </div>
+          </div>
+          <div class="ev indent">
+            <div class="ln">02</div>
+            <div>
+              <span class="kind">◆ 메시지</span>
+              <div class="msg">“반짝이는 검을 손에 넣었다!”</div>
+            </div>
+          </div>
+          <div class="ev indent">
+            <div class="ln">03</div>
+            <div>
+              <span class="kind">◆ 아이템 증가</span>
+              <div class="arg">검 × 1</div>
+            </div>
+          </div>
+          <div class="ev">
+            <div class="ln">04</div>
+            <div>
+              <span class="kind">◆ 그 외의 경우</span>
+            </div>
+          </div>
+          <div class="ev indent">
+            <div class="ln">05</div>
+            <div>
+              <span class="kind">◆ 메시지</span>
+              <div class="msg">“상자 안은 먼지뿐이었다…”</div>
+            </div>
+          </div>
+          <div class="ev">
+            <div class="ln">06</div>
+            <div>
+              <span class="kind">◆ 분기 종료</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="mini" style="margin-bottom:0.75rem;">
+            <h4>왜 이렇게 쪼개나?</h4>
+            <p>
+              가중 분기는 RM2000/2003의 “확률 분기 블록”처럼 들여쓰기 가지를 자동 생성하지 않는다.
+              현대 명령(M2)으로 <strong>결과 값만 생산</strong>하고, 기존 <strong>조건 분기(fork)</strong> 인프라에 연결한다.
+            </p>
+          </div>
+          <div class="mini" style="margin-bottom:0.75rem;">
+            <h4>3갈래 이상</h4>
+            <p>
+              표에 줄을 더 넣으면 된다.
+              <code>crit=1</code> / <code>hit=6</code> / <code>miss=3</code> → 변수 0/1/2.
+              조건 분기를 연쇄하거나 변수 비교를 여러 번 걸면 된다.
+            </p>
+          </div>
+          <div class="mini">
+            <h4>재현 가능한 난수</h4>
+            <p>
+              같은 세션 시드 + 같은 misc 소비 순서면 같은 결과가 나온다.
+              세이브 직후 다시 로드해도 misc 스트림 상태가 복원된다.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Pitfalls -->
+    <section id="pitfalls">
+      <h2>6. 함정 / FAQ</h2>
+      <p class="sub">자주 헷갈리는 지점만 압축.</p>
+
+      <div class="two-col">
+        <div class="mini">
+          <h4>Q. success/failure 문자열이 조건인가?</h4>
+          <p>아니다. 라벨은 주석에 가깝다. 조건에는 <strong>숫자 인덱스</strong>를 써야 한다.</p>
+        </div>
+        <div class="mini">
+          <h4>Q. 결과 변수를 비우면?</h4>
+          <p>롤은 수행되고 <code>m2Runtime.session.weightedBranch</code>에도 기록되지만, 이후 분기할 값이 없다. 사실상 관측 불가.</p>
+        </div>
+        <div class="mini">
+          <h4>Q. 가중치 0 / 빈 표?</h4>
+          <p>양수 가중치가 하나도 없으면 인덱스 <code>0</code>을 반환한다. 조용히 실패하는 편.</p>
+        </div>
+        <div class="mini">
+          <h4>Q. 전투 명중률이랑 같은 RNG?</h4>
+          <p>아니다. 전투는 <code>battle</code>, 인카운트는 <code>encounter</code>, 가중 분기는 <code>misc</code>.</p>
+        </div>
+        <div class="mini">
+          <h4>Q. 줄 순서를 바꿨더니 보상이 바뀜</h4>
+          <p>정상. 인덱스가 라벨이 아니라 순서에 묶여 있다. 표 수정 시 조건 분기 값도 같이 점검.</p>
+        </div>
+        <div class="mini">
+          <h4>Q. 에디터 미리보기가 확률을 보여주나?</h4>
+          <p>현재는 요약 텍스트만. 확률 바/검증 UI는 없고, 플레이 실행 때 비로소 굴린다.</p>
+        </div>
+      </div>
+
+      <div class="note" style="margin-top:0.9rem;">
+        <strong>한 줄 정신 모델:</strong>
+        가중 분기 = <em>“주사위를 굴려 번호를 변수에 적어 두는 스탬프”</em>.
+        갈래 연출/보상/대사는 그 번호를 읽는 다음 명령들이 한다.
+      </div>
+    </section>
+
+    <footer class="foot">
+      Source of truth:
+      <code>src/editor/eventCommands/m2ModernCatalog.ts</code> ·
+      <code>src/player/interpreter/m2ModernRuntime.ts</code> ·
+      <code>src/util/rng.ts</code> ·
+      <code>openwiki/runtime-and-data.md (slim index → topic pages)</code>
+    </footer>
+  </div>
+</body>
+</html>

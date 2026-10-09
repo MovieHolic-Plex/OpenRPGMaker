@@ -1,0 +1,138 @@
+/* 02-class-layout.css — Class tab studio layout (scoped, --db-studio-* only) */
+
+.database-modal-backdrop .database-modal-body .oprn-record-workspace.oprn-record-classes {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 258px minmax(0, 1fr);
+  align-items: start;
+  min-height: 0;
+}
+
+.database-modal-backdrop .oprn-record-classes .oprn-record-list-pane {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  padding: 12px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  gap: 8px;
+  min-height: 0;
+}
+
+.database-modal-backdrop .oprn-record-classes .oprn-record-list-pane h3 {
+  color: var(--db-studio-text-1);
+  font: 600 13px/1.2 var(--font-ui);
+  letter-spacing: -0.01em;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-search input {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.2 var(--font-ui);
+  height: 32px;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-search input::placeholder {
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  min-height: 320px;
+  overflow: auto;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row {
+  background: var(--db-studio-surface);
+  border: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
+  font: 500 13px/1.2 var(--font-ui);
+  min-height: 36px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row:last-child {
+  border-bottom: 0;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row.active {
+  background: var(--db-studio-accent-soft);
+  box-shadow: inset 2px 0 0 var(--db-studio-accent);
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row .db-list-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  flex: 0 0 24px;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row .db-list-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  order: 1;
+}
+
+.database-modal-backdrop .oprn-record-classes .db-list-row .db-list-number {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1 var(--font-ui);
+  order: 2;
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .oprn-record-classes .oprn-record-detail-pane {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  min-height: 0;
+  max-height: calc(100vh - 160px);
+  padding: 0;
+}
+
+.database-modal-backdrop .oprn-record-classes .oprn-detail-form {
+  padding: 0;
+  background: transparent;
+}
+
+@media (max-width: 1100px) {
+  .database-modal-backdrop .database-modal-body .oprn-record-workspace.oprn-record-classes {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .database-modal-backdrop .database-modal-body .oprn-record-workspace.oprn-record-classes {
+    grid-template-columns: 1fr;
+  }
+  .database-modal-backdrop .oprn-record-classes .oprn-record-list-pane {
+    max-height: 200px;
+    order: 2;
+  }
+  .database-modal-backdrop .oprn-record-classes .oprn-record-detail-pane {
+    order: 1;
+    max-height: none;
+  }
+}

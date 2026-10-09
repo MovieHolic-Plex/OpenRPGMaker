@@ -1,0 +1,40 @@
+/* 손 슬롯 칩. 좌하단 — bottom-center 는 .zone-feedback-prompt,
+   top-left 은 .action-hud(z-index 40), top-right 은 .zone-feedback-objective 가 이미 쓴다.
+   z-index 는 action-hud 아래로 둬서 전투 HUD 가 항상 위에 오게 한다.
+   토큰은 zoneFeedback.css 를 따른다(actionHud.css 의 하드코딩 px/hex 는 답습하지 않는다). */
+.hand-slot {
+  background: var(--runtime-glass-panel);
+  border: 1px solid var(--runtime-glass-hairline);
+  /* 자료집 윈도스킨은 slice 에 fill 이 붙어 **중앙까지** 칠한다 — 그러면 위 background 가
+     비트맵에 덮여 유리판이 안 보인다(실측: verify-shots/glass-runtime, 좌하단 칩이 회색 판). */
+  border-image: none;
+  border-radius: var(--runtime-glass-radius-small);
+  bottom: var(--space-2);
+  box-shadow: var(--runtime-glass-shadow);
+  box-sizing: border-box;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-9);
+  left: var(--space-2);
+  line-height: 1.4;
+  max-width: 40%;
+  padding: var(--space-1) var(--space-2);
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+  white-space: nowrap;
+  z-index: 30;
+}
+
+.hand-slot.is-empty {
+  opacity: 0.75;
+}
+
+/* 메뉴·대화창·전투가 열려 있으면 숨긴다(actionHud.css 의 :has() 관례, minimap 의 억제 목록과 같은 이유).
+   .dialogue-overlay 는 항상 DOM 에 남고 내용만 비우므로 :empty 로 걸러야 한다.
+   전투 화면은 좌하단에 커맨드 창을 그린다 — 실측(1360x768, rm2000): 칩이 아이템·도주 칸을 덮었다. */
+.play-stage:has(> [data-testid="main-menu"]) > .hand-slot,
+.play-stage:has([data-testid="battle-scene"]) > .hand-slot,
+.play-stage:has(> .dialogue-overlay:not(:empty)) > .hand-slot {
+  display: none;
+}

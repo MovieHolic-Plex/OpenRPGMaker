@@ -1,0 +1,35 @@
+// oasis wv6-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wbark 1
+@mat b wbark 2
+@mat c wbark 3
+@mat d wleaf 1
+@mat e wleaf 2
+@mat f wleaf 3
+@mat g wleaf 4
+@mat h wriver 1
+@mat i wriver 2
+@mat j wriver 3
+@mat k wrock 0
+@mat l wsand 1
+@mat m wsea 4
+@mblock 0 0
+................
+................
+................
+...........kkk..
+..........kfgfk.
+.........kefgfek
+........kdekaked
+........kdkkbkkd
+.........kkck..k
+..kkkkkkkkkbk...
+.kllllllllkck...
+klhmhhmhhmlbk...
+kliiijjiiilck...
+kliijiiiiilbk...
+.kllllllllkk....
+..kkkkkkkk......

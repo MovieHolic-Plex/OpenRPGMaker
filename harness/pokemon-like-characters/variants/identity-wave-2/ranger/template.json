@@ -1,0 +1,1400 @@
+{
+  "version": 1,
+  "templateId": "bug_catcher",
+  "templateSourceSha256": "31d75283f046c64b4dacc59c23ea0824646b954bf03321ae1100f07449a8f2e2",
+  "paletteOverrides": {
+    "5": "#d77752",
+    "6": "#a45042",
+    "7": "#654539",
+    "8": "#99b275",
+    "9": "#637f51",
+    "A": "#334b3d",
+    "B": "#d39a5d",
+    "C": "#976341",
+    "D": "#4b3c34",
+    "E": "#eee1bd",
+    "F": "#282f32"
+  },
+  "patches": [
+    {
+      "frame": "up_stepA",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 16,
+      "rows": [
+        "..DBBBCCCCBBCD.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 17,
+      "rows": [
+        ".DDBBCCCCCCBCDD."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 18,
+      "rows": [
+        ".DCCBBCCCCBBCCD."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 19,
+      "rows": [
+        ".DDCCBBBBBBCCDD."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 20,
+      "rows": [
+        ".FDCCCCCCCCDCDF."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 21,
+      "rows": [
+        "..FDDCCCCCCDDF.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 22,
+      "rows": [
+        "...FDDDDDDDDF..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 23,
+      "rows": [
+        ".42A555555554..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 24,
+      "rows": [
+        ".43A995555934..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 25,
+      "rows": [
+        "..4A98E9E8944..."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 26,
+      "rows": [
+        "...AA988894224.."
+      ]
+    },
+    {
+      "frame": "up_stepA",
+      "y": 27,
+      "rows": [
+        "...FAA99994334.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 11,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 12,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 13,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 14,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 15,
+      "rows": [
+        "..DBBBCCCCBBCD.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 16,
+      "rows": [
+        ".DDBBCCCCCCBCDD."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 17,
+      "rows": [
+        ".DCCBBCCCCBBCCD."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 18,
+      "rows": [
+        ".DDCCBBBBBBCCDD."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 19,
+      "rows": [
+        ".FDCCCCCCCCDCDF."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 20,
+      "rows": [
+        "..FDDCCCCCCDDF.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 21,
+      "rows": [
+        "...FDDDDDDDDF..."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 22,
+      "rows": [
+        "..D3555555553D.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 23,
+      "rows": [
+        "..4A99555599A4.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 24,
+      "rows": [
+        ".42A98E99E89A24."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 25,
+      "rows": [
+        ".433A98EE89A334."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 26,
+      "rows": [
+        "..44FA9999AF44.."
+      ]
+    },
+    {
+      "frame": "up_idle",
+      "y": 27,
+      "rows": [
+        "...4555555554..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 16,
+      "rows": [
+        "..DBBBCCCCBBCD.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 17,
+      "rows": [
+        ".DDBBCCCCCCBCDD."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 18,
+      "rows": [
+        ".DCCBBCCCCBBCCD."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 19,
+      "rows": [
+        ".DDCCBBBBBBCCDD."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 20,
+      "rows": [
+        ".FDCCCCCCCCDCDF."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 21,
+      "rows": [
+        "..FDDCCCCCCDDF.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 22,
+      "rows": [
+        "...FDDDDDDDDF..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 23,
+      "rows": [
+        "...455555555A24."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 24,
+      "rows": [
+        "...439555599A34."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 25,
+      "rows": [
+        "...4498E9E89A4.."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 26,
+      "rows": [
+        "..422498889AA..."
+      ]
+    },
+    {
+      "frame": "up_stepB",
+      "y": 27,
+      "rows": [
+        "..43349999AAF..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 16,
+      "rows": [
+        "..DBBCC1111BCD.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 17,
+      "rows": [
+        ".DDBBC111111CDD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 18,
+      "rows": [
+        ".DCCB1111111CCD."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 19,
+      "rows": [
+        ".4D221111112DD4."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 20,
+      "rows": [
+        ".43C22F11F22C34."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 21,
+      "rows": [
+        "..4332F22F2334.."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 22,
+      "rows": [
+        "...4333223334..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 23,
+      "rows": [
+        ".429A555555AD..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 24,
+      "rows": [
+        ".43A9E5665934..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 25,
+      "rows": [
+        "..4A988888444..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 26,
+      "rows": [
+        "...AA98884224..."
+      ]
+    },
+    {
+      "frame": "down_stepA",
+      "y": 27,
+      "rows": [
+        "...FFA9994334..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 11,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 12,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 13,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 14,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 15,
+      "rows": [
+        "..DBBCC1111BCD.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 16,
+      "rows": [
+        ".DDBBC111111CDD."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 17,
+      "rows": [
+        ".DCCB1111111CCD."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 18,
+      "rows": [
+        ".4D221111112DD4."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 19,
+      "rows": [
+        ".43C22F11F22C34."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 20,
+      "rows": [
+        "..4332F22F2334.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 21,
+      "rows": [
+        "...4333223334..."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 22,
+      "rows": [
+        "..D3A555555A3D.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 23,
+      "rows": [
+        "..449E5665E944.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 24,
+      "rows": [
+        ".42298E99E89224."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 25,
+      "rows": [
+        ".433A98EE89A334."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 26,
+      "rows": [
+        "..44FA9999AF44.."
+      ]
+    },
+    {
+      "frame": "down_idle",
+      "y": 27,
+      "rows": [
+        "...4555555554..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 16,
+      "rows": [
+        "..DBBCC1111BCD.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 17,
+      "rows": [
+        ".DDBBC111111CDD."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 18,
+      "rows": [
+        ".DCCB1111111CCD."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 19,
+      "rows": [
+        ".4D221111112DD4."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 20,
+      "rows": [
+        ".43C22F11F22C34."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 21,
+      "rows": [
+        "..4332F22F2334.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 22,
+      "rows": [
+        "...4333223334..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 23,
+      "rows": [
+        "...DA555555A924."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 24,
+      "rows": [
+        "...4395566E9A34."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 25,
+      "rows": [
+        "...444888889A4.."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 26,
+      "rows": [
+        "...42248889AA..."
+      ]
+    },
+    {
+      "frame": "down_stepB",
+      "y": 27,
+      "rows": [
+        "...4334999AFF..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 16,
+      "rows": [
+        "..DBBBCCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 17,
+      "rows": [
+        "..D1111BCBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 18,
+      "rows": [
+        "..41111DCCCCCD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 19,
+      "rows": [
+        "..411112DDCCDD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 20,
+      "rows": [
+        "..411F23DDCCCD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 21,
+      "rows": [
+        "..422F23D13CDD.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 22,
+      "rows": [
+        "...433333234DF.."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 23,
+      "rows": [
+        "....443333DDF..."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 24,
+      "rows": [
+        ".....4444DDF...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 25,
+      "rows": [
+        "....A89EE58A...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 26,
+      "rows": [
+        "....A994224A...."
+      ]
+    },
+    {
+      "frame": "left_stepA",
+      "y": 27,
+      "rows": [
+        "...DAFF43344D..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 13,
+      "rows": [
+        "....DDBBBDDD...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 14,
+      "rows": [
+        "...DCBBBBBBDD..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 15,
+      "rows": [
+        "..DCBBBBCBBBBD.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 16,
+      "rows": [
+        "..DCBBBBCCBBBD.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 17,
+      "rows": [
+        "..DCBBBCB1111D.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 18,
+      "rows": [
+        "..DCCCCCD11114.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 19,
+      "rows": [
+        "..DDCCDD211114.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 20,
+      "rows": [
+        "..DCCCDD32F114.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 21,
+      "rows": [
+        "..DDC31D32F224.."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 22,
+      "rows": [
+        "..FD432333334..."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 23,
+      "rows": [
+        "...FDD333344...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 24,
+      "rows": [
+        "....FDD4444....."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 25,
+      "rows": [
+        "....A85EE98A...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 26,
+      "rows": [
+        "....A422499A...."
+      ]
+    },
+    {
+      "frame": "right_stepA",
+      "y": 27,
+      "rows": [
+        "...D44334FFAD..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 11,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 12,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 13,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 14,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 15,
+      "rows": [
+        "..DBBBCCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 16,
+      "rows": [
+        "..D1111BCBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 17,
+      "rows": [
+        "..41111DCCCCCD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 18,
+      "rows": [
+        "..411112DDCCDD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 19,
+      "rows": [
+        "..411F23DDCCCD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 20,
+      "rows": [
+        "..422F23D13CDD.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 21,
+      "rows": [
+        "...433333234DF.."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 22,
+      "rows": [
+        "....443333DDF..."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 23,
+      "rows": [
+        ".....4444DDF...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 24,
+      "rows": [
+        "....A895588A...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 25,
+      "rows": [
+        "....A942248A...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 26,
+      "rows": [
+        "....A943349F...."
+      ]
+    },
+    {
+      "frame": "left_idle",
+      "y": 27,
+      "rows": [
+        ".....FF44FF....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 11,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 12,
+      "rows": [
+        "....DDBBBDDD...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 13,
+      "rows": [
+        "...DCBBBBBBDD..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 14,
+      "rows": [
+        "..DCBBBBCBBBBD.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 15,
+      "rows": [
+        "..DCBBBBCCBBBD.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 16,
+      "rows": [
+        "..DCBBBCB1111D.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 17,
+      "rows": [
+        "..DCCCCCD11114.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 18,
+      "rows": [
+        "..DDCCDD211114.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 19,
+      "rows": [
+        "..DCCCDD32F114.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 20,
+      "rows": [
+        "..DDC31D32F224.."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 21,
+      "rows": [
+        "..FD432333334..."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 22,
+      "rows": [
+        "...FDD333344...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 23,
+      "rows": [
+        "....FDD4444....."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 24,
+      "rows": [
+        "....A885598A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 25,
+      "rows": [
+        "....A842249A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 26,
+      "rows": [
+        "....F943349A...."
+      ]
+    },
+    {
+      "frame": "right_idle",
+      "y": 27,
+      "rows": [
+        ".....FF44FF....."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 13,
+      "rows": [
+        "....DDDBBBDD...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 14,
+      "rows": [
+        "...DDBBBBBBCD..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 15,
+      "rows": [
+        "..DBBBBCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 16,
+      "rows": [
+        "..DBBBCCBBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 17,
+      "rows": [
+        "..D1111BCBBBCD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 18,
+      "rows": [
+        "..41111DCCCCCD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 19,
+      "rows": [
+        "..411112DDCCDD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 20,
+      "rows": [
+        "..411F23DDCCCD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 21,
+      "rows": [
+        "..422F23D13CDD.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 22,
+      "rows": [
+        "...433333234DF.."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 23,
+      "rows": [
+        "....443333DDF..."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 24,
+      "rows": [
+        ".....4444DDF...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 25,
+      "rows": [
+        "....A855E88A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 26,
+      "rows": [
+        "...DA422498A...."
+      ]
+    },
+    {
+      "frame": "left_stepB",
+      "y": 27,
+      "rows": [
+        "..DDF43349F3D..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 12,
+      "rows": [
+        "......DDDD......"
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 13,
+      "rows": [
+        "....DDBBBDDD...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 14,
+      "rows": [
+        "...DCBBBBBBDD..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 15,
+      "rows": [
+        "..DCBBBBCBBBBD.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 16,
+      "rows": [
+        "..DCBBBBCCBBBD.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 17,
+      "rows": [
+        "..DCBBBCB1111D.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 18,
+      "rows": [
+        "..DCCCCCD11114.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 19,
+      "rows": [
+        "..DDCCDD211114.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 20,
+      "rows": [
+        "..DCCCDD32F114.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 21,
+      "rows": [
+        "..DDC31D32F224.."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 22,
+      "rows": [
+        "..FD432333334..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 23,
+      "rows": [
+        "...FDD333344...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 24,
+      "rows": [
+        "....FDD4444....."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 25,
+      "rows": [
+        "....A88E558A...."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 26,
+      "rows": [
+        "....A894224AD..."
+      ]
+    },
+    {
+      "frame": "right_stepB",
+      "y": 27,
+      "rows": [
+        "...D3F94334FDD.."
+      ]
+    }
+  ],
+  "protectedRows": [
+    28,
+    29,
+    30,
+    31
+  ],
+  "design": "챙모자를 벗은 적갈색 머리, 짧은 주황 목수건, 주머니가 있는 숲색 조끼",
+  "editSource": "author.py explicit rows and exact clothing-string replacements at original pose offsets. Original mirrored side-view contract retained."
+}

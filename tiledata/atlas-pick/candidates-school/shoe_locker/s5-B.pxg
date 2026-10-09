@@ -1,0 +1,76 @@
+// s5 후보 — s5-B.pxg
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a hinoki
+@mat b vdwood
+@mat c vwhite
+@mat d vgreen
+@mat e vblue
+@mat f vred
+@mblock 0 0
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abccccbabccccbabbbbbbabbbbbbaaaa
+abccccbabccccbabccccbabbbbbbaaaa
+abddddbabeeeebabccccbabbbbbbaaaa
+abddddbabeeeebabccccbabbbbbbaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abccccbabbbbbbabccccbabccccbaaaa
+abccccbabbbbbbabccccbabccccbaaaa
+abffffbabbbbbbabddddbabeeeebaaaa
+abffffbabbbbbbabddddbabeeeebaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabbbbbbabbbbbbabbbbbbaaaa
+abbbbbbabccccbabccccbabccccbaaaa
+abccccbabccccbabccccbabccccbaaaa
+abccccbabddddbabeeeebabffffbaaaa
+abccccbabddddbabeeeebabffffbaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+.-------------------------------
+@tblock 0 0
+................................
+66666666666666666666666666666666
+55555555555555555555555555555555
+44444444444444444444444444444444
+43333333333333333333333333332332
+40000003000000300000030000002111
+40000003000000300000030000002111
+40111113011111301111130111112111
+40666613066661301111130111112111
+40555513055551305555130111112111
+40444413044441303322130111112111
+40333313033331301111130111112111
+44444444444444444444444444442111
+40000003000000300000030000002111
+40000003000000300000030000002111
+40111113011111301111130111112111
+40666613011111306666130666612111
+40555513011111305555130555512111
+40444413011111304444130444412111
+40333313011111303333130333312111
+44444444444444444444444444442111
+40000003000000300000030000002111
+40000003000000300000030000002111
+40111113011111301111130111112111
+40111113066661306666130666612111
+40555513055551305555130555512111
+40332213044441304444130444412111
+40111113033331303333130333312111
+22222222222222222222222222222222
+333333333333333333333333333321..
+000000000000000000000000000000..
+................................

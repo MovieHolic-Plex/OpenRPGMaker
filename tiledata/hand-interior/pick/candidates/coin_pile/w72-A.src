@@ -1,0 +1,27 @@
+// w72-A 금화 더미: 동전 비늘 무늬, 위 왼쪽 빛
+o gold 1
+m gold 2
+n gold 3
+p gold 4
+q gold 5
+r gold 6
+g red 3
+h red 4
+@size 16 16
+@grid
+................
+................
+................
+.......oo.......
+.....ooqro......
+....oqrpqnoo....
+...oqpqnpqpno...
+..oqrnprnpqrno..
+..oprqpnqrpnpmo.
+.oqnpqrpnpqrpnmo
+.orpnpqnrqpnqpno
+oqpnqrpnqpnrpqno
+ompnpqnpmnpqnpmo
+.ommnmpmmnmmpmo.
+..oooooooooooo..
+..~~~~~~~~~~~~..

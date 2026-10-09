@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shelf_coins/w10-A.pxg",
+ "id": "shelf:coins",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "v5 색만 쓰되 동전 더미를 윗면 반짝임+옆줄무늬로 바꾸고 선반에 윗판·앞판·밑그림자 3면을 줬다",
+ "ok": true
+}

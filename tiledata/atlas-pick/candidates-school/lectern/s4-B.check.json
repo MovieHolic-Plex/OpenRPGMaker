@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lectern/s4-B.pxg",
+ "set": "school",
+ "id": "lectern",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.127
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  3,
+  10,
+  31,
+  31
+ ],
+ "note": "같은 상자에 빛을 세게: 왼쪽 위 모서리 8단, 오른쪽 면 2~3단, 윗판 밑 짙은 그늘 2줄, 접지 그림자 2줄 진하게",
+ "ok": true
+}

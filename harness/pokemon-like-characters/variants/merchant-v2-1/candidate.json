@@ -1,0 +1,12 @@
+{
+  "role": "merchant",
+  "label": "상인",
+  "variant": "도윤 v2.1 · 등 끈 수정",
+  "description": "청록 두건과 머리 뒤의 짧은 매듭, 콧수염, 가죽 작업 조끼. 등 위로 내려오는 끈 제거.",
+  "identity": "v2의 두건 끈이 등에 검은 줄처럼 보이던 문제를 수정. 끈은 머리 뒤에서 끝나며 조끼 등판은 이어진다.",
+  "collection": "merchant-tail-fix",
+  "base": "mart_employee-merchant-v2-1",
+  "templateId": "mart_employee",
+  "sourceNote": "에메랄드 mart_employee의 보행·접지를 판형으로 유지하고 Codex가 머리·얼굴·몸통의 픽셀 행을 다시 저작한 파생 후보입니다. 원작 기반임을 명시합니다.",
+  "author": "Codex GPT-6"
+}

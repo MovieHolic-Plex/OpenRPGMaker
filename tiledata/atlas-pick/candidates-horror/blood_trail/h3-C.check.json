@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/blood_trail/h3-C.pxg",
+ "set": "horror",
+ "id": "blood_trail",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "손톱 긁은 다섯 줄: 줄 두께 2 씩 다섯 갈래로 끌린 자국, 한 줄 끝에 빠진 손톱 조각이 떨어져 있다",
+ "ok": true
+}

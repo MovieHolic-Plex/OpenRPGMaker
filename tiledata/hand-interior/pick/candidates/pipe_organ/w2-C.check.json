@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pipe_organ/w2-C.pxg",
+ "id": "pipe organ",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "light",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "note": "재해석 — 나무 케이스 안에 아치형 파이프, 양쪽 탑 기둥+금 장식구",
+ "ok": true
+}

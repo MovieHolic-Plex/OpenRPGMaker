@@ -1,0 +1,480 @@
+// Scarloxy MPWSP01 팩 포켓몬풍 데모 — "몬스터 테이머" 예시 프로젝트.
+//
+// 엔진 내장 몬스터 수집 시스템(system.monsterCollection)을 팩 몬스터 16종으로 시연한다:
+//   - 박사에게 스타터 3택 (giveMonster)
+//   - 야생 전투에서 포획 구슬로 포획 (전투 '포획' 명령, HP가 낮을수록 성공률 상승)
+//   - 파티 몬스터는 전투 경험치를 나눠 받아 레벨업·기술 습득·진화 (스파르츄→신드릴→차마딜로 등)
+//   - 상태 메뉴 '몬스터'에서 파티/보관함 관리
+// 전투·상태 메뉴·약 미리보기는 실제 몬스터 인스턴스 파티를 사용한다.
+// 2026-10-07: 데모 맵(마을·1번 길·EasyRPG 실내)은 지웠다. 남은 것은 DB 구성(몬스터 원정 캠페인이 쓴다).
+
+import { PRODUCT_BRAND } from "@/brand";
+import { configureMonsterPresentation } from "@/project/monsterPresentation";
+import type { Project } from "../types";
+import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeSkillRecord, normalizeStateRecord } from "@/project/databaseRecordModel";
+import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
+import { demoEnemy, demoSkill, demoTroop } from "./scarloxyDemoGame";
+
+
+const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
+
+const GEN1_TYPE_DEFINITIONS = [
+  ["normal", "노말", "physical"],
+  ["fighting", "격투", "physical"],
+  ["flying", "비행", "physical"],
+  ["poison", "독", "physical"],
+  ["ground", "땅", "physical"],
+  ["rock", "바위", "physical"],
+  ["bug", "벌레", "physical"],
+  ["ghost", "고스트", "physical"],
+  ["fire", "불꽃", "magical"],
+  ["water", "물", "magical"],
+  ["grass", "풀", "magical"],
+  ["electric", "전기", "magical"],
+  ["psychic", "에스퍼", "magical"],
+  ["ice", "얼음", "magical"],
+  ["dragon", "드래곤", "magical"],
+] as const;
+
+type Gen1Type = typeof GEN1_TYPE_DEFINITIONS[number][0];
+
+const GEN1_TYPE_EFFECTS: readonly [Gen1Type, Gen1Type, 0 | 0.5 | 2][] = [
+  ["water", "fire", 2], ["fire", "grass", 2], ["fire", "ice", 2],
+  ["grass", "water", 2], ["electric", "water", 2], ["water", "rock", 2],
+  ["ground", "flying", 0], ["water", "water", 0.5], ["fire", "fire", 0.5],
+  ["electric", "electric", 0.5], ["ice", "ice", 0.5], ["grass", "grass", 0.5],
+  ["psychic", "psychic", 0.5], ["fire", "water", 0.5], ["grass", "fire", 0.5],
+  ["water", "grass", 0.5], ["electric", "grass", 0.5], ["normal", "rock", 0.5],
+  ["normal", "ghost", 0], ["ghost", "ghost", 2], ["fire", "bug", 2],
+  ["fire", "rock", 0.5], ["water", "ground", 2], ["electric", "ground", 0],
+  ["electric", "flying", 2], ["grass", "ground", 2], ["grass", "bug", 0.5],
+  ["grass", "poison", 0.5], ["grass", "rock", 2], ["grass", "flying", 0.5],
+  ["ice", "water", 0.5], ["ice", "grass", 2], ["ice", "ground", 2],
+  ["ice", "flying", 2], ["fighting", "normal", 2], ["fighting", "poison", 0.5],
+  ["fighting", "flying", 0.5], ["fighting", "psychic", 0.5], ["fighting", "bug", 0.5],
+  ["fighting", "rock", 2], ["fighting", "ice", 2], ["fighting", "ghost", 0],
+  ["poison", "grass", 2], ["poison", "poison", 0.5], ["poison", "ground", 0.5],
+  ["poison", "bug", 2], ["poison", "rock", 0.5], ["poison", "ghost", 0.5],
+  ["ground", "fire", 2], ["ground", "electric", 2], ["ground", "grass", 0.5],
+  ["ground", "bug", 0.5], ["ground", "rock", 2], ["ground", "poison", 2],
+  ["flying", "electric", 0.5], ["flying", "fighting", 2], ["flying", "bug", 2],
+  ["flying", "grass", 2], ["flying", "rock", 0.5], ["psychic", "fighting", 2],
+  ["psychic", "poison", 2], ["bug", "fire", 0.5], ["bug", "grass", 2],
+  ["bug", "fighting", 0.5], ["bug", "flying", 0.5], ["bug", "psychic", 2],
+  ["bug", "ghost", 0.5], ["bug", "poison", 2], ["rock", "fire", 2],
+  ["rock", "fighting", 0.5], ["rock", "ground", 0.5], ["rock", "flying", 2],
+  ["rock", "bug", 2], ["rock", "ice", 2], ["ghost", "normal", 0],
+  ["ghost", "psychic", 0], ["fire", "dragon", 0.5], ["water", "dragon", 0.5],
+  ["electric", "dragon", 0.5], ["grass", "dragon", 0.5], ["ice", "dragon", 2],
+  ["dragon", "dragon", 2],
+];
+
+function gen1TypeChart() {
+  const types = GEN1_TYPE_DEFINITIONS.map(([id]) => id);
+  const multipliers = Object.fromEntries(types.map((attackType) => [
+    attackType,
+    Object.fromEntries(types.map((defenderType) => [defenderType, 1])),
+  ])) as Record<Gen1Type, Record<Gen1Type, number>>;
+  for (const [attackType, defenderType, multiplier] of GEN1_TYPE_EFFECTS) {
+    multipliers[attackType][defenderType] = multiplier;
+  }
+  return { types: [...types], multipliers };
+}
+
+export function configureScarloxyPokemonDemoProject(project: Project): void {
+  project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: PRODUCT_BRAND };
+  const titleScreen = project.system.titleScreen;
+  project.system = {
+    ...project.system,
+    monsterCollection: true,
+    battleUiStyle: "pokemon",
+    // 전투 규칙 엔진도 Gen1 로 켠다. battleUiStyle 은 스킨(코스메틱)만 바꾸므로
+    // 이것이 없으면 포켓몬 스킨을 쓰면서 RM2k3 규칙으로 싸운다 — applyGenrePreset
+    // ("monster-collect") 은 이미 둘을 함께 켜는데, 출하 데모만 빠져 있었다.
+    battleModel: "gen1",
+    // Gen1 은 게이지(ATB)가 아니라 속도 기반 단일 턴이다. strict 흐름은 이미 구현돼
+    // 있었고(runtime.ts battleFlow), 기본값(gauge)만 꺼져 있었다. 이 데모의 테스트들도
+    // 처음부터 battleFlow: "strict" 를 명시해 왔다(scarloxyPokemonDemo.test.ts).
+    battleFlow: "strict",
+    // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
+    battleParty: "monsters",
+    activeSlots: 1,
+    typeChart: gen1TypeChart(),
+    startActorIds: [DEFAULT_ACTOR_ID],
+    ...(titleScreen
+      ? {
+          titleScreen: {
+            ...titleScreen,
+            title: "몬스터 테이머",
+            menuLabels: { newGame: "모험 시작", continueGame: "불러오기", quit: "그만두기" },
+          },
+        }
+      : {}),
+  };
+  configureMonsterPresentation(project);
+  project.session = {
+    ...project.session,
+    partyActorIds: [DEFAULT_ACTOR_ID],
+    inventory: { ...project.session.inventory, [CAPTURE_ORB_ITEM_ID]: 3 },
+  };
+
+  const hero = project.database.actors.find((actor) => actor.id === DEFAULT_ACTOR_ID);
+  if (hero) {
+    hero.name = "트레이너";
+    hero.characterResourceId = "scarloxy-charset-people1";
+    hero.characterIndex = 0;
+    // 기본 주인공 얼굴(갈색 머리띠 용사)은 이 트레이너 소년이 아니다. 공용 대응표에 이 팩의 얼굴이 없어 비운다.
+    delete hero.faceResourceId;
+    // 포켓몬풍 밸런스: 기본 용사 스탯(HP 500+, 공격 원킬)을 데모 규모로 낮춘다.
+    hero.parameterCurves = {
+      ...hero.parameterCurves,
+      maxHp: flatCurve(130, 6),
+      maxMp: flatCurve(20, 1),
+      attack: flatCurve(30, 2),
+      defense: flatCurve(14, 1),
+      mind: flatCurve(9, 1),
+      agility: flatCurve(9, 1),
+    };
+    // 기술 목록에서 용사 스킬(집중·검격)을 걷어내고 트레이너다운 기술만 남긴다.
+    hero.learnedSkills = [{ level: 1, skillId: "skill_pkmn_rock" }];
+  }
+
+  project.database.skills.push(
+    // Gen1 관례: 불꽃 기본기는 10% 화상. state_burn 은 아래에서 이 데모 DB 에만 저작한다.
+    { ...demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"), stateEffects: [{ stateId: "state_burn", chance: 10, operation: "add" as const }] },
+    demoSkill("skill_scarloxy_leaf", "잎날리기", 24, "anim_scarloxy_green", "날카로운 잎을 날립니다.", "grass"),
+    demoSkill("skill_scarloxy_splash", "물장구", 24, "anim_scarloxy_splash", "물보라를 일으켜 공격합니다.", "water"),
+    demoSkill("skill_scarloxy_scratch", "할퀴기", 18, "anim_scarloxy_scratch", "발톱으로 할큅니다."),
+    demoSkill("skill_scarloxy_ice", "얼음 조각", 28, "anim_scarloxy_ice", "얼음 조각을 날립니다.", "water"),
+    demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire"),
+    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다."),
+    // 전광석화 — movePriority +1 은 strict 턴제에서 속도보다 먼저 비교된다(느려도 선공).
+    { ...demoSkill("skill_scarloxy_quick", "전광석화", 18, "anim_scarloxy_scratch", "번개처럼 빠르게 몸통박치기합니다. 반드시 선공합니다."), movePriority: 1 },
+    demoSkill("skill_scarloxy_punch", "Karate Strike", 25, "anim_scarloxy_scratch", "A focused Fighting-type strike.", "fighting"),
+    demoSkill("skill_scarloxy_wing", "Gale Wing", 25, "anim_scarloxy_scratch", "A swift Flying-type strike.", "flying"),
+    { ...demoSkill("skill_scarloxy_venom", "Venom Sting", 20, "anim_poison", "A Poison-type sting.", "poison"), stateEffects: [{ stateId: "state_poison", chance: 20, operation: "add" as const }] },
+    demoSkill("skill_scarloxy_mud", "Mud Quake", 25, "anim_scarloxy_explosion", "A Ground-type shock.", "ground"),
+    demoSkill("skill_scarloxy_bug", "Mandible Cut", 25, "anim_scarloxy_scratch", "A Bug-type bite.", "bug"),
+    demoSkill("skill_scarloxy_shadow", "Night Shade", 25, "anim_magic", "A Ghost-type shade.", "ghost"),
+    demoSkill("skill_scarloxy_spark", "Thunder Jolt", 25, "anim_magic", "An Electric-type jolt.", "electric"),
+    // 전기자기파 — Gen1 관례(마비 100%, 땅 타입만 면역). 확률 10% 기술만 있으면
+    // 상태이상이 전투에서 사실상 관측되지 않아, 상태기 하나는 확정 부여로 둔다.
+    {
+      ...normalizeSkillRecord({
+        id: "skill_scarloxy_wave",
+        name: "전기자기파",
+        scope: "enemy",
+        power: 0,
+        animationId: "anim_magic",
+        description: "약한 전류로 상대를 반드시 마비시킵니다.",
+        mpCost: { flat: 0, percentMax: 0 },
+        successRate: 100,
+        effect: { kind: "support" },
+        elementId: "electric",
+        stateEffects: [{ stateId: "state_paralysis", chance: 100, operation: "add" }],
+      }),
+    },
+    { ...demoSkill("skill_scarloxy_mind", "Dream Pulse", 30, "anim_magic", "A Psychic-type pulse.", "psychic"), stateEffects: [{ stateId: "state_sleep", chance: 10, operation: "add" as const }] },
+    demoSkill("skill_scarloxy_dragon", "Dragon Rage", 40, "anim_scarloxy_explosion", "A Dragon-type blast.", "dragon")
+  );
+
+  const gen1MoveMetadata: Readonly<Record<string, { maxPp: number; elementId: Gen1Type; critical?: "normal" | "high" }>> = {
+    [DEFAULT_SKILL_ID]: { maxPp: 35, elementId: "normal" },
+    skill_scarloxy_ember: { maxPp: 25, elementId: "fire" },
+    skill_scarloxy_leaf: { maxPp: 25, elementId: "grass", critical: "high" },
+    skill_scarloxy_splash: { maxPp: 25, elementId: "water" },
+    skill_scarloxy_scratch: { maxPp: 35, elementId: "normal" },
+    skill_scarloxy_ice: { maxPp: 10, elementId: "ice" },
+    skill_scarloxy_burst: { maxPp: 5, elementId: "fire" },
+    skill_pkmn_rock: { maxPp: 15, elementId: "rock" },
+    skill_scarloxy_quick: { maxPp: 30, elementId: "normal" },
+    skill_scarloxy_punch: { maxPp: 25, elementId: "fighting" },
+    skill_scarloxy_wing: { maxPp: 35, elementId: "flying" },
+    skill_scarloxy_venom: { maxPp: 35, elementId: "poison" },
+    skill_scarloxy_mud: { maxPp: 30, elementId: "ground" },
+    skill_scarloxy_bug: { maxPp: 35, elementId: "bug" },
+    skill_scarloxy_shadow: { maxPp: 15, elementId: "ghost" },
+    skill_scarloxy_spark: { maxPp: 30, elementId: "electric" },
+    skill_scarloxy_wave: { maxPp: 20, elementId: "electric" },
+    skill_scarloxy_mind: { maxPp: 10, elementId: "psychic" },
+    skill_scarloxy_dragon: { maxPp: 10, elementId: "dragon" },
+  };
+  for (const [skillId, metadata] of Object.entries(gen1MoveMetadata)) {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    if (!skill) continue;
+    skill.maxPp = metadata.maxPp;
+    skill.elementId = metadata.elementId;
+    skill.gen1CriticalRate = metadata.critical ?? "normal";
+  }
+  const iceMove = project.database.skills.find((record) => record.id === "skill_scarloxy_ice");
+  if (iceMove) iceMove.stateEffects = [{ stateId: "state_freeze", chance: 10, operation: "add" }];
+  const sparkMove = project.database.skills.find((record) => record.id === "skill_scarloxy_spark");
+  if (sparkMove) sparkMove.stateEffects = [{ stateId: "state_paralysis", chance: 10, operation: "add" }];
+
+  // Gen1 major status is persistent and mutually exclusive at runtime. The
+  // metadata, rather than localized ids/names, is the semantic source of truth.
+  const gen1States = [
+    normalizeStateRecord({
+      id: "state_poison", name: "독", gen1MajorStatus: "poison", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_burn", name: "화상", gen1MajorStatus: "burn", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { attackMultiplier: 0.5, hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_sleep", name: "수면", gen1MajorStatus: "sleep", restriction: "행동 불가",
+      removalCondition: "잠에서 깰 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      recoverWhenHitChance: 0, runtimeEffects: { restrictsAction: true, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_freeze", name: "얼음", gen1MajorStatus: "freeze", restriction: "행동 불가",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { restrictsAction: true, removeOnBattleEnd: false },
+    }),
+    normalizeStateRecord({
+      id: "state_paralysis", name: "마비", gen1MajorStatus: "paralysis", restriction: "없음",
+      removalCondition: "치료할 때까지 유지", recoverNaturallyFromTurn: 0, recoverNaturallyChance: 0,
+      runtimeEffects: { removeOnBattleEnd: false },
+    }),
+  ];
+  for (const state of gen1States) {
+    const index = project.database.states.findIndex((record) => record.id === state.id);
+    if (index >= 0) project.database.states[index] = state;
+    else project.database.states.push(state);
+  }
+
+  const elements = project.database.elements ?? [];
+  const elementTemplate = elements.find((record) => record.id === "fire") ?? elements[0];
+  if (elementTemplate) {
+    const gen1TypeIds = new Set(GEN1_TYPE_DEFINITIONS.map(([id]) => id));
+    project.database.elements = [
+      ...elements.filter((record) => !gen1TypeIds.has(record.id as Gen1Type)),
+      ...GEN1_TYPE_DEFINITIONS.map(([id, name, kind]) => ({
+        ...elementTemplate,
+        id,
+        name,
+        kind,
+        rateLabels: [...elementTemplate.rateLabels],
+        damageMultipliers: { ...elementTemplate.damageMultipliers },
+      })),
+    ];
+  }
+
+  project.database.monsterSpecies = [
+    ...(project.database.monsterSpecies ?? []),
+    ...scarloxySpeciesRecords(),
+  ];
+
+  project.database.enemies.push(
+    wildEnemy("enemy_pkmn_larvea", "라르베아", "larvea", 3, { maxHp: 40, maxMp: 2, attack: 6, defense: 8, mind: 4, agility: 5 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
+    wildEnemy("enemy_pkmn_sparchu", "스파르츄", "sparchu", 4, { maxHp: 42, maxMp: 6, attack: 8, defense: 5, mind: 7, agility: 10 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_spark"]),
+    wildEnemy("enemy_pkmn_plumette", "플루메트", "plumette", 4, { maxHp: 44, maxMp: 4, attack: 7, defense: 5, mind: 6, agility: 15 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_finsta", "핀스타", "finsta", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 7, mind: 7, agility: 11 }, { exp: 6, gold: 4 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_jacana", "자카나", "jacana", 5, { maxHp: 52, maxMp: 5, attack: 8, defense: 7, mind: 8, agility: 13 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_draem", "드림", "draem", 6, { maxHp: 60, maxMp: 8, attack: 9, defense: 8, mind: 11, agility: 9 }, { exp: 10, gold: 8 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_mossling", "모슬링", "mossling", 3, { maxHp: 42, maxMp: 3, attack: 6, defense: 9, mind: 5, agility: 6 }, { exp: 5, gold: 3 }, [DEFAULT_SKILL_ID, "skill_scarloxy_leaf"]),
+    wildEnemy("enemy_pkmn_emberkit", "엠버킷", "emberkit", 4, { maxHp: 44, maxMp: 5, attack: 8, defense: 6, mind: 7, agility: 13 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
+    wildEnemy("enemy_pkmn_puddlup", "퍼들업", "puddlup", 4, { maxHp: 46, maxMp: 5, attack: 7, defense: 8, mind: 9, agility: 10 }, { exp: 7, gold: 5 }, [DEFAULT_SKILL_ID, "skill_scarloxy_splash"]),
+    wildEnemy("enemy_pkmn_pouch", "파우치", "pouch", 5, { maxHp: 55, maxMp: 5, attack: 8, defense: 9, mind: 6, agility: 7 }, { exp: 8, gold: 6 }, [DEFAULT_SKILL_ID, "skill_scarloxy_scratch"]),
+    wildEnemy("enemy_pkmn_rival_cindrill", "라이벌의 신드릴", "cindrill", 8, { maxHp: 90, maxMp: 8, attack: 12, defense: 10, mind: 9, agility: 12 }, { exp: 20, gold: 20 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember"]),
+    wildEnemy("enemy_pkmn_atrox", "전설의 아트록스", "atrox", 15, { maxHp: 170, maxMp: 16, attack: 17, defense: 13, mind: 13, agility: 12 }, { exp: 50, gold: 60 }, [DEFAULT_SKILL_ID, "skill_scarloxy_ember", "skill_scarloxy_burst"])
+  );
+
+  project.database.troops.push(
+    demoTroop("troop_pkmn_grass_a", "풀숲의 라르베아", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_larvea", x: 168, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_grass_b", "풀숲의 몬스터들", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
+    ]),
+    demoTroop("troop_pkmn_new_grass", "풀숲의 모슬링", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_mossling", x: 160, y: 132 },
+    ]),
+    // 야생은 1:1 이 포켓몬 문법이다 — 두 마리 트룹은 더블배틀 시스템이 없는 한 만들지 않는다.
+    demoTroop("troop_pkmn_new_pair", "풀숲의 엠버킷", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_emberkit", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_pond_pair", "연못가의 퍼들업", "scarloxy-backdrop-sand", [
+      { enemyId: "enemy_pkmn_puddlup", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_sparchu", "풀숲의 스파르츄", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_sparchu", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_pouch", "물가의 파우치", "scarloxy-backdrop-sand", [
+      { enemyId: "enemy_pkmn_pouch", x: 160, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_shore", "물가의 몬스터들", "scarloxy-backdrop-sand", [
+      { enemyId: "enemy_pkmn_finsta", x: 136, y: 132 },
+    ]),
+    demoTroop("troop_pkmn_dream", "떠도는 드림", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_draem", x: 168, y: 128 },
+    ]),
+    // 트레이너 소유 몬스터는 포획 금지 — 포켓몬 규칙.
+    demoTroop("troop_pkmn_rival", "라이벌 배틀", "scarloxy-backdrop-forest", [
+      { enemyId: "enemy_pkmn_rival_cindrill", x: 168, y: 128 },
+    ], { uncapturable: true, trainerBattle: true }),
+    demoTroop("troop_pkmn_atrox", "전설의 아트록스", "scarloxy-backdrop-ice", [
+      { enemyId: "enemy_pkmn_atrox", x: 168, y: 124 },
+    ])
+  );
+}
+
+// --- 종(도감) 정의: 팩 몬스터 16종 전부 --------------------------------------
+// 진화 라인: 스파르츄→신드릴→차마딜로(불) / 핀스타→걸핀→피니에트(물) /
+//            라르베아→클리프→아이비론(풀) / 플루메트→플루마(풀)
+
+type SpeciesSeed = {
+  readonly key: string;
+  readonly name: string;
+  readonly type: "fire" | "water" | "grass";
+  readonly stats: { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
+  readonly captureRate: number;
+  readonly skillId?: string;
+  readonly extraSkills?: readonly { level: number; skillId: string }[];
+  readonly evolvesTo?: { key: string; level: number };
+};
+
+const SCARLOXY_GEN1_TYPES: Readonly<Record<string, readonly Gen1Type[]>> = {
+  sparchu: ["electric"],
+  cindrill: ["fire", "fighting"],
+  charmadillo: ["fire", "rock"],
+  finsta: ["water"],
+  gulfin: ["water", "ground"],
+  finiette: ["water", "ice"],
+  larvea: ["bug", "poison"],
+  cleaf: ["bug", "grass"],
+  mossling: ["grass"],
+  emberkit: ["fire"],
+  puddlup: ["water"],
+  ivieron: ["grass"],
+  plumette: ["flying"],
+  pluma: ["normal", "flying"],
+  jacana: ["water", "flying"],
+  pouch: ["normal"],
+  draem: ["psychic", "ghost"],
+  friolera: ["ice"],
+  atrox: ["dragon"],
+};
+
+const SCARLOXY_GEN1_PRIMARY_SKILLS: Readonly<Record<string, string>> = {
+  sparchu: "skill_scarloxy_spark",
+  cindrill: "skill_scarloxy_punch",
+  charmadillo: "skill_pkmn_rock",
+  finsta: "skill_scarloxy_splash",
+  gulfin: "skill_scarloxy_mud",
+  finiette: "skill_scarloxy_ice",
+  larvea: "skill_scarloxy_venom",
+  cleaf: "skill_scarloxy_bug",
+  mossling: "skill_scarloxy_leaf",
+  emberkit: "skill_scarloxy_ember",
+  puddlup: "skill_scarloxy_splash",
+  ivieron: "skill_scarloxy_leaf",
+  plumette: "skill_scarloxy_wing",
+  pluma: "skill_scarloxy_quick",
+  jacana: "skill_scarloxy_wing",
+  pouch: "skill_scarloxy_scratch",
+  draem: "skill_scarloxy_shadow",
+  friolera: "skill_scarloxy_ice",
+  atrox: "skill_scarloxy_dragon",
+};
+
+// 레벨업 기술 테이블 — 1레벨 기본기(공격) + 주력기(3레벨)는 scarloxySpeciesRecords 가
+// 채우고, 여기엔 주력 뒤에 붙는 상위 습득만 둔다. 15타입 차트가 사장되지 않게
+// 종족 타입(SCARLOXY_GEN1_TYPES)에 맞는 기술로만 구성한다.
+const SCARLOXY_LEVELUP_MOVES: Readonly<Record<string, readonly { level: number; skillId: string }[]>> = {
+  // 원작 피카츄 습득 순서(전기쇼크 → 전광석화 → 전기자기파 lv9)를 따른다.
+  sparchu: [{ level: 5, skillId: "skill_scarloxy_quick" }, { level: 9, skillId: "skill_scarloxy_wave" }],
+  cindrill: [{ level: 7, skillId: "skill_scarloxy_punch" }, { level: 10, skillId: "skill_scarloxy_ember" }, { level: 14, skillId: "skill_scarloxy_burst" }],
+  charmadillo: [{ level: 12, skillId: "skill_pkmn_rock" }, { level: 16, skillId: "skill_scarloxy_burst" }],
+  finsta: [{ level: 5, skillId: "skill_scarloxy_ice" }, { level: 9, skillId: "skill_scarloxy_mud" }],
+  gulfin: [{ level: 7, skillId: "skill_scarloxy_mud" }, { level: 10, skillId: "skill_scarloxy_ice" }],
+  finiette: [{ level: 12, skillId: "skill_scarloxy_ice" }, { level: 16, skillId: "skill_scarloxy_mud" }],
+  larvea: [{ level: 5, skillId: "skill_scarloxy_venom" }, { level: 9, skillId: "skill_scarloxy_bug" }],
+  cleaf: [{ level: 7, skillId: "skill_scarloxy_bug" }, { level: 10, skillId: "skill_scarloxy_venom" }, { level: 14, skillId: "skill_scarloxy_leaf" }],
+  ivieron: [{ level: 12, skillId: "skill_scarloxy_leaf" }, { level: 16, skillId: "skill_scarloxy_venom" }],
+  plumette: [{ level: 5, skillId: "skill_scarloxy_wing" }, { level: 9, skillId: "skill_scarloxy_quick" }],
+  pluma: [{ level: 8, skillId: "skill_scarloxy_wing" }, { level: 12, skillId: "skill_scarloxy_quick" }],
+  mossling: [{ level: 5, skillId: "skill_scarloxy_leaf" }, { level: 8, skillId: "skill_scarloxy_bug" }],
+  emberkit: [{ level: 5, skillId: "skill_scarloxy_ember" }, { level: 8, skillId: "skill_scarloxy_burst" }],
+  puddlup: [{ level: 5, skillId: "skill_scarloxy_splash" }, { level: 8, skillId: "skill_scarloxy_mud" }],
+  jacana: [{ level: 5, skillId: "skill_scarloxy_wing" }, { level: 8, skillId: "skill_scarloxy_splash" }],
+  pouch: [{ level: 5, skillId: "skill_scarloxy_scratch" }, { level: 8, skillId: "skill_scarloxy_quick" }],
+  draem: [{ level: 5, skillId: "skill_scarloxy_shadow" }, { level: 9, skillId: "skill_scarloxy_mind" }],
+  friolera: [{ level: 5, skillId: "skill_scarloxy_ice" }, { level: 9, skillId: "skill_scarloxy_splash" }],
+  atrox: [{ level: 10, skillId: "skill_scarloxy_ember" }, { level: 14, skillId: "skill_scarloxy_burst" }, { level: 18, skillId: "skill_scarloxy_dragon" }],
+};
+
+const SPECIES_SEEDS: readonly SpeciesSeed[] = [
+  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", evolvesTo: { key: "cindrill", level: 7 } },
+  { key: "cindrill", name: "신드릴", type: "fire", stats: { maxHp: 30, maxMp: 10, attack: 15, defense: 11, mind: 12, agility: 14 }, captureRate: 0.25, skillId: "skill_scarloxy_ember", evolvesTo: { key: "charmadillo", level: 12 } },
+  { key: "charmadillo", name: "차마딜로", type: "fire", stats: { maxHp: 46, maxMp: 12, attack: 20, defense: 18, mind: 13, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_burst" },
+  { key: "finsta", name: "핀스타", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 9, mind: 11, agility: 11 }, captureRate: 0.5, skillId: "skill_scarloxy_splash", evolvesTo: { key: "gulfin", level: 7 } },
+  { key: "gulfin", name: "걸핀", type: "water", stats: { maxHp: 32, maxMp: 10, attack: 14, defense: 12, mind: 13, agility: 13 }, captureRate: 0.25, skillId: "skill_scarloxy_splash", evolvesTo: { key: "finiette", level: 12 } },
+  { key: "finiette", name: "피니에트", type: "water", stats: { maxHp: 48, maxMp: 14, attack: 18, defense: 15, mind: 19, agility: 16 }, captureRate: 0.12, skillId: "skill_scarloxy_ice" },
+  { key: "larvea", name: "라르베아", type: "grass", stats: { maxHp: 17, maxMp: 6, attack: 8, defense: 11, mind: 8, agility: 7 }, captureRate: 0.6, skillId: "skill_scarloxy_scratch", evolvesTo: { key: "cleaf", level: 7 } },
+  { key: "cleaf", name: "클리프", type: "grass", stats: { maxHp: 30, maxMp: 9, attack: 13, defense: 14, mind: 11, agility: 10 }, captureRate: 0.3, skillId: "skill_scarloxy_leaf", evolvesTo: { key: "ivieron", level: 12 } },
+  { key: "ivieron", name: "아이비론", type: "grass", stats: { maxHp: 46, maxMp: 12, attack: 17, defense: 18, mind: 14, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_leaf" },
+  { key: "plumette", name: "플루메트", type: "grass", stats: { maxHp: 16, maxMp: 5, attack: 8, defense: 6, mind: 7, agility: 16 }, captureRate: 0.6, skillId: "skill_scarloxy_leaf", evolvesTo: { key: "pluma", level: 8 } },
+  { key: "pluma", name: "플루마", type: "grass", stats: { maxHp: 34, maxMp: 9, attack: 14, defense: 10, mind: 11, agility: 20 }, captureRate: 0.25, skillId: "skill_scarloxy_leaf" },
+  // 생성 자산 3종(2026-08-30) — 1번 길 초반 야생 라인업. 진화 없음, 포획률 높음.
+  { key: "mossling", name: "모슬링", type: "grass", stats: { maxHp: 19, maxMp: 7, attack: 9, defense: 12, mind: 9, agility: 8 }, captureRate: 0.55, skillId: "skill_scarloxy_leaf" },
+  { key: "emberkit", name: "엠버킷", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 12, defense: 8, mind: 10, agility: 14 }, captureRate: 0.5, skillId: "skill_scarloxy_ember" },
+  { key: "puddlup", name: "퍼들업", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 10, mind: 12, agility: 10 }, captureRate: 0.55, skillId: "skill_scarloxy_splash" },
+  { key: "jacana", name: "자카나", type: "water", stats: { maxHp: 21, maxMp: 6, attack: 9, defense: 8, mind: 9, agility: 15 }, captureRate: 0.55, skillId: "skill_scarloxy_splash" },
+  { key: "pouch", name: "파우치", type: "water", stats: { maxHp: 26, maxMp: 6, attack: 10, defense: 11, mind: 8, agility: 8 }, captureRate: 0.5, skillId: "skill_scarloxy_splash" },
+  { key: "draem", name: "드림", type: "grass", stats: { maxHp: 24, maxMp: 10, attack: 10, defense: 9, mind: 14, agility: 10 }, captureRate: 0.35, skillId: "skill_scarloxy_leaf" },
+  { key: "friolera", name: "프리올레라", type: "water", stats: { maxHp: 34, maxMp: 12, attack: 12, defense: 11, mind: 15, agility: 11 }, captureRate: 0.3, skillId: "skill_scarloxy_ice" },
+  { key: "atrox", name: "아트록스", type: "fire", stats: { maxHp: 60, maxMp: 16, attack: 19, defense: 14, mind: 15, agility: 14 }, captureRate: 0.15, skillId: "skill_scarloxy_burst" },
+];
+
+export function scarloxySpeciesId(key: string): string {
+  return `species_scarloxy_${key}`;
+}
+
+function scarloxySpeciesRecords() {
+  return SPECIES_SEEDS.map((seed) =>
+    normalizeMonsterSpeciesRecord({
+      id: scarloxySpeciesId(seed.key),
+      name: seed.name,
+      types: [...(SCARLOXY_GEN1_TYPES[seed.key] ?? [seed.type])],
+      graphic: { monsterResourceId: `scarloxy-monster-${seed.key}`, graphicHue: 0, transparent: false, flying: false },
+      baseStats: seed.stats,
+      captureRate: Math.round(seed.captureRate * 255) / 255,
+      // 데모용 저속 곡선 — 야생전 몇 번이면 스타터가 7레벨 진화에 도달한다.
+      expCurve: { base: 2, extra: 1, acceleration: 1 },
+      skillsByLevel: [
+        { level: 1, skillId: DEFAULT_SKILL_ID },
+        ...((SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId)
+          ? [{ level: 3, skillId: SCARLOXY_GEN1_PRIMARY_SKILLS[seed.key] ?? seed.skillId! }]
+          : []),
+        ...(SCARLOXY_LEVELUP_MOVES[seed.key] ?? []),
+      ],
+      evolutions: seed.evolvesTo
+        ? [{ toSpeciesId: scarloxySpeciesId(seed.evolvesTo.key), requires: { level: seed.evolvesTo.level } }]
+        : [],
+    })
+  );
+}
+
+function flatCurve(base: number, perLevel: number): number[] {
+  return Array.from({ length: 99 }, (_, index) => base + index * perLevel);
+}
+
+function wildEnemy(
+  id: string,
+  name: string,
+  speciesKey: string,
+  level: number,
+  stats: { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number },
+  rewards: { exp: number; gold: number },
+  skillIds: readonly string[],
+) {
+  return demoEnemy(id, name, `scarloxy-monster-${speciesKey}`, stats, rewards, skillIds, {
+    level,
+    speciesId: scarloxySpeciesId(speciesKey),
+  });
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/genkan_step/s5-A.pxg",
+ "set": "school",
+ "id": "genkan_step",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "가로 널 네 장, 틈 어두운 줄, 앞 턱 2px, 낮은 다리 — 신발장과 같은 히노키. 좌우 이어 붙는 폭",
+ "ok": true
+}

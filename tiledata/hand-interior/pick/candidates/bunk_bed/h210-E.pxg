@@ -1,0 +1,72 @@
+// E: 선원 숙소의 수납형 목제 이층 침대, 넓은 상부 덮판과 서쪽 머리판·동쪽 사다리
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g dwood 2
+@mat h dwood 3
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@mat m linen 6
+@mat n iron 3
+@mat o iron 5
+@layer body
+@mblock 0 0
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeab.
+.bfeeeeeedeeeeeeeeeeeeedeeeeeeb.
+.bfeeeeeeeeeeeeeeddddeeeeeeeeeb.
+.bfddddddddddddddddddddddddddcb.
+.bcccccccccccccccccccccccccccbb.
+.bcbbbbbbbbbbbbbbbbbbbbbbbbbcbb.
+.bedbmmmmmlkkkkkkkkkkkkkkkkbcbb.
+.bedbmmmmmmlllllllllllllllkbcbb.
+.bedbmmmmmmllllllkklllllllkbcbb.
+.bedbllllllmllllllllllllllkbcbb.
+.bedbjjjjjklllllllkllllllljbcbb.
+.bedbkkkkkkllllllllllkkllkjbcbb.
+.bedbjjjjjjkkkkkkkkkkkkkkjjbcbb.
+.bedbiiiiijjjjjjjjjjjjjjjjdc..cb
+.bedbeeeeeeeeeeeeeeeeeeeeedc..cb
+.bedbfddddddddddddddddddcbdc..cb
+.bedbcccccddccccccccccccbadc..cb
+.bedbbbbbbbbbbbbbbbbbbbbabfeeeeb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg..................gbfeeeeb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbg...................gdc..cb
+.bedbcccccccccccccccccccccdc..cb
+.bedbbbbbbbbbbbbbbbbbbbbbbfeeeeb
+.bedbmmmmmlkkkkkkkkkkkkkkkdc..cb
+.bedbmmmmmmllllllllllllllkdc..cb
+.bedbmmmmmmllllllkkllllllkdc..cb
+.bedbllllllmlllllllllllllkdc..cb
+.bedbjjjjjklllllllllllllljdc..cb
+.bedbkkkkkklllllllkklllljbfeeeeb
+.bedbjjjjjjkkkkkkkkkkkkkjjdc..cb
+.bedbiiiiijjjjjjjjjjjjjjiidc..cb
+.bedbeeeeeeeeeeeeeeeeeeeeedc..cb
+.bedbfdddddddddddddddddddcdc..cb
+.bedbccccccccccccccccccccbdc..cb
+.bedbbbbbbbbbbbbbbbbbbbbbbfeeeeb
+.bedbedddddddddbdddddddcbbdc..cb
+.bedbeddoooddddbdddooodcbbdc..cb
+.bedbccccccccccbcccdccccbbdc..cb
+.bedbbbbbbbbbbbbbbbbbbbbbbdc..cb
+.bccbg...................gfeeeeb
+.bbbbg...................gbc..bb
+@layer shadow
+@block 6 46
+~~~~~~~~~~~~~~~~~~~

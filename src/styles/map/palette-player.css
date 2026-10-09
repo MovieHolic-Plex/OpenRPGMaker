@@ -1,0 +1,143 @@
+.event-list-meta {
+  font: 500 11px/1.35 var(--font-mono);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor-modal-body .panel-section {
+  margin: 0;
+}
+/* 커맨드 프리픽스('@>')와 요약 토큰 — 필드셋 밖 리스트에서도 같은 색 규약을 쓴다. */
+/* 아이템/장비 요약 아이콘 (16px 픽셀아트). */
+/* 분기 마커 라인 (": 조건이 참일 때" 등) — 본 커맨드와 구분되는 이탤릭 보조 라인. */
+
+/* ?? ?대깽??紐낅졊 ?쒕옒洹??ъ젙??(RM2K3 泥닿컧) ?? */
+/* ?쒕∼ ?꾩튂 ?쒖떆??(???꾨옒). */
+
+/* 스택은 화면 하단 왼쪽에 쌓인다. 가운데 정렬은 유휴 AI 데크
+   (--ai-float-compact-width 480px, right: var(--space-3)) 와 겹친다.
+   column-reverse 라 최신 토스트가 항상 아래(눈이 가는 자리)에 온다. */
+.toast-stack {
+  position: fixed;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  transform: none;
+  /* 앱 모달(테스트 플레이 창) 위에 떠야 한다 — 1000 일 때 테스트 플레이 백드롭(1300)에 가려졌다.
+     런타임 디버그 막대(60)는 그 백드롭 안에 있어 직접 이긴 것이 아니다. 순서 근거는
+     src/styles/tokens.css 의 --z-toast 주석. */
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  /* 유휴 컴포저 열(480px) + 데크 right inset(--space-3) + 스택 left(--space-4) + 간격(--space-2).
+     1024 전용 미디어쿼리는 1280에서 가운데 560px 스택이 컴포저를 덮었다. */
+  max-width: min(560px, calc(100vw - 480px - var(--space-3) - var(--space-4) - var(--space-2)));
+}
+
+.toast {
+  position: relative;
+  transform: translateY(8px);
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius);
+  font-size: 13px;
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: 0 6px 20px rgba(42, 37, 33, 0.10);
+  pointer-events: none;
+  /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
+     너비를 제한하고 2줄까지만 보여준 뒤 자른다. 너비 상한은 스택 컨테이너와 같다. */
+  max-width: min(560px, calc(100vw - 480px - var(--space-3) - var(--space-4) - var(--space-2)));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  white-space: normal;
+}
+.toast .toast-message {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 밀려난 이전 토스트는 살짝 죽여 최신 것에 눈이 가게 한다. */
+.toast-stack .toast:not(:last-child) {
+  opacity: 0.72;
+  font-size: 12.5px;
+}
+
+/* 좁은 화면에서는 `100vw - 480px - …` 가 음수가 되어 토스트 폭이 0 으로 접히고 테두리만 남았다
+   (실측 390×844: 빨간 빈 상자 4개). 이 폭에서는 AI 데크가 컴포저 열을 옆에 두지 않으므로
+   좌우 여백만 빼고 화면 폭을 쓴다. */
+@media (max-width: 760px) {
+  .toast-stack {
+    left: var(--space-3);
+    right: var(--space-3);
+    max-width: none;
+  }
+  .toast {
+    max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; transform: none; }
+}
+.toast.show.has-action {
+  /* 복구 버튼 클릭 가능 */
+  pointer-events: auto;
+}
+.toast .toast-action {
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  cursor: pointer;
+}
+.toast .toast-action:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+}
+.toast.error {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.toast.ok {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+/* ?? ?곗륫 而⑦뀓?ㅽ듃 ???? */
+.right-tab.active {
+  border-bottom-color: var(--accent);
+}
+
+
+/* 맵 우클릭 스포이트 → 팔레트 칩셋 셀 하이라이트 (전문가 모드) */
+.chipset-tile.is-map-reveal,
+[data-testid^="cluster-tile-"].is-map-reveal,
+[data-testid^="quick-tile-"].is-map-reveal {
+  outline: 2px solid var(--accent, #3bc9db);
+  box-shadow: 0 0 0 3px rgba(59, 201, 219, 0.45);
+  z-index: 2;
+  position: relative;
+}
+
+.chipset-tile.banned { opacity: 0.45; filter: grayscale(0.6); }
+.chipset-tile.banned::after { content: "🚫"; position: absolute; top: 2px; right: 2px; font-size: 10px; }

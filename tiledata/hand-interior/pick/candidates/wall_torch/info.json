@@ -1,0 +1,37 @@
+{
+ "id": "wall torch",
+ "slug": "wall_torch",
+ "name_ko": "벽 횃불(움직임)",
+ "category": "장식",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "불꽃이 흔들리는 벽 횃불(벽면 윗줄, 움직임). 지하·드워프 홀·감옥·종탑 복도 벽면에 3~4칸 간격.",
+ "where": "지하·드워프 홀·감옥·종탑 복도 벽면에 3~4칸 간격.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  6,
+  3,
+  11,
+  14
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

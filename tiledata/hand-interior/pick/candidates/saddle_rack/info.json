@@ -1,0 +1,38 @@
+{
+ "id": "saddle rack",
+ "slug": "saddle_rack",
+ "name_ko": "안장걸이",
+ "category": "마구간",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "붉은 안장을 걸친 나무 받침(8px 솟음). 마구 방에 2개, 마구간 통로 끝에 1개.",
+ "where": "마구 방에 2개, 마구간 통로 끝에 1개.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,342 @@
+/* 자율 실행 — 다크 #1a1d27 박스 금지. 앞면은 2px 골드 바 + 한 줄 + 중지. */
+.ai-autonomous-run-surface {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 4px;
+  margin: 0 8px 6px;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
+/* ── 할 일 목록 앞면 — 아이콘 + 드롭다운 한 줄(2026-09-21) ──
+   펼친 목록이 아니라 pill 머리 한 줄이 기본이다. 눌러야 본문(활동·진행·계획 보기)이 열린다. */
+.ai-work-plan-dropdown { border: 0; margin: 0; padding: 0; }
+.ai-work-plan-dropdown > .ai-work-plan-head {
+  align-items: center;
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  font: 500 12px/1.5 var(--font-ui);
+  gap: 7px;
+  list-style: none;
+  max-width: 100%;
+  min-width: 0;
+  padding: 4px 10px;
+}
+.ai-work-plan-dropdown > .ai-work-plan-head::-webkit-details-marker { display: none; }
+.ai-work-plan-dropdown > .ai-work-plan-head:hover { border-color: var(--border-default); color: var(--text-1); }
+.ai-work-plan-dropdown.is-open > .ai-work-plan-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.ai-plan-head-icon { align-items: center; color: var(--gold-deep); display: inline-flex; flex: none; }
+.ai-work-plan-head-label { color: var(--text-1); flex: none; font-weight: 600; }
+.ai-work-plan-head-status {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-autonomous-run-surface .ai-autonomous-progress { flex: none; }
+.ai-plan-head-chevron { align-items: center; display: inline-flex; flex: none; color: var(--text-3); transition: transform 160ms ease; }
+.ai-work-plan-dropdown.is-open .ai-plan-head-chevron { transform: rotate(180deg); }
+.ai-work-plan-dropdown[open] > .ai-work-plan-body {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
+  border-top: 0;
+  color: var(--text-2);
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  gap: 8px;
+  padding: 8px 12px 10px;
+}
+.ai-work-plan-body > .ai-plan-book-open { align-self: flex-start; }
+
+.ai-chat-panel.is-autonomous-run .ai-status-group {
+  display: none;
+}
+
+.ai-run-whisper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-run-line {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-run-status {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.ai-run-stop {
+  background: none;
+  border: 0;
+  color: var(--danger);
+  cursor: pointer;
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.ai-run-progress {
+  background: var(--bg-inset);
+  border-radius: 99px;
+  height: 2px;
+  overflow: hidden;
+}
+
+.ai-run-progress-fill {
+  background: var(--gold);
+  display: block;
+  height: 100%;
+}
+
+.ai-run-details {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.ai-run-details-toggle {
+  color: var(--text-3);
+  cursor: pointer;
+  list-style: none;
+}
+
+.ai-run-details-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.ai-run-details[open] {
+  color: var(--text-2);
+  margin-top: 4px;
+}
+
+.ai-autonomous-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.ai-autonomous-chip {
+  background: var(--gold-wash);
+  border: 1px solid var(--gold-soft);
+  border-radius: 999px;
+  color: var(--gold-deep);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+.ai-autonomous-budget {
+  color: var(--text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.ai-autonomous-goal {
+  color: var(--text-1);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ai-autonomous-progress-row {
+  align-items: center;
+  color: var(--text-3);
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+}
+
+.ai-autonomous-progress {
+  background: var(--bg-inset);
+  border-radius: 999px;
+  color: var(--gold-deep);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 0 8px;
+}
+
+.ai-autonomous-layer {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 6px;
+}
+
+.ai-autonomous-layer-title {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.ai-autonomous-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-autonomous-item {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.ai-autonomous-item-mark {
+  color: var(--text-3);
+  font-size: 10px;
+  text-align: center;
+  width: 14px;
+}
+
+.ai-autonomous-item.is-done {
+  color: var(--success);
+  text-decoration: line-through;
+}
+
+.ai-autonomous-item.is-in_progress {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.ai-autonomous-item.is-blocked {
+  color: var(--danger);
+}
+
+/* ── 할 일 목록 앞면 — 항목 본문은 책 모달 (2026-09-03) ──
+   DOM(aiChatRenderers.renderWorkPlanChecklist):
+   .ai-autonomous-checklist[data-active][data-complete] > .ai-run-whisper + .ai-run-details */
+.ai-autonomous-item-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ai-autonomous-item-note {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ai-autonomous-item.is-in_progress .ai-autonomous-item-mark {
+  color: var(--gold-deep);
+}
+
+.ai-autonomous-checklist[data-active="true"] .ai-autonomous-item.is-in_progress .ai-autonomous-item-mark {
+  animation: ai-work-item-pulse 1.2s ease-in-out infinite;
+}
+
+.ai-autonomous-item.is-done .ai-autonomous-item-mark {
+  animation: ai-work-item-check 220ms ease-out;
+  color: var(--success);
+}
+
+.ai-autonomous-checklist[data-complete="true"] .ai-run-status {
+  color: var(--success);
+}
+
+.ai-autonomous-checklist[data-active="false"][data-complete="false"] .ai-run-status {
+  color: var(--text-3);
+}
+
+.ai-autonomous-checklist[data-blocked="true"] .ai-run-status {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.ai-autonomous-item-note.is-blocked {
+  color: var(--danger);
+}
+
+.ai-autonomous-item.is-blocked .ai-autonomous-item-mark {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+@keyframes ai-work-item-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes ai-work-item-check {
+  0% {
+    transform: scale(0.4);
+  }
+
+  60% {
+    transform: scale(1.25);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-autonomous-checklist .ai-autonomous-item-mark {
+    animation: none;
+  }
+}
+
+.ai-autonomous-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 6px;
+}
+
+.ai-autonomous-feed-line {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.ai-autonomous-feed-line.is-applied {
+  color: var(--success);
+}
+
+.ai-autonomous-feed-line.is-apply-failed {
+  color: var(--danger);
+}
+
+.ai-autonomous-feed-mark {
+  font-size: 10px;
+  width: 14px;
+}

@@ -1,0 +1,74 @@
+// hosp_screen v34-A 3/4 재작도
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rust 0
+@mat b tin 0
+@mat c ward 0
+@mblock 0 0
+................................
+................................
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbabbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbccbccbccbcbbccbccbccbccbb..
+..bbcccccccccccbbcccccccccccbb..
+..abcccccccccccbbcccccccccccbb..
+..bbcccccccccccabcccccccccccbb..
+..bbcccccccccccbbcccccccccccbb..
+..bbcccccccccccbbcccccccccccba..
+..bbcccccccccccbbcccccccccccbb..
+..bbcccccccccccbb.cccccc.cccbb..
+..bbcccccccccccbb.cccc.c.c.cbb..
+..bbcccccccccccbb..ccc.c.c.cbb..
+..bbcccccccccccbb..ccc.c.c.cbb..
+..bbcccccccccccbb...cc.c.c.cba..
+..bbcccccccccccbb...cc.c.c..bb..
+..bbcccccccccccbb...cc.c.c..bb..
+..bbcccccccccccbb...c....c..bb..
+..bbcccccccccccbb...c....c..bb..
+..abcccccccccccbb...c....c..bb..
+..bb...........bbc.c.c.c.c.cbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbbb..
+..bb...........bb...........bb..
+..bb...........bb...........bb..
+..bb...........bb...........bb..
+..bb...........bb...........bb..
+@tblock 0 0
+................................
+................................
+..1111111111111111111111111111..
+..1444444444444444444444444441..
+..1554555555555555355555555551..
+..1555555555555555555555555551..
+..1666666666666666666666666661..
+..0000000000000000000000000000..
+..5323224321422311422123224322..
+..5343214321432311432143214312..
+..3354325432543312543254325412..
+..5354325432543312543254325412..
+..5354325432543312543254325412..
+..5354325432543311543254225414..
+..5354325432543311543244224412..
+..535432543254331.443244.24412..
+..535432543254331.4432.4.2.412..
+..535432543254331..332.4.2.412..
+..535432543254331..332.4.2.312..
+..535432543254331...32.4.2.313..
+..535432543254331...31.3.2..12..
+..535432543254331...31.3.2..12..
+..535432543254331...3....2..12..
+..534321432143231...2....1..12..
+..331111111111131...2....1..12..
+..53...........313.2.3.2.3.212..
+..4444444444444444444444444444..
+..2222222222222222222222222222..
+..31...........31...........31..
+..21...........21...........21..
+..11...........11...........11..
+..11...........11...........11..

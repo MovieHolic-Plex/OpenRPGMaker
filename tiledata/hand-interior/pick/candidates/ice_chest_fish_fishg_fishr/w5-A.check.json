@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ice_chest_fish_fishg_fishr/w5-A.pxg",
+ "id": "ice chest:fish+fishg+fishr",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 26,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "v5 의 진열함을 더 알아보기 쉽게: 뚜껑 없는 나무 함 안의 얼음 위에 생선 다섯 마리(붉은·푸른·초록), 각 마리 눈·배 밝기·꼬리 구분, 앞판 널 이음 선",
+ "ok": true
+}

@@ -1,0 +1,124 @@
+{
+ "baseline": {
+  "findings": 0,
+  "maskMismatchKnown": {
+   "jb_road16_autotile": 33,
+   "jb_yard16_autotile": 65,
+   "jb_water47_autotile": 0,
+   "jb_paddy16_autotile": 0,
+   "jb_rice16_autotile": 0,
+   "jb_road64_autotile": 0,
+   "jb_yard64_autotile": 0,
+   "jb_water47g_autotile": 0,
+   "jb_slab_edge16_autotile": 0,
+   "jb_palace_court16_autotile": 0,
+   "jb_fld_trail32_autotile": 0,
+   "jb_fld_tall32_autotile": 0,
+   "jb_fld_forest32_autotile": 0,
+   "jb_fld_bog94_autotile": 0,
+   "jb_fld_rock32_autotile": 0,
+   "jb_cav_roof47_autotile": 0,
+   "jb_cav_pool94_autotile": 0,
+   "jb_in_ceil47_autotile": 0,
+   "jb_pal_ceil47_autotile": 0
+  }
+ },
+ "cases": [
+  {
+   "code": "door-unreachable",
+   "at": [
+    3,
+    22
+   ],
+   "change": "문 앞 칸에 rocks(막힘 1칸)를 윗층에 놓음",
+   "detected": [
+    [
+     "door-unreachable",
+     3,
+     22
+    ]
+   ]
+  },
+  {
+   "code": "object-tile-in-lower-layer",
+   "at": [
+    59,
+    34
+   ],
+   "change": "zelkova_a 수관 8칸을 lowerTiles 에 칠함",
+   "detected": [
+    [
+     "object-tile-in-lower-layer",
+     59,
+     34
+    ],
+    [
+     "object-tile-in-lower-layer",
+     60,
+     34
+    ],
+    [
+     "object-tile-in-lower-layer",
+     61,
+     34
+    ],
+    [
+     "object-tile-in-lower-layer",
+     62,
+     34
+    ],
+    [
+     "object-tile-in-lower-layer",
+     59,
+     35
+    ],
+    [
+     "object-tile-in-lower-layer",
+     60,
+     35
+    ],
+    [
+     "object-tile-in-lower-layer",
+     61,
+     35
+    ],
+    [
+     "object-tile-in-lower-layer",
+     62,
+     35
+    ]
+   ],
+   "detectedCount": 8
+  },
+  {
+   "code": "autotile-mask-mismatch",
+   "at": [
+    40,
+    5
+   ],
+   "change": "jb_water47_autotile 칸 마스크 55 → 205",
+   "detected": [
+    [
+     "jb_water47_autotile",
+     40,
+     5
+    ]
+   ]
+  },
+  {
+   "code": "bridge-blocked",
+   "at": [
+    42,
+    28
+   ],
+   "change": "다리 갑판 한 칸에 rocks",
+   "detected": [
+    [
+     "bridge-blocked",
+     42,
+     28
+    ]
+   ]
+  }
+ ]
+}

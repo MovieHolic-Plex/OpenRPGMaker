@@ -1,0 +1,382 @@
+:root {
+  --oprn-enemy-preview-bg: var(--accent);
+  --oprn-enemy-preview-text: var(--text-1);
+  --oprn-enemy-table-bg: var(--bg-raised);
+  --oprn-enemy-table-text: var(--text-1);
+  --oprn-enemy-table-separator: var(--border-subtle);
+  --oprn-enemy-menu-ink: var(--text-primary);
+  --oprn-enemy-menu-muted-ink: var(--text-muted);
+  --oprn-enemy-menu-danger-ink: var(--danger);
+  --oprn-enemy-panel-width: 154px;
+  --oprn-enemy-graphic-height: 132px;
+  --oprn-enemy-graphic-max: 104px;
+  --oprn-enemy-action-height: 206px;
+  --oprn-enemy-dialog-width: 420px;
+  --oprn-enemy-graphic-list-width: 176px;
+  --oprn-enemy-graphic-preview-width: 242px;
+}
+
+/* 2026-08 모던 개편: 몬스터 워크벤치는 databaseWorkspace 의 카드 스택으로 옮겼다
+   (.db-enemy-workbench / .db-ws-stack, modern/enemies.css). 여기 있던
+   `.db-enemy-bm101-workbench` grid-template-areas 맵과 패널 상자 스타일은
+   desktop.css / desktop-record-shell/05-dense-workbenches.css / studio-theme.css 의
+   서로 다른 area 맵과 충돌해 패널 겹침·클리핑을 만들던 원인이라 통째로 삭제했다.
+   이 파일에는 다이얼로그/컨텍스트 메뉴 등 워크벤치 바깥 자산만 남긴다. */
+
+.database-modal-body .db-enemy-dialog .db-field {
+  align-items: center;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(58px, 0.75fr) minmax(0, 1fr);
+  margin: 0;
+}
+
+.db-enemy-dialog input,
+.db-enemy-dialog select {
+  background-color: var(--oprn-enemy-table-bg);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: 12px/1.2 var(--font-ui);
+  min-height: 20px;
+  min-width: 0;
+}
+
+.database-modal-body .db-enemy-species-status {
+  font: 11px/1.3 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-body .db-enemy-species-status-warn {
+  color: var(--warning);
+}
+
+.database-modal-body .db-enemy-species-status-info {
+  color: var(--accent);
+}
+
+.database-modal-body .db-enemy-species-status-error {
+  color: var(--danger, #C6403D);
+}
+
+.database-modal-body .db-enemy-species-mismatch-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-body .db-enemy-empty-graphic {
+  color: var(--oprn-enemy-preview-text);
+  font: 12px/1.2 var(--font-mono);
+}
+
+.db-enemy-dialog-backdrop {
+  align-items: center;
+  background: rgba(42, 37, 33, 0.14);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  overflow: auto;
+  padding: 8px;
+  position: fixed;
+  z-index: var(--z-popover-high);
+}
+
+/* background/border-color 는 예전에 var(--oprn-chrome)/var(--oprn-light) 였다.
+   그 토큰들은 저장소 어디에도 정의되어 있지 않아서(--oprn-* 60개 중 23개가 그렇다)
+   선언이 무효가 되고 배경이 초기값 transparent 로 떨어졌다 — 그래서 이 다이얼로그를
+   열면 뒤에 있는 DB 표가 그대로 뚫고 보였다. 실존 토큰으로 바꾼다. */
+.db-enemy-dialog {
+  background: var(--bg-overlay);
+  border-color: var(--border-default);
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: var(--shadow-popover);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 16px);
+  max-width: calc(100vw - 16px);
+  min-width: min(var(--oprn-enemy-dialog-width), calc(100vw - 16px));
+}
+
+/* 같은 이유로 헤더 그라디언트도 죽어 있었다(--oprn-title-blue-* 미정의). */
+.db-enemy-dialog header {
+  background: linear-gradient(90deg, var(--accent), var(--accent-active));
+  color: var(--bg-raised);
+  font: 700 12px/20px var(--font-ui);
+  padding: 0 6px;
+}
+
+.db-enemy-dialog main {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+  padding: 10px;
+}
+
+.db-enemy-dialog footer {
+  display: flex;
+  gap: 8px;
+  justify-content: end;
+  padding: 0 10px 10px;
+}
+
+/* 스코프 없는 전역 `.btn.small { flex: 1 }`(tabs-b-resource-manager.css)이 여기까지 새어
+   「선택/취소」 같은 버튼을 대화상자 전폭 바로 만든다. 이 대화상자는 `document.body` 에
+   붙어서 `.database-modal-body` 로 스코프된 되돌림 규칙이 닿지 않으므로 여기서 되돌린다.
+   (버튼을 `db-ws-btn` 으로 갈아치우는 우회는 쓰지 않는다 — 그 토큰 블록도 전부
+   `.database-modal-body` 하위라 스타일이 통째로 사라진다.) */
+.db-enemy-dialog footer .btn.small {
+  flex: 0 0 auto;
+  /* WCAG 2.5.8 최소 대상 크기. 모달 안 규칙은 여기까지 닿지 않는다. */
+  min-height: 24px;
+}
+
+.db-enemy-dialog textarea {
+  background-color: var(--oprn-enemy-table-bg);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  font: 12px/1.45 var(--font-ui);
+  min-height: 76px;
+  min-width: 0;
+  resize: vertical;
+  width: 100%;
+}
+
+.db-enemy-dialog label:has(textarea) {
+  display: grid;
+  gap: 4px;
+}
+
+.db-enemy-dialog main > p {
+  font: 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.db-enemy-dialog main > img {
+  align-self: start;
+  background: var(--bg-inset, transparent);
+  border: 1px solid var(--border-default);
+  height: auto;
+}
+
+.db-enemy-graphic-dialog-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: var(--oprn-enemy-graphic-list-width) var(--oprn-enemy-graphic-preview-width);
+}
+
+.db-enemy-graphic-list {
+  background: var(--oprn-enemy-table-bg);
+  display: grid;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.db-enemy-graphic-list button {
+  background: transparent;
+  border: 0;
+  color: var(--oprn-enemy-table-text);
+  font: 12px/18px var(--font-ui);
+  text-align: left;
+}
+
+/* .db-enemy-graphic-list button 의 active/hover 강조 규칙이 여기 있었다.
+   두 선언 모두 정의된 적 없는 --oprn-highlight/--oprn-light 를 읽어 통째로 폐기되고
+   있었고, .db-enemy-graphic-list 는 TS 어디서도 발행하지 않는다(참조 0건). */
+
+.db-enemy-switch-effect {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr) 28px;
+}
+
+.db-enemy-switch-effect .actor-check {
+  min-width: 48px;
+}
+
+.db-enemy-switch-effect select {
+  min-width: 0;
+  width: 100%;
+}
+
+.db-enemy-action-condition-grid {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+}
+
+.db-enemy-condition-detail {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+  min-height: 42px;
+  padding: 6px;
+}
+
+.db-enemy-behaviour-mode {
+  display: grid;
+  gap: 4px;
+}
+
+.db-enemy-behaviour-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
+.db-enemy-behaviour-row select,
+.db-enemy-behaviour-row .db-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.db-enemy-context-menu {
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: var(--shadow-popover);
+  min-width: 124px;
+  padding: 2px;
+  position: fixed;
+  z-index: 1100;
+}
+
+.db-enemy-context-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-primary);
+  display: grid;
+  font: 12px/18px var(--font-ui);
+  gap: 6px;
+  grid-template-columns: 14px minmax(0, 1fr) auto;
+  padding: 1px 18px 1px 4px;
+  text-align: left;
+  width: 100%;
+}
+
+.db-enemy-context-menu button:hover:not(:disabled) {
+  /* --oprn-highlight/--oprn-light 는 정의된 적이 없어 두 선언이 통째로 폐기됐고,
+     컨텍스트 메뉴 항목에 hover 피드백이 아예 없었다(2026-09-17 실측).
+     정본 토큰으로 되살린다. 글자색은 밝은 배경 위라 그대로 둔다. */
+  background: var(--control-bg-hover);
+}
+
+.db-enemy-context-menu button:disabled {
+  color: var(--text-muted);
+}
+
+.db-enemy-context-menu kbd {
+  font: inherit;
+}
+
+.db-enemy-menu-icon {
+  display: inline-block;
+  height: 12px;
+  position: relative;
+  width: 12px;
+}
+
+.db-enemy-menu-icon.edit {
+  border: 1px solid var(--oprn-enemy-menu-ink);
+}
+
+.db-enemy-menu-icon.edit::after {
+  background: var(--oprn-enemy-menu-ink);
+  content: "";
+  height: 7px;
+  left: 5px;
+  position: absolute;
+  top: 2px;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.cut::before,
+.db-enemy-menu-icon.cut::after {
+  background: var(--oprn-enemy-menu-ink);
+  content: "";
+  height: 12px;
+  left: 5px;
+  position: absolute;
+  top: 0;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.cut::after {
+  transform: rotate(-45deg);
+}
+
+.db-enemy-menu-icon.copy {
+  border: 1px solid var(--oprn-enemy-menu-ink);
+  /* 겹친 문서 아이콘을 그리던 box-shadow 는 --oprn-chrome 이 정의된 적이 없어
+     통째로 폐기되고 있었다. 되살리려면 --oprn-chrome 부터 정의해야 한다. */
+}
+
+.db-enemy-menu-icon.paste {
+  border: 1px solid var(--oprn-enemy-menu-muted-ink);
+  opacity: 0.45;
+}
+
+.db-enemy-menu-icon.delete::before,
+.db-enemy-menu-icon.delete::after {
+  background: var(--oprn-enemy-menu-danger-ink);
+  content: "";
+  height: 13px;
+  left: 5px;
+  position: absolute;
+  top: -1px;
+  transform: rotate(45deg);
+  width: 2px;
+}
+
+.db-enemy-menu-icon.delete::after {
+  transform: rotate(-45deg);
+}
+
+@media (max-width: 480px) {
+  .db-enemy-dialog {
+    width: calc(100vw - 16px);
+  }
+
+  .db-enemy-graphic-dialog-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .db-enemy-behaviour-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .db-enemy-action-condition-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.database-modal-body .db-enemy-actions-empty,
+.database-modal-body .db-capture-preview {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+.database-modal-body .db-collection-gate-warn {
+  align-items: center;
+  background: rgba(255, 107, 107, 0.14);
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+}
+
+.database-modal-body .db-monster-species-evolution-cycle-warn {
+  color: #ff6b6b;
+}

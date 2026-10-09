@@ -1,0 +1,383 @@
+:root {
+  --oprn-battle-blue-hi: #315dc0;
+  --oprn-battle-blue: #1742a5;
+  --oprn-battle-blue-deep: #071e68;
+  --oprn-battle-window-light: #e7f2ff;
+  --oprn-battle-window-shadow: #040b28;
+  --oprn-battle-text: #f8fbff;
+  --oprn-battle-muted: #b9c8f4;
+  --oprn-battle-backdrop-top: #84b8e3;
+  --oprn-battle-backdrop-mid: #6aa85a;
+  --oprn-battle-backdrop-ground: #368b37;
+}
+
+.player-layout.system-shell {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+}
+
+.player-layout.system-shell .play-viewport {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.player-layout.system-shell .title-screen {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.battle-stage {
+  background: var(--oprn-battle-window-shadow);
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+.battle-playback-status {
+  background: var(--oprn-battle-window-shadow);
+  border-radius: 4px;
+  color: var(--oprn-battle-text);
+  font-family: var(--runtime-ui-font);
+  font-size: 12px;
+  line-height: 16px;
+  padding: 2px 8px;
+  pointer-events: none;
+  position: absolute;
+  right: 12px;
+  text-shadow: none;
+  top: 4px;
+  z-index: 20;
+}
+
+.battle-scene {
+  /* 포커스 링: var(--focus-ring, …) 의 폴백은 죽은 코드다 — tokens.css 가 --focus-ring 을
+     정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
+     스코프에서 재정의한다. 색은 전역과 동일. */
+  --focus-ring: 0 0 0 4px rgba(108, 121, 242, 0.55);
+  /* 진입 커버(블라인드 열림, battleTransition.ts BATTLE_TRANSITION_REVEAL_MS)가 걷히는 시간.
+     인트로 안무는 이만큼 늦게 시작해 커버 뒤에서 소진되지 않는다. */
+  --battle-reveal-ms: 300ms;
+  /* 논리 해상도 스케일링 — battleStageScale.ts 가 컨테이너 크기에서 배율을 계산해
+     --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2000)은 320×240
+     (RM2003 해상도) 기준으로 저작됐는데 예전에는 640×480 에 transform 없이 붙어
+     모든 치수가 의도의 절반으로 보였다(실측: 명령 레일 84px = 640 화면의 13%). */
+  --battle-stage-scale: 1;
+  --battle-stage-offset-x: 0px;
+  --battle-stage-offset-y: 0px;
+  /* 배틀러 무대(battler stage) 기하 — 단일 소스.
+     `--battle-node-x/y`(battleFieldDom.positionBattleNode)는 **백분율** 이므로 그 값을
+     소비하는 요소들의 컨테이닝 블록이 서로 같아야 같은 점으로 풀린다.
+     `.battle-enemy-group` / `.battle-actor-group` 은 `.battle-field` 의 패딩 박스에서
+     상단만 `--battle-stage-inset-top` 만큼 들어간 박스이고, `.battle-animation-layer` /
+     `.battle-effects-layer` 도 아래에서 이 두 변수로 같은 박스를 재현한다.
+     값을 바꿀 때는 아래 한 줄만 바꿔라. */
+  --battle-field-border-width: 2px;
+  /* 이 한 줄이 `--battle-stage-inset-top` 의 **유일한 선언**이다
+     (감사: test/battleRm2003PixelGrid.test.ts). 스킨은 이 변수를 다시 선언하지 않고
+     스킨 노브 `--battle-stage-skin-inset-top` 만 재정의한다(rm2000 = 8px,
+     나머지 11종 = 미지정 → 48px). 그래서 배틀러 그룹·애니메이션 레이어·이펙트
+     레이어가 어느 스킨에서든 하나의 값으로 같은 박스로 풀린다. */
+  --battle-stage-inset-top: var(--battle-stage-skin-inset-top, 48px);
+  left: var(--battle-stage-offset-x);
+  top: var(--battle-stage-offset-y);
+  width: 640px;
+  height: 480px;
+  transform: scale(var(--battle-stage-scale));
+  transform-origin: top left;
+  border: 0;
+  border-radius: 0;
+  color: var(--oprn-battle-text);
+  overflow: hidden;
+  position: absolute;
+  box-shadow: none;
+}
+
+.battle-field {
+  display: block;
+  min-height: 0;
+}
+
+.battle-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 100%);
+}
+
+.battle-backdrop {
+  inset: 0;
+  padding: 0;
+  position: absolute;
+  border: 0;
+  border-radius: 0;
+  z-index: 0;
+  /* 배경 이미지를 어둡게 — 몬스터가 묻히지 않도록 */
+  background-repeat: no-repeat;
+  color: var(--oprn-battle-muted);
+  font-family: inherit;
+  font-size: 16px;
+}
+
+/* 배경 드리프트(2026-09-03): 38초 주기로 4% 까지 아주 느리게 다가온다. 정지한 배경은 이펙트가 끝나면
+   화면이 "멈춘 그림" 으로 읽히게 하는 세 번째 원인이었다. `scale` 이라 배경의 다른 속성과 겹치지 않는다. */
+.battle-backdrop {
+  animation: battle-backdrop-drift 38s ease-in-out infinite alternate;
+  transform-origin: 50% 40%;
+}
+@keyframes battle-backdrop-drift {
+  from { scale: 1; }
+  to { scale: 1.04; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-backdrop { animation: none; }
+}
+
+.battle-backdrop::after {
+  display: none;
+}
+
+.battle-title {
+  display: none;
+}
+
+.battle-enemy {
+  left: var(--battle-node-x);
+  min-height: 0;
+  position: absolute;
+  /* 저작 y 는 스프라이트의 **발**이다. 이름표·HUD 는 `.battle-enemy-chrome` 이 흐름에서
+     빼내므로 노드 높이 = 스프라이트 높이고, 아래쪽 앵커가 그대로 발이 된다.
+     전에는 라벨 스택 높이를 JS 로 실측해 top 에 더했는데(--battle-enemy-label-drop),
+     HUD 를 펼치고 접을 때마다 그 값이 바뀌어 몬스터가 눈에 보이게 튀었다. */
+  top: var(--battle-node-y);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--oprn-battle-text);
+  font-size: 0;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 0;
+  text-shadow: none;
+}
+
+/* 전투 중 옮겨진 적(moveEnemy · 행동 moveTo). 시간은 battleFieldDom 이 스냅샷의 durationMs 로 싣는다. */
+.battle-enemy[data-battle-move-sequence] {
+  transition: left var(--battle-move-ms, 400ms) ease-in-out, top var(--battle-move-ms, 400ms) ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-enemy[data-battle-move-sequence] { transition: none; }
+}
+
+.battle-enemy-group {
+  min-width: 0;
+  padding: 0;
+  position: absolute;
+}
+
+/* 이름표·순번·상태 아이콘·HP HUD 를 담는 겹(battleFieldDom: enemyChrome).
+   흐름에서 빠져 있어야 HUD 를 펼치거나 접어도 노드 높이가 안 변하고, 그래야 스프라이트가
+   제자리에 못 박힌다. flex 열로 두는 이유는 스킨이 자식에 걸어둔 `order`(vxace 배지 1 /
+   HUD 2)를 계속 살리기 위해서다. */
+.battle-enemy-chrome {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  position: absolute;
+  /* 6px 띄운다. 원래 근거는 "조준 중 노드에 그려지는 outline(4px + offset 4px)이 스프라이트
+     바로 밑을 지난다" 였는데 그 흰 사각형은 없어졌다(06-damage-flash-targeting.css).
+     간격 자체는 남긴다 — 이름표 알약과 스프라이트 발끝이 붙어 보이지 않게 하는 여백이고,
+     이 값을 줄이면 배틀러 기하 게이트가 재는 이름표 상자 위치가 함께 움직인다. */
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+}
+
+.battle-enemy-image {
+  image-rendering: pixelated;
+  object-fit: contain;
+  background: none;
+  border-radius: 0;
+  filter: none;
+  opacity: 1;
+}
+
+.battle-actor-group {
+  min-width: 0;
+  padding: 0;
+  position: absolute;
+}
+
+.battle-party {
+  grid-auto-rows: minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  align-self: stretch;
+}
+
+.battle-actor {
+  min-height: 84px;
+  gap: 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--oprn-battle-text);
+  font-size: 22px;
+  line-height: 1.2;
+  padding: 8px 10px;
+}
+
+.battle-actor-group .battle-actor {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+  left: var(--battle-node-x);
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  top: var(--battle-node-y);
+}
+
+.battle-actor-sprite {
+  background-repeat: no-repeat;
+  display: block;
+  height: var(--battle-sprite-frame-height, 144px);
+  image-rendering: pixelated;
+  width: var(--battle-sprite-frame-width, 144px);
+}
+
+/* 고해상도 짝 시트(192px 셀, battlerHiresSheets.ts)는 축소해 그린다 — pixelated 로 4배 시트를 96px 에
+   넣으면 계단이 다시 생긴다. 런타임이 data-rendering 으로 표시한다. */
+.battle-actor-sprite[data-rendering="smooth"] {
+  image-rendering: auto;
+}
+
+/* HUD 파티 행 사이의 구분선을 노리고 쓴 규칙이 여기 있었다:
+     `.battle-actor + .battle-actor { border-top: 2px solid rgba(216,228,255,.35) }`
+   그런데 HUD 행의 클래스는 `.battle-actor-status` 라 그 선택자는 HUD 에 **한 번도 맞지 않았고**,
+   대신 `.battle-actor-group` 안의 **필드 스프라이트 노드**(같은 `.battle-actor`)에만 걸렸다.
+   필드 노드는 192px 높이의 절대 배치 상자라 그 border 가 스프라이트 몸통을 가로지르는
+   밝은 수평선으로 보였다 — rm2000 4인 편성에서 2·3·4번 노드에 3줄(실측: 노드 top 에
+   2px, 허공에서 끊김). 구분선이 필요하면 `.battle-actor-status` 로 다시 달아야 한다. */
+
+.battle-actor-image {
+  width: 144px;
+  height: 144px;
+}
+/* 필드 위 배틀러 라벨(적 이름표·HP 숫자·파티 이름행)은 **스프라이트 레이어**다.
+   상자 크기가 픽셀 글꼴 폭으로 실측돼 있어 비례 글꼴로 바꾸면 그대로 넘친다
+   (실측, battle-text 시나리오: 적 이름 잘림 0.299 → 0.831, 파티 이름 0 → 0.035).
+   창·명령 행처럼 **크롬**인 자리만 --runtime-ui-font 로 간다. 스킨이 이 라벨을
+   알약 같은 크롬으로 다시 그릴 때는 그 규칙에서 글꼴을 명시한다(_rm2000.css). */
+.battle-enemy-name,
+.battle-enemy-hp-text,
+.battle-party .battle-actor-name,
+.battle-party .battle-actor-hp {
+  font-family: var(--runtime-pixel-font);
+}
+
+
+.battle-actor-label,
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp,
+.battle-atb-label {
+  color: var(--oprn-battle-text);
+  text-shadow: 2px 2px 0 #000;
+}
+
+.battle-actor-state,
+.battle-atb-label {
+  color: var(--oprn-battle-muted);
+}
+
+.battle-command-panel {
+  /* gap 은 외부 파일(editor/core.part-2.css 의 gap: var(--space-2) = 8px)에 의존하던 값이라
+     그 파일이 없는 빌드(독립 플레이어: src/player/player.css)에서는 gap: normal = 0 으로
+     갈렸다. 16px = 이주 전 화면 크기와 같은 8 논리 px × 2 — 여기서 명시해 두 빌드를 통일한다. */
+  justify-items: stretch;
+  min-width: 0;
+}
+
+/* 커맨드 메뉴가 스크롤포트 밖에 항목을 숨길 때(도주/교체가 잘리는 4행 카드) 보이는
+   "더 있다" 신호. sticky 로 뷰포트 하단에 떠 있다가 끝까지 스크롤하면 도킹된다.
+   battleCommandDom.attachScrollCue 가 넘침이 있을 때만 hidden 을 해제한다. */
+.battle-command-scroll-cue {
+  align-self: end;
+  bottom: 0;
+  color: var(--oprn-battle-muted, #fff7c6);
+  font-size: 12px;
+  grid-column: 1 / -1;
+  justify-self: center;
+  /* 글리프 잉크(약 17px)가 1 배 상자(12px)를 넘어 스크롤포트 경계에 걸쳐 그려졌다(감사 sliced 0.118). */
+  line-height: 1.5;
+  pointer-events: none;
+  position: sticky;
+  text-shadow: 1px 1px 0 #000;
+  z-index: 3;
+}
+
+.battle-enemy-list-panel {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.battle-message-window {
+  grid-template-columns: 28px minmax(0, 1fr);
+  padding: 6px 10px;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.battle-scene[data-battle-director-step="command"] .battle-message-window {
+  display: none;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-message-window {
+  display: grid;
+}
+
+.battle-scene[data-battle-director-step="result"] {
+  background-image: none;
+  overflow: hidden;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-field {
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+/* 결과 단계에서 배경을 파란 하늘 그라데이션으로 갈아치우던 규칙이 있었다. `background`
+   단축 속성은 인라인 background-image(전투 배경 그림 url)까지 통째로 덮어,
+   승리 화면에서 전투장이 사라지고 단색 그라데이션만 남겼다.
+   결과 단계의 어두워짐은 아래 `filter: brightness(0.72)` 규칙이 이미 담당한다. */
+.battle-scene[data-battle-director-step="result"] .battle-backdrop::before {
+  background: rgba(9, 35, 98, 0.28);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-backdrop::after {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* 결과 화면에서도 전장(배틀러 그룹)과 아군 상태(파티 패널)는 남는다 — 포켓몬처럼
+   승리의 현장 위에 보상이 얹힌다. 명령/적 정보 패널만 정리한다(적대 리뷰 §13). */
+
+.battle-scene[data-battle-director-step="result"]::after {
+  background: rgba(0, 0, 0, 0.22);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}

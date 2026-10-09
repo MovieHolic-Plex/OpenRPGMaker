@@ -1,0 +1,23 @@
+{
+ "id": "ruins",
+ "slug": "ruins",
+ "name": "폐허",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "무너진 옛 도시·신전 터. World.png 폐허처럼 **돌 벽 토막(흉벽 톱니가 부서진)** 두세 개가 높이가 다르게 서고, 무너진 돌 더미. 윤곽 1px(돌 가장 어두운 단), 윗면 밝게. 멀쩡한 건물로 읽히면 실패.",
+ "palette_hint": "wstone 돌, 이끼 wswamp·wmead 점",
+ "worker": "wv8"
+}

@@ -1,0 +1,654 @@
+/* ============================================================================
+   농장 건물·집 꾸미기 / 낚시·채집·박물관 — 모던 워크스페이스 보조 레이어.
+
+   워크스페이스 프리미티브(db-ws-*)로 표현할 수 없는 것만 여기 둔다:
+     - 목록 창 안의 컬렉션 그룹 머리글 (한 목록에 네 컬렉션이 들어간다)
+     - 저작 대상의 미리보기 — 발자국(타일 격자), 방향 나침반, 영역 사각형
+     - 계절/시간대/날씨/아이템 토글 칩
+   팔레트는 --db-studio-* 토큰만 쓴다. 새 hex 없음.
+   ========================================================================= */
+
+/* .db-ws-detail-body 는 flex column 이다 — 본문 블록이 내용보다 작게 눌리면 그리드가
+   넘쳐 아래 형제와 겹쳐 보인다. (뷰 코드에도 인라인으로 한 번 더 못박아 뒀다.) */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-panels,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-panels,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-system {
+  flex: 0 0 auto;
+}
+
+/* 히어로 배지(id 꼬리표)는 nowrap 이라 좁은 폭에서 히어로를 가로로 넘치게 할 수 있다.
+   TS 쪽에서 길이를 자르지만 CSS 로도 한 번 더 막는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-workspace .db-ws-tag,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-collections-ws .db-ws-tag {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── 목록: 컬렉션 그룹 ───────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-group {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-head,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-head {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 8px 4px 3px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-title,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-title {
+  color: var(--db-studio-text-3);
+  font: 700 10px/1.4 var(--font-ui);
+  letter-spacing: 0.06em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-count,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-count {
+  background: var(--db-studio-inset);
+  border-radius: 999px;
+  color: var(--db-studio-text-3);
+  flex: 0 0 auto;
+  font: 600 10px/15px var(--font-ui);
+  padding: 0 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-group-empty,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-group-empty {
+  color: var(--db-studio-text-3);
+  font: 400 11px/1.5 var(--font-ui);
+  margin: 0;
+  padding: 2px 6px 6px;
+}
+
+/* ── 히어로 미디어: 탭 상징 일러스트는 56px 썸네일로 강등한다 ───────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-hero-art,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-hero-art {
+  object-position: center;
+}
+
+/* ── 발자국(footprint) 미리보기 ──────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-fields {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint {
+  align-items: center;
+  display: grid;
+  flex: 0 0 auto;
+  gap: 4px;
+  justify-items: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-grid {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  display: grid;
+  gap: 1px;
+  max-width: 130px;
+  padding: 3px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-cell {
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 2px;
+  height: 12px;
+  width: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-caption {
+  color: var(--db-studio-text-2);
+  font: 600 10.5px/1.4 var(--font-mono);
+  white-space: nowrap;
+}
+
+/* ── 방향 나침반 ─────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: repeat(3, 30px);
+  justify-content: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-gap {
+  display: block;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-cell {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 700 14px/28px var(--font-ui);
+  height: 30px;
+  padding: 0;
+  text-align: center;
+  width: 30px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-cell:hover:not([disabled]) {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-cell.active {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-cell[disabled] {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-compass-hub {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border-radius: 6px;
+  color: var(--db-studio-text-3);
+  display: flex;
+  font: 700 12px/1 var(--font-ui);
+  height: 30px;
+  justify-content: center;
+}
+
+/* ── 회전 허용 토글 / 맵 체크리스트 ─────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-orientation-grid,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-orientation-toggle,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-check {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 11.5px/1 var(--font-ui);
+  gap: 5px;
+  padding: 5px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-orientation-toggle.active,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-check.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-orientation-toggle input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-check input {
+  margin: 0;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-orientation-arrow {
+  font-weight: 700;
+}
+
+/* ── 카드 안 인라인 행 / 목록 / 라벨 ────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-inline-row,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-inline-row {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-cost-list {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-sublabel,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-sublabel {
+  color: var(--db-studio-text-3);
+  font: 600 10.5px/1.4 var(--font-ui);
+  letter-spacing: 0.02em;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-bullets,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-bullets {
+  color: var(--db-studio-text-2);
+  display: grid;
+  font: 400 12px/1.7 var(--font-ui);
+  gap: 2px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-inline-delete,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-inline-delete {
+  align-self: end;
+  justify-self: start;
+  min-height: 30px;
+  opacity: 0.75;
+}
+
+/* ── 영역(rect) 미리보기 ─────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-fields {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 4px;
+  justify-items: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-frame {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  height: 84px;
+  position: relative;
+  width: 112px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-box {
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent);
+  border-radius: 2px;
+  box-sizing: border-box;
+  min-height: 3px;
+  min-width: 3px;
+  position: absolute;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-caption {
+  color: var(--db-studio-text-2);
+  font: 600 10.5px/1.4 var(--font-mono);
+  white-space: nowrap;
+}
+
+/* ── 계절/시간대/날씨/아이템 토글 칩 ────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-toggle-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-toggle-row,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-item-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-item-chips {
+  max-height: 132px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-toggle-chip {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 500 11.5px/1 var(--font-ui);
+  max-width: 100%;
+  overflow: hidden;
+  padding: 6px 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-toggle-chip:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-toggle-chip.active {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+}
+
+/* ── 계절별 드롭 4열 ─────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-season-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  min-width: 0;
+}
+
+/* ── 좁은 폭 ─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 980px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-spatial-footprint-row,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-rect-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+/* ============================================================================
+   맵 → 타일셋 (spatialTiles) — 컴팩트 갤러리 + 2열 모던 워크벤치 + 전폭 시트
+   ========================================================================= */
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-action:disabled,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-save-state,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-source-chips,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-sub,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-inspector-toggle {
+  display: none !important;
+}
+
+/* 행도 같이 못박는다 — <1200px 컨테이너 쿼리가 spatial-body 를
+   「갤러리 32% 행 + 나머지」 두 행 필름스트립으로 바꾸는데, 열만 되돌리고 행을 놔두면
+   갤러리·스테이지가 32% 행에 함께 눌려 작업대가 0px 로 붕괴한다(1024×768 실측).
+   !important 없이도 이긴다 — data-testid 선택자가 특이도를 한 단계 올리고
+   이 파일은 tilesets.css 보다 뒤에 로드된다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-body {
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery {
+  padding: 6px;
+  border-right: 1px solid var(--db-studio-border-subtle);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card .spatial-card-badge:not(.is-count) {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 2px;
+}
+
+/* height:auto 도 필요하다 — <1200px 쿼리의 .spatial-card{height:100%} 가 남아 있으면
+   세로 목록의 카드마다 목록 전체 높이를 물어 첫 카드만 보인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  height: auto;
+  padding: 6px 10px;
+  border-radius: 6px;
+  grid-template-rows: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-caption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-name {
+  font: 600 13px/1.3 inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-badges {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-stage {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-tiles-canvas {
+  padding: 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-editor {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  padding: 6px 12px !important;
+  gap: 6px 12px !important;
+  margin-bottom: 6px !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 8px !important;
+}
+
+/* legend-on-top 필드셋은 세로를 두 줄 먹는다 — 시트가 주인공인 셸에서는
+   라벨을 같은 줄 인라인으로 접어 속성 띠를 한 줄 높이로 누른다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset legend {
+  float: none;
+  padding: 0;
+  white-space: nowrap;
+  font: 600 11px/1.2 var(--font-ui);
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-properties .oprn-db-fieldset .db-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 워크벤치+사이드 레일은 가로 2열 그리드다 — flex column 이면 「생성 감사」 세로 레일이
+   본문 아래 빈 가로 띠로 깨지고, 접힘 계약(닫히면 26px 열)도 무력해진다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-main {
+  flex: 1 1 auto;
+  display: grid;
+  min-height: 0;
+}
+
+/* 1180px 뷰포트 규칙은 독립 타일셋 표면 전용 — 셸 안에서는 레일 토글 계약을 지킨다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .oprn-tileset-main:not(.side-open) .tileset-side-pane-body {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-side-rail {
+  display: flex;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 200px !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: 100% !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 4px 8px !important;
+  background: var(--db-studio-surface) !important;
+  border: 1px solid var(--db-studio-border-subtle) !important;
+  border-radius: 6px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools::before {
+  content: none !important;
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-tools > button,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-buttons > button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 26px !important;
+  padding: 4px 12px !important;
+  font: 600 12px/1.2 inherit !important;
+  border-radius: 4px !important;
+  white-space: nowrap !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-passage {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 4px 0 10px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-left: 1px solid var(--db-studio-border-default) !important;
+  background: transparent !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-passage legend,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-passage-paint-hint {
+  display: none !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-rule-buttons {
+  display: inline-flex !important;
+  gap: 4px !important;
+}
+
+/* 시트 열 핀은 passage-paint(도구행이 1행을 먹는 3행 그리드)에만 필요하다.
+   AI 메타·그룹 모드는 DOM 순서가 [사이드바, 시트]인데 무차별 핀이 시트를 좁은
+   사이드바 열(244px)에 가두고 폼 패널을 1fr 로 늘렸다 — 시트가 주인공이라
+   비페인트 모드도 왼쪽 넓은 열로 못박는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-preview-wrap {
+  grid-column: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-preview-wrap {
+  grid-row: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-preview-wrap {
+  grid-row: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-edit-sidebar,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-edit-sidebar {
+  grid-column: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area.passage-paint > .tileset-db-edit-sidebar {
+  grid-row: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area:not(.passage-paint):not(.autotile-compose) > .tileset-db-edit-sidebar {
+  grid-row: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview-wrap {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* min-height 는 0 — 480px 강제는 모달이 짧은 화면에서 시트 하단을 overflow:hidden
+   부모에 잘라먹는다. 시트 자체가 스크롤 상자라 작아도 쓸 수 있다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-preview {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-sidebar {
+  min-height: 0;
+  overflow: auto;
+  padding: 8px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w27-F.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  2,
+  13,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "변형 3 — 큰 결정 다발: 왼쪽 아래에 4×6 청록 결정 두 개가 기대 서고 위쪽 오른쪽에 금 부스러기. 크기 변화를 주는 판.",
+ "ok": true
+}

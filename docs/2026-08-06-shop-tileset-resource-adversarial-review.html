@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>상점 배치·타일셋·리소스 관리 적대적 리뷰 — 2026-08-06</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,600;6..72,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070a14; --panel:#10182b; --panel2:#0e1426; --line:#23324e; --line2:#2e4060;
+  --text:#eaf0ff; --muted:#9aa8c4; --dim:#6f7d9a;
+  --red:#ff4d6a; --red-bg:#2a1420; --orange:#ff9f43; --orange-bg:#2b1e12; --yellow:#ffd43b; --green:#3dd68c; --green-bg:#112a1e;
+  --blue:#6ea8ff; --blue-bg:#15233a; --violet:#b48bff; --cyan:#4ee1c8;
+  --mono:"JetBrains Mono", monospace; --sans:"IBM Plex Sans KR", system-ui, sans-serif; --display:"Newsreader", serif;
+  --r:16px; --shadow:0 18px 50px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.68 var(--sans)}
+a{color:var(--blue);text-underline-offset:3px}
+header.hero{padding:64px 24px 36px;background:
+  radial-gradient(900px 420px at 80% -10%, rgba(180,139,255,.22), transparent 60%),
+  radial-gradient(800px 360px at 10% 0%, rgba(78,225,200,.14), transparent 55%),
+  linear-gradient(180deg, #0d152c 0%, #070a14 70%);border-bottom:1px solid var(--line)}
+.wrap{max-width:1180px;margin:0 auto}
+.kicker{letter-spacing:.14em;text-transform:uppercase;font-weight:800;font-size:12px;color:var(--red)}
+h1{font-family:var(--display);font-size:clamp(34px,6vw,64px);line-height:1.02;margin:14px 0 16px;letter-spacing:-.03em}
+h1 em{font-style:normal;background:linear-gradient(90deg, #ff4d6a, #ff9f43);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{max-width:860px;color:#c9d6ef;font-size:18px;margin:0}
+.verdict{margin:28px 0 0;border-left:4px solid var(--red);background:linear-gradient(90deg, rgba(255,77,106,.14), transparent);padding:18px 20px;border-radius:0 12px 12px 0}
+.verdict strong{color:#fff}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 8px}
+.metric{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.metric b{display:block;font:800 26px var(--display);color:#fff}
+.metric label{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.metric small{color:var(--dim);font-size:11px}
+nav.toc{position:sticky;top:0;z-index:20;backdrop-filter:blur(10px);background:rgba(7,10,20,.88);border-bottom:1px solid var(--line)}
+nav.toc .wrap{display:flex;gap:10px 18px;flex-wrap:wrap;padding:10px 0;font-size:13px}
+nav.toc a{color:var(--muted);text-decoration:none;font-weight:600}
+nav.toc a:hover{color:var(--text)}
+main{padding:0 24px 80px}
+section.block{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 22px;box-shadow:var(--shadow);margin:22px 0}
+section.block h2{font-family:var(--display);font-size:28px;margin:0 0 10px;letter-spacing:-.02em}
+section.block h3{font-size:18px;margin:22px 0 8px;color:#fff}
+section.block h4{font-size:14px;margin:16px 0 6px;color:var(--blue);letter-spacing:.02em;text-transform:uppercase}
+p{color:#d6e0f3}
+hr.sep{border:none;border-top:1px solid var(--line);margin:22px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.metrics,.grid2,.grid3{grid-template-columns:1fr} header.hero{padding-top:36px}}
+.card{background:#0f1a30;border:1px solid var(--line);border-radius:14px;padding:16px 16px}
+.card.bad{border-color:#5a2030;background:linear-gradient(180deg, rgba(255,77,106,.08), #0f1a30)}
+.card.good{border-color:#1d4d36;background:linear-gradient(180deg, rgba(61,214,140,.08), #0f1a30)}
+.card.warn{border-color:#5a3d1a;background:linear-gradient(180deg, rgba(255,159,67,.08), #0f1a30)}
+.tag{display:inline-block;font:800 11px var(--mono);letter-spacing:.04em;padding:3px 8px;border-radius:999px;margin-right:6px;vertical-align:middle}
+.tag.p0{background:#3a1620;color:#ff8fa0;border:1px solid #5a2030}
+.tag.p1{background:#3a2a0f;color:#ffd48a;border:1px solid #5a3d1a}
+.tag.p2{background:#14314a;color:#8ec8ff;border:1px solid #1e4568}
+.tag.good{background:#143528;color:#7ff0b5;border:1px solid #1d4d36}
+.badge{font:700 11px var(--mono);padding:4px 8px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{color:#b9c9ec;background:#121d33;font-weight:700}
+td{color:#d6e0f3}
+code{font-family:var(--mono);font-size:12px;background:#0b1426;border:1px solid var(--line);padding:2px 6px;border-radius:6px;color:#cfe0ff}
+.callout{border-radius:12px;padding:14px 16px;border:1px solid var(--line);margin:12px 0}
+.callout.bad{background:var(--red-bg);border-color:#5a2030}
+.callout.warn{background:var(--orange-bg);border-color:#5a3d1a}
+.callout.good{background:var(--green-bg);border-color:#1d4d36}
+.callout.blue{background:var(--blue-bg);border-color:#1e4568}
+.figure{margin:14px 0;background:#080e1f;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.figure .cap{padding:10px 14px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);background:#0b1426}
+.figure svg, .figure img{display:block;width:100%;height:auto}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:900px){.pair{grid-template-columns:1fr}}
+.kpi{display:flex;align-items:center;gap:10px;margin:6px 0}
+.kpi i{width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block}
+.kpi i.g{background:var(--green)} .kpi i.o{background:var(--orange)} .kpi i.b{background:var(--blue)}
+.bar{height:8px;background:#1a2742;border-radius:99px;overflow:hidden;flex:1}
+.bar s{display:block;height:100%;border-radius:99px}
+.list-tight{margin:6px 0 0 18px}
+.list-tight li{margin:4px 0}
+.rank{font:900 44px var(--display);color:var(--red);float:left;margin:0 14px 4px 0;line-height:1}
+.clear{clear:both}
+.mono{font-family:var(--mono)}
+.slab{display:inline-block;background:#0b1426;border:1px solid var(--line);padding:6px 10px;border-radius:10px;font:600 12px var(--mono);color:#b9c9ec}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:8px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend s{width:14px;height:10px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Adversarial review · shop placement · tileset · resource management · 2026-08-06</div>
+    <h1>상점은 <em>배치</em>가 아니라 <em>경제</em>다.<br>타일셋은 <em>그림</em>이 아니라 <em>계약</em>이다.</h1>
+    <p class="lede">코드·에디터·런타임을 동시에 때려 봤다. 상점 3칸짜리 데크가 그럴듯해 보여도, 그 뒤에 붙은 merchantGold, 시즌 재고, 소셜 할인, graft 베이크, 리소스 검증 우회가 한꺼번에 터지면 “보이는 상점”과 “돌아가는 상점”이 갈라진다. 이 문서는 잘 된 점을 칭찬하지 않는다 — <b>어디서 신뢰가 깨지는지</b>만 적는다.</p>
+    <div class="verdict">
+      <strong>최종 판정 — 조건부 통과</strong> · 데모 1장(56×42, 상점 3개) 수준은 상점·타일·리소스가 닫힌다. 그러나 <b>AI가 만든 상점은 빈 점포</b>가 되기 쉽고, <b>커스텀 칩셋은 하네스 밖</b>이며, <b>리소스 검증은 접두사 하나로 뚫린다</b>. 세 축 모두 “에디터에서 보이는 것 = 런타임에서 도는 것”이라는 계약이 부분적으로만 지켜진다.
+      <div class="legend" style="margin-top:10px"><span><s style="background:#ff4d6a"></s> P0 당장 고쳐야 함</span><span><s style="background:#ff9f43"></s> P1 다음 스프린트</span><span><s style="background:#6ea8ff"></s> P2 빚으로 관리</span></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><b>3 / 6</b><label>데크 상점 (카운터 / 상인 NPC)</label><small>counterShopEvent + merchantChatEvent 쌍</small></div>
+      <div class="metric"><b>480 <span style="font-size:14px">tiles</span></b><label>칩셋 기본 규격 30×16</label><small>RESOURCE_SLICING.chipset 480×256</small></div>
+      <div class="metric"><b>15 kinds</b><label>리소스 프로파일</label><small>chipset~music/sound, validateDimensions</small></div>
+      <div class="metric"><b>4</b><label>상점 전용 테스트</label><small>shopMerchantGold / shopProcessing / gifts / regionFix</small></div>
+    </div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#tldr">TL;DR</a><a href="#shop">1 상점 배치</a><a href="#tileset">2 타일셋</a><a href="#resource">3 리소스 관리</a><a href="#cross">4 교차 실패</a><a href="#evidence">5 증거·재현</a><a href="#fix">6 처방전</a>
+</div></nav>
+
+<main><div class="wrap">
+
+<!-- TL;DR -->
+<section id="tldr" class="block">
+  <h2>TL;DR — 30초 요약</h2>
+  <div class="grid3">
+    <div class="card bad"><span class="tag p0">P0</span><h3>상점은 경제, 배치 아님</h3><p>AI가 <code>상점 주인</code> 이름만 보고 <code>shop { itemIds: [] }</code> 를 꽂는다 — 검증은 <code>shop.items.empty</code> 에러를 던진다. 빈 점포가 “성공”처럼 보인다. 상인 소지금(100G)·계절 재고·소셜 할인은 에디터에 미리보기가 없다.</p></div>
+    <div class="card bad"><span class="tag p0">P0</span><h3>타일셋은 계약, 그림 아님</h3><p>하네스는 <code>DEFAULT_TILESET_TEXTURE_KEY</code> 전용. 업로드 칩셋은 의미·통행·레이어가 모두 없다. graft는 <code>djb2 → hex</code> 충돌 가능, 커스텀 소스는 <code>warn 후 skip</code> 으로 조용히 사라진다.</p></div>
+    <div class="card warn"><span class="tag p1">P1</span><h3>리소스는 검증, 존재 아님</h3><p><code>validateOptionalResource</code> 가 <code>generated-enemy-/farming-crop-/easyrpg-monster-</code> 접두사를 무조건 통과시킨다. 오타가 검증도, 빌드도 안 터뜨리고 런타임 404로만 드러난다. LegacyDb 캐시는 base64 dataUrl만 캐시한다.</p></div>
+  </div>
+  <div class="callout blue" style="margin-top:14px">
+    <b>적대적 질문 3개</b> — (1) 빈 상점을 AI가 만들어도 사용자는 왜 모를까? → 에러는 DraftValidator에만 있고, AI 완료 토스트는 “성공”이다. (2) 커스텀 칩셋에 나무를 심으면 왜 검은 배경이 보일까? → <code>enforceTransparentOverlayPriority</code> 가 기본 칩셋에서만 동작한다. (3) 리소스 오타가 왜 조용할까? → 접두사 예외가 assert를 우회한다.
+  </div>
+</section>
+
+<!-- 1 SHOP -->
+<section id="shop" class="block">
+  <h2>1. 상점 배치 — 데크는 정석, 경제는 유령</h2>
+  <p>실사: <code>src/project/defaults/villageShoppingStreetBuild.ts</code> / <code>src/project/shopStock.ts</code> / <code>src/player/playSceneShop.ts</code> / <code>src/editor/eventDraftValidator.ts</code> / <code>src/ai/assistantSession.ts:1714-1734</code></p>
+
+  <div class="figure">
+    <svg viewBox="0 0 1180 380" role="img" aria-label="Shopping street deck top-down">
+      <rect width="1180" height="380" fill="#0b1426"/>
+      <!-- village bounds -->
+      <rect x="20" y="20" width="520" height="340" rx="14" fill="#0f1a30" stroke="#2a3a5c" stroke-dasharray="6 6"/>
+      <text x="30" y="40" fill="#8aa0c8" font-size="11" font-family="JetBrains Mono">VILLAGE_BOUNDS 36×42 — build_village 슬롯·울타리·NPC</text>
+      <!-- road -->
+      <path d="M540 190 H 760" stroke="#c7b08a" stroke-width="18" stroke-linecap="round" opacity=".95"/>
+      <path d="M540 208 H 760" stroke="#c7b08a" stroke-width="18" stroke-linecap="round" opacity=".95"/>
+      <text x="560" y="186" fill="#5a4020" font-size="10" font-family="JetBrains Mono">sand road y=20,21 ×2</text>
+      <!-- deck -->
+      <g>
+        <rect x="760" y="98" width="260" height="220" rx="10" fill="#3a2a12" stroke="#6b4a1f"/>
+        <rect x="768" y="106" width="244" height="204" rx="8" fill="#6b4a1f" stroke="#8a6a3a"/>
+        <!-- wood floor grid hint -->
+        <g opacity=".22" stroke="#9a7a4a" stroke-width=".6">
+          <line x1="768" y1="130" x2="1012" y2="130"/><line x1="768" y1="154" x2="1012" y2="154"/><line x1="768" y1="178" x2="1012" y2="178"/><line x1="768" y1="202" x2="1012" y2="202"/><line x1="768" y1="226" x2="1012" y2="226"/><line x1="768" y1="250" x2="1012" y2="250"/>
+          <line x1="800" y1="106" x2="800" y2="310"/><line x1="840" y1="106" x2="840" y2="310"/><line x1="880" y1="106" x2="880" y2="310"/><line x1="920" y1="106" x2="920" y2="310"/><line x1="960" y1="106" x2="960" y2="310"/>
+        </g>
+        <!-- edge labels -->
+        <text x="860" y="122" fill="#ffe8b0" font-size="10" font-family="JetBrains Mono" text-anchor="middle">WOOD_FLOOR / EDGE (N/S/E) — 4dir 차단</text>
+        <!-- stairs -->
+        <rect x="728" y="186" width="32" height="14" rx="3" fill="#8a8d95" stroke="#b0b3ba"/><rect x="728" y="204" width="32" height="14" rx="3" fill="#8a8d95" stroke="#b0b3ba"/>
+        <text x="744" y="184" fill="#b0b3ba" font-size="8" font-family="JetBrains Mono" text-anchor="middle">STONE_STAIR_L/M</text>
+        <rect x="760" y="188" width="12" height="10" rx="2" fill="#d8c39a"/><rect x="760" y="206" width="12" height="10" rx="2" fill="#d8c39a"/>
+        <text x="728" y="236" fill="#8a8d95" font-size="7" font-family="JetBrains Mono">서측 2칸만 ○, 나머지는 edgeWest(←막힘)</text>
+        <!-- rails -->
+        <rect x="768" y="302" width="244" height="8" rx="4" fill="#5a3a16"/>
+        <g fill="#8a6a3a"><circle cx="768" cy="108" r="5"/><circle cx="1012" cy="108" r="5"/><circle cx="768" cy="310" r="5"/><circle cx="1012" cy="310" r="5"/></g>
+        <text x="888" y="300" fill="#c9a96a" font-size="8" font-family="JetBrains Mono" text-anchor="middle">TIMBER_RAIL × / RAIL_L/M/R (upper)</text>
+        <!-- counters -->
+        <g>
+          <rect x="780" y="154" width="64" height="12" rx="3" fill="#c7a06a" stroke="#8a6a3a"/><text x="812" y="152" fill="#ffe8b0" font-size="8" font-family="JetBrains Mono" text-anchor="middle">TABLE 234-236</text>
+          <rect x="860" y="154" width="64" height="12" rx="3" fill="#c7a06a" stroke="#8a6a3a"/>
+          <rect x="816" y="202" width="64" height="12" rx="3" fill="#c7a06a" stroke="#8a6a3a"/>
+          <!-- transparent events -->
+          <rect x="796" y="168" width="10" height="10" rx="2" fill="none" stroke="#4ee1c8" stroke-dasharray="3 3"/><text x="812" y="182" fill="#4ee1c8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">ev_shop_counter_*</text>
+          <rect x="876" y="168" width="10" height="10" rx="2" fill="none" stroke="#4ee1c8" stroke-dasharray="3 3"/>
+          <rect x="832" y="216" width="10" height="10" rx="2" fill="none" stroke="#4ee1c8" stroke-dasharray="3 3"/>
+        </g>
+        <!-- NPCs -->
+        <g>
+          <circle cx="812" cy="142" r="7" fill="#6ea8ff" stroke="#b9d2ff"/><text x="812" y="118" fill="#b9d2ff" font-size="7" font-family="JetBrains Mono" text-anchor="middle">루나</text>
+          <circle cx="892" cy="142" r="7" fill="#ff9f43" stroke="#ffd8a8"/><text x="892" y="118" fill="#ffd8a8" font-size="7" font-family="JetBrains Mono" text-anchor="middle">바르</text>
+          <circle cx="848" cy="190" r="7" fill="#b48bff" stroke="#e2d4ff"/><text x="848" y="174" fill="#e2d4ff" font-size="7" font-family="JetBrains Mono" text-anchor="middle">미나</text>
+          <text x="888" y="148" fill="#9aa8c4" font-size="7" font-family="JetBrains Mono">뒤 NPC는 잡담만(shop 없음)</text>
+        </g>
+      </g>
+      <!-- props -->
+      <g fill="#3dd68c" opacity=".9"><circle cx="860" cy="336" r="4"/><circle cx="872" cy="336" r="4"/><rect x="876" y="344" width="18" height="8" rx="2" fill="#6b8a4a"/><rect x="894" y="344" width="18" height="8" rx="2" fill="#6b8a4a"/></g>
+      <text x="866" y="362" fill="#6f7d9a" font-size="8" font-family="JetBrains Mono">FLOWER 288 · BENCH 327/328 · CONIFER 260/290</text>
+      <!-- dimensions -->
+      <g font-family="JetBrains Mono" font-size="9" fill="#6f7d9a">
+        <line x1="760" y1="328" x2="1020" y2="328" stroke="#2a3a5c" stroke-dasharray="4 4"/><text x="888" y="340" text-anchor="middle">SHOP_DECK 14×14 @ (39,10)</text>
+      </g>
+    </svg>
+    <div class="cap">그림 1 — 마을-상점가 1장 맵(56×42). 서쪽 36칸은 <code>build_village</code> 슬롯 알고리즘, 동쪽 14×14 데크는 <code>stampShoppingStreetDeck</code>가 하드 스탬프한다. 층계는 y=20,21 두 칸만 ○. RM2k3 정석대로 <b>카운터 투명 이벤트(shop)</b>와 <b>뒤 상인(대사만)</b>을 분리했다 — 정면에서 탁자를 조사하면 상점, 뒤에서 상인에게 말하면 잡담.</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card good"><span class="tag good">잘했다</span><h3>탁자/카운터 분리 — RM2k3 정석</h3><p><code>counterShopEvent</code>가 <code>graphic: {transparent:true}</code> 로 탁자(upper 234-236) 위에 shop을 올리고, <code>merchantChatEvent</code>가 같은 좌표 뒤쪽에 <code>tex_easyrpg_charset_*</code> 스프라이트를 둔다. 플레이어가 “탁자를 조사”하는 감각이 살아 있고, 뒤로 돌아가면 다른 대사가 나온다. 데크 가장자리 4방향 <code>WOOD_EDGE_*</code> + 남단 <code>TIMBER_RAIL ×</code> 로 고상 분리를 칩 하나로 끝낸 것도 깔끔하다.</p></div>
+    <div class="card bad"><span class="tag p0">P0 — 빈 점포</span><h3>AI가 만든 상점은 비어 있다</h3><p><code>assistantSession.ts:1726-1734</code> — <code>/상점 주인|merchant|shopkeeper/</code> 이름이면 <code>shop { itemIds: [], allowSell:true }</code> 를 꽂고 끝. 재고를 비워 둔다. <code>eventDraftValidator.ts:552</code> 는 <code>shop.items.empty</code> 에러를 내지만, 그 에러는 드래프트 검증 패널에만 뜬다. AI 완료 토스트·툴 로그는 “place_npc 3커맨드 컴파일 성공”으로 찍힌다. 사용자는 <b>성공한 빈 가게</b>를 얻는다.</p></div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px">
+    <div class="card bad"><span class="tag p0">P0 — 숨은 경제</span><h3>merchantGold / 시즌 / 소셜 할인이 미리보기가 없다</h3>
+      <ul class="list-tight">
+        <li><b>상인 소지금</b> <code>DEFAULT 100G</code> — <code>resolveShopMerchantGold</code> 가 <code>NaN→100, 음수→0, 소수→floor</code> 로 클램프. <code>handleShopTransaction</code> 에서 매입 시 <code>merchantGold &lt; sellPrice*qty</code> 면 <code>“상인의 돈이 부족합니다.”</code> 로 차단, 구매 시 <code>merchantGold += cost</code> 로 예산이 늘어난다. 에디터엔 이 숫자를 보는 칸이 없다.</li>
+        <li><b>계절 재고</b> — <code>ShopStockEntry.seasons/priceBySeason</code> 가 있으면 <code>resolveBaseShopStock</code> 이 <code>project.system.timeSystem.enabled</code> 일 때만 필터링. 에디터에서 “봄에만 보이는 포션”을 테스트하려면 게임 시간을 바꿔야 한다.</li>
+        <li><b>소셜 할인</b> — <code>resolveSocialShopPriceMultiplier</code> 가 <code>characterId + socialShop.minFriendship + priceMultiplier</code> 로 buy 가격만 스케일. <code>priceMultiplier 0</code> 이면 무료가 된다(0 클램프 없음). 미리보기·경고 없음.</li>
+      </ul>
+    </div>
+    <div class="card warn"><span class="tag p1">P1 — UX 맹점</span><h3>quantityMode / branchOnTransaction 이 설명 없이 숨어 있다</h3>
+      <ul class="list-tight">
+        <li><code>quantityMode: single(기본) vs select</code> — select면 <code>shopItemList</code> 에 <code>input[type=number, 1..99]</code> 가 붙고, 커서 ←→ 로 <code>adjustShopQuantity</code> 가 동작한다. 버튼에 힌트가 없다. 숫자 입력이 있다는 걸 모르면 1개씩만 산다.</li>
+        <li><code>shopType: normal/buyOnly/sellOnly</code> + <code>messageType: welcome/business/direct</code> — <code>playSceneShopDom.ts:shopType/messageLine</code> 에서 분기하지만, 에디터 폼엔 라벨·미리보기 문장이 짧게만 뜬다.</li>
+        <li><code>branchOnTransaction</code> — <code>transactionBranch: Command[]</code> 가 <code>resume(true)</code> 일 때만 실행(<code>shopProcessingCommand.test.ts:37-57</code>). false면 스킵. 에디터에서 “거래 성공 시 감사 대사”를 안 켜면 실패/성공 구분 없이 그냥 닫힌다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>인터프리터·검증 경계</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4 style="margin-top:0">인터프리터 핸드오프</h4>
+      <p><code>interpreter.ts: createInterpreter → executeCommand → pause(shop)</code> — shop은 블로킹 <code>StepResult { kind:"shop", items, merchantGold, branchOnTransaction … }</code> 를 던지고 <code>resume(boolean)</code> 으로 재개한다. 상점 안에서 인벤토리·골드가 바뀌어도 <code>scene.syncRuntimeState()</code> 가 매 거래마다 호출돼 세션이 즉시 반영된다. 이 부분은 견고하다.</p>
+      <div class="callout good"><b>좋은 점</b> — 매입 실패 시 <code>owned &lt; qty</code> → <code>“You do not have enough.”</code>, <code>merchantGold &lt; payout</code> → <code>“상인의 돈이 부족합니다.”</code> 로 언어가 갈라진다. 테스트가 <code>blocked → ok</code> 두 경로를 모두 잡는다(<code>shopMerchantGold.test.ts:31-49</code>).</div>
+    </div>
+    <div class="card bad">
+      <h4 style="margin-top:0">검증 구멍 2개</h4>
+      <ul class="list-tight">
+        <li><b>itemIds vs stock 이중 기록</b> — <code>shop</code> 커맨드는 레거시 <code>itemIds: string[]</code> 와 신형 <code>stock: ShopStockEntry[]</code> 를 둘 다 가진다. <code>resolveBaseShopStock</code> 은 <code>stock</code> 이 있으면 <code>itemIds</code> 를 무시한다. 에디터에서 두 곳을 따로 편집하면 “stock엔 있는데 itemIds엔 없는” 괴리가 생긴다. 검증은 둘 다 <code>reference.item.missing</code> 를 돌지만, 어느 쪽이 런타임에 쓰이는지 알려주지 않는다.</li>
+        <li><b>가격 0 허용</b> — <code>stockEntryPrice</code> 는 <code>priceOverride/priceBySeason</code> 를 <code>Math.max(0, trunc)</code> 로만 클램프. 0원 상점은 에러가 아니다. 소셜 할인으로 0원이 된 경우도 마찬가지. 의도한 무료 나눔인지 실수인지 구분 불가.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="figure">
+    <svg viewBox="0 0 1180 220" role="img" aria-label="Shop command flow">
+      <rect width="1180" height="220" fill="#0b1426"/>
+      <!-- lanes -->
+      <g font-family="JetBrains Mono" font-size="10">
+        <rect x="14" y="14" width="220" height="28" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="124" y="32" fill="#8ec8ff" text-anchor="middle">에디터 Draft</text>
+        <rect x="250" y="14" width="220" height="28" rx="8" fill="#1d2a1a" stroke="#2a4a2e"/><text x="360" y="32" fill="#7ff0b5" text-anchor="middle">검증 Validator</text>
+        <rect x="486" y="14" width="220" height="28" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="596" y="32" fill="#ffd8a8" text-anchor="middle">인터프리터</text>
+        <rect x="722" y="14" width="220" height="28" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="832" y="32" fill="#ff8fa0" text-anchor="middle">런타임 playSceneShop</text>
+        <rect x="958" y="14" width="208" height="28" rx="8" fill="#1a233a" stroke="#2a3a5c"/><text x="1062" y="32" fill="#b9d2ff" text-anchor="middle">세션 Session</text>
+      </g>
+      <!-- flow boxes -->
+      <g font-family="JetBrains Mono" font-size="9">
+        <rect x="14" y="62" width="220" height="56" rx="10" fill="#0f1a30" stroke="#2a3a5c"/><text x="26" y="78" fill="#eaf0ff">newCommand("shop")</text><text x="26" y="92" fill="#9aa8c4">itemIds / stock / shopType</text><text x="26" y="106" fill="#9aa8c4">merchantGold=100 · branchOnTransaction</text>
+        <line x1="234" y1="90" x2="250" y2="90" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="250" y="62" width="220" height="56" rx="10" fill="#0f1a30" stroke="#2a3a5c"/><text x="262" y="78" fill="#eaf0ff">validate: shop.items.empty</text><text x="262" y="92" fill="#ff8fa0">빈 점포 → error</text><text x="262" y="106" fill="#9aa8c4">참조: itemIds/stock 각각 검사</text>
+        <line x1="470" y1="90" x2="486" y2="90" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="486" y="62" width="220" height="56" rx="10" fill="#0f1a30" stroke="#2a3a5c"/><text x="498" y="78" fill="#eaf0ff">pause → StepResult shop</text><text x="498" y="92" fill="#9aa8c4">resolveShopStock(season/social)</text><text x="498" y="106" fill="#9aa8c4">resume(true/false) → branch</text>
+        <line x1="706" y1="90" x2="722" y2="90" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="722" y="62" width="220" height="56" rx="10" fill="#0f1a30" stroke="#2a3a5c"/><text x="734" y="78" fill="#eaf0ff">ShopOverlay · 커서 메뉴</text><text x="734" y="92" fill="#9aa8c4">merchantGold 예산 검사</text><text x="734" y="106" fill="#6ea8ff">구매 → +merchantGold / 판매 → -merchantGold</text>
+        <line x1="942" y1="90" x2="958" y2="90" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr)"/>
+        <rect x="958" y="62" width="208" height="56" rx="10" fill="#0f1a30" stroke="#2a3a5c"/><text x="970" y="78" fill="#eaf0ff">gold / inventory</text><text x="970" y="92" fill="#9aa8c4">syncRuntimeState() 매 거래</text><text x="970" y="106" fill="#3dd68c">즉시 반영 · 저장</text>
+      </g>
+      <!-- adversary injections -->
+      <g font-family="JetBrains Mono" font-size="9">
+        <rect x="14" y="136" width="220" height="34" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="26" y="156" fill="#ff8fa0">AI: SHOP_ROLE_NAME → 빈 shop</text>
+        <rect x="250" y="136" width="220" height="34" rx="8" fill="#1d2a1a" stroke="#2a4a2e"/><text x="262" y="156" fill="#7ff0b5">검증은 에러, 토스트는 성공</text>
+        <rect x="486" y="136" width="220" height="34" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="498" y="156" fill="#ffd8a8">시즌·할인 미리보기 없음</text>
+        <rect x="722" y="136" width="220" height="34" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="734" y="156" fill="#ff8fa0">quantity select 힌트 없음</text>
+      </g>
+      <defs><marker id="arr" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2a3a5c"/></marker></defs>
+    </svg>
+    <div class="cap">그림 2 — 상점 커맨드 생애. 에디터→검증→인터프리터→런타임→세션까지는 닫히지만, AI 생성 지점과 시즌/소셜/수량 UX가 검증·미리보기 밖에 있다.</div>
+  </div>
+
+  <h3>적대적 시나리오 3개</h3>
+  <table>
+    <thead><tr><th style="width:28%">공격</th><th>기대</th><th>실제</th><th style="width:14%">심각도</th></tr></thead>
+    <tbody>
+      <tr><td><b>A1</b> AI에게 “마을에 상인 3명 추가해줘”</td><td>재고 채운 3개 상점</td><td><code>shop { itemIds:[] }</code> 3개 → 검증 에러 3개, 런타임 “There are no goods here.”</td><td><span class="tag p0">P0</span></td></tr>
+      <tr><td><b>A2</b> 포션을 0G에 팔도록 세팅</td><td>에러 또는 경고</td><td>검증 통과, 런타임 0원 거래 성사. 소셜 할인 0배수도 동일.</td><td><span class="tag p1">P1</span></td></tr>
+      <tr><td><b>A3</b> 상인 돈을 10000G로 넉넉히</td><td>에디터에서 숫자 보임</td><td>폼에 <code>merchantGold</code> 입력이 있으나, 레이블·단위·예산 소진 미리보기 없음. 플레이어는 팔 때 “상인 돈 부족”을 처음 본다.</td><td><span class="tag p1">P1</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 2 TILESET -->
+<section id="tileset" class="block">
+  <h2>2. 타일셋 — 하네스가 그림을 이긴다</h2>
+  <p>실사: <code>src/project/tilesetHarness/*</code> / <code>src/assets/tileGrafts.ts</code> / <code>src/assets/tileGraftImageCache.ts</code> / <code>src/assets/resourceSearch.ts</code> / <code>src/project/tilesetPalette.ts</code> / <code>src/project/resourceSlicing.ts</code></p>
+
+  <div class="figure">
+    <svg viewBox="0 0 1180 340" role="img" aria-label="Tileset harness and graft">
+      <rect width="1180" height="340" fill="#0b1426"/>
+      <!-- chipset sheet -->
+      <g>
+        <rect x="14" y="14" width="420" height="220" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="24" y="32" fill="#8ec8ff" font-size="11" font-family="JetBrains Mono">CHIPSET 480×256 — 30×16 grid (RESOURCE_SLICING)</text>
+        <!-- grid 10x6 hint -->
+        <g opacity=".9">
+          <g fill="none" stroke="#1d2d4a" stroke-width=".7">
+            <rect x="24" y="42" width="400" height="170" rx="6"/>
+            <line x1="24" y1="72" x2="424" y2="72"/><line x1="24" y1="102" x2="424" y2="102"/><line x1="24" y1="132" x2="424" y2="132"/><line x1="24" y1="162" x2="424" y2="162"/><line x1="24" y1="192" x2="424" y2="192"/>
+            <line x1="64" y1="42" x2="64" y2="212"/><line x1="104" y1="42" x2="104" y2="212"/><line x1="144" y1="42" x2="144" y2="212"/><line x1="184" y1="42" x2="184" y2="212"/><line x1="224" y1="42" x2="224" y2="212"/><line x1="264" y1="42" x2="264" y2="212"/><line x1="304" y1="42" x2="304" y2="212"/><line x1="344" y1="42" x2="344" y2="212"/><line x1="384" y1="42" x2="384" y2="212"/>
+          </g>
+          <!-- labeled tiles -->
+          <g font-family="JetBrains Mono" font-size="7" text-anchor="middle">
+            <rect x="26" y="44" width="36" height="26" rx="4" fill="#1d4d36" stroke="#2a6a4a"/><text x="44" y="58" fill="#7ff0b5">105 body</text><text x="44" y="66" fill="#7ff0b5">wall</text>
+            <rect x="66" y="44" width="36" height="26" rx="4" fill="#15233a" stroke="#2a3a5c"/><text x="84" y="58" fill="#8ec8ff">233 NW</text><text x="84" y="66" fill="#8ec8ff">corner</text>
+            <rect x="106" y="44" width="36" height="26" rx="4" fill="#2b1e12" stroke="#5a3d1a"/><text x="124" y="58" fill="#ffd8a8">72 floor</text><text x="124" y="66" fill="#ffd8a8">passable</text>
+            <rect x="146" y="44" width="36" height="26" rx="4" fill="#2a1420" stroke="#5a2030"/><text x="164" y="58" fill="#ff8fa0">397 S</text><text x="164" y="66" fill="#ff8fa0">trim</text>
+            <rect x="186" y="44" width="36" height="26" rx="4" fill="#1a233a" stroke="#2a3a5c"/><text x="204" y="58" fill="#b9d2ff">260 tree</text><text x="204" y="66" fill="#b9d2ff">upper ★</text>
+          </g>
+        </g>
+        <text x="24" y="232" fill="#6f7d9a" font-size="9" font-family="JetBrains Mono">tile 0..479 · tileSize 16 · tilesPerRow 30 · quarter 8×8</text>
+      </g>
+      <!-- harness -->
+      <g>
+        <rect x="456" y="14" width="346" height="220" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="468" y="32" fill="#b48bff" font-size="11" font-family="JetBrains Mono">HARNESS — combinedTown / interior / dungeon</text>
+        <g font-family="JetBrains Mono" font-size="9">
+          <rect x="468" y="44" width="322" height="28" rx="8" fill="#1a233a" stroke="#2a3a5c"/><text x="480" y="62" fill="#eaf0ff">isCombinedTownTileset: DEFAULT_TILESET_TEXTURE_KEY만</text>
+          <rect x="468" y="80" width="322" height="28" rx="8" fill="#1a233a" stroke="#2a3a5c"/><text x="480" y="98" fill="#eaf0ff">applyTileContract → tileMeta / priority / passability</text>
+          <rect x="468" y="116" width="322" height="28" rx="8" fill="#1a233a" stroke="#2a3a5c"/><text x="480" y="134" fill="#eaf0ff">enforceTransparentOverlayPriority → upper 강제</text>
+          <rect x="468" y="152" width="322" height="28" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="480" y="170" fill="#ff8fa0">커스텀 칩셋은 하네스 0 — 의미·통행·레이어 무계약</text>
+          <line x1="484" y1="188" x2="772" y2="188" stroke="#2a3a5c" stroke-dasharray="4 4"/><text x="480" y="204" fill="#6f7d9a" font-size="8">userLocked / user source 만 예외 — treeTrunk만 lower 유지</text>
+        </g>
+      </g>
+      <!-- graft -->
+      <g>
+        <rect x="824" y="14" width="342" height="220" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="836" y="32" fill="#4ee1c8" font-size="11" font-family="JetBrains Mono">GRAFT — 타일 이식 (16×16 blit)</text>
+        <g font-family="JetBrains Mono" font-size="9">
+          <rect x="836" y="44" width="318" height="32" rx="8" fill="#0b1426" stroke="#23324e"/><text x="848" y="58" fill="#eaf0ff">targetTile ↔ sourceChipset:sourceTile</text><text x="848" y="70" fill="#9aa8c4">중복 target은 마지막이 승리</text>
+          <rect x="836" y="84" width="318" height="32" rx="8" fill="#0b1426" stroke="#23324e"/><text x="848" y="98" fill="#eaf0ff">tileCountWithGrafts = rowAlignedTileCount</text><text x="848" y="110" fill="#9aa8c4">행 단위로 캔버스 세로 확장</text>
+          <rect x="836" y="124" width="318" height="46" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="848" y="140" fill="#ff8fa0">djb2 해시 충돌 가능 · 커스텀 소스는 warn+skip</text><text x="848" y="154" fill="#ff8fa0">dual bake: Phaser vs DOM dataURL 불일치</text>
+          <text x="836" y="188" fill="#6f7d9a" font-size="8">tileGraftsTextureSuffix → 캐시 키 · 베이크 dataURL 캐시</text>
+          <text x="836" y="204" fill="#6f7d9a" font-size="8">TILE_GRAFT_IMAGE_BAKED_EVENT로 리렌더</text>
+        </g>
+      </g>
+      <!-- bottom chain -->
+      <g font-family="JetBrains Mono" font-size="9">
+        <rect x="14" y="252" width="360" height="74" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="26" y="270" fill="#8ec8ff">검색 resourceSearch.ts</text>
+        <text x="26" y="286" fill="#9aa8c4">bundledTileSemantics( interior / dungeon / combinedTown )</text>
+        <text x="26" y="302" fill="#ff8fa0">커스텀 칩셋도 combinedTown 라벨로 오답</text>
+        <text x="26" y="318" fill="#9aa8c4">tileGroups + tileMeta 병합 · user 라벨 우선</text>
+        <rect x="410" y="252" width="360" height="74" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="422" y="270" fill="#b48bff">팔레트/툴 계약</text>
+        <text x="422" y="286" fill="#9aa8c4">harnessLayerForTile / isUpperOnlyOverlayTile</text>
+        <text x="422" y="302" fill="#9aa8c4">나무 수관 upper★ · 밑동 lower solid</text>
+        <text x="422" y="318" fill="#ff8fa0">투명 칩 lower 고집 → 상위로 강제 라우팅</text>
+        <rect x="806" y="252" width="360" height="74" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="818" y="270" fill="#4ee1c8">런타임 라우팅</text>
+        <text x="818" y="286" fill="#9aa8c4">Phaser ensureTilesetTexture vs DOM bake</text>
+        <text x="818" y="302" fill="#ff8fa0">두 경로가 같은 graft를 다르게 볼 수 있음</text>
+        <text x="818" y="318" fill="#9aa8c4">캐시는 __grafts_${"{hash}"} suffix 로 무효화</text>
+      </g>
+    </svg>
+    <div class="cap">그림 3 — 칩셋 480타일 규격부터 하네스 계약, graft 베이크, 검색·팔레트 라우팅까지 한 장에. 가운데 하네스 박스의 빨간 줄이 핵심: 업로드 칩셋은 계약 밖이다.</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card warn"><span class="tag p1">P1 — 계약 밖 칩셋</span><h3>업로드 칩셋은 하네스가 없다</h3>
+      <p><code>isCombinedTownTileset</code> / <code>isThemePackTileset</code> 가 번들 <code>tex_*</code> 만 인식한다. 사용자가 올린 480×256 칩셋은 <code>ensureTilesetHarnesses</code> 에서 그대로 통과 — <code>tileGroups 0, tileMeta 빈칸, passability 기본값, priority 기본값</code> 으로 남는다. 나무·물·벽 라벨, 오토타일, 투명 우선순위 모두 없다. <code>resourceSearch.ts:bundledTileSemantics</code> 도 같은 분기로 커스텀 칩셋을 <code>COMBINED_TOWN_TILE_SEMANTICS</code> 로 때운다 — 인덱스 의미가 다른데 라벨을 덮어씌운다.</p>
+      <div class="callout warn">재현: 새 프로젝트 → 칩셋 업로드(480×256, 나무 2칸 포함) → 팔레트에서 “나무” 검색 → combinedTown 라벨이 붙어 엉뚱한 타일이 하이라이트된다. 같은 나무를 하위 레이어에 칠하면 <code>enforceTransparentOverlayPriority</code> 가 동작하지 않아 검은 배경이 보인다.</div>
+    </div>
+    <div class="card bad"><span class="tag p0">P0 — 조용한 graft 실패</span><h3>graft는 실패해도 조용하다</h3>
+      <ul class="list-tight">
+        <li><code>isValidTileGraft</code> — 음수·비정수·빈 문자열만 거른다. 존재하지 않는 <code>sourceChipset</code> 은 통과.</li>
+        <li><code>createGraftedTilesetCanvas</code> — <code>resolveSourceImage(key) == null</code> 이면 <code>warn 후 continue</code>. 캔버스는 빈칸으로 남는다. 에러·검증 이슈 없음.</li>
+        <li><code>tileGraftImageCache.ts:scheduleGraftImageBake</code> — <code>loadChipsetSourceImage</code> 가 <code>bundledChipsetPath</code> 에서 못 찾으면 동일하게 warn+skip. 커스텀 소스 전체가 이 경로로 막힌다.</li>
+        <li><code>tileGraftsTextureSuffix</code> — <code>djb2 → (hash&gt;&gt;&gt;0).toString(16)</code> 32비트. 이론상 충돌 시 다른 graft 구성인데 같은 텍스처 키를 쓴다. 캐시 키는 <code>baseUrl|count|suffix</code> 3요소뿐이라 충돌 확률이 0이 아니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <h4 style="margin-top:0">레이어 강제 — 의도는 좋고, 설명은 없다</h4>
+      <p><code>enforceTransparentOverlayPriority</code> 가 투명 칩을 전부 <code>priority=upper</code> 로 승격한다. 예외는 <code>isUserRuntimeMeta(meta) && defaultLayer=="lower"</code> 일 때, 그리고 <code>TREE_TRUNK</code> 뿐. 사용자가 “이 벤치를 바닥에 깔고 싶다”고 lower로 고정하지 않으면, 하네스가 매 로드마다 upper로 되돌린다. 팔레트엔 “상위 전용”이라는 문구만 있고, 왜 하위에서 검게 보이는지(투명 배경)는 툴팁 한 줄로 끝나서 초보가 이해하기 어렵다.</p>
+      <div class="kpi"><i class="g"></i><span style="color:var(--muted);font-size:12px">나무 수관(260-263) upper★ + 밑동(290-293) lower solid — 겹치면 숲이 되는 건 잘 설계됐다.</span></div>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">행 단위 확장 — 캔버스가 자란다</h4>
+      <p><code>tileCountWithGrafts = max(count, rowAlignedTileCount(maxTarget+1, tilesPerRow))</code> — <code>targetTile=500</code> 이면 <code>ceil(501/30)*30 = 510</code>, 즉 17행이 필요해 캔버스 높이가 <code>max(baseHeight, 17*16=272)</code> 로 늘어난다. 베이스 256보다 16px 커진다. 그 아래 20칸은 비어 있다. 빈칸을 칠하면 투명으로 남고, 저장 시 <code>count=510</code> 이 된다. 이후 이 이미지를 다시 업로드하면 <code>validateResourceDimensions</code> 가 <code>480×256 고정</code> 이 아니라서 통과하지만, 다른 툴은 510을 모른다.</p>
+    </div>
+  </div>
+
+  <h3>타일 검색·팔레트 병합의 미묘한 버그</h3>
+  <table>
+    <thead><tr><th>위치</th><th>현재 동작</th><th>문제</th><th>등급</th></tr></thead>
+    <tbody>
+      <tr><td><code>resourceSearch:tileCandidates</code></td><td>번들 시맨틱 + <code>tileGroups.name/role</code> + <code>tileMeta(label/tags/role)</code> 병합</td><td><code>bundled-default</code> 라벨은 태그로 강등, <code>user</code> 라벨만 우선 — 의도는 맞다. 그러나 그룹 태그가 소속 타일 전부에 뿌려져, 한 타일이 속한 그룹이 3개면 태그가 3배로 불어난다. 검색 점수 <code>matchScore</code> 가 태그 개수에 비례해 부풀려진다.</td><td><span class="tag p2">P2</span></td></tr>
+      <tr><td><code>queryScore</code></td><td>전체 일치 실패 시 공백 분리 합산</td><td>“마을 사람”이 “마을”과 “사람” 점수를 합산 — 둘 중 하나만 맞는 타일이 둘 다 맞는 타일보다 높을 수 있다. <code>labelLower.includes(q)</code> 50점 + 태그 20점 단순 합이라, 라벨이 긴 타일이 유리하다.</td><td><span class="tag p2">P2</span></td></tr>
+      <tr><td><code>combinedTownHarnessPrompt</code></td><td>문·벽=하위, 투명 스프라이트=상위, 길/물=오토타일</td><td>프롬프트는 정확하지만 에디터 팔레트 UI엔 이 문장 4줄이 그대로 노출되지 않는다. 사용자는 “왜 내 벤치가 위로 가냐”를 프롬프트가 아니라 팔레트에서 배워야 하는데, 팔레트는 색·아이콘으로만 말한다.</td><td><span class="tag p1">P1</span></td></tr>
+      <tr><td><code>harnessSuppressedGroupIds</code></td><td>억제된 하네스 그룹은 렌더에서 제외</td><td>억제 목록이 프로젝트에 저장되지만, 어떤 그룹이 왜 억제됐는지 히스토리·UI가 없다. 되돌리기 어렵다.</td><td><span class="tag p2">P2</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 3 RESOURCE -->
+<section id="resource" class="block">
+  <h2>3. 리소스 관리 — 모으는 건 넓고, 검증은 좁다</h2>
+  <p>실사: <code>src/project/io/resourceReferenceValidation.ts</code> / <code>src/assets/generatedAssetResourceResolver.ts</code> / <code>src/assets/legacyDbResourceCache.ts</code> / <code>src/project/resourceProfiles.ts</code> / <code>src/assets/resourceSlicing.ts</code> / <code>src/assets/resourceSearch.ts</code></p>
+
+  <div class="figure">
+    <svg viewBox="0 0 1180 300" role="img" aria-label="Resource pipeline">
+      <rect width="1180" height="300" fill="#0b1426"/>
+      <!-- collect -->
+      <g>
+        <rect x="14" y="14" width="360" height="70" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="26" y="32" fill="#8ec8ff" font-size="11" font-family="JetBrains Mono">collectResourceIds — 넓게 모은다</text>
+        <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
+          <text x="26" y="48">sprites / uploaded / resourceProfiles / tileset.image.id</text>
+          <text x="26" y="60">RM2K3 plan promoted + builtinGeneratedResourceIds</text>
+          <text x="26" y="72">EASYRPG_RTP (id+textureKey) / CC0 / SCARLOXY / FARMING</text>
+        </g>
+        <line x1="374" y1="49" x2="398" y2="49" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr2)"/>
+      </g>
+      <!-- validate -->
+      <g>
+        <rect x="398" y="14" width="360" height="70" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="410" y="32" fill="#ff8fa0" font-size="11" font-family="JetBrains Mono">validateOptionalResource — 좁게 검증한다</text>
+        <g font-family="JetBrains Mono" font-size="8">
+          <text x="410" y="48" fill="#9aa8c4">if (id==undefined) return;</text>
+          <text x="410" y="60" fill="#ff8fa0">if (startsWith("generated-enemy-/farming-crop-/easyrpg-monster-")) return; // 무조건 통과</text>
+          <text x="410" y="72" fill="#eaf0ff">assert(knownIds.has(id), "존재하지 않습니다: "+id)</text>
+        </g>
+        <line x1="758" y1="49" x2="782" y2="49" stroke="#2a3a5c" stroke-width="1.2" marker-end="url(#arr2)"/>
+      </g>
+      <!-- resolve -->
+      <g>
+        <rect x="782" y="14" width="384" height="70" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="794" y="32" fill="#4ee1c8" font-size="11" font-family="JetBrains Mono">resolve — 여러 경로로 푼다</text>
+        <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
+          <text x="794" y="48">builtinGeneratedResourceIds → /assets/generated/…</text>
+          <text x="794" y="60">EasyRPG/CC0/Scarloxy → /assets/… + transparentColorKey</text>
+          <text x="794" y="72">hero-03-face 같은 404는 battleFieldDom onerror로 “얼굴 제거”</text>
+        </g>
+      </g>
+      <!-- bottom: cache & slicing -->
+      <g>
+        <rect x="14" y="104" width="560" height="82" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="26" y="122" fill="#b48bff" font-size="11" font-family="JetBrains Mono">LegacyDb Cache — base64 dataUrl만</text>
+        <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
+          <text x="26" y="138">parseBase64DataUrl(/^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/)</text>
+          <text x="26" y="150">Cache API put(cacheUrl, Response(blob)) · cacheUrl=/__rpg-zzu-cache__/resources/{id}</text>
+          <text x="26" y="162">skipped: cache-api-unavailable / not-base64-data-url</text>
+          <text x="26" y="174" fill="#ff8fa0">http 업로드는 not-base64로 스킵 — 오프라인에서 사라진다</text>
+        </g>
+        <rect x="602" y="104" width="564" height="82" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="614" y="122" fill="#ffd43b" font-size="11" font-family="JetBrains Mono">Slicing — 규격은 엄격, 오디오는 관대</text>
+        <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
+          <text x="614" y="138">chipset 480×256 · charset 288×256 · faceset 192×192 · battleWeapon 192×512</text>
+          <text x="614" y="150">grid: width%cellWidth==0 && height%cellHeight==0 검사</text>
+          <text x="614" y="162">audio(music/sound): 무조건 ok — 크기 검사 없음</text>
+          <text x="614" y="174" fill="#6f7d9a">graft 확장 이미지(510 tiles)는 이 검사를 우회한다</text>
+        </g>
+      </g>
+      <!-- bottom: search -->
+      <g>
+        <rect x="14" y="204" width="1152" height="82" rx="10" fill="#0f1a30" stroke="#23324e"/>
+        <text x="26" y="222" fill="#8ec8ff" font-size="11" font-family="JetBrains Mono">검색 resourceSearch — 부분 문자열 + 태그, “*”는 전체 브라우징</text>
+        <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
+          <text x="26" y="238">candidatesForKind: tile/charset/monster/backdrop/bgm/se — 각각 다른 소스 테이블</text>
+          <text x="26" y="250">queryScore: whole 0이면 공백 분리 합산 · label 일치 100/부분 50, tag 일치 40/부분 20</text>
+          <text x="26" y="262" fill="#ff8fa0">charsetDerivedTags: people→ 마을/사람 동의어 보강 없으면 영문 질의 0건</text>
+          <text x="830" y="262" fill="#6f7d9a">tile: bundled + tileGroups + tileMeta 병합</text>
+        </g>
+      </g>
+      <defs><marker id="arr2" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2a3a5c"/></marker></defs>
+    </svg>
+    <div class="cap">그림 4 — 리소스 파이프라인. 수집은 8개 소스를 쓸어 담지만, 검증에서 접두사 3개가 무조건 통과하고, 캐시는 base64만, 슬라이싱은 오디오를 검사하지 않는다.</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card bad"><span class="tag p0">P0 — 검증 우회</span><h3>접두사 하나로 검증이 뚫린다</h3>
+      <p><code>resourceReferenceValidation.ts:validateOptionalResource</code></p>
+      <pre style="margin:8px 0;background:#0b1426;border:1px solid #23324e;border-radius:10px;padding:10px 12px;overflow:auto"><code>if (id.startsWith("generated-enemy-") ||
+    id.startsWith("farming-crop-") ||
+    id.startsWith("easyrpg-monster-")) return; // ← assert 안 탐
+assert(knownResourceIds.has(id), `존재하지 않습니다: ${id}`)</code></pre>
+      <p>오타 <code>generated-enemy-slime-blu</code>(e 누락)도, 존재하지 않는 <code>farming-crop-ghost-pepper</code> 도 검증·역직렬화를 통과한다. 런타임에 404로만 드러나고, 그 404는 <code>generatedAssetResourceResolver.ts:hero-03-face</code> 주석처럼 “얼굴 노드 제거”로 조용히 처리된다. 사용자는 “왜 내 몬스터가 안 보이냐”를 검증 패널이 아니라 게임 화면에서 처음 안다.</p>
+    </div>
+    <div class="card warn"><span class="tag p1">P1 — 캐시 사각</span><h3>LegacyDb 캐시는 base64만 안다</h3>
+      <p><code>legacyDbResourceCache.ts:BASE64_DATA_URL = /^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/</code> — <code>parseBase64DataUrl</code> 가 이 정규식에 안 맞으면 <code>skipped: not-base64-data-url</code> 로 버린다. 외부 URL 업로드, blob URL, plain text dataUrl은 전부 스킵. <code>cacheStorage == undefined</code> 면 <code>cache-api-unavailable</code> 로 전량 스킵. 리포트 <code>{ cached, skipped }</code> 는 반환되지만, 어디에도 경고 토스트가 없다. 오프라인/배포 시 리소스가 조용히 빠진다.</p>
+      <div class="callout warn" style="margin-top:10px">추가로 <code>LEGACY_DB_RESOURCE_CACHE_NAME = "…-v1"</code> 이 하드코딩. 프로젝트가 바뀌어도 같은 캐시 이름이라 오래된 리소스가 남는다. 무효화 키가 없다.</div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <span class="tag good">견고</span><h3>수집·해결은 넓다</h3>
+      <p><code>collectResourceIds</code> 가 8개 소스를 합친다 — sprites, uploaded, resourceProfiles, tilesets, promoted plan, builtin ids, EasyRPG/CC0/Scarloxy/Farming. <code>generatedAssetResourceResolver.ts</code> 는 <code>BUILTIN_GENERATED_RESOURCE_URLS</code> 100+개와 <code>LEGACY_PACKAGED_RESOURCE_URLS</code> 를 분리하고, 404를 <code>correctFaceGridOnLoad onerror</code> 로 방어한다. <code>resourceSearch.ts:charsetDerivedTags</code> 가 <code>people→ 마을/사람</code> 같은 한영 동의어를 보강한 것도 실측 로그(<code>LLM은 영문 질의 우선</code>)에서 나온 좋은 패치다.</p>
+    </div>
+    <div class="card warn"><span class="tag p1">P1 — 슬라이싱 맹점</span><h3>규격 검사가 graft 확장을 모른다</h3>
+      <p><code>resourceProfiles.ts:validateResourceDimensions</code> 는 <code>chipset 480×256, charset 288×256…</code> 고정 규격을 엄격히 본다. 그런데 graft로 <code>count 510</code> 이 된 칩셋을 이미지로 내보내 다시 업로드하면, 그 이미지는 480×272(17행)라 규격에 안 맞는다. 현재 코드는 이 이미지를 <code>chipset</code> 으로 재검증하지 않으므로 통과하지만, 나중에 누군가 “칩셋 규격 검사”를 강화하면 graft 지도가 전부 에러가 된다. 또한 <code>music/sound</code> 는 <code>media=="audio"</code> 라 무조건 <code>ok:true</code> — 깨진 오디오도 검증이 안 잡는다.</p>
+    </div>
+  </div>
+
+  <h3>검색 점수 — 단순하지만 예측 가능</h3>
+  <table>
+    <thead><tr><th>케이스</th><th>현재 점수</th><th>결과</th><th>개선</th></tr></thead>
+    <tbody>
+      <tr><td><code>query="마을 사람"</code></td><td><code>whole 0 → split "마을"(20) + "사람"(20)=40</code></td><td>둘 중 하나만 맞는 타일과 둘 다 맞는 타일이 같은 40점이 될 수 있다.</td><td>가중합이 아니라 교집합 보너스 도입</td></tr>
+      <tr><td><code>query="*"</code></td><td>전체 목록 <code>score:1</code></td><td>LLM 브라우징용 — 의도대로 동작한다.</td><td>유지</td></tr>
+      <tr><td><code>label="회록 석재 바닥" tags=[terrain, floor]</code> vs <code>query="바닥"</code></td><td>label 부분 50점</td><td>라벨이 길어도 부분 일치 50점으로 같다 — 긴 라벨 불이익 없음. 좋은 설계.</td><td>유지</td></tr>
+      <tr><td>태그가 10개인 타일 vs 2개인 타일</td><td>태그 루프 합산</td><td>태그가 많은 타일이 유리 — 그룹 태그가 붙은 하네스 타일이 검색 상단에 쏠린다.</td><td>태그 중복 제거 + 상한(<code>Set</code>은 이미 함, 상한 추가)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 4 CROSS -->
+<section id="cross" class="block">
+  <h2>4. 교차 실패 — 세 축이 함께 깨지는 지점</h2>
+
+  <div class="grid3">
+    <div class="card bad"><span class="tag p0">P0</span><h3>X1 · AI 상점 + 타일 + 리소스 동시 실패</h3><p>AI가 <code>build_village</code> 로 마을을 깔고 <code>place_npc(상점 주인)</code> 으로 상인을 꽂으면 — 상점은 비어 있고(1장), 상인 스프라이트는 <code>charset:people1</code> 같은 번들 키라 리소스는 통과하지만, 상점이 선 자리의 타일은 <code>WOOD_EDGE</code> 같은 데크 가장자리일 수 있다. 그 타일은 4방향 차단이라 플레이어가 카운터에 접근 못한다. 세 축이 각자 “성공”인데 합치면 막힌 상점이 된다.</p></div>
+    <div class="card warn"><span class="tag p1">P1</span><h3>X2 · 에디터 미리보기 vs 런타임 진실</h3><p>에디터는 데크를 타일 색으로 보여준다. 런타임은 <code>passability × priority</code> 로 걷는다. 투명 타일의 검은 배경, 상인 소지금 부족, 시즌 필터링, 소셜 할인은 에디터에서 안 보인다. “보이는 대로 도는” 계약이 4곳에서 깨진다.</p></div>
+    <div class="card warn"><span class="tag p1">P1</span><h3>X3 · 마이그레이션 빚</h3><p>하네스 라벨 우선순위가 “bundled-default를 태그로 강등, user만 우선”으로 바뀐 건 좋은데, 구 프로젝트는 이미 <code>source: bundled-default</code> 라벨로 저장돼 있다. 재저장 전까지 구 라벨이 검색 상단에 뜬다. graft <code>count 510</code> 지도도 구 버전 툴은 480으로만 안다.</p></div>
+  </div>
+
+  <div class="figure" style="margin-top:14px">
+    <svg viewBox="0 0 1180 200" role="img" aria-label="Cross failure matrix">
+      <rect width="1180" height="200" fill="#0b1426"/>
+      <g font-family="JetBrains Mono" font-size="10" text-anchor="middle">
+        <rect x="14" y="14" width="360" height="26" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="194" y="31" fill="#8ec8ff">상점 배치</text>
+        <rect x="410" y="14" width="360" height="26" rx="8" fill="#241a3a" stroke="#3a2a5c"/><text x="590" y="31" fill="#b48bff">타일셋</text>
+        <rect x="806" y="14" width="360" height="26" rx="8" fill="#1a233a" stroke="#2a3a5c"/><text x="986" y="31" fill="#4ee1c8">리소스</text>
+        <!-- rows -->
+        <g font-size="9" text-anchor="middle">
+          <rect x="14" y="52" width="360" height="36" rx="8" fill="#1d2a1a" stroke="#2a4a2e"/><text x="194" y="66" fill="#7ff0b5">AI 빈 점포 — 검증은 에러, AI는 성공</text><text x="194" y="80" fill="#7ff0b5">메시지가 두 곳에 갈림</text>
+          <rect x="410" y="52" width="360" height="36" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="590" y="66" fill="#ff8fa0">커스텀 칩셋 무계약 — 검은 배경</text><text x="590" y="80" fill="#ff8fa0">투명 강제·오토타일 없음</text>
+          <rect x="806" y="52" width="360" height="36" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="986" y="66" fill="#ff8fa0">접두사 우회 — 오타가 검증 통과</text><text x="986" y="80" fill="#ff8fa0">404는 런타임에서만 발견</text>
+          <rect x="14" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="194" y="114" fill="#ffd8a8">merchantGold/season/social 미리보기 없음</text><text x="194" y="128" fill="#ffd8a8">플레이어가 처음 본다</text>
+          <rect x="410" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="590" y="114" fill="#ffd8a8">graft 해시 충돌·조용한 실패</text><text x="590" y="128" fill="#ffd8a8">warn 후 빈칸, 캐시 키 충돌</text>
+          <rect x="806" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="986" y="114" fill="#ffd8a8">LegacyDb cache base64만</text><text x="986" y="128" fill="#ffd8a8">http 업로드는 스킵</text>
+          <rect x="14" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="194" y="162" fill="#8ec8ff">quantity select 힌트 없음</text><text x="194" y="176" fill="#8ec8ff">←→ 로 수량, 몰라서 1개씩</text>
+          <rect x="410" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="590" y="162" fill="#8ec8ff">검색 점수 태그 개수 비례</text><text x="590" y="176" fill="#8ec8ff">그룹 3개면 태그 3배</text>
+          <rect x="806" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="986" y="162" fill="#8ec8ff">슬라이싱 오디오 무검사</text><text x="986" y="176" fill="#8ec8ff">깨진 오디오도 ok:true</text>
+        </g>
+      </g>
+    </svg>
+    <div class="cap">그림 5 — 삼축 교차 실패 매트릭스. 세로로 읽으면 각 축의 P0→P1→P2, 가로로 읽으면 같은 심각도끼리 묶인다. 빨간 행이 “조용히 틀리는” 것들이다.</div>
+  </div>
+</section>
+
+<!-- 5 EVIDENCE -->
+<section id="evidence" class="block">
+  <h2>5. 증거 — 어디를 뜯었나</h2>
+  <p>정적 코드 감사 + 테스트 독해 + 빌드 산출물 대조. 브라우저 스냅샷은 이 리뷰의 재현 단계에 포함하지 않았다 — 상점은 1장 데모 맵이라 스냅샷보다 코드 경로가 더 정직하다.</p>
+  <table>
+    <thead><tr><th>영역</th><th>파일</th><th>본 것</th></tr></thead>
+    <tbody>
+      <tr><td>상점 배치</td><td><code>villageShoppingStreetBuild.ts: SHOP_DECK / STAIR_WORLD_Y / stampShoppingStreetDeck / addShopkeepers</code></td><td>데크 14×14, 층계 2칸 ○, 카운터 투명 이벤트 3 + 상인 3 분리 구조</td></tr>
+      <tr><td>상점 경제</td><td><code>shopStock.ts: DEFAULT 100 / resolveShopMerchantGold / resolveSocialShopPriceMultiplier / stockEntryVisibleInSeason</code></td><td>클램프·시즌·소셜 3중 분기, 0원 허용, 미리보기 없음</td></tr>
+      <tr><td>상점 런타임</td><td><code>playSceneShop.ts: handleShopTransaction / merchantGold 증감</code> <code>playSceneShopDom.ts: quantity select / goldPanel</code></td><td>매입 예산 검사, ←→ 수량 조절, 골드 패널 존재</td></tr>
+      <tr><td>상점 검증</td><td><code>eventDraftValidator.ts: shop.items.empty / reference.item.missing</code> <code>assistantSession.ts: SHOP_ROLE_NAME</code></td><td>빈 점포 에러 vs AI 빈 상점 생성 — 메시지 갈림</td></tr>
+      <tr><td>타일셋 하네스</td><td><code>tilesetHarness/combinedTown.ts / themePacks.ts</code> <code>resourceSlicing.ts: chipset 480</code></td><td>하네스는 번들 전용, enforceTransparentOverlayPriority, 나무 수관/밑동 예외</td></tr>
+      <tr><td>타일 graft</td><td><code>tileGrafts.ts / tileGraftImageCache.ts</code></td><td>djb2 해시, rowAligned 확장, dual bake, warn+skip</td></tr>
+      <tr><td>리소스 수집·검증</td><td><code>resourceReferenceValidation.ts: collectResourceIds / validateOptionalResource</code></td><td>8소스 수집, 접두사 3개 무조건 통과</td></tr>
+      <tr><td>리소스 캐시·규격</td><td><code>legacyDbResourceCache.ts / resourceProfiles.ts</code></td><td>base64만 캐시, v1 하드코딩, audio 무검사</td></tr>
+      <tr><td>검색</td><td><code>resourceSearch.ts: bundledTileSemantics / tileCandidates / queryScore</code></td><td>번들→그룹→메타 병합, 한영 동의어, 공백 합산 점수</td></tr>
+    </tbody>
+  </table>
+
+  <h3>재현 레시피 (수동, 5분)</h3>
+  <div class="grid2">
+    <div class="card">
+      <h4 style="margin-top:0">R1 — 빈 점포 재현</h4>
+      <ol class="list-tight">
+        <li>AI 패널에 “상점 주인 1명 추가해줘”</li>
+        <li>생성된 이벤트 열기 → 상점 커맨드의 재고가 비어 있음 확인</li>
+        <li>DraftValidator 패널에서 <code>shop.items.empty</code> 에러 확인</li>
+        <li>그런데 AI 로그는 “place_npc 성공”으로 찍힘 — 메시지 갈림 확인</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">R2 — 커스텀 칩셋 검은 배경</h4>
+      <ol class="list-tight">
+        <li>480×256 칩셋 업로드 (투명 배경 벤치 포함)</li>
+        <li>그 칩셋으로 새 맵 생성 → 벤치를 하위 레이어에 배치</li>
+        <li>런타임에서 벤치 배경이 검게 보임 — <code>isCombinedTownTileset==false</code> 라 upper 강제 안 됨</li>
+        <li>같은 타일을 상위로 옮기면 정상 — 하네스 밖 증거</li>
+      </ol>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:12px">
+    <div class="card">
+      <h4 style="margin-top:0">R3 — 검증 우회 404</h4>
+      <ol class="list-tight">
+        <li>아이템 하나에 <code>iconResourceId="generated-enemy-typo"</code> 지정</li>
+        <li>검증 패널: 에러 없음 (접두사 예외)</li>
+        <li>게임 실행 → 콘솔 404, 아이콘 미표시 — 검증이 못 잡은 증거</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">R4 — 상인 돈 부족 첫 경험</h4>
+      <ol class="list-tight">
+        <li>상점 <code>merchantGold=10</code> 으로 저장, 가격 100짜리 아이템 1개 판매 시도</li>
+        <li>런타임 상점에서 “판매” → “상인의 돈이 부족합니다.” 첫 노출</li>
+        <li>에디터엔 이 예산을 미리 보는 UI 없음 — 플레이어가 처음 본다</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 6 FIX -->
+<section id="fix" class="block">
+  <h2>6. 처방전 — 고치는 순서대로</h2>
+  <p>작게, 검증 가능하게, 한 번에 하나씩. “전면 리팩터”는 이 문서가 반대한다.</p>
+
+  <table>
+    <thead><tr><th style="width:9%">순위</th><th style="width:32%">처치</th><th>왜 지금</th><th style="width:11%">비용</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag p0">P0-1</span></td><td><b>AI 빈 상점 금지</b> — <code>SHOP_ROLE_NAME</code> 분기에서 <code>itemIds.length==0 && stock==0</code> 이면 <code>shop</code> 을 꽂지 말고, “재고를 골라 달라”는 질문으로 되돌리거나 <code>DEFAULT_ITEM_ID</code> 1개를 채워라. 검증 에러를 “성공” 토스트로 덮지 마라.</td><td>가장 자주 터지는 “성공한 실패”</td><td>S</td></tr>
+      <tr><td><span class="tag p0">P0-2</span></td><td><b>graft 조용한 실패를 검증으로 승격</b> — 존재하지 않는 <code>sourceChipset</code> 은 <code>eventDraftValidator</code> 또는 <code>projectLint</code> 에서 <code>error</code> 로. <code>warn+continue</code> 유지하되, 에디터에 빨간 배지.</td><td>지금은 콘솔에만 남고 사용자는 모른다</td><td>S</td></tr>
+      <tr><td><span class="tag p0">P0-3</span></td><td><b>접두사 예외 축소</b> — <code>generated-enemy-/farming-crop-/easyrpg-monster-</code> 를 무조건 통과 대신, <code>collectResourceIds</code> 에 실제 존재하는지만 통과. 오타는 에러로.</td><td>404를 검증에서 잡아야 한다</td><td>S</td></tr>
+      <tr><td><span class="tag p1">P1-1</span></td><td><b>상점 경제 미리보기</b> — 상점 폼에 <code>merchantGold / 시즌(봄·여름·가을·겨울) / 소셜 할인</code> 3줄 미리보기. 0원·무료 할인은 노란 경고. 테스트는 이미 있다.</td><td>에디터와 런타임의 간극 1순위</td><td>M</td></tr>
+      <tr><td><span class="tag p1">P1-2</span></td><td><b>커스텀 칩셋 하네스 v1</b> — 업로드 칩셋도 <code>투명 타일→upper / 불투명→lower</code> 최소 계약 + 팔레트에 “하네스 없음 — 수동 레이어 지정 필요” 배지. 검색은 해당 칩셋 라벨이 없을 때 combinedTown 라벨을 붙이지 마라.</td><td>업로드 경로가 완전히 무계약</td><td>M</td></tr>
+      <tr><td><span class="tag p1">P1-3</span></td><td><b>quantity select 힌트 + LegacyDb 캐시 경고</b> — 상점 아이템 리스트에 “←→ 수량” 힌트, 캐시 리포트 <code>skipped.length&gt;0</code> 이면 에디터 토스트. <code>CACHE_NAME v1→v2</code> 마이그레이션 키 추가.</td><td>작은 UX 빚, 발견 비용 큼</td><td>S</td></tr>
+      <tr><td><span class="tag p2">P2-1</span></td><td><b>graft 해시 강화 + 카운트 표시</b> — <code>djb2</code> 를 <code>SHA-1 8자리</code> 또는 <code>FNV-1a 64</code> 로, 캔버스 확장 시 에디터에 “510 tiles (30×17)” 배지 노출.</td><td>충돌은 드물지만 캐시 오염 시 디버깅 지옥</td><td>S</td></tr>
+      <tr><td><span class="tag p2">P2-2</span></td><td><b>검색 점수 상한 + itemIds/stock 단일화</b> — 태그 점수 상한, <code>stock</code> 이 있으면 <code>itemIds</code> 를 숨기거나 동기화. 0원 상점은 <code>info</code> 로라도 알려라.</td><td>점수 쏠림·이중 기록 혼란</td><td>S</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout good" style="margin-top:14px">
+    <b>하지 말 것</b> — (1) 데크를 다시 그리지 마라. 데크 스탬프는 잘 됐다. (2) 하네스를 “모든 칩셋에 강제”하지 마라. 업로드는 최소 계약으로 시작해야 한다. (3) 리소스 수집을 더 넓히지 마라. 이미 넓다 — 검증만 조이면 된다.
+  </div>
+
+  <h3>점수표 — 적대적 채점</h3>
+  <div class="grid3">
+    <div class="card">
+      <h4 style="margin-top:0">상점 배치 — 6.5 / 10</h4>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">배치 정석</span><div class="bar"><s style="width:92%;background:var(--green)"></s></div><span class="mono" style="color:var(--green)">9</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">경제 미리보기</span><div class="bar"><s style="width:22%;background:var(--red)"></s></div><span class="mono" style="color:var(--red)">2</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">검증 일관성</span><div class="bar"><s style="width:48%;background:var(--orange)"></s></div><span class="mono" style="color:var(--orange)">5</span></div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">데크·카운터 분리는 교과서. 그러나 AI 빈 점포와 숨은 경제 3종이 점수를 깎는다.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">타일셋 — 6.0 / 10</h4>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">번들 하네스</span><div class="bar"><s style="width:88%;background:var(--green)"></s></div><span class="mono" style="color:var(--green)">9</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">커스텀 대응</span><div class="bar"><s style="width:18%;background:var(--red)"></s></div><span class="mono" style="color:var(--red)">2</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">graft 견고성</span><div class="bar"><s style="width:42%;background:var(--orange)"></s></div><span class="mono" style="color:var(--orange)">4</span></div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">번들 3종(마을/실내/던전)은 탄탄하다. 업로드 칩셋과 graft 실패 경로가 구멍이다.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0">리소스 관리 — 6.8 / 10</h4>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">수집·해결</span><div class="bar"><s style="width:90%;background:var(--green)"></s></div><span class="mono" style="color:var(--green)">9</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">검증 엄격성</span><div class="bar"><s style="width:38%;background:var(--orange)"></s></div><span class="mono" style="color:var(--orange)">4</span></div>
+      <div class="kpi"><span style="color:var(--muted);font-size:12px">캐시·슬라이싱</span><div class="bar"><s style="width:52%;background:var(--orange)"></s></div><span class="mono" style="color:var(--orange)">5</span></div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">모으는 건 넓고 해결도 넓다. 그러나 접두사 우회와 base64 한정이 검증을 좁힌다.</p>
+    </div>
+  </div>
+
+  <div class="callout blue">
+    <div class="rank">6.4</div>
+    <b>종합 — 6.4 / 10 · “데모는 된다, 제품은 손봐야 한다”</b><br>
+    56×42 데모 1장, 상점 3개, 번들 칩셋, 정적 리소스만 쓰면 지금도 충분히 즐겁다. 그러나 AI로 상점을 대량 생성하거나, 커스텀 칩셋을 올리거나, 외부 URL 리소스를 섞는 순간 세 축의 “조용한 실패”가 동시에 터진다. P0 3개만 막으면 7.5까지, P1까지 하면 8.5까지 간다.
+    <div class="clear"></div>
+  </div>
+</section>
+
+<footer style="text-align:center;color:var(--dim);font-size:12px;padding:18px 0 0">
+  RPG ZZU · 상점 배치·타일셋·리소스 관리 적대적 리뷰 · 2026-08-06 · 코드 기준: <span class="mono">villageShoppingStreetBuild.ts / shopStock.ts / playSceneShop.ts / tilesetHarness / tileGrafts.ts / resourceReferenceValidation.ts</span><br>
+  원칙: 잘 된 점은 한 줄, 깨지는 점은 한 장. 이 문서는 칭찬이 아니라 계약을 본다.
+</footer>
+
+</div></main>
+</body>
+</html>

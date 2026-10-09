@@ -1,0 +1,228 @@
+{
+  "mechanicalPass": true,
+  "original112SlotsUnchanged": true,
+  "original112Hash": "46dd91ec6ad6f39cd8552c6d98b5ad698d60199c87747e0fa1273643aa1bc2ca",
+  "sourceSlots": 304,
+  "recipes": [
+    {
+      "id": "bdg-light-house-cream",
+      "pixelHash": "7d61855ced4e5992efd7c0d504c7c12858b7a02c4a56474e9ee7cdb7580d5f67",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-house-brick",
+      "pixelHash": "7d61855ced4e5992efd7c0d504c7c12858b7a02c4a56474e9ee7cdb7580d5f67",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-house-stone",
+      "pixelHash": "d21162b7ada84f784ebd511b9df44d46b50a372c76f84309d1e88b918e1a4e75",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-house-sage",
+      "pixelHash": "98ae5c7d211611f671e8ebf7c779861d9f8cfbb386aa11301c0bdf94aba654e9",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-house-ochre",
+      "pixelHash": "e528db5b75d28a9e1c7dfebf17d34a71c6316eef616004bc087e7acaba17dca4",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-house-church",
+      "pixelHash": "7400ec3be6471793925be7006556aa0e61a261f3290a9d0410f71aef32abca93",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-tree-03a8f7",
+      "pixelHash": "b1005095d3506ff74cadae337a163293d5a940e0ff8ff71b72aecf1b04956032",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-tree-3e8732",
+      "pixelHash": "05f6ee60bf9032667d32a2b25f36053d2b70e3dd8412c4d21e2a2013d4de020a",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-tree-1a786c",
+      "pixelHash": "3ab7e93eb39cf82f79277121cb4455836fb7bd85dd86520ee1b7d4e6925952c0",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-meadow-0",
+      "pixelHash": "f2ce15941095f090d894d3b12edaef20e50e2987648c7c461f75dd43f7c4743b",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-meadow-1",
+      "pixelHash": "c98d6c4f586af8283738382eb91a524fb3ce3ecb42d9672e85d39c5b627481b0",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-meadow-2",
+      "pixelHash": "6e14eabd8c802cfdcd6d7fe67beaf060576fc1d1cf72bd1c2ddf2dfcdd83f16f",
+      "layer": 2
+    },
+    {
+      "id": "bdg-light-road-2666-0",
+      "pixelHash": "230b54d2754e586004b947b37456b8a742e062320f184104660818eed9c8325d",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-2666-1",
+      "pixelHash": "bdd97cefb5d4f28465c32ff8355b796715a8d59d12a878e3a25eb063c4b338e4",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-3221-0",
+      "pixelHash": "d0fd9c310582571b0975ef0573ab11e7cc5b1416bfd919397e2acb5f6d7b5dbf",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-3221-1",
+      "pixelHash": "d0fd9c310582571b0975ef0573ab11e7cc5b1416bfd919397e2acb5f6d7b5dbf",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-3353-0",
+      "pixelHash": "c7969d0e9496042b4ef652487752f0d3c9a491130afb98092e07d0dee42d3c2e",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-3353-1",
+      "pixelHash": "acda6d50632c8a0da08a9a399e309eb0230e5e322185a0238d45a47935a4bfef",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-4674-0",
+      "pixelHash": "27185a0d987db8d35087d8a1db066ea7cd14b18995f030e8b8f5a2a34689053b",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-4674-1",
+      "pixelHash": "10dea90bbe0fa2c6f9d7c7f74978abe478299b97dd170b35c4eaf55caf3b19fd",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-9585-0",
+      "pixelHash": "8af1e38582903f397f60ff0f606844089fe21ae57f3c2e47d57b4ca8d9740142",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-9585-1",
+      "pixelHash": "29055542e5943ca4376d17e2a8fe19b6569f0cedb9d569c063802fd2eb344796",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-17443-0",
+      "pixelHash": "be653016e3740ba98979a206ac41c6eda584f95976ca63b08aebf84fb5fa9953",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-17443-1",
+      "pixelHash": "f4d82f557ddb08cdb919041a338a34f0ad14b1286c2a8ffce3930e044af2ac1e",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23015-0",
+      "pixelHash": "c42512d51d34ef23808160967c652dcb4d931e239454ab18366d345aa85b5f4d",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23015-1",
+      "pixelHash": "44d1aa72f78735cd323529fc6bdd7fa10af7b96587a6aa24b069e1068c6dd18c",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23016-0",
+      "pixelHash": "e49e0d6973eb040ca10eea725a290aae9e2cab6ee28b1e2ed2ccad78bbf635f6",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23016-1",
+      "pixelHash": "788df76c77e24c2d97999b6c887162657b6f15e044a417097285ac97923d9cda",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23017-0",
+      "pixelHash": "61f996fb3a88fadb6d05a773d8bb263c45a701318b56d50bf3d59b7466c709ae",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23017-1",
+      "pixelHash": "4536995589b313edae5a2b13c1058156a0a4d50755016b9dc76df765cccc8de1",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23018-0",
+      "pixelHash": "b99dd141dd0f530488bdce89c2bc2db2d9a085bc23c478d431a4be3dd45720cf",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23018-1",
+      "pixelHash": "aa8ffd356d790c5ab2ef1142d56d8fbda62e6b0f45fa28c174c9d79614cec642",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23019-0",
+      "pixelHash": "1d9ce3a5045beeba84a1c71551ea5ce668c8e76ec91eebd69a60b2e1b9ae4dac",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23019-1",
+      "pixelHash": "46d2d6996e83ba312888ea3bb39ada19d1b498b0310df7384d42be3f7cbd8e6f",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23020-0",
+      "pixelHash": "6bbdd0c820e7b990f9e481c8073bbb0c7afd2cb9821d40fe8c36d1f81f20fd96",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23020-1",
+      "pixelHash": "e77fd7d12ccadcd33da2f307a9ba9d74ed393bd2f3f7cccef890a016d4169962",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23021-0",
+      "pixelHash": "bc4365cb48ecc0c87a8eb76a053236287f0da0384c1dfc8f7bf8db46ebb19d4d",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23021-1",
+      "pixelHash": "d6a5acf12305968e8424e4a4b341ec9c35e2dbf40396eb5c64e68896826ac8d9",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23022-0",
+      "pixelHash": "8c906f595bb8d36de37c913ff55bb74a91a4ddf8df205c02db27c9a223b7f14d",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23022-1",
+      "pixelHash": "c13b4342435eb8665234f29f59f0c9d0bc9d6a0b2121ab4d8178a494c798a5fc",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23023-0",
+      "pixelHash": "c8e17be217baf3e745f66d6b19619bc8b5ea79523864a917691e2bdd758885a5",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23023-1",
+      "pixelHash": "a9ee575f11754f6c884b4e782c475f1490de197e8a06e52b37797863ea728420",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23024-0",
+      "pixelHash": "e4a8be439ce2a3ff39f7a18b441dcc11219a19e80ffa5ba6207eeba25b1c2845",
+      "layer": 1
+    },
+    {
+      "id": "bdg-light-road-23024-1",
+      "pixelHash": "f39c6e017a037ec1dd462049ddcaa20980c742a410eac40761759384ddc448db",
+      "layer": 1
+    }
+  ]
+}

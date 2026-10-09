@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w6-A.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "물 위에 흩어져 지저분하던 흰 거품 점을 없애고 위쪽 가장자리 거품만 남겨 수면을 깨끗이 한 v5 정리 (모양·색 그대로)",
+ "ok": true
+}

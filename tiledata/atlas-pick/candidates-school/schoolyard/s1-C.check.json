@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/schoolyard/s1-C.pxg",
+ "set": "school",
+ "id": "schoolyard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "C: 가로로 쓸린 결 자국 + 자국 두 개, 알갱이 적게",
+ "ok": true
+}

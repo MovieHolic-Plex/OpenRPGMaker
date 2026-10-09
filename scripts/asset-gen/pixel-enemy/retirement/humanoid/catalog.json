@@ -1,0 +1,191 @@
+[
+  {
+    "resourceId": "generated-enemy-zombie-01",
+    "path": "assets/generated/pixel-enemies/zombie-01.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-orc-01",
+    "path": "assets/generated/pixel-enemies/orc-01.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-harpy-01",
+    "path": "assets/generated/pixel-enemies/harpy-01.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-salamander-01",
+    "path": "assets/generated/pixel-enemies/salamander-01.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-kappa-01",
+    "path": "assets/generated/pixel-enemies/kappa-01.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-leafling-01",
+    "path": "assets/generated/pixel-enemies/leafling-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-sparkit-01",
+    "path": "assets/generated/pixel-enemies/sparkit-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-aqualing-01",
+    "path": "assets/generated/pixel-enemies/aqualing-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-salamander-flame",
+    "path": "assets/generated/pixel-enemies/salamander-flame.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-goblin-brute",
+    "path": "assets/generated/pixel-enemies/goblin-brute.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-kobold-digger",
+    "path": "assets/generated/pixel-enemies/kobold-digger.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-mage-rogue",
+    "path": "assets/generated/pixel-enemies/mage-rogue.png",
+    "cell": 64,
+    "motion": "shoot",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-knight-fallen",
+    "path": "assets/generated/pixel-enemies/knight-fallen.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-centaur-plains",
+    "path": "assets/generated/pixel-enemies/centaur-plains.png",
+    "cell": 96,
+    "motion": "dash",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-ogre-club",
+    "path": "assets/generated/pixel-enemies/ogre-club.png",
+    "cell": 96,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-imp-mischief",
+    "path": "assets/generated/pixel-enemies/imp-mischief.png",
+    "cell": 48,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-griffin-sky",
+    "path": "assets/generated/pixel-enemies/griffin-sky.png",
+    "cell": 96,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-wyvern-cliff",
+    "path": "assets/generated/pixel-enemies/wyvern-cliff.png",
+    "cell": 96,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-roc-giant",
+    "path": "assets/generated/pixel-enemies/roc-giant.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-phoenix-rebirth",
+    "path": "assets/generated/pixel-enemies/phoenix-rebirth.png",
+    "cell": 96,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-dragon-whelp",
+    "path": "assets/generated/pixel-enemies/dragon-whelp.png",
+    "cell": 64,
+    "motion": "breath",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-dragon-red",
+    "path": "assets/generated/pixel-enemies/dragon-red.png",
+    "cell": 96,
+    "motion": "breath",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-dragon-blue",
+    "path": "assets/generated/pixel-enemies/dragon-blue.png",
+    "cell": 96,
+    "motion": "breath",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-dragon-bone",
+    "path": "assets/generated/pixel-enemies/dragon-bone.png",
+    "cell": 96,
+    "motion": "breath",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-hydra-three",
+    "path": "assets/generated/pixel-enemies/hydra-three.png",
+    "cell": 96,
+    "motion": "breath",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-behemoth-horn",
+    "path": "assets/generated/pixel-enemies/behemoth-horn.png",
+    "cell": 96,
+    "motion": "stomp",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "generated-enemy-angel-fallen",
+    "path": "assets/generated/pixel-enemies/angel-fallen.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 200
+  }
+]

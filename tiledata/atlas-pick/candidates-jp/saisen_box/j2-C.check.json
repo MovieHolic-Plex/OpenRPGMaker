@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/saisen_box/j2-C.pxg",
+ "set": "jp",
+ "id": "saisen_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.095
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  4,
+  0,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석: 좁고 높은 궤 위에 넓게 튀어나온 뚜껑, 굵은 줄과 큰 방울 — 방울이 주인공인 세로 실루엣.",
+ "ok": true
+}

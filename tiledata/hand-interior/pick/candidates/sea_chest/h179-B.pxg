@@ -1,0 +1,31 @@
+// B: 방의 기존 상자처럼 단순한 면과 굵은 쇠테, 파란 뚜껑 5행과 밧줄 손잡이.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat d blue 1
+@mat b blue 2
+@mat t blue 3
+@mat l blue 4
+@mat o iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat r pine 3
+@mat s pine 4
+@mblock 0 0
+................
+................
+................
+...dddddddddd...
+..jllllllllllj..
+..jttttttttttj..
+..jttbbttttttj..
+..jttttttbbttj..
+..jtttttttttbi..
+..jddddjjddddi..
+..jbbbbkkbbbdi..
+.ssjbbbkjbbbirs.
+.rdjbbbjjbbbids.
+.rrjbbbbbbbbirr.
+..ibbbddbbbddi..
+..oiiiiiiiiiio..

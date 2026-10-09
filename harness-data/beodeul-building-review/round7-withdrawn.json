@@ -1,0 +1,84 @@
+{
+  "withdrawn": "2026-10-07",
+  "by": "사용자 지시(round 7 엉망) + 감독자 육안 판정",
+  "reason": {
+    "overlap": "박공/지붕이 다른 지붕 위에 겹쳐 떠 있음(10~15,21,25)",
+    "dome": "둥근 탑·구근 지붕이 버섯/덩어리로 보임(16,18~20)",
+    "edge": "지붕 끝이 번져 잘린 조각(5)",
+    "curvedRoof": "곡면 지붕에 평평한 기와 격자(23)"
+  },
+  "note": "기계 Visual QA 는 25장 전부 통과시켰으나 육안으로 반려. 사람 결정 기록 없음(미선택 상태에서 철회).",
+  "items": [
+    {
+      "id": "r7-building-05",
+      "name": "한쪽 지붕이 낮은 골목집",
+      "pngSha256": "902b352fc97dd4c1fed71eb899d65283b5fcd0370958d74ce4e71e4ab5bcb352"
+    },
+    {
+      "id": "r7-building-10",
+      "name": "앞 날개가 두 개인 저택",
+      "pngSha256": "460a4cb95f0473700d72baafffa27b938c251bd81b02b8694207da51e64a62e9"
+    },
+    {
+      "id": "r7-building-11",
+      "name": "박공 현관이 붙은 청회색 집",
+      "pngSha256": "3a37d11db8ab4fd6393b264fbc4b7d4198f73a4b90b451d5810bf656cd4c19ef"
+    },
+    {
+      "id": "r7-building-12",
+      "name": "십자 지붕의 큰 가족집",
+      "pngSha256": "7dfc47f5fd0aa0b63b991147429bf3836907b0f80cfcab1c025b5079916c79a1"
+    },
+    {
+      "id": "r7-building-13",
+      "name": "엇갈린 박공의 석조 민가",
+      "pngSha256": "ca6b2b70c4d458922cf19ce6715e5c4a6e90f7688ca13ea4fe9eb958d9f62b05"
+    },
+    {
+      "id": "r7-building-14",
+      "name": "깊은 현관채가 있는 민가",
+      "pngSha256": "ec4b0d9ba2b678f4d6f9f15444e4017406bd12ff6b20ff92f8293fe4a523dd63"
+    },
+    {
+      "id": "r7-building-15",
+      "name": "세 박공이 이어진 지붕집",
+      "pngSha256": "fd954f5a63b97c2333bf13a45b2e7d150351c8f44791588c1bd7593d969f7c13"
+    },
+    {
+      "id": "r7-building-16",
+      "name": "둥근 탑과 작은 살림집",
+      "pngSha256": "0119220dae8d4ec21994cb343c73f9f242fd399cd71c655da1d6a80c606bd622"
+    },
+    {
+      "id": "r7-building-18",
+      "name": "두 둥근 탑 사이의 집",
+      "pngSha256": "d33bdecf326fde7f993e492227bf8c7412bb9d77fc08f0cf1e789461c1787a9d"
+    },
+    {
+      "id": "r7-building-19",
+      "name": "구근 지붕과 두 낮은 날개",
+      "pngSha256": "dce11488aad894bdad4ff217861f1c4b6770347211d7cdf8e44cc51f1c66db24"
+    },
+    {
+      "id": "r7-building-20",
+      "name": "둥근 본채와 긴 현관채",
+      "pngSha256": "3f5f2443e194dc7e7a8f491b1ebaa022008a86922a6abad49132f328da87c3be"
+    },
+    {
+      "id": "r7-building-21",
+      "name": "다락 박공이 있는 맨사드 집",
+      "pngSha256": "e5fd9cb047dd8585337f98b0c800b1d61360580156cb8a98740b65fb2934cfff"
+    },
+    {
+      "id": "r7-building-25",
+      "name": "박공 날개와 다락의 큰 저택",
+      "pngSha256": "5e4c5bb725b5bda2ae316304b69d8594edf7c0aaa421fdd374b0db169e1c71f0"
+    },
+    {
+      "id": "r7-building-23",
+      "name": "통지붕과 둥근 창의 삼층집",
+      "pngSha256": "efd6ca556ae97c44251cb2a2533b4dae096db47791ac3d61684b32944af80ed6",
+      "reason": "구조 Visual QA INCOHERENT_ROOF_PROJECTION: 곡면 통지붕에 평평한 격자(2026-10-07 재검수, projection 82<90)"
+    }
+  ]
+}

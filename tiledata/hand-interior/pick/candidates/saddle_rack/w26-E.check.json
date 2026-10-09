@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w26-E.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "톱질 모탕 위 안장: 굵은 가로 통나무에 붉은 담요를 깔고 밝은 가죽 안장을 얹음, 왼쪽에 등자 고리, A자 다리",
+ "ok": true
+}

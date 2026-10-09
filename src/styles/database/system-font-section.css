@@ -1,0 +1,63 @@
+/* 시스템 → 폰트 섹션. 토큰만 사용하고, 미리보기 글꼴은 인라인 style 로만 주입된다
+   (선택값은 JS 가 fontRegistry 의 스택으로 채운다). */
+
+.database-modal-backdrop .db-system-font-help {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-system-font-preview {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.database-modal-backdrop .db-system-font-preview-row {
+  align-items: baseline;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
+  padding: var(--space-2) var(--space-3);
+}
+
+.database-modal-backdrop .db-system-font-preview-role {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.database-modal-backdrop .db-system-font-preview-sample {
+  color: var(--text-1);
+  font-size: 15px;
+  line-height: 1.5;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-system-font-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+/* 공유 .btn 은 flex-grow:1 을 갖고 있어 flex 행 어댑에서 행 폭 전제로 늘어난다. */
+.database-modal-backdrop .db-system-font-actions > .btn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-system-font-preview-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,19 @@
+{
+ "sand": {
+  "colors_max": 5,
+  "isolated_max": 0.074,
+  "clump_range": [
+   5.12,
+   20.48
+  ],
+  "boundary_range": [
+   0.62,
+   1.02
+  ],
+  "palette": [
+   "#fed56f",
+   "#fed976",
+   "#ffdf7d"
+  ]
+ }
+}

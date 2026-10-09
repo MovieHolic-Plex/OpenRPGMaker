@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/ceil_plaster/hf1-C.pxg",
+ "set": "horror",
+ "id": "ceil_plaster",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 10,
+  "atLeast95": 0,
+  "max": 0.859
+ },
+ "refmap": {
+  "cells": 10,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "C(재질): ceil_black C 와 같은 속(널 결)·같은 폭. 테는 vmarble — 가운데 줄이 구슬 몰딩(2px 간격, 주기 4)으로 석고 장식 테처럼",
+ "ok": true
+}

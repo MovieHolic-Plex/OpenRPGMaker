@@ -1,0 +1,23 @@
+{
+ "id": "classroom_wall",
+ "slug": "classroom_wall",
+ "name": "교실 벽면",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "교실 안쪽 벽 한 칸(윗칸 크림 회벽 + 아랫칸 나무 징두리판·걸레받이). 좌우로 이어 붙는다. 맨 아래 줄 = 바닥과 만나는 걸레받이 어두운 줄. 칠판·게시판·창이 이 위에 걸린다.",
+ "palette_hint": "cream 벽, vpine/vdwood 징두리",
+ "pair": [
+  "classroom_floor"
+ ],
+ "worker": "s2"
+}

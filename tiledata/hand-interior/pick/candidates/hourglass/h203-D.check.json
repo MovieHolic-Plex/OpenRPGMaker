@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hourglass/h203-D.pxg",
+ "id": "hourglass",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=20 — 캔버스 바닥 y=31 에서 11px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  20
+ ],
+ "v5_bbox": null,
+ "note": "윗판·금장·나무 윤곽 유지, 두 유리방과 기둥을 세로 압축해 아래 높이 27→16행(y=5~20), 둥근 유리 윗부분·중앙 모래줄 보존, 아랫받침 11행 올림; 꼭대기 윗면 4행(y=1~4); hard 합격, 접지 y=20 경고.",
+ "ok": true
+}

@@ -1,0 +1,51 @@
+/* ── 공용 커서 메뉴(runtimeCursorMenu.ts) 비주얼 — RM2003 정통(agy 자문) ──
+   attachCursorMenu 가 관리하는 항목에 .rm-nav-item 을 붙이고, 선택 시 .selected 를 토글한다.
+   좌측 거터에 ▶ 커서를 절대배치(레이아웃 밀림 없음)하고 좌우로 통통 튀는 애니를 준다. */
+/* 클래스를 두 번 써서 특정도를 (0,2,0) 으로 올린다.
+   `.game-over-panel button` 같은 요소+클래스 규칙(0,1,1)이 padding 을 10px 로 덮어써
+   ▶ 커서가 첫 글자 위에 겹쳐 그려졌다(실측: 엔딩 버튼 padding-left 10px, 커서 left 5px).
+   !important 없이 커서 자리만 지킨다. */
+.rm-nav-item.rm-nav-item {
+  position: relative;
+  padding-left: 22px;
+}
+
+/* ▶ 흰 삼각형 커서 + 좌우 바운스 */
+.rm-nav-item.selected::before {
+  content: "▶";
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  color: #ffffff;
+  font-size: 11px;
+  line-height: 1;
+  filter: drop-shadow(1px 1px 0 #061038);
+  transform: translateY(-50%);
+  animation: oprn-cursor-bounce 450ms infinite ease-in-out alternate;
+  pointer-events: none;
+}
+
+@keyframes oprn-cursor-bounce {
+  0% {
+    transform: translateY(-50%) translateX(0);
+  }
+  100% {
+    transform: translateY(-50%) translateX(-3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-nav-item.selected::before {
+    animation: none;
+  }
+}
+
+/* 선택 행 하이라이트(청색 그라디언트 바). 컴포넌트가 이미 .selected 를 칠하면
+   import 순서상 이 규칙이 이어받아 RM2003 톤으로 통일한다. */
+.rm-nav-item.selected {
+  background: linear-gradient(180deg, #3a80f0 0%, #1b49b0 100%);
+  box-shadow:
+    inset 0 0 0 1px #7fc5ff,
+    inset 0 -1px 0 rgba(3, 29, 85, 0.5);
+  color: #ffffff;
+}

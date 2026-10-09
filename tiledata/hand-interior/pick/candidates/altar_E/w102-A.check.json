@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w102-A.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.453
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 19,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "동향 제단 3/4 정면: 상판 윗면 21행(흰 제단보·자주 띠·금 십자) + 남쪽 앞면(드리운 자주 천·금 술·돌 받침). 옆 입면 없음, 윗면 rect [8,2,29,24] 불투명, 캔버스 32x48 유지. 바닥 접지 y=47 맞추려고 그림자 줄 대신 받침을 끝까지 늘림.",
+ "ok": true
+}

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>spatial geography raster harness</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module">
+      const params = new URLSearchParams(location.search);
+      const root = document.getElementById("root");
+      if (!root) throw new Error("missing root");
+      const { mountLakeCountry, mountPreviewFault } = await import("./spatialGeographyRasterHarness.ts");
+      const fault = params.get("fault");
+      if (fault === "narrow-mountain" || fault === "mountain-overflow" || fault === "blocked-route") {
+        await mountPreviewFault(root, fault);
+      } else {
+        await mountLakeCountry(root);
+      }
+      document.documentElement.dataset.ready = "1";
+    </script>
+  </body>
+</html>

@@ -1,0 +1,216 @@
+{
+ "_doc": "조작하면 표면이 바뀌는(=조건부 표시 로직이 걸린) 컨트롤 목록. 여기 있던 항목이 no-change / self-only 로 퇴화하면 조건부 표시 로직이 죽은 것이다. 측정으로 생성한다: INTERACTION_ALLOWLIST_UPDATE=1 npx vitest run test/eventEditorInteractionSurface.baseline.test.ts",
+ "reacting": {
+  "addFollower": [
+   "event-command-add-follower-use-graphic"
+  ],
+  "addLight": [
+   "add-light-anchor-kind-select",
+   "add-light-flicker-select",
+   "add-light-id-input"
+  ],
+  "applyItemUpgrade": [
+   "apply-item-upgrade-result-variable>select#0"
+  ],
+  "battleProcessing": [
+   "battle-processing-branch-on-result",
+   "battle-processing-escape-checkbox",
+   "battle-processing-escape-select",
+   "battle-processing-lose-checkbox",
+   "battle-processing-lose-select",
+   "battle-processing-troop-select",
+   "battle-processing-troop-source"
+  ],
+  "changeActorHp": [
+   "change-actor-hp-actor-select"
+  ],
+  "changeActorMp": [
+   "change-actor-mp-actor-select"
+  ],
+  "changeEquipment": [
+   "change-equipment-actor-select",
+   "change-equipment-equipment-select",
+   "change-equipment-search",
+   "change-equipment-slot-select"
+  ],
+  "changeExp": [
+   "change-exp-actor-select",
+   "change-exp-amount-source",
+   "change-exp-amount-variable-select",
+   "change-exp-op-select",
+   "change-exp-target-mode"
+  ],
+  "changeFace": [
+   "event-command-face-flip-horizontal",
+   "event-command-face-resource"
+  ],
+  "changeGold": [
+   "change-gold-amount-select",
+   "change-gold-amount-source"
+  ],
+  "changeItem": [
+   "change-item-amount-select",
+   "change-item-amount-source",
+   "change-item-item-id-picker"
+  ],
+  "changeLevel": [
+   "change-level-actor-select"
+  ],
+  "changeLifeSkillExp": [
+   "change-life-skill-exp-amount-mode",
+   "change-life-skill-exp-amount-select"
+  ],
+  "changeParty": [
+   "change-party-actor-select"
+  ],
+  "changeTile": [
+   "change-tile-layer-select",
+   "change-tile-map-select",
+   "change-tile-tile-input"
+  ],
+  "choices": [
+   "event-choice-cancel-branch",
+   "event-choice-cancel-disallow"
+  ],
+  "craftRecipe": [
+   "craft-recipe-result-variable>select#0"
+  ],
+  "enterHeroName": [
+   "enter-hero-name-actor-select"
+  ],
+  "equipTool": [
+   "equip-tool-item-select"
+  ],
+  "erasePicture": [
+   "erase-picture-id-input"
+  ],
+  "evolveMonster": [
+   "evolve-monster-species-select"
+  ],
+  "fork": [
+   "event-condition-switch-target>select#0"
+  ],
+  "getFriendship": [
+   ":root>select#0"
+  ],
+  "giveMonster": [
+   "give-monster-species-select"
+  ],
+  "inn": [
+   "inn-branch-not-enough",
+   "inn-note-input",
+   "inn-price-input",
+   "inn-recover-mp"
+  ],
+  "inputNumber": [
+   "input-number-variable>select#0"
+  ],
+  "inputWait": [
+   "event-command-input-wait-variable>select#0"
+  ],
+  "learnSkill": [
+   "learn-skill-action-select",
+   "learn-skill-actor-select",
+   "learn-skill-search",
+   "learn-skill-skill-select",
+   "learn-skill-target-mode"
+  ],
+  "m2Command": [
+   "change-parameters-actor-select",
+   "change-parameters-operation",
+   "change-parameters-target-mode",
+   "change-parameters-value-source",
+   "change-parameters-value-variable>select#0"
+  ],
+  "moveEvent": [
+   "move-route-event-id-input",
+   "move-route-repeat-checkbox",
+   "move-route-skippable-checkbox",
+   "move-route-target-select",
+   "move-route-wait-checkbox"
+  ],
+  "openChest": [
+   "open-chest-lock-item",
+   "open-chest-lock-switch>select#0",
+   "open-chest-scope-select"
+  ],
+  "playAudio": [
+   "play-audio-search"
+  ],
+  "playMovie": [
+   "play-movie-skippable-select",
+   "play-movie-wait-select"
+  ],
+  "promoteActor": [
+   "promote-actor-select",
+   "promote-class-select"
+  ],
+  "recoverAll": [
+   "recover-all-actor-select"
+  ],
+  "removeLight": [
+   "remove-light-all-select"
+  ],
+  "runControl": [
+   "event-command-run-seed-auto"
+  ],
+  "setEventGraphicPattern": [
+   "npc-direction-down>input#0",
+   "npc-direction-left>input#0",
+   "npc-direction-right>input#0",
+   "npc-pattern-1>input#0",
+   "npc-pattern-2>input#0"
+  ],
+  "setLighting": [
+   "set-lighting-transition-input"
+  ],
+  "setSwitch": [
+   "event-command-switch-operand>select#0",
+   "event-command-switch-target>select#0"
+  ],
+  "setVariable": [
+   "event-command-variable-operand>select#0",
+   "event-command-variable-target>select#0",
+   "event-command-variable-value-source"
+  ],
+  "setWeather": [
+   "set-weather-kind-select"
+  ],
+  "shop": [
+   "shop-stock-all-seasons",
+   "shop-stock-price-custom",
+   "shop-stock-price-override"
+  ],
+  "showAnimation": [
+   "show-animation-animationId-select",
+   "show-animation-target-kind-select",
+   "show-animation-wait-select"
+  ],
+  "showPicture": [
+   "show-picture-duration-input",
+   "show-picture-id-input",
+   "show-picture-resource-input",
+   "show-picture-rotation-input"
+  ],
+  "spawnFieldEnemy": [
+   "event-command-spawn-switch",
+   "event-command-spawn-troop"
+  ],
+  "text": [
+   "event-command-text-body",
+   "event-command-text-speaker"
+  ],
+  "transfer": [
+   "transfer-player-direction-down",
+   "transfer-player-direction-left",
+   "transfer-player-direction-right",
+   "transfer-player-direction-up",
+   "transfer-player-fade-none",
+   "transfer-player-fade-white"
+  ],
+  "wait": [
+   "event-wait-mode-variable",
+   "event-wait-variable>select#0"
+  ]
+ }
+}

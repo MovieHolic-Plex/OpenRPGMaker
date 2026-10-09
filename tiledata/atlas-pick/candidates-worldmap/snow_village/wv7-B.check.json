@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_village/wv7-B.pxg",
+ "set": "worldmap",
+ "id": "snow_village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "banding"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "오른쪽 오두막 + 왼쪽 눈 쌓인 소나무, 5단 눈 명암으로 깊이감",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.031
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.021
+  }
+ }
+}

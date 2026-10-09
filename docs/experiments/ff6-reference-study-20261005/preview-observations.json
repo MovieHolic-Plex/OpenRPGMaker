@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "viewport": 704,
+      "scroll": 704,
+      "image": 256
+    },
+    {
+      "viewport": 288,
+      "scroll": 288,
+      "image": 256
+    },
+    {
+      "scene": "holy",
+      "frame": "22",
+      "last": "22",
+      "play": "처음부터 재생",
+      "phase": "전장 복귀"
+    }
+  ],
+  "errors": []
+}

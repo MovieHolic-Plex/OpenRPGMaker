@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/window_night/hf3-A.pxg",
+ "set": "horror",
+ "id": "window_night",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "밤 창 A — 짙은 마호가니 틀·십자 창살(세로 4단·가로 3단), 유리 murk 1~0단(밤), 왼위 칸에 달빛 moon 3단 세 점, 밝은 턱. 벽면 위 2px 비움.",
+ "ok": true
+}

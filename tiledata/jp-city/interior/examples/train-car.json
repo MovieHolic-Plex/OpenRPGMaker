@@ -1,0 +1,229 @@
+{
+ "name": "일본 통근 전철 차내",
+ "plan": [
+  "#####################",
+  "#...................#",
+  "#...................#",
+  "#...................#",
+  "#...................#",
+  "#...................#",
+  "##.................##",
+  "#####################"
+ ],
+ "floor": "st-car-floor",
+ "wall": "st-car-wall",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "st-car-end",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "st-priority-seat",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "st-long-seat",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "st-pole",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "st-long-seat",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "st-priority-seat",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "st-car-end",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "st-car-door",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "st-car-door",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 16,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 17,
+   "y": 1
+  },
+  {
+   "id": "st-strap",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "st-priority-seat-s",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "st-long-seat-s",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "st-pole",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "st-long-seat-s",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "st-priority-seat-s",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "st-car-door-s",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "st-car-door-s",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "st-door-line",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "st-door-line",
+   "x": 15,
+   "y": 3
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "traincar",
+   "x0": 1,
+   "y0": 1,
+   "x1": 19,
+   "y1": 6
+  }
+ ],
+ "start": [
+  5,
+  4
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 5,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 5,
+   "toY": 7,
+   "direction": "down"
+  },
+  {
+   "x": 6,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 5,
+   "toY": 7,
+   "direction": "down"
+  },
+  {
+   "x": 14,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 14,
+   "toY": 7,
+   "direction": "down"
+  },
+  {
+   "x": 15,
+   "y": 3,
+   "toMapId": "jp-city-station-platform",
+   "toX": 14,
+   "toY": 7,
+   "direction": "down"
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w3-A.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "v5 다듬기 — 흩어진 점을 2×2 금 덩이 넷과 2×3 청록 결정 넷으로 묶어 읽히게 하고, 결정은 왼쪽 위 밝은 끝(teal:6)→오른쪽 아래 어두운 끝(teal:2), 금은 gold:6→gold:3 으로 한 단씩 내림.",
+ "ok": true
+}

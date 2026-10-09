@@ -1,0 +1,108 @@
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a marble
+@mblock 0 0
+................
+................
+......aaaa......
+.....aaaaaa.....
+.....aaaaaa.....
+.....aaaaaa.....
+.....aaaaaa.....
+......aaaa......
+......aaaa......
+...aaaaaaaaaa...
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+...aaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+@tblock 0 0
+................
+................
+......0000......
+.....065430.....
+.....056430.....
+.....056430.....
+.....055420.....
+......0540......
+......0430......
+...0055544200...
+..056665544320..
+..065165431320..
+..065165431320..
+..054165431320..
+..046655441320..
+..034433221320..
+...06554321320..
+...06554321320..
+...04332211320..
+...06554321320..
+...06554321320..
+...06554321320..
+...06554321530..
+...06554321430..
+...06645433220..
+...06635423220..
+...06635433220..
+..066544433220..
+..066534423220..
+..066534433220..
+..066544433220..
+..066534423220..
+..066534433220..
+..034344433320..
+..044444443330..
+..056666655440..
+..065666666650..
+...0333333220...
+...0544432210...
+...0544432210...
+...0544432210...
+...0544432210...
+...0544432210...
+..055555555530..
+..044444444320..
+..033333332220..
+..022222222220..
+..000000000000..
+@px 14 45 ~
+@px 15 45 -
+@px 14 46 ~
+@px 15 46 -
+@px 14 47 ~
+@px 15 47 -

@@ -1,0 +1,316 @@
+/* ── 4. 작업 계획 책 모달 (표지 + 레이어 페이지) ─────────────────
+   DOM(aiWorkPlanModal): .ai-plan-book-overlay > article.ai-plan-book
+   > header + .ai-plan-book-stage(.ai-plan-book-sheet.is-current) + footer.
+   데크의 「계획 보기」(.ai-plan-book-open)가 연다. hex/!important 금지. */
+.ai-plan-book-overlay {
+  align-items: center;
+  background: var(--bg-scrim);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-5);
+  position: fixed;
+  z-index: var(--z-app-modal);
+}
+
+.ai-plan-book {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-ui);
+  max-height: min(720px, calc(100vh - 64px));
+  overflow: hidden;
+  width: min(560px, calc(100vw - 48px));
+}
+
+.ai-plan-book-head {
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+}
+
+.ai-plan-book-titles {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-plan-book-kicker {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.ai-plan-book-title {
+  color: var(--text-1);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-plan-book-count {
+  color: var(--text-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.ai-plan-book-close,
+.ai-plan-book-nav {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: none;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 12px;
+}
+
+.ai-plan-book-close:hover,
+.ai-plan-book-nav:hover {
+  background: var(--bg-hover);
+}
+
+.ai-plan-book-nav:disabled {
+  color: var(--text-disabled);
+  cursor: default;
+}
+
+.ai-plan-book-close:focus-visible,
+.ai-plan-book-nav:focus-visible,
+.ai-plan-book-dot:focus-visible,
+.ai-plan-book-toc-row:focus-visible,
+.ai-plan-book-open:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.ai-plan-book-stage {
+  flex: 1 1 auto;
+  min-height: 280px;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.ai-plan-book-sheet {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ai-plan-book-sheet.is-current {
+  display: flex;
+}
+
+.ai-plan-book-progress {
+  color: var(--text-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin: 0;
+}
+
+.ai-plan-book-note {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-plan-book-toc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ai-plan-book-toc-row {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: 10px 12px;
+  text-align: left;
+  width: 100%;
+}
+
+.ai-plan-book-toc-row.is-current {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ai-plan-book-toc-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ai-plan-book-toc-meta {
+  color: var(--text-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-plan-book-layer-kicker {
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+
+.ai-plan-book-layer-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.ai-plan-book-layer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ai-plan-book-item {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+}
+
+.ai-plan-book-item.is-in_progress {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ai-plan-book-item.is-done {
+  background: var(--success-muted);
+  border-color: color-mix(in srgb, var(--success) 35%, transparent);
+}
+
+.ai-plan-book-item.is-blocked {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 35%, transparent);
+}
+
+.ai-plan-book-item-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.ai-plan-book-pill {
+  background: var(--bg-inset);
+  border-radius: 6px;
+  color: var(--text-2);
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+}
+
+.ai-plan-book-pill.is-in_progress {
+  background: var(--accent-muted);
+  color: var(--accent-active);
+}
+
+.ai-plan-book-pill.is-done {
+  background: var(--success-muted);
+  color: var(--success);
+}
+
+.ai-plan-book-pill.is-blocked {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.ai-plan-book-item-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.ai-plan-book-item-instruction,
+.ai-plan-book-item-done,
+.ai-plan-book-item-note {
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ai-plan-book-item-note {
+  color: var(--accent-active);
+}
+
+.ai-plan-book-foot {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-plan-book-dots {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  justify-content: center;
+}
+
+.ai-plan-book-dot {
+  background: var(--border-strong);
+  border: 0;
+  border-radius: 99px;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  width: 8px;
+}
+
+.ai-plan-book-dot.is-current {
+  background: var(--accent);
+  width: 18px;
+}
+
+.ai-deck .ai-plan-book-open {
+  background: none;
+  border: 0;
+  color: var(--accent-active);
+  cursor: pointer;
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-plan-book-dot {
+    transition: none;
+  }
+}

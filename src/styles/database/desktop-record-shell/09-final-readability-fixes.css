@@ -1,0 +1,111 @@
+@media (min-width: 901px) {
+  .database-modal-body .oprn-record-actors .actor-detail-form,
+  .database-modal-body .oprn-record-actors .actor-classic-sheet {
+    overflow: auto;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
+    height: auto;
+    min-height: 820px;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-right-stack {
+    grid-template-rows: auto auto auto auto auto;
+    overflow: visible;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rates {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-list {
+    max-height: 194px;
+    overflow: auto;
+    padding-bottom: 2px;
+  }
+
+  .database-modal-body .oprn-record-actors .actor-rate-row {
+    box-sizing: border-box;
+    height: 38px;
+    line-height: 1.25;
+    min-height: 38px;
+    overflow: visible;
+    padding: 3px 8px;
+  }
+
+  .database-modal-body .oprn-record-troops .oprn-record-list-pane {
+    grid-template-rows: 30px 48px minmax(0, 1fr) 34px 34px;
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-troops .db-list {
+    height: auto;
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-troops .oprn-record-list-footer {
+    align-items: center;
+    height: auto;
+    padding: 4px 0;
+  }
+
+  .database-modal-body .oprn-record-troops .db-toolbar {
+    align-items: center;
+    height: auto;
+    margin: 0;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-event-condition-strip {
+    grid-template-columns: 120px minmax(128px, 1fr) 24px;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-event-condition-strip select {
+    min-width: 128px;
+  }
+
+  .database-modal-body .oprn-record-troops .db-troop-member-row {
+    box-sizing: border-box;
+    line-height: 18px;
+    min-height: 38px;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* db-panel-equipment-graphic 클래스 기반 규칙(04-modern-records.css)이 1차 배치를 맡는다.
+     여기서는 이미지 필드 testid 기준 :has() 규칙만 유지 — 위치(:first-child)에 의존하지 않아
+     equipmentFields()가 그래픽 패널 앞에 이름/가격/부위 필드를 붙여도 항상 매치된다(P1). */
+  .database-modal-body .oprn-record-equipment .oprn-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) {
+    grid-template-columns: minmax(200px, 0.72fr) minmax(320px, 1.28fr);
+  }
+
+  .database-modal-body .oprn-record-equipment .oprn-detail-equipment > .db-advanced-panel:has([data-testid="db-field-equipment-image-resource"]) .db-field {
+    grid-template-columns: 64px minmax(180px, 1fr);
+  }
+
+  .database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child {
+    grid-template-columns: 48px minmax(260px, 1fr);
+    width: min(640px, 100%);
+  }
+
+  .database-modal-body .oprn-record-states .oprn-detail-states > .db-field:first-child > input {
+    min-width: 260px;
+  }
+
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel-hp .db-state-control,
+  .database-modal-body .oprn-record-states .db-state-oprn-workbench > .db-state-panel-mp .db-state-control {
+    grid-template-columns: 52px minmax(124px, 1fr);
+  }
+
+  .database-modal-body .animation-detail-form .field:has([data-testid="db-field-animation-large"]) {
+    grid-template-columns: 84px 24px;
+    overflow: visible;
+    width: max-content;
+  }
+
+  .database-modal-body .animation-detail-form [data-testid="db-field-animation-large"] {
+    min-height: 18px;
+    width: 18px;
+  }
+}

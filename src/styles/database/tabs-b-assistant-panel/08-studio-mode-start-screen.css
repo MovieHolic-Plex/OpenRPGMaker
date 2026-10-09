@@ -1,0 +1,599 @@
+/* 스튜디오 모드 셸 + 시작 화면 + 기록 마운트.
+   스튜디오만 타일 에디터를 덮는 연출 워크스페이스다. 기본 조수(입력줄 캡슐)는
+   18-assistant-deck.css 가 소유하고, 이 파일의 .is-studio 규칙은 그 기하에서 뺀다. */
+
+.ai-chat-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+}
+
+.ai-chat-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ── 스튜디오 「장면 콘솔」(2026-09-03). 톱바 아래 전면 오버레이. 호스트는 캔버스 안이라
+   absolute 로는 좌측 타일 레일을 못 가린다. fixed + 톱바 48px 아래부터.
+   구성은 바닥(--bg-inset) 위에 네 섬(--bg-raised, 12px): 장면 레일 | 모니터 | 조수, 아래 덱.
+   설계: docs/superpowers/specs/2026-09-03-ai-studio-console-design.md
+   스태킹: 호스트 z-index 40 < 초보 레일 --z-rail 50 이라 장면 레일이
+   타일 사이드바에 가렸다. 열리면 도크를 숨기고 호스트를 --z-flyout 으로 올린다. */
+.ai-chat-panel.chat-dock-float.is-studio {
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  inset: 48px 0 0 0;
+  max-height: none;
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: auto;
+  position: fixed;
+  width: auto;
+  z-index: 45;
+}
+
+.ai-chat-panel.is-studio > :not(.ai-studio-shell) {
+  display: none;
+}
+
+body.ai-studio-open .ai-chat-float-host {
+  z-index: var(--z-flyout);
+}
+
+body.ai-studio-open .left-panel,
+body.ai-studio-open .right-panel,
+body.ai-studio-open .resizer-left,
+body.ai-studio-open .authoring-journey-host {
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.ai-chat-panel.is-studio .ai-chat-collapse,
+.ai-chat-panel.is-studio [data-testid="ai-collapse"] {
+  display: none;
+}
+
+.ai-studio-shell {
+  --studio-scenes-col: 252px;
+  --studio-chat-col: 400px;
+  --studio-scenes-w: var(--studio-scenes-col);
+  --studio-chat-w: var(--studio-chat-col);
+  /* 덱(레인 보드) 높이 — 1440 에서 4레인이 스크롤 없이 보인다(§11 결정 2). 1280 은 아래 미디어쿼리. */
+  --studio-deck-h: 284px;
+  --studio-splitter: 8px;
+  background: var(--bg-inset);
+  color: var(--text-1);
+  display: grid;
+  flex: 1 1 auto;
+  font-variant-numeric: tabular-nums;
+  gap: 10px;
+  /* 열: 장면 | 손잡이 | 모니터 | 손잡이 | 지금 보는 채팅 — 손잡이는 소음을 내지 않는 8px 기둥.
+     행: 위 3열 | 아래 덱(레인 보드, 그리드 행 — 2026-09-17 §11 로 오버레이 드로워 폐기). */
+  grid-template-columns: var(--studio-scenes-w) var(--studio-splitter) minmax(0, 1fr) var(--studio-splitter) var(--studio-chat-w);
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 10px;
+  pointer-events: auto;
+  position: relative;
+  transition: grid-template-columns var(--transition-med);
+}
+
+/* 리사이즈 손잡이 — 평소엔 투명 기둥, 호버·포커스 때만 얇은 선 */
+.ai-studio-splitter {
+  align-self: stretch;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: col-resize;
+  justify-self: stretch;
+  min-height: 24px;
+  min-width: var(--studio-splitter);
+  padding: 0;
+  position: relative;
+  touch-action: none;
+  z-index: 1;
+}
+
+.ai-studio-splitter.is-horizontal {
+  cursor: row-resize;
+  min-height: var(--studio-splitter);
+  min-width: 24px;
+}
+
+.ai-studio-splitter::after {
+  background: transparent;
+  border-radius: 2px;
+  content: "";
+  inset: 0;
+  position: absolute;
+  transition: background var(--transition-fast);
+}
+
+.ai-studio-splitter:hover::after,
+.ai-studio-splitter:focus-visible::after {
+  background: var(--accent);
+}
+
+.ai-studio-splitter:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-scenes"] {
+  grid-column: 2;
+  grid-row: 1 / 3;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-chat"] {
+  grid-column: 4;
+  grid-row: 1 / 3;
+}
+
+.ai-studio-splitter[data-testid="ai-studio-split-deck"] {
+  /* 덱 머리띠 바로 위 8px 띠 — 덱 섹션 첫 자식이라 탭 클릭을 가로채지 않는다 */
+  height: var(--studio-splitter);
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-shell {
+    transition: none;
+  }
+}
+
+.ai-studio-pane-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+/* 아이콘은 이벤트 편집기 빌더(renderEditorIcon)를 그대로 쓴다. 크기 규칙은 그쪽 시트가
+   .event-* 스코프로 갖고 있어 여기서 다시 준다. */
+.ai-studio-shell .ee-icon {
+  display: inline-block;
+  flex: 0 0 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.ai-studio-scenes,
+.ai-studio-monitor,
+.ai-studio-chat,
+.ai-studio-deck {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 공통 조각 — 머리, 개수, 킥커, 아이콘 단추, 검색 */
+.ai-studio-pane-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 10px 10px 6px 14px;
+}
+
+.ai-studio-pane-title {
+  align-items: baseline;
+  color: var(--text-1);
+  display: flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+  margin: 0;
+}
+
+.ai-studio-count {
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ai-studio-kicker {
+  color: var(--text-3);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.ai-studio-icon-btn {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  width: 28px;
+}
+
+.ai-studio-icon-btn:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.ai-studio-icon-btn:active {
+  transform: scale(0.96);
+}
+
+.ai-studio-icon-btn:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.ai-studio-search {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--text-3);
+  display: flex;
+  gap: 6px;
+  height: 30px;
+  margin: 0 10px 8px;
+  padding: 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.ai-studio-search:focus-within {
+  background: var(--bg-raised);
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring);
+}
+
+.ai-studio-search-input {
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 13px;
+  min-width: 0;
+  outline: none;
+  padding: 0;
+}
+
+.ai-studio-search-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+/* ── 장면 레일 ─────────────────────────────────────────────────────────────── */
+.ai-studio-scenes {
+  display: flex;
+  flex-direction: column;
+  grid-column: 1;
+  grid-row: 1 / 3;
+  width: var(--studio-scenes-w);
+}
+
+.ai-studio-scene-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 8px 10px;
+}
+
+.ai-studio-scene-group {
+  align-items: center;
+  color: var(--text-3);
+  display: flex;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 6px;
+  padding: 12px 8px 4px;
+}
+
+.ai-studio-scene-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-width: 0;
+  padding-left: calc(var(--scene-depth, 0) * 10px);
+}
+
+.ai-studio-scene-fold {
+  align-items: center;
+  align-self: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  padding: 0;
+  width: 22px;
+}
+
+.ai-studio-scene-fold:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ai-studio-scene-fold:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-studio-scene-fold .ee-icon {
+  transform: rotate(-90deg);
+  transition: transform var(--transition-med);
+}
+
+.ai-studio-scene-fold.is-open .ee-icon {
+  transform: rotate(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-studio-scene-fold .ee-icon {
+    transition: none;
+  }
+}
+
+.ai-studio-scene {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 10px;
+  grid-template-columns: 56px minmax(0, 1fr);
+  padding: 6px 8px;
+  padding-left: calc(8px + var(--scene-depth, 0) * 10px);
+  position: relative;
+  text-align: left;
+  transition: background var(--transition-fast);
+  width: 100%;
+}
+
+.ai-studio-scene-row > .ai-studio-scene {
+  padding-left: 8px;
+}
+
+.ai-studio-scene:hover {
+  background: var(--bg-hover);
+}
+
+.ai-studio-scene:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-studio-scene.is-on {
+  background: var(--accent-muted);
+}
+
+.ai-studio-scene.is-on::before {
+  background: var(--accent);
+  border-radius: 2px;
+  content: "";
+  height: 24px;
+  left: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+}
+
+.ai-studio-scene-thumb {
+  background: var(--bg-inset);
+  border-radius: 6px;
+  display: block;
+  height: 42px;
+  image-rendering: pixelated;
+  width: 56px;
+}
+
+.ai-studio-scene-body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-studio-scene-line {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.ai-studio-scene b {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-studio-scene-meta {
+  color: var(--text-3);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-studio-scene.is-on b {
+  color: var(--accent);
+}
+
+/* 인디고 틴트 위에서는 --text-3 이 AA 를 못 넘는다(순백에서도 4.75:1) → --text-2. */
+.ai-studio-scene.is-on .ai-studio-scene-meta {
+  color: var(--text-2);
+}
+
+.ai-studio-badge {
+  flex: 0 0 auto;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px 5px;
+}
+
+.ai-studio-badge.is-start {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* ── 모니터 ───────────────────────────────────────────────────────────────── */
+.ai-studio-monitor {
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  grid-column: 3;
+  grid-row: 1;
+  grid-template-rows: auto minmax(0, 1fr);
+  position: relative;
+}
+
+.ai-studio-monitor-head {
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 6px 10px 6px 14px;
+}
+
+.ai-studio-monitor-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ai-studio-monitor-label {
+  color: var(--text-1);
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-studio-monitor-meta {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.ai-studio-chip {
+  background: var(--control-bg);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.ai-studio-monitor-tools {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+/* 입양한 줌 툴바 — 캔버스 위 유리 알약이 아니라 머리띠의 평범한 컨트롤이 된다. */
+.ai-studio-monitor-chrome {
+  display: flex;
+}
+
+.ai-studio-exit {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.ai-studio-exit:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.ai-studio-exit:active {
+  transform: scale(0.98);
+}
+
+.ai-studio-exit:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.ai-studio-monitor-stage {
+  background: var(--bg-canvas, var(--bg-inset));
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 캔버스 셸의 톱바 예약(--editor-canvas-chrome-top, persistence :has)을 덮어
+   모니터 칸을 끝까지 채운다. 안 그러면 위가 74px 비어 그림 액자처럼 보인다. */
+
+.ai-studio-monitor-stage .phaser-container,
+.ai-studio-monitor-stage .phaser-container > canvas {
+  display: block;
+  height: 100% !important;
+  max-height: 100%;
+  max-width: 100%;
+  width: 100% !important;
+}
+
+.ai-studio-monitor-empty {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  justify-content: center;
+}

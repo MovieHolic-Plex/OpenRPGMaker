@@ -1,0 +1,20 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/doormat/w1-A.pxg",
+ "id": "doormat",
+ "hard": [
+  "size: 16x16 ≠ resize.json 캔버스 32x16"
+ ],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "사용자 메모: 발깔개를 2x1 로 만들고, 3번(w1-C) 방향이 괜찮다."
+ },
+ "ok": false
+}

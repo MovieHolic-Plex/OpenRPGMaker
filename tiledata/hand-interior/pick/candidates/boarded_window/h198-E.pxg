@@ -1,0 +1,82 @@
+// E: 둥근 폐가 창틀에 세 장의 비스듬한 바랜 판자와 쇠못; 벽면 걸이의 평면 시점.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 3
+@mat c wood 3
+@mat d wood 5
+@mat e wood 7
+@mat g glass 0
+@mat h glass 1
+@mat j glass 2
+@mat k pine 1
+@mat l pine 2
+@mat m pine 3
+@mat n pine 4
+@mat q iron 2
+@mat r iron 5
+@layer window
+@mblock 0 0
+.....bbbbbb.....
+...bbdeeddcbb...
+..bdechhhhcdbb..
+..dechjjhhgacba.
+..dchjhhgggacba.
+..dchhhggggacba.
+..dchhgggggacba.
+..dchggggggacba.
+..dchggggggacba.
+..dchggggggacba.
+..dchggggggacba.
+..dchggggggacba.
+..dchggggggacba.
+..dcccccccccba..
+..ceeeddddccba..
+..bbbbbaaaaaaa..
+@layer boards
+@mblock 0 3
+.knn............
+.kmrnnn.........
+..kkmmmnmm......
+.....kklmmnnnnk.
+........kkllmql.
+...........kkkk.
+................
+................
+................
+................
+................
+................
+................
+@mblock 0 7
+.knnn...........
+.kmrmnnnm.......
+..kklllmmnnnnk..
+......kkmmlmql..
+.........kkkkk..
+@mblock 0 11
+.knnn...........
+.kmrnnnmm.......
+..kkmmllmnnnnnk.
+......kkmmlmmql.
+.........kkkkkk.
+@tblock 0 3
+.144............
+.135444.........
+..11333433......
+.....1123344441.
+........1122322.
+...........1111.
+@tblock 0 7
+.1444...........
+.13534443.......
+..112223344441..
+......11332322..
+.........11111..
+@tblock 0 11
+.1444...........
+.13544433.......
+..1133223444441.
+......113323322.
+.........111111.

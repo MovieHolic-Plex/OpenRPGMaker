@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_wood_panel/hf2-C.pxg",
+ "set": "horror",
+ "id": "wall_wood_panel",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(패널 몰딩): 16px 홈 판(모따기 밝은 왼·위, 어두운 오른·아래) 안에 세로 결 줄과 알갱이, 위 띠에 놋쇠 못",
+ "ok": true
+}

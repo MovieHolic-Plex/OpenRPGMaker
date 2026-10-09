@@ -1,0 +1,95 @@
+// EasyRPG RTP backdrop/BGM/SE 리소스의 분위기 태그.
+// easyrpgRtp.ts는 스크립트로 생성되는 파일(수정 금지)이라, 태그는 파일명 기반 추정으로 이 별도 파일에서 관리한다.
+
+const KEYWORD_TAGS: Record<string, readonly string[]> = {
+  // backdrop(파노라마)
+  cosmos: ["우주", "코스모스"],
+  dawn: ["새벽"],
+  "dimension rift": ["차원", "균열", "이상한"],
+  "night sky": ["밤", "밤하늘"],
+  planet: ["행성", "우주"],
+  sky: ["하늘", "맑음"],
+  sunset: ["석양", "노을"],
+  // BGM
+  battle: ["전투"],
+  boss: ["보스", "전투"],
+  castle: ["성", "궁전"],
+  church: ["교회", "신전"],
+  dungeon: ["던전"],
+  ending: ["엔딩", "결말"],
+  field: ["필드", "평원", "여행"],
+  "game over": ["게임오버", "패배"],
+  doubt: ["미스터리", "긴장"],
+  "end of battle": ["전투종료", "승리"],
+  fanfare: ["팡파레", "승리", "축하"],
+  inn: ["여관", "휴식"],
+  joke: ["코믹", "유머"],
+  mystery: ["미스터리", "긴장"],
+  opening: ["오프닝", "시작"],
+  sorrow: ["슬픔", "감성"],
+  town: ["마을"],
+  vehicle: ["탈것", "이동수단"],
+  // SE(효과음)
+  attack: ["공격"],
+  absorb: ["흡수"],
+  barrier: ["배리어", "보호막"],
+  bell: ["종"],
+  blind: ["실명"],
+  blow: ["타격"],
+  breath: ["브레스"],
+  buff: ["강화"],
+  buzzer: ["실패", "오류"],
+  cancel: ["취소"],
+  cat: ["고양이"],
+  chime: ["차임", "알림"],
+  clock: ["시계"],
+  close: ["닫기"],
+  collapse: ["붕괴"],
+  combat: ["전투"],
+  confusion: ["혼란"],
+  cursor: ["커서"],
+  damage: ["데미지"],
+  darkness: ["암흑"],
+  debuff: ["약화"],
+  decision: ["결정", "선택"],
+  dog: ["개"],
+  earth: ["대지", "땅"],
+  escape: ["도주"],
+  evade: ["회피"],
+  explosion: ["폭발"],
+  fall: ["낙하"],
+  fire: ["불"],
+  flash: ["섬광"],
+  fog: ["안개"],
+  glare: ["섬광"],
+  holy: ["신성"],
+  ice: ["얼음"],
+  item: ["아이템", "획득"],
+  key: ["열쇠"],
+  knock: ["노크"],
+  magic: ["마법"],
+  monster: ["몬스터"],
+  move: ["이동"],
+  poison: ["중독"],
+  pollen: ["꽃가루"],
+  raise: ["부활"],
+  recovery: ["회복"],
+  sandstorm: ["모래폭풍"],
+  shot: ["발사"],
+  silence: ["침묵"],
+  sleep: ["수면"],
+  song: ["노래"],
+  teleport: ["순간이동"],
+  wave: ["파도"],
+  wind: ["바람"],
+};
+
+export function moodTagsForAsset(asset: { readonly fileName: string }): string[] {
+  const base = asset.fileName.replace(/\.[^.]+$/, "").toLowerCase();
+  const tags = new Set<string>();
+  for (const [keyword, keywordTags] of Object.entries(KEYWORD_TAGS)) {
+    if (!base.includes(keyword)) continue;
+    for (const tag of keywordTags) tags.add(tag);
+  }
+  return [...tags];
+}

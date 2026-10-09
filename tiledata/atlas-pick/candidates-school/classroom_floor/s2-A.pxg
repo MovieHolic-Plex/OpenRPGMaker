@@ -1,0 +1,40 @@
+// classroom_floor s2-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a cfloor 0
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+5555524455555555
+4444424444334444
+4434424444444444
+2222222222222222
+5555555555555255
+4443344444444244
+4444444443444244
+2222222222222222
+5555555552555555
+4434444442444444
+4444444442444433
+2222222222222222
+5525555555555555
+4424444334444444
+4424444444443444
+2222222222222222

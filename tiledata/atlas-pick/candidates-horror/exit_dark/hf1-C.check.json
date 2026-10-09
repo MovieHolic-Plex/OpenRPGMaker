@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-C.pxg",
+ "set": "horror",
+ "id": "exit_dark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.199
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.181
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "C(안개 낀 복도식): 단 사이를 두 줄씩 체스판으로 넓게 풀어 어둠이 번지듯, 좌우 가장자리는 두 줄마다 3px/2px 로 들쭉날쭉(젖은 벽 느낌). 위 2줄 투명, 맨 아래 &",
+ "ok": true
+}

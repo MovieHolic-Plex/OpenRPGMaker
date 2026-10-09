@@ -1,0 +1,71 @@
+{
+  "scope": "Isolated QA copies and actual editor components; canonical campaign revision537 unchanged",
+  "editor": {
+    "errors": [],
+    "condition": {
+      "kind": "monsterSpecies",
+      "speciesId": "qa_merin",
+      "present": false
+    },
+    "passed": true
+  },
+  "player": {
+    "passed": true,
+    "errors": [],
+    "sqliteReload": {
+      "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-player/sqlite-fixture",
+      "projectId": "e12d5d3b-42fb-4f34-b580-c737b352b60e",
+      "revision": 3,
+      "conditionPreserved": true
+    },
+    "partySizeAtBoxStage": 6,
+    "boxedInstance": "monster_7",
+    "boxedInstancePresent": true,
+    "partyTransferPresent": true
+  },
+  "battle": {
+    "passed": true,
+    "errors": [],
+    "battleCondition": true,
+    "sqliteReload": {
+      "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-battle/sqlite-fixture",
+      "projectId": "b4102f2c-6ed7-4886-8e22-b22ef5ea98d2",
+      "revision": 1,
+      "conditionPreserved": true
+    }
+  },
+  "screenshots": [
+    "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-editor/condition.png",
+    "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-battle/battle-condition.png"
+  ],
+  "tests": "Vitest/gates/typecheck not run under session instructions",
+  "deployment": {
+    "status": 200,
+    "assets": [
+      {
+        "name": "/assets/main-px6d5-ZN.js",
+        "sha256": "9cca80e72726fc20daee15af6ddafe2cac9365219887911f2ff7b0a13b18a915",
+        "matchesBuild": true
+      },
+      {
+        "name": "/assets/main-hSkw18us.css",
+        "sha256": "673c7a5001cf09e501e755263bb44eb53abf4f2b078d6d8555c5e885779fe290",
+        "matchesBuild": true
+      }
+    ]
+  },
+  "mergeCommit": "34aa80ba76c96dc19aa1e5f8a6c4289f04ef0b1f",
+  "postDeploySync": {
+    "topLevelChanged": [
+      "tilesets"
+    ],
+    "mapsEqual": true,
+    "databaseEqual": true,
+    "sessionEqual": true,
+    "tileChanged": [
+      "shared_lpc_city_outside"
+    ],
+    "uploadedAdded": [],
+    "uploadedChanged": []
+  }
+}

@@ -1,0 +1,107 @@
+/* ── 5. 타일 도크: 시트 · 그리드 ──────────────────────────────────────────── */
+
+/* 시트는 우묵한 면이다 — 테두리 없이 톤으로 내려앉는다. 남는 세로는 전부 여기로. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: var(--radius-m);
+  min-height: min(240px, 32vh);
+  scrollbar-gutter: stable;
+}
+
+/* 칸 크기를 **한 번만** 계산하게 등록한다(2026-09-25 팔레트 클릭 렉).
+   등록 안 된 커스텀 속성은 값을 글자 그대로 물려주므로, 칸마다 `width: var(--chipset-cell)` 가
+   `100cqi` 를 자기 자리에서 다시 풀었다 — 칸 전부가 컨테이너 쿼리에 묶여, 칸 하나의 class(active)
+   만 바꿔도 컨테이너 안 스타일을 통째로 다시 계산했다. 1,980칸 아틀라스에서 클릭 한 번에 ~350ms × 여러 번.
+   `<length>` 로 등록하면 정의한 격자에서 px 로 굳고 칸은 그 px 를 물려받는다(실측 ~350ms → ~5ms).
+   초기값 32px 는 기본 `.chipset-grid` 값과 같다 — 이 변수를 쓰는 곳은 전부 정의하는 조상 아래에 있다. */
+@property --chipset-cell {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 32px;
+}
+
+/* 핵심 — 칸이 폭을 결정하는 게 아니라 폭이 칸을 결정한다.
+   6열 계약(oprn-editor-layout.spec / palette 테스트)은 그대로 두고 칸 크기만
+   컨테이너 폭에서 계산한다: (폭 − 안쪽 여백 6px − 틈 5×2px) / 6. 상한 56px 은
+   좌패널을 640px 까지 넓혔을 때 칸이 그림 해상도를 넘어 뭉개지지 않게 하는 선이다.
+   `--chipset-cell` 을 읽는 옛 규칙들(width/height/background-size)이 자동으로 따라온다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+  --chipset-cell: min(56px, calc((100cqi - 16px) / 6));
+  gap: 2px;
+  padding: 3px;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette {
+  border-radius: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
+  gap: 0;
+  padding: 0;
+}
+
+/* 원본 칩의 경계까지 붙여 그려 여러 칸짜리 나무·지형이 한 그림으로 이어진다.
+   선택 표시는 칸 안쪽에만 그려 이웃 칩을 가리거나 칸 크기를 바꾸지 않는다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile {
+  border: 0;
+  border-radius: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile:hover:not(:disabled),
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile:focus-visible:not(:disabled) {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid .chipset-tile.active {
+  box-shadow: inset 0 0 0 1px var(--accent), inset 0 0 0 2px var(--bg-raised);
+}
+
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile {
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile:hover:not(:disabled),
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile:focus-visible:not(:disabled) {
+  border-color: var(--accent-border);
+  box-shadow: inset 0 0 0 1px var(--bg-raised);
+  outline: none;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-tile.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), inset 0 0 0 1px var(--bg-raised);
+  position: relative;
+  z-index: var(--z-base);
+}
+
+/* 오토타일 표시 — 칸이 커졌으니 배지도 읽히는 크기로. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-autotile-badge {
+  background: var(--accent);
+  border: 0;
+  border-radius: 3px;
+  color: var(--on-accent);
+  font-size: 11px;
+  height: 14px;
+  left: 2px;
+  top: 2px;
+  width: 14px;
+}
+
+/* 가상화 팔레트: 트랙 수천 개짜리 CSS 그리드는 레이아웃마다 트랙 크기 계산이 비싸다(버들항 128열×187행).
+   칸을 절대 위치로 두고 그리드 자체는 전체 크기만 가진 상자로 만든다. */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid.custom-palette-grid--virtual {
+  display: block !important;
+  position: relative;
+  width: calc(var(--custom-cols) * var(--chipset-cell)) !important;
+  height: calc(var(--custom-rows) * var(--chipset-cell));
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .custom-palette-grid--virtual > .chipset-tile {
+  position: absolute;
+  left: calc(var(--vc) * var(--chipset-cell));
+  top: calc(var(--vr) * var(--chipset-cell));
+}

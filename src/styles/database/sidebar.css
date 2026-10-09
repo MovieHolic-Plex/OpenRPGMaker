@@ -1,0 +1,796 @@
+/* ============================================================================
+   DB 사이드바 — Database Studio (2026-08)
+   .database-modal-backdrop 하위에만 스코프. --db-studio-* 토큰 소비.
+   220px labeled rail at >=1100px container, 56px icon rail below.
+   ========================================================================= */
+
+/* container for width query — window itself becomes container */
+.database-modal-backdrop .database-modal-window {
+  container-type: inline-size;
+  container-name: db-modal;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body {
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  grid-template-rows: none;
+}
+
+/* ---- sidebar shell ---------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+  background: var(--db-studio-surface, var(--db-light-bg-surface, #FFFFFF));
+  border-bottom: none;
+  border-right: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
+  box-shadow: none;
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 220px;
+  flex-direction: column;
+  gap: 2px;
+  height: auto;
+  margin: 0;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 10px 8px 12px;
+  position: relative;
+  width: 220px;
+  scrollbar-gutter: stable;
+  /* 고정된 탭 검색(40px)과 구획 머리 한 줄 아래로 활성 탭을 드러낸다 — scrollIntoView(nearest)가
+     위로 올릴 때 행이 고정 머리 밑에 숨지 않게. */
+  scroll-padding-top: 72px;
+  scroll-padding-bottom: 12px;
+  /* ‘모든 자료’를 펼치면 사이드바 내용이 200px 냘게 넘치는데, 오버레이 스크롤바는
+     스크롤 전에 보이지 않아 마지막 항목이 그냥 쟘린 듯이 끝났다 — 스크롤바를 상시
+     노출해 더 내릴 수 있다는 것을 알린다. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.24)) transparent;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-body.db-shared-workspace {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  width: 0;
+}
+
+/* The active tab must never resize the modal. Older :has()-scoped record
+   workbenches requested their own width AND height, so clicking a sidebar tab
+   moved the window by up to 98px (measured 1628 / 1584 / 1530 at 1920x1200).
+   This block is the ONLY geometry owner for the studio frame: no tab-content
+   selector may declare width/height on .database-modal-window again. Pinned by
+   test/e2e/database-modal-size-invariant.spec.ts at 0px tolerance. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) {
+  height: min(900px, calc(100vh - 24px));
+  max-height: calc(100vh - 24px);
+  max-width: calc(100vw - 24px);
+  min-height: 0;
+  min-width: 0;
+  width: min(1628px, calc(100vw - 24px));
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-header {
+  box-sizing: border-box;
+  flex: 0 0 44px !important;
+  min-height: 44px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-body {
+  display: flex !important;
+  flex: 1 1 0;
+  flex-direction: row !important;
+  grid-template-columns: none !important;
+  min-height: 0;
+  overflow: hidden !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+  /* 그룹 띠(64px)가 곁에 서므로 목록은 196px 이다. 좁은 창·도크는 아래 규칙이 다시 줄인다. */
+  flex: 0 0 196px !important;
+  width: 196px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+  /* font 단축을 쓰지 않는다 — !important 단축은 font-weight 도 강제해 활성 행의 600 이 진다.
+     글꼴은 .db-tab 기본 규칙의 var(--font-ui) 를 그대로 받는다. */
+  font-size: 13px !important;
+  line-height: 1.4 !important;
+  /* 그룹 띠로 목록이 그룹당 4~8줄이 됐으니 개선안 높이(32px). 접힌 레일은 아래 규칙이 40px 로 바꾼다. */
+  height: 32px !important;
+  justify-content: flex-start !important;
+  margin: 0 !important;
+  padding: 0 10px !important;
+  width: 100% !important;
+}
+
+/* 글자색·굵기는 강제하지 않는다 — 활성 행(.db-tab.active)의 인디고·600 이 이겨야 한다. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab:not(.active) {
+  color: var(--db-studio-text-2, var(--text-2));
+  font-weight: 500;
+}
+
+/* 아이콘은 모든 폭에서 라벨과 함께 남는다. 접힌 56px 레일은 라벨만 사라진
+   같은 디자인이 되고, 220px 라벨 레일도 한글 텍스트 벽이 되지 않는다. */
+@container db-modal (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    opacity: 0.72;
+  }
+}
+
+/* 위 컨테이너 쿼리의 미디어 폴백 — 둘이 같은 값을 내야 한다. 예전에는 이 쪽만
+   글리프를 죽이고 있어서 컨테이너 쿼리를 고쳐도 데스크톱 아이콘이 살아나지 않았다. */
+@media (min-width: 800px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    opacity: 0.72;
+  }
+}
+
+/* Collapsed icon rail: hide the label text and count pill, center the glyph.
+   These need !important because the :has(.db-shared-workspace) block above
+   forces color/padding/width on .db-tab. */
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+    color: transparent !important;
+    font-size: 0 !important;
+    /* 라벨은 font-size 0 이어도 여전히 flex 항목이다 — gap 을 남기면 아이콘이
+       40px 버튼 중앙에서 gap 의 절반(4px)만큼 왼쪽으로 밀린다. */
+    gap: 0;
+    height: 40px !important;
+    justify-content: center !important;
+    max-width: 40px !important;
+    padding: 0 !important;
+    width: 40px !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    height: 20px;
+    opacity: 1;
+    width: 20px;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
+    display: none !important;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+    color: transparent !important;
+    font-size: 0 !important;
+    /* 라벨은 font-size 0 이어도 여전히 flex 항목이다 — gap 을 남기면 아이콘이
+       40px 버튼 중앙에서 gap 의 절반(4px)만큼 왼쪽으로 밀린다. */
+    gap: 0;
+    height: 40px !important;
+    justify-content: center !important;
+    max-width: 40px !important;
+    padding: 0 !important;
+    width: 40px !important;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab > .db-tab-icon {
+    height: 20px;
+    opacity: 1;
+    width: 20px;
+  }
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab[data-count]::after {
+    display: none !important;
+  }
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+    flex: 0 0 56px !important;
+    width: 56px !important;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
+    flex: 0 0 56px !important;
+    width: 56px !important;
+  }
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer {
+  box-sizing: border-box;
+  flex: 0 0 52px !important;
+  margin: 0 !important;
+  min-height: 52px !important;
+  padding: 0 12px !important;
+}
+
+/* 확인 줄은 푸터 버튼과 같은 52px 줄에 있으면 폭이 0으로 줄고 선택지가 잘린다.
+   그때 닫기는 화면상 아무 일도 안 한 것처럼 보인다. 프롬프트가 있을 때만 줄을 늘린다. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer:has(.database-modal-dirty-prompt) {
+  align-items: stretch;
+  flex: 0 0 auto !important;
+  flex-wrap: wrap;
+  height: auto !important;
+  min-height: 52px !important;
+  padding-bottom: 8px !important;
+  padding-top: 8px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer:has(.database-modal-dirty-prompt) .database-modal-dirty-prompt-region {
+  flex: 1 0 100%;
+  order: -1;
+}
+
+/* container query wins when supported; media fallback below */
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+    flex: 0 0 56px;
+    width: 56px;
+    padding: 8px 6px 12px;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+    flex: 0 0 56px;
+    width: 56px;
+    padding: 8px 6px 12px;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+/* 빈 항목 다이어트: 레코드가 0개인 탭은 시선을 덜 가져가도록 낮춘다.
+   초보 내비의 '모든 자료'에는 0개 탭이 11개나 들어 있어, 데이터가 있는 탭과 같은
+   무게로 보이면 볼 것이 있는 탭이 묻힌다. 탐색과 클릭은 그대로 가능하다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count="0"] {
+  opacity: 0.5;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count="0"]:hover,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count="0"]:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count="0"].active {
+  opacity: 1;
+}
+
+/* ---- group headers — visible ----------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+  align-items: center;
+  align-self: stretch;
+  background: var(--db-studio-surface, #FFFFFF);
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+  display: flex;
+  position: sticky;
+  text-align: left;
+  /* 탭 검색(32px + 아래 8px) 밑에 붙는다 — 검색 칸이 먼저 위에 고정된다. */
+  top: 40px;
+  z-index: 1;
+  margin: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:first-of-type {
+  padding-top: 4px;
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+    display: none;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+    display: none;
+  }
+}
+
+
+/* 그룹 머리는 구획 제목이다(2026-09-24 개선안 C) — 모든 그룹이 늘 펼쳐져 있으므로 셰브론·합계
+   배지가 없다. 합계는 단위가 다른 것을 더한 수였다(맵 716 = 타일 27 + 오브젝트 549 + …).
+   숨은 빈 탭이 있을 때만 누를 거리가 있으므로 그때만 포인터를 준다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+  cursor: default;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[aria-expanded="false"] {
+  cursor: pointer;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:hover {
+  color: var(--db-studio-text-2, var(--text-2));
+}
+
+/* ---- search field — readable ----------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+  background: var(--db-studio-inset, #F1F5F9);
+  border: 1px solid var(--db-studio-border-default, rgba(15,23,42,.10));
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1, var(--text-1));
+  flex: 0 0 auto;
+  font: 400 13px/1.4 var(--font-ui);
+  height: 32px;
+  margin: 0 0 8px;
+  padding: 0 10px;
+  width: 100%;
+  text-align: left;
+  /* 레일이 넘쳐 아래 탭(맵 구획)으로 스크롤해도 검색 칸이 반쯤 잘린 채 사라지지 않게 고정한다.
+     그림자는 칸 둘레의 여백을 레일 바탕으로 덮어 밑으로 지나가는 행이 비치지 않게 한다. */
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  box-shadow: 0 0 0 10px var(--db-studio-surface, #FFFFFF);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+  color: var(--db-studio-text-3);
+  font-size: 13px;
+  opacity: 1;
+}
+
+/* 탭 검색 무결과 안내. 사이드바가 통째로 빈 공백이 되던 자리를 채운다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search-empty {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 var(--font-ui);
+  margin: 4px 2px 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus {
+  border-color: var(--db-studio-accent, var(--accent));
+  box-shadow: 0 0 0 2px rgba(74,87,214,.16), 0 0 0 10px var(--db-studio-surface, #FFFFFF);
+  outline: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus-visible {
+  outline: 2px solid var(--db-studio-accent, var(--accent));
+  outline-offset: 1px;
+}
+
+/* Collapsed rail: a 40px input cannot fit the placeholder, so swap the text
+   for a centered magnifier mark; the real label stays on placeholder/title. */
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+    height: 36px;
+    width: 40px;
+    padding: 0;
+    text-align: center;
+    font-size: 13px;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2394A3B8' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+    color: transparent;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:not(:placeholder-shown) {
+    background-image: none;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+    height: 36px;
+    width: 40px;
+    padding: 0;
+    text-align: center;
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%2394A3B8' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+    color: transparent;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:not(:placeholder-shown) {
+    background-image: none;
+  }
+}
+
+/* hidden filtered tabs */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs [hidden] {
+  display: none !important;
+}
+
+/* ---- tab row — labeled, count badge, icon+label ----------------------- */
+
+/* Context actions belong to the active Map workspace, never a second rail. */
+.database-modal-backdrop .db-body.db-shared-workspace:has(> .db-map-content) {
+  display: flex;
+  flex-direction: column;
+}
+
+.database-modal-backdrop .db-map-context-nav {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-default);
+  background: var(--bg-raised);
+}
+
+.database-modal-backdrop .db-map-context-nav .btn {
+  white-space: normal;
+  min-height: 32px;
+}
+
+.database-modal-backdrop .db-map-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .db-map-content > .tileset-db-workspace,
+.database-modal-backdrop .db-map-content > .oprn-tileset-workspace {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--db-studio-text-2, var(--text-2));
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font: 500 13px/1.4 var(--font-ui);
+  gap: 8px;
+  height: 32px;
+  justify-content: flex-start;
+  margin: 0;
+  min-width: 0;
+  padding: 0 8px;
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+}
+
+/* 아이콘은 `databaseTabIcons.ts` 가 심는 <svg class="db-tab-icon"> 다. CSS `content` 글리프가
+   아닌 이유: per-testid 규칙 24줄로는 29개 탭을 덮지 못해 5개가 한글 첫 글자로 떨어졌고,
+   system-studio.css 가 같은 ::before 를 content:none 으로 덮어 시스템 탭에서 전멸했다.
+   `color` 를 자식에 직접 선언하는 게 핵심 — 접힌 레일의 `.db-tab { color: transparent }` 는
+   상속이므로 자식의 일반 선언에 진다(!important 불필요). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+  color: var(--db-studio-text-2, var(--text-2));
+  flex: 0 0 auto;
+  height: 18px;
+  width: 18px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active > .db-tab-icon {
+  color: var(--db-studio-accent-text, var(--accent));
+}
+
+/* label text is the button's textContent — flex takes remaining space */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* count badge — quiet pill */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
+  /* 개선안: 개수는 배지가 아니라 오른쪽 흐린 숫자다. */
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--db-studio-text-3);
+  content: attr(data-count);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  font: 500 11.5px/1 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  margin-left: auto;
+  min-width: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active[data-count]::after {
+  background: transparent;
+  color: var(--db-studio-accent-text, var(--accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
+  background: var(--db-studio-inset, #F1F5F9);
+  color: var(--db-studio-text-1, var(--text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:focus-visible {
+  outline: 2px solid var(--db-studio-accent, var(--accent));
+  outline-offset: -2px;
+}
+
+/* selected: 옅은 인디고 칸 + 진한 인디고 글자(개선안). 왼쪽 막대는 뺐다 — 칸 색만으로 충분하다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
+  background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--db-studio-accent-text, var(--accent));
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active:hover {
+  background: var(--db-studio-accent-soft, rgba(74,87,214,.08));
+  color: var(--db-studio-accent-text, var(--accent));
+}
+
+/* collapsed icon+tooltip mode — hide label via transparent color + clip */
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+    border-radius: 8px;
+    color: transparent;
+    font-size: 0;
+    gap: 0;
+    justify-content: center;
+    height: 40px;
+    max-width: 40px;
+    padding: 0;
+    width: 40px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+    height: 20px;
+    width: 20px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
+    display: none;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+    border-radius: 8px;
+    color: transparent;
+    font-size: 0;
+    gap: 0;
+    justify-content: center;
+    height: 40px;
+    max-width: 40px;
+    padding: 0;
+    width: 40px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+    height: 20px;
+    width: 20px;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
+    display: none;
+  }
+}
+
+/* per-testid 글리프 24줄은 삭제됐다 — 아이콘은 `databaseTabIcons.ts` 가 소유한다.
+   그 방식은 29개 탭 중 24개만 덮어서 생활 탭 5개가 한글 첫 글자로 떨어졌고,
+   system-studio.css 가 같은 ::before 를 content:none 으로 이겨서 시스템 탭에서는
+   전부 사라졌다. 아이콘을 CSS 선택자로 배분하지 말 것. */
+
+/* ---- body pane ------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-body {
+  border-left: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ---- dock variant ---------------------------------------------------- */
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tabs {
+  flex: 0 0 48px;
+  padding: 8px 4px 12px;
+  width: 48px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-group {
+  display: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab {
+  color: transparent;
+  font-size: 0;
+  gap: 0;
+  height: 32px;
+  justify-content: center;
+  padding: 0;
+  text-align: center;
+  max-width: 40px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab > .db-tab-icon {
+  height: 20px;
+  width: 20px;
+}
+
+/* 빈 탭 접기 줄 (2026-09-24 개선안 C).
+   레코드가 0 인 목록 탭은 그룹마다 이 한 줄로 모인다 — JRPG 프로젝트의 생활 7탭이 한 줄이 된다.
+   탭보다 낮은 목소리(작은 글자·흐린 색)로, 들여쓰기는 탭 라벨 시작점(아이콘 뒤)에 맞춘다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--db-studio-text-3);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font: 400 11.5px/1.3 var(--font-ui);
+  gap: 6px;
+  margin: 0;
+  min-height: 26px;
+  padding: 4px 10px 4px 36px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold:hover,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold:focus-visible {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2, var(--text-2));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-count {
+  flex: 0 0 auto;
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-count::before {
+  content: "+ ";
+}
+
+/* 이름은 줄바꿈한다 — 한 줄 말줄임이면 「세계 개요·설정…」 처럼 두 개뿐인 이름도 잘려 무엇이
+   숨었는지 읽을 수 없었다(2026-09-24 visual QA). 생활 7탭처럼 길면 두 줄로 끊는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-names {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  word-break: keep-all;
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
+    display: none;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold {
+    display: none;
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-label {
+  flex: 0 0 auto;
+}
+
+/* ---- group strip — 2026-09-27 자료집 개선안 ------------------------------
+   레일 왼쪽 64px 세로 띠. 그룹 7개를 아이콘 + 짧은 이름으로 세우고, 옆 목록(.db-tabs)은
+   data-view-group 이 가리키는 구획만 보인다. 탭 검색 중에는 제한을 풀어 전 구획에서 찾는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
+  align-items: stretch;
+  background: var(--db-studio-surface);
+  border-right: 1px solid var(--db-studio-border-subtle);
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 64px;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 6px;
+  width: 64px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  font: 500 11.5px/1.25 var(--font-ui);
+  gap: 3px;
+  min-height: 50px;
+  padding: 7px 2px 6px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-icon {
+  color: currentColor;
+  flex: 0 0 auto;
+  height: 20px;
+  width: 20px;
+}
+
+/* 「전투 규칙」「세계관」처럼 긴 이름도 52px 칸 안에서 두 줄로 끊기게 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-label {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn:hover {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn.active {
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent-text);
+  font-weight: 600;
+}
+
+/* 구획 제한은 넓은 창에서만 건다. 좁은 창(799px 이하)·도크 모드는 기존 56/48px 아이콘 레일이
+   전 구획을 그대로 보이므로 띠를 접고 제한도 걸지 않는다. 컨테이너 쿼리와 미디어 폴백은 쌍이다. */
+@container db-modal (min-width: 800px) {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
+    display: none;
+  }
+  /* 구획이 하나뿐이니 머리는 목록 제목처럼 읽힌다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
+    color: var(--db-studio-text-1);
+    font: 600 12px/1.35 var(--font-ui);
+    padding: 10px 10px 6px;
+  }
+}
+
+@media (min-width: 800px) {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
+    display: none;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
+    color: var(--db-studio-text-1);
+    font: 600 12px/1.35 var(--font-ui);
+    padding: 10px 10px 6px;
+  }
+}
+
+@container db-modal (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
+    display: none;
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
+    display: none;
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-group-strip {
+  display: none;
+}

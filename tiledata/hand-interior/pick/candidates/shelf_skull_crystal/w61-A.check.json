@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shelf_skull_crystal/w61-A.pxg",
+ "id": "shelf:skull+crystal",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "note": "몸통=shelf:coins w10-C 선반판(윗면 밝은 테두리·앞면 wood4·밑면 wood2·끝마구리 wood3; shelf:cheese w4-C 는 판이 옛 v5 평판 그대로라 덜 3/4), 물건=이 기물 v5 화소를 한 줄 올려 판 윗면에 앉힘, 옛 판 앞면·못 화소는 버림 (shelf_coins/work/w61-shelf.py)",
+ "ok": true
+}

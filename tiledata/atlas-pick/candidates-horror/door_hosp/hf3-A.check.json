@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_hosp/hf3-A.pxg",
+ "set": "horror",
+ "id": "door_hosp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "병실 문 A — 쇠 틀(tin 4·5단) + 바랜 회녹 문짝(ward 2단), 위쪽 세로 긴 작은 유리창(속 짙은 murk 2단), 아래 걷어차는 철판, 가로 밀대 손잡이.",
+ "ok": true
+}

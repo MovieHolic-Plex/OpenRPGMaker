@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/town/w5-C.pxg",
+ "set": "worldmap",
+ "id": "town",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  6,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석 — 네 모서리 푸른 뾰족 망루 + 가운데 푸른 큰 지붕 뭉치, 낮은 앞 성벽과 문루, 멀리서 뾰족 지붕 셋으로 읽힘",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.055
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.051
+  }
+ }
+}

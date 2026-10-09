@@ -1,0 +1,42 @@
+{
+  "buildings": [
+    {
+      "id": "bd-house-form-long",
+      "sha256": "25e40b53ce0e9cc91cabbdc0ace291035097542ea4dc9a717dd7c91502901a5e",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    },
+    {
+      "id": "bd-house-form-narrow",
+      "sha256": "08224bf7b8092213a1a3a30f7faac1eae2dacc069745ceb4243f5d02eb0823c2",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    },
+    {
+      "id": "bd-house-form-wing",
+      "sha256": "c5d7c1bea84a7f5d70751ec917ebebb26494d9bc1e968f3fc272a119ba709f2a",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    },
+    {
+      "id": "bd-house-form-inn",
+      "sha256": "c72e19fb25c2fbdc1d82db2d71745e4d87b1bbf9c6ab2a48fbba910dcd31ee23",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    },
+    {
+      "id": "bd-house-form-smithy",
+      "sha256": "67c74d0fc3fbd7f1cc06bfbe89756788e6222386961ded6c2a5c95fa8a70bd33",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    },
+    {
+      "id": "bd-house-form-warehouse",
+      "sha256": "3fef4b8aede18e9e4bb03a34edebb65e44a7f90ed75aa2d16613291295e5697e",
+      "sourceAssemblyMatches": true,
+      "oneEntrance": true
+    }
+  ],
+  "originalSourcesUnchanged": true,
+  "visualVerdict": "requires actual image review"
+}

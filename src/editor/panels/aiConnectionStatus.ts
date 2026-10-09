@@ -1,0 +1,411 @@
+// 에디터 AI 연결 상태의 공유 캐시.
+// 브라우저의 게이트는 동기 판정이어야 하므로 companion `/auth/status`의 마지막 결과를 보관한다.
+// 하단 상태바 칩은 퇴역했으며, 부팅 warm-up과 인증 설정의 mutation 경계가 이 캐시를 갱신한다.
+//
+// 평가 전략:
+// - chatgpt(= 동반 서비스 전송, 에디터의 유일한 경로): companion `/auth/status` 조회가 필요하므로
+//   비동기. 모듈 캐시(aiOAuthCachedStatus)에 마지막 결과를 보관하고 동기 평가는 캐시를 쓴다.
+//   캐시가 없으면 checking. 닿지 못하면 offline(A), 응답했지만 4xx/5xx 면 error(B) — 두 경우의
+//   해결책이 다르므로 라벨·이모지·색을 갈라 보여 준다(같은 pi-ai 워커를 쓰므로 (B) 에
+//   npm run ai:oauth 는 해결책이 아니다).
+// - apiKey 모드: **주입 설정 전용**이다(노드 스크립트·evals·벤치마크). 에디터 UI 는 이 모드를
+//   만들지 않는다 — loadAiConfig() 기반 동기 판정만 남겨 둔다.
+//
+// 환경 변수 키는 사용자가 동의한 뒤에만 서버가 env:true 로 알린다. 그때는 연결로 센다.
+// 연결 해제는 저장 로그인만 지울 수 있어서, env 자격에는 해제 버튼을 붙이지 않는다.
+import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
+import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+// 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
+// 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
+import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
+import { getAiModelDemotion, getAiTransportHealth, isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { workProviderIds } from "@/ai/providerSelection";
+
+/**
+ * 연결 게이트가 구분하는 상태. `offline`(도달 불가)과 `error`(응답했지만 실패)를 나눈다 —
+ * 예전에는 "보조 프로그램이 죽음 / 안 켜짐 / 그냥 로그아웃" 세 가지가 **같은 라벨 "AI 로그인",
+ * 같은 이모지, 같은 색**으로 보였고 차이는 hover 툴팁에만 있었다.
+ */
+export type AiConnectionKind = "ready" | "disconnected" | "checking" | "offline" | "error";
+
+export interface AiConnectionStatus {
+  readonly kind: AiConnectionKind;
+  readonly authMode: AiConfig["authMode"];
+  /** 현재 선택된 oh-my-pi 제공자. 상태 캐시와 화면 라벨이 같은 대상을 가리키게 한다. */
+  readonly providerId: string;
+  readonly providerLabel: string;
+  /** 사용자에게 보일 짧은 라벨(아이콘 제외). */
+  readonly label: string;
+  /** 칩 hover/title 용 상세 문구. */
+  readonly title: string;
+}
+
+interface CachedOAuthStatus {
+  readonly providerId: string;
+  readonly connected: boolean;
+  readonly planType?: string;
+  /** 자격의 출처가 셸 환경 변수인가 — 에디터가 만들지도 지우지도 못한다. */
+  readonly env?: boolean;
+  /** OAuth 토큰이 만료됐는가. */
+  readonly expired?: boolean;
+  /** (A) 동반 서비스에 아예 닿지 못함. */
+  readonly unreachable?: boolean;
+  /** (B) 응답했지만 실패(4xx/5xx) — 서버가 알려준 오류 본문. */
+  readonly serverMessage?: string;
+  readonly workKey?: string;
+  readonly missingWorkProvider?: string;
+  readonly workError?: string;
+  readonly lastLoginError?: string;
+  readonly pendingLogin?: boolean;
+}
+
+function connectionKey(config: AiConfig): string {
+  return `${parseOhMyPiProvider(config.providerId)}:${[...workProviderIds(config)].sort().join(",")}`;
+}
+
+/** 저장된 로그인 또는 동의한 환경 변수 키. 만료는 제외한다. */
+function isUsableCredential(status: CachedOAuthStatus): boolean {
+  return status.connected && status.expired !== true;
+}
+
+let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
+let refreshInFlightKey: string | null = null;
+let refreshInFlight: Promise<void> | null = null;
+let refreshGeneration = 0;
+/** 캐시가 바뀔 때마다 오른다 — 진행 중인 조회에 합류한 호출부가 변화를 알아채는 데 쓴다. */
+let cacheVersion = 0;
+
+/**
+ * 캐시가 바뀌면 window 에 알린다. 조회를 시작한 호출부의 onChange 만 부르면, 다른 호출부
+ * (부팅 warm-up·설정 모달)가 받은 결과를 잠금 막·칩이 영영 모른다 — 2026-09-26 실측:
+ * Google 에 로그인돼 있는데 첫 조회가 실패한 뒤 막이 「AI 연결이 필요합니다」 로 남았다.
+ */
+export const AI_CONNECTION_STATUS_CHANGED_EVENT = "oprn:ai-connection-status-changed";
+
+function markCacheChanged(): void {
+  cacheVersion += 1;
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_CONNECTION_STATUS_CHANGED_EVENT));
+  }
+}
+
+type AiConnectionStatusCore = Omit<AiConnectionStatus, "providerId" | "providerLabel">;
+
+function providerIdentity(config: AiConfig): Pick<AiConnectionStatus, "providerId" | "providerLabel"> {
+  const providerId = parseOhMyPiProvider(config.providerId);
+  return {
+    providerId,
+    providerLabel: getOhMyPiProvider(providerId)?.label ?? providerId,
+  };
+}
+
+function statusFor(config: AiConfig, status: AiConnectionStatusCore): AiConnectionStatus {
+  return { ...status, ...providerIdentity(config) };
+}
+
+/**
+ * 실제 요청이 실패하고 있으면(설정 모양과 무관하게) 그 사실을 우선 보고한다.
+ * 404 = 엔드포인트 없음/프록시 미등록, 401·403 = 인증, 5xx·네트워크 = 게이트웨이 다운.
+ * "AI 연결됨"인데 모든 턴이 404 나던 거짓말(2026-08-19 적대 평가 P0)의 수정.
+ */
+function transportFailureStatus(config: AiConfig): AiConnectionStatus | null {
+  const health = getAiTransportHealth();
+  if (!health || health.ok) return null;
+  const s = health.status;
+  const connectivity = s === undefined || s === 401 || s === 403 || s === 404 || s >= 500;
+  if (!connectivity) return null;
+  const provider = providerIdentity(config);
+  return statusFor(config, {
+    kind: "offline",
+    authMode: config.authMode,
+    label: `${provider.providerLabel} 응답 오류${s ? `(${s})` : ""}`,
+    title: `마지막 ${provider.providerLabel} 요청이 실패했습니다 — ${health.message ?? "원인 미상"}. 이 칩을 눌러 AI 설정에서 연결을 확인하세요. 요청이 다시 성공하면 자동으로 연결됨 상태로 돌아옵니다.`,
+  });
+}
+
+/** apiKey 모드 동기 평가. config 가 주어지지 않으면 loadAiConfig(). */
+export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConnectionStatus {
+  const provider = providerIdentity(config);
+  if (config.authMode === "apiKey") {
+    // 상대 baseUrl(/api/ai 등) = 동일 오리진 프록시: 서버가 Authorization 을 주입하므로
+    // 클라이언트에 키가 없어도 ready 이다(proxyAuth). 보안: 키를 클라이언트 번들에 두지 않는다.
+    // 판정은 llmClient.isProxyAuth 로 통일한다(예전에는 여기서 인라인 재구현했다).
+    const proxyAuth = isProxyAuth(config);
+    // baseUrl 을 **먼저** 본다. 예전에는 키를 먼저 봐서, 둘 다 빈 신규 설정에 "AI 키 없음" 이
+    // 뜨고 "AI 엔드포인트 없음" 은 사실상 도달 불가였다 — 더 흔한 원인이 가려졌다.
+    if (!config.baseUrl || !config.baseUrl.trim()) {
+      return statusFor(config, {
+        kind: "disconnected",
+        authMode: "apiKey",
+        label: `${provider.providerLabel} 엔드포인트 없음`,
+        title: "주입된 게이트웨이 설정에 서버 주소(baseUrl)가 없습니다. 이 경로는 노드 스크립트·벤치마크 전용이며 에디터 UI 에는 없습니다.",
+      });
+    }
+    if (!proxyAuth && (!config.apiKey || !config.apiKey.trim())) {
+      return statusFor(config, {
+        kind: "disconnected",
+        authMode: "apiKey",
+        label: `${provider.providerLabel} 키 없음`,
+        title: "주입된 게이트웨이 설정에 키가 없습니다. 이 경로는 노드 스크립트·벤치마크 전용입니다.",
+      });
+    }
+    const failure = transportFailureStatus(config);
+    if (failure) return failure;
+    return statusFor(config, {
+      kind: "ready",
+      authMode: "apiKey",
+      label: `${provider.providerLabel} 연결됨`,
+      title: proxyAuth
+        ? `${provider.providerLabel} 프록시로 연결됨 · ${config.baseUrl} (서버가 키를 주입)`
+        : `${provider.providerLabel} API 키로 연결됨 · ${config.baseUrl}`,
+    });
+  }
+  // chatgpt OAuth 모드 — 캐시된 companion 상태로 동기 평가.
+  if (!aiOAuthCachedStatus || aiOAuthCachedStatus.providerId !== provider.providerId
+    || aiOAuthCachedStatus.workKey !== connectionKey(config)) {
+    return statusFor(config, {
+      kind: "checking",
+      authMode: "chatgpt",
+      label: `${provider.providerLabel} 확인 중…`,
+      title: `${provider.providerLabel} 로그인 상태를 확인하는 중입니다. 잠시만 기다려주세요.`,
+    });
+  }
+  // (B) 응답했지만 내부 오류 — "보조 프로그램이 켜져 있지 않아요" 안내는 사실과 다르다.
+  // dev 서버와 단독 동반 서비스는 같은 pi-ai 워커를 쓰므로 npm run ai:oauth 는 해결책이 아니다.
+  if (aiOAuthCachedStatus.serverMessage && isHostAiDisabledMessage(aiOAuthCachedStatus.serverMessage)) {
+    return statusFor(config, {
+      kind: "error",
+      authMode: "chatgpt",
+      label: "AI 서버에서 꺼짐",
+      title: HOST_AI_DISABLED_GUIDANCE,
+    });
+  }
+  if (aiOAuthCachedStatus.serverMessage) {
+    return statusFor(config, {
+      kind: "error",
+      authMode: "chatgpt",
+      label: `${provider.providerLabel} 연결 서비스 오류`,
+      title: `${provider.providerLabel} 연결 서비스에서 오류가 났어요. AI 설정에서 연결을 다시 확인하고, 계속 안 되면 서버 관리자에게 알려주세요. 오류 내용: ${aiOAuthCachedStatus.serverMessage}`,
+    });
+  }
+  // (A) 아예 닿지 못함 — 켜져 있지 않거나 응답이 없다는 뜻.
+  if (aiOAuthCachedStatus.unreachable) {
+    return statusFor(config, {
+      kind: "offline",
+      authMode: "chatgpt",
+      label: `${provider.providerLabel} 연결 확인 필요`,
+      title: `${provider.providerLabel} 연결 서비스에 닿지 못했어요. 이 칩을 눌러 연결을 다시 확인하세요. 계속 안 되면 앱을 다시 열거나 서버 관리자에게 알려주세요.`,
+    });
+  }
+  if (isUsableCredential(aiOAuthCachedStatus)) {
+    if (aiOAuthCachedStatus.missingWorkProvider) {
+      const name = getOhMyPiProvider(aiOAuthCachedStatus.missingWorkProvider)?.label ?? aiOAuthCachedStatus.missingWorkProvider;
+      return statusFor(config, {
+        kind: aiOAuthCachedStatus.workError ? "error" : "disconnected",
+        authMode: "chatgpt",
+        label: `${name} 연결 필요 · 작업 모델`,
+        title: aiOAuthCachedStatus.workError
+          ? `${name} 작업 모델의 연결을 확인하지 못했어요. AI 설정에서 다시 확인하세요. ${aiOAuthCachedStatus.workError}`
+          : `직접 지정한 작업 모델이 ${name} 계정을 사용합니다. AI 설정에서 이 계정도 연결하거나 작업 모델을 맞추세요.`,
+      });
+    }
+    const failure = transportFailureStatus(config);
+    if (failure) return failure;
+    // 연결은 됐는데 요청한 모델이 아닌 것이 답하고 있으면 그 사실을 라벨에 올린다 — 예전에는
+    // 아무 신호도 없어서 감독이 고른 모델이 답하는지 알 방법이 없었다.
+    const demotion = getAiModelDemotion();
+    if (demotion) {
+      return statusFor(config, {
+        kind: "error",
+        authMode: "chatgpt",
+        label: `${provider.providerLabel} 다른 모델 응답`,
+        title: `요청한 모델 '${demotion.requested}' 대신 '${demotion.served}' 이(가) 답했습니다. 제공자가 모르는 모델 ID 를 조용히 바꿔치기한 것입니다 — 이 칩을 눌러 목록에서 모델을 고르세요.`,
+      });
+    }
+    const viaEnv = aiOAuthCachedStatus.env === true;
+    return statusFor(config, {
+      kind: "ready",
+      authMode: "chatgpt",
+      label: viaEnv
+        ? `${provider.providerLabel} 연결됨 · 환경 변수`
+        : `${provider.providerLabel} 연결됨${aiOAuthCachedStatus.planType ? ` · ${aiOAuthCachedStatus.planType.toUpperCase()}` : ""}`,
+      title: viaEnv
+        ? `${provider.providerLabel} 환경 변수 키로 연결됨. 이 화면에서는 그 키를 지우지 못합니다.`
+        : `${provider.providerLabel} 구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.`,
+    });
+  }
+  if (aiOAuthCachedStatus.expired === true) {
+    return statusFor(config, {
+      kind: "disconnected",
+      authMode: "chatgpt",
+      label: `${provider.providerLabel} 로그인 필요`,
+      title: "로그인이 만료됐어요. 이 칩을 눌러 다시 로그인하세요.",
+    });
+  }
+  if (aiOAuthCachedStatus.lastLoginError) {
+    return statusFor(config, {
+      kind: "disconnected", authMode: "chatgpt",
+      label: `${provider.providerLabel} 로그인 실패`,
+      title: "로그인을 완료하지 못했어요. AI 설정에서 다시 로그인하세요.",
+    });
+  }
+  if (aiOAuthCachedStatus.pendingLogin) {
+    return statusFor(config, {
+      kind: "checking", authMode: "chatgpt",
+      label: `${provider.providerLabel} 로그인 진행 중`,
+      title: "브라우저에서 로그인을 마치세요. AI 설정을 다시 열면 진행 중인 로그인을 이어갈 수 있어요.",
+    });
+  }
+  return statusFor(config, {
+    kind: "disconnected",
+    authMode: "chatgpt",
+    label: `${provider.providerLabel} 로그인 필요`,
+    title: "AI 기능을 쓰려면 로그인이 필요해요. 이 칩을 눌러 로그인하면 마을 만들기·NPC 배치·AI 채팅을 모두 쓸 수 있어요.",
+  });
+}
+
+/**
+ * chatgpt OAuth 모드일 때 동반 서비스에서 상태를 조회해 캐시를 갱신한다.
+ * apiKey 모드는 동기 평가만으로 충분하므로 조회하지 않는다.
+ * onChange 는 캐시가 바뀐 뒤(상태바 재렌더링 용) 호출된다.
+ */
+/** 연결돼 있던 칩을 「꺼짐」 으로 바꾸기 전에 참는 연속 시간 초과 횟수. */
+const TIMEOUTS_BEFORE_OFFLINE = 3;
+let consecutiveTimeouts = 0;
+
+export async function refreshAiConnectionStatus(onChange?: () => void): Promise<void> {
+  const config = loadAiConfig();
+  if (config.authMode !== "chatgpt") {
+    // apiKey 모드는 동기 평가만으로 충분 — 캐시를 비워두지 않아도 되지만,
+    // 모드 전환 시 이전 OAuth 캐시가 남아 ready 로 오인되지 않도록 초기화.
+    if (aiOAuthCachedStatus) {
+      aiOAuthCachedStatus = null;
+      markCacheChanged();
+      onChange?.();
+    }
+    return;
+  }
+  const providerId = parseOhMyPiProvider(config.providerId);
+  const key = connectionKey(config);
+  if (refreshInFlightKey === key && refreshInFlight) {
+    // 합류: 곧바로 돌아가면 호출부가 낡은 캐시로 다시 칠하고 결과를 영영 못 받는다.
+    const before = cacheVersion;
+    await refreshInFlight;
+    if (cacheVersion !== before) onChange?.();
+    return;
+  }
+  if (refreshInFlight || (aiOAuthCachedStatus && aiOAuthCachedStatus.workKey !== key)) refreshGeneration += 1;
+  refreshInFlightKey = key;
+  const run = runRefresh(providerId, key, config, onChange);
+  refreshInFlight = run;
+  await run;
+}
+
+async function runRefresh(providerId: string, key: string, config: AiConfig, onChange?: () => void): Promise<void> {
+  const generation = refreshGeneration;
+  try {
+    const auth = await fetchChatGptAuthStatus(providerId);
+    if (generation !== refreshGeneration || connectionKey(loadAiConfig()) !== key) return;
+    const otherStatuses = auth.connected && !auth.expired
+      ? await Promise.all(workProviderIds(config).filter(id => id !== providerId).map(async id => {
+        try {
+          const status = await fetchChatGptAuthStatus(id);
+          return { id, ready: status.connected && !status.expired, error: undefined as string | undefined };
+        } catch (error) {
+          return { id, ready: false, error: error instanceof Error ? error.message : "연결 확인 실패" };
+        }
+      })) : [];
+    const missing = otherStatuses.find(status => !status.ready);
+    // 로그인/로그아웃이 reset 뒤 새 조회를 시작했다면, 그보다 먼저 시작한 부팅 조회가 늦게 와도
+    // 새 인증 상태를 덮지 않는다. providerId 만 비교하면 같은 기본 제공자에서 이 경합을 못 잡는다.
+    if (generation !== refreshGeneration || connectionKey(loadAiConfig()) !== key) return;
+    const next: CachedOAuthStatus = {
+      providerId,
+      connected: auth.connected,
+      planType: auth.planType,
+      env: auth.env,
+      expired: auth.expired,
+      workKey: key,
+      missingWorkProvider: missing?.id,
+      workError: missing?.error,
+      lastLoginError: auth.lastLoginError,
+      pendingLogin: Boolean(auth.pendingLogin),
+    };
+    const changed =
+      !aiOAuthCachedStatus ||
+      aiOAuthCachedStatus.providerId !== next.providerId ||
+      aiOAuthCachedStatus.connected !== next.connected ||
+      aiOAuthCachedStatus.planType !== next.planType ||
+      aiOAuthCachedStatus.env !== next.env ||
+      aiOAuthCachedStatus.expired !== next.expired ||
+      aiOAuthCachedStatus.workKey !== next.workKey ||
+      aiOAuthCachedStatus.missingWorkProvider !== next.missingWorkProvider ||
+      aiOAuthCachedStatus.workError !== next.workError ||
+      aiOAuthCachedStatus.lastLoginError !== next.lastLoginError ||
+      aiOAuthCachedStatus.pendingLogin !== next.pendingLogin ||
+      aiOAuthCachedStatus.unreachable === true ||
+      aiOAuthCachedStatus.serverMessage !== undefined;
+    aiOAuthCachedStatus = next;
+    consecutiveTimeouts = 0;
+    if (changed) {
+      markCacheChanged();
+      onChange?.();
+    }
+  } catch (error) {
+    if (generation !== refreshGeneration || connectionKey(loadAiConfig()) !== key) return;
+    // (B) 서버가 응답했지만 실패(4xx/5xx) — 서버가 알려준 원인을 캐시에 담아 툴팁에 노출한다.
+    // instanceof 대신 오류 이름으로 판별한다: 테스트가 이 모듈을 vi.mock 으로 통째 교체하면
+    // 클래스 정체성이 달라질 수 있기 때문. 일반 Error(= 닿지 못함, (A))는 이 이름이 아니다.
+    const serverMessage =
+      error instanceof Error && error.name === "ChatGptCompanionResponseError"
+        ? (error as ChatGptCompanionResponseError).serverMessage
+        : undefined;
+    // 연결돼 있던 상태에서 한두 번 늦는 것은 꺼짐이 아니다. 조수가 체크포인트(수십 MB)를 적용하는 동안 같은 호스트의
+    // /auth/status 가 5~6초씩 걸려(2026-09-24 연애 도그푸딩 실측 5.4 s) 칩이 빨간 「보조 프로그램 꺼짐」 이 되고
+    // 입력칸이 「AI 연결 후 지시할 수 있어요」 로 바뀌었다 — 조수는 그 순간에도 일하고 있었다.
+    const timedOut = serverMessage === undefined && error instanceof Error
+      && (error as { reason?: string }).reason === "timeout";
+    if (timedOut && aiOAuthCachedStatus?.providerId === providerId && aiOAuthCachedStatus.connected
+      && ++consecutiveTimeouts < TIMEOUTS_BEFORE_OFFLINE) return;
+    consecutiveTimeouts = 0;
+    const next: CachedOAuthStatus = {
+      providerId,
+      workKey: key,
+      connected: false,
+      // (B) 는 serverMessage 로, (A) 는 unreachable 로 구분한다 — 칩 라벨·이모지·색이 갈린다.
+      unreachable: serverMessage === undefined,
+      serverMessage,
+    };
+    const changed =
+      !aiOAuthCachedStatus ||
+      aiOAuthCachedStatus.providerId !== next.providerId ||
+      aiOAuthCachedStatus.workKey !== key ||
+      aiOAuthCachedStatus.unreachable !== next.unreachable ||
+      aiOAuthCachedStatus.serverMessage !== serverMessage ||
+      aiOAuthCachedStatus.connected !== false;
+    aiOAuthCachedStatus = next;
+    if (changed) {
+      markCacheChanged();
+      onChange?.();
+    }
+  } finally {
+    // 무효화된 옛 요청의 finally 가 같은 제공자의 새 요청을 in-flight 목록에서 지우면 중복 조회가
+    // 다시 허용된다. 시작 세대가 아직 현재일 때만 자기 슬롯을 반납한다.
+    if (generation === refreshGeneration && refreshInFlightKey === key) {
+      refreshInFlightKey = null;
+      refreshInFlight = null;
+    }
+  }
+}
+
+/** 캐시를 초기화(로그아웃·설정 변경 직후 재평가 유도). */
+export function resetAiConnectionStatusCache(): void {
+  aiOAuthCachedStatus = null;
+  consecutiveTimeouts = 0;
+  // 같은 제공자에서 진행 중인 부팅 조회도 인증 변경 전 상태를 담고 있다. 세대를 올려 그 응답을
+  // 폐기하고 슬롯을 비워야 applyStatus 직후의 재조회가 실제로 시작된다.
+  refreshGeneration += 1;
+  refreshInFlightKey = null;
+  refreshInFlight = null;
+}

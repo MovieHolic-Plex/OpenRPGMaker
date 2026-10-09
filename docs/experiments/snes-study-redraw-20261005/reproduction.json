@@ -1,0 +1,113 @@
+{
+  "layers": [
+    {
+      "key": "mage_fire_burst",
+      "size": [
+        512,
+        64
+      ],
+      "opaqueColors": 7,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "mage_blizzard",
+      "size": [
+        512,
+        64
+      ],
+      "opaqueColors": 8,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "mage_chain_bolt",
+      "size": [
+        448,
+        64
+      ],
+      "opaqueColors": 6,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "cleric_holy_hit",
+      "size": [
+        384,
+        64
+      ],
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "monk_dragon_aura",
+      "size": [
+        128,
+        128
+      ],
+      "opaqueColors": 13,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "cleric_holy_field",
+      "size": [
+        256,
+        128
+      ],
+      "opaqueColors": 3,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "cleric_holy_orbs_front",
+      "size": [
+        768,
+        64
+      ],
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "cleric_holy_orbs_back",
+      "size": [
+        768,
+        64
+      ],
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "monk_dragon_hit",
+      "size": [
+        384,
+        64
+      ],
+      "opaqueColors": 5,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    },
+    {
+      "key": "monk_dragon_wave",
+      "size": [
+        256,
+        128
+      ],
+      "opaqueColors": 3,
+      "binaryAlpha": true,
+      "assetHashMatchesManifest": true
+    }
+  ],
+  "centralPngByteReproduction": true,
+  "wrapperRgbaReproduction": [
+    "mage_fire_burst",
+    "mage_blizzard",
+    "mage_chain_bolt",
+    "monk_dragon_aura",
+    "monk_dragon_hit"
+  ],
+  "artApproval": "awaiting-user-review"
+}

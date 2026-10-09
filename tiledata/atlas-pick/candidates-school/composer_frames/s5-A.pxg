@@ -1,0 +1,44 @@
+// s5 후보 — s5-A.pxg
+@size 48 16
+@cell 16
+@palette palette.pal
+@mat a vbrass
+@mat b vwood
+@mat c vdwood
+@mat d vwhite
+@mat e vlinen
+@mat f vblack
+@mblock 0 0
+................................................
+.aaaaaaaaaaaaaa..bbbbbbbbbbbbbb..aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa..bbbbbbbbbbbbbb..aaaaaaaaaaaaaa.
+.aaccccccccccaa..bbccccccccccbb..aaccccccccccaa.
+.aaccddddddccaa..bbcccdddddccbb..aaccccccccccaa.
+.aaccddddddccaa..bbcccdddddccbb..aacccdddddccaa.
+.aaccdeeeedccaa..bbcccdeeedccbb..aacccddddddcaa.
+.aacddeeeedccaa..bbcccdeeedccbb..aacccdeeecdcaa.
+.aaccdeeeeddcaa..bbcccdeeedccbb..aacccceeecccaa.
+.aaccccccccccaa..bbccddeeedccbb..aacccceeecccaa.
+.aacfffddfffcaa..bbcffdfdfddcbb..aacfffddfffcaa.
+.aacffffffffcaa..bbcffffffffcbb..aacffffffffcaa.
+.aacffffffffcaa..bbcffffffffcbb..aacffffffffcaa.
+.aaaaaaaaaaaaaa..bbbbbbbbbbbbbb..aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa..bbbbbbbbbbbbbb..aaaaaaaaaaaaaa.
+................................................
+@tblock 0 0
+................................................
+.66666666666662..77777777777773..66666666666662.
+.64444444444442..75555555555553..64444444444442.
+.64000000000042..75000000000053..64000000000042.
+.64016666661142..75011666661153..64011111111142.
+.64015555551142..75011555551153..64011666661142.
+.64015555531142..75011555531153..64011555553142.
+.64055555531142..75011555531153..64011555513142.
+.64015333333142..75011555331153..64011155311142.
+.64011111111142..75015555331153..64011155311142.
+.64044466444142..75044546433153..64044466444142.
+.64022222222142..75022222222153..64022222222142.
+.64022222222142..75022222222153..64022222222142.
+.64444444444442..75555555555553..64444444444442.
+.00000000000002..11111111111113..00000000000002.
+................................................

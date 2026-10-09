@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_vase_blue/w2-C.pxg",
+ "id": "tall vase blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  10,
+  12,
+  27
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "note": "목긴 병 대신 배가 부른 항아리형 목병: 입 위로 흰 들꽃 세 송이가 솟아 알아보기 쉽게, 배에 어두운 띠 무늬",
+ "ok": true
+}

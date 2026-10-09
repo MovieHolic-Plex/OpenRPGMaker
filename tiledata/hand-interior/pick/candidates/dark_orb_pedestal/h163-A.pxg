@@ -1,0 +1,51 @@
+// A: 검보라 구슬 16px, 보랏빛 둘레와 돌 받침 3행 윗면을 전형적인 JRPG 형태로 손 도트.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a purple 0
+@mat b purple 1
+@mat c purple 2
+@mat d purple 3
+@mat e purple 4
+@mat f purple 5
+@mat g black 1
+@mat h black 2
+@mat i black 3
+@mat j stone 1
+@mat k stone 2
+@mat l stone 3
+@mat m stone 4
+@mat n stone 5
+@mblock 0 0
+.....bbbbbb.....
+...bbddcccabb...
+..bdeeedccbaab..
+.bdeffedcbbgaab.
+.ceffedcbhhggab.
+bdeeeddchhhgggab
+bdeeddciihhgggab
+bdeddciiihhgggab
+bcddccihhhhgggab
+bcccciihhhgggaab
+abcccihhhgggaaab
+.abccihhhggaaab.
+.abbchhhggaaaab.
+..abbbgggaaaab..
+...aabbbbaaa...
+.....aaaaaa.....
+..kmmmmlllkkj..
+.kmnnmmmmllkkj.
+.kmmmmllllkkkj.
+.kllllkkkkkkjj.
+..jkkkkkkjjjj..
+....jmlkkjj.....
+....jmlkkjj.....
+....jmlkkjj.....
+....jmlkkjj.....
+....jmlkkjj.....
+....jmlkkjj.....
+...klmlllkkj....
+..kmmmmlllkkj...
+.kmmmmllllkkkj..
+.kllllkkkkkkjj..
+.jjjjjjjjjjjjj..

@@ -1,0 +1,363 @@
+// project/projectCommitLog.ts
+// 원격 커밋 로그(project storage project_commits / project_changes) 기록 경로.
+//
+// **왜 `@/editor/tools/changeset` 를 여기서 import 하는가 (순환 검사 근거, 2026-08-29 실측):**
+// diff 계산기(`summarizeChanges`)를 두 번 만들지 않기 위해 원본을 그대로 쓴다. import 그래프를
+// 실제로 넓혀서 확인했다 —
+//   - `editor/tools/changeset.ts` 에서 도달 가능한 모듈 218개 중 `project/projectCommitLog.ts`
+//     도 `project/store.ts` 도 **없다**. 즉 순환이 아니다.
+//   - 무게도 늘지 않는다: `projectCommitLog.ts` 는 이미 `projectRepository` 경유로
+//     `project/lint/projectLint` 를 끌고 있어 224개를 도달한다. changeset 이 추가로 들여오는
+//     것은 `editor/detachedDraftMemory`(의존 0개)와 타입 전용 `editor/tools/types` 뿐이다.
+//   - `src/project/*` → `src/editor/*` 방향 자체도 선례가 있다
+//     (`project/quest/questCompiler.ts` → `@/editor/tools/eventTools` 등 7개 파일).
+// 그래서 계산 함수를 `src/project/` 로 옮기거나 sink 주입으로 뒤집을 이유가 없었다.
+import { summarizeChanges } from "@/editor/tools/changeset";
+import { takeEditActivitySince, type EditActivityCommitAttachment } from "@/editor/editActivityLog";
+import { createLogger } from "@/util/logger";
+import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
+// `projectWithoutEventDrafts` 를 더 쓰지 않는다 — 두 호출부가 복제 없는 투영
+// (`projectViewWithoutEventDrafts`)으로 바뀌었는데 import 만 남아 typecheck:app 이 TS6133 으로 죽었다
+// (2026-09-26 실측: main 의 ci-fast 로그가 13건 기준선 + 이 1건 = 14건. PR 레인의 typecheck 는
+//  이미 기준선에서 빨강이라 새 오류 하나가 그 속에 묻힌다).
+import { projectViewWithoutEventDrafts } from "./eventDrafts";
+import { projectWireView } from "./io/serialize";
+import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "./persistence/core/contentDigest";
+import type { CommitReviewStatus } from "./persistence/types";
+import { projectRepository } from "./persistence/repository";
+import type { ChangeSummary } from "@/project/types";
+import type { Project } from "./types";
+
+const log = createLogger("project-commits");
+
+export type CommitLogInput = {
+  readonly project: Project;
+  readonly identity?: EditorIdentity;
+  readonly reviewStatus: CommitReviewStatus;
+  readonly summary: string;
+  readonly diff?: ChangeSummary;
+  readonly toolNames?: readonly string[];
+};
+
+/**
+ * 직전 커밋 문서의 요약(저장 형식 = serialize 가 쓰는 보기). 문자열 전체를 들고 비교하면 큰 프로젝트에서
+ * AI 체크포인트마다 문서 전체를 한 번 더 직렬화했다(2026-09-25 실측, 26 MB 에 체크포인트당 약 0.4 s).
+ */
+let lastManualDigest: string | null = null;
+
+function manualCommitDigest(project: Project): string {
+  // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 적용 권위 요약(authoredProjectBaseline)과 같이
+  // 요약을 이미 가진 공유 항목은 대조를 건너뛴다. 왜(2026-09-28 실측, 실제 프로젝트 12맵): 조수 체크포인트 뒤 한가할 때
+  // 도는 이 요약이 타일셋 노드를 전부 다시 대조해 한 번에 약 0.6s 메인 스레드를 세웠다.
+  const view = projectWireView(projectViewWithoutEventDrafts(project));
+  return withTrustedSharedEntries(() => {
+    const digest = jsonContentDigest(view)!;
+    trustSharedProjectEntries(view);
+    return digest;
+  });
+}
+/** 직전 커밋에서 어디까지 실었는지. 커밋 경로 전체가 이 한 축을 공유한다. */
+let editActivityCursor = 0;
+
+/**
+ * 이번 커밋에 실을 행위 기록을 꺼내고 커서를 전진시킨다.
+ *
+ * **모든 커밋 경로가 여기를 지난다** — `commits.record` 호출부가
+ * 이 파일의 두 곳(`recordProjectCommit`, `recordManualProjectCommitAfterSave)뿐이라
+ * 초크포인트가 성립한다. 호출부마다 붙이면 새 경로가 생길 때 조용히 빠진다.
+ *
+ * 원격 기록이 실패해도 커서는 전진시킨다: 재시도하면 같은 엔트리가 두 커밋에 실린다.
+ * 감사 기록에서 중복은 누락보다 나쁘다 — 같은 행위가 두 번 있었던 것으로 읽힌다.
+ * (dedup baseline 인 `lastManualDigest` 와 정반대 판단인데, 그쪽은 커밋 자체가
+ * 영구히 사라지는 문제라 보수적으로 잡는 게 맞다.)
+ *
+ * 동기 실행 계약: `recordProjectCommit` 의 첫 `await` **이전에** 불러야 한다.
+ * 그래야 호출자가 방금 만든 mutation 까지 정확히 이 커밋에 실린다.
+ */
+function drainEditActivityForCommit(): EditActivityCommitAttachment | undefined {
+  const slice = takeEditActivitySince(editActivityCursor);
+  editActivityCursor = slice.cursor;
+  if (slice.entries.length === 0 && slice.omitted === 0) return undefined;
+  return { entries: slice.entries, omitted: slice.omitted };
+}
+
+/**
+ * 커밋 로그 row — 포스트 적용 증거로 쓰는 결정적 형태. 프로젝트 저장소 미설정이면
+ * persisted:false + commitId:null(로컬 전용)로 항상 resolve 된다.
+ */
+export type CommitRow = {
+  readonly commitId: string | null;
+  readonly persisted: boolean;
+  readonly reviewStatus: CommitReviewStatus;
+  readonly summary: string;
+  readonly toolNames: readonly string[];
+  readonly recordedAt: string;
+};
+
+/**
+ * await 가능한 커밋 기록 변형 — fire-and-forget과 동일한 직렬화/호출을 거치되
+ * 완료까지 기다려 row를 돌려준다(자동 적용 마일스톤의 결정적 커밋 증거, todo 5 의존).
+ */
+export async function recordProjectCommit(input: CommitLogInput): Promise<CommitRow> {
+  // 저장소 구현(electron·memory)은 이 객체를 붙잡거나 고치지 않는다 — 복제 없는 보기로 충분하다
+  // (2026-09-23 실측: 에이전트 체크포인트마다 프로젝트 전체 structuredClone 이 두 번 돌았다).
+  // 직렬화 문자열도 미리 만들지 않는다: electron 저장소는 쓰지 않고, 메모리 저장소는 없으면 스스로 만든다
+  // (2026-09-25 실측: 26 MB 프로젝트에서 체크포인트마다 약 1 s).
+  const persistedProject = projectViewWithoutEventDrafts(input.project);
+  const editActivity = drainEditActivityForCommit();
+  const result = await projectRepository().commits.record({
+    project: persistedProject,
+    identity: input.identity ?? currentHumanEditorIdentity(),
+    reviewStatus: input.reviewStatus,
+    summary: input.summary,
+    diff: input.diff,
+    toolNames: input.toolNames ?? [],
+    ...(editActivity ? { editActivity } : {}),
+  });
+  return {
+    commitId: result.kind === "saved" ? result.commitId ?? null : null,
+    persisted: result.kind === "saved",
+    reviewStatus: input.reviewStatus,
+    summary: input.summary,
+    toolNames: input.toolNames ?? [],
+    recordedAt: new Date().toISOString(),
+  };
+}
+
+export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
+  void recordProjectCommit(input).catch((error) => {
+    log.warn("커밋 기록 실패", error);
+  });
+}
+
+/**
+ * 사람 손편집이 원격 저장에 성공한 직후의 커밋 로그 1건.
+ *
+ * `baseline` 은 **이번 저장 직전에 서버가 갖고 있던** 프로젝트다(store 의 `persistedBaseline`
+ * 을 덮어쓰기 전 값). 이게 있어야 summary 가 실제 변경을 담는다 —
+ * 실측(2026-08-29): 이전 구현은 `systemChanged = true` 만 세워서 타일 3000장을 칠했든
+ * NPC 를 지웠든 원격 summary 가 **항상 "변경 저장: 시스템"** 이었다. 진짜 diff 계산기
+ * (`summarizeChanges`)는 AI 경로만 쓰고 있었다.
+ *
+ * 성능: diff 는 dedup 통과 **후에만** 계산한다. 변경 없는 저장(가장 흔한 경우)은
+ * 문서 요약 한 번(바뀌지 않은 가지는 기억한 값을 쓴다)으로 끝나고 복제도 하지 않는다. 실제로 바뀐 저장에서만
+ * 복제와 diff 가 돈다.
+ *
+ * 알려진 경계: baseline 은 "서버가 마지막으로 받은 것" 이지 "마지막으로 커밋 로그에 남은 것"
+ * 이 아니다. AI 적용(커밋 row 를 따로 남기고 `resetManualProjectCommitBaseline` 만 부른다)
+ * 직후 사람이 추가 편집을 하면 그 사람 커밋의 diff 에 AI 변경분이 함께 잡힌다.
+ * 과대 집계이긴 하지만 "시스템" 한 단어보다는 감사에 쓸 수 있다.
+ */
+export function recordManualProjectCommitAfterSave(project: Project, baseline?: Project | null): void {
+  // 저장 완료를 막지 않는다. 문서 요약·diff 는 수 MB 문서에서 초 단위라(2026-09-26 실측, 81MB 새 프로젝트
+  // 칠하기 한 획에 약 2.2s 동안 메인 스레드 정지) 한가할 때 모아 한 번 돈다. 그 사이 여러 저장이 오면
+  // 첫 기준본 → 마지막 저장본 하나의 커밋으로 합친다. 두 문서는 저장이 넘긴 사적 객체라 나중에 읽어도 같다.
+  pendingManualCommit = {
+    project,
+    baseline: pendingManualCommit ? pendingManualCommit.baseline : baseline,
+  };
+  if (pendingManualCommitScheduled) return;
+  pendingManualCommitScheduled = true;
+  scheduleWhenIdle(() => {
+    pendingManualCommitScheduled = false;
+    flushPendingManualProjectCommit();
+  });
+}
+
+/** 미뤄 둔 사람 저장 커밋을 지금 기록한다(유휴 콜백·재기준선·테스트가 부른다). */
+export function flushPendingManualProjectCommit(): void {
+  const pending = pendingManualCommit;
+  pendingManualCommit = null;
+  if (pending) recordManualProjectCommitNow(pending.project, pending.baseline);
+}
+
+let pendingManualCommit: { readonly project: Project; readonly baseline: Project | null | undefined } | null = null;
+let pendingManualCommitScheduled = false;
+
+function scheduleWhenIdle(run: () => void): void {
+  const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
+  if (typeof idle === "function") idle(run, { timeout: 5_000 });
+  else setTimeout(run, 1_000);
+}
+
+function recordManualProjectCommitNow(project: Project, baseline?: Project | null): void {
+  settlePendingManualDigest();
+  const digest = manualCommitDigest(project);
+  if (digest === lastManualDigest) return;
+  // 복제 없는 투영을 쓴다: 이 값은 `summarizeChanges` 와 `commits.record` 가 읽기만 하고,
+  // 인자 `project` 는 이미 사적 객체다(저장이 넘긴 savedProject). 실측(2026-09-25):
+  // 42MB 문서 토한 프로젝트에서 전역 딥클로이가 한 번에 약 0.5s 다.
+  const persistedProject = projectViewWithoutEventDrafts(project);
+  // 첫 저장/프로젝트 전환 직후에는 비교 대상이 없다. 기존 동작(systemChanged)으로 떨어뜨리되
+  // summary 가 왜 "시스템" 인지 로그에 남긴다 — 안 남기면 예전 버그와 구분이 안 된다.
+  const diff = baseline ? manualDiffFromBaseline(baseline, persistedProject) : manualDiffSummary();
+  const summary = summaryForDiff(diff);
+  if (!baseline) {
+    log.info("저장 baseline 이 없어 실제 diff 를 못 낸다 — 시스템 변경으로 기록한다", { summary });
+  } else {
+    log.debug("수동 저장 커밋 diff", { summary });
+  }
+  // dedup early-return 뒤에 드레인한다 — 변경 없는 저장(가장 흔한 경우)에서 커서를
+  // 전진시키면 다음 진짜 저장이 행위 기록을 잃는다.
+  const editActivity = drainEditActivityForCommit();
+  void projectRepository().commits.record({
+    project: persistedProject,
+    identity: currentHumanEditorIdentity(),
+    reviewStatus: "direct",
+    summary,
+    diff,
+    toolNames: [],
+    ...(editActivity ? { editActivity } : {}),
+  })
+    // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
+    // 미리 전진시키면 이후 동일 내용 재저장이 dedup에 걸려 그 커밋이 영구히 기록되지 않는다.
+    //
+    // resolve 됐다고 기록된 것은 아니다. `commits.record` 는 프로젝트 저장소 미설정과
+    // project_commits/project_changes 테이블 누락을 **정상 resolve(not-configured)** 로 돌려준다.
+    // 이전 구현은 `.then()` 에서 kind 를 보지 않아 그 경우에도 baseline 을 전진시켰고,
+    // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.
+    .then((result) => {
+      if (result.kind === "saved") {
+        // 그 사이 재기준선(AI 적용)이 왔으면 그 기준이 이긴다 — 늦게 도착한 저장 응답이 덮지 않는다.
+        if (pendingManualDigestProject === null) lastManualDigest = digest;
+        return;
+      }
+      log.warn("수동 저장 커밋이 기록되지 않았다 — dedup baseline 을 전진시키지 않는다", {
+        kind: result.kind,
+        summary,
+      });
+    })
+    .catch((error) => {
+      log.warn("수동 저장 커밋 기록 실패", error);
+    });
+}
+
+export function resetManualProjectCommitBaseline(project: Project): void {
+  // 프로젝트 전환·AI 적용 재기준선: 미뤄 둔 이전 저장의 커밋은 그 기준에서 끝난다 — 지금 남긴다.
+  flushPendingManualProjectCommit();
+  // 기준 요약은 다음 사람 저장 커밋의 dedup 에만 쓰인다 — 적용 직후에 셀 필요가 없다.
+  // 왜(2026-09-28 실측, 새 프로젝트 149MB): 바로 깔기 적용마다 여기서 문서 전체 요약이 0.3~1.1s 돌았다
+  // (타일셋 객체가 새로 복제되면 요약 기억이 맞지 않아 전부 다시 해시한다). 한가할 때 세고,
+  // 그 전에 사람 저장 커밋이 오면 그 자리에서 먼저 센다(settlePendingManualDigest) — 결과는 같다.
+  pendingManualDigestProject = project;
+  if (!pendingManualDigestScheduled) {
+    pendingManualDigestScheduled = true;
+    scheduleWhenIdle(() => {
+      pendingManualDigestScheduled = false;
+      settlePendingManualDigest();
+    });
+  }
+  // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
+  // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.
+  // AI 적용 경로에서는 바로 앞의 커밋이 이미 드레인했으므로 no-op 이다.
+  editActivityCursor = takeEditActivitySince(editActivityCursor).cursor;
+}
+
+let pendingManualDigestProject: Project | null = null;
+let pendingManualDigestScheduled = false;
+
+/** 미뤄 둔 기준 요약을 지금 센다. 그 사이 새 기준이 오면 마지막 것만 센다. */
+function settlePendingManualDigest(): void {
+  const project = pendingManualDigestProject;
+  pendingManualDigestProject = null;
+  if (project) lastManualDigest = manualCommitDigest(project);
+}
+
+export function summaryForDiff(diff: ChangeSummary): string {
+  const parts = [
+    diff.tilesChanged > 0 ? `타일 ${diff.tilesChanged}` : null,
+    (diff.mapPropertiesChanged ?? 0) > 0 ? `맵 설정 ${diff.mapPropertiesChanged}` : null,
+    (diff.audioDescriptionsChanged ?? 0) > 0 ? `오디오 설명 ${diff.audioDescriptionsChanged}` : null,
+    (diff.monsterMetadataChanged ?? 0) > 0 ? `몬스터 소재 ${diff.monsterMetadataChanged}` : null,
+    diff.eventsAdded > 0 ? `이벤트 추가 ${diff.eventsAdded}` : null,
+    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}` : null,
+    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}` : null,
+    diff.mapsAdded > 0 ? `맵 추가 ${diff.mapsAdded}` : null,
+    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}` : null,
+    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}` : null,
+    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}` : null,
+    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}` : null,
+    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}` : null,
+    diff.worldEntitiesAdded > 0 ? `세계관 추가 ${diff.worldEntitiesAdded}` : null,
+    diff.worldEntitiesModified > 0 ? `세계관 수정 ${diff.worldEntitiesModified}` : null,
+    diff.palettePresetsAdded > 0 ? `프리셋 추가 ${diff.palettePresetsAdded}` : null,
+    diff.palettePresetsModified > 0 ? `프리셋 수정 ${diff.palettePresetsModified}` : null,
+    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}` : null,
+    diff.sessionChanged ? "세션" : null,
+    diff.systemChanged ? "시스템" : null,
+  ].filter((part): part is string => part !== null);
+  return parts.length > 0 ? `변경 저장: ${parts.join(", ")}` : "변경 저장";
+}
+
+export function combineDiffs(diffs: readonly (ChangeSummary | undefined)[]): ChangeSummary {
+  return diffs.reduce<ChangeSummary>((combined, diff) => {
+    if (!diff) return combined;
+    combined.tilesChanged += diff.tilesChanged;
+    combined.mapPropertiesChanged = (combined.mapPropertiesChanged ?? 0) + (diff.mapPropertiesChanged ?? 0);
+    combined.audioDescriptionsChanged = (combined.audioDescriptionsChanged ?? 0) + (diff.audioDescriptionsChanged ?? 0);
+    combined.monsterMetadataChanged = (combined.monsterMetadataChanged ?? 0) + (diff.monsterMetadataChanged ?? 0);
+    combined.eventsAdded += diff.eventsAdded;
+    combined.eventsModified += diff.eventsModified;
+    combined.eventsRemoved += diff.eventsRemoved;
+    combined.mapsAdded += diff.mapsAdded;
+    combined.mapsRemoved += diff.mapsRemoved;
+    combined.dbRecordsChanged += diff.dbRecordsChanged;
+    combined.tilesetsChanged += diff.tilesetsChanged;
+    combined.switchesAdded += diff.switchesAdded;
+    combined.variablesAdded += diff.variablesAdded;
+    combined.worldEntitiesAdded += diff.worldEntitiesAdded;
+    combined.worldEntitiesModified += diff.worldEntitiesModified;
+    combined.palettePresetsAdded += diff.palettePresetsAdded;
+    combined.palettePresetsModified += diff.palettePresetsModified;
+    combined.endingsChanged += diff.endingsChanged;
+    combined.sessionChanged = combined.sessionChanged || diff.sessionChanged;
+    combined.systemChanged = combined.systemChanged || diff.systemChanged;
+    combined.warnings.push(...diff.warnings);
+    return combined;
+  }, emptyDiffSummary());
+}
+
+/**
+ * baseline → 저장본 실제 diff.
+ *
+ * baseline 을 한 번 더 `projectWithoutEventDrafts` 로 통과시키는 이유: draft 이벤트가 섞여 있으면
+ * `summarizeChanges` 가 그걸 **이벤트 삭제**로 집계해 "이벤트 삭제 3" 같은 거짓 summary 가 나온다.
+ * store 의 `persistedBaseline` 은 이미 draft 가 없지만, `resetManualProjectCommitBaseline` 이
+ * 라이브 프로젝트를 받는 것과 같은 방어를 여기서도 유지한다.
+ */
+function manualDiffFromBaseline(baseline: Project, saved: Project): ChangeSummary {
+  // 읽기 전용 투영 — `summarizeChanges` 는 둘 다 읽기만 하고, baseline 은 store 가 들고 있는 사적 객체다.
+  return summarizeChanges(projectViewWithoutEventDrafts(baseline), saved);
+}
+
+function manualDiffSummary(): ChangeSummary {
+  const diff = emptyDiffSummary();
+  diff.systemChanged = true;
+  return diff;
+}
+
+function emptyDiffSummary(): ChangeSummary {
+  return {
+    tilesChanged: 0,
+    mapPropertiesChanged: 0,
+    audioDescriptionsChanged: 0,
+    monsterMetadataChanged: 0,
+    eventsAdded: 0,
+    eventsModified: 0,
+    eventsRemoved: 0,
+    mapsAdded: 0,
+    mapsRemoved: 0,
+    dbRecordsChanged: 0,
+    tilesetsChanged: 0,
+    switchesAdded: 0,
+    variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
+    endingsChanged: 0,
+    sessionChanged: false,
+    systemChanged: false,
+    warnings: [],
+  };
+}

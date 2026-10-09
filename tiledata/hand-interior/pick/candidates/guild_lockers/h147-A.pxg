@@ -1,0 +1,110 @@
+// 번호 1~6 나무 보관함을 2열 3단으로 손작도, 쇠 손잡이와 4행 처마 윗면.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g iron 3
+@mat h iron 4
+@mat j iron 5
+@mat n pine 5
+@layer cabinet
+@mblock 0 0
+................................
+................................
+..ffffffffffffffffffffffffffff..
+.feeddedeeeeeeeeeeeeeddeeeeeecb.
+.feeeeeeeeeeeddeeeeeeeeeeeeeecb.
+.feeeeeddeeeeeeeeeeeeddeeeeecbb.
+.fffffffffffffffffffffffffffec.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.aeefffffffffffbefffffffffffba.
+.afefdddddddddcaefdddddddddcba.
+.afefdddedddddcaefddddeddddcba.
+.afefddddddddccaefdddddddddcba.
+.afefddddddddccaefdddddddddcba.
+.afefddddddddccaefdddddddddcba.
+.aeecddddccccccaecccccccccccba.
+.aeecccccccccccaecccccccccccba.
+.aeefffffffffffbefffffffffffba.
+.afefdddddddddcaefdddddddddcba.
+.afefddddddeddcaefddddddedddba.
+.afefddddddddccaefdddddddddcba.
+.afefddddddddccaefdddddddddcba.
+.afefddddddddccaefdddddddddcba.
+.aeecddccccccccaecccccccccccba.
+.aeecccccccccccaecccccccccccba.
+.aeefffffffffffbefffffffffffba.
+.afefdddddddddcaefdddddddddcba.
+.afefdddddedddcaefdddddedddcba.
+.afefddddddddccaefdddddddddcba.
+.afefddddddddccaefdddddddddcba.
+.aeecddddccccccaecccccccccccba.
+.aeeeeeeeeeeeeeeeeeeeeeeeeeeca.
+.abbbbbbbbbbbbbbbbbbbbbbbbbbba.
+// 刻字 1~6: 각 문 왼쪽, 3×5 화소
+@tblock 5 9 pine
+.5.
+55.
+.5.
+.5.
+555
+@tblock 18 9 pine
+555
+..5
+555
+5..
+555
+@tblock 5 17 pine
+555
+..5
+.55
+..5
+555
+@tblock 18 17 pine
+5.5
+5.5
+555
+..5
+..5
+@tblock 5 25 pine
+555
+5..
+555
+..5
+555
+@tblock 18 25 pine
+.55
+5..
+555
+5.5
+555
+// 쇠 손잡이: 위 왼쪽 반사와 아래 짙은 받침
+@tblock 11 11 iron
+55
+43
+33
+@tblock 24 11 iron
+55
+43
+33
+@tblock 11 19 iron
+55
+43
+33
+@tblock 24 19 iron
+55
+43
+33
+@tblock 11 27 iron
+55
+43
+33
+@tblock 24 27 iron
+55
+43
+33

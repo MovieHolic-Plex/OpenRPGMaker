@@ -1,0 +1,78 @@
+// lava wv4-C
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wash 0
+@mat b wash 1
+@mat c wlava 0
+@mat d wlava 1
+@mat e wlava 2
+@mat f wlava 3
+@mat g wlava 4
+@mat h wlava 5
+@mblock 0 0
+................fgffffffffdddddf.bacdgfffffeca..
+........b.......ffdddfffffdeeeddbbacefffddddca..
+......baa.b.....ffdeedffffdeeedfaacedffdeedfdcaa
+.....aaccaab....fffdddfffffdddffccdddffdeddffecc
+....accedccab...ffffffffffffffgfddffffffddffffee
+...acedhfedcab..ddddfffffffffffffggffgghfffffgff
+..bacddffgeca...eeedffggddddfffdffdddddffgffffff
+..aceeddffddcab.dddfffffdeedffffffdeeeddffdddfff
+.bacdedfffdeca..fffffffffdddffffffdeeedfffdeedff
+...aceffffdcab..ffffgfffffffhffffffdddfffffdddff
+..bacdeffdeca...ffffffffddddfgffffffffgfffffffff
+...baccdecca....dddfffffddeddfffeeffffffddddffdd
+....baaccaa.....eedffhffdeeedffdccedfffdeeedfdcc
+.....b.aab......eddffffffddddffdaacdffffdddfecaa
+.......b........ddffffffffffffff..acdffffffecabb
+................fffffgfffggffggh..aceffffffdcab.
+.....................b...............b..........
+........bb......b...baaabb......b...baaab.......
+......baaaab..aaa.baacccaaab..aaa.baaccca.b.....
+.....aaccccaaacccaacceddcccaaacccaacceddcaab....
+....acceddeccceedccedfffddeccceedccedfffdccab...
+...acedhfffdeefffedffgghfffdeefffedffgghfedcab..
+..bacddffgffffffffdddddffgffffffffdddddffgeca...
+..aceeddffdddfffffdeeeddffdddfffffdeeeddffddcab.
+.bacdedfffdeedffffdeeedfffdeedffffdeeedfffdeca..
+bacdddfffffdddfffffdddfffffdddfffffdddffffdcab..
+.aceffgfffffffffffffffgfffffffffffffffgfffeca...
+.acdffffddddffffffffffffddddffffffffffffddddcab.
+.bacdffdeeedffggddddfffdeeedffggddddfffdeeeeca..
+.bacefffdddfffffdeedffffdddfffffdeedffffdddfeca.
+..bacdfffffffffffdddfffffffffffffdddffffffffdcab
+..acefffffffgfffffffhfffffffgfffffffhffffffdcab.
+.bacdgffffffffffddddfgffffffffffddddfgfffffeca..
+.bacefffdddfffffddeddfffdddfffffddeddfffdddfeca.
+..bacdfdeedffhffdeeedffdeedffhffdeeedffdeedfdcab
+..bacefdeddffffffddddffdeddffffffddddffdedddcab.
+...acdffddffffffffffffffddffffffffffffffddfeca..
+.bacegghfffffgfffggffgghfffffgfffggffgghfffdca..
+..acdddffgffffffffdddddffgffffffffdddddffgfecab.
+..aceeddffdddfffffdeeeddffdddfffffdeeeddffddcab.
+.bacdedfffdeedffffdeeedfffdeedffffdeeedfffdeca..
+bacdddfffffdddfffffdddfffffdddfffffdddffffdcab..
+.aceffgfffffffffffffffgfffffffffffffffgfffeca...
+.acdffffddddffffffffffffddddffffffffffffddddcab.
+.bacdffdeeedffggddddfffdeeedffggddddfffdeeeeca..
+.bacefffdddfffffdeedffffdddfffffdeedffffdddfeca.
+..bacdfffffffffffdddfffffffffffffdddffffffffdcab
+..acefffffffgfffffffhfffffffgfffffffhffffffdcab.
+.bacdgffffffffffddddfgffffffffffddddfgfffffeca..
+.bacefffdddfffffddeddfffdddfffffddeddfffdddfeca.
+..bacdfdeedffhffdeeedffdeedffhffdeeedffdeedfdcab
+..bacefdeddffffffddddffdeddffffffddddffdedddcab.
+...acdffddffffffffffffffddffffffffffffffddfeca..
+.bacegghfffffgfffggffgghfffffgfffggffgghfffdca..
+..acdddffgffffffffdddddffgffffffffdddddffgfecab.
+..aceeddffdddfffffdeeeddffdddfffffdeeeddffddcab.
+.bacdedfffdeedffffdeeedfffdeedffffdeeedfffdeca..
+...acefffffdddfffffdddfffffdddfffffdddffffdcab..
+..bacdeffffffffffffffdeefffffffffffffdeefdeca...
+...baccdeeddfeddeffdeccceeddfeddeffdecccecca....
+....baaccccedccccdeccaaacccedccccdeccaaacaa.....
+.....b.aaaaccaaaaccaab..aaaccaaaaccaab..ab......
+.......b..baa.bb.aab......baa.bb.aab............
+...........b......b........b......b.............

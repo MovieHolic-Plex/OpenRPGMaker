@@ -1,0 +1,66 @@
+@media (min-width: 981px) {
+  .database-modal-body .oprn-detail-states {
+    box-sizing: border-box;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+    padding-bottom: 28px;
+  }
+
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
+    align-content: start;
+    gap: 8px;
+    /* runtime = Gen1 knob 패널. 이 파일이 states.css 의 8열 그리드를 16열로 덮어쓰므로
+       영역을 여기에도 선언해야 한다 — 빠뜨리면 패널이 grid-area 를 못 찾아 마지막 칸으로
+       자동 배치되고 세로로 찌그러진다(실제로 그렇게 깨졌다). */
+    grid-template-areas:
+      "base base base base acc acc special special anim anim anim anim anim anim anim anim"
+      "rate rate rate heal heal heal restrict restrict restrict restrict hp hp hp mp mp mp"
+      "runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime"
+      "summary summary summary summary refs refs refs refs refs refs refs refs refs refs refs refs";
+    grid-template-columns: repeat(16, minmax(38px, 1fr));
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding-bottom: 18px;
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel {
+    background: var(--bg-raised);
+    border-color: var(--db-modern-line, var(--border-subtle));
+    padding: 12px 12px 10px;
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp {
+    min-height: 136px;
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp .db-state-control,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp .db-state-control {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-hp .db-state-control input,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel-mp .db-state-control input {
+    font-size: 12px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+
+  .database-modal-body .db-state-control,
+  .database-modal-body .db-state-rate-row {
+    min-height: 28px;
+  }
+
+  .database-modal-body .db-state-oprn-workbench > .db-state-reference-panel,
+  .database-modal-body .db-state-summary {
+    height: auto;
+    min-height: 82px;
+    max-height: 112px;
+  }
+
+  .database-modal-body .db-state-animation-preview {
+    height: 66px;
+  }
+}

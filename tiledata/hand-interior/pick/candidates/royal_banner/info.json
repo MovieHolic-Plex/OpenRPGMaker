@@ -1,0 +1,37 @@
+{
+ "id": "royal banner",
+ "slug": "royal_banner",
+ "name_ko": "왕기(2줄)",
+ "category": "연회장·알현실",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 2,
+ "image": {
+  "w": 16,
+  "h": 30
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "금 문장이 달린 붉은 왕기(벽면 두 줄 걸이). 알현실 왕좌 뒤·연회장 벽에 2개씩 좌우 대칭.",
+ "where": "알현실 왕좌 뒤·연회장 벽에 2개씩 좌우 대칭.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  29
+ ],
+ "v5_colors": 6,
+ "material": "cloth",
+ "related": []
+}

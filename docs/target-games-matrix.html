@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG ZZU · 7개 목표 게임 매트릭스</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #1a1f2e;
+      --muted: #5c6478;
+      --paper: #f4efe4;
+      --paper-2: #e8e2d4;
+      --card: #fffcf5;
+      --line: #d4ccb8;
+      --teal: #0d7a6f;
+      --teal-deep: #08574f;
+      --teal-soft: #d7efe9;
+      --amber: #c47b12;
+      --amber-soft: #f7e7c8;
+      --rose: #a33b4a;
+      --rose-soft: #f6dbe0;
+      --blue: #2f5f9e;
+      --blue-soft: #dce8f8;
+      --violet: #5b4a9a;
+      --violet-soft: #e6e0f6;
+      --green: #2f7a3a;
+      --green-soft: #d9efd9;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans KR", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+      --shadow: 0 18px 50px rgba(26, 31, 46, 0.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 500px at 10% -10%, #fff8e8 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #e7f4f1 0%, transparent 50%),
+        var(--paper);
+      line-height: 1.55;
+    }
+    a { color: var(--teal-deep); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+    header.hero {
+      padding: 3.2rem 0 1.6rem;
+      border-bottom: 1px solid rgba(212, 204, 184, 0.7);
+      background: linear-gradient(180deg, rgba(255,252,245,0.75), transparent);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--teal-deep);
+      font-weight: 600;
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2.1rem, 4vw, 3.2rem);
+      line-height: 1.12;
+      margin: 0.7rem 0 0.9rem;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      max-width: 62ch;
+      font-size: 1.08rem;
+      color: var(--muted);
+      margin: 0 0 1.4rem;
+    }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      font-size: 0.82rem;
+      color: var(--muted);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset;
+    }
+    .chip b { color: var(--ink); font-weight: 600; }
+    nav.toc {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      background: rgba(244, 239, 228, 0.86);
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .wrap {
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      padding: 0.65rem 0;
+    }
+    nav.toc a {
+      white-space: nowrap;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.86rem;
+      border: 1px solid transparent;
+    }
+    nav.toc a:hover {
+      background: var(--teal-soft);
+      color: var(--teal-deep);
+      border-color: #9ecfc6;
+    }
+    section { padding: 2.4rem 0 0.4rem; }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+      margin: 0 0 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .sec-sub {
+      color: var(--muted);
+      margin: 0 0 1.2rem;
+      max-width: 70ch;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .card .body { padding: 1.1rem 1.2rem 1.25rem; }
+    .card h3 {
+      margin: 0 0 0.45rem;
+      font-size: 1.05rem;
+    }
+    .card p { margin: 0; color: var(--muted); }
+    .poster-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
+    }
+    @media (max-width: 980px) {
+      .poster-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .poster-grid { grid-template-columns: 1fr; }
+    }
+    .poster {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 210px;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: #222;
+      color: #fff;
+    }
+    .poster img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.05) contrast(1.02);
+      transform: scale(1.02);
+    }
+    .poster::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(10,14,20,0.05) 20%, rgba(10,14,20,0.78) 100%);
+    }
+    .poster .content {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      z-index: 1;
+      padding: 1rem;
+    }
+    .poster .tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 0.35rem;
+    }
+    .poster h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.25;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+    }
+    .poster p {
+      margin: 0.3rem 0 0;
+      font-size: 0.86rem;
+      opacity: 0.9;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .game {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .game .banner {
+      height: 88px;
+      display: flex;
+      align-items: flex-end;
+      padding: 0.9rem 1rem;
+      color: #fff;
+      position: relative;
+    }
+    .game .banner .num {
+      position: absolute;
+      top: 0.7rem;
+      right: 0.9rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      opacity: 0.85;
+    }
+    .game .banner h3 {
+      margin: 0;
+      font-size: 1.15rem;
+      letter-spacing: -0.01em;
+    }
+    .game .body { padding: 1rem 1.05rem 1.15rem; display: grid; gap: 0.7rem; }
+    .kv {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 0.35rem 0.6rem;
+      font-size: 0.9rem;
+    }
+    .kv dt { color: var(--muted); }
+    .kv dd { margin: 0; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .pill {
+      font-size: 0.75rem;
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 600;
+    }
+    .pill.ok { background: var(--green-soft); color: var(--green); border-color: #b6dfb8; }
+    .pill.mid { background: var(--amber-soft); color: #8a5a0a; border-color: #ebcf96; }
+    .pill.bad { background: var(--rose-soft); color: var(--rose); border-color: #e8b7bf; }
+    .pill.neutral { background: #eef1f5; color: #445; border-color: #d5dbe3; }
+    .pill.phase { background: var(--blue-soft); color: var(--blue); border-color: #b8ccea; }
+    .meter {
+      height: 8px;
+      background: #ece6d8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .meter > span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--teal), #3aa58f);
+    }
+    .matrix {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+    }
+    .matrix th, .matrix td {
+      padding: 0.72rem 0.8rem;
+      border-bottom: 1px solid #ebe4d4;
+      text-align: left;
+      vertical-align: top;
+    }
+    .matrix th {
+      background: #f7f1e5;
+      font-weight: 600;
+      color: #3b4254;
+      white-space: nowrap;
+    }
+    .matrix tr:last-child td { border-bottom: 0; }
+    .matrix td.center, .matrix th.center { text-align: center; }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-weight: 600;
+      font-size: 0.82rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+    }
+    .status.pass { background: var(--green-soft); color: var(--green); }
+    .status.partial { background: var(--amber-soft); color: #8a5a0a; }
+    .status.fail { background: var(--rose-soft); color: var(--rose); }
+    .status.ready { background: var(--teal-soft); color: var(--teal-deep); }
+    .status.far { background: #eceff4; color: #566; }
+    .timeline {
+      display: grid;
+      gap: 0.65rem;
+      position: relative;
+      padding-left: 0.2rem;
+    }
+    .phase {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 0.8rem;
+      align-items: start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      box-shadow: 0 8px 24px rgba(26,31,46,0.04);
+    }
+    .phase .id {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--teal-deep);
+      font-weight: 600;
+    }
+    .phase h4 { margin: 0 0 0.25rem; font-size: 0.98rem; }
+    .phase p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .callout {
+      border-left: 4px solid var(--teal);
+      background: linear-gradient(90deg, var(--teal-soft), transparent);
+      padding: 0.9rem 1rem;
+      border-radius: 0 12px 12px 0;
+      color: #234;
+      margin: 1rem 0;
+    }
+    .callout strong { color: var(--teal-deep); }
+    .split-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+    }
+    @media (max-width: 860px) {
+      .split-3 { grid-template-columns: 1fr; }
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem 1.05rem;
+      box-shadow: var(--shadow);
+    }
+    .stat .n {
+      font-family: var(--display);
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .stat .l { color: var(--muted); font-size: 0.9rem; }
+    .map-box {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px) {
+      .map-box { grid-template-columns: 1fr; }
+    }
+    .lane {
+      border: 1px dashed #cfc6b2;
+      border-radius: 14px;
+      padding: 0.85rem;
+      background: rgba(255,252,245,0.7);
+    }
+    .lane h4 { margin: 0 0 0.55rem; font-size: 0.92rem; }
+    .lane ul { margin: 0; padding-left: 1.1rem; color: var(--muted); }
+    .lane li { margin: 0.2rem 0; }
+    footer {
+      margin: 2.5rem 0 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.86rem;
+    }
+    code {
+      font-family: var(--mono);
+      font-size: 0.84em;
+      background: #f0ebe0;
+      padding: 0.08rem 0.35rem;
+      border-radius: 5px;
+    }
+    .g-hero { background: linear-gradient(135deg, #2f5f9e, #4d7ec4); }
+    .g-moon { background: linear-gradient(135deg, #5b4a9a, #8a74c8); }
+    .g-ib { background: linear-gradient(135deg, #6a3a52, #b06a84); }
+    .g-witch { background: linear-gradient(135deg, #3a2a48, #7a4f86); }
+    .g-pkmn { background: linear-gradient(135deg, #c47b12, #e2a43a); }
+    .g-star { background: linear-gradient(135deg, #0d7a6f, #3aa58f); }
+    .g-wind { background: linear-gradient(135deg, #2f7a3a, #63a86b); }
+    .tiny { font-size: 0.82rem; color: var(--muted); }
+    .checklist { margin: 0; padding-left: 1.15rem; }
+    .checklist li { margin: 0.28rem 0; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot" aria-hidden="true"></span> RPG ZZU · Target Games</div>
+      <h1>예전에 찍었던 목표 게임,<br />지금 엔진으로 어디까지 되나</h1>
+      <p class="lede">
+        Notion 정본은 <b>7개 레퍼런스 게임</b>이었습니다.
+        현재 웰컴 화면은 그중/주변을 제품화해 <b>4개 장르 칩</b>으로 압축한 상태입니다.
+        아래는 2026-07-08 로드맵 + 2026-07-09 성적표 + 2026-07-15 런타임 상태를 합친 매트릭스입니다.
+      </p>
+      <div class="meta-row">
+        <span class="chip">소스 <b>Notion · RPG ZZU</b></span>
+        <span class="chip">로드맵 <b>2026-07-08</b></span>
+        <span class="chip">성적표 <b>2026-07-09 · 3/7 원큐</b></span>
+        <span class="chip">현재 칩 <b>4 장르</b></span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="섹션">
+    <div class="wrap">
+      <a href="#now">지금 칩 4종</a>
+      <a href="#seven">목표 7종</a>
+      <a href="#matrix">가능도 매트릭스</a>
+      <a href="#phases">12 Phase</a>
+      <a href="#score">성적표</a>
+      <a href="#map">제품 매핑</a>
+      <a href="#next">다음에 밀 것</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="now">
+      <h2>1. 지금 웰컴에 남아 있는 4칩</h2>
+      <p class="sec-sub">코드 정본: <code>src/editor/welcomeGenrePresets.ts</code>. 칩은 “완성 게임 클론”이 아니라 <b>시작 뼈대 템플릿</b>입니다.</p>
+      <div class="poster-grid">
+        <article class="poster">
+          <img src="../public/assets/generated/welcome/slide-01.jpg" alt="몬스터 수집" />
+          <div class="content">
+            <div class="tag">monster-collect</div>
+            <h3>포켓몬 같은 몬스터 수집</h3>
+            <p>포획 · 도감 · 야생 조우</p>
+          </div>
+        </article>
+        <article class="poster">
+          <img src="../public/assets/generated/welcome/slide-02.jpg" alt="파트너 육성" />
+          <div class="content">
+            <div class="tag">partner-raise</div>
+            <h3>디지몬 같은 파트너 육성</h3>
+            <p>육성 · 진화 · 유대</p>
+          </div>
+        </article>
+        <article class="poster">
+          <img src="../public/assets/generated/welcome/slide-03.jpg" alt="농장 생활" />
+          <div class="content">
+            <div class="tag">farm-life</div>
+            <h3>스타듀 같은 농장 생활</h3>
+            <p>농장 · 일상 · 마을</p>
+          </div>
+        </article>
+        <article class="poster">
+          <img src="../public/assets/generated/welcome/slide-04.png" alt="모험 JRPG" />
+          <div class="content">
+            <div class="tag">adventure-jrpg</div>
+            <h3>모험 JRPG</h3>
+            <p>파티 · 던전 · 모험</p>
+          </div>
+        </article>
+      </div>
+      <div class="callout" style="margin-top:1.1rem">
+        <strong>중요:</strong> 웰컴 4칩 ≠ Notion 7게임. 4칩은 온보딩 UX, 7게임은 “에이전트가 자연어로 만들 수 있어야 하는 타깃 작품군”입니다. 디지몬 칩은 7종 표에는 없고 포켓몬 수집 레이어의 인접 변형으로 제품 표면에 올라간 축입니다.
+      </div>
+    </section>
+
+    <section id="seven">
+      <h2>2. Notion 정본 — 목표 게임 7종</h2>
+      <p class="sec-sub">페이지: <b>2026-07-08 고도화 로드맵 — 7개 목표 게임 12 Phase</b>. 목표 한 줄: 아래 7종을 내부 에이전트가 자연어 지시만으로 제작 가능한 수준.</p>
+      <div class="game-grid">
+        <article class="game">
+          <div class="banner g-hero"><span class="num">01</span><h3>영웅서기 제로</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 7(+8)</span>
+              <span class="pill ok">엔진 강함</span>
+              <span class="pill ok">원큐 완주</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>고전 탑뷰 JRPG · 전투·성장</dd>
+              <dt>핵심</dt><dd>strict 턴제, 보스 패턴, 마을→필드→보스</dd>
+              <dt>현재</dt><dd>전투 골격·승급·인카운터·팔로워 있음</dd>
+            </dl>
+            <div class="meter" title="엔진 readiness"><span style="width:82%"></span></div>
+            <div class="tiny">가능도 높음 — 콘텐츠 밀도/밸런스가 남은 일</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-moon"><span class="num">02</span><h3>투더문</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 2–3</span>
+              <span class="pill mid">연출 의존</span>
+              <span class="pill mid">원큐 부분</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>컷신·회상 중심 스토리 RPG</dd>
+              <dt>핵심</dt><dd>타임라인 연출, 픽처/카메라/오디오 동기</dd>
+              <dt>현재</dt><dd><code>script_cutscene</code>·컷신 락·엔딩 그래프 있음</dd>
+            </dl>
+            <div class="meter"><span style="width:68%"></span></div>
+            <div class="tiny">가능 — 다만 “감동 연출” 품질은 저작/툴 선택에 달림</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-ib"><span class="num">03</span><h3>이브 (Ib)</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 3–5</span>
+              <span class="pill mid">공간+이벤트</span>
+              <span class="pill bad">원큐 실패</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>갤러리형 조사·퍼즐 호러</dd>
+              <dt>핵심</dt><dd>핫스팟 다수, 퍼즐 DSL, 동행/추격</dd>
+              <dt>현재</dt><dd>조사·체크포인트·추격·라이팅 존재, 실내 밀도 어려움</dd>
+            </dl>
+            <div class="meter"><span style="width:55%"></span></div>
+            <div class="tiny">반쯤 됨 — 엔진보다 저작 오케스트레이션이 병목</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-witch"><span class="num">04</span><h3>마녀의 집</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 3–6</span>
+              <span class="pill mid">호러 완성도</span>
+              <span class="pill mid">원큐 부분</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>트랩·즉사·체크포인트 호러</dd>
+              <dt>핵심</dt><dd>트랩 루프, 분위기 라이팅, 추격자</dd>
+              <dt>현재</dt><dd>killPlayer/checkpoint/chase/lighting/weather</dd>
+            </dl>
+            <div class="meter"><span style="width:62%"></span></div>
+            <div class="tiny">플레이 루프는 됨 · 실내 벽/맵 품질 마찰이 큼</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-pkmn"><span class="num">05</span><h3>포켓몬</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 7+9</span>
+              <span class="pill ok">시스템 강함</span>
+              <span class="pill ok">원큐 완주</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>수집·포획·타입·진화</dd>
+              <dt>핵심</dt><dd>species/instance, capture, typeChart, box</dd>
+              <dt>현재</dt><dd>몬스터 파티 전투, 포켓몬 UI 스킨, 케어/산책</dd>
+            </dl>
+            <div class="meter"><span style="width:88%"></span></div>
+            <div class="tiny">가장 잘 맞는 축 중 하나 — “수직 슬라이스” 가능</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-star"><span class="num">06</span><h3>스타듀 밸리</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 10–11</span>
+              <span class="pill ok">생활 루프</span>
+              <span class="pill ok">원큐 완주</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>농사·시간·마을 사회</dd>
+              <dt>핵심</dt><dd>달력, farmPlots, 선물/호감, 계절 상점</dd>
+              <dt>현재</dt><dd>opt-in 생활 슬롯 (풀 라이프심 클론 아님)</dd>
+            </dl>
+            <div class="meter"><span style="width:80%"></span></div>
+            <div class="tiny">코지 루프 가능 · 결혼/대규모 페스티벌은 비목표</div>
+          </div>
+        </article>
+
+        <article class="game">
+          <div class="banner g-wind"><span class="num">07</span><h3>바람의 나라</h3></div>
+          <div class="body">
+            <div class="pill-row">
+              <span class="pill phase">Phase 8+11+12</span>
+              <span class="pill mid">월드 스케일</span>
+              <span class="pill mid">원큐 부분</span>
+            </div>
+            <dl class="kv">
+              <dt>성격</dt><dd>성장·사냥·생활 + 대형 월드</dd>
+              <dt>핵심</dt><dd>승급, 사냥터 스폰, 월드 그래프</dd>
+              <dt>현재</dt><dd>클래스 승급·필드 스폰·worldGraph·웹 익스포트</dd>
+            </dl>
+            <div class="meter"><span style="width:70%"></span></div>
+            <div class="tiny">뼈대 있음 · “나라” 스케일 콘텐츠 연결이 과제</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="matrix">
+      <h2>3. 가능도 매트릭스 — 엔진 / 에이전트 / 제품</h2>
+      <p class="sec-sub">“구현 가능”을 세 층으로 나눕니다. 엔진 런타임, 에이전트 원큐 제작, 플레이어가 느끼는 완성도.</p>
+      <div style="overflow-x:auto">
+        <table class="matrix">
+          <thead>
+            <tr>
+              <th>게임</th>
+              <th class="center">엔진 런타임</th>
+              <th class="center">에이전트 원큐<br /><span class="tiny">2026-07-09</span></th>
+              <th class="center">10분 수직 슬라이스</th>
+              <th>이미 있는 핵심 슬롯</th>
+              <th>아직 약하거나 비목표</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>포켓몬</b></td>
+              <td class="center"><span class="status ready">강함</span></td>
+              <td class="center"><span class="status pass">완주</span></td>
+              <td class="center"><span class="status pass">가능</span></td>
+              <td>수집/포획/타입/진화/몬스터 파티/포켓몬 전투 UI</td>
+              <td>교환 서버, 도감 UX 풀셋, 애니메이션 연출 밀도</td>
+            </tr>
+            <tr>
+              <td><b>스타듀 밸리</b></td>
+              <td class="center"><span class="status ready">강함</span></td>
+              <td class="center"><span class="status pass">완주</span></td>
+              <td class="center"><span class="status pass">가능</span></td>
+              <td>시간/계절, 농사, 호감/선물, 스케줄, 상점 시즌</td>
+              <td>결혼/동거, 페스티벌 풀 시뮬, 동물 목장 풀셋</td>
+            </tr>
+            <tr>
+              <td><b>영웅서기 제로</b></td>
+              <td class="center"><span class="status ready">강함</span></td>
+              <td class="center"><span class="status pass">완주</span></td>
+              <td class="center"><span class="status pass">가능</span></td>
+              <td>strict 전투, 보스 페이지, 승급, 인카운터, 던전</td>
+              <td>장편 밸런스, 액션패턴 저작 편의, 콘텐츠 양</td>
+            </tr>
+            <tr>
+              <td><b>바람의 나라</b></td>
+              <td class="center"><span class="status ready">중상</span></td>
+              <td class="center"><span class="status partial">부분</span></td>
+              <td class="center"><span class="status partial">부분 가능</span></td>
+              <td>승급, 사냥터 스폰, 생활 루프, worldGraph, export</td>
+              <td>대규모 월드 품질, 승급 NPC 원큐 안정, MMO성</td>
+            </tr>
+            <tr>
+              <td><b>투더문</b></td>
+              <td class="center"><span class="status ready">중상</span></td>
+              <td class="center"><span class="status partial">부분</span></td>
+              <td class="center"><span class="status partial">가능(품질 편차)</span></td>
+              <td>script_cutscene, 카메라/픽처, 엔딩 그래프</td>
+              <td>연출 타이밍 미학, 계획 단계 툴 순서 마찰</td>
+            </tr>
+            <tr>
+              <td><b>마녀의 집</b></td>
+              <td class="center"><span class="status ready">중상</span></td>
+              <td class="center"><span class="status partial">부분</span></td>
+              <td class="center"><span class="status partial">가능(맵 품질↓)</span></td>
+              <td>checkpoint, killPlayer, chase, lighting, weather</td>
+              <td>실내 벽/9-slice, 방 밀도 자동 배치</td>
+            </tr>
+            <tr>
+              <td><b>이브</b></td>
+              <td class="center"><span class="status ready">중</span></td>
+              <td class="center"><span class="status fail">0건</span></td>
+              <td class="center"><span class="status partial">수동 저작 가능</span></td>
+              <td>조사 핫스팟, 퍼즐 컴파일, 동행, 추격</td>
+              <td>원큐 오케스트레이션, 갤러리 맵 자동 밀도</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="split-3" style="margin-top:1rem">
+        <div class="stat">
+          <div class="n" style="color:var(--green)">3/7</div>
+          <div class="l">원큐 완주 (포켓몬·스타듀·영웅서기)</div>
+        </div>
+        <div class="stat">
+          <div class="n" style="color:var(--amber)">3/7</div>
+          <div class="l">부분 성공 (바람·투더문·마녀의집)</div>
+        </div>
+        <div class="stat">
+          <div class="n" style="color:var(--rose)">1/7</div>
+          <div class="l">원큐 실패 (이브 — 설명만 종료)</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="phases">
+      <h2>4. 12 Phase가 7게임을 어떻게 해금했는지</h2>
+      <p class="sec-sub">로드맵 원칙: 각 phase는 대상 게임 1개의 “플레이 가능한 10분 수직 슬라이스”로 검증. A 연출 / B 전투 / C 생활 트랙 병렬 가능.</p>
+      <div class="timeline">
+        <div class="phase"><div class="id">P1</div><div><h4>런타임 코어 + 장면 검증</h4><p>카메라, spawn/remove, scene test — 전 게임 공통 바닥</p></div></div>
+        <div class="phase"><div class="id">P2</div><div><h4>컷신 타임라인 → 투더문</h4><p>script_cutscene, 픽처/오디오 동기, 컷신 락</p></div></div>
+        <div class="phase"><div class="id">P3</div><div><h4>사망·체크포인트·멀티엔딩 → 호러 공통</h4><p>트랩, 리트라이, ending graph</p></div></div>
+        <div class="phase"><div class="id">P4</div><div><h4>조사·퍼즐 저작 → 이브/마녀의집</h4><p>examine hotspots, puzzle DSL</p></div></div>
+        <div class="phase"><div class="id">P5</div><div><h4>동행·추격자 → 이브/마녀의집</h4><p>follower, A* chase, safe zones</p></div></div>
+        <div class="phase"><div class="id">P6</div><div><h4>분위기 연출 → 호러 완성도</h4><p>lighting, weather, map animation</p></div></div>
+        <div class="phase"><div class="id">P7</div><div><h4>전투 코어 확장 → 영웅서기/포켓몬</h4><p>strict 턴, 교체, 보스 이벤트</p></div></div>
+        <div class="phase"><div class="id">P8</div><div><h4>성장·직업·사냥 → 바람의 나라</h4><p>승급, 보상 정책, 필드 스폰</p></div></div>
+        <div class="phase"><div class="id">P9</div><div><h4>몬스터 수집 → 포켓몬</h4><p>species/instance, capture, evolution, typeChart</p></div></div>
+        <div class="phase"><div class="id">P10</div><div><h4>시간·농사 → 스타듀 1</h4><p>GameTime, farmPlots, crops</p></div></div>
+        <div class="phase"><div class="id">P11</div><div><h4>생활·NPC 사회 → 스타듀 2 / 바람</h4><p>스케줄, friendship, 계절 상점</p></div></div>
+        <div class="phase"><div class="id">P12</div><div><h4>대형 월드 + 익스포트</h4><p>worldGraph, web player bundle, (Tauri 후속)</p></div></div>
+      </div>
+      <div class="callout">
+        <strong>해금 맵:</strong> 투더문 2–3 · 이브 3–5 · 마녀의집 3–6 · 영웅서기 7(+8) · 포켓몬 7+9 · 바람 8+11+12 · 스타듀 10–11
+      </div>
+    </section>
+
+    <section id="score">
+      <h2>5. 2026-07-09 성적표 하이라이트</h2>
+      <p class="sec-sub">자연어 원큐, 후속 지시 없음, M8 배포본 기준. 총평: DB/시스템형은 강하고, 공간+이벤트 복합(실내 공포)이 가장 어려움.</p>
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>원큐 결과</h3>
+            <table class="matrix" style="box-shadow:none;border:0">
+              <tbody>
+                <tr><td>포켓몬</td><td><span class="status pass">완주 84s</span></td><td class="tiny">종 3 + 타입 + 스타터 + 진화</td></tr>
+                <tr><td>스타듀</td><td><span class="status pass">완주 175s</span></td><td class="tiny">밭 + 농가 내부 + 농부</td></tr>
+                <tr><td>영웅서기</td><td><span class="status pass">완주 180s</span></td><td class="tiny">strict + 보스 페이지 + 맵 스펙</td></tr>
+                <tr><td>바람의 나라</td><td><span class="status partial">부분 173s</span></td><td class="tiny">사냥터 지형 OK · 승급 NPC 미완</td></tr>
+                <tr><td>투더문</td><td><span class="status partial">부분 150s</span></td><td class="tiny">컷신 OK · NPC 순서 꼬임</td></tr>
+                <tr><td>마녀의 집</td><td><span class="status partial">부분 534s</span></td><td class="tiny">루프 도달 · 외벽 품질↓</td></tr>
+                <tr><td>이브</td><td><span class="status fail">0건 104s</span></td><td class="tiny">설명만 종료 · 재킥 미발화</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>당시 결론 (지금도 유효)</h3>
+            <ul class="checklist">
+              <li>병목은 <b>기능 부재</b>보다 <b>툴/패턴 선택</b>과 <b>저수준 인자 마찰</b></li>
+              <li>전투·수집·농사 같은 DB/시스템 요구는 안정</li>
+              <li>실내 공포(벽 라인, 조사 밀도, 오케스트레이션)가 최약</li>
+              <li>서사/의미 계층·도메인 컴파일러 우선 전략과 일치</li>
+            </ul>
+            <div class="callout" style="margin-top:0.9rem">
+              2026-07-15 기준으로 엔진 슬롯은 더 두꺼워짐: 몬스터 케어, 우정도 프레젠테이션, 생일 보너스, 상점 할인, 포켓몬 전투 UI 다듬기 등.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="map">
+      <h2>6. 7게임 ↔ 현재 제품 표면 매핑</h2>
+      <p class="sec-sub">사용자가 지금 에디터에서 “어떤 문”으로 들어갈 수 있는지.</p>
+      <div class="map-box">
+        <div class="card">
+          <div class="body">
+            <h3>웰컴 칩 → 목표 게임</h3>
+            <table class="matrix" style="box-shadow:none;border:0">
+              <thead>
+                <tr><th>칩</th><th>직접 대응</th><th>간접 대응</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>포켓몬 같은 몬스터 수집</td>
+                  <td>포켓몬</td>
+                  <td>바람(사냥) 일부</td>
+                </tr>
+                <tr>
+                  <td>디지몬 같은 파트너 육성</td>
+                  <td>(7종 외 인접축)</td>
+                  <td>포켓몬 케어/진화/유대</td>
+                </tr>
+                <tr>
+                  <td>스타듀 같은 농장 생활</td>
+                  <td>스타듀 밸리</td>
+                  <td>바람 생활 루프</td>
+                </tr>
+                <tr>
+                  <td>모험 JRPG</td>
+                  <td>영웅서기 제로</td>
+                  <td>바람 성장/던전</td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="tiny" style="margin-top:0.7rem">칩에 없는 목표: <b>투더문 · 이브 · 마녀의 집</b> — 자유 입력 또는 전문가 툴로 진입.</p>
+          </div>
+        </div>
+        <div>
+          <div class="lane" style="margin-bottom:0.8rem">
+            <h4>지금 “어떻게든 구현 가능” 쪽</h4>
+            <ul>
+              <li>포켓몬 수직 슬라이스 (스타터→풀숲→포획→진화)</li>
+              <li>스타듀 수직 슬라이스 (밭→수확→선물→상점)</li>
+              <li>영웅서기식 마을/필드/보스 10분</li>
+            </ul>
+          </div>
+          <div class="lane" style="margin-bottom:0.8rem">
+            <h4>반쯤 — 수동/다턴이면 됨</h4>
+            <ul>
+              <li>투더문식 회상 컷신 + 엔딩 분기</li>
+              <li>마녀의집 트랩/체크포인트 루프</li>
+              <li>바람 사냥터 + 승급 1차</li>
+            </ul>
+          </div>
+          <div class="lane">
+            <h4>아직 먼 쪽 (제품 비목표 포함)</h4>
+            <ul>
+              <li>이브 갤러리 원큐 자동 생성</li>
+              <li>스타듀 풀 라이프심(결혼·축제 시뮬)</li>
+              <li>포켓몬 온라인 교환 / 바람 MMO성</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>7. 한 장 결론 + 다음에 밀 축</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="body">
+            <h3>한 장 결론</h3>
+            <p>
+              예전에 목표로 박은 건 <b>장르 4개</b>가 아니라
+              <b>레퍼런스 게임 7개</b>였습니다.
+              그중 포켓몬·스타듀·영웅서기 축은 엔진과 잘 맞고,
+              호러/연출 축은 “가능은 한데 자동 생성이 약하고”,
+              바람은 “뼈대는 있는데 스케일 연결”이 남은 일입니다.
+            </p>
+            <div class="pill-row" style="margin-top:0.85rem">
+              <span class="pill ok">수집 가능</span>
+              <span class="pill ok">농장 가능</span>
+              <span class="pill ok">JRPG 가능</span>
+              <span class="pill mid">연출 부분</span>
+              <span class="pill mid">호러 부분</span>
+              <span class="pill mid">대형 월드 부분</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="body">
+            <h3>우선순위 제안 (제품 관점)</h3>
+            <ol class="checklist">
+              <li><b>이미 되는 3축을 데모로 고정</b> — 포켓몬/스타듀/영웅서기 샘플 프로젝트를 “증명 가능한 플레이”로</li>
+              <li><b>호러/연출은 템플릿 컴파일러</b> — 방 밀도·트랩 루프·컷신 프리셋 (원큐 실패 줄이기)</li>
+              <li><b>바람은 월드 그래프 연결</b> — 마을↔사냥터↔승급 1줄 파이프라인</li>
+              <li><b>웰컴 칩 확장 여부는 선택</b> — 투더문/호러 칩을 넣을지, 자유입력으로 둘지</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      근거: Notion <code>RPG ZZU</code> /
+      <code>2026-07-08 고도화 로드맵 — 7개 목표 게임 12 Phase</code> /
+      <code>2026-07-09 Phase 6~13 완주 보고</code> /
+      코드 <code>welcomeGenrePresets.ts</code> /
+      <code>openwiki/runtime-and-data.md (slim index → topic pages)</code> (2026-07-15).
+      이 문서는 리서치 정리용이며 실행 승인 문서는 아닙니다.
+    </footer>
+  </main>
+</body>
+</html>

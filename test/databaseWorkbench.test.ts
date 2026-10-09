@@ -1,0 +1,249 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { addDatabaseRecord, deleteDatabaseRecord } from "@/editor/databaseActions";
+import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { setSelectedRecordId, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
+import { DATABASE_FOOTER_ACTION_TEST_IDS } from "@/editor/panels/databaseWorkbench";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { FakeElement, FakeNode, findByTestId, installFakeDom } from "./fakeDom";
+
+type FakeBrowserGlobals = {
+  readonly window: typeof globalThis.window | undefined;
+  readonly requestAnimationFrame: typeof globalThis.requestAnimationFrame | undefined;
+};
+
+let restoreDom: (() => void) | undefined;
+let previousBrowserGlobals: FakeBrowserGlobals;
+
+beforeEach(() => {
+  restoreDom = installFakeDom();
+  previousBrowserGlobals = {
+    requestAnimationFrame: globalThis.requestAnimationFrame,
+    window: globalThis.window,
+  };
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    value: {
+      clearTimeout,
+      localStorage: createFakeLocalStorage(),
+      setTimeout: (handler: TimerHandler): number => {
+        if (typeof handler === "function") handler();
+        return 0;
+      },
+    },
+  });
+  Object.defineProperty(globalThis, "requestAnimationFrame", {
+    configurable: true,
+    value: (callback: FrameRequestCallback): number => {
+      callback(0);
+      return 0;
+    },
+  });
+  store.replace(createBlankProject());
+  resetDatabaseRecordViewSession();
+  // 이 테스트는 리스트 행 계약(부분 렌더/검색/삭제 2단계)을 검증한다 — 갤러리 기본값
+  // 컬렉션(skills/actors/classes)을 명시적으로 list 로 고정한다.
+  setViewModeForCollection("skills", "list");
+  setViewModeForCollection("actors", "list");
+  setViewModeForCollection("classes", "list");
+});
+
+afterEach(() => {
+  restoreDom?.();
+  restoreDom = undefined;
+  restoreBrowserGlobal("window", previousBrowserGlobals.window);
+  restoreBrowserGlobal("requestAnimationFrame", previousBrowserGlobals.requestAnimationFrame);
+});
+
+describe("Database RM2K3 workbench context", () => {
+  // "취소" 버튼은 "닫기"와 완전히 동일한 동작이던 중복 컨트롤이라 제거했다(fix(db): 저장 모델 UI
+  // 정직화). testid 상수에서도 cancel 을 뺀다 — 더 이상 어떤 버튼도 이 testid 를 쓰지 않는다.
+  it("keeps the footer actions stable", () => {
+    expect(DATABASE_FOOTER_ACTION_TEST_IDS).toEqual({
+      apply: "database-footer-apply",
+      ok: "database-footer-ok",
+    });
+  });
+
+  it("Given a stale deleted selection When a modal session restarts Then it selects the first live record", () => {
+    const firstSkill = store.getCurrent().database.skills[0];
+    const secondSkillId = addDatabaseRecord("skills");
+    expect(firstSkill).toBeDefined();
+
+    const selectedRow = findByTestId(renderRecordHost("skills"), `db-record-row-${secondSkillId}`);
+    selectedRow?.click();
+
+    expect(findByTestId(renderRecordHost("skills"), `db-record-row-${secondSkillId}`)?.attrs["aria-pressed"]).toBe("true");
+
+    const deleteResult = deleteDatabaseRecord("skills", secondSkillId);
+    expect(deleteResult.ok).toBe(true);
+    resetDatabaseRecordViewSession();
+
+    const reopened = renderRecordHost("skills");
+    expect(findByTestId(reopened, `db-record-row-${secondSkillId}`)).toBeNull();
+    expect(findByTestId(reopened, `db-record-row-${firstSkill.id}`)?.attrs["aria-pressed"]).toBe("true");
+  });
+
+  it("Given a search on one record tab When another tab renders Then the new tab has an isolated blank search", () => {
+    const actorSearch = searchInput(renderRecordHost("actors"));
+    actorSearch.value = "Hero";
+    actorSearch.dispatchEvent(new Event("input"));
+
+    expect(searchInput(renderRecordHost("actors")).value).toBe("Hero");
+    expect(searchInput(renderRecordHost("skills")).value).toBe("");
+  });
+
+  // 가짜 직업 채움 행("마검사"/"기사"/... disabled aria-hidden 행)은 목록 아래를 시각적으로
+  // 채우기만 하는 죽은 컨트롤이었다 — fix(db)에서 제거했다. classes 탭은 이제 다른 탭과
+  // 동일하게 실제 레코드만 렌더하고 검색도 실동작한다.
+  it("Given the classes tab When rendered Then no decorative filler rows or group tabs exist", () => {
+    const host = renderRecordHost("classes");
+    const recordRows = allElements(host).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
+    const fillerRows = allElements(host).filter((node) => node.className.split(/\s+/u).includes("db-list-row-visual-filler"));
+
+    expect(recordRows).toHaveLength(store.getCurrent().database.classes.length);
+    expect(fillerRows).toHaveLength(0);
+    expect(findByTestId(host, "db-classic-group-tabs")).toBeNull();
+  });
+
+  it("Given a search on the classes tab When a query is typed Then the record list actually filters (no more classes special-case)", () => {
+    const classes = store.getCurrent().database.classes;
+    expect(classes.length).toBeGreaterThan(1);
+    const target = classes[0];
+
+    // 검색어 저장은 세션 상태를 통해 이뤄지므로(디바운스된 rerender 콜백을 거치지 않고도),
+    // 새로 렌더된 호스트에서 필터링 결과를 확인한다 — 다른 케이스("isolated blank search")와
+    // 동일한 패턴.
+    const searchHost = renderRecordHost("classes");
+    const searchField = searchInput(searchHost);
+    searchField.value = target.name;
+    searchField.dispatchEvent(new Event("input"));
+
+    const filteredHost = renderRecordHost("classes");
+    const visibleRows = allElements(filteredHost).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
+    expect(visibleRows.some((row) => row.dataset.recordId === target.id)).toBe(true);
+    expect(visibleRows.length).toBeLessThan(classes.length);
+
+    const noMatchField = searchInput(renderRecordHost("classes"));
+    noMatchField.value = "존재하지않는검색어zzz";
+    noMatchField.dispatchEvent(new Event("input"));
+    const noMatchHost = renderRecordHost("classes");
+    const noMatchRows = allElements(noMatchHost).filter((node) => node.dataset.testid?.startsWith("db-record-row-"));
+    expect(noMatchRows).toHaveLength(0);
+  });
+});
+
+describe("Database record deletion — 2-step confirm", () => {
+  it("arms a confirm state on the first click without deleting the record", () => {
+    const skillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", skillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+
+    expect(deleteButton?.textContent).toBe("정말 삭제?");
+    expect(deleteButton?.className.split(/\s+/u)).toContain("confirming");
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === skillId)).toBe(true);
+  });
+
+  it("deletes on a second click and shows an undo-hint toast", () => {
+    const skillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", skillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+    deleteButton?.click();
+
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === skillId)).toBe(false);
+    const toastEl = document.querySelector<HTMLElement>("[data-testid='toast']");
+    expect(toastEl?.textContent).toContain("삭제했습니다");
+    expect(toastEl?.textContent).toContain("Ctrl+Z");
+  });
+
+  it("re-arms for the newly selected record instead of deleting it when selection changes mid-confirm", () => {
+    const firstSkillId = store.getCurrent().database.skills[0]?.id ?? "";
+    const secondSkillId = addDatabaseRecord("skills");
+    setSelectedRecordId("skills", firstSkillId);
+    const host = renderRecordHost("skills");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click(); // arm 상태: firstSkillId
+
+    const secondRow = findByTestId(host, `db-record-row-${secondSkillId}`);
+    secondRow?.click(); // 3초 확인 창 내 다른 레코드로 선택 전환
+
+    deleteButton?.click(); // 이전 armed 대상(firstSkillId)과 달라 삭제하지 않고 재-arm 되어야 함
+
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === secondSkillId)).toBe(true);
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === firstSkillId)).toBe(true);
+    expect(deleteButton?.textContent).toBe("정말 삭제?");
+    expect(deleteButton?.className.split(/\s+/u)).toContain("confirming");
+
+    deleteButton?.click(); // 재-armed 된 대상(secondSkillId)에 대한 확정 클릭 — 이번엔 삭제된다
+    expect(store.getCurrent().database.skills.some((entry) => entry.id === secondSkillId)).toBe(false);
+  });
+
+  it("still reports a reference-guard failure immediately on the first click (no confirm step needed)", () => {
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    store.update((project) => {
+      project.system.startActorIds = [actorId];
+    });
+    setSelectedRecordId("actors", actorId);
+    const host = renderRecordHost("actors");
+
+    const deleteButton = findByTestId(host, "db-delete-selected");
+    deleteButton?.click();
+
+    // 참조 가드 실패는 기존처럼 1클릭 즉시 에러 — 확인 상태로 넘어가지 않고, 레코드도 남는다.
+    // (databaseReferenceMessage 자체의 가드 메시지/커버리지는 test/databaseReferenceGuards.test.ts
+    // 몫 — 여기선 2단계 확인 도입이 가드 실패 경로를 건드리지 않는다는 것만 확인한다.)
+    expect(deleteButton?.textContent).toBe("삭제");
+    expect(deleteButton?.className.split(/\s+/u)).not.toContain("confirming");
+    expect(store.getCurrent().database.actors.some((entry) => entry.id === actorId)).toBe(true);
+  });
+});
+
+function renderRecordHost(collection: Parameters<typeof renderRecordTab>[1]): FakeElement {
+  const host = document.createElement("div");
+  renderRecordTab(host, collection, () => undefined);
+  if (host instanceof FakeElement) return host;
+  throw new Error("Expected fake database host");
+}
+
+function searchInput(host: FakeElement): FakeElement {
+  const input = host.querySelector("input");
+  if (input) return input;
+  throw new Error("Expected database search input");
+}
+
+function allElements(root: FakeNode): FakeElement[] {
+  const matches: FakeElement[] = [];
+  for (const child of root.childNodes) {
+    if (child instanceof FakeElement) matches.push(child, ...allElements(child));
+  }
+  return matches;
+}
+
+function restoreBrowserGlobal(name: keyof FakeBrowserGlobals, value: FakeBrowserGlobals[typeof name]): void {
+  if (value === undefined) {
+    Reflect.deleteProperty(globalThis, name);
+    return;
+  }
+  Object.defineProperty(globalThis, name, { configurable: true, value });
+}
+
+function createFakeLocalStorage(): Storage {
+  const values = new Map<string, string>();
+  return {
+    get length() {
+      return values.size;
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => void values.delete(key),
+    setItem: (key: string, value: string) => void values.set(key, value),
+  } as Storage;
+}

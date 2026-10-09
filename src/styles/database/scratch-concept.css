@@ -1,0 +1,392 @@
+/* 맵 → 개념 꾸러미. 시설·장소·물건이 주 작업면이다. */
+
+.db-body.db-shared-workspace:has(.scratch-concept-workspace) {
+  overflow: hidden;
+}
+
+.scratch-concept-workspace {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  gap: 12px;
+}
+
+.scratch-concept-tileset-select {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.scratch-concept-tileset-select select {
+  min-width: 0;
+  max-width: 260px;
+}
+
+.db-map-content:has(.scratch-concept-workspace) > .db-tab-note {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.scratch-concept-main {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+}
+
+.scratch-concept-board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.scratch-concept-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.scratch-concept-crumb {
+  flex: 1 1 100%;
+  font: 600 12px/1.4 var(--font-mono);
+  color: var(--db-studio-text-3);
+}
+
+.scratch-concept-places {
+  display: grid;
+  gap: 10px;
+}
+
+.scratch-concept-place {
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-surface);
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.scratch-concept-place.active {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 1px var(--db-studio-accent);
+}
+
+.scratch-concept-place-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.scratch-concept-place-head input {
+  flex: 1;
+  min-width: 0;
+}
+
+.scratch-concept-things {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.scratch-concept-thing,
+.scratch-concept-pick,
+.scratch-concept-add-thing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 88px;
+  max-width: 120px;
+  padding: 6px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+}
+
+.scratch-concept-thing.active,
+.scratch-concept-thing.required {
+  border-color: var(--db-studio-accent);
+}
+
+.scratch-concept-thing-label,
+.scratch-concept-pick span {
+  font-size: 12px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.scratch-concept-thing-chips {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--db-studio-text-3);
+  text-align: center;
+}
+
+.scratch-concept-thing-paint {
+  font-size: 10px;
+  line-height: 1.4;
+  padding: 0 6px;
+}
+
+.scratch-concept-thumb,
+.scratch-concept-preview {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.scratch-concept-missing {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  color: var(--db-studio-text-3);
+}
+
+.scratch-concept-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  border: 1px dashed var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-inset);
+}
+
+.scratch-concept-picker-title,
+.scratch-concept-section-label,
+.scratch-concept-quiet {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 12px;
+  color: var(--db-studio-text-3);
+}
+
+.scratch-concept-inspector {
+  width: 260px;
+  flex: none;
+  min-width: 0;
+  overflow: auto;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-surface);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scratch-concept-inspector-title {
+  font-weight: 700;
+}
+
+.scratch-concept-raster {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--db-studio-inset);
+}
+
+.scratch-concept-line {
+  margin: 0;
+  font: 12px/1.45 var(--font-mono);
+  color: var(--db-studio-text-2);
+}
+
+.scratch-concept-chip-row,
+.scratch-concept-place-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.scratch-concept-chip {
+  font: 700 11px/1.6 var(--font-mono);
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-border-default);
+  background: transparent;
+  color: var(--db-studio-text-3);
+  cursor: pointer;
+}
+
+.scratch-concept-chip.on {
+  color: var(--db-studio-text-1);
+  border-color: var(--db-studio-accent);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
+
+.scratch-concept-chip-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 4px 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-accent);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
+
+.scratch-concept-chip-custom-input,
+.scratch-concept-chip-add {
+  font: 700 11px/1.6 var(--font-mono);
+  width: 8em;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--db-studio-text-1);
+}
+
+.scratch-concept-chip-remove {
+  font: 700 11px/1.6 inherit;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+}
+
+.scratch-concept-chip-error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--db-studio-danger);
+}
+
+.scratch-concept-required {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+@container db-modal (max-width: 1050px) {
+  .scratch-concept-workspace {
+    flex-wrap: wrap;
+    overflow: auto;
+    align-content: start;
+  }
+
+  .scratch-concept-main {
+    flex: 1 1 100%;
+    overflow: visible;
+  }
+
+  .scratch-concept-inspector {
+    width: auto;
+    flex: 1 1 100%;
+    overflow: visible;
+  }
+}
+
+/* 장소 카드 도면 열 — 역할·크기·개수 (2026-09-02). */
+.scratch-concept-place-plan {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 4px 0 6px;
+}
+
+.scratch-concept-plan-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--db-studio-text-3);
+}
+
+.scratch-concept-plan-select,
+.scratch-concept-plan-count {
+  font: inherit;
+  font-size: 11px;
+  padding: 1px 4px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+}
+
+.scratch-concept-plan-count {
+  width: 3.2em;
+}
+
+/* 시설 띠 — 꾸러미 전환 · 초안 넣기 · 빈 시설 (2026-09-02 시설 다양화). */
+.scratch-concept-facilities {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--db-studio-border-default);
+}
+
+.scratch-concept-facility {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 56px;
+  font: 600 13px/1.4 var(--font-ui);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+}
+
+.scratch-concept-facility-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.scratch-concept-facility-art canvas {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.scratch-concept-facility:focus-visible,
+.scratch-concept-place:focus-visible,
+.scratch-concept-thing:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.scratch-concept-facility.active {
+  color: var(--db-studio-text-1);
+  border-color: var(--db-studio-accent);
+  background: color-mix(in srgb, var(--db-studio-accent) 16%, transparent);
+}
+
+/* 시설 장소 소속 — 꾸러미 장소 중 이 시설에 드는 것만 도면에 든다. */
+.scratch-concept-facility-places {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 100%;
+}
+
+.scratch-concept-facility-places .db-mini-btn.active {
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+}
+
+/* Leave room for the two-word layout label and the select arrow. */
+.scratch-concept-layout-select {
+  min-width: 72px;
+}

@@ -1,0 +1,203 @@
+@media (min-width: 800px) {
+  .database-modal-backdrop:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) {
+    align-items: center;
+    background: rgba(15, 23, 42, 0.06);
+    justify-content: center;
+    padding: var(--space-3);
+  }
+
+  .database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-header {
+    color: var(--db-studio-text-1, var(--text-1));
+    position: sticky;
+    top: 0;
+    z-index: 3;
+  }
+
+  .database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-body {
+    display: grid;
+    padding: 0;
+  }
+
+  .database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tabs {
+    flex-wrap: nowrap;
+    height: auto;
+    margin: 0;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab {
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+    flex: 0 0 auto;
+    font-size: 12px;
+    margin-right: 1px;
+  }
+
+  .database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab.active {
+    border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
+    box-shadow: none;
+  }
+
+  .database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-body {
+    border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+    border-style: solid;
+    border-width: 1px;
+    height: auto;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) {
+    gap: 8px;
+    grid-template-columns: 258px minmax(0, 1fr);
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-list-pane {
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: none;
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding: 10px 10px 8px;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-list-pane h3 {
+    background: transparent;
+    border: 0;
+    color: var(--text-1);
+    display: block;
+    font: 700 13px/1.2 var(--font-ui);
+    height: auto;
+    margin: 0 0 8px;
+    text-align: left;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list {
+    background: var(--bg-raised);
+    border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+    border-style: solid;
+    border-width: 1px;
+    display: grid;
+    height: auto;
+    margin: 0 0 var(--space-2);
+    max-height: none;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list-row {
+    align-items: center;
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-1);
+    display: grid;
+    font: 13px/1.35 var(--font-ui);
+    gap: 4px;
+    grid-template-columns: auto minmax(0, 1fr);
+    height: auto;
+    min-height: 24px;
+    padding: 2px 8px;
+    width: 100%;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list-row.active {
+    background: var(--accent-muted);
+    color: var(--text-1);
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-toolbar {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    height: auto;
+    margin: 0;
+  }
+
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-detail-pane,
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-detail-form {
+    background: var(--bg-raised);
+    border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: none;
+    min-width: 0;
+    overflow: hidden;
+    padding: 10px;
+  }
+
+  .database-modal-body .db-troops-classic-workbench {
+    max-width: 100%;
+  }
+}

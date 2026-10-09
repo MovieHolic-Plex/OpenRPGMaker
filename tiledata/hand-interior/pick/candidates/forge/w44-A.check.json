@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/forge/w44-A.pxg",
+ "id": "forge",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "관문 ok t=6 f=26. 굴뚝 머리를 윗면 4줄+앞모서리 밝은 줄+처마 그림자로 3/4화, 화덕·불길(마스크 행 11~24)은 v5 그대로.",
+ "ok": true
+}

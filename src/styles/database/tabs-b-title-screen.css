@@ -1,0 +1,284 @@
+/* =========================================================================
+   Neo둥근모 + 갈색 윈도우스킨: 타이틀 화면 텍스트 및 서피스 규칙
+   ========================================================================= */
+
+/* 타이틀 화면 루트: 런타임 픽셀 폰트(Neo둥근모)와 시스템 창 테마를 상속.
+   개별 텍스트(제목·키커·부제·메뉴·힌트)를 !important 로 덮던 블록은 걷어냈다 —
+   리터럴 Malgun Gothic 스택을 title.css 에서 직접 제거했으므로 반창고가 필요 없다.
+   그 패치는 font-family 만 강제해서, 타이틀에 새 텍스트를 추가하면 조용히
+   Malgun Gothic 으로 돌아가는 함정이기도 했다. */
+.rm-title-screen {
+
+  --oprn-title-sky-glow: rgba(255, 255, 255, 0.12);
+  --oprn-title-vignette: rgba(42, 37, 33, 0.14);
+  --oprn-title-window-hi: #4a5a8a;
+  --oprn-title-window: #243058;
+  --oprn-title-window-deep: #121a34;
+  --oprn-title-window-edge: #e8eef8;
+  --oprn-title-window-shadow: #0a1020;
+  --oprn-title-window-mid: #8aa0c8;
+  --oprn-title-highlight: #3a5a9a;
+  --oprn-title-highlight-deep: #1e3468;
+  --oprn-title-highlight-ring: rgba(255, 255, 255, 0.55);
+  --oprn-title-cursor: var(--bg-overlay);
+  --oprn-title-ornament: rgba(255, 245, 210, 0.9);
+  --oprn-title-ornament-shadow: rgba(60, 48, 32, 0.12);
+  --oprn-title-text: var(--bg-overlay);
+  --oprn-title-shadow: #101828;
+  background-color: #101820;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  color: var(--oprn-title-text);
+  font-family: var(--runtime-ui-font);
+  image-rendering: pixelated;
+  isolation: isolate;
+  overflow: hidden;
+}
+/* 인라인 background-image(Title1 등)가 있을 때는 하늘색 폴백/강한 그라데이션을 약하게 */
+.rm-title-screen::before,
+.rm-title-screen::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+.rm-title-screen::before {
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.05), transparent 30%),
+    linear-gradient(180deg, rgba(42, 37, 33, 0.06), transparent 42%);
+  opacity: 0.4;
+}
+.rm-title-screen::after {
+  background:
+    linear-gradient(90deg, rgba(42, 37, 33, 0.14), transparent 12%, transparent 88%, rgba(42, 37, 33, 0.14)),
+    linear-gradient(180deg, transparent 72%, rgba(42, 37, 33, 0.14));
+  opacity: 0.55;
+}
+.rm-title-screen .rm-title-screen-title {
+  color: var(--oprn-title-text);
+  font-size: clamp(48px, 8.4dvh, 82px);
+  font-weight: 900;
+  left: 50%;
+  letter-spacing: 0;
+  line-height: 0.98;
+  margin: 0;
+  max-width: 94%;
+  position: absolute;
+  text-align: center;
+  -webkit-text-stroke: 1px var(--oprn-title-shadow);
+  text-shadow:
+    3px 0 0 var(--oprn-title-shadow),
+    -3px 0 0 var(--oprn-title-shadow),
+    0 3px 0 var(--oprn-title-shadow),
+    0 -2px 0 var(--oprn-title-shadow),
+    4px 5px 0 rgba(5, 19, 70, 0.62),
+    0 0 14px rgba(255, 255, 255, 0.36);
+  top: 25%;
+  transform: translate(-50%, -50%);
+  overflow-wrap: anywhere;
+  white-space: nowrap;
+  z-index: 2;
+}
+.rm-title-screen .rm-title-screen-title::before,
+.rm-title-screen .rm-title-screen-title::after {
+  background:
+    radial-gradient(circle at 50% 50%, var(--oprn-title-ornament) 0 4px, transparent 5px),
+    radial-gradient(circle at calc(50% - 17px) 50%, var(--oprn-title-ornament) 0 2px, transparent 3px),
+    radial-gradient(circle at calc(50% + 17px) 50%, var(--oprn-title-ornament) 0 2px, transparent 3px),
+    linear-gradient(90deg, transparent 0 2%, var(--oprn-title-ornament) 22% 44%, transparent 44% 56%, var(--oprn-title-ornament) 56% 78%, transparent 98% 100%);
+  box-shadow:
+    0 2px 0 var(--oprn-title-ornament-shadow),
+    0 0 10px rgba(6, 24, 92, 0.18);
+  content: "";
+  height: 4px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(640px, 112%);
+}
+.rm-title-screen .rm-title-screen-title::before {
+  top: -34px;
+}
+.rm-title-screen .rm-title-screen-title::after {
+  bottom: -32px;
+}
+.rm-title-menu {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  box-shadow: none;
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  left: 50%;
+  min-width: min(250px, calc(100vw - 72px));
+  padding: 10px 14px;
+  position: absolute;
+  top: 48%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.rm-title-menu-button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: var(--runtime-glass-radius-small);
+  color: var(--oprn-title-text);
+  /* RM2003 title is keyboard-only — no mouse cursor affordance. */
+  cursor: default;
+  font-family: inherit;
+  font-size: clamp(21px, 2.6dvh, 30px);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.14;
+  min-height: 34px;
+  overflow-wrap: anywhere;
+  padding: 4px 20px 5px 42px;
+  pointer-events: none;
+  position: relative;
+  text-align: center;
+  text-shadow:
+    2px 0 0 var(--oprn-title-window-shadow),
+    -2px 0 0 var(--oprn-title-window-shadow),
+    0 2px 0 var(--oprn-title-window-shadow),
+    2px 3px 0 rgba(0, 0, 0, 0.58);
+  user-select: none;
+  white-space: normal;
+}
+/* Selection is keyboard-driven only — do not highlight on hover. */
+.rm-title-menu-button.selected {
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
+}
+.rm-title-menu-button:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  box-shadow:
+    inset 0 0 0 1px var(--oprn-title-highlight-ring),
+    0 0 0 2px var(--oprn-title-window-edge),
+    0 0 0 4px rgba(6, 26, 79, 0.45);
+  outline: none;
+}
+.rm-title-menu-button:focus-visible {
+  transform: translateY(1px);
+}
+.rm-title-menu-button.selected::before {
+  border-bottom: 10px solid transparent;
+  border-left: 17px solid var(--oprn-title-cursor);
+  border-top: 10px solid transparent;
+  content: "";
+  filter:
+    drop-shadow(2px 0 0 var(--oprn-title-window-shadow))
+    drop-shadow(0 2px 0 var(--oprn-title-window-shadow));
+  height: 0;
+  left: 13px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+}
+.rm-title-input-hint {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  bottom: 18px;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.98);
+  font: 700 var(--runtime-font-size-18)/1.2 var(--runtime-ui-font);
+  left: 50%;
+  letter-spacing: 0;
+  min-width: min(230px, calc(100vw - 96px));
+  padding: 6px 18px 7px;
+  position: absolute;
+  text-align: center;
+  text-shadow:
+    2px 0 0 var(--oprn-title-window-shadow),
+    0 2px 0 var(--oprn-title-window-shadow);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 2;
+}
+.title-screen h1,
+.title-screen h2,
+.main-menu h2 {
+  font-size: 18px;
+  line-height: 1.2;
+  margin: 0 0 4px;
+  text-align: center;
+}
+.system-shell-button,
+.game-over-panel button {
+  background: var(--runtime-window-fill-fallback);
+  border: 1px solid var(--runtime-glass-hairline);
+  border-radius: var(--runtime-glass-radius-small);
+  color: var(--runtime-window-text);
+  cursor: default;
+  font: 700 var(--runtime-font-size-11)/1.25 var(--runtime-ui-font);
+  min-height: 30px;
+  padding: 6px 10px;
+}
+.system-shell-button:focus-visible,
+.game-over-panel button:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
+}
+.system-shell-button.primary {
+  background: var(--runtime-window-selected-bg);
+  border-color: var(--runtime-window-focus);
+}
+.system-shell-button.is-corrupt {
+  color: #a33a32;
+}
+.menu-section,
+.menu-section-title {
+  font-size: 12px;
+  line-height: 1.35;
+}
+.menu-section-title {
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  margin-top: 4px;
+  padding-top: 8px;
+}
+.main-menu {
+  left: auto;
+  max-width: 260px;
+  min-width: 220px;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 35;
+}
+.oprn-status-menu.main-menu {
+  --oprn-logical-width: 320px;
+  --oprn-logical-height: 240px;
+  --oprn-stage-scale: 2;
+  --oprn-menu-row-height: 15px;
+  --oprn-status-window-hi: var(--oprn-title-window-hi, #356fd4);
+  --oprn-status-window: var(--oprn-title-window, #123c9a);
+  --oprn-status-window-deep: var(--oprn-title-window-deep, #071e68);
+  --oprn-status-edge: var(--oprn-title-window-edge, #f5fbff);
+  --oprn-status-shadow: var(--oprn-title-window-shadow, #061038);
+  --oprn-status-mid: var(--oprn-title-window-mid, #7da7ff);
+  --oprn-status-highlight: var(--oprn-title-highlight, #397ddd);
+  --oprn-status-highlight-deep: var(--oprn-title-highlight-deep, #1b54bd);
+  --oprn-status-text: var(--oprn-title-text, var(--bg-overlay));
+  border-radius: var(--runtime-glass-radius-small);
+  bottom: 0;
+  box-sizing: border-box;
+  gap: 4px;
+  /* B안 2열 — 좌측 한 창(레일 + 파티), 우측 전체가 작업 영역.
+     기존 3열(60px 레일 | 120px 파티 | 나머지 상세)에서는 작업 영역이 화면 1/3 뿐이라
+     아이템 이름·효과·개수가 한 행에 못 들어갔다. 112px 로 합치면 작업 영역이 약 1.4배가 된다(96px 는 파티의 HP 숫자가 잘렸다 — 실측). */
+  grid-template-columns: 112px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  left: 0;
+  max-width: none;
+  min-width: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+}

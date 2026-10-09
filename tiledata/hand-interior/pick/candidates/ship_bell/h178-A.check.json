@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ship_bell/h178-A.pxg",
+ "id": "ship bell",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "쇠걸이에 매단 놋쇠 종을 둥근 어깨·벌어진 아랫테·매듭 줄로 새로 그리고 왼쪽 위 금속광을 넣음; 꼭대기 윗면 3행(y=4~6).",
+ "ok": true
+}

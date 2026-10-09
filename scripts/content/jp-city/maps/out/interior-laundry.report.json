@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-laundry",
+  "size": [
+   9,
+   8
+  ]
+ },
+ "start": [
+  7,
+  6
+ ],
+ "summary": "손 도트 실내 '일본 코인세탁(コインランドリー) 실내' 9×8 (jp-city-laundry, jp_city) — 출입구에서 닿는 칸 18, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-laundry",
+  "tilesetId": "jp_city",
+  "width": 9,
+  "height": 8,
+  "reachable": 18,
+  "floorCells": 29,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 7,
+    "y": 6
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [
+   {
+    "x": 7,
+    "y": 7,
+    "width": 1
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 18,
+ "ok": true
+}

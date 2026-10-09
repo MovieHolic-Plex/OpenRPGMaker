@@ -1,0 +1,68 @@
+/** Focused executable negative controls. These small geometric silhouettes are test fixtures, never shipped character artwork. */
+import { strict as assert } from "node:assert";
+import { mkdtempSync, writeFileSync, readFileSync, copyFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { createImage, cloneImage, pixelAt, setPixel, cropImage } from "../../monster-collect-species/pixel/image";
+import { writePng } from "../../monster-collect-species/node/png";
+import { checkCharset,checkClip,pack,framesFromNative,VERSION } from "./motion";
+import { run } from "./cli";
+const results:{name:string,pass:boolean,errors?:string[]}[]=[];
+const rect=(im:ReturnType<typeof createImage>,x:number,y:number,w:number,h:number,color:readonly[number,number,number,number])=>{for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)setPixel(im,xx,yy,color);};
+const fixture=()=>Array.from({length:12},(_,i)=>{const f=createImage(16,32),pose=i%3,dx=Math.floor(i/3)-1,dy=pose===1?0:1;rect(f,4+dx,11+dy,8,8,[30,40,50,255]);rect(f,4+dx,19+dy,8,6,[100,80,180,255]);rect(f,5+dx,25+dy,2,6,[20,30,40,255]);rect(f,9+dx,25+dy,2,6,[20,30,40,255]);if(pose===0)rect(f,4+dx,29+dy,3,2,[20,30,40,255]);if(pose===2)rect(f,10+dx,29+dy,3,2,[20,30,40,255]);return f;});
+function expect(name:string,im:ReturnType<typeof createImage>,pass:boolean){const r=checkCharset(im);assert.equal(r.pass,pass,`${name}: ${r.errors.join('; ')}`);results.push({name,pass:true,errors:r.errors});}
+async function main(){
+  const valid=pack(fixture());expect('valid 12-pose fixture',valid,true);
+  const edge=fixture();rect(edge[0]!,0,22,3,3,[100,80,180,255]);expect('native x0 and feet bottom32 legitimate',pack(edge),true);
+  const tooTall=fixture();rect(tooTall[0]!,4,9,8,4,[30,40,50,255]);expect('wrong Emerald top and ink height',pack(tooTall),false);
+  const short=fixture();for(let y=25;y<32;y++)for(let x=0;x<16;x++)setPixel(short[0]!,x,y,[0,0,0,0]);expect('too-short body and wrong feet baseline',pack(short),false);
+  const sixteenColors=cloneImage(valid);for(let i=0;i<16;i++)setPixel(sixteenColors,3+i%8,20+Math.floor(i/8),[i*13,180-i*4,75+i,255]);expect('sixteen opaque colors forbidden in native field',sixteenColors,false);
+  const stride=fixture();[0,3,6,9].forEach(i=>rect(stride[i]!,Math.floor(i/3),22,4,3,[100,80,180,255]));[2,5,8,11].forEach(i=>rect(stride[i]!,12,22,4,3,[100,80,180,255]));expect('legitimate arms extend 4px while stable core',pack(stride),true);
+  const hairTip=fixture();rect(hairTip[0]!,2,12,1,4,[30,40,50,255]);const hairChecked=checkCharset(pack(hairTip));assert.equal(hairChecked.pass,true,hairChecked.errors.join('; '));const hairRegistration=(hairChecked.metrics.up as {comparisonRegistration:{x:number;y:number;requestedX:number;rejected:boolean}[]}).comparisonRegistration;assert(hairRegistration.some(r=>Math.abs(r.requestedX)===1&&r.x===0&&!r.rejected),'small hair-tip centroid rounding must choose unchanged skull pixels');results.push({name:'small hair-tip rounding registers stable pixels rather than rounded request',pass:true});
+  const rootTwo=fixture(),rootShift=createImage(16,32);for(let y=0;y<32;y++)for(let x=0;x<14;x++)setPixel(rootShift,x+2,y,pixelAt(rootTwo[0]!,x,y));rootTwo[0]=rootShift;const twoChecked=checkCharset(pack(rootTwo));assert.equal(twoChecked.pass,false);assert(twoChecked.errors.some(e=>e.includes('head jitter 2')));assert((twoChecked.metrics.up as {comparisonRegistration:{rejected:boolean}[]}).comparisonRegistration.some(r=>r.rejected),'2px root must reject before registration search');results.push({name:'two-pixel skull shift rejected before registration',pass:true,errors:twoChecked.errors});
+  const threeFour=fixture();const idleBob=createImage(16,32);for(let y=0;y<31;y++)for(let x=0;x<16;x++)setPixel(idleBob,x,y+1,pixelAt(threeFour[1]!,x,y));threeFour[1]=idleBob;for(const index of [0,1])for(let x=0;x<16;x++)setPixel(threeFour[index]!,x,31,[0,0,0,0]);const threeChecked=checkCharset(pack(threeFour));assert.equal(threeChecked.pass,true,threeChecked.errors.join('; '));assert.equal((threeChecked.metrics.up as {torsoBand:{rows:number}}).torsoBand.rows,3);assert.deepEqual((threeChecked.metrics.up as {torso:{core:number}[]}).torso.map(t=>t.core),[21,21,21]);results.push({name:'19/19/20px ink heights use same three torso rows despite foot phase',pass:true});
+  const fourFive=fixture();for(let i=0;i<3;i++){if(i!==1){const aligned=createImage(16,32);for(let y=1;y<32;y++)for(let x=0;x<16;x++)setPixel(aligned,x,y-1,pixelAt(fourFive[i]!,x,y));fourFive[i]=aligned;}for(let x=0;x<16;x++)if(x!==7)setPixel(fourFive[i]!,x,23,[0,0,0,0]);if(i!==0)setPixel(fourFive[i]!,7,10,[30,40,50,255]);}const fourChecked=checkCharset(pack(fourFive));assert.equal(fourChecked.pass,true,fourChecked.errors.join('; '));assert.equal((fourChecked.metrics.up as {torsoBand:{rows:number}}).torsoBand.rows,4);assert.deepEqual((fourChecked.metrics.up as {torso:{core:number}[]}).torso.map(t=>t.core),[28,28,28]);results.push({name:'20/21/21px ink heights use same four torso rows despite hair tip',pass:true});
+  const torsoShrink=fixture();for(let y=20;y<24;y++)for(let x=0;x<16;x++)if(x<5||x>8)setPixel(torsoShrink[1]!,x,y,[0,0,0,0]);const shrunk=checkCharset(pack(torsoShrink));assert.equal(shrunk.pass,false);assert(shrunk.errors.some(e=>e.includes('gross head/torso size drift')));assert((shrunk.metrics.up as {areaRatio:number}).areaRatio>1.3);results.push({name:'actual narrowed torso still fails unchanged area ratio threshold after canonical registration',pass:true,errors:shrunk.errors});
+  const dup=fixture();dup[2]=cloneImage(dup[0]!);expect('duplicate step freeze',pack(dup),false);
+  const jump=fixture();const shifted=createImage(16,32);for(let y=0;y<32;y++)for(let x=0;x<12;x++)setPixel(shifted,x+4,y,pixelAt(jump[0]!,x,y));jump[0]=shifted;expect('large head jump',pack(jump),false);
+  const shuffle=fixture();[shuffle[0],shuffle[9]]=[shuffle[9]!,shuffle[0]!];expect('shuffled inconsistent frame roots',pack(shuffle),false);
+  const scaledHead=fixture();rect(scaledHead[1]!,0,11,16,8,[30,40,50,255]);expect('gross head scale change',pack(scaledHead),false);
+  const alpha=cloneImage(valid);alpha.data[(15*48+7)*4+3]=127;expect('nonbinary alpha',alpha,false);
+  const palette=cloneImage(valid);for(let i=0;i<30;i++)setPixel(palette,3+i%10,20+Math.floor(i/10),[i*7,180-i*3,75+i,255]);expect('palette union overflow',palette,false);
+  const clipped=fixture();rect(clipped[0]!,0,3,2,8,[30,40,50,255]);expect('clipped silhouette',pack(clipped),false);
+  expect('truncated sheet',cropImage(valid,{x:0,y:0,width:47,height:128}),false);
+  const seam=fixture();for(let i=0;i<seam[1]!.data.length;i+=4)if(seam[1]!.data[i+3]){seam[1]!.data[i]=250;seam[1]!.data[i+1]=200;}expect('hard cycle seam color jump',pack(seam),false);
+  const s=createImage(32,32);fixture().slice(0,2).forEach((f,i)=>{for(let y=0;y<32;y++)for(let x=0;x<16;x++)setPixel(s,i*16+x,y,y===31?[0,0,0,0]:pixelAt(f,x,y));});
+  const meta={id:'pose',frameWidth:16,frameHeight:32,fps:6,frameOrder:[0,1],sourceRects:[{x:0,y:0,width:16,height:32},{x:16,y:0,width:16,height:32}],kind:'drawn' as const};
+  assert.equal(checkClip(s,meta).pass,true);results.push({name:'authored distinct clip',pass:true});
+  const trans=createImage(32,32);const f=fixture()[0]!;for(let x=0;x<16;x++)setPixel(f,x,31,[0,0,0,0]);for(let y=0;y<32;y++)for(let x=0;x<16;x++){setPixel(trans,x,y,pixelAt(f,x,y));if(x+1<16)setPixel(trans,16+x+1,y,pixelAt(f,x,y));}
+  assert.equal(checkClip(trans,meta).pass,false);results.push({name:'drawn claim on translated still rejected',pass:true});
+  assert.equal(checkClip(s,{...meta,sourceRects:[meta.sourceRects[0]!,{x:30,y:0,width:16,height:32}]}).pass,false);results.push({name:'clip crop bounds rejected',pass:true});
+  assert.equal(checkClip(s,{...meta,durationsMs:[140,-1]}).pass,false);results.push({name:'clip negative duration rejected',pass:true});
+  const clipPalette=cloneImage(s);for(let i=0;i<30;i++)setPixel(clipPalette,3+i%10,20+Math.floor(i/10),[i*7,180-i*3,75+i,255]);assert.equal(checkClip(clipPalette,meta).pass,false);results.push({name:'clip union palette overflow rejected',pass:true});
+  const clipAlpha=cloneImage(s);clipAlpha.data[(15*32+7)*4+3]=90;assert.equal(checkClip(clipAlpha,meta).pass,false);results.push({name:'clip nonbinary alpha rejected',pass:true});
+  const clipClipped=cloneImage(s);setPixel(clipClipped,0,5,[30,40,50,255]);assert.equal(checkClip(clipClipped,meta).pass,false);results.push({name:'clip silhouette clipping rejected',pass:true});
+  const base=mkdtempSync(join(tmpdir(),'pokemon-motion-verifier-')),source=join(base,'valid.png'),prompt=join(base,'prompt.txt');writePng(source,valid);writeFileSync(prompt,'Geometric negative-control fixture only; never use as artwork.');
+  const beforeLog=console.log;let imported='';console.log=(...v:unknown[])=>{if(typeof v[0]==='string'&&v[0].includes('/candidates/'))imported=v[0];};
+  const execute=(stage:string,args:string[]=[])=>run([stage,'--sandbox',base,...args]);
+  assert.equal(await execute('import',['--role','hero','--source',source,'--prompt-file',prompt,'--native']),0);assert(imported);console.log=beforeLog;
+  assert.equal(await execute('check',['--candidate',imported]),0);
+  assert.equal(await execute('gate',['--candidate',imported]),1);results.push({name:'gate blocks missing semantic review',pass:true});
+  assert.equal(await execute('build',['--candidate',imported]),1);results.push({name:'build blocks failed gate',pass:true});
+  assert.equal(await execute('preview',['--candidate',imported]),0);
+  const evidence=join(base,'fixture-review.txt');writeFileSync(evidence,'Verifier fixture inspection stub: only validates ledger mechanics, NOT actual sprite visual approval.');
+  assert.equal(await execute('review',['--candidate',imported,'--who','executable-fixture','--why','ledger mechanics only','--verdict','pass','--evidence',evidence]),0);
+  assert.equal(await execute('build',['--candidate',imported]),1);results.push({name:'review alone cannot bypass stale failed gate',pass:true});
+  assert.equal(await execute('gate',['--candidate',imported]),0);assert.equal(await execute('build',['--candidate',imported]),0);
+  const original=readFileSync(join(imported,'charset.png'));writeFileSync(join(imported,'charset.png'),Buffer.concat([original,Buffer.from('changed')]));
+  assert.equal(await execute('build',['--candidate',imported]),1);results.push({name:'source/final mutation blocks build',pass:true});writeFileSync(join(imported,'charset.png'),original);
+  const raw=readFileSync(join(imported,'source.png'));writeFileSync(join(imported,'source.png'),Buffer.concat([raw,Buffer.from('mutated')]));assert.equal(await execute('build',['--candidate',imported]),1);results.push({name:'raw source mutation blocks build',pass:true});writeFileSync(join(imported,'source.png'),raw);
+  const ev=join(imported,'review-evidence-0.txt');writeFileSync(ev,'mutated');assert.equal(await execute('build',['--candidate',imported]),1);results.push({name:'evidence mutation blocks build',pass:true});
+  const atlas=createImage(192,256);fixture().slice(0,6).forEach((fr,i)=>{const pose=cloneImage(fr);rect(pose,7,20+i,2,2,[180,30,80,255]);for(let y=0;y<32;y++)for(let x=0;x<16;x++)for(let yy=0;yy<4;yy++)for(let xx=0;xx<4;xx++)setPixel(atlas,(i%3)*64+x*4+xx,Math.floor(i/3)*128+y*4+yy,pixelAt(pose,x,y));});const generatedSource=join(base,'generated-clip-fixture.png');writePng(generatedSource,atlas);
+  imported='';console.log=(...v:unknown[])=>{if(typeof v[0]==='string'&&v[0].includes('/candidates/'))imported=v[0];};assert.equal(await execute('clip-import',['--role','professor','--source',generatedSource,'--prompt-file',prompt,'--block','4']),0);console.log=beforeLog;assert(imported);
+  assert.equal(await execute('check',['--candidate',imported]),0);assert.equal(await execute('preview',['--candidate',imported]),0);assert.equal(await execute('gate',['--candidate',imported]),1);assert.equal(await execute('review',['--candidate',imported,'--who','executable-fixture','--why','clip ledger mechanics only','--verdict','pass','--evidence',evidence]),0);assert.equal(await execute('gate',['--candidate',imported]),0);assert.equal(await execute('build',['--candidate',imported]),0);results.push({name:'generated six-frame clip full lifecycle',pass:true});
+  const clipBytes=readFileSync(join(imported,'clip.png'));writeFileSync(join(imported,'clip.png'),Buffer.concat([clipBytes,Buffer.from('mutated')]));assert.equal(await execute('build',['--candidate',imported]),1);writeFileSync(join(imported,'clip.png'),clipBytes);results.push({name:'generated final clip mutation blocks build',pass:true});
+  const clipMeta=readFileSync(join(imported,'clip-metadata.json'));writeFileSync(join(imported,'clip-metadata.json'),clipMeta.toString().replace('"fps": 6','"fps": 7'));assert.equal(await execute('build',['--candidate',imported]),1);writeFileSync(join(imported,'clip-metadata.json'),clipMeta);results.push({name:'generated clip metadata mutation blocks build',pass:true});
+  const report={version:VERSION,results,count:results.length,base};writeFileSync(join(base,'verification.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
+}
+main().catch(e=>{console.error(e);process.exitCode=1;});

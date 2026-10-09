@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Invalid DB Reference",
+    "author": "qa",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {},
+    "uploaded": {}
+  },
+  "resourceProfiles": [],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "Default tileset",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 1,
+      "passability": [{ "up": true, "down": true, "left": true, "right": true }],
+      "priority": ["lower"],
+      "terrain": [0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_invalid",
+        "name": "Broken Actor",
+        "classId": "class_missing",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "skillIds": []
+      }
+    ],
+    "classes": [],
+    "skills": [],
+    "items": [],
+    "equipment": [],
+    "enemies": [],
+    "troops": [],
+    "states": [],
+    "battleAnimations": []
+  },
+  "system": {
+    "startActorIds": ["actor_invalid"]
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {},
+    "partyActorIds": ["actor_invalid"]
+  },
+  "maps": {
+    "map_invalid": {
+      "id": "map_invalid",
+      "name": "Invalid",
+      "width": 1,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0],
+      "upperTiles": [-1],
+      "events": []
+    }
+  },
+  "mapTree": { "mapId": "map_invalid", "children": [] },
+  "startMapId": "map_invalid",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

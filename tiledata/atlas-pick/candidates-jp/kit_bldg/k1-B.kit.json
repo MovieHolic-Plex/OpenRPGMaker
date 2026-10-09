@@ -1,0 +1,243 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_bldg/k1-B.pxg",
+ "kit": "kit_bldg",
+ "cand": "k1-B",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "b3f3",
+   "name": "3칸 3층(1층 셔터·세로 간판)",
+   "cells": [
+    3,
+    9
+   ],
+   "ctxSize": [
+    80,
+    208
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 0
+  },
+  {
+   "id": "b5f5",
+   "name": "5칸 5층(물탱크·층 간판·1층 이자카야)",
+   "cells": [
+    5,
+    15
+   ],
+   "ctxSize": [
+    112,
+    304
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "b4f2",
+   "name": "4칸 2층(킷 혼자 — 계단 입구)",
+   "cells": [
+    4,
+    6
+   ],
+   "ctxSize": [
+    96,
+    160
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "b8f4",
+   "name": "8칸 4층(1층 콘비니+라멘)",
+   "cells": [
+    8,
+    12
+   ],
+   "ctxSize": [
+    160,
+    256
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 3
+  },
+  {
+   "id": "pair",
+   "name": "높이 다른 두 채 붙이기(3칸 4층 + 4칸 2층)",
+   "cells": [
+    7,
+    10
+   ],
+   "ctxSize": [
+    144,
+    224
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 2
+  }
+ ],
+ "borrowed": {
+  "kit_shopfront": "pilot-A"
+ },
+ "repeat": [
+  {
+   "slug": "roof_nm",
+   "axis": "x",
+   "score": 1.0,
+   "d": 11.4,
+   "bad": false
+  },
+  {
+   "slug": "roof_ml",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "roof_mm",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "roof_mm",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "roof_mr",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "roof_sm",
+   "axis": "x",
+   "score": 0.64,
+   "d": 11.4,
+   "bad": false
+  },
+  {
+   "slug": "wall_l",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_m",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_r",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_plain",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_plain",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_lit",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_lit",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_sign",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "win_sign",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "fsign_m",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "fsign_m2",
+   "axis": "x",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "vsign_m",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.527,
+  "refmapMax": 0.262
+ },
+ "ok": true
+}

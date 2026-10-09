@@ -1,0 +1,52 @@
+// B: 방 카운터의 넓은 판과 낮은 대비 결을 따른 흰 회복 장치, 8행 윗면과 여섯 붉은·흰 구슬.
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat L white 6
+@mat H white 5
+@mat W white 4
+@mat P white 3
+@mat Q white 2
+@mat S white 1
+@mat E white 0
+@mat i iron 2
+@mat k iron 3
+@mat m iron 4
+@mat n iron 5
+@mat r red 3
+@mat t red 4
+@mat d red 2
+@mat g green 3
+@mat h green 4
+@mat b green 1
+@mat c green 2
+@layer machine
+@mblock 1 4
+= 2. 26S 2.
+.SHHHtrrHHHHHtrrHHHHHtrrHHHPS.
+SLHHmLWPmHHHmLWPmHHHmLWPmHHHPS
+SLHHHkkkHHHHHkkkHHHHHkkkHHHWPS
+= 1S 1L 24H 2W 1P 1S
+SLHHHtrrHHHHHtrrHHHHHtrrHHHWPS
+SLWHmLWPmHHHmLWPmHHHmLWPmHWWPS
+SWWWHkkkHWWWHkkkHWWWHkkkHWWPQS
+= 1S 27P 1Q 1E
+= 1S 27Q 2E
+= 1S 1H 25W 1P 1S 1E
+SHWWWPPSSSSSSSSSSSSPPWWWWWWPSE
+SHWWWPSnbbbbbbbbbbESPWWWWWWPSE
+SHWWWPSnhhhgggggccESPWWWWWWPSE
+SHWWWPSnhhggbbggccESPWWWWWWPSE
+SHWWWPSngggghhggccESPWWWWWWPSE
+SHWWWPSngggggggcccESPWWWWWWPSE
+SHWWWPPSEEEEEEEEEESPWWWWWWWPSE
+= 1S 1H 4W 17P 4W 1P 1S 1E
+= 1S 1H 4W 1Q 16W 1Q 3W 1P 1S 1E
+SHWWWWQWWWWWWWWWWWWWWQWWWPPPSE
+SHWWWWQWWWWWWWWWWWWWWQWWWWWPSE
+SHWWWWQWWQQQWQQQWQQWWQWWWWWPSE
+SHWWWWQWWWWWPPWWWWWWWQWWWWWPSE
+= 1S 1W 4P 17Q 4P 1Q 1S 1E
+= 1S 27P 1S 1E
+= 1S 27Q 2E
+= 1. 28E 1.

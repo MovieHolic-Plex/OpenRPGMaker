@@ -1,0 +1,11 @@
+@layer shell {
+  .studio-window-controls { position: fixed; top: 6px; right: 10px; z-index: 10000; display: flex; gap: 6px; }
+  .studio-window-controls button { border: 1px solid #ffffff45; border-radius: 6px; background: #101a29e8; color: #fff9eb; min-height: 32px; padding: 5px 9px; font: inherit; font-size: 11px; cursor: pointer; }
+  .studio-window-controls button:hover { border-color: #edcea0; }
+  .studio-window-controls button:focus-visible { outline: 2px solid #edcea0; outline-offset: 2px; }
+}
+
+/* The launcher and editor establish different layer orders. Native-only spacing
+   must win both graphs so these controls never cover product navigation. */
+body:has(.studio-window-controls) .ci-controls { margin-top: 28px; }
+body:has(.studio-window-controls) .oprn-menu-bar { padding-right: 160px; }

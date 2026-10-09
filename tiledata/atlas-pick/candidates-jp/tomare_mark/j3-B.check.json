@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_mark/j3-B.pxg",
+ "set": "jp",
+ "id": "tomare_mark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.34
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "위쪽·왼쪽 가장자리를 가장 밝은 흰색(5단), 오른쪽·아래는 어둡게, 페인트 오른쪽 아래로 짙은 아스팔트 그림자를 붙여 페인트가 솟아 보이게",
+ "ok": true
+}

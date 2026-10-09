@@ -1,0 +1,56 @@
+// D: 유리 돔 정수리 반사광, 점박이 알, 금장 띠와 중앙 문양을 넣은 놋쇠 받침.
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 1
+@mat b glass 2
+@mat c glass 4
+@mat d glass 5
+@mat e glass 6
+@mat f linen 2
+@mat g linen 3
+@mat h linen 4
+@mat i linen 5
+@mat j linen 6
+@mat k purple 1
+@mat l purple 2
+@mat m brass 0
+@mat n brass 2
+@mat o brass 3
+@mat p brass 4
+@mat q brass 5
+@mat r gold 6
+@layer body
+@mblock 0 0
+......aaaa......
+....abdddcba....
+...acdeeddcba...
+..acdeeddcccba..
+..addeedccccba..
+.acddcccccccbba.
+.acddcccccccbba.
+.adedcccccbbbba.
+.adedccgffbbbba.
+.adedcgjihfbbba.
+.adedgjjiihfbba.
+.adecjjiiihgbba.
+.adchjjlliihgba.
+.adchjjlliihgba.
+.adchjiiihkkgba.
+.adchiihhhkkgba.
+.adcghllhhhgfba.
+.acbghllhhhgfba.
+.acbfghhhggfbba.
+.acbbfgggffbbba.
+.accccbbbbbbbba.
+..acccbbbbbbba..
+..mnppqqpponnm..
+.mnpqqqqppoonnm.
+mnpqqpppppooonm.
+mpqqpppppoooonnm
+.mqqppooooonnnm.
+.mnqqonqqnonmm..
+.mnppnqrqnnnmm..
+.mnpponqnonmmm..
+..mnnmmmmnnmm...
+..mmm....mmmm...

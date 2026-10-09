@@ -1,0 +1,76 @@
+import { describe, expect, it } from "vitest";
+import { createBlankProject } from "@/project/defaults";
+import { runTool } from "@/editor/tools/toolRunner";
+import type { Project } from "@/project/types";
+
+// 라이브 QA 사고: fill_region 이 '키큰 풀'로 덮은 영역에 place_props 로 침엽수를 220개 요청하면
+// 0그루가 놓이는데도 ok=true 로 끝나, 나무 한 그루 없는 "빽빽한 숲"이 완성으로 보고됐다.
+
+function preparedProject(): { readonly ctx: { project: Project }; readonly mapId: string } {
+  const project = createBlankProject();
+  const ctx = { project };
+  const mapId = project.startMapId;
+  expect(runTool(ctx, "resize_map", { mapId, width: 100, height: 100 }).ok).toBe(true);
+  return { ctx, mapId };
+}
+
+const FOREST = { x: 65, y: 5, w: 30, h: 30 };
+
+describe("place_props zero placement", () => {
+  it("fails with an actionable message when the region and its expansion ring leave no room", () => {
+    const { ctx, mapId } = preparedProject();
+    // 2026-09-18 부터 0배치는 영역을 2칸씩 최대 3번 넓혀 재시도한다 — 넓힌 뒤에도 자리가 없어야 실패가 남는다.
+    expect(runTool(ctx, "fill_region", { mapId, rect: { x: 55, y: 0, w: 45, h: 45 }, material: "키큰 풀" }).ok).toBe(true);
+
+    const before = structuredClone(ctx.project);
+    const result = runTool(ctx, "place_props", {
+      mapId,
+      area: FOREST,
+      material: "침엽수",
+      count: 220,
+      packing: "dense",
+      minGap: 0,
+      seed: 5,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("placement-zero");
+    // The real fill writes lower vegetation, not occupied upper tiles. The old
+    // prose assertion required ineffective upper erase. Pin measured fields.
+    const record = result.issues![0]!.message.split("\n").find((line) => line.startsWith("placement_diagnostics: "));
+    expect(record).toBeDefined();
+    expect(JSON.parse(record!.slice("placement_diagnostics: ".length))).toEqual({
+      unit: "candidate-origin", scope: "area-candidate-origins", footprint: { w: 1, h: 2 },
+      candidateOrigins: 870, rejectedOrigins: 870, eligibleOrigins: 0,
+      rejectedBy: { lowerIncompatible: 870 }, upperErase: { recommended: false, upperOnlyOrigins: 0 },
+    });
+    expect(ctx.project).toEqual(before);
+  });
+
+  it("still succeeds on an open region and reports partial placement as success", () => {
+    const { ctx, mapId } = preparedProject();
+
+    const result = runTool(ctx, "place_props", {
+      mapId,
+      area: FOREST,
+      material: "침엽수",
+      count: 220,
+      packing: "dense",
+      minGap: 0,
+      seed: 5,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    const data = result.data as { readonly placed: number };
+    expect(data.placed).toBeGreaterThan(0);
+  });
+
+  it("expands the area when the requested region is full but its surroundings are not", () => {
+    const { ctx, mapId } = preparedProject();
+    expect(runTool(ctx, "fill_region", { mapId, rect: FOREST, material: "키큰 풀" }).ok).toBe(true);
+    const result = runTool(ctx, "place_props", { mapId, area: FOREST, material: "침엽수", count: 12, packing: "dense", minGap: 0, seed: 5 });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("넓힘");
+    expect((result.diff?.warnings ?? []).some((w) => w.includes("넓혀 배치"))).toBe(true);
+  });
+});

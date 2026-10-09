@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "chunks": [
+    {
+      "name": "assets/fixture-runtime.js",
+      "bytes": 2048
+    },
+    {
+      "name": "assets/fixture-too-large.js",
+      "bytes": 614401
+    }
+  ]
+}

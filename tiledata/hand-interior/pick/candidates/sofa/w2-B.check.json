@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sofa/w2-B.pxg",
+ "id": "sofa",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "note": "왼쪽 위 빛이 강해 왼 쿠션·팔걸이는 밝고 오른쪽 절반은 깊은 초록 그늘, 소파 밑에 긴 바닥 그림자",
+ "ok": true
+}

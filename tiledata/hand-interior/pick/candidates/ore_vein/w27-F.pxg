@@ -1,0 +1,10 @@
+// ore_vein 후보 F (w27)
+@size 16 16
+@cell 16
+@palette palette.pal
+@px 10 2 gold:6 11 2 gold:4 10 3 gold:4 11 3 gold:3 5 5 teal:6 4 6 teal:6 5 6 teal:5 6 6 teal:4 12 6 gold:6 13 6 gold:4
+@px 4 7 teal:6 5 7 teal:5 6 7 teal:4 7 7 teal:3 12 7 gold:3 3 8 teal:6 4 8 teal:5 5 8 teal:4 6 8 teal:4 7 8 teal:3
+@px 3 9 teal:6 4 9 teal:4 5 9 teal:4 6 9 teal:3 7 9 teal:2 3 10 teal:5 4 10 teal:4 5 10 teal:3 6 10 teal:3 7 10 teal:2
+@px 9 10 teal:6 3 11 teal:4 4 11 teal:3 5 11 teal:3 6 11 teal:2 7 11 teal:2 9 11 teal:5 10 11 teal:4 4 12 teal:3 5 12 teal:2
+@px 6 12 teal:2 7 12 teal:3 8 12 teal:2 9 12 teal:4 10 12 teal:3 11 12 teal:2 5 13 teal:2 6 13 teal:2 7 13 teal:2 8 13 teal:3
+@px 9 13 teal:3 10 13 teal:2

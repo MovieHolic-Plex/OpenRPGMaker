@@ -1,0 +1,13 @@
+{
+  "tool": "image_gen.imagegen",
+  "purpose": "shared original Emerald reference monster title background",
+  "source": "exec-95f6ad92-213c-4682-9195-9a8aaad82ff7.png",
+  "promptFile": "title-prompt.txt",
+  "sha256": "86a627ab7fd3ebce0a7dfe49ff72258210b9263d91642f7d36de69b5e4df9f5d",
+  "width": 1536,
+  "height": 1024,
+  "mode": "RGB",
+  "bytes": 1586463,
+  "postprocessing": "none; copied exact original generated PNG",
+  "requestedLogicalComposition": "240x160; actual generated pixels recorded above, not claimed native240x160"
+}

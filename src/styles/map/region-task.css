@@ -1,0 +1,276 @@
+/* 선택 영역 AI 작업 모달 (우클릭 메뉴 / 우클릭 드래그 팝오버). */
+.region-task-backdrop {
+  align-items: center;
+  background: var(--bg-scrim);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: var(--z-popover-high);
+}
+
+/* 포인터 근처 팝오버 변형은 **비모달**이다 — 캔버스를 막지 않는다.
+   예전에는 이 요소가 inset:0 풀스크린인 채로 틴트만 낮췄다. 그래서 창이 떠 있는 동안
+   팬·줌·영역 재지정이 전부 막혔고(자기가 바꿀 대상을 볼 수 없었다), 바깥 클릭은 곧
+   폐기였다. 영역 작업은 본질적으로 공간 작업이므로 대상을 보면서 해야 한다.
+   요소 자체는 남긴다 — openRegionTaskModal 의 반환값이 이 노드다.
+   pointer-events:none 이면 `event.target === backdrop` 이 성립하지 않아 바깥클릭-폐기
+   핸들러는 자연히 죽는다(별도 삭제 불필요). 중앙 모달 변형은 그대로 모달이다. */
+.region-task-backdrop-popover {
+  align-items: flex-start;
+  background: transparent;
+  justify-content: flex-start;
+  padding: 0;
+  pointer-events: none;
+}
+
+.region-task-backdrop-popover > .region-task-popover {
+  pointer-events: auto;
+}
+
+.region-task-popover {
+  box-shadow: var(--shadow-pop), 0 0 0 1px var(--accent-muted);
+  /* 결과 로그·before/after 비교가 커져도 뷰포트 밖으로 밀리지 않게 */
+  max-height: calc(100vh - 24px);
+  max-height: calc(100dvh - 24px);
+  /* 단일 A/B 미리보기 전환으로 팝오버 폭을 슬림하게 축소 (460 → 380) */
+  max-width: min(380px, calc(100vw - 24px));
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: var(--z-popover-top);
+}
+
+.region-task-modal {
+  background: var(--editor-panel-bg);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--editor-text);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: min(520px, calc(100vw - 32px));
+  padding: var(--space-4);
+  width: 100%;
+}
+
+/* 중앙 모달도 긴 로그/비교 UI 시 화면 밖으로 넘치지 않게 */
+.region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal {
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 제목·닫기 한 줄 + 메타(단계·좌표·타일 분포) 한 줄. 380px 팝오버에서 다섯 덩어리를 한 줄에
+   밀어 넣으면 제목과 좌표 칩이 서로를 밀어내 아무것도 읽히지 않았다. */
+.region-task-header {
+  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.region-task-title-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
+}
+
+.region-task-meta-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.region-task-title {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 제목 옆 작은 로그 복사 버튼 */
+.region-task-copy-log {
+  background: transparent;
+  border: 1px solid var(--editor-line);
+  border-radius: 999px;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 3px var(--space-2);
+}
+.region-task-copy-log:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.region-task-copy-log.is-ready:not(:disabled) {
+  border-color: var(--accent-border);
+  color: var(--editor-text);
+}
+.region-task-copy-log:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.region-task-chip {
+  align-items: center;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  display: inline-flex;
+  font-size: 12px;
+  gap: var(--space-1);
+  margin-inline-start: auto;
+  padding: 2px var(--space-2);
+}
+.region-task-chip svg {
+  flex-shrink: 0;
+  height: 14px;
+  vertical-align: middle;
+  width: 14px;
+}
+
+.region-task-close {
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--editor-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 16px;
+  justify-content: center;
+  line-height: 1;
+  padding: var(--space-1);
+}
+.region-task-close svg {
+  flex-shrink: 0;
+  height: 14px;
+  width: 14px;
+}
+.region-task-close:hover {
+  color: var(--editor-text);
+}
+
+.region-task-input {
+  background: var(--bg-raised);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  font: inherit;
+  padding: var(--space-2);
+  resize: vertical;
+  width: 100%;
+}
+.region-task-input:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.region-task-log {
+  color: var(--editor-text-muted);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 2px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.region-task-log:empty {
+  display: none;
+}
+.region-task-log-line {
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
+}
+.region-task-log-line.is-error {
+  color: var(--danger);
+}
+
+.region-task-summary {
+  color: var(--editor-text);
+  font-size: 13px;
+  min-height: 18px;
+}
+.region-task-summary:empty {
+  display: none;
+}
+
+.region-task-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.region-task-run {
+  background: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--on-accent);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+
+.region-task-direct-select:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.region-task-cancel {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  display: none;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+.region-task-cancel:hover,
+.region-task-cancel:focus-visible {
+  border-color: var(--danger);
+  color: var(--danger);
+  outline: none;
+}
+
+.region-task-modal[data-stage="running"] .region-task-run { display: none; }
+.region-task-modal[data-stage="running"] .region-task-cancel { display: inline-flex; }
+
+.region-task-direct-room {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+}
+
+.region-task-direct-select {
+  background: var(--bg-inset);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  font: inherit;
+  max-width: 132px;
+  padding: var(--space-2);
+}

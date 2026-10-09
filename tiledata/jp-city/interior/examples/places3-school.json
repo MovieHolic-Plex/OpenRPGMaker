@@ -1,0 +1,114 @@
+[
+ {
+  "file": "school-1f",
+  "maps": [
+   "school-1f",
+   "school-2f",
+   "school-3f",
+   "school-roof"
+  ],
+  "placeId": "jp-city-school-1f-26x20",
+  "name": "일본 학교 본관(中学校・高校) 실내",
+  "kind": "school",
+  "kindKo": "학교",
+  "alias": [
+   "学校",
+   "학교",
+   "school",
+   "中学校",
+   "高校",
+   "校舎"
+  ],
+  "building": "jp_school",
+  "roomKinds": {
+   "shoegenkan": [
+    "학교 현관(昇降口)",
+    [
+     "昇降口",
+     "신발장 현관",
+     "school entrance"
+    ]
+   ],
+   "corridor": [
+    "학교 복도",
+    [
+     "廊下",
+     "복도",
+     "school corridor"
+    ]
+   ],
+   "staffroom": [
+    "교무실",
+    [
+     "職員室",
+     "교무실",
+     "staff room"
+    ]
+   ],
+   "infirmary": [
+    "보건실",
+    [
+     "保健室",
+     "보건실",
+     "school infirmary"
+    ]
+   ],
+   "classroom": [
+    "교실",
+    [
+     "教室",
+     "교실",
+     "classroom"
+    ]
+   ],
+   "musicroom": [
+    "음악실",
+    [
+     "音楽室",
+     "음악실",
+     "music room"
+    ]
+   ],
+   "library": [
+    "도서실",
+    [
+     "図書室",
+     "도서실",
+     "school library"
+    ]
+   ],
+   "sciencelab": [
+    "이과실",
+    [
+     "理科室",
+     "과학실",
+     "science lab"
+    ]
+   ],
+   "rooftop": [
+    "학교 옥상",
+    [
+     "屋上",
+     "옥상",
+     "school rooftop"
+    ]
+   ],
+   "schooltoilet": [
+    "학교 화장실",
+    [
+     "トイレ",
+     "화장실",
+     "school toilet"
+    ]
+   ]
+  },
+  "rules": [
+   "층마다 한 맵 — 1층 school-1f(거리와 잇는 주 맵) · 2층 school-2f · 3층 school-3f · 옥상 school-roof. 계단은 모두 동쪽 끝 계단실(x 20~24): 올라가는 콘크리트 계단 sc-stairs-up(2칸, 복도 북쪽 벽) 옆에 내려가는 계단통 sc-stairwell-down(2×2). 계단 발칸 → 위층 계단통 서쪽 칸, 계단통 아랫줄 → 아래층 계단 앞 칸.",
+   "1층: 맨 아래 4칸 출입구 → 昇降口(회색 타일 sc-genkan-tile, 북쪽 벽면 아래 양쪽에 신발장 sc-shoe-locker·우산꽂이, 복도로 오르는 2칸 트인 곳에 나무 발판 sc-sunoko) → 동서로 긴 복도 2줄(비닐 시트 sc-corridor) → 복도 북쪽에 교무실(교사 책상 sc-staff-desk 섬 둘 — 두 줄을 등 맞대고 북쪽 줄 의자 -s · 남쪽 줄 의자 -n, 북쪽 벽 화이트보드·열쇠함, 차 선반·복사기)·보건실(침대 둘 사이 커튼 칸막이, 약품장·세면대, 체중계, 보건 선생님 책상)·화장실(작게 — 소변기 줄·세면대, 세로 칸막이 3줄 틈의 옆문 너머 대변기 한 칸). 교무실·보건실·화장실 문은 모두 같은 미닫이 sc-classroom-door.",
+   "2층: 북쪽 교실 둘(나무 마루 sc-classroom-wood) — 북쪽 벽 가운데 칠판 sc-blackboard(4칸 걸이) 아래 교단 sc-podium 한 줄, 그 남쪽 교탁(책상 열 위), 학생 책상 sc-desk-n 5~6열×5행(열 사이 1칸 통로, 교탁 줄과 맨 뒤 줄은 비움 — 학생이 북쪽 칠판을 본다), 앞 구석 TV 받침, 북쪽 벽 게시판·시계. 교실 남쪽 끝 줄 = 학급 사물함 sc-back-locker(낮은 floor 종류)·청소 도구함 sc-cleaning-locker, 문 틈 위 칸은 비운다. 교실 문은 남쪽 칸막이 틈 두 개(앞문·뒷문, 미닫이 sc-classroom-door). 두 교실은 열 수·TV·청소함·게시판 자리를 달리한다. 복도는 3줄(첫 줄 = 스테인리스 수세대 sc-washstand·냉수기·화분·청소함).",
+   "3층 특별교실: 음악실(유공 흡음 벽 sc-soundwall, 북쪽 벽 악기 선반 둘 사이 그랜드 피아노·보면대, 의자 두 줄 가운데 2칸 통로) · 도서실(북쪽 벽 서가, 입구 옆 대출 카운터 — 손님 자리 2줄, 열람 탁자 sc-reading-table 남북에 의자, 양면 낮은 서가) · 이과실(타일 벽, 북쪽 벽 표본장·세면대·드래프트, 가운데 실험대 sc-lab-bench 둘 + 남쪽 둥근 의자).",
+   "옥상: 북쪽 가운데 塔屋(계단실 '#' 덩이) 남쪽 벽면에 철문 sc-roof-door — 그 아래 칸이 3층 계단으로 이어진다. 바닥 sc-roof-conc, 북쪽은 콘크리트 난간벽 sc-parapet, 남쪽 끝 줄에 높은 철망 펜스 sc-roof-fence(펜스 바로 북쪽 줄에는 가구를 두지 않는다), 고가 수조·실외기·벤치. 펜스 안은 원래 트인 바닥(open). 동·서 가장자리에 세로 펜스가 필요하면 sc-roof-fence-side.",
+   "평면·가구는 tiledata/jp-city/interior/examples/school-1f.json · school-2f.json · school-3f.json · school-roof.json — build_hand_interior_room({tileset:\"jp_city\"}) 인자 그대로. 짓는 순서: 네 층을 links 없이 → links 넣어 replace:true. 거리 건물(학교 본관 jp-bldg-school) 문과 잇기: link_jp_city_interior({door, place:\"jp-city-school-1f-26x20\"})."
+  ]
+ }
+]

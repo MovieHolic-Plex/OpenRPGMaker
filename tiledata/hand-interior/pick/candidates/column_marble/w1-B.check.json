@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_marble/w1-B.pxg",
+ "id": "column marble",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.061
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "왼쪽 위 빛 강화: 밝은 왼쪽 두 줄(F)→오른쪽 짙은 D 로 확 떨어지고 머리 밑에 드리운 그림자 한 줄, 밑동 오른쪽에 접지 그림자(~ -)",
+ "ok": true
+}

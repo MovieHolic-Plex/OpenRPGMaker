@@ -1,0 +1,34 @@
+// standing_sign B — 빛 구조 강화: 윗면 가장 밝게, 왼쪽 테 밝고 오른쪽 테 어둡게, 칠판 왼쪽 위 윤기, 발치 접지 그림자 두 줄
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat P hinoki 6
+@mat T hinoki 5
+@mat H hinoki 4
+@mat h hinoki 3
+@mat D hinoki 2
+@mat d hinoki 1
+@mat g matsu 1
+@mat G matsu 2
+@mat Q matsu 3
+@mat k matsu 0
+@mat W mwhite 4
+@mat w mwhite 3
+@mat y myellow 3
+@mblock 0 0
+..dddddddddddd..
+..dPPPPPPPPPPd..
+..dTTTTTTTTHhd..
+..dHQQGGgggghd..
+..dHgWWWWWWghd..
+..dHGgggggggDd..
+.dHHgWWWgWWgDDd.
+.dHHggggggggkDd.
+.dHHgWWWWgyggDd.
+.dHHggggkkkkkDd.
+.dHHHHHHHhhhDDd.
+.dHhd......dDDd.
+.dHhd......dDDd.
+.dddd......dddd.
+..-~~~~~~~~~~~~~
+....---~~~~~~---

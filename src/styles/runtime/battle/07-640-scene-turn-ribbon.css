@@ -1,0 +1,212 @@
+/* ── 전투 커서(▶) 640×480 이주 — keyboardNav.css 는 씬 스코프에서 덮는다 ──
+   keyboardNav.css 의 .rm-nav-item.rm-nav-item(padding-left: 22px) 과
+   .rm-nav-item.selected::before(left: 5px / font-size: 11px / drop-shadow 1px) 는
+   맵 메뉴와 공유하는 값이라 거기서 2배할 수 없다. 전투 명령 버튼에도 rm-nav-item 이
+   붙어서(runtimeCursorMenu.ts) 라벨 16px 에 커서 11px 로 왜소해졌다.
+   클래스를 두 번 + 씬 접두어로 특정도 (0,3,0)/(0,4,0) — 공유 규칙 (0,2,0) 을 이긴다.
+   (기본 스킨 vxace 는 커서를 감추므로 나머지 11종 스킨에서만 보인다.) */
+.battle-scene .rm-nav-item.rm-nav-item {
+  padding-left: 44px;
+}
+
+.battle-scene .rm-nav-item.selected::before {
+  filter: drop-shadow(2px 2px 0 #061038);
+  font-size: 22px;
+  left: 10px;
+}
+
+@keyframes oprn-actor-step {
+  50% {
+    margin-left: -16px;
+  }
+}
+
+@keyframes oprn-target-flash {
+  50% {
+    filter: brightness(2.2);
+  }
+}
+
+@keyframes oprn-target-select-pulse {
+  50% {
+    filter: brightness(1.45);
+  }
+}
+
+.battle-scene {
+  --battle-panel: #071a3c;
+  --battle-panel-hi: #123b82;
+  --battle-panel-mid: #0b2a66;
+  --battle-panel-low: #020a1d;
+  --battle-metal: #d8e5ff;
+  --battle-metal-dark: #4d5f7c;
+  --battle-gold: #ffd866;
+  --battle-orange: #ff7a30;
+  --battle-green: #8df064;
+  --battle-cyan: #8deaff;
+  --battle-black: #00040d;
+  background: #000;
+  display: grid;
+  font-family: var(--runtime-ui-font);
+  font-size: var(--runtime-font-size-11);
+  line-height: 1.25;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
+}
+
+.battle-field {
+  /* 테두리 두께는 애니메이션 레이어가 필드의 **패딩 박스** 를 재현할 때 그대로 쓴다 —
+     숫자를 두 곳에 두지 않도록 --battle-field-border-width 로 묶었다. */
+  border: var(--battle-field-border-width) solid rgba(213, 228, 255, 0.65);
+  box-shadow: inset 0 0 0 2px rgba(23, 62, 119, 0.9), 0 0 52px rgba(0, 12, 40, 0.8);
+  overflow: hidden;
+}
+
+.battle-backdrop {
+  background:
+    linear-gradient(180deg, rgba(5, 16, 38, 0.08), rgba(2, 5, 12, 0.28)),
+    radial-gradient(ellipse at 50% 70%, #274f3c 0%, #081834 75%);
+  background-position: center;
+  background-size: cover;
+  filter: saturate(1.12) contrast(1.06);
+}
+
+.battle-backdrop::after {
+  background:
+    radial-gradient(ellipse at 50% 61%, rgba(223, 216, 120, 0.18), transparent 28%),
+    radial-gradient(ellipse at 18% 74%, rgba(77, 136, 77, 0.26), transparent 24%),
+    linear-gradient(180deg, rgba(0, 7, 24, 0.12), rgba(0, 0, 0, 0.2));
+}
+
+.battle-turn-ribbon {
+  align-items: stretch;
+  background: linear-gradient(180deg, rgba(22, 50, 92, 0.96), rgba(2, 10, 26, 0.97));
+  border: 4px solid var(--battle-metal);
+  border-bottom-color: #667897;
+  border-right-color: #475673;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.45);
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 256px minmax(0, 1fr);
+  height: 124px;
+  left: 16px;
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  z-index: 5;
+}
+
+.battle-turn-label {
+  align-content: center;
+  background: linear-gradient(180deg, #173a78, #081a42);
+  border-right: 4px solid rgba(255, 255, 255, 0.36);
+  display: grid;
+  justify-items: center;
+}
+
+.battle-turn-label strong {
+  color: #fff;
+  font-size: 44px;
+}
+
+.battle-turn-label span {
+  color: #e8f1ff;
+  font-size: 26px;
+}
+
+.battle-turn-track {
+  align-items: center;
+  display: flex;
+  gap: 20px;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.battle-turn-track::after {
+  background-image: repeating-linear-gradient(90deg, rgba(198, 213, 255, 0.62) 0 6px, transparent 6px 24px);
+  content: "";
+  height: 4px;
+  left: 760px;
+  position: absolute;
+  right: 36px;
+  top: 50%;
+}
+
+.battle-turn-token {
+  align-items: center;
+  background: linear-gradient(145deg, #1a355f, #071226);
+  border: 4px solid #d8e5ff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  clip-path: polygon(10% 0, 88% 0, 100% 50%, 88% 100%, 10% 100%, 0 50%);
+  display: grid;
+  height: 100px;
+  justify-items: center;
+  min-width: 148px;
+  position: relative;
+  z-index: 1;
+}
+
+.battle-turn-token.active {
+  border-color: var(--battle-gold);
+  filter: drop-shadow(0 0 16px rgba(255, 216, 102, 0.7));
+}
+
+.battle-turn-thumb {
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: auto 84px;
+  height: 84px;
+  image-rendering: pixelated;
+  width: 96px;
+}
+
+.battle-turn-order {
+  bottom: -4px;
+  color: #fff;
+  font-size: 22px;
+  position: absolute;
+}
+
+.battle-turn-future {
+  flex: 1 1 auto;
+  min-width: 440px;
+}
+
+.battle-enemy-group,
+.battle-actor-group {
+  inset: var(--battle-stage-inset-top) 0 0 0;
+  z-index: 2;
+}
+
+.battle-enemy {
+  filter: drop-shadow(0 40px 16px rgba(0, 0, 0, 0.4));
+}
+
+.battle-actor-group .battle-actor {
+  filter: drop-shadow(0 28px 8px rgba(0, 0, 0, 0.38));
+  z-index: 3;
+}
+
+.battle-actor-platform {
+  background: linear-gradient(90deg, transparent, rgba(225, 239, 255, 0.72), transparent);
+  bottom: 8px;
+  height: 4px;
+  position: absolute;
+  width: 152px;
+}
+
+.battle-enemy-intent {
+  background: rgba(3, 8, 20, 0.86);
+  border: 4px solid rgba(229, 238, 255, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
+  color: #fff;
+  display: grid;
+  font-size: 32px;
+  gap: 12px;
+  left: 31%;
+  padding: 24px 32px;
+  position: absolute;
+  top: 232px;
+  z-index: 4;
+}
+

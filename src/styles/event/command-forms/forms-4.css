@@ -1,0 +1,974 @@
+/* event 표면 — command-forms/forms-4.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 한 글자씩 줄바꿈되면 «여 름» 처럼 보인다 — 칩은 절대 줄바꿈하지 않는다. */
+.shop-stock-season-chip { white-space: nowrap; }
+
+.shop-stock-season-chip.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--text-1, #2A2521);
+}
+
+.shop-stock-price-field { display: grid; gap: 4px; }
+
+.shop-stock-price-field > span {
+  color: var(--text-2, #5C5348);
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.inn-command-options {
+  display: grid;
+  gap: 6px;
+}
+
+.inn-command-timing {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+  .inn-command-timing {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shop-intent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.shop-header-badge {
+  font: 700 11px/1 Inter, "Segoe UI", sans-serif;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border, rgba(42,37,33,.20));
+  white-space: nowrap;
+}
+
+.shop-header-badge-ok {
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.shop-header-badge-warn {
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.shop-header-badge-empty {
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
+}
+
+.shop-branch-card { border-color: var(--border-default); }
+
+.shop-branch-card legend { color: var(--text-1); }
+
+/* 레거시 상점 규칙이 편집 본문을 68vh/620px 로 묶어 전체화면 아래쪽이 비었다 — 여기서 해제한다. */
+.event-subdialog-window.full .event-command-edit-columns > .event-command-edit-body:has(.shop-processing-command-body),
+.event-subdialog-window.full .event-command-edit-body {
+  display: flex;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* 상단 툴바: 상태 배지 + 프리셋 + 종류·검색 필터 한 줄 (제목은 창 헤더가 갖고 있다) */
+.shop-processing-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.shop-processing-toolbar .shop-processing-filter-bar {
+  margin-left: auto;
+}
+
+/* 옵션 레일: 설명 문단 없이 컨트롤만 밀도 있게, 넘치면 레일이 스크롤한다 */
+.shop-processing-side[data-testid="shop-options-rail"] {
+  align-content: start;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.2));
+  border-radius: 10px;
+  gap: 10px;
+  padding: 10px;
+}
+
+.shop-processing-side .shop-processing-fieldset {
+  margin: 0;
+}
+
+/* 고급(서비스·투자·마일리지) — `<details>` 대신 button + [hidden] 이라 같은 함정이 없다. */
+.shop-advanced {
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.2));
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.shop-advanced-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--text-2, #5C5348);
+  cursor: pointer;
+  font: 800 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-self: start;
+  letter-spacing: 0.04em;
+  padding: 4px 2px;
+  text-transform: uppercase;
+}
+
+.shop-advanced-toggle::before {
+  content: "▸ ";
+}
+
+.shop-advanced-toggle[aria-expanded="true"]::before {
+  content: "▾ ";
+}
+
+.shop-advanced-body {
+  display: grid;
+  gap: 6px;
+}
+
+/* 작성자 규칙이 UA 의 `[hidden] { display: none }` 을 이기므로 다시 눌러 준다. */
+.shop-advanced-body[hidden] {
+  display: none;
+}
+
+.shop-advanced-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
+}
+
+.shop-advanced-label {
+  color: var(--text-2, #5C5348);
+  font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* Event editor custom select — native select remains as the value/event source. */
+.event-custom-select {
+  box-sizing: border-box;
+  display: inline-grid;
+  max-width: 100%;
+  min-width: 0;
+  position: relative;
+  vertical-align: middle;
+  width: 100%;
+}
+
+.event-custom-select.is-disabled .event-custom-select-trigger {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.event-custom-select.is-placeholder .event-custom-select-value {
+  color: var(--text-2);
+}
+
+.event-custom-select-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-custom-select-chevron {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  color: var(--text-2);
+  height: 7px;
+  justify-self: center;
+  margin-top: -3px;
+  transform: rotate(45deg);
+  transition: transform 140ms ease, margin 140ms ease;
+  width: 7px;
+}
+
+.event-custom-select-trigger[aria-expanded="true"] .event-custom-select-chevron {
+  margin-bottom: -3px;
+  margin-top: 2px;
+  transform: rotate(225deg);
+}
+
+.event-custom-select-popover {
+  --event-custom-select-max-height: 360px;
+  animation: event-custom-select-in 110ms ease-out;
+  background: color-mix(in srgb, var(--bg-raised) 96%, var(--accent) 4%);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border-default));
+  border-radius: 10px;
+  box-shadow: 0 16px 42px color-mix(in srgb, var(--shadow-pop) 88%, transparent), 0 1px 0 color-mix(in srgb, white 7%, transparent) inset;
+  box-sizing: border-box;
+  color: var(--text-1);
+  display: grid;
+  gap: 5px;
+  max-height: var(--event-custom-select-max-height);
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+  position: fixed;
+  transform-origin: top center;
+  z-index: 30;
+}
+
+.event-custom-select-popover.opens-above {
+  transform-origin: bottom center;
+}
+
+.event-custom-select-search-wrap {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 0 0 6px;
+}
+
+.event-custom-select-search {
+  appearance: none;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px var(--shadow-pop) inset;
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 500 13px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 32px;
+  outline: none;
+  padding: 5px 9px;
+  width: 100%;
+}
+
+.event-custom-select-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.event-custom-select-options {
+  display: grid;
+  gap: 2px;
+  max-height: calc(var(--event-custom-select-max-height) - 12px);
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 1px;
+  scrollbar-color: color-mix(in srgb, var(--text-2) 38%, transparent) transparent;
+  scrollbar-width: thin;
+}
+
+.event-custom-select-search-wrap + .event-custom-select-options {
+  max-height: calc(var(--event-custom-select-max-height) - 55px);
+}
+
+.event-custom-select-group {
+  color: var(--text-2);
+  font: 700 10px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.06em;
+  padding: 7px 9px 3px;
+  text-transform: uppercase;
+}
+
+.event-custom-select-option {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 13px/19px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 16px;
+  min-height: 34px;
+  padding: 7px 9px 7px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.event-custom-select-option:focus-visible {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent) inset;
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.event-custom-select-option.is-selected {
+  background: color-mix(in srgb, var(--accent) 22%, var(--bg-surface));
+  color: color-mix(in srgb, var(--text-1) 90%, var(--accent));
+  font-weight: 700;
+}
+
+.event-custom-select-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.event-custom-select-option-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-custom-select-option-check {
+  display: block;
+  height: 12px;
+  justify-self: center;
+  opacity: 0;
+  position: relative;
+  width: 12px;
+}
+
+.event-custom-select-option-check::before {
+  border-bottom: 2px solid var(--accent);
+  border-right: 2px solid var(--accent);
+  content: "";
+  height: 8px;
+  left: 3px;
+  position: absolute;
+  top: 0;
+  transform: rotate(45deg);
+  width: 4px;
+}
+
+.event-custom-select-option.is-selected .event-custom-select-option-check {
+  opacity: 1;
+}
+
+.event-custom-select-options.is-empty::after {
+  color: var(--text-2);
+  content: "일치하는 옵션이 없습니다.";
+  font: 500 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 18px 10px;
+  text-align: center;
+}
+
+@keyframes event-custom-select-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-custom-select-popover {
+    animation: none;
+  }
+
+  .event-custom-select-chevron,
+  .event-custom-select-trigger {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------
+   변수/스위치 모달 통일 픽커 (switchVariablePicker.ts)
+   - 트리거 버튼만 보이고, 네이티브 select 는 계약용으로만 남긴다.
+   - 커스텀 셀렉트 enhancer 가 숨긴 select 을 다시 감싸지 않도록
+     customSelect.ts SKIP 목록의 마커 클래스와 짝을 이룬다.
+---------------------------------------------------------------- */
+.event-record-modal-select {
+  display: none;
+}
+
+@keyframes event-custom-select-attention {
+  0%,
+  70% {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+.shop-editor-summary {
+  margin: 0;
+  padding: 8px 20px 12px;
+  color: var(--text-2);
+  font-size: 12px;
+}
+
+.shop-editor-tabs {
+  display: flex;
+  gap: 24px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.shop-editor-tab {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text-2);
+  padding: 11px 2px;
+  font: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.shop-editor-tab[aria-selected="true"] {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 700;
+}
+
+.shop-editor-panel { min-height: 0; min-width: 0; overflow: hidden; }
+
+.shop-editor-goods {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 340px);
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+}
+
+.shop-editor-listing {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  padding: 22px 20px 12px;
+  background: var(--bg-base);
+}
+
+.shop-editor-list-head,
+.shop-editor-list-head h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.shop-editor-list-head { justify-content: space-between; margin-bottom: 18px; }
+
+.shop-editor h3 { font-size: 16px; line-height: 1.5; }
+
+.shop-editor-count,
+.shop-editor-muted,
+.shop-editor-list-note { color: var(--text-2); font-size: 12px; line-height: 1.5; font-weight: 400; }
+
+.shop-editor-column-head,
+.shop-editor-goods-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 128px;
+  align-items: center;
+  gap: 14px;
+}
+
+.shop-editor-column-head { padding: 9px 12px; border-bottom: 1px solid var(--border-default); color: var(--text-2); font-size: 12px; }
+
+.shop-editor-column-head > :not(:first-child) { text-align: right; }
+
+.shop-editor-list-scroll { min-height: 0; overflow: auto; scrollbar-gutter: stable; }
+
+.shop-editor-goods-row {
+  width: 100%;
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  color: var(--text-1);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.shop-editor-goods-row:hover { background: var(--bg-hover); }
+
+.shop-editor-goods-row.is-selected { background: var(--accent-muted); box-shadow: inset 3px 0 var(--accent); }
+
+.shop-editor-goods-name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+.shop-editor-goods-name > span:last-child { min-width: 0; }
+
+.shop-editor-goods-name strong { display: block; overflow-wrap: anywhere; font-weight: 600; }
+
+.shop-editor-goods-row small,
+.shop-catalog-row small { display: block; color: var(--text-2); font-size: 12px; }
+
+.shop-editor-goods-price { text-align: right; font-variant-numeric: tabular-nums; }
+
+.shop-editor-goods-season { text-align: right; color: var(--text-2); font-size: 12px; }
+
+.shop-editor-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.shop-editor-icon .rich-record-icon,
+.shop-editor-icon .rich-record-icon-crop,
+.shop-editor-icon .rich-record-initial { width: 28px; height: 28px; }
+
+.shop-editor-list-note { margin: 12px 0 0; }
+
+.shop-editor-empty { color: var(--text-2); margin: 0; padding: 24px 12px; font-size: 14px; }
+
+.shop-editor-inspector {
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+  border-left: 1px solid var(--border-default);
+  padding: 22px 20px;
+  background: var(--bg-raised);
+}
+
+.shop-editor-item-hero { display: flex; align-items: center; gap: 12px; }
+
+.shop-editor-item-hero h3 { margin: 0 0 3px; font-size: 18px; overflow-wrap: anywhere; }
+
+.shop-editor-description { color: var(--text-2); margin: 17px 0 22px; overflow-wrap: anywhere; }
+
+.shop-editor .shop-editor-fieldset { display: block; border: 0; padding: 0; margin: 0 0 22px; min-width: 0; }
+
+.shop-editor-fieldset + .shop-editor-fieldset { border-top: 1px solid var(--border-default); padding-top: 18px; }
+
+.shop-editor-fieldset legend { padding: 0 0 10px; font-size: 14px; font-weight: 700; color: var(--text-1); }
+
+.shop-editor-choice { display: flex; align-items: center; gap: 8px; margin: 9px 0; cursor: pointer; }
+
+.shop-editor input[type="radio"],
+.shop-editor input[type="checkbox"],
+.shop-catalog-picker input[type="checkbox"] { width: 16px; height: 16px; min-height: 0; flex: 0 0 16px; margin: 0; accent-color: var(--accent); }
+
+.shop-editor-price-row { display: flex; align-items: center; gap: 8px; }
+
+.shop-editor .shop-editor-price-input { width: 94px; min-width: 0; }
+
+.shop-editor .commerce-command-input,
+.shop-catalog-picker .commerce-command-input { font-size: 14px; min-height: 36px; }
+
+.shop-editor input:disabled { color: var(--text-2); background: var(--bg-inset); }
+
+.shop-editor-seasons { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.shop-editor-seasons button[aria-pressed="true"] { color: var(--accent); background: var(--accent-muted); border-color: var(--accent); }
+
+.shop-editor-price-warning { color: var(--danger); font-size: 12px; margin: 8px 0 0; }
+
+.shop-editor-item-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 20px; }
+
+.shop-editor-remove { margin-left: auto; color: var(--danger); }
+
+.shop-editor-preview-slot { display: none; }
+
+.is-shop-preview-open .shop-editor-item-detail { display: none; }
+
+.is-shop-preview-open .shop-editor-preview-slot { display: block; }
+
+.shop-editor-panel:not([data-shop-tab="goods"]) { overflow: auto; }
+
+.shop-editor-settings { display: grid; gap: 20px; max-width: 800px; padding: 26px 24px; margin: 0 auto; }
+
+.shop-editor-settings .commerce-command-field,
+.shop-editor-settings .shop-advanced-row { grid-template-columns: minmax(180px, 1fr) minmax(0, 240px); gap: 12px; }
+
+.shop-editor-settings .commerce-command-title,
+.shop-editor-settings .shop-advanced-label,
+.shop-editor-settings .commerce-command-option { color: var(--text-1); font-size: 14px; line-height: 1.5; font-weight: 500; }
+
+.shop-editor .commerce-command-hint { color: var(--text-2); font-size: 12px; line-height: 1.5; }
+
+.shop-economy-card { display: grid; gap: 20px; padding-top: 20px; border-top: 1px solid var(--border-default); }
+
+.shop-haggle-settings { display: grid; gap: 12px; padding: 16px; background: var(--bg-inset); border-radius: 8px; }
+
+.shop-haggle-settings:empty { display: none; }
+
+.shop-editor-settings .shop-advanced-toggle { font-size: 14px; padding: 10px 0; line-height: 1.5; }
+
+.shop-editor-settings .shop-advanced-body { gap: 16px; }
+
+.shop-editor-settings .shop-processing-fieldset { display: grid; gap: 18px; padding: 20px; }
+
+.shop-editor-settings .shop-processing-fieldset > legend { font-size: 14px; }
+
+.shop-editor .shop-processing-branch-controls { border: 0; padding: 0; }
+
+.shop-message-example { border-left: 3px solid var(--accent); background: var(--bg-inset); padding: 16px 20px; }
+
+.shop-message-example h4 { color: var(--text-2); font-size: 12px; font-weight: 500; margin: 0 0 8px; }
+
+.shop-message-example p { margin: 0; font-size: 16px; line-height: 1.6; }
+
+.shop-editor [hidden],
+.event-command-edit-actions .shop-preview-toggle[hidden] { display: none; }
+
+.shop-editor button:focus-visible,
+.shop-catalog-picker button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.shop-catalog-picker { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 14px; width: 100%; height: min(620px, calc(100vh - 190px)); min-height: 0; }
+
+.shop-catalog-filters { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; }
+
+.shop-catalog-presets { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+
+.shop-catalog-presets > span { color: var(--text-2); font-size: 12px; }
+
+.shop-catalog-list { min-height: 0; overflow: auto; border-block: 1px solid var(--border-default); }
+
+.shop-catalog-row { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border-subtle); cursor: pointer; color: var(--text-1); font-size: 14px; }
+
+.shop-catalog-row:hover { background: var(--bg-hover); }
+
+.shop-catalog-row.is-stocked { color: var(--text-2); cursor: default; background: var(--bg-inset); }
+
+.shop-catalog-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+
+.shop-catalog-row > span:last-child { font-variant-numeric: tabular-nums; }
+
+.shop-catalog-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.event-inspector-body .shop-editor-goods { grid-template-columns: minmax(0, 1fr); height: auto; }
+
+.event-inspector-body .shop-editor-list-scroll { max-height: 360px; }
+
+.event-inspector-body .shop-editor-inspector { border-left: 0; border-top: 1px solid var(--border-default); }
+
+@media (max-width: 1100px) {
+  .shop-editor-goods { grid-template-columns: minmax(0, 1fr) 290px; }
+  .shop-editor-listing, .shop-editor-inspector { padding-inline: 14px; }
+  .shop-editor-column-head, .shop-editor-goods-row { grid-template-columns: minmax(0, 1fr) 90px 100px; gap: 10px; }
+  .shop-editor-goods-row { padding-inline: 9px; }
+}
+
+.cream-command-form,
+.rich-command-form,
+.m2-command-body,
+.event-command-record-form,
+.move-route-editor,
+.play-audio-command-body,
+.event-command-text-editor {
+  display: grid;
+  gap: 10px;
+}
+
+.schema-command-form .schema-field-label,
+.rich-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.schema-command-form .schema-field-label {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.event-inspector-body .shop-processing-command-body {
+  display: grid;
+  gap: 10px;
+}
+
+.event-inspector-body .shop-processing-layout,
+.event-inspector-body .shop-processing-main,
+.event-inspector-body .shop-processing-side,
+.event-inspector-body .shop-processing-settings {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+.event-inspector-body .shop-processing-intent-flow,
+.event-inspector-body .shop-processing-intent-body {
+  display: none;
+}
+
+.event-inspector-body .event-command-choices-panel {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-inspector-body .event-command-choice-row input {
+  min-width: 8ch;
+}
+
+.event-command-choices-options,
+.event-command-choices-cancel {
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.cream-command-form-head {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.event-command-text-limit-hint{margin-top:4px;font-size:11px;color:var(--text-2);}
+
+.event-command-text-limit-hint[data-over="1"]{color:var(--danger,#f0716f);font-weight:600;}
+
+/* ============================================================================
+   이벤트 명령 리치 편집 폼 (EV-2) — RM2K3 수준 비주얼 UX
+   전부 tokens.css 토큰 기반. 소유: event-editor rich-forms 워커.
+   ========================================================================= */
+/* 폼 골격: 세로 스택 + 가로 행 */
+.rich-command-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.rich-form-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+/* 아이콘: 이미지 / 시트 크롭 / 이니셜 플레이스홀더 */
+.rich-record-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+}
+
+.rich-record-icon-crop {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: inline-block;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border-radius: var(--radius-s);
+  background-color: var(--bg-inset);
+}
+
+.rich-record-initial {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ---- 세그먼트 버튼 (연산 = / + / −, 파티 추가/제거) --------------------- */
+.rich-segment-group {
+  position: relative;
+  display: inline-flex;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--control-bg);
+  overflow: hidden;
+}
+
+.rich-segment {
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.rich-segment + .rich-segment {
+  border-left: 1px solid var(--border-subtle);
+}
+
+.rich-segment:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.rich-segment.selected {
+  background: var(--accent-muted);
+  color: var(--text-1);
+  box-shadow: inset 0 0 0 1px var(--accent-border);
+}
+
+/* 기존 select 는 테스트/자동화 호환용으로 남긴다.
+   크기(1x1 이상)와 visibility 를 유지해 selectOption 액션이 가능해야 하므로
+   display:none / visibility:hidden 금지 — opacity 로만 숨긴다. */
+.rich-native-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---- 수량 스테퍼 (− input +) ------------------------------------------- */
+.rich-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  overflow: hidden;
+}
+
+.rich-stepper > input {
+  width: 64px;
+  border: 0;
+  background: transparent;
+  color: var(--text-1);
+  text-align: center;
+  font-size: 12px;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.rich-stepper > input::-webkit-outer-spin-button,
+.rich-stepper > input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.rich-stepper > input:focus {
+  outline: 2px solid var(--accent-muted);
+  outline-offset: -2px;
+}
+
+.rich-stepper-button {
+  border: 0;
+  background: var(--control-bg);
+  color: var(--text-2);
+  width: 26px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.rich-stepper-button:hover {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+}
+
+.rich-stepper-button:active {
+  background: var(--control-bg-active);
+}
+
+/* ---- 전/후 프리뷰 스트립 ------------------------------------------------ */
+.rich-preview-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  padding: 6px 10px;
+  max-width: 100%;
+}
+
+.rich-preview-body {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  color: var(--text-1);
+  font-size: 12px;
+}
+
+.rich-preview-arrow {
+  color: var(--text-3);
+}
+
+.rich-preview-after {
+  font-weight: 600;
+}
+
+.rich-preview-after.gain {
+  color: var(--success);
+}
+
+.rich-preview-after.loss {
+  color: var(--danger);
+}
+
+.rich-preview-hint {
+  color: var(--text-3);
+  font-size: 12px;
+}
+
+.rich-preview-caption {
+  color: var(--text-3);
+  font-size: 10px;
+}
+
+/* 코인 뉘앙스 배지 (소지금) */
+.rich-gold-badge {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--warning-muted);
+  border: 1px solid var(--warning);
+  color: var(--warning);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ---- 상태 배지 (통행성 등) ---------------------------------------------- */
+.rich-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--border-default);
+  color: var(--text-2);
+}
+
+.rich-badge.passable {
+  background: var(--success-muted);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.rich-badge.blocked {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+  color: var(--danger);
+}

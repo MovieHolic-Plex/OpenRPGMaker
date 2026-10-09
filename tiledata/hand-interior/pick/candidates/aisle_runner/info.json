@@ -1,0 +1,37 @@
+{
+ "id": "aisle runner",
+ "slug": "aisle_runner",
+ "name_ko": "통로 양탄자(2칸)",
+ "category": "예배당",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  32,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 48
+ },
+ "footprint": {
+  "w": 2,
+  "h": 3
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "예배당 가운데 통로의 2칸 폭 붉은 양탄자(밟을 수 있음). 입구에서 제단까지 잇는다.",
+ "where": "입구에서 제단까지 잇는다.",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,63 @@
+/* 갤러리 목록은 고른 그림을 메뉴 안에 크게 보여주고, 결정 키는 화면 전체로 연다. */
+.oprn-status-menu .status-menu-detail.is-gallery.has-showcase {
+  grid-template-areas: "title" "picture" "list";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(72px, 1fr) 72px;
+}
+
+.oprn-status-menu .status-menu-detail.is-gallery.has-showcase > .status-menu-detail-showcase {
+  border-left: 0;
+  grid-area: picture;
+  padding: 0;
+}
+
+.oprn-status-menu .status-menu-detail.is-gallery .status-menu-showcase-frame {
+  height: 100%;
+  width: 100%;
+}
+
+.oprn-status-menu .status-menu-detail.is-gallery .status-menu-showcase-frame .status-menu-showcase-art {
+  background-size: contain;
+  height: 100%;
+  image-rendering: auto;
+  width: 100%;
+}
+
+.play-stage > .gallery-viewer {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.94);
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 80;
+}
+
+.gallery-viewer-image {
+  flex: 1 1 auto;
+  image-rendering: auto;
+  max-height: calc(100% - 28px);
+  max-width: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.gallery-viewer-missing,
+.gallery-viewer-caption {
+  color: #f4efe4;
+  font: 500 7px/1.4 var(--runtime-ui-font, sans-serif);
+  margin: 0;
+  text-align: center;
+}
+
+.gallery-viewer-close {
+  background: transparent;
+  border: 0;
+  color: #f4efe4;
+  font: inherit;
+  margin: 2px 0 4px;
+}

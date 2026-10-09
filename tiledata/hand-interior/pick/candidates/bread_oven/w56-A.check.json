@@ -1,0 +1,41 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_oven/w56-A.pxg",
+ "id": "bread oven",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   48
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "사용자(2026-10-01): 「실내인데 화덕 굴뚝 있어야 하는 거 아닌가」 — 굴뚝이 북쪽 벽면(2줄 32px)을 타고 천장까지 올라간다. 몸통·불 자리는 아래 32px(v5 칸 자리) 그대로, 불 프레임은 아래 맞춤"
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  31
+ ],
+ "note": "w54-A 돔 3/4 를 16px 내리고 위에 곧은 벽돌 굴뚝(폭 10, 돌 갓 띠, 왼 밝고 오른 어둡고 벽 그림자 1px)이 맨 위까지. 연기 구멍은 벽돌로 메움",
+ "ok": true
+}

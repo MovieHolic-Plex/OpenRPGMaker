@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/sofa_sheet/h4-B.pxg",
+ "set": "horror",
+ "id": "sofa_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.079
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  2,
+  31,
+  15
+ ],
+ "note": "왼쪽 위 강한 빛: 천 윗면 밝고 오른쪽 아래 어둡게, 주름 골이 깊고 어두움, 천 아래 오른쪽 아래로 ~ 그림자 3줄, 다리 끝이 그림자 속에 보임",
+ "ok": true
+}

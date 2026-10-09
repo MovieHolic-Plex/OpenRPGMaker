@@ -1,0 +1,49 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+// 강남 결: 윤곽 mmetal:2, 몸통 mwhite 2단, 윗면 한 줄 4단, 아래·오른쪽 1단 어둡게
+@mat o mmetal 2
+@mat w mwhite 2
+@mat W mwhite 4
+@mat h mwhite 3
+@mat s mwhite 1
+@mat d mwhite 0
+@mat l lacq 1
+@mat R lacq 4
+@mat X lacq 5
+@mat m mmetal 5
+@mat n mmetal 3
+@mblock 0 0
+...mn...........
+...mn...........
+...mn...........
+...mn...........
+.oooooooooooooo.
+.oWWWWWWWWWWWWo.
+.owwwwswwwwwwwso
+.owwwwswwwwwwwso
+.owwwwswwwwwwwso
+.owwwwswwwwwwwso
+.owwwwswwwwwwwso
+.owwwwswwwwwwwso
+.osssssssssssso.
+.oooooooooooooo.
+..oo........oo..
+..-~~~~~~~~~~~~-
+@mblock 7 6
+..RRR..
+.RlllR.
+RllXllR
+RlXXXlR
+RllXllR
+.RlllR.
+..RRR..
+@mblock 2 6
+h...
+h...
+h.
+@mblock 2 8
+dddd
+@mblock 2 10
+dddd
+

@@ -1,0 +1,105 @@
+/* 고정 제안 존만 남았다. `.ai-rising-overlay` 안의 휘발 로그는 사이드 도크 전용이라
+   도크 축과 함께 걷혔고(2026-08-31), 맵 위 적용 완료 스트립은 2026-08-30 에 걷혀
+   되돌리기가 컴포저 액션 행으로 옮겨졌다 — 두 선택자 모두 마운트되는 대상이 없다. */
+
+.ai-rising-sticky-zone .ai-proposal-notice-host > * {
+  pointer-events: auto;
+}
+
+.ai-pending-queue {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-surface)) 92%, var(--accent) 10%);
+  border: 1px solid color-mix(in srgb, var(--accent) 38%, transparent);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 6px 12px;
+  margin: 6px 0;
+  box-shadow: 0 2px 10px rgba(42, 37, 33, 0.10);
+}
+.ai-pending-queue[hidden] {
+  display: none !important;
+}
+.ai-pending-queue::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+  animation: ai-queue-pulse 1.2s ease-in-out infinite;
+}
+@keyframes ai-queue-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+.ai-silenced-banner {
+  background: color-mix(in srgb, var(--warning) 16%, var(--bg-panel, var(--bg-surface)));
+  border: 1.5px solid color-mix(in srgb, var(--warning) 48%, transparent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(42, 37, 33, 0.08);
+}
+
+.ai-silenced-banner button {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: var(--bg-inset, var(--bg-inset));
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.ai-silenced-banner button:hover { background: var(--bg-raised); transform: translateY(-1px); }
+
+/* 이전 턴은 어느 뷰에서도 숨기지 않는다. 예전에는 "미니 스트림(오버레이)에서는 현재 턴만"
+   규칙이 있었지만, 오버레이가 사이드 도크 전용이 된 뒤로는 같은 파일의 사이드 규칙이 항상
+   이겨서 한 번도 적용되지 않는 죽은 규칙이었다(2026-08-23). 접기는 .ai-turn-group.is-collapsed
+   가 담당한다 — 그쪽이 실제로 쓰이는 유일한 축약 경로다. */
+.ai-chat-log > .is-prior-turn {
+  display: block;
+}
+
+/* 완료 스트립·0건 알림 밴드. 도크와 무관하게 패널 자식이며 컴포저 바로 위에 둔다. */
+.ai-rising-sticky-zone {
+  max-height: min(38vh, 420px);
+  overflow-y: auto;
+}
+
+/* float 만 컴포저가 절대 위치라 흐름 위치가 캔버스 최상단으로 튄다 — 이 도크에서만 바 위
+   고정 밴드로 띄운다. 컨테이너는 클릭을 삼키지 않고 인터랙티브 자식만 되살린다. */
+.ai-chat-panel.chat-dock-float .ai-rising-sticky-zone {
+  /* clearance 는 데크(레일+기록+컴포저) 사각형 기준이라 기록 높이 보정 변수가 따로 없다(2026-09-03). */
+  bottom: calc(var(--ai-command-bar-clearance, 76px) + 8px);
+  left: auto;
+  margin: 0;
+  max-width: none;
+  pointer-events: none;
+  position: fixed;
+  right: 12px;
+  width: min(var(--ai-float-bar-width, 640px), calc(100vw - 24px));
+  z-index: 41; /* 오버레이와 같은 층 — 커맨드 바(40) 위, 모달(72) 아래 */
+}
+
+.ai-chat-panel.chat-dock-float.is-assistant-idle:not(.is-composer-focused):not(.is-studio):not(.is-history-open) .ai-rising-sticky-zone {
+  width: min(var(--ai-float-compact-width, 420px), calc(100vw - 24px));
+}
+
+/* 적용 완료 스트립(`.ai-completion-*`)은 2026-08-30 에 제거했다. 맵 위에 떠 있는 fixed
+   밴드라 도크별 팔레트와 어긋났고, 요약 문장은 변경 카드 제목과 글자 그대로 겹쳤다.
+   되돌리기는 컴포저 액션 행의 `.ai-composer-undo` 로 옮겼다(assistant-composer.css). */
+
+.ai-rising-sticky-zone .ai-action-zone {
+  border-top: none;
+  max-height: none;
+  padding-top: 0;
+}

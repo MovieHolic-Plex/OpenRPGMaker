@@ -1,0 +1,48 @@
+{
+ "stage": "vehicles",
+ "verdict": "pass",
+ "reviewerVerdict": "pass",
+ "reviewer": "claude -p --model opus --effort medium",
+ "rounds": 2,
+ "seconds": 197,
+ "focus": "움직이는 탈것 14종 — 2회차. 계약 SPEC.md(1회차 지적으로 경차 4칸·버스 문 왼쪽 면만·옆 프레임 윗면 띠·짙은 유리를 계약에 적었다). 한 줄 = 한 탈것, 순서 right·left·up·down·right_open·left_open. 왼쪽 살색·남색 막대는 사람 16×24 눈금. 일본 차량다운지(좌측통행·운전석 오른쪽·노선버스 문 왼쪽·택시 행등·경차), 3/4 시점, 축척, 화풍, 프레임 방향(up 은 뒤꽁무니가 화면 아래)을 본다.",
+ "files": {
+  "tiledata/jp-city/vehicles/preview-road-x3.png": "86508ddefab4cc8528b0a3edefd3b5ab159bc9bddab709479e6c6dbd2a543690",
+  "tiledata/jp-city/vehicles/preview-rail-x3.png": "5ee6862292c3f1271da8cd138cf4bb247afd0c0d9709c29d6fe9bb1885ca01b0",
+  "scripts/content/jp-city/vehicles/SPEC.md": "f8ccca059474e3223a6dd9fc2b2da821c9e742ef96b10a364c51109c8312c1ff",
+  "scripts/content/jp-city/vehicles/cars.py": "c696fcff945b485280b435a3f10f512db168252b7ad9146103b6841e5e202e6c",
+  "scripts/content/jp-city/vehicles/heavy.py": "801712f8078bca41a010bf25be2d80d5474e5099c5a26e08f5f5d6dda9abbc08",
+  "src/assets/jpCityVehicles.json": "c83596a6fbe6bfbc5fb998072201381fffe879f310dcbf9fd77aa2116ef7ec90"
+ },
+ "findings": [
+  {
+   "severity": "minor",
+   "file": "tiledata/jp-city/vehicles/preview-road-x3.png (jp-car-white right 80x48), scripts/content/jp-city/vehicles/cars.py",
+   "where": "세단 옆 프레임 유리 상단 y19 ~ 바퀴 하단 y45",
+   "problem": "유리+옆면+바퀴가 약 26px로 사람(24px)보다 크다. 실제 세단(약 1.45m)은 사람보다 낮아야 한다. 이전 major 3이 minor로 내려온 잔여분이다.",
+   "fix": "세단·해치 옆 프레임의 유리 띠 시작을 3~4px 내려 이 부분을 약 20~22px로 줄이고, 지붕 윗면 띠 폭은 유지한다."
+  },
+  {
+   "severity": "minor",
+   "file": "public/assets/jp-city/vehicles/jp-car-white.png",
+   "where": "right 프레임 윗면 y11-28 (246,241,252) vs 옆면 y30-42 (230,226,240)/(202,199,214)",
+   "problem": "윗면과 옆면의 명도 차이가 약해 3/4 입체감이 흐리다.",
+   "fix": "옆면 기본색을 RAMPS에서 한 단 어둡게 내려 윗면과 최소 2단 차이를 둔다. 은색 차에도 같은 규칙을 적용한다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/cars.py",
+   "where": "_box_side line 490 for x in (16, 28, 79) (jp-truck-box 옆 프레임)",
+   "problem": "뒤 2축이라 대형 트럭처럼 읽힌다. 일본 2t 트럭은 뒤 1축 복륜이다.",
+   "fix": "뒷바퀴를 x=22 하나로 하고 복륜은 안쪽 테두리 1px로 표현한다."
+  },
+  {
+   "severity": "minor",
+   "file": "scripts/content/jp-city/vehicles/SPEC.md, heavy.py",
+   "where": "jp-train-commuter / jp-subway 480x64 프레임, 량당 160px (heavy.py:376 근처)",
+   "problem": "1칸=1m 기준에서 한 량 10칸은 실측 20m의 절반인데, SPEC에 의도적 압축이라는 설명이 없다.",
+   "fix": "SPEC 크기 표에 '량당 10칸으로 압축'을 명시하고, 압축을 유지하면 문 수를 2개로 줄여 비례를 맞추는 것을 검토한다."
+  }
+ ],
+ "report": "**재검수 결과 (차량 2회차)**\n\n이전 지적 5건 재확인:\n1. **[blocker] 버스 문이 운전석 쪽에 있음** → 해소됨. right / right_open 프레임에는 문이 없고 서로 같습니다. left / left_open 프레임에는 앞문(앞바퀴 앞)과 중문(두 축 사이)이 있습니다. `heavy.py:73`.\n2. **[major] 승용차 옆모습이 순수 측면** → 해소됨. 지붕 띠 약 8px, 보닛·트렁크 윗면 약 7px이 보입니다. 버스·전차·열차·트럭도 지붕 윗면 띠와 환기구가 있습니다.\n3. **[major] 세단이 사람의 1.6배 높이** → minor로 낮춤. 아직 사람보다 약간 큽니다(아래 1번).\n4. **[major] 경차 길이 5칸** → 해소됨. 경차·경트럭 모두 L4(64×48, 32×80)입니다.\n5. **[major] 옆유리가 연보라** → 해소됨. 승용차·버스·전차·통근열차·지하철 모두 위/아래 프레임과 같은 짙은 남색 유리 (27,33,56)~(57,83,107) 계열입니다.\n\n추가 확인:\n- up 프레임은 후미등이 화면 아래, down 프레임은 전조등이 화면 아래입니다.\n- 택시 행등이 있습니다.\n- 전차·열차는 양쪽 면에 문이 있고 집전장치가 있습니다.\n- alpha는 0/255만 씁니다.\n- 14종 프레임 크기가 SPEC 표와 일치합니다.\n\nblocker·major는 남지 않았으므로 판정은 pass입니다.\n\n**남은 지적 (모두 minor)**\n\n1. **세단 옆모습이 사람보다 큼.**\n   - 위치: `jp-car-white.png` right 프레임(80×48), 유리 상단 y19 ~ 바퀴 하단 y45.\n   - 문제: 유리+옆면+바퀴가 약 26px로 사람 높이(24px)보다 큽니다. 실제 세단은 약 1.45m라서 사람(약 1.65m)보다 낮아야 합니다.\n   - 고칠 점: `cars.py` 세단·해치 옆 프레임에서 유리 띠 시작을 3~4px 내려 이 부분을 약 20~22px로 줄입니다. 지붕 윗면 띠 폭은 유지합니다.\n2. **흰 차의 윗면·옆면 명도 차이가 약함.**\n   - 위치: `jp-car-white.png` right 프레임, 윗면 y11–28 (246,241,252)와 옆면 y30–42 (230,226,240)/(202,199,214).\n   - 문제: 윗면과 옆면이 한 면처럼 붙어 보여 3/4 입체감이 약합니다.\n   - 고칠 점: 옆면 기본색을 RAMPS에서 한 단 더 어둡게 내려 윗면과 최소 2단 차이를 둡니다. 은색 차에도 같은 규칙을 적용합니다.\n3. **2t 박스트럭 뒷바퀴가 2축.**\n   - 위치: `cars.py:490` `_box_side`의 `for x in (16, 28, 79)`. preview-road-x3 1행의 jp-truck-box 옆 프레임입니다.\n   - 문제: 뒤 2축이라 대형 트럭처럼 읽힙니다. 일본 2t 트럭(엘프·캔터급)은 뒤 1축에 복륜입니다.\n   - 고칠 점: 뒷바퀴를 x=22 하나로 줄이고, 복륜은 안쪽 바퀴 테두리 1px로 표현합니다. 앞바퀴 79는 유지합니다.\n4. **통근열차·지하철 한 량이 10칸.**\n   - 위치: `jp-train-commuter.png`, `jp-subway.png` 480×64 프레임을 160px씩 3량으로 나눈 부분. `heavy.py:376` 근처.\n   - 문제: 1칸=1m 기준이면 일본 통근차 한 량은 약 20m입니다. 반 길이에 문 3개가 들어가 압축이 눈에 띄는데, SPEC에는 의도적 압축이라는 설명이 없습니다.\n   - 고칠 점: SPEC 크기 표에 \"열차는 량당 10칸으로 압축(실측 20m)\"이라고 명시합니다. 압축을 유지하면 문 수를 2개로 줄여 비례를 맞추는 것을 검토합니다.\n\n```json\n{\"verdict\": \"pass\", \"findings\": [\n{\"severity\": \"minor\", \"file\": \"tiledata/jp-city/vehicles/preview-road-x3.png (jp-car-white right 80x48), scripts/content/jp-city/vehicles/cars.py\", \"where\": \"세단 옆 프레임 유리 상단 y19 ~ 바퀴 하단 y45\", \"problem\": \"유리+옆면+바퀴가 약 26px로 사람(24px)보다 크다. 실제 세단(약 1.45m)은 사람보다 낮아야 한다. 이전 major 3이 minor로 내려온 잔여분이다.\", \"fix\": \"세단·해치 옆 프레임의 유리 띠 시작을 3~4px 내려 이 부분을 약 20~22px로 줄이고, 지붕 윗면 띠 폭은 유지한다.\"},\n{\"severity\": \"minor\", \"file\": \"public/assets/jp-city/vehicles/jp-car-white.png\", \"where\": \"right 프레임 윗면 y11-28 (246,241,252) vs 옆면 y30-42 (230,226,240)/(202,199,214)\", \"problem\": \"윗면과 옆면의 명도 차이가 약해 3/4 입체감이 흐리다.\", \"fix\": \"옆면 기본색을 RAMPS에서 한 단 어둡게 내려 윗면과 최소 2단 차이를 둔다. 은색 차에도 같은 규칙을 적용한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/cars.py\", \"where\": \"_box_side line 490 for x in (16, 28, 79) (jp-truck-box 옆 프레임)\", \"problem\": \"뒤 2축이라 대형 트럭처럼 읽힌다. 일본 2t 트럭은 뒤 1축 복륜이다.\", \"fix\": \"뒷바퀴를 x=22 하나로 하고 복륜은 안쪽 테두리 1px로 표현한다.\"},\n{\"severity\": \"minor\", \"file\": \"scripts/content/jp-city/vehicles/SPEC.md, heavy.py\", \"where\": \"jp-train-commuter / jp-subway 480x64 프레임, 량당 160px (heavy.py:376 근처)\", \"problem\": \"1칸=1m 기준에서 한 량 10칸은 실측 20m의 절반인데, SPEC에 의도적 압축이라는 설명이 없다.\", \"fix\": \"SPEC 크기 표에 '량당 10칸으로 압축'을 명시하고, 압축을 유지하면 문 수를 2개로 줄여 비례를 맞추는 것을 검토한다.\"}\n]}\n```"
+}

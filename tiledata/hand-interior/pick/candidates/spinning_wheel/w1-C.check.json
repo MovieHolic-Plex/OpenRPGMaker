@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spinning_wheel/w1-C.pxg",
+ "id": "spinning wheel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.002
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "재해석: 바퀴를 지름 11로 키워 가장 크게(살 6개), 왼쪽에 붉은 실패가 올라간 작은 탁과 날개 막대, 아래에 페달판과 연결 막대를 세워 '발로 돌리는 물레'로 한눈에 읽히게 함.",
+ "ok": true
+}

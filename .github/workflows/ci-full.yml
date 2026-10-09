@@ -1,0 +1,122 @@
+name: ci-full
+
+# 전체 게이트 — main 푸시 + 야간 스케줄 + 수동.
+# 다른 브랜치의 푸시마다 돌리지는 않는다. 한 번에 한 시간 안팎이고, oprn-full 러너는 하나다.
+#
+# 왜 이 모양인가 (2026-09-17 실측, 2026-09-27 에 낮 실행을 열었다):
+#   전체 vitest 는 2,338 파일 / 22,546 케이스 = 약 4.3 CPU-시간이다. 워커 수(8/16/24/32),
+#   pool(forks/threads/vmForks), --no-isolate 를 전부 재봤고 **어느 것도 벽시계를 줄이지 못했다**
+#   (표본 173파일 고정: 201/201/204/204초, 201/202/246초, no-isolate 는 누적 상호작용으로 행).
+#   느린 이유는 스위트가 아니라 박스 경합이었다 — 이 잡은 32코어 중 5.64코어만 받았다.
+#   자리는 이제 슬라이스로 갈라 두었다. 박스는 32코어/98GB 이고, fast 4대(8코어/32GB)와
+#   이 레인(6코어/20GB)이 동시에 최대로 들어가도 부모 한도(16코어/56GB) 안이다.
+#
+#   실행은 self-hosted 러너에서 하고, 러너는 systemd 슬라이스 안에 있다.
+#   ci.slice(16코어/56GB) 아래에 ci-fast.slice(8코어/32GB, 러너 4)와 ci-full.slice(6코어/20GB)가 있고,
+#   이 잡만 **oprn-full** 라벨을 쓴다 — 러너도 슬라이스도 fast 레인과 분리돼 있다.
+#   한 시간짜리 잡이 푸시 레인을 막지 않고, 겹쳐 돌아도 전체 vitest 가 굶지 않는다.
+#   "전체 vitest 두 개 동시 실행"은 위의 concurrency group 과 oprn-full 러너 1개가 막는다.
+#   main 이 연달아 머지되면 진행 중인 잡은 끝내고, 대기 중인 옛 커밋만 최신 커밋으로 바뀐다.
+#
+# 판정은 verify-gates.mjs 가 한다. 이 스크립트는 .omo/gates-baseline.json 과 대조해
+# **새로 생긴 실패만** 회귀로 보고 exit 1 을 낸다. 기준선은 CI 가 절대 갱신하지 않는다 —
+# 사람이 `node scripts/verify-gates.mjs --save-baseline` 으로 내리는 결정이다(래칫 보호).
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # main 이 하루 종일 조용해도 한 번은 돈다. 03:17 KST (18:17 UTC 전날).
+    - cron: "17 18 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ci-full
+  cancel-in-progress: false
+
+jobs:
+  gates:
+    runs-on: [self-hosted, oprn-full]
+    # 러너가 1개라 앞선 잡을 기다릴 수 있다. self-hosted 잡 상한은 5일이라 여유롭게 잡아도 된다.
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
+        run: |
+          echo "node: $(node -v) / npm: $(npm -v)"
+          echo "nproc(참고, 박스 전체): $(nproc)"
+          # ⚠ os.availableParallelism() 은 **믿을 수 없다**. 중첩 슬라이스에서 체인의
+          # 가장 느슨한 쿼터를 집는다(2026-09-17 실측: 리프 300% / 부모 600% / 조부모 800%
+          # 에서 8 반환). 그래서 cgroup 을 직접 훑어 찍는다 — run-vitest.mjs 도 같은 방식이다.
+          node -e '
+            const { readFileSync } = require("node:fs");
+            const { dirname, join } = require("node:path");
+            let dir = join("/sys/fs/cgroup", readFileSync("/proc/self/cgroup", "utf8").trim().split("\n").at(-1).split(":").at(2));
+            for (let i = 0; i < 32; i += 1) {
+              const read = (f) => { try { return readFileSync(join(dir, f), "utf8").trim(); } catch { return null; } };
+              const cpu = read("cpu.max"), mem = read("memory.max");
+              if (cpu || mem) console.log(`${dir.replace("/sys/fs/cgroup", "")}  cpu.max=${cpu ?? "-"}  memory.max=${mem ?? "-"}`);
+              const parent = dirname(dir);
+              if (parent === dir || !parent.startsWith("/sys/fs/cgroup")) break;
+              dir = parent;
+            }
+          '
+
+      - run: npm ci
+
+      - name: 자원 스냅샷 (시작)
+        run: node scripts/ci-resource-report.mjs start
+
+      # verify-gates 가 typecheck / tests / css / surface 를 모두 돌고 기준선과 대조한다.
+      # 회귀가 없으면 exit 0, 있으면 exit 1.
+      # --flake-budget-min: 「새로 실패」 후보를 파일마다 단독(maxWorkers=1)으로 재판정하는
+      #   시간 예산이다. 기본 20분은 로컬 반복용이라 CI 에선 모자란다.
+      #
+      #   건당 비용은 **어디서 재느냐에 따라 6배 차이**가 난다. 둘 다 실측(2026-09-18):
+      #     한산한 박스에서 작은 파일 3개   18~35초
+      #     CI 에서 전체 스위트 뒤에 이어서  약 186초  (run 35383311191: 90분에 29건 판정)
+      #   후자가 현실이다 — 전체 실행 직후라 파일마다 모듈 그래프를 새로 평가한다.
+      #
+      #   그래서 후보가 100건대면 예산으로 못 따라간다(137건이면 7시간). 그건 예산 문제가
+      #   아니라 **기준선이 낡았다는 신호**다. 90분은 기준선이 최신일 때 남는 소수를 거르기에
+      #   충분하다. 잡 상한 240분, 게이트 본체 75분이라 여유는 있다.
+      - name: 전체 게이트 (기준선 대비 회귀만 실패)
+        id: gates
+        env:
+          # verify-gates 의 타입체크만 이 락을 잡는다. 힙 10GB 를 ci-fast 와 동시에 열지 않기 위해서다.
+          OPRN_TYPECHECK_LOCK: /home/dev/ci/typecheck.lock
+        run: node scripts/verify-gates.mjs --flake-budget-min=90
+
+      # 게이트가 실패해도 자원 리포트는 반드시 남긴다 — 조용히 죽는 경우가 바로 이걸로 진단된다.
+      - name: 자원 리포트
+        if: always()
+        run: node scripts/ci-resource-report.mjs report "전체 게이트"
+
+      # 리포트를 **박스 디스크에** 남긴다. actions/upload-artifact 를 쓰지 않는 이유:
+      # 계정의 아티팩트 저장소 쿼터가 이미 차 있다(2026-09-17 실측, 첫 ci-full 실행에서
+      # `Failed to CreateArtifact: Artifact storage quota has been hit`). 이 저장소가 쓰는
+      # 아티팩트는 0개·0.0MB 이므로 다른 저장소가 먹은 것이고, 여기서 고칠 수 없다.
+      # 어차피 러너가 우리 박스라 업로드는 왕복일 뿐이다 — 로컬에 두면 용량 제한도,
+      # 14일 만료도 없고 `jq` 로 바로 열어볼 수 있다.
+      - name: vitest 리포트 보관
+        if: always()
+        run: |
+          set -euo pipefail
+          dest="$HOME/ci/reports/$(date -u +%Y%m%d-%H%M%S)-run${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$dest"
+          # gates-report.json 이 **판정**이다(회귀 목록·플레이크 제외분). vitest-report 는
+          # 원시 출력이고, baseline 은 무엇과 비교했는지다. 셋이 있어야 나중에 재구성된다.
+          for f in .omo/gates-report.json .omo/gates-vitest-report.json .omo/gates-baseline.json; do
+            [ -f "$f" ] && cp "$f" "$dest/" || echo "없음: $f"
+          done
+          git rev-parse HEAD > "$dest/commit.txt"
+          echo "보관 위치: $dest"
+          ls -la "$dest"
+          {
+            echo "### vitest 리포트"
+            echo ""
+            echo "러너 박스의 \`$dest\` 에 있다 (아티팩트 쿼터 소진으로 업로드 대신 로컬 보관)."
+          } >> "$GITHUB_STEP_SUMMARY"
+          # 30일 넘은 보관본은 지운다. 리포트 하나가 수 MB 라 방치하면 쌓인다.
+          find "$HOME/ci/reports" -maxdepth 1 -type d -mtime +30 -exec rm -rf {} + 2>/dev/null || true

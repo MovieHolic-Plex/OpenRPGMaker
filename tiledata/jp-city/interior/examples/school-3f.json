@@ -1,0 +1,394 @@
+{
+ "name": "학교 본관 3층(음악실·도서실·이과실)",
+ "plan": [
+  "##########################",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#........#........#......#",
+  "#####.######.#######.#####",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "##########################"
+ ],
+ "floor": "sc-corridor",
+ "wall": "sc-wall",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 8,
+   "y1": 8,
+   "floor": "sc-classroom-wood",
+   "wall": "sc-soundwall"
+  },
+  {
+   "x0": 10,
+   "y0": 0,
+   "x1": 17,
+   "y1": 8,
+   "floor": "sc-classroom-wood"
+  },
+  {
+   "x0": 19,
+   "y0": 0,
+   "x1": 24,
+   "y1": 8,
+   "floor": "sc-corridor",
+   "wall": "sc-wall-tile"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sc-instrument-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sc-music-stand",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sc-piano",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "sc-music-stand",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "sc-instrument-shelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "wall-clock",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "door-open-western",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "sc-chair-s",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "sc-chair-s",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "sc-lib-counter",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "sc-lib-counter",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "sc-book-island",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "sc-music-chair-n",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "sc-specimen-case",
+   "x": 19,
+   "y": 3
+  },
+  {
+   "id": "sc-specimen-case",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "sc-med-shelf",
+   "x": 23,
+   "y": 3
+  },
+  {
+   "id": "sc-fume-hood",
+   "x": 24,
+   "y": 3
+  },
+  {
+   "id": "sc-lab-bench",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "sc-lab-bench",
+   "x": 23,
+   "y": 5
+  },
+  {
+   "id": "sc-lab-stool",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "sc-lab-stool",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "sc-lab-stool",
+   "x": 23,
+   "y": 6
+  },
+  {
+   "id": "sc-lab-stool",
+   "x": 24,
+   "y": 6
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 20,
+   "y": 9
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 2,
+   "y": 10
+  },
+  {
+   "id": "sc-notice-board",
+   "x": 14,
+   "y": 10
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "sc-stairwell-down",
+   "x": 23,
+   "y": 12
+  }
+ ],
+ "tables": [
+  {
+   "style": "sc-reading-table",
+   "x": 13,
+   "y": 6,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "sc-globe",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "books-stack",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "books-stack",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "pb-documents",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "sc-flask",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "sc-flask",
+   "x": 23,
+   "y": 5
+  }
+ ],
+ "rooms": [
+  {
+   "room": "musicroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 9
+  },
+  {
+   "room": "library",
+   "x0": 9,
+   "y0": 0,
+   "x1": 17,
+   "y1": 9
+  },
+  {
+   "room": "sciencelab",
+   "x0": 18,
+   "y0": 0,
+   "x1": 25,
+   "y1": 9
+  },
+  {
+   "room": "corridor",
+   "x0": 0,
+   "y0": 10,
+   "x1": 25,
+   "y1": 14
+  }
+ ],
+ "start": [
+  22,
+  13
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 21,
+   "y": 12,
+   "toMapId": "jp-city-school-roof",
+   "toX": 6,
+   "toY": 7,
+   "direction": "down"
+  },
+  {
+   "x": 22,
+   "y": 12,
+   "toMapId": "jp-city-school-roof",
+   "toX": 6,
+   "toY": 7,
+   "direction": "down"
+  },
+  {
+   "x": 23,
+   "y": 13,
+   "toMapId": "jp-city-school-2f",
+   "toX": 21,
+   "toY": 16,
+   "direction": "down"
+  },
+  {
+   "x": 24,
+   "y": 13,
+   "toMapId": "jp-city-school-2f",
+   "toX": 21,
+   "toY": 16,
+   "direction": "down"
+  }
+ ]
+}

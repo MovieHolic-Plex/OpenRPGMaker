@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_potion_flask/w62-A.pxg",
+ "id": "table:potion+flask",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 25,
+ "v5_colors": 19,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "3/4: ref(table:bolt+yarn w46-A) 몸통 — 상판 윗면 6~10행·앞 모서리 하이라이트 11행·다리·그림자, 물건은 v5 potion_flask 그대로 1행 위로, purple 천 덮개·자락 유지 양옆 나무틀. work/w62-tables.py",
+ "ok": true
+}

@@ -1,0 +1,49 @@
+{
+ "id": "candle_floor",
+ "slug": "candle_floor",
+ "name": "바닥 촛불 무리",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "바닥에 직접 세운 짧은 초 셋~넷(높이 다르게), 둘은 켜짐, 촛농이 바닥에 고임, 둘레 바닥에 빛 번짐(%). candelabra_drip 과 같은 불꽃 모양·같은 초 색.",
+ "palette_hint": "wax 초, flame 불꽃, % 빛 번짐",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "set_with": [
+  "candelabra_drip"
+ ],
+ "v5_ref": [
+  {
+   "id": "candle",
+   "name_ko": "촛대",
+   "atlas": {
+    "x": 0,
+    "y": 352,
+    "w": 16,
+    "h": 16,
+    "frames": 12,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

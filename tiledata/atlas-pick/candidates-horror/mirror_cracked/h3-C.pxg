@@ -1,0 +1,77 @@
+// mirror_cracked h3-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b mahog 0
+@mat c moon 0
+@mat d murk 0
+@mat e sheet 0
+@mat f void 0
+@mblock 0 0
+.....bbbbbb.....
+...bbbbbbbbbb...
+..bbbddddddbbb..
+.bbddddddddddbb.
+.bbddddddcbffbb.
+.bbdcddddcbffbb.
+.bbddcddddcbfbb.
+.bbdddcddddcfbb.
+.bbddddcdddcfbb.
+.bbdddddcdcdfbb.
+.bbddddcccdddbb.
+.bbddccffccddbb.
+.bbdcdffcffcdbb.
+.bbddffecefdcbb.
+.bbdddfcfffdcbb.
+.bbdddcfffdddbb.
+.bbdddcffffddbb.
+.bbddcffffffdbb.
+.bbdfffffffffbb.
+.bbdfffffffffbb.
+.bbdfffffffffbb.
+.bbdfffffffffbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+...bb......bb...
+...bb......bb...
+@tblock 0 0
+.....211111.....
+...2144444410...
+..244222234440..
+.24333334444420.
+.24344444311020.
+.24344444311020.
+.24344444431020.
+.24344444443020.
+.24444444444120.
+.24444444444120.
+.24444444544420.
+.24444401444420.
+.24444114004420.
+.24341004004420.
+.24344040103420.
+.24344401033320.
+.24344410003320.
+.24344010000320.
+.24300100000020.
+.24300000000020.
+.24300000000020.
+.24300000000020.
+.15555555555551.
+.12222222222220.
+..555555555555..
+..433333333331..
+..431111111131..
+..431226622431..
+..434444444431..
+..111111111110..
+...21......21...
+...21......21...

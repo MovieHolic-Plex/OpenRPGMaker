@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/station_gate/j2-B.pxg",
+ "set": "jp",
+ "id": "station_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  2,
+  8,
+  47,
+  30
+ ],
+ "note": "입체 강화: 윗면은 매우 밝고 앞·옆면 깊게 어둡게, IC 판·등 주변 % 불빛 번짐, 상자 아래 ~ - 그림자 3줄.",
+ "ok": true
+}

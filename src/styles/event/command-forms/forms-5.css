@@ -1,0 +1,933 @@
+/* event 표면 — command-forms/forms-5.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 소지금 변경: 연산/금액 소스/변수 피커 2열 정리 */
+.event-command-gold-form {
+  width: 100%;
+}
+
+.event-command-gold-row {
+  width: 100%;
+}
+
+.event-command-gold-field {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(64px, auto) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-gold-field > span:first-child {
+  color: var(--text-2);
+  font: 650 11px/14px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.event-command-gold-hint {
+  color: var(--text-2);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.event-command-item-form {
+  width: 100%;
+}
+
+.event-command-item-row {
+  width: 100%;
+}
+
+.event-command-item-hint {
+  color: var(--text-2);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+/* 경험치 변경: 세로 스택 + 짧은 세그먼트 */
+.event-command-exp-form {
+  width: 100%;
+}
+
+.event-command-exp-form .event-command-exp-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-exp-controls {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100%;
+}
+
+.event-command-exp-form .rich-segment {
+  min-width: 2.4rem;
+  white-space: nowrap;
+}
+
+.event-command-exp-form .rich-preview-strip {
+  width: 100%;
+}
+
+.event-command-exp-form .rich-preview-caption:empty {
+  display: none;
+}
+
+/* 특수기 변경: 세로 스택 + 짧은 세그먼트 */
+.learn-skill-command-body {
+  width: 100%;
+}
+
+.learn-skill-command-body .learn-skill-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.learn-skill-command-body .rich-segment {
+  min-width: 3rem;
+  white-space: nowrap;
+}
+
+.learn-skill-command-body .rich-preview-strip {
+  width: 100%;
+}
+
+.learn-skill-command-body .rich-preview-caption:empty {
+  display: none;
+}
+
+.rich-skill-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-surface) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-default) 50%, transparent);
+  color: var(--text-1);
+  font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.rich-preview-caption-inline {
+  color: var(--text-3);
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 전투 처리 */
+/* 전투 처리 세로 스택 — auto-fit 그리드 탈출 */
+.event-command-edit-body .battle-processing-command-body,
+.event-command-edit-body .rich-command-form.battle-processing-command-body {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  grid-template-columns: none;
+  min-width: 0;
+  width: 100%;
+}
+
+.battle-processing-intent {
+  color: var(--text-2, #5C5348);
+  font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px dashed var(--border-subtle, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
+}
+
+.battle-processing-preset {
+  min-width: 64px;
+}
+
+.battle-processing-preset:hover {
+  border-color: var(--accent);
+}
+
+.battle-processing-branch-controls {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--bg-raised, #F7F3EA) 90%, transparent);
+}
+
+/* 숨김 체크박스/select 는 기존 .rich-native-select 규칙 + HTML hidden 속성으로 처리.
+   pointer-events:none 금지 — e2e selectOption / check() 호환 유지. */
+.battle-processing-command-body {
+  width: 100%;
+}
+
+.battle-processing-field {
+  min-width: 0;
+  width: 100%;
+}
+
+.battle-processing-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.battle-processing-warning {
+  color: var(--danger, #C6403D);
+  font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-warning.is-empty {
+  display: block;
+}
+
+.battle-processing-troop-hover {
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  background: var(--bg-raised, #F7F3EA);
+  padding: 8px 10px;
+  display: grid;
+  gap: 4px;
+  width: 100%;
+}
+
+.battle-processing-hover-title {
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-hover-row {
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-branch-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-1, #2A2521);
+  font: 500 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.battle-processing-branch-hint {
+  margin: 0;
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* ---- 파티 멤버 변경 / 액터 수치 변경 공통 UX ---- */
+.actor-amount-command-body {
+  gap: 10px;
+  width: 100%;
+}
+
+.actor-amount-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.actor-amount-presets {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.actor-amount-preset-btn {
+  min-height: 28px;
+}
+
+.party-member-intent {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.party-member-intent-title {
+  color: var(--oprn-command-blue, var(--accent));
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.party-member-intent-body {
+  color: var(--text-2, #5C5348);
+  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.party-member-field {
+  display: grid;
+  gap: 4px;
+}
+
+.party-member-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-amount-controls {
+  align-items: center;
+  width: 100%;
+}
+
+/* ---- 능력치 변경 (Change Parameters) ---- */
+.change-parameters-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.change-parameters-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.95fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .change-parameters-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.change-parameters-main,
+.change-parameters-preview {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.change-parameters-field {
+  display: grid;
+  gap: 4px;
+}
+
+.change-parameters-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-parameters-param-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.change-parameters-param-chip.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--text-1, #2A2521);
+}
+
+.change-parameters-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+/* ---- 장비 변경 ---- */
+.change-equipment-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.change-equipment-layout {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
+}
+
+.change-equipment-toolbar {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .change-equipment-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.change-equipment-preview {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.change-equipment-field {
+  display: grid;
+  gap: 4px;
+}
+
+.change-equipment-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+/* 검색형 레코드 브라우저 (공용: 장비/아이템 등) */
+.record-browser {
+  background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.record-browser-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.record-browser-label,
+.record-browser-filter-meta {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-filter-meta {
+  font-weight: 600;
+}
+
+.record-browser-search {
+  width: 100%;
+}
+
+.record-browser-selected {
+  align-items: center;
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border-subtle, rgba(42,37,33,.20)));
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.record-browser-selected.is-empty {
+  border-style: dashed;
+  border-color: var(--border-subtle, rgba(42,37,33,.20));
+}
+
+.record-browser-selected-copy {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.record-browser-selected-copy strong {
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-selected-copy > span {
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.record-browser-selected-card-alias {
+  display: none;
+}
+
+.record-browser-clear-btn {
+  flex: 0 0 auto;
+}
+
+/* 숨김 select: opacity 만 사용 — pointer-events:none / 1px offscreen 금지 (Playwright selectOption). */
+.record-browser-hidden-select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.record-browser-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  max-height: min(48vh, 420px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.record-browser-card {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  color: var(--text-1, #2A2521);
+  cursor: pointer;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  justify-items: start;
+  min-width: 0;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.record-browser-card.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.record-browser-card-icon {
+  display: inline-flex;
+  min-height: 24px;
+}
+
+.record-browser-card-icon.empty {
+  align-items: center;
+  background: var(--bg-inset, #EFE9DC);
+  border-radius: 6px;
+  color: var(--text-3, #6B5F52);
+  display: inline-flex;
+  font-weight: 700;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.record-browser-card-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.record-browser-card strong {
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.record-browser-card-meta,
+.record-browser-grid-empty {
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.record-browser-grid-empty {
+  grid-column: 1 / -1;
+  padding: 8px 2px;
+}
+
+.change-equipment-preview-caption,
+.change-equipment-preview-empty,
+.change-equipment-preview-bonuses {
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.change-equipment-warning {
+  color: var(--text-1);
+  font: 600 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.change-equipment-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.change-equipment-preview-head,
+.change-equipment-preview-copy {
+  display: grid;
+  gap: 2px;
+}
+
+.change-equipment-preview-actor,
+.change-equipment-preview-swap,
+.change-equipment-preview-cell-main {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.change-equipment-preview-swap {
+  justify-content: space-between;
+}
+
+.change-equipment-preview-cell {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.change-equipment-preview-cell-label {
+  color: var(--text-3, #6B5F52);
+  font: 700 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.change-equipment-preview-cell.is-unequip strong {
+  color: var(--danger, #ff7b8a);
+}
+
+/* ---- force modern actor/page3 forms out of auto-fit collapse ---- */
+.event-command-edit-body .change-equipment-command-body,
+.event-command-edit-body .change-parameters-command-body,
+.event-command-edit-body .actor-m2-command-body,
+.event-command-edit-body .page3-command-body,
+.event-command-edit-body .actor-amount-command-body,
+.event-command-edit-body .rich-command-form.change-equipment-command-body,
+.event-command-edit-body .rich-command-form.actor-amount-command-body,
+.event-command-edit-body .rich-command-form.page3-command-body {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  grid-template-columns: none;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .change-parameters-layout,
+.event-command-edit-body .actor-m2-layout,
+.event-command-edit-body .page3-command-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.95fr);
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .change-equipment-layout {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .event-command-edit-body .change-parameters-layout,
+  .event-command-edit-body .actor-m2-layout,
+  .event-command-edit-body .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.event-command-edit-body .party-member-intent,
+.event-command-edit-body .actor-m2-presets,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .record-browser {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .party-member-field-label,
+.event-command-edit-body .change-equipment-field-label,
+.event-command-edit-body .change-parameters-field-label,
+.event-command-edit-body .actor-m2-field-label {
+  writing-mode: horizontal-tb;
+}
+
+.event-command-edit-body .rich-segment-group,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .actor-m2-presets {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-command-edit-columns > .event-command-edit-body:has(.change-equipment-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.change-parameters-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-m2-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.page3-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-amount-command-body) {
+  max-height: min(70vh, 680px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+/* ---- Actor/combat M2 + recover/name modern forms ---- */
+.actor-m2-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.actor-m2-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .actor-m2-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.actor-m2-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.actor-m2-field {
+  display: grid;
+  gap: 4px;
+}
+
+/*
+ * `display: grid` 는 `[hidden]` 의 UA `display: none` 을 이긴다. 그래서 순숫자/변수
+ * 같은 배타 필드가 `field.hidden = true` 에도 그대로 보여, 저작자가 생감해도
+ * 아무 일도 안 일어나는 죽은 입력을 만들었다(2026-09-10 버플로 실제 토지난 결함).
+ * `valueSourceControls`(Page3)와 좌표 이동 폼이 같은 계약을 공유한다.
+ */
+.actor-m2-field[hidden] {
+  display: none;
+}
+
+.actor-m2-field-label {
+  color: var(--text-2, #5C5348);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-m2-presets,
+.actor-m2-chip-grid,
+.actor-m2-inline {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actor-m2-chip.is-active {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* 타일 변경 폼의 실맵 캔버스 미리보기 호스트 */
+.change-tile-map-preview {
+  background: var(--bg-inset, rgba(0,0,0,.06));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  border-radius: 8px;
+  max-height: 280px;
+  min-height: 160px;
+  overflow: hidden;
+  position: relative;
+}
+
+.change-tile-map-preview canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.actor-m2-text-input {
+  min-width: 180px;
+}
+
+.actor-m2-preview-note {
+  color: var(--text-2, #5C5348);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+/*
+ * OPRN-OUT-013 좌표 이동 폼의 자작 경고. 색만이 아니라 낱말(「주의:」)로도
+ * 경고라고 말하므로, 이 사건은 시간을 단축하는 보조 생토다.
+ */
+.coordinate-move-preview-warning {
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.actor-m2-faceset-preview,
+.actor-m2-faceset-gallery {
+  min-width: 0;
+}
+
+/* ---- Page 3 시스템·연출 프리뷰 (색조 / 날씨 / 먼 배경 / 키 입력) ----
+   토큰만 사용한다(tokens.css). 사용자가 고른 색은 인라인 --actor-m2-effect-color 로만 들어온다. */
+/* P0: 좁은 열에서 한국어 칩이 글자 단위로 쪼개지던 문제. */
+.actor-m2-chip {
+  min-inline-size: max-content;
+  white-space: nowrap;
+}
+
+.actor-m2-chip-label {
+  white-space: nowrap;
+}
+
+.actor-m2-field .rich-segment-group {
+  justify-self: start;
+}
+
+/* 숫자 입력은 값 폭에 맞춰 좁게 — 넓은 입력이 프리뷰 열을 밀어내지 않게. */
+.page3-command-body .actor-m2-field input[type="number"] {
+  inline-size: 108px;
+}
+
+/* 그리드 칸은 기본이 stretch 다 — 보다 토글 상자가 열 전폭으로 부풀지 않게 왼쪽에 고정한다. */
+.page3-command-body .actor-m2-field input[type="checkbox"] {
+  justify-self: start;
+}
+
+.actor-m2-fog-layer {
+  inset: 0;
+  opacity: var(--actor-m2-fog-strength, 0.5);
+  position: absolute;
+}
+
+.actor-m2-fog-layer-far {
+  animation: actor-m2-fog-drift 9s ease-in-out infinite alternate;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--text-3) 22%, transparent),
+    color-mix(in srgb, var(--bg-raised) 55%, transparent)
+  );
+}
+
+.actor-m2-fog-layer-near {
+  animation: actor-m2-fog-drift 6s ease-in-out infinite alternate-reverse;
+  background: radial-gradient(
+    120% 70% at 50% 100%,
+    color-mix(in srgb, var(--bg-raised) 75%, transparent),
+    transparent 70%
+  );
+}
+
+@keyframes actor-m2-fog-drift {
+  from { transform: translateX(-4%); }
+  to { transform: translateX(4%); }
+}
+
+.actor-m2-weather-dot {
+  block-size: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  display: inline-block;
+  inline-size: 8px;
+  margin-inline-end: var(--space-1);
+  vertical-align: middle;
+}
+
+.actor-m2-weather-dot[data-weather="none"] { background: var(--bg-inset); }
+
+.actor-m2-weather-dot[data-weather="rain"] { background: color-mix(in srgb, var(--accent) 55%, var(--bg-raised)); }
+
+.actor-m2-weather-dot[data-weather="storm"] { background: color-mix(in srgb, var(--accent) 80%, var(--text-1)); }
+
+.actor-m2-weather-dot[data-weather="snow"] { background: color-mix(in srgb, var(--bg-raised) 72%, var(--accent)); }
+
+.actor-m2-weather-dot[data-weather="fog"] { background: color-mix(in srgb, var(--text-3) 55%, var(--bg-raised)); }
+
+/* 먼 배경 — 와이드 비율 썸네일 + 말줄임 캡션. */
+.actor-m2-parallax-preview {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+}
+
+.actor-m2-parallax-preview-img {
+  block-size: 100%;
+  display: block;
+  inline-size: 100%;
+  object-fit: cover;
+}
+
+.actor-m2-parallax-preview-caption {
+  background: color-mix(in srgb, var(--bg-raised) 82%, transparent);
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-2);
+  font: 600 10px/1.6 var(--font-ui);
+  inset-block-end: 0;
+  inset-inline: 0;
+  margin: 0;
+  overflow: hidden;
+  padding-inline: var(--space-1);
+  position: absolute;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actor-m2-parallax-preview-empty,
+.actor-m2-parallax-preview-missing {
+  color: var(--text-3);
+  font: 500 11px/1.4 var(--font-ui);
+  margin: 0;
+  padding: var(--space-2);
+  text-align: center;
+}
+
+.actor-m2-parallax-preview-missing {
+  color: var(--danger);
+}
+
+/* 키 입력 — 저장되는 코드 집합을 키캡으로 노출. */
+.actor-m2-keycaps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.actor-m2-keycap {
+  align-items: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-pop);
+  display: inline-grid;
+  gap: 1px;
+  justify-items: center;
+  padding: var(--space-1) var(--space-2);
+}
+
+.actor-m2-keycap-keys {
+  color: var(--text-1);
+  font: 700 11px/1.2 var(--font-ui);
+  white-space: nowrap;
+}
+
+.actor-m2-keycap-code {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: 700 9px/1.4 var(--font-ui);
+  padding-inline: var(--space-1);
+}
+
+.actor-m2-keycap-label {
+  color: var(--text-2);
+  font: 500 10px/1.2 var(--font-ui);
+  white-space: nowrap;
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/doll_sitting/h1-A.pxg",
+ "set": "horror",
+ "id": "doll_sitting",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "A: v5 선반 인형을 낡게 — 도자기 얼굴에 금이 가고 드레스는 누렇게 바랬다. 머리 살짝 기울고 커다란 까만 눈 두 개, 한쪽 눈에만 먼지빛 점. 다리를 앞으로 내밀고 앉음.",
+ "ok": true
+}

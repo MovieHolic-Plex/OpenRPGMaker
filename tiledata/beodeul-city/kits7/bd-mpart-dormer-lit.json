@@ -1,0 +1,21 @@
+{
+ "id": "bd-mpart-dormer-lit",
+ "name": "지붕 창(불 켠 창)",
+ "w": 2,
+ "h": 2,
+ "walk": [
+  "XX",
+  "XX"
+ ],
+ "description": "2x2칸 다락 지붕창: 불 켠 창, 초록 창틀.",
+ "rules": "지붕 창과 같음.",
+ "tags": [
+  "귀족저택",
+  "부품",
+  "지붕창"
+ ],
+ "role": "part",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

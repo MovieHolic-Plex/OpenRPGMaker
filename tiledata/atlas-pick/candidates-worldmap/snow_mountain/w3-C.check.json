@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow_mountain/w3-C.pxg",
+ "set": "worldmap",
+ "id": "snow_mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.134
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "mountain C와 같은 결 — 눈 덮인 바늘 봉우리 무리, 눈은 뾰족 끝에만 얇게.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.09
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.148
+  },
+  "seam": 0.84
+ }
+}

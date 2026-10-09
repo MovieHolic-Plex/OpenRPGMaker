@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/v4-A.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.266
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  47,
+  60
+ ],
+ "note": "4판 산 몸통: 봉우리를 뺀 갈색 바닥+능선 음영. 봉우리는 mountain_peaks 겹판이 얹는다.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.066
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.312
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     3,
+     4,
+     4,
+     4
+    ],
+    "s": [
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     4,
+     4
+    ],
+    "w": [
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4
+    ],
+    "e": [
+     4,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     4,
+     4,
+     3,
+     4,
+     5,
+     5,
+     4,
+     3,
+     4
+    ]
+   },
+   "strait": 7,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 1,
+    "w": 1,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.51
+ }
+}

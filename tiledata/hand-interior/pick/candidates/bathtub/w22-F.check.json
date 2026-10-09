@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w22-F.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  2,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "방향 B: 말린 테 욕조 — 양끝에 둥글게 말린 테(원통 명암)와 안쪽으로 들어간 몸통, 왼쪽 위 빛·오른쪽 한 단 어둡게, 발 사이 바닥 그림자",
+ "ok": true
+}

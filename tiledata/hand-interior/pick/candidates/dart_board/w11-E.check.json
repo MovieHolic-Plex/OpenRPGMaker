@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dart_board/w11-E.pxg",
+ "id": "dart board",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 다트판은 2x2 로 하되, 66% 정도만 차지하는 큰 버전으로."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 7,
+ "bbox": [
+  5,
+  3,
+  26,
+  27
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "실루엣 재해석: 굵은 8쐐기와 굵은 검은 테, 노란 중심, 위쪽 못과 끈으로 걸린 모양 (벽 걸이 이야기)",
+ "ok": true
+}

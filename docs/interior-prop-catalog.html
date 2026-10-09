@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>실내 소품 카탈로그 — villager-room-v1</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a222c;
+    --line: #2c3a4a;
+    --text: #e7eef6;
+    --muted: #8fa3b8;
+    --accent: #6cb6ff;
+    --chip: #243041;
+    --ok: #3ecf8e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font: 15px/1.55 system-ui, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 28px 20px 64px;
+  }
+  main { max-width: 980px; margin: 0 auto; }
+  h1 { font-size: 1.55rem; margin: 0 0 6px; }
+  h2 { font-size: 1.15rem; margin: 28px 0 10px; color: var(--accent); }
+  h3 { font-size: 1rem; margin: 18px 0 8px; }
+  p, li { color: var(--muted); }
+  .lead { color: var(--text); margin-bottom: 18px; }
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px;
+  }
+  .chip {
+    background: var(--chip);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 9px 11px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: #121a23;
+    color: var(--text);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  tr:last-child td { border-bottom: 0; }
+  code {
+    font: 12px/1.4 ui-monospace, Consolas, monospace;
+    color: #c5e0ff;
+    background: #101820;
+    padding: 1px 5px;
+    border-radius: 4px;
+  }
+  .id { white-space: nowrap; }
+  .note {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 12px 0 18px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .card strong { color: var(--text); display: block; margin-bottom: 4px; }
+  .card span { color: var(--muted); font-size: 13px; }
+  footer { margin-top: 28px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>실내 소품 카탈로그</h1>
+  <p class="lead">
+    소스: <code>src/editor/interiorRoomPipeline.ts</code> 의 <code>VR</code> 상수 + 테마별 배치.
+    마을 집 내부(<code>villager-room-v1</code>)가 실제로 쓰는 어휘입니다.
+  </p>
+  <div class="meta">
+    <span class="chip">타일셋: 실내 하우스</span>
+    <span class="chip">배치 파이프: floor → walls → furniture → entrance</span>
+    <span class="chip">기준일: 2026-07-15</span>
+  </div>
+
+  <div class="note">
+    <strong style="color:var(--text)">왜 비슷해 보이나</strong><br />
+    소품 종류 자체는 꽤 있지만, 방 테마마다 <em>필수 세트 몇 개 + 상자/통 필러</em>가 반복됩니다.
+    프로그램(shop/inn 등)은 방 구성만 갈리고, 가구 카탈로그는 공유합니다.
+  </div>
+
+  <h2>1. 표면(어디에 놓이나)</h2>
+  <div class="grid">
+    <div class="card"><strong>wallFace</strong><span>벽면 위(창문·그림·시계 등)</span></div>
+    <div class="card"><strong>againstWallFloor</strong><span>북벽 바로 앞 바닥(침대·서가·화덕)</span></div>
+    <div class="card"><strong>cornerFloor</strong><span>구석(상자·곡식·통)</span></div>
+    <div class="card"><strong>openFloor</strong><span>열린 바닥(탁자·의자)</span></div>
+    <div class="card"><strong>floorDebris</strong><span>바닥 잔해/특수(깨진 유리·계단 다운 등)</span></div>
+  </div>
+
+  <h2>2. 가구·소품 (VR 카탈로그)</h2>
+
+  <h3>침실 / 수면</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>침대 (가로)</td><td class="id"><code>BED_L</code> / <code>BED_R</code></td><td>355 | 356</td><td>좌우 hard 쌍, upper</td></tr>
+      <tr><td>침대 (세로)</td><td class="id"><code>BED_V_HEAD</code> / <code>BED_V_FOOT</code></td><td>324 | 354</td><td>북→남 세로 쌍</td></tr>
+      <tr><td>협탁/수납</td><td class="id"><code>BOX</code></td><td>295</td><td>침대 옆 1칸</td></tr>
+      <tr><td>거울</td><td class="id"><code>MIRROR_T</code> / <code>MIRROR_B</code></td><td>269 | 299</td><td>벽 걸침 세로 2</td></tr>
+    </tbody>
+  </table>
+
+  <h3>서재 / 지식</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>책장 3×3 세트</td><td class="id"><code>BOOK_TL…BR</code></td><td>18/20, 48/50, 78/80</td><td>벽 앞 조립 서가</td></tr>
+      <tr><td>수납장</td><td class="id"><code>CABINET_U</code> / <code>CABINET_L</code></td><td>148 | 178</td><td>세로 2</td></tr>
+      <tr><td>수정구 점술대</td><td class="id"><code>CRYSTAL_BALL</code></td><td>329</td><td>1칸</td></tr>
+      <tr><td>탁자·의자</td><td class="id"><code>SQUARE_TABLE</code>, <code>CHAIR_*</code></td><td>328, 297/298</td><td>읽는 자리</td></tr>
+    </tbody>
+  </table>
+
+  <h3>주방</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>화덕 오븐</td><td class="id"><code>STOVE_TOP</code> / <code>STOVE_BOT</code></td><td>21 | 51</td><td>세로 쌍, 북벽 (필수)</td></tr>
+      <tr><td>솥</td><td class="id"><code>CAULDRON</code></td><td>323</td><td>화덕 옆</td></tr>
+      <tr><td>항아리</td><td class="id"><code>KETTLE</code> (저장 ID 유지)</td><td>235</td><td>소품</td></tr>
+      <tr><td>석조 화로</td><td class="id"><code>stone_hearth_unlit / stone_hearth_lit</code></td><td>402·403·404 / 432·433·434 / 462·463·464</td><td>3×3. 463은 꺼진 화구, 켜짐은 그 칸만 124→154→184→214 불 애니메이션으로 교체.</td></tr>
+      <tr><td>양동이</td><td class="id"><code>BUCKET</code></td><td>265</td><td>소품</td></tr>
+      <tr><td>항아리</td><td class="id"><code>JARS</code></td><td>350</td><td>소품</td></tr>
+      <tr><td>과일 선반</td><td class="id"><code>FRUIT_SHELF</code></td><td>25</td><td>벽/선반</td></tr>
+      <tr><td>병 선반</td><td class="id"><code>SHELF_JARS</code></td><td>320</td><td>선반</td></tr>
+    </tbody>
+  </table>
+
+  <h3>식당 / 홀 / 선술집</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>긴 탁자 2칸</td><td class="id"><code>TABLE_L</code> / <code>TABLE_R</code></td><td>325 | 326</td><td>가로 hard 쌍 (필수 후보)</td></tr>
+      <tr><td>긴 탁자 3칸</td><td class="id"><code>TABLE_L</code>…<code>TABLE_R3</code></td><td>325–327</td><td>확장 런</td></tr>
+      <tr><td>사각 탁자</td><td class="id"><code>SQUARE_TABLE</code></td><td>328</td><td>1칸</td></tr>
+      <tr><td>세로 탁자 조각</td><td class="id"><code>TABLE_TOP</code> / <code>TABLE_BOT</code></td><td>264 | 294</td><td>openFloor</td></tr>
+      <tr><td>의자 L/R</td><td class="id"><code>CHAIR_LEFT</code> / <code>CHAIR_RIGHT</code></td><td>298 | 297</td><td>탁자 짝</td></tr>
+      <tr><td>스툴</td><td class="id"><code>STOOL</code></td><td>266</td><td>1칸</td></tr>
+      <tr><td>접수용 긴 탁자</td><td class="id"><code>COUNTER_L/M/R</code></td><td>325–327</td><td>408–410 오분류 제외 후 대체</td></tr>
+      <tr><td>주점 간판</td><td class="id"><code>TAVERN_SIGN</code></td><td>58</td><td>벽</td></tr>
+      <tr><td>피아노</td><td class="id"><code>PIANO_L/M/R</code></td><td>357–359</td><td>3칸 (variant)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>창고 / 적재</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>상자</td><td class="id"><code>BOX</code></td><td>295</td><td>구석·필러 (거의 모든 테마)</td></tr>
+      <tr><td>나무 상자</td><td class="id"><code>CRATE</code></td><td>55</td><td>구석</td></tr>
+      <tr><td>술통</td><td class="id"><code>BARREL</code></td><td>205</td><td>구석·남벽</td></tr>
+      <tr><td>곡식 가마니</td><td class="id"><code>GRAIN</code></td><td>471</td><td>구석</td></tr>
+      <tr><td>사다리</td><td class="id"><code>LADDER</code></td><td>472</td><td>벽 장식</td></tr>
+    </tbody>
+  </table>
+
+  <h3>벽 장식 / 전시</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>형태</th></tr></thead>
+    <tbody>
+      <tr><td>창문</td><td class="id"><code>WINDOW</code></td><td>56</td><td>wallFace</td></tr>
+      <tr><td>그림 좌/우</td><td class="id"><code>PICTURE_L</code> / <code>PICTURE_R</code></td><td>114 | 115</td><td>벽</td></tr>
+      <tr><td>종교 장식</td><td class="id"><code>RELIGIOUS</code></td><td>59</td><td>벽</td></tr>
+      <tr><td>검 걸이</td><td class="id"><code>SWORD_RACK</code></td><td>260</td><td>벽</td></tr>
+      <tr><td>괘종시계</td><td class="id"><code>CLOCK_T</code> / <code>CLOCK_B</code></td><td>389 | 419</td><td>세로 2</td></tr>
+      <tr><td>흉상</td><td class="id"><code>BUST_T</code> / <code>BUST_B</code></td><td>88 | 118</td><td>세로 2</td></tr>
+      <tr><td>갑옷 전시</td><td class="id"><code>ARMOR_T</code> / <code>ARMOR_B</code></td><td>87 | 117</td><td>세로 2</td></tr>
+      <tr><td>진열대(물약·검)</td><td class="id"><code>DISPLAY_T</code> / <code>DISPLAY_B</code></td><td>263 | 293</td><td>세로 2</td></tr>
+    </tbody>
+  </table>
+
+  <h3>이동 / 잔해 / 특수</h3>
+  <table>
+    <thead><tr><th>이름</th><th>VR</th><th>타일 ID</th><th>비고</th></tr></thead>
+    <tbody>
+      <tr><td>계단 가로 L/M/R</td><td class="id"><code>STAIRS_L/M/R</code></td><td>465–467</td><td>다층 업 계단 칩</td></tr>
+      <tr><td>계단 다운</td><td class="id"><code>STAIRS_DOWN</code></td><td>475</td><td>다층 다운 중앙</td></tr>
+      <tr><td>깨진 유리</td><td class="id"><code>BROKEN_GLASS</code></td><td>417</td><td>floorDebris</td></tr>
+      <tr><td>바닥 구멍</td><td class="id"><code>FLOOR_HOLE</code></td><td>73</td><td>debris</td></tr>
+      <tr><td>화분/식물</td><td class="id"><code>PLANT</code></td><td>289</td><td><strong>실내 배치 금지</strong> (월드 수풀 작화)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. 바닥·벽 (소품은 아니지만 톤을 가름)</h2>
+  <table>
+    <thead><tr><th>종류</th><th>ID / 키</th><th>용도</th></tr></thead>
+    <tbody>
+      <tr><td>나무 바닥</td><td>72 (기본)</td><td>대부분 방</td></tr>
+      <tr><td>돌 바닥</td><td>12 등</td><td>주방·공방</td></tr>
+      <tr><td>널 바닥</td><td>102 계열</td><td>여관 등 변주</td></tr>
+      <tr><td>러그 청록 3×3</td><td>279–341</td><td>침대 발치 등</td></tr>
+      <tr><td>러그 빨강 3×3</td><td>375–437</td><td>저택/금장 벽과 페어</td></tr>
+      <tr><td>짚 돗자리 3×3</td><td>108–170</td><td>서민 톤</td></tr>
+      <tr><td>벽 cream</td><td>기본 크림 면</td><td>회벽 집</td></tr>
+      <tr><td>벽 stone-brick</td><td>134–166 리틴트</td><td>석벽/파랑 지붕 집</td></tr>
+      <tr><td>벽 gold-brick</td><td>314–346 리틴트</td><td>저택·manor</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4. 방 테마별 “필수” 소품</h2>
+  <table>
+    <thead><tr><th>테마</th><th>없으면 critique 실패</th><th>추가로 자주 깔림</th></tr></thead>
+    <tbody>
+      <tr><td><code>bedroom</code></td><td>침대</td><td>협탁, 거울, 러그, 상자</td></tr>
+      <tr><td><code>study</code></td><td>책장</td><td>책상+의자, 수정구</td></tr>
+      <tr><td><code>kitchen</code></td><td>화덕</td><td>솥, 항아리, 통</td></tr>
+      <tr><td><code>dining</code></td><td>탁자</td><td>의자, 러그</td></tr>
+      <tr><td><code>tavern</code></td><td>탁자 (+큰 방이면 카운터)</td><td>스툴, 간판, 피아노(variant)</td></tr>
+      <tr><td><code>storage</code></td><td>(느슨)</td><td>상자·통·곡식·사다리</td></tr>
+      <tr><td><code>corridor</code></td><td>—</td><td>벽 장식만 (바닥 가구 금지)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5. 집 프로그램 → 쓰는 방 테마</h2>
+  <div class="grid">
+    <div class="card"><strong>dwelling</strong><span>bedroom + dining/kitchen</span></div>
+    <div class="card"><strong>shop</strong><span>storage + dining(가게 홀)</span></div>
+    <div class="card"><strong>inn</strong><span>bedroom + tavern</span></div>
+    <div class="card"><strong>workshop</strong><span>storage + kitchen(돌바닥)</span></div>
+    <div class="card"><strong>study</strong><span>study + dining</span></div>
+    <div class="card"><strong>manor</strong><span>bedroom/study/dining + gold-brick</span></div>
+  </div>
+
+  <h2>6. 정리</h2>
+  <ul>
+    <li><strong>종류 수:</strong> 침실·주방·서가·홀·창고·벽 장식까지 대략 <strong>40+ 타일 역할</strong> (멀티타일 세트 포함).</li>
+    <li><strong>체감 단조:</strong> 필러가 <code>BOX/CRATE/BARREL</code>에 몰리고, 방마다 “한 세트 찍고 끝” 패턴.</li>
+    <li><strong>다층 전용:</strong> 계단 칩은 소품 카탈로그에 있으나, 가구가 아니라 <strong>층 이동 연출</strong>용.</li>
+    <li><strong>미사용/금지:</strong> <code>PLANT(289)</code>는 실내 자동 배치에서 제외.</li>
+  </ul>
+
+  <footer>
+    생성: 에이전트 문서 · 코드 정본이 바뀌면 이 HTML을 갱신하세요.
+    관련: <code>houseInteriors.ts</code>, <code>interiorRoomPipeline.ts</code>
+  </footer>
+</main>
+</body>
+</html>

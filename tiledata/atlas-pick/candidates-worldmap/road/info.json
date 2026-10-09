@@ -1,0 +1,60 @@
+{
+ "id": "road",
+ "slug": "road",
+ "name": "흙길",
+ "scene": "들·길",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "장소 사이를 잇는 흙길. 1칸 폭 길이 주 용도 → 기슭(풀 테) 깊이는 칸 바깥 3~4px, 길 속 폭 8~10px. 풀 테는 길 위로 1~2px 불규칙하게 덮는다(World.png 흙 블록처럼 풀 덩이가 흙을 파먹는 모양, 같은 간격 톱니 금지). 속은 흙 결만(바퀴 자국 금지), 대비 낮게.",
+ "palette_hint": "wdirt 흙, 테 wgrass",
+ "worker": "wv2",
+ "style": "line",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

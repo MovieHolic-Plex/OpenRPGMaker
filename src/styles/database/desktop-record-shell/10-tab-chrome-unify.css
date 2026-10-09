@@ -1,0 +1,145 @@
+/* Shared DB tab chrome: empty lists, list actions, intro banners, tab underline family. */
+@media (min-width: 800px) {
+  /* Empty list panes still reserve a real list region (crops/characters gold gap). */
+  .database-modal-body .oprn-record-list-pane .db-list {
+    min-height: 220px;
+  }
+
+  .database-modal-body .oprn-record-list-pane .db-list:empty,
+  .database-modal-body .oprn-record-list-pane .db-list:not(:has(.db-list-row)) {
+    background: var(--bg-inset, rgba(42, 37, 33, 0.08));
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+  }
+
+  /* List action toolbar sits at bottom of list pane — match actors density. */
+  .database-modal-body .oprn-record-list-pane .db-toolbar {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  /* 파괴적 액션(삭제) 바로 옆에 뷰 전환 토글이 붙어 오조작을 부르던 배치를 구분자로 끊는다.
+     추가/복제/삭제 버튼은 flex-grow:1 로 행을 가득 채우므로 margin-left:auto 로는 여백이
+     생기지 않는다 — 경계선과 좌측 여백으로 그룹을 나눈다. */
+  .database-modal-body .oprn-record-list-pane .db-toolbar .db-view-toggle-group {
+    border-left: 1px solid var(--border-subtle);
+    margin-left: 6px;
+    padding-left: 12px;
+  }
+
+  .database-modal-body .oprn-record-list-pane .db-list-footer,
+  .database-modal-body .oprn-record-list-pane .oprn-record-count {
+    color: var(--text-2, var(--text-primary));
+    font: 400 12px/18px var(--font-ui);
+    margin-top: 4px;
+  }
+
+  /* Detail empty state card */
+  .database-modal-body .oprn-record-detail-pane > .db-detail-form:only-child {
+    align-content: start;
+    background: var(--bg-inset, rgba(42, 37, 33, 0.10));
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    color: var(--text-2, var(--text-primary));
+    min-height: 160px;
+    padding: 16px 18px;
+  }
+
+  /* Shared intro / note strip */
+  .database-modal-body .db-record-intro,
+  .database-modal-body .db-tab-note {
+    background: var(--bg-panel-2, var(--bg-raised));
+    border: 1px solid var(--border-soft, var(--border-subtle));
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    color: var(--text-2, var(--text-primary));
+    font: 400 12px/18px var(--font-ui);
+    margin: 0 0 8px;
+    padding: 8px 12px;
+  }
+
+  /* 노트 띠 안에 제목과 아이콘 칩을 한 줄로 눕힌다. 설명 문단을 지우고 사실 하나를 칩으로
+     옮긴 탭(구조물)이 두 줄 75.7px 를 먹지 않게 하려는 것이다. */
+  .database-modal-body .db-tab-note:has(.db-tab-note-chip) {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .database-modal-body .db-tab-note:has(.db-tab-note-chip) h3 {
+    font: 700 13px/1.35 var(--font-ui);
+    margin: 0;
+  }
+
+  .database-modal-body .db-tab-note-chip {
+    align-items: center;
+    background: var(--bg-inset, rgba(42, 37, 33, 0.08));
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    display: inline-flex;
+    font: 600 11.5px/1.35 var(--font-ui);
+    gap: 4px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+
+  .database-modal-body .db-tab-note-chip .db-tab-icon {
+    color: var(--accent);
+    height: 13px;
+    width: 13px;
+  }
+
+  /* Crops / characters / monster-species: same 2-col workspace as core records */
+  .database-modal-body .oprn-record-crops,
+  .database-modal-body .oprn-record-characters,
+  .database-modal-body .oprn-record-monster-species {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-crops .oprn-record-list-pane,
+  .database-modal-body .oprn-record-characters .oprn-record-list-pane,
+  .database-modal-body .oprn-record-monster-species .oprn-record-list-pane,
+  .database-modal-body .oprn-record-crops .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-characters .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-monster-species .oprn-record-detail-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    height: 100%;
+    min-height: 0;
+    padding: 12px;
+  }
+
+  /* Characters intro sits above workspace — fill remaining body height */
+  .database-modal-body .db-body:has(.oprn-record-characters),
+  .database-modal-body .db-body:has(.oprn-record-monster-species) {
+    display: grid;
+    gap: 8px;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100%;
+    min-height: 0;
+  }
+
+  .database-modal-body .db-body:has(.oprn-record-characters) > .oprn-record-workspace,
+  .database-modal-body .db-body:has(.oprn-record-monster-species) > .oprn-record-workspace,
+  .database-modal-body .db-body:has(.oprn-record-crops) > .oprn-record-workspace {
+    min-height: 0;
+  }
+
+  /* Prefer underline-ish active tab for generic workspace family (when enemies/troops overrides absent) */
+  .database-modal-body:has(.oprn-record-crops) .db-tab.active,
+  .database-modal-body:has(.oprn-record-characters) .db-tab.active,
+  .database-modal-body:has(.oprn-record-monster-species) .db-tab.active {
+    background: linear-gradient(var(--accent), var(--accent));
+    border-bottom-color: var(--accent-border);
+    color: var(--text-1);
+  }
+}

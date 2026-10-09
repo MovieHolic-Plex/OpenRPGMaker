@@ -1,0 +1,80 @@
+name: ci-fast
+
+# 푸시·PR 마다 도는 **가벼운** 레인. 여기에 전체 vitest 를 넣지 않는다.
+#
+# 무엇을 넣었나: 2026-08-04 마지막 CI 실행에서 **실제로 초록이었던 것들**만 넣었다
+# (editor-player-parity ✅, build ✅). 빨간 잡(unit-tests / e2e / ax-gates)은 여기 없다 —
+# 빨간불을 푸시마다 띄우면 아무도 안 보게 되고, 그래서 이 저장소의 Actions 가 꺼졌다.
+# 전체 스위트는 ci-full.yml(야간+수동)이 기준선 대비 회귀만 잡는다.
+#
+# 왜 `npm run test:changed` 가 아닌가: 이 래퍼는 import 그래프를 타고 번져서 소요가
+# 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
+# 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
+#
+# 러너는 self-hosted 다. `oprn-box` 라벨을 단 러너 **2개**가 ci-fast.slice(4코어/8GB) 안에서
+# 돈다 — 러너 1개였을 때 이 잡 4개가 큐에 밀리는 걸 관측하고 늘렸다(2026-09-17).
+# 야간 전체 게이트는 `oprn-full` 라벨의 별도 러너·별도 슬라이스라 여기로 안 온다.
+#
+# 이 저장소는 공개다. 따라서 포크 PR을 이 self-hosted 러너에서 실행하지 않는다.
+# PR 검증이 필요하면 GitHub-hosted 러너 전용 워크플로를 별도로 사용한다.
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+
+concurrency:
+  # push 와 pull_request 가 같은 브랜치면 메모리 예산을 같이 쓴다.
+  # PR 브랜치는 새 푸시가 옛 잡을 끊는다.
+  # main 은 끊지 않는다. 2026-09-26 에 머지 간격이 잡(타입체크만 약 3분)보다 짧아서,
+  # 타입체크가 통과한 main 잡이 parity 도중에 취소되고 완료된 체크가 하나도 남지 않았다.
+  # 진행 중인 main 잡은 끝내고, 아직 시작 전인 대기 잡만 최신 커밋으로 바뀐다.
+  group: ci-fast-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  fast:
+    runs-on: [self-hosted, oprn-box]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: npm ci
+
+      - name: 캐릭터 하네스 계약
+        run: |
+          python3 -m venv "$RUNNER_TEMP/charset-harness-venv"
+          "$RUNNER_TEMP/charset-harness-venv/bin/pip" install 'Pillow>=10,<14'
+          "$RUNNER_TEMP/charset-harness-venv/bin/python" src/harnesses/charset-actor/verify.py
+
+      # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 4–10분을 태웠다.
+      # 잡 cgroup MemoryMax 는 12GB 다. 10GB 만 연다. 그 이상이면 cgroup 이 프로세스를 죽인다.
+      # 빠른 러너 둘이 이 힙을 동시에 열면 16GB 슬라이스를 넘기므로 이 단계만 호스트 락으로 직렬화한다.
+      - name: 타입체크 (src 만)
+        env:
+          NODE_OPTIONS: --max-old-space-size=10240
+        run: flock -w 1800 /home/dev/ci/typecheck.lock npm run typecheck:app
+
+      # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
+      # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
+      # 실제로 #882/#883 이 머지되면서 e2e 스펙 2개가 배럴에서 빠진 심볼을 다시 가져왔다.
+      - name: 배럴 수출 계약
+        run: npm run gates:barrel
+
+      # 워크플로가 GitHub 호스티드 러너로 새지 않는지. 호스티드는 분 단위 과금이고
+      # self-hosted 는 무료·무제한이라, 이 저장소의 CI 비용이 0인 건 전적으로 `runs-on` 에
+      # 달려 있다. 새 워크플로를 남들 하던 대로 `ubuntu-latest` 로 적으면 아무도 안 막는다.
+      - name: self-hosted 계약
+        run: npm run gates:self-hosted
+
+      # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
+      # 이 단계도 12GB 잡 cgroup 안에서 힙 약 9GB 를 연다. 타입체크(10GB)와 겹치면
+      # ci-fast.slice 16GB 를 넘고, 42개 테스트가 통과한 뒤 vitest onTaskUpdate 가 타임아웃된다
+      # (2026-10-07, run 37597174386 · 37600500943). 타입체크와 같은 락으로 둘 중 하나만 연다.
+      - name: parity 스위트
+        run: flock -w 1800 /home/dev/ci/typecheck.lock npm run test:parity
+
+      # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
+      - name: 앱 빌드
+        run: npm run build:app

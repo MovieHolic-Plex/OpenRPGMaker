@@ -1,0 +1,49 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a tin 4
+@mat b tin 2
+@mat c tin 1
+@mat d tin 3
+@mat e tin 5
+@mat f rust 4
+@mat g tin 6
+@mat h rust 3
+@mat i ward 3
+@mat j ward 2
+@mat k ward 4
+@mat l ward 1
+@mat m ward 5
+@mblock 0 0
+................................
+................................
+..ab........................cd..
+..efgghggggggggggggggggggggggb..
+..edddddddddddddcdddddhddddddb..
+..edeccecceccecdcccecceccecceb..
+..edbijbkiblkbjdclkbjlbijbkibb..
+..edkijlkijlkijdclkijlkijlkicb..
+..hdmkijmkijmkidcjmkijmkijmkcb..
+..edmkijmkijmkihcjmkijmkijmkcb..
+..edmkijmkijmkidcjmkijmkijmkcb..
+..edmkijmkijmkidcjmkijmkijmkcb..
+..edmkijmkijmkidcjmkijmkijmkcb..
+..edmkijmkijmkidcjmkijmkijmkcb..
+..edmkijmkijmkidclmkijmkjjmkcf..
+..edmkijmkijmkidclmkijkkjjkkcb..
+..edmkijmkijmkidc.kkijkk.jkkcb..
+..edmkijmkijmkidc.kkij.k.j.kcb..
+..edmkijmkijmkidc..iij.k.j.kcb..
+..edmkijmkijmkidc..iij.k.j.icb..
+..edmkijmkijmkidc...ij.k.j.ich..
+..edmkijmkijmkidc...il.i.j..cb..
+..edmkijmkijmkidc...il.i.j..cb..
+..edmkijmkijmkidc...i....j..cb..
+..edkijlkijlkijdc...j....l..cb..
+..hdllllllllllldc...j....l..cb..
+..ed...........dci.j.i.j.i.jcb..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..bbbbbbbbbbbbbbbbbbbbbbbbbbhb..
+..dc...........dc...........dc..
+..bc...........bc...........bc..
+..cc...........cc...........cc..

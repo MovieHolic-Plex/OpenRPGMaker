@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mannequin/w7-B.pxg",
+ "id": "mannequin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 10,
+ "bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "note": "같은 자세에 노란 줄자를 가슴에 비스듬히 걸고 바닥에 옅은 그림자를 깔았다",
+ "ok": true
+}

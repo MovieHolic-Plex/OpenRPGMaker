@@ -1,0 +1,108 @@
+/* ===========================================================================
+   Compact HUD layer — 320×240 stage geometry + readable typography.
+
+   History: this layer used to force every battle text down to 2.5–7px so the
+   HUD would fit the 320×240 play stage; at those sizes Galmuri11 renders as
+   unreadable smudge. It now keeps only the stage
+   geometry (scene grid, HUD row placement, victory box sizing) and sets all
+   text on the same 9/11px pixel grid the rest of the runtime uses
+   (--runtime-font-size-9 / --runtime-font-size-11 in system.css).
+   Rules for elements that no longer exist in the battle DOM (turn ribbon,
+   active actor card, target analysis panel, resource preview, weakness
+   chips, enemy intent, result progress) were removed.
+   ======================================================================== */
+
+.battle-scene {
+  --battle-hud-height: 192px;
+  /* 커맨드 행은 목록 길이와 무관하게 같은 높이다. 행을 1fr 로 당기면 항목 수에 따라
+     행이 늘었다 줄었다 하고(실측: 루트 22.9px vs 스킬 서브메뉴 12px), 넘치는 목록은
+     행이 찌그러지는 대신 스크롤로 밀려야 한다. */
+  /* 24px = 테두리 2px×2 를 뺀 내용 20px. 18px 라벨의 잉크 상자가 20px 이라 23px
+     행(내용 19px)에서는 1px 이 잘렸다(실측: 스킨당 26건, 잘림비 0.053). 짝수라
+     640×480 논리 무대의 반정수 배율에서도 디바이스 픽셀 격자에 맞는다. */
+  --battle-command-row-height: 26px;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 184px 328px;
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height);
+  padding: 0;
+}
+
+.battle-field {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  z-index: 1;
+}
+
+/* Side-view staging: enemy/party read as field protagonists. The rm2000 skin
+   resets these transforms for its own sprite sizes; every other skin keeps
+   the scaled node together with the _battlers.css sprite sizing. */
+.battle-enemy {
+  transform: translate(-50%, -100%) scale(1.35);
+}
+
+.battle-enemy-image {
+  height: 112px;
+  width: 128px;
+}
+
+.battle-actor-group .battle-actor {
+  transform: translate(-50%, -100%) scale(1.2);
+  height: 96px;
+  width: 80px;
+}
+
+.battle-enemy-group,
+.battle-actor-group {
+  pointer-events: none;
+}
+
+.battle-enemy {
+  pointer-events: auto;
+}
+
+/* --- Command / result icon assets (shared by every skin) ---------------- */
+
+.battle-command[data-preview-only="true"] {
+  filter: saturate(0.74) brightness(0.88);
+}
+
+.battle-command-icon {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.battle-command-icon::before {
+  content: none;
+}
+
+.battle-command::before {
+  content: none;
+  width: 0;
+}
+
+.battle-result-reward-icon,
+.battle-result-progress-icon {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.battle-result-reward-icon-exp {
+  border: 0;
+  transform: none;
+}
+
+/* 레벨업·기술 습득 행의 아이콘 상자. Starter 그림은 삭제됐다. */
+.battle-result-reward-icon-levelup,
+.battle-result-reward-icon-skill {
+  border: 0;
+  transform: none;
+}
+
+.battle-result-progress-icon-next::before {
+  content: none;
+}
+

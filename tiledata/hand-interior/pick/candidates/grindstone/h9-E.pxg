@@ -1,0 +1,21 @@
+// h9-E: 자유 — 바퀴를 온원에 가깝게(위 둥근 윤곽·허브·오른쪽 손잡이 크랭크) 읽히게 하고, 틀 기둥이 바퀴를 받치게; 받침은 v5 유지
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....AAAAA......
+....ABBBBCA.....
+...ABBBBCCCCA...
+..ABBBBBCCDCCA..
+..ABBBFFDDDDCAEE
+..ACCBFFDDDDCA.E
+..EACCDDDDDCCAE.
+..EEAACDDDCAAEE.
+.EEEEEEEEEEEEEE.
+.GHHHHHHHHHHHHE.
+.GHIIIJJJIIIJJE.
+.EHHHHHHHHHHHHE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

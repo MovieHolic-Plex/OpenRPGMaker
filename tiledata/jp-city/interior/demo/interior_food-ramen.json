@@ -1,0 +1,163 @@
+{
+ "plan": [
+  "##########",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "#........#",
+  "########.#"
+ ],
+ "floor": "fd-tile-red",
+ "wall": "fd-plaster",
+ "zones": [
+  {
+   "x0": 1,
+   "x1": 8,
+   "y0": 1,
+   "y1": 4,
+   "floor": "fd-kitchen-tile",
+   "wall": "fd-plaster"
+  }
+ ],
+ "objects": [
+  {
+   "id": "fd-stockpot",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fd-noodle-boiler",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "fd-prep",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "fd-sink",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "fd-fridge",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fd-ticket-machine",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "fd-menu-board",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "fd-lantern",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "fd-stool",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 5,
+   "y": 6
+  },
+  {
+   "id": "fd-stool",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "fd-water-jug",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "genkan-door",
+   "x": 8,
+   "y": 9
+  }
+ ],
+ "tables": [
+  {
+   "style": "fd-counter",
+   "x": 1,
+   "y": 5,
+   "w": 6,
+   "h": 1
+  },
+  {
+   "style": "fd-counter",
+   "x": 7,
+   "y": 6,
+   "w": 1,
+   "h": 1
+  },
+  {
+   "style": "fd-counter",
+   "x": 7,
+   "y": 7,
+   "w": 1,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fd-ramen-bowl",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "fd-ramen-bowl",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "fd-condiments",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "fd-condiments",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "fd-tokkuri",
+   "x": 4,
+   "y": 5
+  }
+ ]
+}

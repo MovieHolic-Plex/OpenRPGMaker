@@ -1,0 +1,47 @@
+/* AI 도구 실행 직후 나타나는 라이브 활동 행 — 작업 띠 카드의 진행 칸에 붙는다(2026-09-17, aiWorkStrip). */
+.ai-activity-live {
+  align-items: center;
+  background: var(--accent-muted);
+  border: var(--stroke-1) solid var(--accent-border);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  display: flex;
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-2);
+  line-height: var(--line-height-tight);
+  padding: var(--space-2) var(--space-3);
+}
+
+.ai-activity-live-spinner {
+  animation: ai-activity-live-spin 900ms linear infinite;
+  border: var(--stroke-2) solid var(--accent-muted);
+  border-radius: var(--radius-pill);
+  border-top-color: var(--accent);
+  display: inline-block;
+  flex: 0 0 auto;
+  height: var(--space-3);
+  width: var(--space-3);
+}
+
+.ai-activity-live-line {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-activity-completed {
+  display: contents;
+}
+
+@keyframes ai-activity-live-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-activity-live-spinner {
+    animation: none;
+  }
+}

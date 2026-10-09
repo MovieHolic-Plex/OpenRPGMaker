@@ -1,0 +1,50 @@
+{
+  "version": 2,
+  "collection": "distinct-v2",
+  "items": [
+    {
+      "role": "rival",
+      "base": "wally",
+      "sourceSha256": "f8a324ce86c99fe635608d00035e87e2cc37773b08db5118066649e521286308",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    },
+    {
+      "role": "rival",
+      "base": "may-walking",
+      "sourceSha256": "7309c5b865300114714adb97e64970c0b589336df2eda11d9d674a48a9c60d59",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    },
+    {
+      "role": "explorer",
+      "base": "hiker",
+      "sourceSha256": "ccd284b59a71ee200444005cafc07c8a55ebdd84b40843c219b1c8cde7883bb7",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    },
+    {
+      "role": "explorer",
+      "base": "sailor",
+      "sourceSha256": "22d8af0960906400b5d91ea672adbb4d3a042239121365831dbb44526d508e5c",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    },
+    {
+      "role": "ranger",
+      "base": "camper",
+      "sourceSha256": "65f01355e6f5cb560e37d837c98eeaa2e4d687371ffc9c313f001f1e41d8fae4",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    },
+    {
+      "role": "ranger",
+      "base": "expert_m",
+      "sourceSha256": "24cfc1518fcdf5a878ac1aad0250e63a1be25e51b00bc44a80c353c2d1b952a3",
+      "decision": "pending",
+      "note": "Actual original NPC art. No automatic approval."
+    }
+  ],
+  "originalArtwork": "Nintendo / Game Freak / Creatures",
+  "independentlyAuthored": false
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_anatomy/h1-C.pxg",
+ "set": "horror",
+ "id": "broken_anatomy",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 24,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "C: 실루엣 재해석 — 머리가 오른쪽으로 갸웃 기울고 남은 왼팔이 지나치게 길어 손끝이 발등까지 닿는다. 빠진 어깨는 크게 벌어진 구멍. 어긋난 곳은 긴 팔과 기운 목.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pot/h7-A.pxg",
+ "id": "pot",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "주둥이만: 입구 테를 위·아래 밝은 줄로, 속 D 한 줄 — 위에서 내려다본 둥근 입구로 읽히게; 몸통은 v5 그대로",
+ "ok": true
+}

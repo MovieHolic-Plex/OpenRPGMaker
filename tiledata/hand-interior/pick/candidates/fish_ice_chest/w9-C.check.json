@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fish_ice_chest/w9-C.pxg",
+ "id": "fish ice chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 30,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  2,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "다시 그림: 위에 얼음을 봉긋이 쌓고 생선이 머리를 내민 상자, 앞판은 세로 널빤지와 테두리",
+ "ok": true
+}

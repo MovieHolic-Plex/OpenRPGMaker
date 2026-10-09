@@ -1,0 +1,10 @@
+{
+  "role": "rival",
+  "label": "라이벌",
+  "variant": "D · 소녀",
+  "description": "양갈래 머리 · 머리띠 · 허리와 치마가 드러나는 옷",
+  "identity": "소녀 · 머리 양옆 돌출 · 가벼운 걸음",
+  "collection": "distinct-v2",
+  "base": "may-walking",
+  "sourceNote": "에메랄드 실제 NPC 원본을 사용한 후보. 체형·얼굴·복장·걷기 원본이 각각 다릅니다. 신규 창작 원화 아님."
+}

@@ -1,0 +1,15 @@
+/* 속성 탭 데스크톱 오버라이드.
+ *
+ * 2026-08: 이 파일이 갖고 있던 규칙은 전부 삭제한 마크업(.db-elements-classic-inner /
+ * .db-elements-editor / .db-elements-fieldset / .db-elements-list-pane / .db-elements-row)
+ * 을 겨냥하고 있었다. 특히 `.db-elements-editor { grid-template-rows: 88px 160px minmax(0,1fr) }`
+ * + `nth-child(3) { grid-column:2; grid-row:1/4 }` 조합이 1열 3행을 영구 공백으로 만든
+ * H 축 P0 의 절반이었다(나머지 절반은 elements.css). 속성 탭은 이제 databaseWorkspace
+ * 프리미티브를 쓰므로 데스크톱 전용 오버라이드가 필요 없다. */
+
+@media (min-width: 981px) {
+  .database-modal-backdrop .database-modal-body .db-elements-classic {
+    height: 100%;
+    min-height: 0;
+  }
+}

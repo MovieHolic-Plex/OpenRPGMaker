@@ -1,0 +1,49 @@
+// C: 넓은 윗판과 굵은 두 기둥, 큰 유리 덩이와 금모래로 단순하게 읽히는 모래시계. 꼭대기 윗면 4행(y=1~4).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat a wood 4
+@mat b wood 5
+@mat c wood 6
+@mat d wood 7
+@mat e iron 2
+@mat f iron 3
+@mat g iron 4
+@mat h glass 5
+@mat i gold 3
+@mat j gold 4
+@mat k gold 5
+@mblock 0 0
+....oooooooo....
+..ooccccccbboo..
+.odcccaacbbbbao.
+.odccccccbbbbao.
+.odccccbbbbbbbo.
+.oaaaaaaaaaaaao.
+..oooooooooooo..
+..co.ehgggfe.ao..
+..coehhggggfeao..
+..coehgjjjjfeao..
+..coehkjjjjfeao..
+..coegkkkkjfeao..
+..co.egkkjfe.ao..
+..co..egjfe..ao..
+..co...gje...ao..
+..co...gje...ao..
+..co...gje...ao..
+..co...gje...ao..
+..co..ehjge..ao..
+..co.ehhggfe.ao..
+..coehhggggfeao..
+..coehgggggfeao..
+..coehggjggfeao..
+..coehgjkjgfeao..
+..coegjkkkjfeao..
+..co.egjjjfe.ao..
+..co..eeee..bao..
+..odccccccbbbbo..
+.odccccbbbbbbbao.
+.odbbbbbbbbbbbao.
+.oaaaaaaaaaaaao.
+..oooooooooooo..

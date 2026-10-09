@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-modern/gn_delivery_scooter/v35-A.pxg",
+ "set": "modern",
+ "id": "gn-delivery-scooter",
+ "hard": [
+  "palette: 팔레트 밖 색 14개 #db4d4a/255, #ffe26e/255, #f78175/255, #817c8c/255, #4e4d59/255, #100a1a/255"
+ ],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   2,
+   2
+  ],
+  "canvas": [
+   32,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  2,
+  8,
+  31,
+  31
+ ],
+ "note": "",
+ "ok": false
+}

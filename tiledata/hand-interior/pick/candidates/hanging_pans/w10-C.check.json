@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hanging_pans/w10-C.pxg",
+ "id": "hanging pans",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  15,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "실루엣 재해석: 크기가 다른 셋을 서로 다른 높이에 — 긴 자루 프라이팬(아래 큰 원판), 작은 소스팬, 국자(황동), 막대 아래로 길게 늘어져 세로 리듬",
+ "ok": true
+}

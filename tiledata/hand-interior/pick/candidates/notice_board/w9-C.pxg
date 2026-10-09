@@ -1,0 +1,41 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b wood 6
+@mat c wood 3
+@mat d wood 4
+@mat l linen 4
+@block 0 0
+................
+.AAAAAAAAAAAAAA.
+.A............A.
+..A...........A.
+..A.CCCCDCCCE.A.
+..A.CCCCCCCCE.A.
+..A.CCDCCEEEE.A.
+..A.CCCCCEEEE.A.
+..A.EEEEEEEEE.A.
+..A.EECCDCCEE.A.
+..A.EECCCCCEE.A.
+..A.EEEEEEEEE.A.
+..A...........A.
+...AAAAAAAAAAA..
+................
+................
+@mblock 0 0
+................
+................
+..bbbbbbbbbbbc..
+...ccccccccccc..
+...d.........d..
+...d.........d..
+...d.........d..
+...d.........d..
+...d.........d..
+...d.........d..
+...d.........d..
+...d.........d..
+...ccccccccccd..
+................
+................
+................

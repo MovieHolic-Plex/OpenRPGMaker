@@ -1,0 +1,31 @@
+/* 실험 배치 — 엔진(src/styles/runtime/battle/20-pokemon-skin.css)에 아직 반영 안 됨. 실제 전투 화면 A/B 에 주입해 쓴다.
+   112 캔버스 스프라이트를 내 몬스터 3배(화면 336px)·상대 2배(화면 224px) 정수 배율로, 발은 발판 중심. 무대 배율 1.5 (960x720) 기준.
+   pokemon-platform.svg 는 상대 경로라 주입 전에 data URI 로 바꿔 넣어야 한다. */
+/* 1) 내 몬스터: 3배 (CSS 224 = 화면 336), 상자 = 112 캔버스 정사각. 이미지는 행위자 바닥(=발판 중심)에 붙는다 → top 15 = 발이 중심보다 화면 22px 앞 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-monster-authored-back {
+  width: 224px; height: 224px; top: 15.2667px; left: 0; right: auto; margin: 0;
+  transform: none; image-rendering: pixelated; object-fit: fill;
+}
+/* 2) 상대: 2배 (CSS 149.333 = 화면 224) */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-skin="pokemon"] .battle-enemy .battle-enemy-image {
+  --battle-enemy-base-width: 149.3333px; --battle-enemy-base-height: 149.3333px;
+  top: 0.4667px; image-rendering: pixelated; object-fit: fill;
+}
+/* 3) 숨쉬기 찌그러짐 끄기 (피격·기절·포획 모션은 유지) */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy:not(.defeated):not(.battle-motion-knockback):not(.battle-pose-hit) .battle-enemy-image:not([data-battler-anim]) {
+  animation-name: none; scale: 1;
+}
+/* 4) 발판: 그림(160x36)을 몬스터와 같은 정수 배율로 — 내 쪽 3배(화면 480), 상대 2배(화면 320).
+      몬스터 폭의 약 2배. 가운데에 몸 폭 3/4 정도의 접촉 그림자 */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy::before {
+  width: 213.3333px; height: 48px; bottom: -15px; left: 50%;
+  background:
+    radial-gradient(ellipse 30px 7px at 50% 50%, rgba(52, 70, 40, .40) 0 98%, transparent 100%),
+    url("./assets/pokemon-platform.svg") center / 100% 100% no-repeat;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor::before {
+  width: 320px; height: 72px; bottom: -36px;
+  background:
+    radial-gradient(ellipse 58px 12px at 50% 50%, rgba(52, 70, 40, .40) 0 98%, transparent 100%),
+    url("./assets/pokemon-platform.svg") center / 100% 100% no-repeat;
+}

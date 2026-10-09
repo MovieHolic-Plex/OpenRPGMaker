@@ -1,0 +1,484 @@
+/* ── 조수 카드 (2026-09-03) — 변경 영수증 · 자율 런 체크리스트 · 넓은 비교 뷰어 ──
+   16-modern-change-first.css 에서 카드·뷰어 규칙을 이관하고 데크 언어(제안서 §05 영수증 해부)로 다시
+   그렸다. 툴 활동·커맨드 줄 규칙은 18-assistant-deck.css 가 갖는다.
+   색은 tokens.css 변수만. !important 0. 글자 크기 3단(data-ai-font-size)은 --ai-font-scale 로 스케일. */
+
+/* ── 1. 변경 영수증 카드 ─────────────────────────────────────────
+  DOM(aiChangePreview.ts): section.ai-change-card[data-state=applied|proposed]
+  > .ai-change-card-head(배지·제목·넓게 보기) + .ai-change-chips
+  + (.ai-change-pair(지금 → 적용 후) | .ai-change-word-diff) + .ai-change-detail
+  + .ai-change-card-actions(되돌리기).
+  커맨드 줄은 auto minmax(0,1fr) 2열 그리드라 두 열을 다 쓰게 못 박는다. */
+.ai-command-row > .ai-change-card,
+.ai-command-row > .ai-change-card-host {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.ai-change-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 4%, transparent);
+  color: var(--text-1);
+  container-type: inline-size;
+  display: grid;
+  font-family: var(--font-ui);
+  gap: 0;
+  line-height: 1.55;
+  margin: 8px 0 0;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.ai-change-card-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px 14px 8px;
+}
+
+.ai-change-badge {
+  background: var(--success-muted);
+  border-radius: 6px;
+  color: var(--success);
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  padding: 3px 8px;
+}
+
+/* 「적용 전」(Pi 검토 단계)은 완료가 아니다 — 초록 성공 배지를 쓰면 이미 적용된 것처럼 읽힌다. */
+.ai-change-card[data-state="proposed"] .ai-change-badge {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+/* 지도 그림이 말할 수 없는 변경 — 두 장 대신 사실 한 줄. */
+.ai-change-word-diff {
+  color: var(--text-2);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  margin: 0;
+  padding: 0 14px 12px;
+}
+
+.ai-change-title {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-change-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  padding: 0 14px 10px;
+}
+
+.ai-change-chip {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-weight: 500;
+  line-height: 1.5;
+  padding: 3px 9px;
+  white-space: nowrap;
+}
+
+/* 지금 → 적용 후. 카드 폭 기준 컨테이너 쿼리로 배치를 정한다(뷰포트가 아니라 데크 폭). */
+.ai-change-pair {
+  align-items: stretch;
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  min-width: 0;
+  padding: 0 14px 12px;
+}
+
+.ai-change-shot {
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px var(--border-default);
+  display: grid;
+  gap: 0;
+  grid-template-rows: minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.ai-change-shot[data-kind="after"] {
+  box-shadow: inset 0 0 0 1px var(--accent-border);
+}
+
+/* 라벨은 그림 위 좌상단 태그로 얹는다 — 위에 따로 줄을 두면 그림이 그만큼 작아진다. */
+.ai-change-shot-label {
+  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+  border-radius: 5px;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 12%, transparent);
+  color: var(--text-2);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 700;
+  left: 8px;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  padding: 2px 7px;
+  position: absolute;
+  text-transform: none;
+  top: 8px;
+  z-index: 1;
+}
+
+.ai-change-shot[data-kind="after"] .ai-change-shot-label {
+  color: var(--accent-active);
+}
+
+.ai-change-shot-canvas {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  min-height: 120px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 스냅숏은 픽셀 아트다 — 보간하면 뭉개진다. renderRegionSnapshot 은 width/height 속성만 세운다. */
+.ai-change-shot-canvas canvas,
+.ai-change-shot-canvas img,
+.ai-change-wide-shot canvas,
+.ai-change-wide-shot img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.ai-change-shot-canvas canvas,
+.ai-change-shot-canvas img {
+  max-height: 220px;
+  width: auto;
+}
+
+.ai-change-shot-canvas.ai-change-wide-shot {
+  width: 100%;
+}
+
+.ai-change-shot-canvas.ai-change-wide-shot canvas,
+.ai-change-shot-canvas.ai-change-wide-shot img {
+  max-height: none;
+  width: 100%;
+}
+
+.ai-change-shot-fallback {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  line-height: 1.6;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.ai-change-arrow {
+  align-self: center;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: calc(14px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.ai-change-detail {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  padding: 0 14px 10px;
+}
+
+/* ── 변경 내역(항목별 before → after) ────────────────────────────
+   큰 위임의 검토는 칩이 아니라 이 목록으로 한다. 목록만 스크롤한다 — 카드가 로그를
+   통째로 밀어내면 그 뒤의 말풍선을 못 읽는다. 기본은 펼침(접힘이 원래 불평이었다). */
+.ai-change-ledger {
+  border-top: 1px solid var(--border-subtle);
+  margin: 0 0 10px;
+  min-width: 0;
+  padding: 8px 0 0;
+}
+
+.ai-change-ledger-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 6px;
+}
+
+.ai-change-ledger-title {
+  color: var(--text-1);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  font-weight: 600;
+}
+
+.ai-change-ledger-count {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  font-variant-numeric: tabular-nums;
+}
+
+.ai-change-ledger-note {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-toggle {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin-left: auto;
+  padding: 2px 9px;
+}
+
+.ai-change-ledger-toggle:hover {
+  border-color: var(--border-strong);
+  color: var(--text-1);
+}
+
+.ai-change-ledger-list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 14px 6px;
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+.ai-change-ledger[data-collapsed="true"] .ai-change-ledger-list {
+  display: none;
+}
+
+.ai-change-ledger-row {
+  border-left: 2px solid var(--border-default);
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding-left: 8px;
+}
+
+.ai-change-ledger-row.is-added {
+  border-left-color: var(--success);
+}
+
+.ai-change-ledger-row.is-removed {
+  border-left-color: var(--danger);
+}
+
+.ai-change-ledger-line {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-change-ledger-area {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-label {
+  color: var(--text-1);
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ai-change-ledger-verb {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-values {
+  align-items: baseline;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ai-change-ledger-before {
+  color: var(--text-2);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  overflow-wrap: anywhere;
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in srgb, var(--text-2) 55%, transparent);
+}
+
+.ai-change-ledger-arrow {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+}
+
+.ai-change-ledger-after {
+  color: var(--text-1);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  overflow-wrap: anywhere;
+}
+
+.ai-change-ledger-detail {
+  color: var(--text-2);
+  display: grid;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  gap: 1px;
+  line-height: 1.5;
+  list-style: none;
+  margin: 0;
+  overflow-wrap: anywhere;
+  padding: 0;
+}
+
+.ai-change-wide .ai-change-ledger {
+  border-top: 1px solid var(--border-default);
+  margin: 0;
+  padding: 10px 4px 0;
+}
+
+.ai-change-wide .ai-change-ledger-list {
+  max-height: min(320px, 40vh);
+  padding: 0 4px 4px;
+}
+
+.ai-change-card-actions {
+  align-items: center;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin: 0;
+  padding: 10px 14px 12px;
+}
+
+/* 카드 안 버튼 — 넓게 보기(조용)·되돌리기(테두리) */
+.ai-change-expand,
+.ai-change-undo,
+.ai-change-wide-close,
+.ai-change-wide-mode {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: calc(13px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  gap: 6px;
+  letter-spacing: -0.01em;
+  min-height: 32px;
+  padding: 0 10px;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.ai-change-expand:hover,
+.ai-change-undo:hover,
+.ai-change-wide-close:hover,
+.ai-change-wide-mode:hover {
+  background: var(--bg-inset);
+  color: var(--text-1);
+}
+
+/* 머리말의 넓게 보기는 오른쪽 끝, 조용한 텍스트 버튼. */
+.ai-change-card-head .ai-change-expand {
+  margin-left: auto;
+}
+
+.ai-change-undo {
+  border-color: var(--border-default);
+  color: var(--text-1);
+  padding: 0 12px;
+}
+
+.ai-change-undo:hover {
+  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger) 40%, transparent);
+  color: var(--danger);
+}
+
+/* 아주 좁은 데크에서만 위/아래로 쌓고 화살표를 아래로 돌린다. */
+@container (max-width: 300px) {
+  .ai-change-pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ai-change-arrow {
+    justify-self: center;
+    rotate: 90deg;
+  }
+}
+
+/* 「변경 없음」 배너(aiChatPanelHelpers) — 같은 카드 언어, 경고 톤. */
+.ai-command-row > .ai-proposal-card {
+  grid-column: 1 / -1;
+}
+
+.ai-deck .ai-proposal-card.ai-proposal-empty {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--warning);
+  border-radius: 14px;
+  box-shadow: none;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.ai-deck .ai-proposal-empty .ai-proposal-title {
+  color: var(--text-1);
+  font-size: calc(13.5px * var(--ai-font-scale, 1));
+  font-weight: 600;
+}
+
+.ai-run-outcome {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  color: var(--ai-deck-secondary, var(--text-2));
+  font: var(--font-size-sm)/1.5 var(--font-ui);
+  overflow-wrap: anywhere;
+}

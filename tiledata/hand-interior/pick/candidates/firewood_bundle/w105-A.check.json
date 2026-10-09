@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_bundle/w105-A.pxg",
+ "id": "firewood bundle",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w105-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  14,
+  14
+ ],
+ "note": "윗면(장작 윗부분의 껍질 판 4행 + 옆줄 단)이 보이고 앞은 남쪽을 보는 단면 고리 2단(위 2·아래 3). 눕힌 방향을 동서→남북으로 바꿔 서쪽 옆면을 없앴다",
+ "ok": true
+}

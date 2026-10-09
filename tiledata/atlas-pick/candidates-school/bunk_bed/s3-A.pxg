@@ -1,0 +1,71 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat o vpine 0
+@mat d vpine 1
+@mat m vpine 2
+@mat w vpine 3
+@mat l vpine 4
+@mat h vpine 5
+@mat n vlinen 5
+@mat N vlinen 4
+@mat q vlinen 3
+@mat P vlinen 6
+@mat b vblue 4
+@mat B vblue 3
+@mat c vblue 2
+@mat e vblue 5
+@mat k vblue 1
+@mat s sakura 3
+@mat S sakura 2
+@mat t sakura 4
+@mat u sakura 1
+@mblock 0 0
+.dd.....................dd......
+ohm....................ohm......
+olmllllllllllllllllllllolm......
+olmwwwwwwwwwwwwwwwwwwwwolm......
+olmddddddddddddddddddddolm......
+olmPPPPPPPPeeeeeeeeeeeeolm......
+olmnPPPPPNnbbbbbbbbbbbbolm......
+olmnPPPPPNnbbBBBBBBBBbbolm......
+olmnqqqqqqnbbbbbbbbbbbbolm......
+olmnnnnnnnnBBBBBBBBBBBBolm......
+olmNNNNNNNNbbbbbbbbbbbbolm......
+olmNNNNNNNNbBBBBBBBBBBBolmhh..lm
+olmNNNNNNNNbBBBBBBBBBBBolmlw..wm
+olmNNNNNNNNbBBBBBBBBBBBolmlw..wm
+olmNNNNNNNNbBBBBBBBBBBBolmlw..wm
+olmNNNNNNNNbBBBBBBBBBBBolmlwllwm
+olmqqqqqqqqbcccccccccccolmlwddwm
+olmllllllllllllllllllllolmlw..wm
+olmwwwwwwwwwwwwwwwwwwwwolmlw..wm
+olmwwwwwwwwwwwwwwwwwwwwolmlw..wm
+olmddddddddddddddddddddolmlwllwm
+olm~~~~~~~~~~~~~~~~~~~~olmlwddwm
+olm~~~~~~~~~~~~~~~~~~~~olmlw..wm
+olm~~~~~~~~~~~~~~~~~~~~olmlw..wm
+olmwwwwwwwwwwwwwwwwwwwwolmlw..wm
+olmmmmmmmmmmmmmmmmmmmmmolmlwllwm
+olmddddddddddddddddddddolmlwddwm
+olmPPPPPPPPttttttttttttolmlw..wm
+olmnPPPPPNnssssssssssssolmlw..wm
+olmnPPPPPNnssSSSSSSSSssolmlw..wm
+olmnqqqqqqnssssssssssssolmlwllwm
+olmnnnnnnnnSSSSSSSSSSSSolmlwddwm
+olmNNNNNNNNssssssssssssolmlw..wm
+olmNNNNNNNNsSSSSSSSSSSSolmlw..wm
+olmNNNNNNNNsSSSSSSSSSSSolmlw..wm
+olmNNNNNNNNsSSSSSSSSSSSolmlwllwm
+olmqqqqqqqqsuuuuuuuuuuuolmlwddwm
+olmllllllllllllllllllllolmlw..wm
+olmwwwwwwwwwwwwwwwwwwwwolmlw..wm
+olmwwwwwwwwwwwwwwwwwwwwolmlw..wm
+olmddddddddddddddddddddolmlwllwm
+olm~~~~~~~~~~~~~~~~~~~~olmlwddwm
+olm~~~~~~~~~~~~~~~~~~~~olmlw..wm
+olm~~~~~~~~~~~~~~~~~~~~olmlw..wm
+olm~~~~~~~~~~~~~~~~~~~~olmlw..wm
+ooo~~~~~~~~~~~~~~~~~~~~ooo~~~~~.
+.------------------------------.
+................................

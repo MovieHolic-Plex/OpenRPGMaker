@@ -1,0 +1,404 @@
+/* database 표면 — editor/event-editor-legacy.part-2.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 위 헤더가 가리키는 원본 `editor/event-editor-legacy.part-2.css` 는 **더 이상 존재하지 않는다** — 규칙이 전부 이 파일들로
+   옮겨진 뒤 원본이 삭제됐다. 여기 있는 규칙이 그 내용의 정본이다. 파일명의 `from-` 은
+   역사적 출처 표기다(2026-09-17 확인, 계획 Task 11 Step 4). */
+
+
+/* editor/event-editor-legacy.part-2.css:25-28 */
+
+/* editor/event-editor-legacy.part-2.css:29-31 */
+.tileset-settings-open {
+  justify-self: start;
+}
+
+/* editor/event-editor-legacy.part-2.css:33-39 */
+.tileset-db-workspace {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 184px minmax(0, 1fr) 170px;
+  min-height: 440px;
+  padding: 4px;
+}
+
+/* editor/event-editor-legacy.part-2.css:41-43 */
+.tileset-db-workspace.compact {
+  grid-template-columns: 184px minmax(0, 1fr);
+}
+
+/* editor/event-editor-legacy.part-2.css:45-49 */
+.tileset-db-editor {
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:51-56 */
+
+/* editor/event-editor-legacy.part-2.css:58-65 */
+.tileset-db-preview {
+  background: var(--bg-raised);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+}
+
+/* editor/event-editor-legacy.part-2.css:67-71 */
+
+/* editor/event-editor-legacy.part-2.css:73-82 */
+
+/* editor/event-editor-legacy.part-2.css:84-86 */
+
+/* editor/event-editor-legacy.part-2.css:88-91 */
+.tileset-db-list-row.active {
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+/* editor/event-editor-legacy.part-2.css:93-98 */
+.tileset-db-editor {
+  display: grid;
+  gap: 4px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:100-102 */
+.tileset-db-editor.simplified {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+/* editor/event-editor-legacy.part-2.css:104-109 */
+.tileset-db-preview-meta {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* editor/event-editor-legacy.part-2.css:111-123 */
+
+/* editor/event-editor-legacy.part-2.css:125-127 */
+.tileset-db-properties > .tileset-db-resource:nth-of-type(2) {
+  display: none;
+}
+
+/* editor/event-editor-legacy.part-2.css:129-138 */
+.tileset-db-properties {
+  background: var(--surface-workbench);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  padding: 6px;
+}
+
+/* editor/event-editor-legacy.part-2.css:140-143 */
+.tileset-db-editor.simplified .tileset-db-properties {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+/* editor/event-editor-legacy.part-2.css:145-147 */
+.tileset-db-editor.simplified .tileset-db-properties .db-field {
+  grid-column: 1 / -1;
+}
+
+/* editor/event-editor-legacy.part-2.css:149-154 */
+.tileset-db-properties .db-field {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 52px minmax(0, 1fr);
+  margin: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:156-163 */
+.tileset-db-properties .db-field label {
+  align-self: center;
+  color: var(--text-primary);
+  font-size: 12px;
+  letter-spacing: 0;
+  margin: 0;
+  text-transform: none;
+}
+
+/* editor/event-editor-legacy.part-2.css:165-169 */
+.tileset-db-group {
+  border: 1px solid var(--border-default);
+  margin: 0;
+  padding: 7px 6px 6px;
+}
+
+/* editor/event-editor-legacy.part-2.css:171-176 */
+.tileset-db-group legend {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0 4px;
+}
+
+/* editor/event-editor-legacy.part-2.css:178-185 */
+.tileset-db-preview-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:187-193 */
+.tileset-db-preview-title-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:195-200 */
+.tileset-db-preview-title {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* editor/event-editor-legacy.part-2.css:202-205 */
+.tileset-db-layer-filter {
+  display: inline-flex;
+  gap: 2px;
+}
+
+/* editor/event-editor-legacy.part-2.css:207-218 */
+.tileset-db-layer-filter button {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 11px/1.1 inherit;
+  min-height: 20px;
+  min-width: 40px;
+  padding: 0 6px;
+}
+
+/* editor/event-editor-legacy.part-2.css:220-223 */
+.tileset-db-layer-filter button.active {
+  background: var(--surface-panel);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+/* editor/event-editor-legacy.part-2.css:225-229 */
+.tileset-db-preview-scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* editor/event-editor-legacy.part-2.css:231-242 */
+.tileset-db-preview-scale button {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 11px/1.1 inherit;
+  min-height: 20px;
+  min-width: 42px;
+  padding: 0 6px;
+}
+
+/* editor/event-editor-legacy.part-2.css:250-253 */
+.tileset-db-preview-scale button.active {
+  background: var(--surface-panel);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+/* editor/event-editor-legacy.part-2.css:255-260 */
+.tileset-db-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+/* editor/event-editor-legacy.part-2.css:262-265 */
+
+/* editor/event-editor-legacy.part-2.css:267-279 */
+.tileset-db-tools button {
+  background: var(--bg-raised);
+  border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: 600 12px/1.1 inherit;
+  min-height: 22px;
+  min-width: 56px;
+  padding: 0 7px;
+}
+
+/* editor/event-editor-legacy.part-2.css:281-285 */
+.tileset-db-layer-tabs button.active,
+.tileset-db-tools button.active {
+  background: var(--surface-panel);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+}
+
+/* editor/event-editor-legacy.part-2.css:287-292 */
+.tileset-db-edit-area {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 140px minmax(360px, 1fr);
+  min-height: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:294-298 */
+.tileset-db-edit-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+/* editor/event-editor-legacy.part-2.css:300-307 */
+.tileset-db-tools {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 3px;
+}
+
+/* editor/event-editor-legacy.part-2.css:309-312 */
+.tileset-db-tools button {
+  min-width: 0;
+  width: 100%;
+}
+
+/* editor/event-editor-legacy.part-2.css:314-318 */
+.tileset-db-tools button.disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+/* editor/event-editor-legacy.part-2.css:320-326 */
+.tileset-db-selected-tile {
+  background: var(--surface-panel);
+  border: 1px solid var(--border-default);
+  display: grid;
+  gap: 5px;
+  padding: 6px;
+}
+
+/* editor/event-editor-legacy.part-2.css:328-333 */
+.tileset-db-selected-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+/* editor/event-editor-legacy.part-2.css:335-339 */
+.tileset-db-selected-header strong {
+  color: var(--text-primary);
+  font-size: 12px;
+  min-width: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:341-345 */
+.tileset-db-selected-header span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-2.css:347-350 */
+
+/* editor/event-editor-legacy.part-2.css:352-356 */
+.tileset-db-group-editor .db-field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:358-361 */
+.tileset-db-group-editor .db-field span {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+/* editor/event-editor-legacy.part-2.css:363-375 */
+
+/* editor/event-editor-legacy.part-2.css:377-380 */
+
+/* editor/event-editor-legacy.part-2.css:382-387 */
+.tileset-db-group-list {
+  display: grid;
+  gap: 3px;
+  max-height: 90px;
+  overflow: auto;
+}
+
+/* editor/event-editor-legacy.part-2.css:389-401 */
+.tileset-db-group-row {
+  background: var(--surface-workbench);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 11px;
+  min-height: 22px;
+  overflow: hidden;
+  padding: 2px 4px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* editor/event-editor-legacy.part-2.css:403-407 */
+.tileset-db-group-row:hover,
+.tileset-db-group-row:focus-visible {
+  background: var(--surface-selected);
+  outline: 1px solid var(--accent-primary);
+}
+
+/* editor/event-editor-legacy.part-2.css:409-412 */
+
+/* editor/event-editor-legacy.part-2.css:414-419 */
+
+/* editor/event-editor-legacy.part-2.css:421-425 */
+.tileset-db-selected-tile .db-field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+
+/* editor/event-editor-legacy.part-2.css:427-430 */
+.tileset-db-selected-tile .db-field span {
+  color: var(--text-primary);
+  font-size: 11px;
+}
+
+/* editor/event-editor-legacy.part-2.css:432-443 */
+.tileset-db-selected-tile input,
+.tileset-db-selected-tile textarea {
+  background: var(--surface-panel);
+  border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--text-primary);
+  font: 400 11px/1.25 inherit;
+  min-width: 0;
+  padding: 3px 4px;
+  resize: vertical;
+}
+
+/* editor/event-editor-legacy.part-2.css:445-447 */
+.tileset-db-selected-tile textarea {
+  min-height: 42px;
+}
+
+/* editor/event-editor-legacy.part-2.css:449-452 */

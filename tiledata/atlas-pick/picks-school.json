@@ -1,0 +1,350 @@
+{
+ "assembly_podium": {
+  "at": "2026-09-30T08:14:00+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "ball_basket": {
+  "at": "2026-09-30T08:12:25+09:00",
+  "choice": "s1-C",
+  "note": ""
+ },
+ "basketball_hoop": {
+  "at": "2026-09-30T08:11:45+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "bike_rack": {
+  "at": "2026-09-30T08:13:31+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "blackboard": {
+  "at": "2026-09-30T08:53:45+09:00",
+  "choice": "s2-A",
+  "note": "\n",
+  "noteAt": "2026-09-30T08:53:45+09:00"
+ },
+ "broadcast_desk": {
+  "at": "2026-09-30T08:11:36+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "bulletin_board": {
+  "at": "2026-09-30T07:55:52+09:00",
+  "choice": "s5-C",
+  "note": ""
+ },
+ "bunk_bed": {
+  "at": "2026-09-30T08:15:02+09:00",
+  "choice": null,
+  "note": "3x2 사이즈로하고 계단이 좀 겹치게 ..",
+  "noteAt": "2026-09-30T08:15:02+09:00"
+ },
+ "cafeteria_table": {
+  "at": "2026-09-30T08:14:07+09:00",
+  "choice": "s3-B",
+  "note": ""
+ },
+ "class_clock": {
+  "at": "2026-09-30T07:56:10+09:00",
+  "choice": null,
+  "note": "전혀 시계같지 않음..",
+  "noteAt": "2026-09-30T07:56:10+09:00"
+ },
+ "class_plate": {
+  "at": "2026-09-30T08:03:23+09:00",
+  "choice": null,
+  "note": "글자가 잘 안 보임",
+  "noteAt": "2026-09-30T08:03:23+09:00"
+ },
+ "class_speaker": {
+  "at": "2026-09-30T07:56:23+09:00",
+  "choice": null,
+  "note": "TV 는 3x2 로 대형으로..",
+  "noteAt": "2026-09-30T07:56:23+09:00"
+ },
+ "class_window": {
+  "at": "2026-09-30T07:57:47+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "classroom_floor": {
+  "at": "2026-09-30T07:58:33+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "classroom_wall": {
+  "at": "2026-09-30T07:58:36+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "cleaning_locker": {
+  "at": "2026-09-30T07:58:28+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "composer_frames": {
+  "at": "2026-09-30T08:07:33+09:00",
+  "choice": "s5-C",
+  "note": ""
+ },
+ "copier": {
+  "at": "2026-09-30T08:11:33+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "desk_pair": {
+  "at": "2026-09-30T07:54:42+09:00",
+  "choice": "s4-B",
+  "note": ""
+ },
+ "desk_set": {
+  "at": "2026-09-30T07:54:35+09:00",
+  "choice": "s4-B",
+  "note": ""
+ },
+ "dorm_closet": {
+  "at": "2026-09-30T08:15:17+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "dorm_desk": {
+  "at": "2026-09-30T08:15:11+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "dorm_rug": {
+  "at": "2026-09-30T08:15:20+09:00",
+  "choice": "s4-C",
+  "note": ""
+ },
+ "easel": {
+  "at": "2026-09-30T08:07:37+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "exit_sign": {
+  "at": "2026-09-30T08:03:31+09:00",
+  "choice": null,
+  "note": "2x1 사이즈로",
+  "noteAt": "2026-09-30T08:03:31+09:00"
+ },
+ "fire_hydrant": {
+  "at": "2026-09-30T08:06:12+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "genkan_step": {
+  "at": "2026-09-30T08:02:12+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "grand_piano": {
+  "at": "2026-09-30T08:07:21+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "gym_floor": {
+  "at": "2026-09-30T08:12:29+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "gym_line": {
+  "at": "2026-09-30T08:12:32+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "gym_mat": {
+  "at": "2026-09-30T08:12:14+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "hall_door": {
+  "at": "2026-09-30T08:03:11+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "hall_floor": {
+  "at": "2026-09-30T08:02:28+09:00",
+  "choice": "s1-C",
+  "note": ""
+ },
+ "hall_wall": {
+  "at": "2026-09-30T08:02:34+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "hall_window": {
+  "at": "2026-09-30T08:02:42+09:00",
+  "choice": "s1-B",
+  "note": ""
+ },
+ "height_scale": {
+  "at": "2026-09-30T08:08:14+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "kiosk_counter": {
+  "at": "2026-09-30T08:14:29+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "lab_bench": {
+  "at": "2026-09-30T08:06:55+09:00",
+  "choice": "s5-B",
+  "note": ""
+ },
+ "lab_cabinet": {
+  "at": "2026-09-30T08:06:58+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "lectern": {
+  "at": "2026-09-30T07:54:48+09:00",
+  "choice": "s4-B",
+  "note": ""
+ },
+ "library_counter": {
+  "at": "2026-09-30T08:07:55+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "library_shelf": {
+  "at": "2026-09-30T08:07:51+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "locker_row": {
+  "at": "2026-09-30T07:55:58+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "meal_tray": {
+  "at": "2026-09-30T08:14:11+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "milk_crate": {
+  "at": "2026-09-30T08:14:36+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "music_stand": {
+  "at": "2026-09-30T08:07:25+09:00",
+  "choice": "s2-B",
+  "note": ""
+ },
+ "nurse_bed": {
+  "at": "2026-09-30T08:07:58+09:00",
+  "choice": "s3-A",
+  "note": ""
+ },
+ "plaster_bust": {
+  "at": "2026-09-30T08:07:43+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "privacy_screen": {
+  "at": "2026-09-30T08:08:03+09:00",
+  "choice": "s3-C",
+  "note": ""
+ },
+ "roof_fence": {
+  "at": "2026-09-30T08:12:35+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "roof_floor": {
+  "at": "2026-09-30T08:12:39+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "roof_stairhouse": {
+  "at": "2026-09-30T08:12:48+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "school_gate": {
+  "at": "2026-09-30T08:12:53+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "schoolyard": {
+  "at": "2026-09-30T08:13:35+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "serving_counter": {
+  "at": "2026-09-30T08:14:22+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "shoe_locker": {
+  "at": "2026-09-30T07:58:50+09:00",
+  "choice": null,
+  "note": "신발의 느낌이 너무 들지 않는다",
+  "noteAt": "2026-09-30T07:58:50+09:00"
+ },
+ "skeleton_model": {
+  "at": "2026-09-30T08:07:10+09:00",
+  "choice": "s1-A",
+  "note": ""
+ },
+ "slippers": {
+  "at": "2026-09-30T08:02:09+09:00",
+  "choice": "s5-B",
+  "note": ""
+ },
+ "soccer_goal": {
+  "at": "2026-09-30T08:13:50+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "staff_desks": {
+  "at": "2026-09-30T08:11:23+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "teacher_platform": {
+  "at": "2026-09-30T07:54:56+09:00",
+  "choice": "s4-A",
+  "note": ""
+ },
+ "tile_floor": {
+  "at": "2026-09-30T08:06:47+09:00",
+  "choice": "s2-C",
+  "note": ""
+ },
+ "track_line": {
+  "at": "2026-09-30T08:13:46+09:00",
+  "choice": "s1-B",
+  "note": ""
+ },
+ "vaulting_box": {
+  "at": "2026-09-30T08:12:18+09:00",
+  "choice": "s5-A",
+  "note": ""
+ },
+ "vending_school": {
+  "at": "2026-09-30T08:14:38+09:00",
+  "choice": "s2-A",
+  "note": ""
+ },
+ "water_fountain": {
+  "at": "2026-09-30T08:06:39+09:00",
+  "choice": null,
+  "note": "3x3 으로 하고 세면대 느낌이 확나게.",
+  "noteAt": "2026-09-30T08:06:39+09:00"
+ },
+ "water_tank": {
+  "at": "2026-09-30T08:12:42+09:00",
+  "choice": "s3-C",
+  "note": ""
+ },
+ "whiteboard": {
+  "at": "2026-09-30T07:55:38+09:00",
+  "choice": "s2-B",
+  "note": ""
+ }
+}

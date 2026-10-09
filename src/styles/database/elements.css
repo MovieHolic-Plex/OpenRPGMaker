@@ -1,0 +1,104 @@
+/* Elements — neutral cool studio scoped to .database-modal-backdrop.
+ *
+ * 2026-08: 목록/에디터 레이아웃은 databaseWorkspace 프리미티브(.db-ws-*)와
+ * modern/utility-records.css 로 옮겼다. 여기 남은 건 속성 탭 고유의 컨트롤 외형뿐이다.
+ * 특히 `.db-elements-editor { grid-template-columns/rows }` + `nth-child(3) { grid-row:1/4 }`
+ * 하드코딩 그리드는 삭제했다 — 1열 3행이 영구히 비어 상세 카드의 65% 가 죽어 있었다(H 축 P0).
+ * `.db-elements-damage-input { width: 112px }` 도 삭제했다: 새 배율 표는 그리드가 폭을
+ * 정하는데 고정 폭이 "%" 라벨 위로 10px 씩 겹쳤다. */
+
+.database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
+  background: var(--db-studio-canvas);
+  border: 0;
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px 16px 10px;
+}
+
+.database-modal-backdrop:has(.db-elements-classic) {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-elements-classic) {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow-pop);
+}
+
+.database-modal-backdrop .database-modal-body .db-elements-classic {
+  background: transparent;
+  border: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .db-elements-name-input,
+.database-modal-backdrop .db-elements-damage-input {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 13px/20px var(--font-ui);
+  height: 32px;
+  min-width: 0;
+  padding: 0 10px;
+}
+
+.database-modal-backdrop .db-elements-name-input:focus,
+.database-modal-backdrop .db-elements-damage-input:focus {
+  border-color: var(--db-studio-accent-border);
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.database-modal-backdrop .database-modal-body .db-elements-classic .db-elements-name-input {
+  width: 100%;
+}
+
+.database-modal-backdrop .db-elements-radio-row {
+  align-items: center;
+  color: var(--db-studio-text-1);
+  display: flex;
+  font: 400 13px/20px var(--font-ui);
+  gap: 8px;
+  height: 28px;
+  margin: 0;
+}
+
+/* radio 원 크기는 기준선(modern-controls.css)이 16px 으로 통일하므로 여기서는 잡지 않는다. */
+
+.database-modal-backdrop .db-elements-grade {
+  color: var(--db-studio-text-2);
+  font: 600 12px/20px var(--font-ui);
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-elements-grade.grade-a { color: var(--db-studio-danger); }
+.database-modal-backdrop .db-elements-grade.grade-b { color: var(--db-studio-text-2); }
+.database-modal-backdrop .db-elements-grade.grade-c { color: var(--db-studio-success); }
+.database-modal-backdrop .db-elements-grade.grade-d { color: var(--db-studio-accent); }
+.database-modal-backdrop .db-elements-grade.grade-e { color: var(--db-studio-text-3); }
+
+.database-modal-backdrop .db-elements-percent {
+  color: var(--db-studio-text-3);
+  font: 400 12px/20px var(--font-ui);
+}
+
+@media (max-width: 900px) {
+  .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
+    overflow: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .database-modal-backdrop .database-modal-body .db-body:has(.db-elements-classic) {
+    overflow: auto;
+    padding: 10px;
+  }
+}

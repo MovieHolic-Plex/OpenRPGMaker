@@ -1,0 +1,45 @@
+/* _rm2003.css — 턴제 전투의 **측면 구도**(유리 뼈대, `data-battle-layout="sideview"`).
+   2026-09-03 스킨 id rm2003 으로 되살렸고, 2026-09-25 부터는 같은 구도를 쓰는 변형 스킨(코발트·금갈색·
+   청람·먹빛·세피아)도 이 파일을 그대로 탄다 — 그래서 선택자가 스킨 id 가 아니라 구도다.
+   창 크롬(파티·명령·메시지·적 정보 카드)과 연출 키프레임은 유리 묶음 `_rm2000.css`
+   (`[data-battle-skin-family="glass"]`)를 쓰고, 색·HUD 변형은 `_glass-variants.css` 가 뒤에서 덮는다.
+   이 파일은 **구도만** 덮는다: 적은 필드 왼쪽 두 줄, 아군 전투 시트는 오른쪽 사선 열(battlerPlacements
+   SIDEVIEW)에 서서 서로 마주 보고, 타격·전진은 가로로 움직인다.
+
+   선택자는 묶음 규칙보다 속성 하나(구도)가 많아 순서와 무관하게 이긴다. 기계 감사(짝수 px · 강제 플래그 0)는
+   `_rm2000.css` 와 같은 규약을 따른다. */
+
+/* ---- 타격 방향: 가로 --------------------------------------------------------- */
+/* 묶음(정면)은 적이 카메라 쪽(아래)으로, 뒷모습 파티가 위로 밀린다. 측면에서는 왼쪽의 적은 왼쪽으로,
+   오른쪽의 아군은 오른쪽으로 — 맞은 쪽의 반대편으로 밀린다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy {
+  --hit-dir-x: -1;
+  --hit-dir-y: 0;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor {
+  --hit-dir-x: 1;
+  --hit-dir-y: 0;
+}
+
+/* ---- 아군 전투 시트 ---------------------------------------------------------- */
+/* 48px 셀 시트(고해상도 짝 192px)는 프레임 96px 을 발끝 기준으로 1.25 배(묶음 기본과 같다) — 120px 은 적
+   (160×180 상자, 몸통 ~120)과 마주 섰을 때 눈높이가 맞고, 사선 열 간격(25 RM px = 75px)에 넷이 들어간다.
+   1.35 로 키웠을 때는 네 배우가 한 덩이로 겹쳤다(실측). 값을 다시 적어 두는 이유는 묶음이 바뀌어도
+   이 구도의 크기가 따라 움직이지 않게 하기 위해서다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
+  transform: scale(1.25);
+}
+
+/* 사선 열은 뒤(위·왼쪽) 배우부터 앞(아래·오른쪽) 배우 순으로 DOM 에 놓이므로, 같은 z 에서는 뒤에 오는
+   형제가 앞을 덮는다 — 아래쪽 배우가 앞에 보이는 것이 맞다. 발밑 그림자는 사선 열 폭에 맞춰 조금 좁힌다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-actor-platform {
+  width: 72px;
+}
+
+/* ---- 적 ------------------------------------------------------------------- */
+/* 두 줄 진형: 앞줄(발 y=124)이 뒷줄(y=112) 앞에 오도록 깊이를 y 로 정한다(`--battle-depth` 는 battleFieldDom 이
+   y/16 으로 심는다). 묶음 규칙의 고정 z 3 을 깊이 변수로 바꾼다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-enemy {
+  z-index: var(--battle-depth, 3);
+}

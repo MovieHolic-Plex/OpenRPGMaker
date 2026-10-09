@@ -1,0 +1,158 @@
+{
+ "name": "wand_third_and_rack",
+ "item": "wand_third_and_rack",
+ "candidate": "h9-A",
+ "source": "art-output/door-slot-repair-r1/content/tiledata/hand-interior/pick/candidates/wand_third_and_rack/h9-A.png",
+ "sha256": "ff44eb30ef1d3d3f719b1288246da9f25c89c489ef14add653a7b52dc30dcacd",
+ "set": {
+  "id": "wand-third-and-rack",
+  "name_ko": "wand-third-and-rack",
+  "category": "shop",
+  "category_ko": "마법 상점",
+  "kind": "surface",
+  "canvas": [
+   32,
+   16
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "description": "카운터(6,3)의 빈 상면에 제3종 지팡이와 작은 거치대만 추가. surfaceOffset(0,-7), screen(96,73), stateOrigin(0,0). 두 슬롯 같은 원점에서 접촉 합성, 측정도구(4,3)/열린상자(5,3)와 분리. 새 카운터 actual bright mask 안에서 검수. 기존 시험대 pair 원본은 보존.",
+  "parent": "wand-third-and-rack",
+  "derive": "production",
+  "slots": [
+   {
+    "key": "third-wand",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "topMin": 0,
+    "mount": "surface",
+    "layer": 4,
+    "see": "기존 두 자루와 다른 옹이 손잡이·굽은 결의 제3종. local x2..13,y1..2; rack 윗면과 접촉. 원배율로 손잡이/목재형태 구분.",
+    "origin": [
+     0,
+     0
+    ],
+    "localAlphaBounds": [
+     2,
+     1,
+     14,
+     3
+    ],
+    "x": 0,
+    "y": 0,
+    "locked": false,
+    "label": "third-wand",
+    "child": "wand-third-and-rack third-wand"
+   },
+   {
+    "key": "rack",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "topMin": 0,
+    "mount": "surface",
+    "layer": 4,
+    "see": "작은 탁상 목재 거치대, local x2..13,y2..5, 위에서 보이는 받침 y2와 남쪽면 y3..5. 제3종 y2 접촉, 다른 셀 불침범.",
+    "origin": [
+     0,
+     0
+    ],
+    "localAlphaBounds": [
+     2,
+     2,
+     14,
+     6
+    ],
+    "x": 16,
+    "y": 0,
+    "locked": false,
+    "label": "rack",
+    "child": "wand-third-and-rack rack"
+   }
+  ],
+  "contract": {
+   "palette": "theme dedicated42 colors only",
+   "lighting": "upper left",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "registration": "separate native supplement; no selection/install during preparation",
+   "requirement": "distinct-wands-and-rack",
+   "surfaceCell": [
+    6,
+    3
+   ],
+   "surfaceOffset": [
+    0,
+    -7
+   ],
+   "surfaceOriginScreen": [
+    96,
+    73
+   ],
+   "localAlphaBounds": [
+    2,
+    1,
+    14,
+    6
+   ],
+   "stateOrigin": [
+    0,
+    0
+   ],
+   "groundOccupation": 0,
+   "contact": "third-wand row2 intersects rack top row2; actual alpha contact required",
+   "actualHostTopMaskRequired": true,
+   "preservedPair": [
+    {
+     "path": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_wands/h3-A.png",
+     "sha256": "f3fb484befb6ef0824ea2705b544ada4b7ace15892fb867b099f2142c3390194"
+    }
+   ],
+   "heldBindings": {
+    "left-original": {
+     "source": {
+      "path": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_wands/h3-A.png",
+      "sha256": "f3fb484befb6ef0824ea2705b544ada4b7ace15892fb867b099f2142c3390194"
+     },
+     "slot": "pair",
+     "localCrop": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "right-original": {
+     "source": {
+      "path": "art-output/repair-spec-r5/content/tiledata/hand-interior/pick/candidates/wandtrial_wands/h3-A.png",
+      "sha256": "f3fb484befb6ef0824ea2705b544ada4b7ace15892fb867b099f2142c3390194"
+     },
+     "slot": "pair",
+     "localCrop": [
+      16,
+      0,
+      32,
+      16
+     ]
+    },
+    "third": {
+     "order": "wand-third-and-rack",
+     "slot": "third-wand",
+     "source": "future native receipt candidateImages/sheet and sha256; bind the same extracted wand silhouette to existing trial-student/elder-wandmaker action hand anchor; no duplicate actor generation",
+     "status": "pending actual held pose contact/identity review"
+    }
+   }
+  }
+ }
+}

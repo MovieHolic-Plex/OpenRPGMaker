@@ -1,0 +1,4 @@
+@layer one, two;
+@import "./a.css" layer(one);
+@import "./b.css";
+.plain { color: red; }

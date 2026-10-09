@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/fireplace_cold/h3-A.pxg",
+ "set": "horror",
+ "id": "fireplace_cold",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 28,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "note": "낡은 돌 벽난로(2×2): 돌 틀·나무 선반, 아궁이 안 재와 타다 남은 통나무, 상인방까지 번진 그을음, 선반 위 먼지와 쓰러져 누운 액자 — 불 없음",
+ "ok": true
+}

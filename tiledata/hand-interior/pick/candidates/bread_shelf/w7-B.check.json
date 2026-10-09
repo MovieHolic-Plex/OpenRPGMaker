@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf/w7-B.pxg",
+ "id": "bread shelf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "A에 빵 칼집·참깨 알갱이·선반 가격표를 더해 갓 구운 빵 느낌을 줌",
+ "ok": true
+}

@@ -1,0 +1,182 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_house/k6-C.pxg",
+ "kit": "kit_house",
+ "cand": "k6-C",
+ "hard": [],
+ "warn": [],
+ "examples": [
+  {
+   "id": "hira5",
+   "name": "단층 5칸",
+   "cells": [
+    5,
+    4
+   ],
+   "ctxSize": [
+    112,
+    128
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "two5",
+   "name": "2층 5칸(층 사이 차양)",
+   "cells": [
+    5,
+    8
+   ],
+   "ctxSize": [
+    112,
+    192
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "two6v",
+   "name": "2층 6칸(베란다·오른 현관)",
+   "cells": [
+    6,
+    8
+   ],
+   "ctxSize": [
+    128,
+    192
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  },
+  {
+   "id": "wide8",
+   "name": "넓은 2층 8칸(지붕 깊이 4)",
+   "cells": [
+    8,
+    9
+   ],
+   "ctxSize": [
+    160,
+    208
+   ],
+   "through": null,
+   "errs": [],
+   "warns": [],
+   "seams": [],
+   "doors": 1
+  }
+ ],
+ "borrowed": {},
+ "repeat": [
+  {
+   "slug": "rf_tm",
+   "axis": "x",
+   "score": 0.82,
+   "d": 22.4,
+   "bad": false
+  },
+  {
+   "slug": "rf_sl",
+   "axis": "y",
+   "score": 0.13,
+   "d": 15.5,
+   "bad": false
+  },
+  {
+   "slug": "rf_sm",
+   "axis": "x",
+   "score": 0.23,
+   "d": 3.0,
+   "bad": false
+  },
+  {
+   "slug": "rf_sm",
+   "axis": "y",
+   "score": 0.0,
+   "d": 0.0,
+   "bad": false
+  },
+  {
+   "slug": "rf_sr",
+   "axis": "y",
+   "score": 0.1,
+   "d": 12.4,
+   "bad": false
+  },
+  {
+   "slug": "rf_em",
+   "axis": "x",
+   "score": 0.36,
+   "d": 7.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_l",
+   "axis": "y",
+   "score": 0.8,
+   "d": 54.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_m",
+   "axis": "x",
+   "score": 1.0,
+   "d": 64.8,
+   "bad": false
+  },
+  {
+   "slug": "wall_m",
+   "axis": "y",
+   "score": 0.81,
+   "d": 54.0,
+   "bad": false
+  },
+  {
+   "slug": "wall_r",
+   "axis": "y",
+   "score": 0.82,
+   "d": 52.1,
+   "bad": false
+  },
+  {
+   "slug": "win_slide",
+   "axis": "x",
+   "score": 0.94,
+   "d": 99.6,
+   "bad": false
+  },
+  {
+   "slug": "win_veranda",
+   "axis": "x",
+   "score": 1.17,
+   "d": 85.4,
+   "bad": false
+  },
+  {
+   "slug": "hisashi_m",
+   "axis": "x",
+   "score": 0.36,
+   "d": 7.0,
+   "bad": false
+  }
+ ],
+ "check": {
+  "ok": true,
+  "hard": [],
+  "lint": {
+   "pass": true,
+   "failed": []
+  },
+  "easyMax": 0.246,
+  "refmapMax": 0.195
+ },
+ "ok": true
+}

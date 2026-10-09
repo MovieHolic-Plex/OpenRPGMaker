@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w5-B.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 4,
+ "bbox": [
+  12,
+  1,
+  35,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "명암 강화: 반원 고리에 왼쪽 두 줄 밝은 결(B)·오른쪽 짙은 결(C), 왼쪽 다리와 윗고리 안쪽에 반투명 그림자(-)를 문 틈 쪽으로 드리움",
+ "ok": true
+}

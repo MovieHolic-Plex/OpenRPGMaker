@@ -1,0 +1,68 @@
+// C: 넓은 닫힌 뚜껑과 큰 앞판, 작은 경첩 두 개만 남긴 단순한 출하 상자. 꼭대기 윗면 9행(y=9~17)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@layer bin
+@mblock 0 8
+..wwwwwwwwwwwwwwwwwwwwwwwwwwww..
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+.wwwwwwwwwwwwwwwwwwwwwwwwwwwwww.
+..wwwwwwwwwwwwwwwwwwwwwwwwwwww..
+@tblock 0 8 wood
+..3333333333333333333333333333..
+.376666666666666566666666666631.
+.376666666666666566666666666631.
+.376666666666666566666666666631.
+.376666666666666566666666666631.
+.376666555566666566666666666631.
+.376666666666666566666655566631.
+.376666666666666566666666666631.
+.376666666666666566666666666631.
+.376666666666666566666666666631.
+.366666666666666666666666666631.
+.333333333333333333333333333321.
+.365555555555555555555555555431.
+.365555555555666666555555555431.
+.365555555555333333555555555431.
+.365555555555222222555555555431.
+.365555555555555555555555555431.
+.363333333333333333333333333431.
+.365555555555555555555555555431.
+.365555555555555555555555555431.
+.365555555555555555555555555431.
+.365555555555555555555555555431.
+.334444444444444444444444444321.
+..1111111111111111111111111111..
+@mat i iron 3
+@mblock 7 9
+ii
+ii
+@mblock 23 9
+ii
+ii
+@mat j iron 4
+@mblock 7 9
+jj
+@mblock 23 9
+jj

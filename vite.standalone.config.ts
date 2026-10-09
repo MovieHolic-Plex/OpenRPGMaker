@@ -1,0 +1,64 @@
+import { defineConfig } from "vite";
+import { fileURLToPath, URL } from "node:url";
+import { resolve } from "node:path";
+import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContract.mjs";
+import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
+import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
+import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
+import { runtimeLicenseBannerPlugin } from "./scripts/lib/runtimeLicenseBanner.mjs";
+
+/**
+ * 스탠드얼론(단일 HTML) 플레이어 빌드.
+ *
+ * vite.player.config.ts 와 다른 점만 적는다 — 나머지는 같아야 한다.
+ * - format: "iife" + inlineDynamicImports: 코드 분할이 있으면 `file://` 에서 청크를 못 가져온다.
+ * - cssCodeSplit: false: CSS 한 덩어리로 뽑아 HTML 에 인라인한다.
+ * - phaserRuntime alias: `import.meta.url` 주입식 대신 번들 포함판(phaserRuntimeBundled).
+ *
+ * 이 설정의 산출물은 그 자체로 완성물이 아니다. scripts/build-standalone-html.mjs 가
+ * JS·CSS·에셋·프로젝트를 묶어 HTML 한 장으로 만든다.
+ */
+const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url));
+let thisRoot: string;
+let outputDirectory: string;
+
+export default defineConfig({
+  base: "./",
+  envPrefix: "OPENRPG_PLAYER_",
+  publicDir: false,
+  plugins: [{
+    name: "standalone-sdk",
+    configResolved(config) { thisRoot = config.root; outputDirectory = resolve(config.root, config.build.outDir); },
+    async closeBundle() {
+      await writeReleaseCollector(thisRoot, outputDirectory);
+      await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
+    },
+  }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin(), runtimeLicenseBannerPlugin(fileURLToPath(new URL("./LICENSE-RUNTIME.md", import.meta.url)))],
+  resolve: {
+    alias: [
+      { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
+      { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
+      { find: /^@\/app\/phaserRuntime$/, replacement: src("app/phaserRuntimeBundled.ts") },
+      { find: "@", replacement: src("") },
+    ],
+    extensions: [".ts", ".js"],
+  },
+  build: {
+    target: "es2022",
+    outDir: "dist/standalone-player",
+    emptyOutDir: true,
+    sourcemap: false,
+    cssCodeSplit: false,
+    // CSS imports (including HUD icons) must not leave sibling files beside one HTML.
+    assetsInlineLimit: Number.POSITIVE_INFINITY,
+    rollupOptions: {
+      input: src("player/exportEntry.ts"),
+      output: {
+        format: "iife",
+        inlineDynamicImports: true,
+        entryFileNames: "standalone.js",
+        assetFileNames: "standalone[extname]",
+      },
+    },
+  },
+});

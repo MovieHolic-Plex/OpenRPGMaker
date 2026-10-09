@@ -1,0 +1,29 @@
+/* database 표면 — editor/harness-suggestion.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `map/harness-suggestion.css` 에 있다. */
+
+
+/* editor/harness-suggestion.css:150-154 */
+.db-body.db-shared-workspace:has(.structure-kit-album-workspace),
+.db-body.db-shared-workspace:has(.tileset-spaces-workspace) {
+  display: flex;
+  flex-direction: column;
+}
+
+/* editor/harness-suggestion.css:802-807 */
+.tileset-spaces-workspace .structure-kit-inspector .db-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+
+/* editor/harness-suggestion.css:841-844 */
+[data-testid="structure-kit-editor"] > .db-enemy-dialog {
+  width: min(1424px, calc(100vw - 16px));
+  height: min(884px, calc(100vh - 16px));
+}

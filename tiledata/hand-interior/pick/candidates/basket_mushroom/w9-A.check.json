@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/basket_mushroom/w9-A.pxg",
+ "id": "basket:mushroom",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  3,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "v5 모양 유지: 버섯 두 개(갓 4단·흰 점·줄기)로 정리, 짚 엮음은 사선 가닥 3톤 + 테두리 밝은 띠",
+ "ok": true
+}

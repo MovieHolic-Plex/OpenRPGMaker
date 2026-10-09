@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/shoe_locker/s5-C.pxg",
+ "set": "school",
+ "id": "shoe_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  1,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석: 다리 달린 열린 선반형 — 칸막이 없이 두 단, 실내화가 칸 앞으로 나와 보이고 아래가 트인다",
+ "ok": true
+}

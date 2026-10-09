@@ -1,0 +1,57 @@
+// tailor_mirror w1-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat j wood 2
+@mat k wood 3
+@mat d wood 4
+@mat s wood 5
+@mat m wood 6
+@mat h wood 7
+@mat 1 gold 1
+@mat 2 gold 2
+@mat 3 gold 3
+@mat 4 gold 4
+@mat 5 gold 5
+@mat 6 gold 6
+@mat p glass 2
+@mat q glass 3
+@mat r glass 4
+@mat u glass 5
+@mat v glass 6
+@mat w ice 6
+@mat y ice 5
+@mblock 0 0
+......2542......
+....26655532....
+..222222222222..
+..266666666651..
+..26rrrrrrrr31..
+..26vuuuuuur31..
+..26vwyuuuur31..
+..26vuwyuuur31..
+..26vuuwyuur31..
+..26vuuuwyur31..
+..26vuuuuwyr31..
+..26vuuuuuwr31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26vwyuuuur31..
+..26vuwyuuur31..
+..26vuuwyuur31..
+..26vuuuwyur31..
+..26vuuuuwyr31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26vuuuuuur31..
+..26qqqqqqqr31..
+..243333333331..
+..211111111111..
+.hhhhhhhhhhhhhm.
+.mmmmmmmmmmdddk.
+.jddddddddkkkkk.
+................

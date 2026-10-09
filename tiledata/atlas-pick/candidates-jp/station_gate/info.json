@@ -1,0 +1,19 @@
+{
+ "id": "station_gate",
+ "slug": "station_gate",
+ "name": "역 개찰구",
+ "scene": "역 앞 번화가",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "자동 개찰구 세 대(사이에 두 통로). 허리 높이 회색 상자, 윗면에 IC 카드 대는 파란 원판, 통로 쪽 작은 초록/빨강 등, 앞 끝에 둥근 문 날개. 위에서 약간 내려다본 각 — 윗면 밝게, 앞면 한 단 어둡게.",
+ "palette_hint": "mmetal/mconc 몸통, kblue 판, kgreen·akachin 등",
+ "worker": "j2"
+}

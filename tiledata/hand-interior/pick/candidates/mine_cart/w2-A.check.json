@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mine_cart/w2-A.pxg",
+ "id": "mine cart",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 정리: 광석 무더기를 금 조각이 섞인 회색 덩이로 정돈, 윗테두리 밝은 선, 리벳 띠, 바퀴 둥글게",
+ "ok": true
+}

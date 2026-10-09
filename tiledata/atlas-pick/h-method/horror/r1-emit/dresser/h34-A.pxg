@@ -1,0 +1,45 @@
+// dresser h34-A (H 방법: Tibo 3/4 → C → E)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b mahog 0
+@mat c rot 0
+@mat d soil 0
+@mat e vpine 0
+@mat f vpurple 0
+@mblock 0 0
+acaacaaaaaaacccc
+caaacaaaaaaccccc
+caaaacaaaaaaaacc
+bbbbbbbbbbbbbbbb
+bddddddddddddddb
+bbbecbbbbbbbcebb
+bbbabbbbbbbbbabb
+dddddddddddddddd
+bbbecbbbbbbbcebb
+bbbabbbbbbbbbabb
+dddddddddddddddd
+bbbecbbbbbbbcebb
+bbbabbbbbbbbbabb
+bddddddddddddddb
+b..............b
+................
+@tblock 0 0
+2622622222226666
+6222622222266666
+6222262222222266
+5444444444444442
+2000000000000002
+2444644444446442
+2332533333335232
+0000000000000000
+2444644444446442
+2332533333335232
+0000000000000000
+2444644444446442
+2332533333335232
+2000000000000002
+2..............2
+................

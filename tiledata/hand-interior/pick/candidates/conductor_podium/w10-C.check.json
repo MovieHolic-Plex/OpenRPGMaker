@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/conductor_podium/w10-C.pxg",
+ "id": "conductor podium",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.1
+ },
+ "lint": {
+  "failed": [
+   "banding",
+   "saturation",
+   "outline_black",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  14
+ ],
+ "note": "2단 단상 + 놋쇠 난간으로 재해석, 위 단이 좁아 계단식 입체감",
+ "ok": true
+}

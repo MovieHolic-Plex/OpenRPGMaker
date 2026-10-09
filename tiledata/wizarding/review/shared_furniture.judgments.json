@@ -1,0 +1,127 @@
+{
+ "_reviewer": "sonnet adversarial",
+ "wz-furn-bench-long": {
+  "verdict": "PASS",
+  "reason": "긴 벤치로 읽힘. 윗면 3px+정면, 좌우 대칭, 오크 3~4단 명암·유색 윤곽, 빛 왼쪽 위. S 몸체 통행 적절."
+ },
+ "wz-furn-table-small": {
+  "verdict": "PASS",
+  "reason": "작은 탁자로 읽힘. 윗면이 충분히 보이고 상판 높이 축척 적절, 결·윤곽 style-ref 와 일치."
+ },
+ "wz-furn-bench-seat": {
+  "verdict": "PASS",
+  "reason": "얇지만 좌석 벤치로 읽힘. 윗면+앞면 3/4 유지, 같은 오크 팔레트."
+ },
+ "wz-furn-chair-back-up": {
+  "verdict": "PASS",
+  "reason": "등받이 기둥·가로살+좌면 윗면이 보여 의자로 읽힘. 3/4 시점·명암 OK, S."
+ },
+ "wz-furn-chair-back-down": {
+  "verdict": "PASS",
+  "reason": "Redrawn: 16px tall like chair-back-up; a bright wood5 seat top is visible between the two back posts (y=3~5), a single slat at y=7, a darker apron below, and both legs reach the floor with a gap between them. Reads as a chair seen from behind at 1x and 3x, matches the left/right/up chairs in outline, 3-4 step shading and upper-left light. S walk, same size and pivot as the state bundle."
+ },
+ "wz-furn-chair-back-left": {
+  "verdict": "PASS",
+  "reason": "옆 등받이 널+좌면 윗면 4px 이 보여 의자로 읽힘. 방향 구별됨, 윤곽·명암 OK."
+ },
+ "wz-furn-chair-back-right": {
+  "verdict": "PASS",
+  "reason": "left 의 좌우 대칭형, 의자로 읽힘. 윗면·다리 OK."
+ },
+ "wz-furn-cabinet-closed": {
+  "verdict": "PASS",
+  "reason": "두 짝 여닫이장으로 읽힘. 윗면 3px, 금속 손잡이 포인트, 패널 명암 일관."
+ },
+ "wz-furn-cabinet-open": {
+  "verdict": "PASS",
+  "reason": "열린 문 양옆+선반 속 책/물건이 보여 열린 장으로 읽힘. 같은 크기·피벗, 열림 상태 통행 처리 일관."
+ },
+ "wz-furn-bookshelf": {
+  "verdict": "PASS",
+  "reason": "책장으로 읽힘. 책등 색 다양·선반 3단, 윗면 보임, 질감 좋음."
+ },
+ "wz-furn-bookshelf-low": {
+  "verdict": "PASS",
+  "reason": "낮은 책장으로 읽힘. 윗면·책등·선반 OK."
+ },
+ "wz-furn-crate-a": {
+  "verdict": "PASS",
+  "reason": "X 보강 상자로 읽힘. 윗면+정면, 3~4단 명암 OK."
+ },
+ "wz-furn-crate-b": {
+  "verdict": "PASS",
+  "reason": "가로 널 상자로 읽힘(서랍장 느낌이 약간 있으나 상자 범위). 윗면·윤곽 OK."
+ },
+ "wz-furn-crate-stack": {
+  "verdict": "PASS",
+  "reason": "쌓은 상자 3개로 읽힘. 위 상자 윗면 보이고 겹침 윤곽 정상."
+ },
+ "wz-furn-barrel": {
+  "verdict": "PASS",
+  "reason": "쇠테 통으로 읽힘. 둥근 뚜껑 윗면과 몸통 곡면 명암 OK."
+ },
+ "wz-furn-candlestick": {
+  "verdict": "PASS",
+  "reason": "세 갈래 촛대로 읽힘. 촛불 불꽃·황동 명암 OK."
+ },
+ "wz-furn-lantern-hanging": {
+  "verdict": "PASS",
+  "reason": "고리·유리창·테두리로 매다는 등불로 읽힘. 윤곽·명암 OK."
+ },
+ "wz-furn-prop-quill": {
+  "verdict": "PASS",
+  "reason": "깃펜으로 읽힘. 대각 실루엣, 깃/촉 구분됨."
+ },
+ "wz-furn-prop-inkwell": {
+  "verdict": "PASS",
+  "reason": "잉크병으로 읽힘. 파랑 몸통+금색 고리."
+ },
+ "wz-furn-prop-scroll": {
+  "verdict": "PASS",
+  "reason": "양끝 말림+붉은 끈 두루마리로 읽힘. 책과는 구별됨."
+ },
+ "wz-furn-prop-bottles": {
+  "verdict": "PASS",
+  "reason": "세 병(초록·보라·주황)으로 읽힘. 유리 하이라이트 OK."
+ },
+ "wz-furn-prop-book-open": {
+  "verdict": "PASS",
+  "reason": "펼친 책으로 읽힘. 두 쪽·표지 가장자리."
+ },
+ "wz-furn-prop-book-closed": {
+  "verdict": "PASS",
+  "reason": "덮은 보라 책으로 읽힘. 금 장식 OK."
+ },
+ "wz-furn-curtain-closed": {
+  "verdict": "PASS",
+  "reason": "닫힌 붉은 커튼으로 읽힘. 주름 세로결+금 봉, 3단 명암. 통행 C/C/S 적절."
+ },
+ "wz-furn-curtain-open": {
+  "verdict": "PASS",
+  "reason": "양옆으로 묶인 열린 커튼으로 읽힘. 가운데 개방, 같은 크기·피벗, 통행 가능."
+ },
+ "wz-furn-banner-lion": {
+  "verdict": "PASS",
+  "reason": "붉은 배너+금색 사자 얼굴(갈기·귀)로 읽힘. 제비꼬리 끝 OK."
+ },
+ "wz-furn-banner-snake": {
+  "verdict": "PASS",
+  "reason": "재검수: 머리·눈·굽은 목이 생겨 1배에서도 S 글자가 아닌 뱀(코브라형)으로 읽힌다. 은회색 명암·배너 틀 OK."
+ },
+ "wz-furn-banner-eagle": {
+  "verdict": "PASS",
+  "reason": "파란 배너+날개 편 독수리 실루엣으로 읽힘. 색·명암 OK."
+ },
+ "wz-furn-banner-badger": {
+  "verdict": "PASS",
+  "reason": "재검수: 눈 아래로 내려온 어두운 줄무늬 얼룩+코로 오소리 얼굴로 읽히고 웃는 얼굴 느낌이 사라졌다. 노란 배너와 윤곽·명암 OK."
+ },
+ "wz-furn-rug": {
+  "verdict": "PASS",
+  "reason": "무늬 양탄자로 읽힘. 술 장식·금 테두리·마름모 무늬, 바닥 f 겹침."
+ },
+ "wz-furn-fireplace": {
+  "verdict": "PASS",
+  "reason": "돌 벽난로로 읽힘. 돌 블록 질감·장작·맨틀 OK."
+ }
+}

@@ -1,0 +1,131 @@
+/* database 표면 진입 시트 — 리프 시트를 @layer database 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전).
+   첫 줄의 @layer 선언은 허용된 유일한 비-import 줄이다: index.css 와 같은 순서 선언을 멱등으로 되풀이해, dev 모드에서 이 시트가
+   index.css 보다 먼저 파싱되더라도(모듈 평가 순서) 레이어 순서가 import 순서에 기대지 않게 한다. */
+@layer tokens, base, components, shell, map, event, database, resources, runtime, overrides;
+@import "./from-editor-core-part-2.css" layer(database);
+@import "./from-editor-harness-suggestion.css" layer(database);
+@import "./from-editor-event-editor-legacy-part-1.css" layer(database);
+@import "./from-editor-event-editor-legacy-part-2.css" layer(database);
+@import "./core.part-1.css" layer(database);
+@import "./core.part-2.css" layer(database);
+@import "./core.part-3.css" layer(database);
+@import "./tabs-a.part-1.css" layer(database);
+@import "./tabs-a.part-2.css" layer(database);
+@import "./tabs-a.part-3.css" layer(database);
+@import "./tabs-b-resource-manager.css" layer(database);
+@import "./tabs-b-shell-layout.css" layer(database);
+@import "./skill-item-visuals.css" layer(database);
+@import "./record-thumbs.css" layer(database);
+@import "./character-graphics.css" layer(database);
+@import "./from-editor-responsive-a.css" layer(database);
+@import "./actors.css" layer(database);
+@import "./actors.part-2.css" layer(database);
+@import "./actors.part-3.css" layer(database);
+@import "./actors.part-4.css" layer(database);
+@import "./actors.part-5.css" layer(database);
+@import "./enemies.part-1.css" layer(database);
+@import "./enemies.part-2.css" layer(database);
+@import "./enemies.part-3.css" layer(database);
+@import "./elements.css" layer(database);
+@import "./states.css" layer(database);
+@import "./troops.part-2.css" layer(database);
+@import "./modern/tilesets.css" layer(database);
+@import "./tilesets.css" layer(database);
+@import "./tilesets.part-2.css" layer(database);
+@import "./tilesets.part-3.css" layer(database);
+@import "./tilesets.part-4.css" layer(database);
+@import "./tilesets.part-5.css" layer(database);
+@import "./tilesets.part-6.css" layer(database);
+@import "./tilesets.part-7.css" layer(database);
+@import "./tilesets.part-8.css" layer(database);
+@import "./tilesets-autotile.css" layer(database);
+@import "./tilesets-terrain.css" layer(database);
+@import "./desktop.css" layer(database);
+@import "./desktop-record-shell/01-modal-shell.css" layer(database);
+@import "./desktop-record-shell/02-class-layout.css" layer(database);
+@import "./desktop-record-shell/03-class-panels.css" layer(database);
+@import "./desktop-record-shell/04-modern-records.css" layer(database);
+@import "./desktop-record-shell/modern-records.part-2.css" layer(database);
+@import "./desktop-record-shell/modern-records.part-3.css" layer(database);
+@import "./desktop-record-shell/05-dense-workbenches.css" layer(database);
+@import "./desktop-record-shell/06-states.css" layer(database);
+@import "./desktop-record-shell/07-utility-tabs.css" layer(database);
+@import "./desktop-record-shell/08-elements.css" layer(database);
+@import "./desktop-record-shell/09-final-readability-fixes.css" layer(database);
+@import "./desktop-record-shell/10-tab-chrome-unify.css" layer(database);
+@import "./desktop-record-shell/11-life-authoring.css" layer(database);
+@import "./desktop-record-shell/12-spatial-authoring.css" layer(database);
+@import "./desktop-record-shell/14-party-ux-fixes.css" layer(database);
+@import "./virtual-list.css" layer(database);
+@import "./dock.css" layer(database);
+@import "./light-theme.css" layer(database);
+@import "./sidebar.css" layer(database);
+@import "./record-list-modern.css" layer(database);
+@import "./modern-controls.css" layer(database);
+@import "./overview-dashboard.css" layer(database);
+@import "./title-workbench.css" layer(database);
+@import "./play-resolution.css" layer(database);
+@import "./system-font-section.css" layer(database);
+@import "./system-studio.css" layer(database);
+@import "./world-gen.css" layer(database);
+@import "./retro-gallery.css" layer(database);
+@import "./scratch-concept.css" layer(database);
+@import "./studio-theme.css" layer(database);
+/* 15- 인 이유(2026-09-17 실측): 이 시트는 record-list-modern.css 뒤에 실려야 한다.
+   `.db-actor-table-row { display: grid }` 와
+   `.database-modal-backdrop .database-modal-window .database-modal-body .db-list-row { display: flex }`
+   가 **둘 다 (0,4,0)·같은 레이어**라 승자를 문서 순서가 정한다. 앞으로 옮기면 flex 가 이겨
+   배우 목록 행의 5열 정렬이 헤더와 어긋난다(CDP 로 잰 셀 x 좌표 265/442/536/586/650 →
+   265/384/416/432/462). 한때 13- 이름으로 여기 있었는데, 번호만 보고 위로 올리면 깨진다.
+   그래서 위치가 아니라 **번호**를 실제 순서에 맞췄다. 앞으로 옮기려면 두 규칙의 경쟁을
+   먼저 풀어라 — 승자 게이트는 선택자가 달라서 이 충돌을 못 잡는다. */
+@import "./desktop-record-shell/15-actor-studio.css" layer(database);
+@import "./workspace-modern.css" layer(database);
+@import "./village-design.css" layer(database);
+@import "./modern/crops-characters.css" layer(database);
+@import "./modern/life-crafting.css" layer(database);
+@import "./modern/skills.css" layer(database);
+@import "./modern/spatial-collections.css" layer(database);
+@import "./modern/troops.css" layer(database);
+@import "./modern/utility-records.css" layer(database);
+@import "./modern/weather-animals.css" layer(database);
+@import "./studio-v2.css" layer(database);
+@import "./studio-v2.part-2.css" layer(database);
+@import "./studio-v2.part-3.css" layer(database);
+@import "./studio-v2.part-4.css" layer(database);
+@import "./desktop-record-shell/16-view-toggle-final.css" layer(database);
+@import "./desktop-record-shell/17-database-footer-final.css" layer(database);
+@import "./desktop-record-shell/18-party-simplify.css" layer(database);
+@import "./spatial-shell.css" layer(database);
+@import "./spatial-spaces.css" layer(database);
+@import "./spatial-places.css" layer(database);
+@import "./spatial-geography.css" layer(database);
+@import "./ai-bar.css" layer(database);
+@import "./ai-bar.part-2.css" layer(database);
+@import "./ai-bar.part-3.css" layer(database);
+@import "./ai-bar.part-4.css" layer(database);
+@import "./character-appearances.css" layer(database);
+@import "./from-editor-world-panel.css" layer(database);
+@import "./from-editor-map-props.css" layer(database);
+@import "./from-editor-audio-test-dialog.css" layer(database);
+@import "./from-editor-ai-settings-modal.css" layer(database);
+@import "./curve-editors.css" layer(database);
+@import "./battle-studio.css" layer(database);
+@import "./animation-editor.css" layer(database);
+@import "./modern/enemies.css" layer(database);
+@import "./modern/equipment-items.css" layer(database);
+@import "./modern/factions.css" layer(database);
+@import "./modern/monster-species.css" layer(database);
+@import "./modern/village.css" layer(database);
+@import "./growth-tree.css" layer(database);
+@import "./quick-battle-modal.css" layer(database);
+@import "./region-reference.css" layer(database);
+
+@import "./asset-browser.css" layer(database);
+@import "./spatial-new-place.css" layer(database);
+
+@import "./spatial-composition.css" layer(database);
+@import "./editor-owned-ai-modal-shell.css" layer(database);
+
+@import "./tileset-references.css" layer(database);
+@import "./studio-refresh.css" layer(database);

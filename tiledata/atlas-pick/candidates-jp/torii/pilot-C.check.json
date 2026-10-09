@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/torii/pilot-C.pxg",
+ "set": "jp",
+ "id": "torii",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "refmap": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  4,
+  63,
+  61
+ ],
+ "note": "실루엣 재해석: 기둥이 아래로 벌어진 판(위가 좁다), 가사기 끝을 크게 휨, 액자 크게, 누키를 한 칸 내림",
+ "ok": true
+}

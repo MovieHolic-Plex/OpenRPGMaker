@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_base/wv2-B.pxg",
+ "set": "worldmap",
+ "id": "plains_base",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  0,
+  47,
+  15
+ ],
+ "note": "왼쪽 위 빛: 밝은 얼룩 둘레 오른쪽 아래에 그늘 점. 그림자 없이 명도 차만으로 결",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.109
+  },
+  "seam": 0.14,
+  "variantLuma": [
+   124.9,
+   124.9,
+   124.8
+  ]
+ }
+}

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hanging_pans/w10-A.pxg",
+ "id": "hanging pans",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "v5 유지: 남는 황동 냄비가 공중에 뜨던 것을 철 사슬 한 칸으로 프라이팬 밑에 매닮, 나머지는 그대로",
+ "ok": true
+}

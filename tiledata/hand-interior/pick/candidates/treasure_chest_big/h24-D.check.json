@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_chest_big/h24-D.pxg",
+ "id": "treasure chest big",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  11,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "장식판: 뚜껑 가운데 금 메달리온+파란 보석, 앞 패널을 금선으로 둘러 자물쇠판을 안에 앉히고 밴드에 금못 (납작 21행 유지)",
+ "ok": true
+}

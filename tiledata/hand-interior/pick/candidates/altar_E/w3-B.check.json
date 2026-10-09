@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w3-B.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.194
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 23,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "강한 명암 — 천에 세로 주름 셋(밝은 면 white:6 → 골 white:1~3 → 그늘 white:2)을 넣어 왼쪽 위 빛이 걸리게 함. 밑돌은 왼쪽 marble:6 하이라이트→오른쪽 marble:0 그늘로 대비를 키우고, 천이 드리운 그림자를 돌 윗줄에 깔았다. 문양판은 어둡게 눌러 금 십자가 떠 보이게. 접지 그림자는 캔버스 바닥이 꽉 차 있어 넣지 못함.",
+ "ok": true
+}

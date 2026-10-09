@@ -1,0 +1,401 @@
+.cluster-ai-modal-backdrop {
+  align-items: center;
+  background: rgba(42, 37, 33, 0.18);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: var(--z-popover-high);
+}
+
+.cluster-ai-modal-window {
+  background: var(--editor-panel-bg);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  color: var(--editor-text);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: min(860px, calc(100dvh - 32px));
+  max-width: min(1180px, calc(100vw - 32px));
+  min-height: 620px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.cluster-ai-header {
+  align-items: center;
+  background: var(--editor-toolbar-bg);
+  border-bottom: 1px solid var(--editor-line);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+}
+
+.cluster-ai-heading {
+  min-width: 0;
+}
+
+.cluster-ai-heading h2 {
+  font-size: 14px;
+  line-height: 1.2;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cluster-ai-heading p {
+  color: var(--editor-text-muted);
+  font-size: 12px;
+  margin: 3px 0 0;
+}
+
+.cluster-ai-modal-close,
+.cluster-ai-send,
+.cluster-ai-choice,
+.cluster-ai-accept,
+.cluster-ai-reject {
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  cursor: pointer;
+  font: 700 12px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 10px;
+}
+
+.cluster-ai-modal-close:hover,
+.cluster-ai-send:hover:not(:disabled),
+.cluster-ai-choice:hover,
+.cluster-ai-accept:hover,
+.cluster-ai-reject:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--editor-line-strong);
+}
+
+.cluster-ai-body {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-rows: minmax(260px, 1.05fr) minmax(240px, 0.95fr);
+  min-height: 0;
+  padding: var(--space-3);
+}
+
+.cluster-ai-stage {
+  align-items: center;
+  background: var(--editor-canvas-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  display: flex;
+  justify-content: center;
+  max-height: min(520px, 52vh);
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-3);
+}
+
+.cluster-ai-stage-placeholder {
+  align-items: center;
+  border: 1px dashed var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted);
+  display: flex;
+  font-size: 13px;
+  justify-content: center;
+  min-height: 180px;
+  padding: var(--space-4);
+  text-align: center;
+  width: min(520px, 100%);
+}
+
+.cluster-ai-stage-placeholder.loading {
+  background: var(--editor-blue-soft);
+  border-color: var(--editor-blue);
+  color: var(--editor-text);
+}
+
+.cluster-ai-beforeafter,
+.cluster-ai-image-grid {
+  align-items: stretch;
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 0;
+  width: 100%;
+}
+
+.cluster-ai-image-single {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  width: 100%;
+}
+
+.cluster-ai-stage-card {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto minmax(0, 1fr);
+  margin: 0;
+  max-height: min(560px, 58vh);
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.cluster-ai-image-single .cluster-ai-stage-card {
+  height: 100%;
+  max-width: 760px;
+}
+
+.cluster-ai-stage-card figcaption {
+  color: var(--editor-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cluster-ai-stage-card img {
+  background: var(--editor-panel-bg-2);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  height: 100%;
+  image-rendering: pixelated;
+  max-height: min(520px, 54vh);
+  max-width: 100%;
+  min-height: 0;
+  object-fit: contain;
+  width: 100%;
+}
+
+.cluster-ai-bottom {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
+  min-height: 240px;
+}
+
+.cluster-ai-preview,
+.cluster-ai-chat {
+  background: var(--editor-panel-bg-2);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  min-width: 0;
+}
+
+.cluster-ai-preview {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
+  padding: var(--space-3);
+}
+
+.cluster-ai-preview h3 {
+  color: var(--editor-text-muted);
+  font-size: 12px;
+  margin: 0;
+}
+
+.cluster-ai-tile-grid {
+  align-content: start;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(auto-fill, 44px);
+  min-height: 0;
+  overflow: auto;
+}
+
+.cluster-ai-tile {
+  align-items: end;
+  border: 1px solid var(--editor-line);
+  display: flex;
+  height: 44px;
+  justify-content: end;
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: 44px;
+}
+
+.cluster-ai-tile span {
+  background: rgba(42, 37, 33, 0.12);
+  color: var(--on-accent);
+  font: 700 10px/1 var(--font-mono);
+  padding: 2px 3px;
+}
+
+.cluster-ai-empty {
+  color: var(--editor-text-muted);
+  font-size: 12px;
+}
+
+.cluster-ai-chat {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto minmax(96px, 1fr) auto auto auto;
+  max-height: none;
+  min-height: 200px;
+  padding: var(--space-3);
+}
+
+.cluster-ai-status {
+  color: var(--editor-text-muted);
+  font-size: 11px;
+}
+
+.cluster-ai-log {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: 0;
+  overflow: auto;
+}
+
+.cluster-ai-bubble {
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 92%;
+  padding: 7px 10px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.cluster-ai-bubble.assistant {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cluster-ai-bubble.user {
+  align-self: flex-end;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+}
+
+.cluster-ai-bubble.assistant,
+.cluster-ai-bubble.tool {
+  align-self: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+}
+
+.cluster-ai-bubble.tool {
+  color: var(--editor-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.cluster-ai-bubble.system {
+  align-self: center;
+  color: var(--editor-text-muted);
+  font-size: 11px;
+}
+
+.cluster-ai-quick-replies,
+.cluster-ai-proposal-actions,
+.cluster-ai-input-row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.cluster-ai-input-row {
+  align-items: stretch;
+}
+
+.cluster-ai-quick-replies {
+  flex-wrap: wrap;
+}
+
+.cluster-ai-proposal-host {
+  min-height: 0;
+  overflow: auto;
+}
+
+.cluster-ai-choice {
+  background: var(--editor-blue-soft);
+  border-color: var(--editor-blue);
+  font-size: 13px;
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.cluster-ai-proposal {
+  background: var(--bg-raised);
+  border: 1px solid var(--editor-line-strong);
+  border-radius: var(--radius-s);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.cluster-ai-proposal.destructive {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+}
+
+.cluster-ai-proposal-lines {
+  color: var(--editor-text-muted);
+  display: grid;
+  font-size: 11px;
+  gap: 2px;
+  max-height: 96px;
+  overflow: auto;
+}
+
+.cluster-ai-accept,
+.cluster-ai-send {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+
+.cluster-ai-send {
+  align-self: stretch;
+  min-width: 84px;
+}
+
+.cluster-ai-reject:hover {
+  background: var(--danger-muted);
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.cluster-ai-input {
+  background: var(--control-bg);
+  border: 1px solid var(--editor-line);
+  border-radius: var(--radius-s);
+  color: var(--editor-text);
+  flex: 1 1 auto;
+  font: 12px/1.45 var(--font-ui);
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+@media (max-width: 760px) {
+  .cluster-ai-modal-backdrop {
+    padding: var(--space-2);
+  }
+
+  .cluster-ai-modal-window {
+    min-height: calc(100dvh - 16px);
+  }
+
+  .cluster-ai-body {
+    grid-template-rows: minmax(220px, 0.9fr) minmax(300px, 1.1fr);
+  }
+
+  .cluster-ai-bottom,
+  .cluster-ai-beforeafter,
+  .cluster-ai-image-grid {
+    grid-template-columns: 1fr;
+  }
+}

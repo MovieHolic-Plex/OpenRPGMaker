@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/ticket_machine/r2-C.pxg",
+ "set": "jp",
+ "id": "ticket_machine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.262
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 29,
+ "bbox": [
+  0,
+  0,
+  46,
+  31
+ ],
+ "note": "실루엣 재해석: 가운데 기계만 노선도 등 상자를 이고 높이 솟고 좌우 기계는 낮게 붙는다(계단 실루엣). 운임표는 양옆 위로 보이고 오른 끝 옆면 한 단 어둡게.",
+ "ok": true
+}

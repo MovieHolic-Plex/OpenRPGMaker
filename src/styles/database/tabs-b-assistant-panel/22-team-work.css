@@ -1,0 +1,573 @@
+/* ── 작업 페인 (2026-09-14 A안 — 조수 데크 「대화|작업」 탭 + 스튜디오 상세)
+   aiTeamWorkPane.ts 가 그리는 팀원 열 + 과정 열. 조수 데크의 「작업」 탭과 스튜디오 덱의
+   「작업」 탭이 같은 마크업을 쓰고, 스튜디오는 .is-detail 로 툴 인자·전체 문장을 펼친다.
+   tokens.css 변수만 쓴다. !important 0. */
+
+/* ── 1. 조수 데크의 「대화|작업」 탭 줄 ───────────────────────── */
+.ai-work-tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--ai-deck-line);
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 0 14px;
+}
+
+.ai-work-tabs[hidden] {
+  display: none;
+}
+
+/* 스튜디오에서는 스튜디오 덱의 「작업」이 같은 상태를 그린다 — 데크 탭 줄은 숨긴다. */
+.ai-chat-panel.is-studio .ai-work-tabs {
+  display: none;
+}
+
+/* 작업 탭이 채팅 본문을 숨길 때 — 18 의 display:flex 규칙이 [hidden] 을 이기지 못하게. */
+.ai-deck > .ai-chat-body[hidden] {
+  display: none;
+}
+
+.ai-work-tab {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ai-deck-secondary);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 12.5px;
+  gap: 6px;
+  margin-bottom: -1px;
+  padding: 7px 10px 8px;
+}
+
+.ai-work-tab:hover {
+  color: var(--text-1);
+}
+
+.ai-work-tab:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-work-tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.ai-work-tab-count {
+  color: var(--text-3);
+  font-size: 11.5px;
+}
+
+.ai-work-tab-count:empty {
+  display: none;
+}
+
+.ai-work-tab-badge {
+  background: var(--accent);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.5;
+  min-width: 16px;
+  padding: 0 5px;
+  text-align: center;
+}
+
+.ai-work-tab-badge[hidden] {
+  display: none;
+}
+
+.ai-work-tab-live {
+  border-radius: 50%;
+  height: 6px;
+  width: 6px;
+}
+
+.ai-work-tab-live[data-state="run"] {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.ai-work-tab-live[data-state="attention"] {
+  background: var(--warning);
+  box-shadow: 0 0 0 3px var(--warning-muted);
+}
+
+.ai-work-tab-live[data-state="error"] {
+  background: var(--danger);
+}
+
+.ai-work-tab-live[data-state="done"] {
+  background: var(--success);
+}
+
+.ai-work-tab-live[data-state="idle"] {
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ── 2. 페인 골격 — 데크 안에서는 탭 높이만큼 키를 키운다 ─────── */
+.ai-team-work {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ai-team-work[hidden],
+.ai-team-work-body[hidden],
+.ai-team-work-empty[hidden],
+.ai-team-work-review[hidden],
+.ai-team-work-foot[hidden],
+.ai-team-tx[hidden] {
+  display: none;
+}
+
+/* 조수 데크 직속일 때만 명시 높이 — 900 호스트에서 612, 1080 에서 700 (목업 계약). */
+.ai-deck > .ai-team-work {
+  height: min(700px, 68vh);
+}
+
+.ai-team-work-empty {
+  color: var(--ai-deck-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 18px 16px;
+}
+
+.ai-team-work-body {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.ai-team-work-body.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ai-team-work-body.is-single > .ai-team-work-members {
+  display: none;
+}
+
+.ai-team-work-progress { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: auto; }
+.ai-team-work-current { flex: none; margin: 0; padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); font-size: 13px; color: var(--accent); }
+.ai-team-work-member-action { font-size: 13px; line-height: 1.5; margin-top: 8px; color: var(--text-1); }
+.ai-team-work-member-result, .ai-team-work-member-signal { font-size: 11px; line-height: 1.5; margin-top: 6px; color: var(--text-2); white-space: normal; overflow-wrap: anywhere; }
+.ai-team-work-member-signal { color: var(--text-3); }
+
+/* The studio's narrow team column needs a full-width activity body. */
+@container (max-width: 560px) {
+  .ai-team-work .ai-team-work-body:not(.is-single),
+  .ai-team-work.is-detail .ai-team-work-body:not(.is-single) { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 40%) minmax(0, 1fr); }
+  .ai-team-work-body:not(.is-single) > .ai-team-work-members { grid-template-columns: repeat(2, minmax(0, 1fr)); border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+}
+
+/* ── 3. 팀원 열 ──────────────────────────────────────────────── */
+.ai-team-work-members {
+  align-content: start;
+  border-right: 1px solid var(--ai-deck-line);
+  display: grid;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 8px 10px 10px;
+}
+
+.ai-team-work-member {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 2px;
+  padding: 7px 9px;
+  text-align: left;
+  width: 100%;
+}
+
+.ai-team-work-member:hover {
+  background: var(--control-bg-hover);
+}
+
+.ai-team-work-member[aria-selected="true"] {
+  background: var(--bg-raised);
+  border-color: var(--accent);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--text-1) 8%, transparent);
+}
+
+.ai-team-work-member:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.ai-team-work-member-head {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-team-work-member-name {
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-work-member-where,
+.ai-team-work-member-meta,
+.ai-team-work-member-fix {
+  color: var(--ai-deck-secondary);
+  font-size: 11.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-work-member.is-running .ai-team-work-member-meta {
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-1));
+}
+
+.ai-team-work-member.is-error .ai-team-work-member-meta {
+  color: var(--danger);
+}
+
+.ai-team-work-member-fix {
+  color: var(--warning);
+}
+
+/* 상세 보기의 배정 전문 — 팀원 카드 안에서 몇 줄까지 편다. */
+.ai-team-work-member-task {
+  color: var(--ai-deck-secondary);
+  display: -webkit-box;
+  font-size: 11.5px;
+  line-height: 1.4;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* 팀장 배지는 20-team-board 의 .ai-team-role 색을 그대로 쓴다(role-orchestrator/builder/reviewer). */
+
+/* ── 4. 과정 열(aiTeamTranscript.ts) ─────────────────────────── */
+.ai-team-tx {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+
+.ai-team-tx-head {
+  align-items: center;
+  border-bottom: 1px solid var(--ai-deck-line);
+  display: flex;
+  flex: none;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 14px;
+}
+
+.ai-team-tx-name {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.ai-team-tx-counters {
+  color: var(--ai-deck-secondary);
+  font-size: 12px;
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-tx-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 6px 12px 10px;
+}
+
+.ai-team-tx-dropped {
+  color: var(--text-3);
+  font-size: 11.5px;
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+.ai-team-tx-dropped[hidden] {
+  display: none;
+}
+
+.ai-team-tx-list {
+  display: grid;
+  gap: 3px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-team-tx-row {
+  font-size: 12.5px;
+  line-height: 1.45;
+  min-width: 0;
+}
+
+.ai-team-tx-task,
+.ai-team-tx-done {
+  align-items: baseline;
+  background: var(--bg-inset);
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  margin: 2px 0 4px;
+  padding: 7px 10px;
+}
+
+.ai-team-tx-tag {
+  color: var(--accent);
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ai-team-tx-done.is-ok .ai-team-tx-tag {
+  color: var(--success);
+}
+
+.ai-team-tx-done.is-error .ai-team-tx-tag {
+  color: var(--danger);
+}
+
+.ai-team-tx-body {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-team-tx-turn {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 8px;
+  padding: 0 2px;
+}
+
+.ai-team-tx-tool {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  padding: 4px 6px;
+}
+
+.ai-team-tx-tool:hover {
+  background: var(--control-bg-hover);
+}
+
+.ai-team-tx-tool .ai-act-what {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-team-tx-tool .ai-act-label {
+  flex: none;
+  font-weight: 600;
+}
+
+.ai-team-tx-tool .ai-act-sum {
+  color: var(--ai-deck-secondary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-tx-tool .ai-act-status {
+  color: var(--success);
+  display: inline-flex;
+  flex: none;
+}
+
+.ai-team-tx-tool.is-error .ai-act-status {
+  color: var(--danger);
+}
+
+.ai-team-tx-tool.is-running .ai-act-status {
+  color: var(--accent);
+}
+
+.ai-team-tx-tool.is-running .ai-act-sum {
+  color: color-mix(in srgb, var(--accent) 70%, var(--text-1));
+}
+
+.ai-team-tx-text {
+  overflow-wrap: anywhere;
+  padding: 3px 8px 3px 20px;
+  position: relative;
+}
+
+.ai-team-tx-text::before {
+  background: var(--text-3);
+  border-radius: 50%;
+  content: "";
+  height: 5px;
+  left: 8px;
+  position: absolute;
+  top: 0.65em;
+  width: 5px;
+}
+
+.ai-team-tx-error {
+  background: var(--danger-muted);
+  border-radius: 8px;
+  color: var(--danger);
+  overflow-wrap: anywhere;
+  padding: 6px 10px;
+}
+
+.ai-team-tx-review {
+  border-left: 2px solid var(--success);
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+  margin: 4px 0;
+  padding: 6px 10px;
+}
+
+.ai-team-tx-review.is-findings {
+  background: var(--warning-muted);
+  border-left-color: var(--warning);
+}
+
+.ai-team-tx-verdict {
+  display: block;
+  font-weight: 600;
+}
+
+.ai-team-tx-findings {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+
+.ai-team-tx-more {
+  color: var(--text-3);
+}
+
+/* ── 5. 상세 보기(.is-detail, 스튜디오) — 인자 줄·전체 문장 ────── */
+.ai-team-work.is-detail .ai-team-work-body {
+  grid-template-columns: minmax(200px, 260px) minmax(0, 1fr);
+}
+
+.ai-team-work.is-detail .ai-team-tx-tool {
+  align-items: flex-start;
+}
+
+.ai-team-work.is-detail .ai-team-tx-tool .ai-act-what {
+  flex-wrap: wrap;
+}
+
+.ai-team-work.is-detail .ai-team-tx-tool .ai-act-sum {
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.ai-team-tx-args {
+  color: var(--text-3);
+  flex-basis: 100%;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+/* ── 6. 검토 스트립 — 버리기 · 보고서 열기 · 적용 ─────────────── */
+.ai-team-work-review {
+  align-items: center;
+  background: var(--warning-muted);
+  border-top: 1px solid var(--ai-deck-line);
+  display: flex;
+  flex: none;
+  gap: 10px;
+  padding: 8px 14px;
+}
+
+.ai-team-work-review-label {
+  color: var(--text-1);
+  font-size: 12.5px;
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-work-review-actions {
+  display: flex;
+  flex: none;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.ai-team-work-review .ai-team-btn:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+/* ── 7. 푸터 ─────────────────────────────────────────────────── */
+.ai-team-work-foot {
+  border-top: 1px solid var(--ai-deck-line);
+  color: var(--ai-deck-secondary);
+  display: grid;
+  flex: none;
+  font-size: 12px;
+  gap: 4px;
+  padding: 8px 14px 10px;
+}
+
+.ai-team-work-foot p {
+  margin: 0;
+}
+
+.ai-team-work-report-line {
+  color: var(--text-1);
+}
+
+.ai-team-work-error {
+  color: var(--danger);
+}
+
+/* ── 8. 스튜디오 덱 안 — 페인이 덱 페인을 가득 채운다 ─────────── */
+.ai-studio-deck-pane .ai-team-work {
+  height: 100%;
+}
+
+/* 자율 실행 체크리스트(WorkPlan)와 실행 보드가 함께 있을 때 좌: 계획, 우: 보드. */
+.ai-studio-work-split {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.ai-studio-work-split > .ai-studio-work {
+  min-height: 0;
+  overflow: auto;
+}

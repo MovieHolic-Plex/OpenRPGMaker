@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hanging_cage/h162-E.pxg",
+ "id": "hanging cage",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  14,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "둥근 쇠 덮개와 잠금쇠 달린 감옥용 우리로 재해석하고 사슬·하부 판 윗면·바닥 그림자를 표현; 꼭대기 윗면 5행(y=16~20)",
+ "ok": true
+}

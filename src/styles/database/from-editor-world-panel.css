@@ -1,0 +1,1160 @@
+/* database 표면 — editor/world-panel.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 database 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+/* 주: 원본 표면 `editor/` 는 2026-09-17 에 해체됐다(계획 Task 11) — 21장은 map/, 5장은 shell/dialogs/.
+   파일명의 `from-editor-` 는 **역사적 출처 표기**이며 현재 디렉터리를 뜻하지 않는다.
+   위 헤더가 말하는 원본은 지금 `map/world-panel.css` 에 있다. */
+
+
+/* editor/world-panel.css:560-570 */
+@layer editor {
+  .db-world-canon-name,
+    .db-world-canon-premise,
+    .db-world-canon-body,
+    .db-world-canon-absence-input {
+      width: 100%;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background: var(--bg-overlay);
+      color: inherit;
+      font: inherit;
+    }
+}
+
+/* editor/world-panel.css:572-579 */
+@layer editor {
+  .db-world-canon-name {
+      border-color: transparent;
+      background: transparent;
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.3;
+      padding: 4px 2px;
+    }
+}
+
+/* editor/world-panel.css:581-586 */
+@layer editor {
+  .db-world-canon-name:hover,
+    .db-world-canon-name:focus {
+      border-color: var(--border-subtle);
+      background: var(--bg-overlay);
+      outline: none;
+    }
+}
+
+/* editor/world-panel.css:588-592 */
+@layer editor {
+  .db-world-canon-premise {
+      min-height: 52px;
+      padding: 8px 10px;
+      resize: vertical;
+    }
+}
+
+/* editor/world-panel.css:594-599 */
+@layer editor {
+  .db-world-canon-body {
+      min-height: 280px;
+      padding: 10px 12px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+}
+
+/* editor/world-panel.css:601-608 */
+@layer editor {
+  .db-world-canon-tones,
+    .db-world-canon-absence-chips,
+    .db-world-canon-absence-add {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+}
+
+/* editor/world-panel.css:610-612 */
+@layer editor {
+  .db-world-canon-absence-add {
+      width: 100%;
+    }
+}
+
+/* editor/world-panel.css:614-619 */
+@layer editor {
+  .db-world-canon-absence-input {
+      flex: 1 1 12em;
+      min-width: 0;
+      min-height: 32px;
+      padding: 6px 10px;
+    }
+}
+
+/* editor/world-panel.css:621-630 */
+@layer editor {
+  .db-world-canon-chip {
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+}
+
+/* editor/world-panel.css:632-636 */
+@layer editor {
+  .db-world-canon-chip.is-on {
+      border-color: var(--accent);
+      background: var(--accent-muted);
+      color: var(--success);
+    }
+}
+
+/* editor/world-panel.css:638-641 */
+@layer editor {
+  .db-world-canon-law {
+      display: grid;
+      gap: 8px;
+    }
+}
+
+/* editor/world-panel.css:643-646 */
+@layer editor {
+  .db-world-canon-body-wrap {
+      display: grid;
+      gap: 8px;
+    }
+}
+
+/* editor/world-panel.css:648-650 */
+@layer editor {
+  .db-world-canon-preview-toggle {
+      justify-self: start;
+    }
+}
+
+/* editor/world-panel.css:652-657 */
+@layer editor {
+  .db-world-canon-preview {
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: var(--bg-overlay);
+    }
+}
+
+/* editor/world-panel.css:694-699 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace {
+  container-type: inline-size;
+  gap: 0;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+}
+
+/* editor/world-panel.css:701-707 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws,
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-detail-body {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* editor/world-panel.css:709-712 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-detail-body {
+  display: block;
+  height: 100%;
+}
+
+/* editor/world-panel.css:714-723 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  box-sizing: border-box;
+}
+
+/* editor/world-panel.css:725-731 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-ai-scope-label,
+.world-document-workspace .world-muted,
+.world-document-workspace .world-result-count,
+.world-document-workspace .world-draft-context {
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.5 var(--font-ui);
+}
+
+/* editor/world-panel.css:733-736 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-panel-header {
+  padding: 12px 16px;
+  background: var(--db-studio-surface);
+}
+
+/* editor/world-panel.css:738-743 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-panel-controls {
+  width: 100%;
+  gap: 8px;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* editor/world-panel.css:745-749 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-search-input {
+  flex: 1;
+  min-width: 80px;
+  width: auto;
+}
+
+/* editor/world-panel.css:751-754 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .world-document-workspace .world-panel-controls :is(button, input, select) {
+  min-height: 36px;
+  font-size: 13px;
+}
+
+/* editor/world-panel.css:756-759 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-panel-main {
+  grid-template-columns: 256px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+}
+
+/* editor/world-panel.css:761-765 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-browser {
+  padding: 16px 12px;
+  background: var(--db-studio-canvas);
+  gap: 12px;
+}
+
+/* editor/world-panel.css:767 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-tabs { gap: 4px; }
+
+/* editor/world-panel.css:768-775 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-tab {
+  min-height: 32px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--db-studio-text-2);
+  font: 500 13px/1.5 var(--font-ui);
+}
+
+/* editor/world-panel.css:776-780 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-tab.active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+
+/* editor/world-panel.css:781-786 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+/* editor/world-panel.css:787-799 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 64px;
+  padding: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+/* editor/world-panel.css:800-804 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card.active {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+  box-shadow: none;
+}
+
+/* editor/world-panel.css:805 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card.active .world-card-title { color: var(--db-studio-accent); }
+
+/* editor/world-panel.css:806-810 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-media {
+  height: 32px;
+  border-radius: 6px;
+  background: var(--db-studio-inset);
+}
+
+/* editor/world-panel.css:811 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-placeholder { width: 28px; height: 28px; font-size: 14px; border: 0; }
+
+/* editor/world-panel.css:812 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-content { padding: 0; gap: 4px; min-width: 0; }
+
+/* editor/world-panel.css:813 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-title { font: 600 13px/1.5 var(--font-ui); }
+
+/* editor/world-panel.css:814 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-summary { color: var(--db-studio-text-2); font-size: 12px; }
+
+/* editor/world-panel.css:815 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card-badges { display: none; }
+
+/* editor/world-panel.css:816 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-lock-button { font-size: 12px; min-width: 36px; padding: 2px 4px; }
+
+/* editor/world-panel.css:817-822 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace [data-gallery="true"] .world-card {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 112px auto;
+  border-color: var(--db-studio-border-subtle);
+  background: var(--db-studio-surface);
+}
+
+/* editor/world-panel.css:823 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace [data-gallery="true"] .world-card-media { height: 112px; }
+
+/* editor/world-panel.css:824-829 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-browser-tools {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  padding-top: 12px;
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+
+/* editor/world-panel.css:830 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace summary { cursor: pointer; }
+
+/* editor/world-panel.css:831-838 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-wiki-view {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--db-studio-surface);
+}
+
+/* editor/world-panel.css:839-844 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-wiki-view.empty {
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  text-align: center;
+}
+
+/* editor/world-panel.css:845-853 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-wiki-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  flex-shrink: 0;
+}
+
+/* editor/world-panel.css:854 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-wiki-heading h3 { font: 700 26px/1.3 var(--font-ui); overflow-wrap: anywhere; }
+
+/* editor/world-panel.css:855 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-wiki-heading p { font: 400 14px/1.5 var(--font-ui); overflow-wrap: anywhere; }
+
+/* editor/world-panel.css:856-864 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-layout {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+}
+
+/* editor/world-panel.css:865-871 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-content {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px 32px;
+}
+
+/* editor/world-panel.css:872-876 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-content.world-edit-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* editor/world-panel.css:877-883 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-document-content .db-ws-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  margin-bottom: 24px;
+}
+
+/* editor/world-panel.css:884-891 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace :is(.world-document-title, .db-world-canon-name) {
+  font: 700 26px/1.3 var(--font-ui);
+  background: transparent;
+  border-color: transparent;
+  min-height: 48px;
+  padding: 4px 0;
+  width: 100%;
+}
+
+/* editor/world-panel.css:892-904 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace :is(.world-edit-body, .db-world-canon-body) {
+  font: 400 16px/1.65 var(--font-ui);
+  field-sizing: content;
+  min-height: 320px;
+  height: auto;
+  max-height: none;
+  padding: 16px;
+  resize: vertical;
+  width: 100%;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  background: var(--db-studio-surface);
+}
+
+/* editor/world-panel.css:905-909 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-world-canon-premise {
+  min-height: 64px;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+/* editor/world-panel.css:910 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-markdown { font: 400 16px/1.65 var(--font-ui); overflow-wrap: anywhere; }
+
+/* editor/world-panel.css:911 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-markdown .md { line-height: 1.65; gap: 16px; }
+
+/* editor/world-panel.css:912-913 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-draft-context,
+.world-document-workspace .world-edit-error { margin: 0; padding: 8px 24px; flex-shrink: 0; }
+
+/* editor/world-panel.css:914-919 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-properties {
+  width: 64px;
+  box-sizing: border-box;
+  min-height: 0;
+  background: var(--db-studio-surface);
+}
+
+/* editor/world-panel.css:920-931 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-properties > summary {
+  font: 600 13px/1.5 var(--font-ui);
+  min-height: 36px;
+  margin: 12px 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  list-style: none;
+  text-align: center;
+  color: var(--db-studio-text-2);
+}
+
+/* editor/world-panel.css:932-937 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-properties[open] {
+  width: 272px;
+  border-left: 1px solid var(--db-studio-border-subtle);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* editor/world-panel.css:938-941 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-document-properties[open] > summary {
+  color: var(--db-studio-accent);
+  background: var(--db-studio-accent-soft);
+}
+
+/* editor/world-panel.css:942 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-properties-body { padding: 8px 16px 24px; display: grid; gap: 24px; }
+
+/* editor/world-panel.css:943-946 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-properties-body .db-ws-card {
+  padding: 0;
+  background: transparent;
+}
+
+/* editor/world-panel.css:947-951 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-properties-body .db-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+
+/* editor/world-panel.css:952 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-properties-body .world-edit-fields { grid-template-columns: minmax(0, 1fr); }
+
+/* editor/world-panel.css:953 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-ai-preview { white-space: pre-wrap; overflow-wrap: anywhere; font: 400 12px/1.5 var(--font-ui); }
+
+/* editor/world-panel.css:954 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-list-toggle { display: none; }
+
+/* editor/world-panel.css:955-958 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace :is(button, summary, input, textarea, select, [role="button"]):focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+/* editor/world-panel.css:959 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+.world-document-workspace .world-card:hover { background: var(--db-studio-inset); }
+
+/* editor/world-panel.css:962-968 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 1100px) {
+  .world-document-workspace .world-document-properties[open] {
+      position: absolute;
+      inset: 0 0 0 auto;
+      z-index: 3;
+      width: min(320px, 100%);
+      box-shadow: var(--db-studio-shadow-pop);
+    }
+}
+
+/* editor/world-panel.css:971 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-panel-main { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* editor/world-panel.css:972-973 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace [data-view="document"] .world-browser,
+    .world-document-workspace [data-view="list"] .world-wiki-view { display: none; }
+}
+
+/* editor/world-panel.css:974 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-list-toggle { display: inline-flex; }
+}
+
+/* editor/world-panel.css:975 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-document-content { padding: 16px; }
+}
+
+/* editor/world-panel.css:976 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-document-toolbar { padding: 8px 16px; flex-wrap: wrap; gap: 4px 12px; }
+}
+
+/* editor/world-panel.css:977 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-browser { max-height: none; border-right: 0; }
+}
+
+/* editor/world-panel.css:978 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-panel-controls { flex-wrap: wrap; }
+}
+
+/* editor/world-panel.css:979 — [레이어 보존] 세계 문서 작업공간(DB 탭) 전체 — db- 주어 규칙과 world- 주어 규칙이 같은 요소를 다뤄 한 레이어에 있어야 한다 */
+@container (max-width: 799px) {
+  .world-document-workspace .world-gallery-toggle { margin-left: auto; }
+}
+/* 세계 개요 v2 (2026-09-18) — Studio 토큰·프리미티브 유지, 구조만 추가.
+   AI 미터 / hero stat / 법칙 2열 그리드. */
+.world-document-workspace .world-canon-law-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-law-grid { grid-template-columns: minmax(0, 1fr); }
+}
+/* 설정집 v2 (2026-09-18) — 헤더 아래 stat 스트립. 기존 toolbar 경계·토큰 유지. */
+.world-document-workspace .world-codex-lead-wrap {
+  display: grid;
+  gap: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+.world-document-workspace .world-codex-lead-wrap .world-document-toolbar {
+  border-bottom: 0;
+}
+.world-document-workspace .world-codex-lead-wrap .db-ws-stats {
+  padding: 0 24px 12px;
+}
+/* 세계 개요 v2 — hero stat 리듬: stat 띠와 미터 사이 호흡. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .world-canon-workspace .db-ws-stats {
+  gap: 0;
+  margin-bottom: 16px;
+}
+/* 세계 개요 v2 — 제목+힌트 겹침 방지: 좁은 열에서 줄바꿈 허용.
+   같은 database 레이어 안이라 파일 순서가 아니라 특이성이 이긴다 —
+   workspace-modern.css(0-4-0)를 이기도록 풀 체인(0-5-0)으로 건다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-head {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-title {
+  white-space: normal;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .world-document-workspace .db-ws-card-hint {
+  flex-basis: 100%;
+}
+/* 세계 개요·설정집 폴리시 (2026-09-18) — Studio v2 문법 안에서만. 새 토큰 없음.
+   미터 가독 / 법칙 카드 표면 / 선택 카드 레일 마커 / 위키 헤더 리듬. */
+.world-document-workspace .world-canon-law-grid > .db-world-canon-law {
+  background: var(--db-studio-canvas);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.world-document-workspace .world-card.active {
+  border-color: var(--db-studio-accent-border);
+  box-shadow: inset 3px 0 0 var(--db-studio-accent), var(--db-studio-shadow);
+}
+.world-document-workspace .world-card.active .world-card-title {
+  letter-spacing: 0;
+}
+.world-document-workspace .world-wiki-header {
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  margin-bottom: 12px;
+}
+.world-document-workspace .world-wiki-heading h3 {
+  letter-spacing: -0.01em;
+}
+.world-document-workspace .db-world-canon-chip.is-on {
+  font-weight: 700;
+}
+/* 세계 개요·설정집 폴리시 2 (2026-09-18) — database 레이어라 map(editor) 레이어의
+   동급 규칙을 특이성과 무관하게 이긴다. 새 토큰 없음.
+   경고 블록 탈포화 / 칩·카드 호버·포커스 피드백. */
+.world-document-workspace .world-lint-item.warning {
+  background: var(--warning-muted);
+  color: var(--db-studio-warning-strong);
+}
+.world-document-workspace .world-lint-item.error {
+  background: var(--danger-muted);
+  color: var(--db-studio-danger);
+}
+.world-document-workspace .world-lint-item.info {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .db-world-canon-chip,
+.world-document-workspace .world-tab,
+.world-document-workspace .world-relation-chip {
+  transition: background-color var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
+}
+.world-document-workspace .db-world-canon-chip:hover,
+.world-document-workspace .world-tab:hover,
+.world-document-workspace .world-relation-chip:hover {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+}
+.world-document-workspace .db-world-canon-chip:focus-visible,
+.world-document-workspace .world-tab:focus-visible,
+.world-document-workspace .world-relation-chip:focus-visible,
+.world-document-workspace .world-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+.world-document-workspace .world-card:hover {
+  border-color: var(--db-studio-border-strong);
+}
+
+/* 세계 개요 스프레드 뷰 (2026-09-22) — 문서 리듬 + 법칙 질문 카드. 새 토큰 없이 Studio 토큰만 쓴다. */
+.world-document-workspace .db-ws-card-title {
+  font: 600 11px/1.4 var(--font-ui);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--db-studio-text-3);
+}
+.world-document-workspace .world-canon-law-grid.is-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-law-grid.is-cards { grid-template-columns: minmax(0, 1fr); }
+}
+.world-document-workspace .db-world-canon-law-card {
+  appearance: none;
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 10px;
+  background: var(--db-studio-canvas, var(--db-studio-surface));
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color var(--transition-fast, 120ms ease), box-shadow var(--transition-fast, 120ms ease);
+}
+.world-document-workspace .db-world-canon-law-card:hover {
+  border-color: var(--db-studio-accent-border);
+  box-shadow: 0 2px 10px rgba(40, 30, 10, 0.08);
+}
+.world-document-workspace .db-world-canon-law-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+.world-document-workspace .db-world-canon-law-q {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 700 13px/1.4 var(--font-ui);
+  color: var(--db-studio-text-1);
+}
+.world-document-workspace .db-world-canon-law-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+  font-size: 11px;
+}
+.world-document-workspace .db-world-canon-law-arrow {
+  margin-left: auto;
+  font: 600 11px/1 var(--font-ui);
+  color: var(--db-studio-text-3);
+}
+.world-document-workspace .db-world-canon-law-card:hover .db-world-canon-law-arrow { color: var(--db-studio-accent); }
+.world-document-workspace .db-world-canon-law-state {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font: 700 11px/1.4 var(--font-ui);
+}
+.world-document-workspace .db-world-canon-law-state::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.world-document-workspace .db-world-canon-law-state.is-yes { background: var(--db-studio-success-soft, rgba(46, 125, 79, 0.12)); color: var(--db-studio-success); }
+.world-document-workspace .db-world-canon-law-state.is-no { background: var(--db-studio-danger-soft, rgba(179, 64, 47, 0.12)); color: var(--db-studio-danger); }
+.world-document-workspace .db-world-canon-law-state.is-unset { background: var(--db-studio-warning-soft, rgba(196, 124, 32, 0.14)); color: var(--db-studio-warning-strong, var(--db-studio-warning)); }
+.world-document-workspace .db-world-canon-law-note {
+  font: 400 12.5px/1.55 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.db-world-canon-law-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-top);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(20, 16, 8, 0.4);
+}
+.db-world-canon-law-dialog {
+  width: min(420px, 100%);
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 14px;
+  background: var(--db-studio-surface);
+  box-shadow: 0 18px 50px rgba(30, 20, 5, 0.25);
+}
+.db-world-canon-law-dialog-title {
+  margin: 0;
+  font: 700 14px/1.4 var(--font-ui);
+  color: var(--db-studio-text-1);
+}
+.db-world-canon-law-options { display: grid; gap: 7px; }
+.db-world-canon-law-option {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 12px;
+  border: 1.5px solid var(--db-studio-border-subtle);
+  border-radius: 10px;
+  background: var(--db-studio-canvas, var(--db-studio-surface));
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.db-world-canon-law-option:hover { border-color: var(--db-studio-accent-border); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option.is-selected { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.db-world-canon-law-option-title { font: 700 13px/1.4 var(--font-ui); color: var(--db-studio-text-1); }
+.db-world-canon-law-option-desc { font: 400 11.5px/1.5 var(--font-ui); color: var(--db-studio-text-3); }
+.db-world-canon-law-note-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 9px 11px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  background: var(--db-studio-canvas, var(--db-studio-surface));
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.55 var(--font-ui);
+  resize: vertical;
+}
+.db-world-canon-law-note-input:focus-visible { outline: var(--focus-outline); outline-offset: 1px; }
+.db-world-canon-law-tip {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--db-studio-inset);
+  font: 400 11px/1.55 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.db-world-canon-law-tip strong { color: var(--db-studio-warning-strong, var(--db-studio-warning)); }
+.db-world-canon-law-save { justify-self: end; min-width: 110px; }
+
+
+.world-document-workspace .world-canon-spread-era {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-spread-era { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* 세계 개요 탭 구조 (2026-09-22 v2) — 한 장 스프레드를 문서/조수 전달 두 탭으로 나눈다.
+   탭 스트립은 DB 공용 db-ws-section-tab 문법을 그대로 쓰고, 아래는 이 탭의 리듬 보정만 담는다. */
+.world-document-workspace .db-ws-section-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--db-studio-surface);
+  padding: 0 8px;
+}
+.world-document-workspace .world-canon-tab-body {
+  display: grid;
+  gap: 16px;
+  padding: 16px 8px 24px;
+}
+.world-document-workspace .world-canon-ai-panel { gap: 12px; }
+.world-document-workspace .world-canon-ai-lead {
+  margin: 0;
+  font: 400 12.5px/1.6 var(--font-ui);
+  color: var(--db-studio-text-2);
+  background: var(--db-studio-inset);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.world-document-workspace .world-canon-ai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.world-document-workspace .world-canon-ai-grid-item {
+  display: grid;
+  gap: 3px;
+  padding: 10px 14px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-left: 3px solid var(--db-studio-success, #2e7d4f);
+  border-radius: 10px;
+  background: var(--db-studio-canvas, var(--db-studio-surface));
+}
+.world-document-workspace .world-canon-ai-grid-item[data-tone="missing"],
+.world-document-workspace .world-canon-ai-grid-item[data-tone="warn"] {
+  border-left-color: var(--db-studio-warning);
+}
+.world-document-workspace .world-canon-ai-grid-label {
+  font: 600 11px/1.4 var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--db-studio-text-3);
+}
+.world-document-workspace .world-canon-ai-grid-value {
+  font: 500 13px/1.5 var(--font-ui);
+  color: var(--db-studio-text-1);
+  overflow-wrap: anywhere;
+}
+.world-document-workspace .world-canon-ai-pre {
+  margin: 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--db-studio-inset, #f4f1e9);
+  max-height: 420px;
+  overflow: auto;
+}
+@container (max-width: 799px) {
+  .world-document-workspace .world-canon-ai-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* 본문 탭(도화지) — 첫 화면의 주인공. 리드 문장 + 본문이 화면을 채운다. */
+.world-document-workspace .world-canon-body-lead {
+  margin: 0;
+  font: 400 13px/1.6 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+
+
+/* 세계 개요 헤드 압축 + 평문 폼 (2026-09-22 v4) */
+.world-document-workspace .world-canon-fields {
+  display: grid;
+  gap: 10px;
+}
+.world-document-workspace .world-canon-group-title {
+  margin: 6px 0 0;
+  font: 600 12px/1.4 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-canon-fields .db-field {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+
+/* 세계 개요 헤드 v5 (2026-09-22) — 키커 제거, 제목+도움말 한 줄, 미터는 얇게. */
+/* 법칙 대화상자 — DB 모달 안에 붙으므로 위치는 fixed 로 뷰포트 기준을 유지한다. */
+.db-world-canon-law-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal-top);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.28);
+}
+.db-world-canon-law-dialog {
+  width: min(400px, 100%);
+  max-height: min(80vh, 640px);
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+  padding: 16px 18px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.24);
+}
+.db-world-canon-law-dialog-title {
+  margin: 0;
+  font: 700 14px/1.4 var(--font-ui);
+  color: var(--db-studio-text-1, #0f172a);
+}
+.db-world-canon-law-options { display: grid; gap: 6px; }
+.db-world-canon-law-option {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 9px 12px;
+  border: 1.5px solid var(--db-studio-border-default);
+  border-radius: 9px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  font: inherit;
+  cursor: pointer;
+}
+.db-world-canon-law-option:hover { border-color: var(--db-studio-accent-border); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option.is-selected { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); }
+.db-world-canon-law-option:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.db-world-canon-law-option-title { font: 700 13px/1.4 var(--font-ui); color: var(--db-studio-text-1, #0f172a); }
+.db-world-canon-law-option-desc { font: 400 11.5px/1.5 var(--font-ui); color: var(--db-studio-text-2, #475569); }
+.db-world-canon-law-note-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 10px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1, #0f172a);
+  font: 400 13px/1.55 var(--font-ui);
+  resize: vertical;
+}
+.db-world-canon-law-note-input:focus-visible { outline: var(--focus-outline); outline-offset: 1px; }
+.db-world-canon-law-tip {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--db-studio-inset, #f1f5f9);
+  color: var(--db-studio-text-2, #475569);
+  font: 400 11px/1.55 var(--font-ui);
+}
+.db-world-canon-law-tip strong { color: var(--db-studio-warning-strong, #b45309); }
+.db-world-canon-law-save { justify-self: end; min-width: 104px; }
+
+
+/* 세계 설정 인터뷰 (2026-09-22) — 폼 대신 문답. 대화 로그 + 선택지 + 입력줄. */
+.world-document-workspace .world-canon-interview {
+  gap: 10px;
+}
+.world-document-workspace .world-canon-interview-lead {
+  margin: 0;
+  font: 400 12.5px/1.6 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-canon-interview-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.world-document-workspace .world-canon-interview-chip {
+  padding: 3px 9px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-interview-chip.is-filled {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+.world-document-workspace .world-canon-interview-log {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-height: 200px;
+  max-height: 46vh;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 12px;
+  background: var(--db-studio-canvas, var(--db-studio-surface));
+}
+.world-document-workspace .world-canon-interview-empty {
+  margin: 0;
+  color: var(--db-studio-text-3);
+  font: 400 12.5px/1.6 var(--font-ui);
+}
+.world-document-workspace .world-canon-interview-line {
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font: 400 13px/1.6 var(--font-ui);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.world-document-workspace .world-canon-interview-line.is-assistant {
+  justify-self: start;
+  background: var(--db-studio-surface, #fff);
+  border: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
+  border-bottom-left-radius: 4px;
+}
+.world-document-workspace .world-canon-interview-line.is-user {
+  justify-self: end;
+  background: var(--db-studio-accent-soft);
+  border: 1px solid var(--db-studio-accent-border);
+  color: var(--db-studio-text-1);
+  border-bottom-right-radius: 4px;
+}
+.world-document-workspace .world-canon-interview-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.world-document-workspace .world-canon-interview-choice {
+  appearance: none;
+  padding: 5px 12px;
+  border: 1px solid var(--db-studio-accent-border);
+  border-radius: 999px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-accent);
+  font: 600 12px/1.5 var(--font-ui);
+  cursor: pointer;
+}
+.world-document-workspace .world-canon-interview-choice:hover {
+  background: var(--db-studio-accent-soft);
+}
+.world-document-workspace .world-canon-interview-compose {
+  display: grid;
+  gap: 6px;
+}
+.world-document-workspace .world-canon-interview-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 9px 11px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.55 var(--font-ui);
+  resize: vertical;
+}
+.world-document-workspace .world-canon-interview-input:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+.world-document-workspace .world-canon-interview-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.world-document-workspace .world-canon-interview-status {
+  min-height: 16px;
+  color: var(--db-studio-text-3);
+  font: 400 11.5px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-interview-manual > summary {
+  cursor: pointer;
+  color: var(--db-studio-text-3);
+  font: 600 12px/1.6 var(--font-ui);
+}
+.world-document-workspace .world-canon-interview-manual[open] > summary {
+  color: var(--db-studio-accent);
+  margin-bottom: 8px;
+}
+
+/* 본문 AI 도움 (2026-09-22) — 초안/이어쓰기 제안. 결과는 textarea 에 들어가고 저장은 저자가 한다. */
+.world-document-workspace .world-canon-body-ai {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 12px;
+  background: var(--db-studio-inset);
+}
+.world-document-workspace .world-canon-body-ai-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.world-document-workspace .world-canon-body-ai-instruction {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1);
+  font: 400 12.5px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-status {
+  min-height: 16px;
+  color: var(--db-studio-text-3);
+  font: 400 11.5px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-notes {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 3px;
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.55 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-notes-head {
+  list-style: none;
+  margin-left: -18px;
+  color: var(--db-studio-warning-strong, var(--db-studio-warning));
+  font-weight: 700;
+}
+

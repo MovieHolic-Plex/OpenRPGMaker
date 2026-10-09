@@ -1,0 +1,124 @@
+/* map 표면 — shell/figma-editor/09-rm-chipset-grid.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/09-rm-chipset-grid.css:1-8 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+    flex: 1 1 auto;
+    height: auto;
+    max-height: none;
+    min-height: min(240px, 32vh);
+    scrollbar-width: thin;
+    container-type: inline-size;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:11-18 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid {
+    --chipset-cell: 32px;
+    box-sizing: border-box;
+    gap: 2px;
+    grid-template-columns: repeat(auto-fill, var(--chipset-cell));
+    justify-content: start;
+    padding: 0;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:22-25 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+    gap: 2px;
+    justify-content: start;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:27-34 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-tile {
+    border-radius: 4px;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    height: var(--chipset-cell);
+    min-width: 0;
+    width: var(--chipset-cell);
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:36-43 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-palette-title-row {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:45-51 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-palette-title-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:53-63 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-tool-status {
+    align-items: start;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--editor-line);
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 64px minmax(0, 1fr) 172px;
+    margin: 8px 0 4px;
+    padding: 8px 0 0;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:65-70 */
+.left-panel-stack[data-testid="left-palette-root"] .selected-tile-preview {
+    background-repeat: no-repeat;
+    background-size: 64px auto;
+    height: 64px;
+    width: 64px;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:72-76 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-grid {
+    display: grid;
+    gap: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:78-80 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-cell:nth-child(n + 5) {
+    display: block;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:82-85 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-label {
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:87-91 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-value {
+    font-size: 13px;
+    line-height: 26px;
+    min-height: 26px;
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:93-97 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-actions {
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+/* shell/figma-editor/09-rm-chipset-grid.css:99-108 */
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action {
+    align-items: center;
+    border-radius: 6px;
+    display: grid;
+    gap: 2px;
+    grid-template-rows: 18px 16px;
+    height: 44px;
+    justify-items: center;
+    padding: 4px 4px;
+  }

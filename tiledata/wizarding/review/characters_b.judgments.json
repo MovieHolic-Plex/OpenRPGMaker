@@ -1,0 +1,51 @@
+{
+  "_reviewer": "sonnet adversarial",
+  "wz-chr-earmuff-student": {
+    "verdict": "PASS",
+    "reason": "4방향×3프레임 있음, 행 순서 위·오른쪽·아래·왼쪽 맞음(오른쪽 행 눈이 오른쪽). 아래 보기 f0/f2 발이 좌우로 엇갈림, 옆 보기는 앞/뒷다리 명암이 바뀜. 좌우로 튀는 털 귀마개+목도리로 실루엣이 다른 직업과 구별, 학생 몸 26px. 머리 비율·유색 윤곽·3단 명암이 native trial-student 와 같은 결. 장갑이 손색과 비슷해 약한 건 감점 사유 아님."
+  },
+  "wz-chr-greenhouse-professor": {
+    "verdict": "PASS",
+    "reason": "넓은 챙 낡은 모자+회색 머리+흙 얼룩 초록 망토로 1·2배에서 약초학 교수로 읽힘. 어른 32px(모자 포함). 4방향·3프레임, 망토 밑단과 발이 f0/f2 에서 엇갈림. 옆 보기 얼굴·눈이 오른쪽/왼쪽에 맞게 보임. 명암 3단, 윤곽 유색."
+  },
+  "wz-chr-night-healer": {
+    "verdict": "PASS",
+    "reason": "붉은 십자 간호 모자·흰 앞치마·손 등불로 치료사로 읽힘. 4방향·3프레임 있고 아래 보기 발이 엇갈림, 등불도 프레임마다 흔들림. 앞머리가 길어 얼굴이 3줄뿐이지만 눈 2px 이 있어 무표정 인형은 아님. 뒷모습 앞치마 끈 보임. native 와 머리 비율 비슷."
+  },
+  "wz-chr-bandaged-patient": {
+    "verdict": "PASS",
+    "reason": "머리 붕대 띠와 위로 삐친 생강색 머리, 줄무늬 하늘색 잠옷, 팔 붕대로 환자로 읽힘. 4방향·3프레임, 발 엇갈림 확인, 행 방향 맞음. 머리 위 삐침이 2배에서 머리카락으로 읽힘(왕관처럼 보일 정도는 아님)."
+  },
+  "wz-chr-quidditch-gryffindor": {
+    "verdict": "PASS",
+    "reason": "recheck: broom bristles moved off the floor to behind the body; reads as player carrying broom."
+  },
+  "wz-chr-quidditch-slytherin": {
+    "verdict": "PASS",
+    "reason": "recheck: broom bristles moved off the floor to behind the body; reads as player carrying broom."
+  },
+  "wz-chr-quidditch-ravenclaw": {
+    "verdict": "PASS",
+    "reason": "recheck: broom bristles moved off the floor to behind the body; reads as player carrying broom."
+  },
+  "wz-chr-quidditch-hufflepuff": {
+    "verdict": "PASS",
+    "reason": "recheck: broom bristles moved off the floor to behind the body; reads as player carrying broom."
+  },
+  "wz-chr-boat-guide": {
+    "verdict": "PASS",
+    "reason": "덩치 큰 어른(31px·폭 넓음), 덥수룩한 머리·수염, 털 코트 밑단 술, 손 등불로 사냥터지기풍 안내인으로 읽힘. 4방향·3프레임, 발 엇갈림·등불 흔들림 있음, 옆 보기 얼굴 눈 보임. 명암 3~4단."
+  },
+  "wz-chr-rowing-student": {
+    "verdict": "PASS",
+    "reason": "recheck: thin shaft with wide blade at bottom now reads as an oar."
+  },
+  "wz-chr-honeydukes-packer": {
+    "verdict": "PASS",
+    "reason": "recheck: headscarf hugs head with stripe, no dotted dome; no longer reads as mushroom."
+  },
+  "wz-chr-wand-clerk": {
+    "verdict": "PASS",
+    "reason": "흰 셔츠·보라 조끼·금색 소매 밴드·귀 뒤 펜으로 상점 직원으로 읽히고 다른 직업과 실루엣 구별. 4방향·3프레임, 발 엇갈림, 행 방향 맞음. 펜이 머리 윤곽 밖으로 3px 삐치나 귀에 꽂은 펜으로 자연스럽다. 머리 비율·명암 native 와 같은 결."
+  }
+}

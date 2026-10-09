@@ -1,0 +1,49 @@
+# 물의 정령 — retro2003 손도트
+
+원본: `scripts/asset-gen/pixel-enemy/spirit-water.py` + 공통 출력기 `pe_lib.py`, 검사기 `pe_review.py`.
+시트: `public/assets/generated/pixel-enemies/spirit-water.png`.
+리소스: `generated-enemy-spirit-water` · motion `float` · cell 48 · 권장 idleFrameMs `220`
+(등록은 런타임 에이전트가 `src/assets/retroMonsterPlan.ts` 목록으로 일괄한다).
+
+## 제작·규격
+
+Python 3 + Pillow로 최종 격자에 다각형·선·개별 픽셀을 직접 찍은 OPRN Studio 원작.
+AI 이미지 생성, 외부 몬스터 이미지의 축소·트레이스·팔레트 교체는 사용하지 않았다.
+아군 비교 그림은 기존 EasyRPG Actor1-0 유도 시트이며 몬스터 원화 입력으로 쓰지 않는다(아군 출처: `assets/easyrpg/AUTHORS.md`).
+
+- 셀 48×48, 3열×3행, 시트 144×144 RGBA, 알파 0/255, 16색 이하(실측은 `validation.json`).
+- 오른쪽 보기, 몸 중심 x≈24, 공통 바닥 y=44.
+- 화면은 원본의 정수 2배. 광원 왼쪽 위, 그림자는 오른쪽 아래에 면으로 묶고 선택적 외곽선을 쓴다.
+
+물방울 모양 아래로 좁아지는 몸, 뒤로 말린 물결 머리칼, 몸 안쪽의 진한 물살과 흰 거품. 반투명은 겹친 푸른 띠로 표현했다(알파 0/255 계약).
+
+## 아홉 칸
+
+| 행/열 | 0 | 1 | 2 |
+|---|---|---|---|
+| 0 | idle_a | idle_b | idle_c |
+| 1 | windup | move | attack |
+| 2 | recover | hit | dead |
+
+대기 세 칸은 떠오르며 물결 줄과 거품이 움직인다. windup 두 손을 들어 머리 위에 물 구체를 모음 → move 앞으로 흘러감 → attack 앞 손에서 물줄기를 쏘아 할퀸다. hit 뒤로 밀리며 물방울이 튄다. dead 바닥의 물웅덩이와 떨어지는 물방울.
+대기는 a→b→c→b.
+
+## 재생성·직접 검토
+
+```sh
+cd scripts/asset-gen/pixel-enemy && python3 spirit-water.py
+```
+
+`pe_lib.build` 가 저장 후 재로드 일치·팔레트·알파·칸 밖 침범을 검사하고, `pe_review.review` 가
+시트 크기(cell×3 정사각)·알파 0/255·색 수·빈 칸 없음·아홉 칸 서로 다름(최소 차이 픽셀 수)·바닥선을 다시 검사해 한 줄로 출력한다.
+미리보기는 `.omo/pixel-enemy-spirit-water/`:
+
+- `preview.png`: 4배, 칸 경계·칸 이름·바닥선.
+- `cycle.gif`: #202840 배경 2배, idle 2회 → windup → move → attack → recover → hit → dead.
+- `gif-keyframes.png`, `scale.png`(actor1-0 의 0,0 48px 칸과 같은 4배율, 발 기준선 맞춤), `validation.json`.
+
+직접 `view_image`로 확인한 뒤 수정한 기록:
+1. 몸이 한 덩어리 파랑이라 반투명 느낌이 약했다 → 치마 부분에 물결 줄·거품을 한 칸씩 더하고 가슴 윗면 반사를 넣었다.
+2. windup 물 구체가 작은 마름모라 모이는 느낌이 약했고, attack 물줄기가 손과 떨어져 보였다 → 구체를 9px 원(윗면 반사·물방울 둘)으로 키우고 물줄기를 손끝에서 이어 넓게 퍼지게 했다.
+
+수정 전 미리보기는 같은 폴더 `round0/`(·`round1/`)에 보존했다.

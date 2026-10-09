@@ -1,0 +1,155 @@
+// E: 철제 모서리 보강과 출하 표찰을 단 널판 수거함; 꼭대기 윗면 10행(y=8~17).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 2
+@mat i iron 3
+@mat l linen 4
+@layer bin
+@mblock 0 8
+..dddddddddddddddddddddddddddd..
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwd
+dddddddddddddddddddddddddddddddd
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dwwwwwwwwwwwwwwwwwwwwwwwwwwwwd.
+.dddddddddddddddddddddddddddddd.
+@tblock 1 9 wood
+.7777777777777777777777777777.
+766666666666666666666666666665
+766665566666666666666666666665
+766666666666666665556666666665
+655555555555555555555555555555
+666666666666666666666666666655
+666666666665556666666666666655
+666655666666666666666666666655
+666666666666666666666655556655
+655555555555555555555555555554
+@tblock 2 20 wood
+6555553555555355555535555554
+6555553555555355555535555554
+6554553555555355555535554554
+6554553554555355555535554554
+6555553554555355555535555554
+6555553555555355545535555554
+6555553555555355545535555554
+6555553555555355555535555554
+6555553555555355555535555554
+5555555555555555555555555554
+4444444444444444444444444443
+@tblock 0 8 dwood
+..3333333333333333333333333333..
+.3............................2.
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+3..............................2
+22222222222222222222222222222222
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.3............................2.
+.222222222222222222222222222222.
+// Two flat rear hinges: top surfaces, lit left, shaded right.
+@mblock 6 8
+iii
+iii
+iii
+@tblock 6 8 iron
+443
+332
+432
+@mblock 23 8
+iii
+iii
+iii
+@tblock 23 8 iron
+433
+332
+332
+// Short corner straps on the south face.
+@mblock 3 20
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+@tblock 3 20 iron
+43
+32
+42
+32
+32
+32
+32
+42
+22
+@mblock 27 20
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+ii
+@tblock 27 20 iron
+32
+22
+32
+22
+22
+22
+22
+32
+22
+// Shipping docket: a small cream panel with two printed brown marks.
+@mblock 13 22
+dddddd
+dlllld
+dlllld
+dlllld
+dddddd
+@tblock 14 23 linen
+5443
+4443
+3332
+@mblock 15 24
+ww
+@tblock 15 24 wood
+33

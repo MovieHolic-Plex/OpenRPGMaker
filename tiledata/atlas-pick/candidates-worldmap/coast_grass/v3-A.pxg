@@ -1,0 +1,79 @@
+// coast_grass v3-A (baseline: wv1-C 재색)
+@size 48 64
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wdirt 1
+@mat b wdirt 2
+@mat c wdirt 3
+@mat d wgrass 4
+@mat e wsea 0
+@mat f wsea 1
+@mat g wsea 2
+@mat h wsea 3
+@mat z wsea 3
+@mblock 0 0
+................fhffffffffffffff..ahgfffffggha..
+.......bb.......ffffffffffffffffbbahggfffffghabb
+.....bbaabb.....fffffffffffffeffaahgfffffffffhac
+....baahhacb....ffffffffffffffefhhggffffffffffhh
+....ahhgghha....fffffffffffffffegggffffffffffggg
+...ahfggfgfhad..fffffffffzzfffffgffffffffhffffgf
+...ahgfffggha...ffffffgfffffffffffffffffffffffff
+..ahgeffffggha..fffffgfffffffffffffffeffffffffff
+..ahggeffffgha..ffffgfffffffffffffffffefffffffff
+...ahggeffgha...fffffffffffffffffffffffeffffffff
+...ahfgfggfha...fffffffffffhfffffgffffffffzffffg
+....ahhgghha....fffzzfffffffffffgggffffffffffggg
+.....aahhca.....fffffffffgffffffhhfffffffffffghh
+.......aa.......ffffffffffgfffffaahfffffffffghac
+.......d........fffffffffffgffff.dahgfffffggha..
+................ffffffffffffffff..ahggfffffgha..
+...........b.....bb........b.....bb.............
+.......bbbbabbbbbaabb..bbbbabbbbbaabb..bb.......
+.....bbaaaahaaacahhacbbaaaahaaacahhacbbaabb.....
+....baahhhhghhhhhfghhaahhhhghhhhhfghhaahhacb....
+....ahhgggffgggggfggfhhgggffgggggfggfhhgghha....
+...ahfggfhffffgfgfffgfggfhffffgfgfffgfggfgfhad..
+...ahgfffffffffffffffgfffffffffffffffgfffggha...
+..ahgefffffffffffffffefffffffffffffffeffffggha..
+..ahggefffffffffffffffefffffffffffffffeffffgha..
+.ahgfffefffffffffffffffefffffffffffffffeffgghc..
+..ahffffffzfffffffffffffffzfffffffffffffffffha..
+..ahffffffffffgffffzzfffffffffgffffzzfffffffhad.
+...ahgfffffffgfffffffffffffffgfffffffffffffggha.
+...ahgffffffgfffffffffffffffgffffffffffffffgha..
+.dahgfffffffffffffffffffffffffffffffffffffggha..
+..ahggfffffffffffffhfffffffffffffffhfffffffgha..
+..ahgfffzzffffffffffffffzzffffffffffffffffggha..
+..ahggfffzzffffffgfffffffzzffffffgfffffffffgha..
+..ahgfffffffffffffgfffffffffffffffgfffffffgha...
+...ahgfffffffffffffgfffffffffffffffgffffffghab..
+..ahffffffffffffffffffffffffffffffffffffffffha..
+.dahfffffhfffffffffffffffhfffffffffffffffhfggha.
+.ahfffffffffffffffffffffffffffffffffffffffffgha.
+..ahgeffffffffffffzffeffffffffffffzffeffffggha..
+..ahggefffffffffffffffefffffffffffffffeffffgha..
+.ahgfffefffffffffffffffefffffffffffffffeffgghc..
+..ahffffffzfffffffffffffffzfffffffffffffffffha..
+..ahffffffffffgffffzzfffffffffgffffzzfffffffhad.
+...ahgfffffffgfffffffffffffffgfffffffffffffggha.
+...ahgffffffgfffffffffffffffgffffffffffffffgha..
+.dahgfffffffffffffffffffffffffffffffffffffggha..
+..ahggfffffffffffffhfffffffffffffffhfffffffgha..
+..ahgfffzzffffffffffffffzzffffffffffffffffggha..
+..ahggfffzzffffffgfffffffzzffffffgfffffffffgha..
+..ahgfffffffffffffgfffffffffffffffgfffffffgha...
+...ahgfffffffffffffgfffffffffffffffgffffffghab..
+..ahffffffffffffffffffffffffffffffffffffffffha..
+.dahfffffhfffffffffffffffhfffffffffffffffhfggha.
+.ahfffffffffffffffffffffffffffffffffffffffffgha.
+..ahgeffffffffffffzffeffffffffffffzffeffffggha..
+..ahggefffffffffffffffefffffffffffffffeffffgha..
+...ahggeffgffffffffffffeffgffffffffffffeffgha...
+...ahfgfgffffffgfggfgfffgffffffgfggfgfffggfha...
+....ahhggghhgggggghgffgggghhgggggghgffggghha....
+.....aahhhaahghhhhahhhghhhaahghhhhahhhghhca.....
+.......aaa..ahacaa.acahaaa..ahacaa.acahaa.......
+.......d.....a...d..d.ad.....a...d..d.ad........
+................................................

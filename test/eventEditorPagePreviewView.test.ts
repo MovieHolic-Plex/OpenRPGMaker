@@ -1,0 +1,159 @@
+/** @vitest-environment happy-dom */
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { editorState } from "@/editor/editorState";
+import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
+import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
+import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+
+const EVENT_ID = "ev_page_preview";
+let pageSequence = 0;
+
+function seedProject(): string {
+  const project = createBlankProject();
+  const mapId = project.startMapId;
+  const pageId = `preview-${++pageSequence}`;
+  project.maps[mapId]!.events = [
+    {
+      id: EVENT_ID,
+      x: 3,
+      y: 3,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: pageId,
+          name: "안내인",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [
+            { kind: "text", body: "어서 오세요." },
+            { kind: "setSwitch", switchId: "sw_met", value: true },
+          ],
+        },
+      ],
+    },
+  ];
+  store.replace(project);
+  editorState.set({ currentMapId: mapId, selectedEventId: EVENT_ID, selectedEventPageId: pageId });
+  return mapId;
+}
+
+function click(host: HTMLElement, testId: string): void {
+  const button = host.querySelector<HTMLElement>(`[data-testid="${testId}"]`);
+  if (!button) throw new Error(`missing control ${testId}`);
+  button.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+}
+
+describe("이 페이지가 하는 일 — 미리보기 보기", () => {
+  let host: HTMLElement;
+
+  beforeEach(() => {
+    clearCommandInspector();
+    localStorage.clear();
+    // 보기 모드는 이제 세션에도 있다 — localStorage.clear() 만으로는 안 지워진다.
+    // 이걸 빼면 앞 테스트가 남긴 preview 때문에 아래 「툴바의 미리보기 버튼」 테스트가
+    // 버튼이 아무 일을 안 해도 통과하는 빈 테스트가 된다.
+    resetEventViewSession();
+    host = document.createElement("div");
+    document.body.append(host);
+  });
+
+  afterEach(() => {
+    clearCommandInspector();
+    host.remove();
+  });
+
+  it("보기 토글에 미리보기가 있고, 고르면 명령 컬럼 안에서 무대를 그린다", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+
+    const canvas = host.querySelector<HTMLElement>('[data-testid="event-script-canvas"]');
+    expect(canvas?.querySelector('[data-testid="event-view-toggle-preview"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-preview"]')).toBeNull();
+
+    click(host, "event-view-toggle-preview");
+
+    const previewHost = canvas?.querySelector<HTMLElement>('[data-testid="event-page-preview-host"]');
+    const panel = previewHost?.querySelector<HTMLElement>('[data-testid="event-page-preview"]');
+    expect(previewHost?.hidden).toBe(false);
+    expect(panel).toBeTruthy();
+    expect(previewHost?.querySelector('[data-testid="event-script-live-stage"]')?.textContent).toContain("어서 오세요.");
+  });
+
+  it("이전/다음이 무대와 단계 위치를 옮긴다", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    click(host, "event-view-toggle-preview");
+
+    const caption = () => host.querySelector<HTMLElement>('[data-testid="event-script-live-caption"]')?.textContent ?? "";
+    const position = () => host.querySelector<HTMLElement>(".event-script-live-position")?.textContent ?? "";
+    expect(position()).toBe("1/2");
+    const first = caption();
+
+    click(host, "event-script-live-next");
+    expect(position()).toBe("2/2");
+    expect(caption()).not.toBe(first);
+
+    click(host, "event-script-live-prev");
+    expect(position()).toBe("1/2");
+    expect(caption()).toBe(first);
+  });
+
+  it("keeps the selected tab focused through actual parent view replacement", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    click(host, "event-view-toggle-preview");
+    host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]')!.focus();
+    for (const [key, mode] of [
+      ["ArrowRight", "flow"], ["ArrowLeft", "preview"], ["Home", "list"],
+      ["ArrowLeft", "flow"], ["ArrowRight", "list"], ["End", "flow"], ["ArrowLeft", "preview"],
+    ]) {
+      document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+      const selected = host.querySelector<HTMLElement>(`[data-testid="event-view-toggle-${mode}"]`)!;
+      expect(document.activeElement).toBe(selected);
+      expect(selected.isConnected).toBe(true);
+      expect(selected.getAttribute("aria-selected")).toBe("true");
+      expect(host.querySelectorAll('[data-testid="event-view-toggle"] [role="tab"][tabindex="0"]')).toHaveLength(1);
+    }
+  });
+
+  it("does not steal outside focus when a view refresh is not keyboard activation", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+    const input = host.querySelector<HTMLInputElement>(".event-editor-command-search")!;
+    input.focus();
+    click(host, "event-view-toggle-preview");
+    expect(document.activeElement).toBe(input);
+    click(host, "event-view-toggle-flow");
+    expect(document.activeElement).toBe(input);
+  });
+
+  // 미리보기는 보기 방식 세그먼트가 유일한 입구다. 예전에는 툴바에도 «▶ 미리보기» 가
+  // 있었는데 같은 `changeMode("preview")` 로 들어가는 중복 컨트롤이라 지웠다.
+  it("미리보기 세그먼트가 미리보기 보기로 넘긴다", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+
+    click(host, "event-view-toggle-preview");
+
+    expect(host.querySelector('[data-testid="event-page-preview"]')).toBeTruthy();
+    const toggle = host.querySelector<HTMLElement>('[data-testid="event-view-toggle-preview"]');
+    expect(toggle?.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("미리보기는 다음 열기까지 남는 저작 보기로 저장되지 않는다", () => {
+    const mapId = seedProject();
+    renderEventEditorDynamic(host, mapId, EVENT_ID);
+
+    click(host, "event-view-toggle-list");
+    expect(localStorage.getItem("oprn:storyboard-mode")).toBe("list");
+
+    click(host, "event-view-toggle-preview");
+    expect(localStorage.getItem("oprn:storyboard-mode")).toBe("list");
+  });
+});

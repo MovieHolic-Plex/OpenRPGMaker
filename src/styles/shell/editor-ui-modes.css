@@ -1,0 +1,355 @@
+.editor-product-brand {
+  align-items: center;
+  color: var(--editor-text, var(--text-1));
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 13px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 8px;
+  letter-spacing: 0.02em;
+  margin-right: 14px;
+  user-select: none;
+}
+
+.editor-product-brand-mark {
+  color: var(--brand-blue);
+  font-size: 14px;
+}
+
+.editor-product-brand-text {
+  white-space: nowrap;
+}
+
+
+
+
+
+body .topbar-test-play {
+  align-items: center;
+  background: var(--studio-play, var(--editor-blue, var(--accent)));
+  border: 1px solid var(--studio-select, var(--accent-border));
+  border-radius: var(--radius-s, 2px);
+  color: var(--on-accent, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  white-space: nowrap;
+}
+
+body .topbar-test-play:hover,
+body .topbar-test-play:focus-visible {
+  filter: brightness(1.12);
+  outline: 2px solid color-mix(in srgb, var(--editor-blue, var(--accent)) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.topbar-test-play-glyph {
+  font-size: 11px;
+}
+
+
+
+/* ── Basic statusbar: keep layer / map / tool / tile / zoom / DB; hide expert-only detail ── */
+/* 타일(무엇을 칠하는지)·줌은 basic에서도 보여준다 — 편집에 필수정보. */
+
+/* Map tree: always available when chrome.mapTree; only hide via .is-ui-hidden. */
+.left-panel-stack.is-ui-hidden,
+.resizer-map-tree.is-ui-hidden {
+  display: none !important;
+}
+
+/* Basic has no ⋯ expand control — never hide zoom buttons behind is-expanded gate. */
+
+/* ── Basic labeled rail + flyout ─────────────────────────────────
+   figma-editor.css loads after this file and sets left-palette padding +
+   overflow:hidden for expert sheet scrolling. Beginner mode must beat those
+   with higher specificity so its narrow labeled rail and flyouts are not
+   clipped (layer/map toggles open overlays to the right of the rail).
+*/
+
+/* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
+
+/* 테스트 플레이/전투 테스트 모달이 떠 있는 동안은 숨긴다 — 코치마크가 가리키는
+   도구 레일은 모달 뒤에 있는데 카드만 모달 위(z-modal-top)에 남아, 작은 창에서
+   전투 필드·HUD 를 덮었다(코덱스 적대 리뷰 C5). 모달이 닫히면 다시 보인다. */
+
+
+/* 짧은 뷰포트: 맵 트리가 시트 공간을 잡아먹지 않게 */
+@media (max-height: 720px) {
+  .left-panel-stack[data-testid="left-map-root"] {
+    max-height: min(140px, 22vh);
+    min-height: 72px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] {
+    min-height: 0;
+  }
+
+
+}
+
+/* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통) */
+body .editor-layout .left-panel {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+body .editor-layout .left-panel-stack {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+body .left-panel-stack[data-testid="left-palette-root"],
+body .left-panel-stack[data-testid="left-map-root"] {
+  overflow-x: hidden !important;
+}
+
+/* 전문가 좌측 RM2003 팔레트: 가로 6칸 고정 */
+
+/* Custom atlases preserve the authored sheet geometry. Never reflow them into the
+   RM2K six-column palette: multi-cell facades and props must remain readable. */
+
+/* 시트 크게 보기 팝오버 */
+
+/* Basic rail layout is fully specified in the icon-rail block above. */
+
+/* ── 실제 저작 작업 · 패널 도킹 · 레이아웃 · 밀도 · ⌘K ─────────────────────── */
+
+
+
+/* 「▤ 보기」 — 글리프 + 글자. 글리프만 있던 때(2026-08-26~09-03)는 편집 모드의 유일한 진입점이
+   장식으로 읽혔다. 글자는 다른 메뉴 항목(프로젝트·도구…)과 같은 14px 을 상속하고 글리프만 작게. */
+.workspace-panels-button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  line-height: 1;
+}
+
+.workspace-panel-row .workspace-panel-toggle {
+  text-align: left;
+}
+
+
+/* ⌘K 칩 — 단축키를 모르면 커맨드 팔레트는 존재하지 않는 것과 같다. 키캡을 함께 보여준다. */
+.workspace-command-chip {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.workspace-command-chip-icon {
+  font-size: 13px;
+}
+
+.workspace-command-chip-key {
+  border: 1px solid var(--border-subtle, rgba(60, 48, 32, 0.18));
+  border-radius: var(--radius-s, 2px);
+  color: var(--text-3, #8A7F70);
+  font: 600 10px/1 var(--font-mono, ui-monospace, monospace);
+  padding: 3px 4px;
+}
+
+@media (max-width: 1180px) {
+  /* 좁은 화면에서는 키캡만 접는다 — 아이콘은 남겨 클릭 경로를 유지한다. */
+  .workspace-command-chip-key { display: none; }
+}
+
+/* 저작 여정: 하단 풀폭 스트립 대신 캔버스 왼쪽 아래 아이콘. */
+.authoring-journey-host {
+  bottom: 10px;
+  left: 10px;
+  position: absolute;
+  z-index: 24;
+}
+
+.authoring-journey {
+  position: relative;
+}
+
+.authoring-journey-toggle {
+  align-items: center;
+  background: var(--bg-glass, rgba(252, 249, 242, 0.86));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: var(--radius-s, 3px);
+  box-shadow: var(--shadow-pop, 0 4px 12px rgba(30, 24, 18, 0.12));
+  color: var(--text-1, #2A2521);
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0;
+  position: relative;
+}
+.authoring-journey-toggle:hover,
+.authoring-journey-toggle:focus-visible {
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.55));
+  outline: none;
+}
+.authoring-journey-toggle svg { display: block; }
+
+.authoring-journey-badge {
+  align-items: center;
+  background: var(--danger, #C6403D);
+  border-radius: 8px;
+  color: #fff;
+  display: inline-flex;
+  font: 700 9px/1 var(--font-ui, system-ui, sans-serif);
+  height: 14px;
+  justify-content: center;
+  min-width: 14px;
+  padding: 0 3px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+}
+
+.authoring-journey-strip {
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
+  border-radius: var(--radius-s, 3px);
+  bottom: calc(100% + 6px);
+  box-shadow: 0 8px 24px rgba(30, 24, 18, 0.18);
+  display: none;
+  left: 0;
+  max-height: min(360px, 50vh);
+  overflow: auto;
+  position: absolute;
+  width: min(280px, calc(100vw - 24px));
+}
+.authoring-journey.is-open .authoring-journey-strip { display: block; }
+.authoring-journey-strip[hidden] { display: none; }
+
+.authoring-journey-list {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+}
+
+.authoring-journey-stage {
+  align-items: center;
+  display: grid;
+  gap: 1px 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 24px 18px;
+  min-width: 0;
+  padding: 6px 8px;
+  position: relative;
+}
+.authoring-journey-stage + .authoring-journey-stage {
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
+}
+.authoring-journey-stage[aria-current="step"] {
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.authoring-journey-stage.has-issues {
+  box-shadow: inset 2px 0 0 var(--danger, #C6403D);
+}
+.authoring-journey-stage.is-acknowledged:not(.is-complete) {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+.authoring-journey-project,
+.authoring-journey-task {
+  background: transparent;
+  border: 0;
+  color: var(--text-1, #2A2521);
+  font: 700 12px/1.1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.authoring-journey-task { cursor: pointer; min-width: 24px; }
+.authoring-journey-task:hover,
+.authoring-journey-task:focus-visible { color: var(--accent); outline: none; }
+.authoring-journey-task:disabled { color: var(--danger, #C6403D); cursor: not-allowed; }
+
+.authoring-journey-evidence {
+  color: var(--text-3, #6B5F52);
+  font: 500 11px/1.1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1 / -1;
+  grid-row: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.authoring-journey-manual {
+  background: transparent;
+  border: 0;
+  color: var(--text-3, #6B5F52);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 24px;
+  min-width: 24px;
+  padding: 2px 4px;
+}
+.authoring-journey-manual:focus-visible { outline: 2px solid var(--accent); }
+
+.authoring-journey-reference-issues {
+  color: var(--danger, #C6403D);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  grid-column: 1 / -1;
+  position: static;
+}
+.authoring-journey-reference-issues > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  min-height: 24px;
+}
+.authoring-journey-reference-panel {
+  background: var(--bg-overlay, #FFFFFF);
+  border: 1px solid var(--danger, #C6403D);
+  border-radius: var(--radius-s, 3px);
+  margin-top: 6px;
+  max-height: 180px;
+  overflow: auto;
+  padding: 8px;
+  position: static;
+  width: auto;
+}
+.authoring-journey-reference-list {
+  font: 500 11px/1.35 var(--font-ui, system-ui, sans-serif);
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.authoring-journey-reference-repair {
+  min-height: 24px;
+  min-width: 24px;
+}
+
+/* ── 이관(2026-09-03, 구 shell/editor-responsive-expert.css) — AI 패널: 입력 행이 절대 잘리지 않게 ── */
+.ai-composer,
+.ai-composer-actions {
+  min-width: 0;
+}
+
+.ai-composer > textarea {
+  min-width: 0;
+}
+
+.ai-chat-send {
+  flex: 0 0 auto;
+}
+
+/* 「그리기」 탭 도구 한 줄 (2026-09-24 정리). 여섯 도구를 3×2 글자 단추에서 아이콘 한 줄로 줄이고,
+   이름은 바로 아래 붓 상태 줄(「칠하기 · 바닥」)이 말한다. 라벨 span 은 DOM 에 남기고 화면에서만 숨긴다 —
+   접근 이름은 aria-label, 테스트는 textContent 를 그대로 읽는다. */

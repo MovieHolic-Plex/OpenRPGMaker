@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/portrait_eyes/h1-B.pxg",
+ "set": "horror",
+ "id": "portrait_eyes",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 26,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "B: 왼쪽 위 빛 — 액자 위·왼 띠는 밝고 아래·오른쪽은 어둡게, 오른쪽·아래로 반투명 접촉 그림자(~ -). 액자를 14칸으로 줄여 그림자 자리를 남김. 캔버스 왼쪽 위에 유리 빛 줄.",
+ "ok": true
+}

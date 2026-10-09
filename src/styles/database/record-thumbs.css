@@ -1,0 +1,568 @@
+/* 레코드 리스트 썸네일/리소스 피커 스타일 (database-overhaul, 신규 클래스 전용) */
+
+.database-modal-body .oprn-record-list-pane .db-list-row.db-list-row-has-thumb {
+  gap: 8px;
+  grid-template-columns: auto 32px minmax(0, 1fr);
+}
+
+/* Characters catalog has no ordinal column — thumb + name + badge. */
+.database-modal-body .oprn-record-characters .db-list-row.db-list-row-has-thumb {
+  gap: 8px;
+  grid-template-columns: 32px auto minmax(0, 1fr);
+}
+
+.db-list-thumb {
+  align-self: center;
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  background-position: center;
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: inline-grid;
+  image-rendering: pixelated;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+}
+
+/* Non-DB consumers retain 32px; DB row and actor dimensions have scoped owners. */
+.db-list-thumb:not(.database-modal-window .db-list-thumb) {
+  height: 32px;
+  width: 32px;
+}
+
+.db-list-thumb-state {
+  border-radius: 999px;
+}
+
+.db-list-thumb img {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 100%;
+}
+
+.db-list-thumb.empty,
+.db-list-thumb.db-image-load-failed {
+  background-image: none;
+}
+
+.db-list-thumb.empty::before {
+  content: none;
+}
+
+.db-image-placeholder {
+  align-content: center;
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  color: var(--text-3, rgba(255, 255, 255, 0.58));
+  display: inline-grid;
+  gap: 2px;
+  justify-items: center;
+  opacity: 1;
+  overflow: hidden;
+  place-items: center;
+  position: relative;
+}
+
+.db-image-load-failed {
+  border-style: dashed;
+}
+
+.db-image-placeholder-icon {
+  display: block;
+  height: 18px;
+  width: 18px;
+}
+
+.db-image-placeholder-label {
+  font-size: 9px;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0 3px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-list-thumb .db-image-placeholder-label,
+.db-resource-picker-option-thumb .db-image-placeholder-label,
+.db-resource-picker-inline-thumb .db-image-placeholder-label,
+.db-system-party-face .db-image-placeholder-label {
+  display: none;
+}
+
+.db-list-thumb.empty .db-image-placeholder-icon {
+  opacity: 0.58;
+}
+
+.db-list-thumb-probe {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.db-animation-stage-surface {
+  background:
+    linear-gradient(90deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.18) 50%, transparent calc(50% + 1px)),
+    linear-gradient(0deg, transparent calc(50% - 1px), rgba(255, 255, 255, 0.18) 50%, transparent calc(50% + 1px)),
+    radial-gradient(circle at 50% 58%, rgba(255, 255, 255, 0.08), transparent 42%);
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  min-height: 154px;
+  overflow: hidden;
+  position: relative;
+}
+
+.db-animation-stage-cells {
+  height: 0;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 52%;
+  width: 0;
+  z-index: 2;
+}
+
+.db-animation-stage-cell-sprite {
+  background-repeat: no-repeat;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+  height: var(--animation-frame-height, 96px);
+  image-rendering: pixelated;
+  left: calc(var(--animation-frame-width, 96px) / -2);
+  position: absolute;
+  top: calc(var(--animation-frame-height, 96px) / -2);
+  transform-origin: center;
+  width: var(--animation-frame-width, 96px);
+}
+
+.db-animation-stage-cell-sprite.muted {
+  background-color: transparent;
+  border-color: rgba(255, 255, 255, 0.46);
+  border-style: dashed;
+}
+
+.actor-resource-control {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.actor-resource-control input {
+  min-width: 0;
+}
+
+.db-actor-resource-dialog-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 280px) minmax(120px, 1fr);
+}
+
+.db-actor-resource-list {
+  background: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
+  display: grid;
+  max-height: 260px;
+  overflow: auto;
+}
+
+.db-actor-resource-list button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 38px minmax(0, 1fr);
+  min-height: 44px;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.db-actor-resource-list button.active,
+.db-actor-resource-list button:hover {
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+}
+
+.db-actor-resource-list button > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-actor-resource-dialog-preview {
+  align-items: center;
+  background: var(--bg-raised, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  display: grid;
+  justify-items: center;
+  min-height: 148px;
+  padding: 10px;
+}
+
+.db-actor-resource-option-thumb,
+.db-actor-resource-preview-visual {
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.db-actor-resource-option-thumb {
+  height: 36px;
+  max-width: 36px;
+  width: 36px;
+}
+
+.db-actor-resource-preview-visual {
+  max-height: 96px;
+  max-width: 120px;
+}
+
+.db-actor-resource-crop {
+  background-image: var(--actor-resource-url);
+  background-position: var(--actor-resource-x) var(--actor-resource-y);
+  background-repeat: no-repeat;
+  background-size: var(--actor-resource-sheet-width) var(--actor-resource-sheet-height);
+  height: min(var(--actor-resource-height), 96px);
+  overflow: hidden;
+  width: min(var(--actor-resource-width), 120px);
+}
+
+.db-actor-resource-empty {
+  color: var(--text-3, rgba(255,255,255,0.5));
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+}
+
+/* Shared visual resource picker (items/equipment/enemies/system/species/actors) */
+
+.db-resource-picker-search {
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+.db-resource-picker-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(220px, 280px) minmax(120px, 1fr);
+}
+
+.db-resource-picker-list {
+  background: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
+  display: grid;
+  max-height: 280px;
+  overflow: auto;
+}
+
+/* 아이콘·이미지는 이름 한 줄보다 그림으로 고른다. 한 열 목록은 200종이 넘으면 비교가 안 된다. */
+.db-resource-picker-list.db-resource-picker-list-icons {
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  max-height: 360px;
+  padding: 6px;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons button {
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  min-height: 0;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons button > span:last-child {
+  font-size: 11px;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons .db-resource-picker-option-thumb {
+  height: 48px;
+  max-width: 48px;
+  min-height: 48px;
+  min-width: 48px;
+  width: 48px;
+}
+
+.db-resource-picker-list button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 40px minmax(0, 1fr);
+  min-height: 48px;
+  padding: 4px 8px;
+  text-align: left;
+}
+
+.db-resource-picker-list button.active,
+.db-resource-picker-list button:hover {
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+}
+
+.db-resource-picker-list button > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-resource-picker-preview {
+  align-items: center;
+  background: var(--bg-raised, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  display: grid;
+  justify-items: center;
+  min-height: 160px;
+  padding: 10px;
+}
+
+.db-resource-picker-option-thumb,
+.db-resource-picker-preview-visual,
+.db-resource-picker-inline-thumb {
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: contain;
+}
+
+.db-resource-picker-option-thumb,
+.db-resource-picker-inline-thumb {
+  height: 40px;
+  max-width: 40px;
+  min-height: 40px;
+  min-width: 40px;
+  width: 40px;
+}
+
+.db-resource-picker-inline-thumb {
+  flex: 0 0 40px;
+}
+
+.db-resource-picker-preview-visual {
+  min-height: 120px;
+  min-width: 120px;
+  max-height: 120px;
+  max-width: 140px;
+}
+
+.db-resource-picker-crop {
+  background-image: var(--db-resource-url);
+  background-position: var(--db-resource-x) var(--db-resource-y);
+  background-repeat: no-repeat;
+  background-size: var(--db-resource-sheet-width) var(--db-resource-sheet-height);
+  height: min(var(--db-resource-height), 120px);
+  min-height: min(var(--db-resource-height), 120px);
+  min-width: min(var(--db-resource-width), 140px);
+  overflow: hidden;
+  width: min(var(--db-resource-width), 140px);
+}
+
+.db-resource-picker-load-probe {
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.db-resource-picker-empty {
+  color: var(--text-3, rgba(255,255,255,0.5));
+  display: grid;
+  min-height: 36px;
+  place-items: center;
+}
+
+.db-resource-picker-index-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.db-resource-picker-index {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.db-resource-picker-control {
+  display: grid;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.db-resource-picker-control-label {
+  color: var(--text-2, rgba(255, 255, 255, 0.78));
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.db-resource-picker-control-body {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 44px minmax(0, 1fr);
+}
+
+.db-resource-picker-control-meta {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+  position: relative;
+}
+
+.db-resource-picker-inline-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.db-authoring-id,
+.db-resource-picker-inline-id {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.db-system-party-face-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.db-system-party-face {
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
+  box-sizing: border-box;
+  height: 40px;
+  image-rendering: pixelated;
+  min-height: 40px;
+  min-width: 40px;
+  position: relative;
+  width: 40px;
+}
+
+.db-system-party-face.empty,
+.db-system-party-face.db-image-load-failed {
+  opacity: 1;
+}
+
+/* 종족 그래픽 프리뷰 — 적 스테이지(db-enemy-graphic-stage, height:100%)와 분리한 고정 높이 박스.
+   상세 폼 안에서 세로로 늘어나 아래 필드(스탯·스킬·진화)를 밀어내지 않게 한다. */
+.db-monster-species-stage {
+  align-items: center;
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: flex;
+  height: 120px;
+  justify-content: center;
+  margin: 8px 0;
+  max-width: 180px;
+  overflow: hidden;
+}
+
+.db-monster-species-stage img {
+  image-rendering: pixelated;
+  max-height: 104px;
+  max-width: 132px;
+}
+
+/* 데이터베이스 탭 상단의 역할 안내 배너 (몬스터·종족 탭 구분) */
+/* 셸: 배너(auto) + 워크스페이스(1fr)로 높이를 나눠, height:100% 워크스페이스가
+   배너에 밀려 넘치지 않게 한다(특히 dense 고정높이 스크롤인 몬스터 탭). */
+.db-record-intro-shell {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.db-record-intro {
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0;
+  padding: var(--space-2);
+}
+
+.db-monster-species-empty-row {
+  color: var(--text-dim);
+  font-size: 10px;
+  margin: 0;
+  padding: 4px 2px;
+}
+
+/* 진화 행: 좁은 디테일 패널에서도 안 깨지게 flex-wrap */
+.db-monster-species-evo-list {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.db-monster-species-evo-row {
+  align-items: center;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+}
+
+.db-monster-species-evo-row > select {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+.db-monster-species-evo-cond {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.db-monster-species-evo-cond > span {
+  color: var(--text-dim);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.db-monster-species-evo-cond input {
+  width: 56px;
+}
+
+.db-monster-species-evo-row > button {
+  margin-left: auto;
+}

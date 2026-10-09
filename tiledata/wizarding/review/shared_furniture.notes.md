@@ -1,0 +1,34 @@
+# shared_furniture 검수 노트 (형식: 읽힘 / 윗면 비율 / 사람 대비 크기 / native 화풍 / 고친 것)
+
+- wz-furn-bench-long: 긴 오크 작업대로 읽힘 / 윗면 약 30% / 3칸 폭, 높이 2칸=사람 허리 / 같음 / 다리 안쪽 그림자 추가
+- wz-furn-table-small: 작은 탁자로 읽힘 / 윗면 약 35% / 2×2 사람 허리 / 같음 / 상판 나뭇결 간격 정리
+- wz-furn-bench-seat: 긴 의자로 읽힘 / 윗면 약 35% / 1칸 높이 앉는 높이 / 같음 / 다리 두 쌍 간격 균일화
+- wz-furn-chair-back-up: 등받이가 뒤(위)인 의자 / 윗면 약 30% / 1칸 / 같음 / 등받이 살 폭 맞춤
+- wz-furn-chair-back-down: 등받이가 앞(아래)인 의자 / 윗면 약 30% / 1칸 / 같음 / 앞다리 가림 정리 [수정] 등받이 기둥이 좌면 위로 솟고 가로살 두 줄 사이를 비움.
+- wz-furn-chair-back-left: 등받이 왼쪽 의자 / 윗면 약 30% / 1칸 / 같음 / 측면 두께 통일
+- wz-furn-chair-back-right: 등받이 오른쪽 의자(좌우 대칭) / 윗면 약 30% / 1칸 / 같음 / 빛 방향 유지
+- wz-furn-cabinet-closed: 닫힌 수납장 / 윗면 약 25% / 2×2 사람과 비슷한 키 / 같음 / 손잡이 황동 하이라이트
+- wz-furn-cabinet-open: 문이 열린 수납장, 안쪽 어둠 / 윗면 약 25% / 2×2 / 같음 / 열린 문 두께 추가
+- wz-furn-bookshelf: 높은 서가, 책 등 색 다양 / 윗면 약 20% / 2×3 사람보다 큼 / 같음 / 책 높이·색 변주, 잡음 줄임
+- wz-furn-bookshelf-low: 낮은 서가 / 윗면 약 30% / 2×2 허리~가슴 / 같음 / 책 줄 수 축소
+- wz-furn-crate-a: 버팀대 나무 상자 / 윗면 약 33% / 1칸 / 같음 / 못 점 정리
+- wz-furn-crate-b: 살 있는 나무 상자 / 윗면 약 33% / 1칸 / 같음 / 살 간격 균일화
+- wz-furn-crate-stack: 쌓인 상자 / 윗면 약 25% / 2×2 / 같음 / 위 상자 어긋남으로 단조로움 방지
+- wz-furn-barrel: 통, 테 두 줄 / 윗면 타원 / 1칸 / 같음 / 테 곡선과 윗면 타원 맞춤
+- wz-furn-candlestick: 초 3개 황동 촛대 / 해당 없음(받침 타원) / 1칸 / 같음 / 불꽃은 효과 작업자 몫이라 정적
+- wz-furn-lantern-hanging: 걸이 등불 / 해당 없음 / 1칸 / 같음 / 고리·창살 단순화
+- wz-furn-prop-quill: 깃펜 f 덧그림 / 탁상 위 윗면 위 / 1칸 이하 / 같음 / 깃털 대각 실루엣 정리
+- wz-furn-prop-inkwell: 잉크병 f / 탁상 위 / 작음 / 같음 / 병 몸통 하이라이트
+- wz-furn-prop-scroll: 두루마리 f / 탁상 위 / 작음 / 같음 / 말린 끝 단면 표시
+- wz-furn-prop-bottles: 유리병 묶음 f / 탁상 위 / 작음 / 같음 / 병 색 3종 분리
+- wz-furn-prop-book-open: 펼친 책 f / 탁상 위 / 작음 / 같음 / 책장 줄 개수 축소
+- wz-furn-prop-book-closed: 덮은 책 f / 탁상 위 / 작음 / 같음 / 책등 띠 추가
+- wz-furn-curtain-closed: 닫힌 붉은 커튼, 주름 세로 / 해당 없음 / 1×3 사람보다 큼 / 같음 / 위 봉과 밑단 정리
+- wz-furn-curtain-open: 양옆으로 묶인 커튼, 가운데 비움 / 해당 없음 / 1×3 / 같음 / 드레이프를 대칭으로 다시 그림, 황동 끈 위치 맞춤
+- wz-furn-banner-lion: 붉은+금, 사자 실루엣 / 해당 없음 / 1×2 / 같음 / 문양 읽힘 확인
+- wz-furn-banner-snake: 녹+은, 뱀 문양 / 해당 없음 / 1×2 / 같음 / S자로 읽힘 — 약점으로 남김 [수정] 머리(눈·혀)가 위, 굵은 S 몸통, 가는 꼬리.
+- wz-furn-banner-eagle: 청+청동, 독수리 / 해당 없음 / 1×2 / 같음 / 날개 폭 정리
+- wz-furn-banner-badger: 황+흑, 오소리 / 해당 없음 / 1×2 / 같음 / 문양 약간 뭉침 — 약점으로 남김 [수정] 눈줄 검정+가운데 밝은 세로줄+코, 웃는 입 제거.
+- wz-furn-rug: 붉은 융단 3×2 f / 바닥에 눕힘 / 3×2 / 같음 / 술 장식과 테두리 문양 정리
+- wz-furn-fireplace: 돌 벽난로, 불 없음 / 윗면 약 25%(선반) / 3×3 / 같음 / 선반·그을음 강조
+- wz-furn-example-common (예제): 12×9 휴게실, 벽·서가·벽난로·깃발·탁자 배치 정상 / 바닥 wz-castle-floor-flag 는 castle_kit 에서 아직 미정의라 임시 바닥으로 확인

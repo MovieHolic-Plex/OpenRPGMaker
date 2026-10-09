@@ -1,0 +1,324 @@
+.editor-layout .canvas-area {
+  /* flex center 금지 — 캔버스가 가용 영역을 가득 채워야 한다 */
+  align-items: stretch;
+  display: block;
+  justify-content: stretch;
+  min-height: 0;
+  min-width: 0;
+  position: relative;
+}
+/* 2026-09-18: dense(standard/expert, 플로팅 툴바)만 flex column.
+   고정 top 예약(48px/배너 시 74px)이 배너 실측(42px)과 어긋나 상단 빈 띠를
+   만들던 결함 수정. 셸이 배너 뒤에 normal flow로 바로 붙는다.
+   beginner(도크 툴바)는 absolute 예약을 유지 — 플로팅과 도크를 한 규칙으로
+   묶으면 도크 바가 캔버스와 겹친다. */
+body .editor-layout .canvas-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.editor-layout .canvas-area .phaser-container {
+  /* 스크롤 셸을 꽉 채운다. 고정 1024×768은 작은 중앙 영역 + 가로스크롤을 만든다. */
+}
+
+.editor-layout .canvas-area .phaser-container > canvas {
+  /* 버퍼 크기와 별도로 CSS가 호스트를 채우게 — fitCanvas가 버퍼도 맞춤 */
+  max-height: 100%;
+  max-width: 100%;
+}
+
+.editor-canvas-scroll-shell {
+  /* 크롬 높이: 상태바 / 툴바 예약. Figma 셸은 figma-editor에서 덮어씀.
+     beginner(absolute)는 아래 :has 규칙에서 위·아래를 못 박는다. */
+  bottom: 0;
+  height: auto;
+  left: 0;
+  /* DOM 스크롤 대신 카메라 팬 — 스크롤바 거터로 영역이 줄어들지 않게 */
+  position: absolute;
+  right: 0;
+  width: auto;
+}
+body .editor-canvas-scroll-shell {
+  /* dense만 normal flow + flex:1 — 남은 높이를 다 쓴다. */
+  bottom: auto;
+  flex: 1;
+  left: auto;
+  min-height: 0;
+  position: relative;
+  right: auto;
+  top: auto;
+}
+/* beginner(absolute) 셸은 위·아래를 둘 다 못 박아야 늘어난다.
+   bottom:0만 주면 height:auto라 높이는 그대로고 top이 아래로 밀려
+   상단 갭이 생긴다(2026-09-19 실측 top:143). top은 배너 실측 42px —
+   툴바 오프셋과 같은 값(uxc 미러 :23-33). 배너가 없으면 0. */
+
+.editor-canvas-scroll-shell::-webkit-scrollbar {
+  height: 16px;
+  width: 16px;
+}
+
+.editor-canvas-scroll-shell::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  background-clip: padding-box;
+  border: 4px solid transparent;
+  border-radius: 8px;
+}
+
+.editor-canvas-scroll-shell::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+.editor-canvas-scroll-shell::-webkit-scrollbar-track {
+  background: var(--bg-canvas);
+}
+
+@media (max-width: 480px) {
+
+  .test-play-window[data-window-mode="windowed"] > .runtime-debug-panel {
+    display: none;
+  }
+}
+
+.canvas-toolbar {
+  backdrop-filter: blur(10px);
+  display: flex;
+  position: absolute;
+  z-index: 20;
+}
+
+.canvas-ai-workbench {
+  align-items: center;
+  display: flex;
+  gap: 2px;
+}
+
+.canvas-ai-action {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 5px;
+  min-height: 34px;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+.canvas-ai-action svg {
+  height: 16px;
+  width: 16px;
+}
+
+.canvas-ai-action:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.canvas-ai-action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.canvas-ai-action.is-ask {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.canvas-ai-action.is-ask:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.canvas-inspection-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-primary);
+  display: grid;
+  gap: 10px;
+  left: 50%;
+  max-height: min(560px, calc(100vh - 110px));
+  overflow: hidden;
+  padding: 14px;
+  position: fixed;
+  top: 64px;
+  transform: translateX(-50%);
+  width: min(520px, calc(100vw - 24px));
+  z-index: 80;
+}
+
+.canvas-inspection-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.canvas-inspection-header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.canvas-inspection-summary,
+.canvas-inspection-location {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.canvas-inspection-close,
+.canvas-inspection-actions button {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 9px;
+}
+
+.canvas-inspection-actions .is-ai-fix {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.canvas-inspection-list {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  overflow: auto;
+  padding: 0;
+}
+
+.canvas-inspection-item {
+  align-items: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 10px;
+}
+
+.canvas-inspection-severity {
+  background: var(--bg-raised);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font: 700 10px/1 var(--font-ui);
+  padding: 5px 7px;
+}
+
+.canvas-inspection-item.is-error .canvas-inspection-severity {
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--danger);
+}
+
+.canvas-inspection-item.is-warning .canvas-inspection-severity {
+  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  color: var(--warning);
+}
+
+.canvas-inspection-content {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.canvas-inspection-content strong {
+  font: 600 12px/1.45 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+
+.canvas-inspection-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.canvas-inspection-empty {
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-m);
+  color: var(--text-secondary);
+  padding: 24px;
+  text-align: center;
+}
+
+@media (max-width: 820px) {
+  .canvas-ai-action {
+    padding-inline: 7px;
+  }
+
+  .canvas-ai-action span {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .canvas-toolbar[data-ui-density="expert"] .canvas-toolbar-expand,
+  .canvas-toolbar[data-ui-density="expert"] .canvas-toolbar-save-group {
+    display: none;
+  }
+
+  .canvas-inspection-item {
+    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .canvas-inspection-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+.zoom-button.active,
+.zoom-button[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(1) h3,
+.left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) h3 {
+  display: none;
+}
+
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.rm-tool-icon {
+  display: block;
+  flex: 0 0 auto;
+  height: 16px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 16px;
+}
+
+.rm-tool-icon::before,
+.rm-tool-icon::after {
+  content: "";
+  display: block;
+  image-rendering: pixelated;
+  position: absolute;
+}

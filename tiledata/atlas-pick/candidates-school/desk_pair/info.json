@@ -1,0 +1,23 @@
+{
+ "id": "desk_pair",
+ "slug": "desk_pair",
+ "name": "두 사람 책상(짝꿍)",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "둘이 나란히 앉는 긴 책상 하나 + 의자 둘(한국 옛 교실·일본 특별실). 상판 가운데 이음 선 한 줄, 의자 둘은 같은 높이. desk_set 과 같은 재료·명암 방식.",
+ "palette_hint": "vpine 상판, locker 다리",
+ "pair": [
+  "desk_set"
+ ],
+ "worker": "s4"
+}

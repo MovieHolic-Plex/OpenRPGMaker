@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_scatter/wv2-C.pxg",
+ "set": "worldmap",
+ "id": "plains_scatter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  4,
+  44,
+  12
+ ],
+ "note": "다른 해석: 납작한 잔돌 넷 / 덤불 없이 야생화 여섯 점 / 둔덕 대신 위로 뻗은 뾰족 풀 다발",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.044
+  }
+ }
+}

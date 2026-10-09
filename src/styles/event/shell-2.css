@@ -1,0 +1,424 @@
+/* event 표면 — shell-2.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 48px Titlebar */
+.event-editor-modal-header {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 14px;
+  height: var(--hierarchy-header-height);
+  min-height: var(--hierarchy-header-height);
+  max-height: var(--hierarchy-header-height);
+  padding: 0 16px 0 20px;
+  box-sizing: border-box;
+}
+
+.event-editor-modal-header .meta {
+  align-items: center;
+  color: var(--text-3);
+  display: flex;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  gap: 8px;
+}
+
+.event-editor-modal-header .dot-sep {
+  background: #CBD5E1;
+  border-radius: 50%;
+  height: 3px;
+  width: 3px;
+}
+
+.event-editor-modal-header .npc {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  color: var(--text-2);
+  display: inline-flex;
+  font-weight: 550;
+  gap: 6px;
+  padding: 2px 8px 2px 3px;
+}
+
+.event-editor-modal-header .npc .face {
+  background: #3d4a5c;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  height: 18px;
+  position: relative;
+  width: 18px;
+}
+
+.event-editor-modal-header .npc .face::after {
+  background: #d7b07a;
+  border-radius: 3px;
+  content: "";
+  height: 6px;
+  left: 5px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.event-editor-modal-header .header-actions {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.event-editor-modal-header .icon-btn {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 18px;
+  height: 30px;
+  justify-content: center;
+  width: 30px;
+}
+
+.event-editor-modal-stable {
+  display: none;
+}
+
+.event-editor-modal-dynamic {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Workbench */
+/* 트랙 목록은 이 파일의 «Hierarchy zones» 블록이 단독 소유한다(변수 기반).
+   여기 있던 `228px minmax(0,1fr) 340px` 와 `:not(.has-command-inspector)` 의
+   `228px minmax(0,1fr)` (둘 다 중요 플래그 달림)는 둘 다 같은 선택자의 뒤 규칙에 덮여 사문이었다.
+   같은 파일 안에서 트랙을 두 번 못 박으면 다음 사람이 위쪽을 읽고 폭을 잘못 추론한다. */
+.event-editor .event-editor-workbench {
+  --event-editor-settings-track: var(--balanced-settings-width);
+  background: var(--bg-base);
+  display: grid;
+  gap: 0;
+  grid-template-rows: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-editor .event-editor-column-resizer {
+  display: block;
+  grid-column: 1;
+  height: 100%;
+  justify-self: end;
+  position: relative;
+  transform: translateX(50%);
+  width: 7px;
+  z-index: 3;
+}
+
+.event-editor .chip {
+  background: var(--bg-inset);
+  border-radius: 999px;
+  color: var(--text-2);
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 8px;
+}
+
+.event-editor .more {
+  background: transparent;
+  border: 0;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: auto;
+  padding: 8px 0 0;
+  text-align: left;
+}
+
+.event-editor .leaf .kind {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.event-editor .leaf .line {
+  color: var(--text-1);
+  font-size: 13px;
+}
+
+.event-editor .leaf.sel,
+.event-editor .leaf.is-selected {
+  background: var(--bg-raised);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.event-editor .ins-head h2 {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 650;
+  margin: 0;
+}
+
+.event-editor .preview {
+  background: #121826;
+  border-radius: 10px;
+  margin: 0 16px 14px;
+  overflow: hidden;
+}
+
+.event-editor .preview .sky {
+  background: linear-gradient(#2a3a58, #1b2438);
+  height: 88px;
+  position: relative;
+}
+
+.event-editor .preview .sky::after {
+  background: #3d4a3a;
+  border-radius: 6px 6px 0 0;
+  bottom: 0;
+  content: "";
+  height: 44px;
+  left: 24px;
+  position: absolute;
+  right: 24px;
+}
+
+.event-editor .preview .box {
+  padding: 10px 12px 12px;
+}
+
+.event-editor .preview .who {
+  background: #0b1220;
+  border-radius: 4px;
+  color: #e2e8f0;
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 650;
+  margin-bottom: 8px;
+  padding: 3px 8px;
+}
+
+.event-editor .preview p {
+  color: #f8fafc;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.event-editor .field label {
+  color: var(--text-3);
+  display: block;
+  font-size: 11px;
+  font-weight: 650;
+  margin-bottom: 5px;
+}
+
+/* editor/core 가 .event-editor 입력물의 outline 을 지우고 테두리 색만 바꿔서
+ * 키보드 초점이 사실상 보이지 않는다. 이벤트 에디터 전역에서 링을 다시 살린다.
+ * 이 시트가 이벤트 에디터의 마지막 계층이라 여기서 소유하는 것이 맞다. */
+.event-editor input:focus-visible,
+.event-editor textarea:focus-visible,
+.event-editor select:focus-visible {
+  border-color: var(--accent);
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.event-editor .count {
+  color: var(--text-3);
+  font-size: 11px;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Hierarchy zones (2026-08-27): labelled columns, styled rail groups, single page-selector home. */
+.event-editor-modal-window {
+  --balanced-settings-width: 268px;
+}
+
+.event-editor .event-editor-column-label {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  column-gap: 10px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.event-editor .event-editor-column-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-column-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-column-count {
+  background: var(--accent-muted);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+/* The aux openers ride the toolbar instead of floating over the command list. */
+.event-editor .event-editor-command-aux-group {
+  display: flex;
+  gap: 3px;
+  margin-left: 2px;
+}
+
+/* 설정 컬럼의 «레일 + 시트» 마스터-디테일 배치. 레일 196px + 간격 12px + 조건 2열 그리드
+   (`minmax(218px, 1fr)` x2) 를 담아야 하므로 660px 아래로는 성립하지 않는다.
+   예전에는 이 블록이 1321px 에서 열리면서 폭을 772px 로 못박았다. 1366x900 에서
+   772/1366 = 56.5% 를 설정 패널이 먹고, 명령 21줄이 들어갈 스크립트 컬럼에 594px 만
+   남았다(2560 에서는 같은 772px 이 30%). 화면이 좁아질수록 스크립트 쪽이 손실을 전부
+   받는 구조였다. 이제 (1) 두 컬럼이 같이 들어가는 폭에서만 열고, (2) 폭을 유동으로 둔다.
+   1321~1440px 은 아래 `max-width: 1440px` 가 다듬어 둔 268px 단일 컬럼 배치로 내려간다. */
+@media (min-width: 1441px) {
+  .event-editor-modal-window {
+    --balanced-settings-width: clamp(660px, 30vw, 780px);
+    --balanced-rail-width: 196px;
+  }
+}
+
+/* ============================================================================
+   검토 알림 종 — 타이틀바 오른쪽 (2026-08-28)
+
+   문제(실측): 검증 요약은 창 **맨 아래** `.event-editor` 마지막 자식으로 붙었고, 스타일은
+   존재하지 않는 래퍼 `.event-editor-command-header` 아래에만 선언돼 있었다. 즉 출하된 화면은
+   브라우저 기본 `<details>` — 삼각형 마커 + 링크색 없는 검은 글씨였다. 경고가 있어도 화면
+   맨 아래 한 줄이라 눈에 걸리지 않았다.
+
+   해결: 개수 배지를 단 종을 타이틀바 오른쪽(테스트 버튼 왼쪽)에 세우고, 목록은 종 아래
+   팝오버로 연다. 색은 심각도 하나로 결정한다 — 오류·경고는 --danger, 안내만 있을 때는
+   --accent. 톤을 지역 변수 하나(--ev-bell-tone)로 두면 배지·테두리·호버가 함께 따라온다.
+
+   종 흔들림은 **오류가 있고 아직 열어보지 않았을 때만** 3회 돌고 멈춘다. 무한 애니메이션은
+   편집 중 계속 시야를 잡아먹고, prefers-reduced-motion 사용자에게는 아예 돌지 않는다.
+   ========================================================================= */
+/* 팝오버는 헤더를 벗어나 본문 위로 내려온다. 그런데 헤더가 쌓임 문맥을 만들지 않으면
+   **뒤 형제**인 `.event-editor-modal-body`(자체 쌓임 문맥)가 팝오버 위에 그려진다 —
+   실측: 페이지 탭 줄이 팝오버 첫 줄(제목·집계)을 덮어 잘린 것처럼 보였다.
+   자손의 z-index 로는 못 이긴다. 헤더 자신을 올려야 한다. */
+.event-editor-modal-header {
+  position: relative;
+  z-index: var(--z-popover-high);
+}
+
+/* 편집 팝오버 — 무엇에 적용되는지 먼저 말한다. */
+.event-editor .event-editor-command-edit-target {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.4;
+  margin: 0 0 6px;
+  max-width: 240px;
+}
+
+/* ── 헤더·푸터 배치 교정 (2026-09-02 적대적 리뷰) ──────────────────────────
+ * (2026-09-11 Task 13 재편성 전 문맥: 이 규칙들이 있던 시트는 이벤트 에디터 시트 중 마지막이고 레이어 밖이라
+ * 옛 storyboard.css 의 `@layer editor` 와 앞선 세대(part-*, modern/*, mockup)를 모두 이겼다.
+ * 지금은 모두 @layer event 평면이고 접기 전 유효 순서가 보존돼 그대로 이긴다.) 배치 교정은 여기서 한다. */
+/* ⚠️ 셀렉터에 `.event-editor` 를 앞에 붙이지 말 것.
+ * `.event-editor` 는 모달 **본문**을 감싸는 요소이지 창 전체가 아니다. 실측한 조상 사슬은
+ * `.event-editor-modal-backdrop > .event-editor-modal-window > .event-editor-modal-header`
+ * 라서, 헤더·푸터를 `.event-editor …` 로 겨누면 한 번도 매칭되지 않는 죽은 규칙이 된다
+ * (이 교정을 처음 그렇게 썼다가 두 번의 실측으로 잡았다). */
+/* 닫기 «×» 가 타이틀바 한가운데 떠 있었다. 이 파일 137행에 이미
+ * `.header-actions { margin-left: auto }` 가 있는데도 그랬다 — auto 는 **남은 자유 공간**을
+ * 가져가는 값인데, part-1.css 의 `.event-editor-modal-header > div { flex: 1 }` 때문에
+ * .meta 가 그 공간을 먼저 다 먹어치워 auto 가 0 으로 해소됐다(그래서 computed margin-left
+ * 는 `0px` 로 보였다 — 규칙이 없어서가 아니다).
+ * 실측(2560px 창, 교정 전): 창 오른쪽 끝과 닫기 버튼 사이 850px.
+ * .meta 를 내용 폭으로 되돌려 자유 공간을 되살린다. */
+.event-editor-modal-header .meta {
+  flex: 0 1 auto;
+}
+
+.event-editor-modal-header .event-editor-header-page-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+/* 카운터가 자유 공간을 가져갔으면 액션 묶음은 그 옆에 붙는다(카운터가 없으면 137행의
+ * `margin-left:auto` 가 그대로 작동한다). */
+.event-editor-modal-header .event-editor-header-page-count ~ .header-actions {
+  flex: 0 0 auto;
+  margin-left: 8px;
+}
+
+.event-editor-modal-backdrop[hidden] {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor-modal-header > .header-actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.event-editor-modal-window .event-editor-modal-header > .meta {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.event-editor-modal-window .event-editor-modal-header {
+  cursor: grab;
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls {
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-1);
+  margin-left: var(--space-2);
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 50%;
+  color: var(--text-2);
+  cursor: pointer;
+  flex: 0 0 32px;
+  height: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  width: 32px;
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control:active,
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-window-control[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-modal-close:hover,
+.event-editor-modal-window .event-editor-modal-header .event-editor-window-controls .event-editor-modal-close:active {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--on-accent);
+}

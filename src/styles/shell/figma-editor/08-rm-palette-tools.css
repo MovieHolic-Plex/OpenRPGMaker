@@ -1,0 +1,346 @@
+  .left-panel-stack {
+    padding: 24px 20px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: 18px;
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 2px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) {
+    border-bottom: 0;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
+    display: none;
+  }
+
+  /* 도구막대 행은 ⋯ 트리거를 오른쪽에 고정하는 틀이고, 가로 스크롤은 내부 자식이 맡는다.
+     이전엔 행 자신이 overflow-x:auto 인 30px 띠여서 도구 합 344px → clientWidth 261px(표준)
+     ·281px(전문가) 에서 ⋯ 가 x=328 로 밀려 좌패널(폭 300/320px) 밖에서 그려졌고,
+     드롭다운은 그 띠의 자손이라 열려도 중심 히트테스트가 칩셋 타일로 떨어졌다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+    align-items: center;
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1px;
+    margin: 0 0 6px;
+    max-width: 100%;
+    min-height: 30px;
+    overflow: visible;
+    padding: 2px;
+    position: relative;
+    width: 100%;
+    z-index: var(--z-canvas-decor);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    gap: 1px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--editor-text);
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 26px;
+    justify-content: center;
+    padding: 0;
+    width: 26px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool svg {
+    display: block;
+    height: 18px;
+    pointer-events: none;
+    width: 18px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:hover:not(:disabled) {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+    color: var(--editor-blue);
+  }
+
+  /* 고른 도구는 hover 보다 또렷하게 강해야 한다. 전엔 둘이 한 선언 블록을 공유해서
+     마우스가 도구 줄 위에 있는 동안에는 지금 무엇으로 그리는지를 알 수 없었다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active {
+    background: var(--editor-blue);
+    border-color: var(--editor-blue);
+    color: var(--on-accent);
+  }
+
+  /* 선언을 분리하는 것만으로는 부족하다: `:hover:not(:disabled)` 는 클래스 5개,
+     `.active` 는 4개라 명시도에서 hover 가 이긴다. 그래서 고른 도구에 마우스를 올리는
+     순간 배경이 hover 상태와 정확히 같아지며(실측: 둘 다 rgba(15,23,42,0.08)) — 가리킨
+     버튼이 지금 선택된 것인지 알 수 없었다. 이 상태만 따로 받아 채운 모양을 지킨다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.active:hover:not(:disabled) {
+    background: var(--editor-blue);
+    border-color: var(--editor-blue);
+    color: var(--on-accent);
+    filter: brightness(1.12);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool:disabled {
+    color: var(--editor-text-soft);
+    cursor: default;
+    opacity: 0.48;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-separator {
+    align-self: stretch;
+    background: var(--editor-line);
+    display: block;
+    margin: 3px 2px;
+    width: 1px;
+  }
+
+  /* 맵 모드 도구 그룹(스포이트·이동·통행·이벤트) — 가로 스크롤 시 한 덩어리로 움직인다 */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-modes {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 1px;
+  }
+
+  /* 레이어 전환 — 도구 줄 바로 아래. 맵 작업 중 두 번째로 잦은 조작이라 사이드바 최상단에 둔다
+     (전에는 standard/expert 에서 상단 「도구」 메뉴에만 있었다). 라벨을 항상 노출해
+     아이콘만으로 바닥/상위/이벤트를 구별하게 만들지 않는다. */
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-switcher {
+    display: grid;
+    gap: 2px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0 0 8px;
+    width: 100%;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn {
+    align-items: center;
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 5px;
+    color: var(--editor-text);
+    cursor: pointer;
+    display: inline-flex;
+    gap: 5px;
+    justify-content: center;
+    min-height: 28px;
+    padding: 0 6px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn svg {
+    display: block;
+    flex: 0 0 auto;
+    height: 15px;
+    pointer-events: none;
+    width: 15px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn-label {
+    font-size: 12px;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn:hover {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .left-layer-btn.is-active {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-blue);
+    color: var(--editor-blue);
+    font-weight: 600;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-overflow-section {
+    color: var(--editor-text-soft);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 2px 0 0;
+    padding: 3px 4px 1px;
+    text-transform: uppercase;
+  }
+
+  /* 320px 고정이면 내용(363px)이 자기 접힘선 아래로 내려가, 마지막 항목 「붓 크기 4」의
+     중심이 메뉴 밖에 놓여 클릭이 뒤의 타일 셀로 떨어졌다(실측: 항목 y=446, 메뉴 하단 435).
+     보이지 않는 스크롤을 발견해야 쓸 수 있는 기능은 되찾은 게 아니다. 뷰포트에 맞춰 늘린다. */
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-overflow-dropdown {
+    max-height: min(70vh, 440px);
+    min-width: 196px;
+    overflow-y: auto;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu {
+    display: flex;
+    flex: 0 0 auto;
+    /* static: 드롭다운이 (position:relative인) 툴바 전체를 기준으로 우하단에 열린다.
+       flex-wrap으로 토글이 2행 왼쪽에 떨어져도 패널 밖으로 잘리지 않는다. */
+    position: static;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-dropdown,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-dropdown {
+    background: var(--editor-popover-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 6px;
+    box-shadow: var(--shadow-popover);
+    display: grid;
+    gap: 3px;
+    min-width: 174px;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    z-index: var(--z-toolbar);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-dropdown {
+    min-width: 216px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-brush-dropdown {
+    min-width: 118px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-summary {
+    align-items: center;
+    border-bottom: 1px solid var(--editor-line);
+    display: grid;
+    gap: 5px 8px;
+    grid-template-columns: 34px minmax(0, 1fr) minmax(0, 1fr);
+    padding: 3px 2px 7px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-preview {
+    background: var(--editor-panel-bg-2);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 4px;
+    grid-row: span 2;
+    height: 32px;
+    image-rendering: pixelated;
+    width: 32px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field {
+    min-width: 0;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field-label {
+    color: var(--editor-text-muted);
+    display: block;
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-inspector-field-value {
+    color: var(--editor-text);
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: var(--editor-text);
+    cursor: pointer;
+    display: grid;
+    gap: 1px;
+    min-height: 34px;
+    padding: 5px 7px;
+    text-align: left;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item {
+    align-items: center;
+    display: flex;
+    font-size: 12px;
+    font-weight: 700;
+    justify-content: space-between;
+    min-height: 28px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item::after {
+    background: transparent;
+    border-radius: 999px;
+    content: "";
+    height: 6px;
+    width: 6px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item.active::after {
+    background: var(--editor-blue);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item:hover:not(:disabled),
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item.active,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item:hover:not(:disabled),
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item.active {
+    background: var(--editor-blue-soft);
+    border-color: var(--editor-line-strong);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-option-item:disabled,
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-item:disabled {
+    color: var(--editor-text-soft);
+    cursor: default;
+    opacity: 0.52;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-label {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-template-description {
+    color: var(--editor-text-muted);
+    font-size: 11px;
+    line-height: 1.2;
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] > .panel-section:nth-child(2) > h3:not(.tile-palette-title) {
+    font-size: 14px;
+    margin: 8px 0 6px;
+  }

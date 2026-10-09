@@ -1,0 +1,28 @@
+{
+ "id": "dark_edge",
+ "slug": "dark_edge",
+ "name": "어둠 덮개(가장자리)",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "방 가장자리를 어둡게 덮는 반투명 한 칸: 위 줄 = 어둠 가장 짙음(&) → 아래로 * \" ^ 순으로 옅어져 맨 아래 줄은 투명. 단 경계는 곧은 가로선 말고 2px 디더(체크)로 부드럽게. 좌우로 이어 붙는다(좌우 끝 모양 같게). 네 방향은 회전해 쓴다. 불투명 색 금지.",
+ "palette_hint": "^ \" * & 어둠",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "frame",
+ "role": "어둠 가장자리",
+ "worker": "h4",
+ "set_with": [
+  "dark_corner",
+  "dark_light_hole"
+ ]
+}

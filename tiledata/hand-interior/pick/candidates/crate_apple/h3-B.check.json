@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate_apple/h3-B.pxg",
+ "id": "crate:apple",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "사과 아랫줄(8행)을 어두운 붉은 F 로 굳혀 궤짝 입구와 분리, 널 이음 두 곳(L 한 칸) 추가; 모양·크기·윤곽은 v5 그대로",
+ "ok": true
+}

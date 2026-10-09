@@ -1,0 +1,98 @@
+import type Phaser from "phaser";
+
+const SIZE = 256;
+const KEY = "__oprn_weather_mist_v1";
+
+/** Periodic value noise: each octave wraps independently, so drifting never exposes a seam. */
+function noise(x: number, y: number, period: number, seed: number): number {
+  const ix = Math.floor(x);
+  const iy = Math.floor(y);
+  const smooth = (t: number) => t * t * t * (t * (t * 6 - 15) + 10);
+  const u = smooth(x - ix);
+  const v = smooth(y - iy);
+  const hash = (a: number, b: number) => {
+    let n = Math.imul((a % period + period) % period, 374761393)
+      + Math.imul((b % period + period) % period, 668265263) + seed;
+    n = Math.imul(n ^ (n >>> 13), 1274126177);
+    return ((n ^ (n >>> 16)) >>> 0) / 4294967295;
+  };
+  const a = hash(ix, iy);
+  const b = hash(ix + 1, iy);
+  const c = hash(ix, iy + 1);
+  const d = hash(ix + 1, iy + 1);
+  return (a + (b - a) * u) * (1 - v) + (c + (d - c) * u) * v;
+}
+
+/**
+ * 굽는 중인 안개. 한 장이 256² × 5옥타브 값잡음이라 한 프레임에 구우면 약 45ms 멈춘다(Node 실측,
+ * 안개·연무 맵에 처음 들어갈 때). 프레임마다 FOG_ROWS_PER_STEP 줄씩 나눠 굽는다.
+ */
+type PendingFog = {
+  readonly pixels: ImageData; readonly canvas: HTMLCanvasElement; readonly context: CanvasRenderingContext2D;
+  row: number;
+  /** 마지막으로 구운 프레임 표. 같은 프레임의 두 번째 호출부터는 굽지 않는다. */
+  frame?: number;
+};
+const pendingFog = new WeakMap<Phaser.Textures.TextureManager, Map<string, PendingFog>>();
+const FOG_ROWS_PER_STEP = 64;
+
+/**
+ * Generated once per game texture manager, reused across maps. No external assets or per-frame uploads.
+ *
+ * `rowBudget` 를 주면 그만큼만 굽고, 아직 덜 됐으면 null 을 낸다 — 호출부는 그 프레임에 안개를 그리지
+ * 않고 다음 프레임에 다시 부른다. 생략하면 예전처럼 한 번에 끝까지 굽는다.
+ *
+ * `frame` (게임 루프 프레임 번호)을 주면 예산은 **호출이 아니라 프레임**당이다. 날씨 안개와 분위기 연무
+ * 네 종류가 같은 텍스처를 한 프레임에 각자 부르면, 호출당 예산으로는 그 프레임에 통째로 구워졌다
+ * (Node 실측 약 420ms). 같은 프레임의 추가 호출은 진행 상태만 본다.
+ */
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key?: string): string;
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key: string | undefined, rowBudget: number, frame?: number): string | null;
+export function ensureFogTexture(textures: Phaser.Textures.TextureManager, key = KEY, rowBudget = SIZE, frame?: number): string | null {
+  if (textures.exists(key)) return key;
+  let pending = pendingFog.get(textures)?.get(key);
+  if (!pending) {
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = SIZE;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Weather requires a 2D canvas context");
+    pending = { pixels: context.createImageData(SIZE, SIZE), canvas, context, row: 0 };
+    const byKey = pendingFog.get(textures) ?? new Map<string, PendingFog>();
+    byKey.set(key, pending);
+    pendingFog.set(textures, byKey);
+  }
+  if (frame !== undefined && pending.frame === frame) return null;
+  pending.frame = frame;
+  const { pixels } = pending;
+  const end = Math.min(SIZE, pending.row + Math.max(1, Math.floor(rowBudget)));
+  for (let y = pending.row; y < end; y += 1) {
+    for (let x = 0; x < SIZE; x += 1) {
+      let density = 0;
+      let weight = 0;
+      for (let octave = 0; octave < 5; octave += 1) {
+        const period = 4 * 2 ** octave;
+        const amplitude = 0.5 ** octave;
+        density += noise(x / SIZE * period, y / SIZE * period, period, 97 + octave * 113) * amplitude;
+        weight += amplitude;
+      }
+      // Continuous density, with transparent pockets and feathered wisps rather than sprite silhouettes.
+      density = Math.max(0, Math.min(1, (density / weight - 0.20) / 0.60));
+      const offset = (y * SIZE + x) * 4;
+      pixels.data[offset] = 213;
+      pixels.data[offset + 1] = 226;
+      pixels.data[offset + 2] = 232;
+      pixels.data[offset + 3] = Math.round(density ** 1.5 * 255);
+    }
+  }
+  pending.row = end;
+  if (pending.row < SIZE) return null;
+  pendingFog.get(textures)?.delete(key);
+  pending.context.putImageData(pixels, 0, 0);
+  const texture = textures.addCanvas(key, pending.canvas);
+  // Phaser's LINEAR filter (0): the game's pixelArt/NEAREST setting must not turn mist into blocks.
+  texture?.setFilter(0);
+  return key;
+}
+
+/** 프레임 예산 안에서 안개를 굽는 기본 줄 수. 약 11ms 분량이다. */
+export const FOG_BAKE_ROWS_PER_FRAME = FOG_ROWS_PER_STEP;

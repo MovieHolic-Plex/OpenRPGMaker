@@ -1,0 +1,77 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vpine 3
+@mat b vdwood 3
+@mat c vred 3
+@mat d vblue 3
+@mat e washi 3
+@mat f vyellow 3
+@mat g vgreen 3
+@mat h vwhite 3
+@mblock 0 0
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aacccbddeeebbdddccfffggcccddgggb
+aaeeebddgggffeeeccfffggcccddgggb
+aacccbddgggffdddcceeeggccceegggb
+aacccbddgggffdddccfffggcccddgggb
+aacccbddgggffdddccfffggcccddgggb
+aacccbddgggffdddccfffggcccddgggb
+aaaahaaahaaahaaahaaahaaahaaahaaa
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aaddbeeeccgggccbbbffcccggddbbdbb
+aaddbfffcceeeccdddffeeeggddbddbb
+aaddbfffccgggccdddffcccggddbddbb
+aaddbfffccgggcceeeffcccggddddbbb
+aaddbfffccgggccdddffcccggddddbbb
+aaddbfffccgggccdddffcccggdddbbbb
+aaaahaaahaaahaaahaaahaaahaaahaaa
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aabbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aagggccdddffcccggdddfffbccgggddb
+aagggeedddffccceedddfffbeegggeeb
+aagggccdddeecccggdddfffbccgggddb
+aagggccdddffcccggdddfffbccgggddb
+aagggccdddffcccggdddfffbccgggddb
+aagggccdddffcccggdddfffbccgggddb
+aaaahaaahaaahaaahaaahaaahaaahaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+...--------------------------...
+@tblock 0 0
+66666666666666666655555555444444
+65555555333333333322222222111111
+65222222000000000000000000000000
+65222222000000000000000000000000
+65653366333114204044430420333100
+65555363531553334042030420303100
+65653363531514204022230420113100
+65653363531514204042030420303100
+65653363531514204042030420303100
+65653363531514204042030420303100
+66666666555555555544444444333333
+44222222000000000000000000000000
+65222222000000000000000000000000
+65633555555314011130420444100100
+65633653513334044430222404101100
+65633653515314042030420404101100
+65633653515314033330420404121000
+65633653515314042030420404121000
+65633653515314042030420404120000
+66666666555555555544444444333333
+33111111000000000000000000000000
+64111111000000000000000000000000
+64666626204431030322310030222200
+64642446204031022300310011200000
+64642626202231030300310030200200
+64642626204031030300310030200200
+64642626204031030300310030200200
+64642626204031030300310030200200
+66666666444444444433333333222222
+33333333111111111100000000000000
+................................
+................................

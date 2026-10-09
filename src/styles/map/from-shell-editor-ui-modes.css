@@ -1,0 +1,117 @@
+/* map 표면 — shell/editor-ui-modes.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/editor-ui-modes.css:73-77 */
+
+/* shell/editor-ui-modes.css:79-92 */
+
+/* shell/editor-ui-modes.css:95-98 */
+
+/* shell/editor-ui-modes.css:422-429 */
+/* 좌팔레트 폭 가둠. 아래 !important 들은 **측정 결과 실제 경쟁을 이기고 있다** —
+   같은 속성을 선언하는 규칙이 요소마다 2~5개씩 있다(2026-09-17, CDP getMatchedStylesForNode,
+   UI 모드 3종 전부에서 측정). 지우려면 요소별 캐스케이드를 다시 풀어야 한다.
+   단 min-width 는 선언자가 이 규칙뿐이라 플래그를 뗐다. */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet,
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+  max-width: 100% !important;
+  min-width: 0;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  width: 100% !important;
+}
+
+/* shell/editor-ui-modes.css:431-435 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* shell/editor-ui-modes.css:438-440 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.oprn-palette {
+  container-type: inline-size;
+}
+
+/* shell/editor-ui-modes.css:442-450 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+  --oprn-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: max-content !important;
+}
+
+/* shell/editor-ui-modes.css:452-456 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid .chipset-tile {
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+/* shell/editor-ui-modes.css:460-463 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette {
+  container-type: inline-size;
+  overflow-x: auto !important;
+}
+
+/* shell/editor-ui-modes.css:465-472 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid {
+  --chipset-cell: max(var(--custom-min-cell), min(32px, calc(100cqi / var(--custom-cols))));
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(var(--custom-cols), var(--chipset-cell)) !important;
+  max-width: none !important;
+  min-width: calc(var(--custom-cols) * var(--custom-min-cell)) !important;
+  width: max-content !important;
+}
+
+/* shell/editor-ui-modes.css:474-478 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.custom-palette.source-layout {
+  overflow-x: auto !important;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .source-layout .chipset-grid.custom-palette-grid {
+  --chipset-cell: 16px;
+  grid-template-columns: repeat(var(--custom-cols), var(--chipset-cell)) !important;
+  max-width: none !important;
+  gap: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .source-layout .chipset-tile {
+  border-radius: 0;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.custom-palette-grid .chipset-tile {
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+/* shell/editor-ui-modes.css:529-535 */
+.chipset-sheet-popout-body .chipset-sheet.tile-palette {
+  border: 0;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  overflow: visible;
+}
+
+/* shell/editor-ui-modes.css:537-541 */
+.chipset-sheet-popout-body .chipset-grid {
+  --chipset-cell: clamp(32px, calc((100cqw - 16px) / 10), 48px);
+  grid-template-columns: repeat(auto-fill, minmax(var(--chipset-cell), 1fr));
+  width: 100%;
+}
+
+/* shell/editor-ui-modes.css:543-549 */
+
+/* shell/editor-ui-modes.css:551-555 */
+.palette-sheet-tools .btn {
+  font-size: 11px;
+  height: 26px;
+  padding: 0 10px;
+}

@@ -1,0 +1,681 @@
+/* Resource manager can open before databaseModal.ts has lazy-loaded the
+   database surface. Keep its shared modal shell self-contained so the first
+   open is centered instead of falling back to a static block in document flow. */
+.database-modal-backdrop:has(.resource-modal-window) {
+  background: rgba(24, 22, 18, 0.18);
+  display: grid;
+  inset: 0;
+  padding: var(--space-3);
+  place-items: center;
+  position: fixed;
+  z-index: 900;
+}
+
+.resource-modal-window {
+  --rm-resource-window-max: 1180px;
+  --rm-resource-viewport-gutter: 32px;
+  --rm-resource-body-pad: 12px;
+  --rm-resource-pane-gap: 12px;
+  --rm-resource-left-min: 220px;
+  --rm-resource-center-min: 440px;
+  --rm-resource-command-width: 280px;
+  --rm-resource-shell-height: 580px;
+  --rm-resource-shell-min: 420px;
+  --rm-resource-shell-reserve: 120px;
+  --rm-resource-row-height: 24px;
+  --rm-resource-command-height: 38px;
+  --rm-resource-preview-min: 180px;
+  --rm-resource-footer-button-width: 132px;
+  --rm-resource-icon-folder-width: 17px;
+  --rm-resource-icon-file-size: 14px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  overflow: hidden;
+  height: min(820px, calc(100vh - 24px));
+  max-width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
+  position: relative;
+  width: min(var(--rm-resource-window-max), calc(100vw - var(--rm-resource-viewport-gutter)));
+}
+
+.resource-modal-window .database-modal-header {
+  align-items: center;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-1);
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: space-between;
+  min-height: 36px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+}
+
+.resource-modal-window .database-modal-header h2 {
+  color: var(--text-1);
+  font: 600 13px/20px var(--font-ui);
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-shadow: none;
+}
+
+.resource-modal-window .database-modal-header h2::before {
+  background: var(--accent);
+  border: 0;
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 8px;
+  margin-right: 8px;
+  vertical-align: 1px;
+  width: 8px;
+}
+
+.resource-modal-window .database-modal-close {
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-2);
+  font: 400 16px/1 var(--font-ui);
+  height: 24px;
+  min-height: 24px;
+  min-width: 24px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  width: 24px;
+}
+
+.resource-modal-window .database-modal-close:hover,
+.resource-modal-window .database-modal-close:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.resource-modal-window .database-modal-close:active {
+  background: var(--bg-active);
+  border-color: transparent;
+  padding: 0;
+}
+
+.resource-modal-window .database-modal-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: hidden;
+  padding: var(--rm-resource-body-pad) var(--rm-resource-body-pad) 0;
+}
+
+.rm-classic-shell {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 12px;
+  grid-template-columns: 200px 1fr 270px;
+  height: min(600px, calc(100vh - 120px));
+  min-height: 400px;
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+/* 모달 창 안에서는 창 높이를 채운다. 셸이 600px 로 고정돼 창(820px) 아래 120px 이 빈 띠로 남고
+   카드 목록은 그 위에서 잘렸다(2026-09-24 visual QA). */
+.resource-modal-window .rm-classic-shell {
+  align-self: stretch;
+  height: auto;
+}
+
+.rm-category-list,
+.rm-entry-list,
+.rm-preview-well {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  min-width: 0;
+}
+
+.rm-preview-well {
+  background: var(--bg-canvas);
+}
+
+.rm-category-list,
+.rm-entry-list {
+  align-content: start;
+  display: grid;
+  overflow: auto;
+  padding: var(--space-1);
+}
+
+.rm-hidden-kind-select {
+  height: 1px;
+  opacity: 0.01;
+  position: absolute;
+  width: 1px;
+}
+
+.resource-modal-window .rm-category-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-2);
+  display: flex;
+  font: 400 13px/20px var(--font-ui);
+  gap: 6px;
+  min-height: var(--rm-resource-row-height);
+  overflow: hidden;
+  padding: 0 6px 0 4px;
+  text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.resource-modal-window .rm-category-row::before {
+  background: var(--warning-muted);
+  border: 1px solid var(--warning);
+  border-radius: 3px;
+  content: "";
+  flex: 0 0 var(--rm-resource-icon-folder-width);
+  height: calc(var(--rm-resource-icon-folder-width) - 4px);
+  opacity: 0.8;
+}
+
+.resource-modal-window .rm-category-row:hover,
+.resource-modal-window .rm-category-row:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+
+.resource-modal-window .rm-category-row:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.resource-modal-window .rm-category-row.active {
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.rm-entry-list {
+  grid-auto-rows: min-content;
+}
+
+.rm-profile-list,
+.rm-upload-list {
+  display: grid;
+  gap: 3px;
+}
+
+.rm-entry-list > h3,
+.rm-summary {
+  display: none;
+}
+
+.rm-profile-row,
+.rm-asset-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-s);
+  color: var(--text-2);
+  display: flex;
+  font: 400 13px/23px var(--font-ui);
+  gap: 6px;
+  min-height: var(--rm-resource-row-height);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 6px;
+  text-overflow: ellipsis;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.rm-profile-row:hover,
+.rm-asset-row:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+/* 방금 가져온 줄 — 기본 포함 리소스 수십 줄 사이에서 어느 것이 새 것인지 짚어 준다. */
+.rm-asset-row.is-recent {
+  background: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text-1);
+}
+
+.rm-profile-row::before {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 3px;
+  content: "";
+  flex: 0 0 var(--rm-resource-icon-file-size);
+  height: var(--rm-resource-icon-file-size);
+}
+
+.rm-profile-thumb,
+.rm-preview {
+  image-rendering: pixelated;
+  max-height: 18px;
+  max-width: 24px;
+  object-fit: contain;
+}
+
+.rm-tile-grid {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1px;
+  margin-left: auto;
+  max-width: 78px;
+  overflow: hidden;
+}
+
+.rm-tile-cell {
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: 2px;
+  color: var(--text-3);
+  flex: 0 0 12px;
+  font: 400 8px/10px var(--font-mono);
+  height: 12px;
+  text-align: center;
+}
+
+.rm-entry-empty {
+  color: var(--text-3);
+  font: 400 12px/18px var(--font-ui);
+  padding: var(--space-2);
+}
+
+.rm-command-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.rm-command-button,
+.resource-footer-button {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-shadow: none;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font: 600 13px/1 var(--font-ui);
+  min-width: 0;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.rm-command-button:hover:not(:disabled),
+.resource-footer-button:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+
+.rm-command-button:active:not(:disabled),
+.resource-footer-button:active:not(:disabled) {
+  background: var(--control-bg-active);
+}
+
+.rm-command-button:focus-visible,
+.resource-footer-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.rm-command-button.primary {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+
+.rm-command-button.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-border);
+}
+
+.rm-command-button.primary:active:not(:disabled) {
+  background: var(--accent-active);
+}
+
+.rm-command-button::before {
+  display: none;
+}
+
+.rm-command-button:disabled {
+  color: var(--text-3);
+  cursor: default;
+  opacity: 0.6;
+}
+
+.rm-import-format {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+}
+
+.rm-import-format legend {
+  color: var(--text-2);
+  font: 600 12px/1 var(--font-ui);
+  padding: 0 4px;
+}
+
+.rm-radio-row {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font: 400 13px/18px var(--font-ui);
+  gap: 7px;
+}
+
+.rm-radio-row input[type="radio"] {
+  accent-color: var(--accent);
+}
+
+.rm-preview-well {
+  min-height: var(--rm-resource-preview-min);
+}
+
+.rm-asset-info {
+  min-width: 0;
+}
+
+.rm-asset-name,
+.rm-asset-kind,
+.rm-asset-dims {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-asset-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.rm-asset-actions .btn,
+.rm-asset-row > .btn.danger {
+  min-height: 24px;
+}
+
+/* 가로 여백이 0 이라 왼쪽 안내문과 오른쪽 「도움말」 버튼이 창 테두리에 붙어 있었다(2026-09-24 visual QA).
+   본문과 같은 여백을 쓴다. */
+.resource-modal-footer {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding: 10px var(--rm-resource-body-pad) var(--rm-resource-body-pad);
+}
+
+.resource-footer-status {
+  color: var(--text-3);
+  font: 400 12px/18px var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: auto;
+}
+
+.resource-footer-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.resource-footer-button {
+  min-height: 36px;
+  min-width: var(--rm-resource-footer-button-width);
+}
+
+@media (max-width: 760px) {
+  .rm-classic-shell {
+    grid-template-columns: minmax(132px, 0.8fr) minmax(180px, 1fr);
+  }
+
+  .rm-command-panel {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto auto;
+  }
+
+  .rm-import-format,
+  .rm-preview-well {
+    grid-column: 1 / -1;
+  }
+
+  .resource-modal-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+
+.rm-profile-audio-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border-subtle, rgba(42,37,33,.12)));
+  border-radius: 6px;
+  color: var(--text-1, #2A2521);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 8px;
+  min-width: 48px;
+  padding: 4px 6px;
+  justify-content: center;
+}
+
+.resource-modal-window:has(.rm-audio-detail) {
+  --rm-resource-left-min: 192px;
+  --rm-resource-center-min: 240px;
+  --rm-resource-command-width: min(40vw, 400px);
+  --rm-resource-shell-height: 600px;
+}
+
+.rm-audio-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+.rm-audio-detail > * {
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.rm-audio-detail > .rm-audio-detail-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.rm-audio-detail-scroll > * { flex-shrink: 0; min-width: 0; }
+
+.rm-audio-detail .rm-command-button {
+  min-height: var(--rm-resource-command-height);
+  padding: var(--space-2);
+  white-space: normal;
+}
+
+.rm-audio-name {
+  color: var(--text-1);
+  font: 600 18px/1.5 var(--font-ui);
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.rm-audio-meta {
+  color: var(--text-2);
+  font: 400 12px/18px var(--font-ui);
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+.rm-audio-field {
+  color: var(--text-1);
+  display: grid;
+  font: 400 13px/20px var(--font-ui);
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.rm-audio-description,
+.rm-audio-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: 400 13px/20px var(--font-ui);
+  min-width: 0;
+  padding: var(--space-2);
+  resize: vertical;
+  width: 100%;
+}
+
+.rm-audio-description:focus-visible,
+.rm-audio-search:focus-visible,
+.rm-audio-row:focus-visible,
+.rm-audio-filter input:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.rm-audio-filter {
+  align-items: center;
+  color: var(--text-2);
+  display: flex;
+  font: 400 13px/20px var(--font-ui);
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.rm-audio-filter input {
+  accent-color: var(--accent);
+}
+
+.rm-audio-rows {
+  display: grid;
+  min-width: 0;
+}
+
+.rm-audio-row {
+  cursor: pointer;
+  text-align: left;
+}
+
+.rm-audio-row.active {
+  background: var(--accent-muted);
+  color: var(--text-1);
+}
+
+.rm-audio-detail audio {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.asset-source-backdrop {
+  background: rgba(24, 22, 18, 0.28);
+  display: grid;
+  inset: 0;
+  padding: 16px;
+  position: fixed;
+  z-index: 1200;
+}
+
+.asset-source-window {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.asset-source-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.asset-source-header h2 {
+  font: 600 16px/22px var(--font-ui);
+  margin: 0;
+}
+
+.asset-source-url {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.asset-source-status {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.asset-source-body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-height: 0;
+}
+
+.asset-source-viewport {
+  background: #1c1a17;
+  min-height: 420px;
+  position: relative;
+}
+
+.asset-source-desktop-note,
+.asset-source-picker {
+  padding: 12px;
+}
+
+.asset-source-picker {
+  border-left: 1px solid var(--border-strong);
+  overflow: auto;
+}
+
+.asset-source-sheet {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto 72px minmax(0, 1fr);
+  margin-bottom: 8px;
+}
+
+.asset-source-sheet img {
+  height: 72px;
+  object-fit: contain;
+  width: 72px;
+}
+

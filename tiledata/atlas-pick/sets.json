@@ -1,0 +1,7 @@
+[
+ {"id": "modern", "name": "현대(강남)", "items": "items-modern.json", "candidates": "candidates-modern", "baseline": "v0", "palette": "modern.pal", "about": "atlas_biome_modern 시트의 강남역 맵(modern-gangnam-station)에 쓰인 조각·블록. v0 = 지금 시트에 든 판."},
+ {"id": "jp", "name": "일본", "items": "jobs-jp.json", "candidates": "candidates-jp", "baseline": null, "palette": "jp.pal", "worker": "WORKER-JP.md", "kits": "kits-jp.json", "kitJobs": "jobs-jp-kit.json", "about": "일본 도시(역 앞 번화가·주택가 골목·신사 한 켠) 새 조각. 현재판 없음 — 후보끼리 고른다. 절차 WORKER-JP.md. 건물·역 입구·개찰구·신호등 같은 큰 구조물은 조립형 킷(kits-jp.json, 절차 WORKER-JP-KIT.md) — 후보 = 부품 한 벌, 화면에는 조립 예가 뜬다."},
+ {"id": "worldmap", "name": "월드맵", "items": "jobs-worldmap.json", "candidates": "candidates-worldmap", "baseline": null, "palette": "worldmap.pal", "worker": "WORKER-WORLDMAP.md", "about": "JRPG 월드맵(필드 축척) 16px 조각. 맥락은 깔았을 때 모습. 절차 WORKER-WORLDMAP.md.", "context": "worldmap_context:worldmap_context", "ctxScale": 3, "ctxFirst": true},
+ {"id": "horror", "name": "호러", "items": "jobs-horror.json", "candidates": "candidates-horror", "baseline": null, "palette": "horror.pal", "worker": "WORKER-HORROR.md", "about": "쯔꾸르 인디 호러(낡은 저택·폐병원·폐교 복도·밤 묘지·연출) 16px 조각. 맥락은 밝은 방 + 어두운 방. 절차 WORKER-HORROR.md.", "context": "horror_context:lit_dark"},
+ {"id": "school", "name": "학원", "items": "jobs-school.json", "candidates": "candidates-school", "baseline": null, "palette": "school.pal", "worker": "WORKER-SCHOOL.md", "about": "학원(교실·복도·운동장 등) 16px 조각. 실내는 v5 널마루·회벽 앞 맥락. 절차 WORKER-SCHOOL.md.", "context": "school_context:context_image"}
+]

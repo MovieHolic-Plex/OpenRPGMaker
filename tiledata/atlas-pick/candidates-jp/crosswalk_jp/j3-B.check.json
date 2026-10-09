@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/crosswalk_jp/j3-B.pxg",
+ "set": "jp",
+ "id": "crosswalk_jp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "왼쪽 줄 가장자리를 가장 밝게(5단), 오른쪽은 3단, 줄 오른쪽 옆에 어두운 아스팔트 그림자 한 줄을 붙여 페인트가 솟아 보이는 강한 빛 구조",
+ "ok": true
+}

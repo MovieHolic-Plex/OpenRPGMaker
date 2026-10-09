@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mortar_and_pestle/w1-B.pxg",
+ "id": "mortar and pestle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "failed": [
+   "orphans"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  4,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  12,
+  13
+ ],
+ "note": "A 에 사발 안에 갈아 둔 초록 약초 더미를 넣어 쓰임새가 보이게 하고, 몸통 밑 접지 그림자 두 겹으로 바닥에 무겁게 눌린 느낌을 강화.",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+// hamlet v5-A (5판: FF6 실측 톤(어둡고 채도 낮음), 외곽선 없음)
+@size 16 16
+@cell 16
+@palette ../../palette/worldmap5.pal
+@layer main
+@mat a wgrass 0
+@mat b wroofb 2
+@mat c wroofb 0
+@mat d wroofr 2
+@mat e wroofr 0
+@mat f wplast 2
+@mat g wplast 1
+@mat h wplast 0
+@mat i wbark 2
+@mat j wbark 1
+@mblock 0 0
+................
+................
+................
+.........aaaaa..
+........abbbbca.
+..aaaaaabbbbbbca
+.addddeaccccccca
+addddddeafgggha.
+aeeeeeeeafgggha.
+.afggghaafiigha.
+.afiighaafjjgha.
+.afjjghaafjjgha.
+.afjjgha.aaaaa..
+..aaaaa.........
+.--------------.
+...-----------..

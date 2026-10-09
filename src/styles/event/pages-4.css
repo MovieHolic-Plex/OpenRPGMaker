@@ -1,0 +1,632 @@
+/* event 표면 — pages-4.css. 규칙 순서는 2026-09 세대 접기 전 유효 순서(event/index.css 평탄 순서)를 보존한다. */
+
+/* 기본 접힘 — 닫힌 상태는 한 줄 요약만 남겨 커맨드 툴바 밀도를 낮춘다. */
+.event-editor-follower-preset-bar:not([open]) {
+  padding: 2px 8px;
+  gap: 0;
+}
+
+.event-editor-follower-preset-summary {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+  cursor: pointer;
+  user-select: none;
+  list-style-position: inside;
+}
+
+.event-editor-follower-preset-bar:not([open]) .event-editor-follower-preset-chips,
+.event-editor-follower-preset-bar:not([open]) .follower-preset-note {
+  display: none;
+}
+
+.event-editor-follower-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.follower-preset-chip {
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.follower-preset-chip--mascot {
+  border-color: var(--border-default);
+}
+
+.follower-preset-chip--actor {
+  border-color: var(--border-default);
+}
+
+.follower-preset-note {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.follower-preset-chip .companion-portrait {
+  border-radius: 999px;
+}
+
+.event-editor-modal-header .event-name {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-1);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  margin: 0 -6px;
+  padding: 4px 6px;
+}
+
+.event-editor-modal-header .event-name:focus {
+  background: var(--bg-inset);
+  outline: none;
+}
+
+/* 배경 힌트만으로는 키보드 초점이 보이지 않는다. 링은 셸 토큰을 쓴다. */
+.event-editor-modal-header .event-name:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* 이벤트 ID 칩(OPRN-OUT-014, variant="chip").
+ * 제목 줄은 48px 고정 높이 flex 라 카드 변형의 grid(라벨/값/복사/도움말 2줄)를 그대로
+ * 쓰면 헤더를 넘친다. 여기서는 NPC 칩과 같은 pill 로 눌러 담고, 값이 길면(레거시 `EV003`
+ * ~ `ev_`+UUID 39자) 줄임표로 자른다 — 전체 값은 input value·title·복사 버튼에 남는다.
+ * 이 시트는 index.css 에서 event-editor.css(modern/mockup/modernize 포함)보다 **뒤에**
+ * import 되므로, 같은 특이도로도 여기 규칙이 이긴다. */
+.event-editor-modal-header .event-id-readout {
+  align-items: center;
+  background: var(--bg-inset);
+  border-radius: 999px;
+  display: inline-flex;
+  flex: 0 1 auto;
+  gap: 4px;
+  /* 실측(1440×900 / 1024×768): 이 칩은 224~241px 로 놓이고 39자 UUID 는 109~126px 잘린다.
+   * 상한을 280px 로 두는 이유는 «더 넓히려면 `.meta` 를 flex:1 1 auto 로 바꿔야 하고, 그건
+   * 이름·맵·좌표·NPC 칩이 공유하는 줄 배치를 건드린다»는 것이다 — 실측에서 flex-basis
+   * 360px 을 줘도 `.meta` 가 늘지 않아 2px 밖에 얻지 못했다. 전체 값은 왼쪽 패널의 카드
+   * 변형과 이 상자의 value·title·복사 버튼이 보존한다. */
+  max-width: 280px;
+  min-width: 0;
+  padding: 2px 4px 2px 8px;
+}
+
+.event-editor-modal-header .event-id-readout-label {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.event-editor-modal-header input.event-id-readout-value {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  font: 400 11px/1.4 var(--mono, unset);
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.event-editor-modal-header input.event-id-readout-value:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 1px;
+}
+
+.event-editor-modal-header .event-id-readout-copy {
+  border: 0;
+  flex: 0 0 auto;
+  font-size: 10px;
+  min-height: 18px;
+  padding: 1px 6px;
+}
+
+/* 40px Page Tabs */
+.event-editor .event-editor-pagebar,
+.event-editor .pages {
+  align-items: stretch;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 4px;
+  height: var(--hierarchy-pages-height);
+  min-height: var(--hierarchy-pages-height);
+  max-height: var(--hierarchy-pages-height);
+  padding: 0 16px 0 12px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.event-editor .event-page-number-tabs {
+  align-items: stretch;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0;
+}
+
+.event-editor .page-tab.active::after,
+.event-editor .event-page-number-tabs .btn.active::after,
+.event-editor .event-page-number-tabs .btn[aria-selected="true"]::after {
+  background: var(--accent);
+  bottom: -1px;
+  content: "";
+  height: 2px;
+  left: 12px;
+  position: absolute;
+  right: 12px;
+}
+
+.event-editor .page-add,
+.event-editor .event-page-tab-add {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: var(--text-3);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 18px;
+  justify-content: center;
+  width: 28px;
+}
+
+.event-editor .pages-meta {
+  align-items: center;
+  color: var(--text-3);
+  display: flex;
+  font-size: 12px;
+  gap: 14px;
+  margin-left: auto;
+}
+
+.event-editor .pages-meta .warn-text {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* Modal Body & Dynamic Shell
+ *
+ * 본문이 헤더/푸터만 남고 하얗게 비는 실패는 두 갈래다.
+ * (1) JS 가 clearChildren 뒤에 던짐 — modal.ts 가 오류 면으로 잡는다.
+ * (2) 높이 사슬이 끊기거나 옛 3행 그리드(`auto auto 1fr`)가 이기면 워크벤치가
+ *     0 높이 auto 행에 앉고 1fr 이 빈 흰 칸이 된다. 바디를 flex 로 고정하고
+ *     에디터는 페이지바+워크벤치 두 행만 인정한다. */
+.event-editor-modal-body {
+  background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.event-editor-modal-dynamic .event-editor {
+  background: var(--bg-base);
+  display: grid;
+  flex: 1 1 auto;
+  gap: 0;
+  grid-template-rows: var(--hierarchy-pages-height) minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 컬럼 배치는 이 파일이 소유하는 최종 트랙 목록(설정 | 목록 1fr | 인스펙터, 923~930행)과
+   반드시 같은 개수여야 한다. 예전에는 windowing 레이어의 4트랙(설정 | 12px 리사이저 |
+   목록 | 인스펙터)을 기준으로 목록=3 / 인스펙터=4 를 못 박아 두었는데, 이 파일이 3트랙으로
+   덮으면서 목록이 인스펙터 트랙(340px)에 앉고 1fr 트랙이 빈 채 남아 1440px에서 396px
+   죽은 띠가 생겼다(실측: 설정 0~268, 목록 642~982). 리사이저는 자기 트랙 없이
+   `grid-column: 1` + `justify-self: end` 로 설정 컬럼 경계에 얹히므로 트랙은 3개다.
+   720px 이하는 이 배치에서 제외한다 — 다만 «거기서 단일 컬럼으로 접힌다»는 전제는 사실이
+   아니다. 트랙 목록은 event 레이어의 마지막 시트인 이 파일이 같은 특이도로 뒤에서 선언하므로
+   좁은 폭에서도 3트랙이 유지된다(2026-09-11: 은퇴 레이어 event-editor.modern/06 · windowing ·
+   mockup 의 폴드 트랙 선언은 어차피 이 선언에 가려져 있어 지웠다). 문서화된 최소 지원 뷰포트가
+   1024x768 이라 실사용 범위 밖이지만, 720px 이하를 지원하게 되는 날에는 폴드를 이 파일이 직접 선언해야 한다. */
+@media (min-width: 721px) {
+  .event-editor .event-editor-workbench > .event-editor-settings-column {
+    grid-column: 1;
+  }
+}
+
+/* Left Rail: Compact Facts */
+.event-editor .event-editor-settings-column,
+.event-editor aside {
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  grid-column: 1;
+  grid-row: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px 16px 12px;
+}
+
+.event-editor .event-editor-settings-main {
+  background: var(--bg-raised);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.event-editor .presence {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 56px 1fr;
+}
+
+.event-editor .presence .sprite {
+  background: #9bb07a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  height: 56px;
+  overflow: hidden;
+  position: relative;
+  width: 56px;
+}
+
+.event-editor .presence .sprite i {
+  background: #5a3d28;
+  border-radius: 4px 4px 2px 2px;
+  height: 28px;
+  left: 16px;
+  position: absolute;
+  top: 12px;
+  width: 24px;
+}
+
+.event-editor .presence .sprite i::before {
+  background: #d7b07a;
+  border-radius: 5px;
+  content: "";
+  height: 10px;
+  left: 3px;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+}
+
+.event-editor .presence .kicker {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.event-editor .presence .value {
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 650;
+  margin-top: 2px;
+}
+
+.event-editor .presence .sub {
+  color: var(--text-2);
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.event-editor .fact label {
+  color: var(--text-3);
+  display: block;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.event-editor .fact .value {
+  color: var(--text-1);
+  font-size: 13px;
+}
+
+/* Secondary Props Details (hidden or modal) */
+.event-editor .event-page-props {
+  background: transparent;
+  border: 0;
+}
+
+.event-editor .event-oprn-fieldset,
+.event-editor .event-page-props fieldset {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+}
+
+/* Center Column: Command Story & Toolbar */
+.event-editor .event-editor-commands-column,
+.event-editor main {
+  background: var(--bg-base);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  grid-row: 1;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-editor .event-editor-settings-column,
+.event-editor .event-editor-commands-column {
+  display: grid;
+  gap: 0;
+  /* 3번 행 = AI 명령 도크. 암시 행으로 내버려 두면 1fr 이 줄지 않아
+     도크가 모달 밑밖으로 밀려난다(실직: 900 높이에서 도크 밑이 1016). */
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 0;
+}
+
+.event-editor .event-editor-settings-main {
+  gap: 8px;
+  padding: 10px;
+}
+
+.event-editor .event-editor-settings-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-editor .event-editor-settings-accordion-group {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.event-editor .event-editor-settings-accordion-summary {
+  align-items: center;
+  column-gap: 8px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 12px;
+  list-style: none;
+  padding: 8px 11px;
+  row-gap: 1px;
+}
+
+.event-editor .event-editor-settings-accordion-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-editor-settings-accordion-summary::after {
+  color: var(--text-3);
+  content: "\25BE";
+  font-size: 10px;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: center;
+}
+
+.event-editor .event-editor-settings-accordion-group[open] > .event-editor-settings-accordion-summary::after {
+  content: "\25B4";
+}
+
+.event-editor .event-editor-settings-accordion-title {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 650;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.event-editor .event-editor-settings-accordion-meta {
+  color: var(--text-3);
+  font-size: 11px;
+  grid-column: 1;
+  grid-row: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-settings-accordion-body {
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 11px 11px;
+}
+
+.event-editor .event-editor-settings-accordion-body label {
+  min-width: 0;
+}
+
+.event-editor .event-editor-settings-accordion-body .event-oprn-fieldset,
+.event-editor .event-editor-settings-accordion-body fieldset {
+  margin-bottom: 0;
+}
+
+/* Page selector and all six actions share one row. The tab strip owns the shrink/scroll budget; the
+ * fixed action cluster uses compact labels below 1024px so every action remains inside the pagebar. */
+.event-editor > .event-editor-pagebar {
+  align-items: center;
+  column-gap: 10px;
+  overflow: hidden;
+}
+
+.event-editor .evt-page-segments {
+  align-items: center;
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.event-editor .evt-page-segments .evt-page-segment,
+.event-editor .evt-page-segments .evt-page-segment-add {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  height: 28px;
+  max-width: 240px;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.event-editor .evt-page-segments .evt-page-segment[draggable="true"] {
+  cursor: grab;
+}
+
+.event-editor .evt-page-segments .evt-page-segment.is-dragging {
+  cursor: grabbing;
+  opacity: 0.55;
+}
+
+.event-editor .evt-page-segments .evt-page-segment.evt-page-drop-before {
+  box-shadow: inset 2px 0 0 0 var(--accent);
+}
+
+.event-editor .evt-page-segments .evt-page-segment.evt-page-drop-after {
+  box-shadow: inset -2px 0 0 0 var(--accent);
+}
+
+.event-editor .evt-page-segment-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 탭 제자리 이름 바꾸기(더블클릭·F2). 제목 글자 자리를 그대로 차지해 탭이 튀지 않게 한다. */
+.event-editor .evt-page-segment-rename {
+  background: var(--bg-surface);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  color: var(--text-1);
+  font: inherit;
+  min-width: 6ch;
+  padding: 0 4px;
+  width: 10ch;
+}
+
+.event-editor .evt-page-segment-cond {
+  color: var(--text-3);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 페이지 관리 버튼은 탭 바로 옆에 붙는다.
+ *
+ * 실측(1600×1000, 2026-08-30): 예전에는 `margin-left: auto` 로 모달 오른쪽 끝(x=1514)에
+ * 밀려 있었고 접힌 `<details>` 라서 복사·삭제가 화면에 아예 없었다. 탭 줄은 x=12..639 였다.
+ * 조작 대상(탭)과 조작 수단(버튼)이 1500px 떨어져 있으면 기능이 없는 것과 같다. */
+.event-editor > .event-editor-pagebar > .event-page-tabs {
+  align-items: center;
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  margin-left: 10px;
+  min-height: 0;
+  padding-left: 10px;
+}
+
+.event-editor .event-page-actions-label {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* 좁아질 때 밀려나는 쪽은 탭 줄(가로 스크롤 있음)이지 액션 줄이 아니다. */
+.event-editor .event-page-actions-row .event-page-action-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  grid-template-columns: none;
+}
+
+.event-editor .event-page-actions-row .event-page-action-button {
+  flex: 0 0 auto;
+  height: 26px;
+  min-height: 26px;
+  min-width: 0;
+  padding: 0 8px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* 순서 이동은 화살표 한 글자라 정사각형으로 좁힌다. */
+.event-editor .event-page-actions-row .event-page-action-move {
+  padding: 0;
+  width: 26px;
+}
+
+/* 삭제는 파괴적이라 색으로도 말한다 — 옆 버튼과 같은 회색이면 오조작을 부른다. */
+.event-editor .event-page-actions-row .event-page-action-danger:not(:disabled) {
+  color: var(--danger);
+}
+
+.event-editor .event-page-actions-row .event-page-action-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* 라벨은 진짜 텍스트 노드가 직접 크기를 갖는다 — 예전에는 `::after` 대체 텍스트에만 크기가 있었다. */
+.event-editor .event-page-actions-row .event-page-button-label {
+  font-size: 11px;
+}
+
+/* 복제·복사·붙여넣기는 단어가 짧고 서로 닮았다 — 장식용 글리프로 한눈에 갈라진다.
+ * 글리프는 CSS 생삱 내용이므로 라벨 텍스트·접근성 이름을 바꾸지 않는다(Label in Name 유지). */
+.event-editor .event-page-actions-row [data-testid="event-page-duplicate"] .event-page-button-label::before {
+  content: "\29c9\a0";
+}
+
+.event-editor .event-page-actions-row [data-testid="event-page-copy"] .event-page-button-label::before {
+  content: "\1f5d0\a0";
+}
+
+.event-editor .event-page-actions-row [data-testid="event-page-paste"] .event-page-button-label::before {
+  content: "\1f4cb\a0";
+}
+
+@media (max-width: 1024px) {
+  .event-editor > .event-editor-pagebar {
+    column-gap: 4px;
+    padding-inline: 6px;
+  }
+
+  .event-editor > .event-editor-pagebar > .event-page-tabs {
+    gap: 3px;
+    margin-left: 2px;
+    padding-left: 5px;
+  }
+
+  .event-editor .event-page-actions-label {
+    display: none;
+  }
+
+  .event-editor .event-page-actions-row .event-page-action-button {
+    padding-inline: 5px;
+  }
+
+  /* 좁은 포트에서는 장식 글리프만 지운다 — 라벨 텍스트는 모든 포트에서 같다. */
+  .event-editor .event-page-actions-row .event-page-button-label::before {
+    content: none;
+  }
+}

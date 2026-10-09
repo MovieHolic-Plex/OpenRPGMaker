@@ -1,0 +1,23 @@
+{
+ "id": "port",
+ "slug": "port",
+ "name": "항구",
+ "scene": "물가",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "해안 마을의 항구: 위 칸 = 창고·집 지붕 둘, 아래 칸 = 바다로 뻗은 나무 부두 + 돛배 한 척(흰 돛 세모, 선체 갈색). 아래 칸 부두·배 둘레는 투명(바다가 비친다). 마을과 한 식구 지붕.",
+ "palette_hint": "wroofr 지붕, mwood 부두·선체, mwhite 돛",
+ "worker": "wv7"
+}

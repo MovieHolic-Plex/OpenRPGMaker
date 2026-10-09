@@ -1,0 +1,43 @@
+.left-panel-stack[data-testid="left-map-root"] {
+  background: var(--surface-workbench);
+}
+
+.left-panel-stack[data-testid="left-map-root"] .panel-section {
+  margin-bottom: 0;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .panel-section h3 {
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 3px;
+}
+
+/* 맵 패널 행 요소(트리 행 · 토글 · 시작 배지 등) 규칙 전량은 editor/map-panel.modern.css 로
+   이관 완료(2026-08, Task 3+4). 이 파일은 이제 그 서브트리에 대해 아무 것도 정의하지 않는다
+   — 소유자는 하나다. 토글 버튼의 hover/focus/active 상태도 함께 포팅됐다(이 파일엔 없던
+   상태였음). 잠금 배지 · 부모 선택자 · 넓은 액션 버튼 · 삭제 표시 · 범용 버튼류는 렌더러가
+   만들지 않는 죽은 선택자였다(grep 이 src/editor/ 전체에서 0건 — mapList.ts 로 확인). 아래
+   컨텍스트 메뉴 규칙은 document.body 에 붙는 팝업이라 이 서브트리 밖이며 이관 대상이 아니다. */
+
+.map-context-menu {
+  display: grid;
+  gap: 1px;
+  position: fixed;
+  z-index: var(--z-popover-high);
+}
+
+.map-context-menu-item {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) max-content;
+  text-align: left;
+}
+
+.map-context-menu-shortcut {
+  font: 600 11px/1.2 var(--mono);
+  justify-self: end;
+  white-space: nowrap;
+}

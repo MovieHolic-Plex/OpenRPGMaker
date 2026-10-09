@@ -1,0 +1,422 @@
+/* ESC workbench. All dimensions are in the 320 × 240 logical stage.
+   The map remains visible around a single inset frame. Only the active task
+   owns the body; party statistics no longer compete with every submenu. */
+.oprn-status-menu.main-menu {
+  --status-edge-ivory: var(--runtime-glass-text);
+  --status-edge-muted: var(--runtime-glass-muted);
+  --status-edge-amber: var(--runtime-glass-accent);
+  --status-edge-amber-soft: var(--runtime-glass-accent-soft);
+  --status-edge-border: var(--runtime-glass-hairline);
+  background: transparent;
+  border: 0;
+  border-image: none;
+  box-shadow: none;
+  color: var(--status-edge-ivory);
+  display: block;
+  font: 500 7px/1.4 var(--runtime-ui-font);
+  isolation: isolate;
+  overflow: hidden;
+  padding: 0;
+}
+.oprn-status-menu.main-menu::before,
+.oprn-status-menu.main-menu::after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+}
+.oprn-status-menu.main-menu::before {
+  background: var(--runtime-glass-surface);
+  border: 1px solid var(--status-edge-border);
+  border-radius: 5px;
+  box-shadow: 0 4px 12px rgba(3, 5, 14, 0.35);
+  inset: 7px;
+  z-index: -1;
+}
+.oprn-status-menu.main-menu::after {
+  background: rgba(6, 8, 18, 0.32);
+  inset: 0;
+  z-index: -2;
+}
+.oprn-status-menu .status-menu-header {
+  align-items: baseline;
+  border-bottom: 1px solid var(--status-edge-border);
+  display: grid;
+  gap: 7px;
+  grid-template-columns: max-content minmax(0, 1fr) max-content max-content;
+  left: 17px;
+  padding-bottom: 6px;
+  position: absolute;
+  right: 17px;
+  top: 14px;
+}
+.oprn-status-menu .status-menu-heading { font-size: 10px; font-weight: 750; }
+.oprn-status-menu .status-menu-location {
+  color: var(--status-edge-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oprn-status-menu .status-menu-gold,
+.oprn-status-menu .status-menu-time { font-variant-numeric: tabular-nums; }
+.oprn-status-menu .status-menu-time { color: var(--status-edge-muted); }
+.oprn-status-menu .status-menu-sidebar { display: contents; }
+.oprn-status-menu .status-menu-primary-dock {
+  background: transparent;
+  border: 0;
+  border-image: none;
+  border-right: 1px solid var(--status-edge-border);
+  bottom: 48px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  left: 15px;
+  overflow: visible;
+  padding: 0 7px 0 0;
+  position: absolute;
+  top: 40px;
+  width: 62px;
+}
+.oprn-status-menu .status-menu-command-group-label,
+.oprn-status-menu .status-menu-command-legacy-suffix { display: none; }
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--status-edge-muted);
+  cursor: default;
+  display: flex;
+  flex: 0 0 23px;
+  font: 600 7px/1.4 var(--runtime-ui-font);
+  gap: 5px;
+  margin: 0;
+  min-height: 0;
+  padding: 2px 5px;
+  position: relative;
+  text-shadow: none;
+  white-space: nowrap;
+  width: 100%;
+}
+.oprn-status-menu .status-menu-command-icon {
+  display: inline-flex;
+  flex: 0 0 10px;
+  font: 500 10px/1 "Segoe UI Symbol", "Apple Symbols", "DejaVu Sans", var(--font-ui);
+  justify-content: center;
+}
+.oprn-status-menu .status-menu-command-icon::before { content: attr(data-icon); }
+.oprn-status-menu .status-menu-command-label { overflow: hidden; text-overflow: ellipsis; }
+.oprn-status-menu .status-menu-primary-dock > .status-menu-command.selected {
+  background: var(--status-edge-amber-soft);
+  border-color: transparent;
+  border-radius: 3px;
+  bottom: auto;
+  box-shadow: none;
+  color: var(--status-edge-ivory);
+  margin: 0;
+  min-height: 0;
+}
+.oprn-status-menu .status-menu-command.selected::before,
+.oprn-status-menu .status-menu-detail-action.selected::before { content: none; }
+.oprn-status-menu.status-menu-detail-focus .status-menu-command-rail,
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail { opacity: 1; }
+.oprn-status-menu.status-menu-detail-focus .status-menu-command.selected {
+  background: rgba(124, 140, 255, 0.08);
+  box-shadow: none;
+}
+.oprn-status-menu .status-menu-detail {
+  background: transparent;
+  border: 0;
+  border-image: none;
+  bottom: 49px;
+  box-shadow: none;
+  box-sizing: border-box;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  left: 88px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  right: 17px;
+  top: 39px;
+}
+.oprn-status-menu .status-menu-detail-title {
+  color: var(--status-edge-ivory);
+  font: 700 9px/1.4 var(--runtime-ui-font);
+  margin: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.oprn-status-menu .status-menu-detail-list {
+  align-content: start;
+  display: grid;
+  gap: 2px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: var(--status-edge-border) transparent;
+  scrollbar-width: thin;
+  scroll-snap-type: y proximity;
+}
+/* Keep the bottom visible row whole. Informational and target rows have their
+   own heights, so only uniformly compact lists use row quantization. */
+.oprn-status-menu .status-menu-detail-list:not(:has(.with-vitals, .has-description)) {
+  --oprn-menu-row-step: 22px;
+  align-self: start;
+  height: min(100%, max(20px, calc(round(down, 100% + 2px, var(--oprn-menu-row-step)) - 2px)));
+}
+.oprn-status-menu .status-menu-detail-row {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-sizing: border-box;
+  color: var(--status-edge-ivory);
+  display: grid;
+  font: 500 7px/1.4 var(--runtime-ui-font);
+  gap: 5px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  min-height: 20px;
+  padding: 2px 4px;
+  scroll-snap-align: start;
+  text-shadow: none;
+}
+.oprn-status-menu .status-menu-detail-action { appearance: none; cursor: default; text-align: left; width: 100%; }
+.oprn-status-menu .status-menu-detail-action.selected {
+  background: var(--status-edge-amber-soft);
+  border-color: var(--runtime-glass-hairline-strong);
+  box-shadow: inset 2px 0 0 var(--status-edge-amber);
+  color: var(--status-edge-ivory);
+}
+.oprn-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
+  background: rgba(124, 140, 255, 0.06);
+  border-color: transparent;
+  box-shadow: none;
+}
+.oprn-status-menu .status-menu-detail-action.destructive { color: rgba(255, 158, 151, 1); }
+.oprn-status-menu .status-menu-detail-action.destructive.selected { background: rgba(190, 55, 50, 0.18); }
+.oprn-status-menu .status-menu-detail-row.disabled,
+.oprn-status-menu .status-menu-detail-row.unavailable { color: var(--status-edge-muted); }
+.oprn-status-menu .status-menu-detail-row-compact { grid-template-columns: max-content minmax(0, 1fr) max-content; white-space: nowrap; }
+.oprn-status-menu .status-menu-detail-row-compact .status-menu-detail-value { grid-column: 3; grid-row: 1; }
+.oprn-status-menu .status-menu-detail-copy { display: grid; gap: 3px; grid-column: 2 / -1; grid-template-columns: minmax(0, 1fr) max-content; }
+.oprn-status-menu .status-menu-detail-label,
+.oprn-status-menu .status-menu-detail-value,
+.oprn-status-menu .status-menu-detail-description { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.oprn-status-menu .status-menu-detail-value { color: var(--status-edge-muted); justify-self: end; text-align: right; }
+.oprn-status-menu .status-menu-detail-row.has-description { align-items: start; grid-template-columns: minmax(0, 1fr) max-content; }
+.oprn-status-menu .status-menu-detail-description { grid-column: 1 / -1; white-space: normal; }
+.oprn-status-menu .status-menu-detail-hint,
+.oprn-status-menu .status-menu-detail-empty,
+.oprn-status-menu .status-menu-detail-description { color: var(--status-edge-muted); font: 500 6.5px/1.45 var(--runtime-ui-font); }
+.oprn-status-menu .status-menu-detail-empty { align-self: start; padding: 8px 0; white-space: normal; }
+.oprn-status-menu .status-menu-detail.has-showcase {
+  column-gap: 8px;
+  grid-template-areas: "title title" "list showcase";
+  grid-template-columns: minmax(0, 1fr) 76px;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-title { grid-area: title; }
+.oprn-status-menu .status-menu-detail.has-showcase > .status-menu-detail-list { grid-area: list; }
+.oprn-status-menu .status-menu-detail-showcase {
+  align-content: start;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--status-edge-border);
+  border-radius: 0;
+  box-sizing: border-box;
+  display: grid;
+  gap: 5px;
+  grid-area: showcase;
+  justify-items: start;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 0 0 7px;
+}
+.oprn-status-menu .status-menu-showcase-frame {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.035);
+  border-radius: 3px;
+  display: flex;
+  height: 36px;
+  justify-content: center;
+  width: 36px;
+}
+.oprn-status-menu .status-menu-showcase-name { font: 700 8px/1.4 var(--runtime-ui-font); max-width: 100%; overflow-wrap: anywhere; white-space: normal; }
+.oprn-status-menu .status-menu-showcase-value { color: var(--status-edge-amber); font-variant-numeric: tabular-nums; white-space: normal; }
+.oprn-status-menu .status-menu-showcase-description {
+  color: var(--status-edge-muted);
+  font: 500 6.5px/1.5 var(--runtime-ui-font);
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: keep-all;
+}
+.oprn-status-menu .status-menu-entry-icon,
+.oprn-status-menu .status-menu-detail-face {
+  background-color: rgba(255, 255, 255, 0.035);
+  border: 0;
+  border-radius: 1px;
+  box-sizing: border-box;
+  display: block;
+  height: 14px;
+  image-rendering: pixelated;
+  width: 14px;
+}
+.oprn-status-menu .status-menu-showcase-frame .status-menu-showcase-art { height: 28px; width: 28px; }
+.oprn-status-menu .status-menu-detail-list .with-vitals {
+  gap: 2px 6px;
+  grid-template-columns: 24px minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 31px;
+  padding: 2px 5px;
+}
+.oprn-status-menu .with-vitals > .status-menu-detail-face { grid-column: 1; grid-row: 1 / span 2; }
+.oprn-status-menu .status-menu-target-name { font-weight: 650; grid-column: 2 / -1; }
+.oprn-status-menu .status-menu-target-vital { color: var(--status-edge-muted); display: grid; font: 500 6.5px/1.4 var(--runtime-ui-font); gap: 2px; min-width: 0; }
+.oprn-status-menu .status-menu-target-track { background: rgba(255, 255, 255, 0.06); display: block; height: 2px; position: relative; }
+.oprn-status-menu .status-menu-target-preview,
+.oprn-status-menu .status-menu-target-fill { display: block; height: 100%; left: 0; position: absolute; top: 0; }
+.oprn-status-menu .status-menu-target-preview { background: rgba(144, 220, 168, 0.3); }
+.oprn-status-menu .status-menu-target-fill { background: rgba(106, 193, 142, 1); }
+.oprn-status-menu .mp .status-menu-target-fill { background: rgba(124, 151, 226, 1); }
+.oprn-status-menu .status-menu-stat-delta { background: transparent; border: 0; gap: 4px; padding: 0; width: 100%; }
+.oprn-status-menu .status-menu-stat-delta-row { display: grid; font: 500 6.5px/1.4 var(--runtime-ui-font); gap: 2px; grid-template-columns: max-content minmax(0, 1fr); padding: 0; }
+.oprn-status-menu .status-menu-stat-delta-value { color: var(--status-edge-muted); text-align: right; }
+.oprn-status-menu .status-menu-stat-delta-row.up .status-menu-stat-delta-value { color: rgba(144, 220, 168, 1); }
+.oprn-status-menu .status-menu-stat-delta-row.down .status-menu-stat-delta-value { color: rgba(255, 158, 151, 1); }
+.oprn-status-menu .status-menu-item-facts {
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: max-content;
+  min-height: 0;
+  overflow: visible;
+  width: 100%;
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-row {
+  font: 500 6.5px/1.25 var(--runtime-ui-font);
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-row[data-fact-id="effects"] {
+  align-items: start;
+  min-height: 0;
+}
+.oprn-status-menu .status-menu-item-facts .status-menu-stat-delta-value {
+  min-width: 0;
+  overflow: visible;
+  overflow-wrap: normal;
+  text-align: right;
+  text-overflow: unset;
+  white-space: normal;
+  word-break: keep-all;
+}
+.oprn-status-menu.has-party-overview .status-menu-detail { bottom: 129px; grid-template-rows: minmax(0, 1fr); }
+.oprn-status-menu.has-party-overview .status-menu-detail-title { display: none; }
+.oprn-status-menu.has-party-overview .status-menu-detail-list { --oprn-menu-row-step: 17px; }
+.oprn-status-menu.has-party-overview .status-menu-detail-row { min-height: 15px; padding-block: 1px; }
+.oprn-status-menu .status-menu-party {
+  background: transparent;
+  border: 0;
+  border-image: none;
+  bottom: 49px;
+  box-shadow: none;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 33px;
+  left: 88px;
+  overflow-y: auto;
+  padding: 0;
+  position: absolute;
+  right: 17px;
+  top: 121px;
+}
+.oprn-status-menu .status-menu-party-row { align-items: center; background: rgba(255, 255, 255, 0.025); border: 0; border-radius: 3px; display: grid; gap: 4px; grid-template-columns: 22px minmax(0, 1fr); min-height: 0; padding: 3px; }
+.oprn-status-menu .status-menu-party-info { display: grid; gap: 2px; line-height: 1.3; min-width: 0; padding: 0; }
+.oprn-status-menu .status-menu-party-headline { gap: 2px; }
+.oprn-status-menu .status-menu-actor-name { overflow: hidden; text-overflow: ellipsis; }
+.oprn-status-menu .status-menu-actor-subline { color: var(--status-edge-muted); }
+.oprn-status-menu .status-menu-face { border-radius: 1px; }
+.oprn-status-menu .status-menu-actor-vitals { font: 500 6px/1.4 var(--runtime-ui-font); }
+.oprn-status-menu .status-menu-vital-gauge { border-radius: 1px; }
+.oprn-status-menu .status-menu-footer {
+  background: transparent;
+  border: 0;
+  border-image: none;
+  bottom: 15px;
+  box-shadow: none;
+  display: grid;
+  font: 500 6.5px/1.45 var(--runtime-ui-font);
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  left: 17px;
+  padding: 0;
+  position: absolute;
+  right: 17px;
+}
+.oprn-status-menu .status-menu-message { color: var(--status-edge-muted); height: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.oprn-status-menu .status-menu-controls { border-top: 1px solid var(--status-edge-border); color: var(--status-edge-muted); padding-top: 5px; }
+.oprn-status-menu .status-menu-primary-dock:focus,
+.oprn-status-menu .status-menu-detail-list:focus,
+.oprn-status-menu .status-menu-detail:focus { outline: none; }
+.oprn-status-menu .status-menu-command:focus-visible,
+.oprn-status-menu .status-menu-detail-action:focus-visible { outline: 1px solid var(--status-edge-amber); outline-offset: -2px; }
+/* Growth and life-ledger keep their existing tab semantics. */
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] { grid-template-areas: "title" "growth-tabs" "list"; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto minmax(0, 1fr); }
+.oprn-status-menu .status-menu-detail.life-ledger-detail.has-showcase[data-status-menu-command="skills"] { grid-template-areas: "title title" "growth-tabs growth-tabs" "list showcase"; grid-template-columns: minmax(0, 1fr) 76px; }
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .status-menu-detail-title { grid-area: title; }
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .status-menu-detail-list { grid-area: list; }
+.oprn-status-menu .status-menu-detail.life-ledger-detail[data-status-menu-command="skills"] > .life-ledger-tabs { grid-area: growth-tabs; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.oprn-status-menu .life-ledger-tab { font-size: 7px; min-height: 17px; }
+/* The status-menu motion owner uses Web Animations, independent of generic
+   title/shop juice. Never animate the map through backdrop-filter. */
+.oprn-status-menu[class*="juice-menu-"] { animation: none; outline: none; }
+@media (prefers-reduced-motion: reduce) {
+  .oprn-status-menu *, .oprn-status-menu { transition: none; }
+}
+/* This marker keeps its DOM owner when changing pages. */
+.oprn-status-menu .status-menu-primary-dock::after {
+  background: var(--status-edge-amber);
+  border-radius: 1px;
+  content: "";
+  height: 15px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 4px;
+  transform: translateY(var(--status-menu-cursor-y, 0px));
+  transition: transform 80ms cubic-bezier(.2,.8,.2,1);
+  width: 2px;
+}
+.oprn-status-menu.status-menu-detail-focus .status-menu-primary-dock::after { opacity: 0.3; }
+@media (prefers-reduced-motion: reduce) {
+  .oprn-status-menu .status-menu-primary-dock::after { transition: none; }
+}
+
+.oprn-status-menu .status-menu-detail-row:not(.has-description) .status-menu-detail-value { white-space: nowrap; }
+.oprn-status-menu .has-stat-delta { gap: 3px; }
+.oprn-status-menu .has-stat-delta .status-menu-showcase-frame { height: 28px; width: 28px; }
+.oprn-status-menu .has-stat-delta .status-menu-showcase-description { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.oprn-status-menu .has-item-facts { gap: 2px; min-height: 0; }
+.oprn-status-menu .has-item-facts .status-menu-item-facts { align-self: start; width: 100%; }
+.oprn-status-menu .has-item-facts .status-menu-showcase-description { display: none; }
+.oprn-status-menu .status-menu-detail-value { max-width: 100%; }
+.oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value { justify-self: stretch; text-align: left; }
+
+/* Quest prose needs the whole row; max-content values otherwise squeeze titles. */
+.oprn-status-menu .status-menu-detail-row[data-quest-row] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.oprn-status-menu [data-quest-row] .status-menu-detail-label,
+.oprn-status-menu [data-quest-row] .status-menu-detail-value {
+  grid-column: 1;
+  justify-self: stretch;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

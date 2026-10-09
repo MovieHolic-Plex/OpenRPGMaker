@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/window_curtain/hf3-B.pxg",
+ "set": "horror",
+ "id": "window_curtain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "커튼 창 B — window_night B 와 같은 밝은 틀, 벨벳 주름 밝은 줄 4단·그늘 0단으로 폭 대비를 키우고 틈의 달빛은 moon 5단. 어두운 방에서 틈 한 줄과 틀선이 읽힌다.",
+ "ok": true
+}

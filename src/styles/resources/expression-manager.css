@@ -1,0 +1,12 @@
+.resource-modal-window .rm-category-row.rm-expression-category { padding-left: 28px; }
+.rm-expression-section { min-width: 0; overflow: auto; padding: 12px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-raised); }
+.rm-expression-section h3 { margin: 0 0 6px; }
+.rm-expression-description { margin: 0 0 12px; color: var(--text-2); font-size: 12px; }
+.rm-expression-character { width: 100%; padding: 8px; margin-bottom: 12px; }
+.rm-expression-summary { margin-bottom: 10px; font-size: 13px; font-weight: 600; }
+.rm-expression-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.rm-expression-card { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; min-height: 102px; padding: 8px 4px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-raised); color: var(--text-1); cursor: pointer; }
+.rm-expression-card img { width: 48px; height: 48px; image-rendering: pixelated; }
+.rm-expression-card span { font-size: 11px; line-height: 1.4; text-align: center; overflow-wrap: anywhere; }
+.rm-expression-card[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--bg); }
+.rm-expression-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

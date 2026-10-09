@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stained_glass/w4-B.pxg",
+ "id": "stained glass",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 24,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "유리를 뒤에서 비추듯 밝게(5~6단), 위·왼쪽 안쪽 테는 창틀 그림자로 어둡게, 턱 위에 색 빛무늬, 오른쪽·아래 틀은 두 단 어둡게.",
+ "ok": true
+}

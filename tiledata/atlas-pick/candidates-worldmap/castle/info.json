@@ -1,0 +1,23 @@
+{
+ "id": "castle",
+ "slug": "castle",
+ "name": "성",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "World.png 성처럼 **네 귀 둥근 탑(흉벽 톱니) + 가운데 본성 + 앞 성문**, 돌 윤곽 1px(가장 어두운 단), 탑마다 왼쪽 밝게 오른쪽 어둡게. 뾰족 지붕 탑 하나 이상으로 도시와 구분, 깃발 한 점.",
+ "palette_hint": "wstone 벽, wroofb 지붕, wgold·mred 깃발",
+ "worker": "wv8"
+}

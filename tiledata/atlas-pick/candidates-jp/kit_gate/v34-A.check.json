@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_gate/v34-A.pxg",
+ "set": "jp",
+ "id": "kit_gate",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.539
+ },
+ "refmap": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.293
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 43,
+ "bbox": [
+  0,
+  0,
+  112,
+  47
+ ],
+ "note": "",
+ "ok": true
+}

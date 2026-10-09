@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w9-C.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px",
+  "키: 위 끝 y=1 (v5 y=4) — 낮은 가구가 솟았다"
+ ],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  30,
+  47
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "C 재해석: 구체 몸통을 로봇형(둥근 조종석+상자 몸통+어깨+무릎 관절+넓은 발)으로, 같은 칸 수·접지선",
+ "ok": true
+}

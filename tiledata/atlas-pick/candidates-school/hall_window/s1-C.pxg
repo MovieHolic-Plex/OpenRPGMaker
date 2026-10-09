@@ -1,0 +1,58 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat F mmetal 5
+@mat f mmetal 4
+@mat e mmetal 3
+@mat d mmetal 2
+@mat k mmetal 1
+@mat g mglass 4
+@mat h mglass 5
+@mat s mglass 3
+@mat w mglass 7
+@mat i mglass 2
+@mat a mdglass 3
+@mat b mdglass 4
+@mat c mdglass 5
+@mat n mdglass 2
+@mat L cream 5
+@mat l cream 4
+@mat m cream 3
+@mat o cream 2
+@mat T mconc 5
+@mat t mconc 4
+@mat u mconc 2
+@mat U mconc 1
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFd
+Fffffffffffffffffffffffffffffffd
+dddddddddddddddddddddddddddddddd
+FdaaaaaaaaaaaaaFdaaaaaaaaaaaaaFd
+Fdbwbbbbbbbb&bbFdbwbbbbbbbb&bbFd
+FdfffffffffffffFdfffffffffffffFd
+FdeeeeeeeeeeeeeFdeeeeeeeeeeeeeFd
+FddddddddddddddFddddddddddddddFd
+Fdbbbbbbbb&bbb&Fdbbbbbbbb&bbb&Fd
+Fdbbbbbbb&bbb&bFdbbbbbbb&bbb&bFd
+Fdbbbbbbb&bbb&bFdbbbbbbb&bbb&bFd
+Fdbbbbbb&bbb&bbFdbbbbbb&bbb&bbFd
+Fdbccccc&ccc&cbFdbccccc&ccc&cbFd
+Fdbbbbb&bbb&bbbFdbbbbb&bbb&bbbFd
+Fdbbbbb&bbb&bbbFdbbbbb&bbb&bbbFd
+Fdbccc&ccc&ccc&Fdbccc&ccc&ccc&Fd
+Fdbbbb&bbb&bbb&Fdbbbb&bbb&bbb&Fd
+ddbbbbbbbbbbbbbddbbbbbbbbbbbbbdd
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFd
+dddddddddddddddddddddddddddddddd
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu
+................................
+................................
+................................
+................................
+................................

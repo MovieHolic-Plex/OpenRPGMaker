@@ -1,0 +1,26 @@
+{
+ "id": "grave_open",
+ "slug": "grave_open",
+ "name": "파헤친 무덤",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "풀밭 위에 파헤쳐진 무덤 구덩이(세로 긴 네모, 속 void 로 깊게, 가장자리 흙 더미가 위쪽에 쌓임), 옆에 꽂힌 삽 하나(선택, C). 바깥은 night_grass 와 이어지는 풀 바탕 — 칸 전부 불투명.",
+ "palette_hint": "soil 흙, void 구덩이, night 풀, tin 삽",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "set_with": [
+  "night_grass",
+  "night_path"
+ ]
+}

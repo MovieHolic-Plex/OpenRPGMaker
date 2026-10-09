@@ -1,0 +1,53 @@
+{
+ "title": "캠퍼스 재회",
+ "presetId": "story-cutscene",
+ "brief": {
+  "version": 1,
+  "presetId": "story-cutscene",
+  "summary": "대학 캠퍼스에서 고등학교 때 헤어진 옛 친구와 재회하는 첫 만남 한 장면. 주인공 이름은 민준. 상대 이름은 서연. 만나는 장소는 캠퍼스 중앙 쉼터. 두 선택지는 반갑게 인사한다 / 모른 척 지나친다. 선택에 따라 서연의 반응과 관계가 달라지고 다시 말을 걸면 다른 대사가 나온다.",
+  "answers": {
+   "experience": {
+    "question": "마지막에 어떤 감정이 남기를 바라나요?",
+    "label": "핵심 감정",
+    "text": "그리움과 따뜻함",
+    "source": "user"
+   },
+   "activity": {
+    "question": "이야기를 어떻게 알아가게 할까요?",
+    "label": "플레이 행동",
+    "text": "대화를 선택",
+    "source": "user"
+   },
+   "progression": {
+    "question": "기억은 어떤 순서로 드러나나요?",
+    "label": "회상의 순서",
+    "text": "한 사람의 삶을 시간순으로",
+    "source": "user"
+   },
+   "detail": {
+    "question": "플레이어의 선택은 무엇을 바꾸나요?",
+    "label": "선택의 영향",
+    "text": "엔딩 자체",
+    "source": "user"
+   },
+   "scope": {
+    "question": "첫 초안에서 어떤 이야기 단위를 완성할까요?",
+    "label": "첫 제작 범위",
+    "text": "10분짜리 이야기와 결말 하나",
+    "source": "user"
+   }
+  },
+  "interview": {
+   "version": 1,
+   "genre": "romance",
+   "concept": "대학 캠퍼스 재회",
+   "protagonist": "민준",
+   "notes": "상대 이름은 서연. 대화 중심 첫 만남 한 장면.",
+   "choiceIds": {
+    "scope": "scene",
+    "activity": "talk",
+    "progression": "single"
+   }
+  }
+ }
+}

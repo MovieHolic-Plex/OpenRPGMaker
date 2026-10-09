@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/runner/w9-C.pxg",
+ "id": "runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "note": "다시 그림: 체크 대신 금빛 마름모 메달리온이 이어지는 무늬, 양끝에 술(프린지) 달린 복도용 양탄자",
+ "ok": true
+}

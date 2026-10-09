@@ -1,0 +1,50 @@
+{
+  "actor3-0": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  },
+  "actor1-0": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  },
+  "actor1-1": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  },
+  "actor1-2": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  },
+  "actor1-3": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  },
+  "actor1-4": {
+    "disk_cells": 45,
+    "packed_cells_match": true,
+    "gif_frames": 3,
+    "frame_ms": 160,
+    "nearest_scale": 4,
+    "extra_colors": 6
+  }
+}

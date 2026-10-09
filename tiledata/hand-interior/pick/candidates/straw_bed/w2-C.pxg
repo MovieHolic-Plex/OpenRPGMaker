@@ -1,0 +1,48 @@
+// v5 현재판 straw bed (16x32, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+................
+................
+................
+.ABBBBBBBBBBBBA.
+.ABBEDDDDDDEBBA.
+.ABBBEEEEEEBBBA.
+.ABCCBBBBBBBBCA.
+.ABBBBBBBCCBBBA.
+.ACCBBBBBBBBBBA.
+.ABBBBCCBBBBCCA.
+.AFFFFFFFFFFFFA.
+.AGGGGGGGGGGGGA.
+.AFFGFFFFGFFFFA.
+.AFGFFFFGFFFFGA.
+.AGFFFFGFFFFGFA.
+.AFFFFGFFFFGFFA.
+.AFFFGFFFFGFFFA.
+.AFFGFFFFGFFFFA.
+.AFGFFFFGFFFFGA.
+.AGFFFFGFFFFGFA.
+.AFFFFGFFFFGFFA.
+.AFFFGFFFFGFFFA.
+.AFFGFFFFGFFFFA.
+.ABBBBBBBBBBBBA.
+.AAAAAAAAAAAAAA.
+.AAAAAAAAAAAAAA.
+................
+................
+@mat w wood 5
+@mat d wood 2
+@mat e wood 6
+@mat f wood 3
+@mblock 1 4
+deeeeeeeeeeeeed
+dweeeeeeeeeewwd
+dwwwwwwwwwwwwwd
+@mblock 1 27
+dwwwwwwwwwwwwwd
+dddddddddddddd

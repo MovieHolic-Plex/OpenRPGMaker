@@ -1,0 +1,368 @@
+/* 커스텀 인앱 모달 (2026-07-07 §2.4) — 네이티브 confirm/alert 대체. */
+@layer components {
+  .app-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 37, 33, 0.32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: var(--z-app-modal);
+  }
+  .app-modal-card {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-l);
+    box-shadow: var(--shadow-modal);
+    color: var(--text-1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-height: calc(100vh - 64px);
+    max-width: 440px;
+    overflow-y: auto;
+    padding: var(--space-4);
+    width: calc(100vw - 48px);
+  }
+  .app-modal-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .app-modal-message {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    word-break: keep-all;
+  }
+  .app-modal-actions {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: flex-end;
+  }
+  .app-modal-choices {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .app-modal-choice {
+    align-items: center;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    font-size: 13px;
+    gap: var(--space-2);
+    padding: 8px 12px;
+  }
+  .app-modal-button {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px 14px;
+  }
+  .app-modal-button.is-confirm {
+    background: var(--accent);
+    border-color: var(--accent-border, var(--accent));
+    color: var(--on-accent, #fff);
+  }
+  .app-modal-button.is-confirm:hover {
+    background: var(--accent-hover);
+  }
+  .app-modal-button.is-danger {
+    background: var(--danger, #C6403D);
+    border-color: var(--danger, #C6403D);
+    color: var(--on-accent, #fff);
+  }
+  .app-modal-button.is-danger:hover,
+  .app-modal-button.is-danger.is-confirm:hover {
+    background: var(--danger, #C6403D);
+    border-color: var(--danger, #C6403D);
+    color: var(--on-accent, #fff);
+    filter: brightness(0.92);
+  }
+
+  .app-modal-input {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-1);
+    font-size: 13px;
+    padding: 6px 10px;
+    width: 100%;
+  }
+
+  /* 새 프로젝트 다이얼로그 — 첫 화면 포스터와 같은 그림을 쓰는 시작 장르 격자. */
+  .new-project-card {
+    max-width: 820px;
+  }
+  .new-project-genre-list {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .new-project-genre-row {
+    background: var(--bg-inset);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .new-project-genre-row:hover {
+    border-color: var(--border-strong);
+  }
+  .new-project-genre-row:has(.new-project-genre-radio:checked) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .new-project-genre-row:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .new-project-genre-radio {
+    accent-color: var(--accent);
+    height: 18px;
+    margin: 0;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 18px;
+    z-index: 1;
+  }
+  /* 그림이 없거나 닿기 전에도 칸이 무너지지 않게 격자 배경을 깔아 둔다. */
+  .new-project-genre-art {
+    background-color: var(--bg-inset);
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 20px 20px;
+    display: grid;
+    height: 104px;
+    overflow: hidden;
+    place-items: center;
+    position: relative;
+  }
+  .new-project-genre-art img {
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    width: 100%;
+  }
+  .new-project-genre-placeholder {
+    color: var(--text-2);
+    font-size: 28px;
+  }
+  .new-project-genre-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+  }
+  .new-project-genre-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .new-project-genre-blurb {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  @media (max-width: 700px) {
+    .new-project-genre-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* 인터뷰 모드 — 한 단계에 한 질문. 숨긴 단계의 입력은 DOM 에 남는다(테스트 계약). */
+  .new-project-header {
+    align-items: baseline;
+    display: flex;
+    gap: var(--space-2);
+    justify-content: space-between;
+  }
+  .new-project-progress {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  .new-project-step[hidden] {
+    display: none;
+  }
+  .new-project-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .new-project-question {
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .new-project-size-preview {
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    display: grid;
+    flex-shrink: 0;
+    height: 56px;
+    place-items: center;
+    width: 64px;
+  }
+  .new-project-size-preview-box {
+    background: var(--accent);
+    display: block;
+    opacity: 0.75;
+  }
+  .new-project-size-preview-box[data-size-preset="classic"] {
+    height: 24px;
+    width: 32px;
+  }
+  .new-project-size-preview-box[data-size-preset="wide"] {
+    height: 22px;
+    width: 48px;
+  }
+  .new-project-choice-list {
+    display: grid;
+    gap: var(--space-2);
+  }
+  .new-project-choice-row {
+    background: var(--bg-inset);
+    border: 2px solid var(--border);
+    border-radius: var(--radius-m);
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .new-project-choice-row:hover {
+    border-color: var(--border-strong);
+  }
+  .new-project-choice-row:has(.new-project-choice-radio:checked) {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .new-project-choice-row:focus-within {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .new-project-choice-radio {
+    accent-color: var(--accent);
+    height: 18px;
+    margin: 0;
+    width: 18px;
+  }
+  .new-project-choice-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .new-project-choice-label {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .new-project-choice-blurb {
+    color: var(--text-2);
+    font-size: 12px;
+  }
+  .new-project-summary {
+    background: var(--bg-inset);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-m);
+    color: var(--text-2);
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+
+  /* AI 차단 게이트 경고(editor/ui/aiGateModal.ts) — 위 프리미티브에 목록/원문 영역만 얹는다. */
+  .ai-gate-card {
+    border-color: var(--danger);
+    max-width: 520px;
+  }
+  .ai-gate-section-title {
+    color: var(--text-2);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+  .ai-gate-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding-left: var(--space-4);
+  }
+  .ai-gate-list-item {
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .ai-gate-detail {
+    background: var(--bg-inset);
+    border-radius: var(--radius-m);
+    padding: var(--space-2);
+  }
+  .ai-gate-detail-summary {
+    color: var(--text-2);
+    cursor: pointer;
+    font-size: 12px;
+  }
+  .ai-gate-detail-body {
+    font-size: 12px;
+    margin: var(--space-2) 0 0;
+    max-height: 180px;
+    overflow: auto;
+    white-space: pre-wrap;
+  }
+
+  /* 프리셋 시작 전 AI 연결 관문(editor/ui/aiConnectGate.ts). 설정 창이 떠 있는 동안에는 숨는다. */
+  .ai-connect-gate-overlay[hidden] {
+    display: none;
+  }
+  .ai-connect-gate-card {
+    max-width: 460px;
+  }
+  .ai-connect-gate-kicker {
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .ai-connect-gate-team {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .ai-connect-gate-member {
+    background: var(--accent-muted);
+    border-radius: var(--radius-m);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--space-2);
+  }
+  .ai-connect-gate-role {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .ai-connect-gate-job {
+    color: var(--text-2);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .ai-connect-gate-status {
+    color: var(--text-2);
+    font-size: 12px;
+    margin: 0;
+  }
+  @media (max-width: 420px) {
+    .ai-connect-gate-team {
+      grid-template-columns: 1fr;
+    }
+  }
+}

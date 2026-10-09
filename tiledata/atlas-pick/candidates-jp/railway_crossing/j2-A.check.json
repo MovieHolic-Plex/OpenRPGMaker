@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/railway_crossing/j2-A.pxg",
+ "set": "jp",
+ "id": "railway_crossing",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.103
+ },
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  0,
+  1,
+  31,
+  47
+ ],
+ "note": "강남 결: 노랑·검정 사선 X 표지, 붉은 등 둘(한 쪽 점등), 붉고 흰 차단봉이 옆 칸까지 가로로, 노랑·검정 줄무늬 받침, 오른쪽 아래 그림자.",
+ "ok": true
+}

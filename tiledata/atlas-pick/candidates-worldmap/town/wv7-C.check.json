@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/town/wv7-C.pxg",
+ "set": "worldmap",
+ "id": "town",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 25,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "뒷벽 위로 솟은 큰 붉은 지붕 집회소 + 양옆 푸른 오두막, 가운데 솟은 실루엣",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.043
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.102
+  }
+ }
+}

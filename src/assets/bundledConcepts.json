@@ -1,0 +1,913 @@
+{
+  "format": "oprn-concept/1",
+  "concepts": [
+    {
+      "slug": "a-wizard-in-joseon-opening-shop-in-hanyang-1d0k7h",
+      "title": "마법사 in 조선: 한양 저잣거리 개업기",
+      "hook": "서양 마법사가 조선에 떨어졌다. 먹고살려면 점집부터 차려야 한다.",
+      "description": "차원 균열로 한양 저잣거리에 떨어진 마법사는 지팡이 하나로 점집을 연다. 장터 사람들의 고민을 듣고 사소한 마법으로 해결하면 소문이 나고 단골이 생긴다. 하지만 포졸과 무당이 수상한 눈으로 지켜본다. 첫 구간은 저잣거리와 점집 안 두 곳이다.",
+      "tags": [
+        "웹소설",
+        "퓨전 사극"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "조선에 떨어진 서양 마법사",
+      "stage": "한양 저잣거리와 점집",
+      "firstScene": "장터 한복판에 떨어져 갓 쓴 사람들에게 둘러싸인 순간",
+      "brief": {
+        "experience": "문화 충돌 코미디와 소소한 의뢰 해결이 이어지는 퓨전 사극",
+        "activity": "손님 의뢰를 듣고 마법을 골라 해결, 포졸 눈 피하기",
+        "progression": "의뢰를 해결할수록 평판이 올라 점집이 확장됨",
+        "detail": "마법 사용 때마다 의심 수치가 올라 포졸 이벤트가 발동",
+        "scope": "저잣거리와 점집 두 맵에서 첫 단골 확보까지"
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/a-wizard-in-joseon-opening-shop-in-hanyang-1d0k7h.full.webp",
+        "card": "/assets/concepts/a-wizard-in-joseon-opening-shop-in-hanyang-1d0k7h.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "A Wizard in Joseon: Opening Shop in Hanyang",
+          "hook": "A Western wizard fell into Joseon. First step to survive: open a fortune shop.",
+          "description": "Dropped into Hanyang's market by a dimensional rift, a wizard opens a fortune stall with a single staff. Small spells solve villagers' worries, and rumors bring regulars, while guards and shamans watch warily. The first chapter covers the market and the shop."
+        },
+        "ja": {
+          "title": "朝鮮の魔法使い:漢陽市場で開業します",
+          "hook": "西洋の魔法使いが朝鮮に落ちた。食べていくには占い屋から始めるしかない。",
+          "description": "次元の裂け目で漢陽の市場に落ちた魔法使いは、杖一本で占い屋を開く。小さな魔法で悩みを解決すると噂が立つが、役人と巫女が怪しむ。最初の章は市場と店内で完結する。"
+        },
+        "zh": {
+          "title": "朝鲜魔法师:汉阳集市开张记",
+          "hook": "西方魔法师掉进了朝鲜,想活下去得先开间占卜铺。",
+          "description": "魔法师因空间裂缝掉进汉阳集市,靠一根法杖开起占卜铺。用小魔法解决街坊烦恼,口碑渐起,但捕快和巫女都在盯着他。第一章在集市和铺子内完成。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "a-day-as-a-martial-inn-part-timer-1fvzy4",
+      "title": "무림 객잔 알바생의 하루",
+      "hook": "칼 든 손님이 가득한 객잔에서 서빙 알바를 시작했다.",
+      "description": "검객과 낭인이 드나드는 국경 객잔에 알바로 들어간 주인공. 주문받고 서빙하고 싸움을 말리며 하루를 버팁니다. 손님의 정체가 하나둘 드러나고 객잔 주인의 비밀도 보입니다. 첫 구간은 객잔 홀, 주방, 마당 세 곳에서 첫 영업일을 무사히 마치는 일입니다.",
+      "tags": [
+        "퓨전 사극",
+        "코미디",
+        "액션"
+      ],
+      "presetId": "action-rpg",
+      "protagonist": "일당 때문에 객잔에 들어온 평범한 청년 '민호'",
+      "stage": "국경 고갯길의 객잔",
+      "firstScene": "첫 출근, 칼 든 손님들이 일제히 문 쪽을 돌아본다.",
+      "brief": {
+        "experience": "살벌하지만 웃긴 객잔 알바의 정신없는 하루를 겪는다.",
+        "activity": "주문을 받아 나르고 싸움이 나면 쟁반과 의자로 말린다.",
+        "progression": "영업일을 마칠 때마다 팁으로 새 도구와 기술이 열린다.",
+        "detail": "음식 서빙 제한 시간과 난투 말리기가 핵심이며 손님 기분 게이지가 있다.",
+        "scope": "홀, 주방, 마당 세 맵 안에서 첫 영업일 하루를 마치는 첫 구간."
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/a-day-as-a-martial-inn-part-timer-1fvzy4.full.webp",
+        "card": "/assets/concepts/a-day-as-a-martial-inn-part-timer-1fvzy4.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "A Day as a Martial Inn Part-Timer",
+          "hook": "My new waiter job is at an inn packed with sword-wielding guests.",
+          "description": "You take a part-time job at a border inn full of swordsmen and wanderers. Take orders, serve food and break up brawls. The first chapter is surviving your first business day across the hall, kitchen and yard."
+        },
+        "ja": {
+          "title": "武林宿屋バイトの一日",
+          "hook": "刀を持った客だらけの宿屋で配膳のバイトを始めた。",
+          "description": "剣客や浪人が出入りする国境の宿屋でアルバイトを始めた主人公。注文を取り、給仕し、喧嘩を止めて一日を乗り切ります。最初の章は、広間・厨房・庭で初営業日を無事に終えることです。"
+        },
+        "zh": {
+          "title": "武林客栈打工人的一天",
+          "hook": "我在满是佩刀客人的客栈开始了跑堂兼职。",
+          "description": "你在边境客栈打工,往来的都是剑客和浪人。接单、上菜、劝架,熬过每一天。第一章是在大堂、厨房和院子顺利完成第一个营业日。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "joseon-s-top-matchmaker-s-first-client-is-the-crown-prince-q5diih",
+      "title": "조선 최고 매파가 되었는데 첫 의뢰인이 왕세자",
+      "hook": "혼담 성사율 100% 매파의 첫 난제 — 의뢰인이 하필 왕세자, 상대는 나였다.",
+      "description": "한양 저잣거리에서 중매로 이름을 날리는 주인공. 어느 날 궁에서 온 의뢰는 '세자빈 후보를 찾아 달라'였다. 후보 세 명을 만나 보며 성격과 사연을 파악하는데, 세자가 자꾸 주인공의 중매 현장에 몰래 따라붙는다. 후보의 마음을 이어 줄지, 내 마음을 인정할지 선택하라.",
+      "tags": [
+        "연애",
+        "퓨전 사극",
+        "코미디"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "혼담 성사율 1위 한양 매파",
+      "stage": "한양 저잣거리, 양반가 사랑채, 궁궐 후원",
+      "firstScene": "저잣거리 찻집에서 궁녀가 봉인된 서찰을 건네며 '세자 저하의 의뢰'라고 속삭인다.",
+      "brief": {
+        "experience": "중매쟁이 눈으로 사람들의 속마음을 읽고 혼담을 이어 주는 사극 로맨스 코미디를 경험하게 한다.",
+        "activity": "후보 세 명을 방문해 대화하고, 취향·사연 단서를 모으고, 세자에게 올릴 추천 답신을 고른다.",
+        "progression": "단서가 모일수록 후보별 궁합 점수가 오르고, 세자의 몰래 방문이 늘며 주인공 호감 이벤트가 열린다.",
+        "detail": "후보 3인 카드, 궁합 변수, 세자 잠입 이벤트 세 개, 추천 답신 선택지를 만든다.",
+        "scope": "세 맵: 저잣거리, 양반가, 궁궐 후원에서 첫 후보 면담까지 완성한다."
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/joseon-s-top-matchmaker-s-first-client-is-the-crown-prince-q5diih.full.webp",
+        "card": "/assets/concepts/joseon-s-top-matchmaker-s-first-client-is-the-crown-prince-q5diih.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Joseon's Top Matchmaker's First Client Is the Crown Prince",
+          "hook": "A matchmaker with a perfect record gets her toughest case: the client is the prince, and the bride he wants is me.",
+          "description": "A famed matchmaker in Hanyang's market receives a palace request: find a bride for the crown prince. She meets three candidates and learns their stories, while the prince keeps sneaking along to her matchmaking visits. Connect the candidates' hearts, or admit your own."
+        },
+        "ja": {
+          "title": "朝鮮一の仲人の初依頼人は世子様でした",
+          "hook": "成功率100%の仲人に最難関の依頼。依頼人は世子、しかも相手は私だった。",
+          "description": "漢陽の市場で名を馳せる仲人の主人公に、宮中から「世子の妃候補を探してほしい」と依頼が届く。三人の候補に会い人柄を探るうち、世子がこっそり同行するようになる。候補の縁を結ぶか、自分の気持ちを認めるか選ぼう。"
+        },
+        "zh": {
+          "title": "朝鲜第一媒婆的首位客户竟是世子",
+          "hook": "姻缘成功率百分百的媒婆遇上最大难题——委托人是世子,对象却是我。",
+          "description": "在汉阳集市名声大噪的媒婆收到宫中委托:为世子寻找世子嫔人选。她逐一拜访三位候选人,世子却总偷偷跟来。是牵好别人的红线,还是承认自己的心意,由你选择。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-murder-the-night-shift-clerk-saw-1rhj0h",
+      "title": "편의점 야간알바가 본 살인",
+      "hook": "새벽 3시, CCTV에는 아무도 안 찍혔는데 계산대엔 피 묻은 영수증이 있었다.",
+      "description": "야간 편의점 알바생인 당신은 매일 같은 손님들을 본다. 어느 밤 영수증 한 장과 사라진 CCTV 구간이 이상한 사건을 가리킨다. 골목과 편의점, 옥상을 오가며 단골들의 진술을 모아 진실을 맞춘다.",
+      "tags": [
+        "추리",
+        "코미디"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "야간알바 도하준",
+      "stage": "일본풍 도시 골목의 24시간 편의점",
+      "firstScene": "새벽 3시, 계산대 아래에서 피 묻은 영수증이 나온다.",
+      "brief": {
+        "experience": "평범한 일상 공간에서 사소한 위화감을 파고드는 생활밀착 추리",
+        "activity": "단골과 대화, 영수증·재고 대조, 골목 탐문",
+        "progression": "단골 진술의 모순이 쌓이면 새 장소가 열리고 범인 지목",
+        "detail": "구매 목록과 시간표가 알리바이 증거가 된다",
+        "scope": "편의점·골목·옥상 세 맵"
+      },
+      "tilesetHint": "jp_city",
+      "thumb": {
+        "full": "/assets/concepts/the-murder-the-night-shift-clerk-saw-1rhj0h.full.webp",
+        "card": "/assets/concepts/the-murder-the-night-shift-clerk-saw-1rhj0h.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Murder the Night-Shift Clerk Saw",
+          "hook": "At 3 a.m. the CCTV showed nobody, yet a bloody receipt sat at the register.",
+          "description": "You work nights at a convenience store and know every regular. A receipt and a gap in the CCTV point to something wrong. Collect testimonies across the alley, store and rooftop."
+        },
+        "ja": {
+          "title": "コンビニ夜勤バイトが見た殺人",
+          "hook": "午前三時、防犯カメラには誰もいないのに、レジには血のついたレシートがあった。",
+          "description": "夜勤のコンビニ店員のあなたは常連客を知り尽くしている。一枚のレシートと消えた映像が事件を示す。路地・店・屋上で証言を集め真相に迫る。"
+        },
+        "zh": {
+          "title": "便利店夜班店员目睹的命案",
+          "hook": "凌晨三点监控里空无一人,收银台却有张带血的小票。",
+          "description": "你在便利店上夜班,熟悉每位常客。一张小票和缺失的监控片段指向异常。在小巷、店内与天台收集证词,拼出真相。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "delivery-in-3-minutes-moto-rush-1d77z8",
+      "title": "배달 마감 3분 전, 오토바이 액션",
+      "hook": "치킨이 식기 전에 도착해라. 골목을 가르는 초단위 배달 질주.",
+      "description": "좁은 도시 골목을 오토바이로 달리며 장애물과 단속 경찰, 불량배를 피해 제시간에 배달을 끝내는 액션. 지름길을 찾고 점프대를 타고, 몸싸움은 헬멧 휘두르기로 해결한다. 배달 건수가 쌓이면 오토바이를 개조하고 더 어려운 구역의 주문을 받는다.",
+      "tags": [
+        "액션",
+        "코미디"
+      ],
+      "presetId": "action-rpg",
+      "protagonist": "만년 알바생 배달 라이더 도윤",
+      "stage": "좁은 골목이 얽힌 현대 일본풍 상점가",
+      "firstScene": "점장이 '3분 안에 못 가면 월급 깎는다'며 가방을 던져 준다",
+      "brief": {
+        "experience": "시간에 쫓기며 골목을 가르는 속도감과 아슬아슬하게 도착하는 웃음",
+        "activity": "골목을 달려 장애물을 피하고 방해하는 불량배를 헬멧으로 쳐내며 배달지에 도착한다",
+        "progression": "배달 성공 보수로 엔진과 가방을 개조해 속도와 적재 한도를 올리고 더 먼 구역 주문을 연다",
+        "detail": "상점가 입구, 시장 골목, 육교 아래 세 구간에 불량배 무리와 공사 구덩이를 배치하고 마지막 집 앞에 단속 경찰 보스를 둔다",
+        "scope": "상점가 맵 한 장에서 세 건의 배달을 완수하면 끝난다"
+      },
+      "tilesetHint": "jp_city",
+      "thumb": {
+        "full": "/assets/concepts/delivery-in-3-minutes-moto-rush-1d77z8.full.webp",
+        "card": "/assets/concepts/delivery-in-3-minutes-moto-rush-1d77z8.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Delivery in 3 Minutes: Moto Rush",
+          "hook": "Get there before the chicken goes cold. A second-by-second sprint through the alleys.",
+          "description": "Ride a scooter through tight city alleys, dodging obstacles, patrol cops and thugs to finish deliveries on time. Find shortcuts, hit ramps, and settle fights by swinging your helmet. Earn upgrades for your bike and take on orders from tougher districts."
+        },
+        "ja": {
+          "title": "配達まであと3分!バイクアクション",
+          "hook": "チキンが冷める前に届けろ。路地を駆け抜ける秒単位の配達ラッシュ。",
+          "description": "狭い街の路地をバイクで走り、障害物や取り締まりの警官、チンピラをかわして時間内に配達を終えるアクション。近道を探し、ジャンプ台に乗り、揉め事はヘルメットで解決。配達を重ねてバイクを改造し、難しい地区の注文に挑もう。"
+        },
+        "zh": {
+          "title": "送餐倒计时3分钟:摩托狂飙",
+          "hook": "赶在炸鸡变凉前送到。小巷里争分夺秒的外卖飞驰。",
+          "description": "骑着摩托在狭窄街巷中穿梭,躲开障碍、巡警和混混,准时完成配送。找近道、冲跳台,打架就抡头盔。送单赚钱改装车子,接下更难街区的订单。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-demon-lord-is-now-our-convenience-store-clerk-1aeafy",
+      "title": "마왕이 우리 편의점 알바생이 됐다",
+      "hook": "세계를 정복하려던 마왕이 야간 편의점에서 삼각김밥을 데우고 있다.",
+      "description": "용사에게 패해 현대 일본으로 떨어진 마왕은 골목 편의점의 야간 알바가 된다. 점장은 무서운 눈으로 시키고, 손님은 하나같이 사연이 있다. 대화와 선택으로 진상 손님을 응대하고 마왕의 위엄을 조금씩 잃는 일상 코미디. 첫 구간은 편의점, 골목, 아파트 앞.",
+      "tags": [
+        "패러디",
+        "코미디",
+        "힐링"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "편의점 야간 알바가 된 전직 마왕",
+      "stage": "골목 편의점과 주변 길",
+      "firstScene": "자동문 소리에 '어서 오세요'를 외치는 마왕의 첫 밤",
+      "brief": {
+        "experience": "소소하고 웃긴 일상 코미디",
+        "activity": "계산·진열·손님 응대를 대화 선택으로 처리한다",
+        "progression": "손님 호감도가 쌓이면 단골 이야기와 새 시간대가 열린다",
+        "detail": "마왕 말투가 새는 응대 선택지, 폐기 도시락 이벤트",
+        "scope": "편의점 안, 골목, 아파트 앞 세 맵 안에서 첫 일주일까지"
+      },
+      "tilesetHint": "jp_city",
+      "thumb": {
+        "full": "/assets/concepts/the-demon-lord-is-now-our-convenience-store-clerk-1aeafy.full.webp",
+        "card": "/assets/concepts/the-demon-lord-is-now-our-convenience-store-clerk-1aeafy.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Demon Lord Is Now Our Convenience Store Clerk",
+          "hook": "The would-be world conqueror is heating rice balls on the night shift.",
+          "description": "Defeated and dropped into modern Japan, the Demon Lord takes a night shift at an alley convenience store. Handle customers through dialogue choices while slowly losing dignity."
+        },
+        "ja": {
+          "title": "魔王がうちのコンビニ夜勤バイトになった",
+          "hook": "世界征服を狙った魔王が、深夜のコンビニでおにぎりを温めている。",
+          "description": "勇者に敗れ現代日本に落ちた魔王は路地のコンビニの夜勤に。会話の選択で客に応対し、少しずつ威厳を失っていく日常コメディ。"
+        },
+        "zh": {
+          "title": "魔王成了我们便利店的夜班店员",
+          "hook": "想统治世界的魔王,正在深夜便利店加热饭团。",
+          "description": "败给勇者后落入现代日本的魔王,成了小巷便利店的夜班店员。通过对话选择应对顾客,威严一点点流失的日常喜剧。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "after-school-alchemy-club-the-explosion-class-ka8utp",
+      "title": "방과 후 연금술부의 폭발 수업",
+      "hook": "부원은 단 둘. 오늘도 과학실 천장이 날아갔다.",
+      "description": "폐부 직전의 연금술부에 끌려 들어간 당신. 부장은 천재지만 사고뭉치고, 실험은 항상 폭발로 끝난다. 재료를 구하러 학교 곳곳을 뛰어다니며 실험을 성공시켜 부를 살려라. 첫 구간은 과학실과 학교 뒷마당에서 첫 번째 물약을 완성하는 것까지다.",
+      "tags": [
+        "학원",
+        "코미디",
+        "액션"
+      ],
+      "presetId": "adventure-jrpg",
+      "protagonist": "연금술부에 끌려온 신입 부원",
+      "stage": "학원 과학실과 뒷마당",
+      "firstScene": "문을 열자마자 플라스크가 폭발해 부장이 그을음투성이로 손을 흔든다.",
+      "brief": {
+        "experience": "엉뚱한 실험과 소소한 전투로 가득한 가벼운 학원 모험을 즐긴다.",
+        "activity": "뒷마당에서 재료 몬스터를 쓰러뜨려 재료를 모으고 과학실에서 조합한다.",
+        "progression": "물약이 완성될수록 새로운 조합법과 더 강한 재료 몬스터가 열린다.",
+        "detail": "재료 조합에 따라 물약 효과가 달라지고 실패하면 작은 폭발이 일어난다.",
+        "scope": "과학실 맵과 뒷마당 맵 두 곳에서 첫 물약을 완성하는 첫 구간."
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/after-school-alchemy-club-the-explosion-class-ka8utp.full.webp",
+        "card": "/assets/concepts/after-school-alchemy-club-the-explosion-class-ka8utp.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "After-School Alchemy Club: The Explosion Class",
+          "hook": "Two members. The lab ceiling blew off again today.",
+          "description": "Dragged into a nearly defunct alchemy club, you meet a genius but accident-prone president whose experiments always explode. Run around campus gathering ingredients to save the club. The first chapter spans the lab and back yard, finishing the first potion."
+        },
+        "ja": {
+          "title": "放課後錬金術部の爆発授業",
+          "hook": "部員はたった二人。今日も理科室の天井が吹き飛んだ。",
+          "description": "廃部寸前の錬金術部に引きずり込まれたあなた。部長は天才だがトラブルメーカーで、実験はいつも爆発で終わる。材料を求めて学園を駆け回り、部を救おう。序盤は理科室と裏庭で最初の薬を完成させる。"
+        },
+        "zh": {
+          "title": "放学后炼金社的爆炸课",
+          "hook": "社员只有两人。今天理科教室的天花板又飞了。",
+          "description": "你被拉进濒临废社的炼金社,社长是天才却爱闯祸,实验总以爆炸收场。在校园里奔走收集材料来拯救社团。第一章在理科教室和后院,完成第一瓶药水。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "night-patrol-at-the-cursed-academy-of-magic-rjjscz",
+      "title": "저주받은 마법 학원 야간 순찰",
+      "hook": "모두가 잠든 밤, 기숙사 감독생에게만 보이는 복도가 있다.",
+      "description": "마법 학원의 야간 순찰 당번이 된 주인공은 자정 이후에만 나타나는 복도를 발견한다. 그 복도는 학원이 지워 버린 실험실 기록으로 이어진다. 순찰 도중 마주치는 사라진 선배의 환영을 피하며 봉인된 실험실의 비밀을 밝혀야 한다.",
+      "tags": [
+        "호러",
+        "학원"
+      ],
+      "presetId": "school-horror",
+      "protagonist": "벌점으로 야간 순찰을 떠맡은 신입생 에리안",
+      "stage": "자정이 지난 마법 학원 기숙사 복도와 지하 실험실",
+      "firstScene": "순찰 등불을 들자 벽에 어제는 없던 문이 줄지어 나타난다.",
+      "brief": {
+        "experience": "익숙한 학원이 밤에는 다른 구조로 바뀌어 있다는 방향 감각의 공포",
+        "activity": "등불로 숨은 문을 비추고 환영을 피해 복도를 이동하며 기록을 모은다",
+        "progression": "실험 기록 조각을 모을수록 지하 실험실의 봉인이 풀린다",
+        "detail": "환영은 등불 빛을 향해 천천히 다가오고 마법 문장이 새겨진 벽만 안전하다",
+        "scope": "기숙사 복도와 지하 입구 두 맵에서 첫 기록 회수까지"
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.full.webp",
+        "card": "/assets/concepts/night-patrol-at-the-cursed-academy-of-magic-rjjscz.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Night Patrol at the Cursed Academy of Magic",
+          "hook": "When everyone sleeps, there is a corridor only the dorm monitor can see.",
+          "description": "Assigned night patrol at a magic academy, you find a corridor that appears only after midnight. It leads to erased laboratory records. Avoid the phantom of a vanished senior and uncover the secret of the sealed lab."
+        },
+        "ja": {
+          "title": "呪われた魔法学院の夜間巡回",
+          "hook": "みんなが眠る夜、寮の監督生にだけ見える廊下がある。",
+          "description": "魔法学院の夜間巡回当番になった主人公は、真夜中を過ぎてからだけ現れる廊下を見つける。そこは学院が消した実験室の記録へ続いていた。消えた先輩の幻影を避けながら、封印された実験室の秘密を暴こう。"
+        },
+        "zh": {
+          "title": "被诅咒的魔法学院夜巡",
+          "hook": "所有人入睡后,有一条走廊只有宿舍监督生看得见。",
+          "description": "被分配夜间巡逻的主角,发现一条只在午夜之后出现的走廊。它通向学院抹去的实验室记录。避开失踪学长的幻影,揭开被封印实验室的秘密。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "reviving-the-harbor-oyster-farm-w9sf2y",
+      "title": "항구 마을 굴 양식장 되살리기",
+      "hook": "바다 위에 농사짓는다. 이번 작물은 굴이다.",
+      "description": "폐업 직전의 항구 마을 굴 양식장을 물려받은 주인공. 갯벌과 바다 위 뗏목에서 굴을 키우고, 새벽 어시장에 내다 판다. 태풍과 적조를 이겨내며 항구 사람들의 일감을 되살린다. 바다 냄새 가득한 해안 농장 생활.",
+      "tags": [
+        "농장",
+        "힐링"
+      ],
+      "presetId": "farm-life",
+      "protagonist": "양식장을 물려받은 항구 마을 막내딸",
+      "stage": "안개 낀 항구 도시의 굴 양식장과 새벽 어시장",
+      "firstScene": "비어 있던 뗏목에 첫 굴 줄을 매다는 새벽, 늙은 어부가 팔짱 끼고 지켜본다.",
+      "brief": {
+        "experience": "바다 냄새와 새벽 장터 활기가 있는 해안 양식 생활을 체험한다.",
+        "activity": "굴 줄 매달기, 수온 확인, 수확, 어시장 경매에 내놓기를 한다.",
+        "progression": "수익으로 뗏목을 늘리고 일꾼을 고용해 항구가 다시 북적인다.",
+        "detail": "태풍·적조 같은 날씨 사건에 대비해 미리 대비 도구를 마련해야 한다.",
+        "scope": "양식장 맵 하나와 어시장 맵 하나에서 끝나는 첫 수확철."
+      },
+      "tilesetHint": "beodeul_city",
+      "thumb": {
+        "full": "/assets/concepts/reviving-the-harbor-oyster-farm-w9sf2y.full.webp",
+        "card": "/assets/concepts/reviving-the-harbor-oyster-farm-w9sf2y.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Reviving the Harbor Oyster Farm",
+          "hook": "Farming on the sea. This season's crop: oysters.",
+          "description": "You inherit a failing oyster farm in a harbor town. Raise oysters on rafts and tidal flats, sell them at the dawn fish market, and weather typhoons and red tides to bring work back to the harbor. A seaside farming life."
+        },
+        "ja": {
+          "title": "港町の牡蠣養殖場を立て直せ",
+          "hook": "海の上で農業をする。今度の作物は牡蠣だ。",
+          "description": "廃業寸前の港町の牡蠣養殖場を継いだ主人公。干潟と筏で牡蠣を育て、早朝の魚市場で売る。台風や赤潮を乗り越えて港の仕事を取り戻す。潮の香りいっぱいの海辺の農場生活。"
+        },
+        "zh": {
+          "title": "重振港口小镇的牡蛎养殖场",
+          "hook": "在海上种田,这次的作物是牡蛎。",
+          "description": "继承了濒临倒闭的港口牡蛎养殖场。在滩涂和木筏上养牡蛎,凌晨拿到鱼市拍卖,扛过台风和赤潮,让港口重新热闹。满是海风味道的海边农场生活。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-retired-hero-s-suspicious-moving-company-1o76cf",
+      "title": "항구 도시 은퇴 용사의 수상한 이삿짐센터",
+      "hook": "마왕을 쓰러뜨린 용사가 항구에서 이삿짐센터를 차렸는데, 짐마다 사연이 있다.",
+      "description": "마왕 토벌 뒤 직업을 잃은 용사가 항구 도시에서 이삿짐센터를 열었다. 짐 속에서 나오는 저주 인형, 잠든 정령, 수상한 편지. 의뢰를 받아 짐을 나르고 사연을 해결하는 힐링 모험 웹소설.",
+      "tags": [
+        "웹소설",
+        "힐링"
+      ],
+      "presetId": "adventure-jrpg",
+      "protagonist": "마왕 토벌 후 실업자가 된 용사",
+      "stage": "항구 도시 부두, 의뢰인 집, 창고",
+      "firstScene": "이삿짐센터 개업 첫날 첫 의뢰인이 수상한 상자를 들고 온다",
+      "brief": {
+        "experience": "모험 뒤의 삶을 다루는 따뜻한 일상 모험",
+        "activity": "의뢰를 받아 항구를 돌아다니고 짐 속 마물과 턴제 전투를 한다",
+        "progression": "의뢰 완료로 평판과 동료가 늘어 먼 구역 의뢰가 열린다",
+        "detail": "짐 하나마다 짧은 사연과 반전이 있는 에피소드 구성",
+        "scope": "부두, 의뢰인 집, 창고 세 맵의 첫 의뢰 하나"
+      },
+      "tilesetHint": "beodeul_city",
+      "thumb": {
+        "full": "/assets/concepts/the-retired-hero-s-suspicious-moving-company-1o76cf.full.webp",
+        "card": "/assets/concepts/the-retired-hero-s-suspicious-moving-company-1o76cf.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Retired Hero's Suspicious Moving Company",
+          "hook": "The hero who beat the Demon Lord runs a moving company, and every box has a story.",
+          "description": "Jobless after the Demon Lord's defeat, a hero opens a moving company in a harbor city. Cursed dolls, sleeping spirits and strange letters turn up in the boxes."
+        },
+        "ja": {
+          "title": "港町の引退勇者の怪しい引っ越し屋",
+          "hook": "魔王を倒した勇者が引っ越し屋を開いたが、荷物はどれも訳ありだった。",
+          "description": "魔王討伐後に失業した勇者が港町で引っ越し屋を開く。荷物から呪いの人形や眠る精霊、怪しい手紙が出てくる。依頼を運び事情を解決する癒し系冒険。"
+        },
+        "zh": {
+          "title": "港口城市退休勇者的可疑搬家公司",
+          "hook": "打倒魔王的勇者开了搬家公司,每件行李都有故事。",
+          "description": "讨伐魔王后失业的勇者在港口城市开搬家公司。行李里冒出诅咒人偶、沉睡精灵和可疑信件。接单搬运并解决隐情。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "crack-the-code-in-the-courtesan-house-ledger-d2jw26",
+      "title": "기생집 장부 속 암호를 풀어라",
+      "hook": "주인이 사라진 한양 기방, 남겨진 장부엔 아무도 읽지 못하는 숫자가 빼곡하다.",
+      "description": "한양 기방의 주인이 하룻밤 새 사라졌다. 남은 건 암호처럼 적힌 장부 한 권과 입을 다문 사람들. 주인공은 비밀리에 파견된 암행 서리로, 기방의 손님과 악사, 하인을 만나 증언을 모으고 장부 속 숫자의 규칙을 풀어야 한다. 모순된 증언을 지적하면 새 단서가 열리고, 틀린 지적은 신뢰를 깎는다. 범인의 윤곽이 잡히는 첫 밤까지의 추리극.",
+      "tags": [
+        "퓨전 사극",
+        "추리"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "암행 서리 '윤소월', 장부 읽기의 달인인 젊은 여성 관리",
+      "stage": "한양 기방 안채·마루·뒷마당",
+      "firstScene": "비 오는 밤, 텅 빈 주인 방 책상 위에 펼쳐진 장부 한 권과 아직 식지 않은 찻잔.",
+      "brief": {
+        "experience": "증언 모순을 짚어 내는 쫄깃한 추리 한 판.",
+        "activity": "기방 사람 5명을 조사하고, 증언의 모순을 지적하며, 장부 숫자 암호를 맞춰 푼다.",
+        "progression": "단서를 모을수록 장부 해독 칸이 채워지고, 다 채우면 범인 지목 장면이 열린다.",
+        "detail": "틀린 지적은 신뢰를 깎고, 각 인물마다 숨기는 이유가 다르다. 암호는 날짜·물목·값의 세 가지 규칙이다.",
+        "scope": "기방 안채·마루·뒷마당 세 맵에서 첫 밤 범인 지목까지."
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/crack-the-code-in-the-courtesan-house-ledger-d2jw26.full.webp",
+        "card": "/assets/concepts/crack-the-code-in-the-courtesan-house-ledger-d2jw26.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Crack the Code in the Courtesan House Ledger",
+          "hook": "The owner of a Hanyang house has vanished, leaving a ledger full of numbers no one can read.",
+          "description": "The owner of a Hanyang entertainment house disappears overnight. All that remains is a ledger written like a cipher and tight-lipped people. You are a secret royal inspector who interviews guests, musicians and servants, then cracks the number rules in the ledger. Point out contradictions to open new clues; wrong accusations cost trust. A mystery up to the first night when the culprit's outline emerges."
+        },
+        "ja": {
+          "title": "妓房の帳簿に隠された暗号を解け",
+          "hook": "主が消えた漢陽の妓房。残された帳簿には誰も読めない数字がびっしり。",
+          "description": "漢陽の妓房の主が一夜で姿を消した。残るは暗号のような帳簿一冊と口をつぐむ人々。主人公は密命を受けた暗行書吏として、客や楽師、下男に会って証言を集め、帳簿の数字の規則を解く。矛盾を突けば新たな手掛かりが開き、誤った指摘は信頼を削る。犯人の輪郭が見える最初の夜までの推理劇。"
+        },
+        "zh": {
+          "title": "破解妓馆账本里的暗号",
+          "hook": "汉阳妓馆的主人失踪了,留下的账本里满是无人能读的数字。",
+          "description": "汉阳妓馆老板一夜消失,只剩一本写得像密码的账本和闭口不言的人们。主角是奉密令的暗行书吏,要询问宾客、乐师和仆役收集证词,破解账本数字的规则。指出矛盾会开启新线索,指错则损失信任。推理剧直到犯人轮廓浮现的第一夜。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "late-night-diner-at-the-alley-s-end-every-regular-is-my-firs-bzr0md",
+      "title": "골목 끝 심야 식당, 단골은 전부 첫사랑",
+      "hook": "새벽 2시에만 여는 식당 — 오는 손님마다 내 첫사랑의 흔적을 들고 있다.",
+      "description": "도쿄풍 골목 끝, 새벽에만 문을 여는 작은 식당의 주인이 된 주인공. 매일 밤 다른 손님이 오는데 모두 한 사람의 이야기를 한다. 메뉴 선택으로 손님의 마음을 열고, 조각난 이야기를 맞추면 그 사람이 누구인지 드러난다. 마지막 손님은 문 앞에 서 있는 바로 그 사람일지도 모른다.",
+      "tags": [
+        "연애",
+        "힐링"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "식당을 물려받은 20대 후반 주인",
+      "stage": "현대 일본풍 골목 끝 심야 식당과 주변 골목",
+      "firstScene": "새벽 2시, 처음 보는 손님이 낡은 우산을 들고 들어와 '이 우산 주인을 아세요?'라고 묻는다.",
+      "brief": {
+        "experience": "따뜻한 음식과 조각난 사연으로 첫사랑의 정체를 추리해 가는 잔잔한 로맨스를 경험하게 한다.",
+        "activity": "손님별로 메뉴를 골라 내고, 대화로 사연 조각을 얻고, 골목을 오가며 물건 주인을 찾는다.",
+        "progression": "사연 조각 6개가 모이면 마지막 밤 이벤트가 열리고 선택한 메뉴 종류에 따라 결말이 달라진다.",
+        "detail": "메뉴 5종, 손님 3인과 사연 조각, 우산 아이템, 마지막 밤 분기를 만든다.",
+        "scope": "두 맵: 식당 내부와 골목에서 손님 3인의 이야기까지 완성한다."
+      },
+      "tilesetHint": "jp_city",
+      "thumb": {
+        "full": "/assets/concepts/late-night-diner-at-the-alley-s-end-every-regular-is-my-firs-bzr0md.full.webp",
+        "card": "/assets/concepts/late-night-diner-at-the-alley-s-end-every-regular-is-my-firs-bzr0md.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Late-Night Diner at the Alley's End: Every Regular Is My First Love",
+          "hook": "A diner that opens only at 2 a.m. — every customer carries a trace of my first love.",
+          "description": "You inherit a tiny diner at the end of a Tokyo-style alley that opens only after midnight. Each night a different guest arrives, all telling stories about the same person. Choose menus to open hearts, piece the fragments together, and learn who it is."
+        },
+        "ja": {
+          "title": "路地裏の深夜食堂、常連はみんな初恋の人の話をする",
+          "hook": "午前2時だけ開く食堂。来る客は皆、私の初恋の痕跡を持っている。",
+          "description": "東京風の路地の奥、深夜だけ開く小さな食堂を継いだ主人公。毎晩違う客が訪れ、皆が同じ一人の話をする。メニューで心を開き、断片をつなげるとその人が誰か分かる。"
+        },
+        "zh": {
+          "title": "巷尾深夜食堂,常客全都说起我的初恋",
+          "hook": "只在凌晨两点营业的食堂——每位客人都带着我初恋的痕迹。",
+          "description": "你继承了东京风小巷尽头只在深夜开门的小食堂。每晚来的客人不同,却都在讲同一个人的故事。用菜单打开他们的心扉,拼起碎片,就能知道那个人是谁。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-suspicious-regulars-of-the-alley-teahouse-dm442b",
+      "title": "골목 끝 찻집의 수상한 단골들",
+      "hook": "매일 오는 단골 중 한 명이 찻집 금고를 털었다. 범인은 늘 같은 자리에 앉던 사람이다.",
+      "description": "일본 소도시 골목 끝의 작은 찻집에서 하룻밤 사이 금고가 비었다. 아르바이트생인 주인공은 단골 다섯 명의 습관과 취향을 떠올리며 누가 거짓말을 하는지 추리한다. 주문 내역, 영수증, 골목 CCTV 대신 이웃의 목격담이 단서다. 소소하지만 따뜻한 일상 미스터리.",
+      "tags": [
+        "추리",
+        "힐링"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "찻집 아르바이트생 대학생",
+      "stage": "현대 일본 소도시의 골목과 작은 찻집",
+      "firstScene": "아침 개점 준비 중, 금고 문이 열려 있고 잔돈 바구니만 남아 있다.",
+      "brief": {
+        "experience": "잔잔한 BGM과 따뜻한 대사로 이웃을 의심하면서도 정이 드는 일상 미스터리.",
+        "activity": "찻집과 골목을 오가며 단골 다섯 명과 대화하고, 습관의 어긋남을 찾아낸다.",
+        "progression": "단골 대화, 목격담 수집, 습관 모순 발견, 범인 대면 순서로 진행한다.",
+        "detail": "단골마다 늘 앉는 자리와 주문 메뉴가 있고, 그날 달랐던 점이 단서가 된다.",
+        "scope": "맵 두 개(찻집 내부, 골목)에서 범인 대면까지."
+      },
+      "tilesetHint": "jp_city",
+      "thumb": {
+        "full": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.full.webp",
+        "card": "/assets/concepts/the-suspicious-regulars-of-the-alley-teahouse-dm442b.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Suspicious Regulars of the Alley Teahouse",
+          "hook": "One of the daily regulars robbed the teahouse safe, and the culprit always sat in the same seat.",
+          "description": "In a tiny teahouse at the end of an alley in a Japanese town, the safe is emptied overnight. You, the part-time worker, recall each of the five regulars' habits and tastes to spot who is lying. Order records, receipts and neighbors' sightings are your clues. A small but warm everyday mystery."
+        },
+        "ja": {
+          "title": "路地裏の喫茶店と怪しい常連たち",
+          "hook": "毎日来る常連の誰かが金庫を荒らした。犯人はいつも同じ席に座る人だった。",
+          "description": "日本の小さな町の路地奥にある喫茶店で、一晩のうちに金庫が空になった。アルバイトの主人公は、常連五人の習慣や好みを思い出して誰が嘘をついているか推理する。注文履歴、レシート、近所の目撃談が手がかりだ。ささやかであたたかい日常ミステリー。"
+        },
+        "zh": {
+          "title": "巷尾茶馆的可疑常客",
+          "hook": "每天都来的常客里，有人洗劫了茶馆保险箱，凶手总坐在同一个位子。",
+          "description": "日本小镇巷子尽头的小茶馆，一夜之间保险箱被掏空。身为兼职店员的主角回想五位常客的习惯与口味，推理谁在说谎。点单记录、收据和邻居的目击都是线索。这是一则平凡而温暖的日常推理。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "body-swapped-as-the-blond-rival-young-master-magic-academy-s-ck1ld3",
+      "title": "TS 금발 라이벌 도련님의 마법학원 생존기",
+      "hook": "나를 괴롭히던 금발 라이벌의 몸으로 눈을 떴다. 이제 내가 괴롭힘당할 차례?",
+      "description": "마법 학원 입학식 날 아침, 주인공은 평생 앙숙이던 금발 귀족 라이벌의 몸으로 깨어난다. 하인들은 굽신거리고 취향도 모르는 가문의 체면을 지켜야 하며, 원래 내 몸은 어디서 무엇을 하는지도 모른다. 대화와 선택으로 정체를 숨기며 학원 사람들과 관계를 쌓는 코미디 이야기. 첫 구간은 기숙사 방과 복도, 첫 수업 교실까지.",
+      "tags": [
+        "패러디",
+        "학원",
+        "코미디"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "라이벌 귀족 도련님의 몸에 들어간 평범한 신입생",
+      "stage": "마법 학원 기숙사와 복도, 교실",
+      "firstScene": "낯선 비단 침대에서 눈을 떠 거울 속 금발 도련님과 마주친다",
+      "brief": {
+        "experience": "정체를 들킬까 조마조마한 학원 코미디",
+        "activity": "대화 선택으로 도련님 행세를 하고 하인·동급생의 반응을 살핀다",
+        "progression": "선택마다 가문 체면·친밀도 수치가 바뀌고 첫 수업 발표 이벤트로 이어진다",
+        "detail": "도련님 말버릇 퀴즈, 몸이 바뀐 원래 주인공과의 복도 마주침 컷신",
+        "scope": "기숙사 방, 복도, 교실 세 맵 안에서 첫 수업까지"
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/body-swapped-as-the-blond-rival-young-master-magic-academy-s-ck1ld3.full.webp",
+        "card": "/assets/concepts/body-swapped-as-the-blond-rival-young-master-magic-academy-s-ck1ld3.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Body-Swapped as the Blond Rival Young Master: Magic Academy Survival",
+          "hook": "I woke up in my arch-rival's body. Now who's getting bullied?",
+          "description": "On the first day at a magic academy, you wake in the body of your lifelong blond noble rival. Servants bow, family honor must be kept, and you have no idea where your real body went. A dialogue-driven comedy of hiding your identity while making friends. The first stretch covers the dorm room, hallway and first classroom."
+        },
+        "ja": {
+          "title": "金髪ライバル御曹司に憑依した魔法学園サバイバル",
+          "hook": "いじめてきた金髪ライバルの体で目覚めた。今度は私がいじめられる番?",
+          "description": "魔法学園の入学式の朝、宿敵だった金髪貴族の体で目覚める。使用人はひれ伏し、家の体面を守らねばならず、元の体の行方も分からない。正体を隠しつつ人間関係を築く会話中心のコメディ。最初は寮の部屋・廊下・初授業の教室まで。"
+        },
+        "zh": {
+          "title": "穿成金发死对头少爷的魔法学院求生记",
+          "hook": "醒来发现成了总欺负我的金发死对头,这次轮到我被欺负?",
+          "description": "魔法学院开学当天,你在宿敌金发贵族少爷的身体里醒来。仆人毕恭毕敬,家族颜面要守住,真正的身体不知去向。以对话选择为主的喜剧,第一段包含宿舍、走廊和第一堂课教室。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-principal-was-the-demon-lord-on-opening-day-1k95xo",
+      "title": "입학식날 교장이 마왕이었다",
+      "hook": "신입생 대표 선서 중에 교장 선생님의 뿔이 튀어나왔다. 아무도 놀라지 않는 게 더 무섭다.",
+      "description": "명문 마법 학원 「성월관」에 수석으로 입학한 당신. 그런데 입학식 단상에서 교장이 마왕의 정체를 드러내고, 선배도 교수도 태연하게 박수를 친다. 이 학원에서는 마왕이 교장을 겸임하는 것이 오랜 전통이었다. 마왕 교장의 눈을 피해 기숙사와 강의동을 오가며 학원의 비밀을 하나씩 파헤쳐 보자. 첫 구간에서는 입학식장과 기숙사 복도를 돌며 수상한 선배들과 대화하고, 교장실 열쇠의 행방을 추적한다.",
+      "tags": [
+        "학원",
+        "웹소설",
+        "코미디"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "수석 입학한 신입생 (이름 직접 입력)",
+      "stage": "성월관 마법 학원 입학식장과 기숙사 복도",
+      "firstScene": "선서 도중 교장의 이마에서 뿔이 솟고, 객석의 선배들이 일제히 박수를 친다.",
+      "brief": {
+        "experience": "마왕 교장과 태연한 학원 사람들 사이에서 어이없고 웃긴 입학 첫날을 겪는다.",
+        "activity": "입학식장과 기숙사 복도를 돌며 선배·교수와 대화하고 단서를 모은다.",
+        "progression": "단서를 모을수록 교장실 열쇠의 행방이 좁혀지고 학원 전통의 정체가 드러난다.",
+        "detail": "대사마다 선택지가 있고 선택에 따라 선배들의 호감과 교장의 경계심이 달라진다.",
+        "scope": "입학식장 맵과 기숙사 복도 맵, 두 맵 안에서 교장실 열쇠를 찾는 첫 구간."
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/the-principal-was-the-demon-lord-on-opening-day-1k95xo.full.webp",
+        "card": "/assets/concepts/the-principal-was-the-demon-lord-on-opening-day-1k95xo.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Principal Was the Demon Lord on Opening Day",
+          "hook": "Mid-oath, the principal's horns popped out. What's scarier is that nobody flinched.",
+          "description": "You enter the elite magic academy Moonbridge Hall as top scorer. At the ceremony the principal reveals he is the Demon Lord, and the seniors and teachers just applaud. Dodge his gaze as you roam dorms and lecture halls, uncovering the academy's secrets. The first chapter covers the hall and dorm corridor: talk to suspicious seniors and trace the missing key to the principal's office."
+        },
+        "ja": {
+          "title": "入学式の日、校長が魔王だった",
+          "hook": "新入生代表の宣誓中に校長の角が生えた。誰も驚かないのがいちばん怖い。",
+          "description": "名門魔法学園「星月館」に首席で入学したあなた。式典で校長が魔王の正体を現すが、先輩も教授も平然と拍手を送る。魔王校長の目を避けつつ寮と講義棟を巡り、学園の秘密を暴こう。序盤は式場と寮の廊下で先輩と話し、校長室の鍵の行方を追う。"
+        },
+        "zh": {
+          "title": "开学典礼那天,校长是魔王",
+          "hook": "新生代表宣誓时,校长的角冒了出来。最可怕的是没人惊讶。",
+          "description": "你以第一名考入名校星月馆魔法学院。典礼上校长现出魔王真身,学长和教授却若无其事地鼓掌。避开魔王校长的视线,在宿舍与教学楼间探索学院秘密。第一章在礼堂和宿舍走廊与可疑学长交谈,追查校长室钥匙的下落。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "hanyang-alley-apothecary-boss-1cni67",
+      "title": "한양 골목 약방 사장님",
+      "hook": "망해 가는 약방을 물려받았더니 손님이 전부 도깨비였다.",
+      "description": "한양 뒷골목 약방을 물려받은 주인공. 밤마다 찾아오는 손님은 갓 쓴 도깨비, 우는 처녀귀신, 배탈 난 구미호입니다. 약재를 구해 달이고 사연을 들어 병을 고쳐 주세요. 단골이 늘수록 약방이 번창하고 골목이 환해집니다. 첫 구간은 약방, 뒷골목, 약초밭 세 곳에서 첫 손님 셋을 치료하는 일입니다.",
+      "tags": [
+        "퓨전 사극",
+        "힐링",
+        "코미디"
+      ],
+      "presetId": "farm-life",
+      "protagonist": "약방을 물려받은 서툰 청년 '도하'",
+      "stage": "한양 뒷골목의 약방과 약초밭",
+      "firstScene": "비 오는 밤, 약방 문을 두드리는 갓 쓴 손님의 그림자가 이상하다.",
+      "brief": {
+        "experience": "포근하고 웃긴 밤의 약방 운영을 느긋하게 즐긴다.",
+        "activity": "약초를 심고 거두어 약을 달이고, 손님의 사연을 들어 처방한다.",
+        "progression": "단골이 늘면 약방이 넓어지고 새 약초와 새 손님이 찾아온다.",
+        "detail": "약초 재배·달이기·손님 호감도가 핵심이며 날씨와 밤낮에 따라 오는 손님이 다르다.",
+        "scope": "약방, 뒷골목, 약초밭 세 맵 안에서 첫 손님 셋을 치료하는 첫 구간."
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/hanyang-alley-apothecary-boss-1cni67.full.webp",
+        "card": "/assets/concepts/hanyang-alley-apothecary-boss-1cni67.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Hanyang Alley Apothecary Boss",
+          "hook": "I inherited a failing apothecary, and every customer is a goblin.",
+          "description": "You inherit a back-alley apothecary in old Hanyang. Night visitors include a hat-wearing goblin, a weeping ghost and a fox with a stomachache. Grow herbs, brew medicine and listen to their stories. The first chapter is healing three customers across the shop, the alley and the herb garden."
+        },
+        "ja": {
+          "title": "漢陽路地裏の薬屋店主",
+          "hook": "潰れかけの薬屋を継いだら、客は全員トッケビだった。",
+          "description": "漢陽の裏路地の薬屋を継いだ主人公。夜ごと訪れるのは笠をかぶったトッケビ、泣く幽霊、お腹を壊した九尾狐。薬草を育て、煎じ、話を聞いて癒やしましょう。最初の章は薬屋・路地・薬草畑で三人の客を治すことです。"
+        },
+        "zh": {
+          "title": "汉阳小巷药铺老板",
+          "hook": "接手快倒闭的药铺,客人却全是妖怪。",
+          "description": "你继承了汉阳后巷的药铺,夜里上门的有戴笠帽的鬼怪、哭泣的女鬼和肚子疼的九尾狐。种药草、熬药、倾听故事来治病。第一章是在药铺、小巷和药田治好三位客人。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-lighthouse-post-office-s-unanswered-letters-3muvs1",
+      "title": "등대 우체국의 답장 없는 편지",
+      "hook": "항구 우체국에 십 년째 도착하는 편지, 보낸 사람이 오늘 처음 나타났다.",
+      "description": "항구 도시의 작은 우체국에 부임한 주인공은 보낸 이 없이 매달 도착하는 연애편지 꾸러미를 발견한다. 부두와 등대, 시장을 돌며 편지의 주인과 받을 사람을 찾는다. 단서를 모을수록 등대지기와의 대화가 깊어지고, 편지를 전할지 숨길지에 따라 결말이 갈린다.",
+      "tags": [
+        "연애",
+        "힐링"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "새로 부임한 항구 우체국 직원",
+      "stage": "로마풍 항구 도시의 우체국·부두·등대",
+      "firstScene": "첫 출근날 창고 구석에서 먼지 쌓인 편지 꾸러미를 발견한다.",
+      "brief": {
+        "experience": "편지 속 비밀을 추적하는 잔잔한 항구 로맨스",
+        "activity": "부두·시장·등대를 돌며 단서를 모으고 등대지기와 대화한다",
+        "progression": "단서 개수에 따라 등대지기와의 장면이 단계적으로 열린다",
+        "detail": "편지 단서 5개, 등대지기 대화 3단계, 편지를 전달/보류하는 선택 1개",
+        "scope": "우체국·부두·등대 세 맵에서 편지 발견부터 전달 선택까지"
+      },
+      "tilesetHint": "beodeul_city",
+      "thumb": {
+        "full": "/assets/concepts/the-lighthouse-post-office-s-unanswered-letters-3muvs1.full.webp",
+        "card": "/assets/concepts/the-lighthouse-post-office-s-unanswered-letters-3muvs1.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Lighthouse Post Office's Unanswered Letters",
+          "hook": "Letters have arrived at the harbor post office for ten years, and today the sender finally showed up.",
+          "description": "A new clerk at a harbor town post office finds a bundle of love letters with no sender. Searching the docks, market, and lighthouse, you grow closer to the keeper. Deliver the letters or hide them, and the ending changes."
+        },
+        "ja": {
+          "title": "灯台郵便局の返事のない手紙",
+          "hook": "港の郵便局に十年届き続ける手紙。その差出人が今日、初めて現れた。",
+          "description": "港町の小さな郵便局に着任した主人公は、差出人不明のラブレターの束を見つける。埠頭・市場・灯台で手がかりを集めるうち、灯台守と親しくなる。手紙を届けるか隠すかで結末が変わる。"
+        },
+        "zh": {
+          "title": "灯塔邮局里没有回信的信",
+          "hook": "港口邮局十年来不断收到的信,寄信人今天第一次出现了。",
+          "description": "新到港口小邮局的职员发现一叠没有寄信人的情书。在码头、市场与灯塔寻找线索,与灯塔守护人越走越近。送出信还是藏起来,结局不同。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-great-final-exam-theft-at-magic-academy-2h923f",
+      "title": "마법 학원 기말시험지 도난 사건",
+      "hook": "기말시험 전날 밤 금고 속 시험지가 사라졌다. 마법으로 흔적까지 지운 범인을 잡아라.",
+      "description": "마법 학원의 기말시험 전날, 교무 금고 속 시험지가 증발한다. 현장의 마력 흔적은 누군가 의도적으로 지운 상태다. 신입 조교가 되어 기숙사, 도서관, 약초 온실을 돌며 마법 잔재를 읽고 학생들의 증언을 맞춰 보자. 마법의 규칙을 알아야만 풀 수 있는 트릭이 숨어 있다.",
+      "tags": [
+        "추리",
+        "학원",
+        "웹소설"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "마력이 약한 신입 조교",
+      "stage": "기숙사·도서관·온실이 있는 마법 학원",
+      "firstScene": "시험 전날 자정, 교무실 금고가 열린 채 연기만 피어오른다.",
+      "brief": {
+        "experience": "마법 규칙을 이용한 퍼즐형 추리와 학원 특유의 호기심 어린 분위기.",
+        "activity": "마법 잔재 조사 도구로 현장을 살피고, 학생과 교수의 증언을 비교하며 마법 트릭을 추리한다.",
+        "progression": "금고 조사, 세 곳 탐문, 마법 규칙 모순 발견, 범인 추궁 순서로 진행한다.",
+        "detail": "마법에는 지울 수 없는 흔적이 하나 있다는 규칙이 있고, 그것이 결정적 단서가 된다.",
+        "scope": "맵 세 개(교무실, 도서관, 약초 온실)에서 범인 추궁까지."
+      },
+      "tilesetHint": "wizarding_world",
+      "thumb": {
+        "full": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.full.webp",
+        "card": "/assets/concepts/the-great-final-exam-theft-at-magic-academy-2h923f.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Great Final Exam Theft at Magic Academy",
+          "hook": "The exam papers vanished from the vault the night before finals, and the thief even erased the magic traces.",
+          "description": "The night before finals at a magic academy, the exam papers evaporate from the staff vault, and someone deliberately wiped the residual magic. As a rookie assistant, visit the dorm, library and herb greenhouse, read magical remnants and compare testimonies. A trick that only makes sense if you know the rules of magic is waiting."
+        },
+        "ja": {
+          "title": "魔法学院・期末試験用紙消失事件",
+          "hook": "期末試験の前夜、金庫の試験用紙が消えた。魔力の痕跡まで消した犯人を捕まえろ。",
+          "description": "魔法学院の期末試験前夜、職員金庫の試験用紙が蒸発する。現場の魔力の痕跡は誰かに意図的に消されていた。新米助手となって寮、図書館、薬草温室を巡り、魔法の残滓を読み、生徒の証言を突き合わせよう。魔法の決まりを知らなければ解けないトリックが潜んでいる。"
+        },
+        "zh": {
+          "title": "魔法学院期末试卷失窃案",
+          "hook": "期末考前夜保险柜里的试卷消失了，犯人连魔力痕迹都抹掉了。",
+          "description": "魔法学院期末考前夜，教务保险柜里的试卷凭空蒸发，现场的魔力痕迹被人刻意抹去。身为新手助教，你要走访宿舍、图书馆和药草温室，解读魔法残留并比对学生证词。这里藏着只有懂魔法规则才能识破的诡计。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "the-dancheong-girl-s-goblin-palace-1nq8dq",
+      "title": "단청장이 소녀의 도깨비 궁궐",
+      "hook": "단청 그리던 소녀가 그림 속 궁궐에 갇혀 출구를 찾는다.",
+      "description": "낡은 사찰에서 단청을 칠하던 소녀가 문득 그림 속 도깨비 궁궐로 빨려 들어갑니다. 색과 문양이 맞아야 문이 열리는 궁궐에서 퍼즐을 풀며 출구를 찾으세요. 첫 구간은 대문, 회랑, 도깨비 방 세 곳에서 첫 색 퍼즐 셋을 푸는 일입니다.",
+      "tags": [
+        "퓨전 사극",
+        "호러"
+      ],
+      "presetId": "horror-gallery",
+      "protagonist": "단청을 배우는 견습 소녀 '채원'",
+      "stage": "그림 속 도깨비 궁궐",
+      "firstScene": "붓 끝이 벽화에 닿자 단청 문양이 꿈틀거리며 소녀를 끌어당긴다.",
+      "brief": {
+        "experience": "아름답지만 오싹한 그림 속 궁궐 탈출 퍼즐을 겪는다.",
+        "activity": "방을 탐색하고 색과 문양을 맞춰 문을 열며 단서를 모은다.",
+        "progression": "푼 퍼즐마다 새 구역이 열리고 도깨비 방의 비밀이 드러난다.",
+        "detail": "색 안료 수집과 문양 맞추기가 핵심이며 잘못 칠하면 도깨비가 깨어난다.",
+        "scope": "대문, 회랑, 도깨비 방 세 맵 안에서 첫 색 퍼즐 셋을 푸는 첫 구간."
+      },
+      "tilesetHint": "joseon_baram",
+      "thumb": {
+        "full": "/assets/concepts/the-dancheong-girl-s-goblin-palace-1nq8dq.full.webp",
+        "card": "/assets/concepts/the-dancheong-girl-s-goblin-palace-1nq8dq.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "The Dancheong Girl's Goblin Palace",
+          "hook": "A girl painting temple patterns is trapped inside her own painted palace.",
+          "description": "An apprentice painting dancheong in an old temple is pulled into a goblin palace within the mural. Doors open only when colors and patterns match, so solve puzzles to find the exit. The first chapter is solving three color puzzles across the gate, corridor and goblin chamber."
+        },
+        "ja": {
+          "title": "丹青絵師の少女と鬼火の宮殿",
+          "hook": "丹青を描いていた少女が絵の中の宮殿に閉じ込められた。",
+          "description": "古い寺で丹青を塗っていた少女が、壁画の中のトッケビの宮殿へ吸い込まれます。色と文様が合えば扉が開く宮殿でパズルを解いて出口を探しましょう。最初の章は、大門・回廊・トッケビの部屋で三つの色パズルを解くことです。"
+        },
+        "zh": {
+          "title": "丹青少女的鬼怪宫殿",
+          "hook": "画丹青的少女被困在自己画出的宫殿里。",
+          "description": "在古寺描绘丹青的学徒被吸入壁画中的鬼怪宫殿。颜色与纹样吻合才能开门,解开谜题寻找出口。第一章是在大门、回廊和鬼怪房间解开三道配色谜题。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    },
+    {
+      "slug": "harbor-smuggler-murder-the-salt-crate-secret-4ympck",
+      "title": "항구 도시 밀수꾼 살인사건: 소금 상자의 비밀",
+      "hook": "부두 창고에서 발견된 시체, 소금 상자 속에는 시체보다 더 큰 비밀이 있었다.",
+      "description": "무역 항구의 세관 조사관이 된 당신. 창고에서 죽은 상인과 뒤바뀐 화물 장부를 단서로 밀수 조직을 추적한다. 부두, 시장, 선술집을 돌며 장부의 숫자와 증언을 맞춰 간다.",
+      "tags": [
+        "추리",
+        "정통 JRPG"
+      ],
+      "presetId": "story-cutscene",
+      "protagonist": "세관 조사관 리안",
+      "stage": "로마풍 항구 도시의 부두와 시장",
+      "firstScene": "소금 상자를 열자 죽은 상인이 누워 있다.",
+      "brief": {
+        "experience": "장부와 화물을 추적하는 항구 도시 수사극",
+        "activity": "창고 조사, 장부 대조, 상인 심문, 화물 확인",
+        "progression": "장부의 모순을 찾으면 밀수 경로가 지도에 열린다",
+        "detail": "상자 번호·도장·날짜 불일치가 핵심 증거",
+        "scope": "부두·시장·선술집 세 맵"
+      },
+      "tilesetHint": "beodeul_city",
+      "thumb": {
+        "full": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.full.webp",
+        "card": "/assets/concepts/harbor-smuggler-murder-the-salt-crate-secret-4ympck.card.webp"
+      },
+      "locales": {
+        "en": {
+          "title": "Harbor Smuggler Murder: The Salt Crate Secret",
+          "hook": "A body in the dockside warehouse, and the salt crate hid a bigger secret.",
+          "description": "As a customs inspector you chase a smuggling ring through swapped ledgers and a dead merchant, checking figures and testimonies across docks, market and tavern."
+        },
+        "ja": {
+          "title": "港町密輸殺人事件:塩の木箱の秘密",
+          "hook": "波止場の倉庫で見つかった死体。塩の箱には死体より大きな秘密があった。",
+          "description": "税関調査官となったあなたは、死んだ商人とすり替えられた帳簿を手掛かりに密輸組織を追う。埠頭・市場・酒場で数字と証言を突き合わせる。"
+        },
+        "zh": {
+          "title": "港城走私命案:盐箱的秘密",
+          "hook": "码头仓库里发现尸体,盐箱里藏着比尸体更大的秘密。",
+          "description": "你是港口海关调查官,凭死去的商人与被调包的账本追查走私集团,在码头、市场与酒馆间核对账目和证词。"
+        }
+      },
+      "source": "official",
+      "aiGenerated": true
+    }
+  ]
+}

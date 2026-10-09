@@ -1,0 +1,537 @@
+/* ── 6. 컴포저 — 데크 안에서는 껍데기 없는 입력 + 한 줄 행 ──
+   스튜디오는 commandBar 를 .ai-deck 밖으로 .ai-studio-composer 에 옮긴다.
+   크롬 규칙은 :is(.ai-deck, .ai-studio-composer) 로 한곳에서 소유한다. */
+.ai-chat-panel.chat-dock-float :is(.ai-deck, .ai-studio-composer) > .ai-command-bar {
+  bottom: auto;
+  display: block;
+  flex: 0 0 auto;
+  inset: auto;
+  left: auto;
+  max-width: none;
+  padding: 0;
+  position: relative;
+  right: auto;
+  width: auto;
+  z-index: auto;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer {
+  backdrop-filter: none;
+  background: transparent;
+  border: 0;
+  /* 입력 구역 상단 hairline — 유리 로그와 입력칸이 한 면으로 붙어 "어디에 치는지" 안 보이던 결함(2026-09-04). 레일 구분선과 같은 토큰. */
+  border-top: 1px solid var(--ai-deck-line);
+  border-radius: 0;
+  box-shadow: none;
+  display: grid;
+  gap: 2px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  padding: 8px 12px 12px;
+  transition: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer:focus-within {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input {
+  /* 유리 위 무테·투명 입력은 "어디에 치는지" 안 보인다(2026-09-04) — inset 필드로 되돌린다. 베이스(assistant-composer.css)와 같은 토큰만 쓴다. */
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  line-height: 1.5;
+  min-height: 44px;
+  padding: 8px 10px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus,
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input:focus-visible {
+  /* 포커스 링은 셸이 아니라 입력칸이 그린다 — 데크 셸은 border:0 이라 :focus-within 링이 닿지 않는다. 베이스와 같은 14% accent 링. */
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+  outline: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer .ai-assistant-input::placeholder {
+  color: var(--text-2);
+  opacity: 1;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions {
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 2px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions-lead {
+  gap: 8px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions-trail {
+  gap: 8px;
+}
+
+/* 모드 세그먼트(지시/질문/계획)의 규칙은 없앴다 — 지시줄 컨트롤은 자율성 셀렉트 하나다.
+   「질문」은 레벨 readOnly, 「계획」은 planOnly 로 흡수됐다(src/ai/autonomyLevels.ts). */
+
+/* 컨텍스트 핀(현재 맵 · 선택 영역) */
+:is(.ai-deck, .ai-studio-composer) .ai-context-chips {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-context-chip {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-raised) 60%, transparent);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  display: inline-flex;
+  font-size: 12.5px;
+  gap: 5px;
+  height: 28px;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-selection-chip {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-pending-queue {
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* 지시줄 effort 셀렉트(자율성·추론 강도) — 모드 세그먼트 옆 28px 한 줄. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-effort-select {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 12px;
+  height: 28px;
+  max-width: 76px;
+  padding: 0 4px;
+}
+
+/* 적용 모드는 긴 한국어 모드명도 선택 상태에서 읽을 수 있어야 한다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-apply-mode {
+  max-width: 128px;
+}
+
+/* 팀 토글 — 지시줄의 28px 알약. 켜지면 액센트(선택 칩과 같은 토큰). 다이얼이 쓰기를 허용할 때만
+   보이므로([hidden] 은 읽기 전용·계획 턴) 자리를 차지하지 않는다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-stamp-toggle {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 12px;
+  height: 28px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-stamp-toggle[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle {
+  align-items: center;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle[hidden] {
+  display: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle[data-team="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-team-toggle input {
+  accent-color: var(--accent);
+  height: 12px;
+  margin: 0;
+  width: 12px;
+}
+
+/* 모델 칩 */
+.ai-composer-model {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 12px;
+  height: 28px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+.ai-composer-model:hover,
+.ai-composer-model:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.ai-composer-model[hidden] {
+  display: none;
+}
+
+.ai-composer-spend {
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ai-composer-spend[hidden] {
+  display: none;
+}
+
+/* 되돌리기(방금 적용) — 행 안의 알약. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-undo {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-size: 12px;
+  height: 28px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-undo::before {
+  content: none;
+}
+
+/* 보내기 = 34px 인디고 원, 멈추기 = 같은 자리의 검은 원. 둘 다 상주, 진행 중엔 보내기를 숨긴다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send,
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button {
+  align-items: center;
+  border: 0;
+  border-radius: 50%;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 34px;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+  transition: background 150ms, transform 100ms, box-shadow 150ms;
+  width: 34px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send {
+  background: var(--accent);
+  box-shadow: 0 6px 14px -6px color-mix(in srgb, var(--accent) 70%, transparent);
+  color: var(--bg-raised);
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send.is-not-ready {
+  background: color-mix(in srgb, var(--text-1) 10%, transparent);
+  box-shadow: none;
+  color: color-mix(in srgb, var(--text-1) 35%, transparent);
+  filter: none;
+  opacity: 1;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send:hover:not(:disabled):not(.is-not-ready) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button {
+  background: var(--text-1);
+  color: var(--bg-raised);
+  cursor: pointer;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* 도는 중에는 중단이 보내기 자리를 갖는다. 글을 쓰면 보내기가 옆에 다시 선다 — 그 요청은 맵별 대기열로 간다. */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions:has(.ai-abort-button:not([hidden])) .ai-chat-send.is-not-ready {
+  display: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-chat-send[hidden],
+:is(.ai-deck, .ai-studio-composer) .ai-composer-actions .ai-abort-button[hidden] {
+  display: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-status-group {
+  display: none;
+}
+
+/* ── 7. 팝오버 ─────────────────────────────────────────────── */
+
+/* 추천은 데크 안에서 입력창 위에 흐름으로 선다 — 떨어진 흰 상자가 아니다. */
+:is(.ai-deck, .ai-studio-composer) .ai-command-bar > .ai-composer-suggest {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--ai-deck-line);
+  border-radius: 0;
+  box-shadow: none;
+  left: auto;
+  max-width: none;
+  padding: 8px 10px 6px;
+  position: static;
+  z-index: auto;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-composer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 4px 6px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-composer-chips:empty {
+  display: none;
+  padding: 0;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-next-steps {
+  border-top: 0;
+  display: grid;
+  gap: 2px;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-suggest .ai-next-steps[hidden] {
+  display: none;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-next-steps-hint {
+  align-items: center;
+  color: var(--ai-deck-secondary, var(--text-2));
+  display: flex;
+  font: 500 12.5px/1.4 var(--font-ui);
+  gap: 8px;
+  margin: 0;
+  padding: 4px 8px 8px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-next-steps-hint::before {
+  background: var(--warning-muted);
+  border-radius: 5px;
+  color: var(--warning);
+  content: "맵 진단";
+  flex: none;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+}
+
+/* 추천 행 — 실행 가능한 문장 하나 + 근거. */
+.ai-suggest-row {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 13.5px;
+  gap: 10px;
+  min-height: 0;
+  padding: 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.ai-suggest-row:hover,
+.ai-suggest-row:focus-visible {
+  background: var(--bg-hover);
+  outline: none;
+}
+
+.ai-suggest-row .ai-deck-icon {
+  color: var(--accent);
+}
+
+.ai-suggest-row-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-suggest-row-why {
+  color: var(--ai-deck-secondary, var(--text-2));
+  flex: none;
+  font-size: 12px;
+}
+
+/* 감독 프롬프트 칩(기존). */
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip {
+  background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--accent-active);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip:hover,
+:is(.ai-deck, .ai-studio-composer) .ai-composer-chip:focus-visible {
+  background: var(--accent-muted);
+}
+
+/* 저작 예제 칩 — 추천 행으로 대체되기 전까지 같은 언어. */
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-examples {
+  display: grid;
+  gap: 2px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-examples-title {
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 8px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 8px 4px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip {
+  background: color-mix(in srgb, var(--bg-raised) 70%, transparent);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: 500 13px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 12px;
+}
+
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip:hover,
+:is(.ai-deck, .ai-studio-composer) .ai-authoring-example-chip:focus-visible {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+/* ⋯ 메뉴 — 레일 아래 오른쪽. 248px, 아이콘 + 라벨 + 오른쪽 메타. */
+.ai-deck-rail > .ai-command-menu {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  /* 레일 위로 연다 — 유휴 데크는 뷰포트 바닥에 붙은 110px 이라 아래로 열면 잘린다(실측 2026-09-03). */
+  bottom: calc(100% + 6px);
+  box-shadow: var(--shadow-pop);
+  display: grid;
+  gap: 2px;
+  left: auto;
+  min-width: 0;
+  padding: 6px;
+  position: absolute;
+  right: 8px;
+  top: auto;
+  width: 248px;
+  z-index: 6;
+}
+
+.ai-deck-rail > .ai-command-menu[hidden] {
+  display: none;
+}
+
+.ai-deck-rail .ai-command-menu-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 13.5px;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 10px;
+  text-align: left;
+}
+
+.ai-deck-rail .ai-command-menu-item:hover,
+.ai-deck-rail .ai-command-menu-item:focus-visible {
+  background: var(--bg-inset);
+  outline: none;
+}
+
+.ai-deck-rail .ai-command-menu-item .ai-deck-icon {
+  color: var(--text-2);
+}
+
+.ai-command-menu-meta {
+  color: var(--text-2);
+  font-size: 11.5px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.ai-command-menu-sep {
+  border-top: 1px solid var(--border-subtle);
+  margin: 4px 4px;
+}
+
+/* 성향·맥락 팝오버의 토글은 레일에 있다 — 팝오버도 레일 아래로 내려 붙인다(컴포저 위로 띄우면
+   기록과 레일을 덮어 토글 자신을 가렸다 — 실측 2026-09-03). */
+.ai-deck-rail > .ai-preference-popover,
+.ai-deck-rail > .ai-planning-popover,
+.ai-deck-rail > .ai-context-panel {
+  bottom: calc(100% + 6px);
+  left: auto;
+  max-height: min(420px, 50vh);
+  position: absolute;
+  right: 8px;
+  top: auto;
+  z-index: 6;
+}
+
+.ai-deck-rail > .ai-preference-popover[hidden],
+.ai-deck-rail > .ai-planning-popover[hidden],
+.ai-deck-rail > .ai-context-panel[hidden] {
+  display: none;
+}

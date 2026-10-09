@@ -1,0 +1,51 @@
+// 장식: 금장 처마·붉은 보석·금 마름모 문양·금띠 투구와 금 선반 앞판(못)으로 한 단계 화려하게 한 2단 투구 선반
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat D dwood 2
+@mat d dwood 3
+@mat w wood 5
+@mat v wood 3
+@mat u wood 2
+@mat G gold 5
+@mat H gold 3
+@mat I gold 1
+@mat r red 4
+@mat R red 2
+@mat k iron 1
+@mat i iron 5
+@mat j iron 3
+@mblock 0 0
+................................
+................................
+.IIIIIIIIIIIIIIIIIIIIIIIIIIIIII.
+IGGGGGGGGGGGGGGrrGGGGGGGGGGGGGGI
+IHHHHHHHHHHHHHHRRHHHHHHHHHHHHHHI
+owDDDDDDDDDDDDDDDDDDDDDDDDDDDDvo
+owddddddddddddddddiddddddddiddvo
+owdddddkiikdddddddiddddddddiddvo
+owddddkiiijkddddddidkiiijkdiddvo
+owdddkiiiijjkdddddjkiiiijjkjddvo
+owdddkjoooojkddddddkjoooojkdddvo
+owdddkHGGGGHkddddddkHGGGGHkdddvo
+owdddkkkkkkkkddddddkkkkkkkkdddvo
+owwwwwwwwwwwwwwwwwwwwwwwwwwwwwvo
+owvvvvvvvvvvvvvvvvvvvvvvvvvvvvvo
+owGGGGGGGGGGGGGGGGGGGGGGGGGGGGvo
+owHHHHHrHHHHHHHHHHHHHHrHHHHHHHvo
+owdddddddddddddrrdddddddddddddvo
+owddddddddddddRrrrddddddddddddvo
+owdddddddddddRkiikrRddddddddddvo
+owddddGdddddkiiiijjkdddddGddddvo
+owdddGGGddddkiiiijjkddddGGGdddvo
+owddddGdddddkjoooojkdddddGddddvo
+owddddddddddkHGGGGHkddddddddddvo
+owddddddddddkkkkkkkkddddddddddvo
+owwwwwwwwwwwwwwwwwwwwwwwwwwwwwvo
+owvvvvvvvvvvvvvvvvvvvvvvvvvvvvvo
+owGGGGGGGGGGGGGGGGGGGGGGGGGGGGvo
+owHHHHHrHHHHHHHHHHHHHHrHHHHHHHvo
+owuuuuuuuuuuuuuuuuuuuuuuuuuuuuvo
+owuuuuuuuuuuuuuuuuuuuuuuuuuuuuvo
+oooooooooooooooooooooooooooooooo

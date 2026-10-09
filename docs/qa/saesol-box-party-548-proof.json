@@ -1,0 +1,15 @@
+{
+  "scope": "Actual earned pass-trainer checkpoint in canonical548 read-only copy. Use actual party menu to deposit Fuzall and withdraw captured Grimlit, then campsite healer. No injected party or healing; not3-hour proof.",
+  "errors": [],
+  "actualBoxSwap": {
+    "deposited": "monster_3",
+    "withdrawn": "monster_7",
+    "species": "species_isaiah_grimlit"
+  },
+  "healedGrimlit": {
+    "hp": 75,
+    "stateIds": []
+  },
+  "passed": true,
+  "automaticSeconds": 5.326
+}

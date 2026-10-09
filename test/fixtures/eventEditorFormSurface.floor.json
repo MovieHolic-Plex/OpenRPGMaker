@@ -1,0 +1,634 @@
+{
+ "text": {
+  "testidCount": 38,
+  "controlCount": 26,
+  "selectOptionCount": 5,
+  "classCount": 47,
+  "labelCount": 26,
+  "textCount": 4
+ },
+ "changeFace": {
+  "testidCount": 103,
+  "controlCount": 92,
+  "selectOptionCount": 5,
+  "classCount": 35,
+  "labelCount": 9,
+  "textCount": 3
+ },
+ "choices": {
+  "testidCount": 10,
+  "controlCount": 7,
+  "selectOptionCount": 0,
+  "classCount": 19,
+  "labelCount": 7,
+  "textCount": 2
+ },
+ "fork": {
+  "testidCount": 18,
+  "controlCount": 5,
+  "selectOptionCount": 40,
+  "classCount": 30,
+  "labelCount": 3,
+  "textCount": 9
+ },
+ "wait": {
+  "testidCount": 15,
+  "controlCount": 9,
+  "selectOptionCount": 21,
+  "classCount": 17,
+  "labelCount": 9,
+  "textCount": 2
+ },
+ "inputWait": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 21,
+  "classCount": 8,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "inputNumber": {
+  "testidCount": 15,
+  "controlCount": 11,
+  "selectOptionCount": 21,
+  "classCount": 21,
+  "labelCount": 10,
+  "textCount": 1
+ },
+ "label": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 2,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "gotoLabel": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 2,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "loop": {
+  "testidCount": 11,
+  "controlCount": 3,
+  "selectOptionCount": 79,
+  "classCount": 12,
+  "labelCount": 2,
+  "textCount": 4
+ },
+ "breakLoop": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 2,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "setSwitch": {
+  "testidCount": 9,
+  "controlCount": 5,
+  "selectOptionCount": 46,
+  "classCount": 13,
+  "labelCount": 1,
+  "textCount": 2
+ },
+ "setVariable": {
+  "testidCount": 22,
+  "controlCount": 14,
+  "selectOptionCount": 49,
+  "classCount": 23,
+  "labelCount": 11,
+  "textCount": 6
+ },
+ "timer": {
+  "testidCount": 4,
+  "controlCount": 3,
+  "selectOptionCount": 5,
+  "classCount": 2,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "advanceTime": {
+  "testidCount": 4,
+  "controlCount": 3,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 3,
+  "textCount": 1
+ },
+ "advanceCropGrowth": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "setTime": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 0,
+  "classCount": 5,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "sleepUntilMorning": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "transfer": {
+  "testidCount": 17,
+  "controlCount": 12,
+  "selectOptionCount": 0,
+  "classCount": 23,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "moveEvent": {
+  "testidCount": 74,
+  "controlCount": 62,
+  "selectOptionCount": 8,
+  "classCount": 44,
+  "labelCount": 61,
+  "textCount": 4
+ },
+ "setEventGraphicPattern": {
+  "testidCount": 50,
+  "controlCount": 41,
+  "selectOptionCount": 2,
+  "classCount": 32,
+  "labelCount": 32,
+  "textCount": 2
+ },
+ "changeTile": {
+  "testidCount": 18,
+  "controlCount": 12,
+  "selectOptionCount": 4,
+  "classCount": 33,
+  "labelCount": 7,
+  "textCount": 4
+ },
+ "callCommonEvent": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 1,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "callMapEvent": {
+  "testidCount": 2,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 1,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "battleProcessing": {
+  "testidCount": 31,
+  "controlCount": 20,
+  "selectOptionCount": 13,
+  "classCount": 39,
+  "labelCount": 13,
+  "textCount": 5
+ },
+ "learnSkill": {
+  "testidCount": 22,
+  "controlCount": 13,
+  "selectOptionCount": 12,
+  "classCount": 40,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "changeExp": {
+  "testidCount": 12,
+  "controlCount": 8,
+  "selectOptionCount": 7,
+  "classCount": 24,
+  "labelCount": 5,
+  "textCount": 2
+ },
+ "changeLevel": {
+  "testidCount": 12,
+  "controlCount": 8,
+  "selectOptionCount": 7,
+  "classCount": 24,
+  "labelCount": 5,
+  "textCount": 2
+ },
+ "changeLifeSkillExp": {
+  "testidCount": 16,
+  "controlCount": 13,
+  "selectOptionCount": 26,
+  "classCount": 19,
+  "labelCount": 8,
+  "textCount": 1
+ },
+ "promoteActor": {
+  "testidCount": 5,
+  "controlCount": 2,
+  "selectOptionCount": 8,
+  "classCount": 9,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "changeEquipment": {
+  "testidCount": 23,
+  "controlCount": 12,
+  "selectOptionCount": 13,
+  "classCount": 40,
+  "labelCount": 8,
+  "textCount": 4
+ },
+ "changeActorHp": {
+  "testidCount": 21,
+  "controlCount": 16,
+  "selectOptionCount": 9,
+  "classCount": 28,
+  "labelCount": 12,
+  "textCount": 2
+ },
+ "changeActorMp": {
+  "testidCount": 21,
+  "controlCount": 16,
+  "selectOptionCount": 9,
+  "classCount": 28,
+  "labelCount": 12,
+  "textCount": 2
+ },
+ "recoverAll": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 4,
+  "classCount": 6,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "enterHeroName": {
+  "testidCount": 5,
+  "controlCount": 3,
+  "selectOptionCount": 4,
+  "classCount": 7,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "changeGold": {
+  "testidCount": 16,
+  "controlCount": 12,
+  "selectOptionCount": 26,
+  "classCount": 20,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "changeItem": {
+  "testidCount": 18,
+  "controlCount": 13,
+  "selectOptionCount": 30,
+  "classCount": 25,
+  "labelCount": 8,
+  "textCount": 2
+ },
+ "craftRecipe": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 10,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "applyItemUpgrade": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 10,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "equipTool": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 4,
+  "classCount": 10,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "openChest": {
+  "testidCount": 9,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 22,
+  "labelCount": 3,
+  "textCount": 2
+ },
+ "changeFriendship": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 0,
+  "classCount": 4,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "setRelationship": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 4,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "changeFactionStance": {
+  "testidCount": 5,
+  "controlCount": 4,
+  "selectOptionCount": 7,
+  "classCount": 4,
+  "labelCount": 4,
+  "textCount": 1
+ },
+ "getFriendship": {
+  "testidCount": 4,
+  "controlCount": 3,
+  "selectOptionCount": 21,
+  "classCount": 10,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "changeParty": {
+  "testidCount": 7,
+  "controlCount": 4,
+  "selectOptionCount": 6,
+  "classCount": 17,
+  "labelCount": 2,
+  "textCount": 2
+ },
+ "giveMonster": {
+  "testidCount": 7,
+  "controlCount": 5,
+  "selectOptionCount": 4,
+  "classCount": 12,
+  "labelCount": 4,
+  "textCount": 1
+ },
+ "moveMonster": {
+  "testidCount": 5,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 8,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "evolveMonster": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 4,
+  "classCount": 9,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "addFollower": {
+  "testidCount": 11,
+  "controlCount": 9,
+  "selectOptionCount": 18,
+  "classCount": 5,
+  "labelCount": 9,
+  "textCount": 1
+ },
+ "removeFollower": {
+  "testidCount": 4,
+  "controlCount": 2,
+  "selectOptionCount": 2,
+  "classCount": 4,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "setLighting": {
+  "testidCount": 17,
+  "controlCount": 11,
+  "selectOptionCount": 0,
+  "classCount": 34,
+  "labelCount": 6,
+  "textCount": 4
+ },
+ "addLight": {
+  "testidCount": 25,
+  "controlCount": 18,
+  "selectOptionCount": 5,
+  "classCount": 34,
+  "labelCount": 7,
+  "textCount": 4
+ },
+ "removeLight": {
+  "testidCount": 9,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 23,
+  "labelCount": 2,
+  "textCount": 3
+ },
+ "setWeather": {
+  "testidCount": 22,
+  "controlCount": 16,
+  "selectOptionCount": 5,
+  "classCount": 35,
+  "labelCount": 10,
+  "textCount": 4
+ },
+ "showAnimation": {
+  "testidCount": 23,
+  "controlCount": 12,
+  "selectOptionCount": 9,
+  "classCount": 46,
+  "labelCount": 6,
+  "textCount": 3
+ },
+ "showEmote": {
+  "testidCount": 26,
+  "controlCount": 18,
+  "selectOptionCount": 3,
+  "classCount": 18,
+  "labelCount": 15,
+  "textCount": 2
+ },
+ "showPicture": {
+  "testidCount": 26,
+  "controlCount": 16,
+  "selectOptionCount": 0,
+  "classCount": 38,
+  "labelCount": 8,
+  "textCount": 5
+ },
+ "erasePicture": {
+  "testidCount": 5,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 19,
+  "labelCount": 0,
+  "textCount": 3
+ },
+ "playAudio": {
+  "testidCount": 17,
+  "controlCount": 7,
+  "selectOptionCount": 734,
+  "classCount": 19,
+  "labelCount": 5,
+  "textCount": 3
+ },
+ "stopAudio": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "playMovie": {
+  "testidCount": 16,
+  "controlCount": 7,
+  "selectOptionCount": 5,
+  "classCount": 36,
+  "labelCount": 2,
+  "textCount": 5
+ },
+ "cutsceneControl": {
+  "testidCount": 6,
+  "controlCount": 4,
+  "selectOptionCount": 2,
+  "classCount": 12,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "displayTextSettings": {
+  "testidCount": 11,
+  "controlCount": 9,
+  "selectOptionCount": 5,
+  "classCount": 9,
+  "labelCount": 10,
+  "textCount": 1
+ },
+ "shop": {
+  "testidCount": 27,
+  "controlCount": 17,
+  "selectOptionCount": 0,
+  "classCount": 43,
+  "labelCount": 18,
+  "textCount": 5
+ },
+ "inn": {
+  "testidCount": 24,
+  "controlCount": 15,
+  "selectOptionCount": 79,
+  "classCount": 32,
+  "labelCount": 14,
+  "textCount": 4
+ },
+ "checkpointSave": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "openSaveMenu": {
+  "testidCount": 1,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 1,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "spawnFieldEnemy": {
+  "testidCount": 11,
+  "controlCount": 7,
+  "selectOptionCount": 25,
+  "classCount": 9,
+  "labelCount": 6,
+  "textCount": 1
+ },
+ "despawnFieldEnemy": {
+  "testidCount": 1,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 1,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "runControl": {
+  "testidCount": 7,
+  "controlCount": 5,
+  "selectOptionCount": 5,
+  "classCount": 3,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "killPlayer": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "triggerEnding": {
+  "testidCount": 3,
+  "controlCount": 1,
+  "selectOptionCount": 1,
+  "classCount": 3,
+  "labelCount": 1,
+  "textCount": 1
+ },
+ "gameOver": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "ending": {
+  "testidCount": 3,
+  "controlCount": 2,
+  "selectOptionCount": 0,
+  "classCount": 1,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "returnToTitle": {
+  "testidCount": 2,
+  "controlCount": 0,
+  "selectOptionCount": 0,
+  "classCount": 3,
+  "labelCount": 0,
+  "textCount": 1
+ },
+ "setFlag": {
+  "testidCount": 2,
+  "controlCount": 2,
+  "selectOptionCount": 2,
+  "classCount": 2,
+  "labelCount": 2,
+  "textCount": 1
+ },
+ "setSelfSwitch": {
+  "testidCount": 7,
+  "controlCount": 5,
+  "selectOptionCount": 0,
+  "classCount": 7,
+  "labelCount": 5,
+  "textCount": 1
+ },
+ "m2Command": {
+  "testidCount": 29,
+  "controlCount": 20,
+  "selectOptionCount": 32,
+  "classCount": 36,
+  "labelCount": 14,
+  "textCount": 3
+ }
+}

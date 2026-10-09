@@ -1,0 +1,115 @@
+import { expect, test, type Locator, type Page } from "@playwright/test";
+
+// Explicit screenshots are the evidence; avoid tracing every tile DOM node on each action.
+test.use({ trace: "off" });
+
+async function hitVisible(locator: Locator): Promise<void> {
+  await expect(locator).toBeVisible();
+  expect(await locator.evaluate((node) => {
+    const r = node.getBoundingClientRect();
+    return r.top >= 0 && r.bottom <= innerHeight && r.left >= 0 && r.right <= innerWidth
+      && node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+  })).toBe(true);
+}
+
+async function resizeSidebar(page: Page, width: number, height: number, withMaps: boolean): Promise<void> {
+  await page.evaluate(({ width, height, withMaps }) => {
+    const target = window as Window & { sidebarResize?: Promise<void> };
+    target.sidebarResize = new Promise<void>((resolve, reject) => {
+      const root = document.querySelector<HTMLElement>(".left-panel")!;
+      const list = document.querySelector<HTMLElement>(".map-tree-list");
+      const cleanup = () => {
+        clearTimeout(timeout);
+        observer.disconnect();
+        window.removeEventListener("resize", check);
+      };
+      const check = () => {
+        if (innerWidth !== width || innerHeight !== height || (withMaps && (!list || list.clientHeight < 108))) return;
+        cleanup();
+        resolve();
+      };
+      const observer = new ResizeObserver(check);
+      const timeout = setTimeout(() => { cleanup(); reject(new Error("sidebar resize did not reach usable layout")); }, 30_000);
+      observer.observe(root);
+      if (withMaps && list) observer.observe(list);
+      window.addEventListener("resize", check);
+    });
+  }, { width, height, withMaps });
+  await page.setViewportSize({ width, height });
+  await page.evaluate(() => (window as Window & { sidebarResize?: Promise<void> }).sidebarResize);
+}
+
+test("sidebar retains focus, reachable controls and usable map space", async ({ page }, testInfo) => {
+  test.setTimeout(600_000);
+  // Fetch the real local application through Node: shared-host network changes
+  // can cancel Chromium's in-flight Vite imports even on loopback.
+  const origin = new URL(testInfo.project.use.baseURL!).origin;
+  await page.route("**/*", async route => {
+    const request = route.request();
+    if (request.method() !== "GET" || new URL(request.url()).origin !== origin) return route.continue();
+    const response = await fetch(request.url());
+    await route.fulfill({
+      status: response.status,
+      headers: Object.fromEntries(response.headers),
+      body: Buffer.from(await response.arrayBuffer()),
+    });
+  });
+  await page.addInitScript(() => {
+    localStorage.setItem("oprn:standard-welcome-seen", "1");
+    localStorage.setItem("oprn:ai-panel-collapsed", "1");
+  });
+  await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
+  await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
+  for (const [width, height] of [[1440, 900], [1280, 800], [1024, 768]]) {
+    await resizeSidebar(page, width, height, true);
+    await page.getByTestId("tool-erase").focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByTestId("tool-erase")).toBeFocused();
+    await expect(page.locator("body")).toHaveAttribute("data-editor-tool", "erase");
+    for (const id of ["tool-paint", "tool-fill", "tool-event", "layer-lower", "layer-upper", "layer-event"]) {
+      await hitVisible(page.getByTestId(id));
+    }
+    await hitVisible(page.getByTestId("oprn-tool-overflow"));
+    const list = page.locator(".map-tree-list");
+    // Three rows can be compared without repeatedly scrolling a one-row slit.
+    expect(await list.evaluate(e => e.clientHeight)).toBeGreaterThanOrEqual(108);
+    await list.evaluate(e => { e.scrollTop = e.scrollHeight; });
+    await hitVisible(list.locator(".map-item").last());
+    await list.evaluate(e => { e.scrollTop = 0; });
+    // Every size keeps the same assertions; capture the tightest layout once.
+    if (width === 1024) await page.screenshot({ path: testInfo.outputPath(`sidebar-${width}.png`) });
+  }
+  const search = page.getByTestId("tile-search-input");
+  await search.fill("ab");
+  await page.keyboard.press("Home");
+  await page.keyboard.type("x");
+  await expect(search).toHaveValue("xab");
+  expect(await search.evaluate(e => (e as HTMLInputElement).selectionStart)).toBe(1);
+  await search.fill("");
+  await page.getByTestId("layer-event").click();
+  await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-current", "true");
+  await page.getByTestId("layer-lower").click();
+  await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
+  await page.getByTestId("sidebar-tools").click();
+  const sheet = page.getByTestId("tile-palette");
+  await expect(sheet.locator(".chipset-tile")).not.toHaveCount(48);
+  expect(await sheet.locator(".chipset-tile").count()).toBeGreaterThan(48);
+  expect(await sheet.locator('.chipset-tile[tabindex="0"]').count()).toBe(1);
+  const cells = sheet.locator(".chipset-tile");
+  await cells.first().focus();
+  await page.keyboard.press("End");
+  await expect(cells.last()).toBeFocused();
+  await hitVisible(cells.last());
+  await page.keyboard.press("Enter");
+  await expect(cells.last()).toBeFocused();
+  await expect(cells.last()).toHaveAttribute("aria-pressed", "true");
+  expect(await sheet.evaluate(e => e.scrollTop)).toBeGreaterThan(0);
+  await page.screenshot({ path: testInfo.outputPath("sidebar-tiles.png") });
+  // 맵 고르기는 사이드바 「맵」 탭이 집이다 — 그리기 탭으로 돌아오면 시트가 그대로 있다.
+  await page.getByTestId("sidebar-maps").click();
+  await expect(page.getByTestId("map-tree")).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("sidebar-maps.png") });
+  await page.getByTestId("sidebar-tools").click();
+  await expect(sheet).toBeVisible();
+  await expect(page.getByTestId("tool-paint")).toHaveAttribute("aria-current", "true");
+});

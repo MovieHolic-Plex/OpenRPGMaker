@@ -1,0 +1,61 @@
+// 월드맵 세트 팔레트 — 바탕은 현대 칩셋 pal.RAMPS(현대 시트 자기 칸에서 뽑은 색, 이름 앞 m), 그 뒤에 월드맵 지형·아이콘 색(w…).
+// 이 파일은 scripts/content/atlas-pick/make_worldmap5_palette.py 가 만든다. 손으로 색을 더하지 마라(검사가 이 밖의 색을 불합격시킨다).
+// 격자: @mat 글자 램프 [기본단] → @mblock / @tblock X Y 램프 / @tadj. 0 = 가장 어두움.
+
+// ── 현대 칩셋 바탕(강남 조각과 같은 색 — 아이콘의 벽·나무·쇠·유리) ──
+@rampc mout     #111310 #071528 #1c2626
+@rampc masph    #241924 #3c3e41 #4e5053 #56585a #5e6063 #686a6c
+@rampc mconc    #3c3e41 #56585a #6f7173 #868887 #a2a29f #b6b6b0 #dee0dd
+@rampc mpave    #6f7173 #858582 #92928d #9f9f99 #a7a7a0 #acaca5 #b7b7b0 #c2ccc7
+@rampc mgran    #3c3e41 #4e5053 #7e7f7f #a2a29f #b9bbb8 #c4c6c3 #dee0dd
+@rampc mbrick   #2b1407 #431d00 #6c4835 #8c6c5b #9e8d83 #bcaaa0
+@rampc mtile    #6c4835 #9e8d83 #aa8a7e #bcaaa0 #d9d2be #ecd6c6
+@rampc mglass   #071528 #212d42 #315a6b #366476 #6693a0 #9cc6cc #a7d4db #d6d8d5
+@rampc mdglass  #071528 #0d1b2e #1f2636 #2b3243 #363e5a #575f7d #747b8f #959dbe
+@rampc mmetal   #111310 #3e403d #5b6667 #777579 #90928f #b6b6b0 #beb8b7 #dee0dd
+@rampc mwhite   #8f918e #b9bbb8 #dee0dd #eaf8f8 #f7fdff #fefffc
+@rampc myellow  #583b01 #ad8604 #ec9900 #fbc10d #f4ef5d #ffff01
+@rampc mred     #2b1407 #a40100 #9e2514 #dd2912 #e0482a #e1975a
+@rampc mgreen   #071528 #143a27 #205030 #4b8232 #62a04b #7cb85c
+@rampc mblue    #071528 #202737 #363e5a #575f7d #959dbe #c2ccc7
+@rampc mteal    #1d2c33 #315a6b #3fa2ae #8ca9a3 #a7d4db
+@rampc mwood    #312210 #452a17 #633712 #885a26 #aa7a08 #ba9d71
+@rampc morange  #431d00 #7c4114 #cd7121 #ec9900 #e1975a #f0c6a8
+@rampc mpurple  #2b203f #4f4352 #703f57 #895261 #9e6574 #ae7a87
+@rampc mnavy    #071528 #0d1b2e #202737 #2b3243 #444c5e #747b8f
+@rampc msoil    #2b1407 #431d00 #5a3011 #744c2a
+
+// ── 월드맵 지형·물·아이콘 색 ──
+@rampc wgrass   #1c3420 #304828 #285828 #386040 #506848 #688858
+@rampc wmead    #142818 #1c3420 #283c20 #304828 #285828 #386040
+@rampc whill    #304828 #386040 #506848 #688858 #88a068 #a8b880
+@rampc wleaf    #002010 #082818 #103820 #184828 #205830 #306838
+@rampc wpine    #00201c #082c20 #0c3824 #144828 #1c5830 #286838
+@rampc wbark    #281810 #402818 #583c20 #705028
+@rampc wrock    #201818 #302020 #403828 #504838 #807848 #909898 #c0d8d8
+@rampc wsand    #78643a #94804a #b09850 #c0a860 #d0b870 #e0c888
+@rampc wdune    #685838 #887848 #a89858 #c8b878
+@rampc wsnow    #48506c #607088 #8090a8 #a0b0c0 #c0d0d8 #dce8ec #f0f4f4
+@rampc wice     #284068 #405888 #6888a8 #a0c0d0 #d0e4ec
+@rampc wswamp   #1c2c1c #2c3c24 #3c4c2c #506038 #687444 #808c58
+@rampc wbog     #142420 #203830 #305048 #486c60 #688c80
+@rampc wash     #181414 #2c2422 #403630 #54483c #6c5c4c #847460
+@rampc wlava    #3c1008 #681c0c #983c10 #c85c18 #e89430 #f8c868
+@rampc wdirt    #3c2c20 #584030 #745438 #907048 #ac9060
+@rampc wpoison  #201430 #382048 #503060 #684478 #805890 #a080a8
+@rampc wsea     #102048 #102860 #203870 #385880 #708090 #a0a8b0
+@rampc wdeep    #0c1838 #102048 #142858 #102860 #203870 #284880
+@rampc wriver   #102860 #203870 #385880 #708090 #a0a8b0
+@rampc wfoam    #708090 #98a8b0 #c8d8d8
+@rampc wstone   #28262c #403e44 #585658 #787678 #9c9a98 #c0bebc #e0dede
+@rampc wroofr   #3c1810 #5c2818 #804020 #a05830 #c07840
+@rampc wroofb   #182038 #283858 #385078 #4c6c98 #6890b8
+@rampc wgold    #605020 #806c30 #a08840 #c0a458 #d8c078
+@rampc wplast   #504030 #706048 #908060 #b0a080 #d0c0a0 #e8e0c8
+@rampc wink     #101410
+
+// 반투명(빛은 왼쪽 위 → 그림자는 오른쪽 아래). 산·숲 덩이의 남동쪽 발치, 아이콘 발치에만.
+~ #141218 110   // 그림자 속
+- #141218 58    // 그림자 번짐
+% #fff8d0 120   // 불빛 번짐(용암 빛·마을 불빛)
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)

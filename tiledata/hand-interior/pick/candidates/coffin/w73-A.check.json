@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coffin/w73-A.pxg",
+ "id": "coffin",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  1,
+  13,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "관: 육각 뚜껑(3/4 윗면 길게)+발치 앞면, 나무 램프, 놋 십자, 왼쪽 위 빛",
+ "ok": true
+}

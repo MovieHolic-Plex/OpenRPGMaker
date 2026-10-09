@@ -1,0 +1,353 @@
+{
+  "method": "pinned-template-explicit-edits",
+  "author": "Claude (Opus 5.5) theme edits on original Emerald man_4 artwork",
+  "independentlyAuthored": false,
+  "copiedOriginalPixels": true,
+  "templateSpec": {
+    "version": 1,
+    "templateId": "man_4",
+    "templateSourceSha256": "264a7e6d2916f397c592aed0f663350612908b0da2bc8fe3e77410a6c525ab32",
+    "paletteOverrides": {
+      "5": "#58b0cc",
+      "6": "#2c6482",
+      "8": "#f2cc40",
+      "E": "#ffffff",
+      "B": "#f8a850",
+      "C": "#d06828",
+      "D": "#6a3018",
+      "9": "#f0ece0",
+      "A": "#8a8070"
+    },
+    "patches": [
+      {
+        "frame": "up_stepA",
+        "y": 15,
+        "rows": [
+          "..777777777777.."
+        ]
+      },
+      {
+        "frame": "up_stepA",
+        "y": 26,
+        "rows": [
+          "...DC888884224.."
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 14,
+        "rows": [
+          "..777777777777.."
+        ]
+      },
+      {
+        "frame": "up_idle",
+        "y": 25,
+        "rows": [
+          ".43DC888888CD34."
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 15,
+        "rows": [
+          "..777777777777.."
+        ]
+      },
+      {
+        "frame": "up_stepB",
+        "y": 26,
+        "rows": [
+          "..422488888CD..."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 15,
+        "rows": [
+          "..7777777778E7.."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 24,
+        "rows": [
+          "....D8D8888D...."
+        ]
+      },
+      {
+        "frame": "right_stepA",
+        "y": 25,
+        "rows": [
+          "....D8D8448D...."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 14,
+        "rows": [
+          "..7777777778E7.."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 23,
+        "rows": [
+          "....D8D8888D...."
+        ]
+      },
+      {
+        "frame": "right_idle",
+        "y": 24,
+        "rows": [
+          "....DD84488D...."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 15,
+        "rows": [
+          "..7777777778E7.."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 24,
+        "rows": [
+          "....D8D8888D...."
+        ]
+      },
+      {
+        "frame": "right_stepB",
+        "y": 25,
+        "rows": [
+          "....DD44888D...."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 16,
+        "rows": [
+          "..77E87777E877.."
+        ]
+      },
+      {
+        "frame": "down_stepA",
+        "y": 26,
+        "rows": [
+          "...DC888884224.."
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 15,
+        "rows": [
+          "..77E87777E877.."
+        ]
+      },
+      {
+        "frame": "down_idle",
+        "y": 25,
+        "rows": [
+          ".43DC888888CD34."
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 16,
+        "rows": [
+          "..77E87777E877.."
+        ]
+      },
+      {
+        "frame": "down_stepB",
+        "y": 26,
+        "rows": [
+          "..422488888CD..."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 15,
+        "rows": [
+          "..7E8777777777.."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 24,
+        "rows": [
+          "....D8888D8D...."
+        ]
+      },
+      {
+        "frame": "left_stepA",
+        "y": 25,
+        "rows": [
+          "....D8448D8D...."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 14,
+        "rows": [
+          "..7E8777777777.."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 23,
+        "rows": [
+          "....D8888D8D...."
+        ]
+      },
+      {
+        "frame": "left_idle",
+        "y": 24,
+        "rows": [
+          "....D88448DD...."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 15,
+        "rows": [
+          "..7E8777777777.."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 24,
+        "rows": [
+          "....D8888D8D...."
+        ]
+      },
+      {
+        "frame": "left_stepB",
+        "y": 25,
+        "rows": [
+          "....D88844DD...."
+        ]
+      }
+    ],
+    "protectedRows": [
+      28,
+      29,
+      30,
+      31
+    ],
+    "design": "\uccad\ub85d \ud138\ubaa8\uc790 \uc704 \ub178\ub780 \ubc29\ud48d \uace0\uae00, \ub178\ub780 \ubc18\uc0ac\ub760\uac00 \uc788\ub294 \uc8fc\ud669 \uaca8\uc6b8 \uc7ac\ud0b7\uacfc \ud770 \ud50c\ub9ac\uc2a4",
+    "editSource": "author-theme-cast.py rules from templates/theme-cast-v1/cast.json (literal substrings and explicit index remaps at original pose rows); source right view mirrors left."
+  },
+  "templateAudit": {
+    "source": {
+      "id": "man_4",
+      "file": "man_4.png",
+      "sha256": "264a7e6d2916f397c592aed0f663350612908b0da2bc8fe3e77410a6c525ab32",
+      "sourceUrl": "https://raw.githubusercontent.com/pret/pokeemerald/master/graphics/object_events/pics/people/man_4.png",
+      "size": [
+        144,
+        32
+      ],
+      "originalArtwork": "Nintendo / Game Freak / Creatures",
+      "sourceUse": "Pinned original body/gait reference for explicitly edited theme-cast-v1 derivatives (desert/snow/coast)."
+    },
+    "frames": [
+      {
+        "frame": "up_stepA",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 5,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "up_idle",
+        "headIndexEdits": 8,
+        "clothingIndexEdits": 6,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "up_stepB",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 5,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_stepA",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_idle",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "right_stepB",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_stepA",
+        "headIndexEdits": 7,
+        "clothingIndexEdits": 5,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_idle",
+        "headIndexEdits": 7,
+        "clothingIndexEdits": 6,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "down_stepB",
+        "headIndexEdits": 7,
+        "clothingIndexEdits": 5,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_stepA",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_idle",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      },
+      {
+        "frame": "left_stepB",
+        "headIndexEdits": 10,
+        "clothingIndexEdits": 8,
+        "lowerFourRowsUnchanged": true
+      }
+    ],
+    "footGeometryPreserved": true,
+    "originalPixelsRetained": 1423
+  },
+  "templateSpecSha256": "485509f62cd6f0464d820a3cd1123faee6c70e504566739d8b696a4582a43076",
+  "rendererSha256": "b45bd1f6cd4dc7205b317d2bc52da098b493e162bbad181ad10013da02f2d554",
+  "templateImplementationSha256": "ef27834d140960ea3ed54c70f9c00b4086a5b9797bf94ff2781545b4bbacb7a2",
+  "encoderSha256": "0e6306c559c7c54c5f229d46bfb220327b3b13202571a5e6584bb6234714f2e9",
+  "scope": "Original-game derivative. Body/gait template retained; new head/clothes row patches. Human Allow required.",
+  "themeContext": {
+    "theme": "snow",
+    "ground": [
+      {
+        "sheet": "public/assets/emerald-monster/tiles/climate.png",
+        "tile": [
+          0,
+          28
+        ],
+        "sheetSha256": "1bec5f8f137081211f7ba22b696c620df1461ec894cf3ddff6bfbd51ec0f0d57"
+      }
+    ],
+    "producer": "author-theme-cast.py",
+    "producerSha256": "f6eeb790ec49c03967a6cf60f90e24bcc025ed0f75b5dcd0a5ac058dd5f350de",
+    "castSha256": "8a4aaaa7b7dffb4c8fb1eaf4a654a5870fe81afd5eb7d889d820c6d923caf354"
+  }
+}

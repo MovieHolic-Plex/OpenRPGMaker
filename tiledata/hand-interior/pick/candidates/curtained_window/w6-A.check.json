@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/curtained_window/w6-A.pxg",
+ "id": "curtained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "note": "커튼 밑단(어두운 갈색 점)을 붉은 주름으로 이어 끊김 정리, 나머지는 v5 유지",
+ "ok": true
+}

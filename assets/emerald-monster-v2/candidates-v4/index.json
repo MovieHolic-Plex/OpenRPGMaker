@@ -1,0 +1,2596 @@
+{
+  "revision": 4,
+  "species": 60,
+  "candidates": 120,
+  "regeneratedSpecies": 21,
+  "nativeMaximum": 64,
+  "paletteMaximum": 16,
+  "backFrontBodyMin": 0.8893905919223567,
+  "backFrontBodyMax": 1.0443810163523048,
+  "candidateErrors": 0,
+  "warnings": 140,
+  "selection": "pending-human",
+  "sandbox": "/home/main/z-project/emerald-art-v4-final-review-20261004",
+  "finalCliCandidates": true,
+  "entries": [
+    {
+      "id": "spriglet",
+      "name": "새싹토",
+      "side": "front",
+      "run": "20261004-075749",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 18.2% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (28x39)"
+        }
+      ],
+      "file": "spriglet-front.png",
+      "rawSha256": "e34b7b9885928db39bed7e001df21246e595d1839b670e1b8c60d8103080101c",
+      "sha256": "af13943d07f6852604aec4b459bfcda2d6e552f9e2c2f1e1baaa5cae4da5ede2",
+      "width": 28,
+      "height": 39,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "spriglet",
+      "name": "새싹토",
+      "side": "back",
+      "run": "20261004-075749",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.6% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (30x39)"
+        }
+      ],
+      "file": "spriglet-back.png",
+      "rawSha256": "c2a1ac1c049cdf024c9eb4c9e1adcbf19aafeace8a0797d68485031e72cfc221",
+      "sha256": "00c1d3b2db60b72ab4d4840c0916a921a43a5bea69cf888713860d391f3a1acc",
+      "width": 30,
+      "height": 39,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "frondhare",
+      "name": "잎귀토",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 18.2% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (44x51)"
+        }
+      ],
+      "file": "frondhare-front.png",
+      "rawSha256": "87491b18e0ad1f35d779ef6bfe6fd45b8fd3f7c1b041360458dff585de584e2e",
+      "sha256": "5dd09608e9301fe2e599f22a34f5033fc6f5c161d1f1031b33bfd8d9a6afd3a3",
+      "width": 44,
+      "height": 51,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "frondhare",
+      "name": "잎귀토",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 16.9% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x51)"
+        }
+      ],
+      "file": "frondhare-back.png",
+      "rawSha256": "c5b276209b72826ff281b95ed1af5b4b409f2964ac76ef7861791ae366e9cffa",
+      "sha256": "486289af1a0a9385fe53900071b2f7da697b8cef76e7c2fb086e5502728d3894",
+      "width": 47,
+      "height": 51,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "grovewarden",
+      "name": "숲지기토",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 18.2% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "grovewarden-front.png",
+      "rawSha256": "87b7d661a33bcd70b71db850f1efcf691cc3cf3c2269a74b8ddabb654bda43fc",
+      "sha256": "61d2dd0cbc7668209dfdc9df9792e5ef89591db94a58dfac0ad8088f38de29ad",
+      "width": 54,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "grovewarden",
+      "name": "숲지기토",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "grovewarden-back.png",
+      "rawSha256": "e4033cb09c7f5819ec7a9d202e5c716bca0842c210ef0012391975ee79ea8ae4",
+      "sha256": "085e1c1be0af7aa23f947ce4fa873579ed0e984f38bf11015e8b3ef90a758829",
+      "width": 50,
+      "height": 62,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coalbit",
+      "name": "숯비늘",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 17.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x30)"
+        }
+      ],
+      "file": "coalbit-front.png",
+      "rawSha256": "5543e3f90f6e3340be0243d6fc9dadf2d93535ab17be52e0556eaf97ef1726f7",
+      "sha256": "ddf771c5773828ccdc0ad546aab540283d274c9daa27bb87d76718d01ffe8698",
+      "width": 40,
+      "height": 30,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coalbit",
+      "name": "숯비늘",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 14.2% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (38x30)"
+        }
+      ],
+      "file": "coalbit-back.png",
+      "rawSha256": "f591bcdb6e591e60b1da395374d3c79d0beebc82899307dc7cf54c73be67429d",
+      "sha256": "5addd7aa96265970e1612bf3ba2a40d9c701f10c67419b56e626d0dc371cc450",
+      "width": 38,
+      "height": 30,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "kilnclaw",
+      "name": "가마발",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 14.9% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x46)"
+        }
+      ],
+      "file": "kilnclaw-front.png",
+      "rawSha256": "3fe3bb802470c8879264744c84f9a0362873a71d23a6b79b15adf4fd14b7b99c",
+      "sha256": "69c4bc849b9a5f6d0974a103b0538b40dcf77374b33a46bf545eb510b765815f",
+      "width": 52,
+      "height": 46,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "kilnclaw",
+      "name": "가마발",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (49x43)"
+        }
+      ],
+      "file": "kilnclaw-back.png",
+      "rawSha256": "a27b4a26fcb1ae7d52a76babe4e78cca80f20f8c42447a28216dc6b134071282",
+      "sha256": "a39845468c6cd8d78e4ea8fc1c664cf67d637655532fb95a7795e5172a206a5e",
+      "width": 49,
+      "height": 43,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "furnscale",
+      "name": "용광비늘",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 23.3% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "furnscale-front.png",
+      "rawSha256": "1491b1c582e258bbec084568d6750e5fbe5edf6af3916bfb3d5636694aa1837c",
+      "sha256": "ca36d588192fe972bbd07f97cc2dca21ab084e3a2044cd40928ec700dc916c11",
+      "width": 54,
+      "height": 63,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "furnscale",
+      "name": "용광비늘",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.8% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "furnscale-back.png",
+      "rawSha256": "74909e6edb3a7cd068a06e1beb9fa2ddb360b82092f1cbe58738e57e20ec8fac",
+      "sha256": "7871c4b70b903d550e89b7d26e078d761210707924e295ea0c2f81ee20ca811a",
+      "width": 49,
+      "height": 62,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rivulet",
+      "name": "여울랑",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (33x39)"
+        }
+      ],
+      "file": "rivulet-front.png",
+      "rawSha256": "7ce67399da7a570844abde0322b83e5b0d2c20e184e8e2bd0cd7388abc1d8bba",
+      "sha256": "ad34fd4c767e71f02f4bd1b5ad3c69531e258f3a6b9ae263a474ce9738aba52d",
+      "width": 33,
+      "height": 39,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rivulet",
+      "name": "여울랑",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (36x35)"
+        }
+      ],
+      "file": "rivulet-back.png",
+      "rawSha256": "efa3a199d9fa530d1f7e25a3039e4f28943efd5b551ed98c6aaca0a6e9497061",
+      "sha256": "ad8020fac67a8fa35d347a1a33d0a1f92f159b45f49af8ffb9515f890a99daf3",
+      "width": 36,
+      "height": 35,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brookraft",
+      "name": "뗏목랑",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 14.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x43)"
+        }
+      ],
+      "file": "brookraft-front.png",
+      "rawSha256": "f1d5269b8c9f01a92ffafb5a95dc39db2a2a495d0f83a574b1ba4b29af7f30e7",
+      "sha256": "7f8d6bec938add89bf9eb0f7b4d3c50b18c8321fdcfad08b8c6beadbb8ff28dd",
+      "width": 52,
+      "height": 43,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brookraft",
+      "name": "뗏목랑",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.6% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x41)"
+        }
+      ],
+      "file": "brookraft-back.png",
+      "rawSha256": "55e21eb759d64dbb792b459494c74a83d295383bc62da4de075dc5ec6df0e2ea",
+      "sha256": "41707b09e4423c6fee608794283dd2dd36a615c5e06433c92c364f06157a24c1",
+      "width": 47,
+      "height": 41,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "tidekeeper",
+      "name": "조수지기",
+      "side": "front",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.3% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "tidekeeper-front.png",
+      "rawSha256": "514db5465b9ace17c4777d8eb8367deb50d9adf570f1991fe05f46ad253a5286",
+      "sha256": "f0bbb67048af4906471d706a58b758b7874460a6292ab28f70f0ec7d406e393b",
+      "width": 64,
+      "height": 63,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "tidekeeper",
+      "name": "조수지기",
+      "side": "back",
+      "run": "20261004-075750",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "tidekeeper-back.png",
+      "rawSha256": "e39fd8d72761103d1c3f57e1e92aaf45cb4be5fc5366e9b91b38e816f9f9ccfd",
+      "sha256": "e6b71963ef099c219504acfb597178fb203b0303299728c0d43af3e9179b8635",
+      "width": 62,
+      "height": 59,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "pipbug",
+      "name": "씨앗충",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (37x38)"
+        }
+      ],
+      "file": "pipbug-front.png",
+      "rawSha256": "0b0a2413e4a7b0ce7c22ad81333feedf7c462ee3a33877d2532df3ecb3f91d03",
+      "sha256": "9ee4057df2a27059e127ce8ab1ed69e8b1ddf260ad2e295c13a19e844b6abd0f",
+      "width": 37,
+      "height": 38,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "pipbug",
+      "name": "씨앗충",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (36x39)"
+        }
+      ],
+      "file": "pipbug-back.png",
+      "rawSha256": "330b2133ade632fecb1673b374e10ebe2f4d41727c34c164911156a42e660ca8",
+      "sha256": "ad5e08e936117238e1cae094e62244df1607f0254361060748daddb7ef1232dc",
+      "width": 36,
+      "height": 39,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "podback",
+      "name": "콩등충",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.9% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (51x51)"
+        }
+      ],
+      "file": "podback-front.png",
+      "rawSha256": "903f73fde9c5935083459af3918f863ae217db6b77d85cadea2463f0497be0cf",
+      "sha256": "3d6baa3ccc0ceb402af8b0eb9b926dc2301126a728e2f2d6b9593f36f1124ca5",
+      "width": 51,
+      "height": 51,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "podback",
+      "name": "콩등충",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x50)"
+        }
+      ],
+      "file": "podback-back.png",
+      "rawSha256": "f7dcad46b49a7724b3ebe52a61efb86900efafcff565f01b9d7399eb5a6b6044",
+      "sha256": "6e30c07c1ace5cb359d37510a6e7bf9f626f0f9be668e64d94f64f5e8248f764",
+      "width": 52,
+      "height": 50,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "orchardant",
+      "name": "과수장수",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.5% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "orchardant-front.png",
+      "rawSha256": "25f5ee3254c8819076e5b52ba3c759618bd752843c6d4b56502ad1bc80012e12",
+      "sha256": "6acacebe56c25b0ddcccdd309e3df5d5019151c61d1133687658f0e245349758",
+      "width": 53,
+      "height": 63,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "orchardant",
+      "name": "과수장수",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.9% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "orchardant-back.png",
+      "rawSha256": "234b85a49244c402022213812411821192ddb0ff22b40e7bcaf9025d73b730a8",
+      "sha256": "d4eb497112521ca2d6b022a212a1ee840c81bae8daea8a7668679fcfbd9f7593",
+      "width": 56,
+      "height": 64,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "gustchick",
+      "name": "바람삐",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (28x39)"
+        }
+      ],
+      "file": "gustchick-front.png",
+      "rawSha256": "780b03b34fb0f16aad5689fed2d7ee1d5bce0261d16bab2df91284674fc810a4",
+      "sha256": "e95bd960e94c7063dd2c044e890ac5d28c525e70af4cea6f70ae4d3e14cc81fb",
+      "width": 28,
+      "height": 39,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "gustchick",
+      "name": "바람삐",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (30x38)"
+        }
+      ],
+      "file": "gustchick-back.png",
+      "rawSha256": "a60ffd8f5ce002c22fa78d6f387066a3c114acd47a650a8928fefa694636f039",
+      "sha256": "4ec165d736ac7a7433b4c9536f79e4b637f6e9bf954ead80845e80859bc2862f",
+      "width": 30,
+      "height": 38,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "ribbonwing",
+      "name": "리본날개",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x41)"
+        }
+      ],
+      "file": "ribbonwing-front.png",
+      "rawSha256": "af1fb847828c3a67c38f83c51693e71d1c3527cf70fd4c35f4c702cc0b1e2d51",
+      "sha256": "fc560b1c8a6223a335df89731123cba99772aaf221da7f75267db6348a518d24",
+      "width": 52,
+      "height": 41,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "ribbonwing",
+      "name": "리본날개",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (49x41)"
+        }
+      ],
+      "file": "ribbonwing-back.png",
+      "rawSha256": "f3d1f7165b645d28d750be6ca4b443ba1ed44eedf63b3e9f331241827968552e",
+      "sha256": "be0e65b030641877fb6a73200cb8acb1f21a43d7b3011093485080589af7c626",
+      "width": 49,
+      "height": 41,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "galecrest",
+      "name": "돌풍깃",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "galecrest-front.png",
+      "rawSha256": "19f78c8e7e8c771c43910cb1446fb4e782f1ff09295de3c55defa6d941445f9c",
+      "sha256": "2d4bee065432c6d8cb2b28f57c6cbdbcadc3e5d653b149a94b916479a1558eb7",
+      "width": 63,
+      "height": 60,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "galecrest",
+      "name": "돌풍깃",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "galecrest-back.png",
+      "rawSha256": "2b56eeaa81af377a7db09b832cc55c2730d0fcab7440e8fea4a2a3283c7cd163",
+      "sha256": "135784f11bd58e0db8879e210f0fd08366806aac5a7344956a61f204a83c048a",
+      "width": 56,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "zaptoe",
+      "name": "톡발도마",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (39x33)"
+        }
+      ],
+      "file": "zaptoe-front.png",
+      "rawSha256": "7cd6d51abce393b5e8f435105b545e17ae0948cd2a52fc377519913fb4222117",
+      "sha256": "7d583c0caedf81da196256512612e57d4c3bb13b55ef984014657e0e2ea3953a",
+      "width": 39,
+      "height": 33,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "zaptoe",
+      "name": "톡발도마",
+      "side": "back",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x32)"
+        }
+      ],
+      "file": "zaptoe-back.png",
+      "rawSha256": "53170999e4650ffe89ce333f4ee88a5b8ea7628aa142970c3e2a80b7eae47626",
+      "sha256": "cb92b0d70717433c08cec2e543ded18b383f4c8f00a09e08783c6d14992aa92a",
+      "width": 40,
+      "height": 32,
+      "colors": 10,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coilcrest",
+      "name": "코일볏",
+      "side": "front",
+      "run": "20261004-075751",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (50x51)"
+        }
+      ],
+      "file": "coilcrest-front.png",
+      "rawSha256": "b025a552b95765a894c2089495edc452f9953943af64ba991a84c1f38904ece0",
+      "sha256": "ee24ff4d853964b8cbeed312532cd9366fc5c616a2ed951fd360d900f2f5636a",
+      "width": 50,
+      "height": 51,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coilcrest",
+      "name": "코일볏",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (48x52)"
+        }
+      ],
+      "file": "coilcrest-back.png",
+      "rawSha256": "0b943e0154f028248ba9e0e5594d25f6102abbd3a3b997d82aada6c8fd750233",
+      "sha256": "c97febe8d2259ab8e76518bb5b0340055723ae1d1957179ff02f5abd15306668",
+      "width": 48,
+      "height": 52,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "stormskink",
+      "name": "폭풍도마",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "stormskink-front.png",
+      "rawSha256": "b200dc991f6f46cc3135262fe4c476489108897f2ecfeba699f64d00a3baffbc",
+      "sha256": "6e68421dd46bf5232804e79eeffd5170768fc348a6e71f91de3535797b462050",
+      "width": 64,
+      "height": 63,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "stormskink",
+      "name": "폭풍도마",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "stormskink-back.png",
+      "rawSha256": "d0b81df7a80a5ab876b166673f329381de0aa917ad671e979f9e6e08687ca792",
+      "sha256": "b839920b517025d80f99380cb173da69b7d5754968691a56bdaa511812778fef",
+      "width": 56,
+      "height": 58,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "pebblekid",
+      "name": "조약양",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.6% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (32x39)"
+        }
+      ],
+      "file": "pebblekid-front.png",
+      "rawSha256": "0ba87bd1890f9ec0593341aa7fe5a96985c9bb8f3b4b3899c855fe18885f93f4",
+      "sha256": "cf4ee387258d503ee0564d38ed50f844cf7ba9f2ccd5bba9be792b574d209927",
+      "width": 32,
+      "height": 39,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "pebblekid",
+      "name": "조약양",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (33x38)"
+        }
+      ],
+      "file": "pebblekid-back.png",
+      "rawSha256": "ab829af880c06ba1a6dd225386b76d53e0d794fb6fdf817989d3520907a95741",
+      "sha256": "467511d34d40d613dbef29c14819960efefdc7695bb7a995ebad126b1d3fd168",
+      "width": 33,
+      "height": 38,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "craghoof",
+      "name": "절벽굽",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.6% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (43x52)"
+        }
+      ],
+      "file": "craghoof-front.png",
+      "rawSha256": "a7c99916a6929dc156c8367496efd61c6f45b8ecd678e3dd744bef93d73d9604",
+      "sha256": "703f553bed280f7b70703ed2d99212e680eb76c657b505d03c11238c2bf6a59d",
+      "width": 43,
+      "height": 52,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "craghoof",
+      "name": "절벽굽",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.7% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (41x50)"
+        }
+      ],
+      "file": "craghoof-back.png",
+      "rawSha256": "adc54147f8e2f6d97f925b1d078b71b6d9459b1873e7daf725e17ea7c4b345cc",
+      "sha256": "38bc324a47472890108f86fe2e817f5e90866225267ae106d9f4233a7967ee3f",
+      "width": 41,
+      "height": 50,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "ridgehorn",
+      "name": "능선뿔",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x63)"
+        }
+      ],
+      "file": "ridgehorn-front.png",
+      "rawSha256": "6efab548818ccea511c8bf076fef9232aa581b8d50035dc865235a0b5ea4ddb4",
+      "sha256": "9d800256bf176fc246b286afe0bf8093c058590d20475290b6270357804bf1b5",
+      "width": 42,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "ridgehorn",
+      "name": "능선뿔",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x59)"
+        }
+      ],
+      "file": "ridgehorn-back.png",
+      "rawSha256": "795228a2f31bc58b66ad72cedb525e981464d703f823870b7a15e236bd98b3f6",
+      "sha256": "3238a1d1d383c24234dae8d55e3d271226d45ab350b2c3fd0fbd07b0df84cff3",
+      "width": 42,
+      "height": 59,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "sandnip",
+      "name": "모래집게",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 20.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x39)"
+        }
+      ],
+      "file": "sandnip-front.png",
+      "rawSha256": "2bd2cd6caf3a2c40ad3b04f912ffdbc6c54b32aa6c4a5f99460a38f5e5dfb86b",
+      "sha256": "a24887b663929d58a45728ee8d09ca9706423f60f4fa2c49f3d3529e6cc5f4b5",
+      "width": 40,
+      "height": 39,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "sandnip",
+      "name": "모래집게",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 16.5% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (39x38)"
+        }
+      ],
+      "file": "sandnip-back.png",
+      "rawSha256": "2a79fb9ce9314446e4639cf07def7209fda1241106a55d211e346c760a44e003",
+      "sha256": "b87bba0111d3f5d2ca3c244279bed2389bb214f91bf0025c1da747fe79c1e7fa",
+      "width": 39,
+      "height": 38,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "dunestalk",
+      "name": "사구꼬리",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 14.8% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x49)"
+        }
+      ],
+      "file": "dunestalk-front.png",
+      "rawSha256": "454078083cf05cea007a09106eff1fe3939812f5efebcb9961ed1de88038e8f3",
+      "sha256": "34c54cd5541736692b00a2514ca61635edd1ce5d91b9902c90241f8e4967f16a",
+      "width": 52,
+      "height": 49,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "dunestalk",
+      "name": "사구꼬리",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.4% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x48)"
+        }
+      ],
+      "file": "dunestalk-back.png",
+      "rawSha256": "3d78d9bbc773e992f7eb6a6673099dc26e48736d1fa87f53cce5538ba57db885",
+      "sha256": "eb6081a43dc0cfde6a1139ba733a1e1c191f4a3df2a454464bf12147f312cb4d",
+      "width": 47,
+      "height": 48,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "miragespike",
+      "name": "신기루침",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "miragespike-front.png",
+      "rawSha256": "e31fb6be6e9c3213bfe7e8d96a360023ae9175d6ec0ae3ae3b10c932455cac03",
+      "sha256": "40e937e38dfb4e6fda3e91252e29324c78ca8ee6bfefff0b662c52d24f8e7a18",
+      "width": 64,
+      "height": 64,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "miragespike",
+      "name": "신기루침",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.9% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "miragespike-back.png",
+      "rawSha256": "2c3d3553d43805ec329a31cd8f3122511d9792ce155a65365a2f4d5cd9790f8e",
+      "sha256": "09de61829f7b764a6802c775662a5b839e80ea84d14f87c8a7440062acee0fce",
+      "width": 54,
+      "height": 60,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "flurrykit",
+      "name": "눈송냥",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.2% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (30x39)"
+        }
+      ],
+      "file": "flurrykit-front.png",
+      "rawSha256": "bb3b8afd2f2a6f505864288076c2bd3c5bf4de43015a31a2ceadda381426e07f",
+      "sha256": "ac1f3a5ac738d4c8ebb91f8a70804ec6cde752373070cc04c362932f66399a5f",
+      "width": 30,
+      "height": 39,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "flurrykit",
+      "name": "눈송냥",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (28x40)"
+        }
+      ],
+      "file": "flurrykit-back.png",
+      "rawSha256": "d2c7e609f06e0c723a681e857e7b2b1df300418645a795122a3504611fd7004d",
+      "sha256": "e518397497173c26f1139728bd7d360858245e8802e01e7d82e2cd82c1884c7b",
+      "width": 28,
+      "height": 40,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rimepelt",
+      "name": "서리털",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x52)"
+        }
+      ],
+      "file": "rimepelt-front.png",
+      "rawSha256": "3363200bc472445668d97a68813a828f1b76d1bb510515544cfb2b899c3c2b2f",
+      "sha256": "f6db66b8cb0f6c907a33f871512891940ff69246610487bb530037cfaba89cca",
+      "width": 42,
+      "height": 52,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rimepelt",
+      "name": "서리털",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (39x51)"
+        }
+      ],
+      "file": "rimepelt-back.png",
+      "rawSha256": "e173397edcf862274b25a7d7ebcc5b5d1662028b848967115ee6c58986e98f58",
+      "sha256": "5b90dd6ee7856d0fa92e9817472237b1c48cbb605ab9506c4d7462c3274d5e67",
+      "width": 39,
+      "height": 51,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "glaciermane",
+      "name": "빙하갈기",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "glaciermane-front.png",
+      "rawSha256": "0800320aeb541d6000de821c79935cc7087eb93da8f81ffc6a681741ea8421b0",
+      "sha256": "a6494c691ade18e9a6b63e3739ac58f544d061cee552d2e946bb5d8d3bac32d7",
+      "width": 53,
+      "height": 64,
+      "colors": 10,
+      "selection": "pending-human"
+    },
+    {
+      "id": "glaciermane",
+      "name": "빙하갈기",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "glaciermane-back.png",
+      "rawSha256": "c80858dc07216796660ae90de5330c3dbc761cd4e96cdcef665c7ba66628d383",
+      "sha256": "fed052a899b02ee8b3b30bfb12d3d40a63f1dbf5cdbe21f3c88e324a7af6b758",
+      "width": 50,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "wickworm",
+      "name": "심지충",
+      "side": "front",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 78%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 16.4% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (32x39)"
+        }
+      ],
+      "file": "wickworm-front.png",
+      "rawSha256": "ad641140d20ab1ab7d9c22f6266e2337dceee59fb65a9a9d85ecd5882dd3ad00",
+      "sha256": "34ad9dfe45714a01cc8972edfe6392349b05c57294c365e8a2b805ff70c744f9",
+      "width": 32,
+      "height": 39,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "wickworm",
+      "name": "심지충",
+      "side": "back",
+      "run": "20261004-075752",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 78%)"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (32x40)"
+        }
+      ],
+      "file": "wickworm-back.png",
+      "rawSha256": "72e10231189a4a4c06405affd5d65a64fba004ab18ed753697b8a896028946ae",
+      "sha256": "238b9e7f331cb96f7dfa386fef1bebd535ff603a3ddf70a4373745841a1097e1",
+      "width": 32,
+      "height": 40,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "lanternwing",
+      "name": "등불나방",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 14.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (50x42)"
+        }
+      ],
+      "file": "lanternwing-front.png",
+      "rawSha256": "4d352076dac91a87b068d6404c4931427022134d3a13d10e23a4ca33bafb50c6",
+      "sha256": "007761506fbfd8c7c5515076716d366e11c8942c747b6a79fb31154ae7c855a0",
+      "width": 50,
+      "height": 42,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "lanternwing",
+      "name": "등불나방",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x43)"
+        }
+      ],
+      "file": "lanternwing-back.png",
+      "rawSha256": "b0a5996d582b4b119d2c5bf23b7a9903b1ce4309fcece8431e3553e99d5d9bff",
+      "sha256": "cc8b518ff0594a5d8cc924a1ed94eac7388fe9e86b28156bb88d8e325f1a47ba",
+      "width": 52,
+      "height": 43,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "beaconmoth",
+      "name": "봉화나방",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.5% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "beaconmoth-front.png",
+      "rawSha256": "7d4a46f3a9962b3d8bd9dcc86a46696b49aa0564e42d3657ecc6da5a087e078b",
+      "sha256": "a7031c777a2171b5c2b4c9195c6311f41c2bae1aaf90ae33c19e343c5acf2cef",
+      "width": 61,
+      "height": 55,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "beaconmoth",
+      "name": "봉화나방",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "beaconmoth-back.png",
+      "rawSha256": "a370867e821d42c8892c4fcec3b3be2906c5d1c4c9c9f54e9341474796d914c7",
+      "sha256": "9fcbdc4dbbaa50d0b5b037dac885211a3136bda49a8648ec87c57c107b8d3c90",
+      "width": 64,
+      "height": 57,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "miretail",
+      "name": "늪꼬리",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x25)"
+        }
+      ],
+      "file": "miretail-front.png",
+      "rawSha256": "3221f626a98933ea69124dbcd3b6321f140f0895320520f38f8704886d481183",
+      "sha256": "8e39cb4019ecebf03492fa516e1b962c04bb94888baac5f8a4c0d6028ebce380",
+      "width": 40,
+      "height": 25,
+      "colors": 9,
+      "selection": "pending-human"
+    },
+    {
+      "id": "miretail",
+      "name": "늪꼬리",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (35x24)"
+        }
+      ],
+      "file": "miretail-back.png",
+      "rawSha256": "34b079bd303584a8e8e23509da636cd1f6617e460eb20ede9e66cf93c3e043ec",
+      "sha256": "e00ad069e40a367c7ffc833e44ad3eb004a3d277cea1a0cb1ea76d8d9dced1b5",
+      "width": 35,
+      "height": 24,
+      "colors": 10,
+      "selection": "pending-human"
+    },
+    {
+      "id": "venomfrill",
+      "name": "독주름",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x39)"
+        }
+      ],
+      "file": "venomfrill-front.png",
+      "rawSha256": "0946ce571103917eb81424a131d87e7b7acae3e63c3b370e6fc97577264f9158",
+      "sha256": "1ebe4f92d47a5f3089a8d2a452fc1e8b0584e54eca7a5560fe6a2f6c7528c6bf",
+      "width": 52,
+      "height": 39,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "venomfrill",
+      "name": "독주름",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (50x37)"
+        }
+      ],
+      "file": "venomfrill-back.png",
+      "rawSha256": "b686379da453db3f187f3b6584c90d5608ac337219a4a61a2ad769d27590edcc",
+      "sha256": "a3d35fcf27eeb9f718248aeffc8d605b737ff1dbe24648c7c4f15fa71fce6c67",
+      "width": 50,
+      "height": 37,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "marshcrown",
+      "name": "습지왕관",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "marshcrown-front.png",
+      "rawSha256": "e55a28fee23de6bcff7df3229efee09804d2e2689220e28724a7e12395ab7269",
+      "sha256": "3d99fe4dcee9cea8180150439218023d5a82ee6cd09baa59f482268accd8d456",
+      "width": 64,
+      "height": 60,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "marshcrown",
+      "name": "습지왕관",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "marshcrown-back.png",
+      "rawSha256": "720130eec61b6ec2ddcb63e9f7a6f61c7daca5cff6a7c5c529ae817fda4a43b6",
+      "sha256": "a9aecd9154fb9a4857a17a7f649a3a171c2ba8a4f4494c6c8c2956ba0dc569f4",
+      "width": 58,
+      "height": 58,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rootpig",
+      "name": "뿌리꿀",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (37x38)"
+        }
+      ],
+      "file": "rootpig-front.png",
+      "rawSha256": "3225b4ddd8c85ea64b5e7d196a2e8249942d6dd29391acdfdd7e667cdc29e0c9",
+      "sha256": "72aac9b4eb455b4008e5ecdffa53a416c306e9f3d608bd826586a5e0162aeee4",
+      "width": 37,
+      "height": 38,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "rootpig",
+      "name": "뿌리꿀",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x38)"
+        }
+      ],
+      "file": "rootpig-back.png",
+      "rawSha256": "ce397557f2d8ddce0d04f24681c13ed47f125c1429f4eb979f04316421e54424",
+      "sha256": "771b443b3a8868c7eb740eeebf5182a63f4853d468749052250ef150b9c99b0c",
+      "width": 40,
+      "height": 38,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brambleboar",
+      "name": "덤불멧",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.2% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x43)"
+        }
+      ],
+      "file": "brambleboar-front.png",
+      "rawSha256": "9552bc773acfbb6b3c5bf2ed85cb4efe064303a2af19b65ae321c472524b251d",
+      "sha256": "66cf6b850d20e9f4d02b1796b61104d39d341eeb2e810e8116b0a8c0cd6a22f5",
+      "width": 52,
+      "height": 43,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brambleboar",
+      "name": "덤불멧",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (46x45)"
+        }
+      ],
+      "file": "brambleboar-back.png",
+      "rawSha256": "40452de29de6046cc298aaf94a849ca3bd79f39fc6be29256374482e71d6ca8e",
+      "sha256": "794d77cfba478b68a1376adf4f9d3b53f23d23957b874acda8a4842e42bb80ad",
+      "width": 46,
+      "height": 45,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "briartusk",
+      "name": "가시엄니",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.9% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "briartusk-front.png",
+      "rawSha256": "008cddae5bf4c4d2cec4fb6a41c76854d24162fcd6fbc5cfbb53ec9c51182b0e",
+      "sha256": "105c2c312254da9a007dc0281827019b7225974ee37f176cbba65dcfae7a1321",
+      "width": 64,
+      "height": 54,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "briartusk",
+      "name": "가시엄니",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (58x51)"
+        }
+      ],
+      "file": "briartusk-back.png",
+      "rawSha256": "e2ea2ad39679da439aeeee3e732a354ec8629e94c5ab05b8d359fc5578789296",
+      "sha256": "6e3c6a96c4469b8eec18511de1216d24da12045a01834a05b39a8b84e13c3602",
+      "width": 58,
+      "height": 51,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "dozemite",
+      "name": "졸음사마",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (35x39)"
+        }
+      ],
+      "file": "dozemite-front.png",
+      "rawSha256": "bca8eff0e2605f9a10d2cd4aa741994f299b5e6094172605f09608ee82a48cc7",
+      "sha256": "26813f2f4d426226c5d6aaea1c6909b1dc33b520711ca611c4cdd76b4f0bbc7a",
+      "width": 35,
+      "height": 39,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "dozemite",
+      "name": "졸음사마",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (34x37)"
+        }
+      ],
+      "file": "dozemite-back.png",
+      "rawSha256": "67a19882d2d1cab4bd52f93acba5ffc4b6d3ac86c4a7e7728d8d252f6c9e05b2",
+      "sha256": "07cb1d57dd406d188b3dd103853722f0ddc41daee66c2a6d637a987a36ddbbd2",
+      "width": 34,
+      "height": 37,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "trancescythe",
+      "name": "몽환낫",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (49x51)"
+        }
+      ],
+      "file": "trancescythe-front.png",
+      "rawSha256": "aa6b0a421ce5ab94695ec1f65598ed43b8693e9b1e681343fc727256f48baa65",
+      "sha256": "47ecd39cf94117f0a1dfb044d583158873fcf19a2d72d400224364741ba504d1",
+      "width": 49,
+      "height": 51,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "trancescythe",
+      "name": "몽환낫",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x49)"
+        }
+      ],
+      "file": "trancescythe-back.png",
+      "rawSha256": "33bf32ac886320f9179cdc37cdbd60a3601116a776fda3fb929e03729586abcf",
+      "sha256": "3abe5fc940edc3af7db8a0fdca6cd8c226c84cbcd87aa41fd597dc10284cf001",
+      "width": 47,
+      "height": 49,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "oraclemantis",
+      "name": "예지사마",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "oraclemantis-front.png",
+      "rawSha256": "15d1f4de68826e29497c36dec50f79a205e77b4d405347aebc325b97dbf8b2e8",
+      "sha256": "c5b489d69fa6cb9df058f797feb94c8ad70557dee80024937dc9bb74177c3b7b",
+      "width": 54,
+      "height": 63,
+      "colors": 10,
+      "selection": "pending-human"
+    },
+    {
+      "id": "oraclemantis",
+      "name": "예지사마",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "oraclemantis-back.png",
+      "rawSha256": "864f1a9db73d7989b24d7cc2e1706f0628d778c17cfebc6b1adc396bf67fcbb7",
+      "sha256": "95e80d0543b00114cabe7ab9befc843d9cc639905e8e3f5756f6055167c148ed",
+      "width": 49,
+      "height": 62,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "gritnose",
+      "name": "자갈코",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 13.6% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x30)"
+        }
+      ],
+      "file": "gritnose-front.png",
+      "rawSha256": "66a60c63794bb297657698942d88547ea810e0cdfa2e6207a151c9311bf8ff60",
+      "sha256": "5e25becad24ed7aa8e60c8b94852538c4e12b1e74b164c009ad8742aad748b98",
+      "width": 40,
+      "height": 30,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "gritnose",
+      "name": "자갈코",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (38x31)"
+        }
+      ],
+      "file": "gritnose-back.png",
+      "rawSha256": "7faf95b4576426024fd2482ade94a8d4c43a6d2d3dfbaedf69eacb5dd2f852b2",
+      "sha256": "21d039b33ce4393bb32915786fa33111a2d5aa94bceb3c9f605c60996fddd4dd",
+      "width": 38,
+      "height": 31,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "tunnelpaw",
+      "name": "굴손",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (49x43)"
+        }
+      ],
+      "file": "tunnelpaw-front.png",
+      "rawSha256": "a898c8e68338306450065a5fa344dd82abd032d30c8fa72ba00056a063a3c29b",
+      "sha256": "b4c78af039087334c11a0f861b4583bd93cf507fb7bd336e8833b996926a5653",
+      "width": 49,
+      "height": 43,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "tunnelpaw",
+      "name": "굴손",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x43)"
+        }
+      ],
+      "file": "tunnelpaw-back.png",
+      "rawSha256": "e439d746177404a0752c4116c48eb737b118e2ebffaaf5056106e6ff24e61cf5",
+      "sha256": "dd149003bc61288061d21004fc740fa324334ebb3a00862005134f416e95e013",
+      "width": 52,
+      "height": 43,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "faultdigger",
+      "name": "단층발",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 17.2% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "faultdigger-front.png",
+      "rawSha256": "66837ea1a9d139d5c0de1e152c1da655d85e902599079b9b6a7ebcbab314112d",
+      "sha256": "79007d31af7d8ec106b217f6592001e5893cf74f9f1b2a95db7a7ceff0cee044",
+      "width": 64,
+      "height": 55,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "faultdigger",
+      "name": "단층발",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "faultdigger-back.png",
+      "rawSha256": "b4b846de3402e5da6464e6fb11caa05db1eb9c1a60938672edf0b05327b0d0fe",
+      "sha256": "12933e594acaf4ad8551abd09f58e73009df81967873fc5644b43ea8487cfdeb",
+      "width": 61,
+      "height": 54,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "threadimp",
+      "name": "실꼬마",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 75%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 18.8% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (39x39)"
+        }
+      ],
+      "file": "threadimp-front.png",
+      "rawSha256": "d5cf9dedd97271f26c977a234ac33aed93bc3c46ee070fbcac2c7be145befab9",
+      "sha256": "7624e70b2c19b55def1dd2f56da4268602848bab6de578b92ad84a9981bb0616",
+      "width": 39,
+      "height": 39,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "threadimp",
+      "name": "실꼬마",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 76%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 17.7% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x40)"
+        }
+      ],
+      "file": "threadimp-back.png",
+      "rawSha256": "94eb048ddfd4488921b43c73023a872d03fdfec10606c60f26233f08f011cc3f",
+      "sha256": "bb1fbdf133d053c19b6213913eaec6b266191bcfeaf522b3c0245fc793caacba",
+      "width": 40,
+      "height": 40,
+      "colors": 16,
+      "selection": "pending-human"
+    },
+    {
+      "id": "hushdoll",
+      "name": "고요인형",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (44x50)"
+        }
+      ],
+      "file": "hushdoll-front.png",
+      "rawSha256": "c3c6e21d3cbed48259a444dcea2e74a4c97213db61211e08e16ab7525cf7102b",
+      "sha256": "4b607d9dd39b09f1198e8fc2884024e1807e14b6317cf044e917fe5adcedf70b",
+      "width": 44,
+      "height": 50,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "hushdoll",
+      "name": "고요인형",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x52)"
+        }
+      ],
+      "file": "hushdoll-back.png",
+      "rawSha256": "858f2e4baded56ee3478476d232c2d851a56f99cd40a18f5da8d527e6003eb4e",
+      "sha256": "1c8db183bb659f19cb339292d43fd8176c307a59c5ee396988c23ee9567bfac6",
+      "width": 42,
+      "height": 52,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "veilmaster",
+      "name": "장막인형",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.8% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "veilmaster-front.png",
+      "rawSha256": "c7e391c8c78f69f176f9bcad9e44622ef5bb78ae0c19f329ef09e4d8b8e2d5ea",
+      "sha256": "f247bbfe1d9562f097e45df52f0417dda7572b4d4880f61af45e0a97f0a32ccd",
+      "width": 56,
+      "height": 64,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "veilmaster",
+      "name": "장막인형",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "veilmaster-back.png",
+      "rawSha256": "d8cf1cdfd932c4c4b272454464cc6b5d5bec504f847072cbf071cf52560ed2c8",
+      "sha256": "2d06b2b769808aead80148d28f45ebe3ab03d020f19a5fd5da5d0e7cf72a2b36",
+      "width": 53,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "reedpeep",
+      "name": "갈대삐",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (29x35)"
+        }
+      ],
+      "file": "reedpeep-front.png",
+      "rawSha256": "4c56c23279caf76c5dd424900c1af52f7d7d14aaa4f2239c1aa0a00083ad5046",
+      "sha256": "24e552decb03b0e68f4ab98e2dc334795e2d318ca0f58718ea64bed97ee9e3c0",
+      "width": 29,
+      "height": 35,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "reedpeep",
+      "name": "갈대삐",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (28x33)"
+        }
+      ],
+      "file": "reedpeep-back.png",
+      "rawSha256": "555b7ba3edb843d0822691ae64274ffc5224c973ee378718418b039fcb3cee5a",
+      "sha256": "6604b69a20745e247cafc5f5e6dd563d101583788261645e5defcad184d5789b",
+      "width": 28,
+      "height": 33,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "fenstrider",
+      "name": "습지걸음",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (33x51)"
+        }
+      ],
+      "file": "fenstrider-front.png",
+      "rawSha256": "52cb8b5122fc4dc86e6c29d19b9b2d2edf0bffd1e5b91e782d96c2a14a5b0715",
+      "sha256": "74c2be48ce8a7f1420dbe0fcdf6caec842a678d0d9dfb67c65d80ae8c303a267",
+      "width": 33,
+      "height": 51,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "fenstrider",
+      "name": "습지걸음",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (29x49)"
+        }
+      ],
+      "file": "fenstrider-back.png",
+      "rawSha256": "b092ca349d9aa3437309cd5138a3b9d30810faa5244e03e57e4b89d2113a2b1e",
+      "sha256": "0721195dd9498259424947b0df9e34875fd521c9b8e9218749b92595900a9193",
+      "width": 29,
+      "height": 49,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "mistralheron",
+      "name": "안개왜가리",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "mistralheron-front.png",
+      "rawSha256": "57eef8fdbc609733ec36b940d1bbaad4cae72f9a745aaec608225e4a5692122b",
+      "sha256": "19fc0a05f0298b621246e3e5070f5eae473724b269bd695fce1a821a9666cf33",
+      "width": 48,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "mistralheron",
+      "name": "안개왜가리",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (41x63)"
+        }
+      ],
+      "file": "mistralheron-back.png",
+      "rawSha256": "6a8e18455a1e52d5b40a8b49dae7e103f70cde94819c837e0bd88ca829fe864a",
+      "sha256": "54981b16012894c44d740aebcc44daaf6b3d99a22da79f6b065ea997847855b9",
+      "width": 41,
+      "height": 63,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coralpin",
+      "name": "산호집",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x38)"
+        }
+      ],
+      "file": "coralpin-front.png",
+      "rawSha256": "cce2ffb1637d26481dce319e4bab078330da0d55ab3e1aa91acf61d2dc3be7b0",
+      "sha256": "ec7287259e8930133d45bf3a6cc9b9d9903681e6eab042cf9db23c8e7a896739",
+      "width": 40,
+      "height": 38,
+      "colors": 10,
+      "selection": "pending-human"
+    },
+    {
+      "id": "coralpin",
+      "name": "산호집",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (40x39)"
+        }
+      ],
+      "file": "coralpin-back.png",
+      "rawSha256": "6f9411d035568e8c0f08c4299f676c0c8d978c62c88aea11d9ad970c297ab7f7",
+      "sha256": "6f1d2195f65531f1ecbcbf99bfb2b13376be41d864adf4611560534f388e8eb5",
+      "width": 40,
+      "height": 39,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "reefguard",
+      "name": "암초방패",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (50x41)"
+        }
+      ],
+      "file": "reefguard-front.png",
+      "rawSha256": "604abefe3d8c8f5ea877bd4dc754f92fb4220f3167028a81a3c20a5d856fb253",
+      "sha256": "72e6b6375643eb7532107b15634b7f47964402cce63cec4959970cefbdf5be48",
+      "width": 50,
+      "height": 41,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "reefguard",
+      "name": "암초방패",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x43)"
+        }
+      ],
+      "file": "reefguard-back.png",
+      "rawSha256": "f4b559b15e061447e43d8caf037c9fd5ccb433b3452a8a40207bff72b3fbe7fd",
+      "sha256": "bf7335e67089e910bbd1f592d0e5dbf677759c874d3d5a42f5e4f2585ab64f84",
+      "width": 52,
+      "height": 43,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "atollclamp",
+      "name": "환초집게",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "atollclamp-front.png",
+      "rawSha256": "0d998d770fc1e66f3066a12395330ed7b0e6dcec32690b3b59783ba4b5a060c3",
+      "sha256": "e900ffd9ccad746b5e03d89ff337b0529dc7d80bc781b0c7fe169e73aaede916",
+      "width": 63,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "atollclamp",
+      "name": "환초집게",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "atollclamp-back.png",
+      "rawSha256": "cc8d56a1ee22b37fce21b8830ccb2c95c0eddc3c8224dfc4d18ee345a9f4587c",
+      "sha256": "53967ae38b020e911f3698b9da3de478bc43798180b43d1d5c9ebe188b962fb7",
+      "width": 62,
+      "height": 63,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "curlfin",
+      "name": "돌돌해마",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 20.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (27x39)"
+        }
+      ],
+      "file": "curlfin-front.png",
+      "rawSha256": "a50f9ea76254a810d7189e5cf0d559591b3534fbe52f7dfff4bdc88d825cc2aa",
+      "sha256": "70e4000368ddb30f5d2135f8ee23989965bf45ff12cb41cc2cfe7c66a429a75b",
+      "width": 27,
+      "height": 39,
+      "colors": 12,
+      "selection": "pending-human"
+    },
+    {
+      "id": "curlfin",
+      "name": "돌돌해마",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 19.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (23x38)"
+        }
+      ],
+      "file": "curlfin-back.png",
+      "rawSha256": "a3f79dc2519fd4014bb86aeb14e20c0380def64fbc0104be38b9fd5856f59d5a",
+      "sha256": "b569c90414c309f1c2a627f9a0df85c78b1dee803e98971a66330ec4b04e2fec",
+      "width": 23,
+      "height": 38,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brinewyrm",
+      "name": "소금비룡",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 17.7% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x51)"
+        }
+      ],
+      "file": "brinewyrm-front.png",
+      "rawSha256": "a7973ab79a23537cfef200a3163a0e1e5c267d55356c31f204cdd2b227de2428",
+      "sha256": "7fbbb9c23bd27c951a54ca6eb1510219627f6e1bf1dc425c20a246c8b26c50b8",
+      "width": 52,
+      "height": 51,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "brinewyrm",
+      "name": "소금비룡",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 20.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (52x51)"
+        }
+      ],
+      "file": "brinewyrm-back.png",
+      "rawSha256": "40e7221afb13515aec0b91f340077530b3d60fe522f6fdc971e586c3b1023133",
+      "sha256": "c86d2c24974c8dc0d6132aedd17c24df14d8ad2bb148335ca71e78db6448144b",
+      "width": 52,
+      "height": 51,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "abyssail",
+      "name": "심해돛룡",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 17.8% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "abyssail-front.png",
+      "rawSha256": "382fe44fd98394740fec24addb0f321db32da56ffbcc3f24148faeecd8b069b5",
+      "sha256": "666fa6fcfce0030f4f6f564a2a823ecf2aaa7f150527b3361b6382e483384b2a",
+      "width": 62,
+      "height": 63,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "abyssail",
+      "name": "심해돛룡",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.2% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "abyssail-back.png",
+      "rawSha256": "1907e1a3c89ffed71aa0fee3d3564a49234cec751b8dbab636b55497464cd845",
+      "sha256": "b41b106fc9b68326fae7c69c3dc83bdf4a04436364956e4ffe9957ce4e5f85dd",
+      "width": 61,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "thundercairn",
+      "name": "천뢰산양",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x64)"
+        }
+      ],
+      "file": "thundercairn-front.png",
+      "rawSha256": "ccd1df504c338d1094be00d5f757221004ed0143c630a5327daa26acf123a6cc",
+      "sha256": "eebe2673e4dd64fa3c5f74e2c4cd05cebc4fb3aee0e1fb0117fa09b072312b40",
+      "width": 42,
+      "height": 64,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "thundercairn",
+      "name": "천뢰산양",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (42x60)"
+        }
+      ],
+      "file": "thundercairn-back.png",
+      "rawSha256": "24ce24d9f17025a85e0f421028b4e376d0c28c97b5d551045ded712e0015cbfb",
+      "sha256": "b7fab67d45e82887788f0324e0d80a8d40e704dff80b66aa82bbe475ced6ad82",
+      "width": 42,
+      "height": 60,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "winterquill",
+      "name": "설월학",
+      "side": "front",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x63)"
+        }
+      ],
+      "file": "winterquill-front.png",
+      "rawSha256": "837955a1d84e4b199f87a87879b8716d6766cb5d9721698fed2ca05cf6743319",
+      "sha256": "000fbb88f08c90c245bd1962d6d48b84511fc7684284970e2733c9e56bdaa5b6",
+      "width": 47,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "winterquill",
+      "name": "설월학",
+      "side": "back",
+      "run": "20261004-075753",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (47x63)"
+        }
+      ],
+      "file": "winterquill-back.png",
+      "rawSha256": "6b096bdd60d5886359984f77a19791a7201477346f7ff3012d4ef765054b5430",
+      "sha256": "2a305a48fc752b3647717ea74058280caaa6e314be98d559969198ad1312484f",
+      "width": 47,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "solmane",
+      "name": "해갈기사자",
+      "side": "front",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "solmane-front.png",
+      "rawSha256": "51d9aeba5b2eb3629c3257cc961b596bc0a0990233b179aec74ac3b833527f7b",
+      "sha256": "707e8c260cbab977dd931e175ed270a08981472bb962b23086b266ec0d5a9798",
+      "width": 64,
+      "height": 64,
+      "colors": 11,
+      "selection": "pending-human"
+    },
+    {
+      "id": "solmane",
+      "name": "해갈기사자",
+      "side": "back",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [],
+      "file": "solmane-back.png",
+      "rawSha256": "5d718620ca8452835e52d0adbb4fe280d6a04fc4f6cd75e50eb21cac981f234f",
+      "sha256": "4552f0295bc9a7cdebede9102ccb26af8b27a4a0347741613ea1ddf7e66e84ec",
+      "width": 60,
+      "height": 63,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "lunavane",
+      "name": "달빛가오리",
+      "side": "front",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 12.3% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (64x36)"
+        }
+      ],
+      "file": "lunavane-front.png",
+      "rawSha256": "09d141d9fa088a9ded5c78267c19a6671d23c929561b299df322653e298b38ee",
+      "sha256": "f4758aa0e4ad688d254f94d9d2cc8cb70f710eabc49f1cc9980aa90e7e6b774d",
+      "width": 64,
+      "height": 36,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "lunavane",
+      "name": "달빛가오리",
+      "side": "back",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (61x36)"
+        }
+      ],
+      "file": "lunavane-back.png",
+      "rawSha256": "a590b8c2430799d48bfed9c01f09518f6eadfa0f2fc6b81f1e21b2965e939a55",
+      "sha256": "69cde66da02abe39fb7501bcd3960a2720294ab6ee706b7469c95ba4c089a960",
+      "width": 61,
+      "height": 36,
+      "colors": 14,
+      "selection": "pending-human"
+    },
+    {
+      "id": "relicarab",
+      "name": "유적장수",
+      "side": "front",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 49%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 22.9% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "relicarab-front.png",
+      "rawSha256": "b880ce8da48bfc46bad80776b8d28aa13b3def47c16adf68252afbd01495cbe3",
+      "sha256": "538bc30319ceff4b16340def3160fe13713898809b05bc6f1edd863b9202da46",
+      "width": 63,
+      "height": 51,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "relicarab",
+      "name": "유적장수",
+      "side": "back",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 64%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 21.0% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (60x49)"
+        }
+      ],
+      "file": "relicarab-back.png",
+      "rawSha256": "c2ee1e85c90f83ab70b0345218fabb1e5eb6ce0bd9a931b094b16d7e72516ba0",
+      "sha256": "d2777cb06dd9448851c6e7ec7a056df52538ee39921cd10bdc9e7487d6030056",
+      "width": 60,
+      "height": 49,
+      "colors": 15,
+      "selection": "pending-human"
+    },
+    {
+      "id": "astralhart",
+      "name": "별가지사슴",
+      "side": "front",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "외톨이 점 16.8% — 색이 잘게 갈라졌다"
+        }
+      ],
+      "file": "astralhart-front.png",
+      "rawSha256": "08c38751ecf210af1598c5677250c5bba0d153f80f7aa7f4bb35c2d7fd9e7be1",
+      "sha256": "bdc8e5408f855e6b0fae116b53fa5558402979fa5a818196e7de9765137f4d24",
+      "width": 50,
+      "height": 64,
+      "colors": 13,
+      "selection": "pending-human"
+    },
+    {
+      "id": "astralhart",
+      "name": "별가지사슴",
+      "side": "back",
+      "run": "20261004-075754",
+      "candidate": 1,
+      "block": 8,
+      "issues": [
+        {
+          "level": "warn",
+          "message": "윤곽이 약하다 (가장자리 어두운 칸 81%)"
+        },
+        {
+          "level": "warn",
+          "message": "외톨이 점 15.8% — 색이 잘게 갈라졌다"
+        },
+        {
+          "level": "warn",
+          "message": "몸집이 작다 (46x63)"
+        }
+      ],
+      "file": "astralhart-back.png",
+      "rawSha256": "07624f0e4c7c64414ec499c1c9823a895c6c3b65d1544e1c42e39f7706cb8bbd",
+      "sha256": "daaa178eec5c78db9e736f13c4e5b7e52e49299baab9c22dc73b00186e2e5caa",
+      "width": 46,
+      "height": 63,
+      "colors": 14,
+      "selection": "pending-human"
+    }
+  ]
+}

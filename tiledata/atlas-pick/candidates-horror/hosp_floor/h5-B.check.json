@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_floor/h5-B.pxg",
+ "set": "horror",
+ "id": "hosp_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.168
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "바닥 전체를 어둡게 두고 창빛 든 타일 일곱 장만 밝은 회백으로: 사선 빛줄기 모양. 빛 안쪽에 깨진 타일, 어둠 쪽 구석에 번진 검은 얼룩",
+ "ok": true
+}

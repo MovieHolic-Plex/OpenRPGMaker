@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이벤트 에디터 껍데기·모달·레이아웃 — 적대적 리뷰 5장</title>
+<style>
+:root{
+  --bg:#0f1117; --surface:#151823; --raised:#1c202d; --overlay:#232838; --inset:#0c0e14;
+  --border:rgba(255,255,255,.09); --border2:rgba(255,255,255,.14); --borderS:rgba(255,255,255,.07);
+  --t1:#e9ecf3; --t2:#9aa3b5; --t3:#626b7d;
+  --accent:#6c79f2; --accent2:#8590f6; --accentMuted:rgba(108,121,242,.15);
+  --danger:#f0716f; --warn:#f2b749; --ok:#55d69c;
+  --r:12px; --rs:8px; --shadow:0 8px 28px rgba(0,0,0,.45), 0 1px 0 rgba(255,255,255,.06) inset;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--t1);font-family:Inter,"Segoe UI","Malgun Gothic",system-ui,sans-serif;line-height:1.5}
+a{color:var(--accent2);text-decoration:none} a:hover{text-decoration:underline}
+.hero{position:sticky;top:0;z-index:20;background:rgba(15,17,23,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.hero-inner{max-width:1180px;margin:0 auto;padding:18px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.badge{font:700 11px/1 sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:var(--accent);padding:6px 10px;border-radius:999px}
+.hero h1{margin:0;font-size:22px;line-height:1.25;letter-spacing:-.02em}
+.hero p{margin:4px 0 0;color:var(--t2);font-size:13px;max-width:760px}
+.toc{max-width:1180px;margin:0 auto;padding:12px 20px 0;display:flex;gap:8px;flex-wrap:wrap}
+.toc a{font:600 13px/1 sans-serif;padding:8px 10px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--t1)}
+.toc a:hover{border-color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.chapter{background:var(--raised);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:18px 0;box-shadow:var(--shadow)}
+.ch-head{display:flex;gap:14px;align-items:center;padding:18px 18px 14px;border-bottom:1px solid var(--borderS);background:linear-gradient(180deg,rgba(255,255,255,.04),transparent)}
+.num{width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font:800 16px/1 sans-serif;color:#fff;background:var(--accent);flex:0 0 auto}
+.ch-head h2{margin:0;font-size:17px;letter-spacing:-.02em}
+.ch-head p{margin:2px 0 0;color:var(--t2);font-size:12.5px}
+.ch-body{padding:18px;display:grid;gap:16px}
+.grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+@media(max-width:900px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--borderS);border-radius:12px;padding:14px}
+.card h3{margin:0 0 8px;font-size:13px;letter-spacing:-.01em}
+.card p{margin:0;color:var(--t2);font-size:12.5px;line-height:1.6}
+.kpi{display:flex;gap:8px;flex-wrap:wrap}
+.kpi span{font:700 11px/1 sans-serif;padding:7px 9px;border-radius:999px;border:1px solid var(--border);background:var(--inset);color:var(--t2)}
+.kpi .bad{color:var(--danger);border-color:rgba(240,113,111,.35);background:rgba(240,113,111,.1)}
+.kpi .warn{color:var(--warn);border-color:rgba(242,183,73,.35);background:rgba(242,183,73,.1)}
+.kpi .good{color:var(--ok);border-color:rgba(85,214,156,.35);background:rgba(85,214,156,.12)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11.5px;white-space:pre-wrap;background:var(--inset);border:1px solid var(--borderS);border-radius:10px;padding:10px;color:#cbd5e1;overflow:auto}
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th{ text-align:left;color:var(--t2);font-weight:700;border-bottom:1px solid var(--border);padding:8px 6px}
+.table td{border-bottom:1px solid var(--borderS);padding:9px 6px;vertical-align:top}
+.sev{font:700 11px/1 sans-serif;padding:4px 7px;border-radius:999px;display:inline-block}
+.sev-p0{background:rgba(240,113,111,.16);color:var(--danger);border:1px solid rgba(240,113,111,.4)}
+.sev-p1{background:rgba(242,183,73,.14);color:var(--warn);border:1px solid rgba(242,183,73,.35)}
+.sev-p2{background:rgba(148,163,184,.12);color:var(--t2);border:1px solid var(--border)}
+.figure{background:var(--inset);border:1px solid var(--border);border-radius:14px;padding:14px;overflow:auto}
+.figcap{color:var(--t3);font:600 11px/1 sans-serif;letter-spacing:.06em;text-transform:uppercase;margin:0 0 10px}
+.shot{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface)}
+.shot-head{height:40px;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--raised);border-bottom:1px solid var(--border);font:600 11px/1 sans-serif;letter-spacing:.06em;color:var(--t2);text-transform:uppercase}
+.dot{width:10px;height:10px;border-radius:50%}
+.callout{border-left:3px solid var(--accent);padding:10px 12px;background:rgba(108,121,242,.08);border-radius:0 10px 10px 0;color:var(--t1);font-size:12.5px}
+.callout.bad{border-left-color:var(--danger);background:rgba(240,113,111,.08)}
+.callout.warn{border-left-color:var(--warn);background:rgba(242,183,73,.08)}
+.hr{height:1px;background:var(--borderS)}
+.diagram{font:600 11px/1 sans-serif}
+.mini{color:var(--t3);font-size:11px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="badge">Hostile Review · 5 Chapters · Image-Rich</div>
+    <div style="flex:1;min-width:260px">
+      <h1>이벤트 에디터 껍데기 · 모달 · 레이아웃 적대적 리뷰</h1>
+      <p>대상: <code>src/editor/panels/editor.ts</code> / <code>eventEditor/modal.ts</code> + drag/resize / <code>eventEditor/layoutResize.ts</code> / <code>ui/modalStack.ts</code> / 42개 이벤트 CSS 레이어. “잘 보인다”가 아니라 “어디서 깨지는지”를 먼저 본다.</p>
+    </div>
+    <div class="kpi">
+      <span class="bad">P0 3건</span><span class="warn">P1 7건</span><span>P2 6건</span><span class="good">강점 4개</span>
+    </div>
+  </div>
+  <nav class="toc">
+    <a href="#c1">Ch 1 껍데기</a><a href="#c2">Ch 2 모달</a><a href="#c3">Ch 3 워크벤치</a><a href="#c4">Ch 4 상호작용·상태</a><a href="#c5">Ch 5 비주얼·부채</a>
+  </nav>
+</div>
+
+<div class="wrap">
+
+<!-- ==================== CH 1 ==================== -->
+<section class="chapter" id="c1">
+  <div class="ch-head"><div class="num">01</div><div><h2>껍데기 — 에디터 쉘과 바깥 프레임이 만드는 불안</h2><p>left 526 / canvas 520 / breakpoint 720 · chat dock side vs float · 어디서 “점프”하고 “끼는지”</p></div><div class="kpi" style="margin-left:auto"><span class="bad">P0 1</span><span class="warn">P1 2</span></div></div>
+  <div class="ch-body">
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 1 — 쉘 3분면 + 두 리사이저 (실코드 수치 그대로)</p>
+        <!-- schematic -->
+        <div style="display:grid;grid-template-columns: 526fr 6fr 1fr 360fr;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface);min-height:220px">
+          <div style="background:var(--raised);padding:10px;border-right:1px solid var(--border)">
+            <div style="font:700 11px/1 sans-serif;color:var(--t2)">LEFT 526</div>
+            <div style="margin:6px 0 8px;height:2px;background:var(--border)"></div>
+            <div style="display:grid;gap:6px">
+              <div style="height:64px;border:1px dashed var(--border);border-radius:8px;display:grid;place-items:center;color:var(--t3);font:600 11px/1 sans-serif">MAP TREE 300 (80–480)</div>
+              <div style="height:4px;border-radius:999px;background:var(--accent)"></div>
+              <div style="height:90px;border:1px solid var(--border);border-radius:8px;display:grid;place-items:center;color:var(--t2);font:600 11px/1 sans-serif">Palette / Events</div>
+            </div>
+            <div style="margin-top:10px;color:var(--t3);font:600 10px/1 sans-serif">MIN 184 — MAX 640</div>
+          </div>
+          <div style="background:#2a2f45;display:grid;place-items:center;color:#fff;font:700 10px/1 sans-serif;writing-mode:vertical-lr">RESIZER 6px</div>
+          <div style="background:var(--inset);padding:10px;display:grid;gap:8px">
+            <div style="height:28px;border:1px solid var(--border);border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:space-between;padding:0 8px;font:600 10px/1 sans-serif;color:var(--t2)"><span>Canvas Toolbar (floating)</span><span style="background:var(--accent);color:#fff;padding:2px 6px;border-radius:999px">48px top</span></div>
+            <div style="flex:1;border:1px solid var(--border);border-radius:10px;background:radial-gradient(rgba(108,121,242,.18) 1px, transparent 1px) 0 0/14px 14px, var(--surface);display:grid;place-items:center;color:var(--t2);font:700 11px/1 sans-serif;min-height:110px">Phaser Canvas (min 520)</div>
+            <div style="height:28px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;gap:6px;align-items:center;padding:0 8px;color:var(--t2);font:600 10px/1 sans-serif"><span>Statusbar 54px</span><span style="margin-left:auto;background:var(--inset);border:1px solid var(--border);padding:2px 6px;border-radius:999px">scroll-snap?</span></div>
+          </div>
+          <div style="background:var(--surface);border-left:1px solid var(--border);padding:10px">
+            <div style="font:700 11px/1 sans-serif;color:var(--t2)">CHAT SIDE</div>
+            <div style="margin:6px 0;color:var(--t3);font:600 10px/1.4 sans-serif">--ai-chat-side-width<br>computeSideChatWidth()<br>720 ↓ float</div>
+            <div style="margin-top:8px;border:1px solid var(--border);border-radius:8px;height:110px;display:grid;place-items:center;color:var(--t3);font:600 11px/1 sans-serif;background:var(--inset)">Float → Overlay<br>Side → Grid Column</div>
+          </div>
+        </div>
+        <div style="margin-top:8px" class="mini">boot: <code>chatDock side</code>면 첫 페인트에 <code>--ai-chat-side-width</code>를 <code>window.innerWidth</code>로 미리 박아 “0→목표폭 점프”를 막는다. 좋은 의도, 그러나…</div>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="card">
+          <h3>호스트가 먼저 깨뜨리는 것</h3>
+          <p>“0→폭 점프 방지”는 첫 프레임만 막는다. 이후 <code>innerWidth</code> 변화(브라우저 리사이즈, DevTools 도킹, OS 스케일)는 <code>computeSideChatWidth</code> 재호출 없이 남는다. <b>사이드 폭은 고착, 캔버스는 줄어들어 720 근처에서 가로 스크롤/겹침이 난다.</b></p>
+          <div class="mono">LEFT 526 + MIN_CANVAS 520 + SIDE ~360 = 1406px
+720px breakpoint는 “float로 전환”만 하고, 전환 순간 애니메이션·포커스·스크롤 스냅을 동반한다.
+→ 저해상도/스플릿 뷰에서 palette↔canvas 리사이저가 6px로 얇아 터치 미스↑</div>
+        </div>
+        <div class="card">
+          <h3>Left MapTree 리사이저 — 6px의 함정</h3>
+          <p><code>MAP_TREE 300 (80–480)</code>은 타당하지만, 수직 리사이저가 <b>border 1px을 포함해 6px</b>라 포인터 캡처는 되나 키보드 접근성은 없다. <code>aria-orientation/role=separator</code> 없이 div만 존재. 스크린리더는 “구분선”을 모른다.</p>
+          <div class="kpi"><span>editor.ts:184–640 / 80–480 / 720</span><span>figma-editor 03/05</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <table class="table card" style="padding:0">
+        <tr><th>지점</th><th>증상</th><th>심각도</th></tr>
+        <tr><td><code>computeSideChatWidth</code> 1회 계산</td><td>리사이즈/줌 변경 시 사이드 폭 고착 → 900–1100에서 캔버스 협착</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>720 breakpoint</td><td>좌측 접힘(toggle) 제스처 없음, 키보드 토글도 없음. 좁은 창에서 맵 트리·팔레트가 서로 미는 “밀어내기”</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>palette-work-pane <code>overflow-x:hidden</code></td><td>클러스터 타일이 넘치면 “줄바꿈/클립”이라 시트 자체가 안 보이는 줄 알고 사용자가 이탈</td><td><span class="sev sev-p2">P2</span></td></tr>
+        <tr><td><code>resizer-left / resizer-map-tree</code></td><td>hover만 스타일, focus-visible 없음 + hit 6px 터치 실패</td><td><span class="sev sev-p1">P1</span></td></tr>
+      </table>
+      <div class="card">
+        <h3>좋은 점 — 인정할 건 인정</h3>
+        <p>• 첫 페인트 전 dock 클래스 부여로 <b>레이아웃 점프 방지</b>는 매우 잘했다.<br>• <code>editorState.set</code>의 변경 감지 가드(같은 값이면 notify 스킵)로 <b>pointerdown 중 팔레트 재구축으로 클릭 증발</b>을 막은 건 레어한 디테일.<br>• 캔버스 크롬 변수 <code>--editor-canvas-chrome-top/bottom</code>로 툴바/상태바 예약은 일관적.</p>
+        <div class="callout warn" style="margin-top:10px"><b>처방:</b> <code>ResizeObserver</code>로 editor-layout 폭을 보고 side폭을 재계산. 720 이하에선 좌측을 오버레이 드로어로 전환(햄버거/스와이프). 리사이저에 <code>role=separator tabindex=0</code> + 키보드 ±24px.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CH 2 ==================== -->
+<section class="chapter" id="c2">
+  <div class="ch-head"><div class="num" style="background:var(--danger)">02</div><div><h2>모달 — 전역을 덮는 창이지만 전역을 모른다</h2><p>backdrop 100vw/dvh · 드래그 translate · 리사이즈 · modalStack Escape 레이어</p></div><div class="kpi" style="margin-left:auto"><span class="bad">P0 2</span><span class="warn">P1 2</span></div></div>
+  <div class="ch-body">
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 2 — 모달 윈도우 그리드 (실코드 그대로)</p>
+        <div class="shot">
+          <div class="shot-head"><span class="dot" style="background:#ff5f56"></span><span class="dot" style="background:#ffbd2e"></span><span class="dot" style="background:#27c93f"></span> event-editor-modal-window — 52 / 1fr / 64</div>
+          <div style="display:grid;grid-template-rows:52px 1fr 58px;height:360px;background:var(--raised)">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--border);background:var(--raised)">
+              <div><div style="font:600 9px/1 sans-serif;letter-spacing:.08em;color:var(--t3)">RPG ZZU ENGINE IDE · 이벤트 에디터</div><div style="font:700 14px/1 sans-serif;color:var(--t1)">이벤트 에디터 · ID:012 · 입구 경비병 (12,8)</div></div>
+              <div style="width:32px;height:32px;border-radius:6px;border:1px solid var(--border);display:grid;place-items:center;color:var(--t2)">×</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.15fr 10px 1.2fr;gap:0;padding:12px;background:var(--raised);min-height:0">
+              <div style="border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:10px;display:grid;gap:8px">
+                <div style="height:10px;border-radius:999px;background:var(--border)"></div>
+                <div style="height:48px;border:1px solid var(--border);border-radius:8px;background:var(--inset)"></div>
+                <div style="height:48px;border:1px solid var(--border);border-radius:8px;background:var(--inset)"></div>
+                <div style="height:48px;border:1px solid var(--border);border-radius:8px;background:var(--inset)"></div>
+              </div>
+              <div style="background:linear-gradient(90deg,transparent 0 4px, var(--border) 4px 6px, transparent 6px 10px);border-radius:6px"></div>
+              <div style="border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:10px;display:grid;gap:8px">
+                <div style="height:26px;border-radius:8px;background:var(--inset);border:1px solid var(--border);display:flex;align-items:center;padding:0 8px;color:var(--t3);font:600 10px/1 sans-serif">조건 · 그래픽 · 이동 · 실행 내용</div>
+                <div style="flex:1;min-height:90px;border:1px solid var(--border);border-radius:8px;background:repeating-linear-gradient(180deg, var(--surface) 0 28px, var(--inset) 28px 29px);"></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-top:1px solid var(--border);background:color-mix(in srgb, var(--raised) 94%, var(--inset))">
+              <div style="color:var(--t2);font:500 11px/1 sans-serif">초안 · 자동 저장됨 · Esc로 닫기</div>
+              <div style="display:flex;gap:6px"><span style="padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font:700 11px/1 sans-serif">취소</span><span style="padding:6px 10px;border-radius:8px;background:var(--accent);color:#fff;font:700 11px/1 sans-serif">확인</span></div>
+            </div>
+          </div>
+          <div style="position:relative"><div title="resize handle" style="position:absolute;right:6px;bottom:6px;width:18px;height:18px;border:1px solid var(--border);border-radius:4px;background:var(--surface);display:grid;place-items:center;color:var(--t3);font:700 10px/1 sans-serif">⤡</div></div>
+        </div>
+        <div class="mini" style="margin-top:8px">backdrop: <code>display:grid; width:100vw; height:100dvh; padding:0; overflow:hidden</code> — 창 자체가 뷰포트를 삼킨다.</div>
+      </div>
+
+      <div style="display:grid;gap:12px">
+        <div class="card">
+          <h3>치명 — 1px 보더가 만드는 2px 넘침</h3>
+          <p><code>.event-editor-modal-window { width:100vw; height:100dvh; border:1px solid … }</code> — <b>보더 포함이면 100vw+2px</b>라 가로 스크롤이 생긴다. <code>dvh</code>에서도 모바일 주소창 접힘 시 100dvh 재계산으로 세로 점프. backdrop이 이미 <code>overflow:hidden</code>이라 가려지지만, 내부 <code>position:absolute</code> 요소(리사이즈 핸들·드롭다운)는 잘린다.</p>
+          <div class="mono">.backdrop { display:grid }  /* position:fixed 없음 — body 스크롤을 못 잠근다 */
+.window  { width:100vw; height:100dvh; border:1px solid }
+→ iOS 사파리/안드로이드 크롬에서 “뒤 페이지가 같이 스크롤”</div>
+        </div>
+        <div class="card">
+          <h3>드래그 — translate는 영구, 리사이즈는 휘발</h3>
+          <p><code>modalDrag.ts</code>는 <code>translateX/Y</code>를 누적한다. 드래그 후 윈도우를 리사이즈하면 <code>getBoundingClientRect().left</code>가 translate를 포함한 값이라 <b>다음 드래그 시작점이 어긋난다</b>. 또한 닫고 다시 열면 translate 리셋 — 사용자가 “내가 옮긴 위치”를 기대하지만 매번 원점.</p>
+          <div class="mono">nextX = clamp(startX + dx, 0, innerWidth - min(width,160))
+→ 160px만 남기고 밖으로 밀 수 있어, 헤더를 화면 밖으로 보내면 “닫기 ×”를 잃는다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 3 — ModalStack 레이어 & Escape 라우팅</p>
+        <div style="display:grid;gap:10px">
+          <div style="display:flex;gap:8px;align-items:end;justify-content:center;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+            <div style="width:120px;height:70px;border:1px solid var(--border);border-radius:10px;background:var(--raised);display:grid;place-items:center;position:relative;color:var(--t3);font:700 10px/1 sans-serif">Editor<div style="position:absolute;inset:auto 8px 8px 8px;height:6px;border-radius:999px;background:var(--border)"></div></div>
+            <div style="width:170px;height:110px;border:2px solid var(--accent);border-radius:12px;background:var(--surface);display:grid;place-items:center;color:var(--t1);font:700 10px/1 sans-serif;box-shadow:0 6px 18px rgba(108,121,242,.3);position:relative">Event Editor<div style="position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--accent)"></div></div>
+            <div style="width:130px;height:80px;border:1px solid var(--border);border-radius:10px;background:var(--inset);display:grid;place-items:center;color:var(--t3);font:700 10px/1 sans-serif">Command Picker</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;justify-content:center">
+            <span style="padding:4px 8px;border-radius:999px;background:var(--accent);color:#fff;font:700 10px/1 sans-serif">Esc</span>
+            <span style="font:600 11px/1 sans-serif;color:var(--t2)">→ capture phase에서 top만 닫는다</span>
+          </div>
+          <div class="mono">registerModal(backdrop, close) — stack push
+onDocumentKeyDown(capture:true) → stack[stack.length-1].close()
+pruneDetached()로 DOM 분리된 고아 모달 제거
+→ 좋음. 단, backdrop click close와 이중 경로라 closeHandler 중복 호출 가드가 없으면 discarded draft가 두 번 돈다.</div>
+        </div>
+      </div>
+      <table class="table card" style="padding:0">
+        <tr><th>지점</th><th>증상</th><th>심각도</th></tr>
+        <tr><td><code>modalResize.ts clamp</code></td><td><code>Math.min(Math.max(v,min),Math.max(min,max))</code> — max&lt;min이면 max가 min으로 덮여 <b>리사이즈가 멈춘 것처럼 보인다</b> (740 창에서 재현)</td><td><span class="sev sev-p0">P0</span></td></tr>
+        <tr><td>backdrop <code>position</code> 없음</td><td>모달이 열려도 바디 스크롤 잠금 없음 → 휠이 뒤 캔버스를 움직인다</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>리사이즈 핸들 18×18 고정</td><td>터치·트랙패드에서 잡기 어렵고, <code>tabindex=0</code>이지만 키보드 리사이즈 없음</td><td><span class="sev sev-p2">P2</span></td></tr>
+        <tr><td>드래그/리사이즈 동시 <code>pointerCapture</code></td><td>둘 다 <code>pointerdown</code>에서 캡처 — 헤더 드래그 중 핸들에 닿으면 핸들이 가로챌 수 있다</td><td><span class="sev sev-p2">P2</span></td></tr>
+      </table>
+    </div>
+
+    <div class="callout bad"><b>P0 처방:</b> <code>window { width:100vw; max-width:100vw; box-sizing:border-box }</code>에 <code>border-box</code> 강제 + backdrop를 <code>position:fixed; inset:0; z-index:1000</code>로. 리사이즈 clamp는 <code>Math.min(Math.max(v,min),max)</code>로 즉시 수정. 드래그는 translate 대신 <code>left/top</code>로 바꾸거나 리사이즈 시 translate 재계산.</div>
+  </div>
+</section>
+
+<!-- ==================== CH 3 ==================== -->
+<section class="chapter" id="c3">
+  <div class="ch-head"><div class="num" style="background:#7c5cff">03</div><div><h2>워크벤치 — 4컬럼 그리드가 2컬럼으로 무너지는 법</h2><p>--event-editor-settings-track / resizer / 1100·820·720 세 단계 붕괴</p></div><div class="kpi" style="margin-left:auto"><span class="bad">P0 1</span><span class="warn">P1 2</span></div></div>
+  <div class="ch-body">
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 4 — 워크벤치 그리드 스펙트럼 (실코드 clamp 그대로)</p>
+        <div style="display:grid;gap:10px">
+          <div style="padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+            <div style="font:700 10px/1 sans-serif;color:var(--t2)">≥1180px — 4컬럼 (Settings | Resizer | Commands | Inspector)</div>
+            <div style="margin-top:8px;display:grid;grid-template-columns: 360px 10px 1fr 280px;gap:6px;height:54px">
+              <div style="border:1px solid var(--border);border-radius:8px;background:var(--raised);display:grid;place-items:center;color:var(--t2);font:600 10px/1 sans-serif">Settings 320–540</div>
+              <div style="background:var(--border);border-radius:6px"></div>
+              <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);display:grid;place-items:center;color:var(--t2);font:600 10px/1 sans-serif">Commands  ≥380</div>
+              <div style="border:1px solid var(--accent);border-radius:8px;background:rgba(108,121,242,.1);display:grid;place-items:center;color:var(--accent);font:700 10px/1 sans-serif">Inspector 280</div>
+            </div>
+            <div class="mini">--event-editor-settings-track: clamp(320px,36vw,540px)</div>
+          </div>
+          <div style="padding:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px">
+            <div style="font:700 10px/1 sans-serif;color:var(--t2)">1100px — 3.5컬럼 압축</div>
+            <div style="margin-top:8px;display:grid;grid-template-columns: 300px 8px 1fr;gap:6px;height:44px">
+              <div style="border:1px solid var(--border);border-radius:8px;background:var(--raised);display:grid;place-items:center;color:var(--t3);font:600 10px/1 sans-serif">260–360</div>
+              <div style="background:var(--border);border-radius:6px"></div>
+              <div style="border:1px solid var(--border);border-radius:8px;background:var(--surface);display:grid;place-items:center;color:var(--t3);font:600 10px/1 sans-serif">Commands 1fr (Inspector는 아래?)</div>
+            </div>
+            <div class="mini">gap 12px · Inspector가 어디로 가는지 불명확</div>
+          </div>
+          <div style="padding:10px;background:var(--inset);border:1px solid var(--border);border-radius:12px">
+            <div style="font:700 10px/1 sans-serif;color:var(--danger)">720px — 1컬럼 붕괴 (Resizer display:none)</div>
+            <div style="margin-top:8px;display:grid;grid-template-columns:1fr;height:44px">
+              <div style="border:1px dashed var(--danger);border-radius:8px;background:var(--surface);display:grid;place-items:center;color:var(--t3);font:600 10px/1 sans-serif">Settings / Commands / Inspector 세로 스택 — 스크롤만</div>
+            </div>
+            <div class="mini">→ 720에서 “실행 내용”을 보려면 2번 스크롤. 명령 인스펙터가 리스트 아래로 밀려 맥락 상실</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="card">
+          <h3>단일 진실 공급원 위반 — settings-track이 세 곳에 복제</h3>
+          <p><code>layoutResize.ts</code>의 <code>clampColumnWidth</code>와 CSS의 <code>--event-editor-settings-track</code> 초기값·미디어쿼리 값이 <b>서로 다른 clamp</b>로 중복 정의. JS는 <code>min 220/288, reserve 260/380+280</code>로 계산하고, CSS는 <code>clamp(320,36vw,540)</code>로 고정. 둘이 어긋나면 드래그 중 “턱” 걸림이 생긴다.</p>
+          <div class="mono">JS: max = workbenchWidth - ( <1180 ? 260 : 660 )
+CSS: 320–540 / 260–360 / 250–320 (미디어쿼리 3단계)
+→ JS 드래그로 400을 찍어도 CSS clamp가 320–360으로 다시 조인다.</div>
+        </div>
+        <div class="card">
+          <h3>명령 인스펙터 — 은근한 유령 컬럼</h3>
+          <p>1180 미만에서 <code>reserveRight</code>가 260으로 줄어 Inspector 280을 더 이상 예약하지 않는다. 그런데 그리드는 여전히 3컬럼. Inspector는 <code>display</code>로 숨지 않고 <b>그리드 밖 오버플로</b>로 밀려, 좁은 창에서 마우스로 닿을 수 없는 영역에 렌더된다.</p>
+          <div class="callout"><b>관찰:</b> 900px 창에서 명령을 클릭해도 우측 인스펙터가 안 보이면 “편집이 안 된다”로 오해한다. 실제로는 아래로 밀려 있다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <table class="table card" style="padding:0">
+        <tr><th>지점</th><th>증상</th><th>심각도</th></tr>
+        <tr><td><code>grid-template-columns !important</code> 3곳</td><td>미디어쿼리마다 <code>!important</code>로 덮어써서, 런타임에서 <code>style.setProperty</code>가 이길지 예측 불가</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td><code>settingsColumnWidth()</code>가 매 키다운마다 <code>getBoundingClientRect</code></td><td>키보드 리사이즈 시 레이아웃 스래싱. 24px 스텝을 10번 누르면 10번 리플로우</td><td><span class="sev sev-p2">P2</span></td></tr>
+        <tr><td>720 이하 <code>resizer display:none</code></td><td>대체 조작 없음 — 키보드도, 터치 드래그도 막힘. 접근성 실패</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>Inspector 숨김 전략 없음</td><td>좁은 창에서 인스펙터가 잘려 “명령 편집 모달이 없다”는 피드백 루프 유발</td><td><span class="sev sev-p0">P0</span></td></tr>
+      </table>
+      <div class="card">
+        <h3>처방 — 하나의 트랙, 하나의 붕괴</h3>
+        <p>• <code>--event-editor-settings-track</code> 단일 소유: JS만 쓰거나 CSS만 쓰기. 추천은 <b>JS 소유, CSS는 var만 소비</b>.<br>• 1180 미만: Inspector를 <b>슬라이드 오버레이/탭</b>으로 전환 — 잘라내지 말고 모드로 전환.<br>• 리사이저는 720에서도 숨기지 말고 <code>height: 12px</code> 수평 핸들로 재배치.<br>• <code>!important</code> 제거, 그리드는 <code>grid-template-columns: var(--cols)</code> 한 줄로.</p>
+        <div class="mono">workbench.style.setProperty('--cols',
+  `minmax(0,var(--track)) 10px minmax(0,1fr)`)</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CH 4 ==================== -->
+<section class="chapter" id="c4">
+  <div class="ch-head"><div class="num" style="background:#0ea5e9">04</div><div><h2>상호작용·상태 — 스크롤, 포커스, 초안이 동시에 흔들린다</h2><p>scroll snapshot · focus trap · draft checkpoint · autosave race</p></div><div class="kpi" style="margin-left:auto"><span class="warn">P1 3</span><span>P2 2</span></div></div>
+  <div class="ch-body">
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 5 — 리프레시 파이프라인 (store.subscribe → refresh)</p>
+        <div style="display:grid;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <span style="padding:6px 8px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:700 10px/1 sans-serif;color:var(--t2)">store.subscribe</span>
+            <span style="color:var(--t3)">→</span>
+            <span style="padding:6px 8px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:700 10px/1 sans-serif;color:var(--t2)">captureScroll</span>
+            <span style="color:var(--t3)">→</span>
+            <span style="padding:6px 8px;border-radius:999px;background:var(--accent);color:#fff;font:700 10px/1 sans-serif">clearChildren + render</span>
+            <span style="color:var(--t3)">→</span>
+            <span style="padding:6px 8px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:700 10px/1 sans-serif;color:var(--t2)">restoreScroll + restoreInteraction</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="border:1px solid var(--border);border-radius:10px;padding:8px;background:var(--raised)">
+              <div style="font:700 11px/1 sans-serif;color:var(--t1)">좋은 의도</div>
+              <div style="font:500 11px/1.5 sans-serif;color:var(--t2);margin-top:6px">하단 페이지 필드에서 타이핑해도<br>스크롤 점프 없이 유지</div>
+            </div>
+            <div style="border:1px solid rgba(240,113,111,.35);border-radius:10px;padding:8px;background:rgba(240,113,111,.08)">
+              <div style="font:700 11px/1 sans-serif;color:var(--danger)">깨지는 순간</div>
+              <div style="font:500 11px/1.5 sans-serif;color:var(--t2);margin-top:6px">autosave가 <code>store.subscribe</code>를 연타 →<br>입력 중 포커스가 <code>clearChildren</code>으로 증발</div>
+            </div>
+          </div>
+          <div class="mono">refresh() {
+  snapshots = captureScroll(dynamicBody)
+  live = maps[mapId].events.some(...)
+  if (!live) store.restoreEventDraftFromVault(...) // race!
+  clearChildren(dynamicBody); renderDynamic(...);
+  restoreScroll(snapshots)
+}</div>
+        </div>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="card">
+          <h3>포커스 증발 — dynamic을 통째로 갈아끼우기</h3>
+          <p><code>renderEventEditorDynamic</code>은 <code>clearChildren → render</code>로 <b>동적 영역 전체를 재생성</b>한다. <code>captureInteraction → restoreInteraction</code>으로 포커스를 복원하려 하나, 그 사이에 <code>activeElement</code>가 <code>&lt;body&gt;</code>로 빠지는 grace 400ms 동안 다음 필드로 포커스가 옮겨가면 <b>복원 대상이 어긋난다</b>. 버튼 클릭 직전 rAF 재렌더는 클릭 자체를 유실(<code>qa-troops</code> 회귀 주석이 증거).</p>
+          <div class="mono">requestAnimationFrame(run) {
+  if (isEditing || withinGrace) pending=true
+  else refreshDatabasePanel(body) // 편집 중이면 보류
+}
+// grace = 400ms — 근데 human tab은 120ms, click은 80ms</div>
+        </div>
+        <div class="card">
+          <h3>Draft & Checkpoint — 왜 1.5초마다 전체를 체크포인트하나</h3>
+          <p><code>checkpointEventDraft</code>를 <b>open 즉시 + 1500ms 간격</b>으로 돌린다. autosave(4s 디바운스)와 별개로 또 저장. 이벤트 하나 편집에 2개의 저장 루프가 경쟁하면, <code>store.restoreEventDraftFromVault</code>가 “사라진 이벤트를 되살리는” 방어 코드까지 필요해진다. <b>방어가 필요할 정도로 저장이 과하다</b>는 신호.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <table class="table card" style="padding:0">
+        <tr><th>지점</th><th>증상</th><th>심각도</th></tr>
+        <tr><td><code>clearChildren(dynamicBody)</code> 전체 재생성</td><td>입력 중 커서·선택영역·IME 조합이 끊김. 한글 조합 중 Enter가 유실되면 “글자가 사라졌다”로 보인다</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>Esc 레이어드 처리 + backdrop click</td><td>두 경로가 동시에 <code>closeHandler(false)</code>를 타면 <code>discardEventDraft</code>가 두 번. 신규 이벤트면 “삭제 확인 없이 사라짐”</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>포커스 트랩 없음</td><td>모달이 <code>aria-modal=true</code>지만, Tab이 backdrop 뒤 에디터로 빠져나간다. 포커스 루프가 없다</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td>자동 초안 복구 <code>restoreFromVault</code></td><td>autosave가 live를 덮어쓴 뒤에야 복구 — 사용자는 “저장했는데 되돌아갔다”를 본다</td><td><span class="sev sev-p2">P2</span></td></tr>
+      </table>
+      <div class="card">
+        <h3>처방 — “덜 그리고, 덜 저장하기”</h3>
+        <p>• dynamic 전체 재생성 대신 <b>필드 단위 패치</b>로. 최소한 포커스 중인 필드는 건너뛰기.<br>• 포커스 트랩: <code>inert</code> + Tab 루프 + <code>focusout</code> 가드.<br>• 체크포인트는 <code>dirty</code>일 때만, interval 대신 <code>store.subscribe + debounce 800ms</code> 한 루프로 통합.<br>• 닫기 경로는 <code>closed</code> 플래그로 한 번만 실행(현재 있음) — backdrop과 Esc가 같은 플래그를 공유하는지 테스트로 고정.</p>
+        <div class="callout"><b>검증 포인트:</b> 한글 IME 조합 중 자동 리프레시 → 조합 유지, Tab 20회 왕복 → 포커스 탈출 없음, Esc 2회 연타 → draft 1회만 discard</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== CH 5 ==================== -->
+<section class="chapter" id="c5">
+  <div class="ch-head"><div class="num" style="background:#111827">05</div><div><h2>비주얼 시스템·부채 — 토큰은 하나, 현실은 42개 파일</h2><p>tokens.css 단일 진실 공급원 vs RM2K3 레거시 vs modern 오버라이드 3파전</p></div><div class="kpi" style="margin-left:auto"><span class="warn">P1 2</span><span>P2 2</span></div></div>
+  <div class="ch-body">
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 6 — 이벤트 에디터 CSS 적층 (import 순서 = 우선순위)</p>
+        <div style="display:grid;gap:6px">
+          <div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface);display:flex;align-items:center;gap:10px">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--ok)"></span>
+            <span style="font:700 11px/1 sans-serif;color:var(--t1)">tokens.css</span>
+            <span style="margin-left:auto;font:600 10px/1 sans-serif;color:var(--t2)">SoT — bg/inset/border/accent 1원칙</span>
+          </div>
+          <div style="padding:10px 12px;border:1px dashed var(--border);border-radius:10px;background:var(--raised);display:flex;gap:8px;flex-wrap:wrap">
+            <span style="padding:4px 7px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:600 10px/1 sans-serif;color:var(--t2)">part-1 · part-2 (RM2K3)</span>
+            <span style="padding:4px 7px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:600 10px/1 sans-serif;color:var(--t2)">p1-graphic · p1-route · p1-pagetabs</span>
+            <span style="padding:4px 7px;border-radius:999px;background:var(--inset);border:1px solid var(--border);font:600 10px/1 sans-serif;color:var(--t2)">legacy · commerce</span>
+          </div>
+          <div style="padding:10px 12px;border:1px solid rgba(108,121,242,.35);border-radius:10px;background:rgba(108,121,242,.08);display:flex;align-items:center;gap:10px">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--accent)"></span>
+            <span style="font:700 11px/1 sans-serif;color:var(--t1)">modern (modal backdrop/toolbar/footer)</span>
+            <span style="margin-left:auto;font:600 10px/1 sans-serif;color:var(--t2)">Inter 14px · 6px radius · soft shadow</span>
+          </div>
+          <div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--inset);display:flex;align-items:center;gap:10px">
+            <span style="width:10px;height:10px;border-radius:50%;background:var(--warn)"></span>
+            <span style="font:700 11px/1 sans-serif;color:var(--t1)">blocks → mockup (마지막 2줄이 전부 덮는다)</span>
+            <span style="margin-left:auto;font:600 10px/1 sans-serif;color:var(--warn)">! DOM 변경 없이 리스트를 블록 캔버스로 재해석</span>
+          </div>
+        </div>
+        <div class="mono">@import "./part-1.css";
+@import "./part-2.css";
+@import "./part-4.css";
+@import "./part-3.css";
+@import "./modern.css";
+@import "./command-preview.css";
+@import "./modernize.css";
+@import "./commerce.css";
+@import "./p1-graphic.css";
+@import "./p1-route.css";
+@import "./p1-pagetabs.css";
+@import "./blocks.css";   /* ← DOM 그대로, 리스트를 블록으로 */
+@import "./mockup.css";   /* ← 반드시 blocks 다음 */</div>
+        <div class="mini">순서가 곧 명세. 한 줄을 옮기면 버튼이 RM2K3 베벨로 되돌아간다.</div>
+      </div>
+      <div style="display:grid;gap:12px">
+        <div class="card">
+          <h3>두 개의 세계가 한 모달에 산다</h3>
+          <p>같은 <code>.event-editor-modal-body input</code>이 <b>part-2에선 Tahoma 12px + 2px 베벨 보더</b>, <b>modern에선 Inter 14px + 1px soft 보더 + ring</b>로 정의된다. 로드 순서에 따라 폼이 “두 번 변신”한다. 개발자는 “modern에서 고쳤는데 왜 안 바뀌지?”를 겪고, 결국 <code>!important</code>를 하나 더 얹는다.</p>
+          <div class="mono">/* part-2 (레거시) */
+input { border-width:2px; font:400 12px Tahoma }
+/* modern */
+input { border:1px solid var(--border-subtle); font:500 14px Inter }
+/* modernize가 다시 덮고, blocks가 또 덮는다 */</div>
+        </div>
+        <div class="card">
+          <h3>토큰은 SoT인데, 별칭이 SoT를 이긴다</h3>
+          <p><code>tokens.css</code>가 SoT라면서, <code>shell/figma-editor.css</code>·<code>core.part-1.css</code>가 <code>--bg / --surface-panel / --editor-shell-bg</code> 등 <b>레거시 변수로 재매핑</b>한다. 새 코드는 <code>--bg-raised</code>, 옛 코드는 <code>--bg</code>를 쓴다. 다크모드·테마 전환 시 둘이 따로 논다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="figure">
+        <p class="figcap">Fig 7 — 변형 전·후 버튼 스펙 비교 (동일 클래스, 다른 시대)</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px">
+            <div style="font:700 11px/1 sans-serif;color:var(--t2)">RM2K3 Bevel</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <span style="padding:6px 12px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;box-shadow:inset -1px -1px 0 #404040, inset 1px 1px 0 #fff;color:#000;font:700 11px/1 Tahoma">확인</span>
+              <span style="padding:6px 12px;background:#c0c0c0;border:2px solid;border-color:#fff #808080 #808080 #fff;color:#6b7280;font:700 11px/1 Tahoma">취소</span>
+            </div>
+            <div class="mini" style="margin-top:8px">2px 베벨 · Tahoma 12px · inset 그림자 · 고정 회색</div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px">
+            <div style="font:700 11px/1 sans-serif;color:var(--t2)">Modern Soft</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <span style="padding:7px 14px;background:var(--accent);border:1px solid var(--accent);border-radius:6px;color:#fff;font:700 12px/1 Inter;box-shadow:0 1px 2px rgba(16,24,40,.06)">확인</span>
+              <span style="padding:7px 14px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--t1);font:700 12px/1 Inter">취소</span>
+            </div>
+            <div class="mini" style="margin-top:8px">1px soft 보더 · Inter 13–14px · ring focus · 토큰 기반</div>
+          </div>
+        </div>
+      </div>
+      <table class="table card" style="padding:0">
+        <tr><th>지점</th><th>증상</th><th>심각도</th></tr>
+        <tr><td>42개 CSS, 단일 진입점 <code>event-editor.css</code></td><td>빌드 시 1파일로 합쳐지지만, 디버깅 시 “어느 파일이 이겼다” 추적이 어렵다. 소스맵 없으면 끝</td><td><span class="sev sev-p1">P1</span></td></tr>
+        <tr><td><code>blocks.css / mockup.css</code>가 DOM 없이 재해석</td><td>아이디어는 영리하나, 선택자가 <code>:has()</code>·다중 클래스에 의존해 구형 WebView에서 깨진다</td><td><span class="sev sev-p2">P2</span></td></tr>
+        <tr><td>토큰 별칭 이중화</td><td>테마 토큰을 바꿔도 레거시 경로는 그대로 — “다크는 됐는데 모달만 밝다”</td><td><span class="sev sev-p1">P1</span></td></tr>
+      </table>
+    </div>
+
+    <div class="callout"><b>처방 — “한 시대만 살게 하기”:</b> 이벤트 모달은 <b>modern 토큰만</b> 쓰도록 격리. 레거시 RM2K3 스타일은 <code>.legacy-scope</code>로 가두고, 모달 루트엔 <code>all: revert</code> 격리 레이어를 둔다. 신규 스타일은 <code>@layer</code>로 순서 고정(<code>@layer tokens, legacy, modern, overrides</code>).</div>
+
+    <div class="card">
+      <h3>지금 당장 할 5가지 (우선순위 순)</h3>
+      <ol style="margin:8px 0 0;padding-left:18px;color:var(--t1);font-size:12.5px;line-height:1.7">
+        <li><b>P0</b> <code>modalResize.ts clamp</code> 버그 수정 + backdrop <code>position:fixed</code> + 100vw 보더 박스 수정</li>
+        <li><b>P0</b> 720/1180에서 Inspector 오버레이 전환 — 잘라내지 말고 모드로 전환</li>
+        <li><b>P1</b> 리프레시 granularity 축소 + 포커스 트랩 + dirty 기반 체크포인트 통합</li>
+        <li><b>P1</b> 쉘 리사이즈 옵저버 + 720 드로어 + 리사이저 키보드 핸들</li>
+        <li><b>P1</b> CSS <code>@layer</code> 도입 + 레거시 별칭 제거 로드맵</li>
+      </ol>
+    </div>
+
+    <div class="hr"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+      <div style="color:var(--t2);font:600 11px/1 sans-serif">근거: <code>editor.ts</code> 526/184–640/80–480/720 · <code>modal.ts</code> 52/1fr/64 · <code>modalDrag/Resize.ts</code> · <code>layoutResize.ts clamp</code> · <code>modalStack.ts</code> · <code>styles/editor/event-editor*.css (42)</code> · <code>TOKENS.md / tokens.css</code></div>
+      <div style="font:600 11px/1 sans-serif;color:var(--t3)">Hostile review — “예쁘다”보다 “안 깨진다”를 먼저</div>
+    </div>
+
+  </div>
+</section>
+
+</div>
+
+<footer style="max-width:1180px;margin:0 auto;padding:0 20px 40px;color:var(--t3);font:500 11px/1.6 sans-serif">
+  생성: 이벤트 에디터 껍데기·모달·레이아웃 적대적 리뷰 · 이미지 리치 5장 · 단일 HTML · 외부 의존성 없음 · 인쇄 시 배경 유지 권장
+</footer>
+
+</body>
+</html>

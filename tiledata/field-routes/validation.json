@@ -1,0 +1,260 @@
+[
+  {
+    "id": "field-forest-crossroads",
+    "forestSeed": 1201,
+    "entry": [
+      4,
+      40
+    ],
+    "targets": [
+      [
+        0,
+        40
+      ],
+      [
+        40,
+        0
+      ],
+      [
+        95,
+        24
+      ]
+    ],
+    "reachable": 2290,
+    "blocked": [],
+    "terraceLeaks": 0,
+    "sealedPocketCells": 37
+  },
+  {
+    "id": "field-ford-cliff-road",
+    "forestSeed": 1307,
+    "entry": [
+      48,
+      67
+    ],
+    "targets": [
+      [
+        30,
+        28
+      ],
+      [
+        30,
+        36
+      ],
+      [
+        58,
+        53
+      ],
+      [
+        63,
+        53
+      ],
+      [
+        48,
+        71
+      ],
+      [
+        99,
+        54
+      ],
+      [
+        40,
+        0
+      ]
+    ],
+    "reachable": 2265,
+    "blocked": [],
+    "terraceLeaks": 0,
+    "sealedPocketCells": 0
+  },
+  {
+    "id": "field-two-step-pass",
+    "forestSeed": 1409,
+    "entry": [
+      40,
+      75
+    ],
+    "targets": [
+      [
+        22,
+        52
+      ],
+      [
+        22,
+        59
+      ],
+      [
+        52,
+        25
+      ],
+      [
+        52,
+        32
+      ],
+      [
+        34,
+        31
+      ],
+      [
+        40,
+        79
+      ],
+      [
+        40,
+        0
+      ]
+    ],
+    "reachable": 1988,
+    "blocked": [],
+    "terraceLeaks": 0,
+    "sealedPocketCells": 0
+  },
+  {
+    "id": "field-snow-two-step-pass",
+    "entry": [
+      40,
+      75
+    ],
+    "targets": [
+      [
+        22,
+        52
+      ],
+      [
+        22,
+        59
+      ],
+      [
+        52,
+        25
+      ],
+      [
+        52,
+        32
+      ],
+      [
+        34,
+        31
+      ],
+      [
+        40,
+        79
+      ],
+      [
+        40,
+        0
+      ],
+      [
+        62,
+        43
+      ],
+      [
+        58,
+        45
+      ]
+    ],
+    "reachable": 2037,
+    "blocked": []
+  },
+  {
+    "id": "field-volcano-ford-cliff-road",
+    "entry": [
+      48,
+      67
+    ],
+    "targets": [
+      [
+        30,
+        28
+      ],
+      [
+        30,
+        36
+      ],
+      [
+        58,
+        53
+      ],
+      [
+        63,
+        53
+      ],
+      [
+        48,
+        71
+      ],
+      [
+        99,
+        54
+      ],
+      [
+        40,
+        0
+      ]
+    ],
+    "reachable": 2320,
+    "blocked": []
+  },
+  {
+    "id": "field-desert-crossroads",
+    "entry": [
+      4,
+      40
+    ],
+    "targets": [
+      [
+        0,
+        40
+      ],
+      [
+        40,
+        0
+      ],
+      [
+        95,
+        24
+      ]
+    ],
+    "reachable": 5966,
+    "blocked": []
+  },
+  {
+    "id": "field-autumn-ford-cliff-road",
+    "entry": [
+      48,
+      67
+    ],
+    "targets": [
+      [
+        30,
+        28
+      ],
+      [
+        30,
+        36
+      ],
+      [
+        58,
+        53
+      ],
+      [
+        63,
+        53
+      ],
+      [
+        48,
+        71
+      ],
+      [
+        99,
+        54
+      ],
+      [
+        40,
+        0
+      ]
+    ],
+    "reachable": 2265,
+    "blocked": []
+  }
+]

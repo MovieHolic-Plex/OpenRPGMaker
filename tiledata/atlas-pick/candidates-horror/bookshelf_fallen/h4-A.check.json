@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bookshelf_fallen/h4-A.pxg",
+ "set": "horror",
+ "id": "bookshelf_fallen",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.058
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  4,
+  29,
+  30
+ ],
+ "note": "앞으로 넘어진 2칸 책장: 등판이 위로 보이고(널판 이음 세로), 아래·오른쪽 옆면 두께가 보이며 칸막이 끝이 튀어나옴, 바닥에 쏟아진 색 책 6권과 펼친 책 하나",
+ "ok": true
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Canonical548 read-only player copy, actual completed camp checkpoint. Corrected place menu, journal, and repeated completed-report reward prevention.",
+  "errors": [],
+  "completedDialogue": "다온 : 이미 모든 야영지 완공 보고를 마치고 보상을 지급해 드렸습니다.\n힘써주셔서 다시 한번 감사드려요!\n■\n기록",
+  "repeatNoReward": true,
+  "supplyMenu": "새솔마을 (소미)\n1번 길 (준서)\n바위턱마을 (은호)\n뒤로",
+  "questText": "첫 동행을 위한 야영지\n새솔상점의 다온과 협력하여 새솔마을, 1번 길, 바위턱마을의 야영 환경을 조사하고 알맞은 보급 꾸러미를 설치한다.\n임무 요약",
+  "passed": true,
+  "automaticSeconds": 7.484
+}

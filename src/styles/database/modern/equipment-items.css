@@ -1,0 +1,527 @@
+/* ============================================================================
+   장비 / 아이템 탭 모던 레이어 (2026-08 DB 개편).
+
+   왜 새 파일인가
+   - 두 탭의 상세 창은 예전에 `.oprn-detail-items` / `.oprn-detail-equipment` 라는
+     **2열 그리드 + overflow:auto 폼** 자체였다. 카드가 열 사이에 흩어지고, 라벨은
+     `minmax(82px, .22fr)` 열에 눌려 `text-overflow: ellipsis` 로 잘렸다
+     (게이트 clipped: 장비 3 / 아이템 2 — 전부 `label.db-field > span`).
+   - 이제 두 폼은 공용 프리미티브와 같은 골격을 쓴다: 히어로(고정) +
+     `.db-ws-detail-body`(유일한 스크롤 경계) + `db-ws-stack` 카드 격자.
+     여기서는 그 골격을 레코드 탭 셸(databaseRecordViews.ts 가 만드는
+     `.oprn-record-detail-pane`) 안에 앉히고, 옛 2열 폼 규칙을 되돌린다.
+
+   규칙: 모든 선택자는 `.database-modal-backdrop .database-modal-window
+   .database-modal-body` 아래로 스코프하고, 색은 `--db-studio-*` 만 소비한다.
+   index.css 에서 workspace-modern.css / light-theme.css 뒤에 import 된다.
+   ========================================================================= */
+
+/* ── 셸 ──────────────────────────────────────────────────────────────────
+   상세 창 패딩을 폼 안쪽으로 옮긴다 — 히어로가 창 상단에 붙어야 "인스펙터"로 읽힌다.
+   (04-modern-records.css 는 `.oprn-record-detail-pane` 에 14px 을 준다.) */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-items .oprn-record-detail-pane,
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-equipment .oprn-record-detail-pane {
+  padding: 0;
+}
+
+/* 폼 = 상세 창. 행은 히어로(auto) / 본문(1fr) 둘뿐이고 스크롤은 본문에서 끝난다.
+   `.oprn-detail-items|equipment` 의 2열 그리드·overflow:auto·하단 패딩을 전부 되돌린다
+   (04-modern-records.css:632, 05-dense-workbenches.css:928). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-sizing: border-box;
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  max-height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws > .db-ws-detail-body,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws > .db-ws-detail-body {
+  grid-row: 2;
+  padding: 12px 14px 18px;
+}
+
+/* ── 히어로 ─────────────────────────────────────────────────────────────
+   light-theme.css 의 인스펙터 헤더(96px 아이콘 · flex-start · 자체 테두리)를
+   워크스페이스 히어로 비율로 되잡는다. 클래스명은 유지 — 단위 테스트가
+   `.db-equipment-inspector-header` / `.db-item-inspector-icon` 등을 계약으로 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws > .db-equipment-inspector-header,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws > .db-item-inspector-header {
+  align-items: center;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 0;
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 0;
+  box-sizing: border-box;
+  display: flex;
+  gap: 14px;
+  grid-column: auto;
+  grid-row: 1;
+  min-width: 0;
+  padding: 12px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-icon,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-icon {
+  appearance: none;
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  color: inherit;
+  cursor: pointer;
+  flex: 0 0 64px;
+  font: inherit;
+  height: 64px;
+  margin: 0;
+  padding: 0;
+  width: 64px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-title {
+  display: grid;
+  flex: 1 1 auto;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 이름 필드는 히어로 제목처럼 — 라벨 위, 큰 입력 아래(1열). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-name .db-field,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-name .db-field {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-name .db-field input[type="text"],
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-name .db-field input[type="text"] {
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 700 17px/1.3 var(--font-ui);
+  padding: 5px 10px;
+}
+
+/* 히어로 안 부위 세그먼트 — 라벨을 앞에 붙인 한 줄. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title > .db-field {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title > .db-field > span {
+  flex: 0 0 auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-title > .db-field > .db-segmented {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ── 카드 격자 ──────────────────────────────────────────────────────────
+   `.db-items-oprn-workbench` 는 e2e 가 가시성을 확인하는 노드라 남기고,
+   레이아웃만 공용 `db-ws-stack` 에 넘긴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-items-oprn-workbench {
+  align-content: start;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
+/* 종류별 패널 묶음(`db-items-medicine-panel` 등)은 testid 계약 때문에 DOM 에 남아야
+   하지만, 자체 행을 차지하면 그 행의 나머지가 통째로 빈다(H 축 여백). `display: contents`
+   로 자식 카드를 바깥 스택에 그대로 흘려보낸다 — 대신 `db-ws-stack > .db-ws-span`
+   직계 규칙이 안 걸리므로 여기서 다시 심는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-type-panels {
+  display: contents;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-type-panels > .db-ws-span {
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-stack,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-ws-stack {
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+}
+
+/* 그래픽 카드는 `db-advanced-panel`(그리드 클래스 테스트 계약) 을 함께 달고 있어
+   레거시 fieldset 여백이 따라온다 — 카드 규격으로 되돌린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-card.db-advanced-panel {
+  gap: 8px;
+  margin: 0;
+  max-height: none;
+  overflow: visible;
+  padding: 12px 14px;
+}
+
+/* ── 필드 ────────────────────────────────────────────────────────────────
+   게이트 clipped 의 원인이던 규칙을 정면으로 되돌린다:
+   04-modern-records.css:513 는 모든 `.db-field > span` 에
+   `overflow:hidden; text-overflow:ellipsis; white-space:nowrap` 을 걸고,
+   라벨 열을 `minmax(82px, .22fr)` 로 고정했다. "물리 회피율 증가",
+   "전투불능 대상에게만 유효" 같은 한국어 라벨이 82px 을 넘겨 잘렸다.
+   여기서는 라벨 열을 넉넉히 잡고 **넘치면 자른다 대신 줄바꿈**한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-card .db-field,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-ws-card .db-field {
+  align-items: center;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: minmax(96px, 0.5fr) minmax(0, 1fr);
+  margin: 0;
+  min-height: 30px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-card .db-field > span,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-ws-card .db-field > span {
+  min-width: 0;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+/* 설명처럼 긴 입력은 한 줄을 다 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-ws-card .db-field:has(textarea),
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-ws-card .db-field:has(textarea) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* 카드 안 2열 필드 격자(능력치·효과 플래그·스펙 줄·그래픽 픽커). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-grid,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-grid {
+  display: grid;
+  gap: 6px 14px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-graphic-grid,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-graphic-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+/* 토글 스위치가 16px 정사각형으로 찌그러지던 문제.
+   04-modern-records.css:526 의 `:is(.oprn-detail-items,.oprn-detail-equipment)
+   input[type="checkbox"] { width:16px }` 이 (0,3,1) 로 `.db-toggle-input` (0,3,0) 을
+   이겨서, 34×18 필 스위치가 체크박스 크기로 눌려 상태를 읽을 수 없었다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-toggle-input,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-toggle-input {
+  flex: 0 0 34px;
+  height: 18px;
+  min-height: 18px;
+  min-width: 34px;
+  width: 34px;
+}
+
+/* 카드 본문을 다시 2열로 — 체크박스 묶음 두 개가 세로로만 길어지던 카드
+   (공격/방어 속성 · 장착 허용)에서 옆 칸이 통째로 비는 걸 막는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-eq-two-col > .db-ws-card-body {
+  align-items: start;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* 카드 안 소제목 + 필드 묶음. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-subgroup {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-subgroup > strong {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 700 11px/1.6 var(--font-ui);
+}
+
+/* ── 체크박스 묶음 ──────────────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-item-choice-list,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-choice-list {
+  align-content: start;
+  display: grid;
+  gap: 2px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-item-choice-list > strong,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-choice-list > strong {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 700 11px/1.6 var(--font-ui);
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .actor-check,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-checkbox-field {
+  align-items: center;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  display: inline-flex;
+  font: 400 12px/1.5 var(--font-ui);
+  gap: 7px;
+  min-height: 26px;
+  min-width: 0;
+}
+
+/* ── 결과 카드(효과 이야기 / 초기 빌드 비교) ─────────────────────────────
+   light-theme.css 는 이 셋에 자체 그라디언트 카드 크롬을 준다. 이제 바깥의
+   `db-ws-card` 가 프레임이라 카드-속-카드가 되므로 내부 크롬만 벗긴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-effect-story,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-effect-story {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: 0;
+  padding: 0;
+}
+
+/* 카드 제목이 이미 "이 장비를 착용하면" 이라 같은 뜻의 키커는 지운다.
+   (초기 빌드 비교 쪽 키커는 소제목 역할이라 남긴다.) */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-effect-story > .db-effect-story-kicker,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-effect-story > .db-effect-story-kicker {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison {
+  border-top: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-heading .db-field {
+  align-items: center;
+  display: flex;
+  flex: 0 1 320px;
+  gap: 8px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-heading .db-field > span {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-comparison-stats {
+  display: grid;
+  gap: 6px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  min-width: 0;
+}
+
+/* ── 장비형 아이템 안내 ─────────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-equipment-redirect {
+  min-width: 0;
+}
+
+/* ── 카드 묶음 구분자 (아이템 정보 위계 3단계) ─────────────────────────────
+   카드가 8~10 장이라 제목(2단계)만으로는 "정의 / 효과 / 사용 제한" 경계가 보이지 않는다.
+   `.db-item-section-label` 은 격자 전폭을 차지하는 얇은 캡션 행으로, 스크롤 중에도
+   지금 어느 묶음을 편집하는지 알려준다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-section-label {
+  align-items: center;
+  color: var(--db-studio-text-3);
+  display: flex;
+  font: 700 10.5px/1.4 var(--font-ui);
+  gap: 8px;
+  letter-spacing: 0.1em;
+  margin: 6px 0 -2px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-section-label::after {
+  background: var(--db-studio-border-subtle);
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+}
+
+/* 기본·회복은 넓은 행에, 접힌 보조 카드는 별도 행에 둬 빈 반쪽 카드를 없앤다. */
+.database-modal-backdrop .db-item-basics > .db-ws-card-body,
+.database-modal-backdrop .db-equipment-rules > .db-ws-card-body,
+.database-modal-backdrop .db-item-ws .db-ws-card-body:has(> .db-item-subgroup) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  gap: 10px 16px;
+}
+.database-modal-backdrop .db-item-basics > .db-ws-card-body > p,
+.database-modal-backdrop .db-equipment-rules > .db-ws-card-body > .db-eq-grid {
+  grid-column: 1 / -1;
+}
+.database-modal-backdrop .db-item-ws .db-ws-card.collapsed,
+.database-modal-backdrop .db-eq-ws .db-ws-card.collapsed {
+  align-self: start;
+}
+
+.database-modal-backdrop .db-equipment-slot-manager {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--db-studio-text-2);
+}
+.database-modal-backdrop .db-equipment-slot-manager > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.database-modal-backdrop .db-equipment-slot-manager > .db-ws-stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  padding-top: 12px;
+}
+.database-modal-backdrop .db-equipment-slot-manager .db-eq-grid {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 8px;
+}
+.database-modal-backdrop .db-equipment-slot-manager input {
+  min-width: 0;
+  width: 100%;
+}
+.database-modal-backdrop .db-equipment-slot-manager small {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  word-break: keep-all;
+}
+
+/* Catalog owns only its two panes; sidebar.css remains the modal geometry owner. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog {
+  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog .db-ws-list-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-rows {
+  display: block;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: auto;
+  overflow-anchor: none;
+}
+/* Measured virtual-list contract: only the rows host owns gaps. Spacers are
+   plain blocks; every row has the same border-box height, including long names. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-rows > .db-virtual-rows {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-rows .db-list-row {
+  box-sizing: border-box;
+  height: 36px;
+  min-height: 36px;
+  max-height: 36px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-rows .db-list-sub {
+  max-width: 50%;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-controls,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions {
+  display: grid;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-filters {
+  display: flex;
+  gap: 4px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-filters .db-filter-chip {
+  flex: 1 1 auto;
+  padding: 6px 4px;
+  white-space: nowrap;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions .db-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions {
+  padding: 8px 0;
+  border-top: 1px solid var(--db-studio-border-subtle);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-detail {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  padding: 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-detail .db-ws-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-gallery > .db-virtual-rows {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-gallery .db-gallery-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 140px;
+  min-height: 140px;
+  max-height: 140px;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-gallery .db-list-thumb {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-gallery .db-list-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  flex: 0 0 auto;
+  max-height: 36px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-gallery .db-list-sub {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-selection-notice {
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-text-1);
+  padding: 4px 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-rows:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog button:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}

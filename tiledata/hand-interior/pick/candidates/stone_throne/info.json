@@ -1,0 +1,38 @@
+{
+ "id": "stone throne",
+ "slug": "stone_throne",
+ "name_ko": "돌 왕좌",
+ "category": "광산",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "등받이 높은 검은 돌 왕좌(금 띠, 16px 솟음). 드워프 왕의 홀·지하 왕좌 단 가운데에 1개. 양옆 화로.",
+ "where": "드워프 왕의 홀·지하 왕좌 단 가운데에 1개. 양옆 화로.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

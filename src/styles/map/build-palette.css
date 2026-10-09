@@ -1,0 +1,124 @@
+.build-palette-popup {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: 228px;
+  padding: 8px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  box-shadow: 0 10px 26px rgba(60, 48, 32, 0.10);
+  color: var(--text-1);
+}
+
+/* 캔버스 위 플로팅(건축 팔레트·선택 칩 공용 슬롯). */
+.build-palette-floating {
+  pointer-events: auto;
+  position: absolute;
+  z-index: 30;
+}
+
+.build-palette-popup.build-palette-floating {
+  right: auto;
+  top: auto;
+}
+
+.build-palette-title {
+  margin: 0 0 6px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--text-2);
+}
+
+.build-palette-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.build-house-preset-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-kit-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.build-house-option-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.build-house-preset-button,
+.build-house-kit-button,
+.build-house-option-button {
+  min-width: 0;
+  min-height: 26px;
+  padding: 4px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-2);
+  font: inherit;
+  font-size: 11px;
+  line-height: 1.1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.build-house-kit-button {
+  min-height: 38px;
+}
+
+.build-house-preset-button.active,
+.build-house-kit-button.active,
+.build-house-option-button.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--text-1);
+}
+
+.build-house-preset-button:hover,
+.build-house-preset-button:focus-visible,
+.build-house-kit-button:hover,
+.build-house-kit-button:focus-visible,
+.build-house-option-button:hover,
+.build-house-option-button:focus-visible {
+  border-color: var(--border-strong);
+  outline: none;
+}
+
+.build-palette-button {
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 6px;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.build-palette-button:hover,
+.build-palette-button:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--accent);
+  outline: none;
+}
+
+.build-palette-button[data-testid="build-palette-ai"] {
+  grid-column: 1 / -1;
+}

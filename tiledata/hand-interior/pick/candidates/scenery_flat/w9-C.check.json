@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scenery_flat/w9-C.pxg",
+ "id": "scenery flat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 24,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "같은 칸수에서 석양 하늘띠·반쪽 해·탑 성·언덕·울타리로 재해석.",
+ "ok": true
+}

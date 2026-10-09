@@ -1,0 +1,41 @@
+// cave v3-A (baseline: wv8-A 재색)
+@size 16 16
+@cell 16
+@palette ../../palette/worldmap3.pal
+@layer main
+@mat a wrock 0
+@mat b mout 0
+@mblock 0 0
+................
+................
+.....aaaaaa.....
+...aaaaaaaaaa...
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+aaaaabbbbbbaaaaa
+aaaabbbbbbbbaaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+.....111110.....
+...1144221110...
+..144442211110..
+.14444422111110.
+1444400000011110
+1444000000001110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+0002222222222000

@@ -1,0 +1,24 @@
+{
+ "id": "genkan_step",
+ "slug": "genkan_step",
+ "name": "현관 발판(스노코)",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "현관 신발 벗는 자리의 나무 발판(가로 널 네 장, 틈 사이 어두운 줄, 낮은 다리). 윗면이 거의 전부, 앞 턱 1~2px. 좌우 이어 붙게.",
+ "palette_hint": "hinoki 널, vdwood 틈",
+ "pair": [
+  "shoe_locker",
+  "slippers"
+ ],
+ "worker": "s5"
+}

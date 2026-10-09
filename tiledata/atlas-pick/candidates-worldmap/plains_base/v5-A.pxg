@@ -1,0 +1,25 @@
+// plains_base v5-A (5판: FF6 실측 톤(어둡고 채도 낮음), 외곽선 없음)
+@size 48 16
+@cell 16
+@palette ../../palette/worldmap5.pal
+@layer main
+@mat a wgrass 1
+@mat b wgrass 2
+@mat c wgrass 3
+@mblock 0 0
+abbbbbbbbbaccbbbbaccbbaabbaaaaabababbbbbabbbcbba
+aaabbcaccccabaabbbbbbabbacbbcbbbacbbbbabaabbaabb
+bbaccabbcabcbbbbbbabbbababaaaaabbbbbcaabbbbbbccb
+bbbbcbbbccbbccbbbbbbbcbbbbaaabccbcbbcbbbbcbbcbbb
+bbbabcaabaababbbcabbccaacbcbcacccaaccbbbcabbabab
+bbbaaabbabcbbbbbbabbbabcacbaaccbaabaaabbbbaaabab
+bbaccaaaaabaacbbabcabcbbcabbbbbcccbccaaacbcccbab
+bbbabbaabcbcbbbabbcbaaaaabbbbbbbabbcbcbbcbbbcaac
+cbbbbccbaaabbbccbbabbbbabbbaacbbabbbccbacbaaabbb
+bbbbacabbcacabbbbbbcbbccabbbbabccbcabbcabbbbbccb
+abbaacbbbbabbabcabbbbccbbabbbaaccbababbbaaacacab
+babbbcaabaaaababaaaabbbcbaabbcbabbcabaabbbbaabca
+cabbacbbcaccacbcbbbccbbaaabbcbbbbcccbcabcbbbbcca
+bbbbbabbababbaacaabbcbabbbaccbcbbcbcbccbbacccbbc
+cbabcbbabacaaccbabcbaaabccbbababaaaabccbccbcbaba
+bcccaabbbcbababbacaabbbbccbccababcabbbbbbabbabab

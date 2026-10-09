@@ -1,0 +1,65 @@
+[
+ {
+  "name": "tree_sakura",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.6453139999999999
+ },
+ {
+  "name": "tree_green",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.5623866
+ },
+ {
+  "name": "vending_red",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.44399659999999996
+ },
+ {
+  "name": "vending_blue",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.38931499999999997
+ },
+ {
+  "name": "street_lamp",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.5263058
+ },
+ {
+  "name": "traffic_light",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.7198595999999998
+ },
+ {
+  "name": "hero",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.416243
+ },
+ {
+  "name": "taxi",
+  "shape_ok": true,
+  "padded_rows": 1,
+  "bad_chars": [],
+  "cost_usd": 1.0832998
+ },
+ {
+  "name": "guardrail",
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "cost_usd": 0.4364108
+ }
+]

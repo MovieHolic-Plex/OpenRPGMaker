@@ -1,0 +1,80 @@
+// river wv2-B
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 1
+@mat b wdirt 2
+@mat c wdirt 3
+@mat d wriver 1
+@mat e wriver 2
+@mat f wriver 3
+@mat g wriver 4
+@mat h wriver 5
+@mat i wsea 3
+@mat j wsea 5
+@mblock 0 0
+................ffffgffgffffffff.aideffgfffeejc.
+.....a.aaaa.....ffffggffffffhhhhaaidegfffffehiaa
+.....aaiiaa.....gfffffffffffggffiideffffffffedii
+....aiiddiia....ffffffffffffffffddeffffffffffedd
+...aiddeeddib...ffgfffffffffffgfeegfffffffffffee
+.aaidhhhgeedjcb.ffffhhhhgfffffffffffhhhhgfffffff
+..aideffffeeic..ffffffffffffffffffffffffffffffff
+.aideffffffedjb.gfffgffffffffgfggfffgffffffffgfg
+.aideffffffeejc.ffgfffffffffffffffgfffffffffffff
+.aajdeffffeejcb.fffffgfffffffffffffffgffffffffff
+.aaideeffeeejcb.ffffgfgffgffffffffffgfgffgffffff
+...ajdeeeeejc...gfffffffffffgfffeeffffffffffgfee
+....bjjdejjc....ffgfffgffffffffgeeefffgffffffeee
+.....ccjjcc.....ffgfffffffffffggjjdeffffffffeejj
+.....b.bcbb.....fffffffffgggffffccjdeffffggeejcc
+................ffgfgfffffffffff.aideffffffeejc.
+...................aa..............aa...........
+.....a.aaaa.aaaaaaaiiaaaaaa.aaaaaaaiiaaaaaa.....
+.....aaiiaaaiiiiiiiddiiiiaaaiiiiiiiddiiiiaa.....
+....aiiddiiidddddddeeddddiiidddddddeeddddiia....
+...aiddeedddeeeeeeeffeeeedddeeeeeeeffeeeeddib...
+.aaidhhhgeeeffffffffhhhhgeeeffffffffhhhhgeedjcb.
+..aideffffffffffffffffffffffffffffffffffffeeic..
+.aideffffffffgfggfffgffffffffgfggfffgffffffedjb.
+.aidefffffffffffffgfffffffffffffffgffffffffeeic.
+.aidegfffffffffffffffgfffffffffffffffgffffffedjc
+.aidefgffgffffffffffgfgffgffffffffffgfgffgffeejc
+..ajdeffffffgfffgfffffffffffgfffgffffffffffeejc.
+..aidegffffffffgffgfffgffffffffgffgfffgffffeejc.
+.aidefffffffffggffgfffffffffffggffgffffffffeejc.
+.aideffffgggfffffffffffffgggfffffffffffffggeejc.
+.aidefffffffffffffgfgfffffffffffffgfgffffffeejc.
+.aideffgffffffffffffgffgffffffffffffgffgfffeejc.
+.aidegffffffhhhhffffggffffffhhhhffffggfffffehjc.
+aideffffffffggffgfffffffffffggffgffffffffffeejb.
+aidefffffffffffffffffffffffffffffffffffffffeejb.
+aideffffffffffgfffgfffffffffffgfffgfffffffeejb..
+.ajdhhhhgfffffffffffhhhhgfffffffffffhhhhgfeejcb.
+.aidefffffffffffffffffffffffffffffffffffffeeic..
+.aideffffffffgfggfffgffffffffgfggfffgffffffedjb.
+.aidefffffffffffffgfffffffffffffffgffffffffeeic.
+.aidegfffffffffffffffgfffffffffffffffgffffffedjc
+.aidefgffgffffffffffgfgffgffffffffffgfgffgffeejc
+..ajdeffffffgfffgfffffffffffgfffgffffffffffeejc.
+..aidegffffffffgffgfffgffffffffgffgfffgffffeejc.
+.aidefffffffffggffgfffffffffffggffgffffffffeejc.
+.aideffffgggfffffffffffffgggfffffffffffffggeejc.
+.aidefffffffffffffgfgfffffffffffffgfgffffffeejc.
+.aideffgffffffffffffgffgffffffffffffgffgfffeejc.
+.aidegffffffhhhhffffggffffffhhhhffffggfffffehjc.
+aideffffffffggffgfffffffffffggffgffffffffffeejb.
+aidefffffffffffffffffffffffffffffffffffffffeejb.
+aideffffffffffgfffgfffffffffffgfffgfffffffeejb..
+.ajdhhhhgfffffffffffhhhhgfffffffffffhhhhgfeejcb.
+.aidefffffffffffffffffffffffffffffffffffffeeic..
+.aideffffffffgfggfffgffffffffgfggfffgffffffedjb.
+.aidefffffffffffffgfffffffffffffffgffffffffeejc.
+.aajdefffffffffffffffgfffffffffffffffgffffeejcb.
+.aaideeffgfffffffeefgfgffgfffffffeefgfgffeeejcb.
+...ajdeeeeffgeeeeeeeeeeeeeffgeeeeeeeeeeeeeejc...
+....bjjdeeeeeeeeejjdeeeeeeeeeeeeejjdeeeeejjc....
+.....ccjjjdeejjjjcbjjjjjjjdeejjjjcbjjjjjjcc.....
+.....b.bccjjjcccc..bbccbccjjjcccc..bbccbcbb.....
+..........ccc.............ccc...................

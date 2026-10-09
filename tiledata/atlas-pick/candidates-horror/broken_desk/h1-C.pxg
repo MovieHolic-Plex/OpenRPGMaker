@@ -1,0 +1,29 @@
+// h1-C.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer b
+@px 0 3 rot:6 1 3 rot:5 2 3 rot:5
+@px 0 4 rot:6 1 4 rot:5 2 4 rot:1 3 4 rot:5 4 4 rot:5 5 4 rot:5
+@px 0 5 rot:6 1 5 rot:2 2 5 rot:5 3 5 rot:1 4 5 rot:1 5 5 rot:1 6 5 rot:1 7 5 rot:5
+@px 8 5 rot:5
+@px 0 6 rot:3 1 6 rot:3 2 6 rot:3 3 6 rot:2 4 6 rot:2 5 6 rot:5 6 6 rot:5 7 6 rot:1
+@px 8 6 rot:5 9 6 rot:5
+@px 0 7 rot:1 1 7 rot:1 2 7 rot:1 3 7 rot:3 4 7 rot:3 5 7 rot:3 6 7 rot:5 7 7 rot:5
+@px 8 7 rot:5 9 7 rot:3
+@px 1 8 tin:4 2 8 tin:2 3 8 rot:1 4 8 rot:1 5 8 rot:1 6 8 rot:3 7 8 rot:3 8 8 tin:4
+@px 9 8 rot:3
+@px 1 9 tin:4 2 9 tin:2 3 9 void:2 4 9 void:2 5 9 void:2 6 9 rot:1 7 9 rot:1 8 9 rot:1
+@px 9 9 tin:4 10 9 tin:4 11 9 vdwood:5 12 9 vdwood:5 13 9 vdwood:5 14 9 vdwood:5
+@px 1 10 tin:4 2 10 tin:2 5 10 tin:2 6 10 void:2 7 10 void:2 8 10 tin:3 9 10 tin:1 11 10 vdwood:4
+@px 12 10 vdwood:4 13 10 vdwood:4 14 10 vdwood:4 15 10 vdwood:4
+@px 1 11 tin:4 2 11 tin:2 5 11 tin:2 8 11 tin:4 9 11 tin:2 11 11 vdwood:3 12 11 vdwood:3 13 11 vdwood:3
+@px 14 11 vdwood:3 15 11 vdwood:3
+@px 1 12 tin:4 2 12 tin:2 5 12 tin:2 9 12 tin:4 10 12 tin:4 11 12 vdwood:3 12 12 vdwood:3 13 12 vdwood:3
+@px 14 12 vdwood:3 15 12 vdwood:3
+@px 1 13 tin:4 2 13 tin:2 5 13 tin:2 8 13 tin:4 9 13 tin:4 10 13 tin:4 11 13 vdwood:1 12 13 vdwood:1
+@px 13 13 vdwood:1 14 13 vdwood:1 15 13 vdwood:1
+@px 1 14 tin:4 2 14 tin:2 3 14 void:2 4 14 void:2 5 14 void:2 6 14 void:2 7 14 void:2 11 14 tin:5
+@px 12 14 vdwood:2 13 14 vdwood:2 14 14 vdwood:2 15 14 vdwood:2
+@px 0 15 tin:2 1 15 tin:1 2 15 tin:1 3 15 void:2 4 15 void:2 5 15 void:2 6 15 void:2 7 15 void:2
+@px 12 15 vdwood:1 13 15 vdwood:1 14 15 vdwood:1 15 15 vdwood:1

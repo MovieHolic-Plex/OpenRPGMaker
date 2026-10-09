@@ -1,0 +1,50 @@
+// A: 전형적인 목제 2단 모종 선반, 흙 윗면과 줄지은 새싹; 꼭대기 윗면 3행(y=4~6).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat s dwood 2
+@mat t dwood 3
+@mat u dwood 4
+@mat p pine 2
+@mat q pine 3
+@mat r pine 4
+@mat g leaf 2
+@mat h leaf 3
+@mat i leaf 4
+@mat j leaf 5
+@layer furniture
+@mblock 2 4
+BFFFFFFFFFFFFFFFFFFFFFFFFFFB
+EDDDDEDDDDDDDEEDDDDDDEDDDDCB
+EEEEEEEEEEEEEEEEEEEEEEEEEECB
+DCCCCCCCCCCCCCCCCCCCCCCCCCBA
+BAAAAAAAAAAAAAAAAAAAAAAAAAAB
+EDBssssssssssssssssssssssCBA
+EDBsijssssijssijssssijsssCBA
+EDBhghssshghshghssshghsssCBA
+EDBrgqqqqqgqqqgqqqqqgqqppCBA
+EDBrttttttuttttttttutttppCBA
+EDBrttutttttttuttttttttppCBA
+EDBrqqqqqqpqqqqqqqpqqqqppCBA
+EDBqpppppppppppppppppppppCBA
+EDFEEEEEEEEEEEEEEEEEEEEEEDCB
+EDDDDDDDDDDDDDDDDDDDDDDDDCBA
+EDBAAAAAAAAAAAAAAAAAAAAAACBA
+EDBssssssssssssssssssssssCBA
+EDBssijssijssssijssijssssCBA
+EDBshghshghssshghshghssssCBA
+EDBrqgqqqgqqqqqgqqqgqqqppCBA
+EDBrtttttuttttttttttuttppCBA
+EDBrtutttttttttutttttttppCBA
+EDBrqqqqpqqqqqqqqqqqpqqppCBA
+EDBqpppppppppppppppppppppCBA
+EDFEEEEEEEEEEEEEEEEEEEEEEDCB
+EDDDDDDDDDDDDDDDDDDDDDDDDCBA
+EDB......................CBA
+CBA......................BAA

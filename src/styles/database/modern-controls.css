@@ -1,0 +1,513 @@
+/* ============================================================================
+   DB 모달 모던 컨트롤 (W4) — 슬라이더+스테퍼 / 세그먼티드 / 토글 스위치 / 아바타 칩.
+   값에 맞는 폼 프리미티브(databaseControls.ts 신규 4종)의 시각 계층.
+
+   스코프 규칙은 light-theme.css 와 동일 — 모든 규칙이 `.database-modal-backdrop`
+   하위에만 적용되고, 팔레트는 light-theme.css 가 정의한 --db-light-* 변수만
+   소비한다(:root / 전역 토큰 재정의 금지). 앱 셸은 다크 유지.
+
+   추가(2026-08): 파일 앞머리에 **네이티브 폼 컨트롤 기준선**이 붙었다. 아래 첫
+   섹션이 그것이고, W4 프리미티브와 달리 전용 클래스가 아니라 요소 선택자를 쓴다.
+   신규 규칙은 studio-theme.css 의 --db-studio-* 를 소비한다(--db-light-* 는 레거시).
+   ========================================================================= */
+
+/* ============================================================================
+   네이티브 폼 컨트롤 기준선 — "그냥 html 느낌" 제거
+   ----------------------------------------------------------------------------
+   데이터베이스 모달은 databaseModal.ts 가 backdrop 을 document.body 직속으로
+   붙이므로, 여기 한 곳에서 모든 탭의 네이티브 컨트롤 외형을 잡을 수 있다.
+
+   의도적으로 **낮은 특이성**(0,2,1)을 쓴다. 탭별 규칙이 크기·색을 이미 정해 둔
+   곳에서는 그쪽이 이기고, 아무도 안 잡던 곳에만 기준선이 적용된다. 특이성 싸움을
+   새로 만들지 않는 게 목적이다.
+
+   전제: select 를 잡는 규칙 20건의 `background:` 단축을 `background-color:` 로
+   바꿔 두었다. 단축은 background-image 를 리셋해서 아래 chevron 을 지운다.
+   `test/databaseSelectChevronGuard.test.ts` 가 그 두 전제를 기계로 고정한다.
+   ========================================================================= */
+
+/* ── select: OS 위젯 → 에디터 chevron ──────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window select {
+  appearance: none;
+  cursor: pointer;
+  /* chevron 을 순수 CSS 로 그린다. currentColor 라서 글자색(및 disabled 흐림)을
+     그대로 따라가고, 하드코딩 색이나 data-URI 가 필요 없다. */
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 12px center, right 7px center;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+  /* chevron 은 패딩 박스 오른쪽 **7~17px** 밴드를 쓴다(7px 오프셋 + 5px+5px 두 삼각형).
+     텍스트는 콘텐츠 박스 오른쪽 끝까지 갈 수 있으므로, 밴드를 비우려면 오른쪽 패딩이
+     17px 이상이어야 한다. 이 규칙의 특이성은 (0,2,1) 이라 탭별 규칙의 `padding` 단축이
+     이긴다 — 즉 **짧은 padding 이 바로 겹침의 원인**이다(8px → 9px 침범, 9px → 8px).
+     그래서 짧은 단축을 쓰는 탭 규칙마다 바로 뒤에 select 전용 `padding-right: 24px`
+     보정을 붙여 뒀다(`.left-panel-stack select` 의 선례와 같은 형태). 새 탭을 추가할
+     때도 같이 붙여야 하며, 빠뜨리면 위 가드 테스트가 파일:행과 함께 실패한다. */
+  padding-right: 24px;
+}
+
+/* 비활성 상태의 시각 신호.
+   `appearance: none` 이 OS 위젯을 지우면서 UA 의 disabled 렌더링(회색 글자/눌린 위젯)도
+   같이 사라졌고, 탭별 규칙이 (0,4,1) 특이성으로 `color` 를 무조건 선언해 UA 의 GrayText
+   까지 이긴다 — 실측에서 disabled 와 enabled 의 computed 값이 완전히 같았다.
+   `color` 로 되받으면 그 특이성 싸움을 다시 해야 하므로, 아무 탭도 select 에 선언하지
+   않는 `opacity` 로 글자·테두리·chevron 을 한꺼번에 흐린다. */
+.database-modal-backdrop .database-modal-window select:disabled {
+  opacity: 0.55;
+}
+
+/* ── text/textarea: placeholder·caret·autofill ────────────────────────────
+   입력 박스 자체는 studio-v2 가 잡고, 여기서는 박스 안에서 "글자가 아닌 것"만
+   잡는다. 플레이스홀더는 UA 회색 대신 text-3 토큰(AA 5.43:1 실측), 캐럿은 accent 로
+   포커스 위치를 알린다. autofill 은 UA 노란 배경을 덮어 다크 스킨에서도 입력이
+   읽히게 한다. 탭별 규칙이 ::placeholder 를 직접 잡으면 이 기준선을 이기므로
+   새로 추가하지 않는다(chevron 가드와 같은 이유). */
+.database-modal-backdrop .database-modal-window :is(input, textarea)::placeholder {
+  color: var(--db-studio-text-3);
+  opacity: 1;
+}
+
+.database-modal-backdrop .database-modal-window :is(input, textarea, select) {
+  caret-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input:is(:-webkit-autofill, :autofill) {
+  -webkit-box-shadow: 0 0 0 100px var(--db-studio-surface) inset;
+  -webkit-text-fill-color: var(--db-studio-text-1);
+  box-shadow: 0 0 0 100px var(--db-studio-surface) inset;
+}
+
+/* Numeric spinner suppression belongs only to the composite in studio-v2.css.
+   Bare change-committed Life/actor numbers keep their native increment UI. */
+
+/* Disabled native controls retain their own baseline; composite interiors are
+   owned by studio-v2.css. */
+.database-modal-backdrop .database-modal-window input:disabled:not(.db-number-stepper input),
+.database-modal-backdrop .database-modal-window select:disabled {
+  background-color: var(--db-studio-inset);
+  border-style: dashed;
+  color: var(--db-studio-text-2);
+  cursor: not-allowed;
+}
+
+/* ── range: 스튜디오 트랙 + thumb ─────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window input[type="range"] {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 30px;
+  margin-block: 0;
+  padding-block: 0;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  height: 6px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--db-studio-accent);
+  border: 2px solid var(--db-studio-surface);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--db-studio-accent-border);
+  height: 18px;
+  margin-top: -7px;
+  width: 18px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-moz-range-track {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  height: 6px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]::-moz-range-thumb {
+  background: var(--db-studio-accent);
+  border: 2px solid var(--db-studio-surface);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--db-studio-accent-border);
+  height: 14px;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="range"]:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+/* ── details: 네이티브 marker 대신 회전 chevron ─────────────────────── */
+
+/* summary만 꾸민다. Chromium의 익명 ::details-content 블록에는 display/flex/overflow를
+   주지 않아 내부 스크롤러가 멈추는 알려진 문제와 충돌하지 않는다. */
+.database-modal-backdrop .database-modal-window details > summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+
+.database-modal-backdrop .database-modal-window details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window details > summary::before {
+  border-bottom: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  box-sizing: border-box;
+  content: "";
+  flex: 0 0 auto;
+  height: 7px;
+  margin-left: 2px;
+  transform: rotate(-45deg);
+  transition: transform 120ms ease;
+  width: 7px;
+}
+
+.database-modal-backdrop .database-modal-window details[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+/* ── range: 액센트 통일 ─────────────────────────────────────────────────
+   워크벤치별로 흩어져 있던 accent-color 를 기준선으로 올린다. checkbox 는 아래
+   커스텀 사각형 규칙이 외형을 통째로 다시 그리므로 여기서는 뺀다(둘 다 걸면
+   커스텀 박스 위에 OS 네이티브 체크가 겹쳐 칠해진다). */
+.database-modal-backdrop .database-modal-window input[type="range"] {
+  accent-color: var(--db-studio-accent);
+}
+
+/* ── checkbox: 네이티브 박스 → 커스텀 체크 ────────────────────────────────
+   DB 모달 안의 모든 네이티브 checkbox 를 radio 커스텀 원과 같은 문법으로 다시
+   그린다(16px 박스 + accent 테두리/채움 + 흰 체크). 네이티브 input 은 그대로
+   둔다(e2e 가 data-testid 로 집고, Space 토글·포커스 링은 브라우저 기본 동작에
+   맡긴다) — 외형만 appearance:none 으로 덮는다. 토글 스위치(.db-toggle-input)는
+   별도 프리미티브라 제외한다. 팔레트는 --db-studio-* 변수만 소비한다(하드코딩
+   색·:root 재정의 금지). */
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input) {
+  appearance: none;
+  background-color: var(--db-studio-surface);
+  border: 2px solid var(--db-studio-text-3);
+  border-radius: 4px;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):hover:not(:disabled) {
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):checked {
+  background-color: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):checked::after {
+  border-bottom: 2px solid var(--db-studio-on-accent);
+  border-right: 2px solid var(--db-studio-on-accent);
+  box-sizing: border-box;
+  content: "";
+  height: 9px;
+  left: 4px;
+  position: absolute;
+  top: 1px;
+  transform: rotate(45deg);
+  width: 5px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* 강제 고대비에서는 OS 네이티브로 돌려 시스템 고대비를 그대로 탄다(radio 블록과 동일). */
+@media (forced-colors: active) {
+  .database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input),
+  .database-modal-backdrop .database-modal-window input[type="checkbox"]:not(.db-toggle-input):is(:checked, :hover, :focus-visible, :disabled) {
+    appearance: auto;
+    background: none;
+    border: 0;
+  }
+}
+
+/* ── radio: 네이티브 원 → 커스텀 원 ───────────────────────────────────────
+   DB 모달 안의 모든 네이티브 radio 를 스튜디오 토큰으로 다시 그린다.
+   네이티브 input 은 그대로 둔다(e2e 가 input[value=…] 로 집고, 방향키 이동·Space
+   선택·포커스 링은 브라우저 기본 동작에 맡긴다) — 외형만 appearance:none 으로 덮는다.
+   팔레트는 --db-studio-* 변수만 소비한다(하드코딩 색·:root 재정의 금지).
+   radio-custom 가드(test/databaseRadioCustomGuard.test.ts)가 이 블록을 기계로 고정한다. */
+.database-modal-backdrop .database-modal-window input[type="radio"] {
+  appearance: none;
+  background-color: var(--db-studio-surface);
+  border: 2px solid var(--db-studio-text-3);
+  border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:hover:not(:disabled) {
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:checked {
+  background-image: radial-gradient(circle at center, var(--db-studio-accent) 0 4px, transparent 4.5px);
+  border-color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window input[type="radio"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* 세그먼티드 필(.db-segmented-pill)은 필 자체가 선택 상태를 전달하므로 안의 작은
+   radio 는 네이티브로 둔다 — 커스텀 원을 얹으면 accent 필 위에서 점이 묻힌다.
+   appearance 만 되돌리면 기준선의 border/background 가 남아 네이티브가 안 살아나므로
+   박스도 함께 리셋한다(크기 12px·accent-color 는 아래 그대로 유지). */
+.database-modal-backdrop .database-modal-window .db-segmented-pill > input[type="radio"] {
+  appearance: auto;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+/* 강제 고대비에서는 OS 네이티브로 돌려 시스템 고대비를 그대로 탄다.
+   :checked(0,4,1)가 기본 리셋(0,3,1)을 이기고 커스텀 점을 덧칠하므로
+   상태 선택자도 같은 리셋으로 덮는다. */
+@media (forced-colors: active) {
+  .database-modal-backdrop .database-modal-window input[type="radio"],
+  .database-modal-backdrop .database-modal-window input[type="radio"]:is(:checked, :hover, :focus-visible, :disabled) {
+    appearance: auto;
+    background: none;
+    border: 0;
+  }
+}
+
+/* ── 공통: 좁은 격자에서 컨트롤이 넘치지 않게 ──────────────────────────── */
+
+/* 목적은 "min-width 를 아무도 안 잡은 flex/grid 아이템의 auto 최소 크기를 푼다" 뿐이다.
+   그런데 (0,2,1) 로 쓰면 클래스 하나로 잡던 기존 규칙까지 이겨 버린다 — 실제로
+   `skill-item-visuals.css` 의 `.db-skill-state-effect-row select { min-width: 96px }`
+   (0,1,1) 가 무력화돼 computed 가 0px 로 떨어졌다(상태 변화 행의 드롭다운이 라벨 폭까지
+   찌그러진다). 스코프는 그대로 두고 특이성만 (0,0,1) 로 내려서, min-width 를 직접
+   선언한 규칙은 전부 이기게 한다. `:where()` 는 특이성 0 이다. */
+:where(.database-modal-backdrop .database-modal-window) :is(select, input, textarea) {
+  min-width: 0;
+}
+
+/* ── 공통: 신규 컨트롤 래퍼(.db-field 내부 2번째 슬롯) ─────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-slider-stepper,
+.database-modal-backdrop .database-modal-window .db-segmented,
+.database-modal-backdrop .database-modal-window .db-toggle-switch,
+.database-modal-backdrop .database-modal-window .db-avatar-chip-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ── 슬라이더 + 스테퍼 쌍 ───────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-slider-input {
+  accent-color: var(--db-light-accent);
+  flex: 1 1 120px;
+  margin: 0;
+  min-width: 90px;
+}
+
+.database-modal-backdrop .database-modal-window .db-stepper-input {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  color: var(--db-light-text-1);
+  flex: 0 0 72px;
+  font: inherit;
+  padding: 3px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .db-slider-unit {
+  color: var(--db-light-text-2);
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* ── 세그먼티드 컨트롤 (네이티브 radio) ─────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) {
+  background: var(--db-light-accent);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) > span {
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill > span {
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* radio input 자체는 시각 필(pill)이 선택 상태를 대신 전달한다. */
+.database-modal-backdrop .database-modal-window .db-segmented-pill > input[type="radio"] {
+  accent-color: var(--db-light-on-accent);
+  height: 12px;
+  margin: 0;
+  width: 12px;
+}
+
+/* ── 토글 스위치 (checkbox) ─────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-toggle-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input {
+  appearance: none;
+  background: var(--db-light-bg-inset);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 18px;
+  margin: 0;
+  position: relative;
+  transition: background-color 120ms ease;
+  width: 34px;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input::before {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 14px;
+  left: 1px;
+  position: absolute;
+  top: 1px;
+  transition: transform 120ms ease;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:checked {
+  background: var(--db-light-accent);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:checked::before {
+  border-color: var(--db-light-accent-border);
+  transform: translateX(16px);
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 2px;
+}
+
+/* ── 아바타 칩 행 (faceset 원형 칩) ─────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 10px 3px 3px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip[aria-pressed="true"] {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip.dimmed {
+  opacity: 0.45;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip-face {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 999px;
+  display: inline-block;
+  height: 40px;
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: 40px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip-name {
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}

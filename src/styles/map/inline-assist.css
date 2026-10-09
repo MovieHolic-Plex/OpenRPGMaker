@@ -1,0 +1,542 @@
+/* src/styles/map/inline-assist.css
+   캔버스 인라인 어시스트 — 선택 액션 칩, 제안 인라인 승인, 영역 작업 진행 배지. */
+
+/* 선택 영역 액션 바: 한 줄 AI 입력(자라남) + 같은 상자 안의 아이콘 도구.
+   position 없으면 flex 형제로 캔버스를 밀고 left/top이 무시된다.
+   줄 높이 20px · 버튼 30px 이 기준이다 — 입력창이 여러 줄로 자라면 도구와 실행 버튼은 아래에 붙는다. */
+.selection-action-chips,
+.selection-action-chips.build-palette-floating {
+  align-items: flex-end;
+  animation: selection-action-in 90ms ease-out;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  left: auto;
+  padding: 4px 4px 4px 10px;
+  pointer-events: auto;
+  position: fixed;
+  right: auto;
+  top: auto;
+  width: 480px;
+  z-index: 240;
+}
+
+.selection-action-chips:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-default));
+  box-shadow: var(--shadow-pop), 0 0 0 3px var(--accent-muted);
+}
+
+@keyframes selection-action-in {
+  from { opacity: 0; transform: translateY(3px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selection-action-chips { animation: none; }
+}
+
+.selection-action-spark {
+  align-self: flex-start;
+  color: var(--accent);
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 7px 2px 0 0;
+  order: 0;
+  width: 16px;
+}
+
+.selection-action-prompt {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: var(--text-1);
+  flex: 1 1 160px;
+  font: 400 13px/20px var(--font-ui, system-ui, sans-serif);
+  height: 30px;
+  margin: 0;
+  min-width: 0;
+  order: 1;
+  outline: none;
+  overflow-y: hidden;
+  padding: 5px 4px;
+  resize: none;
+}
+
+.selection-action-prompt::placeholder {
+  color: var(--text-3);
+}
+
+.selection-action-tools {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1px;
+  order: 2;
+}
+
+.selection-action-sep {
+  background: var(--border-default);
+  height: 16px;
+  margin: 0 3px;
+  width: 1px;
+}
+
+.selection-action-chip {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  height: 30px;
+  justify-content: center;
+  padding: 0;
+  white-space: nowrap;
+  width: 30px;
+}
+
+.selection-action-chip > svg {
+  display: block;
+  height: 18px;
+  width: 18px;
+}
+
+.selection-action-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.selection-action-chip:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.selection-action-chip.is-danger:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+/* 실행 — 입력이 있을 때만 강조색. 비어 있으면 누르면 무엇을 할지 적으라고 한다(바로 깔기면 숲). */
+.selection-action-chip.selection-action-send {
+  background: var(--accent);
+  border-radius: 10px;
+  color: var(--on-accent);
+  margin-left: 2px;
+  order: 4;
+}
+
+.selection-action-chip.selection-action-send:hover {
+  background: var(--accent-hover);
+  color: var(--on-accent);
+}
+
+.selection-action-chip.selection-action-send.is-empty {
+  background: var(--bg-hover);
+  color: var(--text-2);
+}
+
+.selection-action-chip.selection-action-send.is-empty:hover {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+/* 바로 깔기 토글 — 실행 버튼 바로 앞. 켜지면 강조색 테두리로 「Enter 가 곧바로 깐다」를 보인다. */
+.selection-action-chip.selection-action-stamp {
+  order: 3;
+}
+
+.selection-action-chip.selection-action-stamp.is-active {
+  background: var(--accent-muted);
+  box-shadow: inset 0 0 0 1.5px var(--accent);
+  color: var(--accent);
+}
+
+.selection-action-chip.selection-action-stamp.is-active > svg {
+  fill: currentColor;
+}
+
+/* 넓은 영역 「지우기」의 확인 상태 — 한 번 더 눌러야 실제로 지워진다. */
+.selection-action-chip.is-armed {
+  background: var(--danger-muted);
+  color: var(--danger);
+  padding: 0 10px;
+  width: auto;
+}
+
+.selection-action-chip.is-armed:hover {
+  background: var(--danger);
+  color: var(--on-accent);
+}
+
+.agent-ghost-preview {
+  pointer-events: none;
+}
+
+.ghost-inline-approval {
+  align-items: center;
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 94%, rgba(42,37,33,.08));
+  border: 1px solid var(--editor-line-strong, rgba(42,37,33,.20));
+  border-radius: 999px;
+  box-shadow: 0 8px 24px var(--shadow-pop);
+  display: inline-flex;
+  gap: 4px;
+  left: 0;
+  padding: 3px 5px;
+  pointer-events: auto;
+  position: absolute;
+  top: -34px;
+}
+
+.ghost-inline-approval.is-canvas-first {
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 96%, var(--editor-blue, var(--accent)));
+  border-color: color-mix(in srgb, var(--editor-blue, var(--accent)) 70%, var(--on-accent));
+  max-width: min(520px, calc(100vw - 24px));
+}
+
+.ghost-inline-summary {
+  color: var(--editor-text-muted, #6B5F52);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  max-width: 180px;
+  overflow: hidden;
+  padding: 0 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ghost-inline-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--editor-text, #2A2521);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.ghost-inline-btn.is-accept {
+  background: color-mix(in srgb, var(--bg-surface) 80%, var(--bg-surface));
+  color: var(--on-accent);
+}
+
+.ghost-inline-btn.is-reject:hover {
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+.ghost-inline-btn:hover,
+.ghost-inline-btn:focus-visible {
+  border-color: var(--editor-line-strong, rgba(42,37,33,.20));
+  outline: none;
+}
+
+.ghost-inline-count {
+  color: var(--editor-text-muted, #6B5F52);
+  font: 600 10px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 0 4px;
+}
+
+.region-task-badge {
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 85%, rgba(42,37,33,.20));
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 10px;
+  pointer-events: none;
+  position: absolute;
+  z-index: 30;
+  animation: region-task-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes region-task-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* 선택 영역 크기 배지 — 드래그 중에도 갱신되어 W×H 를 놓기 전에 알려준다.
+   region-task-badge(작업 진행 중)와 같은 배치 규약이되, 진행 상태가 아니라 정적 사실이라
+   맥동하지 않고 중립색이다. 두 배지가 같이 뜰 수 있어 세로 위치를 22px / 26px 로 어긋냈다. */
+.region-size-badge {
+  /* 토큰만 쓴다 — `var(--x, #hex)` 폴백도 예산 게이트가 하드코딩 hex 로 센다.
+     --text-1 은 정의된 잉크색이고, 캔버스 위에서 흰 글자를 받칠 만큼 어둡다. */
+  background: color-mix(in srgb, var(--text-1) 82%, transparent);
+  border-radius: 999px;
+  color: var(--on-accent);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  padding: 4px 8px;
+  pointer-events: none;
+  position: absolute;
+  white-space: nowrap;
+  z-index: 29;
+}
+
+/* Ctrl+K 팔레트 셸 — 구 스킬 팔레트 CSS(assistant-skills.css)와 함께 있던 백드롭·창·항목
+   규칙을 여기로 가져왔다. 스킬 기능 제거로 그 파일이 사라졌고, 팔레트는 자립해야 한다.
+   항목은 flex 한 줄이다 — 그리드로 두면 버튼이 shrink-to-fit으로 붕괴해 라벨이 한 글자만 남는다. */
+.command-palette-backdrop {
+  align-items: flex-start;
+  background: rgba(60, 48, 32, 0.12);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding-top: 12vh;
+  position: fixed;
+  z-index: 80;
+}
+
+.command-palette-window {
+  background: var(--bg-inset, var(--bg-surface));
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: 4px;
+  max-width: min(560px, 92vw);
+  padding: 6px;
+  width: 100%;
+}
+
+.command-palette-input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong, var(--border-subtle));
+  border-radius: 4px;
+  color: var(--text-1);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 7px;
+  width: 100%;
+}
+
+.command-palette-item {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.command-palette-item:last-child {
+  border-bottom: none;
+}
+
+.command-palette-item:hover {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.command-palette-empty {
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+.command-palette-list {
+  display: flex;
+  flex-direction: column;
+  max-height: min(420px, 60vh);
+  overflow-y: auto;
+}
+
+.command-palette-item-name {
+  color: var(--text-1);
+  flex: 0 1 auto;
+  font-size: 13px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-palette-item-desc {
+  color: var(--editor-text-muted, #6B5F52);
+  display: block;
+  flex: 1 1 auto;
+  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-palette-hotkey {
+  flex: 0 0 auto;
+}
+
+.command-palette-group {
+  color: var(--editor-text-soft, #6B5F52);
+  font: 700 10px/1.2 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.05em;
+  padding: 8px 6px 2px;
+  text-transform: uppercase;
+}
+
+.command-palette-hotkey {
+  border: 1px solid var(--editor-line, rgba(42,37,33,.20));
+  border-radius: 5px;
+  color: var(--editor-text-muted, #6B5F52);
+  font: 600 10px/1 ui-monospace, monospace;
+  margin-left: auto;
+  padding: 2px 5px;
+}
+
+.command-palette-item.is-active {
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 24%, transparent);
+}
+
+/* 원본 보기(홀드) — 고스트 시각만 숨기고 툴바는 유지 */
+.agent-ghost-preview.is-ghost-hidden {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.ghost-inline-btn.is-hold {
+  border-style: dashed;
+}
+
+.ghost-inline-btn.is-hold:active {
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 40%, var(--mix-base));
+  color: var(--on-accent);
+}
+
+/* 영역 작업 before/after 비교 */
+
+.region-task-compare-actions {
+  margin-top: 8px;
+}
+
+/* 기본 모드 시작 화면 카드 */
+.ai-start-basic-card {
+  background: color-mix(in srgb, var(--editor-popover-bg, #FFFDF8) 92%, var(--on-accent));
+  border: 1px solid var(--editor-line, rgba(42,37,33,.20));
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.ai-start-basic-card-title {
+  color: var(--editor-text, #2A2521);
+  font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+.ai-start-basic-card-body {
+  color: var(--editor-text-muted, #6B5F52);
+  font: 500 12px/1.5 var(--font-ui, system-ui, sans-serif);
+}
+
+.ai-start-basic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ai-start-basic-chip {
+  background: transparent;
+  border: 1px solid var(--editor-line, rgba(42,37,33,.20));
+  border-radius: 999px;
+  color: var(--editor-text-muted, #6B5F52);
+  cursor: pointer;
+  font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 5px 10px;
+}
+
+.ai-start-basic-chip:hover,
+.ai-start-basic-chip:focus-visible {
+  border-color: var(--editor-blue, var(--accent));
+  color: var(--editor-text, #2A2521);
+  outline: none;
+}
+
+.ai-start-recent-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-start-recent-instruction {
+  color: var(--editor-text, #2A2521);
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-start-recent-meta {
+  color: var(--editor-text-soft, #6B5F52);
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}
+
+/* 대화 기록 검색 카드 — 시작 화면 */
+.ai-start-history-search {
+  background: transparent;
+  border: 1px solid var(--editor-line, rgba(42,37,33,.20));
+  border-radius: 8px;
+  color: var(--editor-text, #2A2521);
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  padding: 6px 10px;
+}
+
+.ai-start-history-search:focus-visible {
+  border-color: var(--editor-blue, var(--accent));
+  outline: none;
+}
+
+.ai-start-history-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-start-history-row {
+  align-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--editor-text, #2A2521);
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 5px 8px;
+  text-align: left;
+}
+
+.ai-start-history-row:hover,
+.ai-start-history-row:focus-visible {
+  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 14%, transparent);
+  outline: none;
+}
+
+.ai-start-history-title {
+  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-start-history-meta {
+  color: var(--editor-text-soft, #6B5F52);
+  flex: none;
+  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
+}

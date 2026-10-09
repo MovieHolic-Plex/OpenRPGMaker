@@ -1,0 +1,15 @@
+{
+  "scope": "Synthetic browser decisions in a disposable harness copy. NOT human approval.",
+  "temporaryKit": "/tmp/field-kit-receipts-9hLc9Z/kit",
+  "checks": {
+    "unchecked_allow_rejected": true,
+    "stale_package_rejected": true,
+    "foreign_origin_rejected": true,
+    "deny_blocks_export": true,
+    "allow_survives_restart": true,
+    "deny_survives_restart": true,
+    "all_current_allows_export": true,
+    "changed_bytes_block_export": true,
+    "production_has_zero_votes": true
+  }
+}

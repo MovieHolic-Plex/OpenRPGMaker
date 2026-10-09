@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/white_tree/w6-A.pxg",
+ "id": "white tree",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 14,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  1,
+  10,
+  14,
+  47
+ ],
+ "note": "가득 찬 흰 꽃구름 수관, 왼쪽 밝고 오른쪽 어두운 줄기, 흙 있는 돌 화분으로 나무답게 다듬음",
+ "ok": true
+}

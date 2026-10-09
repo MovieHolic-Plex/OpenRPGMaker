@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_dwarf/w90-A.pxg",
+ "id": "column dwarf",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.103
+ },
+ "lint": {
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "드워프 기둥: 밝은 타원 윗면 4행+앞면 갓돌 2행+축.",
+ "ok": true
+}

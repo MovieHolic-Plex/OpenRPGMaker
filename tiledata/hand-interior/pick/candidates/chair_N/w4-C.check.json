@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chair_N/w4-C.pxg",
+ "id": "chair N",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  15
+ ],
+ "note": "실루엣: 아치형 높은 등받이(8px)+세로 살대, 넓은 시트(10px), 바깥으로 벌어진 다리",
+ "ok": true
+}

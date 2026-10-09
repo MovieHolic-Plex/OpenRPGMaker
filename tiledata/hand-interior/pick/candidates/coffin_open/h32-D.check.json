@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/coffin_open/h32-D.pxg",
+ "id": "coffin open",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "D 효과: 뚜껑을 비껴 밀어 속을 열고, 안쪽은 어둡게(검정)·아래쪽에만 붉은 천이 비치게 하며 뚜껑 밑 틈 그림자를 더함",
+ "ok": true
+}

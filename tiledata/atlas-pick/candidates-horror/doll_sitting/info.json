@@ -1,0 +1,49 @@
+{
+ "id": "doll_sitting",
+ "slug": "doll_sitting",
+ "name": "앉은 인형",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "바닥에 다리를 뻗고 앉은 도자기 인형(마녀의 집 결): 창백한 얼굴이 칸 윗부분 절반을 차지할 만큼 크게, 큰 검은 눈 두 점, 금발 또는 검은 머리 덩이, 빛바랜 드레스(velv 또는 바랜 파랑). 목이 살짝 기울어짐. 1×1 에서 「인형」 으로 읽히는 게 먼저 — 머리를 과장.",
+ "palette_hint": "bisque 얼굴, velv/vblue 드레스, vyellow/void 머리, void 눈",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "set_with": [
+  "doll_shelf"
+ ],
+ "v5_ref": [
+  {
+   "id": "shelf:toy",
+   "name_ko": "인형 벽 선반",
+   "atlas": {
+    "x": 112,
+    "y": 48,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

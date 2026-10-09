@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/w3-C.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.215
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "실루엣 재해석 — 뾰족한 바늘 봉우리를 촘촘히 세운 바위탑 산, 윗 테를 톱니로 둬 멀리서도 산으로 읽힘.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.094
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.402
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     5,
+     3,
+     1,
+     3,
+     7,
+     6,
+     4,
+     2,
+     0,
+     2,
+     4,
+     6,
+     6,
+     5,
+     3,
+     5
+    ],
+    "s": [
+     5,
+     6,
+     6,
+     5,
+     5,
+     6,
+     7,
+     6,
+     5,
+     5,
+     6,
+     6,
+     5,
+     5,
+     6,
+     6
+    ],
+    "w": [
+     4,
+     6,
+     5,
+     4,
+     6,
+     5,
+     5,
+     4,
+     4,
+     6,
+     5,
+     4,
+     6,
+     5,
+     5,
+     4
+    ],
+    "e": [
+     6,
+     6,
+     7,
+     6,
+     6,
+     7,
+     7,
+     6,
+     6,
+     6,
+     7,
+     6,
+     6,
+     7,
+     7,
+     6
+    ]
+   },
+   "strait": 4,
+   "steps": {
+    "n": 4,
+    "s": 1,
+    "w": 2,
+    "e": 1
+   },
+   "amp": {
+    "n": 7,
+    "s": 2,
+    "w": 2,
+    "e": 1
+   },
+   "joinWorst": 2
+  },
+  "seam": 1.19
+ }
+}

@@ -1,0 +1,1301 @@
+/* 적 그룹(troops) 탭 — 2026-08 모던 개편.
+ *
+ * 이 파일 하나가 탭 레이아웃의 단일 권위다. troops.part-1/part-2.css 는 RM2003 창을
+ * 픽셀로 흉내 내던 고정 캔버스(1048×554, 170px 격자, MS UI Gothic)라 통째로 비웠고,
+ * desktop.css / desktop-record-shell/*.css 에 흩어져 있는 옛 규칙들은 여기서 4-클래스
+ * 스코프(.database-modal-backdrop .database-modal-window .database-modal-body …)로
+ * 덮는다 — 그 파일들은 lead 소유라 손대지 않는다.
+ *
+ * 특히 되살아나면 안 되는 두 가지:
+ *   1) `.db-troop-event-panel { overflow: hidden }` + 고정 grid-template-rows
+ *      (desktop.css:444 / 04-modern-records.css:1145) — 5열 고정 툴바가 81px 넘쳐
+ *      다섯 번째 버튼이 잘렸다(게이트 clipped:1). 여기서 flex 컬럼으로 바꿔 행 맵
+ *      자체를 무력화한다.
+ *   2) `.db-troop-member-list` 의 170px×3행 격자 — 멤버 목록/적 팔레트가 "배치"
+ *      필드 위에 겹쳐 그려지고 Y 입력이 통째로 잘렸다. 그 DOM 은 이제 없다.
+ *
+ * 워크벤치의 영역 맵과 좁은 상세 창 전환은 이 파일에서 함께 정의한다:
+ *   "top top" / "preview events" / "members events" / "balance events"
+ * 뷰(databaseTroopRecordView.ts)는 정확히 그 다섯 이름을 채우는 다섯 자식을 렌더한다. */
+
+/* ── 워크벤치 셸 ─────────────────────────────────────────────────────────── */
+
+/* The optional collection notice and record workspace share the bounded body.
+   The workspace occupies the remaining row, never 100% plus the notice. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(> .oprn-record-troops) {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops {
+  grid-row: 2;
+}
+
+/* 2026-09 구획 분할: 머리줄 → 구획 탭 → 구획 패널(배치 · 밸런스 · 전투 이벤트). 옛 다섯 영역 맵
+   ("top top" / "preview events" …)은 버렸다 — 워크벤치는 한 열 흐름이고, 두 열 배치는
+   「배치」 구획 안의 .db-troop-layout 만 쓴다. 레거시 시트(desktop.css / modern-records.part-3)가
+   이 클래스에 거는 grid-template-* 는 display:flex 로 무력화된다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: auto;
+  min-width: 0;
+  overflow: visible;
+  padding: 0 0 4px;
+  width: 100%;
+}
+
+/* ── 머리줄 ──────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-header {
+  align-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-header-main {
+  display: grid;
+  flex: 1 1 320px;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* 이름 칸은 제목처럼 보이게 — 라벨은 보조기술용으로만 남긴다(visually-hidden). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-troop-name-field > span {
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* studio-v2.part-3.css 의 입력 기본값이 (0,8,1) 이라 그보다 한 단계 높인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench.db-troop-studio .db-troop-header .db-troop-name-field input[type="text"][data-testid="db-field-name"] {
+  background-color: transparent;
+  border-color: transparent;
+  font: 700 20px/1.3 var(--font-ui);
+  max-width: 520px;
+  padding: 2px 8px;
+  margin-left: -9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench.db-troop-studio .db-troop-header .db-troop-name-field input[type="text"][data-testid="db-field-name"]:is(:hover, :focus-visible) {
+  border-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-summary {
+  align-items: center;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  display: flex;
+  flex-wrap: wrap;
+  font: 500 12.5px/1.5 var(--font-ui);
+  gap: 4px 10px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-summary-chip {
+  background: var(--db-studio-success-muted, rgba(15, 122, 74, 0.1));
+  border-radius: 999px;
+  color: var(--db-studio-success, var(--db-studio-success));
+  font: 600 11.5px/1.5 var(--font-ui);
+  padding: 1px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-header > .db-ws-toolbar {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* ── 구획 탭(세그먼트) ─────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-section-tabs {
+  align-self: start;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 9px;
+  display: inline-flex;
+  gap: 0;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-section-tab {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 13px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-section-tab + .db-troop-section-tab {
+  border-left: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-section-tab:hover {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-section-tab[aria-selected="true"] {
+  background: var(--db-studio-text-1, var(--db-studio-text-1));
+  color: var(--db-studio-surface, var(--db-studio-surface));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-section-tab:focus-visible {
+  outline: 2px solid var(--db-studio-accent, var(--db-studio-accent));
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-section-badge {
+  color: inherit;
+  font: 500 11.5px/1 var(--font-ui);
+  opacity: 0.7;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-section-panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* UA 의 [hidden]{display:none} 은 바로 위 author display:grid 에 진다 — 같은 파일에서 명시한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-section-panel[hidden] {
+  display: none;
+}
+
+/* ── 배치 구획: 미리보기(넓게) + 오른쪽 열(선택한 적 · 팔레트) ─────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layout-main {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-record-detail-pane,
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-detail-form {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  min-width: 0;
+  /* 스크롤은 상세 창에서 끝난다 — 워크벤치가 넘치면 여기서 스크롤한다. */
+  min-height: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-record-detail-pane { overflow: hidden; grid-template-rows: minmax(0, 1fr); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-detail-form { overflow: auto; height: 100%; }
+
+/* ── 카드 ────────────────────────────────────────────────────────────────
+   sectionCard() 가 만든 .db-ws-card 를 그대로 쓰되, 레거시 `.db-troop-classic-panel`
+   규칙(테두리 없는 fieldset, overflow:hidden, MS UI Gothic)을 무력화한다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-troop-card {
+  align-content: start;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08));
+  box-sizing: border-box;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 12px 14px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-troop-card > .db-ws-card-body {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-ws-card-title {
+  font: 700 12.5px/1.4 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-ws-card-hint {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11px/1.45 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-field-label {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 600 10.5px/1.4 var(--font-ui);
+  letter-spacing: 0.02em;
+}
+
+/* 필드 공통 — 레거시의 72px 라벨 열 고정을 풀고 라벨을 위로 올린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-field {
+  align-items: stretch;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="text"],
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="number"],
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="search"],
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
+  background-color: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 7px;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 400 12.5px/1.5 var(--font-ui);
+  height: auto;
+  min-height: 30px;
+  min-width: 0;
+  padding: 4px 9px;
+  width: 100%;
+}
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 9px 로 덮어 글자가 화살표를 침범한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select {
+  padding-right: 24px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input:not([type="radio"]):focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio select:focus-visible {
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
+  outline: 2px solid var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  outline-offset: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio input[type="checkbox"] {
+  accent-color: var(--db-studio-accent, var(--db-studio-accent));
+  flex: 0 0 auto;
+  height: 15px;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  width: 15px;
+}
+
+/* ── 상단 스트립: 이름 + 설정 ─────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-top-controls {
+  border-bottom: 0;
+  box-sizing: border-box;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  height: auto;
+  min-width: 0;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-card-identity .db-ws-card-body {
+  align-content: start;
+  gap: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-config-grid {
+  align-items: end;
+  display: grid;
+  gap: 10px 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(155px, 100%), 1fr));
+  min-width: 0;
+}
+
+/* 전투 배경 겹 — 겹마다 카드 한 장. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-card {
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layer-head strong {
+  font: 600 12px/1.4 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio-group {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio-pills {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+}
+
+/* `.db-troop-radio input[value=…]` 는 e2e 계약이라 네이티브 radio 를 유지한다 —
+   알약 모양은 라벨에만 입힌다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio {
+  align-items: center;
+  border-radius: 6px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 5px;
+  letter-spacing: 0;
+  padding: 6px 12px;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+/* 레거시 `.db-troops-classic-workbench input { height: 32px }`(desktop.css)이 라디오까지 키워
+   알약 글자를 덮었다(실측) — 라디오만 제 크기로 돌린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-troop-radio input[type="radio"] {
+  height: 13px;
+  margin: 0;
+  min-height: 0;
+  padding: 0;
+  width: 13px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio:hover {
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-radio.active {
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  box-shadow: var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-check-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-check {
+  align-items: center;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1.3 var(--font-ui);
+  gap: 7px;
+  letter-spacing: 0;
+  padding: 7px 11px;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-check.active {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+/* ── 미리보기 ───────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-panel {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-battle-preview-stage {
+  /* 적 좌표 공간이 320×160 이라 2:1 이 실제 비율이다. 넓은 왼쪽 열을 채운다. */
+  aspect-ratio: 2 / 1;
+  background:
+    linear-gradient(180deg, #a8c8e8 0 18%, #93bde0 19% 25%, #55a13d 26% 100%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 45%);
+  background-position: center;
+  background-size: cover;
+  border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+  border-radius: 8px;
+  height: auto;
+  max-height: 420px;
+  min-height: 180px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-battle-preview-stage::before {
+  background: linear-gradient(90deg, transparent, rgba(71, 62, 142, 0.24), transparent);
+  content: "";
+  height: 28px;
+  left: 45%;
+  position: absolute;
+  right: 8%;
+  top: 24px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-sprite {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  min-height: 0;
+  outline: 0;
+  padding: 0;
+  position: absolute;
+  transform: translate(-50%, -70%);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-sprite.active {
+  filter: drop-shadow(0 0 2px var(--db-studio-surface)) drop-shadow(0 0 6px #fff45f);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-sprite.hidden-member {
+  filter: grayscale(1);
+  opacity: 0.42;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-sprite.is-recentered {
+  filter: drop-shadow(0 0 3px #ff6b6b);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-recenter-line {
+  background: repeating-linear-gradient(180deg, rgba(255, 107, 107, 0.85) 0 6px, transparent 6px 12px);
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-party-marker {
+  align-items: center;
+  /* 알파 0.55 로는 밝은 전투 배경이 그대로 올라와 흰 숫자가 2.83:1 까지 떨어졌다(실측).
+     마커는 임의의 그림 위에 얹히므로 뒤 배경에 의존하지 않을 만큼 불투명하게 둔다. */
+  background: rgba(47, 41, 100, 0.92);
+  border: 1px dashed rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  color: var(--db-studio-on-accent);
+  display: flex;
+  font: 600 10px/1 var(--font-ui);
+  height: 20px;
+  justify-content: center;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 20px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-empty-member {
+  background: rgba(15, 23, 42, 0.14);
+  border-radius: 8px;
+  bottom: 14px;
+  color: var(--db-studio-on-accent);
+  display: grid;
+  font: 500 12px/1 var(--font-ui);
+  height: 64px;
+  left: 12px;
+  place-items: center;
+  position: absolute;
+  width: 64px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-caption {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 0;
+  border-radius: 7px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 400 11.5px/1.5 var(--font-ui);
+  height: auto;
+  margin: 0;
+  overflow: hidden;
+  padding: 5px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-legend-chip {
+  align-items: center;
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  display: inline-flex;
+  font: 500 10.5px/1.4 var(--font-ui);
+  gap: 5px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-legend-chip::before {
+  border-radius: 3px;
+  content: "";
+  height: 9px;
+  width: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-legend-party::before {
+  background: rgba(71, 62, 142, 0.55);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-legend-recenter::before {
+  background: rgba(255, 107, 107, 0.85);
+}
+
+/* ── 멤버 편집기 ─────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-editor {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-columns {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-roster,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-inspector {
+  align-content: start;
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-inspector-hint {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11.5px/1.55 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-nav-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-xy-row {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-rows {
+  align-content: start;
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+  grid-column: auto;
+  grid-row: auto;
+  max-height: 152px;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row {
+  align-items: center;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  cursor: pointer;
+  display: grid;
+  font: 500 12px/1.4 var(--font-ui);
+  gap: 8px;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  min-height: 28px;
+  overflow: hidden;
+  padding: 4px 8px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row:hover {
+  border-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.active {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  box-shadow: inset 2px 0 0 var(--db-studio-accent, var(--db-studio-accent));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.is-hidden-member .db-troop-member-name {
+  opacity: 0.55;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-index {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 600 10.5px/1 var(--font-mono);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-flag {
+  background: var(--db-studio-well, var(--db-studio-well));
+  border-radius: 4px;
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 600 11px/1.35 var(--font-ui);
+  padding: 3px 5px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-coords {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 500 11px/1.35 var(--font-mono);
+  white-space: nowrap;
+}
+
+/* 선택된 행은 배경 틴트가 더 짙어 text-3 이 4.45:1 로 아슬하게 미달한다(실측).
+   그 행에서만 한 단계 진한 text-2 로 올린다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.active :is(.db-troop-member-index, .db-troop-member-coords) {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+}
+
+/* `.db-troop-member-row.empty` 는 e2e 계약(qa-troops.spec.ts:193)이라 클래스를 유지하되,
+   행이 아니라 빈 상태 카드처럼 보이게 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-row.empty {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  cursor: default;
+  display: block;
+  grid-template-columns: none;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-list {
+  align-content: start;
+  display: grid;
+  gap: 6px;
+  /* max-height 상자 안의 auto 행은 칸(min-height:0)을 23px 로 눌렀다(실측) — 행을 내용 높이로 고정. */
+  grid-auto-rows: max-content;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  max-height: 232px;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px;
+}
+
+/* 팔레트 칸 — 스프라이트 썸네일 위, 이름 아래. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-enemy-row {
+  align-content: start;
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  cursor: pointer;
+  display: grid;
+  font: 500 11.5px/1.3 var(--font-ui);
+  gap: 4px;
+  justify-items: center;
+  min-height: 0;
+  min-width: 0;
+  padding: 6px 4px 5px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-row .db-list-thumb {
+  height: 40px;
+  width: 40px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-enemy-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-enemy-row:hover {
+  border-color: var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troops-classic-workbench .db-troop-enemy-row.active {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+/* ── 밸런스 ─────────────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-panel-balance {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-panel-balance .db-ws-stats {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-sim-row {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(110px, 160px) auto;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-sim-result {
+  font: 500 12px/1.5 var(--font-ui);
+}
+
+/* ── 전투 이벤트 패널 ─────────────────────────────────────────────────────
+   레거시 시트 두 곳이 이 패널에 `overflow:hidden` + 고정 행 맵을 걸어 두어 툴바
+   다섯 번째 버튼이 잘렸다. flex 컬럼으로 바꾸면 어떤 grid-template-rows 도 무력해진다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-panel {
+  align-self: stretch;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08));
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: auto;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 12px 14px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-panel h3 {
+  background: transparent;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  float: none;
+  font: 700 12.5px/1.4 var(--font-ui);
+  margin: 0;
+  padding: 0;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-head-hint {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11px/1.45 var(--font-ui);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-troop-event-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-template-columns: none;
+  height: auto;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality {
+  align-items: center;
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  display: flex;
+  font: 500 11.5px/1.5 var(--font-ui);
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-dot {
+  border-radius: 50%;
+  flex: 0 0 auto;
+  height: 7px;
+  width: 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-warn {
+  background: rgba(180, 83, 9, 0.07);
+  border-color: rgba(180, 83, 9, 0.22);
+  color: var(--db-studio-warning-strong);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-warn .db-troop-event-quality-dot {
+  background: var(--db-studio-warning);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-good {
+  background: var(--db-studio-success-muted, rgba(15, 122, 74, 0.1));
+  border-color: rgba(15, 122, 74, 0.22);
+  color: var(--db-studio-success, var(--db-studio-success));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-quality-good .db-troop-event-quality-dot {
+  background: var(--db-studio-success, var(--db-studio-success));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-page-tabs {
+  align-items: center;
+  border-bottom: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-page-tab {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  font: 600 11.5px/1 var(--font-ui);
+  max-width: 180px;
+  min-height: 26px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-page-tab:hover {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-page-tab.active {
+  background: var(--db-studio-accent-soft, rgba(74, 87, 214, 0.08));
+  border-color: var(--db-studio-accent-border, rgba(74, 87, 214, 0.16));
+  color: var(--db-studio-accent, var(--db-studio-accent));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-condition-strip {
+  align-items: center;
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-condition-strip > span {
+  border-right: 0;
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  flex: 0 0 auto;
+  font: 600 10.5px/1.4 var(--font-ui);
+  padding-left: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-condition-strip .db-field {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-condition-strip .db-field > span {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-condition-note {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  flex: 1 1 100%;
+  font: 400 11px/1.5 var(--font-ui);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-details {
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  min-height: 0;
+  min-width: 0;
+  overflow: visible;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-details > .db-ws-empty,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-details > .db-advanced-panel,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-details > fieldset {
+  grid-column: 1 / -1;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-command-area {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  /* 자라되 끝없이 자라지 않는다 — 예전 `flex:1` + 스트레치 조합은 명령 영역 하나가
+     835px 짜리 빈 흰 상자가 되게 만들었다. */
+  flex: 1 1 auto;
+  font: 400 12.5px/1.6 var(--font-ui);
+  max-height: 340px;
+  min-height: 120px;
+  min-width: 0;
+  overflow: auto;
+  padding: 6px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-command-line {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  min-height: 22px;
+}
+
+/* 페이지가 없을 때의 명령 영역 — 예전에는 ◆ 한 글자만 덩그러니 남아 큰 흰 구멍이 됐다.
+   ◆ 는 e2e 계약(oprn-database-battle-records.spec.ts)이라 지우지 않고 설명을 붙인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-command-empty {
+  align-content: center;
+  display: grid;
+  gap: 4px;
+  height: 100%;
+  justify-items: center;
+  min-height: 0;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-command-empty .db-troop-command-line {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 18px/1 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-command-empty-text {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11.5px/1.55 var(--font-ui);
+  max-width: 34ch;
+}
+
+/* The list and navigation rails leave a much narrower detail area than the viewport. */
+.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-troops .oprn-detail-form {
+  container: troop-detail / inline-size;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio .db-ws-card-head {
+  flex-wrap: wrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-caption {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-preview-party-marker {
+  top: clamp(12px, var(--troop-marker-y), calc(100% - 12px));
+  left: clamp(12px, var(--troop-marker-x), calc(100% - 12px));
+}
+
+@container troop-detail (max-width: 760px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-collection-gate-warn.is-info {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+
+
+/* ── 설정 카드(배치 방식 · 전투 배경 · 판정 규칙) ─────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-backdrop-field {
+  align-items: start;
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-backdrop-field > .db-ws-toolbar {
+  margin: 0;
+  padding-top: 18px;
+}
+
+/* 공용 배경 고르개의 AI 생성 줄은 이 좁은 설정 카드에서 한 줄 전체를 쓴다. 초보에게는 접는다
+   (배경은 「설정…」·「배경 변경」으로 충분히 고른다). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-backdrop-field .ai-image-queue {
+  flex-basis: 100%;
+}
+
+/* 도트 측면 배경 종류 카드(battleSceneryPicker.ts) — 적 그룹 설정 카드와 지형 효과 「전투 · 표시」 카드가 같이 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-picker {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-cards {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-s, 6px);
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  padding: 4px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card:hover { border-color: var(--db-studio-border-default); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card.is-active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 1px var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card img,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card-auto {
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: cover;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card-auto {
+  align-items: center;
+  background: repeating-linear-gradient(135deg, var(--db-studio-inset), var(--db-studio-inset) 6px, var(--db-studio-border-subtle) 6px, var(--db-studio-border-subtle) 7px);
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 600 12px/1 var(--font-ui);
+  justify-content: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card strong { font: 600 12px/1.3 var(--font-ui); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card small {
+  color: var(--db-studio-text-2);
+  display: -webkit-box;
+  font: 11px/1.3 var(--font-ui);
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-note {
+  color: var(--db-studio-text-2);
+  font: 12px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-custom {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-custom-hint {
+  color: var(--db-studio-text-2);
+  flex-basis: 100%;
+  font: 11px/1.3 var(--font-ui);
+}
+
+/* ── 선택한 적 카드 ─────────────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-card-members > .db-ws-card-body {
+  gap: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-member-inspector:empty {
+  display: none;
+}
+
+/* ── 전투 이벤트: 페이지 0 개일 때 빈 상태는 명령 영역 하나에만 ─────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-event-command-area.is-empty {
+  align-content: center;
+  display: grid;
+  min-height: 160px;
+}
+
+/* ── 밸런스 구획: 행동 후보 · 받는 속성 배율 ─────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-panel {
+  align-content: start;
+  background: var(--db-studio-surface, var(--db-studio-surface));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08));
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  display: grid;
+  font: 400 12.5px/1.5 var(--font-ui);
+  gap: 12px;
+  min-width: 0;
+  padding: 12px 14px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-head {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-title {
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 700 12.5px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-hint,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-note,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-empty {
+  color: var(--db-studio-text-3, var(--db-studio-text-3));
+  font: 400 11.5px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-assumptions {
+  margin-left: auto;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-assumptions[open] {
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border-radius: 8px;
+  display: grid;
+  flex: 1 1 100%;
+  gap: 8px;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-assumptions-summary {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  cursor: pointer;
+  font: 600 11.5px/1.5 var(--font-ui);
+  list-style: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-assumption-fields {
+  display: grid;
+  gap: 8px 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(130px, 100%), 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-content {
+  align-items: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-content > :is(p, button) {
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-context {
+  color: var(--db-studio-text-2, var(--db-studio-text-2));
+  font: 500 12px/1.5 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-shared-warning {
+  background: rgba(180, 83, 9, 0.07);
+  border: 1px solid rgba(180, 83, 9, 0.22);
+  border-radius: 8px;
+  color: var(--db-studio-warning-strong);
+  font: 600 12px/1.5 var(--font-ui);
+  margin: 0;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-action {
+  align-content: start;
+  background: var(--db-studio-inset, var(--db-studio-inset));
+  border: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-prediction {
+  color: var(--db-studio-text-1, var(--db-studio-text-1));
+  font: 600 12.5px/1.45 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-studio :is(.db-troop-intent-remove, .db-troop-intent-add) {
+  justify-self: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-elements {
+  border-top: 1px solid var(--db-studio-border-subtle, rgba(15, 23, 42, 0.08));
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-elements:empty {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-troop-intent-rate-grid {
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+}

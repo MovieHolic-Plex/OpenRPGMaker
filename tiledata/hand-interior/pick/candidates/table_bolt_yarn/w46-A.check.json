@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_bolt_yarn/w46-A.pxg",
+ "id": "table:bolt+yarn",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 27,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "3/4: 상판 윗면 11행(옷감·실타래가 앉음)+앞가장자리 하이라이트(11행 7)+처마 그림자 2행, 앞면 낮게 들어감. 물건 위치·색 불변.",
+ "ok": true
+}

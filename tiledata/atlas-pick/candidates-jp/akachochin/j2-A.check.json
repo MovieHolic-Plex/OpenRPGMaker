@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/akachochin/j2-A.pxg",
+ "set": "jp",
+ "id": "akachochin",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  3,
+  0,
+  12,
+  15
+ ],
+ "note": "강남 결: 짙은 옻 뚜껑·붉은 몸통에 가로 살대 세 줄, 왼쪽 한 단 밝게·오른쪽 한 단 어둡게, 검은 「酒」 한 자(1px 획), 오른쪽 옅은 벽 그늘.",
+ "ok": true
+}

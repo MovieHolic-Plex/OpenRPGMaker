@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/gilded_wardrobe/h141-E.pxg",
+ "id": "gilded wardrobe",
+ "hard": [],
+ "warn": [
+  "접지: 맨 아래 불투명 줄 y=31 — 캔버스 바닥 y=47 에서 16px 떠 있다"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "흰 칠·금장 두 문과 기존 디자인 유지, 문 몸통 33→17행으로 세로 16행 압축하고 받침 y=26~31로 이동하여 높이 32px; 꼭대기 윗면 4행(y=1~4)",
+ "ok": true
+}

@@ -1,0 +1,20 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spellbook_stand/w55-B.pxg",
+ "id": "spellbook stand",
+ "hard": [
+  "size: 16x16 ≠ resize.json 캔버스 32x24"
+ ],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   24
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 1
+  },
+  "why": "사용자 메모(2026-09-30 「2x1 사이즈가 나을듯」) + 2026-10-01 「왜케 크냐」: 가로 2칸은 지키되 낮고 작게 — 위로 8px 만 솟는다(w53-A 32x32 는 너무 큼)"
+ },
+ "ok": false
+}

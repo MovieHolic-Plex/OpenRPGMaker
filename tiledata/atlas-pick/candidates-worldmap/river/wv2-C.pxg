@@ -1,0 +1,76 @@
+// river wv2-C
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 2
+@mat b wriver 2
+@mat c wriver 3
+@mat d wriver 4
+@mat e wriver 5
+@mat f wsea 5
+@mblock 0 0
+................dcccccccccccccde.afccccccccccfa.
+.......aa.......dedcccccccccdedcaafcccccccccdfaa
+.....aaffaa.....ccccccccccccccccffccccccccccccff
+....affccffa....ccccbcccccccccccccccbccccccccccc
+...afbcccccfa...cbcccbcccccccccbcbcccbcccccccccb
+..afdedcccccfa..dcccdedcccccccdedcccdedcccccccde
+..afdccdeedcfa..ccdedccdeedcccccccdedccdeedccccc
+.afcdedccccccfa.ccccdedcccccccccccccdedccccccccc
+.afcccccccdedfa.ccccccccccdedcccccccccccccdedccc
+..afccccbdedfa..ccccccccbdeddedcccccccccbdeddedc
+..afcccdedccfa..cccccccdedcccccbcccccccdedcccccb
+...afedccccfa...bcccdedccccbccccbcccdedccccbcccc
+....affccffa....cccbcccccccccccccccbcccccccccccc
+.....aaffaa.....cccccccccccccdedffcccccccccccdff
+.......aa.......cccccccccbccccccaafccccccbcccfaa
+................dbccbcccccccccde.afcbccccccccfa.
+..........aaa.............aaa...................
+.......aaafffaaaaaaa..aaaafffaaaaaaa..aaa.......
+.....aafffcccfffffffaaffffcccfffffffaafffaa.....
+....affcccccccccccccffccccccccccccccffcccffa....
+...afbcccccccccbcbcccbcccccccccbcbcccbcccccfa...
+..afdedcccccccdedcccdedcccccccdedcccdedcccccfa..
+..afdccdeedcccccccdedccdeedcccccccdedccdeedcfa..
+.afcdedcccccccccccccdedcccccccccccccdedccccccfa.
+.afcccccccdedcccccccccccccdedcccccccccccccdedfa.
+.afcccccbdeddedcccccccccbdeddedcccccccccbdeddfa.
+..afcccdedcccccbcccccccdedcccccbcccccccdedcccfa.
+..afdedccccbccccbcccdedccccbccccbcccdedccccbccfa
+..afcccccccccccccccbcccccccccccccccbccccccccccfa
+.afccccccccccdedcccccccccccccdedcccccccccccccdfa
+.afccccccbcccccccccccccccbcccccccccccccccbcccfa.
+.afcbcccccccccdedbccbcccccccccdedbccbccccccccfa.
+.afcccccccccccdedcccccccccccccdedccccccccccccfa.
+.afcccccccccdedcdedcccccccccdedcdedcccccccccfa..
+.afcccccccccccccccccccccccccccccccccccccccccfa..
+.afcbcccccccccccccccbcccccccccccccccbccccccccfa.
+.afccbcccccccccbcbcccbcccccccccbcbcccbcccccccfa.
+afccdedcccccccdedcccdedcccccccdedcccdedccccccfa.
+afdedccdeedcccccccdedccdeedcccccccdedccdeedccfa.
+.afcdedcccccccccccccdedcccccccccccccdedccccccfa.
+.afcccccccdedcccccccccccccdedcccccccccccccdedfa.
+.afcccccbdeddedcccccccccbdeddedcccccccccbdeddfa.
+..afcccdedcccccbcccccccdedcccccbcccccccdedcccfa.
+..afdedccccbccccbcccdedccccbccccbcccdedccccbccfa
+..afcccccccccccccccbcccccccccccccccbccccccccccfa
+.afccccccccccdedcccccccccccccdedcccccccccccccdfa
+.afccccccbcccccccccccccccbcccccccccccccccbcccfa.
+.afcbcccccccccdedbccbcccccccccdedbccbccccccccfa.
+.afcccccccccccdedcccccccccccccdedccccccccccccfa.
+.afcccccccccdedcdedcccccccccdedcdedcccccccccfa..
+.afcccccccccccccccccccccccccccccccccccccccccfa..
+.afcbcccccccccccccccbcccccccccccccccbccccccccfa.
+.afccbcccccccccbcbcccbcccccccccbcbcccbcccccccfa.
+afccdedcccccccdedcccdedcccccccdedcccdedccccccfa.
+afdedccdeedcccccccdedccdeedcccccccdedccdeedccfa.
+.afcdedcccccccccccccdedcccccccccccccdedccccccfa.
+.afcccccccdedcccccccccccccdedcccccccccccccdedfa.
+..afccccbdeddedcccccccccbdeddedcccccccccbdedfa..
+..afcccdedcccccbcccccccdedcccccbcccccccdedccfa..
+...afedccccbccccbcccdedccccbccccbcccdedccccfa...
+....affccffffccccccbcccccffffccccccbcccccffa....
+.....aaffaaaaffffccffffffaaaaffffccffffffaa.....
+.......aa....aaaaffaaaaaa....aaaaffaaaaaa.......
+.................aa..............aa.............

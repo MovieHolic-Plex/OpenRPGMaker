@@ -1,0 +1,54 @@
+// 둥근 돌 우물·나무 도르래 지붕·어두운 물 윗면을 전형적인 SFC JRPG 손 도트로 신작; 꼭대기 윗면 5행(y=1~5)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 4
+@mat c wood 6
+@mat d wood 7
+@mat e wood 5
+@mat h iron 4
+@mat i iron 2
+@mat j stone 1
+@mat k stone 2
+@mat l stone 3
+@mat m stone 4
+@mat n stone 5
+@mat r pine 4
+@mat s pine 2
+@mat u water 0
+@mat v iron 2
+@layer object
+@mblock 0 0
+...aaaaaaaaaa...
+..addddddddcca..
+.accbccceccccba.
+adccccbccccbccba
+accccbccceccccba
+accbccccccecccba
+abbbbbbbbbbbbbba
+.aaaaaaaaaaaaaa.
+..dc........ba..
+..dc...iii..ba..
+..dc..ihhi..ba..
+..dcccihicccba..
+..beaaaiaaaaba..
+..dc...rr...ba..
+..dc....r...ba..
+..dc....r...ba..
+..dc....r...ba..
+..dc....r...ba..
+..dc....r...ba..
+..dcnnnmmmkkba..
+..nnmmjjjjkkk...
+.nmmjuuuruujlk..
+nnmjuvvuruujlkk.
+nmljuuuuruujlkk.
+nmlmjuuuuujlkkj.
+.nmmnmmmlllkkj..
+.nmmmjlllljkkj..
+.nllljmmlljkkj..
+..jmmmmmjllkj...
+..jllllljllkj...
+...jllllkkkj....
+....jjjjjjjj....

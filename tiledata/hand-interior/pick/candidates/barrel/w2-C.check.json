@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/barrel/w2-C.pxg",
+ "id": "barrel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "실루엣 재해석: 배가 더 볼록한 통, 뚜껑 넓힘, 테 두 줄 굵게",
+ "ok": true
+}

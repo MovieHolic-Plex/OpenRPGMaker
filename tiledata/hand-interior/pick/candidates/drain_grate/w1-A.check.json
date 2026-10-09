@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/drain_grate/w1-A.pxg",
+ "id": "drain grate",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  3,
+  12,
+  12
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  12
+ ],
+ "note": "v5 창살 그대로 다듬음: 창살 첫 줄 끝을 밝은 A 로 올려 윗면 하이라이트, 가운데 가로 살 한 줄을 B 로 이어 창살이 한 판처럼 읽히게 함, 아래 반은 어두운 E 살",
+ "ok": true
+}

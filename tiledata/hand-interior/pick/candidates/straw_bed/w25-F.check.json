@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/straw_bed/w25-F.pxg",
+ "id": "straw bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  7,
+  15,
+  28
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "note": "땅에 깐 거친 자루천 위에 짚을 얹은 잠자리. 천 가장자리에 박음질, 짚이 천 밖으로 삐져나온다.",
+ "ok": true
+}

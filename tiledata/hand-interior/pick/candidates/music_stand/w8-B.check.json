@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/music_stand/w8-B.pxg",
+ "id": "music stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "lint": {
+  "failed": [
+   "orphans"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  10,
+  13,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  30
+ ],
+ "note": "쇠 재질을 밝은 회청색 하이라이트(왼쪽 위)로 강하게 명암, 악보 받침 턱 추가, 바닥에 반투명 접촉 그림자.",
+ "ok": true
+}

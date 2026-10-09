@@ -1,0 +1,49 @@
+{
+ "id": "gn-arrow",
+ "slug": "gn_arrow",
+ "name": "노면 화살표",
+ "scene": "도로·보도 표시",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "노면 화살표 직진(북) 1×2. 차로 화살표: 교차로 멈춤선 3~6칸 앞, 차로 안쪽 칸(점선이 없는 칸)에. 연석 옆 차로와 중앙선 칸은 피한다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-arrow-ns-n",
+  "gn-arrow-ns-s",
+  "gn-arrow-ew-w",
+  "gn-arrow-ew-e",
+  "gn-arrow-lt-w"
+ ],
+ "tiles": [
+  4843,
+  4844,
+  4845,
+  4846,
+  4847,
+  4848,
+  4849,
+  4850,
+  4873,
+  4874
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   51,
+   62
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dining_3x1/w62-A.pxg",
+ "id": "dining 3x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  47,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  47,
+  15
+ ],
+ "note": "dining 3x1: 몸통=dining 2x1 pilot-B(왼쪽 위 빛·앞 테 한 단 낮게·접지 그림자)를 48x16로 늘임/줄임, 16px 마다 결, 다리 양끝 (work/w62-dining.py in candidates/dining_2x1/work)",
+ "ok": true
+}

@@ -1,0 +1,241 @@
+// projectLint 라이브러리 검증: 정상 프로젝트 0 error + 고의 파손 fixture가 error를 낸다.
+import { describe, expect, it } from "vitest";
+import type { Command, Project } from "@/project/types";
+import { deserialize, serialize } from "@/project/io";
+import { projectLint, type LintIssue } from "@/project/lint/projectLint";
+import { createBlankProject } from "@/project/defaults/defaultProject";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { MAX_TOOL_MAP_DIMENSION } from '@/project/mapSizeLimits';
+
+const TILE_FLOOR_IMPASSABLE = 342; // TILE.FLOOR — 통행 불가.
+
+function errorsOf(issues: readonly LintIssue[]): readonly LintIssue[] {
+  return issues.filter((issue) => issue.severity === "error");
+}
+
+// JSON 왕복으로 안전하게 깊은 복제(mutable 사본).
+function cloneProject(project: Project): Project {
+  return deserialize(serialize(project));
+}
+
+describe("projectLint", () => {
+  it("reports a native partial map command from the guarantee registry", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.events.push({
+      id: "ev_partial_native",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [{ kind: "giveMonster", speciesId: "monster_missing", level: 1 }],
+    });
+
+    const issues = projectLint(project);
+
+    expect(issues).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "runtime-support:giveMonster",
+      mapId: map.id,
+    }));
+  });
+
+  it("런타임 지원 제한 명령을 맵/커먼 이벤트 warning으로 보고한다", () => {
+    const project = cloneProject(createBlankProject());
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    const comment: Command = { kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "런타임 무효과" } };
+    map.events.push({
+      id: "ev_editor_only",
+      x: 3,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "p1",
+          name: "본문",
+          conditions: [],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          overlapForbidden: true,
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [comment],
+        },
+      ],
+    });
+    project.commonEvents.push({ id: "ce_editor_only", name: "주석", trigger: "none", commands: [comment] });
+    project.database.troops[0]?.battleEventPages.push({
+      id: "bp_editor_only",
+      name: "주석",
+      conditions: [],
+      span: "battle",
+      commands: [comment],
+    });
+
+    const issues = projectLint(project).filter((issue) => issue.code === "runtime-support:m2-088-comment");
+
+    expect(issues).toHaveLength(3);
+    expect(issues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 4 });
+    expect(issues.map((issue) => issue.message).join("\n")).toContain("커먼 이벤트 ce_editor_only");
+    expect(issues.map((issue) => issue.message).join("\n")).toContain("트룹");
+  });
+
+  it("비배열 page.commands는 순회 예외 대신 command-shape warning으로 건너뛴다", () => {
+    const project = cloneProject(createBlankProject());
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.events.push({
+      id: "ev_malformed",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "p_bad",
+          name: "깨진 페이지",
+          conditions: [],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "same",
+          overlapForbidden: true,
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: { kind: "text", body: "배열 아님" } as unknown as Command[],
+        },
+      ],
+    });
+
+    const issues = projectLint(project);
+    expect(issues.some((issue) => issue.code === "command-shape" && issue.message.includes("ev_malformed/p_bad.commands"))).toBe(true);
+  });
+
+  describe("playerTouch-impassable", () => {
+    // 밟기형 접촉 이벤트 픽스처: 지정한 priority의 playerTouch 페이지 하나짜리 이벤트를 만든다.
+    function pushTouchEvent(project: Project, x: number, y: number, priority: "below" | "same"): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.events.push({
+        id: "ev_touch_fixture",
+        x,
+        y,
+        trigger: { kind: "playerTouch" },
+        commands: [],
+        pages: [
+          {
+            id: "p_touch",
+            name: "접촉",
+            conditions: [],
+            graphic: { transparent: true },
+            trigger: { kind: "playerTouch" },
+            priority,
+            overlapForbidden: priority === "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            commands: [{ kind: "text", body: "touch" }],
+          },
+        ],
+      });
+    }
+
+    function makeImpassable(project: Project, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.lowerTiles[y * map.width + x] = TILE_FLOOR_IMPASSABLE;
+      map.upperTiles[y * map.width + x] = -1;
+    }
+
+    it("통행 불가 타일 위의 밟기형(priority below) playerTouch 이벤트를 warning으로 보고한다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 5, 5);
+      pushTouchEvent(project, 5, 5, "below");
+      const issues = projectLint(project).filter((issue) => issue.code === "playerTouch-impassable");
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({ severity: "warning", x: 5, y: 5 });
+      expect(issues[0]?.message).toContain("ev_touch_fixture");
+    });
+
+    it("통행 가능한 타일 위의 playerTouch 이벤트는 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      pushTouchEvent(project, 5, 5, "below");
+      expect(projectLint(project).filter((issue) => issue.code === "playerTouch-impassable")).toHaveLength(0);
+    });
+
+    it("통행 불가 타일이라도 priority same(차단형·부딪힘 발동)은 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 5, 5);
+      pushTouchEvent(project, 5, 5, "same");
+      expect(projectLint(project).filter((issue) => issue.code === "playerTouch-impassable")).toHaveLength(0);
+    });
+  });
+
+  describe("event-unreachable", () => {
+    function makeImpassable(project: Project, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.lowerTiles[y * map.width + x] = TILE_FLOOR_IMPASSABLE;
+      map.upperTiles[y * map.width + x] = -1;
+    }
+
+    function pushActionEvent(project: Project, id: string, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.events.push({ id, x, y, trigger: { kind: "action" }, commands: [] });
+    }
+
+    function unreachableOf(project: Project): readonly LintIssue[] {
+      return projectLint(project).filter((issue) => issue.code === "event-unreachable");
+    }
+
+    it("자신의 칸과 4방향 이웃이 전부 통행 불가면 warning을 보고한다", () => {
+      const project = cloneProject(createBlankProject());
+      // (5,5)와 4방향 이웃을 벽으로 감싼다.
+      makeImpassable(project, 5, 5);
+      makeImpassable(project, 5, 4);
+      makeImpassable(project, 5, 6);
+      makeImpassable(project, 4, 5);
+      makeImpassable(project, 6, 5);
+      pushActionEvent(project, "ev_walled", 5, 5);
+
+      const issues = unreachableOf(project);
+      expect(issues, JSON.stringify(issues, null, 2)).toHaveLength(1);
+      expect(issues[0]).toMatchObject({ severity: "warning", x: 5, y: 5 });
+      expect(issues[0]?.message).toContain("ev_walled");
+      expect(issues[0]?.message).toContain("통행 가능한 칸으로 옮기세요");
+    });
+
+    it("통행 불가 타일이라도 통행 가능한 이웃이 하나 있으면(문·간판) 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 7, 7); // 문 타일 자체만 통행 불가, 이웃은 기본 통행 가능.
+      pushActionEvent(project, "ev_door", 7, 7);
+
+      expect(unreachableOf(project)).toHaveLength(0);
+    });
+
+    it("통행 가능한 타일 위의 평범한 이벤트는 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      pushActionEvent(project, "ev_normal", 9, 9);
+
+      expect(unreachableOf(project)).toHaveLength(0);
+    });
+  });
+
+  // OPRN-OUT-018: 생성 계약이 256을 넘는 맵을 만들지 않으므로 남아 있는 초과 맵은 지원 밖
+  // 상태다. warning 이던 동안 build_world 가 만든 257 맵이 프로젝트에 그대로 남을 수 있었다.
+  it("지원 상한 초과 맵을 error로 보고한다", () => {
+    const project = cloneProject(createBlankProject());
+    const huge = createBlankMap("임포트 초대형", MAX_TOOL_MAP_DIMENSION + 1, 12);
+    project.maps[huge.id] = huge;
+    project.mapTree.children.push({ mapId: huge.id, children: [] });
+
+    const issues = projectLint(project);
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        severity: "error",
+        code: "map-size",
+        mapId: huge.id,
+      })
+    );
+    expect(errorsOf(issues).some((issue) => issue.code === "map-size")).toBe(true);
+  });
+});

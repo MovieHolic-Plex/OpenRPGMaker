@@ -1,0 +1,68 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a vpine 0
+@mat b vpine 5
+@mat c vpine 3
+@mat d vpine 6
+@mat e vpine 1
+@mat f vlinen 5
+@mat g vlinen 6
+@mat h vlinen 4
+@mat i vred 3
+@mat j vred 4
+@mat k vred 2
+@mat l vlinen 2
+@mat m vred 1
+@mat n vgreen 3
+@mat p vgreen 2
+@mat q vgreen 1
+@mblock 0 0
+.......da.....................da
+......abc....................abe
+......abcbbbbbbbbbbbbbbbbbbbbabe
+......abcccccccccccccccccccccabe
+......abceeeeeeeeeeeeeeeeeeeeabe
+......abcggggggggjjjjjjjjjjjjabe
+......abcfggggggfiiiiiiiiiiiiabe
+......abcfggggggfiiiiiiiiiiiiabe
+......abcfhhhhhhfiiiiiiiiiiiiabe
+......abcffffffffkkkkkkkkkkkkabe
+......abcffffffffiiiiiiiiiiiiabe
+......abchhhhhhhhikkkkkkkkkkkabe
+be..beabchhhhhhhhikkkkkkkkkkkabe
+be..beabchhhhhhhhikkkkkkkkkkkabe
+be..beabchhhhhhhhikkkkkkkkkkkabe
+beccbeabchhhhhhhhikkkkkkkkkkkabe
+beeebeabcllllllllmmmmmmmmmmmmabe
+be..beabcbbbbbbbbbbbbbbbbbbbbabe
+be..beabcccccccccccccccccccccabe
+be..beabcccccccccccccccccccccabe
+beccbeabceeeeeeeeeeeeeeeeeeeeabe
+beeebeabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+beccbeabc~~~~~~~~~~~~~~~~~~~~abe
+beeebeabc--------------------abe
+be..beabcfggggggfnnnnnnnnnnnnabe
+be..beabcfggggggfnnnnnnnnnnnnabe
+be..beabcfhhhhhhfnnnnnnnnnnnnabe
+beccbeabcffffffffppppppppppppabe
+beeebeabcffffffffnnnnnnnnnnnnabe
+be..beabchhhhhhhhnpppppppppppabe
+be..beabchhhhhhhhnpppppppppppabe
+be..beabchhhhhhhhnpppppppppppabe
+beccbeabchhhhhhhhnpppppppppppabe
+beeebeabchhhhhhhhnpppppppppppabe
+be..beabcllllllllqqqqqqqqqqqqabe
+be..beabcbbbbbbbbbbbbbbbbbbbbabe
+be..beabcccccccccccccccccccccabe
+beccbeabcccccccccccccccccccccabe
+beeebeabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+be..beabc~~~~~~~~~~~~~~~~~~~~abe
+beccbeabc--------------------abe
+..ee..~~~~~~~~~~~~~~~~~~~~~~~~~~
+......--------------------------

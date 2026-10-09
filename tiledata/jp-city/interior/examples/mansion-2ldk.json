@@ -1,0 +1,411 @@
+{
+ "name": "일본 맨션 2LDK 실내(베란다)",
+ "plan": [
+  "##################",
+  "#.#..#..#....#...#",
+  "#.#..#..#....#...#",
+  "#.#.....#....#...#",
+  "#.#.....#....#...#",
+  "#.#.....#....#...#",
+  "#.#.######.####.##",
+  "#...#............#",
+  "#...#............#",
+  "#...#............#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#...#............#",
+  "#..#######..######",
+  "#..####........###",
+  "#..####........###",
+  "#..####........###",
+  "#..####........###",
+  "#..###############"
+ ],
+ "exitWidth": 2,
+ "floor": "flooring",
+ "wall": "cloth",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 1,
+   "y1": 5,
+   "floor": "cushion",
+   "wall": "cloth"
+  },
+  {
+   "x0": 3,
+   "y0": 0,
+   "x1": 4,
+   "y1": 5,
+   "floor": "cushion",
+   "wall": "cloth"
+  },
+  {
+   "x0": 6,
+   "y0": 0,
+   "x1": 7,
+   "y1": 5,
+   "floor": "bathtile",
+   "wall": "bathwall"
+  },
+  {
+   "x0": 9,
+   "y0": 0,
+   "x1": 12,
+   "y1": 5,
+   "floor": "carpet",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 11,
+   "y0": 6,
+   "x1": 16,
+   "y1": 8,
+   "floor": "flooring",
+   "wall": "kitchen-panel"
+  },
+  {
+   "x0": 1,
+   "y0": 13,
+   "x1": 3,
+   "y1": 14,
+   "floor": "tataki"
+  },
+  {
+   "x0": 7,
+   "y0": 15,
+   "x1": 14,
+   "y1": 18,
+   "floor": "h2-veranda-floor",
+   "wall": "cloth-beige"
+  },
+  {
+   "x0": 1,
+   "y0": 14,
+   "x1": 2,
+   "y1": 19,
+   "floor": "h2-veranda-floor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "toilet-paper",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "toilet",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "bath-mirror",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "washbasin",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "washing-machine",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "door-open-western",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "door-side-sliding",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "shower-faucet",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "bathtub",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "bath-stool",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "bath-bucket",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "curtain-window",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "bed-single",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "h2-bed-side",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "wardrobe",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "door-open-western",
+   "x": 10,
+   "y": 6
+  },
+  {
+   "id": "window-sash-small",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "bed-single",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "desk-study",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "door-open-western",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "h2-genkan-door-steel",
+   "x": 2,
+   "y": 14
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "kitchen-sink",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "kitchen-worktop",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "kitchen-stove",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "fridge",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "houseplant",
+   "x": 16,
+   "y": 13
+  },
+  {
+   "id": "h2-sash-door",
+   "x": 10,
+   "y": 14
+  },
+  {
+   "id": "h2-sandals",
+   "x": 10,
+   "y": 17
+  },
+  {
+   "id": "h2-laundry-pole",
+   "x": 7,
+   "y": 18
+  },
+  {
+   "id": "h2-railing",
+   "x": 9,
+   "y": 18
+  },
+  {
+   "id": "h2-railing",
+   "x": 10,
+   "y": 18
+  },
+  {
+   "id": "h2-railing",
+   "x": 11,
+   "y": 18
+  },
+  {
+   "id": "h2-railing",
+   "x": 12,
+   "y": 18
+  },
+  {
+   "id": "h2-ac-outdoor",
+   "x": 13,
+   "y": 18
+  },
+  {
+   "id": "h2-planter",
+   "x": 14,
+   "y": 18
+  },
+  {
+   "id": "h2-shoe-closet",
+   "x": 2,
+   "y": 9
+  },
+  {
+   "id": "genkan-mat",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "slippers",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "agarikamachi",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "agarikamachi",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "door-side-western",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "shoes-pair",
+   "x": 1,
+   "y": 13
+  },
+  {
+   "id": "tv-board",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "low-table",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "sofa-n",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "chair-dining-e",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-e",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "chair-dining-w",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "chair-dining-w",
+   "x": 9,
+   "y": 11
+  }
+ ],
+ "tables": [
+  {
+   "style": "kcounter",
+   "x": 12,
+   "y": 11,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "dining",
+   "x": 8,
+   "y": 10,
+   "w": 1,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "rice-cooker",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "kettle",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "fruit-bowl",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "plates",
+   "x": 8,
+   "y": 10
+  }
+ ],
+ "start": [
+  1,
+  18
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "mansion",
+   "x0": 0,
+   "y0": 0,
+   "x1": 17,
+   "y1": 19
+  }
+ ]
+}

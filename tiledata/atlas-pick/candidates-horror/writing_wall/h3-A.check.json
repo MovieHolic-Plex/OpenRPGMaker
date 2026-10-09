@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/writing_wall/h3-A.pxg",
+ "set": "horror",
+ "id": "writing_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  30,
+  15
+ ],
+ "note": "벽 핏글씨 「도와」: 획 2px, 왼쪽 위 밝고 오른쪽 아래 어두운 단, 가로획 밑에서 흘러내린 줄과 끝 방울, $ 번짐",
+ "ok": true
+}

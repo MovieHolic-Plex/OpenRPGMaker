@@ -1,0 +1,59 @@
+Interested in custom assets for your game?
+Get in touch to discuss your project!
+
+Contact
+Discord: scarloxy
+Email: ismaelgarcia.scarloxy@gmail.com
+
+Pricing
+
+Monsters
+
+First Stage / Small Monster
+- Front view: $20
+- Back view: $15
+- Menu sprite: $5
+
+Second Stage / Medium Monster
+- Front view: $30
+- Back view: $15
+- Menu sprite: $5
+
+Third Stage / Big Monster
+- Front view: $40
+- Back view: $15
+- Menu sprite: $5
+
+4-directional overworld walk: $30
+
+If you buy 10 different monsters at once, one will be free
+
+Animations
+
+Monster idle (4 frames):
+- Front only: $15
+- Front and back: $30
+
+Monster attack (4 frames):
+- Front only: $30
+- Front and back: $60
+
+People & NPCs
+
+Front view character: $30
+4-directional overworld walk (monsters or people): $30
+
+Tilesets
+
+Up to 16×16 tiles: $5
+Up to 32×32 tiles: $10
+Up to 64×64 tiles: $20
+Up to 128×128 tiles: $40
+
+Backgrounds
+
+640×320 background: $150
+
+UI
+
+Budget-based (contact for a quote)

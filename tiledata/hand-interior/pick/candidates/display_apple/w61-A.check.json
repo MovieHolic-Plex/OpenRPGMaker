@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/display_apple/w61-A.pxg",
+ "id": "display apple",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  4,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "몸통=display potion w7-B 나무 진열 상자(윗면+앞면 5단 판, 오른쪽 그림자) 그대로, 물건=이 기물 v5 의 apple 화소(옛 상자 테두리 제외)를 한 줄 내려 상자 윗면에 앉힘 (display_potion/work/w61-display.py)",
+ "ok": true
+}

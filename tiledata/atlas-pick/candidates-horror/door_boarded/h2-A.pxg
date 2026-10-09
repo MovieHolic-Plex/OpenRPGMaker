@@ -1,0 +1,51 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a mahog 1
+@mat b mahog 0
+@mat c mahog 4
+@mat d mahog 3
+@mat e mahog 2
+@mat f rot 1
+@mat g rot 5
+@mat h tin 6
+@mat i tin 3
+@mat j rot 4
+@mat k rot 3
+@mat l rot 0
+@mat m rot 2
+@mat n void 1
+@mat o void 0
+@mblock 0 0
+................
+.aaaaaaaaaaaaab.
+.accccccccccccb.
+.acdddeddeddeeb.
+.acdeeeeeeedeeb.
+.acdededdeddeeb.
+.acdededdeddeeb.
+fggggggggggggggf
+fhijjjjkjjjjkhif
+fljkjjjjkjjjjljf
+fmmmmmmmmmmmmmmf
+.acdededdeddeeb.
+.acdededdeddeeb.
+.acdededdeddeeb.
+facdcccccccdeeb.
+fhidddeddeddeebf
+flkgddeddeddehif
+fjjkgeeeeeedeljf
+.mmjjggddedggjjf
+.acmjjjgdegjkjm.
+.acdmjjhigjjjkb.
+.acdemmlgjjmmeb.
+.acdedggjjmgeeb.
+.acdegjkjmjjggb.
+.acdgjjjkemjkjg.
+.higjjmmdedmjhif
+.lkjjmcccccdmljf
+fjjkmdeddeddeemf
+fjmmddeddeddeebf
+fmcnnnnnnnnnneb.
+facooooooooooeb.
+.bbbbbbbbbbbbbb.

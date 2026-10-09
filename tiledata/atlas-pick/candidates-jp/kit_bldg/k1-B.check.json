@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_bldg/k1-B.pxg",
+ "set": "jp",
+ "id": "kit_bldg",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.527
+ },
+ "refmap": {
+  "cells": 35,
+  "atLeast95": 0,
+  "max": 0.262
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 73,
+ "bbox": [
+  0,
+  0,
+  127,
+  111
+ ],
+ "note": "그늘 강화 — 살구빛 타일 외벽, 깊게 들어간 창(문미 그늘), 주황·분홍 간판, 물탱크 밑 그늘",
+ "ok": true
+}

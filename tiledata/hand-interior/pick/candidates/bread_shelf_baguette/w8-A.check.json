@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf_baguette/w8-A.pxg",
+ "id": "bread shelf baguette",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "v5 열린 선반 골격 유지, 서 있는 바게트·굵은 롤빵·눕힌 바게트로 진열을 크고 또렷하게",
+ "ok": true
+}

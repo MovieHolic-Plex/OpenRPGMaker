@@ -1,0 +1,81 @@
+/* ============================================================================
+   생활 기술·제작 탭 (life-crafting) — 모던 개편 보강 레이어.
+
+   원칙
+   1. 이 시트는 **정제 전용**이다. 마크업은 이미 스타일이 있는 프리미티브
+      (`db-ws-*`)로만 조립돼 있어서, 이 파일을 @import 하지 않아도 탭은 읽을
+      수 있는 상태로 뜬다. 여기서 고치는 건 (a) 섹션 서브탭 한 줄 스크롤,
+      (b) 4열 레벨 보상 행, (c) 카드 안 체크박스 목록의 이중 테두리.
+   2. 색은 `--db-studio-*` 만 쓴다. 새 hex 없음.
+   3. 전부 `.database-modal-backdrop .database-modal-window .database-modal-body`
+      아래로 스코프한다.
+   ========================================================================= */
+
+/* ── 섹션 서브탭 ────────────────────────────────────────────────────────────
+   사이드바가 이미 '생활 기술·제작' 제목을 들고 있으므로 헤더에 제목을 다시
+   넣지 않는다. 열 개 항목은 줄바꿈하지 않고 가로로 흘린다 — wrap 하면 마지막
+   '가공 설비' 가 둘째 줄에 홀로 떨어져 이동 수단처럼 안 보인다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-section-nav {
+  flex-wrap: nowrap;
+  gap: 0;
+  max-width: none;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-section-nav .db-ws-section-tab.active .db-ws-section-badge {
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-life-workspace"] .db-ws-detail-body:has(> .db-ws-empty) {
+  align-content: center;
+}
+
+/* ── 레벨 보상 행 ────────────────────────────────────────────────────────────
+   `.db-life-nested-row` 는 "선택 + 수량 + 제거" 3열용이다. 레벨 보상은 필드가
+   셋(레벨/스위치/제작법) + 제거라 4열이 필요하다. 시트가 없으면 3열로 접혀
+   제거 버튼이 둘째 줄로 내려갈 뿐, 읽기/조작은 그대로 된다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-reward-row {
+  grid-template-columns: minmax(88px, 0.6fr) minmax(150px, 1fr) minmax(150px, 1fr) auto;
+}
+
+@media (max-width: 1199px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-life-reward-row {
+    grid-template-columns: minmax(72px, 0.5fr) minmax(120px, 1fr) minmax(120px, 1fr) auto;
+  }
+}
+
+/* 행 안의 제거 버튼은 내용 폭만 쓴다 — 그리드 자식 기본 stretch 로 전폭이 되던 문제. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-row-remove {
+  justify-self: start;
+}
+
+/* ── 카드 안 체크박스 목록 ───────────────────────────────────────────────────
+   `.db-life-checkbox-list` 는 원래 `<fieldset>` 이었다. 이제 `.db-ws-card` 안의
+   div 라서 테두리가 이중으로 겹친다 — 안쪽은 배경만 남긴 우물로 만든다. */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body > .db-life-checkbox-list {
+  background: var(--db-studio-inset);
+  border-color: transparent;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  max-height: 320px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* 카드 안 필드는 라벨을 왼쪽에 붙여 세로 길이를 줄인다(체크박스 한정). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body .db-life-field.is-checkbox {
+  margin-bottom: 0;
+}
+
+/* 목록 안 체크박스는 라벨 바로 옆에 붙인다 — 열이 넓어지면 라벨과 상자가 양 끝으로
+   벌어져 어느 상자가 어느 이름인지 눈으로 이어 붙이기 어려웠다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-life-checkbox-list .db-life-field {
+  gap: 6px;
+  grid-template-columns: max-content max-content;
+  justify-content: start;
+}

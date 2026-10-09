@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/clock/w10-B.pxg",
+ "id": "clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "note": "명암 강화: 케이스 왼쪽 결을 밝은 B, 오른쪽을 어두운 A 로 벌리고 문자판 오른쪽 아래에 K 그늘을 넣어 볼록한 느낌, 문자판 12·6 시 방향 눈금 정리",
+ "ok": true
+}

@@ -1,0 +1,24 @@
+// kit_shrine 부품 시트 128x96px (8×6칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+sr_tl               0    0  16  16  facade  -   X     지붕 용마루 왼
+sr_tm              16    0  16  16  facade  x   X     지붕 용마루
+sr_tr              32    0  16  16  facade  -   X     지붕 용마루 오른
+sr_sl              48    0  16  16  facade  y   X     지붕 비탈 왼
+sr_sm              64    0  16  16  facade  xy  X     지붕 비탈
+sr_sr              80    0  16  16  facade  y   X     지붕 비탈 오른
+sr_el              96    0  16  16  facade  -   X     처마 왼(들림)
+sr_em             112    0  16  16  facade  x   X     처마
+sr_er               0   16  16  16  facade  -   X     처마 오른(들림)
+hafu               16   16  48  16  over    -   X     가라하후 박공
+nuki_l             64   16  16  16  facade  -   X     들보 왼
+nuki_m             80   16  16  16  facade  x   X     들보
+nuki_r             96   16  16  16  facade  -   X     들보 오른
+hashira           112   16  16  32  facade  y   X     기둥 칸
+koshi               0   48  16  32  facade  x   X     격자문 칸
+ent_bell           16   48  16  32  facade  -   X     가운데 앞(방울·새끼줄)
+kiza               32   48  16  16  facade  x   F     나무 계단(참배 자리)
+kidan_l            48   48  16  16  facade  -   X     돌 기단 왼
+kidan_m            64   48  16  16  facade  x   X     돌 기단
+kidan_r            80   48  16  16  facade  -   X     돌 기단 오른
+post               96   48  16  32  object  -   C/X   데미즈야 기둥
+basin               0   80  32  16  object  -   X     돌 물통(국자)

@@ -1,0 +1,548 @@
+{
+ "id": "kit_shopfront",
+ "slug": "kit_shopfront",
+ "kind": "kit",
+ "name": "킷: 1층 가게 정면(콘비니·이자카야·라멘 공용 뼈대)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  8,
+  6
+ ],
+ "canvas": [
+  128,
+  96
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "가게 1층 = 간판 띠 1줄 + 정면 2줄(한 층). 뼈대(양 끝 기둥·창·문)는 모든 가게가 같이 쓰고, 간판 띠·글자·차양·노렌·등롱만 갈아 끼워 콘비니·이자카야·라멘이 된다. 폭은 3칸부터 몇 칸이든. 위층은 kit_bldg 가 얹는다. (부품 24 · 조립 예 6)",
+ "palette_hint": "mwhite·mconc 기둥, mglass 유리, mmetal 문틀, kgreen·korange·kblue 콘비니 띠, sumi·hinoki 이자카야 나무, akachin·taxi 라멘, ai 노렌",
+ "worker": "k2",
+ "replaces": [
+  "konbini_front",
+  "izakaya_front",
+  "ramen_front"
+ ],
+ "aliases": {},
+ "contract": [
+  "간판 띠 줄(band_*·text_*)의 맨 아래 2px = 띠 밑 그늘(mconc 1~2단) — 띠가 정면보다 튀어나와 보인다. 모든 간판 띠 부품이 같은 높이·같은 단.",
+  "정면 부품(pil_*·win_*·door_*·wall_*·shutter)은 1×2(32px). 위 2px = 띠가 드리운 그늘 한 줄, 아래 3px = 문턱·걸레받이(mconc) — 가로로 이어 붙였을 때 이 두 줄이 끊기지 않는다.",
+  "pil_l 은 왼쪽 1~2px 가 빛(밝은 단), pil_r 은 오른쪽 2px 가 한 단 어둡다. 가게 둘이 붙으면 pil_r|pil_l 이 한 번에 두꺼운 기둥으로 읽힌다.",
+  "위층(kit_bldg)과 만나는 곳: 간판 띠 줄 맨 위 1px = kit_bldg 벽 부품 맨 아래 1px 와 같은 단(mconc 2). 서로 다른 작업자가 그리므로 이 한 줄만은 꼭 지킨다."
+ ],
+ "parts": [
+  {
+   "slug": "pil_l",
+   "name": "왼 끝 기둥",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "가게 정면 왼쪽 끝 벽기둥(흰 타일·콘크리트). 빛 쪽이라 왼 테 밝게.",
+   "right": [
+    "win_*",
+    "door_*",
+    "wall_*",
+    "shutter"
+   ],
+   "left": [
+    "|",
+    "pil_r"
+   ],
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "pil_r",
+   "name": "오른 끝 기둥",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "오른쪽 끝 벽기둥. 오른 테 한 단 어둡게.",
+   "left": [
+    "win_*",
+    "door_*",
+    "wall_*",
+    "shutter"
+   ],
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "win_glass",
+   "name": "유리창(빈 가게)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "알루미늄 틀 큰 유리. 안쪽 어둡게, 왼 위 반사 사선 한두 줄. 가로로 이어도 틀이 겹치지 않게(틀은 왼쪽에만 1px).",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "win_shelf",
+   "name": "유리창(선반 보이는 콘비니)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "유리 너머 밝은 매장: 잡지 칸·선반 색 점 줄(작은 색 점 두세 줄). 밤에도 밝은 판.",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "win_koshi",
+   "name": "나무 격자창(이자카야)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "짙은 나무 틀 + 세로 격자(코시) 사이로 따뜻한 불빛(washi).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "wall_plain",
+   "name": "민벽 판",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "창 없는 벽 판(타일·회벽). 문 옆 벽이나 좁은 가게 채움.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "door_auto_l",
+   "name": "자동문 왼 짝",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "유리 자동문 왼 짝. 아랫칸이 드나드는 칸. door_auto_r 과 짝으로 가운데 틈이 보인다.",
+   "right": [
+    "door_auto_r"
+   ],
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "door_auto_r",
+   "name": "자동문 오른 짝",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "유리 자동문 오른 짝.",
+   "left": [
+    "door_auto_l"
+   ],
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "door_slide",
+   "name": "미닫이 나무문",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "격자 유리 미닫이 나무문(라멘·작은 가게). 노렌 없는 판.",
+   "at": [
+    0,
+    2
+   ]
+  },
+  {
+   "slug": "door_noren",
+   "name": "노렌 걸린 문",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": [
+    "X",
+    "F"
+   ],
+   "door": true,
+   "desc": "미닫이 위에 남색 노렌(윗칸 대부분, 세 갈래 트임). 이자카야 입구.",
+   "at": [
+    1,
+    2
+   ]
+  },
+  {
+   "slug": "shutter",
+   "name": "셔터(문 닫은 가게)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "은회색 가로 골 셔터. 가로로 이어 붙여도 골 줄이 맞게.",
+   "at": [
+    2,
+    2
+   ]
+  },
+  {
+   "slug": "band_l",
+   "name": "간판 띠 왼 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "간판 띠 왼 끝 마감(흰 테). 모든 간판 종류가 같이 쓴다.",
+   "at": [
+    3,
+    2
+   ]
+  },
+  {
+   "slug": "band_r",
+   "name": "간판 띠 오른 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "간판 띠 오른 끝 마감.",
+   "at": [
+    4,
+    2
+   ]
+  },
+  {
+   "slug": "band_cvs",
+   "name": "간판 띠: 콘비니 세 줄",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "초록·주황·파랑 가로 줄무늬(상표 금지, 줄만). 이어 붙이면 줄이 끊기지 않는다.",
+   "at": [
+    5,
+    2
+   ]
+  },
+  {
+   "slug": "band_izakaya",
+   "name": "간판 띠: 이자카야 나무",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "짙은 나무 판 + 위 처마 기와 한 줄 느낌.",
+   "at": [
+    6,
+    2
+   ]
+  },
+  {
+   "slug": "band_ramen",
+   "name": "간판 띠: 라멘 붉은 판",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "붉은 판 + 노란 테.",
+   "at": [
+    7,
+    2
+   ]
+  },
+  {
+   "slug": "band_plain",
+   "name": "간판 띠: 흰 민판",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "빈 흰 간판(닫은 가게·빈 점포).",
+   "at": [
+    0,
+    4
+   ]
+  },
+  {
+   "slug": "text_ramen",
+   "name": "글자 「ラーメン」",
+   "cells": [
+    2,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "band_ramen 바탕 위 노란 가타카나 네 자(획 2px). band_ramen 사이에 끼운다.",
+   "at": [
+    1,
+    4
+   ]
+  },
+  {
+   "slug": "text_sake",
+   "name": "글자 「酒」",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "band_izakaya 바탕 위 흰 한자 한 자.",
+   "at": [
+    3,
+    4
+   ]
+  },
+  {
+   "slug": "awn_l",
+   "name": "차양 왼 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "정면 윗칸 위에 덧씌우는 줄무늬 천 차양 왼 끝(윗 8~10px 만, 아래 끝 물결 테). 사람 위층.",
+   "at": [
+    4,
+    4
+   ]
+  },
+  {
+   "slug": "awn_m",
+   "name": "차양 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "차양 가운데(줄무늬 주기 8px — 이어 붙여도 줄이 맞게).",
+   "at": [
+    5,
+    4
+   ]
+  },
+  {
+   "slug": "awn_r",
+   "name": "차양 오른 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "차양 오른 끝(그늘 쪽 한 단 어둡게).",
+   "at": [
+    6,
+    4
+   ]
+  },
+  {
+   "slug": "lantern",
+   "name": "붉은 등롱",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "정면 윗칸에 매단 붉은 등롱(아카초칭) 하나. 둘레 불빛 % 조금.",
+   "at": [
+    7,
+    4
+   ]
+  },
+  {
+   "slug": "entry_mat",
+   "name": "문 앞 발깔개",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "ground",
+   "repeat": "x",
+   "walk": "F",
+   "desc": "보도 위 문 앞 회색 매트(보도 바탕까지 칠한 불투명 바닥 칸).",
+   "at": [
+    0,
+    5
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "konbini6",
+   "name": "콘비니 6칸",
+   "ctx": "street",
+   "layers": {
+    "ground": [
+     ". . . . . .",
+     ". . . . . .",
+     ". . . . . .",
+     ". . entry_mat entry_mat . ."
+    ],
+    "main": [
+     "band_l band_cvs band_cvs band_cvs band_cvs band_r",
+     "pil_l win_shelf door_auto_l door_auto_r win_shelf pil_r",
+     "+ + + + + +"
+    ]
+   }
+  },
+  {
+   "id": "konbini9",
+   "name": "넓은 콘비니 9칸(창을 더 잇기)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "band_l band_cvs band_cvs band_cvs band_cvs band_cvs band_cvs band_cvs band_r",
+     "pil_l win_shelf win_shelf win_shelf door_auto_l door_auto_r win_shelf win_shelf pil_r",
+     "+ + + + + + + + +"
+    ]
+   }
+  },
+  {
+   "id": "izakaya5",
+   "name": "이자카야 5칸(노렌·등롱)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "band_l band_izakaya text_sake band_izakaya band_r",
+     "pil_l win_koshi door_noren win_koshi pil_r",
+     "+ + + + +"
+    ],
+    "upper": [
+     ". . . . .",
+     ". lantern . lantern ."
+    ]
+   }
+  },
+  {
+   "id": "ramen4",
+   "name": "라멘집 4칸(차양)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "band_l text_ramen + band_r",
+     "pil_l door_slide win_glass pil_r",
+     "+ + + +"
+    ],
+    "upper": [
+     ". . . .",
+     "awn_l awn_m awn_m awn_r"
+    ]
+   }
+  },
+  {
+   "id": "closed3",
+   "name": "문 닫은 좁은 가게 3칸",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "band_l band_plain band_r",
+     "pil_l shutter pil_r",
+     "+ + +"
+    ]
+   }
+  },
+  {
+   "id": "row15",
+   "name": "가게 줄 15칸(콘비니·이자카야·라멘 한 뼈대)",
+   "ctx": "street",
+   "layers": {
+    "main": [
+     "band_l band_cvs band_cvs band_cvs band_cvs band_r band_l band_izakaya text_sake band_izakaya band_r band_l text_ramen + band_r",
+     "pil_l win_shelf door_auto_l door_auto_r win_shelf pil_r pil_l win_koshi door_noren win_koshi pil_r pil_l door_slide win_glass pil_r",
+     "+ + + + + + + + + + + + + + +"
+    ],
+    "upper": [
+     ". . . . . . . . . . . . . . .",
+     ". . . . . . . lantern . lantern . awn_l awn_m awn_m awn_r"
+    ]
+   }
+  }
+ ]
+}

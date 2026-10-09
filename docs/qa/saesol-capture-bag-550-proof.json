@@ -1,0 +1,16 @@
+{
+  "scope": "Dedicated player actual trainer battle bag check. Resumed earned investigation checkpoint; no new progress claimed. Capture options absent, medicine retained. Does not cover wild or uncapturable-only troops.",
+  "steps": [],
+  "checkpointMatches": true,
+  "walkedSteps": 22,
+  "captureButtons": 0,
+  "medicineButtons": 6,
+  "pageErrors": [],
+  "passed": true,
+  "benchmark": {
+    "snapshotRevision": 550,
+    "playerSeconds": 18.192,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  },
+  "resultsSha256": "bb68fcea3fb399d268aa3b8774ffdd9076a34ed51830cb7ff1f5528bf53d61e5"
+}

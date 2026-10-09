@@ -1,0 +1,69 @@
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a tin 6
+@mat b tin 3
+@mat c tin 5
+@mat d rust 3
+@mat e tin 1
+@mat f rust 4
+@mat g tin 2
+@mat h tin 4
+@mat i sheet 6
+@mat j sheet 5
+@mat k sheet 3
+@mat l sheet 4
+@mat m sheet 2
+@mat n sheet 1
+@mat o blood 3
+@mat p blood 1
+@mat q blood 2
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.aa..........bb.
+.cd..........be.
+.cfccccccccccde.
+.cgggggggggggge.
+.cb.hg.hg.hg.be.
+.cb.hg.hg.hg.be.
+.cb.hg.hg.hg.be.
+.chhdhhhhhhhfhe.
+.ceeeeeeeeeeeee.
+.h-iiiiiijjjk-e.
+.d.jjjjjjjjjk.e.
+.h.lllkklllkk.e.
+.h.llllmllmlk.e.
+.h.nmmmmmmmmn.e.
+.hiiiiiiiiiilie.
+.hiiiiiiiiiiiie.
+.hjlllllllllmmd.
+.hjlllllllllmme.
+.hjkkkkkkkkknme.
+.hjmmmmmmmmmmme.
+.djiiiiiiiiiime.
+.hjlll$opqllmme.
+.fjlkkkqqq$lmme.
+.hjlljjj$lllmme.
+.hjlllllkkkkmme.
+.hjlllllljjjkmf.
+.hjlllllllllmme.
+.hjkkkklllllmme.
+.hjljjjjlkkkmme.
+.hjllllllljjkme.
+.hnnnnnnnnnnnne.
+.cccccccccccccc.
+.bbbbbbbbbbbbdb.
+.hbd.........ge.
+.hgggggggggggge.
+.geeeeeeeeeeege.
+.be..........be.
+.ee..........ee.

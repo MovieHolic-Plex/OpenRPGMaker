@@ -1,0 +1,44 @@
+{
+ "id": "wall_manor_stripe",
+ "slug": "wall_manor_stripe",
+ "name": "저택 벽면(줄무늬 벽지)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "wall_manor_damask 와 같은 몰딩·징두리·걸레받이 높이(섞어 깔 수 있게), 넓은 면만 세로 줄무늬 벽지(줄 폭 섞음 2·3·5, 색 두 단). 침실·복도용.",
+ "palette_hint": "paper/velv 줄, mahog",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "벽면(줄무늬)",
+ "worker": "hf2",
+ "set_with": [
+  "wall_manor_damask",
+  "wall_wood_panel",
+  "floor_manor_plank",
+  "floor_manor_carpet",
+  "floor_checker",
+  "carpet_runner"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:plaster",
+   "name_ko": "회벽+판자 징두리",
+   "atlas": {
+    "x": 320,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

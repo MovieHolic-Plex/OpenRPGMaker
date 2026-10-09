@@ -1,0 +1,34 @@
+// A: 금 간 도자기 얼굴과 빈 오른눈, 바랜 리본과 위에서 보이는 주저앉은 드레스; 정수리 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b dwood 4
+@mat c dwood 5
+@mat d dwood 6
+@mat e linen 4
+@mat f linen 5
+@mat g linen 6
+@mat h linen 2
+@mat i linen 3
+@mat j linen 2
+@mat k linen 4
+@mat r pink 2
+@mat o dwood 1
+@mblock 0 0
+......bbb.......
+.....bdddcb.....
+....bddcccb.....
+....bfggheeb....
+....bfofhooa....
+....beffaooa....
+.....herhha.....
+....hekeikeh....
+...hegkrrikeh...
+...ehkkiiijhe...
+..hfkkiiiijjha..
+..hkkkiikiijja..
+.akkkiikkijijja.
+.akkiikijijjjja.
+..heijjjjjjieh..
+..aeea....aeea..

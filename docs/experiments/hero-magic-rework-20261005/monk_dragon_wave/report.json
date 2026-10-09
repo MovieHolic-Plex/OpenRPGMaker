@@ -1,0 +1,74 @@
+{
+  "sourceSha256": "92a6e803abc5f743cc372900bde0c03468471740c285be4d34d4f9ca9827d31d",
+  "width": 128,
+  "height": 128,
+  "frames": [
+    {
+      "id": "f00",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "1ada269e923a05323ca4573cd077f4f041aba3189339bfa8a17bdb6ea9433579",
+      "changedFromPrevious": null,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "긴 물결 전면"
+    },
+    {
+      "id": "f01",
+      "durationMs": 160,
+      "opaquePixels": 16384,
+      "opaqueColors": 3,
+      "boundsInclusive": [
+        0,
+        0,
+        127,
+        127
+      ],
+      "touchesEdges": [
+        "left",
+        "top",
+        "right",
+        "bottom"
+      ],
+      "rgbaSha256": "f112e109a74400d71dd6c5b24a367db47b836ca2a147d4b826ec433067532ea9",
+      "changedFromPrevious": 5014,
+      "anchor": [
+        64,
+        64
+      ],
+      "phase": "긴 물결 이면"
+    }
+  ],
+  "opaqueColors": 3,
+  "alpha": [
+    255
+  ],
+  "totalDurationMs": 320,
+  "assessment": "File measurements only; artistic quality and authorship were not assessed.",
+  "gifPreviewScale": 2,
+  "reviewGridScale": 2,
+  "nativePngMatchesSource": true,
+  "outputs": {
+    "checker.gif": "afddd8c524dd9c3685bfa0986e3206cae2c7c7b77c94819577c93538c490261b",
+    "contact-grid-00.png": "f496f37e86a14b2978f88a5d9f3d68e49edc96726dd7d4f1123aa6531ddb7110",
+    "contact-native-00.png": "d337d8b68d47acac805cd895964571319b103e8b8ec7ad9b4657ff3c337c6fbc",
+    "dark.gif": "a55df9e637059f14871cfd2312d2079ed540d8c5acbd27d29ff9663214f2a1f3",
+    "light.gif": "4a5a01e9f071a3ce2193243d118b56eb7090ddb35503ceb2d78f675e9fd63e2b",
+    "sheet.png": "3e34e0e8b6fd11f63f70e107c97b04ec234e10a5b056cef20c0e8d7f339757f4"
+  }
+}

@@ -1,0 +1,81 @@
+  .map-context-menu-item:hover:not(.disabled),
+  .map-context-menu-item:focus-visible:not(.disabled),
+  .oprn-menu-command:hover:not(:disabled),
+  .oprn-menu-command:focus-visible:not(:disabled) {
+    background: var(--editor-blue-soft);
+    border-color: var(--accent-border);
+  }
+
+  .map-context-menu-item:focus:not(:focus-visible) {
+    background: transparent;
+    border-color: transparent;
+    outline: none;
+  }
+
+  .map-context-menu-shortcut {
+    color: var(--editor-text-muted);
+    font-size: 15px;
+  }
+
+  .map-context-menu-item.disabled,
+  .oprn-menu-command:disabled {
+    color: var(--editor-text-soft);
+    opacity: 0.72;
+  }
+
+  .map-context-menu-item.separator-before {
+    border-top-color: var(--editor-line);
+    margin-top: 8px;
+    padding-top: 11px;
+  }
+
+  @media (max-width: 900px) {
+    .oprn-menu-item {
+      margin-right: 10px;
+    }
+
+    .editor-statusbar-cell {
+      padding: 0 10px;
+    }
+
+    .map-context-menu,
+    .oprn-menu-popup {
+      min-width: min(304px, calc(100vw - 24px));
+      padding: 10px;
+    }
+
+    .map-context-menu-item,
+    .oprn-menu-command {
+      column-gap: 10px;
+      font-size: 15px;
+      min-height: 36px;
+      padding: 6px 10px;
+    }
+
+    .map-context-menu-shortcut {
+      font-size: 13px;
+    }
+  }
+
+  @media (min-width: 901px) and (max-width: 1320px) {
+
+    .editor-statusbar {
+      font-size: 12px;
+    }
+
+    .editor-statusbar-cell {
+      padding: 0 8px;
+    }
+
+    .editor-statusbar-cell.db-connection-status {
+      display: inline-flex;
+      max-width: none;
+      padding: 0 10px;
+    }
+  }
+
+  .editor-layout .left-panel {
+    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
+    min-width: 184px;
+  }
+

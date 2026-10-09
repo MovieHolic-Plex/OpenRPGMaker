@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chandelier_fallen/h2-B.pxg",
+ "set": "horror",
+ "id": "chandelier_fallen",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "B: 형태는 A 와 같되 고리 왼쪽 위에 놋쇠 최고광을 몰고 유리 알갱이는 가장 밝은 moon 으로 올렸다. 고리·팔의 오른쪽 아래로 ~/- 그림자가 두 단으로 떨어져 바닥에 박힌 무게가 읽힌다.",
+ "ok": true
+}

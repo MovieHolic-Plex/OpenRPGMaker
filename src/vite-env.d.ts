@@ -1,0 +1,119 @@
+// CSS 는 Vite 가 번들에 넣고 타입은 없다. TS 5.x 는 side-effect import 를 조용히 넘기지만
+// TS 7 은 선언이 없으면 TS2882 로 막는다 — 13개 패널이 여기에 걸려 typecheck 게이트가
+// 빨간불이 됐다. `vite/client` 를 types 에 넣으면 ImportMetaEnv 선언과 겹치므로 모양만 선언한다.
+declare module "*.css";
+
+interface ImportMetaEnv {
+  readonly DEV: boolean;
+  readonly PROD: boolean;
+  /** Vite public path. Always present; default `/`. */
+  readonly BASE_URL: string;
+  // VITE_YUNWU_API_KEY / VITE_LLM_API_KEY / VITE_LLM_API_URL 은 선언을 걷었다.
+  // 앞의 둘은 키를 클라이언트 번들에 인라인하던 통로이고, 마지막 것은 에디터의 인증
+  // 모드를 정해 AI 를 반복적으로 죽인 통로다(llmClient.defaultAiConfig 주석 참고).
+  // 되살리지 말 것 — 게이트웨이가 필요한 소비자는 설정을 직접 주입한다.
+
+  /** AI 활동 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
+  readonly VITE_AI_ACTIVITY_DISK_MIRROR?: string;
+  /** 편집 행위 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
+  readonly VITE_EDIT_ACTIVITY_DISK_MIRROR?: string;
+  readonly VITE_TOUCH_CONTROLS?: string;
+  /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
+  readonly VITE_BGM_CDN_BASE?: string;
+  readonly VITE_STILL_CDN_BASE?: string;
+  // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
+  readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
+
+type OprnPlayerSpriteDebug = {
+  readonly textureKey: string;
+  readonly frame: string | number;
+  readonly resourceId: string;
+  readonly kind: string;
+  readonly moving: boolean;
+  readonly x: number;
+  readonly y: number;
+};
+
+type OprnRuntimeJuiceEvent =
+  | "menu-back"
+  | "menu-close"
+  | "menu-confirm"
+  | "menu-invalid"
+  | "menu-open"
+  | "menu-select"
+  | "title-confirm"
+  | "title-enter"
+  | "title-select";
+
+type OprnRuntimeJuiceLogEntry = {
+  readonly event: OprnRuntimeJuiceEvent;
+  readonly soundResourceId: string;
+  readonly motionClass: string;
+  readonly durationMs: number;
+};
+
+type OprnCameraDebug = {
+  readonly height: number;
+  readonly width: number;
+  readonly zoom: number;
+};
+
+interface Window {
+  __OPRN_E2E_PROJECT__?: unknown;
+  __oprnProjectE2E?: import("@/editor/editorToolHook").ProjectE2EBridge;
+  // 영역 작업 마지막 로그 export (감사·툴·하네스) — 콘솔/헤드리스 디버깅용.
+  __oprnRegionTaskLog?: unknown;
+  __oprnLastRegionTaskLog?: () => unknown;
+  // 영역 작업 승인 게이트 pending (get/apply/discard) — E2E·디버깅용.
+  __oprnRegionTaskPending?: {
+    get: () => unknown;
+    apply: () => void;
+    discard: () => void;
+  };
+  // AI 활동 로그 링버퍼 (채팅·영역 등) — localStorage + optional project storage.
+  __oprnAiActivityLog?: unknown;
+  __oprnListAiActivityLogs?: (limit?: number) => readonly unknown[];
+  __oprnGetAiActivityLog?: (id: string) => unknown;
+  __oprnClearAiActivityLogs?: () => void;
+  __oprnExportAiActivityLogs?: (limit?: number) => string;
+  // 이 탭의 런 식별자. DB 에서 "내 런의 최신 턴" 을 고를 때 쓴다(scripts/list-ai-activity.mjs --run).
+  __oprnAiActivityRunId?: () => string;
+  // AI 표면의 프론트 액션 링버퍼(src/ai/uiEventLog.ts) — 어떤 버튼을 눌렀는지.
+  __oprnAiUiEventLatest?: unknown;
+  __oprnListAiUiEvents?: (limit?: number) => readonly unknown[];
+  __oprnClearAiUiEvents?: () => void;
+  __oprnFlushAiUiEvents?: () => void;
+  // 원격 전송 실패분 큐 — 조용한 유실을 드러내기 위한 진단 표면(src/project/remoteOutbox.ts).
+  __oprnRemoteOutbox?: () => unknown;
+  __oprnFlushRemoteOutbox?: () => Promise<unknown>;
+  // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
+  __oprnAiHarness?: () => unknown;
+  // MCP/에이전트 브리지 — 라이브 채팅 패널과 같은 세션 (src/editor/aiAssistantBridge.ts).
+  __oprnAiBridge?: {
+    readonly send: (text: string) => Promise<unknown>;
+    readonly status: () => unknown;
+    readonly audit: () => unknown;
+    readonly harness: () => unknown;
+    readonly abort: () => void;
+    readonly connected: () => boolean;
+  };
+  // DB 모달 인라인 AI 바의 마지막 전송 요청 — E2E가 실 LLM 호출 없이 전송 도달을 검증.
+  __oprnDbAiLastRequest?: { readonly message: string; readonly at: string };
+  // 이 빌드의 버전 메타(src/brand.ts) — 버그 리포트가 커밋과 빌드 시각을 인용할 수 있게 한다.
+  __oprnVersion?: () => import("@/brand").AppVersionMeta;
+  __oprnCamera?: () => OprnCameraDebug | null;
+  __oprnJuiceLog?: () => readonly OprnRuntimeJuiceLogEntry[];
+  __oprnInput?: {
+    readonly action: () => void;
+    readonly dir: (direction: string | null) => void;
+  };
+  __oprnPlayerSprite?: () => OprnPlayerSpriteDebug | null;
+  __oprnRuntimeJuice?: { readonly log: OprnRuntimeJuiceLogEntry[] };
+  __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
+}

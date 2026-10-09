@@ -1,0 +1,21 @@
+{
+ "id": "locker_row",
+ "slug": "locker_row",
+ "name": "교실 뒤 사물함",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "교실 뒤 벽에 붙은 칸 사물함 2단×4열(한 칸 = 8px 폭). 칸마다 문 손잡이 점·번호표 흰 점, 한두 칸은 가방·체육복 끝이 삐져나옴. 윗면 띠 1~2px, 앞면이 주인공. 좌우로 이어 붙게 양 끝 같게.",
+ "palette_hint": "locker 쇠 또는 vpine 나무, uniform 가방, jersey 체육복",
+ "pair": [],
+ "worker": "s3"
+}

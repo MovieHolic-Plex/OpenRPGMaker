@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hay_bale/w103-A.pxg",
+ "id": "hay bale",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w103-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "note": "건초 더미: 윗면 6줄(짚 결·끈)+앞 접힘 그늘 1줄+앞면 짚 단면 5줄, 끈 둘이 위에서 앞으로 이어짐",
+ "ok": true
+}

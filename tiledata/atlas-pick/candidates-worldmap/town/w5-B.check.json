@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/town/w5-B.pxg",
+ "set": "worldmap",
+ "id": "town",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.119
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  7,
+  31,
+  31
+ ],
+ "note": "빛·부피 — 성벽 왼쪽 밝고 오른쪽·아랫단 어둡게 3단, 윗면 가장 밝은 줄, 톱니, 발치 반투명 그림자, 어두운 아치 성문",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.059
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.119
+  }
+ }
+}

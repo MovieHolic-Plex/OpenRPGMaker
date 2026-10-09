@@ -1,0 +1,37 @@
+{
+ "id": "bench 2",
+ "slug": "bench_2",
+ "name_ko": "벤치 2칸",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "등받이 없는 2칸 나무 벤치. 긴 식탁 위·아래 줄(드워프 홀 8개), 예배당·복도 벽 곁에 1~2개.",
+ "where": "긴 식탁 위·아래 줄(드워프 홀 8개), 예배당·복도 벽 곁에 1~2개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치" />
+    <meta name="theme-color" content="#131722" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/pwa-192.png" />
+    <link rel="apple-touch-icon" href="/icons/pwa-192.png" />
+    <title>OPRN Studio</title>
+    <!--
+      첫 로드 로더: 편집기 번들이 평가·마운트되기까지(실측 ~5.6초) 빈 회색 화면만 보이던 자리.
+      기본 세 줄은 이 파일만으로 그려지고, 지난 로드가 남긴 프로젝트 줄이 있으면 아래 스크립트가 갈아끼운다.
+      편집기 셸이 뜨면 src/app/bootLoader.ts 가 지운다.
+      #app 안이 아니라 형제로 둔다 — bootApp 은 #app 을 비우지 않고 append 하므로.
+    -->
+    <style>
+      #oprn-boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: #f7f8f8;
+        color: #0f172a;
+        font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        transition: opacity 160ms ease-out;
+      }
+      #oprn-boot-loader[data-leaving] {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #oprn-boot-loader .oprn-boot-brand {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      #oprn-boot-loader .oprn-boot-lines {
+        width: min(100% - 32px, 22rem);
+        height: 2.8em;
+        overflow: hidden;
+        text-align: center;
+      }
+      #oprn-boot-loader .oprn-boot-track {
+        animation: oprn-boot-lines 5.4s ease-out forwards;
+      }
+      #oprn-boot-loader .oprn-boot-track p {
+        height: 2.8em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #oprn-boot-loader .oprn-boot-text {
+        font-size: 13px;
+        color: #475569;
+      }
+      /* 진행 막대. 번들 전에는 CSS 애니메이션이 0→12% 를 채우고, 번들이 뜨면 src/app/bootLoader.ts 가
+         data-progress="js" 로 바꿔 단계별 전환을 건다(Electron CSP 는 인라인 스크립트를 막으므로 JS 없이 시작한다).
+         transform 만 움직인다 — 합성 스레드가 그려 프로젝트 역직렬화로 메인 스레드가 막혀도 계속 찬다. */
+      #oprn-boot-loader .oprn-boot-progress-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: min(100% - 32px, 18rem);
+      }
+      #oprn-boot-loader .oprn-boot-progress {
+        flex: 1;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+      }
+      #oprn-boot-loader .oprn-boot-progress-fill {
+        width: 100%;
+        height: 100%;
+        background: #4a57d6;
+        transform-origin: left center;
+        transform: scaleX(0.12);
+        animation: oprn-boot-progress 6s cubic-bezier(0.1, 0.6, 0.3, 1) both;
+      }
+      #oprn-boot-loader[data-progress="js"] .oprn-boot-progress-fill {
+        animation: none;
+      }
+      #oprn-boot-loader .oprn-boot-percent {
+        min-width: 3ch;
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        color: #475569;
+        text-align: right;
+      }
+      #oprn-boot-loader:not([data-progress="js"]) .oprn-boot-percent {
+        visibility: hidden;
+      }
+      @keyframes oprn-boot-progress {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(0.12); }
+      }
+      @keyframes oprn-boot-lines {
+        0%, 30% { transform: translateY(0); }
+        38%, 64% { transform: translateY(-2.8em); }
+        72%, 100% { transform: translateY(-5.6em); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #oprn-boot-loader {
+          transition: none;
+        }
+        #oprn-boot-loader .oprn-boot-track {
+          animation: none;
+        }
+        #oprn-boot-loader .oprn-boot-progress-fill {
+          animation: none;
+          transition: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="oprn-boot-loader" data-testid="boot-loader" role="status" aria-live="polite">
+      <div class="oprn-boot-brand">OPRN Studio</div>
+      <div class="oprn-boot-lines">
+        <div class="oprn-boot-track">
+          <p>맵·이벤트 편집</p>
+          <p>AI 어시스턴트</p>
+          <p>자동 저장</p>
+        </div>
+      </div>
+      <div class="oprn-boot-text">불러오는 중…</div>
+      <div class="oprn-boot-progress-row">
+        <div class="oprn-boot-progress" role="progressbar" aria-label="불러오기 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="oprn-boot-progress-fill"></div>
+        </div>
+        <span class="oprn-boot-percent" aria-hidden="true">0%</span>
+      </div>
+    </div>
+    <script>
+      (function () {
+        // 번들이 뜨기 전 몇 초 동안의 글자. 결정 규칙은 src/i18n/locale.ts 와 같다(자동화 가드 포함).
+        var BOOT_COPY = {
+          en: ["Map & event editing", "AI assistant", "Autosave", "Loading…", "en"],
+          ja: ["マップ・イベント編集", "AIアシスタント", "自動保存", "読み込み中…", "ja"],
+          zh: ["地图·事件编辑", "AI 助手", "自动保存", "正在加载…", "zh-CN"]
+        };
+        var locale = "ko";
+        try {
+          var pick = function (tag) {
+            var base = String(tag || "").toLowerCase().replace(/_/g, "-").split("-")[0];
+            return base === "ko" || BOOT_COPY[base] ? base : null;
+          };
+          var params = new URLSearchParams(location.search);
+          var saved = null;
+          try { saved = localStorage.getItem("oprn:locale"); } catch (error) { saved = null; }
+          locale = pick(params.get("lang")) || pick(saved);
+          if (!locale && navigator.webdriver && params.get("localeDetect") !== "1") locale = "ko";
+          if (!locale) {
+            var languages = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+            for (var k = 0; k < languages.length && !locale; k += 1) locale = pick(languages[k]);
+          }
+          locale = locale || "en";
+          var copy = BOOT_COPY[locale];
+          if (copy) {
+            document.documentElement.lang = copy[4];
+            var tips = document.querySelectorAll("#oprn-boot-loader .oprn-boot-track p");
+            for (var n = 0; n < tips.length && n < 3; n += 1) tips[n].textContent = copy[n];
+            var status = document.querySelector("#oprn-boot-loader .oprn-boot-text");
+            if (status) status.textContent = copy[3];
+            return;
+          }
+        } catch (error) {
+          /* 언어를 못 정하면 한국어 원문을 그대로 둔다. */
+        }
+        try {
+          var raw = localStorage.getItem("oprn:boot-brief");
+          if (!raw) return;
+          var lines = JSON.parse(raw);
+          if (!Array.isArray(lines) || lines.length !== 3) return;
+          var nodes = document.querySelectorAll("#oprn-boot-loader .oprn-boot-track p");
+          if (nodes.length !== 3) return;
+          for (var i = 0; i < 3; i += 1) {
+            if (typeof lines[i] !== "string" || lines[i].length === 0) return;
+          }
+          for (var j = 0; j < 3; j += 1) nodes[j].textContent = lines[j];
+        } catch (error) {
+          /* 캐시가 깨져 있으면 기본 기능 줄을 그대로 둔다. */
+        }
+      })();
+    </script>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

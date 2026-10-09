@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/aisle_runner/w5-B.pxg",
+ "id": "aisle runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "명암 강화: 왼쪽 위에서 빛 — 왼쪽 테두리 밝게(E·B), 오른쪽 테두리 어둡게(E·A), 양탄자 오른쪽 세 줄 그늘(D), 마름모도 왼쪽 위 B·오른쪽 아래 E",
+ "ok": true
+}

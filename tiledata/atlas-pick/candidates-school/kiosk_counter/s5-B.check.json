@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/kiosk_counter/s5-B.pxg",
+ "set": "school",
+ "id": "kiosk_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 35,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "note": "같은 구성에 유리 반사(&)와 접지 그림자 두 줄, 상판 안쪽 그늘",
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/runner/w9-A.pxg",
+ "id": "runner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 5,
+ "bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  46
+ ],
+ "note": "v5 모양 유지: 금테 위·왼 밝게/아래·오른 어둡게, 안쪽 어두운 붉은 줄, 체크는 2×2 규칙 무늬로 정돈",
+ "ok": true
+}

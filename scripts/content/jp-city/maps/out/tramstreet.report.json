@@ -1,0 +1,780 @@
+{
+ "map": {
+  "id": "jp-city-tram-street",
+  "size": [
+   48,
+   30
+  ]
+ },
+ "start": [
+  20,
+  11
+ ],
+ "poles": [
+  {
+   "row": 19,
+   "xs": [
+    2,
+    22,
+    44
+   ],
+   "kind": "jp-tram-pole-c"
+  }
+ ],
+ "deco": {
+  "placed": 10,
+  "skipped": 0
+ },
+ "doors": {
+  "n": 7,
+  "allReached": true,
+  "failing": []
+ },
+ "anchors": {
+  "n": 2,
+  "allReached": true,
+  "failing": []
+ },
+ "solid": {
+  "cells": 151,
+  "openByEngine": 0,
+  "open": []
+ },
+ "autotiles": {
+  "lane": {
+   "cells": 288,
+   "mismatch": 0,
+   "ex": []
+  },
+  "rail": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "fence": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "jp-guardrail": {
+   "cells": 30,
+   "mismatch": 0,
+   "ex": []
+  }
+ },
+ "layers": {
+  "overlaps": 0,
+  "issues": [],
+  "l2": 414,
+  "l3": 544,
+  "l4": 147
+ },
+ "emptiness": {
+  "worst17x13": 0.262,
+  "worstAt": [
+   13,
+   0
+  ],
+  "ignore": [],
+  "max": 0.4,
+  "skippedWindows": 0
+ },
+ "reach": {
+  "reachable": 1258
+ },
+ "placed": 74,
+ "extra": {
+  "ok": true,
+  "sidewalks": {
+   "north": true,
+   "south": true
+  },
+  "railGaps": [],
+  "crosswalkGaps": [],
+  "railCells": 192,
+  "note": "레일은 키트(2층)라 오토타일 검사(autotiles.rail, 지상 선로 jp-rail-track 전용)는 0칸이다 — 이음은 railGaps 로 본다"
+ },
+ "ok": true,
+ "placedList": [
+  {
+   "id": "jp-tram-stop",
+   "x": 6,
+   "y": 17,
+   "w": 12,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-stop-zebra-e",
+   "x": 3,
+   "y": 17,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-stop",
+   "x": 22,
+   "y": 22,
+   "w": 12,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-stop-zebra",
+   "x": 34,
+   "y": 22,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-zakkyo5",
+   "x": 0,
+   "y": -5,
+   "w": 7,
+   "h": 14,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shop-ramen",
+   "x": 7,
+   "y": 0,
+   "w": 7,
+   "h": 9,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-office6",
+   "x": 14,
+   "y": -10,
+   "w": 9,
+   "h": 15,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-entrance",
+   "x": 19,
+   "y": 5,
+   "w": 4,
+   "h": 5,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-mansion4",
+   "x": 23,
+   "y": -2,
+   "w": 11,
+   "h": 11,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shop-izakaya",
+   "x": 34,
+   "y": 0,
+   "w": 7,
+   "h": 9,
+   "layer": 3
+  },
+  {
+   "id": "jp-bldg-shop-sushi",
+   "x": 41,
+   "y": 0,
+   "w": 7,
+   "h": 9,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 14,
+   "y": 8,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-planter",
+   "x": 17,
+   "y": 8,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-ped-signal",
+   "x": 16,
+   "y": 9,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-ped-signal",
+   "x": 23,
+   "y": 25,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-pole-c",
+   "x": 2,
+   "y": 12,
+   "w": 1,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-pole-c",
+   "x": 22,
+   "y": 12,
+   "w": 1,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-pole-c",
+   "x": 44,
+   "y": 12,
+   "w": 1,
+   "h": 8,
+   "layer": 3
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 0,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 0,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 2,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 2,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 4,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 4,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 6,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 6,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 8,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 8,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 10,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 10,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 12,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 12,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 14,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 14,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 16,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 16,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 18,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 18,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 20,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 20,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 22,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 22,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 24,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 24,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 26,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 26,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 28,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 28,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 30,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 30,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 32,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 32,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 34,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 34,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 36,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 36,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 38,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 38,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 40,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 40,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 42,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 42,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 44,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 44,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 46,
+   "y": 13,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-tram-wire-h",
+   "x": 46,
+   "y": 18,
+   "w": 2,
+   "h": 1,
+   "layer": 4
+  },
+  {
+   "id": "jp-prop-vend-pair",
+   "x": 9,
+   "y": 9,
+   "w": 4,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-rack",
+   "x": 24,
+   "y": 9,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-bike-rack",
+   "x": 31,
+   "y": 9,
+   "w": 2,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-post-box",
+   "x": 40,
+   "y": 9,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-prop-tree-ginkgo",
+   "x": 6,
+   "y": 22,
+   "w": 4,
+   "h": 6,
+   "layer": 4
+  },
+  {
+   "id": "jp-prop-tree-zelkova",
+   "x": 40,
+   "y": 22,
+   "w": 4,
+   "h": 6,
+   "layer": 4
+  },
+  {
+   "id": "jp-prop-lamp-post",
+   "x": 15,
+   "y": 24,
+   "w": 1,
+   "h": 4,
+   "layer": 4
+  },
+  {
+   "id": "jp-prop-street-flag",
+   "x": 46,
+   "y": 25,
+   "w": 1,
+   "h": 3,
+   "layer": 4
+  }
+ ],
+ "doorList": [
+  {
+   "b": "jp-bldg-zakkyo5",
+   "x": 1,
+   "y": 8,
+   "ax": 1,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-zakkyo5",
+   "x": 5,
+   "y": 8,
+   "ax": 5,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shop-ramen",
+   "x": 8,
+   "y": 8,
+   "ax": 8,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-office6",
+   "x": 18,
+   "y": 4,
+   "ax": 18,
+   "ay": 5,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-mansion4",
+   "x": 28,
+   "y": 8,
+   "ax": 28,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shop-izakaya",
+   "x": 37,
+   "y": 8,
+   "ax": 37,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  },
+  {
+   "b": "jp-bldg-shop-sushi",
+   "x": 43,
+   "y": 8,
+   "ax": 43,
+   "ay": 9,
+   "doorBlocked": true,
+   "accessPassable": true,
+   "accessReached": true
+  }
+ ],
+ "anchorList": [
+  {
+   "b": "subway-entrance",
+   "x": 20,
+   "y": 9,
+   "passable": true,
+   "reached": true
+  },
+  {
+   "b": "subway-entrance",
+   "x": 21,
+   "y": 9,
+   "passable": true,
+   "reached": true
+  }
+ ]
+}

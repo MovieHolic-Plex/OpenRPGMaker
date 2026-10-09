@@ -1,0 +1,442 @@
+@media (min-width: 901px) {
+  .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace {
+    gap: 0;
+    grid-template-columns: minmax(430px, 0.85fr) minmax(520px, 1.15fr);
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px 0 0 8px;
+    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-heading {
+    grid-row: 1;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-tools {
+    grid-row: 2;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
+    grid-row: 3;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
+    grid-row: 4;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-toolbar {
+    grid-row: 5;
+  }
+
+  .db-actor-studio-heading {
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    min-height: 58px;
+    padding: 0 18px;
+  }
+
+  .db-actor-studio-heading h3,
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane h3 {
+    color: var(--text-1);
+    font: 700 15px/1.2 var(--font-ui);
+    margin: 0;
+  }
+
+  .db-actor-studio-count {
+    background: var(--accent-muted);
+    border: 1px solid var(--accent-border);
+    border-radius: 999px;
+    color: var(--text-1);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 11px;
+    white-space: nowrap;
+  }
+
+  .db-actor-studio-tools {
+    align-items: center;
+    display: block;
+    padding: 14px 18px;
+  }
+
+  .database-modal-body .db-actor-studio-tools .db-search {
+    margin: 0;
+  }
+
+  .database-modal-body .db-actor-studio-tools .db-search input {
+    background: var(--bg-inset);
+    border-radius: 7px;
+    font-size: 13px;
+    height: 36px;
+    padding-inline: 12px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table {
+    border: 0;
+    border-radius: 0;
+    display: block;
+    align-self: stretch;
+    overflow: auto;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
+    align-items: center;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(166px, 1.4fr) minmax(84px, 0.72fr) 42px 56px 56px;
+    min-width: calc(166px + 84px + 42px + 56px + 56px + 4 * 8px + 2 * 18px);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header {
+    background: var(--bg-inset);
+    border-block: 1px solid var(--border-subtle);
+    color: var(--text-2);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    min-height: 34px;
+    padding: 0 18px;
+    position: sticky;
+    text-transform: uppercase;
+    top: 0;
+    z-index: 2;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row {
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    color: var(--text-1);
+    cursor: pointer;
+    font: 500 13px/1.2 var(--font-ui);
+    min-height: 58px;
+    padding: 7px 18px;
+    text-align: left;
+    width: 100%;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row:hover {
+    background: color-mix(in srgb, var(--accent-muted) 35%, var(--bg-raised));
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row.active {
+    background: var(--accent-muted);
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .db-actor-identity-cell {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-actor-identity-cell .db-list-thumb,
+  .db-actor-identity-cell .db-list-thumb-crop,
+  .db-actor-avatar-fallback {
+    border: 0;
+    border-radius: 9px;
+    box-shadow: 0 0 0 1px var(--border-subtle);
+    box-sizing: content-box;
+    flex: 0 0 36px;
+    height: 36px;
+    width: 36px;
+  }
+
+  .db-actor-avatar-fallback {
+    align-items: center;
+    background: var(--accent-muted);
+    color: var(--accent);
+    display: flex;
+    font-weight: 800;
+    justify-content: center;
+  }
+
+  .db-actor-name-stack {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .db-actor-name-stack strong,
+  .db-actor-name-stack small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* record-list-modern.css 가 .db-list-name 에 order:1 을 주는데, 이 스택은 grid 라
+     그 order 가 그대로 적용되었다 — 기본 order:0 인 장호(small)가 이름 위로 올라가
+     이름이 부제처럼 보이는 위계 역전이 연출됐다. 스택 안에서만 상쇄한다. */
+  .db-actor-name-stack > .db-list-name {
+    order: 0;
+  }
+
+  .db-actor-name-stack > small {
+    order: 1;
+  }
+
+  .db-actor-name-stack small {
+    color: var(--text-2);
+    font-size: 10px;
+  }
+
+  /* 기본값 뱃지 진정: 전 행이 "보임"이라 초록 알약이 도배되면 표가 시끄럽고
+     예외인 "투명"이 안 보인다. 기본값은 조용한 텍스트로, 예외만 뱃지로 남긴다. */
+  .db-actor-status.is-default {
+    background: none;
+    border: 0;
+    color: var(--text-2);
+    font-weight: 500;
+  }
+
+  /* 목록 pane 에 옅은 바탕을 주어 흰 행이 카드처럼 떠 보이게 한다. 3열이 모두 흰
+     바탕이라 1px 선만으로 갈라져 있어 화면이 종이 한 장처럼 뭉개졌다. */
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane {
+    background: var(--bg-inset, rgba(15, 23, 42, 0.03));
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-heading,
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .db-actor-studio-table {
+    background: var(--bg-raised, #fff);
+  }
+
+  /* 개수 중복 제거: 헤더에 이미 "6명" 이 있는데 목록 아래에 "6개" 가 한 번 더 나와
+     40px 짜리 바를 잡아먹었다. 표 헤더 쪽 카운트를 단일 출처로 삼는다. */
+  .database-modal-body .db-actor-studio-workspace .db-studio-table-pane > .oprn-record-list-footer {
+    display: none;
+  }
+
+  .db-actor-table-row .numeric {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .db-actor-status {
+    background: rgba(22, 163, 74, 0.1);
+    border-radius: 999px;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 800;
+    justify-self: start;
+    padding: 5px 9px;
+  }
+
+  .db-actor-status.is-hidden {
+    background: var(--bg-inset);
+    color: var(--text-2);
+  }
+
+  .db-actor-table-empty {
+    color: var(--text-2);
+    margin: 0;
+    padding: 28px 18px;
+    text-align: center;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .oprn-record-list-footer {
+    align-items: center;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 10px 18px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .oprn-maximum-button {
+    display: none;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-toolbar {
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 8px;
+    margin: 0;
+    padding: 12px 18px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-studio-inspector-pane {
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    box-shadow: -10px 0 26px rgba(15, 23, 42, 0.04);
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-detail-form {
+    display: grid;
+    grid-template-rows: auto auto minmax(0, 1fr);
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-record-hero {
+    align-items: center;
+    background: var(--bg-raised);
+    border-inline: 0;
+    border-radius: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    margin: 0;
+    min-height: 104px;
+    padding: 16px 20px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-record-hero-face .actor-sheet-crop {
+    border: 1px solid var(--border-subtle);
+    border-radius: 10px;
+    box-sizing: content-box;
+    box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+    flex: 0 0 auto;
+    overflow: hidden;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-record-hero-face {
+    border: 0;
+    margin: 0;
+    min-height: 0;
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-tabs {
+    padding: 0 12px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-body {
+    overflow: auto;
+    padding: 8px 20px 24px;
+    scrollbar-gutter: stable;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-panel {
+    display: grid;
+    gap: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-panel[hidden] {
+    display: none;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-panel > .actor-panel {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    border-radius: 0;
+    margin: 0;
+    padding: 18px 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-panel > .actor-panel:last-child {
+    border-bottom: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-panel > .actor-panel > legend {
+    color: var(--text-1);
+    font-size: 12px;
+    font-weight: 800;
+    padding-inline: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-preview .actor-build-preview {
+    margin: 12px 0 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-editor-grid {
+    display: block;
+    overflow: visible;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-left-stack,
+  .database-modal-body .db-actor-studio-workspace .actor-right-stack {
+    display: block;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-center-stack {
+    display: block;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-panel {
+    border-inline: 0;
+    padding-inline: 2px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-right-stack > * {
+    display: block;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 1180px) and (min-width: 901px) {
+  .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace {
+    grid-template-columns: minmax(340px, 0.76fr) minmax(0, 1.24fr);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-row {
+    grid-template-columns: minmax(112px, 1.3fr) minmax(50px, 0.65fr) 28px 38px 40px;
+    min-width: 100%;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table .db-actor-table-header,
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table button.db-actor-table-row {
+    gap: 6px;
+    padding-inline: 10px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-identity.actor-panel,
+  .database-modal-body .db-actor-studio-workspace .actor-graphic.actor-panel {
+    display: block;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-identity.actor-panel > *,
+  .database-modal-body .db-actor-studio-workspace .actor-graphic.actor-panel > * {
+    margin-bottom: 8px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-level-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-classic-sheet label,
+  .database-modal-body .db-actor-studio-workspace .actor-classic-sheet .field,
+  .database-modal-body .db-actor-studio-workspace .actor-level-row .field,
+  .database-modal-body .db-actor-studio-workspace .actor-graphic.actor-panel > .db-field {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-graphic.actor-panel > .actor-graphic-preview {
+    display: block;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-resource-control {
+    grid-template-columns: minmax(88px, 1fr) auto;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-rate-columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-rate-row {
+    grid-template-columns: minmax(0, 1fr) 96px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-rate-row select {
+    min-width: 96px;
+    width: 96px;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .actor-section-body {
+    padding-inline: 16px;
+  }
+}

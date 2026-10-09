@@ -1,0 +1,587 @@
+@layer editor {
+
+  .world-panel {
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    width: min(1180px, calc(100vw - 36px));
+    height: min(760px, calc(100vh - 36px));
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--bg-surface);
+    color: var(--text-1);
+    box-shadow: 0 22px 64px rgba(42, 37, 33, 0.10);
+  }
+
+  .world-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
+  }
+
+  .world-panel-title h2 {
+    margin: 0;
+    font-size: 18px;
+    letter-spacing: 0;
+  }
+
+  .world-panel-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .world-search-input,
+  .world-add-type,
+  .world-edit-input,
+  .world-edit-body {
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: var(--bg-overlay);
+    color: var(--text-1);
+    font: inherit;
+  }
+
+  .world-search-input {
+    width: min(320px, 34vw);
+    padding: 7px 10px;
+  }
+
+  .world-add-type,
+  .world-edit-input {
+    min-height: 32px;
+    padding: 6px 8px;
+  }
+
+  .world-panel-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.86fr);
+    min-height: 0;
+    flex: 1;
+  }
+
+  .world-browser,
+  .world-wiki-view {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .world-browser {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    border-right: 1px solid var(--border-subtle);
+    background: var(--bg-base);
+  }
+
+  .world-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .world-tab,
+  .world-relation-chip,
+  .world-ref-chip {
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: var(--bg-surface);
+    color: var(--text-2);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .world-tab {
+    min-height: 32px;
+    padding: 6px 10px;
+  }
+
+  .world-tab.active {
+    border-color: var(--accent);
+    background: var(--accent-muted);
+    color: var(--success);
+  }
+
+  .world-overview {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--bg-surface);
+  }
+
+  .world-counts {
+    color: var(--text-2);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .world-chip-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .world-relation-chip,
+  .world-ref-chip {
+    max-width: 100%;
+    padding: 5px 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 10px;
+    align-content: start;
+  }
+
+  .world-card-grid.empty {
+    display: block;
+    padding: 24px;
+    color: var(--text-3);
+    text-align: center;
+  }
+
+  .world-card {
+    display: grid;
+    grid-template-rows: 112px minmax(112px, auto);
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--bg-raised);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .world-card:hover,
+  .world-card:focus-visible {
+    border-color: var(--border-default);
+    outline: none;
+  }
+
+  .world-card.active {
+    border-color: var(--accent);
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-raised) 100%);
+    box-shadow:
+      0 0 0 1px var(--accent-muted) inset,
+      0 8px 22px rgba(42, 37, 33, 0.08);
+    outline: none;
+  }
+
+  .world-card.active .world-card-title {
+    color: var(--success);
+  }
+
+  .world-card-media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: var(--bg-inset);
+  }
+
+  .world-card-map-thumb {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .world-card-map-canvas {
+    image-rendering: pixelated;
+  }
+
+  .world-card-sprite {
+    transform: scale(1.8);
+    transform-origin: center;
+    image-rendering: pixelated;
+  }
+
+  .world-card-placeholder {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
+    background: var(--bg-inset);
+    color: var(--text-1);
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .world-card-placeholder.faction {
+    background: var(--bg-inset);
+  }
+
+  .world-card-placeholder.event {
+    background: var(--bg-inset);
+  }
+
+  .world-card-placeholder.guideline {
+    background: var(--bg-inset);
+  }
+
+  .world-lint-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 3px 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .world-lint-badge.error,
+  .world-lint-item.error {
+    background: var(--danger);
+    color: var(--bg-overlay);
+  }
+
+  .world-lint-badge.warning,
+  .world-lint-item.warning {
+    background: var(--warning);
+    color: var(--bg-overlay);
+  }
+
+  .world-lint-badge.info,
+  .world-lint-item.info {
+    background: var(--bg-inset);
+    color: var(--text-2);
+  }
+
+  .world-card-content {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .world-card-title-row,
+  .world-wiki-header,
+  .world-edit-row,
+  .world-edit-add-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .world-card-title-row {
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  .world-card-title {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    color: var(--text-1);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card-summary {
+    min-height: 18px;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text-3);
+    font-size: 12px;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-card.active .world-card-summary {
+    color: var(--text-2);
+  }
+
+  .world-card-badges,
+  .world-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .world-card.active .world-type-badge {
+    border-color: var(--accent-muted);
+    background: var(--success-muted);
+    color: var(--success);
+  }
+
+  .world-type-badge,
+  .world-origin-badge,
+  .world-tag {
+    max-width: 100%;
+    padding: 3px 7px;
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    background: var(--bg-raised);
+    color: var(--text-2);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+
+  .world-origin-badge {
+    color: var(--success);
+  }
+
+  .world-lock-button {
+    flex: 0 0 auto;
+    min-width: 42px;
+    min-height: 26px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    background: var(--bg-surface);
+    color: var(--text-2);
+    font: inherit;
+    font-size: 12px;
+  }
+
+  .world-lock-button.locked {
+    border-color: rgba(248, 113, 113, 0.55);
+    color: var(--danger);
+    background: var(--bg-surface);
+  }
+
+  .world-wiki-view {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px;
+    background: var(--bg-surface);
+  }
+
+  .world-wiki-view.empty {
+    color: var(--text-2);
+  }
+
+  .world-wiki-header {
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .world-wiki-heading {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .world-wiki-heading h3 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .world-wiki-heading p {
+    margin: 0;
+    color: var(--text-2);
+  }
+
+  .world-wiki-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .world-lint-list {
+    display: grid;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    background: var(--bg-overlay);
+  }
+
+  .world-lint-list.empty {
+    color: var(--text-3);
+  }
+
+  .world-lint-list ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .world-lint-item {
+    padding: 6px 8px;
+    border-radius: 6px;
+    line-height: 1.4;
+  }
+
+  .world-markdown .md {
+    display: grid;
+    gap: 10px;
+    line-height: 1.6;
+  }
+
+  .world-markdown .md :is(h1, h2, h3, h4, h5, h6, p, ul, ol, blockquote, pre) {
+    margin: 0;
+  }
+
+  .world-markdown .md pre {
+    overflow: auto;
+    padding: 10px;
+    border-radius: 6px;
+    background: var(--bg-inset);
+  }
+
+  .world-relations,
+  .world-ref-jumps,
+  .world-edit-section {
+    display: grid;
+    gap: 8px;
+  }
+
+  .world-relations.empty,
+  .world-ref-jumps.empty,
+  .world-muted {
+    color: var(--text-3);
+  }
+
+  .world-edit-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .world-edit-field {
+    display: grid;
+    gap: 5px;
+    color: var(--text-2);
+    font-size: 13px;
+  }
+
+  .world-edit-field.inline {
+    display: flex;
+    align-items: center;
+  }
+
+  .world-edit-field:has(.world-edit-body) {
+    grid-column: 1 / -1;
+  }
+
+  .world-edit-body {
+    min-height: 180px;
+    resize: vertical;
+    padding: 8px;
+    line-height: 1.5;
+  }
+
+  .world-edit-section {
+    padding-top: 10px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .world-edit-section h4 {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .world-edit-list {
+    display: grid;
+    gap: 6px;
+  }
+
+  .world-edit-row {
+    justify-content: space-between;
+    min-width: 0;
+    padding: 7px 8px;
+    border-radius: 6px;
+    background: var(--bg-surface);
+  }
+
+  .world-edit-row span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .world-edit-add-row {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .world-edit-add-row .world-edit-input {
+    min-width: 140px;
+    flex: 1 1 150px;
+  }
+
+  .world-edit-error {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--danger);
+    color: var(--bg-overlay);
+  }
+
+  .world-panel-embedded {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .world-panel-header-embedded {
+    padding-inline: 12px;
+  }
+
+  @media (max-width: 820px) {
+    .world-panel:not(.world-panel-embedded) {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+    }
+
+    .world-panel-header,
+    .world-panel-controls {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .world-search-input {
+      width: 100%;
+    }
+
+    .world-panel-main {
+      grid-template-columns: 1fr;
+    }
+
+    .world-browser {
+      border-right: 0;
+      border-bottom: 1px solid var(--border-subtle);
+      max-height: 52vh;
+    }
+
+    .world-edit-fields {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/* Document workspace: unlayered like Database Studio, deliberately scoped so its
+   prose controls win over generic database inputs without changing other tabs. */

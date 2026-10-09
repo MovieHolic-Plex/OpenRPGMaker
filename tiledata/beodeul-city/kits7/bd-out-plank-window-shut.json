@@ -1,0 +1,23 @@
+{
+ "id": "bd-out-plank-window-shut",
+ "name": "외곽 판자 벽 덧문창칸",
+ "w": 1,
+ "h": 3,
+ "walk": [
+  "X",
+  "X",
+  "X"
+ ],
+ "description": "위층 창 + 초록 덧문. 1칸x3줄(2층).",
+ "rules": "판자집 벽 줄 맨 아래에 놓는다.",
+ "tags": [
+  "외곽",
+  "나무집",
+  "판자벽",
+  "부품"
+ ],
+ "role": "part",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

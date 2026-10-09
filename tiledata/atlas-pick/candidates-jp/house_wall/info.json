@@ -1,0 +1,19 @@
+{
+ "id": "house_wall",
+ "slug": "house_wall",
+ "name": "2층 주택 외벽",
+ "scene": "주택가 골목",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "2층 주택 앞면: 연한 모르타르(베이지) 벽, 2층 = 알루미늄 난간 베란다 + 미닫이 유리창, 1층 = 격자 창 하나 + 현관 미닫이문(나무 격자 유리) + 문 옆 문패·우편함, 발치 좁은 콘크리트 단. 기와 지붕 블록 아래에 붙는다.",
+ "palette_hint": "mtile/washi 벽, mmetal 난간, mglass 창, hinoki 격자문",
+ "worker": "j1"
+}

@@ -1,0 +1,163 @@
+/* =========================================================================
+   전투 연출 보강 — 히트 플래시(데드코드 복구), juice 좌표 변수화,
+   인트로 배너, 포획 구슬 시네마틱, 사망 페이드, MISS 팝업.
+   ========================================================================= */
+
+/* 히트/크리티컬/결과 화면 플래시 — battleJuice.flashBattleField가 붙이는 클래스 */
+.battle-scene.battle-flash-hit .battle-field::after,
+.battle-scene.battle-flash-critical .battle-field::after,
+.battle-scene.battle-flash-victory .battle-field::after,
+.battle-scene.battle-flash-defeat .battle-field::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+  animation: battle-flash-fade 320ms ease-out forwards;
+}
+.battle-scene.battle-flash-hit .battle-field::after { background: rgba(255, 255, 255, 0.34); }
+.battle-scene.battle-flash-critical .battle-field::after { background: rgba(255, 214, 138, 0.5); animation-duration: 430ms; }
+.battle-scene.battle-flash-victory .battle-field::after { background: rgba(255, 250, 214, 0.42); animation-duration: 600ms; }
+.battle-scene.battle-flash-defeat .battle-field::after { background: rgba(120, 20, 30, 0.45); animation-duration: 700ms; }
+
+@keyframes battle-flash-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* juice 히트 키프레임의 기준 변환을 변수화 — 아군(-45%)과 적(-72%)이 다른 문제 수정 */
+.battle-enemy-group .battle-enemy { --battle-juice-base: translate(-50%, -100%); }
+.battle-actor-group .battle-actor { --battle-juice-base: translate(-50%, -100%); }
+
+/* 인트로 배너: 양 스킨 모두에서 메시지 창 노출 */
+.battle-scene[data-battle-director-step="intro"] .battle-message-window {
+  display: grid;
+}
+
+/* MISS 팝업 */
+.battle-damage-popup-miss {
+  color: #cfd6de;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
+
+/* 적 사망: 필터 잔상 대신 쓰러지며 사라진다.
+   연출은 **노드가 아니라 이미지에** 건다. 노드의 `animation` 슬롯은 스킨 피격 juice
+   (`.battle-juice-hit` → `rm2000-juice-hit` 등)가 이미 쓰고 있어서, 노드에 걸면 막타에
+   juice 가 death-fade 를 밀어내 페이드가 멈췄다가 juice 가 끝나면 **처음부터 다시**
+   시작한다 — 몬스터가 옅어졌다 다시 진해졌다 사라진다(실측: 0.9 → 400ms 정지 → 0.898
+   복귀 → 0). pokemon 스킨은 이미 이미지에 거는 방식이다(19-adversarial-review-3.css). */
+.battle-enemy.defeated {
+  pointer-events: none;
+}
+.battle-enemy.defeated .battle-enemy-image {
+  /* 페이드가 아니라 **분해**: 하얗게 타오르다 위로 떠오르며 흐려져 사라진다. 조각(.battle-death-shard)이
+     같은 순간 사방으로 튄다(battleFieldDom.spawnDeathShards). 620ms 는 시퀀서 격파 대사(660ms) 안이다. */
+  animation: battle-death-dissolve 620ms ease-in forwards;
+}
+@keyframes battle-death-dissolve {
+  /* 1 에서 시작한다. 0.9 로 시작하면 첫 프레임에 10% 가 한 번에 빠져 "왜 갑자기 반투명이지" 로 읽힌다. */
+  0% { opacity: 1; filter: none; translate: 0 0; scale: 1 1; }
+  22% { opacity: 1; filter: brightness(2.2) saturate(0.35); }
+  60% { opacity: 0.55; filter: brightness(2.4) saturate(0) blur(1.5px); translate: 0 -10px; scale: 1.04 0.96; }
+  100% { opacity: 0; filter: brightness(2.6) saturate(0) blur(5px); translate: 0 -26px; scale: 1.1 0.86; }
+}
+
+/* 격파 조각. 컨테이너는 배틀러 노드의 발끝 중심에 놓이고, 조각마다 --sx/--sy(도착 오프셋)·--sd(지연)·--ss(크기)를
+   런타임이 인라인으로 심는다. 700ms 뒤 컨테이너를 걷는다. */
+.battle-death-shards {
+  inset: auto 0 0 0;
+  height: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+}
+.battle-death-shard {
+  animation: battle-death-shard-fly 700ms cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  animation-delay: var(--sd, 0ms);
+  background: radial-gradient(circle at 40% 40%, white, var(--battle-accent) 55%, transparent 74%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--battle-accent);
+  display: block;
+  height: var(--ss, 6px);
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: calc(-1 * var(--shard-rise, 60px));
+  width: var(--ss, 6px);
+}
+@keyframes battle-death-shard-fly {
+  0% { opacity: 1; translate: 0 0; scale: 1; }
+  100% { opacity: 0; translate: var(--sx, 0px) var(--sy, -40px); scale: 0.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-death-shard { animation: none; opacity: 0; }
+}
+
+/* ---- 포획 구슬 시네마틱 ---- */
+.battle-capture-orb {
+  --orb-to-x: 70%;
+  --orb-to-y: 35%;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e43b44 0%, #e43b44 44%, #23262b 44%, #23262b 56%, #f6f5f1 56%);
+  border: 3px solid #23262b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  left: 20%;
+  top: 78%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  animation: battle-orb-throw 460ms cubic-bezier(0.3, 0.6, 0.6, 1) forwards;
+}
+@keyframes battle-orb-throw {
+  0% { left: 20%; top: 78%; transform: translate(-50%, -50%) rotate(0deg); }
+  50% { transform: translate(-50%, -260%) rotate(380deg); }
+  100% { left: var(--orb-to-x); top: var(--orb-to-y); transform: translate(-50%, -50%) rotate(720deg); }
+}
+.battle-orb-shake {
+  animation: battle-orb-rock 420ms ease-in-out 3;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-rock {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(calc(-50% - 8px), -50%) rotate(-22deg); }
+  75% { transform: translate(calc(-50% + 8px), -50%) rotate(22deg); }
+}
+.battle-orb-caught {
+  animation: battle-orb-caught 400ms ease-out forwards;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-caught {
+  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 244, 180, 0.9); }
+  60% { box-shadow: 0 0 0 28px rgba(255, 244, 180, 0); }
+  100% { transform: translate(-50%, -50%) scale(1); filter: brightness(0.75); }
+}
+.battle-orb-burst {
+  animation: battle-orb-burst 260ms ease-in forwards;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-burst {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+.battle-capture-absorbed .battle-enemy-image,
+.battle-capture-absorbed .battle-actor-image {
+  transform: scale(0);
+  transition: transform 220ms ease-in;
+}
+.battle-enemy .battle-enemy-image,
+.battle-enemy .battle-actor-image {
+  transition: transform 220ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-capture-orb, .battle-orb-shake, .battle-orb-caught, .battle-orb-burst,
+  .battle-enemy.defeated .battle-enemy-image { animation-duration: 1ms; }
+  .battle-scene .battle-field { transition: none; }
+}
+

@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "modelHeardAudio": false,
+  "tracks": [
+    {
+      "id": "town",
+      "name": "눈길의 작은 약속",
+      "renderer": "oprn-symbolic-1",
+      "seconds": 43.636371882086166,
+      "frames": 962182,
+      "channels": 2,
+      "sampleRate": 22050,
+      "peak": 0.78,
+      "rms": 0.19703741333632097,
+      "joinStep": 0,
+      "loop": true,
+      "tracks": 8,
+      "events": 380,
+      "sha256": "8fba6d8a1a76781deccbd9478dd95adfa685e7c77c366a3be5c8c611c9301ab4"
+    },
+    {
+      "id": "route",
+      "name": "숲 너머로 한 걸음",
+      "renderer": "oprn-symbolic-1",
+      "seconds": 30.967755102040815,
+      "frames": 682839,
+      "channels": 2,
+      "sampleRate": 22050,
+      "peak": 0.78,
+      "rms": 0.2041108215559215,
+      "joinStep": 0,
+      "loop": true,
+      "tracks": 8,
+      "events": 394,
+      "sha256": "18aaa90d7ecd401123231ccb1006fa85c839be50e891cfdeff14765a107f10f2"
+    }
+  ],
+  "cues": [
+    {
+      "id": "cursor",
+      "seconds": 0.13002267573696144,
+      "peak": 0.233978271484375,
+      "sha256": "39808338835d4764f7e929af22bcd7c3ce4a11128567843d667cef836e02171b"
+    },
+    {
+      "id": "confirm",
+      "seconds": 0.24,
+      "peak": 0.233978271484375,
+      "sha256": "4470352c209db6248d27d6e8f7d85ce55dbc812c2e6c7747386f8d60960a5826"
+    },
+    {
+      "id": "cancel",
+      "seconds": 0.24,
+      "peak": 0.233978271484375,
+      "sha256": "62e120d6b87d582cd40ca9168cb3bd3270b045bf75a910b2ba8ff2dc0bcfb9c4"
+    }
+  ]
+}

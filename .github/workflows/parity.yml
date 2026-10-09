@@ -1,0 +1,131 @@
+name: parity
+
+# 2026-09-17: 자동 트리거를 뗐다 — **수동 전용**이다.
+#
+# 이 저장소의 Actions 는 2026-08-04 이후 꺼져 있었다(actions/permissions → enabled:false).
+# 그 마지막 실행에서 unit-tests / e2e / ax-gates 가 실패했고, build 와 editor-player-parity 만
+# 초록이었다. 빨간 잡을 푸시마다 띄우는 것이 CI 가 무시되고 결국 꺼진 경로였다.
+#
+# 그래서 역할을 나눴다:
+#   - 푸시·PR 마다      → ci-fast.yml   (초록이 확인된 것만: typecheck:app / parity / build:app)
+#   - 야간·수동         → ci-full.yml   (verify-gates.mjs, 기준선 대비 회귀만 실패)
+#   - 이 파일           → 수동 전용. 아래 잡들을 하나씩 초록으로 만들어 ci-fast 로 옮겨라.
+#
+# 2026-09-17 추가: runs-on 을 ubuntu-latest 에서 self-hosted 로 바꿨다.
+#   호스티드 러너는 분 단위 과금이고 self-hosted 는 무료·무제한이다. 이 잡들은 꺼져 있어도
+#   언젠가 하나씩 켜서 고칠 물건이라, 그때 돈이 들면 안 된다. 노드도 박스 것(24.11.1)을
+#   쓴다 — 여기 박혀 있던 node-version: 20 은 로컬·ci-fast 와 어긋났다.
+#   이 규칙은 scripts/check-self-hosted-workflows.mjs 가 집행한다.
+#
+# 남아 있는 빨간 잡과 이유:
+#   unit-tests  — 생짜 `npm test`. 상시 실패가 있고 이 박스에선 완주도 못 했다(78분 무출력 사망).
+#                 ci-full 의 verify-gates 가 대체한다. 옮길 게 아니라 지울 후보다.
+#   ax-gates    — check-file-loc.mjs 가 clean HEAD 에서도 exit 1(미유예 위반 19건).
+#   e2e         — playwright. 초록 여부 미확인.
+on:
+  workflow_dispatch:
+
+jobs:
+  editor-player-parity:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run typecheck:app
+      - run: npm run test:parity
+
+  unit-tests:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run typecheck:app
+      - run: npm test
+      - run: npm run test:node
+
+  build:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      # 빌드 경고를 실패로 승격시킨다. esbuild 는 CSS 문법 오류를 경고로만 내고 exit 0 을
+      # 주기 때문에, src/benchmark/ui/styles.css 가 규칙 0개로 출하되는 동안에도 CI 는
+      # 계속 초록이었다(실측: 경고 8건이 매 빌드마다 찍혔으나 아무도 grep 하지 않았다).
+      # pipefail 이 없으면 tee 의 종료 코드가 npm 의 것을 덮어써 빌드 실패 자체를 놓친다.
+      - name: Build
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee /tmp/build.log
+      - name: Assert no build warnings
+        run: |
+          if grep -n '▲ \[WARNING\]' /tmp/build.log; then
+            echo "::error::빌드가 경고를 냈다(위 라인 참조). 고치거나, 정당하면 이 게이트를 함께 수정하라."
+            exit 1
+          fi
+          echo "빌드 경고 0건."
+
+  e2e:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  ax-gates:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: node scripts/check-file-loc.mjs
+      - run: npm run openwiki:verify
+
+  # CSS 게이트는 ax-gates 와 **별도 job** 이다. GitHub Actions 는 job 안에서 첫 실패 step 에서
+  # 멈추는데, ax-gates 의 check-file-loc.mjs 는 이미 빨간불이다(실측: 이 브랜치의 clean HEAD
+  # 에서도 exit 1, 미유예 위반 19건). 같은 job 에 넣으면 CSS 게이트는 영원히 실행되지 않는다.
+  # 별도 job 이면 PR 에 독립된 status check 로 뜨고, 선행 게이트의 부채와 무관하게 동작한다.
+  css-gates:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      # CSS 래칫: 다섯 지표는 내려갈 수만 있다. TOKENS.md §4.1(하드코딩 hex 금지)은
+      # 기계 가드가 없어 593건(2026-07-06) → 1,940건(2026-08-28), 3.27배로 무너졌다.
+      #
+      # 주의: 이 저장소에서 Actions 는 리포지터리 수준에서 꺼져 있다
+      # (actions/permissions → enabled:false, 마지막 실행 2026-08-04). 이 job 은 Actions 를
+      # 다시 켜기 전까지 돌지 않는다. 실제 집행 경로는 AGENTS.md:79 가 지정한
+      # `npm run gates` 이고, 그쪽에 같은 두 스크립트가 css 게이트로 물려 있다.
+      - run: node scripts/check-css-budget.mjs
+      # CSS import 그래프 구조 검사. PR #98 의 스쿼시 머지가 배럴의 @import 한 줄만 조용히
+      # 되돌려 07-identifiable-previews.css 가 고아가 됐고, 그 시각 버그가 계속 출하됐다.
+      - run: node scripts/check-css-graph.mjs
+      # 표면 규칙(R1-R6)과 렌더 증명 기반 실사용 클래스 게이트.
+      # 2026-09-17 이전에는 이 둘이 어떤 자동 경로에도 없었다 — npm run gates 의
+      # cssGate() 에도, 이 job 에도 없어서 빨간불을 이틀 동안 아무도 몰랐다.
+      - run: node scripts/check-css-live-classes.mjs
+      - run: node scripts/check-css-surfaces.mjs --enforce all
+      # (선택자, 속성) 승자 래칫. 위의 넷은 선언을 **세기만** 해서, @layer 우선순위 한 줄을
+      # 역순으로 뒤집어도 지문 해시까지 동일하게 통과했다(2026-09-17 적대적 리뷰 D 실측).
+      - run: node scripts/check-css-winners.mjs
+      # TS 클래스 ↔ CSS 규칙 교차검증. npm 스크립트로만 있고 자동 경로엔 없어서
+      # exit 1 인 채로 방치돼 있었다.
+      - run: node scripts/check-dead-css-classes.mjs
+
+  # 이벤트 에디터 표면 스냅샷 게이트. css-gates 와 같은 이유로 **별도 job** 이다 —
+  # 같은 job 의 선행 step 이 이미 빨간불이면 이 게이트는 영원히 실행되지 않는다.
+  #
+  # 이 job 이 감시하는 것: 폼(kind 77종) / M2(commandId) / 셸 / 커밋 프로브 / 조건 축의
+  # 렌더 표면과, 그 표면이 쓰는 CSS 클래스의 속성 보존. 실측으로 확인된 사각을 막는다 —
+  # 커밋 배선 삭제·분기 소실·값 결선 뒤바뀜·시트 통째 삭제가 전부 기존 레일에서 초록이었다.
+  #
+  # 주의: 이 저장소에서 Actions 는 리포지터리 수준에서 꺼져 있다. 실제 집행 경로는
+  # `npm run gates` (verify-gates.mjs 의 surface 게이트)이고 같은 스크립트를 부른다.
+  surface-gates:
+    runs-on: [self-hosted, oprn-box]
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      # 기준선 갱신 환경변수는 CI 에서 금지다(CI 가 기준선을 다시 쓰면 래칫이 사라진다).
+      # check-surface-gates.mjs 와 test/surfaceGateSupport.ts 가 각각 이를 하드 실패로 막는다.
+      - run: node scripts/check-surface-gates.mjs

@@ -1,0 +1,98 @@
+{
+  "actor4-2": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  },
+  "actor4-3": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  },
+  "actor4-4": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  },
+  "actor4-5": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  },
+  "actor4-6": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  },
+  "actor4-7": {
+    "cells": 45,
+    "cast_frames": 21,
+    "unique_silhouettes": 21,
+    "extra_colors": 6,
+    "ground_row": 44,
+    "alpha": [
+      0,
+      255
+    ],
+    "sheet_matches": true,
+    "gif_frames": 21,
+    "gif_ms": 160,
+    "gif_scale": 4,
+    "gif_pixels_exact": true
+  }
+}

@@ -1,0 +1,298 @@
+/* ?꾩뿭 ?ㅽ???+ ?먮뵒???뚮젅?댁뼱 怨듯넻 ?덉씠?꾩썐 */
+
+:root {
+  /* ?먮뵒???꾩슜 紐⑤뜕 ?ㅽ겕 ?붾젅???뺤젣). 寃뚯엫 罹붾쾭???ㅺ낵 遺꾨━. */
+  /* 레거시 변수 브리지 (UI-0) — 실제 값은 전부 ../tokens.css 의 토큰.
+     (--accent / --accent-hover / --danger / --border-strong / --border-default /
+      --space-1..4 / --font-mono 는 tokens.css 가 직접 정의 — 여기서 재정의 금지.) */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+  --accent-soft: var(--accent-muted);
+  --ok: var(--success);
+  /* --gold 재정의 삭제: tokens.css 가 단독 소유한다(TOKENS.md §4.3).
+     이 줄은 tabs-b-shell-layout.css 가 뒤에서 다시 덮어써 이미 죽어 있었다. */
+  /* DESIGN.md 짠2 ?좏겙 ???ъ슜泥섍? 議댁옱?섏?留??뺤쓽媛 鍮좎졇 ?됱씠 源⑥???蹂?섎뱾.
+     紐⑤뜕 ?ㅽ겕 ?붾젅??湲곗? 媛믪쑝濡??뺤쓽?쒕떎(?덊듃濡??쇱씠???뚮쭏???꾨옒 ??踰덉㎏ :root ?먯꽌 override). */
+  --surface-app: var(--bg-base);
+  --accent-secondary: var(--gold);
+  --accent-editor: var(--success);
+  --accent-blue: var(--accent);
+  --bg-recessed: var(--bg-inset);
+  --surface-button: var(--control-bg);
+  --mono: var(--font-mono);
+  --status-warning: var(--warning);
+  --status-success: var(--success);
+  --pixel-grid: rgba(42, 37, 33, 0.08);
+  --surface-workbench: var(--bg-surface);
+  --surface-panel: var(--bg-raised);
+  --surface-recessed: var(--bg-inset);
+  --surface-selected: var(--accent-muted);
+  --text-primary: var(--text-1);
+  --text-secondary: var(--text-2);
+  --text-inverse: var(--on-accent);
+  --accent-primary: var(--accent);
+  --status-error: var(--danger);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  --radius: var(--radius-s);
+  --radius-sm: 4px;
+  --shadow-popover: var(--shadow-pop);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ?? ?곷떒 硫붾돱諛??? */
+
+button.btn {
+  align-items: center;
+  background: var(--control-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  display: inline-flex;
+  gap: var(--space-1);
+  justify-content: center;
+  padding: 5px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.2;
+  transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s, box-shadow 0.12s;
+  user-select: none;
+}
+button.btn:hover:not(:disabled) {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+button.btn:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+button.btn:active:not(:disabled) {
+  box-shadow: inset 0 1px 4px rgba(60, 48, 32, 0.22);
+  transform: translateY(1px);
+}
+button.btn.primary {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+button.btn.primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+button.btn.danger {
+  color: var(--danger);
+}
+button.btn.danger:hover {
+  border-color: var(--danger);
+}
+button.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ?? 硫붿씤 ?곸뿭 ?? */
+.main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ?? ?먮뵒???덉씠?꾩썐 ?? */
+.editor-layout .canvas-area {
+  /* 가운데 정렬하면 캔버스가 작을 때 사방에 빈 여백이 남음 → stretch로 가용 영역 가득 */
+  flex: 1;
+  overflow: hidden;
+}
+/* 맵 캔버스: 브라우저 기본 우클릭 메뉴와 겹치지 않도록 (EditScene도 DOM preventDefault). */
+.editor-layout .canvas-area .phaser-container,
+.editor-layout .canvas-area .phaser-container canvas,
+.editor-layout [data-testid="edit-canvas"],
+.editor-layout [data-testid="edit-canvas"] canvas {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* 도구별 캔버스 커서.
+   예전에는 캔버스에 cursor 규칙이 하나도 없어 지금이 연필인지 채우기인지 스포이드인지
+   커서만 봐서는 알 수 없었다. 감독은 툴바를 다시 보거나 일단 칠해 보고 되돌리는 왕복을 했다.
+   도구는 body[data-editor-tool] 로 온다(editor/toolCursor.ts). 매핑이 없으면 기본값 유지. */
+body[data-editor-tool] .editor-layout .canvas-area .phaser-container {
+  cursor: var(--editor-tool-cursor, default);
+}
+
+/* 실측(Chromium 1440x900, before-standard-contract.json): erase 는 매핑이 없어 default 로
+   떨어져 "도구 없음"과 구별되지 않았고, select 는 paint 와 바이트 단위로 같은 crosshair 여서
+   클릭이 타일을 칠하는지 영역만 표시하는지 커서가 답하지 못했다. 여덟 도구가 서로 다른 값으로
+   해결되어야 하고 default 는 없어야 한다. paint/erase 는 연필·지우개 모양을 직접 그린다. */
+body[data-editor-tool="paint"] {
+  --editor-tool-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M3.5 20.5l1.2-4.2L15.6 5.4l3 3L7.7 19.3z' fill='%23ffe066' stroke='%23111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M14.4 6.6l3 3' stroke='%23111' stroke-width='1.2'/%3E%3C/svg%3E") 4 20, crosshair;
+}
+body[data-editor-tool="erase"] {
+  --editor-tool-cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M3.5 20.5h7.6l8.4-8.4-5.6-5.6-10.4 10.4z' fill='%23ffd8d8' stroke='%23111' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M8.2 10.4l5.6 5.6' stroke='%23111' stroke-width='1.2'/%3E%3C/svg%3E") 4 20, no-drop;
+}
+body[data-editor-tool="fill"] { --editor-tool-cursor: cell; }
+body[data-editor-tool="eyedropper"] { --editor-tool-cursor: copy; }
+body[data-editor-tool="pan"] { --editor-tool-cursor: grab; }
+body[data-editor-tool="select"] { --editor-tool-cursor: crosshair; }
+body[data-editor-tool="collision"] { --editor-tool-cursor: not-allowed; }
+body[data-editor-tool="event"] { --editor-tool-cursor: pointer; }
+
+/* 패닝 중에는 손을 쥔 모양으로 — 드래그가 먹고 있다는 즉시 신호. */
+body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:active {
+  cursor: grabbing;
+}
+
+.editor-layout .canvas-area .phaser-container {
+  /* block + relative: 선택 칩/배지 absolute 오버레이가 캔버스 flex 레이아웃을 밀지 않음 */
+}
+
+/* 맵 전환 크로스페이드의 베일(editor/mapDissolveVeil.ts). 편집 캔버스([data-testid="edit-canvas"])
+   안에만 붙는다 — 플레이어도 `.phaser-container` 를 쓰므로 그쪽을 덮으면 안 된다.
+   불투명도는 JS 가 소유한다 — 여기에 transition/animation 을 두면 WAAPI 와 두 주인이 생긴다.
+   색은 그 호스트가 이미 깔고 있는 캔버스 종이색이라, 다 덮인 순간의 화면은
+   검은 판이 아니라 «빈 편집 캔버스» 다. */
+.map-dissolve-veil {
+  background: var(--bg-canvas);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: var(--z-canvas-veil, 30);
+}
+
+.agent-focus-highlight {
+  animation: agent-focus-highlight-fade 2.2s ease-out forwards;
+  background: rgba(104, 120, 100, 0.03);
+  border: 1px solid rgba(98, 113, 95, 0.65);
+  box-shadow: none;
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  z-index: 4;
+}
+
+.agent-ghost-preview {
+  background: rgba(104, 120, 100, 0.025);
+  border: 1px dashed rgba(98, 113, 95, 0.65);
+  box-shadow: none;
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 3;
+}
+
+@keyframes agent-focus-highlight-fade {
+  0% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.82;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ?쎌? ?꾪듃 ?먮┝ 諛⑹?: Phaser 罹붾쾭???뺣? ???쎌???萸됯컻吏吏 ?딄쾶. */
+.editor-layout canvas,
+.player-layout canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.brush-size-btn {
+  font-size: 11px;
+  height: 24px;
+  min-width: 0;
+  padding: 0 var(--space-1);
+}
+.command-catalog-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+}
+.runtime-overlay {
+  position: absolute;
+  inset: 12px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: var(--bg-glass);
+  border: 1px solid var(--accent-border);
+  color: var(--text-1);
+  font-size: 18px;
+  font-weight: 700;
+  padding: 16px;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: pre-line;
+  z-index: 20;
+}
+.runtime-overlay[data-testid="audio-indicator"] {
+  inset: auto 16px 16px auto;
+  min-width: 160px;
+  max-width: min(340px, calc(100% - 32px));
+  padding: 8px 12px;
+  place-items: center;
+  background: var(--bg-glass);
+  border: 1px solid var(--accent-border);
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.25;
+  z-index: 28;
+}
+/* 이벤트 마커는 클릭으로 이벤트를 실행하는 히트박스라 pointer-events 는 살려두되,
+   화면에는 보이지 않아야 한다. opacity 0.08 + 배경색이면 게임 화면과 대사창 위에
+   흐린 초록 사각형으로 그대로 드러난다(실측: 대사창 안에 32x32 초록 패치).
+   player.css 쪽 의도(opacity 0.01)와 맞춘다 — 0 이 아니라 0.01 이어야 히트 테스트가 남는다. */
+.runtime-debug-marker {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: auto;
+  color: var(--text-inverse);
+  font-size: 1px;
+  z-index: 6;
+}
+.runtime-sprite-marker {
+  pointer-events: none;
+}
+.runtime-state-json {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0.01;
+  pointer-events: none;
+  color: var(--text-inverse);
+  background: var(--surface-recessed);
+  font-size: 1px;
+  z-index: 1;
+  /* player.css 와 같은 이유 — 수십 KB 짜리 세션 JSON 의 줄 상자 계산을 건너뛴다.
+     상자는 1×1 로 남아 헤드리스 가시성 판정과 textContent 읽기에 영향이 없다. */
+  content-visibility: hidden;
+}
+/* `.runtime-missing-resource` 는 runtime/playSurface.css 로 옮겼다 — 이 시트는 편집기만
+   읽으므로 규칙이 여기 있는 동안 출하되는 내보내기 플레이어에는 스타일이 없었다. */

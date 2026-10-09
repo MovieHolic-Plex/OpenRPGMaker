@@ -1,0 +1,20 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w1-B.pxg",
+ "id": "throne",
+ "hard": [
+  "size: 16x32 ≠ resize.json 캔버스 48x32"
+ ],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "ok": false
+}

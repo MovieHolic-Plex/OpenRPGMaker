@@ -1,0 +1,155 @@
+{
+  "extends": "monster-overworld",
+  "id": "monster-rooms",
+  "title": "몬스터 수집 실내 (연구소·학교·박물관·백화점·배·사천왕)",
+  "tilesetId": "monster_rooms",
+  "tilesetName": "몬스터 수집 실내 · OPRN 손 도트",
+  "textureKey": "tex_monster_rooms",
+  "sections": ["interior"],
+  "gates": {
+    "tree": null,
+    "grass": null,
+    "sand": null,
+    "water": null,
+    "house": null,
+    "center": null,
+    "cave_floor": null,
+    "gym": null,
+    "gable": null
+  },
+  "building_gates": null,
+  "match": null,
+  "palette": {
+    "rm_lab_face": ["#dcdfe8", "#eef0f5", "#fafbfd"],
+    "rm_lab_band": ["#7088b0", "#98b0d0", "#c0d0e8"],
+    "rm_fl_lab": ["#c4c8d4", "#dadde6", "#eceef3"],
+    "rm_s_face": ["#ecdcae", "#f8ecc8", "#fff8e2"],
+    "rm_s_band": ["#3a7a48", "#58a060", "#88c888"],
+    "rm_fl_school": ["#a4a6b0", "#c0c2ca", "#d8dadf"],
+    "rm_board": ["#24503a", "#336a4a", "#4e8a62"],
+    "rm_cork": ["#a86a38", "#c88a50", "#e0a868"],
+    "rm_mu_face": ["#d8b870", "#ecd290", "#f8e8b0"],
+    "rm_mu_band": ["#3848a0", "#5868c8", "#8898e8"],
+    "rm_fl_museum": ["#205c58", "#2e7a72", "#48968c", "#70b4a8"],
+    "rm_cream": ["#d8c8a0", "#f0e4c4", "#fff8e8"],
+    "rm_bone": ["#a89878", "#d0c4a4", "#f0e8d0"],
+    "rm_rope": ["#901830", "#c83048"],
+    "rm_d_face": ["#b8c4bc", "#d4ded6", "#eaf0ec"],
+    "rm_fl_dept": ["#c06428", "#dc8238", "#f0a454"],
+    "rm_fl_dept2": ["#4ea47c", "#7cc8a0", "#b0e4c8"],
+    "rm_mint": ["#78b898", "#a8dcc0", "#d8f4e8"],
+    "rm_fl_carpet": ["#4a4494", "#605aae", "#7c78c8"],
+    "rm_fl_cabin": ["#a03a2a", "#c85a3a", "#e4825a"],
+    "rm_deck": ["#84643a", "#a88450", "#c8a46a"],
+    "rm_lg_ghost": ["#3e2a5e", "#5c4284", "#8064a8", "#ac94cc"],
+    "rm_lg_ice": ["#6680bc", "#8ca6dc", "#b8ccf0", "#e2ecff"],
+    "rm_lg_dragon": ["#7c2418", "#a83c24", "#d0603a", "#ec9068"],
+    "rm_lg_dark": ["#3c2e26", "#5a4636", "#7c644c", "#a48a6a"],
+    "rm_lg_champ": ["#246a6c", "#3c9092", "#6cbcbc", "#b4e6e4"],
+    "rm_lgf_ghost": ["#b8706c", "#d08c86", "#5e3a5a", "#7a5276", "#f0e4b4"],
+    "rm_lgf_ice": ["#4e9494", "#6cb2b2", "#7c86b0", "#9aa4cc", "#f2f6ff"],
+    "rm_lgf_dragon": ["#d4c41c", "#ecdc48", "#983428", "#b44c3c", "#3e4c68"],
+    "rm_lgf_dark": ["#8e9090", "#acaeae", "#5e4230", "#7a5a44", "#ece0b0"],
+    "rm_blk_ghost": ["#2c2c3c", "#4c4a52", "#6e6a6c", "#7aa83a", "#5a8a2c"],
+    "rm_blk_ice": ["#3e6a9c", "#78b2de", "#9ccff0", "#c4e6fa", "#f0faff"],
+    "rm_blk_dragon": ["#34303e", "#625e6c", "#9a98a6", "#d4d2dc", "#a83c24"],
+    "rm_blk_dark": ["#201e26", "#36343e", "#a89a30", "#e8d860", "#4c4a56"],
+    "rm_blk_ghost_top": ["#6a4a40", "#9c7a68", "#d0bca8"],
+    "rm_blk_ice_top": ["#3e6c78", "#6c9ca4", "#b0d4d4"],
+    "rm_blk_dragon_top": ["#6c2626", "#a83c34", "#d8c828"],
+    "rm_blk_dark_top": ["#4c3828", "#7c6048", "#d8d0c0"],
+    "rm_ch_glass": ["#34406c", "#8a9a90", "#4a9e9e", "#7cc4c0", "#c4e6e2"],
+    "rm_ch_face": ["#4c5862", "#6e7a84", "#96a0a8", "#c0c8cc"],
+    "rm_ch_void": ["#283050", "#3a4468"],
+    "rm_mic": ["#2e3a4a", "#506070", "#8898a8"],
+    "rm_dh_roof": ["#5a5aa8", "#7676c4", "#9090dc"],
+    "rm_ch_top": ["#9ed6d4", "#a8dedc"],
+    "sea": ["#0a5fc2", "#0b70d6", "#1286e4", "#3aa8f0", "#8fd2fa"],
+    "foam": ["#c4ecfc", "#ffffff"],
+    "quay": ["#5a6078", "#888ea6", "#b6bacb", "#dfe2ec", "#ffffff"],
+    "dock": ["#6a3818", "#905226", "#b2723a", "#cf9452"],
+    "rm_ch_side": ["#3a5a60", "#56787c", "#749a9c", "#a2c6c6"]
+  },
+  "limits": {
+    "max_colors": 320,
+    "note": "실내 지역 시트 한 장: 본 시트 실내 절(93색) + 장소별 벽·바닥·가구 램프."
+  },
+  "roles": ["floor", "wall", "mat", "league_floor", "carpet_autotile"],
+  "bake": {
+    "backing": "rm_fl_lab0",
+    "autotile": [
+      [
+        "mu_carpet",
+        "rm_mu_carpet_at",
+        "path",
+        {
+          "label": "박물관 안쪽 카펫"
+        }
+      ]
+    ],
+    "autotile_names": {
+      "mu_carpet": "박물관 안쪽 카펫"
+    },
+    "rules": [
+      {
+        "re": "sh_bow_\\d+_\\d+_f\\d",
+        "pass": "shut",
+        "label": "뱃머리 바다 칸 애니메이션 프레임"
+      },
+      {
+        "re": "rm_dh_roof_.*",
+        "pass": "shut",
+        "label": "갑판 선실 지붕(통행 불가)"
+      },
+      {
+        "re": "rm_fl_(deck)\\d|rm_fl_deck_s",
+        "pass": "open",
+        "label": "갑판 널"
+      },
+      {
+        "re": "rm_fl_.*",
+        "pass": "open",
+        "label": "실내 바닥"
+      },
+      {
+        "re": "rm_mat_.*",
+        "pass": "open",
+        "label": "출입 매트 — 이동 이벤트를 올릴 자리"
+      },
+      {
+        "re": "rm_wall_.*",
+        "pass": "shut",
+        "label": "실내 벽(통행 불가)"
+      },
+      {
+        "re": "rm_sea_f\\d",
+        "pass": "shut",
+        "terrain": "water",
+        "label": "바다(배 밖, 통행 불가 — 해안 시트와 같은 물)"
+      },
+      {
+        "re": "rm_hull_.*",
+        "pass": "shut",
+        "label": "선체 옆면(통행 불가)"
+      },
+      {
+        "re": "rm_rail_.*",
+        "pass": "shut",
+        "label": "갑판 난간(통행 불가)"
+      }
+    ],
+    "entrances": {
+      "cave_mouth": [1, 2],
+      "sh_door": [0, 1],
+      "lg_door": [1, 1],
+      "dp_elevator": [0, 1],
+      "mu_stairs": [0, 1]
+    },
+    "object_kinds": {
+      "decor": ["rug", "h_rug", "h_mat", "c_emblem", "g_leader_mat", "g_dais", "g_edais", "lgf_", "rmw_", "dp_elevfoot", "dp_escfoot"],
+      "prop": ["sign", "counter", "shelf", "table", "chair", "bed", "plant", "tv", "pc", "machine", "statue", "stairs_up", "window_pair", "lab_", "sc_", "mu_", "dp_", "sh_", "lg_", "ch_"],
+      "building": ["house_", "two_", "shop_", "cabin_", "center", "mart", "gym_", "gable_", "cave_mouth"],
+      "tree": ["tree_", "pine_", "forest_"]
+    }
+  }
+}

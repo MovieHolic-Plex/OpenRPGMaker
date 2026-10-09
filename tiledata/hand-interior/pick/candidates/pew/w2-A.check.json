@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew/w2-A.pxg",
+ "id": "pew",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "note": "v5 정리: 순검정(wood:0) 바깥 열을 wood:1 로, 네 모서리 픽셀 투명(둥글게)",
+ "ok": true
+}

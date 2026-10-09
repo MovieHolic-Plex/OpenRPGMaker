@@ -1,0 +1,22 @@
+{
+ "id": "broken_anatomy",
+ "slug": "broken_anatomy",
+ "name": "반쯤 부서진 인체 모형",
+ "scene": "폐교 복도",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "과학실 인체 반신 모형(받침대 위 서 있는 몸): 왼쪽 반은 살결, 오른쪽 반은 근육·내장 색 덩이, 팔 하나 빠져 발치에 떨어짐, 한쪽 눈알 없음. 실루엣으로 사람 모형이 읽히게 머리·어깨 또렷하게.",
+ "palette_hint": "bisque 살결, blood/velv 근육, vgreen/vyellow 내장 점, tin 받침",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1"
+}

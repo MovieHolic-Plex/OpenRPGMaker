@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "key": "hand_thrust",
+  "width": 64,
+  "height": 64,
+  "anchor": "target",
+  "frameMs": 60,
+  "palette": {
+    "A": "#25314d",
+    "B": "#4e7098",
+    "C": "#7fafd1",
+    "D": "#bce8ef",
+    "E": "#fff7cf",
+    "F": "#e2aa52",
+    "G": "#bb6538"
+  },
+  "frames": [
+    {
+      "phase": "발동",
+      "pieces": [
+        {
+          "x": 10,
+          "y": 33,
+          "rows": [
+            "BBC",
+            "BCCD",
+            "BBC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접근",
+      "pieces": [
+        {
+          "x": 12,
+          "y": 31,
+          "rows": [
+            "BBBBCC",
+            "BCCCCDDDDD",
+            "BCCDDEEEEDDDD",
+            "BCCCCDDDDD",
+            "BBBBCC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "접촉",
+      "pieces": [
+        {
+          "x": 7,
+          "y": 28,
+          "rows": [
+            "BBBBBBBBCCCCDD",
+            "BBCCCCCCCCDDDEEEEE",
+            "BCCCCDDDDDDDEEEFFFFEEE",
+            "BCCDDDDDEEEFFFFFFFFFFFEEE",
+            "BCCCCDDDDDDDEEEFFFFEEE",
+            "BBCCCCCCCCDDDEEEEE",
+            "BBBBBBBBCCCCDD"
+          ]
+        },
+        {
+          "x": 44,
+          "y": 22,
+          "rows": [
+            "E",
+            ".E",
+            "..EE",
+            "...EE"
+          ]
+        },
+        {
+          "x": 44,
+          "y": 37,
+          "rows": [
+            "...EE",
+            "..EE",
+            ".E",
+            "E"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "전개",
+      "pieces": [
+        {
+          "x": 17,
+          "y": 27,
+          "rows": [
+            "BBBBBBCCCCDD",
+            "BBCCCCCCDDDEEE",
+            "BCCCCDDDDEEFFFE",
+            "BCCDDDD..EFF..FFEE",
+            "BCCCCDDDDEEFFFE",
+            "BBCCCCCCDDDEEE",
+            "BBBBBBCCCCDD"
+          ]
+        },
+        {
+          "x": 47,
+          "y": 18,
+          "rows": [
+            "D",
+            ".DD",
+            "..DD"
+          ]
+        },
+        {
+          "x": 46,
+          "y": 40,
+          "rows": [
+            "..DD",
+            ".DD",
+            "D"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "분해",
+      "pieces": [
+        {
+          "x": 30,
+          "y": 28,
+          "rows": [
+            "BBCCDDD",
+            "BCCDD.EE",
+            "BBCCDDD"
+          ]
+        },
+        {
+          "x": 52,
+          "y": 23,
+          "rows": [
+            "DD",
+            ".DD"
+          ]
+        },
+        {
+          "x": 51,
+          "y": 41,
+          "rows": [
+            "DD",
+            "DD"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "잔상",
+      "pieces": [
+        {
+          "x": 41,
+          "y": 30,
+          "rows": [
+            "BCC",
+            "CDD",
+            "BCC"
+          ]
+        },
+        {
+          "x": 56,
+          "y": 20,
+          "rows": [
+            "C"
+          ]
+        },
+        {
+          "x": 54,
+          "y": 44,
+          "rows": [
+            "CC"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "소멸",
+      "pieces": [
+        {
+          "x": 48,
+          "y": 31,
+          "rows": [
+            "BC",
+            "BC"
+          ]
+        },
+        {
+          "x": 56,
+          "y": 46,
+          "rows": [
+            "B"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "끝",
+      "pieces": [
+        {
+          "x": 51,
+          "y": 31,
+          "rows": [
+            "A"
+          ]
+        }
+      ]
+    }
+  ]
+}

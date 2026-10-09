@@ -1,0 +1,91 @@
+// E: 둥근 모서리 해도 탁자, 펼친 항로 지도와 황동 항해 도구, 가로 버팀 다리; 꼭대기 윗면 8행(y=7~14)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o dwood 2
+@mat q dwood 4
+@mat r pine 1
+@mat d pine 2
+@mat p pine 3
+@mat e pine 4
+@mat h pine 5
+@mat a linen 4
+@mat b linen 5
+@mat c linen 3
+@mat f fish 3
+@mat g fish 2
+@mat u brass 4
+@mat v brass 5
+@mat t brass 2
+@mat i iron 2
+@mat j iron 4
+@layer table
+@mblock 4 7
+pphhhhhhhhhhhhhhhhhhhppp
+@mblock 2 8
+phheeeeeeeeeeeeeeeeeeeeeeepp
+@mblock 1 9
+pheeeeeeeeppeeeeeeeeeeeeeeeepp
+@mblock 1 10
+pheeeeeeeeeeeeeeeeeeeeppeeeepp
+@mblock 1 11
+pheeeeeeeeeeeeeeeeeeeeeeeeeepp
+@mblock 1 12
+pheeeeeeeeeeeeeeeeeeeeeeeeeepp
+@mblock 1 13
+pheeeeppeeeeeeeeeeeeeeeeeeeepp
+@mblock 2 14
+phheeeeeeeeeeeeeeeeeeeeeeppp
+@mblock 2 15
+pehhhhhhhhhhhhhhheeeeeeepppp
+@mblock 2 16
+pdddddddddddddddddddddddqqqo
+@mblock 3 17
+odpppppddppppppppddppppqqo
+@mblock 3 18
+oqqqqqqqqqqqqqqqqqqqqqqqoo
+@mblock 4 19
+opddo................oqddo
+@mblock 4 20
+opedo................oqddo
+@mblock 4 21
+opddo................oqddo
+@mblock 4 22
+opddo................oqddo
+@mblock 4 23
+opedo................oqddo
+@mblock 4 24
+opddoppppppppppppppppoqddo
+@mblock 4 25
+opddoddddddddddddddddoqddo
+@mblock 4 26
+opddoqqqqqqqqqqqqqqqqoqddo
+@mblock 4 27
+opddo................oqddo
+@mblock 4 28
+opddo................oqddo
+@mblock 3 29
+oppddo..............oqdddoo
+@mblock 2 30
+oppeddpo............oqpdddoo
+@mblock 2 31
+oooooooo............ooooooo
+@layer chart
+@mblock 5 9
+cbbbbbbbbbbbbbc
+cbaaffaaabbbbcc
+cbafgffaaabbacc
+cbaaafffggaabac
+caaaaaaafaaaaac
+.ccccccccccccc.
+@layer instruments
+@mblock 23 9
+.vvv.
+vujut
+tuutt
+.ttt.
+@mblock 21 12
+......vvu
+...vuuujt
+vuuujttii
+jttti....

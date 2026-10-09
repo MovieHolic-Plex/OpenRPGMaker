@@ -1,0 +1,24 @@
+{
+ "id": "trees_scatter",
+ "slug": "trees_scatter",
+ "name": "외딴 나무 셋",
+ "scene": "들·길",
+ "kind": "scatter",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "한 칸짜리 외딴 나무 셋: ① 둥근 활엽수 한 그루(수관 지름 10~12px, 윗왼 밝은 덩이 셋 + 오른아래 어두운 틈, 줄기 2px, 발치 그림자) ② 잎 없는 고목(갈라진 가지, 줄기 윤곽) ③ 야자수(휘어진 줄기 + 잎 다섯 갈래). World.png 는 이것들을 위층 단품으로 따로 둔다 — 숲 덩이 가장자리에 붙여 숲 끝을 흐트러뜨리는 용도도 있다.",
+ "palette_hint": "wleaf·wbark, 고목 wbark·wash, 야자 wmead·wbark",
+ "worker": "wv5",
+ "variants": 3
+}

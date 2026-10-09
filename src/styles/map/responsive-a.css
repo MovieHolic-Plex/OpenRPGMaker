@@ -1,0 +1,71 @@
+.tile-mapping-inspector {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.35;
+  margin-top: var(--space-1);
+  padding: var(--space-2);
+}
+
+.tile-mapping-title {
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.tile-mapping-meta {
+  color: var(--text-dim);
+}
+
+.editor-layout.no-right-panel .canvas-area {
+  border-left: 1px solid var(--border-default);
+}
+
+.editor-layout.no-right-panel .editor-canvas-scroll-shell {
+  top: 24px;
+}
+/* 2026-09-18: no-right-panel 을 붙이는 코드가 없고(죽은 규칙) dense flow 를
+   깨뜨린다(클래스 3 이 dense 규칙을 이겨 24px 갭 부활). dense 에선 무효화. */
+body .editor-layout.no-right-panel .editor-canvas-scroll-shell {
+  top: auto;
+}
+
+.editor-layout.no-right-panel .chipset-sheet {
+  height: min(580px, calc(100vh - 188px));
+  max-height: min(580px, calc(100vh - 188px));
+}
+
+.editor-layout.no-right-panel .quick-tile-picker {
+  margin-bottom: 2px;
+  position: sticky;
+  top: 26px;
+  z-index: 4;
+}
+
+.editor-layout.no-right-panel .palette-option-row {
+  background: var(--surface-panel);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.editor-layout.no-right-panel .chipset-grid,
+.editor-layout.no-right-panel .quick-tile-grid {
+  justify-content: start;
+}
+
+.editor-layout.no-right-panel .palette-option-row {
+  grid-template-columns: repeat(auto-fill, 28px);
+  justify-content: start;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.editor-layout.no-right-panel .palette-option-button,
+.editor-layout.no-right-panel .chipset-band-button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/piano/w4-B.pxg",
+ "id": "piano",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  8,
+  31,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "note": "강한 빛: 왼쪽 위 dwood6 하이라이트, 오른쪽 아래로 짙은 그늘 3단, 다리 사이 바닥에 -/~ 접지 그림자, 건반 앞 처마 그림자",
+ "ok": true
+}

@@ -1,0 +1,48 @@
+/* 픽처(그림) 슬롯. 컨테이너 스태킹(.picture-layer)은
+   database/tabs-b-status-menu-main.css:373-376 이 소유한다. 여기 중복 선언을 두면
+   값이 바뀌어도 효력이 없는 dead rule 이 된다.
+
+   왜 못 이기는가 — 아래 `@layer runtime {` 때문이다. 이 파일은 이미
+   runtime/index.css:54 에서 `layer(runtime)` 으로 들어오므로, 안에서 다시 감싸면
+   실효 레이어가 `runtime.runtime` **서브레이어**가 된다. 서브레이어는 부모 직속
+   규칙에게 지므로, `layer(runtime)` 직속인 tabs-b-status-menu-main.css 가 이긴다.
+   (실측 2026-09-17: .picture-layer → [runtime] 직속, .picture-layer-item → [runtime.runtime].)
+
+   >>> 이 `@layer runtime {` 래퍼를 "이미 layer(runtime) 인데 중복이네" 하고 지우지 말 것. <<<
+   지우는 순간 이 파일이 직속 runtime 으로 **승격**하고, import 순서가 :48 < :54 라
+   pictures.css 가 이겨서 이미지 픽처 컨테이너에 흰 상자 + 파란 테두리가 돌아온다.
+
+   (2026-09-17 이전 주석은 "playerRuntime.css 안의 unlayered 선언이 우선한다"고
+   설명했는데 전제가 비어 있었다 — playerRuntime.css 는 `@import "./index.css";`
+   한 줄뿐이고 선언이 0개다. 결론만 우연히 맞았다.) */
+@layer runtime {
+  .picture-layer-item {
+    position: absolute;
+    transform-origin: top left;
+    will-change: transform, opacity, left, top;
+  }
+
+  .picture-layer-image {
+    display: block;
+    image-rendering: pixelated;
+    max-width: none;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .picture-layer-label {
+    /* 다크 글래스 라벨. 값은 토큰이 공급한다 — 플레이어는 runtime/tokens.dark.css 가,
+       에디터는 tokens.css 가 준다. 폴백에 다크 값을 적어 두면 토큰이 라이트일 때
+       조용히 흰 칩으로 렌더되면서도 코드는 다크처럼 읽힌다(2026-09-17 실측). */
+    background: var(--bg-glass);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-s, 6px);
+    color: var(--text-1);
+    display: inline-block;
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    padding: 4px 6px;
+  }
+}

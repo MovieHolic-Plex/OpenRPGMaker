@@ -1,0 +1,49 @@
+// instrument_tray h5-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b dust 0
+@mat c flame 0
+@mat d moon 0
+@mat e murk 0
+@mat f rot 0
+@mat g rust 0
+@mat h sheet 0
+@mat i tin 0
+@mat j void 0
+@mblock 0 0
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiaaaaaaaaaaii.
+.iiaaaaaaaaaaii.
+.iiiiiiiiiiiiii.
+.iiiiiaiiiiaiii.
+..i...a....a.i..
+..iiiiaiiiiiii..
+..iiiiaiiiiiii..
+..i...a......i..
+.iii........iii.
+..ii........ii..
+@tblock 0 0
+................
+................
+................
+.55555555555555.
+.52222222222222.
+.52666644444442.
+.52233333333342.
+.55222222222252.
+.53333333333332.
+.11111211111112.
+..3...2....1.2..
+..333323333332..
+..311121111112..
+..3...3......2..
+.111........111.
+..11........11..

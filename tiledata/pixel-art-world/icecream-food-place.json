@@ -1,0 +1,143 @@
+{
+  "id": "shared_paw_icecream_orange_drink_place",
+  "name": "아이스크림점 · 주황 음료 식탁 · 10×8",
+  "tilesetId": "shared_paw_icecream_orange_drink",
+  "assetId": "shared_paw_icecream_orange_drink_image",
+  "baseTilesetId": "paw-icecream-shop",
+  "basePlaceId": "shared_paw_icecream_counter_and_two_seats",
+  "baseLibraryId": "pixel-art-world-local",
+  "baseSceneCategoryId": "scene-icecream-counter-and-two-seats",
+  "foodTilesetId": "shared_paw_food_juice_table",
+  "foodRecipeId": "paw-food-juice-00",
+  "sources": [
+    {
+      "filename": "ST-Icecream-I01.png",
+      "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+      "page": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html"
+    },
+    {
+      "filename": "SC-F-Juice01.png",
+      "sha256": "d9261ffcc160efcb202e762bfafc8ef2ea53d7c489d846f249a8c0fbb347e813",
+      "page": "https://yms.main.jp/dotartworld/page3/food01.html"
+    }
+  ],
+  "foodSourceTiles": [
+    [
+      12,
+      13,
+      14
+    ],
+    [
+      24,
+      25,
+      26
+    ],
+    [
+      36,
+      37,
+      38
+    ]
+  ],
+  "foodDestinationTiles": [
+    [
+      160,
+      161,
+      162
+    ],
+    [
+      168,
+      169,
+      170
+    ],
+    [
+      176,
+      177,
+      178
+    ]
+  ],
+  "foodOrigin": {
+    "x": 5,
+    "y": 3
+  },
+  "removeUpperCells": [
+    [
+      6,
+      3
+    ],
+    [
+      6,
+      4
+    ],
+    [
+      6,
+      5
+    ],
+    [
+      8,
+      3
+    ],
+    [
+      8,
+      4
+    ],
+    [
+      8,
+      5
+    ]
+  ],
+  "northChair": {
+    "x": 6,
+    "y": 3,
+    "tile": 51
+  },
+  "southChair": {
+    "x": 6,
+    "y": 6,
+    "tile": 59
+  },
+  "entrance": {
+    "x": 4,
+    "y": 7
+  },
+  "approaches": [
+    {
+      "x": 2,
+      "y": 5
+    },
+    {
+      "x": 2,
+      "y": 2
+    },
+    {
+      "x": 5,
+      "y": 3
+    },
+    {
+      "x": 7,
+      "y": 3
+    },
+    {
+      "x": 5,
+      "y": 6
+    },
+    {
+      "x": 7,
+      "y": 6
+    },
+    {
+      "x": 8,
+      "y": 4
+    },
+    {
+      "x": 4,
+      "y": 4
+    }
+  ],
+  "limitations": "정적 학습 장소. 먹기·착석·계산·NPC·문 전이 이벤트 없음. 기존 기본 장소를 덮어쓰지 않는 별도 제안.",
+  "transparentOverlay": {
+    "sourceFoodTile": 13,
+    "destinationFoodTile": 161,
+    "replacementTile": 51,
+    "reason": "주황 음료 합성 상단 중앙32×32는 완전 투명. 전체3×3 배치 뒤 이 빈 칸만 의자로 대체한다. 다른 음식에 일반화 금지."
+  }
+}

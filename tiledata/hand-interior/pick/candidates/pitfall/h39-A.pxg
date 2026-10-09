@@ -1,0 +1,28 @@
+// h39 A: 구멍 함정 — 부서진 돌 테두리, 북쪽 안벽(밝은 줄)과 깊은 검정, 남쪽 테 윗면이 위에서 보임
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat e stone 1
+@mat d stone 0
+@mat f stone 2
+@mat g stone 3
+@mat h stone 4
+@mat K black 1
+@mat k black 0
+@mblock 0 0
+................
+....eegghgee....
+..eehhhhhhggee..
+.ehhgdddddddgge.
+.ehgdeefeefdgff.
+.eg.dKeeeeeKdgf.
+.ehdKKKKKKKKd.f.
+.egdKkkkkkkKdgf.
+.eedKkkkkkkKdff.
+.ehdKkkkkkKKdgf.
+.eg.dKKKKKKddgf.
+.ehhgdddddddggf.
+..eggghhhhgggfe.
+..eefggggggffe..
+....eeffffee....
+.....eeeeee.....

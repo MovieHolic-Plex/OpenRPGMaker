@@ -1,0 +1,38 @@
+name: Security Audit
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Report file names only. Never print a suspected credential to the Actions log.
+      - name: Scan tracked files for credential patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          pattern='(^|[^A-Za-z0-9+/=])(AKIA[0-9A-Z]{16}|ASIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{40,}|glpat-[A-Za-z0-9_-]{20,}|-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----)([^A-Za-z0-9+/=]|$)'
+          files="$(git grep -IlE "$pattern" -- . ':(exclude)package-lock.json' || true)"
+          if [[ -n "$files" ]]; then
+            printf '%s\n' "$files" | while IFS= read -r file; do
+              echo "::error file=$file::Potential credential pattern found; inspect locally without printing its contents."
+            done
+            exit 1
+          fi
+
+      - name: Audit production dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Check production dependency advisories
+        run: npm audit --omit=dev --audit-level=high

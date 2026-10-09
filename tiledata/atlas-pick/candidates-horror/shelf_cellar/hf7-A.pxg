@@ -1,0 +1,76 @@
+// shelf_cellar hf7-A (작업자 hf7, 지하·돌방 한 벌)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat w vdwood 0
+@mat g vgreen 0
+@mat c vclay 0
+@mat b vwood 0
+@mat k dust 0
+@mblock 0 0
+................
+................
+.wwwwwwwwwwwwww.
+.wwwwkkkwkwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwgwwwwwwwww.
+.wwwwgwwwwwgwww.
+.wwwgggwcccgwww.
+.wwwgggwccggwww.
+.wwwgggwccggwww.
+.wwwgggwccggwww.
+.wwwwwwkkkwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwbbbbwwwwwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwbbbbwwccwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwccwwwwwwww.
+.wwwccccwwgwwww.
+.wwwccccwwgwwww.
+.wwwccccwggbwww.
+.wwwccccwggbwww.
+.wwwccccwggbwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+.wwwwwwwwwwwwww.
+@tblock 0 0
+................
+................
+.00000000000000.
+.05555555455550.
+.03333333333330.
+.04300000000320.
+.04312111111320.
+.04312111112320.
+.04343215552320.
+.04344314343320.
+.04344314443320.
+.04332213232320.
+.04444434511140.
+.02222222222220.
+.04300000022320.
+.04311111111320.
+.04354431111320.
+.04343321155320.
+.04343321143320.
+.04343321143320.
+.04332221132320.
+.04444444444440.
+.02222222222220.
+.04305500000320.
+.04344331121320.
+.04344321121320.
+.04343321434320.
+.04333221433320.
+.04322221322320.
+.03333333333330.
+.01111111111110.
+.00000000000000.

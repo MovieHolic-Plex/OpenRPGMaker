@@ -1,0 +1,296 @@
+import { phaserEaseName, type EasingName } from "@/project/easing";
+import { mapTileSize } from "@/project/tileGeometry";
+import type Phaser from "phaser";
+import { TILE_SIZE } from "@/assets/bundled";
+import type { GameMap } from "@/project/types";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
+import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
+import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
+import { store } from "@/project/store";
+import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
+import { bumpPerfCounter } from "@/player/runtimePerfCounters";
+import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
+import { reliefTopOverhangPx } from "@/player/playSceneRelief";
+import { normalizeVisualTopOverhangPx } from "@/project/mapVisualBounds";
+
+export type ScrollMapDirection = "down" | "left" | "right" | "up";
+
+export type ScrollMapPanInput = {
+  readonly centerX: number;
+  readonly centerY: number;
+  readonly direction: ScrollMapDirection;
+  readonly distanceTiles: number;
+  readonly tileSize?: number;
+};
+
+export type ScrollMapPanTarget = {
+  readonly x: number;
+  readonly y: number;
+};
+
+/**
+ * 저작 배율(프로젝트 기본값·연출 명령)을 카메라별로 기억한다. 실제 camera.zoom 은 여기에
+ * 맵 보기 배율(runtimeViewScale)을 곱한 값이라, 맵을 옮기면 저작값을 그대로 두고 곱만 바꾼다.
+ */
+const authoredZooms = new WeakMap<Phaser.Cameras.Scene2D.Camera, number>();
+
+/** `viewZoom` 은 이 맵의 보기 배율이다. 저작 배율은 뒤이은 applyStoredCameraState 가 얹는다. */
+export function centerRuntimeCamera(
+  camera: Phaser.Cameras.Scene2D.Camera,
+  map: GameMap,
+  player: Phaser.GameObjects.Sprite,
+  viewZoom = 1,
+): void {
+  authoredZooms.set(camera, 1);
+  camera.setZoom(viewZoom);
+  syncRuntimeCameraBounds(camera, map);
+  camera.centerOn(player.x, player.y);
+}
+
+/**
+ * 카메라 경계는 **보이는 세계 크기**(canvas / zoom) 기준이다. 맵이 화면보다 작으면 가운데
+ * 놓이게 여백을 두고, 크면 맵 가장자리에서 멈춘다. canvas 폭 그대로 쓰면 배율 ≠ 1 에서 여백이
+ * 틀려 작은 맵이 한쪽으로 쏠리거나 큰 맵 밖의 검은 곳까지 스크롤된다.
+ */
+function syncRuntimeCameraBounds(camera: Phaser.Cameras.Scene2D.Camera, map: GameMap): void {
+  const tile = mapTileSize(map);
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const viewWidth = camera.width / zoom;
+  const viewHeight = camera.height / zoom;
+  const mapWidth = Math.max(tile, map.width * tile);
+  // 높이 지형: 북쪽 끝 고지대는 월드 y=0 위로 그려진다 — 경계를 그만큼 위로 넓혀야 잘리지 않는다.
+  const overhang = Math.max(reliefTopOverhangPx(map, tile),
+    normalizeVisualTopOverhangPx(map.visualTopOverhangPx) ?? 0);
+  const mapHeight = Math.max(tile, map.height * tile + overhang);
+  const paddingX = Math.max(0, (viewWidth - mapWidth) / 2);
+  const paddingY = Math.max(0, (viewHeight - mapHeight) / 2);
+  camera.setBounds(-paddingX, -paddingY - overhang, Math.max(viewWidth, mapWidth), Math.max(viewHeight, mapHeight));
+}
+
+export function calculateScrollMapPanTarget(input: ScrollMapPanInput): ScrollMapPanTarget {
+  const distance = Math.max(0, input.distanceTiles) * (input.tileSize ?? TILE_SIZE);
+  switch (input.direction) {
+    case "left":
+      return { x: input.centerX - distance, y: input.centerY };
+    case "right":
+      return { x: input.centerX + distance, y: input.centerY };
+    case "up":
+      return { x: input.centerX, y: input.centerY - distance };
+    case "down":
+      return { x: input.centerX, y: input.centerY + distance };
+  }
+}
+
+export type ScrollMapStep = {
+  readonly direction: ScrollMapDirection;
+  readonly distanceTiles: number;
+  readonly durationMs: number;
+  readonly wait: boolean;
+  readonly returnToPlayer: boolean;
+  readonly lock: boolean;
+};
+
+export function panRuntimeCamera(scene: PlaySceneContext, step: ScrollMapStep): Promise<void> {
+  const camera = scene.cameras.main;
+  const from = camera.worldView.centerX || scene.player.x;
+  const fromY = camera.worldView.centerY || scene.player.y;
+  const target = calculateScrollMapPanTarget({
+    centerX: from,
+    centerY: fromY,
+    direction: step.direction,
+    distanceTiles: step.distanceTiles,
+    tileSize: mapTileSize(scene.map),
+  });
+  camera.stopFollow();
+  const sequence = async (): Promise<void> => {
+    await panCamera(camera, target.x, target.y, step.durationMs);
+    if (step.returnToPlayer) {
+      await panCamera(camera, scene.player.x, scene.player.y, step.durationMs);
+    }
+    if (!step.lock || step.returnToPlayer) {
+      camera.startFollow(scene.player, true, 0.2, 0.2);
+    }
+  };
+  const promise = sequence();
+  return step.wait ? promise : Promise.resolve();
+}
+
+export type CameraControlStep = {
+  readonly mode: "pan" | "follow" | "fixed" | "return";
+  readonly target: RuntimeCameraTarget;
+  readonly durationMs: number;
+  readonly wait: boolean;
+  readonly returnToPlayer: boolean;
+  readonly offsetX?: number;
+  readonly offsetY?: number;
+  readonly zoom?: number;
+  readonly easing?: EasingName;
+};
+
+export function applyStoredCameraState(scene: PlaySceneContext): void {
+  const state = scene.session.camera;
+  if (!state) {
+    // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
+    // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
+    // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
+    applyCameraZoom(scene, resolveCameraZoom(store.getCurrent().system));
+    followCameraTarget(scene, { kind: "player" });
+    return;
+  }
+  // Default/new-game camera state intentionally has no zoom. Centering a map
+  // seeds 1, so inherit the authored system zoom instead of retaining that seed.
+  applyCameraZoom(scene, state.zoom ?? resolveCameraZoom(store.getCurrent().system));
+  if (state.mode === "follow") {
+    followCameraTarget(scene, state.target);
+    return;
+  }
+  const target = resolveCameraTarget(scene, state.target, state.offsetX, state.offsetY);
+  scene.cameras.main.stopFollow();
+  scene.cameras.main.centerOn(target.x, target.y);
+}
+
+export function applyCameraControl(scene: PlaySceneContext, step: CameraControlStep): Promise<void> {
+  applyCameraZoom(scene, step.zoom);
+  const run = async (): Promise<void> => {
+    if (step.mode === "follow") {
+      followCameraTarget(scene, step.target);
+      scene.session.camera = cameraState("follow", step);
+      scene.syncRuntimeState();
+      return;
+    }
+    if (step.mode === "return" || step.returnToPlayer) {
+      scene.cameras.main.stopFollow();
+      await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY, step.easing);
+      followCameraTarget(scene, { kind: "player" });
+      scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: step.zoom };
+      scene.syncRuntimeState();
+      return;
+    }
+    scene.cameras.main.stopFollow();
+    await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY, step.easing);
+    scene.session.camera = cameraState("fixed", step);
+    scene.syncRuntimeState();
+  };
+  const promise = run();
+  if (!step.wait) {
+    void promise;
+    return Promise.resolve();
+  }
+  return promise;
+}
+
+function cameraState(mode: RuntimeCameraSessionState["mode"], step: CameraControlStep): RuntimeCameraSessionState {
+  return {
+    mode,
+    target: step.target,
+    offsetX: step.offsetX,
+    offsetY: step.offsetY,
+    zoom: step.zoom,
+  };
+}
+
+function followCameraTarget(scene: PlaySceneContext, target: RuntimeCameraTarget): void {
+  const followTarget = followObjectForTarget(scene, target);
+  if (followTarget) {
+    const camera = scene.cameras.main;
+    // Phaser 의 startFollow 는 scrollX/Y 를 대상 좌표로 **하드 설정**한다(Camera.js §startFollow).
+    // 이미 같은 대상을 따르는 중에 다시 부르면 0.2 러프가 죽고 화면이 대상 위치로 튄다. 이 함수는
+    // refreshRuntimeSurfaces 를 거쳐 인터프리터 스텝마다 불리므로(실측: 대화 1회에 6번, 100ms
+    // 병렬 이벤트면 초당 8번) 같은 대상이면 아무것도 하지 않는다.
+    if (isFollowing(camera, followTarget)) {
+      bumpPerfCounter(scene, "cameraRefollowsSkipped");
+      return;
+    }
+    bumpPerfCounter(scene, "cameraRefollows");
+    camera.startFollow(followTarget, true, 0.2, 0.2);
+    return;
+  }
+  const resolved = resolveCameraTarget(scene, target);
+  scene.cameras.main.stopFollow();
+  scene.cameras.main.centerOn(resolved.x, resolved.y);
+}
+
+/**
+ * 카메라가 지금 이 객체를 따르는가. Phaser 는 추적 대상을 `_follow` 에만 둔다(공개 getter 없음);
+ * 없는 환경(테스트 스텁)에서는 모른다고 보고 startFollow 를 그대로 부른다.
+ */
+function isFollowing(camera: Phaser.Cameras.Scene2D.Camera, target: Phaser.GameObjects.Sprite): boolean {
+  const current = (camera as unknown as { _follow?: unknown })._follow;
+  return current !== undefined && current === target;
+}
+
+function followObjectForTarget(
+  scene: PlaySceneContext,
+  target: RuntimeCameraTarget
+): Phaser.GameObjects.Sprite | null {
+  if (target.kind === "player") return scene.player;
+  if (target.kind === "event") return scene.eventSprites.get(target.eventId) ?? null;
+  return null;
+}
+
+function panToTarget(
+  scene: PlaySceneContext,
+  target: RuntimeCameraTarget,
+  durationMs: number,
+  offsetX = 0,
+  offsetY = 0,
+  easing?: EasingName
+): Promise<void> {
+  const resolved = resolveCameraTarget(scene, target, offsetX, offsetY);
+  return panCamera(scene.cameras.main, resolved.x, resolved.y, durationMs, easing);
+}
+
+function resolveCameraTarget(
+  scene: PlaySceneContext,
+  target: RuntimeCameraTarget,
+  offsetX = 0,
+  offsetY = 0
+): { readonly x: number; readonly y: number } {
+  if (target.kind === "player") return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
+  if (target.kind === "position") {
+    return { x: characterSpriteX(target.x, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(target.y, mapTileSize(scene.map)) + offsetY };
+  }
+  const sprite = scene.eventSprites.get(target.eventId);
+  if (sprite) return { x: sprite.x + offsetX, y: sprite.y + offsetY };
+  const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
+    .find((event) => event.event.id === target.eventId);
+  // 스프라이트가 없는 이벤트로 팬할 때도 **몸 중앙**을 겨눈다. 앵커를 쓰면 3x3 골렘이
+  // 화면 한쪽으로 밀린 채 멈춘다.
+  if (view) return { x: footprintSpriteX(view.x, view.footprint, mapTileSize(scene.map)) + offsetX, y: characterSpriteY(view.y, mapTileSize(scene.map)) + offsetY };
+  return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
+}
+
+/** 카메라 배율 범위의 정본은 @/project/cameraZoom 에 있다 — 저작 정규화와 같은 값을 봐야
+ * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. 범위는 **저작값**에만 건다. 맵 보기
+ * 배율은 그 위에 곱해지는 보정이라 16px 맵의 3배처럼 상한을 넘을 수 있다.
+ * `zoom` 이 없으면 저작값을 바꾸지 않고 현재 맵의 보기 배율만 다시 맞춘다. */
+function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): void {
+  const camera = scene.cameras.main;
+  if (zoom !== undefined && Number.isFinite(zoom) && zoom > 0) {
+    authoredZooms.set(camera, Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
+  }
+  const next = (authoredZooms.get(camera) ?? 1) * runtimeMapViewZoom(scene);
+  if (camera.zoom !== next) camera.setZoom(next);
+  syncRuntimeCameraBounds(camera, scene.map);
+}
+
+/** `easing` 생략 = 일정하게(Linear) — 저장된 옛 명령의 움직임은 그대로다. */
+export function panCamera(
+  camera: Phaser.Cameras.Scene2D.Camera,
+  x: number,
+  y: number,
+  durationMs: number,
+  easing?: EasingName,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const duration = Math.max(0, Math.round(durationMs));
+    if (duration === 0) {
+      camera.centerOn(x, y);
+      resolve();
+      return;
+    }
+    camera.once("camerapancomplete", () => resolve());
+    camera.pan(x, y, duration, phaserEaseName(easing), true);
+  });
+}

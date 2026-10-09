@@ -1,0 +1,259 @@
+// 2026-09-17: "uses bounded repair to correct the real NPC" 삭제 — 검수 모델이 NPC 보상 미완성을 changes_requested 로
+// 되돌리는 수리 루프를 검증했으나, 결정적 검사(lint error 0)에서 기능 수용은 승인 조건이 아니다.
+// 2026-09-17 저녁 수용 원장 해체: repair_acceptance 도구는 노출되지 않고 getAcceptanceSnapshot() 은 항상 null 이라,
+// 적용 뒤 확인은 원장 대신 verifyNpcRewardsPlayable(적용된 스토어) 로만 한다.
+import { cooperativeNodeYield } from "./cooperativeNodeYield";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import * as commitLog from "@/project/projectCommitLog";
+import { store } from "@/project/store";
+import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
+import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
+import { resetIntentDeclarationCache, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+import type { NpcRewardRequirements } from "@/ai/intentDeclaration";
+import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
+import { createBlankProject } from "@/project/defaults";
+import type { Command, GameEvent } from "@/project/types";
+import { declaredIntent, fixedDeclarer } from "./intentFixture";
+import { offlineChatResponse } from "./fixtures/offlineChatResponse";
+import { approvedReviewResponse, independentReviewPayload, imageDeliveryForRequest } from "./independentReviewFixture";
+import type { ReviewInput } from "@/ai/independentReview";
+
+const COMPLETE = "MODEL_COMPLETION_SENTINEL";
+const NPC = "ev_reward_session";
+describe.each(["items-monsters", "gold"] as const)("%s reward lifecycle", rewardKind => {
+const REQUIRED: NpcRewardRequirements = [{
+  target: { eventId: NPC }, oneTime: true,
+  grants: rewardKind === "gold" ? [{ kind: "gold", count: 20 }]
+    : [{ kind: "item", id: "item_potion", count: 2 }, { kind: "monster", id: "species_leafling", count: 1 }],
+}];
+const config = { ...defaultAiConfig(), agentMode: "chat", apiKey: "test", maxToolCalls: 18, maxTokens: 32000 } satisfies import("@/ai/llmClient").AiConfig;
+const final = (): ChatResult => ({ message: { role: "assistant", content: COMPLETE }, finishReason: "stop" });
+function call(name: string, args: unknown): ChatResult {
+  return { message: { role: "assistant", content: null, tool_calls: [{ id: `${name}_call`, type: "function", function: { name, arguments: JSON.stringify(args) } }] }, finishReason: "tool_calls" };
+}
+function npc(variant: "text" | "once" | "repeat"): GameEvent {
+  const grants: Command[] = variant === "text" ? [] : rewardKind === "gold" ? [{ kind: "changeGold", op: "+=", amount: 20 }] : [
+    { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 2 },
+    { kind: "giveMonster", speciesId: "species_leafling", level: 5 },
+  ];
+  const page = {
+    id: "reward", name: "Mira", conditions: [], graphic: { transparent: true },
+    trigger: { kind: "action" as const }, priority: "same" as const, overlapForbidden: true,
+    movement: { type: "fixed" as const, speed: 3, frequency: 3 },
+    commands: [...grants, { kind: "text", body: "Here are your rewards." } satisfies Command,
+      ...(variant !== "repeat" ? [{ kind: "setSelfSwitch", key: "A", value: true } satisfies Command] : [])],
+  };
+  return { id: NPC, name: "Mira", x: 2, y: 3, trigger: { kind: "action" }, commands: [], pages: [page,
+    ...(variant !== "repeat" ? [{ ...page, id: "claimed", conditions: [{ kind: "selfSwitch", key: "A", value: true }], commands: [{ kind: "text", body: "Already claimed." }] } satisfies NonNullable<GameEvent["pages"]>[number]] : []),
+  ] };
+}
+const plan = (tools: string[]) => ({ goal: "Reward request", layers: [{ title: "Author", items: tools.map((tool, i) => ({ title: `Item ${i}`, instruction: `Use ${tool}`, successTools: [tool] })) }] });
+function harness(steps: readonly (ChatResult | Error)[], options: { required?: NpcRewardRequirements; noContract?: boolean; declarer?: IntentDeclarer; maxToolCalls?: number; pause?: () => string | null } = {}) {
+  const project = createBlankProject();
+  project.session.gold = 37;
+  project.maps[project.startMapId].events = [];
+  const requests: ChatRequest[] = [];
+  const reviews: ReviewInput[] = [];
+  const events: SessionEvent[] = [];
+  const map = project.maps[project.startMapId];
+  const region = { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height };
+  // Real read and image tools keep successive NPC replacements grounded; the
+  // separate reward verifier checks the grants.
+  const groundedSteps = steps.flatMap((step) => !(step instanceof Error)
+    && step.message.tool_calls?.some((tool) => tool.function.name === "upsert_event")
+    ? [call("get_map_region", region), step, call("show_map_region", region)] : [step]);
+  let index = 0;
+  const session = new AssistantSession(project, { yieldToUi: cooperativeNodeYield,
+    config: { ...config, ...(options.maxToolCalls ? { maxToolCalls: options.maxToolCalls } : {}) },
+    declareIntent: options.declarer ?? fixedDeclarer({ mode: "modify", npcRewards: options.noContract ? undefined : options.required ?? REQUIRED }),
+    peekPendingUserMessage: options.pause,
+    renderImages: async () => [{ label: "Reward NPC map", dataUrl: "data:image/png;base64,AA==" }],
+    chat: async (_config, request) => {
+      const review = independentReviewPayload(request);
+      const approval = approvedReviewResponse(request);
+      if (review && approval) { reviews.push(review); return approval; }
+      requests.push(request);
+      const next = groundedSteps[index++];
+      if (next instanceof Error) throw next;
+      return offlineChatResponse({ ...(next ?? final()), imageDelivery: imageDeliveryForRequest(request) });
+    },
+  });
+  return { session, project, requests, reviews, events, onEvent: (event: SessionEvent) => events.push(event) };
+}
+const writeNpc = (mapId: string, variant: "text" | "once" | "repeat") => call("upsert_event", { mapId, event: npc(variant) });
+const tools = (events: SessionEvent[], name: string) => events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call" && event.name === name);
+const hasContract = (request: ChatRequest) => request.messages.some((message) => typeof message.content === "string" && message.content.includes(JSON.stringify(REQUIRED)));
+
+afterEach(() => { resetIntentDeclarationCache(); vi.restoreAllMocks(); });
+
+async function applyAndVerify(h: ReturnType<typeof harness>) {
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(h.project);
+  // Only the external history write is replaced; the real commit gate and store apply run.
+  vi.spyOn(commitLog, "recordProjectCommit").mockResolvedValue({ commitId: null, persisted: false, reviewStatus: "approved", summary: "test", toolNames: [], recordedAt: "2026-09-07T00:00:00.000Z" });
+  expect(h.session.isDraftReviewApproved()).toBe(true);
+  const applied = await applyProposedProject(h.session.getProposedProject(), { base: h.session.getProposalBase(), baseline: h.session.getDraftBaseline(), source: "agent", summary: "Requested reward", toolNames: ["upsert_event"] });
+  expect(applied.ok).toBe(true);
+  h.session.refreshAcceptance(store.getCurrent());
+  expect(h.session.getAcceptanceSnapshot()).toBeNull();
+  expect(verifyNpcRewardsPlayable(store.getCurrent(), REQUIRED).ok).toBe(true);
+}
+
+describe("NPC reward request lifetime in AssistantSession", () => {
+  it("does not dispatch authoring or planner calls for an unrepairable reward declaration", async () => {
+    const h = harness([call("set_title_screen", { title: "Must not change" })], {
+      required: { invalidReason: "npcRewards: invalid target" },
+    });
+    const originalTitle = h.project.meta.title;
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent, undefined, { autonomous: true });
+    expect(h.requests).toHaveLength(0);
+    expect(h.events.filter((event) => event.type === "tool_call")).toEqual([]);
+    expect(h.session.getProposedProject().meta.title).toBe(originalTitle);
+    expect(result.stoppedReason).toBe("error");
+  });
+
+  // 2026-09-17 결정적 검사: 기능 수용(NPC 보상)은 승인 조건이 아니다. lint error 0 이면 초안은 승인되고,
+  // 보상 미완성은 verifyNpcRewardsPlayable 과 최종 문구("… 아직 미완성입니다")로만 드러난다.
+  it.each([
+    { variant: "text", pass: false, noContract: false },
+    { variant: "once", pass: true, noContract: false },
+    { variant: "repeat", pass: false, noContract: false },
+    { variant: "text", pass: true, noContract: true },
+  ] as const)("direct $variant NPC, contract opt-out=$noContract", async ({ variant, pass, noContract }) => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([writeNpc(mapId, variant)], { noContract });
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "upsert_event")[0]?.result.ok).toBe(true);
+    expect(verifyNpcRewardsPlayable(h.session.getProposedProject(), noContract ? undefined : REQUIRED).ok).toBe(pass);
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.review?.summary).toBe("결정적 검사 통과 — 변경 맵 1개, lint error 0건.");
+    expect(h.session.isDraftReviewApproved()).toBe(true);
+    // 보상이 완성됐으면 모델의 완료 문장이 그대로 사용자에게 간다(옛 LLM 검수는 자기 요약으로 갈아치웠다).
+    // 미완성이면 npcRewardFinalText 가 완료 주장을 "아직 미완성입니다" 문구로 바꾼다.
+    expect(h.events.filter((event) => event.type === "assistant_message").some((event) => event.content.includes(COMPLETE))).toBe(pass);
+    // 미완성 보상은 승인을 막지 않고 최종 문구로만 드러난다.
+    if (!pass) expect(result.assistantText).toMatch(/아직 미완성입니다/);
+    // 검수 모델은 더 이상 호출되지 않는다.
+    expect(h.reviews).toHaveLength(0);
+    if (pass && !noContract) await applyAndVerify(h);
+    expect(h.requests.length).toBeLessThanOrEqual(7);
+  });
+
+  it.each(([[], { invalidReason: "npcRewards: invalid grant" }, [{ target: { eventId: "missing_npc" }, grants: [{ kind: "item", id: "item_potion", count: 1 }] }]] satisfies NpcRewardRequirements[]).map((required) => ({ required })))("does not finalize unresolved or invalid obligations %j", async ({ required }) => {
+    const h = harness([], { required });
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(result.assistantText).not.toContain(COMPLETE);
+    expect(h.requests.length).toBeLessThanOrEqual(5);
+  });
+
+  it("allows an earlier DB item but refuses final explicit completion and skip with missing rewards", async () => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([
+      call("set_work_plan", plan(["upsert_item", "upsert_event"])),
+      call("upsert_item", { item: { id: "item_potion", name: "Revised potion" } }),
+      writeNpc(mapId, "text"), call("complete_work_item", { itemId: "L1-2" }), call("skip_work_item", { itemId: "L1-2", note: "Skip reward" }),
+    ]);
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "upsert_item")[0]?.result.ok).toBe(true);
+    expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
+    expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(false);
+    expect(tools(h.events, "skip_work_item")[0]?.result.ok).toBe(false);
+    expect(result.assistantText).not.toContain(COMPLETE);
+  });
+
+  it("gates a non-final item that actually authors the declared NPC", async () => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"])), writeNpc(mapId, "text"), call("complete_work_item", { itemId: "L1-1" })]);
+    await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(false);
+    expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).not.toBe("done");
+  });
+
+  it("cannot erase the obligation by replanning into an unrelated skipped plan", async () => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"])), writeNpc(mapId, "text"), call("set_work_plan", plan(["get_database_records"])), call("skip_work_item", { itemId: "L1-1", note: "Everything is unnecessary" })]);
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "set_work_plan")).toHaveLength(2);
+    expect(tools(h.events, "skip_work_item")[0]?.result.ok).toBe(false);
+    expect(result.assistantText).not.toContain(COMPLETE);
+    expect(h.requests.every(hasContract)).toBe(true);
+  });
+
+  it("rechecks a previously completed NPC after its grants are removed", async () => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([call("set_work_plan", plan(["upsert_event"])), writeNpc(mapId, "once"), writeNpc(mapId, "text"), call("complete_work_item", { itemId: "L1-1" })]);
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "upsert_event").every((event) => event.result.ok)).toBe(true);
+    expect(h.events.some(event => event.type === "work_plan" && event.plan.layers[0]?.items[0]?.status === "done")).toBe(true);
+    expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(false);
+    expect(result.assistantText).not.toContain(COMPLETE);
+  });
+
+  it("completes an actual one-time NPC plan and accepts idempotent explicit completion", async () => {
+    const mapId = createBlankProject().startMapId;
+    const h = harness([call("set_work_plan", plan(["upsert_event"])), writeNpc(mapId, "once"), call("complete_work_item", { itemId: "L1-1" })]);
+    const result = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(tools(h.events, "complete_work_item")[0]?.result.ok).toBe(true);
+    expect(h.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
+    expect(result.stoppedReason, result.error).toBe("final");
+    expect(result.review?.status).toBe("approved");
+    expect(result.assistantText).not.toBe(COMPLETE);
+    await applyAndVerify(h);
+  });
+
+  it("preserves the obligation through plan-only confirmation and the actual planner replan", async () => {
+    let declarations = 0;
+    const planner = (action: string, tools: string[]): ChatResult => ({ message: { role: "assistant", content: JSON.stringify({ action, ...plan(tools) }) }, finishReason: "stop" });
+    const h = harness([planner("new_plan", ["upsert_event"]), planner("replan", ["get_database_records"]), call("skip_work_item", { itemId: "L1-1", note: "No reward work left" })], {
+      declarer: async () => { declarations++; return { intent: declaredIntent({ mode: "modify", needsPlan: true, npcRewards: REQUIRED }), elapsedMs: 0 }; },
+    });
+    await h.session.sendUserMessage("Plan the requested reward NPC", h.onEvent, undefined, { composerMode: "plan" });
+    expect(tools(h.events, "upsert_event")).toHaveLength(0);
+    const result = await h.session.sendUserMessage("계속", h.onEvent);
+    expect(declarations).toBe(1);
+    expect(h.session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.startsWith("planner:replan"))).toBe(true);
+    expect(tools(h.events, "skip_work_item")[0]?.result.ok).toBe(false);
+    expect(h.requests.every(hasContract)).toBe(true);
+    expect(result.assistantText).not.toContain(COMPLETE);
+  });
+
+  it("retains the captured requirement and context on retryLastTurn", async () => {
+    const mapId = createBlankProject().startMapId;
+    const error = Object.assign(new Error("Test authentication interruption"), { status: 401, name: "LlmError" });
+    const h = harness([writeNpc(mapId, "text"), error]);
+    expect((await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent)).stoppedReason).toBe("error");
+    const retryAt = h.requests.length;
+    const result = await h.session.retryLastTurn(h.onEvent);
+    expect(result.assistantText).not.toContain(COMPLETE);
+    expect(h.requests.slice(retryAt).every(hasContract)).toBe(true);
+  });
+
+  it("preserves the request across the real autonomous synthetic continuation", async () => {
+    let declarations = 0;
+    let calls = 0;
+    const h = harness([call("set_work_plan", plan(["upsert_event", "upsert_item"]))], {
+      maxToolCalls: 1,
+      declarer: async () => { declarations++; return { intent: declaredIntent({ mode: "modify", npcRewards: REQUIRED }), elapsedMs: 0 }; },
+      pause: () => ++calls >= 2 ? "User has a new message" : null,
+    });
+    await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent, undefined, { autonomous: true });
+    expect(declarations).toBe(1);
+    expect(h.session.getAuditEntries().some((entry) => entry.kind === "status" && entry.text.startsWith("agent_run:auto-continue"))).toBe(true);
+    expect(h.requests.length).toBeGreaterThan(1);
+    expect(h.requests.every(hasContract)).toBe(true);
+  });
+
+  it.each(["new-request", "ask"] as const)("host new-goal clears old obligations; ask does not enforce them: %s", async (mode) => {
+    let declarations = 0;
+    const h = harness([], { declarer: async () => ({ intent: declaredIntent({ mode: "modify", ...(declarations++ === 0 || mode === "ask" ? { npcRewards: REQUIRED } : {}) }), elapsedMs: 0 }) });
+    const initial = await h.session.sendUserMessage("Create the requested reward NPC", h.onEvent);
+    expect(initial.assistantText).not.toContain(COMPLETE);
+    const at = h.requests.length;
+    const next = await h.session.sendUserMessage("An unrelated question", h.onEvent, undefined, { composerMode: mode === "ask" ? "ask" : "do", ...(mode === "new-request" ? { goalAction: "new-goal" as const } : {}) });
+    expect(next.assistantText).toBe(COMPLETE);
+    expect(h.requests.slice(at).some(hasContract)).toBe(false);
+  });
+});
+});

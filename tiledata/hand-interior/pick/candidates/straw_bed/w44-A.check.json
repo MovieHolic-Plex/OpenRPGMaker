@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/straw_bed/w44-A.pxg",
+ "id": "straw bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "note": "관문(object) ok t=19 f=7(접힘선 측정 약함, 눈 판정 O: 윗면 깊이 16줄+앞면 7줄). 짚 결 점무늬+밝은 단면 띠+삐져나온 짚끝, 앞면은 나무 틀·다리. 베개 천 유지.",
+ "ok": true
+}

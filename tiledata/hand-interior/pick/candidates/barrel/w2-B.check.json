@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/barrel/w2-B.pxg",
+ "id": "barrel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "명암 강화: 위·왼쪽 밝게, 오른쪽·앞 어둡게, 굽 오른쪽 아래에 반투명 접지 그림자",
+ "ok": true
+}

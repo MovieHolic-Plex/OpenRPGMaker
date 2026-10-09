@@ -1,0 +1,126 @@
+{
+ "name": "일본 맨션 공용부 1층(엔트런스·엘리베이터 홀)",
+ "plan": [
+  "#########",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "####.####",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "#.......#",
+  "###..####"
+ ],
+ "exitWidth": 2,
+ "floor": "mc-entrance-tile",
+ "wall": "mc-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "mc-elevator",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "houseplant",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "mc-stairs-up",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "mc-notice-board",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "mc-bike-rack",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "mc-bike-rack",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "mc-autodoor",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "mc-mailboxes",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "mc-autolock",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "mc-delivery-box",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 3,
+   "y": 11
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "rooms": [
+  {
+   "room": "elevatorhall",
+   "x0": 0,
+   "y0": 0,
+   "x1": 8,
+   "y1": 5
+  },
+  {
+   "room": "windbreak",
+   "x0": 0,
+   "y0": 6,
+   "x1": 8,
+   "y1": 11
+  }
+ ],
+ "start": [
+  3,
+  10
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "toMapId": "jp-city-mansion-corridor",
+   "toX": 3,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "toMapId": "jp-city-mansion-corridor",
+   "toX": 3,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 5,
+   "y": 3,
+   "toMapId": "jp-city-mansion-corridor",
+   "toX": 18,
+   "toY": 4,
+   "direction": "left"
+  }
+ ]
+}

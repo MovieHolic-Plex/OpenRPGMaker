@@ -1,0 +1,347 @@
+﻿  :root {
+    /* (UI-0) 셸 스킨 변수 → tokens.css 별칭 */
+    --editor-shell-bg: var(--bg-base);
+    --editor-toolbar-bg: var(--bg-surface);
+    --editor-canvas-bg: var(--bg-canvas);
+    --editor-panel-bg: var(--bg-surface);
+    --editor-panel-bg-2: var(--bg-raised);
+    --editor-popover-bg: var(--bg-overlay);
+    --editor-line: var(--border-subtle);
+    --editor-line-strong: var(--border-strong);
+    --editor-text: var(--text-1);
+    --editor-text-muted: var(--text-2);
+    --editor-text-soft: var(--text-3);
+    --editor-blue: var(--accent);
+    --editor-blue-soft: var(--accent-muted);
+    --editor-yellow: var(--warning);
+  }
+
+  body,
+  #app {
+    background: var(--editor-shell-bg);
+    color: var(--editor-text);
+  }
+
+  .topbar {
+    color: var(--editor-text);
+    display: block;
+    padding: 0;
+  }
+
+  .oprn-menu-bar {
+    align-items: center;
+    background: var(--bg-base);
+    border-bottom: 1px solid var(--editor-line);
+    color: var(--editor-text);
+    display: flex;
+    height: 48px;
+    padding: 0 18px;
+  }
+
+  .editor-topbar-trailing {
+    align-items: center;
+    display: inline-flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .team-history-button,
+  .team-identity-button,
+  .quick-battle-test-button,
+  .topbar-ai-settings-button,
+  .topbar-ai-studio {
+    align-items: center;
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: var(--radius-s);
+    color: var(--editor-text);
+    cursor: pointer;
+    display: inline-flex;
+    font: 600 12px/1 var(--font-ui);
+    gap: 8px;
+    height: 32px;
+    justify-content: center;
+    letter-spacing: 0;
+    margin-left: 0;
+    padding: 0 10px;
+  }
+
+  .team-history-button.is-icon-only,
+  .team-identity-button.is-icon-only,
+  .quick-battle-test-button.is-icon-only {
+    gap: 0;
+    padding: 0;
+    width: 32px;
+  }
+
+  .team-history-button:hover,
+  .team-history-button:focus-visible,
+  .team-history-button[aria-expanded="true"],
+  .team-identity-button:hover,
+  .team-identity-button:focus-visible,
+  .team-identity-button[aria-expanded="true"],
+  .quick-battle-test-button:hover,
+  .quick-battle-test-button:focus-visible,
+  .topbar-ai-settings-button:hover,
+  .topbar-ai-settings-button:focus-visible,
+  .topbar-ai-studio:hover,
+  .topbar-ai-studio:focus-visible {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+    outline: none;
+  }
+
+  .topbar-ai-studio.is-on,
+  .topbar-ai-studio[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: transparent;
+    color: var(--on-accent);
+  }
+
+  .topbar-ai-studio.is-on:hover,
+  .topbar-ai-studio.is-on:focus-visible {
+    background: var(--accent-hover);
+    border-color: transparent;
+    color: var(--on-accent);
+  }
+
+  .quick-battle-test-button {
+    background: var(--control-bg);
+    border-color: var(--border-default);
+    color: var(--text-1);
+  }
+
+  .quick-battle-test-button:hover,
+  .quick-battle-test-button:focus-visible {
+    background: var(--control-bg-hover);
+    border-color: var(--border-strong);
+    color: var(--text-1);
+  }
+
+  .topbar-ai-settings-button {
+    background: var(--accent-muted);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+  .team-topbar-icon {
+    display: block;
+    flex: 0 0 auto;
+    height: 18px;
+    width: 18px;
+  }
+
+  .team-commit-kind,
+  .team-commit-review {
+    border: 1px solid var(--editor-line);
+    border-radius: 999px;
+    color: var(--editor-text-muted);
+    font: 700 10px/1 var(--font-ui);
+    padding: 3px 6px;
+  }
+
+  .team-identity-label {
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .team-identity-label.is-visually-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  .team-login-backdrop {
+    align-items: center;
+    background: rgba(42, 37, 33, 0.14);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 24px;
+    position: fixed;
+    /* AI 제안 모달(≈2500)보다 아래에 두어 soft-confirm [이대로 적용]을 가리지 않게 한다. */
+    z-index: var(--z-modal);
+  }
+
+  .team-login-card,
+  .team-identity-menu,
+  .team-commit-panel {
+    background: var(--editor-popover-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: 8px;
+    box-shadow: var(--shadow-modal);
+    color: var(--editor-text);
+  }
+
+  .team-login-card {
+    display: grid;
+    gap: 14px;
+    max-width: 380px;
+    padding: 22px;
+    width: min(380px, 100%);
+  }
+
+  .team-login-head h2,
+  .team-commit-head h2 {
+    font: 700 16px/1.2 var(--font-ui);
+    margin: 0;
+  }
+
+  .team-login-head p {
+    color: var(--editor-text-muted);
+    font-size: 12px;
+    margin: 6px 0 0;
+  }
+
+  .team-login-form,
+  .team-login-field,
+  .team-login-oauth {
+    display: grid;
+    gap: 10px;
+  }
+
+  .team-login-field span {
+    color: var(--editor-text-muted);
+    font-size: 12px;
+  }
+
+  .team-login-input,
+  .team-identity-input {
+    background: var(--editor-panel-bg-2);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    font: 500 13px/1.2 var(--font-ui);
+    min-height: 34px;
+    padding: 0 10px;
+  }
+
+  .team-login-submit,
+  .team-login-oauth-button,
+  .team-login-guest,
+  .team-identity-menu-action,
+  .team-commit-refresh {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    color: var(--editor-text);
+    cursor: pointer;
+    font: 700 12px/1 var(--font-ui);
+    min-height: 34px;
+    padding: 0 12px;
+  }
+
+  .team-login-submit,
+  .team-identity-menu-action.primary {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
+  }
+
+  .team-login-guest {
+    background: transparent;
+    border-color: transparent;
+    color: var(--editor-text-muted);
+  }
+
+  .team-identity-menu {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    position: fixed;
+    width: 220px;
+    z-index: var(--z-modal-top);
+  }
+
+  .team-identity-menu-title {
+    color: var(--editor-text-muted);
+    font: 700 11px/1 var(--font-ui);
+  }
+
+  .team-commit-panel {
+    display: grid;
+    gap: 12px;
+    max-height: min(520px, calc(100vh - 96px));
+    overflow: auto;
+    padding: 14px;
+    position: fixed;
+    right: 20px;
+    top: 58px;
+    width: min(680px, calc(100vw - 40px));
+    z-index: var(--z-modal-overlay);
+  }
+
+  .team-commit-head {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .team-commit-list {
+    display: grid;
+    gap: 8px;
+  }
+
+  .team-commit-row {
+    align-items: center;
+    background: rgba(42, 37, 33, 0.06);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 120px auto minmax(90px, 1fr) auto;
+    padding: 10px;
+  }
+
+  .team-commit-time,
+  .team-commit-author,
+  .team-commit-summary,
+  .team-commit-empty {
+    font-size: 12px;
+  }
+
+  .team-commit-time {
+    color: var(--editor-text-muted);
+  }
+
+  .team-commit-summary {
+    color: var(--editor-text-muted);
+    grid-column: 1 / -1;
+    margin: 0;
+  }
+
+  .team-commit-kind.agent,
+  .team-commit-review.approved {
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .team-commit-empty.error {
+    color: var(--status-error);
+  }
+
+  .oprn-window-control {
+    align-items: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-s);
+    color: var(--editor-text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    font: 700 16px/1 var(--font-ui);
+    height: 32px;
+    justify-content: center;
+    padding: 0;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    width: 32px;
+  }
+

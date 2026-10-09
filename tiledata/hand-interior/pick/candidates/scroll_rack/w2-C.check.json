@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_rack/w2-C.pxg",
+ "id": "scroll rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "재해석: 단면이 보이는 둥근 두루마리(나선 끝) + 빈 칸 + 눕힌 긴 두루마리 한 줄",
+ "ok": true
+}

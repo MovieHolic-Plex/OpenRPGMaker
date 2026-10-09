@@ -1,0 +1,62 @@
+{
+ "id": "blk-gb-rt",
+ "slug": "blk_gb_rt",
+ "name": "옥상 설비(새 칠)",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "옥상 설비(새 칠) · gb.rt.ac.b 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-rt-ac-b",
+  "gnb-rt-ac-d",
+  "gnb-rt-ac-w",
+  "gnb-rt-antenna-t",
+  "gnb-rt-antenna-w",
+  "gnb-rt-solar-w",
+  "gnb-rt-stair-bl-w",
+  "gnb-rt-stair-br-w",
+  "gnb-rt-stair-tl-w",
+  "gnb-rt-stair-tr-w",
+  "gnb-rt-tank-bl-b",
+  "gnb-rt-tank-br-b",
+  "gnb-rt-tank-tl-b",
+  "gnb-rt-tank-tr-b"
+ ],
+ "tiles": [
+  5942,
+  5943,
+  5945,
+  5948,
+  5949,
+  5953,
+  5957,
+  5961,
+  5965,
+  5969,
+  5970,
+  5974,
+  5978,
+  5982
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   3,
+   7
+  ]
+ }
+}

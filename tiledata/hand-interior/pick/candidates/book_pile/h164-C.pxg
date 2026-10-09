@@ -1,0 +1,37 @@
+// C: 넓은 붉은 윗표지와 다섯 색 덩어리, 종이 결 없이 어긋난 책더미. 꼭대기 윗면 4행(y=1~4)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat d red 1
+@mat R red 2
+@mat r red 3
+@mat h red 4
+@mat B blue 1
+@mat b blue 2
+@mat G green 1
+@mat g green 2
+@mat P purple 1
+@mat p purple 2
+@mat Y yellow 1
+@mat y yellow 2
+@mat q yellow 3
+@mat L linen 4
+@mat t linen 2
+@layer books
+@mblock 0 0
+....ddddddddd...
+...dhhhhhhhhrd..
+...dhrrrrrrrrd..
+..dhrrrrrrrrd...
+..drrrrrrrrrd...
+..dLLLLLLLLtd...
+..ddddddddddd...
+.BbbbbbbbbbbbbB.
+.BLLLLLLLLLLttB.
+..GggggggggggG..
+..GLLLLLLLLttG..
+.PppppppppppP...
+.PLLLLLLLLttP...
+..YqqyyyyyyyyY..
+..YLLLLLLLLttY..
+..YYYYYYYYYYYY..

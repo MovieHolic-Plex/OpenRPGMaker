@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w27-G.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  7,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "변형 4 — 가로 실맥: 얇은 청록 실이 벽을 가로로 가르고 마디마다 금과 청록 반짝임이 맺힌다. 다른 판보다 성기다.",
+ "ok": true
+}

@@ -1,0 +1,40 @@
+// laundry B — 빛 구조: 왼쪽 위 빛으로 흰 옷이 밝게, 아래로 짧은 그림자와 %빛 번짐
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat o mwhite 0
+@mat W mwhite 4
+@mat V mwhite 3
+@mat Z mwhite 2
+@mat p mmetal 5
+@mat q mmetal 3
+@mat r mmetal 1
+@mat b kblue 3
+@mat B kblue 2
+@mat c kblue 1
+@mat d kblue 5
+@mat s sakura 3
+@mat S sakura 2
+@mat t sakura 1
+@mat u sakura 5
+@mat y taxi 4
+@mat Y taxi 3
+@mat z taxi 1
+@mat x taxi 5
+@mblock 0 0
+................................
+pppppppppppppppppppppppppppppppp
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+.ooo......ooo.ccccccc.oooo.oooo.
+.oWWooooVVWWo.cddddbc.uSSo.xzzo.
+.oWWWWWWVVWWo.cbbbbBc.usso.xyyo.
+.oWWWWWWVVWWo.cWWWWWc.usso.xyyo.
+.ooWWWWWVVWoo.cbbbbBc.ussooxyyoo
+..oWWWWWVVWo..cddddbc.uSSSoxYYYo
+..oWWWWWVVWo..cbbbbBc.oooooooooo
+..oWWWWWVVZo..cBBBBBc...........
+..oWWWWWVVZo..ccccccc...........
+..oWZVVVVZZo....................
+..%%%%%%%%%%..%%%%%%%...........
+..~~~~~~~~~~~~~~~~~~~~~~-------.
+................................

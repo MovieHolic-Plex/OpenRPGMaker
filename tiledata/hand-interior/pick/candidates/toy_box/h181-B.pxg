@@ -1,0 +1,88 @@
+// 열린 뚜껑 y=2행을 기존 윗면 색 단계로 넓혀 안쪽 면을 2행으로 재배분; 입구·장난감·앞판 유지; 꼭대기 윗면 3행(y=0~2).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 2
+@mat b blue 2
+@mat p pine 4
+@mat r red 2
+@layer box
+@mblock 0 0
+...wwwwwwwwww...
+..dwwwwwwwwwwd..
+..dwwwwwwwwwwd..
+..dwwrrrrrrwwd..
+..dwwrrrrrrwwd..
+..dddddddddddd..
+.dwwwwwwwwwwwwd.
+.dwddddddddddwd.
+.dwddddddddddwd.
+.dwddddddddddwd.
+.dwddddddddddwd.
+.dwwwwwwwwwwwwd.
+.dwwbbbbbbbbwwd.
+.dwwbbbbbbbbwwd.
+.dwwbbbbbbbbwwd.
+.dddddddddddddd.
+@tblock 0 0
+...6666655665...
+..277777767663..
+..277777667663..
+..265222222543..
+..264211122433..
+..222222222222..
+.27777766766662.
+.27211111111252.
+.27211111111252.
+.26211111111242.
+.26211111111242.
+.27776666665552.
+.26633333332542.
+.26522222221542.
+.26422222221432.
+.22222222222111.
+@layer toys
+// 작은 나무칼: 위에서 본 날의 밝은 면과 어두운 등, 가로 손잡이.
+@mblock 11 3
+.p.
+pp.
+pp.
+pp.
+ppp
+.p.
+.p.
+@tblock 11 3
+.5.
+54.
+54.
+43.
+353
+.2.
+.2.
+// 인형: 밝은 정수리, 귀 둘, 그늘진 오른쪽 볼과 몸통.
+@mblock 7 5
+p.pp
+pppp
+pppp
+.pp.
+pppp
+.pp.
+@tblock 7 5
+4.33
+5553
+4242
+.43.
+3432
+.32.
+// 공: 넓은 왼쪽 위 반사와 오른쪽 아래 파란 그늘.
+@mblock 3 7
+.bb.
+bbbb
+bbbb
+.bb.
+@tblock 3 7
+.54.
+5543
+4432
+.22.

@@ -1,0 +1,49 @@
+/* 표면 경계 예외. 항목마다 [출발→도착] 이유, 만기(어느 단계에서 지우나). 게이트 R3 는 이 파일을 세지 않는다.
+   2026-09-11 전수 조사(scripts/css-important-pairs.mjs): 표면을 넘는 !important 쌍 24건 중 레이어를 씌워도
+   승자가 바뀌는 쌍은 0건이었다. 2026-09-11 Task 12(이벤트 편집기 !important 해체)에서 첫 항목들이 들어왔다:
+   인라인 style 과 싸우는 2건(플래그 유지), 같은 표면의 타입 선택자·auto-fit 그리드 특이도를 레이어로 넘는 3건(플래그 없음).
+   새 항목은 반드시 위 형식의 주석과 함께 넣는다. */
+@layer overrides {
+  /* [event→inline] 전체 화면일 때 modalDrag.ts 가 창에 남긴 인라인 transform 을 무효화한다(modalDrag 는 is-fullscreen 이면 드래그를 시작하지 않고 modalFullscreen 은 진입 때 인라인을 비우므로 실제로는 안전망). 만기: Task 13 — TS 보증을 확인하고 지운다. */
+  .event-editor-modal-window.is-fullscreen {
+    transform: none !important;
+  }
+
+  /* [event→inline·모든 레이어] 컬럼 리사이저를 끄는 동안 문서 전체(*)의 커서·선택을 잠근다. 특이도 (0,1,1) 이라 표면 규칙(.x:hover 등)과 인라인 cursor 를 모두 이기려면 !important 가 필요하다. 만기: 드래그 중 body 에 pointer-events 격리 오버레이를 두는 방식으로 바꾸는 단계. */
+  body.event-editor-column-resizing,
+  body.event-editor-column-resizing * {
+    cursor: col-resize !important;
+    user-select: none !important;
+  }
+
+  /* [event→event] 프레임 편집기 뒤에 숨긴 네이티브 <input type=number>(pattern). 같은 편집기의 `.event-command-frame-editor input[type="number"] { width: 100% }`(0,2,1) 등 타입 선택자 규칙이 이 한-클래스 규칙(0,1,0)을 특이도로 이기므로 레이어로만 이길 수 있다. 만기: 시각 숨김을 components 의 유틸리티 클래스로 바꾸는 단계. */
+  .event-command-frame-absolute-input,
+  .event-command-frame-walk-chip[hidden] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  /* [event→event] 커스텀 셀렉트 뒤에 숨긴 네이티브 <select>. 이벤트 편집기의 `… select { height/width }` 타입 선택자 규칙(0,1,1 이상, 예: part-4.css `.event-advanced-condition-add select { height: 20px }`)이 이 한-클래스 규칙(0,1,0)을 특이도로 이기므로 레이어로만 이길 수 있다(Task 12 DOM 하네스 실측: 12 상태·38 요소). 만기: 네이티브 select 시각 숨김을 components 의 유틸리티 클래스로 바꾸는 단계. */
+  .event-custom-select-native {
+    height: 100%;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  /* [event→event] auto-fit 격자 (0,25,2) 를 레이어로 넘는다. 만기: Task 23 auto-fit 옵트인 전환
+     — 상점 명령 편집 폼 위의 중복 제목 줄(commandBody.ts 가 `cream-command-form-head` +
+     data-testid="event-command-edit-summary" 로 그림). renderCommandBody 의 익명 래퍼 때문에 이 줄은
+     .event-command-edit-body 의 손자 div 이고 part-3/04-auto-fit.css `.event-command-edit-body > div > div:not(…)`
+     의 :not 목록에 없어 그 `display: grid` 가 이 (0,2,0) 규칙을 특이도로 이긴다(Task 12 리뷰 Important 1). */
+  .cream-command-form-head:has(+ .shop-processing-command-body) {
+    display: none;
+  }
+}

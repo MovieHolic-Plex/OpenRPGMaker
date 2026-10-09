@@ -1,0 +1,40 @@
+/* DB 3파 M8 — 데이터베이스 모달 사이드 도킹(맵 보며 조정).
+   백드롭은 투명 + 포인터 통과(맵 캔버스가 Phaser 입력을 그대로 받는다),
+   창만 우측 고정(폭 40%, 높이 100%)으로 포인터를 받는다. */
+
+.database-modal-backdrop.is-docked {
+  background: transparent !important;
+  padding: 0 !important;
+  place-items: stretch end;
+  pointer-events: none !important;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window {
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-width: none !important;
+  pointer-events: auto !important;
+  position: fixed !important;
+  right: 0;
+  top: 0 !important;
+  left: auto !important;
+  width: 40vw !important;
+}
+
+/* 도크에서는 드래그 이동이 없다 — 헤더의 move 커서를 되돌린다. */
+.database-modal-backdrop.is-docked .database-modal-header {
+  cursor: default;
+}
+
+/* 최대화는 도크에서 비활성(스크립트 가드와 동일 신호). */
+.database-modal-backdrop.is-docked .database-modal-maximize {
+  cursor: default;
+  opacity: 0.45;
+}
+
+/* Narrow dock: keep the AI chip on one line so 트 is not orphaned. */
+.database-modal-backdrop.is-docked .database-ai-toggle {
+  flex: 0 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}

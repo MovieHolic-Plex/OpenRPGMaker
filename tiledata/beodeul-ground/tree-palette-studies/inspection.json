@@ -1,0 +1,40 @@
+{
+  "candidateOnly": true,
+  "baseline": "current native tree composition",
+  "allAlphaAndPixelPositionsIdentical": true,
+  "colorLookupIndependentOfPosition": true,
+  "allGroundShadowsByteIdentical": true,
+  "houseGrassRoadFoundationUnchanged": true,
+  "baselineMatchesPreviousComparison": true,
+  "sourceBodyHashes": [
+    "7708c0cb1ad5611aee15e254c7ceb7fdfae4275a7fd5a00cfcb7a0a465673da8",
+    "6fb361c3a18391e9a089f3c45f90e54a0eda6ff773322798681ff9d61717ff7b",
+    "855aff399fd9473c91a5e2ea7790b95af66a29b996f97feb7747d5951a601842"
+  ],
+  "variants": [
+    {
+      "id": "current",
+      "changedBodyPixels": 0
+    },
+    {
+      "id": "muted",
+      "changedBodyPixels": 4672
+    },
+    {
+      "id": "warm",
+      "changedBodyPixels": 4672
+    },
+    {
+      "id": "cool",
+      "changedBodyPixels": 4672
+    },
+    {
+      "id": "contrast",
+      "changedBodyPixels": 4672
+    },
+    {
+      "id": "balanced",
+      "changedBodyPixels": 5243
+    }
+  ]
+}

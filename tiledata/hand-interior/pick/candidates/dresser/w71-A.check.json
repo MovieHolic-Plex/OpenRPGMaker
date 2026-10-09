@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dresser/w71-A.pxg",
+ "id": "dresser",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  6,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "w42 나무 결 서랍장: 윗면+앞 모서리 빛줄+처마 그림자, 2x2 서랍·놋 손잡이, 위에 손거울·병·함. 관문 ok t=7",
+ "ok": true
+}

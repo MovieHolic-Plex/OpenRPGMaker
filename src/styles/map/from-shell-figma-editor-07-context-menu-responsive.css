@@ -1,0 +1,70 @@
+/* map 표면 — shell/figma-editor/07-context-menu-responsive.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/07-context-menu-responsive.css:9-11 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
+    flex: 0 0 76px;
+  }
+
+/* shell/figma-editor/07-context-menu-responsive.css:13-15 */
+
+/* shell/figma-editor/07-context-menu-responsive.css:17-19 */
+.left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
+    grid-column: 1 / -1;
+  }
+
+/* shell/figma-editor/07-context-menu-responsive.css:49-55 */
+@media (max-width: 900px) {
+  .canvas-toolbar {
+        gap: 4px;
+        left: 12px;
+        padding: 7px;
+        right: 12px;
+        transform: none;
+      }
+}
+
+/* shell/figma-editor/07-context-menu-responsive.css:57-60 */
+
+/* shell/figma-editor/07-context-menu-responsive.css:62-65 */
+@media (max-width: 900px) {
+  .zoom-button {
+        min-width: 38px;
+        padding: 0 7px;
+      }
+}
+
+/* shell/figma-editor/07-context-menu-responsive.css:67-69 */
+@media (max-width: 900px) {
+  .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+        min-width: 62px;
+      }
+}
+
+/* shell/figma-editor/07-context-menu-responsive.css:95-99 */
+@media (min-width: 901px) and (max-width: 1320px) {
+  .canvas-toolbar {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 6px;
+      }
+}
+
+/* shell/figma-editor/07-context-menu-responsive.css:101-104 */
+
+/* shell/figma-editor/07-context-menu-responsive.css:106-109 */
+@media (min-width: 901px) and (max-width: 1320px) {
+  .zoom-button {
+        min-width: 34px;
+        padding: 0 6px;
+      }
+}
+
+/* shell/figma-editor/07-context-menu-responsive.css:111-113 */
+@media (min-width: 901px) and (max-width: 1320px) {
+  .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+        min-width: 60px;
+      }
+}

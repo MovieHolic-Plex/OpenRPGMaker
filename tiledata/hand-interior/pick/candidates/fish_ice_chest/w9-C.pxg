@@ -1,0 +1,45 @@
+// w9 C — 다시 그림: 위에 얼음을 봉긋이 쌓고 생선이 머리를 내민 상자, 앞판은 세로 널빤지와 테두리
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a black 3
+@mat b fish 3
+@mat c green 3
+@mat d ice 3
+@mat e pine 3
+@mat f red 3
+@mat g white 3
+@mblock 0 0
+................................
+................................
+...............d................
+........ddddddddddddddd.........
+..dddddddddddfffffdfdddddddddd..
+..dddcccccdcfaffffffddbbbdbdbd..
+..ddcaccccccdfffffdfdbabbbbbbd..
+eeeeeccccceceeeeeeeeeebbbbbebeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+@tblock 0 0
+................................
+................................
+...............5................
+........666455564665556.........
+..4555646455566554426464565646..
+..5566655452605544226466544624..
+..3360554422354431323605544223..
+06666544316266666666665443162550
+04444444444444444444444444444440
+04113332433333324333333243331120
+04113332333333323333333233331120
+04113332333333323333333233331120
+04113332333333323333333233331120
+04113332333333323333333233331120
+04112222222222222222222222221120
+00000000000000000000000000000000

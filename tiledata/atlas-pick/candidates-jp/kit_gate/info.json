@@ -1,0 +1,342 @@
+{
+ "id": "kit_gate",
+ "slug": "kit_gate",
+ "kind": "kit",
+ "name": "킷: 개찰구(통로 걸을 수 있음)",
+ "scene": "역 앞 번화가",
+ "cells": [
+  8,
+  3
+ ],
+ "canvas": [
+  128,
+  48
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "개찰 기계 = 세로로 긴 몸통(뒤 끝·가운데 반복·앞 끝) 1칸 폭, 기계 사이 통로 1칸(걸음) — 기계 수·통로 수·길이 자유. 끝 막음·낮은 칸막이·머리 위 안내판. 사용자 요구: 실제로 통행할 수 있어야 한다(설계도마다 THROUGH 검사). (부품 15 · 조립 예 3)",
+ "palette_hint": "mmetal·mconc 몸통, mwhite 윗면, kblue IC 판, kgreen 진입 화살표, akachin 금지 표시, mpave·mgran 역 바닥",
+ "worker": "k4",
+ "replaces": [
+  "station_gate"
+ ],
+ "aliases": {},
+ "contract": [
+  "기계 몸통은 칸 가운데 10~12px 폭, 좌우 2~3px 는 투명(통로 쪽으로 문 날개만 1~2px 튀어나온다). 몸통 윗면(밝은 단)은 뒤 끝 → 앞 끝까지 같은 x 에서 이어진다.",
+  "gm_t(뒤 끝) · gm_m(가운데, 세로 반복) · gm_b_*(앞 끝, IC 판·화살표) 를 세로로 쌓아 기계 하나. 앞 끝은 남쪽(화면 아래)을 본다.",
+  "통로(lane_*)는 투명 바탕 위 문 날개 그림자·바닥 선 정도의 덧칠(decal). 걸음 칸.",
+  "floor(역 바닥)는 불투명 바닥 칸, xy 반복."
+ ],
+ "parts": [
+  {
+   "slug": "floor",
+   "name": "역 바닥",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "ground",
+   "repeat": "xy",
+   "walk": "F",
+   "desc": "역 안 바닥 타일(조용하게 4~5단, 줄눈 8px 주기).",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "gm_t",
+   "name": "기계 뒤 끝",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "개찰 기계 뒤쪽 끝(둥근 윗면 모서리).",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "gm_m",
+   "name": "기계 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "기계 몸통 가운데(세로 반복 — 긴 기계).",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "gm_b_in",
+   "name": "기계 앞 끝: 진입(초록 화살표)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "앞 끝 IC 판(파란 원) + 초록 화살표 등.",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "gm_b_out",
+   "name": "기계 앞 끝: 진입 금지(빨강)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "앞 끝 빨간 금지 표시(나가는 쪽 기계).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "gm_b_ic",
+   "name": "기계 앞 끝: IC 전용(파랑)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "IC 전용 파란 판(표 넣는 곳 없음).",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "lane_t",
+   "name": "통로 뒤",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "decal",
+   "repeat": null,
+   "walk": "F",
+   "desc": "통로 뒤 끝(바닥 선·열린 문 날개 끝).",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "lane_m",
+   "name": "통로 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "decal",
+   "repeat": "y",
+   "walk": "F",
+   "desc": "통로 가운데(옆 기계 그늘 한 줄).",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "lane_b",
+   "name": "통로 앞",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "decal",
+   "repeat": null,
+   "walk": "F",
+   "desc": "통로 앞 끝(양옆에서 튀어나온 문 날개 — 열린 상태, 가운데는 비움).",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "end_l",
+   "name": "끝 막음 왼",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "개찰 줄 왼 끝 막음 칸막이(유리·쇠).",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "end_r",
+   "name": "끝 막음 오른",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "오른 끝 막음.",
+   "at": [
+    2,
+    1
+   ]
+  },
+  {
+   "slug": "fence",
+   "name": "낮은 칸막이",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "object",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "개찰 줄을 벽까지 잇는 낮은 칸막이(가로 반복).",
+   "at": [
+    3,
+    1
+   ]
+  },
+  {
+   "slug": "disp_l",
+   "name": "머리 위 안내판 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "천장에 매단 검은 안내판 왼 끝(매단 줄).",
+   "at": [
+    4,
+    1
+   ]
+  },
+  {
+   "slug": "disp_m",
+   "name": "머리 위 안내판 가운데",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": "x",
+   "walk": "C",
+   "desc": "안내판(주황 글자 점 줄·화살표).",
+   "at": [
+    5,
+    1
+   ]
+  },
+  {
+   "slug": "disp_r",
+   "name": "머리 위 안내판 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "C",
+   "desc": "안내판 오른 끝.",
+   "at": [
+    6,
+    1
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "g3",
+   "name": "통로 셋(기계 넷)",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "ground": [
+     "floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor"
+    ],
+    "main": [
+     ". . . . . . . . .",
+     "end_l gm_t lane_t gm_t lane_t gm_t lane_t gm_t end_r",
+     "+ gm_b_in lane_b gm_b_ic lane_b gm_b_out lane_b gm_b_in +",
+     ". . . . . . . . ."
+    ],
+    "upper": [
+     ". disp_l disp_m disp_m disp_m disp_m disp_m disp_r ."
+    ]
+   }
+  },
+  {
+   "id": "g5long",
+   "name": "통로 다섯·긴 기계·넓은 통로 하나",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "ground": [
+     "floor floor floor floor floor floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor floor floor floor floor floor floor"
+    ],
+    "main": [
+     ". . . . . . . . . . . . . .",
+     "end_l gm_t lane_t gm_t lane_t gm_t lane_t gm_t lane_t gm_t lane_t lane_t gm_t end_r",
+     "+ gm_m lane_m gm_m lane_m gm_m lane_m gm_m lane_m gm_m lane_m lane_m gm_m +",
+     "fence gm_b_in lane_b gm_b_in lane_b gm_b_ic lane_b gm_b_out lane_b gm_b_out lane_b lane_b gm_b_ic fence",
+     "+ . . . . . . . . . . . . +"
+    ],
+    "upper": [
+     ". disp_l disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_r ."
+    ]
+   }
+  },
+  {
+   "id": "g2fence",
+   "name": "통로 둘 + 칸막이로 벽까지",
+   "ctx": "floor",
+   "through": "ns",
+   "layers": {
+    "ground": [
+     "floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor",
+     "floor floor floor floor floor floor floor floor"
+    ],
+    "main": [
+     ". . . . . . . .",
+     "end_l gm_t lane_t gm_t lane_t gm_t fence fence",
+     "+ gm_b_in lane_b gm_b_ic lane_b gm_b_out + +",
+     ". . . . . . . ."
+    ]
+   }
+  }
+ ]
+}

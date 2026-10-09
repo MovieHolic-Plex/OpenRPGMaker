@@ -1,0 +1,23 @@
+# library 자기 검수 (2회전)
+- wz-lib-floor-worn-a: 어두운 마모 포석 — 불규칙 3줄 블록(가로 줄무늬 제거), 금·밝은 점. 재수정
+- wz-lib-floor-worn-b: 같은 포석의 다른 닳음 — 반복 시 이음 눈에 안 띔. 합격
+- wz-lib-arch: 밝은 돌 아치 고리 + 안쪽 어두운 통로·계단 — 열린 아치로 읽힘. 합격
+- wz-lib-gate-closed: 철창 세로살+가로띠, 돌 문틀 — 닫힌 철문. 합격
+- wz-lib-gate-open: 양쪽에 두꺼운 문짝이 젖혀지고 황동 경첩, 가운데 어둠 — 열림으로 읽힘. 합격
+- wz-lib-gate-locked: 쇠사슬 X 자 + 판 + 맹꽁이자물쇠 — 사슬이 약간 얽혀 보이나 잠김으로 읽힘. 보통
+- wz-lib-fence / fence-end: 가로 반복 철살, 끝은 굵은 기둥+캡. 합격
+- wz-lib-shelf-chain-2x3 / 3x3: 책마다 황동 막대 아래 책마다 황동 고리+쇠사슬이 선반까지 늘어짐(4폭 책). 재수정
+- wz-lib-shelf-plain-2x3: 사슬 없는 일반 서가, 책 색 다양. 합격
+- wz-lib-grimoire-locked: 붉은 표지에 쇠 띠·황동 자물쇠. 합격
+- wz-lib-grimoire-open: 붉은 표지·두 쪽·척추 홈, 왼쪽 글줄, 오른쪽 보라 문양. 재수정
+- wz-lib-keyring: 쇠 고리 아래 황동 열쇠 2개(둥근 머리·구멍·톱니). 재수정
+- wz-lib-lectern: 비스듬한 윗판의 책 + 기둥·받침, 3/4 로 읽힘. 합격
+- wz-lib-ladder: 1×3 오크 사다리, 서가에 기댄 각도 없이 수직 — 보통
+- wz-lib-record-table: 양피지·펜 탁자 2×2, 윗면 보이는 3/4. 합격
+- wz-wand-testdoor-closed/open/locked: 판벽 문 3상태, 열림=어두운 틈, 잠김=황동 자물쇠. 합격
+- wz-wand-scorch-1..3: 1은 이어진 불규칙 그을음+불씨 1점으로 재수정, 2·3 그대로 — 투명 덧그림.
+- wz-wand-floor-oak: 가로 오크 판 반복. 합격
+- wz-wand-box-wall: 천장까지 쌓인 가는 상자 칸, 색 라벨. 합격
+- wz-wand-display-1..3: 손잡이 다른 지팡이 3종, 붉은 방석 받침 — 작지만 구별됨. 보통
+- wz-wand-tape: 황동 줄자 통+끝 고리. 합격
+- 예제: restricted 14×10·shop 10×9 구도 정상. 붉은 상자는 castle_kit 공유 id 미등록 때문(내 모듈 아님).

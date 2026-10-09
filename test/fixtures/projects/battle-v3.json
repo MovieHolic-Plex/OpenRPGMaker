@@ -1,0 +1,328 @@
+{
+  "version": 3,
+  "meta": {
+    "title": "Battle Fixture",
+    "author": "T11",
+    "terms": {
+      "gold": "G",
+      "level": "Level",
+      "hp": "HP",
+      "mp": "MP",
+      "attack": "Attack",
+      "skill": "Skill",
+      "item": "Item"
+    }
+  },
+  "assets": {
+    "sprites": {
+      "hero": {
+        "id": "hero",
+        "image": { "type": "bundled", "id": "tex_easyrpg_charset_people1" },
+        "frames": 8,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "slime": {
+        "id": "slime",
+        "image": { "type": "bundled", "id": "tex_slime" },
+        "frames": 1,
+        "frameWidth": 32,
+        "frameHeight": 32
+      },
+      "dragon": {
+        "id": "dragon",
+        "image": { "type": "bundled", "id": "tex_dragon" },
+        "frames": 1,
+        "frameWidth": 48,
+        "frameHeight": 48
+      }
+    },
+    "uploaded": {}
+  },
+  "resourceProfiles": [
+    {
+      "kind": "charset",
+      "name": "주인공",
+      "tileWidth": 24,
+      "tileHeight": 32,
+      "assetId": "hero"
+    },
+    {
+      "kind": "battleCharset",
+      "name": "주인공 전투",
+      "tileWidth": 48,
+      "tileHeight": 48,
+      "assetId": "hero"
+    },
+    {
+      "kind": "monster",
+      "name": "슬라임",
+      "assetId": "slime"
+    },
+    {
+      "kind": "monster",
+      "name": "드래곤",
+      "assetId": "dragon"
+    },
+    {
+      "kind": "chipset",
+      "name": "기본 칩셋",
+      "tileWidth": 16,
+      "tileHeight": 16,
+      "assetId": "tex_tiles_default"
+    }
+  ],
+  "tilesets": {
+    "tiles_default": {
+      "id": "tiles_default",
+      "name": "기본 타일셋",
+      "image": { "type": "bundled", "id": "tex_tiles_default" },
+      "tileSize": 16,
+      "tilesPerRow": 8,
+      "count": 8,
+      "passability": [
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true },
+        { "up": true, "down": true, "left": true, "right": true }
+      ],
+      "priority": ["lower", "lower", "lower", "lower", "lower", "lower", "upper", "lower"],
+      "terrain": [0, 0, 0, 0, 0, 0, 0, 0]
+    }
+  },
+  "switches": [],
+  "variables": [],
+  "commonEvents": [],
+  "database": {
+    "actors": [
+      {
+        "id": "actor_hero",
+        "name": "주인공",
+        "classId": "class_fighter",
+        "initialLevel": 1,
+        "maxLevel": 50,
+        "characterResourceId": "hero",
+        "battleCharacterResourceId": "hero",
+        "skillIds": ["skill_fire"]
+      }
+    ],
+    "classes": [
+      {
+        "id": "class_fighter",
+        "name": "전사",
+        "skillIds": ["skill_fire"]
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill_fire",
+        "name": "화염",
+        "scope": "enemy",
+        "power": 14,
+        "animationId": "anim_magic"
+      },
+      {
+        "id": "skill_claw",
+        "name": "할퀴기",
+        "scope": "enemy",
+        "power": 80,
+        "animationId": "anim_hit"
+      }
+    ],
+    "items": [
+      {
+        "id": "item_bomb",
+        "name": "폭탄",
+        "scope": "enemy",
+        "price": 50,
+        "skillId": "skill_fire"
+      }
+    ],
+    "equipment": [
+      {
+        "id": "equip_sword",
+        "name": "검",
+        "slot": "weapon",
+        "price": 100
+      }
+    ],
+    "enemies": [
+      {
+        "id": "enemy_slime",
+        "name": "슬라임",
+        "monsterResourceId": "generated-enemy-slime-01",
+        "stats": {
+          "maxHp": 220,
+          "maxMp": 1,
+          "attack": 10,
+          "defense": 8,
+          "mind": 10,
+          "agility": 10
+        },
+        "rewards": { "exp": 7, "gold": 3 },
+        "skillIds": []
+      },
+      {
+        "id": "enemy_dragon",
+        "name": "드래곤",
+        "monsterResourceId": "generated-enemy-dragon-01",
+        "stats": {
+          "maxHp": 70,
+          "maxMp": 10,
+          "attack": 1000,
+          "defense": 30,
+          "mind": 10,
+          "agility": 50
+        },
+        "rewards": { "exp": 200, "gold": 500 },
+        "skillIds": ["skill_claw"]
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_slime",
+        "name": "슬라임 무리",
+        "enemyIds": ["enemy_slime"],
+        "battleEventPages": [
+          {
+            "id": "troop_state_page",
+            "name": "화상 적용",
+            "conditions": [],
+            "graphic": {},
+            "trigger": { "kind": "auto" },
+            "priority": "below",
+            "movement": { "type": "fixed", "speed": 3, "frequency": 3 },
+            "commands": []
+          }
+        ]
+      },
+      {
+        "id": "troop_dragon",
+        "name": "드래곤 무리",
+        "enemyIds": ["enemy_dragon"],
+        "battleEventPages": []
+      }
+    ],
+    "states": [
+      {
+        "id": "state_burn",
+        "name": "화상"
+      }
+    ],
+    "battleAnimations": [
+      {
+        "id": "anim_magic",
+        "name": "마법",
+        "resourceId": "easyrpg-battle-blow",
+        "sheet": {
+          "frameWidth": 96,
+          "frameHeight": 96,
+          "columns": 5
+        },
+        "scope": "singleTarget",
+        "position": "center",
+        "large": false,
+        "frames": [
+          {
+            "cells": [
+              {
+                "pattern": 0,
+                "x": 0,
+                "y": 0,
+                "zoom": 100,
+                "opacity": 255,
+                "visible": true
+              }
+            ]
+          },
+          {
+            "cells": [
+              {
+                "pattern": 1,
+                "x": 0,
+                "y": -8,
+                "zoom": 110,
+                "opacity": 220,
+                "visible": true
+              }
+            ]
+          }
+        ],
+        "timings": [
+          {
+            "frameIndex": 0,
+            "soundResourceId": "easyrpg-sound-magic1",
+            "flash": {
+              "target": "target",
+              "color": {
+                "red": 160,
+                "green": 160,
+                "blue": 255,
+                "gray": 0
+              },
+              "durationFrames": 8
+            },
+            "screenShake": true
+          }
+        ]
+      },
+      {
+        "id": "anim_hit",
+        "name": "타격",
+        "resourceId": "dragon"
+      }
+    ]
+  },
+  "system": {
+    "startActorIds": ["actor_hero"],
+    "titleResourceId": "tex_tiles_default",
+    "systemResourceId": "tex_tiles_default",
+    "battleSystemResourceId": "tex_tiles_default",
+    "battleBgmResourceId": "easyrpg-music-battle-1",
+    "initialTroopId": "troop_slime"
+  },
+  "session": {
+    "switches": {},
+    "variables": {},
+    "inventory": {
+      "item_bomb": 1
+    },
+    "partyActorIds": ["actor_hero"]
+  },
+  "maps": {
+    "map_battle": {
+      "id": "map_battle",
+      "name": "Battle Start",
+      "width": 2,
+      "height": 1,
+      "tilesetId": "tiles_default",
+      "tileSize": 16,
+      "lowerTiles": [0, 0],
+      "upperTiles": [-1, -1],
+      "events": [
+        {
+          "id": "battle-start",
+          "x": 1,
+          "y": 0,
+          "trigger": { "kind": "action" },
+          "commands": [
+            {
+              "kind": "battleProcessing",
+              "troopId": "troop_slime",
+              "canEscape": true,
+              "canLose": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "mapTree": { "mapId": "map_battle", "children": [] },
+  "startMapId": "map_battle",
+  "startPos": { "x": 0, "y": 0 },
+  "flags": {}
+}

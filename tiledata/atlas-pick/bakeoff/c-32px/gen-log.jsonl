@@ -1,0 +1,14 @@
+{"name": "L", "round": "r1", "i": 2, "ok": true, "sec": 60, "model": "sunburst", "err": null, "t": "2026-09-30 10:49:12"}
+{"name": "L", "round": "r1", "i": 3, "ok": true, "sec": 71, "model": "sunburst", "err": null, "t": "2026-09-30 10:49:23"}
+{"name": "L", "round": "r1", "i": 1, "ok": true, "sec": 90, "model": "sunburst", "err": null, "t": "2026-09-30 10:49:42"}
+{"name": "R", "round": "r1", "i": 2, "ok": true, "sec": 55, "model": "sunburst", "err": null, "t": "2026-09-30 10:50:54"}
+{"name": "R", "round": "r1", "i": 3, "ok": true, "sec": 56, "model": "sunburst", "err": null, "t": "2026-09-30 10:50:55"}
+{"name": "P", "round": "r1", "i": 2, "ok": true, "sec": 68, "model": "sunburst", "err": null, "t": "2026-09-30 10:51:07"}
+{"name": "P", "round": "r1", "i": 1, "ok": true, "sec": 95, "model": "sunburst", "err": null, "t": "2026-09-30 10:51:33"}
+{"name": "P", "round": "r1", "i": 3, "ok": true, "sec": 113, "model": "sunburst", "err": null, "t": "2026-09-30 10:51:51"}
+{"name": "R", "round": "r1", "i": 1, "ok": true, "sec": 124, "model": "sunburst", "err": null, "t": "2026-09-30 10:52:03"}
+{"name": "L", "round": "r2", "i": 1, "ok": true, "sec": 50, "model": "sunburst", "err": null, "t": "2026-09-30 10:55:40"}
+{"name": "P", "round": "r2", "i": 1, "ok": true, "sec": 73, "model": "sunburst", "err": null, "t": "2026-09-30 10:56:04"}
+{"name": "L", "round": "r2", "i": 2, "ok": true, "sec": 76, "model": "sunburst", "err": null, "t": "2026-09-30 10:56:06"}
+{"name": "P", "round": "r2", "i": 3, "ok": true, "sec": 120, "model": "sunburst", "err": null, "t": "2026-09-30 10:56:50"}
+{"name": "P", "round": "r2", "i": 2, "ok": true, "sec": 190, "model": "sunburst", "err": null, "t": "2026-09-30 10:58:00"}

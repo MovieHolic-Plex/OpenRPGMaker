@@ -1,0 +1,23 @@
+{
+ "id": "track_line",
+ "slug": "track_line",
+ "name": "트랙 흰 선",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "운동장 흙 위 석회 흰 선 — 2px 가로 선, 가장자리 가루 번짐 점. 좌우 이어 붙게, 투명 배경.",
+ "palette_hint": "vwhite, washi",
+ "pair": [
+  "schoolyard"
+ ],
+ "worker": "s1"
+}

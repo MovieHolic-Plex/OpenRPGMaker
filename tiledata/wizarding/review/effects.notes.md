@@ -1,0 +1,25 @@
+# effects 검수 노트 (30조각, 오토타일 0, 캐릭터 0)
+- wz-fx-candle-flame: 4프레임 모두 불꽃 모양이 달라짐(곧음·휘어짐·갈라짐), 작지만 1배로 불꽃으로 읽힘. 합격.
+- wz-fx-fireplace: 3x2 불 6프레임, 혀 모양과 불똥이 변함. 면적 큼(아궁이 크기). 합격.
+- wz-fx-dust-motes: 먼지 알갱이 4프레임, 위치·밝기 바뀜. 합격.
+- wz-fx-wand-glow: 점→십자→별→흐려짐. 합격.
+- wz-fx-owl-feather: 깃털이 떨어져 바닥에 눕는 4단. 합격.
+- wz-fx-seal-afterglow: 붉은 봉인 + 불똥, 잔광 감소. 합격.
+- wz-fx-cauldron-violet/green: 검수 FAIL 후 재작성. 2px S자 증기띠(밝음/옆면 교대+디더 소멸) + 고리 기포 3개(2x2→3x3 테두리+하이라이트→터짐).
+- wz-fx-potion-reaction: 검수 FAIL 후 f3~5 재작성. 윤곽 없는 연회색 2톤 연기 덩어리, 가장자리 체커 디더, 마지막 프레임은 성긴 소멸.
+- wz-fx-gear-oil-glint: 황금 반짝 4프레임. 합격.
+- wz-fx-snow-fine: 반복 눈발, 성김. 합격.
+- wz-fx-snow-shake: 눈 덩이→흩날림→쌓임. 합격.
+- wz-fx-wand-test: 빛줄기→불꽃→가라앉음 8프레임 2x1. 합격.
+- wz-fx-book-tremble: 책 기울며 흔들림 6프레임. 합격.
+- wz-fx-page-wind: 페이지가 넘어감 6프레임. 합격.
+- wz-fx-chain-tension: 검수 FAIL 후 재작성. 가로3x2/세로2x3 고리 교대+반사 픽셀, 팽팽한 프레임에 십자 반짝 2개.
+- wz-fx-forest-fog: 검수 FAIL 후 재작성. 가로 띠 4줄, 길이 변동, 체커 디더 채움, 32px 반복 이음매 없음.
+- wz-fx-wheel-dust: 덩이→번짐→풀어짐→알갱이. 합격.
+- wz-fx-mandrake-scream: 2x2 동심 파동 확장 + 흙 부스러기. 합격.
+- wz-fx-watering-stream: 물줄기 4프레임. 합격.
+- wz-fx-ward-heal / vial-vapor: 반짝 6f / 김 4f. 합격.
+- wz-fx-snitch-wings: 날개 접힘·펼침 4f. 합격.
+- wz-fx-bludger-trail / broom-stop-dust: 궤적 6f / 먼지 6f 2x1. 합격.
+- wz-fx-boat-ripple / launch-ripple: 파문 확장 6f. 합격.
+- wz-fx-candy-wrap / string-tie / magic-seal: 8프레임 단계 변화. 합격.

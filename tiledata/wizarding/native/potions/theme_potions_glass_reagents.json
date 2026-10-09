@@ -1,0 +1,373 @@
+{
+ "name": "theme_potions_glass_reagents",
+ "item": "theme_potions_glass_reagents",
+ "candidate": "h7-A",
+ "source": "art-output/repair-r4-actors-vault/content/tiledata/hand-interior/pick/candidates/theme_potions_glass_reagents/h7-A.png",
+ "sha256": "242427a04d4f7f0c470545fc7f7b4ddee14f736657683c0f121ac21a646d06c8",
+ "set": {
+  "id": "theme potions glass-reagents",
+  "name_ko": "glass-reagents",
+  "name_en": "theme potions glass-reagents",
+  "parent": "theme potions glass-reagents",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   16
+  ],
+  "description": "전용 투명 유리 시약병·플라스크·마개·표본병, 수납/탁상/완성병 상태. 1px 짧은 반사와 빈 유리면, 녹색/보라색/호박색 약액은 brief 팔레트로 구별.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "stored",
+    "label": "stored",
+    "see": "stored",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "flask",
+    "label": "flask",
+    "see": "flask",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 16,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "stoppered",
+    "label": "stoppered",
+    "see": "stoppered",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 32,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "green",
+    "label": "green",
+    "see": "green",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 48,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "purple",
+    "label": "purple",
+    "see": "purple",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "amber",
+    "label": "amber",
+    "see": "amber",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 80,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   },
+   {
+    "key": "finished",
+    "label": "finished",
+    "see": "finished",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r4-actors-vault/scene-contract.json",
+   "instructions": "전용 투명 유리 시약병·플라스크·마개·표본병, 수납/탁상/완성병 상태. 1px 짧은 반사와 빈 유리면, 녹색/보라색/호박색 약액은 brief 팔레트로 구별.\nRead current sceneContract, theme-brief.json and concept-art.png. Use only the dedicated 42 colours. No stock artwork or palette. Logical ground cells remain fixed; rendered pixels are the resolved ground/support/hood anchors in scene-contract.json. Use the approved 23x14 coordinates. Read approved planning and compare each required attachment, footprint and actor scale; no room PASS before complete native coverage.\nRead scene-contract and attachment-contract: teacher sole(136,47)/hand(150,42), assistant sole(328,127)/hand(328,123), same sole in walking/action. North bodies behind tables, hand/tool separate above top. Board pixel(96,0), readable rect(98,2,126,14). Five named new cut-vault rib parents are ordered, with in-range source sockets. Lower exhaust endpoints(40,102)/(152,102) on ribs in y98..105 gap; continuous duct-return alpha behind upper bench fascia, not terminating at table front. Each slot contact/inlet/exhaust is an actual in-range pixel; boundary endpoints separately declared. Use only42 theme colours. Verify real native PNG alpha and all three comparison regions before verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "glass-reagents",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r4-actors-vault/attachment-contract.json"
+  }
+ }
+}

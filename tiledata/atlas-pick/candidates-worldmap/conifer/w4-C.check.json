@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/conifer/w4-C.pxg",
+ "set": "worldmap",
+ "id": "conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies",
+   "light",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  0,
+  47,
+  63
+ ],
+ "note": "실루엣 재해석 — 폭 5px 4단 뾰족 첨탑 전나무를 성기게, 숲(둥근 덩이)과 확연히 다른 세로 실루엣",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.129
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.246
+  },
+  "seam": 1.06
+ }
+}

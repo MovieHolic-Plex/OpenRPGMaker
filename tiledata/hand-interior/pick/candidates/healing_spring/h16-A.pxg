@@ -1,0 +1,49 @@
+// 설명 충실: 둥근 돌 테두리·하늘색 물·빛 번짐·남쪽 돌 앞면 이음 (SFC JRPG 회복의 샘)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat O stone 1
+@mat o stone 0
+@mat R stone 4
+@mat r stone 5
+@mat c stone 2
+@mat F stone 3
+@mat f stone 2
+@mat W glass 3
+@mat w glass 2
+@mat v glass 4
+@mat V glass 5
+@mat Y glass 6
+@mblock 0 0
+................................
+................................
+...........OOOOOOOOOO...........
+........OOOrrrrrrrrrrOOO........
+......OOrrrrrrrrRRRRRRRROO......
+....OOrrrrrrrrrrRRRRRRRRRROO....
+...OrrrrRRRRccccccccRRRRRRRRO...
+..OrrrRRRcccwwwwwwwwcccRRRRRRO..
+..OrrRRccwwwWWWWWWWWwwwccRRRRO..
+.OrrRRcwwWWWWWvvvvvvvvWwwcRRRRO.
+OrrRRcwWWWWvvvWWWWWWWWvvvwcRRRRO
+OrRRcwWWWvvWWWWWWWWWWWWWWWwcRRRO
+OrRRwWWWWWWWWWWWWWvvWWWWWWWwRRRO
+OrRcwWWWWWWWWWWWWvVYVvWWWWWwcRRO
+OrRwWWWWWWWWWWWvVYYYYVvWWWWWwRRO
+OrRwWWWWWWWWWWWWvVYYVvWWWWWWwRRO
+OrRwWWWWWWWWWWWWWvVVvWWWWWWWwRRO
+OrRRwWWWWWWWWWWWWWWWWWWWWWWwRRRO
+OrRRwWWWWvvvvWWWWWWWWWWWWWWwRRRO
+OrRRRwWWWvvvWWWWWWWWvvvWWWwRRRRO
+OFrRRRwWWWWWvvvvvvvvWWWWWwRRRRfo
+OFrRRRRwWWWWWWWWWWWWWWWWwRRRRRfo
+OFFrRRRRRwWWWWWWWWWWWWwRRRRRRffo
+OFFFrRRRRRRRwwwwwwwwRRRRRRRRfffo
+.OFFFFRRRRRRRRRRRRRRRRRRRRffffo.
+..OFFFFFRRRRRRRRRRRRRRRRfffffo..
+..OFFFFFFFFRRRRRRRRRRffffffffo..
+...OFFFFFcFFFFFFFFffffOfffffo...
+....OFFFFFFFFcFFFFfffffffOfo....
+......OFFFcFFFFFFFffOffffo......
+........OFFFFFFFFffffffo........
+...........oooooooooo...........

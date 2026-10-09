@@ -1,0 +1,1222 @@
+// 적 그룹(troops) 탭 상세 폼 — 2026-08 모던 개편.
+//
+// 이전 구조는 RM2003 창을 픽셀 단위로 흉내 낸 1048×554 고정 캔버스였다. 감사에서 잡힌
+// 문제는 전부 그 고정 캔버스에서 나왔다:
+//   - 멤버 목록/적 팔레트가 "배치" fieldset 위로 겹쳐 그려지고 Y 입력이 통째로 잘림
+//     (.db-troop-member-list 가 170px×170px 3행 고정 격자인데 자식은 4개였다)
+//   - 액션 버튼이 클래스 없는 raw <button> 이라 `.db-troops-classic-workbench button`
+//     블랭킷 규칙 하나만 먹었고, 추가/삭제/지우기/정렬/예시 배치 다섯 개가 전부 같은
+//     전폭 회색 상자로 세로로 쌓였다(위계 0, 삭제도 안 붉음)
+//   - 난이도 추정 버튼이 519px 전폭 바(fullBleed)
+//
+// 이제 공용 워크스페이스 프리미티브(sectionCard/listToolbar/statStrip/emptyState)로
+// 다시 짓는다. 레이아웃은 studio-theme.css 가 `.db-troops-classic-workbench` 에 박아 둔
+// 영역 맵(top / preview·events / members·events / balance·events)을 그대로 채운다 —
+// 자식이 다섯이고 이름도 다섯이라 암묵 트랙으로 밀려나는 사고가 재발하지 않는다.
+//
+// 테스트 계약(유지): db-troops-classic-workbench, .db-troop-top-controls >
+// .db-troop-classic-panel(마지막이 설정), .db-troop-radio input[value=manual|automatic],
+// .db-troop-member-rows .db-troop-member-row(+.empty), db-troop-member-row-N 의
+// "X{x} Y{y}" 텍스트, db-troop-preview-stage, db-troop-member-sprite-N, 필드 testid 전부.
+
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId, nextBattleScenery } from "@/editor/panels/battleSceneryPicker";
+import { battleMethodOf, BATTLE_METHOD_LABELS } from "@/project/battleMethod";
+import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
+import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
+import { renderTroopAfterBattlePanel } from "@/editor/panels/databaseTroopAfterBattlePanel";
+import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import { troopIntentPanel } from "@/editor/panels/databaseTroopIntentPanel";
+import { imageThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import {
+  emptyState,
+  listToolbar,
+  sectionCard,
+  statStrip,
+  type ToolbarAction,
+} from "@/editor/panels/databaseWorkspace";
+import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
+import { store } from "@/project/store";
+import type { BattleBackdropAnimation, BattleBackdropLayer, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
+import { BATTLE_BACKDROP_ANIMATION_LIMITS, type BattleBackdropAnimationKey } from "@/project/battleBackdropAnimation";
+import {
+  BATTLE_BACKDROP_LAYER_LABELS,
+  BATTLE_BACKDROP_LAYER_LIMIT,
+  BATTLE_BACKDROP_LAYER_PRESETS,
+  resolvedBattleBackdropLayer,
+} from "@/project/battleBackdropLayers";
+import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
+import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
+import { classicEnemyFormation } from "@/battle/battleBattlers";
+import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
+import { BATTLER_PLACEMENTS, resolveSkinEnemyPositions } from "@/battle/battlerPlacements";
+import type { BattleSkinId } from "@/battle/skins/types";
+import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { simulateBattle } from "@/battle/simulate";
+import { applyMagentaChromaKeyToImageData } from "./chromaKey";
+
+const DEFAULT_MEMBER: TroopMemberRecord = { enemyId: "", ...classicEnemyFormation(0), hidden: false };
+const selectedMemberIndexes = new Map<string, number>();
+
+export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, rerender: () => void): void {
+  const selectedIndex = selectedMemberIndex(record);
+  const member = record.members?.[selectedIndex] ?? record.members?.[0] ?? DEFAULT_MEMBER;
+  const project = store.getCurrent();
+  const selectedEnemy = project.database.enemies.find((enemy) => enemy.id === member.enemyId) ?? project.database.enemies[0];
+  // 2026-09 구획 분할: 한 줄로 이어진 2,897px 폼(≈3.9 화면)을 배치 · 밸런스 · 전투 이벤트 세 구획으로
+  // 나눈다. 세 구획은 전부 DOM 에 남기고 안 보이는 것만 `hidden` 으로 감춘다 — 필드 testid 를
+  // 찾는 기존 테스트와 저장 경로가 그대로 동작한다.
+  const sections: readonly TroopSection[] = [
+    {
+      id: "layout",
+      label: "배치",
+      children: [
+        el("div", {
+          class: "db-troop-layout",
+          children: [
+            el("div", {
+              class: "db-troop-layout-main",
+              children: [troopBattlePreview(record, selectedIndex, rerender), topControls(record, rerender)],
+            }),
+            memberEditor(record, member, selectedIndex, selectedEnemy, rerender),
+          ],
+        }),
+      ],
+    },
+    {
+      id: "balance",
+      label: "밸런스",
+      children: [balancePanel(record), troopIntentPanel(record, selectedIndex)],
+    },
+    {
+      id: "events",
+      label: "전투 이벤트",
+      badge: String(record.battleEventPages.length),
+      // 지형 패널은 두 겹으로 죽어 있었다 — troops.part-2.css 가 display:none 으로 감추고,
+      // 체크박스는 전부 `input.disabled = true` 였다. 아예 렌더하지 않는다(git 이력에 있다).
+      // 전투 배경은 지형 레코드에서 오므로 「설정」 카드의 배경 칸이 그 역할을 대신한다.
+      children: [renderTroopBattleEventPanel(record, rerender)],
+    },
+    {
+      id: "after",
+      label: "전투 뒤",
+      badge: String(troopAfterBattleLists(record).length),
+      children: [renderTroopAfterBattlePanel(record, rerender)],
+    },
+  ];
+  form.append(
+    el("div", {
+      class: "db-troops-classic-workbench db-troop-studio",
+      dataset: { testid: "db-troops-classic-workbench" },
+      children: [troopHeader(record, rerender), ...troopSectionTabs(sections)],
+    })
+  );
+}
+
+type TroopSectionId = "layout" | "balance" | "events" | "after";
+type TroopSection = {
+  readonly id: TroopSectionId;
+  readonly label: string;
+  readonly badge?: string;
+  readonly children: readonly HTMLElement[];
+};
+
+/** 고른 구획은 레코드를 바꾸거나 다시 그려도 유지한다 — 편집할 때마다 「배치」로 튀지 않게. */
+let activeTroopSection: TroopSectionId = "layout";
+
+function troopSectionTabs(sections: readonly TroopSection[]): HTMLElement[] {
+  const buttons: HTMLButtonElement[] = [];
+  const panels: HTMLElement[] = [];
+  const select = (id: TroopSectionId): void => {
+    activeTroopSection = id;
+    sections.forEach((section, index) => {
+      const selected = section.id === id;
+      buttons[index].setAttribute("aria-selected", String(selected));
+      buttons[index].classList.toggle("active", selected);
+      buttons[index].tabIndex = selected ? 0 : -1;
+      panels[index].hidden = !selected;
+    });
+  };
+  for (const section of sections) {
+    const id = `db-troop-section-${section.id}`;
+    const button = el("button", {
+      class: "db-troop-section-tab",
+      attrs: { type: "button", role: "tab", id: `${id}-tab`, "aria-controls": id },
+      dataset: { testid: `${id}-tab` },
+      children: [
+        el("span", { text: section.label }),
+        ...(section.badge !== undefined ? [el("span", { class: "db-troop-section-badge", text: section.badge })] : []),
+      ],
+      on: { click: () => select(section.id) },
+    }) as HTMLButtonElement;
+    button.addEventListener("keydown", (event) => {
+      const index = buttons.indexOf(button);
+      const key = (event as KeyboardEvent).key;
+      const next = key === "ArrowRight" ? (index + 1) % sections.length
+        : key === "ArrowLeft" ? (index + sections.length - 1) % sections.length
+          : key === "Home" ? 0 : key === "End" ? sections.length - 1 : -1;
+      if (next < 0) return;
+      event.preventDefault();
+      select(sections[next].id);
+      buttons[next].focus();
+    });
+    buttons.push(button);
+    panels.push(el("section", {
+      class: `db-troop-section-panel db-troop-section-panel-${section.id}`,
+      attrs: { id, role: "tabpanel", "aria-labelledby": `${id}-tab` },
+      dataset: { testid: id },
+      children: [...section.children],
+    }));
+  }
+  select(sections.some((section) => section.id === activeTroopSection) ? activeTroopSection : sections[0].id);
+  return [
+    el("div", {
+      class: "db-troop-section-tabs",
+      attrs: { role: "tablist", "aria-label": "적 그룹 편집 구획" },
+      dataset: { testid: "db-troop-section-tabs" },
+      children: buttons,
+    }),
+    ...panels,
+  ];
+}
+
+// databaseRecordViews.ts의 updateRecordRowLabel과 동일한 동작 — 리스트 행 라벨/타이틀만
+// 직접 갱신해 포커스·스크롤을 건드리지 않는다.
+function updateTroopRowLabel(id: string, name: string): void {
+  if (typeof document === "undefined") return;
+  const row = document.querySelector(`[data-testid='db-record-row-${id}']`);
+  if (!(row instanceof HTMLElement)) return;
+  const nameNode = row.querySelector(".db-list-name");
+  if (nameNode instanceof HTMLElement) nameNode.textContent = name || "(이름 없음)";
+  row.setAttribute("title", `${name} (${id})`);
+}
+
+// ---------------------------------------------------------------------------
+// 상단 스트립 — 이름 카드 + 설정 카드
+//
+// `.db-troop-top-controls > .db-troop-classic-panel` 의 **마지막**이 설정 패널이라는 건
+// qa-troops.spec.ts:79 의 계약이다. 카드 두 장 순서를 바꾸지 말 것.
+// ---------------------------------------------------------------------------
+
+function topControls(record: TroopRecord, rerender: () => void): HTMLElement {
+  return el("section", {
+    class: "db-troop-top-controls",
+    dataset: { testid: "db-troop-top-controls" },
+    children: [configurationPanel(record, rerender)],
+  });
+}
+
+/**
+ * 머리줄 — 이름 칸 + 한 줄 요약 + 전투 테스트/이름 생성. 구획 탭 위에 있어 어느 구획에서도 보인다.
+ * testid `db-troop-identity-card` 는 옛 「이름」 카드의 것을 물려받는다.
+ */
+function troopHeader(record: TroopRecord, rerender: () => void): HTMLElement {
+  const nameField = textField("이름", "db-field-name", record.name, (name) => {
+    updateDatabaseRecord("troops", record.id, { name });
+    // troops는 databaseRecordViews.ts의 공용 nameField(onRename→updateRecordRowLabel)
+    // 경로에서 제외되고(databaseAdvancedRecordViews.ts가 troops를 자체 폼으로 위임)
+    // 이 필드가 자체 textField를 쓴다 — 타이핑 중에는 포커스 유지를 위해 전체
+    // rerender를 부르지 않으므로, 다른 탭처럼 좌측 리스트 행만 직접 갱신한다
+    // (qa-troops-report.md m5).
+    updateTroopRowLabel(record.id, name);
+  });
+  nameField.classList.add("db-troop-name-field");
+
+  const actions: ToolbarAction[] = [
+    {
+      label: "이름 생성",
+      testid: "db-troop-generate-name",
+      title: "배치한 적 이름을 이어 붙여 그룹 이름을 만듭니다",
+      onClick: () => {
+        // 사람이 쓴 이름을 즉시 덮어쓴다. updateDatabaseRecord 가 스냅샷을 남기므로 되돌릴
+        // 수는 있지만, 그 사실을 알리지 않으면 저작물이 조용히 사라진 것처럼 보인다.
+        const previous = record.name;
+        const next = generatedTroopName(record);
+        updateDatabaseRecord("troops", record.id, { name: next });
+        toast(`이름을 "${next}"로 바꿨습니다 (이전 "${previous}") — Ctrl+Z로 되돌릴 수 있습니다.`, "ok");
+        rerender();
+      },
+    },
+    {
+      label: "전투 테스트",
+      kind: "primary",
+      testid: "db-troop-battle-test",
+      title: "이 적 그룹으로 즉시 전투를 돌려 봅니다",
+      onClick: () => {
+        // DOM을 직접 뜯어내지 않는다 — openDatabaseModal이 등록한 document keydown
+        // 리스너 2개가 정리되지 않고 새는 문제(M11)가 있었다. 훅을 통해 정식 close()를
+        // 태운다(읽기 행위라 dirty 확인/discard 없이 즉시 닫힘 — 자동 저장이라 안전).
+        requestDatabaseModalClose("battleTest");
+        void openTroopBattleTestModal(record.id);
+      },
+    },
+  ];
+
+  return el("header", {
+    class: "db-troop-header",
+    dataset: { testid: "db-troop-identity-card" },
+    children: [
+      el("div", { class: "db-troop-header-main", children: [nameField, troopSummary(record)] }),
+      listToolbar(actions),
+    ],
+  });
+}
+
+function summaryDot(): HTMLElement {
+  return el("span", { class: "db-troop-summary-dot", text: "·", attrs: { "aria-hidden": "true" } });
+}
+
+/** "슬라임 ×2 · 벌 ×1 · 승률 80% · 경험치 5 · 돈 4" — 밸런스 구획과 같은 숫자를 쓴다. */
+function troopSummary(record: TroopRecord): HTMLElement {
+  const enemies = store.getCurrent().database.enemies;
+  const counts = new Map<string, number>();
+  for (const member of record.members ?? []) {
+    const name = enemies.find((enemy) => enemy.id === member.enemyId)?.name ?? member.enemyId;
+    if (name) counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+  const rewards = troopRewards(record);
+  const lineup = [...counts].map(([name, count]) => `${name} ×${count}`).join(" · ") || "배치한 적 없음";
+  const difficulty = cachedTroopSim(record)?.chip;
+  return el("p", {
+    class: "db-troop-summary",
+    dataset: { testid: "db-troop-summary" },
+    children: [
+      el("span", { class: "db-troop-summary-lineup", text: lineup }),
+      ...(difficulty ? [el("span", { class: "db-troop-summary-chip", text: difficulty })] : [summaryDot()]),
+      el("span", { class: "db-troop-summary-rewards", text: `경험치 ${rewards.exp} · 돈 ${rewards.gold}` }),
+    ],
+  });
+}
+
+function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElement {
+  const side = battleMethodOf(store.getCurrent()) === "side";
+  return studioCard({
+    title: "설정",
+    hint: side
+      ? "전투 배경은 종류(풀밭·숲·동굴·설원·사막)로 고릅니다. 자동이면 싸우는 곳의 지형 효과를 따릅니다."
+      : "전투 배경은 지형 레코드에 등록된 것에서 고릅니다.",
+    children: [
+      el("div", {
+        class: "db-troop-config-grid",
+        children: [
+          el("div", {
+            class: "db-troop-radio-group",
+            attrs: { role: "radiogroup", "aria-label": "배치 방식" },
+            children: [
+              el("span", { class: "db-troop-field-label", text: "배치 방식" }),
+              el("div", {
+                class: "db-troop-radio-pills",
+                children: [
+                  radioField("수동", "manual", !record.autoAlign, () => {
+                    updateDatabaseRecord("troops", record.id, { autoAlign: false });
+                    rerender();
+                  }),
+                  radioField("자동", "automatic", record.autoAlign === true, () => {
+                    updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
+                    rerender();
+                  }),
+                ],
+              }),
+            ],
+          }),
+          activeSlotsField(record, rerender),
+        ],
+      }),
+      backdropField(record, rerender),
+      // 스크롤·물결·색 순환은 그림 한 장을 움직이는 효과라 그림을 그대로 까는 몬스터 대치에서만 보인다.
+      // 도트 측면은 겹 배경이 그 그림을 덮는다(battleFieldDom: scenery "layered" 면 applyBattleBackdropMotion 을 건너뜀).
+      ...(side ? [] : [backdropAnimationField(record, rerender)]),
+      backdropLayersField(record, rerender),
+      el("div", {
+        class: "db-troop-check-row",
+        children: [trainerBattleField(record, rerender), uncapturableField(record, rerender)],
+      }),
+    ],
+    testid: "db-troop-config-card",
+    extraClass: "db-troop-card-config",
+  });
+}
+
+/** 전투 배경 — 도트 측면은 배경 종류를, 몬스터 대치는 그림을 고른다. 「배경 변경」은 차례로 넘긴다. */
+function backdropField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const side = battleMethodOf(project) === "side";
+  const picker = resourcePickerControl({
+    label: side ? "직접 그림" : "전투 배경",
+    resourceId: side ? customPickerResourceId(project, record.previewBackgroundResourceId) : record.previewBackgroundResourceId,
+    kind: "backdrop",
+    testid: "db-field-troop-backdrop",
+    queueKey: `troop-backdrop:${record.id}`,
+    dialogTitle: "전투 배경",
+    allowClear: true,
+    onChange: (result) => {
+      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
+    },
+    rerender,
+  });
+  // 라벨은 e2e 계약이다(oprn-database-battle-records.spec.ts 가 "배경 변경" 을 요구).
+  // "차례로 넘긴다"는 사실은 title 과 아래 토스트가 말한다.
+  const cycle = listToolbar([{
+    label: "배경 변경",
+    testid: "db-troop-change-background",
+    title: side ? "배경 종류를 차례로 넘깁니다" : "지형 레코드에 등록된 전투 배경을 차례로 넘깁니다",
+    onClick: () => {
+      const next = side ? nextBattleScenery(record.previewBackgroundResourceId) : nextBattleBackground(record.previewBackgroundResourceId);
+      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: next });
+      toast("전투 배경을 다음 것으로 넘겼습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
+      rerender();
+    },
+  }]);
+  return el("div", {
+    class: "db-troop-backdrop-field",
+    dataset: { testid: "db-troop-backdrop-card" },
+    children: side
+      ? [
+        battleSceneryField({
+          project,
+          resourceId: record.previewBackgroundResourceId,
+          testid: "db-troop-scenery",
+          autoHint: "싸우는 곳의 지형 효과·기후를 따릅니다. 없으면 숲.",
+          onChange: (resourceId) => {
+            updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: resourceId });
+            rerender();
+          },
+          customPicker: picker,
+        }),
+        cycle,
+      ]
+      : [picker, cycle],
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 밸런스 — 보상 롤업 + 난이도 추정
+// ---------------------------------------------------------------------------
+
+const troopSimLevels = new Map<string, number>();
+/**
+ * 마지막 난이도 추정 결과(요약 칩 · 결과 줄). 구획을 오가거나 다시 그려도 지워지지 않게 모듈에 두되,
+ * 배치가 바뀌면 낡은 숫자이므로 버린다(멤버 서명으로 확인).
+ */
+const troopSimCache = new Map<string, { readonly signature: string; readonly chip?: string; readonly text: string }>();
+
+function troopSimSignature(record: TroopRecord): string {
+  return JSON.stringify(record.members ?? []);
+}
+
+function cachedTroopSim(record: TroopRecord): { readonly chip?: string; readonly text: string } | undefined {
+  const cached = troopSimCache.get(record.id);
+  return cached && cached.signature === troopSimSignature(record) ? cached : undefined;
+}
+
+/** 보상 합계. 숨김 멤버는 보상에서 제외된다(battleRewards.ts). */
+function troopRewards(record: TroopRecord): { exp: number; gold: number; dropItemIds: Set<string> } {
+  const project = store.getCurrent();
+  let exp = 0;
+  let gold = 0;
+  const dropItemIds = new Set<string>();
+  for (const member of (record.members ?? []).filter((entry) => entry.hidden !== true)) {
+    const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
+    if (!enemy) continue;
+    const rewards = normalizeEnemyRecord(enemy).rewards;
+    exp += rewards.exp;
+    gold += rewards.gold;
+    if (rewards.dropItemId && rewards.dropRatePercent > 0) dropItemIds.add(rewards.dropItemId);
+  }
+  return { exp, gold, dropItemIds };
+}
+
+/** 보상 롤업 + 난이도 추정. */
+function balancePanel(record: TroopRecord): HTMLElement {
+  const { exp, gold, dropItemIds } = troopRewards(record);
+
+  // 롤업은 타일 세 장으로 나눈다. 예전엔 "총 경험치 5 / 총 돈 4 / 드롭 후보 1종" 한 줄
+  // 문자열이라 훑어볼 수 없었다. testid 는 회귀 추적용으로 그대로 유지한다.
+  const rollup = statStrip(
+    [
+      { label: "총 경험치", value: String(exp), hint: "숨김 멤버 제외", testid: "db-troop-reward-exp" },
+      { label: "총 돈", value: String(gold), hint: "숨김 멤버 제외", testid: "db-troop-reward-gold" },
+      { label: "드롭 후보", value: `${dropItemIds.size}종`, testid: "db-troop-reward-drops" },
+    ],
+    { testid: "db-troop-reward-rollup" }
+  );
+
+  const result = el("div", {
+    class: "db-ws-readout db-troop-sim-result",
+    dataset: { testid: "db-troop-sim-result" },
+    text: cachedTroopSim(record)?.text ?? "난이도 미추정",
+  });
+  const heroLevel = troopSimLevels.get(record.id) ?? 5;
+  const levelField = numberField("파티 레벨", "db-troop-sim-level", heroLevel, (value) => troopSimLevels.set(record.id, value), { min: 1, max: 99 });
+  const hasMembers = (record.members ?? []).length > 0;
+  const runRow = listToolbar([
+    {
+      label: "난이도 추정",
+      kind: "primary",
+      testid: "db-troop-sim-run",
+      disabled: !hasMembers,
+      title: hasMembers ? "10회 시뮬레이션으로 승률을 추정합니다" : "멤버를 추가하면 추정할 수 있습니다",
+      // 20 샘플은 클릭→결과 561ms(실측)로 UI 를 눈에 띄게 멈춰 세웠다 — 10 샘플로 낮추고
+      // "추정 중…" 이 실제로 그려지도록 한 프레임 양보한 뒤 계산한다(워커로 옮기지 않는다).
+      onClick: () => {
+        result.textContent = "추정 중…";
+        const run = (): void => {
+          let chip: string | undefined;
+          try {
+            const outcome = simulateBattle({
+              project: store.getCurrent(),
+              troopId: record.id,
+              heroLevel: troopSimLevels.get(record.id) ?? 5,
+              n: 10,
+              seed: 12345,
+            });
+            const level = troopSimLevels.get(record.id) ?? 5;
+            result.textContent = `10회 표본 · 승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
+            chip = `파티 Lv${level} 승률 ${Math.round(outcome.winRate * 100)}%`;
+          } catch (error) {
+            result.textContent = `추정 불가: ${error instanceof Error ? error.message : String(error)}`;
+          }
+          const live = store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? record;
+          troopSimCache.set(record.id, { signature: troopSimSignature(live), chip, text: result.textContent ?? "" });
+          // 머리줄 요약 칩도 같은 숫자로 맞춘다 — 전체를 다시 그리면 구획 스크롤이 튄다.
+          const summary = result.closest(".db-troop-studio")?.querySelector("[data-testid='db-troop-summary']");
+          if (summary) summary.replaceWith(troopSummary(live));
+        };
+        if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+        else run();
+      },
+    },
+  ]);
+
+  return studioCard({
+    title: "밸런스",
+    hint: "보상 합계와 예상 난이도입니다.",
+    children: [
+      rollup,
+      el("div", { class: "db-troop-sim-row", children: [levelField, runRow] }),
+      result,
+    ],
+    testid: "db-troop-balance-card",
+    extraClass: "db-troop-panel-balance",
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 멤버 편집기
+// ---------------------------------------------------------------------------
+
+function memberEditor(
+  record: TroopRecord,
+  member: TroopMemberRecord,
+  selectedIndex: number,
+  selectedEnemy: EnemyRecord | undefined,
+  rerender: () => void
+): HTMLElement {
+  const members = record.members ?? [];
+  const enemies = store.getCurrent().database.enemies;
+  const hasEnemies = enemies.length > 0;
+
+  const actions: ToolbarAction[] = [
+    {
+      label: "＋ 추가",
+      kind: "primary",
+      testid: "db-troop-member-add",
+      disabled: !hasEnemies,
+      title: hasEnemies ? "선택한 적을 새 슬롯으로 배치합니다" : "먼저 몬스터 탭에서 적을 만드세요",
+      onClick: () => {
+        const nextEnemyId = selectedEnemy?.id ?? store.getCurrent().database.enemies[0]?.id ?? "";
+        if (!nextEnemyId) return;
+        const nextMembers = [...(record.members ?? []), positionedMember(nextEnemyId, record.members?.length ?? 0)];
+        selectedMemberIndexes.set(record.id, nextMembers.length - 1);
+        updateDatabaseRecord("troops", record.id, { members: nextMembers });
+        rerender();
+      },
+    },
+    {
+      label: "정렬",
+      testid: "db-troop-member-arrange",
+      disabled: members.length === 0,
+      title: "고전 진형 좌표로 다시 줄 세웁니다",
+      onClick: () => {
+        updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
+        rerender();
+      },
+    },
+    // 라벨은 사용자에게 보인다 — 타사 제품명을 쓰지 않는다(2026-08-21).
+    // testid 는 e2e 계약이라 유지하고, 식별자 개명은 별도 라운드에서 다룬다.
+    {
+      label: "예시 배치",
+      testid: "db-troop-member-rm2003-preset",
+      disabled: !hasEnemies,
+      title: "슬라임 2 + 벌 2 의 견본 진형으로 덮어씁니다",
+      onClick: () => {
+        const nextMembers = rm2003ExampleMembers();
+        if (nextMembers.length === 0) return;
+        selectedMemberIndexes.set(record.id, 0);
+        updateDatabaseRecord("troops", record.id, { autoAlign: false, members: nextMembers });
+        rerender();
+      },
+    },
+    {
+      label: "삭제",
+      // 이 탭에는 "삭제" 가 3 개(적 그룹 · 적 슬롯 · 전투 이벤트 페이지)라 접근명으로는
+      // 구분되지 않았다. 보이는 글자는 좁은 툴바에 맞춰 두고 접근명만 구체화한다.
+      ariaLabel: "선택한 적 슬롯 삭제",
+      kind: "danger",
+      testid: "db-troop-member-delete",
+      disabled: members.length === 0,
+      title: "선택한 슬롯 하나만 지웁니다 (Ctrl+Z 로 복구)",
+      onClick: () => {
+        const nextMembers = (record.members ?? []).filter((_, index) => index !== selectedIndex);
+        selectedMemberIndexes.set(record.id, Math.max(0, Math.min(selectedIndex, nextMembers.length - 1)));
+        updateDatabaseRecord("troops", record.id, { members: nextMembers });
+        rerender();
+      },
+    },
+    {
+      label: "전체 지우기",
+      kind: "danger",
+      testid: "db-troop-member-clear",
+      disabled: members.length === 0,
+      title: "이 그룹의 배치를 전부 비웁니다 (Ctrl+Z 로 복구)",
+      onClick: () => {
+        selectedMemberIndexes.set(record.id, 0);
+        updateDatabaseRecord("troops", record.id, { members: [] });
+        rerender();
+      },
+    },
+  ];
+
+  // 미리보기에서 적을 누르면 이 카드가 그 슬롯을 연다 — 슬롯 편집(적·등장·좌표)과 팔레트를
+  // 미리보기 오른쪽 한 열에 모아, 한 동작을 위해 화면 세 곳을 오가지 않게 한다.
+  const inspector = el("div", {
+    class: "db-troop-member-inspector",
+    children: members.length > 0
+      ? [
+        selectField("적", "db-picker-troop-member-enemy", member.enemyId, enemies, (enemyId) => {
+          updateSelectedMember(record, selectedIndex, enemyId ? { ...member, enemyId } : undefined);
+          rerender();
+        }),
+        checkboxField("연출 전까지 숨김 (전투 이벤트로 등장)", "db-field-troop-member-hidden", member.hidden ?? false, (hidden) => {
+          updateSelectedMember(record, selectedIndex, { ...member, hidden });
+          rerender();
+        }),
+        // 다부위 적: 본체 슬롯을 고르면 이 슬롯은 부위가 된다. 본체가 쓰러지면 부위도 쓰러지고,
+        // 부위가 쓰러지면 본체 행동 중 「필요 부위」가 이 태그인 것이 막힌다.
+        selectField("부위의 본체", "db-field-troop-member-part-of", member.partOf === undefined ? "" : String(member.partOf),
+          members.flatMap((entry, index) => index === selectedIndex ? [] : [{ id: String(index), name: `${index + 1}. ${enemies.find((enemy) => enemy.id === entry.enemyId)?.name ?? entry.enemyId}` }]),
+          (value) => {
+            updateSelectedMember(record, selectedIndex, { ...member, partOf: value === "" ? undefined : Number(value) });
+            rerender();
+          }),
+        textField("부위 태그", "db-field-troop-member-part-tag", member.partTag ?? "", (partTag) => {
+          updateSelectedMember(record, selectedIndex, { ...member, partTag: emptyToUndefined(partTag.trim()) });
+        }),
+        el("div", {
+          class: "db-troop-xy-row",
+          children: [
+            numberField("X", "db-field-troop-member-x", member.x, (x) => {
+              updateSelectedMember(record, selectedIndex, { ...member, x });
+              rerender();
+            }),
+            numberField("Y", "db-field-troop-member-y", member.y, (y) => {
+              updateSelectedMember(record, selectedIndex, { ...member, y });
+              rerender();
+            }),
+          ],
+        }),
+        openEnemyButton(member.enemyId),
+      ]
+      // 슬롯이 없을 때의 안내는 아래 목록의 빈 상태 하나가 맡는다(같은 말을 두 번 하지 않는다).
+      : [],
+  });
+
+  const roster = el("div", {
+    class: "db-troop-roster",
+    children: [
+      el("span", { class: "db-troop-field-label", text: `배치한 적 ${members.length}` }),
+      memberRows(record, selectedIndex, rerender),
+      listToolbar(actions),
+    ],
+  });
+
+  return el("section", {
+    class: "db-troop-member-editor",
+    dataset: { testid: "db-troop-member-editor" },
+    children: [
+      studioCard({
+        title: members.length > 0 ? `선택한 적 #${selectedIndex + 1}` : "선택한 적",
+        hint: "미리보기에서 적을 누르면 그 슬롯이 여기에 열립니다.",
+        children: [inspector, roster],
+        testid: "db-troop-member-card",
+        extraClass: "db-troop-card-members",
+      }),
+      studioCard({
+        title: "적 팔레트",
+        hint: members.length > 0 ? "누르면 선택한 슬롯의 적이 바뀝니다." : "고른 적으로 첫 슬롯을 만듭니다.",
+        children: [enemyList(record, selectedIndex, selectedEnemy?.id ?? member.enemyId, rerender)],
+        testid: "db-troop-enemy-palette-card",
+        extraClass: "db-troop-card-palette",
+      }),
+    ],
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 미리보기 무대
+// ---------------------------------------------------------------------------
+
+function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const skinId = resolveSkinId(project.system.battleUiStyle);
+  const layout = BATTLE_SKINS[skinId]?.layout;
+  const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    record.autoAlign,
+  );
+  const sprites = members.map((member, index) => {
+    const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
+    const skinPos = positions[index] ?? { x: 160, y: 96 };
+    const sprite = enemySprite(enemy, member, skinPos, record.id, index, index === selectedIndex, rerender);
+    sprite.dataset.memberIndex = String(index);
+    return sprite;
+  });
+  const children = sprites.length > 0 ? sprites : [el("span", { class: "db-troop-empty-member", text: "(없음)" })];
+  const stage = el("div", {
+    class: "db-troop-battle-preview-stage",
+    dataset: { testid: "db-troop-preview-stage" },
+    children: layout === "sideview"
+      ? [recenterGuideLine(), ...partyMarkers(skinId), ...children]
+      : [...partyMarkers(skinId), ...children],
+  });
+  // 도트 측면은 배경 종류의 겹 배경을 깐다 — 미리보기도 그 종류의 그림으로 보인다(업로드 그림만 그대로).
+  const backgroundUrl = battleBackdropPreviewUrl(project, record.previewBackgroundResourceId, { showAuto: true });
+  if (backgroundUrl) {
+    stage.style.backgroundImage = `linear-gradient(180deg, rgba(128, 184, 232, 0.18), rgba(85, 161, 61, 0.12)), url("${cssUrl(backgroundUrl)}")`;
+  }
+
+  const card = studioCard({
+    title: "배치 미리보기",
+    hint: previewHint(record),
+    children: [
+      stage,
+      el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
+      el("div", {
+        class: "db-troop-preview-legend",
+        children:
+          layout === "sideview"
+            ? [
+              legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
+              legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
+            ]
+            : [
+              legendChip("db-troop-legend-party", "현재 전투 방식 기준 배치 미리보기"),
+              ...(manualDivergenceCount(record, skinId) > 0
+                ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
+                : []),
+            ],
+      }),
+    ],
+    testid: "db-troop-preview-card",
+    extraClass: "db-troop-preview-panel",
+  });
+  return card;
+}
+
+function previewHint(record: TroopRecord): string {
+  const method = BATTLE_METHOD_LABELS[battleMethodOf(store.getCurrent())];
+  if (record.autoAlign) return `${method} 전투의 자동 진형으로 싸웁니다.`;
+  return `수동 배치 · ${method} 전투의 실제 표시 위치입니다.`;
+}
+
+function legendChip(className: string, text: string): HTMLElement {
+  return el("span", { class: `db-troop-legend-chip ${className}`, text });
+}
+
+const RECENTER_THRESHOLD_X = 150;
+
+/** 런타임 재배치 경계(x>150)를 저작자가 볼 수 있게 표시한다. */
+function recenterGuideLine(): HTMLElement {
+  const line = el("div", { class: "db-troop-preview-recenter-line", dataset: { testid: "db-troop-preview-recenter-line" } });
+  line.style.left = `${(RECENTER_THRESHOLD_X / 320) * 100}%`;
+  line.title = "이 선을 넘는 적은 전투에서 좌측 진형으로 재배치됩니다";
+  return line;
+}
+
+/** 아군 진형 읽기 전용 마커. 적 스프라이트와 같은 0..160 표시 공간에 둔다. */
+function partyMarkers(skinId: BattleSkinId): HTMLElement[] {
+  return [0, 1, 2, 3].map((index) => {
+    const seat = BATTLER_PLACEMENTS[skinId].party(index, 4);
+    const marker = el("div", {
+      class: "db-troop-preview-party-marker",
+      dataset: { testid: `db-troop-preview-party-marker-${index + 1}` },
+      text: String(index + 1),
+    });
+    marker.style.setProperty("--troop-marker-x", `${(Math.max(0, Math.min(320, seat.x)) / 320) * 100}%`);
+    marker.style.setProperty("--troop-marker-y", `${(Math.max(0, Math.min(160, seat.y)) / 160) * 100}%`);
+    marker.title = "아군 진형 위치(읽기 전용)";
+    return marker;
+  });
+}
+
+function manualDivergenceCount(record: TroopRecord, skinId: BattleSkinId): number {
+  if (record.autoAlign) return 0;
+  const members = record.members ?? [];
+  const positions = resolveSkinEnemyPositions(
+    skinId,
+    members.map((member) => ({ x: member.x, y: member.y })),
+    false,
+  );
+  return members.filter((member, index) => {
+    if (member.x == null || !Number.isFinite(member.x)) return false;
+    const rendered = positions[index]?.x;
+    if (rendered == null) return false;
+    return Math.abs(rendered - member.x) >= 1;
+  }).length;
+}
+
+function enemySprite(
+  enemy: EnemyRecord | undefined,
+  member: TroopMemberRecord,
+  skinPos: { readonly x: number; readonly y: number },
+  troopId: string,
+  index: number,
+  selected: boolean,
+  rerender: () => void
+): HTMLElement {
+  const url = resolveAssetResourceUrl(enemy?.monsterResourceId, { project: store.getCurrent() });
+  if (!url) return el("span", { class: "db-troop-empty-member", text: enemy?.name ?? "(없음)" });
+  const canvas = el("canvas", {
+    class: `db-troop-member-sprite${selected ? " active" : ""}${member.hidden ? " hidden-member" : ""}`,
+    attrs: { "aria-label": `${enemy?.name ?? "적"} 배치 미리보기`, role: "button" },
+    dataset: { testid: `db-troop-member-sprite-${index + 1}`, enemyId: member.enemyId },
+  }) as HTMLCanvasElement;
+  canvas.width = 96;
+  canvas.height = 72;
+  canvas.style.left = `${(Math.max(0, Math.min(320, skinPos.x)) / 320) * 100}%`;
+  canvas.style.top = `${(Math.max(0, Math.min(160, skinPos.y)) / 160) * 100}%`;
+  canvas.addEventListener("click", () => {
+    selectedMemberIndexes.set(troopId, index);
+    rerender();
+  });
+  renderChromaKeyImage(canvas, url);
+  return canvas;
+}
+
+/**
+ * 배치 슬롯 목록. 예전에는 적 이름만 텍스트로 찍고 좌표는 `title` 속성에만 넣어서,
+ * 좌표를 보려면 마우스를 올려 기다려야 했다(그리고 qa-troops.spec 이 기대하는
+ * "X200 Y80" 은 텍스트에 없었다). 이제 번호·이름·좌표를 한 줄에 같이 보여준다.
+ */
+function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const members = record.members ?? [];
+  const children =
+    members.length > 0
+      ? members.map((member, index) => {
+          const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
+          const enemyName = enemy?.name ?? member.enemyId;
+          const coords = `X${member.x} Y${member.y}`;
+          return el("button", {
+            class: `db-troop-member-row${index === selectedIndex ? " active" : ""}${member.hidden ? " is-hidden-member" : ""}`,
+            attrs: { type: "button", title: `${index + 1} · ${enemyName} · ${coords}`, "aria-pressed": index === selectedIndex ? "true" : "false" },
+            dataset: { testid: `db-troop-member-row-${index + 1}` },
+            children: [
+              el("span", { class: "db-troop-member-index", text: String(index + 1) }),
+              el("span", { class: "db-troop-member-name", text: enemyName || "(적 없음)" }),
+              ...(member.hidden ? [el("span", { class: "db-troop-member-flag", text: "숨김" })] : []),
+              el("span", { class: "db-troop-member-coords", text: coords }),
+            ],
+            on: {
+              click: () => {
+                selectedMemberIndexes.set(record.id, index);
+                rerender();
+              },
+            },
+          });
+        })
+      : [
+        // `.db-troop-member-row.empty` 는 qa-troops.spec.ts:193 계약이라 클래스를 유지한다.
+        el("div", {
+          class: "db-troop-member-row empty",
+          children: [
+            emptyState({
+              icon: "◇",
+              title: "배치한 적이 없음",
+              body: "‘＋ 추가’ 를 누르면 선택한 적이 진형에 놓입니다.",
+              compact: true,
+              testid: "db-troop-member-empty",
+            }),
+          ],
+        }),
+      ];
+  return el("div", { class: "db-troop-member-rows", dataset: { testid: "db-troop-member-rows" }, children });
+}
+
+function enemyList(record: TroopRecord, selectedIndex: number, selectedEnemyId: string, rerender: () => void): HTMLElement {
+  const enemies = store.getCurrent().database.enemies;
+  if (enemies.length === 0) {
+    return emptyState({
+      icon: "☠",
+      title: "등록된 적이 없습니다",
+      body: "몬스터 탭에서 적을 먼저 만들면 여기에 나타납니다.",
+      compact: true,
+      testid: "db-troop-enemy-empty",
+    });
+  }
+  return el("div", {
+    class: "db-troop-enemy-list",
+    dataset: { testid: "db-troop-enemy-list" },
+    children: enemies.map((enemy) =>
+      el("button", {
+        class: `db-troop-enemy-row${enemy.id === selectedEnemyId ? " active" : ""}`,
+        attrs: { type: "button", title: `${enemy.name} (${enemy.id})`, "aria-pressed": enemy.id === selectedEnemyId ? "true" : "false" },
+        children: [
+          imageThumbnail(enemy.monsterResourceId, store.getCurrent(), enemy.name, 40),
+          el("span", { class: "db-troop-enemy-name", text: enemy.name }),
+        ],
+        on: {
+          click: () => {
+            const member = record.members?.[selectedIndex] ?? positionedMember(enemy.id, selectedIndex);
+            updateSelectedMember(record, selectedIndex, { ...member, enemyId: enemy.id });
+            rerender();
+          },
+        },
+      })
+    ),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// 설정 필드
+// ---------------------------------------------------------------------------
+
+/** 움직이는 전투 배경(마더식) — 스크롤·물결·색 순환. 0 이면 그 효과가 꺼진다. */
+function backdropAnimationField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const current = (): BattleBackdropAnimation =>
+    store.getCurrent().database.troops.find((troop) => troop.id === record.id)?.backdropAnimation ?? {};
+  const row = (
+    key: BattleBackdropAnimationKey,
+    label: string,
+    step: number,
+  ): HTMLElement => {
+    const { min, max } = BATTLE_BACKDROP_ANIMATION_LIMITS[key];
+    return numberField(label, `db-field-troop-backdrop-${key}`, current()[key] ?? 0, (value) => {
+      // 정규화(normalizeTroopRecord)가 0 과 범위 밖 값을 걸러 키를 지운다.
+      updateDatabaseRecord("troops", record.id, { backdropAnimation: { ...current(), [key]: value } });
+      rerender();
+    }, { min, max, step });
+  };
+  const hasMotion = Object.keys(current()).length > 0;
+  return el("div", {
+    class: "db-troop-backdrop-motion",
+    dataset: { testid: "db-troop-backdrop-motion" },
+    attrs: { title: "움직임 줄이기를 켠 플레이어에게는 정지 배경으로 보입니다." },
+    children: [
+      el("span", { class: "db-troop-field-label", text: "배경 움직임" }),
+      el("div", {
+        class: "db-troop-config-grid",
+        children: [
+          row("scrollX", "가로 스크롤 (px/초)", 5),
+          row("scrollY", "세로 스크롤 (px/초)", 5),
+          row("waveAmplitude", "물결 세기 (px)", 1),
+          row("waveFrequency", "물결 빠르기 (회/초)", 0.5),
+          row("paletteCycleSeconds", "색 순환 주기 (초, 0=끔)", 1),
+        ],
+      }),
+      el("small", {
+        class: "db-ws-usage",
+        text: hasMotion ? "전투 배경이 움직입니다. 움직임 줄이기 설정에서는 멈춥니다." : "모두 0이면 정지 배경입니다.",
+      }),
+    ],
+  });
+}
+
+/** 배경 겹 — 안개·구름·비·눈·불티·별·빛줄기(그림 없이 그린다). 앞 겹은 배틀러 앞에 깔린다. 최대 4. */
+function backdropLayersField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const current = (): BattleBackdropLayer[] =>
+    [...(store.getCurrent().database.troops.find((troop) => troop.id === record.id)?.backdropLayers ?? [])];
+  const save = (layers: BattleBackdropLayer[]): void => {
+    // 정규화(normalizeTroopRecord)가 빈 겹·범위 밖 값을 거르고, 남는 게 없으면 키를 지운다.
+    updateDatabaseRecord("troops", record.id, { backdropLayers: layers.length ? layers : undefined });
+    rerender();
+  };
+  const patch = (index: number, next: Partial<BattleBackdropLayer>): void =>
+    save(current().map((layer, i) => (i === index ? { ...layer, ...next } : layer)));
+  const layers = current();
+  const rows = layers.map((layer, index) => {
+    const resolved = resolvedBattleBackdropLayer(layer);
+    const label = layer.resourceId ? `그림 ${layer.resourceId}` : BATTLE_BACKDROP_LAYER_LABELS[layer.preset ?? "fog"];
+    // 겹마다 카드 한 장 — 머리(번호·종류 이름·빼기) + 칸. 카드 없이 늘어놓으면 두 겹이 한 양식으로 이어져 보였다(실측 캡처).
+    return el("div", {
+      class: "db-troop-layer-card",
+      dataset: { testid: `db-troop-layer-${index}` },
+      children: [
+        el("div", {
+          class: "db-troop-layer-head",
+          children: [
+            el("strong", { text: `겹 ${index + 1} · ${label}${layer.front ? " (앞)" : ""}` }),
+            el("button", {
+              class: "btn btn-mini",
+              text: "빼기",
+              attrs: { type: "button", "aria-label": `겹 ${index + 1} 빼기` },
+              dataset: { testid: `db-troop-layer-delete-${index}` },
+              on: { click: () => save(current().filter((_, i) => i !== index)) },
+            }),
+          ],
+        }),
+        el("div", {
+          class: "db-troop-config-grid",
+          children: [
+            layer.resourceId
+              ? el("span", { class: "db-troop-field-label", text: label })
+              : selectField("종류", `db-troop-layer-preset-${index}`, layer.preset ?? "fog",
+                BATTLE_BACKDROP_LAYER_PRESETS.map((id) => ({ id, name: BATTLE_BACKDROP_LAYER_LABELS[id] })),
+                (preset) => patch(index, { preset: preset as BattleBackdropLayer["preset"] })),
+            checkboxField("배틀러 앞", `db-troop-layer-front-${index}`, layer.front === true, (front) => patch(index, { front: front || undefined })),
+            numberField("불투명도 (%)", `db-troop-layer-opacity-${index}`, resolved.opacity, (opacity) => patch(index, { opacity }), { min: 0, max: 100, step: 5 }),
+            selectField("겹치기", `db-troop-layer-blend-${index}`, resolved.blendMode,
+              BLEND_MODE_NAMES.map((id) => ({ id, name: BLEND_MODE_LABELS[id] })),
+              (blend) => patch(index, { blendMode: normalizeBlendMode(blend) })),
+            numberField("가로 흐름 (px/초)", `db-troop-layer-scrollx-${index}`, resolved.scrollX, (scrollX) => patch(index, { scrollX }), { min: -1200, max: 1200, step: 5 }),
+            numberField("세로 흐름 (px/초)", `db-troop-layer-scrolly-${index}`, resolved.scrollY, (scrollY) => patch(index, { scrollY }), { min: -1200, max: 1200, step: 5 }),
+          ],
+        }),
+      ],
+    });
+  });
+  return el("div", {
+    class: "db-troop-backdrop-motion",
+    dataset: { testid: "db-troop-backdrop-layers" },
+    attrs: { title: "두 전투 방식 모두에서 보입니다. 움직임 줄이기를 켠 플레이어에게는 흐르지 않습니다." },
+    children: [
+      el("span", { class: "db-troop-field-label", text: "배경 겹 (안개·구름·비·눈…)" }),
+      ...rows,
+      el("button", {
+        class: "btn btn-mini",
+        text: "겹 추가",
+        attrs: { type: "button", ...(layers.length >= BATTLE_BACKDROP_LAYER_LIMIT ? { disabled: "true" } : {}) },
+        dataset: { testid: "db-troop-layer-add" },
+        on: { click: () => save([...current(), { preset: "fog" }]) },
+      }),
+    ],
+  });
+}
+
+function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = numberField("아군 인원 (0=기본)", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+    updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
+    rerender();
+  });
+  const system = store.getCurrent().system;
+  field.title = `동시 참전할 아군 수입니다. 0이면 시스템 설정 사용: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}.`;
+  field.append(el("small", { class: "db-ws-usage", text: record.activeSlots ? `${record.activeSlots}명 지정` : `기본: ${system.activeSlots ?? (system.battleModel === "gen1" ? 1 : "파티 전원")}` }));
+  return field;
+}
+
+function uncapturableField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = checkboxField("포획 불가", "db-field-troop-uncapturable", record.uncapturable === true, (uncapturable) => {
+    updateDatabaseRecord("troops", record.id, { uncapturable });
+    rerender();
+  });
+  field.title = "이 그룹의 적은 포획 대상에서 제외됩니다.";
+  return field;
+}
+
+function trainerBattleField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = checkboxField("트레이너 전투", "db-field-troop-trainer-battle", record.trainerBattle === true, (trainerBattle) => {
+    updateDatabaseRecord("troops", record.id, { trainerBattle });
+    rerender();
+  });
+  field.title = "야생 조우가 아닌 트레이너 전투로 판정합니다.";
+  return field;
+}
+
+/**
+ * `.db-troop-radio input[value=...]` 는 qa-troops.spec.ts 의 계약이라 네이티브 radio
+ * 마크업을 유지한다 — 세그먼티드 알약 모양은 CSS 로만 입힌다.
+ */
+function radioField(label: string, value: string, checked: boolean, onChange: () => void): HTMLElement {
+  const input = el("input", { attrs: { type: "radio", name: "db-troop-configuration", value } }) as HTMLInputElement;
+  input.checked = checked;
+  input.addEventListener("change", () => {
+    if (input.checked) onChange();
+  });
+  return el("label", { class: `db-troop-radio${checked ? " active" : ""}`, children: [input, el("span", { text: label })] });
+}
+
+function checkboxField(label: string, testid: string, checked: boolean, onInput: (value: boolean) => void): HTMLElement {
+  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  input.checked = checked;
+  input.addEventListener("change", () => onInput(input.checked));
+  return el("label", { class: `actor-check db-troop-check${checked ? " active" : ""}`, children: [input, el("span", { text: label })] });
+}
+
+function optionalPositiveInteger(value: number): number | undefined {
+  if (!Number.isFinite(value) || value <= 0) return undefined;
+  return Math.trunc(value);
+}
+
+/**
+ * 공용 `sectionCard()` 에 이 탭의 레이아웃 훅(그리드 영역/레거시 클래스)을 얹는다.
+ * `db-troop-classic-panel` 은 qa-troops.spec.ts:79 가 설정 패널을 찾는 선택자라 유지.
+ */
+function studioCard(options: {
+  readonly title: string;
+  readonly hint?: string;
+  readonly children: readonly HTMLElement[];
+  readonly testid: string;
+  readonly extraClass: string;
+}): HTMLElement {
+  const card = sectionCard({
+    title: options.title,
+    hint: options.hint,
+    children: options.children,
+    testid: options.testid,
+  });
+  card.classList.add("db-troop-classic-panel", "db-troop-card", options.extraClass);
+  return card;
+}
+
+function selectedMemberIndex(record: TroopRecord): number {
+  const members = record.members ?? [];
+  if (members.length === 0) return 0;
+  const selected = selectedMemberIndexes.get(record.id) ?? 0;
+  return Math.max(0, Math.min(selected, members.length - 1));
+}
+
+/**
+ * 선택 슬롯의 적을 몬스터 탭에서 바로 연다. 거울 패턴: databaseEnemyRecordView 의
+ * "종족 열기" 버튼과 동일하게 setSelectedRecordId + switchDatabaseActiveTab.
+ */
+function openEnemyButton(enemyId: string): HTMLElement {
+  const enemy = store.getCurrent().database.enemies.find((entry) => entry.id === enemyId);
+  return el("div", {
+    class: "db-troop-enemy-nav-actions",
+    dataset: { testid: "db-troop-enemy-nav-actions" },
+    children: [
+      el("button", {
+        class: "db-ws-btn db-ws-btn-ghost",
+        text: enemy ? `“${enemy.name}” 수정하기` : "몬스터 탭 열기",
+        attrs: { type: "button", title: "몬스터 탭에서 이 적을 바로 수정합니다" },
+        dataset: { testid: "db-troop-open-enemy" },
+        on: {
+          click: (event) => {
+            if (!enemyId) return;
+            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+            setSelectedRecordId("enemies", enemyId);
+            if (!panelRoot) {
+              toast("몬스터 탭에서 적을 선택했습니다", "ok");
+              return;
+            }
+            switchDatabaseActiveTab("enemies", panelRoot);
+          },
+        },
+      }),
+    ],
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
+}
+
+function updateSelectedMember(record: TroopRecord, selectedIndex: number, nextMember: TroopMemberRecord | undefined): void {
+  const current = store.getCurrent().database.troops.find((entry) => entry.id === record.id) ?? record;
+  const members = [...(current.members ?? [])];
+  if (!nextMember) {
+    members.splice(selectedIndex, 1);
+    selectedMemberIndexes.set(record.id, Math.max(0, Math.min(selectedIndex, members.length - 1)));
+    updateDatabaseRecord("troops", record.id, { members });
+    return;
+  }
+  members[selectedIndex] = nextMember;
+  selectedMemberIndexes.set(record.id, selectedIndex);
+  updateDatabaseRecord("troops", record.id, { members });
+}
+
+function cssUrl(value: string): string {
+  return value.replaceAll("\\", "\\\\").replaceAll("\"", "\\\"");
+}
+
+function positionedMember(enemyId: string, index: number): TroopMemberRecord {
+  return { enemyId, ...classicEnemyFormation(index), hidden: false };
+}
+
+function arrangeMembers(members: readonly TroopMemberRecord[]): TroopMemberRecord[] {
+  return members.map((member, index) => ({ ...member, ...classicEnemyFormation(index) }));
+}
+
+function rm2003ExampleMembers(): TroopMemberRecord[] {
+  const enemies = store.getCurrent().database.enemies;
+  const slime =
+    enemies.find((enemy) => enemy.monsterResourceId?.includes("slime"))?.id ??
+    enemies.find((enemy) => enemy.id.includes("slime"))?.id ??
+    enemies[0]?.id;
+  const sylph =
+    enemies.find((enemy) => enemy.monsterResourceId?.includes("sylph") || enemy.monsterResourceId?.includes("hornet"))?.id ??
+    enemies.find((enemy) => enemy.id.includes("sylph") || enemy.id.includes("hornet"))?.id ??
+    enemies[0]?.id;
+  if (!slime || !sylph) return [];
+  const members = [sylph, sylph, slime, slime];
+  return members.map((enemyId, index) => ({ enemyId, ...classicEnemyFormation(index), hidden: false }));
+}
+
+function generatedTroopName(record: TroopRecord): string {
+  const enemies = store.getCurrent().database.enemies;
+  const names = (record.members ?? [])
+    .map((member) => enemies.find((enemy) => enemy.id === member.enemyId)?.name)
+    .filter((name): name is string => Boolean(name));
+  return names.length > 0 ? `${names.join(" / ")} 부대` : "적 그룹";
+}
+
+function nextBattleBackground(current: string | undefined): string | undefined {
+  const backgrounds = store.getCurrent().database.terrains?.map((terrain) => terrain.battleBackgroundResourceId).filter((id): id is string => Boolean(id)) ?? [];
+  if (backgrounds.length === 0) return current;
+  const index = backgrounds.findIndex((id) => id === current);
+  return backgrounds[(index + 1) % backgrounds.length] ?? backgrounds[0];
+}
+
+function previewCaption(record: TroopRecord): string {
+  const enemies = store.getCurrent().database.enemies;
+  const enemyNames = (record.members ?? [])
+    .map((member) => enemies.find((enemy) => enemy.id === member.enemyId)?.name)
+    .filter((name): name is string => Boolean(name));
+  const terrainName = store.getCurrent().database.terrains?.find((terrain) => terrain.battleBackgroundResourceId === record.previewBackgroundResourceId)?.name;
+  return `${record.name} / ${enemyNames.join(", ") || "(없음)"} / ${terrainName ?? (record.previewBackgroundResourceId ? "배경 설정됨" : "배경 없음")}`;
+}
+
+function renderChromaKeyImage(canvas: HTMLCanvasElement, url: string): void {
+  const context = canvas.getContext("2d");
+  if (!context) return;
+  const image = new Image();
+  image.addEventListener("load", () => {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    const scale = Math.min(canvas.width / image.width, canvas.height / image.height, 1);
+    const width = Math.max(1, Math.floor(image.width * scale));
+    const height = Math.max(1, Math.floor(image.height * scale));
+    const x = Math.floor((canvas.width - width) / 2);
+    const y = Math.floor((canvas.height - height) / 2);
+    context.drawImage(image, x, y, width, height);
+    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    applyMagentaChromaKeyToImageData(imageData, { minBlue: 220 });
+    context.putImageData(imageData, 0, 0);
+  });
+  image.src = url;
+}

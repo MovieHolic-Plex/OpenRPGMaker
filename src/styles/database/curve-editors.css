@@ -1,0 +1,275 @@
+/* curve-editors.css — studio tokens only, scoped to .database-modal-backdrop */
+
+.database-modal-backdrop .db-class-dialog-backdrop {
+  background: rgba(15, 23, 42, 0.32);
+  padding: 18px;
+  display: grid;
+  place-items: center;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+}
+
+.database-modal-backdrop .db-class-dialog {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  box-shadow: var(--db-studio-shadow-pop);
+  color: var(--db-studio-text-1);
+  display: grid;
+  font-family: var(--font-ui);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  max-height: calc(100vh - 48px);
+  overflow: hidden;
+  width: min(880px, calc(100vw - 32px));
+}
+
+.database-modal-backdrop .db-class-dialog.db-class-exp-dialog {
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+}
+
+.database-modal-backdrop .db-class-dialog header,
+.database-modal-backdrop .db-class-dialog footer {
+  background: var(--db-studio-surface);
+  border-color: var(--db-studio-border-subtle);
+  color: var(--db-studio-text-1);
+  min-height: 48px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-class-dialog header {
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+}
+
+.database-modal-backdrop .db-class-dialog footer {
+  border-top: 1px solid var(--db-studio-border-subtle);
+  justify-content: flex-end;
+}
+
+.database-modal-backdrop .db-class-dialog header strong {
+  font: 600 14px/1.2 var(--font-ui);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .db-class-dialog header button,
+.database-modal-backdrop .db-class-dialog footer button,
+.database-modal-backdrop .db-class-dialog .btn {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  font: 600 12px/1 var(--font-ui);
+  min-height: 32px;
+  min-width: 72px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.database-modal-backdrop .db-class-dialog footer button:first-child {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: #fff;
+}
+
+.database-modal-backdrop .db-class-dialog footer button:first-child:hover {
+  background: var(--db-studio-accent-hover);
+  border-color: var(--db-studio-accent-hover);
+}
+
+.database-modal-backdrop .db-class-curve-tabs,
+.database-modal-backdrop .db-class-exp-dialog-tabs {
+  background: var(--db-studio-surface);
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 8px 14px 0;
+}
+
+.database-modal-backdrop .db-class-curve-tabs button,
+.database-modal-backdrop .db-class-exp-dialog-tabs button {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--db-studio-text-2);
+  flex: 0 0 auto;
+  font: 600 13px/32px var(--font-ui);
+  min-height: 36px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.database-modal-backdrop .db-class-curve-tabs button.active,
+.database-modal-backdrop .db-class-exp-dialog-tabs button.active {
+  border-bottom-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .db-class-dialog-body {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) 240px;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px;
+}
+
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-class-dialog-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.database-modal-backdrop .db-class-curve-dialog-graph {
+  align-items: end;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: flex;
+  gap: 1px;
+  height: 280px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 12px 12px;
+}
+
+.database-modal-backdrop .db-class-curve-dialog-graph button {
+  background: var(--db-studio-accent);
+  border: 0;
+  border-radius: 3px 3px 0 0;
+  flex: 1 1 0;
+  min-height: 4px;
+  min-width: 2px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.database-modal-backdrop .db-class-curve-dialog-graph button.active {
+  background: var(--db-studio-text-1);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+}
+
+.database-modal-backdrop .db-class-dialog-side {
+  align-content: start;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+}
+
+.database-modal-backdrop .db-class-dialog-number {
+  color: var(--db-studio-text-2);
+  display: grid;
+  font: 600 12px/1.2 var(--font-ui);
+  gap: 5px;
+}
+
+.database-modal-backdrop .db-class-dialog-number input {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.2 var(--font-ui);
+  min-height: 32px;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+/* 다이얼로그는 document.body 직속 마운트라 .database-modal-backdrop 스코프가 닿지 않는다
+   (PR #540 후속, ultrabrain 리뷰) — unscoped 선택자 + :root 토큰으로 건다
+   (backdrop 스코프 --db-studio-* 는 여기서 상속되지 않는다). */
+.db-class-dialog-number input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-muted);
+}
+
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel {
+  border: 0;
+  border-top: 1px solid var(--db-studio-border-subtle);
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 10px 0 0;
+}
+
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel legend {
+  color: var(--db-studio-text-3);
+  font: 600 11px/1.2 var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 4px;
+}
+
+.database-modal-backdrop .db-class-dialog-side .db-advanced-panel .btn {
+  width: 100%;
+}
+
+.database-modal-backdrop .db-class-exp-dialog-body {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px;
+}
+
+@media (max-width: 720px) {
+  .database-modal-backdrop .db-class-exp-dialog-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.database-modal-backdrop .db-class-exp-table {
+  align-content: start;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: grid;
+  font: 500 11px/18px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  gap: 0 10px;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  max-height: 280px;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 10px 12px;
+  white-space: pre;
+  color: var(--db-studio-text-2);
+}
+
+.database-modal-backdrop .db-class-exp-dialog-graph {
+  align-items: end;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+  display: flex;
+  gap: 1px;
+  height: 280px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 16px 12px 12px;
+}
+
+.database-modal-backdrop .db-class-exp-dialog-graph i {
+  background: var(--db-studio-accent);
+  border-radius: 2px 2px 0 0;
+  display: block;
+  flex: 1 1 0;
+  min-height: 2px;
+  min-width: 1px;
+}
+
+.database-modal-backdrop .db-class-exp-controls {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 0 14px 14px;
+}

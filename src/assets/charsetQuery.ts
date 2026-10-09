@@ -1,0 +1,347 @@
+import {
+  applyCharsetLabelOverrides,
+  CHARSET_SEMANTICS,
+  type CharsetAge,
+  type CharsetGender,
+  type CharsetSemanticEntry,
+} from "@/assets/charsetSemantics";
+import type { CharsetLabelOverride } from "@/project/types";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
+
+type CharsetCategory = "actor" | "animal" | "monster" | "object" | "people" | "vehicle";
+
+interface QueryIntent {
+  readonly genders: ReadonlySet<Exclude<CharsetGender, "none">>;
+  readonly ages: ReadonlySet<CharsetAge>;
+  readonly tags: ReadonlySet<string>;
+  readonly categories: ReadonlySet<CharsetCategory>;
+}
+
+export interface NpcGraphicMatch {
+  readonly entry: CharsetSemanticEntry;
+  readonly score: number;
+}
+
+const LEGACY_CATEGORY_ALIASES: ReadonlyMap<string, CharsetCategory> = new Map([
+  ["actor", "actor"],
+  ["hero", "actor"],
+  ["영웅", "actor"],
+  ["주인공", "actor"],
+  ["animal", "animal"],
+  ["동물", "animal"],
+  ["monster", "monster"],
+  ["enemy", "monster"],
+  ["몬스터", "monster"],
+  ["적", "monster"],
+  ["object", "object"],
+  ["오브젝트", "object"],
+  ["사물", "object"],
+  ["people", "people"],
+  ["npc", "people"],
+  ["human", "people"],
+  ["villager", "people"],
+  ["사람", "people"],
+  ["주민", "people"],
+  ["마을 사람", "people"],
+  ["vehicle", "vehicle"],
+  ["vehicles", "vehicle"],
+  ["탈것", "vehicle"],
+]);
+
+const SYNONYMS: readonly {
+  readonly terms: readonly string[];
+  readonly gender?: Exclude<CharsetGender, "none">;
+  readonly age?: CharsetAge;
+  readonly tags?: readonly string[];
+  readonly category?: CharsetCategory;
+}[] = [
+  { terms: ["old woman", "elder woman", "할머니", "노파"], gender: "female", age: "elder", tags: ["할머니", "노인", "여성"] },
+  { terms: ["old man", "elder man", "할아버지", "노인 남성"], gender: "male", age: "elder", tags: ["노인", "남성"] },
+  { terms: ["아줌마"], gender: "female", age: "middle", tags: ["여성", "중년"] },
+  { terms: ["아저씨"], gender: "male", age: "middle", tags: ["남성", "중년"] },
+  { terms: ["소녀", "girl"], gender: "female", age: "child", tags: ["소녀", "아이", "어린이"] },
+  { terms: ["소년", "boy"], gender: "male", age: "child", tags: ["소년", "아이", "어린이"] },
+  { terms: ["여자", "여성", "woman", "female"], gender: "female", tags: ["여성"] },
+  { terms: ["남자", "남성", "man", "male"], gender: "male", tags: ["남성"] },
+  { terms: ["아이", "어린이", "kid", "child"], age: "child", tags: ["아이", "어린이"] },
+  { terms: ["청년", "youth", "young"], age: "youth", tags: ["청년"] },
+  { terms: ["중년", "middle aged", "middle-aged"], age: "middle", tags: ["중년"] },
+  { terms: ["노인", "elder", "old", "aged"], age: "elder", tags: ["노인"] },
+  { terms: ["merchant", "shopkeeper", "상인", "여관 주인", "여관주인"], tags: ["상인", "여관", "여관주인"] },
+  { terms: ["soldier", "guard", "병사"], tags: ["병사"] },
+  { terms: ["knight", "기사"], tags: ["기사"] },
+  { terms: ["priest", "cleric", "사제", "성직자"], tags: ["사제", "성직자"] },
+  { terms: ["monk", "승려"], tags: ["승려"] },
+  { terms: ["wizard", "mage", "마법사"], tags: ["마법사"] },
+  { terms: ["king", "국왕"], tags: ["왕", "국왕"] },
+  { terms: ["golem", "골렘"], tags: ["골렘"] },
+  { terms: ["warrior", "fighter", "전사"], tags: ["전사"] },
+  { terms: ["villager", "resident", "주민"], category: "people", tags: ["주민"] },
+  { terms: ["actor", "hero", "영웅", "주인공"], category: "actor" },
+  { terms: ["animal", "동물"], category: "animal" },
+  { terms: ["monster", "enemy", "몬스터", "적"], category: "monster" },
+];
+
+const DEFAULT_CATEGORY_ORDER: readonly CharsetCategory[] = ["people", "actor", "animal", "monster", "object", "vehicle"];
+
+function normalizeQuery(query: string): string {
+  return query.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function englishTokens(normalized: string): ReadonlySet<string> {
+  return new Set(normalized.match(/[a-z0-9]+/g) ?? []);
+}
+
+function hasTerm(normalized: string, tokens: ReadonlySet<string>, term: string): boolean {
+  const normalizedTerm = normalizeQuery(term);
+  if (!normalizedTerm) return false;
+  if (/^[a-z0-9-]+(?: [a-z0-9-]+)*$/.test(normalizedTerm)) {
+    const words = normalizedTerm.split(" ");
+    if (words.length === 1) return tokens.has(words[0] as string);
+    return normalized.includes(normalizedTerm);
+  }
+  return normalized.includes(normalizedTerm);
+}
+
+function textureShortKey(textureKey: string): string {
+  return textureKey.replace(/^tex_easyrpg_charset_/, "");
+}
+
+function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
+  if (entry.spriteType === 'uploaded') return entry.tags.includes('몬스터') ? 'monster' : entry.tags.includes('동물') ? 'animal' : 'people';
+  if (entry.textureKey.startsWith('tex_scarloxy_charset_people')) return 'people';
+  if (entry.textureKey.startsWith('tex_farming_charset_')) return 'animal';
+  const shortKey = textureShortKey(entry.textureKey);
+  const base = shortKey.replace(/\d+$/, "");
+  if (base === "vehicles") return "vehicle";
+  if (base === "vehicle") return "vehicle";
+  if (base === "actor" || base === "animal" || base === "monster" || base === "object" || base === "people") return base;
+  return "object";
+}
+
+function directTextureAlias(normalized: string, catalog: readonly CharsetSemanticEntry[]): string | null {
+  for (const entry of catalog) {
+    const shortKey = textureShortKey(entry.textureKey).toLowerCase();
+    if (normalized === entry.textureKey.toLowerCase()) return entry.textureKey;
+    // "animal" is the whole category, not just the RTP Animal.png sheet.
+    if (!LEGACY_CATEGORY_ALIASES.has(normalized) && normalized === shortKey) return entry.textureKey;
+  }
+  return null;
+}
+
+function intentFromQuery(normalized: string): QueryIntent {
+  const tokens = englishTokens(normalized);
+  const genders = new Set<Exclude<CharsetGender, "none">>();
+  const ages = new Set<CharsetAge>();
+  const tags = new Set<string>();
+  const categories = new Set<CharsetCategory>();
+  for (const synonym of SYNONYMS) {
+    if (!synonym.terms.some((term) => hasTerm(normalized, tokens, term))) continue;
+    if (synonym.gender) genders.add(synonym.gender);
+    if (synonym.age) ages.add(synonym.age);
+    if (synonym.category) categories.add(synonym.category);
+    for (const tag of synonym.tags ?? []) tags.add(tag);
+  }
+  return { genders, ages, tags, categories };
+}
+
+function textMatchScore(term: string, entry: CharsetSemanticEntry): number {
+  const normalized = normalizeQuery(term);
+  if (!normalized) return 0;
+  const label = entry.label.toLowerCase();
+  // 한 글자 낱말은 부분 일치를 주지 않는다 — 「용」이 「청년 용사」를, 「돌」이 「떠돌이 검객」을, 「왕」이 「여왕」을
+  // 고르던 원인이다(2026-09-27 전수 조사). 한 글자는 라벨 낱말·태그와 정확히 같을 때만 맞는다.
+  const partial = normalized.length >= 2;
+  const labelWords = label.split(/[\s()（）·,/]+/u).filter(Boolean);
+  let score = 0;
+  if (label === normalized) score += 120;
+  else if (labelWords.includes(normalized) || (partial && label.includes(normalized))) score += 55;
+  for (const tag of entry.tags) {
+    const tagLower = tag.toLowerCase();
+    if (tagLower === normalized) score += 45;
+    else if (partial && tagLower.includes(normalized)) score += 20;
+  }
+  if (partial && entry.appearance?.toLowerCase().includes(normalized)) score += 12;
+  return score;
+}
+
+/** 질의에서 성별·나이·역할 같은 의도로 읽힌 낱말 — 라벨에 없어도 의도 검사를 통과했으면 맞은 것으로 친다. */
+function intentWords(normalized: string): ReadonlySet<string> {
+  const tokens = englishTokens(normalized);
+  const words = new Set<string>();
+  for (const synonym of SYNONYMS) {
+    for (const term of synonym.terms) {
+      if (hasTerm(normalized, tokens, term)) normalizeQuery(term).split(" ").forEach((word) => words.add(word));
+    }
+  }
+  return words;
+}
+
+function tagScore(tags: ReadonlySet<string>, entry: CharsetSemanticEntry): number {
+  let score = 0;
+  for (const tag of tags) {
+    score += textMatchScore(tag, entry);
+  }
+  return score;
+}
+
+function satisfiesIntent(entry: CharsetSemanticEntry, intent: QueryIntent): boolean {
+  if (intent.genders.size > 0) {
+    if (entry.gender === undefined || entry.gender === "none" || !intent.genders.has(entry.gender)) return false;
+  }
+  if (intent.ages.size > 0) {
+    if (entry.age === undefined || !intent.ages.has(entry.age)) return false;
+  }
+  if (intent.categories.size > 0 && !intent.categories.has(categoryOf(entry))) return false;
+  return true;
+}
+
+function intentScore(entry: CharsetSemanticEntry, intent: QueryIntent): number {
+  let score = 0;
+  if (entry.gender && entry.gender !== "none" && intent.genders.has(entry.gender)) score += 90;
+  if (entry.age && intent.ages.has(entry.age)) score += 90;
+  if (intent.categories.has(categoryOf(entry))) score += 45;
+  score += tagScore(intent.tags, entry);
+  return score;
+}
+
+function catalogFor(overrides?: readonly CharsetLabelOverride[]): readonly CharsetSemanticEntry[] {
+  return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], overrides);
+}
+
+function exactAliasMatches(normalized: string, catalog: readonly CharsetSemanticEntry[]): NpcGraphicMatch[] | null {
+  const textureKey = directTextureAlias(normalized, catalog);
+  if (textureKey) {
+    return catalog
+      .filter((entry) => entry.textureKey === textureKey)
+      .map((entry, index) => ({ entry, score: 1000 - index }));
+  }
+  const category = LEGACY_CATEGORY_ALIASES.get(normalized);
+  if (!category) return null;
+  const intent = intentFromQuery(normalized);
+  return catalog
+    .filter((entry) => categoryOf(entry) === category)
+    .map((entry, index) => ({ entry, score: 700 + intentScore(entry, intent) - index / 100 }));
+}
+
+function defaultNpcGraphics(catalog: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS): NpcGraphicMatch[] {
+  const byCategory = new Map(DEFAULT_CATEGORY_ORDER.map((category, index) => [category, index]));
+  return catalog
+    .map((entry, index) => ({
+      entry,
+      score: 100 - (byCategory.get(categoryOf(entry)) ?? 99) * 10 - index / 100,
+    }))
+    .sort((a, b) => b.score - a.score);
+}
+
+/** Complete semantic matches; resource pagination must not lose entries after 100. */
+export function findNpcGraphicMatches(
+  query: string | undefined,
+  overrides?: readonly CharsetLabelOverride[],
+): NpcGraphicMatch[] {
+  const catalog = catalogFor(overrides);
+  const normalized = normalizeQuery(query ?? "");
+  if (!normalized || normalized === "*" || normalized === "all" || normalized === "전체") {
+    return defaultNpcGraphics(catalog);
+  }
+  const exactAlias = exactAliasMatches(normalized, catalog);
+  if (exactAlias) return exactAlias;
+  // 라벨과 글자 그대로 같은 칸이 있으면 그 칸이 답이다. 성별·나이 의도 필터를 거치면 「금발 소년」(나이 youth)이
+  // 「소년=child」 의도에 걸려 자기 이름으로도 안 나온다(2026-09-27 전수 조사).
+  const exactLabel = catalog.filter((entry) => entry.label.toLowerCase() === normalized);
+  if (exactLabel.length > 0) return exactLabel.map((entry, index) => ({ entry, score: 2000 - index }));
+
+  const intent = intentFromQuery(normalized);
+  const queryTerms = normalized.split(/\s+/).filter((term) => term.length > 0);
+  const intentTerms = intentWords(normalized);
+  const termHitsEntry = (term: string, entry: CharsetSemanticEntry): boolean =>
+    intentTerms.has(term) || textMatchScore(term, entry) > 0;
+  return catalog
+    .map((entry) => {
+      if (!satisfiesIntent(entry, intent)) return { entry, score: 0 };
+      // 여러 낱말 질의는 낱말마다 이 칸을 가리켜야 한다. 하나만 맞아도 채택하면 「고양이 석상」이 살아 있는
+      // 고양이가, 「강철 문」이 나무 문이 된다(2026-09-27 전수 조사). 성별·나이 같은 의도 낱말은 위에서 걸렀다.
+      if (queryTerms.length > 1 && !queryTerms.every((term) => termHitsEntry(term, entry))) return { entry, score: 0 };
+      const wholeTextScore = textMatchScore(normalized, entry);
+      const splitTextScore = wholeTextScore > 0 ? 0 : queryTerms.reduce((sum, term) => sum + textMatchScore(term, entry), 0);
+      return { entry, score: intentScore(entry, intent) + wholeTextScore + splitTextScore };
+    })
+    .filter((match) => match.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+export function queryNpcGraphics(query: string | undefined, limit = 20, overrides?: readonly CharsetLabelOverride[]): NpcGraphicMatch[] {
+  const cappedLimit = Math.max(1, Math.min(100, Math.floor(limit)));
+  return findNpcGraphicMatches(query, overrides).slice(0, cappedLimit);
+}
+
+export function resolveNpcGraphic(
+  query: string,
+  overrides?: readonly CharsetLabelOverride[],
+): CharsetSemanticEntry | null {
+  return queryNpcGraphics(query, 1, overrides)[0]?.entry ?? null;
+}
+
+export type NpcGraphicPickOptions = {
+  /** 맵에 이미 쓴 textureKey#characterIndex — 가능하면 피한다. */
+  readonly avoidKeys?: ReadonlySet<string>;
+  /** 안정 샘플링용 시드 (이름+좌표 등). 없으면 1등 고정. */
+  readonly seed?: string;
+  /** 시드 샘플 시 top-K 후보 (기본 8). */
+  readonly sampleTopK?: number;
+  readonly overrides?: readonly CharsetLabelOverride[];
+};
+
+export function charsetGraphicKey(entry: Pick<CharsetSemanticEntry, "textureKey" | "characterIndex">): string {
+  return `${entry.textureKey}#${entry.characterIndex}`;
+}
+
+function hashSeed(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** 일반 주민 별칭 — 1등 고정이면 전부 people1#0으로 몰린다. */
+export function isGenericNpcGraphicQuery(query: string): boolean {
+  const n = normalizeQuery(query);
+  return n === "villager" || n === "npc" || n === "human" || n === "people"
+    || n === "사람" || n === "주민" || n === "마을 사람";
+}
+
+/**
+ * 맵 내 중복을 피하고, 일반 query(+seed)면 top-K에서 안정 샘플한다.
+ * 구체 역할(상인/기사…)은 1등 유지 + avoid만 적용.
+ */
+export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {}): CharsetSemanticEntry | null {
+  const topK = Math.max(1, Math.min(24, options.sampleTopK ?? 8));
+  const poolLimit = Math.max(topK, 16);
+  let matches = queryNpcGraphics(query, poolLimit, options.overrides);
+  if (matches.length === 0) return null;
+
+  const avoid = options.avoidKeys;
+  if (avoid && avoid.size > 0) {
+    // 라벨이 질의와 정확히 같은 칸이 있으면 그 칸들 안에서만 피한다 — 맵에 왕이 이미 있다고 「왕」 요청에
+    // 여왕을 주면 안 된다(2026-09-27 전수 조사). 같은 그림을 두 번 쓰는 편이 다른 인물로 바꾸는 것보다 낫다.
+    const wanted = normalizeQuery(query);
+    const exact = matches.filter((m) => m.entry.label.toLowerCase() === wanted);
+    const pool = exact.length > 0 ? exact : matches;
+    const filtered = pool.filter((m) => !avoid.has(charsetGraphicKey(m.entry)));
+    if (filtered.length > 0) matches = filtered;
+    else if (exact.length > 0) matches = exact;
+  }
+
+  const generic = isGenericNpcGraphicQuery(query);
+  if (!generic || !options.seed) return matches[0]!.entry;
+
+  const pool = matches.slice(0, Math.min(topK, matches.length));
+  const idx = hashSeed(options.seed) % pool.length;
+  return pool[idx]!.entry;
+}
+
+export function npcGraphicExampleLabels(limit = 12): string[] {
+  return defaultNpcGraphics().slice(0, limit).map((match) => match.entry.label);
+}

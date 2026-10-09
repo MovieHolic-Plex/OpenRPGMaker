@@ -1,0 +1,35 @@
+  .editor-layout .canvas-area .phaser-container > canvas {
+    display: block;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  /* The studio bar owns `.oprn-menu-popup`. Keep this block for the map
+     context surface only so the two menus do not fight over width/padding. */
+  .map-context-menu {
+    background: var(--editor-popover-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
+    color: var(--editor-text);
+    box-sizing: border-box;
+    max-height: calc(100vh - 24px);
+    max-width: calc(100vw - 24px);
+    min-width: 322px;
+    overflow: auto;
+    padding: 12px;
+  }
+
+
+/* Native navigation tracks project camera bounds; the canvas itself never scrolls. */
+.editor-camera-scroll {
+  position: absolute;
+  z-index: 1;
+  background: var(--bg-inset);
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-inset);
+  overscroll-behavior: contain;
+  scroll-behavior: auto;
+}
+.editor-camera-scroll-x { overflow-x: scroll; overflow-y: hidden; }
+.editor-camera-scroll-y { overflow-y: scroll; overflow-x: hidden; }
+.editor-camera-scroll:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }

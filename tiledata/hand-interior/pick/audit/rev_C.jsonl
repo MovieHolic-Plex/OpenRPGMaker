@@ -1,0 +1,80 @@
+{"n":184,"name":"룬석","verdict":"FAIL","code":"CAP","why":"둥근 상단이 1~2px 어두운 띠뿐, 윗면 타원 캡 없음 정면 입면","fix":"상단에 3~4px 타원 윗면(위 밝음) 추가"}
+{"n":185,"name":"돌 왕좌","verdict":"FAIL","code":"FRONT","why":"붉은 방석이 앞면 띠로만 보이고 좌판 윗면 4~6px 없음, 전체 정면 도면","fix":"방석 윗면을 좌판 뒤쪽에 4~6px 보이게"}
+{"n":186,"name":"갱도 버팀목","verdict":"PASS","code":"","why":"상단 보 윗면 약 5px + 앞면, 기둥은 가는 막대","fix":""}
+{"n":187,"name":"달걀 바구니","verdict":"FAIL","code":"THIN","why":"내용물 더미가 정면 실루엣, 바구니 입구 윗면 판 없음(림은 앞 띠 2~3px)","fix":"바구니 입구 타원 윗면 4~6px 추가"}
+{"n":188,"name":"양모 바구니","verdict":"FAIL","code":"THIN","why":"187과 같은 몸통, 입구 윗면 없음","fix":"바구니 입구 윗면 추가"}
+{"n":189,"name":"실타래 바구니","verdict":"FAIL","code":"THIN","why":"187과 같은 몸통, 입구 윗면 없음","fix":"바구니 입구 윗면 추가"}
+{"n":190,"name":"지휘대","verdict":"PASS","code":"","why":"팔각 상판 윗면 약 14px + 앞면 약 6px","fix":""}
+{"n":191,"name":"무대 날개 막","verdict":"EXEMPT","code":"","why":"벽 부착 커튼, 하단 작은 선반","fix":""}
+{"n":192,"name":"보면대","verdict":"EXEMPT","code":"","why":"가는 막대 스탠드, 받침 작음","fix":""}
+{"n":193,"name":"극장 좌석","verdict":"FAIL","code":"FRONT","why":"붉은 안락의자 정면 입면, 좌판 윗면 4~6px 없음","fix":"좌판 윗면을 등받이 앞에 4~6px 보이게"}
+{"n":194,"name":"증류기","verdict":"FAIL","code":"FRONT","why":"화로 상자·플라스크 모두 정면 도면, 화로 윗면 없음","fix":"화로 받침 윗면 4px 이상 추가"}
+{"n":195,"name":"천칭","verdict":"FAIL","code":"THIN","why":"받침 좌대 윗면 약 2px 띠뿐(8x 확인)","fix":"좌대 윗면 4px 이상"}
+{"n":196,"name":"꽃 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통: 입구 윗면 2~3px 림 띠뿐","fix":"입구 타원 윗면 4~6px"}
+{"n":197,"name":"약초 바구니","verdict":"FAIL","code":"THIN","why":"8x 확인: 림 띠 약 3px, 나머지 정면 짜임","fix":"입구 타원 윗면 4~6px"}
+{"n":198,"name":"단지 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통, 입구 윗면 부족","fix":"입구 윗면 4~6px"}
+{"n":199,"name":"버섯 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통, 입구 윗면 부족","fix":"입구 윗면 4~6px"}
+{"n":200,"name":"물약 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통: 입구 윗면 2~3px 림 띠뿐","fix":"입구 윗면 4~6px"}
+{"n":201,"name":"약병 플라스크 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통: 입구 윗면 부족","fix":"입구 윗면 4~6px"}
+{"n":202,"name":"가마솥","verdict":"PASS","code":"","why":"초록 액면 타원 윗면 약 5px + 앞 몸통","fix":""}
+{"n":203,"name":"칸막이 병풍","verdict":"EXEMPT","code":"","why":"얇은 평면 병풍, 깊이 거의 없음","fix":""}
+{"n":204,"name":"절구","verdict":"PASS","code":"","why":"입구 타원 윗면 약 4px + 앞 몸통","fix":""}
+{"n":205,"name":"물약 플라스크 탁자","verdict":"FAIL","code":"THIN","why":"8x 확인: 상판 윗면 약 3~4px, 앞천 약 6px, 기준 8~14px 미달","fix":"상판 윗면을 8px 이상으로"}
+{"n":206,"name":"해먹","verdict":"FAIL","code":"SIDE","why":"처진 해먹 옆 실루엣 + 정면 기둥 둘, 윗면 없음","fix":"해먹 천 윗면을 위에서 본 판으로 다시"}
+{"n":207,"name":"밧줄 더미","verdict":"PASS","code":"","why":"코일 윗면 타원 + 앞 두께 보임","fix":""}
+{"n":208,"name":"조타륜","verdict":"FAIL","code":"FRONT","why":"바퀴가 정면 원판, 받침 기둥도 정면 앞면만, 좌대 윗면 없음","fix":"받침 좌대 윗면 3~4px 추가"}
+{"n":209,"name":"금화 더미","verdict":"PASS","code":"","why":"불규칙 더미, 윗면+앞 경사 읽힘","fix":""}
+{"n":210,"name":"카운터 1x1","verdict":"PASS","code":"","why":"상판 윗면 약 7~8px + 앞판 약 14px","fix":""}
+{"n":211,"name":"카운터 2x1","verdict":"PASS","code":"","why":"210과 같은 몸통","fix":""}
+{"n":212,"name":"카운터 3x1","verdict":"PASS","code":"","why":"같은 몸통, 상판 윗면 약 8px","fix":""}
+{"n":213,"name":"카운터 4x1","verdict":"PASS","code":"","why":"8x 확인: 상판 약 8px, 앞판 약 14px","fix":""}
+{"n":214,"name":"진열 사과","verdict":"FAIL","code":"THIN","why":"8x 확인: 상자 림 윗면 약 2~3px, 과일은 정면 실루엣","fix":"상자 윗면 4~6px 확보"}
+{"n":215,"name":"진열 빵","verdict":"FAIL","code":"THIN","why":"214와 같은 몸통","fix":"상자 윗면 4~6px 확보"}
+{"n":216,"name":"진열 물약","verdict":"FAIL","code":"THIN","why":"214와 같은 상자 몸통, 윗면 2~3px","fix":"상자 윗면 4~6px"}
+{"n":217,"name":"금고","verdict":"FAIL","code":"THIN","why":"8x 확인: 윗면 밝은 띠 약 3px, 앞 가장자리 하이라이트·처마 그림자 없음, 앞면 정면 도면","fix":"윗면 4~6px + 처마 그림자 2px"}
+{"n":218,"name":"모루","verdict":"PASS","code":"","why":"윗면 약 4px 편평 + 앞 몸통","fix":""}
+{"n":219,"name":"갑옷 거치대","verdict":"EXEMPT","code":"","why":"사람형+가는 기둥, 좌대 윗면 작게 있음","fix":""}
+{"n":220,"name":"숯 통","verdict":"PASS","code":"","why":"입구 안쪽 윗면 약 6px + 앞판","fix":""}
+{"n":221,"name":"숫돌","verdict":"FAIL","code":"FRONT","why":"8x 확인: 숫돌 원판 정면 원, 받침 탁자 윗면 약 2px","fix":"받침 윗면 4~6px, 원판은 윗면 쪽으로 눕히기"}
+{"n":222,"name":"담금질 통","verdict":"PASS","code":"","why":"물 타원 윗면 약 5px + 앞 몸통","fix":""}
+{"n":223,"name":"창꽂이","verdict":"FAIL","code":"FRONT","why":"8x 확인: 꽂이 상단 림 윗면 없음, 전체 정면 도면","fix":"꽂이 입구 윗면 4~6px 추가"}
+{"n":224,"name":"무기 통","verdict":"FAIL","code":"THIN","why":"통 입구 윗면 림 약 2px, 무기는 정면 실루엣","fix":"입구 타원 윗면 4~6px"}
+{"n":225,"name":"초코보","verdict":"EXEMPT","code":"","why":"생물","fix":""}
+{"n":226,"name":"먹이통 2칸","verdict":"PASS","code":"","why":"풀 윗면 약 6px + 앞판","fix":""}
+{"n":227,"name":"건초 더미","verdict":"FAIL","code":"FRONT","why":"8x 확인: 짚단 앞면 격자뿐, 윗면 없음","fix":"짚단 윗면 4~6px 추가"}
+{"n":228,"name":"안장걸이","verdict":"FAIL","code":"MIXED","why":"안장은 옆 실루엣, 걸이 다리는 정면","fix":"안장을 정면/윗면 시점으로 다시, 걸이 상단 윗면 추가"}
+{"n":229,"name":"물통 2칸","verdict":"PASS","code":"","why":"수면 윗면 약 5px + 앞판","fix":""}
+{"n":230,"name":"지구본","verdict":"EXEMPT","code":"","why":"구체+가는 스탠드, 받침 작음","fix":""}
+{"n":231,"name":"학생 책상","verdict":"PASS","code":"","why":"8x 확인: 상판 윗면 약 6px + 다리","fix":""}
+{"n":232,"name":"망원경","verdict":"EXEMPT","code":"","why":"가는 막대형 기구, 삼각대","fix":""}
+{"n":233,"name":"베틀","verdict":"FAIL","code":"FRONT","why":"틀 정면 입면, 상단 프레임 윗면 2px 이하","fix":"상단 프레임 윗면 4~6px"}
+{"n":234,"name":"마네킹","verdict":"EXEMPT","code":"","why":"사람형","fix":""}
+{"n":235,"name":"물레","verdict":"FAIL","code":"FRONT","why":"바퀴 정면 원판, 받침대 윗면 약 2px","fix":"받침대 윗면 4~6px"}
+{"n":236,"name":"전신 거울","verdict":"EXEMPT","code":"","why":"얇은 판 거울, 받침 윗면 있음","fix":""}
+{"n":237,"name":"바 의자","verdict":"PASS","code":"","why":"좌판 윗면 타원 약 5px + 다리","fix":""}
+{"n":238,"name":"천체 모형","verdict":"EXEMPT","code":"","why":"가는 막대 스탠드","fix":""}
+{"n":239,"name":"부엉이 횃대","verdict":"EXEMPT","code":"","why":"생물+가는 막대","fix":""}
+{"n":240,"name":"나선 계단 2x2","verdict":"FAIL","code":"SIDE","why":"옆에서 본 나선 입면: 중심 기둥 옆면 + 계단판 옆 실루엣, 기둥 윗면 캡 없음","fix":"위에서 본 나선 계단판 + 앞면, 중심 기둥 상단 캡"}
+{"n":241,"name":"사과 통","verdict":"PASS","code":"","why":"8x 확인: 입구 어두운 타원 약 4px + 과일 더미 + 앞 몸통","fix":""}
+{"n":242,"name":"포도 통","verdict":"PASS","code":"","why":"241과 같은 통 몸통","fix":""}
+{"n":243,"name":"감자 통","verdict":"PASS","code":"","why":"241과 같은 통 몸통","fix":""}
+{"n":244,"name":"사과 바구니","verdict":"FAIL","code":"THIN","why":"8x 확인: 바구니 입구 윗면 림 약 3px, 나머지 정면 짜임","fix":"입구 타원 윗면 4~6px"}
+{"n":245,"name":"양배추 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통","fix":"입구 윗면 4~6px"}
+{"n":246,"name":"당근 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통","fix":"입구 윗면 4~6px"}
+{"n":247,"name":"가지 바구니","verdict":"FAIL","code":"THIN","why":"바구니 몸통 공통","fix":"입구 윗면 4~6px"}
+{"n": 248, "name": "포도 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 249, "name": "레몬 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 250, "name": "양파 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 251, "name": "감자 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 252, "name": "호박 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 253, "name": "토마토 바구니", "verdict": "FAIL", "code": "THIN", "why": "바구니 몸통 공통: 입구 윗면 림 약 3px, 나머지 정면 짜임", "fix": "입구 타원 윗면 4~6px"}
+{"n": 254, "name": "사과 궤짝", "verdict": "PASS", "code": "", "why": "8x 확인: 내용물 윗면 약 8px + 앞판 약 6px", "fix": ""}
+{"n": 255, "name": "양배추 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통", "fix": ""}
+{"n": 256, "name": "당근 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 257, "name": "가지 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 258, "name": "포도 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 259, "name": "레몬 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 260, "name": "양파 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 261, "name": "감자 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 262, "name": "호박 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}
+{"n": 263, "name": "토마토 궤짝", "verdict": "PASS", "code": "", "why": "254와 같은 궤짝 몸통, 내용물 윗면 + 앞판", "fix": ""}

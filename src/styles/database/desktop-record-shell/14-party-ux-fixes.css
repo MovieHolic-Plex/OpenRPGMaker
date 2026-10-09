@@ -1,0 +1,236 @@
+/* 파티 그룹(주인공·직업·스킬·아이템·장비) 적대적 UI/UX 감사 후속 수정.
+   이 레이어가 마지막 import 인 이유는 앞선 12개 레이어가 같은 선택자를 여러 번 덮고 있어
+   (예: `.db-toolbar .btn` 이 3개 파일에 흩어져 있다) 여기서 최종값을 못 박아야 하기 때문이다.
+   미디어쿼리 밖 규칙은 모든 폭에 적용된다 — 좁은 뷰포트 파손이 실측에서 더 심했다. */
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1. 한국어 줄바꿈 — 낱자 고아 방지
+   실측(1600×1000): `전투불능 대상에게만 유효` → `유`/`효`, `물리 회피율 증가` → `증`/`가`.
+   실측(1100×780): `명령 이름` 이 19px 열에서 **4줄** `명`/`령`/`이`/`름` 낱자 적층.
+   한국어는 어절 단위로 끊어야 한다 — `keep-all` 이 그것이고, 끊을 공백이 아예 없는 초장문
+   토큰(리소스 id 등)만 `anywhere` 로 빠져나가게 한다.
+   ───────────────────────────────────────────────────────────────────────── */
+.database-modal-body,
+.database-modal-body :is(label, legend, span, strong, small, p, th, td, button, option, figcaption) {
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+
+/* 표 헤더는 어절 하나조차 못 들어갈 만큼 열이 좁아지면 `keep-all` 만으로는 못 구한다 —
+   내용 기반 최소 폭을 줘서 열이 글자 폭 아래로 쪼그라들지 못하게 한다. */
+.database-modal-body :is(.db-class-command-rows, .db-class-command-list) :is(th, .db-class-command-head > *) {
+  min-width: max-content;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3. fieldset legend 대비와 계층
+   실측: 12종 전부 `rgb(148,163,184)` = 흰 패널 위 **2.56:1** (AA 요구 4.5:1 미달).
+   게다가 크기·굵기·색·`text-transform` 이 완전히 같아 부모(`장비와 스킬`)와
+   자식(`초기 장비`·`옵션`·`스킬`)의 중첩 깊이가 시각적으로 구분되지 않았다.
+   `uppercase` 는 한글에 무효라 Latin 전제 토큰의 흔적이다 — 떼어낸다.
+   ───────────────────────────────────────────────────────────────────────── */
+.database-modal-body :is(.oprn-detail-form, .db-detail-form) legend {
+  color: var(--text-2);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* 중첩된 fieldset 의 legend 는 한 급 낮춰 계층을 만든다. */
+.database-modal-body :is(.oprn-detail-form, .db-detail-form) fieldset fieldset > legend {
+  color: var(--text-3, #626e89);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+/* 레코드 id(`#1`)는 2.29:1 이었다 — 보조 정보라도 AA 는 넘겨야 읽힌다. */
+.database-modal-body :is(.db-record-id, .oprn-record-id, .db-list-row-id) {
+  color: var(--text-2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4. 갤러리 카드 라벨 절단
+   실측: 라벨 폭 48px 에 말줄임이라 `뇌전석 효과`·`서리병 효과`·`지진석 효과` 가 모두
+   `뇌전석…` 꼴로 보여 **서로 다른 레코드를 구별할 수 없었다**(최대 36px 손실).
+   카드를 넓히고 두 줄까지 허용한다. 그래도 넘치면 툴팁(title)이 렌더러에서 붙는다.
+   ───────────────────────────────────────────────────────────────────────── */
+.database-modal-body .oprn-record-list-pane .db-record-gallery {
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+
+.database-modal-body .oprn-record-list-pane :is(.db-record-card, [data-testid^="db-record-card-"]) {
+  height: auto;
+  min-width: 0;
+}
+
+.database-modal-body .oprn-record-list-pane
+  :is(.db-record-card, [data-testid^="db-record-card-"]) :is(.db-gallery-label, span:last-child) {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  font: 500 11px/14px var(--font-ui);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+/* 갤러리 카드도 UA 폰트(Arial 13.33px)로 렌더되고 있었다. */
+.database-modal-body .oprn-record-list-pane [data-testid^="db-record-card-"] {
+  font-family: var(--font-ui);
+  font-size: 11px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   5. 포인터 타깃 최소 크기 (WCAG 2.5.8 = 24×24)
+   실측: 창 컨트롤 `⇥` 23×20 · `□` 20×18 · `x` 20×18, 체크박스 13×30.
+   ───────────────────────────────────────────────────────────────────────── */
+.database-modal-window :is([data-testid="database-dock-toggle"],
+  [data-testid="database-modal-maximize"],
+  [data-testid="database-modal-close"]) {
+  display: inline-grid;
+  min-height: 24px;
+  min-width: 24px;
+  place-items: center;
+}
+
+.database-modal-body :is(.oprn-detail-form, .db-detail-form) input[type="checkbox"] {
+  height: 16px;
+  margin: 4px;
+  width: 16px;
+}
+
+/* 체크박스는 16px 이 시각 표준이므로 상자 대신 **라벨까지 포함한 클릭 영역**으로 24px 를
+   확보한다 — 상자를 키우면 픽셀아트 폼의 밀도가 깨진다. */
+.database-modal-body :is(.oprn-detail-form, .db-detail-form) label:has(> input[type="checkbox"]) {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  min-height: 24px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   6-b. 알림 위치 — 데이터베이스 모달이 열려 있을 때
+   `.toast-stack` 은 `bottom: var(--space-4)` 로 **뷰포트 최하단**에 붙는다. 실측(1600×1000):
+   토스트가 y=956 에 뜨는데 모달 하단은 y=950 이라 **모달 밖 6px 아래**, 사용자가 누른
+   삭제 버튼(y=836)에서 **120px** 떨어진 곳이었다. 파괴적 액션이 거부됐다는 사실이
+   시선에서 가장 먼 곳에 뜬 셈이다. 모달이 열려 있으면 모달 푸터 위로 끌어올린다.
+   ───────────────────────────────────────────────────────────────────────── */
+body:has(.database-modal-backdrop:not(.is-parked)) .toast-stack {
+  bottom: 96px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   7. 규칙이 아예 없던 클래스들 (scripts/check-dead-css-classes.mjs 로 검출)
+   TS 는 붙이는데 CSS 가 없어 UA 기본으로 렌더되던 것들이다. 파티 5탭에 실제로 보이는
+   것만 여기서 세운다 — 나머지는 베이스라인에 남겨 두고 별도 작업으로 줄인다.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* 갤러리 카드 썸네일 — 크기 규칙이 없어 이미지가 제멋대로 늘어났다. */
+.database-modal-body .oprn-record-list-pane .db-gallery-thumb {
+  align-items: center;
+  aspect-ratio: 1;
+  display: grid;
+  image-rendering: pixelated;
+  justify-items: center;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* `db-ws` 프리미티브 세트의 고스트 버튼 — 신규 프리미티브인데 규칙이 없어 UA 버튼이었다. */
+
+/* 직업 탭 스킬 표의 행 삭제 버튼 — 파괴적 액션인데 중립 UA 버튼으로 보였다. */
+.database-modal-body .oprn-record-classes .db-class-skill-remove {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border-subtle, rgba(15, 23, 42, 0.16));
+  border-radius: 4px;
+  color: #dc2626;
+  cursor: pointer;
+  font: 500 11px/16px var(--font-ui);
+  min-height: 24px;
+  padding: 3px 8px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-skill-remove:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: rgba(220, 38, 38, 0.4);
+}
+
+/* 「경험치 곡선」 패널 — `db-class-exp-content`/`-summary`/`-graph` 셋 다 CSS 규칙이 0건이라
+   118px 패널 안에 모노스페이스 한 줄(`기본=1; 추가=677; 가속=40`)만 떠 있었다.
+   렌더러는 진짜 막대를 발행하고 있었는데 스타일이 없어 보이지 않았을 뿐이다. */
+.database-modal-body .db-class-exp-content {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-body .db-class-exp-summary {
+  color: var(--text-2);
+  font: 400 11.5px/16px var(--font-ui);
+}
+
+.database-modal-body .db-class-exp-graph {
+  align-items: end;
+  appearance: none;
+  background: var(--surface-recessed, rgba(15, 23, 42, 0.06));
+  border: 1px solid var(--border-subtle, rgba(15, 23, 42, 0.16));
+  border-radius: 4px;
+  cursor: pointer;
+  display: grid;
+  gap: 1px;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(var(--curve-samples, 12), minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+  height: 40px;
+  overflow: hidden;
+  padding: 2px;
+  width: 100%;
+}
+
+.database-modal-body .db-class-exp-graph:hover {
+  border-color: var(--accent-primary, var(--accent));
+}
+
+.database-modal-body .db-class-exp-graph:focus-visible {
+  outline: 2px solid var(--accent-primary, var(--accent));
+  outline-offset: 1px;
+}
+
+.database-modal-body .db-class-exp-graph i {
+  background: var(--accent-secondary, var(--gold));
+  border-radius: 1px 1px 0 0;
+  display: block;
+  min-height: 1px;
+}
+
+.database-modal-body .oprn-record-classes :is(.db-class-name-field, .db-class-rate-name) {
+  min-width: 0;
+}
+
+.database-modal-body .oprn-record-classes .db-class-rate-name {
+  color: var(--text-1);
+  font: 500 11.5px/16px var(--font-ui);
+}
+
+/* 카테고리 칩의 라벨 — 칩 안에서 카운트와 붙어 읽히던 것을 떼어낸다. */
+.database-modal-body .db-filter-chip-label {
+  margin-right: 4px;
+}
+
+/* 스킬 탭 미리보기 슬롯 */
+.database-modal-body .db-skill-preview-slot {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+  min-height: 48px;
+}
+
+/* 필드 아래 도움말 — `actor-field-help` 는 규칙이 없어 본문과 같은 크기로 렌더됐다. */
+.database-modal-body .actor-field-help {
+  color: var(--text-2);
+  display: block;
+  font: 400 11px/15px var(--font-ui);
+  margin-top: 3px;
+}

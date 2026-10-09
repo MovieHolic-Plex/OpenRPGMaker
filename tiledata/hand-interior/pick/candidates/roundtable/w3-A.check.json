@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/roundtable/w3-A.pxg",
+ "id": "roundtable",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "A: 원탁 유지 - 윗면을 4단 나뭇결 타원(왼위 밝음)으로, 옆 두께 2줄, 종이는 접힌 글줄, 잔은 손잡이 달린 흰 도자기, 외다리는 깎은 기둥과 넓은 받침 발로 바꿈",
+ "ok": true
+}

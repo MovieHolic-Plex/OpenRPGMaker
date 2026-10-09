@@ -1,0 +1,781 @@
+[
+  {
+    "id": "r9-building-01",
+    "name": "작은 돌집",
+    "role": "주택",
+    "width": 64,
+    "height": 112,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-01",
+        "rect": [
+          0,
+          0,
+          64,
+          112
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 80,
+      "w": 16,
+      "h": 32
+    },
+    "description": "작은 돌집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "작은 돌집",
+    "round": 9,
+    "replaces": "r7-01",
+    "nativeAssetHashes": {
+      "review-r9-building-01": "6fea91b27c2269d043a49bf5420fbdc8ea580f66d1c5a355b4ff04321ce3840a"
+    }
+  },
+  {
+    "id": "r9-building-02",
+    "name": "길게 누운 지붕의 농가",
+    "role": "주택",
+    "width": 128,
+    "height": 112,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-02",
+        "rect": [
+          0,
+          0,
+          128,
+          112
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 80,
+      "w": 16,
+      "h": 32
+    },
+    "description": "길게 누운 지붕의 농가 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "길게 누운 지붕의 농가",
+    "round": 9,
+    "replaces": "r7-02",
+    "nativeAssetHashes": {
+      "review-r9-building-02": "257ea4505d8b833285650dc6533dcd114636720a568a1b2003fd2dd70f47496b"
+    }
+  },
+  {
+    "id": "r9-building-03",
+    "name": "높은 본채와 낮은 부엌집",
+    "role": "주택",
+    "width": 144,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-03",
+        "rect": [
+          0,
+          0,
+          144,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높은 본채와 낮은 부엌집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "높은 본채와 낮은 부엌집",
+    "round": 9,
+    "replaces": "r7-03",
+    "nativeAssetHashes": {
+      "review-r9-building-03": "dbbd4fd0d9efa702d0fe8e30f6eba4a1244a612cb5950823a33ad2a90bdc60a3"
+    }
+  },
+  {
+    "id": "r9-building-04",
+    "name": "가운데 박공이 솟은 상인집",
+    "role": "주택",
+    "width": 160,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-04",
+        "rect": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "가운데 박공이 솟은 상인집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "가운데 박공이 솟은 상인집",
+    "round": 9,
+    "replaces": "r7-04",
+    "nativeAssetHashes": {
+      "review-r9-building-04": "95af284d700bd1975f5bb5a485a9f7c2d5540b271a2592aae3ec7ccc55ddc1f1"
+    }
+  },
+  {
+    "id": "r9-building-05",
+    "name": "삼층 주택",
+    "role": "주택",
+    "width": 96,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-05",
+        "rect": [
+          0,
+          0,
+          96,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "삼층 주택 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "삼층 주택",
+    "round": 9,
+    "replaces": "r7-06",
+    "nativeAssetHashes": {
+      "review-r9-building-05": "6ead4621932ae995ce546de7c7c057a0b88939640ea0d6092cafb320ee01bb34"
+    }
+  },
+  {
+    "id": "r9-building-06",
+    "name": "높은 돌집과 낮은 살림채",
+    "role": "주택",
+    "width": 160,
+    "height": 192,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-06",
+        "rect": [
+          0,
+          0,
+          160,
+          192
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 160,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높은 돌집과 낮은 살림채 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "높은 돌집과 낮은 살림채",
+    "round": 9,
+    "replaces": "r7-07",
+    "nativeAssetHashes": {
+      "review-r9-building-06": "b6aca38da6ba4eb3ff831a81e78d9ee4ff4bd07e97975b0f38cf0ed184961e25"
+    }
+  },
+  {
+    "id": "r9-building-07",
+    "name": "두 박공 사이의 넓은 집",
+    "role": "주택",
+    "width": 160,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-07",
+        "rect": [
+          0,
+          0,
+          160,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 80,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "두 박공 사이의 넓은 집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "두 박공 사이의 넓은 집",
+    "round": 9,
+    "replaces": "r7-08",
+    "nativeAssetHashes": {
+      "review-r9-building-07": "3344177aa3e4585d8902537b62b990aa7cd7e5749bd3999183975a847be429ab"
+    }
+  },
+  {
+    "id": "r9-building-08",
+    "name": "긴 맨사드 지붕의 연립집",
+    "role": "주택",
+    "width": 176,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-08",
+        "rect": [
+          0,
+          0,
+          176,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 96,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "긴 맨사드 지붕의 연립집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "긴 맨사드 지붕의 연립집",
+    "round": 9,
+    "replaces": "r7-09",
+    "nativeAssetHashes": {
+      "review-r9-building-08": "efd307bb5401823b4713ec43ed8bd5085891503663a9c2197f1a0d154690ccd1"
+    }
+  },
+  {
+    "id": "r9-building-09",
+    "name": "종 지붕 탑이 붙은 집",
+    "role": "주택",
+    "width": 144,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-09",
+        "rect": [
+          0,
+          0,
+          144,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "종 지붕 탑이 붙은 집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "종 지붕 탑이 붙은 집",
+    "round": 9,
+    "replaces": "r7-17",
+    "nativeAssetHashes": {
+      "review-r9-building-09": "5853e8d12dce37172cadbaece7b35afc8237032113f9e486ceeeaf4317299b4e"
+    }
+  },
+  {
+    "id": "r9-building-10",
+    "name": "꺾인 너와와 낮은 기와채",
+    "role": "주택",
+    "width": 176,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-10",
+        "rect": [
+          0,
+          0,
+          176,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "꺾인 너와와 낮은 기와채 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "꺾인 너와와 낮은 기와채",
+    "round": 9,
+    "replaces": "r7-22",
+    "nativeAssetHashes": {
+      "review-r9-building-10": "51daccb878d8a8dfecfaee88339c8fce5f11c209ac434d1470c56c2b033dba18"
+    }
+  },
+  {
+    "id": "r9-building-11",
+    "name": "종 지붕 다락을 얹은 집",
+    "role": "주택",
+    "width": 128,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-11",
+        "rect": [
+          0,
+          0,
+          128,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "종 지붕 다락을 얹은 집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "종 지붕 다락을 얹은 집",
+    "round": 9,
+    "replaces": "r7-24",
+    "nativeAssetHashes": {
+      "review-r9-building-11": "11a9614bea3ddcabada5aafdc9fa67f5b35a9634c58f66997c0e3e3be51c1f50"
+    }
+  },
+  {
+    "id": "r9-building-12",
+    "name": "박공 앞면 이층집",
+    "role": "주택",
+    "width": 64,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-12",
+        "rect": [
+          0,
+          0,
+          64,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "박공 앞면 이층집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "박공 앞면 이층집",
+    "round": 9,
+    "replaces": "r8-01",
+    "nativeAssetHashes": {
+      "review-r9-building-12": "c9e6479c500981703b413727e4d82d4fad6744cc402195490f57a5b555437c61"
+    }
+  },
+  {
+    "id": "r9-building-13",
+    "name": "금빛 기와 사각 지붕집",
+    "role": "주택",
+    "width": 128,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-13",
+        "rect": [
+          0,
+          0,
+          128,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 64,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "금빛 기와 사각 지붕집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "금빛 기와 사각 지붕집",
+    "round": 9,
+    "replaces": "r8-02",
+    "nativeAssetHashes": {
+      "review-r9-building-13": "1d691d5c33b6bc976e7faa8819728297d703dbe8452073abcecd1f5e4644e76a"
+    }
+  },
+  {
+    "id": "r9-building-14",
+    "name": "좁고 높은 청회색 삼층집",
+    "role": "주택",
+    "width": 80,
+    "height": 176,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-14",
+        "rect": [
+          0,
+          0,
+          80,
+          176
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 144,
+      "w": 16,
+      "h": 32
+    },
+    "description": "좁고 높은 청회색 삼층집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "좁고 높은 청회색 삼층집",
+    "round": 9,
+    "replaces": "r8-03",
+    "nativeAssetHashes": {
+      "review-r9-building-14": "4bd6229bb6fa63f75ef1497b782fbcbef58a84e98ba1e24d25d9ed5b2a40d817"
+    }
+  },
+  {
+    "id": "r9-building-15",
+    "name": "높이가 다른 연립 두 채",
+    "role": "주택",
+    "width": 144,
+    "height": 160,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-15",
+        "rect": [
+          0,
+          0,
+          144,
+          160
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 128,
+      "w": 16,
+      "h": 32
+    },
+    "description": "높이가 다른 연립 두 채 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "높이가 다른 연립 두 채",
+    "round": 9,
+    "replaces": "r8-04",
+    "nativeAssetHashes": {
+      "review-r9-building-15": "a8be7f7356b55fb6144c5a0e833e5852ba8980954f2fc3516ce21e5ae1725fa4"
+    }
+  },
+  {
+    "id": "r9-building-16",
+    "name": "청회색 본채와 낮은 곁채",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-16",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "청회색 본채와 낮은 곁채 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "청회색 본채와 낮은 곁채",
+    "round": 9,
+    "replaces": "r8-05",
+    "nativeAssetHashes": {
+      "review-r9-building-16": "ffa610ebf1a2283aaa177b1d5a059321888064830f769e26f78c1eb0aa1c764d"
+    }
+  },
+  {
+    "id": "r9-building-17",
+    "name": "돌벽 박공 이층집",
+    "role": "주택",
+    "width": 64,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-17",
+        "rect": [
+          0,
+          0,
+          64,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "돌벽 박공 이층집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "돌벽 박공 이층집",
+    "round": 9,
+    "replaces": "r8-06",
+    "nativeAssetHashes": {
+      "review-r9-building-17": "d786356f39810fa85781cafe584caf6f9eb957fead8a6d4cfc3ad0b65305bbb3"
+    }
+  },
+  {
+    "id": "r9-building-18",
+    "name": "돌벽 올리브 지붕집",
+    "role": "주택",
+    "width": 96,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-18",
+        "rect": [
+          0,
+          0,
+          96,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 48,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "돌벽 올리브 지붕집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "돌벽 올리브 지붕집",
+    "round": 9,
+    "replaces": "r8-07",
+    "nativeAssetHashes": {
+      "review-r9-building-18": "b007340c64ab70d7676207f389d678ac93f95c092f397ad4ba2dc649e79f871a"
+    }
+  },
+  {
+    "id": "r9-building-19",
+    "name": "왼쪽 곁채가 붙은 집",
+    "role": "주택",
+    "width": 160,
+    "height": 144,
+    "authoring": "native-parts",
+    "reference": "arch:cream",
+    "components": [
+      {
+        "source": "arch:review-r9-building-19",
+        "rect": [
+          0,
+          0,
+          160,
+          144
+        ],
+        "at": [
+          0,
+          0
+        ],
+        "replace": false
+      }
+    ],
+    "entrance": {
+      "x": 32,
+      "y": 112,
+      "w": 16,
+      "h": 32
+    },
+    "description": "왼쪽 곁채가 붙은 집 · 원본 칸(brick·church)만 쓴 창: 한 종류, 칸마다 가운데 하나, 모서리·문 옆 없음. 출입문은 한 곳.",
+    "lighting": "원본 왼쪽 위 광원",
+    "perspective": "3/4 탑뷰 · 지붕 윗면과 남쪽 정면",
+    "source": "authored-native-grid/round-9",
+    "silhouette": "왼쪽 곁채가 붙은 집",
+    "round": 9,
+    "replaces": "r8-08",
+    "nativeAssetHashes": {
+      "review-r9-building-19": "7b6689e3277fcec9a3bff2e90d57a762736b6c8854424e971f4090575be95c9a"
+    }
+  }
+]

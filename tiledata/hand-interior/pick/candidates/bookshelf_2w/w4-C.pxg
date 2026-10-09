@@ -1,0 +1,113 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a wood 4
+@mat b dwood 4
+@mat c yellow 4
+@mat d blue 4
+@mat e green 4
+@mat f clay 4
+@mat g red 4
+@mat h gold 4
+@mat i orange 4
+@mat j purple 4
+@mat k linen 4
+@mat l brass 4
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aabbbbbbbbbbbbbbbbbbbbbbbbbbaa.
+.aabbbbbbbbbbbbbbbbbbbbbbbbbbaa.
+.aaccddbbbddbbbbbbeeeffggeeebaa.
+.aaccddbbbddbbbbbbeeeffggeeebaa.
+.aahhhhiiihhcccdddhhhhhhhhhhbaa.
+.aaccddiiiddcccdddeeeffggeeebaa.
+.aaccddhhhddhhhhhheheffggehebaa.
+.aahhhhiiihhcccdddhhhhhhhhhhbaa.
+.aaccddihiddchcdhdeeeffggeeebaa.
+.aaccddiiiddcccdddeeeffg.eeebaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aabbbbbbbbbbjjbbbbbbbbbbbbbbaa.
+.aabbbbbbbbkkjjbbbbeeeeeeeeeeaa.
+.aaiiiggdddkkhheeebekkeeeeeeeaa.
+.aaiiiggdddhhjjeeebbgggggggggaa.
+.aaiiiggdddkkjjeeebbgkkggggggaa.
+.aaiiiggdddkkjjeeebddddddddddaa.
+.aaiiiggdddkkjjeeebdkkdddddddaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaalaaalaaaaaaaaaaaaa.
+.aaaaaaaaaaaalaaalaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@tblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+88888888888888888888888888888888
+77777777777777777777777777777777
+55655655655655655655655655655655
+.343343343343343343343343343343.
+.530000000000000000000000000032.
+.530000000000000000000000000032.
+.535555000550000005555555555032.
+.534242000420000004324242432032.
+.534444555445555554444444444032.
+.534242432424324324324242432032.
+.534242444424444444524242452032.
+.533333432334324323333333333032.
+.534242452424524524324242432032.
+.53424243242432432432424.432032.
+.666666666666666666666666666664.
+.333333333333333333333333333332.
+.530000000000550000000000000032.
+.530000000055420000444444444232.
+.535555555542445550333333333232.
+.534324243244424320044444444232.
+.534324243242424320033333333232.
+.534324243242424320444444444232.
+.534324243242424320333333333232.
+.666666666666666666666666666664.
+.333333333333333333333333333332.
+.577777777777773377777777777772.
+.555555555555553355555555555552.
+.552222222222223322222222222252.
+.552666666666443326666666664452.
+.552655555555443326555555554452.
+.552655555555643366555555554452.
+.552655555555343336555555554452.
+.552444444444443324444444444452.
+.552444444444443324444444444452.
+.555555555555553355555555555552.
+.666666666666666666666666666664.
+.333333333333333333333333333332.
+11111111111111111111111111111111

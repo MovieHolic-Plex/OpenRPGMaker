@@ -1,0 +1,22 @@
+{
+ "id": "xray_viewer",
+ "slug": "xray_viewer",
+ "name": "엑스레이 판독기",
+ "scene": "폐병원",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽에 붙은 판독 상자: 흰 빛 판(깜빡이다 멈춘 듯 얼룩진 밝기) 위에 흉부 엑스레이 필름 한 장(갈비뼈 곡선 3~4줄, 어두운 바탕에 밝은 선). 상자 테 쇠색.",
+ "palette_hint": "tin 테, moon/dust 빛판, void 필름 바탕",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5"
+}

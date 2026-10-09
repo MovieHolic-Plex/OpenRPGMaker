@@ -1,0 +1,19 @@
+{
+ "id": "diamond_mark",
+ "slug": "diamond_mark",
+ "name": "◇ 횡단보도 예고 표시",
+ "scene": "역 앞 번화가",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "횡단보도 앞 차로 위 흰 마름모 ◇ 표시(속이 빈 마름모 선). 아스팔트 바탕 포함.",
+ "palette_hint": "masph 바탕, mwhite 선",
+ "worker": "j1"
+}

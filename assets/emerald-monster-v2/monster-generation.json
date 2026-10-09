@@ -1,0 +1,322 @@
+[
+  {
+    "id": "hare",
+    "kind": "monster",
+    "species": [
+      "spriglet",
+      "frondhare",
+      "grovewarden"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "path": "assets/emerald-monster-v2/source/monster-hare.png",
+    "prompt": "Professional native GBA pixel-art monster sprite comparison sheet. Original monster collecting game. Six standalone sprites in EXACTLY THREE ROWS and TWO COLUMNS. Each row is one creature, front combat sprite in LEFT cell, matching BACK combat sprite in RIGHT cell. Row1 SPRIGLET: small mint-green rabbit, big leafy ears, cream muzzle/belly, dark jade eyes, tiny coral seed charm. Row2 FRONDHARE: agile adolescent forest hare, long broad fern ears, sage fur, leaf cape and vine anklets, athletic silhouette. Row3 GROVEWARDEN: majestic large forest rabbit guardian, branching fern antlers emerging from huge leafy ears, thick cream chest fur and mossy gauntlets, emerald and warm yellow accents. Cohesive three-stage evolution, strong different silhouettes, lovable professionally designed faces, carefully readable anatomy. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT, recognizably same creature with ears/markings/limbs consistent. No generic geometric blobs. Native pixel art, sharp integer pixel blocks, 18-22 colors per creature, 2004 GBA 64x64 sprite fidelity, clear one-pixel dark colored outlines, restrained clustered shading. Flat pure magenta #ff00ff background for sprite extraction, absolutely no shadows on ground, no scenery, no text, no border, no labels. Six evenly sized cells, all creature pixels safely contained within their own cell; equal spacing. This is an art asset sheet, not an illustration."
+  },
+  {
+    "id": "pangolin",
+    "kind": "monster",
+    "species": [
+      "coalbit",
+      "kilnclaw",
+      "furnscale"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Coalbit: adorable small rusty-red pangolin with charcoal overlapping scales, cream cheeks and ember-orange tail tip. Kilnclaw: powerful adolescent pangolin with larger armored scales and volcanic gauntlet claws, warm glowing seams. Furnscale: imposing fully evolved bipedal furnace pangolin with angular layered basalt armor, sturdy clawed limbs, fiery orange seams and gold chest furnace accents.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-pangolin.png"
+  },
+  {
+    "id": "otter",
+    "kind": "monster",
+    "species": [
+      "rivulet",
+      "brookraft",
+      "tidekeeper"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Rivulet: charming small aqua otter with cream face and belly, blue ears, holding smooth round pebble. Brookraft: adventurous medium blue river otter with driftwood shoulder raft and a confident face, broad webbed feet. Tidekeeper: majestic large sea-otter guardian, navy and teal fur with ivory chest, shell crown, icy crystalline forearm guards and regal curled whiskers.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-otter.png"
+  },
+  {
+    "id": "beetle",
+    "kind": "monster",
+    "species": [
+      "pipbug",
+      "podback",
+      "orchardant"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Pipbug: tiny green seed-carrying beetle larva with expressive eyes and 6 little feet. Podback: plump leaf-armored beetle with bean-pod back and small sprouts. Orchardant: large proud rhinoceros orchard beetle, emerald bark-plated shell, huge branching horn, six articulated legs and amber fruit accents.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-beetle.png"
+  },
+  {
+    "id": "bird",
+    "kind": "monster",
+    "species": [
+      "gustchick",
+      "ribbonwing",
+      "galecrest"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Gustchick: cute round blue-gray fledgling with ivory breast and small ochre crest. Ribbonwing: agile medium bird with long ribbon-like sapphire tail feathers and cream wings. Galecrest: majestic large blue storm raptor with swept-back crest, long elegant tail and articulated wings.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-bird.png"
+  },
+  {
+    "id": "gecko",
+    "kind": "monster",
+    "species": [
+      "zaptoe",
+      "coilcrest",
+      "stormskink"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "A charming pixel art sprite sheet of three original fantasy animal characters, in six separate cells, three rows by two columns. Row designs: Zaptoe: tiny golden electric gecko, turquoise toe pads, alert eyes. Coilcrest: athletic gold lizard with spiral electric crest, teal belly and long striped tail. Stormskink: regal golden electric dragon skink with zigzag dorsal lightning fins, four powerful limbs, navy stripes and turquoise claws.. LEFT cell in each row shows its front three-quarter view looking left, RIGHT shows matching rear view looking right. Crisp native pixel-art blocks, simple 20-color palettes, expressive friendly faces, handheld RPG style, transparent background, evenly spaced complete characters. No text, labels, scenery, realism or gradients.",
+    "path": "assets/emerald-monster-v2/source/monster-gecko.png"
+  },
+  {
+    "id": "ram",
+    "kind": "monster",
+    "species": [
+      "pebblekid",
+      "craghoof",
+      "ridgehorn"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "A charming pixel art sprite sheet of three original fantasy animal characters, in six separate cells, three rows by two columns. Row designs: Pebblekid: cute gray stone mountain goat kid with tiny pebble horns and cream muzzle. Craghoof: sturdy adolescent ram with rock hooves and growing spiral slate horns. Ridgehorn: huge mountain ram with craggy stone spiral horns, silver and slate wool, strong muscular forelegs and teal mineral veins.. LEFT cell in each row shows its front three-quarter view looking left, RIGHT shows matching rear view looking right. Crisp native pixel-art blocks, simple 20-color palettes, expressive friendly faces, handheld RPG style, transparent background, evenly spaced complete characters. No text, labels, scenery, realism or gradients.",
+    "path": "assets/emerald-monster-v2/source/monster-ram.png"
+  },
+  {
+    "id": "scorpion",
+    "kind": "monster",
+    "species": [
+      "sandnip",
+      "dunestalk",
+      "miragespike"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Sandnip: little sand-colored scorpion with two pincers, 6 legs and one pink crystal tail stinger. Dunestalk: medium desert scorpion with armored rose sandstone segments and curled single tail. Miragespike: dramatic large angular scorpion with huge gold pincers, dark mauve joints and a faceted pink heat-refracting crystal at one tail tip.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-scorpion.png"
+  },
+  {
+    "id": "lynx",
+    "kind": "monster",
+    "species": [
+      "flurrykit",
+      "rimepelt",
+      "glaciermane"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Flurrykit: charming pale blue lynx kitten with big tufted ears, white muzzle and violet eyes. Rimepelt: lithe ice lynx with white fur collar and blue-gray spotted coat. Glaciermane: majestic muscular ice lynx with crystalline pale blue mane, huge tufted ears and snowy paws.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-lynx.png"
+  },
+  {
+    "id": "moth",
+    "kind": "monster",
+    "species": [
+      "wickworm",
+      "lanternwing",
+      "beaconmoth"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Wickworm: tiny violet caterpillar with warm golden wick on its head. Lanternwing: pretty purple moth with amber lantern-shaped wing markings and fluffy cream body. Beaconmoth: magnificent broad-winged violet moth with four luminous golden eye spots, cream furry chest and elegant antennae.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-moth.png"
+  },
+  {
+    "id": "newt",
+    "kind": "monster",
+    "species": [
+      "miretail",
+      "venomfrill",
+      "marshcrown"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Miretail: cute mud-purple newt with pale lavender belly, coral tail spots and 4 little legs. Venomfrill: medium slender swamp newt with a rose gill neck frill and patterned tail. Marshcrown: regal large amphibian with elaborate crown-shaped violet gills, four strong legs, broad curling tail and coral poison markings.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-newt.png"
+  },
+  {
+    "id": "boar",
+    "kind": "monster",
+    "species": [
+      "rootpig",
+      "brambleboar",
+      "briartusk"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Rootpig: charming brown piglet with root-shaped nose and tiny leaf sprout on its back. Brambleboar: sturdy medium forest boar with green bramble foliage along its back and short ivory tusks. Briartusk: huge noble boar with layered thorn bark armor, broad leafy mane, curved ivory tusks and ochre hooves.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-boar.png"
+  },
+  {
+    "id": "mantis",
+    "kind": "monster",
+    "species": [
+      "dozemite",
+      "trancescythe",
+      "oraclemantis"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Dozemite: little lavender mantis with sleepy half-closed expressive eyes and tiny sickle forearms. Trancescythe: elegant violet psychic mantis with translucent mint blade forearms and folded wings. Oraclemantis: tall regal violet mantis with a pink forehead crystal, two huge teal sickle arms, four walking legs and ceremonial fan-shaped wings.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-mantis.png"
+  },
+  {
+    "id": "mole",
+    "kind": "monster",
+    "species": [
+      "gritnose",
+      "tunnelpaw",
+      "faultdigger"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Gritnose: endearing small brown mole with big stone nose and digging claws. Tunnelpaw: stocky gray-brown mole with broad digging forepaws and a little ore crown. Faultdigger: imposing armored mole with massive mineral claw gauntlets, layered shale back plates and warm gold ore seams.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-mole.png"
+  },
+  {
+    "id": "puppet",
+    "kind": "monster",
+    "species": [
+      "threadimp",
+      "hushdoll",
+      "veilmaster"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Threadimp: tiny blue-gray stitched imp puppet, mischievous button eyes and dangling thread tail. Hushdoll: medium quiet cloth doll, cream face, pale blue layered rag clothing and long loose sleeves. Veilmaster: theatrical ghost puppet with expressive porcelain mask, long slate blue layered curtain cloak and elegant articulated wooden hands.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-puppet.png"
+  },
+  {
+    "id": "heron",
+    "kind": "monster",
+    "species": [
+      "reedpeep",
+      "fenstrider",
+      "mistralheron"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Reedpeep: cute small jade marsh chick with long ochre toes and ivory chest. Fenstrider: elegant adolescent teal heron with long neck and slender legs, reed feather crest. Mistralheron: magnificent tall emerald heron with long flowing mist tail feathers, ivory chest, gold beak and poised wings.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-heron.png"
+  },
+  {
+    "id": "crab",
+    "kind": "monster",
+    "species": [
+      "coralpin",
+      "reefguard",
+      "atollclamp"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Coralpin: charming coral-pink crab with turquoise eyes, tiny coral sprout shell, two claws and six walking legs. Reefguard: sturdy medium red reef crab with coral forest carapace and broad shield pincers. Atollclamp: huge majestic reef crab with island-like coral shell, massive articulated rose pincers and blue turquoise reef details.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-crab.png"
+  },
+  {
+    "id": "seahorse",
+    "kind": "monster",
+    "species": [
+      "curlfin",
+      "brinewyrm",
+      "abyssail"
+    ],
+    "stages": [
+      1,
+      2,
+      3
+    ],
+    "prompt": "A clean original pixel-art sheet of three charming fantasy sea-horse creatures, six separate sprites in three rows and two columns. Row1 a small blue sea horse with curled tail and cream snout, Row2 a medium turquoise sea dragon with two side fins and salt-crystal markings, Row3 a majestic navy-blue sea dragon with large sail-like teal fins and an elegant curling tail. For each row, LEFT sprite is front three-quarter view looking LEFT; RIGHT sprite is same animal from rear three-quarter view looking RIGHT. No humans. Crisp native square pixels, simple20-color palette each, careful dark outline, readable friendly eyes, classic handheld RPG artwork. All six figures fully inside equal cells, clear gaps. Transparent background or flat magenta, no text, scenery, ground shadows, blur, glow, gradients or smooth painting.",
+    "path": "assets/emerald-monster-v2/source/monster-seahorse.png"
+  },
+  {
+    "id": "rare-a",
+    "kind": "monster",
+    "species": [
+      "thundercairn",
+      "winterquill",
+      "solmane"
+    ],
+    "stages": [
+      3,
+      3,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Row1 Thundercairn: majestic golden-gray thunder ibex with huge lightning-shaped horns, slate mineral hooves and teal sparks as markings. Row2 Winterquill: graceful large pale blue snow crane with broad frost feathers, long legs, lavender crest and crystalline tail. Row3 Solmane: noble sun lion with golden flame-shaped mane, warm ochre body, ivory face and powerful paws. These are three DIFFERENT legendary species, not an evolution line.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-rare-a.png"
+  },
+  {
+    "id": "rare-b",
+    "kind": "monster",
+    "species": [
+      "lunavane",
+      "relicarab",
+      "astralhart"
+    ],
+    "stages": [
+      3,
+      3,
+      3
+    ],
+    "prompt": "Professional native GBA pixel-art monster sprite asset sheet for an original monster RPG. Exactly THREE ROWS and TWO COLUMNS, SIX sprites, equal cell size and equal spacing with large clear gaps between every row. Each row has the FRONT combat sprite LEFT and the same creature's matching BACK combat sprite RIGHT. Creature designs in row order: Row1 Lunavane: magical large lavender manta ray with broad flowing wings, teal star spots and a long dark blue tail. Row2 Relicarab: mighty sandstone scarab beetle with ceremonial faceted horns, golden engraved shell and six articulated legs. Row3 Astralhart: magnificent green celestial stag with ivory chest, tall branching golden antlers, jade mane, slim hooves and constellation markings. These are three DIFFERENT legendary species, not an evolution line.. Fronts face viewer three-quarters LEFT. Backs face away three-quarters RIGHT; same anatomy, colors and markings, no face on back. Expert memorable creature design, readable expressive faces, clear limbs and silhouette. 2004 Emerald-era GBA fidelity: low native 64x64 sprite resolution, 18-22 colors each, crisp large integer pixel blocks, dark colored one-pixel outlines, deliberate simple shading clusters. No smooth illustration, blur, gradients, antialiasing or excessive microdetail. Flat pure magenta #ff00ff background, no ground shadows, no scenery, text, labels or borders. All six sprites fully contained in separate cells. One cohesive professionally polished evolution set unless the descriptions specify different legendary species.",
+    "path": "assets/emerald-monster-v2/source/monster-rare-b.png"
+  }
+]

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/curtained_window/w6-B.pxg",
+ "id": "curtained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "note": "커튼 명암을 좌밝음·우어둠으로 벌리고 창틀 위쪽을 밝혀 하단을 눌렀으며 창턱 밑 벽에 반투명 그림자 1줄",
+ "ok": true
+}

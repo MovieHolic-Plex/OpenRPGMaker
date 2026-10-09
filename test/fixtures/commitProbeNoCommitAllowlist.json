@@ -1,0 +1,80 @@
+{
+ "_doc": {
+  "무엇": "조작해도 어떤 CommandListActions 도 불리지 않는 컨트롤 목록. test/eventEditorCommitProbe.baseline.test.ts 의 'no-commit 래칫' 이 읽는다.",
+  "계약": "현재 무커밋 컨트롤 집합 == intentional ∪ UNTRIAGED 여야 한다. 새 항목이 생기면(=배선이 죽으면) 실패한다. 항목이 사라지면(=배선이 생기면) 실패하니 목록에서 지우고 커밋하라 — 개선이 기록에 남아야 한다.",
+  "intentional 이란": "커맨드를 편집하는 컨트롤이 아니라서 무커밋이 정상인 것. 목록 필터/검색, 'Add 버튼이 읽는 종류 선택', 계산값을 비추는 읽기 전용 거울, 별도 Add 버튼이 소비하는 초안 파라미터.",
+  "UNTRIAGED 란": "아직 정상인지 결함인지 판정되지 않았거나, 결함으로 확인됐지만 아직 고쳐지지 않은 것. 이 숫자는 매 실행 stdout 에 찍힌다.",
+  "라디오는 왜 없나": "이미 켜진 라디오를 반전하면 꺼지는데 실제 브라우저는 클릭으로 라디오를 끌 수 없고 폼도 `if (!input.checked) return` 으로 막는다. 프로브가 그 상태를 no-commit 이 아니라 radio-uncheck 로 따로 기록하므로 이 목록에 오지 않는다.",
+  "intentional 근거": {
+   "changeFace :: event-command-face-ai-prompt": "Generation draft, not a command operand. The generate button enqueues this value; only a completed image calls onInserted and commits the resource reference (aiImageGenerateField.ts).",
+   "showPicture :: show-picture-ai-prompt": "Generation draft consumed by the queue's generate button, not by input/change. showPictureForm.test.ts mounts the real form and awaits the generated resource command commit.",
+   "inputNumber :: input-number-digits": "type=hidden 인 레거시 e2e 선택자용 거울(commandBodyInputNumber.ts:44-51, class input-number-digits-mirror). 리스너가 없고, 실제 자릿수 입력은 chip radiogroup(같은 파일 65-69)이 replaceCommand 로 처리한다.",
+   "loop :: event-loop-body-add-kind": "'무엇을 추가할지' 고르는 종류 select(commandBodyLoop.ts:129-130). 리스너가 없고 값은 형제 버튼 event-loop-body-add 의 click 핸들러(141-143)만 읽는다.",
+   "setEventGraphicPattern :: set-event-graphic-pattern-frame-input": "렌더 직후 hidden 으로 감추는 읽기 전용 거울(commandBodyAdvanced.ts:861, 867). apply() 가 pattern.value 에 계산된 절대 프레임을 써넣는 방향이라 이 입력에서 읽지 않는다. 실제 커밋은 슬롯 그리드·방향 그룹·패턴 라디오가 만든다.",
+   "learnSkill :: learn-skill-search": "레코드 픽커의 목록 필터(recordPicker.ts:224-232 의 ${prefix}-search). input 리스너(422-425)는 filterQuery 를 세팅하고 renderGrid() 만 한다. 커밋은 카드/선택 클릭이 한다.",
+   "changeEquipment :: change-equipment-search": "같은 recordPicker 필터 경로(prefix 는 commandBodyDatabase.ts:1128).",
+   "playAudio :: play-audio-search": "리소스 목록 필터(commandBodyAdvanced.ts:1368-1372). input 리스너(1482)는 fillList() 로 play-audio-resource-select 의 option 만 다시 채운다. 커밋은 그 select 의 change 가 한다.",
+   "shop :: shop-item-type-filter": "진열 목록 보기 필터(commandBodyCommerce.ts:1134-1136). change 리스너(1151)가 typeFilter 를 세팅하고 rebuild() 만 한다.",
+   "shop :: shop-item-search": "진열 목록 검색(commandBodyCommerce.ts:1110-1114). input(디바운스, 1124)·change(1128) 모두 applySearch → rebuild() 로 끝난다. restoreGoodsView(1213-1227)가 재빌드 후 두 필터에 change 를 일부러 다시 쏘는 것이 이 둘이 뷰 상태라는 증거다.",
+   "shop :: shop-transaction-branch-row>select#0": "거래 성공 분기에 '무엇을 추가할지' 고르는 종류 select(commandBodyCommerce.ts:832, 렌더 873). 리스너가 없고 값은 shop-add-transaction-branch-command 버튼(840-843)만 읽는다.",
+   "shop :: shop-failed-branch-row>select#0": "거래 실패 분기의 같은 구조(commandBodyCommerce.ts:849, 렌더 882, 소비 855-858).",
+   "inn :: inn-not-enough-branch-controls>select#0": "숙박비 부족 분기의 같은 구조(commandBodyCommerce.ts:529, 렌더 558, 소비 535-538).",
+   "moveEvent": "hop 초안 파라미터 4종(dx/dy/height/duration). 이동 경로 «점프» 단계를 추가할 때 쓰는 값으로, 리스너는 persistParameters 로 모듈 스코프 routeParameterDrafts 에만 쓰고 context.actions 를 부르지 않는다. 값은 Add 버튼의 item.createCommand(parameterContext()) 가 소비한다 — move-route-switch-id-input 계열과 같은 구조.",
+   "moveEvent :: move-route-npc-target-map-input": "위 초안 파라미터와 **같은 루프**에 있다(commandBodyRoute.ts:272-287 이 switchId/graphic/sound/npcTargetMap/npcTargetX/Y/direction/hop 4종을 한 번에 persistParameters 에 묶는다). 그동안 이 목록에 없었던 이유는 배선이 달라서가 아니라 **프로브가 이 컨트롤을 조작할 수 없었기** 때문이다 — 캡처 프로젝트에 맵이 1개뿐이라 옵션이 하나(allowEmpty: false)여서 single-option 으로 건너뛰어졌다. 캡처 프로젝트가 프로브용 두 번째 맵을 심은 뒤부터 조작이 성립해 형제들과 같은 결과가 관측된다(2026-09-09).",
+   "changeFace :: event-command-face-ai-prompt": "AI 그림 생성 위젯의 프롬프트 칸(aiImageGenerateField.ts:122-125, testid `${prefix}-prompt`). 리스너가 없고 값은 형제 버튼 `${prefix}-generate` 의 click 핸들러(280-294)만 읽어 생성 큐에 넣는다. 그림이 만들어지면 onInserted 로 리소스 id 가 폼에 꽂히므로 커밋은 그 경로가 한다 — 프롬프트 타이핑 자체는 커맨드를 바꾸지 않는다.",
+   "showPicture :: show-picture-ai-prompt": "같은 위젯의 showPicture 쪽 인스턴스(showPictureAiField.ts → aiImageGenerateField, testidPrefix 'show-picture-ai')."
+  },
+  "UNTRIAGED 메모": {
+   "(비었음)": "UNTRIAGED 로 올라왔던 2건은 2026-08-30 에 고쳤다. 기록: (1) inputNumber :: input-number-prompt — latestCmd() 가 라이브 DOM 을 읽어 commitPrompt 의 무변경 가드가 자기 자신과 비교했다. 커밋한 문구를 따로 기억하는 committedPrompt + commit() 단일 창구로 고쳤다. (2) moveEvent :: move-route-skippable-checkbox — 리스너가 아예 없었다. repeat/wait/skippable 세 체크박스를 같은 루프로 묶어 apply()+renderPreview() 를 함께 걸었다(wait 는 커밋만 하고 미리보기 배지를 안 그리던 절반 결함도 같이 닫혔다). 두 건 다 커밋 프로브가 no-commit → replaceCommand 로 잡아냈다."
+  }
+ },
+ "intentional": {
+  "changeFace": [
+   "event-command-face-ai-prompt"
+  ],
+  "showPicture": [
+   "show-picture-ai-prompt"
+  ],
+  "changeEquipment": [
+   "change-equipment-search"
+  ],
+  "changeFace": [
+   "event-command-face-ai-prompt"
+  ],
+  "inn": [
+   "inn-not-enough-branch-controls>select#0"
+  ],
+  "inputNumber": [
+   "input-number-digits"
+  ],
+  "learnSkill": [
+   "learn-skill-search"
+  ],
+  "loop": [
+   "event-loop-body-add-kind"
+  ],
+  "moveEvent": [
+   "move-route-graphic-id-input",
+   "move-route-hop-duration-input",
+   "move-route-hop-dx-input",
+   "move-route-hop-dy-input",
+   "move-route-hop-height-input",
+   "move-route-npc-target-direction-input",
+   "move-route-npc-target-map-input",
+   "move-route-npc-target-x-input",
+   "move-route-npc-target-y-input",
+   "move-route-sound-id-input",
+   "move-route-switch-id-input"
+  ],
+  "playAudio": [
+   "play-audio-search"
+  ],
+  "setEventGraphicPattern": [
+   "set-event-graphic-pattern-frame-input"
+  ],
+  "showPicture": [
+   "show-picture-ai-prompt"
+  ]
+ },
+ "UNTRIAGED": {}
+}

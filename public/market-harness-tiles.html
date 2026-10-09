@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>장터 하네스 타일 카탈로그</title>
+  <style>
+    :root { --bg:#0f1419; --panel:#1a222c; --text:#e7eef7; --muted:#9aabbc; --accent:#5ec8ff; --ok:#6ddf9a; --bad:#ff6b6b; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI","Malgun Gothic",system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.45; }
+    header { padding:24px 28px 10px; border-bottom:1px solid #2a3644; }
+    header h1 { margin:0 0 6px; font-size:1.4rem; }
+    header p { margin:0; color:var(--muted); }
+    main { padding:16px 28px 48px; max-width:1100px; }
+    .banner { margin:14px 0 20px; padding:12px 14px; border-radius:10px; background:#152433; border:1px solid #2d4054; color:var(--muted); font-size:.92rem; }
+    .banner.ok { border-color:#2d6a45; color:var(--ok); }
+    .banner.err { border-color:#7a3030; color:var(--bad); }
+    h2 { margin:28px 0 12px; font-size:1.1rem; border-left:4px solid var(--accent); padding-left:10px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    .card { background:var(--panel); border:1px solid #2f3d4d; border-radius:12px; overflow:hidden; }
+    .preview {
+      min-height:100px; display:flex; align-items:center; justify-content:center; gap:4px; padding:14px;
+      background-color:#1b2330;
+      background-image:linear-gradient(45deg,#2a3340 25%,transparent 25%),linear-gradient(-45deg,#2a3340 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a3340 75%),linear-gradient(-45deg,transparent 75%,#2a3340 75%);
+      background-size:16px 16px; background-position:0 0,0 8px,8px -8px,-8px 0;
+    }
+    .preview img {
+      width:64px; height:64px; image-rendering:pixelated; image-rendering:crisp-edges;
+      box-shadow:0 0 0 1px rgba(255,255,255,.15), 0 6px 14px rgba(0,0,0,.4); border-radius:3px; background:#000;
+    }
+    .preview img.sm { width:40px; height:40px; }
+    .compose { display:grid; gap:2px; padding:4px; background:rgba(0,0,0,.25); border-radius:6px; }
+    .meta { padding:10px 12px 12px; }
+    .name { font-weight:700; margin-bottom:2px; }
+    .desc { color:var(--muted); font-size:.86rem; margin-bottom:6px; }
+    .tags { display:flex; flex-wrap:wrap; gap:5px; }
+    .tag { font-size:.72rem; padding:2px 7px; border-radius:999px; border:1px solid #36485c; background:#232d3a; color:#c5d5e6; }
+    .tag.lower { border-color:#4a6a3a; color:#b7e0a0; }
+    .tag.upper { border-color:#6a5a3a; color:#f0d090; }
+    table { width:100%; border-collapse:collapse; background:var(--panel); border:1px solid #2f3d4d; border-radius:12px; overflow:hidden; font-size:.9rem; }
+    th,td { padding:8px 10px; border-bottom:1px solid #2a3644; text-align:left; vertical-align:middle; }
+    th { background:#15202b; color:#b9c9d9; }
+    td.ids { font-family:ui-monospace,Consolas,monospace; color:var(--ok); }
+    .flow { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+    .step { background:var(--panel); border:1px solid #2f3d4d; border-radius:10px; padding:10px; font-size:.86rem; }
+    .step.hot { border-color:#3d7ea8; }
+    .step b { display:block; color:var(--accent); margin-bottom:3px; }
+    pre.layout { background:#0c1117; border:1px solid #2a3644; border-radius:12px; padding:12px 14px; overflow-x:auto; color:#c8d8e8; font-size:.8rem; }
+    code { color:var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>장터 하네스 타일 카탈로그</h1>
+    <p>타일 PNG를 미리 잘라 둔 정적 파일 · <code>/market-harness-tiles/222.png</code></p>
+  </header>
+  <main>
+    <div id="banner" class="banner">이미지 검사 중…</div>
+
+    <h2>시공 순서</h2>
+    <div class="flow">
+      <div class="step"><b>0 플랜</b>market bbox</div>
+      <div class="step"><b>1 물</b></div>
+      <div class="step"><b>2 집</b></div>
+      <div class="step"><b>3 길</b></div>
+      <div class="step hot"><b>4 장터</b>stampMarketHarness</div>
+      <div class="step"><b>5+</b>울타리·숲</div>
+    </div>
+
+    <h2>합성 패턴</h2>
+    <div class="grid" id="composes"></div>
+
+    <h2>타일 카드</h2>
+    <div class="grid" id="cards"></div>
+
+    <h2>표</h2>
+    <table>
+      <thead><tr><th>미리보기</th><th>이름</th><th>ID</th><th>레이어</th><th>역할</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+
+    <h2>레이아웃</h2>
+    <pre class="layout">market bbox — 나무 데크 전체 (천막 금지)
+┌────────────────────────────────┐
+│  222 wood body + edge chips    │ lower 222 / 228-230 / 192
+│  상자·과일·꽃                   │ upper 237,202,203,288
+│ [카운터====]   [카운터====]    │ upper 234-236 + shop event
+│   (상인 NPC 뒤)                 │ charset
+│  남단 223 base + 난간  입구3칸 │ lower 223 / upper 468-470
+└────────────────────────────────┘</pre>
+  </main>
+  <script>
+    // 정적 PNG 경로. Vite public/ 는 루트(/)로 서빙.
+    // 이 프로젝트 기본 dev 포트는 9173 이다 (5173 아님).
+    const BASES = [
+      "/market-harness-tiles/",
+      "./market-harness-tiles/",
+      "market-harness-tiles/",
+    ];
+
+    const TILES = [
+      { id: 222, name: "목재 바닥 body", role: "WOOD_FLOOR", layer: "lower", status: "데크 전체" },
+      { id: 228, name: "목재 edge 서", role: "WOOD_EDGE_W", layer: "lower", status: "가장자리" },
+      { id: 229, name: "목재 edge 동", role: "WOOD_EDGE_E", layer: "lower", status: "가장자리" },
+      { id: 230, name: "목재 edge 북", role: "WOOD_EDGE_N", layer: "lower", status: "가장자리" },
+      { id: 192, name: "목재 edge 남", role: "WOOD_EDGE_S", layer: "lower", status: "가장자리" },
+      { id: 223, name: "팀버 레일 base", role: "TIMBER_RAIL", layer: "lower", status: "남단" },
+      { id: 193, name: "팀버 포스트", role: "TIMBER_POST", layer: "lower", status: "모서리" },
+      { id: 468, name: "난간 좌", role: "RAIL_L", layer: "upper", status: "남단" },
+      { id: 469, name: "난간 중", role: "RAIL_M", layer: "upper", status: "남단" },
+      { id: 470, name: "난간 우", role: "RAIL_R", layer: "upper", status: "남단" },
+      // 천막 411–443 배제
+      { id: 234, name: "테이블 좌", role: "TABLE_L", layer: "upper", status: "카운터" },
+      { id: 235, name: "테이블 중", role: "TABLE_M", layer: "upper", status: "카운터" },
+      { id: 236, name: "테이블 우", role: "TABLE_R", layer: "upper", status: "카운터" },
+      { id: 237, name: "나무 상자", role: "WOOD_BOX", layer: "upper", status: "소품" },
+      { id: 202, name: "과일 상자 좌", role: "FRUIT_L", layer: "upper", status: "소품" },
+      { id: 203, name: "과일 상자 우", role: "FRUIT_R", layer: "upper", status: "소품" },
+      { id: 288, name: "꽃", role: "FLOWER", layer: "upper", status: "소품" },
+    ];
+
+    let BASE = BASES[0];
+    const banner = document.getElementById("banner");
+
+    function tileUrl(id) {
+      return BASE + id + ".png?v=3";
+    }
+
+    function img(id, cls) {
+      const el = document.createElement("img");
+      el.src = tileUrl(id);
+      el.alt = "tile " + id;
+      el.width = cls === "sm" ? 40 : 64;
+      el.height = cls === "sm" ? 40 : 64;
+      if (cls) el.className = cls;
+      el.loading = "eager";
+      return el;
+    }
+
+    function compose(ids, cols) {
+      const wrap = document.createElement("div");
+      wrap.className = "compose";
+      wrap.style.gridTemplateColumns = "repeat(" + cols + ", auto)";
+      ids.forEach((id) => wrap.appendChild(img(id)));
+      return wrap;
+    }
+
+    function card(title, desc, node, tags) {
+      const art = document.createElement("article");
+      art.className = "card";
+      const prev = document.createElement("div");
+      prev.className = "preview";
+      prev.appendChild(node);
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.innerHTML = "<div class=\"name\">" + title + "</div><div class=\"desc\">" + desc + "</div>";
+      const tagRow = document.createElement("div");
+      tagRow.className = "tags";
+      (tags || []).forEach((t) => {
+        const s = document.createElement("span");
+        s.className = "tag " + (t.cls || "");
+        s.textContent = t.text;
+        tagRow.appendChild(s);
+      });
+      meta.appendChild(tagRow);
+      art.append(prev, meta);
+      return art;
+    }
+
+    function build() {
+      const composes = document.getElementById("composes");
+      composes.appendChild(card("카운터 4칸", "TABLE L-M-M-R · 234/235/236 (천막 배제)", compose([234,235,235,236], 4), [{text:"upper",cls:"upper"},{text:"shop"}]));
+      composes.appendChild(card("입구 발판 3×2", "WOOD_FLOOR=222", compose([222,222,222,222,222,222], 3), [{text:"lower",cls:"lower"}]));
+      composes.appendChild(card("소품 묶음", "상자·과일·꽃", compose([237,202,203,288], 4), [{text:"upper",cls:"upper"}]));
+
+      const cards = document.getElementById("cards");
+      const tbody = document.getElementById("tbody");
+      TILES.forEach((t) => {
+        cards.appendChild(card(t.name, t.role, img(t.id), [{text:"#"+t.id},{text:t.layer,cls:t.layer},{text:t.status}]));
+        const tr = document.createElement("tr");
+        const td0 = document.createElement("td");
+        td0.appendChild(img(t.id, "sm"));
+        tr.appendChild(td0);
+        tr.insertAdjacentHTML("beforeend",
+          "<td>"+t.name+"</td><td class=\"ids\">"+t.id+"</td><td>"+t.layer+"</td><td>"+t.role+"<br><span style=\"color:#9aabbc;font-size:.85em\">"+t.status+"</span></td>");
+        tbody.appendChild(tr);
+      });
+    }
+
+    function probeBase(i) {
+      if (i >= BASES.length) {
+        banner.className = "banner err";
+        banner.textContent = "타일 PNG 로드 실패. 이 프로젝트 Vite 포트는 기본 9173 입니다 (5173 아님).\n" +
+          "확인: http://localhost:9173/market-harness-tiles/222.png\n" +
+          "시도한 base: " + BASES.join(", ");
+        // still build with first base so structure visible
+        BASE = BASES[0];
+        build();
+        return;
+      }
+      BASE = BASES[i];
+      const test = new Image();
+      test.onload = () => {
+        banner.className = "banner ok";
+        banner.textContent = "타일 PNG OK — base=" + BASE + " (예: " + tileUrl(222) + ")\n" +
+          "※ 이 레포 Vite 기본 포트는 9173. 5173 이면 다른 앱이 루트 HTML만 줄 수 있음.";
+        build();
+      };
+      test.onerror = () => probeBase(i + 1);
+      test.src = tileUrl(222);
+    }
+
+    probeBase(0);
+  </script>
+</body>
+</html>

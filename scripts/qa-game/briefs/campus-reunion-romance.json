@@ -1,0 +1,59 @@
+{
+  "title": "새 게임",
+  "presetId": "story-cutscene",
+  "screenSize": "standard",
+  "ai": {
+    "piTeam": true
+  },
+  "brief": {
+    "version": 1,
+    "presetId": "story-cutscene",
+    "summary": "관계·연애 중심의 게임을 만든다.\n\n이야기의 출발점은 다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.\n\n플레이어의 핵심 행동: 대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.\n\n분위기: 따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.\n\n진행 흐름: 가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.\n\n먼저 완주 가능하게 만들 구간: 관계가 달라지는 첫 사건 — 만남·작은 갈등·관계 변화 한 번까지.\n\n주인공의 이름·성별·외형은 아직 정하지 않았다. 참고 그림으로 확정하지 않는다.",
+    "answers": {
+      "experience": {
+        "question": "어떤 만남으로 시작할까요?",
+        "label": "이야기의 시작",
+        "text": "다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.",
+        "source": "user"
+      },
+      "activity": {
+        "question": "무엇을 하며 가까워질까요?",
+        "label": "중심 플레이",
+        "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+        "source": "user"
+      },
+      "progression": {
+        "question": "관계는 어떤 흐름으로 이어질까요?",
+        "label": "진행 방식",
+        "text": "가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.",
+        "source": "user"
+      },
+      "detail": {
+        "question": "어떤 감정이 오래 남으면 좋을까요?",
+        "label": "분위기",
+        "text": "따뜻하고 설레게 — 작은 배려와 행복한 만남이 쌓여요.",
+        "source": "user"
+      },
+      "scope": {
+        "question": "첫 번째로 어디까지 만들어 볼까요?",
+        "label": "첫 제작 범위",
+        "text": "관계가 달라지는 첫 사건 — 만남·작은 갈등·관계 변화 한 번까지.",
+        "source": "user"
+      }
+    },
+    "interview": {
+      "version": 1,
+      "genre": "romance",
+      "concept": "",
+      "protagonist": "",
+      "notes": "",
+      "choiceIds": {
+        "experience": "campus",
+        "activity": "talk",
+        "progression": "routes",
+        "detail": "warm",
+        "scope": "episode"
+      }
+    }
+  }
+}

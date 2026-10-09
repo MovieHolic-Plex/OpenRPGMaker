@@ -1,0 +1,278 @@
+/* 파티 그룹 정보량 줄이기 (2026-09-23 파티 UX 검토).
+   레일 7칸 → 4칸 + 보기 전환 줄, 레코드 머리 한 문장, 직업 보기 탭, 접는 고급 카드.
+   index.css 에서 16·17 뒤에 읽는다 — 같은 선택자를 앞 시트들이 여러 번 덮고 있어 여기서
+   최종값을 둔다. 색은 토큰만 쓴다(예산 래칫: hex·!important 증가 금지). */
+
+/* ── 보기 전환 줄(주인공|공유 외형, 직업 편집|승급 트리, 스킬 편집|성장 트리) ── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-party-subviews {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding: 2px;
+  width: max-content;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-party-subview {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 600 12px/1 var(--font-ui);
+  padding: 7px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-party-subview:hover {
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-party-subview.active {
+  background: var(--db-studio-surface);
+  box-shadow: 0 1px 2px var(--db-studio-border-subtle);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-party-subview:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+/* 보기 전환 줄이 본문 첫 줄을 차지하므로, 본문이 그리드인 탭은 한 행을 더 준다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(> .db-party-subviews) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-body:has(> .db-party-subviews) > :not(.db-party-subviews) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ── 주인공 목록: 같은 값뿐인 열을 뺀 만큼 좁힌다 ───────────────────────── */
+@media (min-width: 901px) {
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="2"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1.5fr) minmax(64px, 0.8fr);
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="3"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1.5fr) minmax(64px, 0.8fr) 56px;
+    min-width: 0;
+  }
+
+  .database-modal-body .db-actor-studio-workspace .db-actor-studio-table[data-column-count="4"] .db-actor-table-row {
+    grid-template-columns: minmax(0, 1.4fr) minmax(64px, 0.72fr) 48px 56px;
+    min-width: 0;
+  }
+
+  .database-modal-body .oprn-record-workspace.oprn-record-actors.db-actor-studio-workspace:has(.db-actor-studio-table[data-column-count="2"]) {
+    grid-template-columns: minmax(260px, 0.5fr) minmax(520px, 1.5fr);
+  }
+}
+
+.database-modal-body .db-actor-party-mark {
+  background: var(--db-studio-accent-soft);
+  border-radius: 999px;
+  color: var(--db-studio-accent);
+  display: inline-block;
+  font: 600 10.5px/1.5 var(--font-ui);
+  margin-left: 6px;
+  padding: 0 6px;
+}
+
+/* ── 레코드 머리 한 문장 ─────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-record-hero-summary, .db-item-summary) {
+  color: var(--db-studio-text-2);
+  font: 500 12.5px/1.5 var(--font-ui);
+  margin: 4px 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-record-hero-tags .db-record-hero-party {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-record-hero-tags .db-record-hero-party-text {
+  color: var(--db-studio-text-2);
+  font: 600 11.5px/1 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-record-hero-tags .db-record-hero-party {
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+/* 시작 능력치: 읽기 전용 요약이라 라벨 바로 옆에 숫자를 붙인다(양 끝으로 벌리면 입력칸처럼 보였다). */
+.database-modal-backdrop .database-modal-window .database-modal-body .actor-basic-stat-grid {
+  display: grid;
+  gap: 4px 24px;
+  grid-template-columns: repeat(3, max-content);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .actor-basic-stat-row {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .actor-basic-stat-row > span {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .actor-basic-stat-row > strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .actor-appearance-manage {
+  background: transparent;
+  border: 0;
+  color: var(--db-studio-accent);
+  cursor: pointer;
+  font: 600 12px/1.4 var(--font-ui);
+  justify-self: start;
+  padding: 2px 0;
+}
+
+/* ── 직업: 보기 탭 ───────────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-class-view-tabs {
+  flex: 0 0 auto;
+  margin: 0 0 8px;
+}
+
+.database-modal-body .oprn-record-classes .db-class-bm88-workbench > [hidden] {
+  display: none;
+}
+
+/* 한 보기만 보일 때는 예전 3단 named area 가 빈 칸만 남긴다 — 한 줄 흐름으로 바꾼다. */
+@media (min-width: 901px) {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view] {
+    align-content: start;
+    grid-template-areas: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    min-height: 0;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view] > .db-advanced-panel {
+    grid-area: auto;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view="overview"],
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view="gear"] {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view="gear"] > .db-class-panel-equipment {
+    grid-column: 1 / -1;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view="growth"] .db-class-curves-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-class-build-sentence {
+  color: var(--db-studio-text-1);
+  font: 500 13px/1.55 var(--font-ui);
+  margin: 2px 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-class-exp-summary {
+  align-content: start;
+  display: grid;
+  gap: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-class-exp-readable {
+  color: var(--db-studio-text-1);
+  font: 500 12px/1.4 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-class-exp-formula {
+  color: var(--db-studio-text-3);
+  font: 500 11px/1.4 var(--font-ui);
+}
+
+/* ── 스킬: 요약 한 문장 ──────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-sentence {
+  color: var(--db-studio-text-1);
+  font: 500 13px/1.9 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-sentence .db-skill-composer-chip {
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  display: inline;
+  font-weight: 600;
+  padding: 1px 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-sentence .db-skill-effect-block {
+  background: transparent;
+  border: 0;
+  display: inline;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-skill-studio .db-skill-sentence .db-skill-effect-block[data-effect-kind="animation"] {
+  color: var(--db-studio-text-3);
+}
+
+/* ── 아이템: 회복량 한 줄 ────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-recovery-line {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-recovery-input {
+  width: 72px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-recovery-join {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-item-recovery-percent {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+/* ── 성장 트리: 예시 띠 ──────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .growth-studio .growth-preset-browser.is-compact {
+  border-top: 1px dashed var(--db-studio-border-default);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+/* ── 체크 상자·스위치가 세로로 늘어나던 문제 ─────────────────────────────
+   `.oprn-detail-form :is(input:not([type="radio"]), …) { min-height: 30px }` 가 체크 상자까지
+   잡아 16×30 알약으로 늘렸다(직업 옵션·장비 목록, 주인공 머리의 시작 파티 스위치). 체크 상자는
+   글자 입력칸의 최소 높이를 가질 이유가 없다 — 같은 특이도로 뒤에서 되돌린다. */
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form input[type="checkbox"] {
+  min-height: 0;
+}
+
+/* 보기 하나만 펼칠 때는 3단 배치용 높이 상한을 푼다 — 상한이 있으면 상태·속성 유효도가
+   중간에서 잘린다. 넘치는 높이는 바깥 `.oprn-detail-form` 이 스크롤한다. */
+@media (min-width: 901px) {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view] > .db-advanced-panel,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench[data-class-view] :is(.db-class-equipment-checklist, .db-class-promotion-rows, .db-class-skill-table) {
+    max-height: none;
+    overflow: visible;
+  }
+}
+

@@ -1,0 +1,143 @@
+import { activityNote, activityPhase, createActivityTrace, recordActivityEvent } from "@/ai/activityTrace";
+import { createActivityView } from "./aiActivityView";
+import { bindActivityLevel } from "./aiActivityPreference";
+// A request owns its receipt in the conversation. No document-level work strip.
+import { el } from "@/util/dom";
+import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
+import { changePreviewRegion, openWideChangeViewer } from "./aiChangePreview";
+import { deckIcon } from "./aiDeckIcons";
+import type { AiWorkCard } from "./aiWorkStrip";
+
+/**
+ * `ownerless`: 이 카드를 끝내 줄 턴이 없다. 턴이 끝난 뒤 늦게 도착한 진행 알림이 그렇다 —
+ * `finishWorkCard` 는 다시 오지 않으므로 그 카드는 영영 「작업 중」으로 남고, 누르면 아무 일도
+ * 없는 중지 버튼을 단 채 유휴 화면에 떠 있는다. 주인 없는 카드는 처음부터 결과 카드로 만든다 —
+ * 내용은 그대로 받되 진행 중이라고 거짓말하지 않는다.
+ */
+export function createInlineWorkCard(input: { title: string; onStop: () => void; ownerless?: boolean; projectId?: string }): AiWorkCard {
+  let trace = createActivityTrace(input.title, input.projectId);
+  const activity = createActivityView();
+  let hasBoard = false;
+  let hasExtraProcess = false;
+  let writes = 0;
+  let hasContent = false;
+  const spinner = deckIcon("clock", { size: 15 });
+  // 제목에 사용자 문장을 다시 쓰지 않는다 — 바로 위 말풍선과 같은 줄이 두 번 보였다. 원문은 툴팁에 둔다.
+  const title = el("strong", { text: "작업 중", attrs: { title: input.title } });
+  const status = el("span", { class: "ai-work-inline-status", text: "0:00" });
+  const startedAt = Date.now();
+  let progress = "";
+  const elapsed = (): string => {
+    const seconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  };
+  const renderStatus = (): void => { status.textContent = progress ? `${progress} · ${elapsed()}` : elapsed(); };
+  // 무엇이 도는지 모를 때도 시계는 간다 — 멈춘 화면과 기다리는 화면을 구별하게 한다.
+  const ticker = input.ownerless ? null : setInterval(() => { if (root.isConnected) renderStatus(); }, 1000);
+  const live = el("div", { class: "ai-work-inline-live" });
+  const now = el("p", { class: "ai-work-inline-now", dataset: { testid: "ai-work-card-now" }, attrs: { "aria-live": "polite" } });
+  now.hidden = true;
+  const steps = el("div", { class: "ai-work-inline-steps" });
+  const summary = el("summary", { text: "작업 과정" });
+  const details = el("details", { dataset: { testid: "ai-work-process" }, children: [summary, live, steps] });
+  const actions = el("div", { class: "ai-work-inline-actions" });
+  const stop = el("button", { text: "중지", attrs: { type: "button" }, on: { click: input.onStop } });
+  actions.append(stop);
+  const head = el("button", {
+    class: "ai-work-inline-head", attrs: { type: "button", "aria-expanded": "false", title: "작업 과정 펼치기" },
+    dataset: { testid: "ai-work-card-toggle" },
+    on: { click: () => {
+      const next = !details.open;
+      details.open = next;
+      head.setAttribute("aria-expanded", String(next));
+      head.setAttribute("title", next ? "작업 과정 접기" : "작업 과정 펼치기");
+    } },
+    children: [el("span", { class: "ai-work-inline-spinner", attrs: { "aria-hidden": "true" }, children: [spinner] }), title, status],
+  });
+  const root = el("article", {
+    class: "ai-work-inline has-activity", dataset: { testid: "ai-work-card", state: "running" },
+    children: [head, now, activity.root, actions, details],
+  });
+  bindActivityLevel(root, level => {
+    details.hidden = (hasBoard && !hasExtraProcess) || level === "none" || level === "brief";
+    details.open = level === "detail" || level === "trace";
+  });
+  activity.update(trace);
+  const finish = (result: { readonly ok: boolean; readonly message?: string }): void => {
+    trace = activityPhase(trace, result.ok ? "완료" : /중단|중지/.test(result.message ?? "") ? "중단" : "실패", Date.now());
+    if (!hasBoard) activity.update(trace);
+    root.dataset.state = result.ok ? "done" : "failed";
+    if (ticker !== null) clearInterval(ticker);
+    title.textContent = "작업 결과";
+    head.querySelector(".ai-work-inline-spinner")?.remove();
+    const took = input.ownerless ? "" : ` · ${elapsed()}`;
+    status.textContent = `${result.message || (result.ok ? "완료" : "중단 / 오류")}${took}`;
+    stop.remove(); live.replaceChildren();
+    now.hidden = true; now.textContent = "";
+    if (result.message) steps.append(el("p", { text: result.message }));
+    if (!result.ok) hasContent = true;
+  };
+  if (input.ownerless) finish({ ok: true, message: "" });
+  return {
+    root, live, steps,
+    recordActivity: (event) => {
+      if (trace.phase === "준비") trace = activityPhase(trace, "실행 중");
+      trace = recordActivityEvent(trace, event); activity.update(trace);
+    },
+    setTitle: (text) => { title.setAttribute("title", text); },
+    setStatusLine: (text) => {
+      if (root.dataset.state !== "running") return;
+      const line = text.trim();
+      // 머리 줄이 이미 말하는 「작업 중」 류는 되풀이하지 않는다.
+      const generic = !line || /^(대기|작업 중…?|실행 중…?|준비 중…?)$/.test(line);
+      now.hidden = generic;
+      now.textContent = generic ? "" : line;
+    },
+    setProgress: (done, total) => { progress = total ? `${done}/${total}` : ""; renderStatus(); },
+    noteReadOnly: () => {},
+    appendStep: (entry) => { writes += 1; hasExtraProcess = true; steps.append(entry); root.dispatchEvent(new Event("ai-activity-level")); },
+    attachElement: (element) => {
+      hasContent = true;
+      if (element.dataset.activityBoard) { hasBoard = true; summary.textContent = "추가 안내"; root.dispatchEvent(new Event("ai-activity-level")); activity.root.remove(); root.insertBefore(element, actions); }
+      else {
+        hasExtraProcess = true;
+        details.append(element);
+        root.dispatchEvent(new Event("ai-activity-level"));
+        if (!hasBoard && element.textContent) { trace = activityNote(trace, "process.note", element.textContent); activity.update(trace); }
+      }
+    },
+    attachChange: (preview) => {
+      hasContent = true;
+      // 무엇이 바뀌었는지 한 줄 — 버튼 셋만 있고 「연못 1 · 나무 8」 같은 요약이 어디에도 없었다.
+      const chips = (preview.chips ?? []).filter(Boolean);
+      root.querySelector(".ai-work-inline-changed")?.remove();
+      // 단, 이 줄은 변경 집계 원문(「타일 2536 · 이벤트 +157 · 맵 속성 2 · DB 11 · …」)이라 개발자용
+      // 영수증이다 — 간단히 보기(기본)에서는 숨기고 자세히·전체 기록에서만 보인다. 비개발자에게는
+      // 완료 말풍선의 「맵 16개 · 이벤트 157개를 만들었어요」가 같은 사실을 말한다(2026-09-23 도그푸딩).
+      if (chips.length) {
+        const changed = el("p", { class: "ai-work-inline-changed", dataset: { testid: "ai-work-card-changed" }, text: chips.join(" · ") });
+        bindActivityLevel(changed, level => { changed.hidden = level === "none" || level === "brief"; });
+        root.insertBefore(changed, actions);
+      }
+      actions.replaceChildren(el("button", {
+        text: "변경 보기", attrs: { type: "button" }, dataset: { testid: "ai-inline-change-view" },
+        on: { click: () => openWideChangeViewer(preview) },
+      }));
+      const region = changePreviewRegion(preview.before, preview.after, preview.mapId);
+      if (region) actions.append(el("button", {
+        text: "변경된 곳 보기", attrs: { type: "button" },
+        on: { click: () => { focusEditorRegion({ mapId: preview.mapId, x: region.x, y: region.y, w: region.width, h: region.height }, { highlight: true }); } },
+      }));
+      if (preview.onUndo) {
+        const undo = el("button", { text: "이 작업 되돌리기", attrs: { type: "button" } }) as HTMLButtonElement;
+        undo.addEventListener("click", () => { preview.onUndo?.(); undo.disabled = true; });
+        actions.append(undo);
+      }
+    },
+    finish,
+    discardIfEmpty: () => {
+      if (hasContent || writes || trace.entries.some(e => e.kind === "tool")) return false;
+      root.remove(); return true;
+    },
+  };
+}

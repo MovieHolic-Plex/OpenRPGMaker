@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/broadcast_desk/s1-B.pxg",
+ "set": "school",
+ "id": "broadcast_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  1,
+  1,
+  46,
+  31
+ ],
+ "note": "B: 명암 강화 — 윗면 뒷쪽 밝은 띠·앞쪽 어두운 띠, 믹서/마이크/헤드폰 밑 그림자, 모니터 위 밝은 줄",
+ "ok": true
+}

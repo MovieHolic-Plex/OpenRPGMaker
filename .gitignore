@@ -1,0 +1,319 @@
+node_modules/
+.runtime-archive/
+/verify-shots/release-artifact/
+dist/
+# The deployed root build can be a symlink to a versioned release.
+/dist
+# 병렬 워크트리가 자습의 vite 옵토마이즈 캐시를 따로 쓸 때 생긴다(VITE_CACHE_DIR).
+.vite-cache/
+.vite/
+.omo/*
+# 게이트 기준선은 추적한다. AGENTS.md 는 병렬 에이전트마다 새 워크트리를 강제하는데,
+# 기준선이 무시되면 새 워크트리에는 항상 기준선이 없다 — 즉 verify-gates.mjs 가
+# "기준선 없음"으로 떨어져 회귀 판정이 통째로 비활성화된다(실측: 이 파일은 한 번도
+# 추적된 적이 없어, 명령된 게이트가 명령된 워크플로에서 항상 열화돼 있었다).
+!.omo/gates-baseline.json
+!.omo/css-budget-baseline.json
+# CSS 실사용 클래스 게이트(scripts/check-css-live-classes.mjs)의 기준선. 위와 같은 이유로
+# 추적한다 — 무시되면 새 워크트리에서 게이트가 "기준선 없음"으로 exit 2 가 된다.
+!.omo/css-live-classes-baseline.json
+!.omo/evidence/
+.omo/evidence/*
+!.omo/evidence/ai-assistant-failure-modes.md
+!.omo/evidence/event-editor-ux/
+!.omo/evidence/rm2003-database-plan/
+!.omo/evidence/ai-compaction/
+!.omo/evidence/ai-apply-without-approval/
+!.omo/evidence/action-battle/
+!.omo/evidence/battle-flash-map/
+!.omo/evidence/ai-surfaces-ux/
+!.omo/evidence/ai-studio-console/
+!.omo/evidence/oprn-013/
+!.omo/evidence/oprn-017/
+!.omo/evidence/oprn-019/
+!.omo/evidence/oprn-020/
+!.omo/evidence/oprn-022/
+!.omo/evidence/oprn-024/
+!.omo/evidence/oprn-026/
+!.omo/evidence/balt-parity/
+!.omo/evidence/chipset-transparency/
+!.omo/evidence/loc-adopt/
+!.omo/evidence/loc-transition/
+!.omo/evidence/verif-scope/
+!.omo/evidence/db-ai-review/
+!.omo/evidence/generated-asset-fakes/
+!.omo/evidence/ai-intent-coverage-budget/
+!.omo/rules/
+!.omo/rules/**
+artifacts/
+test-results/
+qa-screenshots/
+# one-off probes, dev logs, and bun/cargo install residue relocated out of root
+scratch/
+_backups/
+*.log
+debug.log
+process_temp.js
+qa-*.png
+*-qa.png
+rpg-zzu-*.png
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+# Windows 예약 장치명 — 셸에서 `> nul` 오타로 생긴다. git 이 인덱싱에 실패해
+# `git add -A` 가 통째로 죽으므로(워크트리 스냅샷 차단) 반드시 무시한다.
+nul
+.vscode/*
+!.vscode/extensions.json
+
+# tooling state / QA artifacts / infra handoff (never commit)
+.omc/
+.playwright-mcp/
+evidence/
+# 위 evidence/ 는 어디에 있는 evidence 디렉터리든 잡으므로 앞에서 둔 .omo/evidence 화이트리스트를
+# 무력화한다(실측: git check-ignore -v 가 .gitignore 의 evidence/ 행을 지목했다). 증거로
+# 추적하는 .omo/evidence 하위 디렉터리는 이 뒤에서 다시 예외 처리해야 한다.
+!.omo/evidence/
+!.omo/evidence/event-editor-ux/
+!.omo/evidence/event-editor-ux/**
+!.omo/evidence/ai-compaction/
+!.omo/evidence/ai-compaction/**
+!.omo/evidence/ai-apply-without-approval/
+!.omo/evidence/ai-apply-without-approval/**
+# 실측: 위 `.omo/evidence/*` 와 바로 위 `evidence/` 가 둘 다 이 디렉터리를 잡고 `*.log` 까지 겹친다.
+# 마지막 규칙이 이기므로 추적할 증거 디렉터리는 여기(가장 뒤)에서 다시 예외 처리한다.
+!.omo/evidence/ai-place-passable-20260827/
+!.omo/evidence/ai-place-passable-20260827/**
+!.omo/evidence/ai-log-anon-delete/
+!.omo/evidence/ai-log-anon-delete/**
+!.omo/evidence/faceset-per-face/
+!.omo/evidence/faceset-per-face/**
+!.omo/evidence/assistant-resize-collapse/
+!.omo/evidence/assistant-resize-collapse/**
+!.omo/evidence/bugfix-sweep/
+!.omo/evidence/bugfix-sweep/**
+# 표면 게이트의 실효성 감사 결과(scripts/audit-gate-mutations.mjs). 게이트가 "돈다"가 아니라
+# "실제 소스 결함을 이름으로 지목한다"는 증거라, 게이트 자체와 같이 리뷰돼야 한다.
+!.omo/evidence/event-editor-guard/
+!.omo/evidence/event-editor-guard/**
+# 사이드바 레이아웃은 단위 테스트로 볼 수 없다 — 짧은 뷰포트에서 맵 진입점이 화면
+# 안에 있는지, 레이일 폭이 색상표현과 일치하는지는 및음으로만 증명된다.
+!.omo/evidence/sidebar-ux/
+!.omo/evidence/sidebar-ux/**
+# 전투 이펙트 앵커·조준 표시 증거. 좌표와 조준 표시는 단위 테스트로 볼 수 없어
+# test/runtime/battle-target-anim.spec.ts 가 찍는 스크린샷이 정본 증거다.
+# 실측: 이 디렉터리의 PNG 두 개는 `git add -f` 로만 들어갔고(규칙 17행 `.omo/evidence/*` 가
+# 잡는다), 허용목록이 없으면 이펙트를 다시 찍어도 `git add -A` 가 그 갱신을 집지 않는다.
+!.omo/evidence/battle-anim-target/
+!.omo/evidence/battle-anim-target/**
+# 체공(hop) 연출 증거: 낙하가 "떨어진다"로 읽히는지는 정지 화면으로 증명되지 않는다.
+!.omo/evidence/character-hop/
+!.omo/evidence/character-hop/**
+handoff.md
+# 세션 로컬 상태·일회성 산출물 (never commit)
+/.mcp.json
+/mcps/
+/output/
+# legacy root tmp-* probes now live under scratch/ (gitignored above); keep
+# this rule to catch any future tmp-* dropped in root before relocation.
+/tmp-*
+# 세션 스크래치 디렉터리. `/tmp-*` 만 있어서 `/tmp/` 가 무시되지 않았고, 실측 157MB
+# (claude-session-detail.json 단일 파일 144MB)가 `git add -A` 한 번에 커밋될 수 있었다.
+/tmp/
+# 현대 외관 타일셋 연구 스크래치. 실측: v42.3 zip(6.9MB)과 .tmp/ 캡처 612개가
+# 워크트리 스냅샷 커밋을 타고 병합에 유입될 뻔했다. research-modern-exteriors.py 의 입력.
+/.tmp/
+/Modern_Exteriors_RPG_Maker_MV_v42.3.zip
+# 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
+# 생성물이 쌓이는 하위 디렉터리만 무시한다.
+/report-assets/shots/
+# Next.js 빌드 산출물. 실측: community-site/.next/ 가 516파일 108MB 로 커밋돼 있었고
+# .gitignore 에 .next 규칙이 아예 없었다. turbopack 캐시(.sst) · 서버 청크 · manifest ·
+# trace · BUILD_ID · .tsbuildinfo 전부 `npm run build` 로 재생성된다.
+# 덤으로 sourcemap 에 다른 사람 홈 경로(C:\Users\hyeon\...)가 8개 파일에 박혀 있었다.
+.next/
+# 루트에 흘린 일회성 리포트 HTML. 정본은 날짜 접두사가 붙은 docs/ 다.
+# 실측: 루트에 8건(1.4MB)이 커밋돼 있었고 문서 링크는 0건이었다.
+# 생성 스크립트가 있는 산출물(ai-npc-placement-proof.html)도 재생성되므로 커밋하지 않는다.
+/*-report.html
+/*-critique.html
+/*-proof.html
+/codebase-analysis-ko.html
+/stardew-feasibility-report.html
+# 진단·스크래치 산출물. 실측: 정리 시점에 루트/scripts 에 35건(9.5MB)이 쌓여 있었고
+# 모두 재생성 가능한 일회용이었다. 개별 삭제로 끝내면 다시 쌓이므로 패턴으로 막는다.
+# tsc 전체 출력 덤프
+/tsc-full*.txt
+# 에이전트 세션 덤프 (claude CLI 가 루트에 흘린다)
+/tmpclaude-*
+# 일회용 스크립트: scripts/scratch-*.{mts,cjs,py} 21건이 커밋 후보로 올라왔다.
+# 보존 가치가 있으면 scratch- 접두사를 떼고 정식 이름으로 커밋한다.
+/scripts/scratch-*
+# 배경 제거·리포트 생성용 일회용 루트 스크립트
+/remove_bg.*
+/_fix_report.py
+# 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
+.claude/
+.gjc/
+.codex/
+# Qoder 자동생성 repowiki. 실측 75파일. openwiki/ 가 코드베이스 지식의 정본인데
+# 이쪽은 도구가 리포를 스캔해 만든 중복이고 이미 stale 했다(10개 파일이 npm 전환 전
+# pnpm 모노레포로 기술). 잘못된 정보를 주는 중복이라 추적하지 않는다.
+.qoder/
+.qwen/
+.senpi/
+.agents/
+.codex-vite*.pid
+.codex-vite*.log
+.codex-event-proof*.log
+__pycache__/
+*.pyc
+# 심링크 형태의 node_modules도 차단 (과거 심링크 커밋 사고 — 슬래시 규칙은 디렉터리만 매치)
+node_modules
+.gjc/
+
+# dev 서버 TLS 자기서명 인증서 (scripts/dev-certs.sh 로 재발급)
+.certs/
+.commandcode/
+.team/
+.typecheck-out.txt
+db_ui_mockup.png
+docs/2026-08-05-house-harness-adversarial-review.md
+new-editor/COMPREHENSIVE.html
+
+# base64 를 인라인한 생성 리포트 HTML. 실측(2026-08-28): 500KB 이상 21건 58.5MB 였고
+# 최악은 docs/2026-07-20-showcase-project.html 11.9MB 가 285줄 — 한 줄이 수 MB 라서
+# 에이전트가 read/grep 한 번에 컨텍스트를 태웠다. 아래는 전부 생성 스크립트가 다시 만든다
+# (docs/INDEX.md 의 "워크트리에서 제거된 리포트" 표에 복구 명령이 있다).
+# 스크립트가 없는 과거 산출물은 git 히스토리에만 두고 여기 규칙도 두지 않는다.
+new-editor/REPORT.html
+docs/2026-07-20-showcase-project.html
+docs/2026-07-20-house-variety-catalog.html
+docs/2026-07-20-interior-ceiling-canon-report.html
+docs/2026-07-20-house-decor-stamp-report.html
+docs/2026-07-31-editor-game-ceiling-adversarial-report.html
+reports/generated-effect-showcase-2026-08-24.html
+reports/effect-audit-2026-08-21.html
+reports/effect-catalog-2026-08-21.html
+reports/effect-p0-fix-2026-08-21.html
+reports/left-sidebar-tools-adversarial-review.html
+
+# 일회용 프로브·세션 산출물. 실측(2026-08-28): scripts/ 503개 중 60개가 tmp-/scratch-/
+# probe-/_ 접두사 일회용이라 모든 glob 에 노이즈를 얹었고, .playwright-cli/ 8건은
+# 2026-07-23 세션 잔재였다. 남긴 예외: openwiki 가 감사 하네스로 지목한
+# probe-editor-surface.mjs, build-left-sidebar-review-report.mjs 가 spawn 하는 probe 3건,
+# src/assets/charsetFaceMap.ts 가 검증 방법으로 인용한 scratch-face-pair/faceset-grid.
+/scripts/tmp-*
+/scripts/probe-*
+!/scripts/probe-editor-surface.mjs
+!/scripts/probe-toolbar-clipping.mts
+!/scripts/probe-sidebar-keyboard.mts
+!/scripts/probe-overflow-dropdown-clip.mts
+!/scripts/scratch-face-pair.cjs
+!/scripts/scratch-faceset-grid.cjs
+/.playwright-cli/
+
+# CC0 BGM release audio: keep binaries/cache outside Git; pin assets/bgm-release-v1.json.
+# artifacts/bgm-release/ is already covered by artifacts/ above.
+/public/assets/cc0/audio/.bgm-stage-*/
+/public/assets/cc0/audio/.bgm-install.lock
+# CC0 BGM 카탈로그 오디오. 281곡/약 1.304 GB 는 일반 Git에 담지 않는다 —
+# GitHub Release 팩으로 배포하고 assets/bgm-release-v1.json에 검증 정보를 고정한다.
+# DigitalOcean CDN은 선택적 스트리밍과 관리자 팩 생성 원본으로 유지한다.
+# 예외: 기본 프로젝트가 CDN 없이도 소리를 내야 하므로 스타터 3곡은 추적한다
+# (src/assets/bgmStarterTracks.ts 와 짝이며 test/bgmCatalog.test.ts 가 존재를 검사한다).
+/public/assets/cc0/audio/catalog/*
+!/public/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3
+!/public/assets/cc0/audio/catalog/rtp-btl-001-vanguard-signal_fc54007f.mp3
+!/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3
+
+# 조수 UX 진단 프로브 산출물(전/후 근거만 큐레이션해 커밋한다).
+# 런타임 QA 하네스의 라이브 산출물 — 매 실행마다 디렉터리째 재생성된다(scripts/runtime-qa.mjs).
+# 보존할 증거는 verify-shots/runtime-export-charset-missing/ 처럼 별도 경로에 둔다.
+verify-shots/runtime-qa/
+verify-shots/opening-still-media/
+verify-shots/ai-assistant-ux/probe-baseline/
+verify-shots/ai-assistant-ux/probe-after/
+verify-shots/ai-assistant-ux/probe-live/
+verify-shots/ai-assistant-ux/probe-model/
+.omo/evidence/battle-flash-map/shots/
+verify-shots/map-modernize/scratch/
+reports/item-catalog-report.html
+verify-shots/item-catalog-report-render/
+
+# 전투 이펙트 개편 프레임 캡처 원본(수십 MB). 병치·카탈로그 시트(compare/, catalog/)만 추적한다.
+verify-shots/battle-anim-overhaul/before/
+verify-shots/battle-anim-overhaul/after/
+verify-shots/battle-anim-overhaul/summary.json
+verify-shots/battle-anim-overhaul/hero-before/
+verify-shots/battle-anim-overhaul/hero-after/
+verify-shots/battle-anim-overhaul/choreo-*/
+verify-shots/battle-anim-overhaul/trio-*/
+verify-shots/battle-skin-trio/
+
+# 스튜디오 P1 — 덱 접힘 공간 회수 전후. 마지막 규칙이 이긴다(`.omo/evidence/*` + `evidence/`).
+!.omo/evidence/studio-p1-collapse/
+!.omo/evidence/studio-p1-collapse/**
+
+# 스튜디오 P2 — 탭 첫 등장만 전환 · 컴포저 데크 크롬.
+!.omo/evidence/studio-p2-composer/
+!.omo/evidence/studio-p2-composer/**
+
+# GRAFT-1 strict graft-image evidence (st_01a07c55).
+!.omo/evidence/graft-proof/
+!.omo/evidence/graft-proof/**
+
+# OPRN-OUT-022 Combo Brush — acceptance evidence (st_01a08a5b).
+!.omo/evidence/oprn-022/
+!.omo/evidence/oprn-022/**
+
+# bAlt/aAlt 패리티 별도 리뷰 — 재현·판정 근거 (st_01a08ac6). OPRN-OUT-017 이 미뤄 둔 항목이
+# 실제 결함이었다는 증거라, 확장기 변경과 같이 리뷰돼야 한다.
+!.omo/evidence/balt-parity/
+!.omo/evidence/balt-parity/**
+# 구역 드나듦 트리거(locationTransition) 수용 근거. `evidence/` 규칙이 다시 잡으므로 여기서 예외.
+!.omo/evidence/loc-transition/
+!.omo/evidence/loc-transition/**
+
+# Growth DB adversarial review — defect + save/reload receipts.
+!.omo/evidence/growth-db-review/
+!.omo/evidence/growth-db-review/**
+
+dist-electron/
+dist-packages/
+.flip-default-check.*
+
+# Local team-host access codes (never commit or include in project backups).
+.oprn-host-access
+.oprn-host-access.*.tmp
+
+# Slates full-project DB snapshots are local; authored bundles, recipes and receipts are tracked.
+/verify-shots/slates*/project.json
+/verify-shots/slates*/reloaded-project.json
+/verify-shots/slates*/runtime-project.json
+/verify-shots/worldmap-terrain/*/project.json
+/test/fixtures/feature16-world/generated.json
+
+# Private local project selection
+.oprn-local.json
+
+# Opening still binaries live in the versioned GitHub Release pack.
+/public/assets/stills/pack/
+/.stills-stage-*/
+/public/assets/stills/.install.lock/
+
+/public/assets/stills/.stills-stage-*/
+qa-runs/
+
+# Generated QA/evidence and recovered/private project data are kept out of Git.
+/verify-shots/
+/.omo/evidence/
+/output/
+/reports/
+/.superpowers/sdd/
+/evidence/
+/deprecated/public/
+/recovered-assets/
+/.oprn-projects/

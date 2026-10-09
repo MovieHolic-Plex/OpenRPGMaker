@@ -1,0 +1,74 @@
+// s2-A.pxg → modern3 자동 재채색(remap_modern3.py)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kinari 0
+@mat b soil 0
+@mat c yuka 0
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbb
+@tblock 0 0
+3333333333333333
+3333333333333333
+3333333333332333
+3334333333333333
+3333333333333333
+3333333333333333
+3333333333343333
+3333333333333333
+3333323333333333
+3433333333333333
+3333333333333333
+3333333433333333
+3333333333333333
+3333333333333343
+3333333332333333
+3333333333333333
+3333333333333333
+4444444444444444
+3333333333333333
+2222222222222222
+2333333223333332
+2333333223332332
+2333233223333332
+2333333223333332
+2333333223333332
+2333233223333332
+2333333223332332
+2333333223333332
+1111111111111111
+2222222222222222
+2222222222222222
+1111111111111111

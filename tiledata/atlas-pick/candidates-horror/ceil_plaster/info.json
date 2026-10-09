@@ -1,0 +1,34 @@
+{
+ "id": "ceil_plaster",
+ "slug": "ceil_plaster",
+ "name": "천장 윗면(검정·밝은 회 테)",
+ "scene": "공통 뼈대",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "ceil_black 과 같은 꼴·같은 테 폭, 테만 밝은 회백(미술관·병원 — 흰 벽 위). 둘을 나란히 깔 수 있게 속 검정은 같게.",
+ "palette_hint": "vblack/void 속, vmarble/grave/dust 테",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "천장 윗면(미술관·병원)",
+ "worker": "hf1",
+ "autotile": "quad3x3+inner",
+ "set_with": [
+  "ceil_black",
+  "exit_dark",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "stairs_down",
+  "pillar_stone",
+  "pillar_marble",
+  "moonlight_floor"
+ ]
+}

@@ -1,0 +1,75 @@
+// rug_red 후보 B (w3)
+@size 48 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................................................
+................................................
+................................................
+................................................
+....CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC...-.
+....CDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD...-.
+....CDDDDCCDDDDCCDDDDCCDDDDCCDDDDCCDDDDCCDD...-.
+....CDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD...-.
+....CDCCDDDDCCDDDDCCDDD.BCDDDDCCDDDDCCDDDDC...-.
+....CDDDDDDDDDDDDDDDD...BBBDDDDDDDDDDDDDDDD...-.
+....CDDDDCCDDDDCCDD...EEEEBBBDDDDCCDDDDCCDD...-.
+....CDDDDDDDDDDDD...EEEEEEEEBBBDDDDDDDDDDDD...-.
+....CDCCDDDDCCD...EEEEDDDDEEEEBBBDDDCCDDDDC...-.
+....CDDDDDDDD...EEEEDDEEEEDDEEEEBBBDDDDDDDD...-.
+....CDDDDCC...EEEEDDEEEEEEEEDDEEEEBBBDDCCDD...-.
+....CDDDD...EEEEDDEEEEBBBBEEEEDDEEEEBBBDDDD...-.
+....CDCCDBBBEEEEDDEEEEBBBBEEEEDDEEEE...DDDC...-.
+....CDDDDDDBBBEEEEDDEEEEEEEEDDEEEE...DDDDDD...-.
+....CDDDDCCDDBBBEEEEDDEEEEDDEEEE...DDDDCCDD...-.
+....CDDDDDDDDDDBBBEEEEDDDDEEEE...DDDDDDDDDD...-.
+....CDCCDDDDCCDDDBBBEEEEEEEE...CDDDDCCDDDDC...-.
+....CDDDDDDDDDDDDDDBBBEEEE...DDDDDDDDDDDDDD...-.
+....CDDDDCCDDDDCCDDDDBBB...CCDDDDCCDDDDCCDD...-.
+....CDDDDDDDDDDDDDDDDDDB.DDDDDDDDDDDDDDDDDD...-.
+....CDCCDDDDCCDDDDCCDDDDCCDDDDCCDDDDCCDDDDC...-.
+....CDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD...-.
+....CDDDDCCDDDDCCDDDDCCDDDDCCDDDDCCDDDDCCDD...-.
+..............................................-.
+..............................................-.
+..............................................-.
+....-------------------------------------------.
+................................................
+@px 2 2 red:4 3 2 red:4 4 2 red:4 5 2 red:4 6 2 red:4 7 2 red:4 8 2 red:4 9 2 red:4 10 2 red:4 11 2 red:4
+@px 12 2 red:4 13 2 red:4 14 2 red:4 15 2 red:4 16 2 red:4 17 2 red:4 18 2 red:4 19 2 red:4 20 2 red:4 21 2 red:4
+@px 22 2 red:4 23 2 red:4 24 2 red:4 25 2 red:4 26 2 red:4 27 2 red:4 28 2 red:4 29 2 red:4 30 2 red:4 31 2 red:4
+@px 32 2 red:4 33 2 red:4 34 2 red:4 35 2 red:4 36 2 red:4 37 2 red:4 38 2 red:4 39 2 red:4 40 2 red:4 41 2 red:4
+@px 42 2 red:4 43 2 red:4 44 2 red:4 45 2 red:4 2 3 red:4 3 3 gold:6 4 3 gold:6 5 3 gold:6 6 3 gold:6 7 3 gold:6
+@px 8 3 gold:6 9 3 gold:6 10 3 gold:6 11 3 gold:6 12 3 gold:6 13 3 gold:6 14 3 gold:6 15 3 gold:6 16 3 gold:6 17 3 gold:6
+@px 18 3 gold:6 19 3 gold:6 20 3 gold:6 21 3 gold:6 22 3 gold:6 23 3 gold:6 24 3 gold:6 25 3 gold:6 26 3 gold:6 27 3 gold:6
+@px 28 3 gold:6 29 3 gold:6 30 3 gold:6 31 3 gold:6 32 3 gold:6 33 3 gold:6 34 3 gold:6 35 3 gold:6 36 3 gold:6 37 3 gold:6
+@px 38 3 gold:6 39 3 gold:6 40 3 gold:6 41 3 gold:6 42 3 gold:6 43 3 gold:6 44 3 gold:6 45 3 red:1 2 4 red:4 3 4 gold:6
+@px 43 4 red:2 44 4 gold:2 45 4 red:1 2 5 red:4 3 5 gold:6 43 5 red:2 44 5 gold:2 45 5 red:1 2 6 red:4 3 6 gold:6
+@px 43 6 red:2 44 6 gold:2 45 6 red:1 2 7 red:4 3 7 gold:6 43 7 red:2 44 7 gold:2 45 7 red:1 2 8 red:4 3 8 gold:6
+@px 23 8 gold:6 43 8 red:2 44 8 gold:2 45 8 red:1 2 9 red:4 3 9 gold:6 21 9 gold:6 22 9 gold:6 23 9 gold:6 43 9 red:2
+@px 44 9 gold:2 45 9 red:1 2 10 red:4 3 10 gold:6 19 10 gold:6 20 10 gold:6 21 10 gold:6 43 10 red:2 44 10 gold:2 45 10 red:1
+@px 2 11 red:4 3 11 gold:6 17 11 gold:6 18 11 gold:6 19 11 gold:6 43 11 red:2 44 11 gold:2 45 11 red:1 2 12 red:4 3 12 gold:6
+@px 15 12 gold:6 16 12 gold:6 17 12 gold:6 43 12 red:2 44 12 gold:2 45 12 red:1 2 13 red:4 3 13 gold:6 13 13 gold:6 14 13 gold:6
+@px 15 13 gold:6 43 13 red:2 44 13 gold:2 45 13 red:1 2 14 red:4 3 14 gold:6 11 14 gold:6 12 14 gold:6 13 14 gold:6 43 14 red:2
+@px 44 14 gold:2 45 14 red:1 2 15 red:4 3 15 gold:6 9 15 gold:6 10 15 gold:6 11 15 gold:6 43 15 red:2 44 15 gold:2 45 15 red:1
+@px 2 16 red:4 3 16 gold:6 36 16 gold:2 37 16 gold:2 38 16 gold:2 43 16 red:2 44 16 gold:2 45 16 red:1 2 17 red:4 3 17 gold:6
+@px 34 17 gold:2 35 17 gold:2 36 17 gold:2 43 17 red:2 44 17 gold:2 45 17 red:1 2 18 red:4 3 18 gold:6 32 18 gold:2 33 18 gold:2
+@px 34 18 gold:2 43 18 red:2 44 18 gold:2 45 18 red:1 2 19 red:4 3 19 gold:6 30 19 gold:2 31 19 gold:2 32 19 gold:2 43 19 red:2
+@px 44 19 gold:2 45 19 red:1 2 20 red:4 3 20 gold:6 28 20 gold:2 29 20 gold:2 30 20 gold:2 43 20 red:2 44 20 gold:2 45 20 red:1
+@px 2 21 red:4 3 21 gold:6 26 21 gold:2 27 21 gold:2 28 21 gold:2 43 21 red:2 44 21 gold:2 45 21 red:1 2 22 red:4 3 22 gold:6
+@px 24 22 gold:2 25 22 gold:2 26 22 gold:2 43 22 red:2 44 22 gold:2 45 22 red:1 2 23 red:4 3 23 gold:6 24 23 gold:2 43 23 red:2
+@px 44 23 gold:2 45 23 red:1 2 24 red:4 3 24 gold:6 43 24 red:2 44 24 gold:2 45 24 red:1 2 25 red:4 3 25 gold:6 43 25 red:2
+@px 44 25 gold:2 45 25 red:1 2 26 red:4 3 26 gold:6 43 26 red:2 44 26 gold:2 45 26 red:1 2 27 red:4 3 27 gold:6 4 27 red:2
+@px 5 27 red:2 6 27 red:2 7 27 red:2 8 27 red:2 9 27 red:2 10 27 red:2 11 27 red:2 12 27 red:2 13 27 red:2 14 27 red:2
+@px 15 27 red:2 16 27 red:2 17 27 red:2 18 27 red:2 19 27 red:2 20 27 red:2 21 27 red:2 22 27 red:2 23 27 red:2 24 27 red:2
+@px 25 27 red:2 26 27 red:2 27 27 red:2 28 27 red:2 29 27 red:2 30 27 red:2 31 27 red:2 32 27 red:2 33 27 red:2 34 27 red:2
+@px 35 27 red:2 36 27 red:2 37 27 red:2 38 27 red:2 39 27 red:2 40 27 red:2 41 27 red:2 42 27 red:2 43 27 red:2 44 27 gold:2
+@px 45 27 red:1 2 28 red:4 3 28 gold:6 4 28 gold:2 5 28 gold:2 6 28 gold:2 7 28 gold:2 8 28 gold:2 9 28 gold:2 10 28 gold:2
+@px 11 28 gold:2 12 28 gold:2 13 28 gold:2 14 28 gold:2 15 28 gold:2 16 28 gold:2 17 28 gold:2 18 28 gold:2 19 28 gold:2 20 28 gold:2
+@px 21 28 gold:2 22 28 gold:2 23 28 gold:2 24 28 gold:2 25 28 gold:2 26 28 gold:2 27 28 gold:2 28 28 gold:2 29 28 gold:2 30 28 gold:2
+@px 31 28 gold:2 32 28 gold:2 33 28 gold:2 34 28 gold:2 35 28 gold:2 36 28 gold:2 37 28 gold:2 38 28 gold:2 39 28 gold:2 40 28 gold:2
+@px 41 28 gold:2 42 28 gold:2 43 28 gold:2 44 28 gold:2 45 28 red:1 2 29 red:4 3 29 red:1 4 29 red:1 5 29 red:1 6 29 red:1
+@px 7 29 red:1 8 29 red:1 9 29 red:1 10 29 red:1 11 29 red:1 12 29 red:1 13 29 red:1 14 29 red:1 15 29 red:1 16 29 red:1
+@px 17 29 red:1 18 29 red:1 19 29 red:1 20 29 red:1 21 29 red:1 22 29 red:1 23 29 red:1 24 29 red:1 25 29 red:1 26 29 red:1
+@px 27 29 red:1 28 29 red:1 29 29 red:1 30 29 red:1 31 29 red:1 32 29 red:1 33 29 red:1 34 29 red:1 35 29 red:1 36 29 red:1
+@px 37 29 red:1 38 29 red:1 39 29 red:1 40 29 red:1 41 29 red:1 42 29 red:1 43 29 red:1 44 29 red:1 45 29 red:1

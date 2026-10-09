@@ -1,0 +1,37 @@
+[
+ {
+  "building": "A2",
+  "place": "jp-city-school-1f-26x20",
+  "name": "일본 학교 본관(中学校・高校) 실내"
+ },
+ {
+  "building": "B1a",
+  "place": "jp-city-gym-21x15",
+  "name": "일본 학교 체육관 실내"
+ },
+ {
+  "building": "A1b",
+  "place": "jp-city-kindergarten-18x12",
+  "name": "일본 유치원 실내"
+ },
+ {
+  "building": "B1b",
+  "place": "jp-city-station-16x11",
+  "name": "일본 작은 지상역(駅) — 역사·승강장·전철 차내"
+ },
+ {
+  "building": "A1c",
+  "place": "jp-city-office-1f-16x10",
+  "name": "일본 사무 빌딩 실내(1층 로비 + 사무층)"
+ },
+ {
+  "building": "B2",
+  "place": "jp-city-post-office-12x13",
+  "name": "일본 우체국(郵便局) 실내"
+ },
+ {
+  "building": "E1",
+  "place": "jp-city-mansion-lobby-9x12",
+  "name": "일본 맨션 공용부(엔트런스·엘리베이터 홀·외복도)"
+ }
+]

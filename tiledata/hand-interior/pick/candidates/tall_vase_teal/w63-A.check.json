@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_vase_teal/w63-A.pxg",
+ "id": "tall vase teal",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "note": "몸통=tall vase blue w2-B 그대로 복사(A~F 의 뜻이 같아 teal 6단으로 다시 칠해짐). 광택 강조·오른쪽 그늘·바닥 그림자 동일",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_house/k6-A.pxg",
+ "set": "jp",
+ "id": "kit_house",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.246
+ },
+ "refmap": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding"
+  ]
+ },
+ "colors": 39,
+ "bbox": [
+  0,
+  0,
+  127,
+  63
+ ],
+ "note": "기와지붕·크림 사이딩·청록 알루미늄 창의 강남 기준 결(단 표·윤곽 A 기준)",
+ "ok": true
+}

@@ -1,0 +1,28 @@
+{
+ "id": "blood_pool",
+ "slug": "blood_pool",
+ "name": "핏자국 웅덩이",
+ "scene": "연출",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "바닥에 고인 피: 가운데 짙은 덩이(blood 2~3단) + 가장자리 번짐($), 윗 가장자리 반짝임 1px 한두 점, 튄 방울 두세 점. 둥근 도장처럼 대칭이면 실패 — 한쪽으로 흘러 기운 모양.",
+ "palette_hint": "blood, $ 번짐",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "set_with": [
+  "blood_trail",
+  "handprints_wall",
+  "writing_wall",
+  "footprints"
+ ]
+}

@@ -1,0 +1,71 @@
+/* map 표면 — shell/figma-editor/05-canvas-statusbar.css 에서 옮겨 온 규칙(2026-09-11, Task 6.5 커밋 B). 선택자 주어가 map 어휘라 그 파일에서는
+   표면 밖 규칙이었거나, [레이어 보존] 표시가 있으면 레이어 순서가 특이도를 이기게 되어 오늘의 승자를 지키려면 이 레이어에 있어야 하는 규칙이다.
+   규칙 본문은 바이트 그대로이고, 이 파일은 원본의 @import 바로 다음에 들어가 오늘의 캐스케이드 위치를 보존한다.
+   각 규칙 앞 주석은 원본 파일:줄 이다. */
+
+/* shell/figma-editor/05-canvas-statusbar.css:1-6 */
+.canvas-area,
+  .editor-layout .canvas-area {
+    /* 하단 상태바는 렌더하지 않는다. 캔버스가 하단까지 온전히 사용한다. */
+    --editor-canvas-chrome-top: 48px;
+    --editor-canvas-chrome-bottom: 0px;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:8-10 */
+.editor-canvas-scroll-shell {
+    background: var(--editor-canvas-bg);
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:12-24 */
+.editor-layout .canvas-area .phaser-container {
+    background: var(--bg-canvas);
+    border: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    min-height: 100%;
+    min-width: 100%;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:32-34 */
+.editor-canvas-scroll-shell {
+    overflow: hidden;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:36-38 */
+.canvas-toolbar {
+    box-sizing: border-box;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:40-46 */
+
+/* shell/figma-editor/05-canvas-statusbar.css:48-52 */
+.zoom-button {
+    flex: 0 0 auto;
+    min-width: 44px;
+    white-space: nowrap;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:54-56 */
+.canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+    min-width: 72px;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:58-62 */
+.map-lock-takeover-button {
+    font: 700 12px/1 var(--font-ui);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+/* shell/figma-editor/05-canvas-statusbar.css:64-69 */
+.map-lock-takeover-button:hover,
+  .map-lock-takeover-button:focus-visible {
+    background: var(--control-bg-hover);
+    outline: 1px solid var(--editor-blue);
+    outline-offset: 1px;
+  }

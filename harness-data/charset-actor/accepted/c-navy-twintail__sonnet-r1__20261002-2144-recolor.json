@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-navy-twintail__sonnet-r1",
+ "brief": "c-navy-twintail",
+ "name": "남색 옷의 양갈래 소녀",
+ "base": "People5:1",
+ "base_label": "People5 2번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-navy-twintail__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-navy-twintail__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "빨간 리본 남색 옷 양갈래 소녀",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "어린이",
+   "hair": "검은 머리"
+  },
+  "role": "마을 소녀 (평범한 마을 아이)",
+  "appearance": "검은 머리를 양쪽 위로 둥글게 묶고 빨간 리본을 단 소녀. 남색 상의에 흰색 치마(아랫단)를 입었고 목에 갈색 옷깃이 보이며, 얼굴은 갈색 눈에 볼이 발그레하다.",
+  "colors": [
+   "검은 머리",
+   "빨간 리본",
+   "남색 상의",
+   "흰 치마",
+   "갈색 옷깃"
+  ],
+  "tags": [
+   "마을 사람",
+   "소녀",
+   "양갈래",
+   "리본",
+   "남색",
+   "마을 아이",
+   "시장",
+   "학생"
+  ],
+  "fits": "마을 광장이나 집 앞, 학교·시장 같은 곳에서 말을 거는 평범한 소녀 NPC 로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:49+00:00"
+ }
+}

@@ -1,0 +1,471 @@
+@media (min-width: 800px) {
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) {
+    --db-modern-accent: var(--accent);
+    --db-modern-accent-strong: var(--accent-hover);
+    --db-modern-bg: var(--bg-raised);
+    --db-modern-chrome: var(--bg-overlay);
+    --db-modern-panel: var(--bg-raised);
+    --db-modern-panel-alt: var(--bg-raised);
+    --db-modern-line: var(--border-subtle);
+    --db-modern-line-soft: var(--border-subtle);
+    --db-modern-text: var(--text-1);
+    --db-modern-muted: var(--text-2);
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    border-radius: 7px;
+    box-shadow: 0 18px 48px rgba(60, 48, 32, 0.12);
+    color: var(--db-modern-text);
+    font-family: var(--font-ui);
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-header {
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--border-subtle);
+    min-height: 50px;
+    padding: 0 18px;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-header h2 {
+    color: var(--text-1);
+    font: 700 18px/50px var(--font-ui);
+    letter-spacing: 0;
+    text-shadow: none;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-controls button {
+    border: 0;
+    background: transparent;
+    color: var(--text-1);
+    font-weight: 700;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-body {
+    background: var(--bg-raised);
+    grid-template-rows: 58px minmax(0, 1fr);
+  }
+
+.database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tabs {
+    align-items: end;
+    background: var(--bg-raised);
+    border-bottom: 1px solid var(--border-subtle);
+    gap: 18px;
+    padding: 0 22px;
+  }
+
+.database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab {
+    background: transparent;
+    border: 0;
+    border-bottom: 3px solid transparent;
+    border-radius: 0;
+    color: var(--text-1);
+    font: 500 14px/1 var(--font-ui);
+    height: 58px;
+    min-width: auto;
+    padding: 0 0 2px;
+  }
+
+.database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-tab.active {
+    background: transparent;
+    border-bottom-color: var(--db-modern-accent);
+    color: var(--db-modern-accent);
+    font-weight: 700;
+    margin-bottom: 0;
+  }
+
+.database-modal-body:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .db-body {
+    background: var(--db-modern-bg);
+    border: 0;
+    margin: 0;
+    padding: 14px 16px;
+  }
+
+.database-modal-body .oprn-record-workspace {
+    gap: 14px;
+    grid-template-columns: minmax(236px, 314px) minmax(0, 1fr);
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-modal-footer {
+    align-items: center;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-subtle);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 104px 104px 104px 104px;
+    gap: 12px;
+    margin: 0 10px 10px;
+    min-height: 78px;
+    padding: 18px 20px;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-footer-status {
+    color: var(--text-1);
+    font-size: 13px;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-footer-button {
+    background: var(--control-bg);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-s);
+    color: var(--text-1);
+    font: 600 14px/1 var(--font-ui);
+    min-height: 44px;
+  }
+
+.database-modal-window:has(:is(
+    .oprn-record-workspace,
+    .db-record-workspace,
+    .db-elements-classic,
+    .db-parity-form,
+    .db-system-form,
+    .db-terms-form,
+    .db-utility-form,
+    .db-common-events-workspace,
+    .tileset-db-workspace
+  )) .database-footer-button.primary {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    border-color: var(--accent-border);
+    color: var(--text-1);
+  }
+
+.database-modal-body .oprn-record-workspace {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+.database-modal-body .oprn-record-list-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    display: grid;
+    /* h3 / 검색 / 카테고리 필터 칩(아이템·장비만, 없으면 빈 행) / 목록(1fr) / 푸터 / 툴바.
+       칩 행은 컬렉션에 따라 렌더되지 않으므로 각 자식을 명시적 행에 배치한다 — 그래야
+       칩 유무와 무관하게 목록이 항상 1fr 행을 차지한다. flex-wrap 칩 행의 max-content
+       높이를 그리드가 0 으로 읽는 케이스(align-content: normal/stretch)가 있어
+       minmax(max-content, auto) 로 내용 높이를 보장한다(빈 행은 max-content 0 → 0px). */
+    grid-template-rows: auto auto minmax(max-content, auto) minmax(0, 1fr) auto auto;
+    min-width: 0;
+    padding: 16px 16px 14px;
+  }
+
+.database-modal-body .oprn-record-list-pane > h3 {
+    grid-row: 1;
+  }
+
+.database-modal-body .oprn-record-list-pane > .db-search {
+    grid-row: 2;
+  }
+
+.database-modal-body .oprn-record-list-pane > .db-filter-chips {
+    grid-row: 3;
+  }
+
+.database-modal-body .oprn-record-list-pane > .db-list {
+    grid-row: 4;
+  }
+
+.database-modal-body .oprn-record-list-pane > .oprn-record-list-footer {
+    grid-row: 5;
+  }
+
+.database-modal-body .oprn-record-list-pane > .db-toolbar {
+    grid-row: 6;
+  }
+
+.database-modal-body .oprn-record-list-pane h3 {
+    background: transparent;
+    border: 0;
+    color: var(--text-1);
+    display: block;
+    font: 700 17px/1.2 var(--font-ui);
+    height: auto;
+    margin: 0 0 12px;
+    text-align: left;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-search {
+    margin: 0 0 8px;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-search input {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--db-modern-text);
+    font: 400 16px/1.2 var(--font-ui);
+    height: 38px;
+    padding: 5px 8px;
+    width: 100%;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: grid;
+    margin: 0;
+    overflow: auto;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list-row {
+    align-items: center;
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    color: var(--text-1);
+    display: grid;
+    font: 500 16px/1.25 var(--font-ui);
+    gap: 4px;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 36px;
+    padding: 0 14px;
+    width: 100%;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list-row:hover {
+    background: var(--bg-raised);
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list-row.active {
+    background: var(--accent-muted);
+    color: var(--text-1);
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list-number {
+    font-variant-numeric: tabular-nums;
+    min-width: 48px;
+    text-align: right;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-list-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+.database-modal-body .oprn-record-list-pane .oprn-record-list-footer {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+.database-modal-body .oprn-record-list-pane .oprn-maximum-button {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--text-2);
+    font-size: 14px;
+    min-height: 36px;
+  }
+
+.database-modal-body .oprn-record-list-pane .db-toolbar {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+.database-modal-body .oprn-record-detail-pane {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 5px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-width: 0;
+    overflow: hidden;
+    padding: 14px;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-record-identity {
+    background: var(--bg-raised);
+    border: 0;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    margin: 0 0 12px;
+    padding: 0 0 10px;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form {
+    background: var(--bg-raised);
+    border: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 0;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(
+    fieldset,
+    .oprn-db-fieldset,
+    .db-panel,
+    .db-class-panel
+  ) {
+    background: var(--db-studio-surface, var(--bg-raised, #FFFFFF));
+    border: 0;
+    border-top: 1px solid var(--db-studio-border-subtle, rgba(15,23,42,.08));
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--db-studio-text-1, var(--text-1));
+    margin: 0 0 4px;
+    padding: 16px 0 12px;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(legend, h3, h4) {
+    color: var(--db-studio-text-1, var(--text-1));
+    font: 600 12px/1.2 var(--font-ui);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0 0 10px;
+    padding: 0;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(.field, label) {
+    color: var(--db-modern-muted);
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(input:not([type="radio"]), select, textarea) {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--db-modern-text);
+    font: 400 14px/1.25 var(--font-ui);
+    min-height: 30px;
+    padding: 3px 8px;
+  }
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮어 글자가 화살표를 침범한다.
+     보정은 같은 @media 안에 둬야 이 규칙이 켜지는 폭에서만 함께 적용된다. */
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form select {
+    padding-right: 24px;
+  }
+
+.database-modal-body .oprn-record-detail-pane .oprn-detail-form :is(button, .btn) {
+    border-radius: 4px;
+    font-family: var(--font-ui);
+  }
+
+.database-modal-body :is(.oprn-detail-skills, .oprn-detail-items, .oprn-detail-equipment) {
+    align-content: start;
+    display: grid;
+    gap: 10px 12px;
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+    padding-right: 6px;
+  }
+}

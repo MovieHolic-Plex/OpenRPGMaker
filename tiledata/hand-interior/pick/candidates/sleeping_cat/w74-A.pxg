@@ -1,0 +1,31 @@
+// w74-A 잠든 고양이 재작: 둥글게 만 몸(위에서 약간 내려다봄)+머리 끝 두 삼각 귀+앞으로 감은 꼬리+감은 눈 두 줄+줄무늬+흰 배·꼬리끝+바닥 그림자
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a orange 1
+@mat b orange 2
+@mat c orange 3
+@mat d orange 4
+@mat e orange 5
+@mat f orange 6
+@mat g linen 5
+@mat h linen 3
+@mat p pink 4
+@mat q pink 3
+@mblock 0 0
+................
+................
+................
+.........aaaa...
+..a..a..afdddaa.
+.aqaaqa.afeedbba
+aeeeeeeaefeddbca
+aefeeeeaeeddbddc
+aaeaaeedddddbcca
+aeepeeedddbddcca
+ahgggeeddddbccca
+.aahgggeedddccaa
+..aaahggggeeaa..
+....aaaaaagggaa.
+...-~~~~~~~~~~~.
+................

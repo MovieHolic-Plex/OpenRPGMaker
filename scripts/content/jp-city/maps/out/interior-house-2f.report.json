@@ -1,0 +1,52 @@
+{
+ "map": {
+  "id": "jp-city-house-2f",
+  "size": [
+   22,
+   12
+  ]
+ },
+ "start": [
+  18,
+  10
+ ],
+ "summary": "손 도트 실내 '2층 단독주택 2층' 22×12 (jp-city-house-2f, jp_city) — 출입구에서 닿는 칸 66, 닿지 못한 빈 바닥 0, 경고 1 — 평면이 참고 예제 「일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다",
+ "tool": {
+  "mapId": "jp-city-house-2f",
+  "tilesetId": "jp_city",
+  "width": 22,
+  "height": 12,
+  "reachable": 66,
+  "floorCells": 91,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 18,
+    "y": 10
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 2,
+  "warnings": [
+   "평면이 참고 예제 「일본 도시 · 일본 집 실내 예제 · 2층 단독주택 2층」와 100% 같다 — 사용자가 그 예제를 달라고 한 게 아니면 요청(방 수·쓰임·크기)에 맞게 새로 짠다(rooms 로 방 사각형을 다시 놓는다). 예제는 문법을 배우는 자료다"
+  ]
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 19,
+   "y": 10,
+   "to": "jp-city-house-1f",
+   "reached": true
+  },
+  {
+   "x": 20,
+   "y": 10,
+   "to": "jp-city-house-1f",
+   "reached": true
+  }
+ ],
+ "reach": 66,
+ "ok": true
+}

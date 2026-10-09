@@ -1,0 +1,179 @@
+/* 「세계 생성」 탭 — 미리보기 캔버스, 예시 카드 격자, 낱말 규칙 행.
+   색은 DB 스튜디오 토큰만 쓴다(스타일 규약): 새 hex 를 들이지 않는다. */
+
+.wg-preview-row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(220px, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.wg-preview {
+  display: inline-flex;
+  padding: 6px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  background: var(--db-studio-inset);
+  box-shadow: var(--db-studio-shadow);
+}
+
+.wg-preview-canvas {
+  display: block;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+
+.wg-preview-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 220px;
+  min-height: 140px;
+  padding: 16px;
+  color: var(--db-studio-text-2);
+  text-align: center;
+}
+
+.wg-preview-side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.wg-preview-landmarks {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--db-studio-text-3);
+}
+
+.wg-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.wg-preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 12px;
+  transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+}
+
+.wg-preset-card:hover {
+  border-color: var(--db-studio-accent);
+  transform: translateY(-1px);
+}
+
+.wg-preset-card:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+
+.wg-preset-card.is-active {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+}
+
+.wg-preset-card .wg-preview {
+  width: 100%;
+  justify-content: center;
+}
+
+.wg-preset-name {
+  font-size: 13px;
+  color: var(--db-studio-text-1);
+}
+
+.wg-preset-summary {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--db-studio-text-3);
+}
+
+.wg-preset-example {
+  font-size: 11px;
+  color: var(--db-studio-text-3);
+  opacity: 0.85;
+}
+
+.wg-keyword-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+}
+
+.wg-keyword-row.is-off {
+  opacity: 0.55;
+}
+
+.wg-keyword-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.wg-keyword-toggle > span:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.wg-keyword-label {
+  flex: 1 1 auto;
+  font-size: 13px;
+  color: var(--db-studio-text-1);
+}
+
+.wg-keyword-landmarks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.wg-landmark-chip {
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--db-studio-text-3);
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+}
+
+.wg-landmark-chip.is-on {
+  color: var(--db-studio-text-1);
+  background: var(--db-studio-accent-soft, var(--db-studio-surface-2));
+  border-color: var(--db-studio-accent);
+  font-weight: 600;
+}
+
+.wg-landmark-chip:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+@media (width <= 1180px) {
+  .wg-preview-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

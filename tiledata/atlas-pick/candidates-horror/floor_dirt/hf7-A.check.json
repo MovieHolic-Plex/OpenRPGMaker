@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_dirt/hf7-A.pxg",
+ "set": "horror",
+ "id": "floor_dirt",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.273
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.301
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구·깨끗): 어두운 흙 톤 2 바탕 + 밟혀 다져진 밝은 자리 한 곳 + 작은 돌 셋 + 어두운 흙덩이 점. 사방 이어짐",
+ "ok": true
+}

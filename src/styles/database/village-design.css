@@ -1,0 +1,139 @@
+/* 마을 설계서. 이미지·컨트롤은 기존 DB 컴포넌트를 사용한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-heading {
+  align-items: center;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-heading h2 {
+  color: var(--db-studio-text-1);
+  font-size: 21px;
+  line-height: 1.5;
+  margin: 3px 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-heading small {
+  color: var(--db-studio-text-3);
+  font-size: 12px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-body {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 28%);
+  padding: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-editor,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields {
+  min-width: 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-tabs .active,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-heading button[aria-pressed="true"] {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent-border);
+  color: var(--db-studio-accent);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview {
+  align-self: start;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview h3 {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 5px 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview canvas {
+  height: auto;
+  max-width: 100%;
+  image-rendering: pixelated;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview textarea {
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 1.65;
+  min-height: 110px;
+  resize: vertical;
+  width: 100%;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-summary-row {
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  font-size: 12px;
+  gap: 12px;
+  justify-content: space-between;
+  padding-bottom: 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-stories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-stories label {
+  align-items: center;
+  display: inline-flex;
+  font-size: 13px;
+  gap: 8px;
+  min-height: 32px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-template-picker {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-template-option {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 8px;
+  position: relative;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-template-option input {
+  left: 8px;
+  position: absolute;
+  top: 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-template-option canvas {
+  height: 96px;
+  max-width: 100%;
+  width: 96px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-option-grid {
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-fields .db-village-option-name {
+  line-height: 1.5;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview details {
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-preview summary { cursor: pointer; }
+@media (max-width: 1280px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-village-design-body { grid-template-columns: minmax(0, 1fr); }
+}

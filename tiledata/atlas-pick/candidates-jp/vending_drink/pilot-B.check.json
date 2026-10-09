@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/pilot-B.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  1,
+  2,
+  15,
+  30
+ ],
+ "note": "명암 강화: 왼 테 밝은 줄, 유리칸 속 청록 빛, 선반 밝게, 오른 옆 두 단, 발치 불빛 번짐(%)과 오른쪽 아래 그림자",
+ "ok": true
+}

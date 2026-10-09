@@ -1,0 +1,199 @@
+# 맵 칸 4층 + 그림자 (MZ식) 설계
+
+- 날짜: 2026-09-24
+- 계기: Rasak Fantasy(RPG Maker MZ 48px) 팩 비공식 지원. OPRN 은 칸당 아래층 1장 + 위층 1장만 그려서
+  MZ 맵을 옮기려면 겹친 칸을 합성 타일로 구워야 했다(`scripts/content/rasak/fold_layers.py`).
+  합성은 나중에 한 겹만 고칠 수 없고 아틀라스를 불린다.
+- 근거 자료: 기존 맵 분석 http://mdc-server:18301/mz-layer-migration.html
+  (로컬 프로젝트 44개, 중복 뺀 맵 196개, 칸 109,177개, 타일 배치 122,694개)
+
+## 1. 결정 요약
+
+| 항목 | 결정 |
+|---|---|
+| 칸 구조 | 1층 · 2층 · 3층 · 4층 + 그림자. 리전은 넣지 않는다(구역은 기존 `locations` 가 맡는다) |
+| 층의 뜻 | 1·2층 = 지금 아래층 규칙(항상 캐릭터 밑). 3·4층 = 지금 위층 규칙(타일 ★/○/× 표시로 앞뒤) |
+| 저장 | 기존 `lowerTiles`=1층, `upperTiles`=3층 그대로. 2층·4층·그림자는 새 선택 칸 |
+| 기존 맵 | 변환 없음. 새 칸이 없으면 비어 있는 것 → 화면·통행·앞뒤 1:1 |
+| 칠하기 | 기본은 자동 층. 사람이 원하면 층을 고정 |
+| UI | 그리기 탭에 층 선택기 `자동 · 1 · 2 · 3 · 4 · 그림자 · 이벤트`. 상단바 층 버튼은 없앤다 |
+| 옛 쌓기 | `lowerTileStacks`/`upperTileStacks` 는 은퇴 완료. 이번에 코드까지 걷어낸다 |
+
+## 2. 데이터 모델
+
+```ts
+interface GameMap {
+  lowerTiles: number[];          // 1층 (기존)
+  lowerOverlayTiles?: number[];  // 2층 (새) — 길이 width*height, -1 = 빈칸
+  upperTiles: number[];          // 3층 (기존)
+  upperOverlayTiles?: number[];  // 4층 (새)
+  shadowBits?: number[];         // 그림자 (새) — 0..15, bit0 왼위 · bit1 오른위 · bit2 왼아래 · bit3 오른아래 (MZ 와 같음)
+  /** @deprecated 읽기 전용 이관용. §8 참조 */
+  lowerTileStacks?: Record<number, number[]>;
+  upperTileStacks?: Record<number, number[]>;
+}
+```
+
+- 새 칸은 **쓰는 맵에만** 생긴다. 모든 칸이 비면 저장 때 빼서, 옛 맵과 새 맵의 JSON 이 같다.
+- 층 번호 ↔ 칸 이름은 한 곳(`src/project/mapLayers.ts`, 새 파일)에만 둔다.
+  ```ts
+  type TileLayerNo = 1 | 2 | 3 | 4;
+  layerTileAt(map, layer, index): number             // 없는 칸은 -1
+  setLayerTileAt(map, layer, index, tile): void      // 필요할 때만 선택 칸을 만든다(빈값이면 만들지 않는다)
+  shadowAt(map, index) / setShadowAt(map, index, bits)
+  cellLayerTiles(map, index): [l1, l2, l3, l4]       // 1→4 순서
+  cloneExtraLayers(map)                              // 선택 칸 깊은 복사(없는 칸은 결과에도 없다)
+  remapExtraLayers(map, w, h, sourceIndex)           // 크기 바꾸기·밀기 — 결과가 모두 비면 키를 뺀다
+  cropExtraLayers(map, srcW, srcH, x, y, w, h)       // 잘라내기·좌상단 크기 바꾸기
+  compactMapLayers(map)                              // 모두 빈 선택 칸을 뺀다(칸을 비우는 변형기 끝에서)
+  malformedExtraLayerKeys(record, expected)          // 길이가 틀린 선택 칸(불러오기에서 버린다)
+  EXTRA_LAYER_KEYS                                   // ["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"]
+  ```
+  (초안의 `tileAt/setTileAt/clearCell/forEachLayer` 는 위 이름으로 구현됐다. `clearCell` 은 없다 — 칸 비우기는
+  `setLayerTileAt(…, -1)`·`setShadowAt(…, 0)` 뒤 `compactMapLayers`.)
+  새 코드와 고치는 코드는 `lowerTiles[i] = …` 를 직접 쓰지 않고 이 헬퍼를 쓴다.
+- 그림자는 타일이 아니라 비트라서 타일셋과 무관하다. 칸을 넷으로 나눈 조각 단위로 검정 반투명(α 0.5)을 칠한다.
+
+## 3. 그리는 순서와 캐릭터 앞뒤
+
+```
+1층 → 2층 → 그림자 → 3층 → 4층        (에디터·게임·미리보기·썸네일 모두 같은 순서)
+```
+
+- 1·2층: 지금 아래층과 같다. 항상 캐릭터 밑(`MAP_LOWER_LAYER_DEPTH`).
+- 그림자: 2층 위, 3층 밑. MZ 도 바닥 두 층 뒤에 그림자를 그린다.
+- 3·4층: 지금 위층과 같은 규칙(`mapUpperTileDepth`) — ★(통행) 캐릭터 위(계단 태그는 예외로 밑), ○ 캐릭터 밑, × 캐릭터와 세로 정렬.
+  같은 규칙 안에서 4층이 3층 위.
+  - **깊이 동점 주의:** ★ 는 고정 깊이(`MAP_UPPER_LAYER_DEPTH`), × 는 캐릭터와 같은 y 정렬이라 3·4층 타일이 같은 깊이가 된다.
+    추가 순서에 기대지 말고 위 층에 아주 작은 오프셋을 준다: 2층 `+0.01`, 그림자 `+0.02`(아래 묶음 컨테이너 안), 4층 `+0.01`(3층 규칙 값 위).
+    크게 주면 × 가구가 같은 줄에 선 캐릭터 앞으로 튄다.
+
+## 4. 통행
+
+맨 위층부터 내려가며 ★ 타일은 건너뛰고, 처음 만난 타일의 통행이 칸을 정한다 (4 → 3 → 2 → 1).
+지금 규칙("위층이 O/X 면 위층, ★ 면 아래층", `src/project/collision.ts`)을 네 층으로 늘린 것이라
+2·4층이 빈 옛 맵은 결과가 같다. 그림자는 통행에 관여하지 않는다.
+
+## 5. 자동 층
+
+### 5.1 타일 종류
+
+타일마다 세 종류 중 하나를 갖는다: **바닥**(ground) · **장식**(decor) · **물체**(object).
+`tileMeta[t].autoLayer?: 'ground' | 'decor' | 'object'` 에 저장하고, 없으면 아래 순서로 계산한다.
+
+1. **실제 쓰인 층**: 그 타일셋을 쓰는 프로젝트 맵에서 아래층에 더 많이 놓였으면 아래 계열, 위층이면 물체.
+2. **타일 설명**: `tileMeta[t].defaultLayer` (`lower` → 아래 계열, `upper` → 물체).
+3. **그림**: ★(`priority === 'upper'`) 이거나 투명 픽셀이 2% 넘으면 물체, 아니면 아래 계열.
+
+아래 계열은 투명 픽셀이 있으면 **장식**, 없으면 **바닥**이다.
+
+- 기존 배치와의 일치율(분석 결과): ① 그림 92.6% · ② 타일 설명 95.2% · ①~③ 순서 99.5%.
+  99.5% 는 같은 맵들로 배운 값이라 기존 타일셋 기준이다. 쓰인 기록이 없는 새 타일셋은 ②·③ 으로 정해진다.
+- 기존 타일셋은 한 번 계산해 `autoLayer` 에 저장한다(맵이 늘 때마다 흔들리지 않게).
+- MZ 팩 프리셋(Rasak)은 시트 칸이 종류를 정한다: A1·A2 바닥 종류·A3·A4·A5 = 바닥, A1 장식 종류·A2 장식 종류 = 장식, B~E = 물체.
+- 틀린 종류는 타일셋 팔레트의 타일 우클릭 메뉴(`tilesetTileContextMenu.ts`)에서 고친다.
+- 두 층에 섞어 쓴 타일(분석상 38개, 배치의 0.5%, 대부분 LPC 실내 바닥)은 어느 규칙으로도 한쪽이 어긋난다 → 층 고정으로 칠한다.
+
+### 5.2 칠하기
+
+| 종류 | 자동 모드에서 들어가는 층 |
+|---|---|
+| 바닥 | 1층을 바꾸고 그 칸의 2층을 비운다 (풀을 다시 깔면 꽃이 지워진다 — **사용자 확인 필요**, MZ 에디터 동작과 같은지 미확인) |
+| 장식 | 2층을 바꾼다 |
+| 물체 | 3층이 비었거나 같은 타일이면 3층, 아니면 4층을 바꾼다 |
+
+- 층 고정 모드(1~4): 고른 층에만 칠한다. 다른 층은 건드리지 않는다.
+- 자동 타일(지형 이음)은 **같은 층 안에서만** 이웃을 본다.
+- 캔버스 위 커서 옆에 "자동 → 3층" 처럼 들어갈 층을 작게 보여 준다.
+
+### 5.3 지우기 · 집기
+
+- 자동 모드 지우개: 칸의 맨 위 타일부터 지운다(4 → 3 → 2 → 1). 그림자는 안 지운다.
+  옛 맵에서는 "위층 지우고 다음에 아래층" 과 같아 동작이 바뀌지 않는다.
+- 층 고정 지우개: 그 층만.
+- 집기(스포이드): 맨 위 타일을 집는다. 층 고정 모드면 그 층의 타일.
+
+### 5.4 그림자 모드
+
+- 붓: 누른 조각(칸의 ¼)을 켠다. 지우개: 끈다. 네모 선택으로 한꺼번에 켜고 끈다.
+- MZ 자동 그림자(벽 오른쪽 아래에 드리움)는 **MZ 벽 자동타일이 표시된 타일셋**(`tileMeta.mzWall`)에서 벽을 칠할 때만 붙인다.
+  일반 OPRN 타일셋에는 자동 그림자가 없다.
+
+## 6. 에디터 UI
+
+- 그리기 탭(`sidebar-tools`) 맨 위에 층 선택기 한 줄: `자동 · 1 · 2 · 3 · 4 · 그림자 · 이벤트`. 기본은 자동.
+  - 이 선택기가 상단바 `layer-*` 버튼(아래층·위층·이벤트)을 대신한다. 상단바 버튼은 없앤다.
+  - 초보 레일(`basicLeftRail.ts`)에도 같은 선택기. 초보 모드는 `자동 · 이벤트` 두 개만 보이고 숫자는 접는다(**사용자 확인 필요**).
+- 층을 고정하면 다른 층은 지금 방식(`editSceneRender.ts` 의 알파·물들임)으로 흐리게. 자동 모드는 모두 선명.
+- 그림자 모드: 그림자 조각을 반투명 보라로 강조해 켜진 조각이 보이게.
+- 단축키: 지금 `F5` 바닥 · `F6` 위층 · `F7` 이벤트(`commandRegistry.ts:100`, RM2K3 식)를 잇는다 —
+  `F5` 자동 · `F6` 층 고정 순환(1 → 2 → 3 → 4 → 그림자) · `F7` 이벤트. 명령 팔레트에는 층마다 명령(`layer-1`~`layer-4`, `layer-shadow`)을
+  두고 옛 `layer-lower`/`layer-upper` 는 1층·3층 고정의 별칭으로 남긴다.
+- 칸 정보창(칸 하나에 쌓인 장 목록)은 이번 범위가 아니다. 필요해지면 따로 한다.
+
+## 7. 조수 도구
+
+- 기존 도구의 `layer: 'lower' | 'upper'` 는 그대로 1층 · 3층으로 받는다. 기존 동작은 바뀌지 않는다.
+- 칠하는 도구에 `layer` 값 `'auto' | 1 | 2 | 3 | 4` 를 더한다. 기본값은 지금과 같게 두고, 새 값은 명시할 때만 쓴다.
+- 그림자 도구 하나(`shadow_paint`: 칸 좌표 + 조각 비트)를 더한다.
+- 조수가 보는 맵 그림·증거(`toolImageRenderer.ts`, `mapVisualEvidence.ts`, `piAgent/mapDelta.ts`)는 네 층 + 그림자를 그린다.
+- `docs/tool-catalog.md` 는 바뀐 도구 행만 고친다.
+
+## 8. 코드 변경 범위
+
+**새 칸을 모르면 조용히 잃는 곳 (1번 PR 에서 반드시):**
+- `src/project/store.ts:857` — 맵을 칸 이름으로 골라 복사한다. 새 칸을 넣지 않으면 저장·되돌리기에서 사라진다.
+- `src/project/io/shapeEventFields.ts` — 길이 검증(`width*height`)에 새 칸 추가.
+- `src/util/structuralJson.ts` `TILE_PAYLOAD_KEYS`, `src/project/changeLedger.ts` 칸 라벨.
+- 크기 바꾸기(`editor/actions.ts:218`), 밀기(`mapShiftActions.ts`), 복사·붙여넣기(`mapClipboard.ts`).
+
+**그리는 곳:** `editSceneRender.ts`, `player/playSceneMapRuntime.ts`, `mapTileDraw.ts`(스크린샷), 맵 썸네일, `transferMapPreview.ts`,
+`tilesetAiTempMapImage.ts`, `ai/toolImageRenderer.ts`, `ai/mapVisualEvidence.ts`.
+
+**판정:** `project/collision.ts`, `project/tilePassabilityComponents.ts`, `tilePicking.ts`.
+
+**비교·조수 경로:** `agentGhostPreview.ts`, `agentFocus.ts`, `ai/piAgent/mapDelta.ts`, `regionTask/*`(자르기·부분 적용), `incrementalMapApply.ts`.
+
+**점검표:** 옛 쌓기 칸을 알던 파일 58곳(`grep -rlE "lowerTileStacks|upperTileStacks" src`)이 곧 "칸이 더 있다는 걸 알아야 하는 곳"이다.
+여기에 `lowerTiles`/`upperTiles` 를 직접 쓰는 파일 109곳을 더해 점검한다. 원칙은 둘이다.
+- **맵을 통째로 새로 만드는 곳**(마을·던전 생성기 등): 새 칸도 비운다(선택 칸을 빼거나 `cropExtraLayers`/`remapExtraLayers`, 새 맵 생성 헬퍼).
+- **칸 하나를 고치는 곳:** `setLayerTileAt` 을 쓴다. 1층을 새로 깔면서 2층을 남길지는 그 도구의 뜻대로 정한다.
+
+**옛 쌓기 걷어내기:** 읽기에서 `lowerTileStacks`/`upperTileStacks` 가 비어 있지 않으면 첫 장을 2층·4층으로 옮기고 나머지는 버린다(경고 기록).
+로컬 프로젝트 196맵·저장소 기본 데이터 모두 0건이라 실제로 옮길 것은 없다. `mapOverlayTiles.ts` 스택 API 는 호출처를 헬퍼로 바꾼 뒤 지운다.
+
+## 9. PR 순서
+
+1. **데이터 칸 + 그리기 + 판정**: `mapLayers.ts`, 저장·검증·복사 경로, 에디터·게임·미리보기·썸네일 렌더러, 통행. UI 는 그대로(1·3층만 칠함).
+   이것만으로 2·4층·그림자가 든 맵(예: Rasak 재현을 합성 없이)이 에디터·게임에서 제대로 보여야 한다.
+   조수 쪽(조수 그림·증거, 고스트 미리보기·agentFocus·mapDelta·regionTask 비교)은 PR ④.
+   계획: `docs/superpowers/plans/2026-09-24-mz-four-layer-pr1-data-render.md`
+2. **층 선택기 UI + 자동 층**: 그리기 탭 선택기, 상단바 버튼 제거, `autoLayer` 계산·저장, 칠하기·지우기·집기 규칙, 그림자 모드.
+3. **점검표 정리**: 58 + 109곳을 헬퍼로. 옛 스택 코드 삭제.
+4. **조수 도구**: `layer` 새 값, `shadow_paint`, 조수 그림·증거.
+5. **Rasak 프리셋**: `fold_layers.py` 합성을 걷고 4층 + 그림자로 그대로 싣기. 시트 칸 → `autoLayer`, MZ 자동 그림자.
+
+## 10. 검증
+
+- **옛 맵 불변**: 196개 맵을 바꾸기 전후로 렌더해 픽셀 해시가 같은지, 칸마다 통행·깊이 판정이 같은지 비교하는 스크립트.
+- **단위 테스트**: `mapLayers` 헬퍼(선택 칸 생성·제거), 통행 위→아래 규칙, 그리는 순서·깊이, 자동 층 표(§5.2), 지우개 순서.
+- **저장 왕복**: 2·4층·그림자가 든 맵을 저장 → 다시 열기 → 되돌리기 → 크기 바꾸기 → 밀기 뒤에도 칸이 남는지.
+- **e2e**: 층 선택기 전환, 자동 칠하기 결과 층, 상단바 `layer-lower/upper/event` 에 묶인 기존 테스트(73개 파일, 150곳)를 새 선택기로 옮김.
+- 워크트리 규칙상 vitest·gates 는 사용자가 그 세션에서 시킬 때만 돌린다.
+
+## 11. 범위 밖
+
+리전 번호, MZ 프로젝트로 내보내기, 칸마다 ★ 덮어쓰기, 칸 정보창, 그림자 애니메이션.
+
+**층 모델과 별개로 MZ 팩을 "그대로" 쓰려면 남는 것** (OPRN 타일셋에 해당 표시가 없다 — 따로 설계):
+- 타일 표시: 수풀(캐릭터 하반신 반투명), 카운터(너머로 말 걸기), 사다리, 피해 바닥.
+- A2 탁자 타일의 아래 칸 모서리 그리기(MZ `_addTableEdge`).
+- MZ 는 A 타일(1·2층)이라도 ☆ 면 캐릭터 위에 그린다. 이 설계는 1·2층을 항상 밑에 두므로(기존 맵 호환 우선) 드물게 다르다.
+
+## 12. 위험
+
+- **새 칸 누락으로 인한 조용한 손실**: 칸 이름을 골라 복사하는 곳이 `store.ts` 말고도 있을 수 있다 → 1번 PR 에서 저장 왕복 테스트로 막는다.
+- **생성기가 2·4층을 남겨 유령 타일**: PR ① 에는 사람이 2·4층을 칠하는 길이 없어 새 칸은 가져오기(MZ 팩 등)로만 생긴다.
+  사람이 칠할 수 있게 되는 PR ② 에서, 맵을 통째로 새로 만드는 생성기가 새 칸도 비우게 함께 고친다.
+- **자동 층 오답**: 0.5% 는 구조적으로 남는다 → 층 고정 + 타일 종류 고치기 메뉴.
+- **상단바 테스트 73개 파일(150곳)**: 2번 PR 이 크다. 선택기 버튼에 옛 `layer-lower`/`layer-upper` id 를 1·3층으로 남겨 두는 방법도 계획에서 따진다.

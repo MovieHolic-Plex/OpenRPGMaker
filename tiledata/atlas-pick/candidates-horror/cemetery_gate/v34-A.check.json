@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cemetery_gate/v34-A.pxg",
+ "set": "horror",
+ "id": "cemetery_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.11
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "3/4 재작도: 기둥 갓돌에 윗면(뒤선·밝은 면·앞 모서리 하이라이트)과 앞면을 새로 그리고 몸통 한 켜를 줄여 높이 유지. 문짝·아치·쇠사슬은 원본 유지",
+ "ok": true
+}

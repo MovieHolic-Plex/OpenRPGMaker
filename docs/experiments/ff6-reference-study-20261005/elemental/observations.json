@@ -1,0 +1,523 @@
+{
+  "source": "https://www.youtube.com/watch?v=XSoHSGRyNPo",
+  "title": "Final Fantasy VI (SNES) Combat Exhibition (All Items, Magic, Espers, Skills, Desperation Attacks) - YouTube",
+  "sampling": {
+    "id": "XSoHSGRyNPo",
+    "start": 171,
+    "end": 207,
+    "step": 0.5
+  },
+  "observations": [
+    {
+      "at": 171,
+      "currentTime": 171.160096,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 171.5,
+      "currentTime": 171.524551,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 172,
+      "currentTime": 172.02377,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 172.5,
+      "currentTime": 172.530256,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 173,
+      "currentTime": 173.011162,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 173.5,
+      "currentTime": 173.521685,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 174,
+      "currentTime": 174.043533,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 174.5,
+      "currentTime": 174.519748,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 175,
+      "currentTime": 175.014294,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 175.5,
+      "currentTime": 175.533268,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 176,
+      "currentTime": 176.028615,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 176.5,
+      "currentTime": 176.527476,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 177,
+      "currentTime": 177.006064,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 177.5,
+      "currentTime": 177.519752,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 178,
+      "currentTime": 178.041938,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 178.5,
+      "currentTime": 178.527513,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 179,
+      "currentTime": 179.032709,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 179.5,
+      "currentTime": 179.526281,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 180,
+      "currentTime": 180.04355,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 180.5,
+      "currentTime": 180.537755,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 181,
+      "currentTime": 181.033911,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 181.5,
+      "currentTime": 181.516905,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 182,
+      "currentTime": 182.03913,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 182.5,
+      "currentTime": 182.515371,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 183,
+      "currentTime": 183.020332,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 183.5,
+      "currentTime": 183.526691,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 184,
+      "currentTime": 184.01941,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 184.5,
+      "currentTime": 184.537742,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 185,
+      "currentTime": 185.018454,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 185.5,
+      "currentTime": 185.519532,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 186,
+      "currentTime": 186.017087,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 186.5,
+      "currentTime": 186.524246,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 187,
+      "currentTime": 187.011774,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 187.5,
+      "currentTime": 187.528128,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 188,
+      "currentTime": 188.029513,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 188.5,
+      "currentTime": 188.531751,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 189,
+      "currentTime": 189.019968,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 189.5,
+      "currentTime": 189.52065,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 190,
+      "currentTime": 190.026853,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 190.5,
+      "currentTime": 190.511641,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 191,
+      "currentTime": 191.036922,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 191.5,
+      "currentTime": 191.52968,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 192,
+      "currentTime": 192.022485,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 192.5,
+      "currentTime": 192.526555,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 193,
+      "currentTime": 193.028263,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 193.5,
+      "currentTime": 193.518148,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 194,
+      "currentTime": 194.019833,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 194.5,
+      "currentTime": 194.539142,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 195,
+      "currentTime": 195.01716,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 195.5,
+      "currentTime": 195.511761,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 196,
+      "currentTime": 196.042839,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 196.5,
+      "currentTime": 196.535364,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 197,
+      "currentTime": 197.022301,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 197.5,
+      "currentTime": 197.521233,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 198,
+      "currentTime": 198.017787,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 198.5,
+      "currentTime": 198.526239,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 199,
+      "currentTime": 199.022011,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 199.5,
+      "currentTime": 199.536091,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 200,
+      "currentTime": 200.028537,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 200.5,
+      "currentTime": 200.517971,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 201,
+      "currentTime": 201.025128,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 201.5,
+      "currentTime": 201.538663,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 202,
+      "currentTime": 202.025089,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 202.5,
+      "currentTime": 202.534102,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 203,
+      "currentTime": 203.031832,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 203.5,
+      "currentTime": 203.537218,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 204,
+      "currentTime": 204.027175,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 204.5,
+      "currentTime": 204.52939,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 205,
+      "currentTime": 205.034663,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 205.5,
+      "currentTime": 205.543317,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 206,
+      "currentTime": 206.041075,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 206.5,
+      "currentTime": 206.524893,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    },
+    {
+      "at": 207,
+      "currentTime": 207.040861,
+      "readyState": 4,
+      "videoWidth": 548,
+      "videoHeight": 480
+    }
+  ]
+}

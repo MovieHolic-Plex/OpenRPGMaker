@@ -1,0 +1,58 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a vblack 1
+@mat b vblack 5
+@mat c mdglass 5
+@mat d mdglass 3
+@mat e mdglass 7
+@mat f mdglass 6
+@mat g vblack 2
+@mat h locker 3
+@mat i locker 6
+@mat j locker 5
+@mat k mmetal 5
+@mat l vblack 4
+@mat m vblack 3
+@mat n vblack 0
+@mat o vred 4
+@mat p mmetal 3
+@mat q vwhite 5
+@mat r vgreen 4
+@mat s locker 0
+@mat t locker 4
+@mat u locker 2
+@mat v locker 1
+@mblock 0 0
+..abbbbbbbba........................abbbbbbbba..
+..acccccccca........................acccccccca..
+..adddddddda........................adddddddda..
+..adedddddda........................adedddddda..
+..addfddddda........................addfddddda..
+..adddddddda........................adddddddda..
+..adddddddda........................adddddddda..
+..aaaaaaaaaa........................aaaaaaaaaa..
+.....gggg..............................gggg.....
+......gg................................gg......
+.hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.
+iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjkkkjjjjjjj
+jjjjjjjjlllllllllllllllllllllllllljjjjkjjmjjjjjj
+jjjjjjjjggnggnggnggnggnggnggngonogjjjjkjjmjjjjjj
+jjjpppppggqggnggnggnggqggnggnggnggjjjjkjjjjjjjjj
+jjjpjjjpggnggnggnggqggnggnggnggqggjjjjkjjjjjjjjj
+jjjpjjjpggnggnggqggnggnggnggqggrggjjjjkjjjjjjjjj
+jjjpppppggnggqggnggnggnggqggnggnggjjjjjjjjjjjjjj
+jjjjjjjjaaaaaaaaaaaaaaaaaaaaaaaaaajjjjjjjjjjjjjj
+jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj
+iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
+ssssssssssssssssssssssssssssssssssssssssssssssss
+tttttttttttttttttttttttttttttttttttttttttttttttu
+thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhu
+thhttttttttttttthttttttttttttthttttttttttttthhhu
+thhuuuuujjjuuuuuhuuuuujjjuuuuuhuuuuujjjuuuuuhhhu
+thhuuuuuuuuuuuuuhuuuuuuuuuuuuuhuuuuuuuuuuuuuhhhu
+thhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhu
+tvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvu
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+..---------------------------------------------.

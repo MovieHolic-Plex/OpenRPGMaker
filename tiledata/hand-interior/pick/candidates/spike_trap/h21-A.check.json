@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spike_trap/h21-A.pxg",
+ "id": "spike trap",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "구멍 뚫린 쇠판 위 뾰족한 쇠가시 넷(끝 밝고 왼쪽 밝음, 구멍 바닥 어둡게), 위·왼 밝은 테/아래·오른 어두운 테",
+ "ok": true
+}

@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hamlet/wv7-B.pxg",
+ "set": "worldmap",
+ "id": "hamlet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 22,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "파란 지붕 집 + 곁의 나무 한 그루. 지붕에 5단 명암(아래로 갈수록 어둡게), 차분한 색 대비, 그림자 오른쪽 아래",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.019
+  }
+ }
+}

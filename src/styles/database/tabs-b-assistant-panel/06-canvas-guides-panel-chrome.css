@@ -1,0 +1,356 @@
+/* ?쒖뿰 罹붾쾭????吏곸젒 源붿븘??媛瑜댁튂???뚮뱶諛뺤뒪 */
+.demo-teach-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 760px);
+  max-width: min(94vw, 1040px);
+  width: 94vw;
+}
+.demo-teach-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.demo-teach-origin {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: 11px;
+}
+.demo-teach-body {
+  display: grid;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  min-height: 0;
+  overflow: hidden;
+}
+.demo-teach-left {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  min-width: 0;
+  overflow: auto;
+}
+.demo-teach-toolbar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.demo-teach-toolbar .is-active {
+  background: var(--accent);
+  border-color: var(--accent-border);
+  color: var(--on-accent);
+}
+.demo-teach-brush {
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-s);
+  height: 28px;
+  image-rendering: pixelated;
+  width: 28px;
+}
+.demo-teach-brush-label {
+  color: var(--text-2);
+  font-size: 11px;
+}
+.demo-teach-count {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.demo-teach-grid {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  width: max-content;
+}
+.demo-teach-grid-row {
+  display: flex;
+}
+.demo-teach-cell {
+  cursor: crosshair;
+  flex: 0 0 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  position: relative;
+  width: 32px;
+}
+.demo-teach-cell:hover {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+.demo-teach-cell-upper {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+.demo-teach-palette {
+  display: grid;
+  align-content: start;
+  gap: var(--space-1);
+  min-height: 0;
+  overflow-y: auto;
+}
+.demo-teach-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  padding: 4px 8px;
+}
+.demo-teach-palette-caption {
+  color: var(--text-3);
+  font-size: 10px;
+  margin: var(--space-1) 0 0;
+}
+.demo-teach-palette-results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.demo-teach-palette-tile {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  cursor: pointer;
+  height: 28px;
+  image-rendering: pixelated;
+  padding: 0;
+  width: 28px;
+}
+.demo-teach-palette-tile:hover {
+  border-color: var(--accent);
+}
+.demo-teach-explanation {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 8px;
+  resize: vertical;
+}
+.demo-teach-send {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+  flex: 1;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 36px;
+  text-align: center;
+}
+.demo-teach-send:hover:not(:disabled) {
+  background: var(--gold-deep, #6E5424);
+  border-color: var(--gold-deep, #6E5424);
+  color: #fff;
+}
+
+/* ?⑤꼸 ?ш린 議곗젅 ?몃뱾(醫뚯긽??肄붾꼫 ???ㅻⅨ履승룹븘??怨좎젙 ?꾪궧?대씪 ?쇱そ쨌?꾨줈 ?뚮㈃ 而ㅼ쭚) */
+.ai-chat-resize-handle {
+  cursor: nwse-resize;
+  height: 16px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 16px;
+}
+.ai-chat-resize-handle::before {
+  border-left: 2px solid var(--border-strong);
+  border-top: 2px solid var(--border-strong);
+  border-top-left-radius: var(--radius-l);
+  content: "";
+  display: block;
+  height: 10px;
+  margin: 2px;
+  width: 10px;
+}
+.ai-chat-resize-handle:hover::before {
+  border-color: var(--accent);
+}
+
+/* 조수 카드(유리)는 좌상단에 고정되므로 손잡이도 우하단이어야 "끌어서 키운다"가 성립한다.
+   좌상단 손잡이는 카드가 커지는 방향과 반대로 움직여 매번 헛손질이 됐다. */
+.ai-chat-resize-handle.is-corner-end {
+  bottom: 0;
+  cursor: nwse-resize;
+  left: auto;
+  right: 0;
+  top: auto;
+}
+.ai-chat-resize-handle.is-corner-end::before {
+  border-bottom: 2px solid var(--border-strong);
+  border-bottom-right-radius: var(--radius-l);
+  border-left: 0;
+  border-right: 2px solid var(--border-strong);
+  border-top: 0;
+  border-top-left-radius: 0;
+}
+/* side/float은 실제 표면의 왼쪽 경계에서 폭만 조절한다. 12px hit target을
+   표면 안쪽에 두어 overflow:hidden인 side host에서도 전부 hit-test된다. */
+.ai-chat-resize-handle.is-edge-start {
+  bottom: 0;
+  cursor: ew-resize;
+  height: auto;
+  left: 0;
+  top: 0;
+  width: 12px;
+  z-index: 5;
+}
+.ai-chat-resize-handle.is-edge-start::before {
+  background: var(--border-strong);
+  border: 0;
+  border-radius: var(--radius-s);
+  height: 36px;
+  left: 1px;
+  margin: 0;
+  opacity: 0.55;
+  position: absolute;
+  top: calc(50% - 18px);
+  width: 2px;
+}
+.ai-chat-resize-handle.is-edge-start:hover::before,
+.ai-chat-resize-handle.is-edge-start:focus-visible::before {
+  background: var(--accent);
+  opacity: 1;
+}
+.ai-chat-resize-handle.is-log-top {
+  bottom: auto;
+  cursor: ns-resize;
+  height: 28px;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: auto;
+  z-index: 6;
+}
+.ai-chat-resize-handle.is-log-top::before {
+  background: transparent;
+  border: 0;
+  content: none;
+}
+.ai-chat-resize-handle.is-log-top:hover,
+.ai-chat-resize-handle.is-log-top:focus-visible {
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.ai-chat-resize-handle:focus-visible {
+  outline: var(--focus-ring);
+}
+.ai-chat-panel.is-studio > .ai-chat-resize-handle,
+.ai-chat-panel.is-docked > .ai-chat-resize-handle,
+.ai-chat-panel.is-collapsed > .ai-chat-resize-handle,
+.ai-chat-panel.is-studio .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-docked .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-collapsed .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel.is-history-open .ai-chat-resize-handle.is-log-top,
+.ai-chat-panel:not(.is-assistant-log-open) .ai-chat-resize-handle.is-log-top {
+  display: none;
+}
+
+/* ?㎞ ??釉뚮씪?곗? 踰꾪듉 */
+.ai-chat-tools-button {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 14px;
+  min-height: 28px;
+  padding: 0 8px;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+.ai-chat-tools-button:hover {
+  background: var(--control-bg-hover);
+  border-color: var(--border-strong);
+}
+.ai-chat-tools-button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+/* ??釉뚮씪?곗? 紐⑤떖 */
+.tool-browser-window {
+  display: flex;
+  flex-direction: column;
+  height: min(84vh, 780px);
+  max-width: min(92vw, 880px);
+  width: 92vw;
+}
+.tool-browser-header {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.tool-browser-search {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: inherit;
+  min-width: 0;
+  padding: 4px 8px;
+}
+.tool-browser-hint {
+  color: var(--text-3);
+  font-size: 11px;
+  margin: var(--space-1) 0;
+}
+.tool-browser-body {
+  display: grid;
+  align-content: start;
+  flex: 1 1 auto;
+  gap: var(--space-3);
+  min-height: 0;
+  overflow-y: auto;
+}
+.tool-browser-category-title {
+  color: var(--text-1);
+  font-size: 12px;
+  margin: 0 0 var(--space-1);
+}
+.tool-browser-row {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 2px;
+  padding: var(--space-1) 0;
+}
+.tool-browser-row-head {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+.tool-browser-name {
+  color: var(--accent);
+  font-size: 12px;
+}
+.tool-browser-badge {
+  border-radius: 999px;
+  font-size: 10px;
+  padding: 1px 8px;
+}
+.tool-browser-badge.is-read {
+  background: var(--control-bg);
+  color: var(--text-2);
+}
+.tool-browser-badge.is-write {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.tool-browser-badge.is-danger {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+.tool-browser-desc {
+  color: var(--text-2);
+  font-size: 11px;
+  margin: 0;
+}
+.tool-browser-empty {
+  color: var(--text-3);
+}
+

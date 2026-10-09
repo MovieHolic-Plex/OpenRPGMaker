@@ -1,0 +1,282 @@
+# 세계 지도 지형 편집 — 조수가 대륙·바다·섬·산맥을 바꾼다 (2026-10-03)
+
+## 빈 지도부터 팔레트로 저작 (2026-10-05)
+
+`worldmap_authoring` / `tex_worldmap_authoring`은 공용 16px 연결 붓이다. 새 맵 창의 **빈 월드맵**은
+48×36 바다(0)에서 시작한다. 지형 47개 연결 상태(8방향 전체 256 입력), 길 16개 상태,
+위층 숲·산, 가로/세로 다리, 기존 사람 선택 판타지 거점 36개를 실제 타일로 놓는다.
+파이프라인은 `scripts/content/build-worldmap-authoring.py` → 번들 PNG/`worldmapAuthoringSheet.json`이다.
+새 경계·길·다리는 `tiledata/worldmap-kit/authoring/pixels.json`의 명시 픽셀 격자, 질감과 숲/산은 현재 키트 원본을 쓴다.
+완성 대륙은 입력이 아니다. 대표 붓 83개(배경별 변형 포함), 그림 3,823칸이다.
+
+팔레트는 **바탕 자동**이 기본이다. 지형 탭의 붓은 초원·사막·설원마다 배경 변형을 고르며,
+길이 강을 가로지르면 진행 방향의 다리를 고른다. 숲·산도 같은 선반에서 골라 위층으로 전환한다.
+거점 탭은 전체 아이콘과 짧은 이름을 두 열로 표시한다. 바탕 설정을 펼치면 바다/초원/사막/설원을 직접 지정할 수 있다.
+숲·산은 투명 위층이며 바닥을 바꾸지 않는다. 직접 지정 모드는 고른 바탕으로 칠한다. 거점/고개 자리의 숲·산은 위층 지우개로 먼저 비운다.
+고원·절벽/높이 지우기/고개·경사로 버튼은 기존 실제 relief 붓을 선택하며 원래 바닥 그림을 보존한다.
+아래층 지형 붓은 기존 위층 거점을 덮지 않는다. 해안 지우기는 바다 붓을 쓴다.
+
+`worldmapAuthoring.ts`의 `attachWorldmapAuthoringBrushes`는 생성 지도에도 공용 소스를 뒤에 이식한다.
+기존 맵 배열/원본 재료/통행은 바꾸지 않는다. `ensureBundledTilesets`가 기존 프로젝트에 소급 배선하고
+`makeWorldmapTilemap`도 새 생성/재생성 때 배선한다. 재생성은 공용 이식 원본 번호로 손 편집을 보존한다.
+옛 대표 크롭 34개는 원본 재현용 재료이며, 저작 팔레트는 새 연결 붓을 쓴다.
+`worldmap_selected`의 공용 참고문서 두 용도(`wmi-authoring`, `wmi-authoring-more`)에 전체 좌표,
+variantMap, 실제 배열과 정상/오류 PNG를 싣는다. 새/기존 프로젝트 모두 같은 자료를 받는다.
+조수는 `fill_region`에서 `강 · 초원`/`길 · 사막`처럼 배경까지 적힌 재료 이름을 사용한다.
+숲·산 면은 `upper`, 바닥·강·길은 `lower`다. 해당 툴도 주변 세계 지도 그룹을 다시 맞춘다. `tileVocabulary`는 실제 연결 그룹과 같은 ID·멤버가 있는 상위 숲/산도 면 재료로 받는다.
+
+편집기 페인트·지우기·채우기는 상위 연결도 다시 맞추고 변경 이웃 칸을 통지한다.
+native 증거 실행기는 `scripts/qa/worldmap-palette-authoring-native.mjs`이다. 전체 테스트/게이트와 별개다.
+고개 붓은 폭 2칸이다. 후속 높이 저장/재로드 증거는 `scripts/qa/worldmap-palette-height-native.mjs`,
+실제 빈 지도 저작·통행·공용 사전·정본 재로드 근거는 [검증 기록](../verify-shots/worldmap-authoring/README.md)을 따른다.
+
+## 자동 붓과 조수 UX (2026-10-05)
+
+- `src/project/worldmapAutoBrush.ts`: 실제 타깃 tileMeta/tileGroups에서 재료·바탕을 읽는다. 소스 번호를 타깃 번호로 가정하지 않는다.
+  native pen/도형/채우기/hover와 조수 fill_region/lay_path가 같은 판별을 사용한다.
+  exactPlacement·전체 아이콘 stamp·명시적 바탕 재료는 원형을 유지한다.
+- 길은 강 칸에서 가로/세로 다리를 고른다. 폭이 넓은 바다 횡단은 사용자가 다리를 설계한다.
+  자동 배경 그림의 범위는 제공된 초원/사막/설원이다. 다른 바닥에는 동일한 변형을 보장하지 않는다.
+- `worldmapEraseTile`: 다리→해당 강, 길/강/호수→해당 바탕, 해안→바다. native 지우개와 조수 tile_erase가 공유한다.
+  숲/산의 위층 지우기는 바닥을 보존한다. 지우개 사용 후 지형 붓을 선택하면 칠하기로 돌아온다.
+- 자연어 재료 강/길/호수/숲/산맥/눈 숲 등을 `worldmapMaterialGroup`이 해석한다.
+  fill_region은 layer 생략 시 재료의 층을 사용하며, 연결 붓 지도에서는 원/경로 마스크 밖 벽 틈 확장을 하지 않는다.
+- 직접 저작 지도와 생성 지도의 조수 경로를 구분한다. `worldmapSource` 생성 지도는 기존 ops 경로이며,
+  직접 저작 worldmap_authoring은 `worldmapChoiceNote`와 `sessionToolExposure`가 fill_region·거점·검사 도구를 처음부터 안내한다.
+  계획 턴의 쓰기 제한은 정상이며 실행 턴에서 해제된다.
+- 공용 `wmi-authoring-auto`는 1 MD + 2 실제 이미지다. 바탕 자동 사용에 소스 사전 84쪽을 모두 읽을 필요가 없다.
+  전체 좌표 사전은 별도 용도에 보존한다. 번들 소유이므로 새 프로젝트와 기존 worldmap_selected 양쪽에 들어간다.
+- 조수 오버레이가 열린 때 지도 배율/도구줄을 옆으로 옮겨 클릭을 막지 않는다.
+- 실행 기록/명령/남은 한계: [실제 조수와 UX 검수](../verify-shots/worldmap-brush-ux/README.md).
+
+## 적대적 시각 검수로 수정한 연결부 (2026-10-05)
+
+이전 저장/통행 영수증은 미적 합격이 아니다. 실제 native 편집기의 고립·대각·1칸 지협·오목 만·구멍,
+수로의 십자·두 방향 다리·하구, 숲/산 9종과 세 바탕, 길 16상태를 별도 SQLite 검수 지도에 놓았다.
+독립 낱말/좌표 oracle은 이전 정본에서 10칸 불일치를 검출했다(강 6, 거점 주변 숲 4).
+원본 접합 픽셀도 외곽/직선 사분면 두 접합에서 6개 글자가 달랐다.
+
+- `authoring/pixels.json` 외곽·직선의 접합면을 `o o f e i . . .`로 맞춘다.
+  해안의 밝은 액자 같은 테두리는 물빛·기슭·그늘 팔레트로 낮춘다. 용암/독수는 별도 기슭 색이다.
+- 강과 바다가 같은 수면 질감을 쓰므로 하구의 색이 사각형으로 끊기지 않는다.
+- 설산은 고립 봉우리 킷 대신 연결 산맥 윤곽과 `snowMountainPalette`의 명시 눈 색을 쓴다.
+- 강·다리는 서로 물 이웃으로 센다. 다리 밑 수면도 47개 상태로 연결되며 초원/사막/설원 붓을 갖는다.
+  가로 다리는 좌우, 세로 다리는 위아래 통행만 열리며 물로 옆걸음하지 않는다.
+- 기존 3,543개 소스 ID와 승인 아이콘 슬롯을 유지한다. 새 280칸은 끝에 추가한다.
+  기존 `worldmap_authoring`의 아이콘 이식 슬롯과 새 소스 프레임이 겹치면 새 타깃 슬롯에 이식한다.
+  `ensureWaterFlags`도 실제 이식 주소를 따라가므로 아이콘 통행을 액체 통행으로 덮지 않는다.
+- native 정확 스탬프는 그 안의 원본 칸을 보존하면서 바깥 숲만 다시 맞춘다.
+  `worldmapBrushStamp.ts`는 구조 키트와 `stamp_layer_block`의 같은 바깥 보정을 담당한다.
+  구조물 우클릭 복원/다시 찍기도 정확한 `before` 안쪽을 보존하고 바깥 연결을 다시 맞춘다.
+  `tile_erase`도 worldmap 연결을 재검사한다.
+
+검수 입구는 `scripts/qa/worldmap-autotile-visual-{fixture.mts,native.mjs,audit.mts}`다.
+실제 PNG·좌표·원본/수정 비교·남은 표현 판정은
+[적대적 검수 기록](../verify-shots/worldmap-autotile-adversarial/README.md)에 있다.
+
+세계 지도(월드맵 키트, 96×72칸·16px)의 큰 지형은 **지형 작업(ops)** 목록을 키트가 다시 그린다. 저장 결과는 재사용 지형 칸과 별도 위층 거점으로 구성되며, 편집기 붓으로도 손 편집할 수 있다.
+조수는 `read_world_terrain` 으로 칸 좌표를 보고 `edit_world_terrain` 으로 작업을 얹는다.
+대륙을 해협으로 가르기, 섬, 산줄기·고개, 강, 숲, 바닥(사막·설원·늪…), 고원, 장소 옮기기까지 된다.
+
+기존 대륙 월드맵은 편집기와 조수의 **기본** 방식이다. 새 맵 생성 창은 일반 프로젝트에서 기본을,
+몬스터 수집 장르에서 별도의 `region-routes`(포켓몬풍 마을·도로)를 초기 선택한다.
+`theme:"monster"`는 이 대륙의 세계관 그림 선택이며 포켓몬풍 이동 구조의 대체가 아니다.
+
+포켓몬·다른 2D 게임의 전도/이동 구조 비교와 현재 `monster` 테마의 한계는
+[월드맵 게임 조사](worldmap-game-research.md)를 참고한다. 여섯 이동 구조는
+`author_worldmap_structure`로 실제 맵·문·관문을 함께 만든다.
+편집기 생성 창·런타임 M 지도·공용 자료와 정본은 [세계 지도 이동 구조](worldmap-navigation-structures.md).
+
+## 흐름
+
+### 세계관별 준비 상태와 우주 조수 (2026-10-04)
+
+`list_worldmap_themes`는 키트의 17개 테마 정의와 **현재 번들의 사람 선택 수**를 함께 돌려준다.
+생성기·팔레트가 있다는 것만으로 거점 그림·내부·게임 해금이 완성된 것은 아니다.
+우주 `starmap`(galaxy + space-5act)와 육지 외계 행성 `alien`을 구분한다.
+출처 JSON은 `node scripts/content/prepare-worldmap-theme-catalog.mjs`로 재생성하며 선택 수는 런타임에 계산한다.
+
+호스트 빌더는 `--selected-icons selected/selected.json`으로 사람 선택 그림만 원본 RGBA로 합성한다.
+선택 그림의 SHA256·크기를 검사하며 미선택/발자국 불일치는 `iconSelection.pending`으로 알려 준다.
+이 장소들은 **그림 없는 논리 위치**다. 후보 세트를 쓰는 키트 CLI/하네스 미리보기와 저작 경로를 혼동하지 않는다.
+우주·외계 전용 거점 칩셋이 없을 때 기본 로마풍 마을로 대체하라는 안내도 제거했다.
+
+실제 Astra가 좌표·테마 ID 없는 우주 요청을 19회 도구 호출/오류 0건으로 수행하고 SQLite 판본 2에서
+지형·캐릭터 75%·시작 맵 보존·실제 PNG를 다시 확인했다. 거점 그림 31곳과 워프 해금 이벤트는 미완성이다.
+근거: [`verify-shots/worldmap-theme-readiness/README.md`](../verify-shots/worldmap-theme-readiness/README.md).
+기본 미리보기 15/17 통과, 전국(바다에 막힌 길)·무협(좁은 배 장벽)은 이번 확인에서 실패했다.
+이 둘은 추가 보정 대상이며 17개 전부의 완성도를 주장하지 않는다.
+
+### 호스트 공용 DB와 조수 (2026-10-04)
+
+`npm run harness -- worldmap-icons publish-shared`는 선택 아이콘과 정본 실제 지형 사례를 호스트 공용 SQLite에
+등록하고 다시 읽는다. 세부 옵션은 [하네스 문서](harnesses/worldmap-icons.md).
+`worldmap-human-selected`는 기본 자료, `worldmap-real-joseon`/`worldmap-real-yucatan`은 필요할 때 가져오는 지역 사례다.
+등록된 전도는 `list_spatial_designs` 또는 `read_region_reference`로 찾는다.
+목록의 `referenceRead:{kind:'region',id}`를 따라 `read_spatial_reference`로 사례의 문서·그림을 읽고
+`import_region_reference`로 새 맵에 가져온다. 아이콘 자료는 별도로 `worldmap_selected`에서 읽는다.
+
+지역 가져오기는 업로드 그림·worldmapSource·characterScale·locations를 보존하며, 월드맵에는
+`worldmap_<새 mapId>` 전용 타일셋을 만든다. 타일 번호와 원본 픽셀을 바꾸지 않는다.
+현재 유카탄 사례는 실제 지리 + 판타지 화풍이며 마야 건축 고증 또는 완성 게임이 아니다.
+
+Pi의 지형 조회·편집, 맵 속성 변경, 지역 가져오기, 공간 참고문서 도구는 선택값에 null을 쓸 수 있다.
+`optionalToolArguments.ts`가 **선택값의 null만** 실행 직전에 생략한다. 필수값의 null은 유효해지지 않으며
+0/false/빈 배열의 의미는 그대로다. 엄격 제공자가 미사용 속성을 임의의 기본값으로 채워
+잘못된 지형 op·기후 설정·clearForBackground 바닥 지우기를 실행하던 실제 호출에서 발견했다.
+
+실호출: `bun scripts/qa/worldmap-shared-assistant-live.mts --label <새 이름> --task-file <요청 파일> --model <제공자/모델>`.
+편집기와 같은 Pi 실행·도구 발견·참고문서 관문을 쓰며, 실제 공용 DB를 로드하고 별도 SQLite에 저장·재로드한다.
+UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함하지 않는다.
+
+월드 키트 지형 재료는 숲·길이 합성된 칸이며 거점 아이콘은 별도 위층이다. `layoutQuality.measureLayoutQuality`의
+위층 소품 수로 빈 바닥을 재는 일반 마을 검사는 이 형식에 적용하지 않는다.
+`worldmapSource.tilemap.version===1`과 worldmap-kit 계열이 맞으면 제외한다. 옛 형식은 worldmapSource + 업로드 그림 + 16px + 지도 폭과 같은 시트 열 수 + `lowerTiles[i]===i` 조건으로 제외한다.
+일반 월드 타일셋이나 임의 배열은 계속 검사한다. 모델이 바닥 풍경을 덮어 채우게 하던 실호출의 오탐 수정이다.
+
+```
+조수 ── edit_world_terrain(ops) ─▶ prepare: buildWorldmap(테마, 쌓인 ops + 새 ops)
+                                    ├ 편집기: POST /v1/worldmap/build (동반 앱, scripts/lib/ohMyPiHttp.mjs)
+                                    └ Bun 일꾼·헤드리스: scripts/lib/worldmapBuild.mjs 를 프로세스 안에서(setWorldmapBuilder)
+                                         └ python3 tiledata/worldmap-kit/kit/build_world.py --theme T --terrain <json> [--preview]
+        run: 완성 PNG → picture assets.uploaded["worldmap_<mapId>_image"]
+             지형 재료 PNG → uploaded worldmap_<mapId>_materials (12열, 픽셀·통행·낱말 해시로 중복 제거)
+             tilesets["worldmap_<mapId>"]  재사용 지형 + 사람 선택 아이콘 이식, 34개 대표 지형 그룹(판본별 상이)
+             maps[mapId]  lowerTiles = 재료 번호 배열, upperTiles = 거점 배열
+             worldmapSource.tilemap = 생성 기준 배열 + 재료 해시(손 편집 보존용)
+```
+
+| 파일 | 역할 |
+|---|---|
+| `src/editor/tools/worldTerrainTools.ts` | 두 도구. 스키마는 `kit_terrain.py` 의 거울 — 자유 키 객체 금지(Gemini 400) |
+| `src/editor/worldmap/worldmapBuild.ts` | 빌드 요청·결과 타입, 기본 빌더(fetch), `setWorldmapBuilder` |
+| `scripts/lib/worldmapBuild.mjs` | python 키트 실행 → `{imageDataUrl, tilemap, world, ascii, journeyCheck, warnings}` |
+| `tiledata/worldmap-kit/kit/lib/kit_tilemap.py` | 거점 합성 전 지형을 좌표와 독립된 12열 재료로 패킹 |
+| `src/editor/worldmap/worldmapTilemap.ts` | 재료 그룹·거점 키트·위층·손 편집 기준 배열 구성 |
+| `tiledata/worldmap-kit/kit/lib/kit_terrain.py` | ops 검사·적용(make_map_v4 목록에 다각형을 얹는다), `coverage` 경고 |
+| `tiledata/worldmap-kit/terrains/<id>.json` | 이름 붙은 지형(예: `archipelago` — 군도 테마가 쓴다) |
+| `scripts/qa-game/worldmap-terrain-offline.mts` | 모델 없이 도구 사슬 끝까지(읽기 → 틀린 작업 → 새 지도 → 작업 누적) |
+| `scripts/qa/runtime/worldmap-terrain.scenario.mjs` | 출하 플레이어로 걷기(절벽은 막히고 평지는 걸어진다) |
+
+## 재사용 팔레트 전환 (2026-10-05)
+
+옛 지도 PNG 전체를 팔레트로 쓰던 형식은 왼쪽 팔레트에 **지형·거점 재료로 바꾸기** 버튼을 표시한다.
+클릭하면 같은 `edit_world_terrain({mapId,ops:[]})` 저장/undo 경로를 사용한다. 새 지도는 처음부터 재료 형식이다.
+완성 지도 그림은 picture이며 타일셋이 아니다. 34개 그룹은 대표 조각을 보여 주고, 경계 변형은 스포이트로 선택한다.
+해안 연결 오토타일은 아니다. 큰 형상 편집은 ops를 쓴다. 거점은 사람 선택 구조물 키트로 놓는다.
+생성 거점은 ★/열린 통행로 기존 `world.walk`를 따르고, 새 스탬프는 원본 입구/벽 계약을 따른다.
+아이콘 원본의 분홍 키(255,103,139)는 투명, (254,103,139)는 검정 alpha80 그림자로 번들과 동일하게 합성한다.
+
+공용 참고문서 `wmi-materials`는 `worldmap_selected`가 소유하며 파생 지도는 referenceSourceTilesetId로 공유한다.
+출처 `tiledata/worldmap-kit/selected/materials/`, 준비 `node scripts/content/prepare-worldmap-material-references.mjs`,
+번들 `src/assets/worldmapMaterialReferences.json`, 그림 `public/assets/worldmap-icons-references/material*.png`.
+새 프로젝트와 기존 프로젝트의 ensureWorldmapSelectedTileset 양쪽에 배선되어 있다.
+
+## 계약
+
+- HTTP 빌더의 LLM 클라이언트는 호출 시 불러온다. 레지스트리 → 지형 도구 → 빌더 → LLM 클라이언트 → 레지스트리 순환 초기화를 피하며, 주입한 헤드리스 빌더는 이 경로를 읽지 않는다.
+- 선택 아이콘 그림은 내보내기 자산 수집에 이식 소스 키로 포함되고 출처 MD도 함께 싣는다. AI 참고문서 JSON은 플레이어 빌드에서 빈 배열로 바꾼다.
+
+- **손 편집 보존**(2026-10-05). 기준 배열과 다른 바닥·위층, 2/4층·스택·doodad 번호를 새 재료 번호로 옮긴다. 동일 재료 해시 또는 원래 이식을 찾을 수 없으면 원자적으로 실패한다. 그림자·relief·이벤트는 유지한다.
+  별도 배치가 있는 지도 크기를 바꾸는 재생성은 `authored-worldmap-resize`로 거부한다. 새 mapId로 만든 뒤 옮긴다.
+- **사람 선택 아이콘 공용 스탬프:** `worldmap_selected`(79개·1,620칸)와 `list_worldmap_icons → stamp_worldmap_icon → inspect_worldmap_icon`.
+  16px 생성 지도에 타일 이식으로 덧붙여 바닥 번호·지도 id를 보존한다. 참고문서는 소스 `worldmap_selected`에서 읽는다.
+  후보 검수·사람 선택·재굽기 계약은 `openwiki/harnesses/worldmap-icons.md`. 이동 이벤트는 따로 연결한다.
+
+- **작업은 쌓인다.** 맵의 `worldmapSource.ops` 뒤에 새 ops 를 잇는다. `replace:true` 면 갈아 끼운다.
+  테마 자체 지형(`themes/<id>.json` 의 `terrain`)은 그 아래 깔리고 저장 ops 에는 들어가지 않는다.
+- **미리보기**(`preview:true`)는 픽셀 렌더 없이 칸 배열·도식 PNG·여정 검사만(1~3초). 저장하지 않는다.
+  실제 빌드는 지형이 바뀌면 약 2분. 지형 서명별 캐시(`~/.cache/oprn/worldmap-kit/terrain-<sig12>`).
+- **실패는 문장으로 돌려준다.** 장소 발자국이 물 위, 길을 낼 수 없음, 바다 장벽이 너무 좁음, 여정 검사 불일치 —
+  `ToolError(code: worldmap-build-failed | journey-check-failed)`. 조수는 그 문장대로 고친다.
+- **경고**(`ops[i]` 번호 + note): 숲·바닥이 덜 먹으면 이유별 칸 수, 사구는 서남 대사막 안에만 남는다, 섬이 다른 땅에 붙음·지도 끝,
+  화산 고리가 작음. 경사로 면 없음도 경고.
+- **장소 여정 규칙**: `places` 줄 끝에 「n막에 무엇으로 처음 닿는다 · 열쇠 장소 · 장벽 뒤 · 길: …」(`kit_terrain.place_rules`).
+  여정 실패 문장도 그 말로 풀어 준다(`kit_terrain.explain`). 막힌 길은 모두 한 번에, 어디까지 가서 무엇에 막혔는지 좌표로.
+- **지역 팔레트**(desert-east 등)는 편집으로 정한 바닥을 덮지 않는다. `themeNote` 가 테마의 칠 방식·자기 지형을 알려 준다.
+- 키트 지도가 아닌 맵(`worldmapSource` 없음)에 덮어쓰지 않는다(`not-worldmap`). 새 id 가 남의 맵이면 `map-id-taken`.
+- 기존 이벤트는 유지하고, 걸을 수 없게 된 칸에 놓인 이벤트를 경고로 알린다.
+- `preservesAuthoredRaster: true` — 지도 그림이 곧 타일이므로 타일 보정 루프가 손대지 않는다.
+
+## 새 구조 만들기 — `base: "generate"` (2026-10-03)
+
+「20조각 대륙」「고리 대륙」「은하」처럼 손 대륙과 다른 구조는 `edit_world_terrain({base: "generate", ops: [{op: "continents", style, count, land?, seed?}, …]})`.
+style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주) · `peninsula`(반도) · `river-continent`(강 문명 대륙) · `arc-islands`(열도) · `korea`(조선 테마용 한반도 윤곽) · `real`(실제 지리 — 지구 어디든).
+`climate {wet?, cold?}` 로 기후를 기울이고, `wall`·`dune_sea`·`sky_island`·`move_place` 로 자동 맞춤을 덮는다.
+
+- **5막 여정은 자동 맞춤**(사용자 결정): 어떤 구조든 키트(`kit_fit.py`)가 시작·관문 산벽·항구·사구 바다·2막 땅·천공섬과 장소 31곳을 놓고
+  여정 검사를 돌린다. 안 맞으면 배치 번호(fit salt)를 바꿔 최대 6번 다시 — 쓴 번호는 `worldmapSource.fitSalt` 로 저장해 같은 세계가 다시 나온다.
+- `base` 를 바꾸면 쌓인 ops 는 버린다(손 대륙 위 작업은 생성 구조에 의미가 없다). 같은 base 면 ops 가 쌓인다.
+- 결과 `layout`(막별 지역 칸 수·벽·관문·항구·사구·하늘·성계)은 `read_world_terrain` 이 요약해 준다. 장소 표시 이름은 `label`(우주 여정은 우주 말).
+- 우주: `starmap` 테마는 기본이 `galaxy` 구조 + `space-5act` 여정(항로 허가증·워프·성운 항법선·점프 게이트). 칸 의미는 같아서(땅 = 항행 공간, 바다 = 공허,
+  산 = 소행성대, 사구 = 이온 폭풍) 통행·여정 검사·도구가 그대로 돈다. 그림은 `kit_theme.draw_galaxy`.
+- **문화권 지리 구조**(2026-10-03): `peninsula`(조선·반도) · `river-continent`(중국·무협) · `arc-islands`(일본·전국).
+  실제 지도를 따라 그리지 않고 특징만 살린 생성기(`kit/lib/kit_geo.py`)라서 시드마다 모양이 다르다. 땅 모양 말고도 **힌트**를 같이 낸다 —
+  척추 산줄기·이끌린 강(맞춤이 장소를 비켜 놓는다), 기후 기울기(위도 범위·서쪽 고원·북쪽 사막), 산벽 극(2막 방향), 사구 바다 극(사막 자리).
+  - `joseon`·`wuxia`·`sengoku` 테마는 이제 기본 지형이 각각 `terrains/joseon-korea`(한반도 윤곽, style `korea`)·`wuxia-china`·`sengoku-japan`(실제 지리 style `real`)이고
+    여정은 `journeys/joseon-5act`·`wuxia-5act`·`sengoku-5act`(장소 id 는 판타지와 같고 label·이야기·장벽·수단 이름만 — 마패·판옥선·모래배·선학 등).
+    생성기: `journeys/src/make_culture_journeys.py`. 이 세 테마로 이미 만든 세계 지도는 다시 빌드하면 새 구조로 바뀐다.
+  - 테마 지형이 생성 바탕일 때 편집이 `continents`·`climate` 을 직접 주면 테마의 것은 버린다(`kit_terrain.merge`). 전에는 테마 것이 앞서 이겨 편집이 무시됐다.
+  - **`korea` — 실제 지리 윤곽**(2026-10-03, 「조선은 전혀 저렇게 안 생겼다」 지적). 닮은꼴 `peninsula` 는 한국으로 안 읽혔다.
+    위·경도 꼭짓점(`KOREA_MAINLAND`·`JAPAN`·제주·울릉)을 `GEO_BOX`(동경 119.5~141.5°, 북위 31.5~44.5°, cos38° 보정)로 칸에 옮기고
+    `polymask` 로 해안만 노이즈 — 시드는 해안 굽이만 바꾼다. 실제 땅이라 지도 가장자리에 닿아도 된다(`info.edge_land` → `kit_gen.EDGE_LAND`).
+    여정 배치: 산벽 = 요동만→압록강 북쪽→백두산→두만강(`hint_wall` 꺾은선, `hint_a_pole` 로 한반도 쪽이 1막), 2막 = 만주,
+    3막 = 바다 건너 일본·제주, 4막 사구 = 요동 벌판(`hint_dune`, `hint_dune_rim` 으로 모래벌 테두리 좁힘), 기후 t0 .25 ~ t1 .76 + 습도 .12(북한이 눈밭이 되지 않게).
+    세토 내해는 한 칸이라 시코쿠가 떨어지면 길이 막혀 아와지 목을 넣었다. 시드 1~8 미리보기 8/8 통과.
+  - **`real` — 실제 지리, 지구 어디든**(2026-10-04, 「조수가 이런 걸 정보 없이 할 수 있어야」). 나라마다 꼭짓점을 손으로 넣지 않는다.
+    `continents{style:"real", region}` 또는 `{style:"real", box:[서경,남위,동경,북위], home?, beyond?, sands?}` — 범위는 조수가 제 지식으로 정한다.
+    자료 `tiledata/worldmap-kit/geo/`(Natural Earth 해안선·호수·강·이름난 지역 + NOAA ETOPO1 높이 0.25°, 564KB, 출처는 그 폴더 README).
+    `kit/lib/kit_realgeo.py`: 범위를 4:3(가운데 위도 cos)으로 넓혀 칸에 칠한다(4×4 표본 다수결). 산 = 둘레보다 솟은 곳(높이 − 가우스 평균)+이름난 산맥,
+    긴 축을 척추 산줄기로(큰 산지는 두 줄). 기후 = 실제 위도 꺾은선(`_temp_of_lat`: 34~43° 온대, 브리튼 온대, 65°~ 툰드라) + 높이 냉각, 사막 지역은 모래.
+    강 = 이름난 강 중 긴 것 6줄(바다 쪽 끝을 어귀로). 가장 큰 사막 = 4막 사구 바다(없으면 시작 땅 내륙), 지어낸 산줄기·강은 끈다(`hint_auto=0`).
+    맞춤 쪽 조정(실제 지리일 때만): 시작 땅 = `home` 가까운 땅(`home_pole`, 일본이면 혼슈), 배 장벽 깎기 4.6 → 2.6칸(`home_gap`),
+    바다 장벽 최소 폭 4 → 2칸(`journey_check_v9.MIN_SEA_GAP` — 영국 해협 같은 실제 해협), 사구는 작은 것부터(`dune_small`), 장소 둘레 바닥 무리 없음(적도 아프리카 눈밭).
+    저장된 지도의 재검사는 `layout.min_sea_gap` 를 읽고, 없는 옛 지도는 매번 4칸으로 되돌린다(직전 실제 지리 검사의 2칸 기준이 다른 지도에 남지 않는다).
+    지역 프리셋 20개(`REGIONS`, TS `WORLDMAP_REGIONS`) — 미리보기 스윕 20/20 통과(`kit/tools/sweep_real.sh`).
+    한계: `beyond`(2막 쪽)·`sands`(사구 자리)는 선호일 뿐 — 「첫 화면(20×15)에 시작·관문·항구·탑」 규칙이 앞서서 무시될 수 있다(무협은 맞춤이 고른 내몽골 장성,
+    전국은 서국·혼슈 북단으로 여정 글을 맞췄다). 배로 갈 실제 땅이 모자라면(남미·호주·아이슬란드) 가상 섬 5개를 띄우고 layout.notes 에 적는다.
+    혼슈처럼 좁은 땅은 사구가 가운데 오면 1막 땅이 갈려 끝으로만 간다. 자료가 1:5천만이라 box 가로 3° 미만은 거절한다.
+  - 우주는 `galaxy` 그대로. 「조선인데 섬나라로」처럼 테마와 다른 땅을 원하면 다른 style 을 주면 된다 — 테마는 기본값일 뿐이다.
+- **칩셋 계열 검사 예외**(2026-10-03): 세계 지도(`worldmapSource` + 칩셋 `worldmap_<mapId>`)는 지도 그림을 자른 전용 타일셋이라
+  `toolRunner.rejectTilesetFamilyChange` 가 대상에서도, 「보는 맵」 기준에서도 뺀다. 전에는 버들항 빈 맵을 보던 조수의
+  `edit_world_terrain` 저장이 「그림체 변경」으로 거부돼 세계 지도를 못 만들었다(조수 시험 `scripts/qa-game/briefs/joseon-worldmap.json`).
+- `edit_world_terrain.characterScale`(0.25~1): 빌드한 세계 지도의 `map.characterScale` 을 같이 정한다 — 「월드맵에서 캐릭터 작게」.
+- 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
+- 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
+
+## 후속 조수 실행·SQLite 재로드 (2026-10-04)
+
+근거:
+[`verify-shots/worldmap-real-geography/README.md`](../verify-shots/worldmap-real-geography/README.md).
+조선은 조수가 `joseon_baram` 한양 고을을 가져와 성문 `(27,25)`에 연결했고,
+프리셋 없는 유카탄은 조수가 실제 경도·위도 범위를 골랐다. 기존 실행물은 별도 SQLite 폴더에 저장한 뒤
+닫고 다시 열어 지도·이벤트·시작 위치·원본 PNG의 일치를 확인했다. 전체 게임 엔딩은 검증 범위 밖이다.
+
+## 지형 경계 v9 (2026-10-03)
+
+바닥 경계·강·용암·독 물가·사구 능선·늪·숲 가장자리를 다시 그렸다(사용자 지적 「다른 타일의 경계면이 어색하다」).
+평지 경계에 어두운 테두리를 치지 않고, 칸 계단 대신 매끈한 장으로 가른다. 상세와 경계 도감 도구: 키트 README ⑧.
+그림이 바뀌었으므로 기존 맵을 다시 빌드하면 경계 픽셀이 달라진다(칸 배열·통행·여정은 그대로).
+
+## 글자 지도
+
+`read_world_terrain`/`edit_world_terrain` 결과의 `ascii` 첫 줄이 범례다.
+`~ 바다 r 강 . 초원 s 사막 d 모래언덕 n 설원 … ^ 산 M 메사 V 화산 * 숲 = 길 / 경사로 @ 장소`.
+둘째 줄은 x 의 10 자리, 줄 머리는 y. 좌표는 모두 칸(x 오른쪽, y 아래).
+
+## 조수 역할 적대 시험 (2026-10-03)
+
+에이전트에게 조수 역할로 실제 요청(해협+산맥, 설원 호수+화산섬, 사막을 정글로+강+신전 이동, 군도에 섬·산맥)을 도구만으로 풀게 했다.
+1차: 요청당 미리보기 3~6번, 실패 문장(「막 불일치 … BFS … R2」)으로는 못 고쳤다. 고친 뒤 2차: 1~4번, 12개 결함 중 8 해결·4 부분.
+2차에서 나온 것(지역 팔레트가 정글을 모래빛으로, 섬 붙음 무경고, 화산 봉우리 없음, density 0.9 로도 숲이 안 남)도 고쳤다.
+증거: `verify-shots/worldmap-terrain/qa-assist-r1/REPORT.md`, `verify-shots/worldmap-terrain/qa-assist-r2/REPORT.md`.
+
+## 함정
+
+- 숲은 sand·dune·물·길·장소 둘레에 안 자란다 → 먼저 `biome` 으로 바닥을 바꿔라.
+- 사막 신전 같은 열쇠 장소는 자기 막의 장벽 안에서만 옮길 수 있다 — 규칙상 안 되는 요청은 조수가 사용자에게 이유를 설명해야 한다.
+- 원래 화산(77,16)의 원뿔은 장소 아이콘이다. 편집 화산의 원뿔은 `kit_world._paint_volcano_peaks` 가 지형 그림에 직접 그린다.
+- 바다로 자를 때 섬 사이 바다가 좁으면(배가 필요한 여정 장벽) 「바다 장벽이 너무 좁다」. 작은 섬을 장벽 바다 안에 두면 장벽이 좁아진다.
+- Pi 조수 도구는 Bun 일꾼(`scripts/lib/piAgentRuntime.ts`) 안에서 돈다. 편집기 기본 빌더(상대 `/v1` fetch)는 거기서 닿지 않으므로
+  일꾼이 시작할 때 `setWorldmapBuilder(buildWorldmap)` 를 건다. 새 실행 경로를 만들면 같은 줄이 필요하다.
+- 도구 준비 단계 `prepare(args, project)` 가 프로젝트를 받는다(2026-10-03 확장). 쌓인 ops 를 합치려면 맵을 봐야 해서다.

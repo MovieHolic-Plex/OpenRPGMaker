@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/roof_floor/s4-A.pxg",
+ "set": "school",
+ "id": "roof_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "옥상 방수 바닥: fence 램프 바탕에 얼룩, 위아래 배수 이음 줄, 벗겨진 콘크리트 두 곳(가장자리에서 떨어짐)",
+ "ok": true
+}

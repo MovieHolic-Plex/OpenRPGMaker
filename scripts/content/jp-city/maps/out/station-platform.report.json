@@ -1,0 +1,1544 @@
+{
+ "map": {
+  "id": "jp-city-station-platform",
+  "size": [
+   44,
+   13
+  ]
+ },
+ "start": [
+  21,
+  11
+ ],
+ "poles": [],
+ "deco": {
+  "placed": 0,
+  "skipped": 0
+ },
+ "doors": {
+  "n": 0,
+  "allReached": true,
+  "failing": []
+ },
+ "anchors": {
+  "n": 2,
+  "allReached": true,
+  "failing": []
+ },
+ "solid": {
+  "cells": 155,
+  "openByEngine": 0,
+  "open": []
+ },
+ "autotiles": {
+  "lane": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "rail": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  },
+  "fence": {
+   "cells": 0,
+   "mismatch": 0,
+   "ex": []
+  }
+ },
+ "layers": {
+  "overlaps": 0,
+  "issues": [],
+  "l2": 17,
+  "l3": 243,
+  "l4": 2
+ },
+ "emptiness": {
+  "worst17x13": 0,
+  "worstAt": null,
+  "ignore": [],
+  "max": null,
+  "skippedWindows": 0
+ },
+ "reach": {
+  "reachable": 285
+ },
+ "placed": 182,
+ "ok": true,
+ "placedList": [
+  {
+   "id": "jp-subway-ceiling",
+   "x": 0,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 1,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 2,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 3,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 4,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 5,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 6,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 7,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 8,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 9,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 10,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 11,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 12,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 13,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 14,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 15,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 16,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 17,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 18,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 19,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 20,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 21,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 22,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 23,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 24,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 25,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 26,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 27,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 28,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 29,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 30,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 31,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 32,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 33,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 34,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 35,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 36,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 37,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 38,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 39,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 40,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 41,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 42,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-ceiling",
+   "x": 43,
+   "y": 0,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall-ad2",
+   "x": 4,
+   "y": 1,
+   "w": 3,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall-ad",
+   "x": 20,
+   "y": 1,
+   "w": 3,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall-ad3",
+   "x": 36,
+   "y": 1,
+   "w": 3,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 0,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 1,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 2,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 3,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 7,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 8,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 9,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 10,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 11,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 12,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 13,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 14,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 15,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 16,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 17,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 18,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 19,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 23,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 24,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 25,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 26,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 27,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 28,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 29,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 30,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 31,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 32,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 33,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 34,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 35,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 39,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 40,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 41,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 42,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-backwall",
+   "x": 43,
+   "y": 1,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 0,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 1,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 2,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 3,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 4,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 5,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 6,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 7,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 8,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 9,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 10,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 11,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 12,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 13,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 14,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 15,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 16,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 17,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 18,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 19,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 20,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 21,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 22,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 23,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 24,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 25,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 26,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 27,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 28,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 29,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 30,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 31,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 32,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 33,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 34,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 35,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 36,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 37,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 38,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 39,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 40,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 41,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 42,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-track",
+   "x": 43,
+   "y": 4,
+   "w": 1,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 0,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 1,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 2,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 3,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 4,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 5,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 6,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 7,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 8,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 9,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 10,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 11,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 12,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 13,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 14,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 15,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 16,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 17,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 18,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 19,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 20,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 21,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 22,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 23,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 24,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 25,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 26,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 27,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 28,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 29,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 30,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 31,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 32,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 33,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 34,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 35,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 36,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 37,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 38,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 39,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 40,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 41,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 42,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-edge",
+   "x": 43,
+   "y": 6,
+   "w": 1,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar",
+   "x": 8,
+   "y": 6,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-pillar",
+   "x": 32,
+   "y": 6,
+   "w": 1,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-station-sign-hang",
+   "x": 12,
+   "y": 8,
+   "w": 6,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-station-sign-hang",
+   "x": 34,
+   "y": 8,
+   "w": 6,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-led",
+   "x": 26,
+   "y": 8,
+   "w": 3,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-stairs-up",
+   "x": 20,
+   "y": 8,
+   "w": 4,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-bench",
+   "x": 3,
+   "y": 11,
+   "w": 3,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-bench",
+   "x": 13,
+   "y": 11,
+   "w": 3,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-bench",
+   "x": 28,
+   "y": 11,
+   "w": 3,
+   "h": 1,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-recycle",
+   "x": 34,
+   "y": 10,
+   "w": 2,
+   "h": 2,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-vending",
+   "x": 41,
+   "y": 9,
+   "w": 2,
+   "h": 3,
+   "layer": 3
+  },
+  {
+   "id": "jp-subway-extinguisher",
+   "x": 16,
+   "y": 1,
+   "w": 1,
+   "h": 2,
+   "layer": 4
+  }
+ ],
+ "doorList": [],
+ "anchorList": [
+  {
+   "b": "stairs-up",
+   "x": 21,
+   "y": 10,
+   "passable": true,
+   "reached": true
+  },
+  {
+   "b": "stairs-up",
+   "x": 22,
+   "y": 10,
+   "passable": true,
+   "reached": true
+  }
+ ]
+}

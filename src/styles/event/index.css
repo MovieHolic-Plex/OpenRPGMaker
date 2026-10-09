@@ -1,0 +1,41 @@
+/* event 표면 진입 시트 — 리프 시트를 @layer event 에 넣는다. 규칙을 여기 쓰지 말 것. 2026-09-11 Task 13 부터 세대 파일이 아니라 구성 요소 버킷이다(순서는 접기 전 유효 순서를 보존).
+   첫 줄의 @layer 선언은 허용된 유일한 비-import 줄이다: index.css 와 같은 순서 선언을 멱등으로 되풀이해, dev 모드에서 이 시트가
+   index.css 보다 먼저 파싱되더라도(모듈 평가 순서) 레이어 순서가 import 순서에 기대지 않게 한다. */
+@layer tokens, base, components, shell, map, event, database, resources, runtime, overrides;
+@import "./shell.css" layer(event);
+@import "./shell-2.css" layer(event);
+@import "./pages.css" layer(event);
+@import "./pages-2.css" layer(event);
+@import "./pages-3.css" layer(event);
+@import "./pages-4.css" layer(event);
+@import "./pages-4.part-2.css" layer(event);
+@import "./pages-4.part-3.css" layer(event);
+@import "./pages-4.part-4.css" layer(event);
+@import "./pages-4.part-5.css" layer(event);
+@import "./pages-4.part-6.css" layer(event);
+@import "./pages-5.css" layer(event);
+@import "./command-list.css" layer(event);
+@import "./command-list-2.css" layer(event);
+@import "./command-list-3.css" layer(event);
+@import "./command-list-4.css" layer(event);
+@import "./inspector.css" layer(event);
+@import "./footer.css" layer(event);
+@import "./subdialogs/dialogs.css" layer(event);
+@import "./subdialogs/dialogs-2.css" layer(event);
+@import "./subdialogs/dialogs-3.css" layer(event);
+@import "./subdialogs/dialogs-4.css" layer(event);
+@import "./subdialogs/dialogs-5.css" layer(event);
+@import "./command-forms/forms.css" layer(event);
+@import "./command-forms/forms-2.css" layer(event);
+@import "./command-forms/forms-3.css" layer(event);
+@import "./command-forms/forms-4.css" layer(event);
+@import "./command-forms/forms-5.css" layer(event);
+@import "./command-forms/forms-6.css" layer(event);
+@import "./previews/command-preview.css" layer(event);
+@import "./previews/command-preview-2.css" layer(event);
+@import "./previews/command-preview-3.css" layer(event);
+@import "./previews/command-preview-4.css" layer(event);
+@import "./narrow.css" layer(event);
+
+@import "./command-workbench.css" layer(event);
+@import "./settings-rail.css" layer(event);

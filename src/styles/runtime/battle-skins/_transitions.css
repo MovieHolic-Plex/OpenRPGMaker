@@ -1,0 +1,59 @@
+/* src/styles/runtime/battle-skins/_transitions.css
+   B: 스킨 트랜지션을 [data-battle-transition] + skinClass로 재생.
+
+   스킨 색은 **막대(.battle-transition-blind-bar)** 에만 준다. 컨테이너(.battle-transition-blinds)
+   는 inset:0 이라 여기에 배경을 주면 부착 즉시 화면 전체가 불투명해져 플래시·블라인드
+   닫힘·인트로 안무가 전부 그 판 뒤에서 재생되고 사용자는 하드컷만 본다(2026-09-14 실측:
+   rm2000/rm2003 진입이 "파랑 판 1초 → 컷" 이었다). */
+.battle-transition-overlay.battle-transition--wipe-black { --battle-transition-cover: #000; }
+.battle-transition-overlay.battle-transition--flash-white .battle-transition-flash { background: #fff; }
+/* 왼쪽에서 밀려오는 판 — 막대가 왼쪽 끝에서 자란다(컨테이너 슬라이드는 배경이 없어 보이지 않았다). */
+.battle-transition-overlay.battle-transition--slide-pokemon .battle-transition-blind-bar { transform-origin: left; }
+
+/* 도트 측면 진입: 흰 번쩍임 두 번(340ms) → 교차 가로 줄 닫힘(260ms).
+   JS 타임라인 안에서 190 + 7×10ms에 모두 닫힌다. 전투 씬이 생기기 전의
+   오버레이이므로 전용 전환 클래스가 스코프다. */
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] {
+  --battle-transition-cover: #000;
+  overflow: hidden;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="flash"] .battle-transition-flash {
+  background: #fff;
+  animation: retro2003-entry-flash 340ms linear both;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] .battle-transition-blind-bar {
+  --retro-slide: -100%;
+  transform: translateX(var(--retro-slide));
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"] .battle-transition-blind-bar:nth-child(even) {
+  --retro-slide: 100%;
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="close"] .battle-transition-blind-bar {
+  animation: retro2003-stripe-close 190ms ease-in both;
+  animation-delay: calc(var(--blind-index) * 10ms);
+}
+.battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="reveal"] .battle-transition-blind-bar {
+  animation: retro2003-stripe-open 230ms ease-out both;
+  animation-delay: calc((7 - var(--blind-index)) * 10ms);
+}
+@keyframes retro2003-entry-flash {
+  0%, 38%, 100% { opacity: 0; }
+  14%, 60% { opacity: 0.9; }
+}
+@keyframes retro2003-stripe-close {
+  from { transform: translateX(var(--retro-slide)); }
+  to { transform: translateX(0); }
+}
+@keyframes retro2003-stripe-open {
+  from { transform: translateX(0); }
+  to { transform: translateX(var(--retro-slide)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase] .battle-transition-flash,
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase] .battle-transition-blind-bar {
+    animation: none;
+  }
+  .battle-transition-overlay.battle-transition--shatter-2003[data-battle-transition="shatter-2003"][data-battle-transition-phase="close"] .battle-transition-blind-bar {
+    transform: none;
+  }
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/house_roof/j1-A.pxg",
+ "set": "jp",
+ "id": "house_roof",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.223
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  1,
+  63,
+  31
+ ],
+ "note": "강남 결 그대로: 은회색 기와 5단, 홈 1줄·엇갈린 세로 이음, 둥근 처마 기와, 양끝 박공 삼각벽.",
+ "ok": true
+}

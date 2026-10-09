@@ -1,0 +1,392 @@
+[
+ {
+  "map": "bakery",
+  "size": [
+   16,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 72,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8831
+ },
+ {
+  "map": "pharmacy",
+  "size": [
+   15,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 67,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8749
+ },
+ {
+  "map": "fish",
+  "size": [
+   15,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 60,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8913
+ },
+ {
+  "map": "butcher",
+  "size": [
+   13,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 49,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8969
+ },
+ {
+  "map": "smithy",
+  "size": [
+   15,
+   13
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 55,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8549
+ },
+ {
+  "map": "chapel",
+  "size": [
+   33,
+   20
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 241,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.863
+ },
+ {
+  "map": "scholar",
+  "size": [
+   18,
+   14
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 64,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.9189
+ },
+ {
+  "map": "tailor",
+  "size": [
+   16,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 76,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8894
+ },
+ {
+  "map": "tavern",
+  "size": [
+   18,
+   16
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 92,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8604
+ },
+ {
+  "map": "manor_1f",
+  "size": [
+   25,
+   20
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 178,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8914
+ },
+ {
+  "map": "manor_2f",
+  "size": [
+   25,
+   20
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 163,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.9082
+ },
+ {
+  "map": "hobbit",
+  "size": [
+   24,
+   13
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 85,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8727
+ },
+ {
+  "map": "inn",
+  "size": [
+   26,
+   17
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 144,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8763
+ },
+ {
+  "map": "dwarf",
+  "size": [
+   22,
+   19
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 169,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8437
+ },
+ {
+  "map": "elf",
+  "size": [
+   22,
+   16
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 138,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8009
+ },
+ {
+  "map": "mead",
+  "size": [
+   25,
+   20
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 182,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8112
+ },
+ {
+  "map": "throne",
+  "size": [
+   23,
+   22
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 178,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.882
+ },
+ {
+  "map": "tower",
+  "size": [
+   18,
+   18
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 85,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8688
+ },
+ {
+  "map": "dungeon",
+  "size": [
+   22,
+   11
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 78,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.7552
+ },
+ {
+  "map": "mine",
+  "size": [
+   22,
+   14
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 123,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.6976
+ },
+ {
+  "map": "magitek",
+  "size": [
+   22,
+   13
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 104,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.9794
+ },
+ {
+  "map": "opera",
+  "size": [
+   24,
+   18
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 166,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8815
+ },
+ {
+  "map": "casino",
+  "size": [
+   22,
+   15
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 133,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.9664
+ },
+ {
+  "map": "stable",
+  "size": [
+   20,
+   13
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 83,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.7979
+ },
+ {
+  "map": "narshe",
+  "size": [
+   16,
+   14
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 65,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8483
+ },
+ {
+  "map": "zozo",
+  "size": [
+   16,
+   13
+  ],
+  "structDiffPx": 0,
+  "pixelDiffAllFrames": 0,
+  "walkMismatch": 0,
+  "walkMismatchCells": [],
+  "unreached": [],
+  "reachable": 72,
+  "cellsOver2": 0,
+  "sameAsUnfoldedOriginal": 0.8219
+ }
+]

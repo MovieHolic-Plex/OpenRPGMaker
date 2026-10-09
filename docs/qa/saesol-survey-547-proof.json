@@ -1,0 +1,258 @@
+{
+  "scope": "Dedicated player, resume actual six-species-registration and campsite-complete progression/party/inventory state from prior successful UI run (new runtime RNG) in a QA-only project copy. No new rewards/levels granted. Actual direction inputs and authored portals, from the continued earned campaign checkpoint. Resumed session, not uninterrupted or three-hour proof.",
+  "steps": [
+    {
+      "id": "ev_sr4_pass_marker1",
+      "started": false,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 5
+    },
+    {
+      "id": "ev_sr4_pass_marker2",
+      "started": false,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 5
+    },
+    {
+      "id": "ev_sr4_pass_marker3",
+      "started": false,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 5
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "choice": 1,
+      "started": false,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 5
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "choice": 0,
+      "started": true,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "started": true,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        false
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker3",
+      "started": true,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker3",
+      "started": true,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "started": true,
+      "done": false,
+      "markers": [
+        false,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker1",
+      "started": true,
+      "done": false,
+      "markers": [
+        true,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker1",
+      "started": true,
+      "done": false,
+      "markers": [
+        true,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "started": true,
+      "done": false,
+      "markers": [
+        true,
+        false,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker2",
+      "started": true,
+      "done": false,
+      "markers": [
+        true,
+        true,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_marker2",
+      "started": true,
+      "done": false,
+      "markers": [
+        true,
+        true,
+        true
+      ],
+      "gold": 9492,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "started": true,
+      "done": true,
+      "markers": [
+        true,
+        true,
+        true
+      ],
+      "gold": 10092,
+      "balls": 11
+    },
+    {
+      "id": "ev_sr4_pass_researcher",
+      "started": true,
+      "done": true,
+      "markers": [
+        true,
+        true,
+        true
+      ],
+      "gold": 10092,
+      "balls": 11
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 663,
+  "walkedPortals": [
+    {
+      "from": "map_variety_market",
+      "event": "sr_map_variety_market_0",
+      "to": "map_variety_ridge"
+    },
+    {
+      "from": "map_variety_ridge",
+      "event": "sr_map_variety_ridge_2",
+      "to": "map_saesol_route"
+    },
+    {
+      "from": "map_saesol_route",
+      "event": "sr_map_saesol_route_2",
+      "to": "map_variety_cavern"
+    },
+    {
+      "from": "map_variety_cavern",
+      "event": "sr_warp_cavern_to_route2",
+      "to": "map_saesol_route2"
+    },
+    {
+      "from": "map_saesol_route2",
+      "event": "sr_warp_route2_to_forest",
+      "to": "map_saesol_forest"
+    },
+    {
+      "from": "map_saesol_forest",
+      "event": "sr_warp_forest_to_town2",
+      "to": "map_saesol_town2"
+    },
+    {
+      "from": "map_saesol_town2",
+      "event": "ev_gate_558ed082-4b10-453b-9f29-0402a9fe7472",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_sr3_port_to_pass",
+      "to": "map_sr4_pass"
+    }
+  ],
+  "declineNoReward": true,
+  "acceptBallsOnce": true,
+  "rewardOnce": true,
+  "passed": true,
+  "pageErrors": []
+}

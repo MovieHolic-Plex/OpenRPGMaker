@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/oasis/wv6-B.pxg",
+ "set": "worldmap",
+ "id": "oasis",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "깊이 강조 — 짙은 둑과 물속 하늘빛 점, 잎 넓은 야자에 어두운 윤곽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.005
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.036
+  }
+ }
+}

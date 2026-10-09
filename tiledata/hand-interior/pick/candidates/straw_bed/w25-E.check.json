@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/straw_bed/w25-E.pxg",
+ "id": "straw bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  5,
+  15,
+  28
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "note": "두툼하게 쌓인 짚 더미: 볼록한 밝은 결 묶음과 어두운 틈, 가장자리 삐친 가닥이 많다. 머리에 어둡게 바랜 자루천 조각 베개.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/house_roof/j1-B.pxg",
+ "set": "jp",
+ "id": "house_roof",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.16
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  1,
+  63,
+  31
+ ],
+ "note": "빛/그림자 강조: 용마루 쪽 밝고 아래로 갈수록 어두운 기와, 왼쪽 가장자리 밝음, 왼 박공 밝고 오른 박공 어둡게, 처마 밑 ~/- 그림자 두 줄.",
+ "ok": true
+}

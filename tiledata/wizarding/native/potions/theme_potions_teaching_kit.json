@@ -1,0 +1,186 @@
+{
+ "name": "theme_potions_teaching_kit",
+ "item": "theme_potions_teaching_kit",
+ "candidate": "h11-A",
+ "source": "art-output/repair-r4-actors-vault/content/tiledata/hand-interior/pick/candidates/theme_potions_teaching_kit/h11-A.png",
+ "sha256": "196fdc00f927a90f2f83ed67660dfa8ac2a28852eeabec5fcd87622d70194864",
+ "set": {
+  "id": "theme potions teaching-kit",
+  "name_ko": "teaching-kit",
+  "name_en": "theme potions teaching-kit",
+  "parent": "theme potions teaching-kit",
+  "derive": "production",
+  "kind": "floor",
+  "category": "castle",
+  "category_ko": "테마 전용 신규 원본",
+  "footprint": {
+   "w": 16,
+   "h": 1
+  },
+  "canvas": [
+   256,
+   32
+  ],
+  "description": "전용 교사 시연대4×1·북벽2칸 칠판·조제법 책/양피지. 시연 솥은 별도 iron-cauldrons로 상판에 결합, 교사와 학생 모두 북쪽 칠판 방향을 읽을 수 있는 3/4 윗면.",
+  "tags": [
+   "theme-3e7ac64c5cf1d943e08a"
+  ],
+  "refs": [],
+  "slots": [
+   {
+    "key": "table",
+    "label": "table",
+    "see": "table",
+    "w": 64,
+    "h": 32,
+    "foot": [
+     4,
+     1
+    ],
+    "origin": [
+     0,
+     16
+    ],
+    "layer": 2,
+    "passage": "X",
+    "topMin": 8,
+    "locked": false,
+    "child": null,
+    "x": 0,
+    "y": 0,
+    "contactMin": 31,
+    "geometry": {
+     "coordinates": "All rects half-open; top_y and contact_y are inclusive local pixel rows.",
+     "tableTop": [
+      8,
+      15
+     ],
+     "tableFront": [
+      16,
+      31
+     ],
+     "transparentPadding": {
+      "top": 8,
+      "bottom": 0,
+      "left": 0,
+      "right": 0
+     },
+     "opaqueBounds": [
+      0,
+      8,
+      "slot.w",
+      32
+     ],
+     "contact_y": 31,
+     "surfaceHeightPx": 16,
+     "topDepthPx": 8,
+     "actualPictureHeightPx": 24,
+     "topRatio": 0.3333333333333333,
+     "supportLocalY": 15,
+     "formula": "tableTL = groundCell*16 - table.origin; support = tableTL + [cellOffsetX*16+8,15]; propTL = support - prop.contact; placement.pixel = propTL + prop.origin"
+    },
+    "contact": [
+     32,
+     31
+    ],
+    "surface": {
+     "height": 16,
+     "supportLocalY": 15,
+     "supportAnchorForEachCell": [
+      8,
+      15
+     ],
+     "top_y": [
+      8,
+      15
+     ],
+     "vertical_y": [
+      16,
+      31
+     ]
+    }
+   },
+   {
+    "key": "blackboard",
+    "label": "blackboard",
+    "see": "blackboard",
+    "w": 32,
+    "h": 16,
+    "foot": [
+     0,
+     0
+    ],
+    "origin": [
+     0,
+     0
+    ],
+    "layer": 1,
+    "passage": "inherit",
+    "topMin": 0,
+    "locked": false,
+    "child": null,
+    "x": 64,
+    "y": 0
+   },
+   {
+    "key": "book-parchment",
+    "label": "book-parchment",
+    "see": "book-parchment",
+    "w": 16,
+    "h": 16,
+    "foot": [
+     1,
+     0
+    ],
+    "origin": [
+     0,
+     15
+    ],
+    "layer": 3,
+    "passage": "inherit",
+    "topMin": 3,
+    "locked": false,
+    "child": null,
+    "x": 96,
+    "y": 0,
+    "contact": [
+     8,
+     15
+    ],
+    "contact_y": 15,
+    "contactMin": 15,
+    "attachment": "table-support",
+    "geometry": {
+     "opaqueBounds": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "transparentOutsideOpaqueBounds": true,
+     "contact_y": 15,
+     "top_y": [
+      8,
+      11
+     ],
+     "vertical_y": [
+      12,
+      15
+     ]
+    }
+   }
+  ],
+  "ms": 150,
+  "production": {
+   "sceneContract": "art-output/repair-r4-actors-vault/scene-contract.json",
+   "instructions": "전용 교사 시연대4×1·북벽2칸 칠판·조제법 책/양피지. 시연 솥은 별도 iron-cauldrons로 상판에 결합, 교사와 학생 모두 북쪽 칠판 방향을 읽을 수 있는 3/4 윗면.\nRead current sceneContract, theme-brief.json and concept-art.png. Use only the dedicated 42 colours. No stock artwork or palette. Logical ground cells remain fixed; rendered pixels are the resolved ground/support/hood anchors in scene-contract.json. Use the approved 23x14 coordinates. Read approved planning and compare each required attachment, footprint and actor scale; no room PASS before complete native coverage.\nRead scene-contract and attachment-contract: teacher sole(136,47)/hand(150,42), assistant sole(328,127)/hand(328,123), same sole in walking/action. North bodies behind tables, hand/tool separate above top. Board pixel(96,0), readable rect(98,2,126,14). Five named new cut-vault rib parents are ordered, with in-range source sockets. Lower exhaust endpoints(40,102)/(152,102) on ribs in y98..105 gap; continuous duct-return alpha behind upper bench fascia, not terminating at table front. Each slot contact/inlet/exhaust is an actual in-range pixel; boundary endpoints separately declared. Use only42 theme colours. Verify real native PNG alpha and all three comparison regions before verdict.",
+   "theme": {
+    "policyHash": "269db7ebc08658e44e99f02570a558c791efe8e4c6b658f2cbe7028ff01195c5",
+    "briefSha256": "8efa9ec969b01c6ab4092f0887768dd283e494ab939d5b261ada30c1f7c77b26"
+   },
+   "requirement": "teaching-kit",
+   "newOriginal": true,
+   "attachmentContract": "art-output/repair-r4-actors-vault/attachment-contract.json"
+  }
+ }
+}

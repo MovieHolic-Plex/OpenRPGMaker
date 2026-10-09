@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/jp_signal/j5-A.pxg",
+ "set": "jp",
+ "id": "jp_signal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.13
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  1,
+  29,
+  47
+ ],
+ "note": "강남 신호등과 같은 결: 검은 칠 함 가로 3등(청록·노랑·빨강), 청록만 켜짐, 차양 줄 1행, 회색 폴 3px+받침, 왼아래 칸에 서서 팔이 오른쪽으로 뻗음",
+ "ok": true
+}

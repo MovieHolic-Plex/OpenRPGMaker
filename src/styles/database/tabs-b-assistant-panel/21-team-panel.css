@@ -1,0 +1,245 @@
+/* ── Pi 팀 패널 (2026-09-09) — 데크 레일 아래 접힌 막대. 펼치면 「지금」(팀원별 진행) + 「팀원」(명단 편집) + 팀장 지침.
+   DOM(aiTeamPanel.ts): section.ai-team-panel[data-open] > button.ai-team-panel-bar + div.ai-team-panel-body
+   색은 tokens.css 변수만. !important 0. 글자 크기는 --ai-font-scale 로 스케일. 스피너·역할 배지는 18/20 파일 재사용. */
+
+.ai-team-panel {
+  border-bottom: 1px solid var(--border-subtle);
+  display: grid;
+  font-family: var(--font-ui);
+  min-width: 0;
+}
+
+.ai-team-panel-bar {
+  align-items: center;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  gap: 8px;
+  min-height: 30px;
+  min-width: 0;
+  padding: 4px 12px 4px 14px;
+  text-align: left;
+  width: 100%;
+}
+
+.ai-team-panel-bar:hover { background: var(--bg-hover); }
+.ai-team-panel-bar:focus-visible { outline: var(--focus-outline); outline-offset: -2px; }
+
+.ai-team-panel-dot {
+  background: var(--border-strong);
+  border-radius: 50%;
+  flex: none;
+  height: 8px;
+  width: 8px;
+}
+.ai-team-panel-dot.is-running { background: transparent; height: 12px; width: 12px; }
+.ai-team-panel-dot.is-done { background: var(--success); }
+.ai-team-panel-dot.is-error { background: var(--danger); }
+
+.ai-team-panel-title {
+  color: var(--text-1);
+  flex: none;
+  font-weight: var(--font-weight-semibold);
+}
+
+.ai-team-panel-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-team-panel.is-running .ai-team-panel-summary { color: var(--accent); }
+
+.ai-team-panel-chevron {
+  border-color: var(--text-3);
+  border-style: solid;
+  border-width: 0 1.5px 1.5px 0;
+  flex: none;
+  height: 6px;
+  margin-right: 4px;
+  transform: rotate(45deg);
+  transition: transform var(--transition-fast);
+  width: 6px;
+}
+.ai-team-panel[data-open="true"] .ai-team-panel-chevron { transform: rotate(-135deg); }
+
+.ai-team-panel-body {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 12px;
+  max-height: min(52vh, 520px);
+  overflow: auto;
+  padding: 10px 14px 12px;
+}
+
+.ai-team-section { display: grid; gap: 6px; min-width: 0; }
+.ai-team-section-head { align-items: center; display: flex; gap: 6px; }
+.ai-team-section-head .ai-team-section-title { flex: 1 1 auto; }
+.ai-team-section-title {
+  color: var(--text-3);
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.ai-team-empty {
+  color: var(--text-3);
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  margin: 0;
+}
+
+/* 지금 */
+.ai-team-live { display: grid; gap: 6px; list-style: none; margin: 0; padding: 0; }
+.ai-team-live-row {
+  background: var(--bg-inset);
+  border-radius: 10px;
+  display: grid;
+  gap: 3px;
+  padding: 7px 10px;
+}
+.ai-team-live-head { align-items: center; display: flex; gap: 8px; }
+.ai-team-live-count { color: var(--text-2); font-size: calc(12px * var(--ai-font-scale, 1)); }
+.ai-team-live-line {
+  color: var(--text-3);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-team-live-line.is-running { color: var(--text-1); }
+.ai-team-live-line.is-error { color: var(--danger); }
+
+/* 팀원 명단 */
+.ai-team-roster-list { display: grid; gap: 4px; list-style: none; margin: 0; padding: 0; }
+.ai-team-roster-member { border: 1px solid var(--border-subtle); border-radius: 10px; display: grid; min-width: 0; }
+.ai-team-roster-member.is-off .ai-team-member-name,
+.ai-team-roster-member.is-off .ai-team-member-summary { color: var(--text-disabled); }
+.ai-team-member-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 8px 6px 10px;
+}
+.ai-team-member-row input[type="checkbox"] { accent-color: var(--accent); flex: none; margin: 0; }
+.ai-team-roster-member .ai-team-member-name {
+  flex: none;
+  font-size: calc(13px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-semibold);
+}
+.ai-team-member-summary {
+  color: var(--text-3);
+  flex: 1 1 auto;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-team-btn {
+  appearance: none;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-1);
+  cursor: pointer;
+  flex: none;
+  font: inherit;
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  line-height: 1.4;
+  padding: 3px 10px;
+}
+.ai-team-btn:hover { background: var(--control-bg-hover); }
+.ai-team-btn:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+.ai-team-btn.is-primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.ai-team-btn.is-primary:hover { background: var(--accent-hover); }
+.ai-team-btn.is-danger { color: var(--danger); }
+.ai-team-btn.is-quiet { background: transparent; border-color: transparent; color: var(--text-2); }
+.ai-team-btn.is-quiet:hover { background: var(--bg-hover); }
+
+.ai-team-form {
+  border-top: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+.ai-team-field { display: grid; gap: 3px; min-width: 0; }
+.ai-team-field-label {
+  color: var(--text-2);
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  font-weight: var(--font-weight-medium);
+}
+.ai-team-input {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  color: var(--text-1);
+  font: inherit;
+  font-size: calc(12.5px * var(--ai-font-scale, 1));
+  min-width: 0;
+  padding: 5px 8px;
+  width: 100%;
+}
+.ai-team-input:focus-visible { border-color: var(--accent-border); outline: var(--focus-outline); outline-offset: 1px; }
+.ai-team-input-narrow { width: 6em; }
+.ai-team-textarea { resize: vertical; }
+.ai-team-domains { display: flex; flex-wrap: wrap; gap: 4px; }
+.ai-team-domain-chip {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: calc(11.5px * var(--ai-font-scale, 1));
+  gap: 4px;
+  padding: 2px 8px;
+}
+.ai-team-domain-chip input { accent-color: var(--accent); margin: 0; }
+.ai-team-form-actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+/* 펼친 팀 패널은 유휴 상태에서도 데크를 열린 폭으로 둔다 — 18-assistant-deck 의 유휴 축소 규칙(0,8,0)보다 세게. */
+.ai-chat-panel.chat-dock-float.is-assistant-idle.is-team-open:not(.is-composer-focused):not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - var(--ai-deck-inset) - 12px));
+}
+
+.ai-team-panel[hidden] { display: none; }
+
+/* Settings use a roster or a focused editor, never nested expanding forms. */
+.ai-team-panel-body { max-height: none; overflow: visible; padding: 16px 0; }
+.ai-team-roster-list { gap: 8px; }
+.ai-team-roster .ai-team-roster-member { border: 0; border-radius: 12px; background: var(--bg-inset); }
+.ai-team-roster .ai-team-member-row { padding: 12px; gap: 10px; }
+.ai-team-settings-member { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; border: 0; padding: 0; background: transparent; color: var(--text-1); text-align: left; cursor: pointer; font: inherit; }
+.ai-team-settings-member:focus-visible { outline: var(--focus-outline); outline-offset: 4px; }
+.ai-team-settings-avatar { display: grid; place-items: center; flex: 0 0 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); }
+.ai-team-settings-avatar .ai-deck-icon { width: 20px; height: 20px; }
+.ai-team-settings-copy { display: grid; gap: 5px; min-width: 0; flex: 1; }
+.ai-team-settings-copy .ai-team-member-name { overflow-wrap: anywhere; }
+.ai-team-settings-copy .ai-team-member-summary { white-space: normal; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ai-team-settings-member > .ai-deck-icon { flex: 0 0 14px; width: 14px; color: var(--text-3); }
+.ai-team-member-row input[role="switch"] { appearance: none; width: 30px; height: 18px; border-radius: 12px; background: var(--border-strong); position: relative; cursor: pointer; }
+.ai-team-member-row input[role="switch"]::after { content: ""; position: absolute; top: 3px; left: 3px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-raised); }
+.ai-team-member-row input[role="switch"]:checked { background: var(--accent); }
+.ai-team-member-row input[role="switch"]:checked::after { left: 15px; }
+.ai-team-member-row input[role="switch"]:focus-visible { outline: var(--focus-outline); outline-offset: 3px; }
+.ai-team-roster .ai-team-form { padding: 0; border: 0; gap: 18px; }
+.ai-team-settings-heading { font-size: 16px; margin: 0; }
+.ai-team-form > .ai-team-btn { justify-self: start; padding-left: 0; }
+.ai-team-roster .ai-team-input { box-sizing: border-box; padding: 9px 10px; }
+.ai-team-settings-advanced { border-top: 1px solid var(--border-subtle); margin-top: 12px; padding-top: 14px; color: var(--text-2); font-size: 12px; }
+.ai-team-settings-advanced > summary { cursor: pointer; padding-bottom: 12px; }
+.ai-team-settings-advanced > .ai-team-field { margin: 12px 0; }
+.ai-team-form-actions { position: sticky; bottom: 0; padding: 12px 0; background: var(--bg-raised); }
+.ai-team-form-actions .is-danger { margin-right: auto; }
+.ai-team-form-actions .ai-team-btn { padding: 7px 14px; }

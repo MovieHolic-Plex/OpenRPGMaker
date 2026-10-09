@@ -1,0 +1,47 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a locker 6
+@mat b locker 4
+@mat c locker 3
+@mat d locker 1
+@mat e locker 5
+@mat f locker 2
+@mat g viron 6
+@mat h uniform 3
+@mat i locker 0
+@mat j uniform 5
+@mat k vwhite 4
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+eeeeeeeeeeeeeeee
+bbbbbbbbbbbbbbbd
+bebbbbbbbbbbbfcd
+bebccccccccccfcd
+bebccccccccccfcd
+bebccccccccccfcd
+bebccccccccgcfcd
+bebccccccccdcfcd
+bebccccccccccfcd
+bebfffffffffffcd
+ffffffffffffffff
+eeeeeeeeeeeeeeee
+dddddddddddddddd
+bebeeeefibeeeefd
+bebccccfibccccfd
+bebfffffhbfffffd
+bebccccfjbccccfd
+bebccccfhbccccfd
+bebccccfhbccccfd
+bebccccfhbccccfd
+bebccccfjbccccfd
+bebbbbbfhbbbbbfd
+bebccckfhbkcccfd
+bebccckfhbkcccfd
+bebccckfjbkcccfd
+bebccccfhbccccfd
+beddddddhddddddd
+cccccccccccccccc
+iiiiiiiiiiiiiiii
+.~~~~~~~~~~~~~~.
+.--------------.

@@ -1,0 +1,67 @@
+// 촛대 받침 윗면을 y=18~20, 해골 잔 받침 윗면을 y=19~21로 뒤쪽 확장; 다른 화소 유지; 꼭대기 윗면 8행(y=16~23)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A black 1
+@mat B black 2
+@mat C black 3
+@mat D black 4
+@mat E black 5
+@mat F black 6
+@mat P purple 2
+@mat Q purple 3
+@mat R purple 4
+@mat S purple 5
+@mat T purple 6
+@mat G brass 1
+@mat H brass 3
+@mat I brass 4
+@mat J brass 5
+@mat K linen 2
+@mat L linen 4
+@mat M linen 5
+@mat N linen 6
+@mat U red 1
+@mat V red 2
+@mat W red 3
+@mat X red 4
+@layer altar
+@mblock 0 6
+.......R................R.......
+......RS...............SR.......
+.....QSTR.............RSTQ......
+.....RSTQ.............QTSR......
+......RP...............PR.......
+......NK...............NK.......
+......ML......KLLK.....ML.......
+......ML.....LKAABL....ML.......
+......ML.....MKAABL....ML.......
+......LK.....NMLLK.....LK.......
+..EEEEIKDDDDDMAMAMDDDDDIKDDDCC..
+.EFDDDIGDDDDDMMLLKDDDDDIGDDDDCC.
+.EEDGJIIGDDDDDLKLDDDDDGJIIGDDCC.
+.EDDDGJIGDDDDDHGDDDDDDGJIGDDDCC.
+.EDDGJIIGDDDDDHGDDDDDGJIIGDDDCC.
+.EDDDGGGDDDDDHIIHDDDDDGGGDDDDCC.
+.EDDDDCCDDDDDDGGDDDDDDDDDCCDDCC.
+.EEEEEEDDDDDDDDDDDDDDDDDDDDDDCB.
+.CCCCCCCCCCCCCCCCCCCCCCCCCCCCBA.
+..BDCCBBBBBBBBBXWBBBBBBBBCCBBA..
+...DCBBBBBBBBBWVVWBBBBBBBCCBA...
+...DCBBBBBBBBWVBBWVBBBBBBCCBA...
+...DCBBBBBBBBBWVVWBBBBBBBCCBA...
+..DECCCCBBBBBBBWVBBBBBBBCCCCBA..
+.ACCCCCCCCCCCCCCCCCCCCCCCCCCBBA.
+// 해골 잔: 3행 입구 아래 두 눈구멍, 코와 이빨, 금속 잔받침.
+@layer skull
+@mblock 12 12
+.KLLLK.
+LKAABKL
+MKAABKL
+NMLLLLK
+NAALAAK
+NMLALMK
+DLKLKLD
+DHJIIHD
+DHJIIHD
+DHJIIHD

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/classroom_floor/s2-B.pxg",
+ "set": "school",
+ "id": "classroom_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "널 위쪽 밝은 줄·아래 어두운 줄로 볼록하게, 이음 더 짙게. 사방 이음 맞춤",
+ "ok": true
+}

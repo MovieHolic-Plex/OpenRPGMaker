@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/powder_kegs/w9-B.pxg",
+ "id": "powder kegs",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  2,
+  13,
+  12
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  12
+ ],
+ "note": "A 위에 왼쪽 하이라이트 줄 추가, 아래 오른쪽 바닥에 반투명 그림자 두 줄",
+ "ok": true
+}

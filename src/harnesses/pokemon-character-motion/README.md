@@ -1,0 +1,22 @@
+# Pokemon character motion
+
+Reusable monster-collect CLI harness. Emerald native walking: 16×32, three poses × four directions. Native output48×128; editor output72×128 is exact x4padding, never a resize. Generated opening clips: default64×64 /15 opaque colors, six actual poses in a3×2 source atlas.
+
+Start with `npm run harness -- pokemon-character-motion status`. Read [the focused workflow](../../../openwiki/harnesses/pokemon-character-motion.md) before import. Keep generated originals outside Git and preserve source/prompt hashes. Every shipping build requires current structural checks and supervisor visual review; portraits use a static1×/2×/3× preview.
+
+`clip-import --role professor --source /path/atlas.png --prompt-file /path/prompt.txt --sandbox /path/review` starts the standalone generated clip lifecycle. Use the returned candidate path for check, preview, review, gate and build. No automatic artwork generation, project-store writes or runtime registration.
+
+Focused adversarial verifier (add `--raster` for source sampling or `--references /path/external-emerald-reference` for original positive controls): `node src/harnesses/pokemon-character-motion/node/verify.mjs`.
+
+`portrait-import --role hero_back --source /path/existing-generated64x96.png --prompt-file /path/original-prompt.txt --sandbox /path/review` starts the same check/preview/review/gate/build lifecycle for native64×64 trainer pictures. Existing pixels are uniformly nearest-fitted within62px ink, centered/bottom63, alpha128, shared15 opaque colors; no shapes are drawn. Accepted roles are the16 cast roles plus hero_back. Structural pass alone cannot build. Output: portrait.png, provenance/review/gate and motion.json; no field charset adapter or runtime registration. Dedicated negative/browser probe: `node src/harnesses/pokemon-character-motion/node/verify-portrait.mjs`.
+
+Generated sources default to common source raster sampling (fixed phase0.5); explicit `--sampling grid` or `--block` retains the legacy shared-grid route. Fast equivalent CLI launcher: `node src/harnesses/pokemon-character-motion/node/cli.mjs <stage> ...`. Native frames and metadata remain tied to the same implementation/review hashes. Clip raster positive and negative controls: `node src/harnesses/pokemon-character-motion/node/verify.mjs --clip-raster`.
+
+
+Direct native authorship: `python3 scripts/asset-gen/pokemon-characters/build.py --out /path/native-source` draws final pixels without image generation/resampling. `prepare-review.py` imports/checks/previews without approving. `portrait-import --native` preserves exact64×64; `clip-import --native --columns6 --rows1` preserves the declared384×64 grid. Wrong grid, alpha and palette are rejected, not repaired. Native source/final equality and four rejection controls: `node scripts/qa/runtime/pokemon-hand-authoring.mjs <selection.json> <evidence-dir>`. The shared producer also checks all Python and native PNG hashes from selection.authoring. Runtime save/reload and visual approval remain separate requirements.
+
+### Hostile quality gate for the directly authored hero
+
+Native structural checks do not judge anatomy or walking quality. `node/quality_gate.py` adds a frozen85-point art rubric, source-exact decoded GIF checks, current prepared contacts, two recorded judgments, and root browser GIF evidence. The Python hero producer's shared registration requires it. `scripts/qa/runtime/pokemon-hero-quality-controls.py` exercises focused rejection controls; fixtures never approve artwork. See `openwiki/harnesses/pokemon-character-motion.md` for commands, evidence schema and limitations.
+
+Before art approval compare the actual Emerald/FireRed character sheets at native and integer enlargement. The previous v4 approval was withdrawn after reference comparison; preserve its historical record and reassessment. Do not grade only relative improvement over a failed candidate. Current reference revision, canonical save and actual player proof: `verify-shots/pokemon-hero-reference-revision/SUMMARY.md`.

@@ -1,0 +1,60 @@
+// kiosk_counter v35-A: 매점 판매대 3/4 — 소나무 윗판 T6(과자·계산기)과 뒤 빨간 간판, 앞 F16 나무 패널 셋 (폭 32px)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o vdwood 1
+@mat O vdwood 2
+@mat Q vdwood 3
+@mat P vdwood 4
+@mat t vpine 4
+@mat a vpine 6
+@mat s vpine 3
+@mat f vpine 2
+@mat r vred 3
+@mat R vred 2
+@mat y vyellow 3
+@mat Y vyellow 5
+@mat b vblue 3
+@mat B vblue 5
+@mat e vgreen 3
+@mat E vgreen 5
+@mat w vwhite 5
+@mat W vwhite 3
+@mat m viron 1
+@mat n viron 3
+@mat g vglass 3
+@mat h vglass 5
+@mat H vbrass 5
+@mblock 0 0
+................................
+................................
+................................
+......RRRRRRRRRRRRRRRRRRRR......
+......rrrYrYrYrYrYrYrYrrrr......
+......RRRRRRRRRRRRRRRRRRRR......
+.......m................m.......
+.......m................m.......
+.......m................m.......
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+ttttttttttttttttttttttttnnnnnttt
+ttYYYYtBBBBtEEEEttWWWtttmmghmttt
+ttyyyytbbbbteeeettwwwtttmmmmmttt
+ttyyyytbbbbteeeettwwwttttttttttt
+tttttttttttttttttttttttttttttttt
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ffffffffffffffffffffffffffffffff
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OQQQQQQQQQOQQQQQQQQQQOQQQQQQQQQO
+OsssssssssOssssssssssOsssssssssO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPHHHPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OPPPPPPPPPOPPPPPPPPPPOPPPPPPPPPO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+OQQQQQQQQQOQQQQQQQQQQOQQQQQQQQQO
+OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+oooooooooooooooooooooooooooooooo
+...~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
