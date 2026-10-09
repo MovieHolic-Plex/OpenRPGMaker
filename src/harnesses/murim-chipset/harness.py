@@ -526,6 +526,8 @@ def cmd_sheet(rid, force=False):
         H.append(f'<h2>{it["title"]} <span style="color:#8e877c;font-size:13px">({item} · {tiles} · {it["layer"]}{" · 반복 " + tl if tl else ""}'
                  f'{" · 조각 " + str(len(it["pieces"])) if it.get("pieces") else ""})</span></h2>')
         H.append(f'<div class="lead">{it["brief"]}</div><ul class="crit">' + ''.join(f'<li>{c}</li>' for c in it['criteria']) + '</ul>')
+        if it.get('walkGrid'):
+            H.append('<div class="sub pieces">통행 격자(칸, 위 → 아래): <code>' + ' / '.join(it['walkGrid']) + f'</code> — {it.get("walkNote", "")}</div>')
         if it.get('pieces'):
             H.append('<div class="sub pieces">조각: ' + ' · '.join(
                 f'<b>{pc["id"]}</b> {pc["title"]}({pc["size"][0]}×{pc["size"][1]}{", 반복 " + pc["tileable"] if pc.get("tileable") else ""})'
@@ -559,7 +561,8 @@ def cmd_sheet(rid, force=False):
                 H.append(f'<div class="card"><h3>후보 {key}{star}</h3><div class="sub">{meta.get("note", "")}</div>')
                 H.append('<div class="badges">' + ''.join(badge(r) for r in rs) + '</div><div class="imgs">')
                 H.append(fig(im, 1, '1×'))
-                H.append(fig(im, 4 if im.width <= 64 else 3, f'{4 if im.width <= 64 else 3}×'))
+                zk = getattr(mod, 'SHEET_ZOOM', None) or (4 if im.width <= 64 else 3)   # 판이 정하면 그 배율(props-r1 은 대형도 4배)
+                H.append(fig(im, zk, f'{zk}×'))
                 if tl and not it.get('pieces'):
                     nx = 3
                     ny = 3 if 'y' in tl else 1
@@ -822,6 +825,12 @@ def cmd_validate():
                 if not (isinstance(px, list) and len(px) == 2 and isinstance(at, list) and len(at) == 2
                         and all(abs(a_ * tk.T - b_) < 1e-6 for a_, b_ in zip(at, px))):
                     errs.append(f'{i}: layout.place.{slot}: at(칸) × 16 = px 여야 한다')
+        wg = it.get('walkGrid')
+        if wg is not None:   # 대형 기물의 칸 단위 통행 격자: X 막힘 · U 지나감(그림이 사람 위) · . 지나감(그림 없음)
+            if len(wg) != it['size'][1] or any(len(r_) != it['size'][0] or set(r_) - set('XU.') for r_ in wg):
+                errs.append(f'{i}: walkGrid 는 {it["size"][1]}줄 × {it["size"][0]}칸, 글자 X·U·. 만')
+            if not it.get('walkNote'):
+                errs.append(f'{i}: walkGrid 에는 walkNote(칸 뜻)가 필요하다')
         style_ids = {x['id'] for x in s['items'] if x['wave'] == 'style'}
         for r_ in it.get('styleRef', []):
             if r_ not in style_ids:
@@ -898,9 +907,10 @@ def cmd_validate():
                     errs.append(f'판 {rid} {item}: 후보 키 {k} 는 <줄><번호>(줄 {",".join(LN)})')
                     continue
                 per.setdefault(m.group(1), []).append(k)
+            need = r.get('minPerLine', 2)   # props-r1 처럼 항목이 많은 판은 줄마다 1개(시드 minPerLine)
             for l_ in want:
-                if len(per.get(l_, [])) < 2:
-                    errs.append(f'판 {rid} {item}: 줄 {l_} 후보가 2개 미만')
+                if len(per.get(l_, [])) < need:
+                    errs.append(f'판 {rid} {item}: 줄 {l_} 후보가 {need}개 미만')
     rep = G.palette_report(JOSEON_PALETTE)
     errs += [f'팔레트: {f}' for f in rep['fail']]
     for e in errs:

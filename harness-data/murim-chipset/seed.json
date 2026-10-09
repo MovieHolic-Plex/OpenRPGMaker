@@ -51,7 +51,8 @@
   "frame": "객잔·누각 뼈대(바닥·벽·지붕·문·계단·난간)",
   "inn": "객잔 살림(탁자·걸상·계산대·부엌·술독·차림판·등롱)",
   "dojo": "도장(목인장·병기 거치대·과녁·모래주머니·방석·돌사자)",
-  "outdoor": "바깥(산문·대숲·연무장 가장자리·석등·비석)"
+  "outdoor": "바깥(산문·대숲·연무장 가장자리·석등·비석)",
+  "props": "무림 기물 — 도장·문파 앞마당·객잔·약방에 놓는 소품 25 + 대형 3(산문 패루·석조 육각 정자·대형 청동 정). 줄 A(밝은 문파)로 하나씩, 재질이 줄 B 와 뚜렷이 다른 것(목재·칠·지붕)만 B1 을 더한다. dojo·outdoor 묶음의 같은 기물(아직 판 없음)을 이 묶음이 먼저 그린다."
  },
  "rounds": {
   "style-r1": {
@@ -76,6 +77,16 @@
     "A",
     "B"
    ]
+  },
+  "props-r1": {
+   "wave": "props",
+   "module": "src/harnesses/murim-chipset/rounds/props_r1.py",
+   "keys": "line",
+   "lines": [
+    "A"
+   ],
+   "minPerLine": 1,
+   "note": "사용자 2026-10-08 「던전, 무림 들에 어울리는 기물들을 충분히 만들어라 … 대형 오브젝트로 5개까지」 — 무림 몫 28(대형 3). 후보는 줄 A 하나씩(A1), 줄 B 는 재질이 다른 항목만 B1."
   }
  },
  "kinds": {
@@ -102,7 +113,8 @@
    "frame": "inn_floor_wood",
    "inn": "inn_floor_wood",
    "dojo": "yard_floor_stone",
-   "outdoor": "yard_floor_stone"
+   "outdoor": "yard_floor_stone",
+   "props": "yard_floor_stone"
   },
   "contrastGroundNote": "줄 대표 바닥 = 그 줄 style 조각(style-r1 의 그 글자). 묶음별 기본, 항목 contrastGround 로 바꿀 수 있다(벽에 거는 menu_board 는 inn_wall_pillar).",
   "structureItems": "항목 outlineClass \"structure\"(stairs_wood·railing_upper) = 큰 구조: OUTLINE 이 빛 쪽 검사를 하지 않고 먹만 본다(바깥 실루엣이 재질 어두운 단이어도 된다)."
@@ -1684,6 +1696,796 @@
     "비석 머리 윗면",
     "거북 등 윗면"
    ]
+  },
+  {
+   "id": "prop_weapon_rack",
+   "wave": "props",
+   "title": "무기 걸이(검·창)",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "도장 마당에 세우는 나무 병기 걸이: 기둥 둘·윗 가로대·받침 틀에 창 둘·관도 하나·검 하나를 세운다.",
+   "criteria": [
+    "가로대·받침 틀 윗면이 보인다(2px 이상)",
+    "창날·관도 날이 실루엣 위로 나온다",
+    "병기는 재질 명암(쇠 = 청석 밝은 단, 자루 = 짙은 나무), 먹 윤곽 없음"
+   ],
+   "styleRef": [
+    "training_dummy",
+    "inn_wall_pillar"
+   ],
+   "footOnEdge": true,
+   "overlaps": "weapon_rack",
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_archery_target",
+   "wave": "props",
+   "title": "과녁",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "짚 과녁판(붉은·흰 동심원)을 나무 세 발 받침에 세운 것.",
+   "criteria": [
+    "과녁판 위 테두리 윗면",
+    "동심원은 얼굴처럼 읽히지 않게 가운데 하나만 점",
+    "받침 발이 바닥에 닿는다"
+   ],
+   "styleRef": [
+    "training_dummy",
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "huang"
+   ],
+   "footOnEdge": true,
+   "overlaps": "archery_target"
+  },
+  {
+   "id": "prop_sandbag_frame",
+   "wave": "props",
+   "title": "모래주머니 틀",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "기둥 둘과 들보로 된 나무 틀에 무명 모래주머니 둘을 매단다(하나는 길쭉, 하나는 둥글게).",
+   "criteria": [
+    "들보 윗면",
+    "주머니는 끈으로 들보에 매달린다",
+    "주머니 그늘 쪽 = 황토 어두운 단"
+   ],
+   "styleRef": [
+    "training_dummy"
+   ],
+   "extraRamps": [
+    "huang",
+    "bai",
+    "shi"
+   ],
+   "footOnEdge": true,
+   "overlaps": "sandbags"
+  },
+  {
+   "id": "prop_meditation_mats",
+   "wave": "props",
+   "title": "명상 방석 묶음",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "walk",
+   "brief": "부들 방석 셋(둥근 것 둘을 나란히 놓지 않고 하나는 겹쳐 쌓음).",
+   "criteria": [
+    "방석 윗면이 넓게 보이고 앞 두께가 얇다",
+    "둥근 덩이 둘이 나란해 눈처럼 읽히지 않는다",
+    "걸어 지나간다(사람 아래)"
+   ],
+   "styleRef": [
+    "inn_floor_wood"
+   ],
+   "extraRamps": [
+    "huang",
+    "zhu"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "overlaps": "meditation_mats"
+  },
+  {
+   "id": "prop_stone_lions",
+   "wave": "props",
+   "title": "돌사자 한 쌍",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "문 앞 돌사자 한 쌍. 왼쪽 수사자(앞발 아래 공) · 오른쪽 암사자(앞발 아래 새끼) — 받침돌 포함, 같은 빛(왼쪽 위).",
+   "criteria": [
+    "받침돌 윗면·사자 머리 갈기 윗면",
+    "좌우가 마주 본다(빛 방향은 그대로)",
+    "청석 재질 명암, 먹 윤곽 없음"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "footOnEdge": true,
+   "overlaps": "stone_lions",
+   "pieces": [
+    {
+     "id": "l",
+     "title": "수사자(왼쪽에 놓는다)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "object"
+    },
+    {
+     "id": "r",
+     "title": "암사자(오른쪽에 놓는다)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "object"
+    }
+   ]
+  },
+  {
+   "id": "prop_stone_lantern",
+   "wave": "props",
+   "title": "석등",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "청석 석등: 받침·기둥·불집(불빛 창)·겹 지붕돌·보주.",
+   "criteria": [
+    "지붕돌·받침 윗면",
+    "불집 창은 금빛 한 칸(얼굴처럼 둘로 나누지 않는다)"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "footOnEdge": true,
+   "overlaps": "stone_lantern"
+  },
+  {
+   "id": "prop_stele",
+   "wave": "props",
+   "title": "비석",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "받침돌 위에 세운 청석 비석(글자 없음, 테두리 띠와 이수 머리).",
+   "criteria": [
+    "비석 머리·받침 윗면",
+    "글자·한자 없음 — 면은 결과 테두리 띠만"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "footOnEdge": true,
+   "overlaps": "stele"
+  },
+  {
+   "id": "prop_censer_small",
+   "wave": "props",
+   "title": "작은 청동 향로",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "세 발 청동 향로(귀 둘·둥근 몸·재 위 향 세 개).",
+   "criteria": [
+    "향로 아가리 윗면(재)",
+    "세 발이 바닥에 닿는다"
+   ],
+   "styleRef": [
+    "inn_floor_wood"
+   ],
+   "extraRamps": [
+    "jin",
+    "zhu"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_bamboo_pot",
+   "wave": "props",
+   "title": "대나무 화분",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "청회 유약 화분에 심은 대나무 세 줄기와 잎.",
+   "criteria": [
+    "화분 아가리 윗면(흙)",
+    "대 줄기 마디",
+    "잎 덩이 위가 밝다"
+   ],
+   "styleRef": [
+    "inn_floor_wood",
+    "roof_tile_eave"
+   ],
+   "extraRamps": [
+    "zhuz",
+    "huang"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_bamboo_thicket",
+   "wave": "props",
+   "title": "대숲 덤불",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "가로로 이어 까는 대숲 덤불(줄기 마디·잎 덩이). 칸 경계에서 잎과 줄기가 끊기지 않는다.",
+   "criteria": [
+    "잎 덩이 윗면 빛",
+    "줄기 마디",
+    "가로로 몇 칸이든 이어 붙인다(감은 이음)"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "zhuz"
+   ],
+   "footOnEdge": true,
+   "tileable": "x",
+   "overlaps": "bamboo_grove"
+  },
+  {
+   "id": "prop_plum_bonsai",
+   "wave": "props",
+   "title": "매화 분재",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "얕은 청석 분에 굽은 매화 가지와 흰·분홍 꽃.",
+   "criteria": [
+    "분 아가리 윗면",
+    "꽃은 점 무더기 — 둘씩 나란한 점(눈)이 없게"
+   ],
+   "styleRef": [
+    "inn_floor_wood"
+   ],
+   "extraRamps": [
+    "bai",
+    "mu",
+    "shi",
+    "zhu"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_garden_rock",
+   "wave": "props",
+   "title": "정원석(태호석)",
+   "size": [
+    1,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "구멍 하나 뚫린 키 큰 태호석과 받침.",
+   "criteria": [
+    "돌 윗면들이 층층이 밝다",
+    "구멍은 하나 — 둘이 나란해 얼굴로 읽히지 않게"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_well",
+   "wave": "props",
+   "title": "우물",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "청석 우물 테(윗면 안에 어두운 물)·나무 도르래 틀·두레박.",
+   "criteria": [
+    "우물 테 윗면(둥글게)·안쪽 물",
+    "도르래 틀 가로대 윗면"
+   ],
+   "styleRef": [
+    "yard_floor_stone",
+    "training_dummy"
+   ],
+   "extraRamps": [
+    "wa",
+    "mu"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_water_jar",
+   "wave": "props",
+   "title": "물독",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "큰 청회 유약 물독(아가리 안에 물, 나무 뚜껑 반쯤·바가지).",
+   "criteria": [
+    "아가리 윗면·안의 물",
+    "그늘 쪽 = 유약 어두운 단 + 접지 그림자"
+   ],
+   "styleRef": [
+    "roof_tile_eave",
+    "inn_floor_wood"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "extraRamps": [
+    "song"
+   ]
+  },
+  {
+   "id": "prop_tea_table",
+   "wave": "props",
+   "title": "찻상(다기)",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "낮은 네모 찻상에 찻주전자 하나와 찻잔 둘(대각선으로).",
+   "criteria": [
+    "상판 윗면이 넓고 앞 두께·다리",
+    "다기가 얼굴처럼 읽히지 않는다(덩이 하나 + 모양 다른 작은 것 대각선)"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_floor_wood"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "extraRamps": [
+    "wa",
+    "bai"
+   ]
+  },
+  {
+   "id": "prop_writing_desk",
+   "wave": "props",
+   "title": "낮은 서안+두루마리",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "낮은 서안에 펼친 두루마리(글자 없음)·붓걸이·벼루.",
+   "criteria": [
+    "상판 윗면",
+    "두루마리는 글자 없는 결 몇 줄"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다",
+   "extraRamps": [
+    "bai",
+    "shi",
+    "huang"
+   ]
+  },
+  {
+   "id": "prop_folding_screen",
+   "wave": "props",
+   "title": "병풍",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "네 폭 병풍: 짙은 나무 틀·흰 비단 면에 먼 산수(색 띠, 글자 없음).",
+   "criteria": [
+    "틀 윗면(위 가로대)",
+    "폭이 지그재그로 꺾인 것은 밝기로만(옆면 금지)"
+   ],
+   "styleRef": [
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "wa",
+    "zhuz"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_scroll_shelf",
+   "wave": "props",
+   "title": "비급 서가",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "짙은 나무 서가 세 칸에 두루마리·책갑·상자.",
+   "criteria": [
+    "서가 윗면(위 판)",
+    "칸 안은 어둡고 두루마리 끝이 밝다"
+   ],
+   "styleRef": [
+    "round_table_stools",
+    "inn_wall_pillar"
+   ],
+   "extraRamps": [
+    "huang"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_medicine_cabinet",
+   "wave": "props",
+   "title": "약재 서랍장",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "작은 서랍 여러 줄의 약재장(금 손잡이)과 위에 약재 소쿠리.",
+   "criteria": [
+    "장 윗면",
+    "서랍 손잡이 줄이 고르게(눈처럼 둘만 있지 않게)"
+   ],
+   "styleRef": [
+    "round_table_stools"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true,
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_herb_stove",
+   "wave": "props",
+   "title": "약탕 화로",
+   "size": [
+    1,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "흙 화로 위 약탕관(손잡이·부리)과 숯불.",
+   "criteria": [
+    "약탕관 뚜껑 윗면",
+    "화로 아가리 불빛은 한 덩이"
+   ],
+   "styleRef": [
+    "inn_floor_wood"
+   ],
+   "extraRamps": [
+    "huang",
+    "jin",
+    "mu",
+    "zhu"
+   ],
+   "contrastGround": "inn_floor_wood",
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_war_drum",
+   "wave": "props",
+   "title": "전고(북)",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "나무 받침틀에 비스듬히 건 큰 붉은 북(금 징, 가죽 면)과 북채.",
+   "criteria": [
+    "북 몸통 윗면·받침틀 윗면",
+    "북면은 하나의 밝은 원 — 징 줄은 테두리에만"
+   ],
+   "styleRef": [
+    "inn_wall_pillar",
+    "training_dummy"
+   ],
+   "extraRamps": [
+    "huang",
+    "jin",
+    "zhu"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_gong_frame",
+   "wave": "props",
+   "title": "징 틀",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "나무 틀(윗 가로대 끝이 들림)에 매단 청동 징과 채.",
+   "criteria": [
+    "가로대 윗면",
+    "징은 원 하나(가운데 젖꼭지 하나)"
+   ],
+   "styleRef": [
+    "inn_wall_pillar",
+    "training_dummy"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_banner_pole",
+   "wave": "props",
+   "title": "문파 깃발 장대",
+   "size": [
+    1,
+    3
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "돌 받침에 세운 붉은 장대와 깃발(글자 없음, 테두리 띠·톱니 끝).",
+   "criteria": [
+    "깃대 머리 가로대 윗면·돌 받침 윗면",
+    "깃발에 글자·문양 글자 없음"
+   ],
+   "styleRef": [
+    "inn_wall_pillar",
+    "yard_floor_stone"
+   ],
+   "footOnEdge": true,
+   "extraRamps": [
+    "jin"
+   ]
+  },
+  {
+   "id": "prop_hand_cart",
+   "wave": "props",
+   "title": "짐수레",
+   "size": [
+    2,
+    2
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "바퀴 둘 손수레에 자루 둘과 짐 상자.",
+   "criteria": [
+    "짐칸 윗면·자루 윗면",
+    "바퀴는 앞면에 보이는 원(옆면 아님 — 수레가 가로로 놓였다)"
+   ],
+   "styleRef": [
+    "training_dummy",
+    "round_table_stools"
+   ],
+   "extraRamps": [
+    "huang",
+    "bai",
+    "mu"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_firewood_pile",
+   "wave": "props",
+   "title": "장작더미",
+   "size": [
+    2,
+    1
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "통나무 끝이 보이게 쌓은 장작과 도끼 박힌 모탕.",
+   "criteria": [
+    "장작 더미 윗면(통나무 등)·통나무 끝 나이테",
+    "모탕 윗면"
+   ],
+   "styleRef": [
+    "training_dummy"
+   ],
+   "extraRamps": [
+    "huang",
+    "mu",
+    "shi"
+   ],
+   "footOnEdge": true
+  },
+  {
+   "id": "prop_sect_gate",
+   "wave": "props",
+   "title": "산문 패루(문파 입구 문루)",
+   "size": [
+    6,
+    5
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "mixed",
+   "brief": "문파 입구의 세 칸 패루: 주칠 기둥 넷(가운데 둘 크게)·돌 받침·채색 보·가운데 글자 없는 편액·청회 수키와 지붕 셋(가운데 높게, 추녀 들림).",
+   "criteria": [
+    "지붕 윗면(기와 골)·용마루",
+    "편액은 색 판(글자 금지)",
+    "가운데 두 칸으로 걸어 지나간다(보·지붕은 사람 위에)",
+    "기둥·받침은 막힌다"
+   ],
+   "styleRef": [
+    "inn_wall_pillar",
+    "roof_tile_eave",
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "wa",
+    "jin"
+   ],
+   "footOnEdge": true,
+   "overlaps": "mountain_gate",
+   "walkGrid": [
+    "UUUUUU",
+    "UUUUUU",
+    "UUUUUU",
+    "UUUUUU",
+    "XXUUXX"
+   ],
+   "walkNote": "X 막힘(기둥·받침·옆 칸 돌난간) · U 지나감 — 그림이 사람 위(보·지붕 아래로 지나감). 맨 아래 줄 가운데 두 칸이 문간.",
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_stone_pavilion",
+   "wave": "props",
+   "title": "석조 육각 정자",
+   "size": [
+    5,
+    5
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "mixed",
+   "brief": "돌 기단 위 육각 정자: 청석 기단(앞 계단)·주칠 기둥(앞에 보이는 넷)·난간·청회 육각 지붕(추녀 여섯 중 보이는 넷이 들림)·보주.",
+   "criteria": [
+    "지붕 윗면(골)·기단 윗면",
+    "육각은 앞쪽 세 면이 앞면, 뒤쪽은 지붕 윗면으로만",
+    "앞 계단으로 올라가 안을 지나간다(지붕은 사람 위에)"
+   ],
+   "styleRef": [
+    "inn_wall_pillar",
+    "roof_tile_eave",
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "wa"
+   ],
+   "footOnEdge": true,
+   "walkGrid": [
+    "UUUUU",
+    "UUUUU",
+    "XUUUX",
+    "XUUUX",
+    "XX.XX"
+   ],
+   "walkNote": "X 막힘(기단 가장자리·기둥·난간) · U 지나감 — 지붕·처마가 사람 위 · . 계단(지나감). 기단 안 가운데 세 칸이 정자 안.",
+   "lineB": "줄 B 후보(B1) 있음 — 재질이 줄 B(짙은 나무·황토·비늘 평기와·주칠 처마판)와 뚜렷이 다르다"
+  },
+  {
+   "id": "prop_bronze_ding",
+   "wave": "props",
+   "title": "대형 청동 정(세 발 향로 + 받침)",
+   "size": [
+    4,
+    4
+   ],
+   "kind": "object",
+   "layer": "object",
+   "walk": "solid",
+   "brief": "청석 받침 위 세 발 청동 큰 정: 선 귀 둘·넓은 아가리(재·향)·도철 대신 기하 띠 무늬·굵은 세 발.",
+   "criteria": [
+    "아가리 윗면(재)·받침 윗면",
+    "몸통 무늬는 기하 띠 — 얼굴(도철) 금지",
+    "세 발 중 앞 둘이 받침 위에 선다"
+   ],
+   "styleRef": [
+    "yard_floor_stone"
+   ],
+   "extraRamps": [
+    "jin"
+   ],
+   "footOnEdge": true,
+   "walkGrid": [
+    "UUUU",
+    "XXXX",
+    "XXXX",
+    "XXXX"
+   ],
+   "walkNote": "X 막힘 · U 지나감 — 귀 끝이 사람 위."
   }
  ],
  "forbidden": [
