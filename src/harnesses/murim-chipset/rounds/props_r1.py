@@ -1430,6 +1430,75 @@ def sect_gate_a1():
                 '줄 A · 세 칸 패루: 주칠 둥근 기둥 넷(가운데 둘 크게, 금 띠)·청석 북 받침·채색 큰 보(청록·금 점)·두공 띠·가운데 금 테 편액(글자 없음)·청회 수키와 지붕 셋(가운데 높게, 치미, 추녀 들림)·옆 칸 돌난간. 가운데 두 칸으로 지나간다.')
 
 
+def sect_gate_b1():
+    """줄 B · 강남 무관 대문: 가운데 한 지붕(비늘 평기와·주칠 처마판) + 양옆 황토 담(청회 기와 담머리·나무 창살 창)."""
+    g = Rows(96, 80)
+    # 양옆 담(황토 회벽): 담머리 기와 38~43, 벽 44~65, 청석 굽 66~71
+    for x0, x1 in ((0, 25), (70, 95)):
+        w = x1 - x0 + 1
+        g.put(x0 + 1, 37, 'L' * (w - 2))
+        g.put(x0, 38, 'L' + 'M' * (w - 2) + 'K')
+        for j, r in enumerate(TILE_B['slope'][:4]):
+            g.put(x0, 39 + j, ''.join(r[(x - x0) % 8] for x in range(x0, x1 + 1)))
+        g.put(x0, 43, 'a' * w)
+        for y in range(44, 66):
+            g.put(x0, y, 'S' + ('R' if y > 46 else 'Q') * (w - 2) + 'P')
+        g.put(x0, 44, 'O' * w)
+        g.put(x0, 45, 'P' * w)
+        for y in range(66, 72):
+            g.put(x0, y, ('E' if y == 66 else 'D' if y < 70 else 'C') * w)
+        for xx in range(x0 + 5, x1, 8):
+            g.r[68][xx] = 'C'
+        # 나무 창살 창(짙은 나무 틀·세로 살·안은 어둡다)
+        cx = x0 + 7
+        g.put(cx, 49, 'e' * 12)
+        for y in range(50, 59):
+            g.put(cx, y, 'd' + ''.join('c' if (k % 3 == 0) else 'a' for k in range(10)) + 'b')
+        g.put(cx, 54, 'd' + 'c' * 10 + 'b')
+        g.put(cx, 59, 'c' * 12)
+    # 기둥 둘(주칠) — 지붕 밑까지
+    for y in range(28, 72):
+        g.put(26, y, 'wvvuuts')
+        g.put(63, y, 'wvvuuts')
+    # 가운데 지붕(비늘 평기와) + 제비꼬리 용마루 끝
+    roof_band(g, 14, 81, 6, TILE_B, 8)
+    g.block(18, 2, ['L.....', 'ML....', '.KL...', '..KLLL', '...JKK'])
+    g.block(73, 2, ['.....K', '....KJ', '...KJ.', 'LLKJ..', 'KKJ...'])
+    # 처마 밑 주칠 들보·검은 옻칠 편액(금 테, 글자 없음)
+    for y, c in ((30, 'v'), (31, 'u'), (32, 'u'), (33, 's')):
+        g.put(26, y, c * 44)
+    for x in range(30, 66, 6):
+        g.r[31][x] = 'Y'
+    g.put(39, 27, '.YYYYYYYYYYYYYYYYX.')
+    g.put(39, 28, 'YXXXXXXXXXXXXXXXXWV')
+    for y in range(29, 36):
+        g.put(39, y, 'YXdcccccccccccccbWV')
+    g.put(39, 29, 'YXeddddddddddddcbWV')
+    g.put(39, 36, 'XWWWWWWWWWWWWWWWWWV')
+    g.put(40, 37, 'VVVVVVVVVVVVVVVVV')
+    # 아래 문지방 보(주칠, 낮게)
+    g.put(33, 42, 'w' * 30)
+    g.put(33, 43, 'u' * 30)
+    g.put(33, 44, 's' * 30)
+    # 기둥 받침(청석)
+    for x0 in (24, 61):
+        g.put(x0, 70, '.' + 'G' * 9 + '.')
+        g.put(x0, 71, 'F' + 'G' * 9 + 'E')
+        for y in range(72, 78):
+            g.put(x0, y, 'E' + 'D' * 9 + 'C')
+        g.put(x0, 78, 'C' * 10 + 'B')
+        g.put(x0, 79, 'B' * 10 + 'A')
+        g.shadow([(x0 + 11, y) for y in range(72, 80)])
+    g.put(0, 72, 'C' * 26)
+    g.put(70, 72, 'C' * 26)
+    for y in range(73, 80):
+        g.put(0, y, ('B' if y < 79 else 'A') * 26)
+        g.put(70, y, ('B' if y < 79 else 'A') * 26)
+    g.shadow(sh_run(73, 26, 26) + sh_run(74, 26, 27))
+    return draw(g.done(), leg('shi'), 96, 80, (6, 8),
+                '줄 B · 강남 무관 대문: 가운데 비늘 평기와 지붕(제비꼬리 용마루·주칠 처마판)·주칠 기둥 둘·검은 옻칠 금 테 편액(글자 없음)·양옆 황토 담(청회 기와 담머리·나무 창살 창·청석 굽). 줄 A(세 칸 패루)와 짜임이 다르다.')
+
+
 # =============================================================================
 # 27. 석조 육각 정자 (5×5) — 앞 세 면이 보이는 육각 지붕 + 청석 기단(앞 계단)
 # =============================================================================
@@ -1523,6 +1592,81 @@ def stone_pavilion_a1():
                 '줄 A · 석조 육각 정자: 청석 육각 기단(밝은 윗면·앞 세 면·가운데 계단)·주칠 기둥(앞 넷, 뒤 둘은 그늘)·소나무 난간·두공 띠·청회 수키와 육각 지붕(왼 면 밝게·오른 면 그늘, 추녀 넷이 들림)·금 보주.')
 
 
+HEX_ROOF_B = {  # 줄 B: 더 가파르고 높은 육각 지붕(행: 왼 바깥, 앞면 시작, 앞면 끝, 오른 바깥) — 손으로 정한 표
+    8: (36, 38, 41, 43), 9: (35, 37, 42, 44), 10: (34, 36, 43, 45), 11: (32, 35, 44, 47), 12: (31, 34, 45, 48),
+    13: (29, 33, 46, 50), 14: (28, 32, 47, 51), 15: (26, 31, 48, 53), 16: (25, 30, 49, 54), 17: (23, 29, 50, 56),
+    18: (21, 28, 51, 58), 19: (19, 27, 52, 60), 20: (17, 26, 53, 62), 21: (15, 25, 54, 64), 22: (13, 24, 55, 66),
+    23: (11, 23, 56, 68), 24: (9, 22, 57, 70), 25: (7, 21, 58, 72), 26: (6, 20, 59, 73), 27: (5, 19, 60, 74),
+}
+HEX_FACE_B = {
+    'L': ['IIJJJJIIH'[:8], 'JKLLLLKJ', 'KLMMMMLK', 'JLMMLLKJ'],
+    'F': ['HIIIIIIH', 'IJKKKKJI', 'JKLLLLKJ', 'IKLMLLKI'],
+    'R': ['HHIIIIHH', 'HIJJJJIH', 'IJKKKKJI', 'HJKLKKJH'],
+}
+
+
+def stone_pavilion_b1():
+    g = Rows(80, 80)
+    # 기단: 긴 장대석 단 둘(윗면 밝게) + 가운데 계단
+    for y, (a, b) in {58: (6, 73), 59: (5, 74), 60: (5, 74)}.items():
+        g.put(a, y, 'G' * (b - a + 1))
+    g.put(5, 61, 'F' * 70)
+    for y in range(62, 70):
+        row = ''.join('C' if (x - 5) % 23 == 0 else ('E' if y < 65 else 'D') for x in range(5, 75))
+        g.put(5, y, row)
+    g.put(5, 65, 'C' * 70)
+    g.put(5, 70, 'C' * 70)
+    g.put(5, 71, 'B' * 70)
+    for k, y in enumerate(range(62, 80)):
+        g.put(32, y, ('G' if k % 3 == 0 else 'E' if k % 3 == 1 else 'C') * 16)
+        g.put(32, y, 'F')
+        g.put(47, y, 'C')
+    g.put(32, 79, 'B' * 16)
+    # 기둥(짙은 나무) 앞 넷 + 뒤 둘
+    for y in range(37, 57):
+        g.put(24, y, 'cba')
+        g.put(53, y, 'cba')
+    for y in range(37, 60):
+        for x in (10, 30, 47, 66):
+            g.put(x, y, 'fedc')
+    # 미인고(주칠 등받이 의자) — 앞 가운데는 트였다
+    for x0, x1 in ((14, 29), (51, 65)):
+        g.put(x0, 48, 'w' * (x1 - x0 + 1))
+        g.put(x0, 49, 'v' * (x1 - x0 + 1))
+        for y in range(50, 54):
+            g.put(x0, y, ''.join('t' if (x - x0) % 4 == 0 else '.' for x in range(x0, x1 + 1)))
+        g.put(x0, 54, 'v' * (x1 - x0 + 1))
+        g.put(x0, 55, 'u' * (x1 - x0 + 1))
+        g.put(x0, 56, 's' * (x1 - x0 + 1))
+    # 지붕(비늘 평기와, 가파르게) — 면 셋
+    for y, (a, b, c, d) in HEX_ROOF_B.items():
+        k = y % 4
+        g.put(a, y, ''.join(HEX_FACE_B['L'][k][(x - a) % 8] for x in range(a, b)))
+        g.put(b, y, ''.join(HEX_FACE_B['F'][k][(x - b) % 8] for x in range(b, c + 1)))
+        g.put(c + 1, y, ''.join(HEX_FACE_B['R'][k][(x - c) % 8] for x in range(c + 1, d + 1)))
+        g.put(a, y, 'L')
+        g.put(b - 1, y, 'MM')
+        g.put(c, y, 'LK')
+        g.put(d, y, 'I')
+    # 처마: 막새 단 + 주칠 처마판(금 점), 양 끝 높이 들림
+    eave = ['IKLLLLKI', 'HJKKKKJH', 'aHJJJJHa', 'vvvvvvvv', 'uuuYYuuu', 'ssssssss']
+    dy = {}
+    for x in range(2, 78):
+        e = min(x - 2, 77 - x)
+        dy[x] = max(0, 9 - e) if e < 9 else (2 if x in (19, 20, 59, 60) else 1 if x in (18, 21, 58, 61) else 0)
+    for x in range(2, 78):
+        for j, r in enumerate(eave):
+            g.put(x, 28 + j - dy[x], r[x % 8])
+    g.block(0, 16, ['L.', 'ML', '.K'])
+    g.block(78, 16, ['.K', 'KJ', 'J.'])
+    # 꼭대기: 청회 보주 받침 + 금 호리병 보주
+    g.block(37, 0, ['..Y...', '.YXW..', '.XWV..', '.YXW..', '..W...', '.LMK..', 'LMMLK.', 'KLLKJ.'])
+    g.shadow([(75, y) for y in range(61, 73)] + [(76, y) for y in range(62, 73)] + [(48, y) for y in range(72, 80)] + [(49, y) for y in range(73, 80)]
+             + sh_run(72, 6, 31) + sh_run(72, 49, 74) + sh_run(73, 7, 31) + sh_run(73, 50, 75))
+    return draw(g.done(), leg('shi'), 80, 80, (12, 34),
+                '줄 B · 강남 물가 정자: 장대석 두 단 기단(가운데 계단)·짙은 나무 기둥·주칠 미인고 의자·가파른 비늘 평기와 육각 지붕(주칠 처마판·금 점, 양 끝 높이 들림)·금 호리병 보주. 줄 A(수키와·주칠 기둥·두공)와 재질·지붕 높이가 다르다.')
+
+
 # =============================================================================
 # 28. 대형 청동 정 (4×4) — 선 귀 둘·넓은 아가리·기하 띠·세 발 + 청석 받침
 # =============================================================================
@@ -1551,22 +1695,22 @@ def bronze_ding_a1():
     for y in range(36, 46):
         g.put(29, y, '22111')
     for y in range(36, 48):
-        g.put(13, y, '454332')
-        g.put(45, y, '443221')
-    g.put(12, 47, '45543321')
-    g.put(44, 47, '44332211')
+        g.put(13, y, '343221')
+        g.put(45, y, '332211')
+    g.put(12, 47, '34432211')
+    g.put(44, 47, '33221100')
     # 몸통(배): 왼쪽 위 빛 → 오른쪽 그늘. 아래쪽 행은 한 단 어둡게
     for y, (a, b) in DING_BODY.items():
-        row = ''.join('5' if x - a < 2 else '4' if x - a < 12 else '3' if x - a < 32 else '2' for x in range(a, b + 1))
+        row = ''.join('4' if x - a < 2 else '3' if x - a < 12 else '2' if x - a < 34 else '1' for x in range(a, b + 1))
         if y >= 33:
-            row = row.replace('3', '2').replace('4', '3').replace('5', '4')
+            row = row.replace('2', '1').replace('3', '2').replace('4', '3')
         g.put(a, y, row)
         g.put(b, y, '1')
     # 기하 띠(꺾쇠 줄) 22~25 — 얼굴 무늬(도철) 없음
-    band = ['YXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXXYXX',
-            'X2X2XX2X2XX2X2XX2X2XX2X2XX2X2XX2X2XX2X2XX2X2XX2X',
-            '2X2X22X2X22X2X22X2X22X2X22X2X22X2X22X2X22X2X22X2',
-            'WVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVVWVV']
+    band = ['XWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWWXWW',
+            'W1W1WW1W1WW1W1WW1W1WW1W1WW1W1WW1W1WW1W1WW1W1WW1W',
+            '1W1W11W1W11W1W11W1W11W1W11W1W11W1W11W1W11W1W11W1',
+            'VUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUUVUU']
     for j, r in enumerate(band):
         g.put(8, 22 + j, r)
     # 아가리(윗면): 금 테, 안은 재(청석)·향 셋
@@ -1575,7 +1719,7 @@ def bronze_ding_a1():
     g.put(7, 15, 'YX' + 'BBCCCCCCCDDDDDDDDDDDDDDDDDDDDDDDCCCCCCCCBB' + 'WV')
     g.put(7, 16, 'X4' + 'BCCDDDDDDDDEEEEEEEEEEEEEEEEEEEDDDDDDDDDCCB' + '2V')
     g.put(7, 17, 'X4' + 'CDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDC' + '2U')
-    g.put(7, 18, '4' * 4 + '3' * 30 + '2' * 12 + '1' * 2)
+    g.put(7, 18, '3' * 4 + '2' * 30 + '1' * 14)
     for x in (27, 31, 35):
         g.put(x, 9, 'w')
         for y in range(10, 16):
@@ -1620,7 +1764,7 @@ CANDIDATES = {
     'prop_banner_pole': {'A1': banner_pole_a1},
     'prop_hand_cart': {'A1': hand_cart_a1},
     'prop_firewood_pile': {'A1': firewood_pile_a1},
-    'prop_sect_gate': {'A1': sect_gate_a1},
-    'prop_stone_pavilion': {'A1': stone_pavilion_a1},
+    'prop_sect_gate': {'A1': sect_gate_a1, 'B1': sect_gate_b1},
+    'prop_stone_pavilion': {'A1': stone_pavilion_a1, 'B1': stone_pavilion_b1},
     'prop_bronze_ding': {'A1': bronze_ding_a1},
 }

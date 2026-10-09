@@ -3964,6 +3964,689 @@
      "B2": "911e64decf39b8d84fe8a75c41a44edc6b0d6b15b7b2920644b20dcedf67404e"
     }
    }
+  },
+  {
+   "at": "2026-10-09T22:05:25",
+   "stage": "gate",
+   "round": "props-r1",
+   "fail": 18,
+   "warn": 8,
+   "byLine": {
+    "A": {
+     "cands": 28,
+     "fail": 17,
+     "warn": 6
+    },
+    "B": {
+     "cands": 6,
+     "fail": 1,
+     "warn": 2
+    }
+   },
+   "warnByCode": {
+    "CONTRAST": 6,
+    "N": 2
+   },
+   "polish": [
+    {
+     "item": "prop_stone_lantern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.34 vs 줄 바닥 0.44 (차 0.10, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 yard_floor_stone]"
+    },
+    {
+     "item": "prop_censer_small",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.33 vs 줄 바닥 0.42 (차 0.09, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_bamboo_pot",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.33 vs 줄 바닥 0.42 (차 0.09, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_plum_bonsai",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.50 vs 줄 바닥 0.42 (차 0.08, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_tea_table",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.33 vs 줄 바닥 0.29 (차 0.05, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_writing_desk",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.32 vs 줄 바닥 0.29 (차 0.04, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    }
+   ],
+   "hashes": {
+    "prop_weapon_rack": {
+     "A1": "80cf15ae33cf876749e621529db727f8ae40ed884dd08e9126cc28c0e6439356",
+     "B1": "38a6747f22cb3bfddd83dd544835410ed49c12f0b4551c47a4b7af1849ffc5ab"
+    },
+    "prop_archery_target": {
+     "A1": "e7b737064cf00e1167f975bb6ec5929c35334575f37bbc62565daf82956c0d47"
+    },
+    "prop_sandbag_frame": {
+     "A1": "ee5fd0f1999b646dc0e7a732457774ff390baa13fdc6851622f953da886cfd29"
+    },
+    "prop_meditation_mats": {
+     "A1": "43e14014214672d65430eb62504f97bd982d83a3285b2a50ab682bd277fac4aa"
+    },
+    "prop_stone_lions": {
+     "A1": "3631394de40f7ce16d098122803508926e1c5597fa5d2d8dfd28a71a64d19028"
+    },
+    "prop_stone_lantern": {
+     "A1": "bc274235044148c1e77be9c4fadeb8b6859539f924159a790d12ec46b23ef8b1"
+    },
+    "prop_stele": {
+     "A1": "5c989f711d3794c549b5c20a900662b42906bf1513b228a43f7a5d002fef267b"
+    },
+    "prop_censer_small": {
+     "A1": "e05ec8860329845ab45600ce2faf457b19ac1f8ee8b879facf2f095aa2ebfa76"
+    },
+    "prop_bamboo_pot": {
+     "A1": "3bafae5cb24db5fee75863fedfd91d2a1d26e7ae26e13bde2a7a491704bc506b"
+    },
+    "prop_bamboo_thicket": {
+     "A1": "afdc59389a3919fc3bd0535a635ecaea505cb7e750925ea29ae9a9ea8db2068c"
+    },
+    "prop_plum_bonsai": {
+     "A1": "3e72b7118bbb9c8fb71ab2e582e600bb2b915f688be35a1673a0330327b668e3"
+    },
+    "prop_garden_rock": {
+     "A1": "4fabf7b25769303daaec164cfc2be341a497164b0ee9c931f998c48dbd595d57"
+    },
+    "prop_well": {
+     "A1": "d53b31de12c6af6708f258a229753ad07eef3a864eb065a39b3046c0e3dab147"
+    },
+    "prop_water_jar": {
+     "A1": "20f4bf4f743a9d7955236c9f89bb86144c7b84a6731330d4cbf88c63bb71a786"
+    },
+    "prop_tea_table": {
+     "A1": "c90a4b4dd955f0769e611c6ed94e46cf6faa612b933767c697e4f12b6df14f0f",
+     "B1": "22ed21cb989c65143b012ab971aee0beb936edecceed964ebefb2aa645899f26"
+    },
+    "prop_writing_desk": {
+     "A1": "8c0ef15820b16a69d4f3131d6e77eb331edf329d55690530786819a68c9ed64d",
+     "B1": "3aaa9bd204572acd89f803994b9a9ce0f61520f0027f518673aad331dd676b9e"
+    },
+    "prop_folding_screen": {
+     "A1": "4aa23804ef9447ef5351ce8eefc9f382c89dc2828110d13c03f8e0555cd7c819",
+     "B1": "950a74afa49c244f36bc1709806567c31ff5df784497bdb783c6c32db14e43fc"
+    },
+    "prop_scroll_shelf": {
+     "A1": "34e98d81b2e0eea076f99c7d7714f5f5a551ba8bc37039dbd7912f7c13ea7a85",
+     "B1": "e7c7042d54c6989ea529eb43c24cb2be28d88927e78c9b05bf9d4402cf79f87d"
+    },
+    "prop_medicine_cabinet": {
+     "A1": "2a9b660efa82085634143593a8496201f56d848e2af8df144d14eba55544a170",
+     "B1": "6f7522447deb811a31c1a9b4e5e6a08b2a9d4cda99822492ac050cce9da7458f"
+    },
+    "prop_herb_stove": {
+     "A1": "d538b5ce6a2eec3fd222d6e14cbffd006a2579e21f349a832aa0ed0215162880"
+    },
+    "prop_war_drum": {
+     "A1": "5a63b3532b2b54d2bc36fe40bcd44aeaa744e800e44c84647c6e653268585604"
+    },
+    "prop_gong_frame": {
+     "A1": "5c1e780378ff0ca819eae761aab76536364d9a55e54f27a1dfd7ed47c7a4a5ce"
+    },
+    "prop_banner_pole": {
+     "A1": "413f4b1a1cbcdc2040a9b3addf6ed49fe140db302f9bbd1489d84ce5df4b5b3b"
+    },
+    "prop_hand_cart": {
+     "A1": "f6ae636ab03e9cb4156baf92476955af7636fd11971183fbbfbcb4cc64febd4a"
+    },
+    "prop_firewood_pile": {
+     "A1": "cd959ea79afa9f3e01ccdfffd7f42ee3f1899ec04e1d68df9a1acd7e6f4c26df"
+    },
+    "prop_sect_gate": {
+     "A1": "829cd40dc026a70b58c25d787dcd6edb6a5e0b695eb10fb38739657a310c1d4f"
+    },
+    "prop_stone_pavilion": {
+     "A1": "9cb758f70432bc06b4dc5c2802ed2d83e2e7a5e50822c0fecd065deb668aaaa2"
+    },
+    "prop_bronze_ding": {
+     "A1": "c563e728c5770af7d29c6f9cdc1a4951b39a5b92b422fe67eba775053f5efced"
+    }
+   }
+  },
+  {
+   "at": "2026-10-09T22:05:30",
+   "stage": "gate",
+   "round": "props-r1",
+   "fail": 4,
+   "warn": 8,
+   "byLine": {
+    "A": {
+     "cands": 28,
+     "fail": 4,
+     "warn": 6
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 2
+    }
+   },
+   "warnByCode": {
+    "CONTRAST": 7,
+    "N": 1
+   },
+   "polish": [
+    {
+     "item": "prop_stone_lions",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "[l] 그늘 쪽 가장자리 밝기 0.39 vs 줄 바닥 0.44 (차 0.05, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 yard_floor_stone]; [r] 그늘 쪽 가장자리 밝기 0.39 vs 줄 바닥 0.44 (차 0.05, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 yard_floor_stone]"
+    },
+    {
+     "item": "prop_stone_lantern",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.34 vs 줄 바닥 0.44 (차 0.10, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 yard_floor_stone]"
+    },
+    {
+     "item": "prop_censer_small",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.33 vs 줄 바닥 0.42 (차 0.09, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_bamboo_pot",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.34 vs 줄 바닥 0.42 (차 0.08, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_plum_bonsai",
+     "key": "A1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.40 vs 줄 바닥 0.42 (차 0.02, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_tea_table",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.22 vs 줄 바닥 0.29 (차 0.07, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    },
+    {
+     "item": "prop_writing_desk",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.26 vs 줄 바닥 0.29 (차 0.02, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    }
+   ],
+   "hashes": {
+    "prop_weapon_rack": {
+     "A1": "80cf15ae33cf876749e621529db727f8ae40ed884dd08e9126cc28c0e6439356",
+     "B1": "38a6747f22cb3bfddd83dd544835410ed49c12f0b4551c47a4b7af1849ffc5ab"
+    },
+    "prop_archery_target": {
+     "A1": "e7b737064cf00e1167f975bb6ec5929c35334575f37bbc62565daf82956c0d47"
+    },
+    "prop_sandbag_frame": {
+     "A1": "ee5fd0f1999b646dc0e7a732457774ff390baa13fdc6851622f953da886cfd29"
+    },
+    "prop_meditation_mats": {
+     "A1": "c78cfec372ce1b3fdfc4e3f6a5135545886d3844386ddb27983562edffb78f68"
+    },
+    "prop_stone_lions": {
+     "A1": "ef41334fcabf1306e8e408f7ce44f67cc126c230836107563017f045736e6fff"
+    },
+    "prop_stone_lantern": {
+     "A1": "bc274235044148c1e77be9c4fadeb8b6859539f924159a790d12ec46b23ef8b1"
+    },
+    "prop_stele": {
+     "A1": "5c989f711d3794c549b5c20a900662b42906bf1513b228a43f7a5d002fef267b"
+    },
+    "prop_censer_small": {
+     "A1": "e05ec8860329845ab45600ce2faf457b19ac1f8ee8b879facf2f095aa2ebfa76"
+    },
+    "prop_bamboo_pot": {
+     "A1": "c77ad75d0458a14e383b3f034e84da5786a5e8cd163b3fd47654305b7ceb04ec"
+    },
+    "prop_bamboo_thicket": {
+     "A1": "311bb9bb9fe654f64c5318d5ede047011fe86269cdd3ef35e6300c7b21409f85"
+    },
+    "prop_plum_bonsai": {
+     "A1": "4d9a8174f1dae13a9fe88aac5cd15942f032f26f8d242abdcf5cef2f49175208"
+    },
+    "prop_garden_rock": {
+     "A1": "223bd4373a05b4dbdc68c41f4c4ce16ad9ff6c905460247a6880240d23216f76"
+    },
+    "prop_well": {
+     "A1": "d53b31de12c6af6708f258a229753ad07eef3a864eb065a39b3046c0e3dab147"
+    },
+    "prop_water_jar": {
+     "A1": "c6c6d24a2a9032d06857be63a9539ff89b78fcd73b5651d8bb82c34a2d981245"
+    },
+    "prop_tea_table": {
+     "A1": "bd3c80db593164a2f28cbfd8f31522f16814061e17114bd84ce196b6948cda4b",
+     "B1": "833a1a4bdbdb770e1447efa8c85f2656750c14b5776f111ac9b23cd31ac177d2"
+    },
+    "prop_writing_desk": {
+     "A1": "8c0ef15820b16a69d4f3131d6e77eb331edf329d55690530786819a68c9ed64d",
+     "B1": "0966901822fe8f2b33876e582eff42fcfc64d34e9e6f7eb27ed2b02185970d41"
+    },
+    "prop_folding_screen": {
+     "A1": "27c3c58e4619ff09701adb2895cd9bd81b6977ee5c2e13acaba93b4fcf63117f",
+     "B1": "950a74afa49c244f36bc1709806567c31ff5df784497bdb783c6c32db14e43fc"
+    },
+    "prop_scroll_shelf": {
+     "A1": "34e98d81b2e0eea076f99c7d7714f5f5a551ba8bc37039dbd7912f7c13ea7a85",
+     "B1": "e7c7042d54c6989ea529eb43c24cb2be28d88927e78c9b05bf9d4402cf79f87d"
+    },
+    "prop_medicine_cabinet": {
+     "A1": "2a9b660efa82085634143593a8496201f56d848e2af8df144d14eba55544a170",
+     "B1": "6f7522447deb811a31c1a9b4e5e6a08b2a9d4cda99822492ac050cce9da7458f"
+    },
+    "prop_herb_stove": {
+     "A1": "d538b5ce6a2eec3fd222d6e14cbffd006a2579e21f349a832aa0ed0215162880"
+    },
+    "prop_war_drum": {
+     "A1": "1f6a3705e134bbbc0b4fdbe9ed9ccac2fa1e734ad7f124087b346f96c5b323a6"
+    },
+    "prop_gong_frame": {
+     "A1": "5c1e780378ff0ca819eae761aab76536364d9a55e54f27a1dfd7ed47c7a4a5ce"
+    },
+    "prop_banner_pole": {
+     "A1": "b0cc144f72abc5797eb3f1fd18f316e0abafb6de6593f13a51c46f5cae071d0d"
+    },
+    "prop_hand_cart": {
+     "A1": "f6ae636ab03e9cb4156baf92476955af7636fd11971183fbbfbcb4cc64febd4a"
+    },
+    "prop_firewood_pile": {
+     "A1": "31a5f6f28ecb9e637fc9d93d9351f080ea870923f32d3e41ddf1918d07487e13"
+    },
+    "prop_sect_gate": {
+     "A1": "8216110a5553814c7b91a9774db868b6d7f339dbbaa4b25ebad3b8c9abe77ba0"
+    },
+    "prop_stone_pavilion": {
+     "A1": "a50abef42075d0de60f6b307881177319b1623bb4b4f1250fc8615ee5aa7c5b1"
+    },
+    "prop_bronze_ding": {
+     "A1": "f81506e946141041a6df853b257739d98709d64338cca420fa97bb2d37241de4"
+    }
+   }
+  },
+  {
+   "at": "2026-10-09T22:05:41",
+   "stage": "gate",
+   "round": "props-r1",
+   "fail": 1,
+   "warn": 2,
+   "byLine": {
+    "A": {
+     "cands": 28,
+     "fail": 1,
+     "warn": 1
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 1
+    }
+   },
+   "warnByCode": {
+    "N": 1,
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "prop_tea_table",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.16 vs 줄 바닥 0.29 (차 0.13, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    }
+   ],
+   "hashes": {
+    "prop_weapon_rack": {
+     "A1": "f67106c0cd5883566436985462fd99e3b6eb71a7b20dd12c0cdb2d7cb47b410c",
+     "B1": "91324044fa870302c33262fe473d834df6bd72e692b4cda8863cbd87544f8d41"
+    },
+    "prop_archery_target": {
+     "A1": "e7b737064cf00e1167f975bb6ec5929c35334575f37bbc62565daf82956c0d47"
+    },
+    "prop_sandbag_frame": {
+     "A1": "ee5fd0f1999b646dc0e7a732457774ff390baa13fdc6851622f953da886cfd29"
+    },
+    "prop_meditation_mats": {
+     "A1": "9c7c3c3f67b26e64686d75f3f0b7913c5127afb9900473e11a0fb122cad2553d"
+    },
+    "prop_stone_lions": {
+     "A1": "a330bece1103c346d2dd90c4c9a5f730c718bd087be83da955bda187f5f657ce"
+    },
+    "prop_stone_lantern": {
+     "A1": "57377a21bebccf24927ac48d4bde67d4b1a285de41b8efee273e1eea798d9bf5"
+    },
+    "prop_stele": {
+     "A1": "5c989f711d3794c549b5c20a900662b42906bf1513b228a43f7a5d002fef267b"
+    },
+    "prop_censer_small": {
+     "A1": "92164fe61907df9bcbdbfbe05249b3d489f2978489ffede7181e832d5f31fb00"
+    },
+    "prop_bamboo_pot": {
+     "A1": "b21ede7be16606ca47e1a985ae391e12224c40a75736ce8303e2d54447186024"
+    },
+    "prop_bamboo_thicket": {
+     "A1": "311bb9bb9fe654f64c5318d5ede047011fe86269cdd3ef35e6300c7b21409f85"
+    },
+    "prop_plum_bonsai": {
+     "A1": "7f65573a65d1f94d511c161631dda88312d023a76e5265e2524064e5166478ad"
+    },
+    "prop_garden_rock": {
+     "A1": "223bd4373a05b4dbdc68c41f4c4ce16ad9ff6c905460247a6880240d23216f76"
+    },
+    "prop_well": {
+     "A1": "574b2ecc6d9bd4898d5679dc189cf5a1c9b46c509fd6ee48729bb61ed4ccd858"
+    },
+    "prop_water_jar": {
+     "A1": "c6c6d24a2a9032d06857be63a9539ff89b78fcd73b5651d8bb82c34a2d981245"
+    },
+    "prop_tea_table": {
+     "A1": "3f9723c522cc1c6f916b08f5404cf9e3d55749333d433d54b639ef984937de1f",
+     "B1": "e0a4bb9807d7fd1df5de9028c82bbaefaf4aa175b3efb2f4085293bbfe623392"
+    },
+    "prop_writing_desk": {
+     "A1": "8c0ef15820b16a69d4f3131d6e77eb331edf329d55690530786819a68c9ed64d",
+     "B1": "bad34e8591042f7ba85fe4649b1afe52be1d0dd762335898ef2ee2e46558f463"
+    },
+    "prop_folding_screen": {
+     "A1": "27c3c58e4619ff09701adb2895cd9bd81b6977ee5c2e13acaba93b4fcf63117f",
+     "B1": "950a74afa49c244f36bc1709806567c31ff5df784497bdb783c6c32db14e43fc"
+    },
+    "prop_scroll_shelf": {
+     "A1": "a5346d7514b84551b196eb03446701c50da7a6fcc05d976bbe0ae042f9248772",
+     "B1": "5ed4fe6f8353d72608781f8937c8f54524786e59ca300f79261817add3827969"
+    },
+    "prop_medicine_cabinet": {
+     "A1": "2a9b660efa82085634143593a8496201f56d848e2af8df144d14eba55544a170",
+     "B1": "6f7522447deb811a31c1a9b4e5e6a08b2a9d4cda99822492ac050cce9da7458f"
+    },
+    "prop_herb_stove": {
+     "A1": "d538b5ce6a2eec3fd222d6e14cbffd006a2579e21f349a832aa0ed0215162880"
+    },
+    "prop_war_drum": {
+     "A1": "39de5952b8f495ef813d555b0b68fbacaa293e59278bafcddc82c9ccd8972649"
+    },
+    "prop_gong_frame": {
+     "A1": "0e0aac2c094d9796adabae8d2a8c15163aed5590402f306e1bf807d488d81fe8"
+    },
+    "prop_banner_pole": {
+     "A1": "b0cc144f72abc5797eb3f1fd18f316e0abafb6de6593f13a51c46f5cae071d0d"
+    },
+    "prop_hand_cart": {
+     "A1": "336e15eb9f79066f33349e8680d83ee56fcb0d0f530fb3c212c91a4f35def909"
+    },
+    "prop_firewood_pile": {
+     "A1": "a039b8ae56d35171f6fd6aaf4f9239b7473cde6824efd4d75b364a4d66774362"
+    },
+    "prop_sect_gate": {
+     "A1": "047979328d5b03bba5f8899614b811cecfaa8e3b0da4be035a11742fdb6a91b0"
+    },
+    "prop_stone_pavilion": {
+     "A1": "95f16c1f07c11b01e48d92d818b8c8d980f380acdcf7f91c53bdfeb5f88f3361"
+    },
+    "prop_bronze_ding": {
+     "A1": "f81506e946141041a6df853b257739d98709d64338cca420fa97bb2d37241de4"
+    }
+   }
+  },
+  {
+   "at": "2026-10-09T22:05:43",
+   "stage": "gate",
+   "round": "props-r1",
+   "fail": 0,
+   "warn": 2,
+   "byLine": {
+    "A": {
+     "cands": 28,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 6,
+     "fail": 0,
+     "warn": 1
+    }
+   },
+   "warnByCode": {
+    "N": 1,
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "prop_tea_table",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.16 vs 줄 바닥 0.29 (차 0.13, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    }
+   ],
+   "hashes": {
+    "prop_weapon_rack": {
+     "A1": "f67106c0cd5883566436985462fd99e3b6eb71a7b20dd12c0cdb2d7cb47b410c",
+     "B1": "91324044fa870302c33262fe473d834df6bd72e692b4cda8863cbd87544f8d41"
+    },
+    "prop_archery_target": {
+     "A1": "e7b737064cf00e1167f975bb6ec5929c35334575f37bbc62565daf82956c0d47"
+    },
+    "prop_sandbag_frame": {
+     "A1": "ee5fd0f1999b646dc0e7a732457774ff390baa13fdc6851622f953da886cfd29"
+    },
+    "prop_meditation_mats": {
+     "A1": "9c7c3c3f67b26e64686d75f3f0b7913c5127afb9900473e11a0fb122cad2553d"
+    },
+    "prop_stone_lions": {
+     "A1": "301dcee9100028f72ac486de0c4781e72f65001ac50c94138fa2225661ee4517"
+    },
+    "prop_stone_lantern": {
+     "A1": "57377a21bebccf24927ac48d4bde67d4b1a285de41b8efee273e1eea798d9bf5"
+    },
+    "prop_stele": {
+     "A1": "5c989f711d3794c549b5c20a900662b42906bf1513b228a43f7a5d002fef267b"
+    },
+    "prop_censer_small": {
+     "A1": "92164fe61907df9bcbdbfbe05249b3d489f2978489ffede7181e832d5f31fb00"
+    },
+    "prop_bamboo_pot": {
+     "A1": "b21ede7be16606ca47e1a985ae391e12224c40a75736ce8303e2d54447186024"
+    },
+    "prop_bamboo_thicket": {
+     "A1": "311bb9bb9fe654f64c5318d5ede047011fe86269cdd3ef35e6300c7b21409f85"
+    },
+    "prop_plum_bonsai": {
+     "A1": "7f65573a65d1f94d511c161631dda88312d023a76e5265e2524064e5166478ad"
+    },
+    "prop_garden_rock": {
+     "A1": "223bd4373a05b4dbdc68c41f4c4ce16ad9ff6c905460247a6880240d23216f76"
+    },
+    "prop_well": {
+     "A1": "574b2ecc6d9bd4898d5679dc189cf5a1c9b46c509fd6ee48729bb61ed4ccd858"
+    },
+    "prop_water_jar": {
+     "A1": "c6c6d24a2a9032d06857be63a9539ff89b78fcd73b5651d8bb82c34a2d981245"
+    },
+    "prop_tea_table": {
+     "A1": "3f9723c522cc1c6f916b08f5404cf9e3d55749333d433d54b639ef984937de1f",
+     "B1": "e0a4bb9807d7fd1df5de9028c82bbaefaf4aa175b3efb2f4085293bbfe623392"
+    },
+    "prop_writing_desk": {
+     "A1": "8c0ef15820b16a69d4f3131d6e77eb331edf329d55690530786819a68c9ed64d",
+     "B1": "bad34e8591042f7ba85fe4649b1afe52be1d0dd762335898ef2ee2e46558f463"
+    },
+    "prop_folding_screen": {
+     "A1": "27c3c58e4619ff09701adb2895cd9bd81b6977ee5c2e13acaba93b4fcf63117f",
+     "B1": "950a74afa49c244f36bc1709806567c31ff5df784497bdb783c6c32db14e43fc"
+    },
+    "prop_scroll_shelf": {
+     "A1": "a5346d7514b84551b196eb03446701c50da7a6fcc05d976bbe0ae042f9248772",
+     "B1": "5ed4fe6f8353d72608781f8937c8f54524786e59ca300f79261817add3827969"
+    },
+    "prop_medicine_cabinet": {
+     "A1": "2a9b660efa82085634143593a8496201f56d848e2af8df144d14eba55544a170",
+     "B1": "6f7522447deb811a31c1a9b4e5e6a08b2a9d4cda99822492ac050cce9da7458f"
+    },
+    "prop_herb_stove": {
+     "A1": "d538b5ce6a2eec3fd222d6e14cbffd006a2579e21f349a832aa0ed0215162880"
+    },
+    "prop_war_drum": {
+     "A1": "39de5952b8f495ef813d555b0b68fbacaa293e59278bafcddc82c9ccd8972649"
+    },
+    "prop_gong_frame": {
+     "A1": "0e0aac2c094d9796adabae8d2a8c15163aed5590402f306e1bf807d488d81fe8"
+    },
+    "prop_banner_pole": {
+     "A1": "b0cc144f72abc5797eb3f1fd18f316e0abafb6de6593f13a51c46f5cae071d0d"
+    },
+    "prop_hand_cart": {
+     "A1": "336e15eb9f79066f33349e8680d83ee56fcb0d0f530fb3c212c91a4f35def909"
+    },
+    "prop_firewood_pile": {
+     "A1": "a039b8ae56d35171f6fd6aaf4f9239b7473cde6824efd4d75b364a4d66774362"
+    },
+    "prop_sect_gate": {
+     "A1": "047979328d5b03bba5f8899614b811cecfaa8e3b0da4be035a11742fdb6a91b0"
+    },
+    "prop_stone_pavilion": {
+     "A1": "95f16c1f07c11b01e48d92d818b8c8d980f380acdcf7f91c53bdfeb5f88f3361"
+    },
+    "prop_bronze_ding": {
+     "A1": "f81506e946141041a6df853b257739d98709d64338cca420fa97bb2d37241de4"
+    }
+   }
+  },
+  {
+   "at": "2026-10-09T22:05:47",
+   "stage": "gate",
+   "round": "props-r1",
+   "fail": 0,
+   "warn": 2,
+   "byLine": {
+    "A": {
+     "cands": 28,
+     "fail": 0,
+     "warn": 1
+    },
+    "B": {
+     "cands": 8,
+     "fail": 0,
+     "warn": 1
+    }
+   },
+   "warnByCode": {
+    "N": 1,
+    "CONTRAST": 1
+   },
+   "polish": [
+    {
+     "item": "prop_tea_table",
+     "key": "B1",
+     "code": "CONTRAST",
+     "msg": "그늘 쪽 가장자리 밝기 0.16 vs 줄 바닥 0.29 (차 0.13, 하한 0.15) — 바닥에 묻힌다: 그늘 쪽을 재질 가장 어두운 단으로, 접지 그림자를 진하게(먹은 쓰지 않는다) [바닥 inn_floor_wood]"
+    }
+   ],
+   "hashes": {
+    "prop_weapon_rack": {
+     "A1": "f67106c0cd5883566436985462fd99e3b6eb71a7b20dd12c0cdb2d7cb47b410c",
+     "B1": "91324044fa870302c33262fe473d834df6bd72e692b4cda8863cbd87544f8d41"
+    },
+    "prop_archery_target": {
+     "A1": "e7b737064cf00e1167f975bb6ec5929c35334575f37bbc62565daf82956c0d47"
+    },
+    "prop_sandbag_frame": {
+     "A1": "ee5fd0f1999b646dc0e7a732457774ff390baa13fdc6851622f953da886cfd29"
+    },
+    "prop_meditation_mats": {
+     "A1": "9c7c3c3f67b26e64686d75f3f0b7913c5127afb9900473e11a0fb122cad2553d"
+    },
+    "prop_stone_lions": {
+     "A1": "301dcee9100028f72ac486de0c4781e72f65001ac50c94138fa2225661ee4517"
+    },
+    "prop_stone_lantern": {
+     "A1": "57377a21bebccf24927ac48d4bde67d4b1a285de41b8efee273e1eea798d9bf5"
+    },
+    "prop_stele": {
+     "A1": "5c989f711d3794c549b5c20a900662b42906bf1513b228a43f7a5d002fef267b"
+    },
+    "prop_censer_small": {
+     "A1": "92164fe61907df9bcbdbfbe05249b3d489f2978489ffede7181e832d5f31fb00"
+    },
+    "prop_bamboo_pot": {
+     "A1": "b21ede7be16606ca47e1a985ae391e12224c40a75736ce8303e2d54447186024"
+    },
+    "prop_bamboo_thicket": {
+     "A1": "311bb9bb9fe654f64c5318d5ede047011fe86269cdd3ef35e6300c7b21409f85"
+    },
+    "prop_plum_bonsai": {
+     "A1": "7f65573a65d1f94d511c161631dda88312d023a76e5265e2524064e5166478ad"
+    },
+    "prop_garden_rock": {
+     "A1": "223bd4373a05b4dbdc68c41f4c4ce16ad9ff6c905460247a6880240d23216f76"
+    },
+    "prop_well": {
+     "A1": "574b2ecc6d9bd4898d5679dc189cf5a1c9b46c509fd6ee48729bb61ed4ccd858"
+    },
+    "prop_water_jar": {
+     "A1": "c6c6d24a2a9032d06857be63a9539ff89b78fcd73b5651d8bb82c34a2d981245"
+    },
+    "prop_tea_table": {
+     "A1": "3f9723c522cc1c6f916b08f5404cf9e3d55749333d433d54b639ef984937de1f",
+     "B1": "e0a4bb9807d7fd1df5de9028c82bbaefaf4aa175b3efb2f4085293bbfe623392"
+    },
+    "prop_writing_desk": {
+     "A1": "8c0ef15820b16a69d4f3131d6e77eb331edf329d55690530786819a68c9ed64d",
+     "B1": "bad34e8591042f7ba85fe4649b1afe52be1d0dd762335898ef2ee2e46558f463"
+    },
+    "prop_folding_screen": {
+     "A1": "27c3c58e4619ff09701adb2895cd9bd81b6977ee5c2e13acaba93b4fcf63117f",
+     "B1": "950a74afa49c244f36bc1709806567c31ff5df784497bdb783c6c32db14e43fc"
+    },
+    "prop_scroll_shelf": {
+     "A1": "a5346d7514b84551b196eb03446701c50da7a6fcc05d976bbe0ae042f9248772",
+     "B1": "5ed4fe6f8353d72608781f8937c8f54524786e59ca300f79261817add3827969"
+    },
+    "prop_medicine_cabinet": {
+     "A1": "2a9b660efa82085634143593a8496201f56d848e2af8df144d14eba55544a170",
+     "B1": "6f7522447deb811a31c1a9b4e5e6a08b2a9d4cda99822492ac050cce9da7458f"
+    },
+    "prop_herb_stove": {
+     "A1": "d538b5ce6a2eec3fd222d6e14cbffd006a2579e21f349a832aa0ed0215162880"
+    },
+    "prop_war_drum": {
+     "A1": "39de5952b8f495ef813d555b0b68fbacaa293e59278bafcddc82c9ccd8972649"
+    },
+    "prop_gong_frame": {
+     "A1": "0e0aac2c094d9796adabae8d2a8c15163aed5590402f306e1bf807d488d81fe8"
+    },
+    "prop_banner_pole": {
+     "A1": "b0cc144f72abc5797eb3f1fd18f316e0abafb6de6593f13a51c46f5cae071d0d"
+    },
+    "prop_hand_cart": {
+     "A1": "336e15eb9f79066f33349e8680d83ee56fcb0d0f530fb3c212c91a4f35def909"
+    },
+    "prop_firewood_pile": {
+     "A1": "a039b8ae56d35171f6fd6aaf4f9239b7473cde6824efd4d75b364a4d66774362"
+    },
+    "prop_sect_gate": {
+     "A1": "047979328d5b03bba5f8899614b811cecfaa8e3b0da4be035a11742fdb6a91b0",
+     "B1": "617fff872f8c8d85c0b549a2ab4d19275638b6d2926318c4656f4775aa03560c"
+    },
+    "prop_stone_pavilion": {
+     "A1": "95f16c1f07c11b01e48d92d818b8c8d980f380acdcf7f91c53bdfeb5f88f3361",
+     "B1": "7872212c09540bd48c93853a0728690113f56c9f142e901e976cdc5666851bfb"
+    },
+    "prop_bronze_ding": {
+     "A1": "0f76b8fe59fab3adbbf6afb56c015edf3f0d75f1c3a5de1e9f054001af391a5e"
+    }
+   }
   }
  ]
 }
