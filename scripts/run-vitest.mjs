@@ -267,10 +267,14 @@ function withWorkerCap(args, budget) {
     `[run-vitest] cgroup 예산 ${cpuPart} / ${memoryPart} → 워커 ${budget.workers}개 ` +
     `× 힙 ${budget.heapMb}MB 로 낮춘다 (워커당 최소 ${MIN_WORKER_HEAP_MB}MB 보장).`,
   );
-  return [...stripped, `--maxWorkers=${budget.workers}`, "--minWorkers=1"];
+  const workerArgs = [...stripped, `--maxWorkers=${budget.workers}`];
+  if (VITEST_SUPPORTS_MIN_WORKERS) workerArgs.push("--minWorkers=1");
+  return workerArgs;
 }
 
 const packagePath = fileURLToPath(import.meta.resolve("vitest/package.json"));
+const vitestVersion = JSON.parse(readFileSync(packagePath, "utf8")).version;
+const VITEST_SUPPORTS_MIN_WORKERS = Number.parseInt(vitestVersion.split(".")[0], 10) < 4;
 const vitestCli = canonicalizeWindowsDrive(join(dirname(packagePath), "vitest.mjs"));
 const root = canonicalizeWindowsDrive(process.cwd());
 const requestedArgs = canonicalizeRootArgs(process.argv.slice(2), root);
