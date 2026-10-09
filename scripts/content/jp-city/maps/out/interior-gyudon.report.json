@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-gyudon",
+  "size": [
+   11,
+   10
+  ]
+ },
+ "start": [
+  7,
+  8
+ ],
+ "summary": "손 도트 실내 '일본 규동집(牛丼屋) 실내' 11×10 (jp-city-gyudon, jp_city) — 출입구에서 닿는 칸 29, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-gyudon",
+  "tilesetId": "jp_city",
+  "width": 11,
+  "height": 10,
+  "reachable": 29,
+  "floorCells": 54,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 7,
+    "y": 8
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 7,
+    "y": 9,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 29,
+ "ok": true
+}

@@ -1,0 +1,272 @@
+{
+ "name": "일본 만화 카페(漫画喫茶·ネットカフェ) 실내",
+ "plan": [
+  "#################",
+  "#....#......#...#",
+  "#....#......#...#",
+  "#....#......#...#",
+  "#....#......#...#",
+  "#....#......##.##",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "##..#############"
+ ],
+ "exitWidth": 2,
+ "floor": "kr-cafe-floor",
+ "wall": "kr-cafe-wall",
+ "zones": [
+  {
+   "x0": 13,
+   "y0": 0,
+   "x1": 15,
+   "y1": 5,
+   "floor": "bathtile",
+   "wall": "bathwall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "of-cabinet",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "cv-back-shelf",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "wall-clock",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "id": "kr-front",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "kr-front-register",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "kr-front",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "kr-manga-island",
+   "x": 3,
+   "y": 8
+  },
+  {
+   "id": "kr-pc-desk",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "kr-pc-desk",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "kr-reclining-seat",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "kr-reclining-seat",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 2,
+   "y": 13
+  },
+  {
+   "id": "kr-manga-shelf",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "kr-manga-shelf",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "kr-manga-shelf",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "kr-manga-island",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "kr-manga-island",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "kr-ice-cream",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "kr-drink-bar",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "pb-steel-locker",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "kr-shower-door",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "washbasin",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "shower-faucet",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "towel-rack",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "bath-mat",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "kr-booth",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "kr-booth",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "kr-booth",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "kr-booth",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "kr-booth-n",
+   "x": 13,
+   "y": 11
+  },
+  {
+   "id": "kr-booth-n",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "kr-booth-n",
+   "x": 15,
+   "y": 11
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "kr-manga-stack",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "kr-menu",
+   "x": 3,
+   "y": 5
+  }
+ ],
+ "rooms": [
+  {
+   "room": "mangaopenseat",
+   "x0": 3,
+   "y0": 9,
+   "x1": 4,
+   "y1": 12
+  },
+  {
+   "room": "mangareception",
+   "x0": 0,
+   "y0": 0,
+   "x1": 4,
+   "y1": 13
+  },
+  {
+   "room": "mangashower",
+   "x0": 13,
+   "y0": 0,
+   "x1": 15,
+   "y1": 5
+  },
+  {
+   "room": "mangadrink",
+   "x0": 12,
+   "y0": 6,
+   "x1": 15,
+   "y1": 8
+  },
+  {
+   "room": "mangashelves",
+   "x0": 5,
+   "y0": 0,
+   "x1": 11,
+   "y1": 8
+  },
+  {
+   "room": "mangabooth",
+   "x0": 5,
+   "y0": 9,
+   "x1": 15,
+   "y1": 13
+  }
+ ],
+ "start": [
+  2,
+  12
+ ],
+ "links": [],
+ "narrow": [
+  {
+   "x0": 1,
+   "y0": 3,
+   "x1": 4,
+   "y1": 4,
+   "why": "접수 카운터 안쪽 직원 자리 — 손님은 들어오지 않는다"
+  },
+  {
+   "x0": 4,
+   "y0": 5,
+   "x1": 4,
+   "y1": 5,
+   "why": "접수 카운터 줄 끝 직원 길"
+  }
+ ]
+}

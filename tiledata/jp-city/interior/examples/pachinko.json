@@ -1,0 +1,384 @@
+{
+ "name": "일본 파친코(パチンコ) 실내",
+ "plan": [
+  "#################",
+  "#...........#...#",
+  "#...........#...#",
+  "#...........#...#",
+  "#...........#...#",
+  "#...........##.##",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "#...............#",
+  "##..#############"
+ ],
+ "exitWidth": 2,
+ "floor": "am-pachinko-carpet",
+ "wall": "am-mirror-wall",
+ "zones": [
+  {
+   "x0": 13,
+   "y0": 0,
+   "x1": 15,
+   "y1": 4,
+   "floor": "pb-linoleum",
+   "wall": "pb-office-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "am-prize-shelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "h2-cardboard",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "am-ball-box",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "am-counter",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "am-register",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "am-counter",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 6,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 9,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 10,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 10,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "am-pachinko-back",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-n",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "am-pachinko-stool",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "am-pachinko-island-end",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "am-pachinko-island-end",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "am-ball-counter",
+   "x": 4,
+   "y": 10
+  },
+  {
+   "id": "am-ball-counter",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "am-ball-box",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
+   "y": 10
+  },
+  {
+   "id": "pb-water-dispenser",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "am-ashtray-stand",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "am-ashtray-stand",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "am-smoke-eater",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "id": "of-glass-door",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 2,
+   "y": 13
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "am-prize-box",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "am-plush",
+   "x": 3,
+   "y": 5
+  }
+ ],
+ "start": [
+  2,
+  12
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "smokingroom",
+   "x0": 13,
+   "y0": 0,
+   "x1": 16,
+   "y1": 5
+  },
+  {
+   "room": "prizecounter",
+   "x0": 0,
+   "y0": 0,
+   "x1": 4,
+   "y1": 7
+  },
+  {
+   "room": "pachinkohall",
+   "x0": 0,
+   "y0": 0,
+   "x1": 16,
+   "y1": 13
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 4,
+   "y0": 4,
+   "x1": 4,
+   "y1": 5,
+   "why": "경품 카운터 안쪽으로 드는 직원 길(카운터 줄 끝 틈)"
+  }
+ ]
+}

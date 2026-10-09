@@ -1,0 +1,378 @@
+{
+ "name": "일본 패밀리 레스토랑(ファミレス) 실내",
+ "plan": [
+  "##################",
+  "#..........#.....#",
+  "#..........#.....#",
+  "#..........#.....#",
+  "#..........#.....#",
+  "#..........#.....#",
+  "#..........#####.#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "#................#",
+  "###..#############"
+ ],
+ "exitWidth": 2,
+ "floor": "fr-floor",
+ "wall": "fr-wall",
+ "zones": [
+  {
+   "x0": 12,
+   "y0": 0,
+   "x1": 16,
+   "y1": 5,
+   "floor": "fr-kitchen-floor",
+   "wall": "kitchen-panel"
+  }
+ ],
+ "objects": [
+  {
+   "id": "window-sash",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "id": "window-sash",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "window-sash",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "fr-booth-s",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "fr-booth-n",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "fr-booth-divider",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fr-booth-s",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "fr-booth-n",
+   "x": 1,
+   "y": 9
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "fr-kids-chair",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 5,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 5,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-e",
+   "x": 8,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 10,
+   "y": 7
+  },
+  {
+   "id": "fd-chair-w",
+   "x": 10,
+   "y": 8
+  },
+  {
+   "id": "fr-drink-bar",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "fr-pass-window",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "fr-soup-bar",
+   "x": 8,
+   "y": 10
+  },
+  {
+   "id": "fr-register",
+   "x": 5,
+   "y": 11
+  },
+  {
+   "id": "fr-dessert-case",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "fr-waiting-bench",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "door-open-western",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "fd-fridge",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "fd-prep",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "fd-fryer",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "fd-stockpot",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "fd-sink",
+   "x": 16,
+   "y": 3
+  }
+ ],
+ "tables": [
+  {
+   "style": "fr-booth-table",
+   "x": 1,
+   "y": 4,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "fr-booth-table",
+   "x": 1,
+   "y": 8,
+   "w": 2,
+   "h": 1
+  },
+  {
+   "style": "fr-booth-table",
+   "x": 6,
+   "y": 3,
+   "w": 1,
+   "h": 2
+  },
+  {
+   "style": "fr-booth-table",
+   "x": 9,
+   "y": 3,
+   "w": 1,
+   "h": 2
+  },
+  {
+   "style": "fr-booth-table",
+   "x": 6,
+   "y": 7,
+   "w": 1,
+   "h": 2
+  },
+  {
+   "style": "fr-booth-table",
+   "x": 9,
+   "y": 7,
+   "w": 1,
+   "h": 2
+  },
+  {
+   "style": "fd-counter",
+   "x": 14,
+   "y": 5,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "fr-call-button",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "id": "fd-teishoku",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "id": "fd-water-set",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "fr-call-button",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "fr-call-button",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "id": "fd-teishoku",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "fr-call-button",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "id": "fd-coffee-cup",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "fr-call-button",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "fr-call-button",
+   "x": 9,
+   "y": 7
+  },
+  {
+   "id": "fd-teishoku",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "plates",
+   "x": 14,
+   "y": 5
+  }
+ ],
+ "start": [
+  3,
+  11
+ ],
+ "links": [],
+ "rooms": [
+  {
+   "room": "famireskitchen",
+   "x0": 12,
+   "y0": 0,
+   "x1": 16,
+   "y1": 5
+  },
+  {
+   "room": "famiresdining",
+   "x0": 0,
+   "y0": 0,
+   "x1": 11,
+   "y1": 12
+  },
+  {
+   "room": "famiresdining",
+   "x0": 12,
+   "y0": 6,
+   "x1": 17,
+   "y1": 12
+  }
+ ],
+ "narrow": [
+  {
+   "x0": 12,
+   "y0": 3,
+   "x1": 16,
+   "y1": 9,
+   "why": "주방 안 직원 줄(조리대 앞)과 주방 직원 문 → 내주는 창 옆으로 나오는 직원 길 — 손님은 들어오지 않는다"
+  }
+ ]
+}

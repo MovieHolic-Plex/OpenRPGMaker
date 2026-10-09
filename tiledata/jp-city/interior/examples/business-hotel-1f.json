@@ -1,0 +1,182 @@
+{
+ "name": "일본 비즈니스 호텔 1층 로비(프런트·엘리베이터)",
+ "plan": [
+  "#############",
+  "#......#....#",
+  "#......#....#",
+  "#......#....#",
+  "#...........#",
+  "#...........#",
+  "#...........#",
+  "#...........#",
+  "#####..######"
+ ],
+ "exitWidth": 2,
+ "floor": "ht-lobby-floor",
+ "wall": "ht-hotel-wall",
+ "ceiling": "default",
+ "zones": [],
+ "objects": [
+  {
+   "id": "ht-elevator",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-elevator-button",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "ht-elevator",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "of-vending",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "of-cabinet",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "sc-key-box",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "wall-clock",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "id": "ht-front",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "ht-front",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "ht-front",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "id": "ht-lobby-sofa-e",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "ht-lobby-sofa-w",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "of-plant-big",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 5,
+   "y": 8
+  }
+ ],
+ "tables": [
+  {
+   "style": "ht-lobby-table",
+   "x": 2,
+   "y": 6,
+   "w": 1,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "ht-bell",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "ht-card-key",
+   "x": 10,
+   "y": 5
+  }
+ ],
+ "rooms": [
+  {
+   "room": "elevatorhall",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 5
+  },
+  {
+   "room": "front",
+   "x0": 7,
+   "y0": 0,
+   "x1": 12,
+   "y1": 5
+  },
+  {
+   "room": "lobby",
+   "x0": 0,
+   "y0": 6,
+   "x1": 12,
+   "y1": 8
+  }
+ ],
+ "start": [
+  5,
+  7
+ ],
+ "narrow": [
+  {
+   "x0": 8,
+   "y0": 3,
+   "x1": 11,
+   "y1": 5,
+   "why": "프런트 카운터 안쪽 직원 자리(카운터 줄 끝 틈 x11)"
+  }
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-floor",
+   "toX": 1,
+   "toY": 5,
+   "direction": "up"
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-floor",
+   "toX": 2,
+   "toY": 5,
+   "direction": "up"
+  },
+  {
+   "x": 4,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-floor",
+   "toX": 4,
+   "toY": 5,
+   "direction": "up"
+  },
+  {
+   "x": 5,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-floor",
+   "toX": 5,
+   "toY": 5,
+   "direction": "up"
+  }
+ ]
+}

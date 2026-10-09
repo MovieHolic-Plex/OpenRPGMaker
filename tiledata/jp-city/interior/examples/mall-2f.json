@@ -1,0 +1,447 @@
+{
+ "name": "쇼핑몰 2층 — 푸드코트·영화관 입구·에스컬레이터",
+ "plan": [
+  "########################",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#...............########",
+  "#...............########",
+  "########################"
+ ],
+ "floor": "ml-floor",
+ "wall": "ml-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "ml-food-stall",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "ml-food-stall-b",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "ml-food-stall-c",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "ml-food-stall-d",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "ml-tray-return",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "houseplant",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "cv-trash",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "houseplant",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "ml-poster",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "id": "ml-cinema-entrance",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "ml-poster-b",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "ml-bench",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "ml-escalator-down",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "ml-info-board",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 1,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 2,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 2,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 3,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 4,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 2,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 6,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 6,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 7,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 8,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 9,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 9,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 11,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 12,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 13,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 14,
+   "y": 11
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 19,
+   "y": 8
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-s",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "fd-chair-n",
+   "x": 21,
+   "y": 8
+  }
+ ],
+ "tables": [
+  {
+   "style": "ml-food-table",
+   "x": 1,
+   "y": 7,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 1,
+   "y": 12,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 6,
+   "y": 7,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 6,
+   "y": 12,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 11,
+   "y": 7,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 11,
+   "y": 12,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 16,
+   "y": 7,
+   "w": 4,
+   "h": 1
+  },
+  {
+   "style": "ml-food-table",
+   "x": 21,
+   "y": 7,
+   "w": 2,
+   "h": 1
+  }
+ ],
+ "goods": [
+  {
+   "id": "ml-tray",
+   "x": 1,
+   "y": 7
+  },
+  {
+   "id": "ml-drink-cup",
+   "x": 3,
+   "y": 7
+  },
+  {
+   "id": "ml-tray",
+   "x": 8,
+   "y": 7
+  },
+  {
+   "id": "ml-popcorn",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "ml-tray",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "ml-drink-cup",
+   "x": 22,
+   "y": 7
+  },
+  {
+   "id": "ml-tray",
+   "x": 2,
+   "y": 12
+  },
+  {
+   "id": "ml-shopping-bag",
+   "x": 7,
+   "y": 12
+  },
+  {
+   "id": "ml-tray",
+   "x": 12,
+   "y": 12
+  },
+  {
+   "id": "ml-drink-cup",
+   "x": 14,
+   "y": 12
+  }
+ ],
+ "rooms": [
+  {
+   "room": "foodcourt",
+   "x0": 0,
+   "y0": 0,
+   "x1": 23,
+   "y1": 13
+  }
+ ],
+ "start": [
+  19,
+  4
+ ],
+ "inner": true,
+ "links": [
+  {
+   "x": 20,
+   "y": 4,
+   "toMapId": "jp-city-mall-1f",
+   "toX": 20,
+   "toY": 9,
+   "direction": "down"
+  },
+  {
+   "x": 21,
+   "y": 4,
+   "toMapId": "jp-city-mall-1f",
+   "toX": 21,
+   "toY": 9,
+   "direction": "down"
+  },
+  {
+   "x": 13,
+   "y": 3,
+   "toMapId": "jp-city-cinema",
+   "toX": 1,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 14,
+   "y": 3,
+   "toMapId": "jp-city-cinema",
+   "toX": 2,
+   "toY": 4,
+   "direction": "up"
+  }
+ ]
+}

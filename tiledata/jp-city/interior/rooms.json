@@ -1,13 +1,10 @@
 {
  "kinds": {
   "genkan": {
-   "ko": "현관",
+   "ko": "료칸 현관",
    "alias": [
     "玄関",
-    "현관",
-    "신발 벗는 곳",
-    "타타키",
-    "entrance"
+    "현관"
    ]
   },
   "hall": {
@@ -368,19 +365,17 @@
    ]
   },
   "lobby": {
-   "ko": "로비",
+   "ko": "호텔 로비",
    "alias": [
     "ロビー",
-    "受付",
-    "접수",
-    "현관 로비"
+    "로비"
    ]
   },
   "elevatorhall": {
    "ko": "엘리베이터 홀",
    "alias": [
     "エレベーターホール",
-    "로비"
+    "승강기 앞"
    ]
   },
   "stairwell": {
@@ -490,11 +485,10 @@
    ]
   },
   "corridor": {
-   "ko": "학교 복도",
+   "ko": "객실 복도",
    "alias": [
     "廊下",
-    "복도",
-    "school corridor"
+    "복도"
    ]
   },
   "staffroom": {
@@ -1243,6 +1237,422 @@
     "밀수품 방",
     "보스 방"
    ]
+  },
+  "gamecenter": {
+   "ko": "게임 센터",
+   "alias": [
+    "ゲームセンター",
+    "게임 센터",
+    "오락실",
+    "game center",
+    "arcade"
+   ]
+  },
+  "cranezone": {
+   "ko": "UFO 캐처 코너",
+   "alias": [
+    "クレーンゲーム",
+    "UFO 캐처",
+    "인형 뽑기"
+   ]
+  },
+  "videozone": {
+   "ko": "비디오 게임 코너",
+   "alias": [
+    "ビデオゲーム",
+    "대전 게임",
+    "아케이드"
+   ]
+  },
+  "medalzone": {
+   "ko": "메달 코너",
+   "alias": [
+    "メダルコーナー",
+    "메달 게임",
+    "스티커 사진"
+   ]
+  },
+  "gccounter": {
+   "ko": "게임 센터 카운터",
+   "alias": [
+    "カウンター",
+    "경품 교환",
+    "직원 카운터"
+   ]
+  },
+  "pachinko": {
+   "ko": "파친코",
+   "alias": [
+    "パチンコ",
+    "파친코",
+    "pachinko parlor"
+   ]
+  },
+  "pachinkohall": {
+   "ko": "파친코 홀",
+   "alias": [
+    "ホール",
+    "파친코 섬",
+    "島"
+   ]
+  },
+  "prizecounter": {
+   "ko": "경품 카운터",
+   "alias": [
+    "景品カウンター",
+    "구슬 교환",
+    "카운터"
+   ]
+  },
+  "smokingroom": {
+   "ko": "흡연실",
+   "alias": [
+    "喫煙室",
+    "흡연 부스",
+    "담배"
+   ]
+  },
+  "famires": {
+   "ko": "패밀리 레스토랑",
+   "alias": [
+    "ファミレス",
+    "ファミリーレストラン",
+    "패밀리 레스토랑",
+    "패미레스",
+    "family restaurant"
+   ]
+  },
+  "famiresdining": {
+   "ko": "패밀리 레스토랑 객석",
+   "alias": [
+    "客席",
+    "객석",
+    "홀",
+    "박스석"
+   ]
+  },
+  "famireskitchen": {
+   "ko": "패밀리 레스토랑 주방",
+   "alias": [
+    "厨房",
+    "キッチン",
+    "주방"
+   ]
+  },
+  "gyudon": {
+   "ko": "규동집",
+   "alias": [
+    "牛丼屋",
+    "牛丼",
+    "규동",
+    "규동집",
+    "덮밥집",
+    "gyudon"
+   ]
+  },
+  "gyudoncounter": {
+   "ko": "규동집 카운터석",
+   "alias": [
+    "カウンター席",
+    "카운터석"
+   ]
+  },
+  "gyudonkitchen": {
+   "ko": "규동집 주방",
+   "alias": [
+    "厨房",
+    "주방",
+    "카운터 안쪽"
+   ]
+  },
+  "business-hotel": {
+   "ko": "비즈니스 호텔",
+   "alias": [
+    "ビジネスホテル",
+    "ホテル",
+    "宿",
+    "비즈니스 호텔",
+    "호텔",
+    "여관",
+    "숙소",
+    "business hotel",
+    "hotel",
+    "inn"
+   ]
+  },
+  "front": {
+   "ko": "프런트",
+   "alias": [
+    "フロント",
+    "受付",
+    "접수",
+    "체크인"
+   ]
+  },
+  "single": {
+   "ko": "싱글 객실",
+   "alias": [
+    "シングルルーム",
+    "객실",
+    "싱글룸",
+    "방"
+   ]
+  },
+  "double": {
+   "ko": "더블 객실",
+   "alias": [
+    "ダブルルーム",
+    "객실",
+    "더블룸"
+   ]
+  },
+  "ryokan": {
+   "ko": "료칸",
+   "alias": [
+    "旅館",
+    "温泉旅館",
+    "宿",
+    "露天風呂",
+    "료칸",
+    "온천 여관",
+    "여관",
+    "온천",
+    "노천탕",
+    "ryokan",
+    "hot spring inn",
+    "inn"
+   ]
+  },
+  "chouba": {
+   "ko": "접수·로비",
+   "alias": [
+    "帳場",
+    "フロント",
+    "ロビー",
+    "접수",
+    "프런트"
+   ]
+  },
+  "guestroom": {
+   "ko": "다다미 객실",
+   "alias": [
+    "客室",
+    "和室",
+    "객실",
+    "방"
+   ]
+  },
+  "datsuijo": {
+   "ko": "탈의실",
+   "alias": [
+    "脱衣所",
+    "탈의장"
+   ]
+  },
+  "rotenburo": {
+   "ko": "노천탕",
+   "alias": [
+    "露天風呂",
+    "온천",
+    "목욕탕"
+   ]
+  },
+  "karaoke": {
+   "ko": "노래방",
+   "alias": [
+    "カラオケボックス",
+    "노래방",
+    "karaoke box"
+   ]
+  },
+  "karaokefront": {
+   "ko": "노래방 프런트",
+   "alias": [
+    "フロント",
+    "프런트",
+    "접수",
+    "로비"
+   ]
+  },
+  "karaokecorridor": {
+   "ko": "노래방 복도",
+   "alias": [
+    "カラオケ廊下",
+    "복도",
+    "드링크 바"
+   ]
+  },
+  "karaokeroom": {
+   "ko": "노래방 방",
+   "alias": [
+    "カラオケルーム",
+    "노래방 룸",
+    "방"
+   ]
+  },
+  "karaokeparty": {
+   "ko": "노래방 파티룸",
+   "alias": [
+    "パーティールーム",
+    "파티룸",
+    "큰 방"
+   ]
+  },
+  "mangacafe": {
+   "ko": "만화 카페",
+   "alias": [
+    "漫画喫茶",
+    "ネットカフェ",
+    "만화 카페",
+    "넷카페",
+    "manga cafe"
+   ]
+  },
+  "mangareception": {
+   "ko": "만화 카페 접수",
+   "alias": [
+    "受付",
+    "접수",
+    "프런트"
+   ]
+  },
+  "mangashelves": {
+   "ko": "만화 서가",
+   "alias": [
+    "漫画コーナー",
+    "서가",
+    "만화책 코너"
+   ]
+  },
+  "mangabooth": {
+   "ko": "개인 부스 구역",
+   "alias": [
+    "個室ブース",
+    "부스",
+    "개인실"
+   ]
+  },
+  "mangaopenseat": {
+   "ko": "오픈석",
+   "alias": [
+    "オープン席",
+    "PC석",
+    "오픈 좌석"
+   ]
+  },
+  "mangadrink": {
+   "ko": "드링크 바·로커",
+   "alias": [
+    "ドリンクバー",
+    "드링크 바",
+    "코인 로커"
+   ]
+  },
+  "mangashower": {
+   "ko": "샤워실",
+   "alias": [
+    "シャワールーム",
+    "샤워 부스"
+   ]
+  },
+  "mall": {
+   "ko": "쇼핑몰",
+   "alias": [
+    "ショッピングモール",
+    "ショッピングセンター",
+    "モール",
+    "映画館",
+    "フードコート",
+    "쇼핑몰",
+    "쇼핑센터",
+    "몰",
+    "영화관",
+    "푸드코트",
+    "shopping mall",
+    "mall",
+    "cinema",
+    "food court"
+   ]
+  },
+  "mall-concourse": {
+   "ko": "몰 통로·분수 광장",
+   "alias": [
+    "モール通路",
+    "吹き抜け",
+    "広場",
+    "몰 통로",
+    "광장",
+    "concourse"
+   ]
+  },
+  "mall-clothes": {
+   "ko": "옷가게(몰)",
+   "alias": [
+    "アパレル",
+    "洋服店",
+    "옷가게",
+    "의류 매장",
+    "clothing store"
+   ]
+  },
+  "mall-goods": {
+   "ko": "잡화점(몰)",
+   "alias": [
+    "雑貨屋",
+    "雑貨店",
+    "잡화점",
+    "소품 가게",
+    "variety store"
+   ]
+  },
+  "mall-electronics": {
+   "ko": "전자 매장(몰)",
+   "alias": [
+    "家電売り場",
+    "家電量販",
+    "전자 매장",
+    "가전 매장",
+    "electronics store"
+   ]
+  },
+  "mall-escalator": {
+   "ko": "에스컬레이터 홀",
+   "alias": [
+    "エスカレーター",
+    "에스컬레이터",
+    "escalator hall"
+   ]
+  },
+  "foodcourt": {
+   "ko": "푸드코트",
+   "alias": [
+    "フードコート",
+    "푸드 코트",
+    "식당가",
+    "food court"
+   ]
+  },
+  "cinema-lobby": {
+   "ko": "영화관 로비(매표·매점)",
+   "alias": [
+    "映画館ロビー",
+    "チケット売り場",
+    "売店",
+    "매표소",
+    "매점",
+    "cinema lobby"
+   ]
+  },
+  "cinema-theater": {
+   "ko": "상영관",
+   "alias": [
+    "シアター",
+    "スクリーン",
+    "上映室",
+    "상영관",
+    "극장",
+    "theater"
+   ]
   }
  },
  "buildings": {
@@ -1281,7 +1691,16 @@
   "jp_subway_access": "지하철 보선 터널(던전) — B1 보선 통로·기계실 · B2 선로 분기부·환기 기계실(subway-tunnel-1, subway-tunnel-2)",
   "jp_sewer_access": "하수도(던전) — 점검로·수문·작업원 대기소·점검실 · 하수 본관 합류 수조·펌프실(sewer-1, sewer-2)",
   "jp_undermall": "밤의 지하상가(地下街) — 셔터 거리·경비실·기계실·분수 광장 던전(undermall-1, undermall-2)",
-  "jp_harbor_warehouse": "항만 창고(港湾倉庫) — 컨테이너 미로·사무 칸·보세 구역·중이층 밀수품 방 던전(harbor-warehouse-1, harbor-warehouse-2)"
+  "jp_harbor_warehouse": "항만 창고(港湾倉庫) — 컨테이너 미로·사무 칸·보세 구역·중이층 밀수품 방 던전(harbor-warehouse-1, harbor-warehouse-2)",
+  "jp_game_center": "일본 게임 센터(ゲームセンター) 실내(game-center)",
+  "jp_pachinko": "일본 파친코(パチンコ) 실내(pachinko)",
+  "jp_famires": "일본 패밀리 레스토랑(ファミレス) 실내(famires)",
+  "jp_gyudon": "일본 규동집(牛丼屋) 실내(gyudon)",
+  "jp_business_hotel": "일본 비즈니스 호텔 실내(1층 로비 + 객실 층)(business-hotel-1f, business-hotel-floor)",
+  "jp_ryokan": "일본 료칸 실내(현관·접수·다다미 객실·남탕/여탕 노천탕)(ryokan)",
+  "jp_karaoke": "일본 노래방(カラオケボックス) 실내(karaoke)",
+  "jp_manga_cafe": "일본 만화 카페(漫画喫茶·ネットカフェ) 실내(manga-cafe)",
+  "jp_mall": "일본 쇼핑몰 실내(1층 가게·분수 광장 + 2층 푸드코트 + 영화관)(mall-1f, mall-2f, cinema)"
  },
  "examples": [
   [
@@ -7222,6 +7641,1247 @@
     [
      "wh-exit-sign",
      1
+    ]
+   ]
+  ],
+  [
+   "game-center",
+   "jp_game_center",
+   "gccounter",
+   [
+    [
+     "am-neon-sign",
+     2
+    ],
+    [
+     "h2-cardboard",
+     2
+    ],
+    [
+     "am-prize-shelf",
+     1
+    ],
+    [
+     "am-register",
+     1
+    ],
+    [
+     "am-counter",
+     2
+    ]
+   ]
+  ],
+  [
+   "game-center",
+   "jp_game_center",
+   "medalzone",
+   [
+    [
+     "am-medal-pusher",
+     1
+    ],
+    [
+     "cv-trash",
+     1
+    ],
+    [
+     "am-arcade-stool",
+     4
+    ],
+    [
+     "houseplant",
+     2
+    ]
+   ]
+  ],
+  [
+   "game-center",
+   "jp_game_center",
+   "videozone",
+   [
+    [
+     "am-rhythm",
+     2
+    ],
+    [
+     "am-racing",
+     2
+    ],
+    [
+     "am-photo-booth",
+     1
+    ],
+    [
+     "am-exchange",
+     1
+    ],
+    [
+     "am-arcade-stool",
+     10
+    ],
+    [
+     "am-arcade-back",
+     5
+    ],
+    [
+     "am-arcade-n",
+     5
+    ]
+   ]
+  ],
+  [
+   "game-center",
+   "jp_game_center",
+   "cranezone",
+   [
+    [
+     "am-crane",
+     14
+    ],
+    [
+     "am-crane-big",
+     2
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "pachinko",
+   "jp_pachinko",
+   "smokingroom",
+   [
+    [
+     "am-ashtray-stand",
+     2
+    ],
+    [
+     "am-smoke-eater",
+     1
+    ],
+    [
+     "of-glass-door",
+     1
+    ]
+   ]
+  ],
+  [
+   "pachinko",
+   "jp_pachinko",
+   "prizecounter",
+   [
+    [
+     "am-prize-shelf",
+     1
+    ],
+    [
+     "h2-cardboard",
+     1
+    ],
+    [
+     "am-ball-box",
+     1
+    ],
+    [
+     "am-counter",
+     2
+    ],
+    [
+     "am-register",
+     1
+    ]
+   ]
+  ],
+  [
+   "pachinko",
+   "jp_pachinko",
+   "pachinkohall",
+   [
+    [
+     "am-pachinko-n",
+     14
+    ],
+    [
+     "am-pachinko-stool",
+     21
+    ],
+    [
+     "am-pachinko-back",
+     7
+    ],
+    [
+     "am-pachinko-island-end",
+     2
+    ],
+    [
+     "am-ball-counter",
+     2
+    ],
+    [
+     "am-ball-box",
+     1
+    ],
+    [
+     "houseplant",
+     1
+    ],
+    [
+     "pb-water-dispenser",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "famires",
+   "jp_famires",
+   "famireskitchen",
+   [
+    [
+     "fd-fridge",
+     1
+    ],
+    [
+     "fd-prep",
+     1
+    ],
+    [
+     "fd-fryer",
+     1
+    ],
+    [
+     "fd-stockpot",
+     1
+    ],
+    [
+     "fd-sink",
+     1
+    ],
+    [
+     "fd-counter",
+     1
+    ]
+   ]
+  ],
+  [
+   "famires",
+   "jp_famires",
+   "famiresdining",
+   [
+    [
+     "window-sash",
+     3
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "fr-booth-s",
+     2
+    ],
+    [
+     "fr-booth-n",
+     2
+    ],
+    [
+     "fr-booth-divider",
+     1
+    ],
+    [
+     "fd-chair-e",
+     8
+    ],
+    [
+     "fd-chair-w",
+     8
+    ],
+    [
+     "fr-kids-chair",
+     1
+    ],
+    [
+     "fr-drink-bar",
+     1
+    ],
+    [
+     "fr-pass-window",
+     1
+    ],
+    [
+     "fr-soup-bar",
+     1
+    ],
+    [
+     "fr-register",
+     1
+    ],
+    [
+     "fr-dessert-case",
+     1
+    ],
+    [
+     "fr-waiting-bench",
+     1
+    ],
+    [
+     "door-open-western",
+     1
+    ],
+    [
+     "fr-booth-table",
+     6
+    ]
+   ]
+  ],
+  [
+   "gyudon",
+   "jp_gyudon",
+   "gyudonkitchen",
+   [
+    [
+     "fd-menu-board",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "fd-fridge",
+     1
+    ],
+    [
+     "fd-sink",
+     1
+    ],
+    [
+     "fr-gyu-pot",
+     2
+    ],
+    [
+     "fr-rice-jar",
+     1
+    ],
+    [
+     "fd-prep",
+     1
+    ]
+   ]
+  ],
+  [
+   "gyudon",
+   "jp_gyudon",
+   "gyudoncounter",
+   [
+    [
+     "fr-counter-stool",
+     8
+    ],
+    [
+     "fd-ticket-machine",
+     1
+    ],
+    [
+     "fr-u-counter",
+     3
+    ]
+   ]
+  ],
+  [
+   "business-hotel-1f",
+   "jp_business_hotel",
+   "elevatorhall",
+   [
+    [
+     "ht-elevator",
+     2
+    ],
+    [
+     "of-elevator-button",
+     1
+    ],
+    [
+     "of-vending",
+     1
+    ]
+   ]
+  ],
+  [
+   "business-hotel-1f",
+   "jp_business_hotel",
+   "front",
+   [
+    [
+     "of-cabinet",
+     1
+    ],
+    [
+     "sc-key-box",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "ht-front",
+     3
+    ]
+   ]
+  ],
+  [
+   "business-hotel-1f",
+   "jp_business_hotel",
+   "lobby",
+   [
+    [
+     "ht-lobby-sofa-e",
+     1
+    ],
+    [
+     "ht-lobby-sofa-w",
+     1
+    ],
+    [
+     "of-plant-big",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ],
+    [
+     "ht-lobby-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "business-hotel-floor",
+   "jp_business_hotel",
+   "elevatorhall",
+   [
+    [
+     "ht-elevator",
+     2
+    ],
+    [
+     "of-elevator-button",
+     1
+    ],
+    [
+     "ht-ice-machine",
+     1
+    ]
+   ]
+  ],
+  [
+   "business-hotel-floor",
+   "jp_business_hotel",
+   "single",
+   [
+    [
+     "ht-single-bed",
+     2
+    ],
+    [
+     "ht-unit-bath-door",
+     2
+    ],
+    [
+     "ht-desk-tv",
+     2
+    ],
+    [
+     "desk-chair-n",
+     2
+    ],
+    [
+     "ht-luggage-rack",
+     2
+    ]
+   ]
+  ],
+  [
+   "business-hotel-floor",
+   "jp_business_hotel",
+   "double",
+   [
+    [
+     "bed-double",
+     1
+    ],
+    [
+     "bed-side-table",
+     1
+    ],
+    [
+     "ht-unit-bath-door",
+     1
+    ],
+    [
+     "curtain-window",
+     1
+    ],
+    [
+     "ht-luggage-rack",
+     1
+    ]
+   ]
+  ],
+  [
+   "business-hotel-floor",
+   "jp_business_hotel",
+   "corridor",
+   [
+    [
+     "ht-room-door",
+     3
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "guestroom",
+   [
+    [
+     "ht-engawa-chairs",
+     2
+    ],
+    [
+     "shoji-window",
+     2
+    ],
+    [
+     "tokonoma",
+     2
+    ],
+    [
+     "ht-guest-futon",
+     2
+    ],
+    [
+     "andon",
+     1
+    ],
+    [
+     "zabuton",
+     3
+    ],
+    [
+     "ht-tea-set-table",
+     1
+    ],
+    [
+     "zaisu-n",
+     1
+    ],
+    [
+     "futon-folded",
+     1
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "rotenburo",
+   [
+    [
+     "pb-wash-station",
+     2
+    ],
+    [
+     "ht-stone-lantern",
+     2
+    ],
+    [
+     "ht-bamboo-fence",
+     4
+    ],
+    [
+     "ht-rotenburo",
+     2
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "corridor",
+   [
+    [
+     "fusuma-open",
+     2
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "datsuijo",
+   [
+    [
+     "of-glass-door",
+     2
+    ],
+    [
+     "washbasin",
+     2
+    ],
+    [
+     "pb-basket-shelf",
+     2
+    ],
+    [
+     "ht-noren-onsen-m",
+     1
+    ],
+    [
+     "ht-noren-onsen-f",
+     1
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "genkan",
+   [
+    [
+     "slippers",
+     2
+    ],
+    [
+     "ht-genkan-step",
+     2
+    ],
+    [
+     "ht-slipper-rack",
+     1
+    ],
+    [
+     "umbrella-stand",
+     1
+    ],
+    [
+     "genkan-door",
+     2
+    ]
+   ]
+  ],
+  [
+   "ryokan",
+   "jp_ryokan",
+   "chouba",
+   [
+    [
+     "tansu",
+     1
+    ],
+    [
+     "sc-key-box",
+     1
+    ],
+    [
+     "ht-ryokan-front",
+     3
+    ],
+    [
+     "ikebana",
+     1
+    ],
+    [
+     "sh-plant-pot",
+     1
+    ],
+    [
+     "pb-milk-fridge",
+     1
+    ],
+    [
+     "pb-massage-chair",
+     1
+    ],
+    [
+     "pb-water-dispenser",
+     1
+    ]
+   ]
+  ],
+  [
+   "karaoke",
+   "jp_karaoke",
+   "karaokefront",
+   [
+    [
+     "kr-rental-shelf",
+     1
+    ],
+    [
+     "of-cabinet",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "kr-front",
+     2
+    ],
+    [
+     "kr-front-register",
+     1
+    ],
+    [
+     "of-lobby-sofa-n",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "karaoke",
+   "jp_karaoke",
+   "karaokeparty",
+   [
+    [
+     "kr-speaker-hang",
+     2
+    ],
+    [
+     "kr-screen",
+     1
+    ],
+    [
+     "kr-mirror-ball",
+     1
+    ],
+    [
+     "kr-mic-stand",
+     1
+    ],
+    [
+     "kr-sofa-e",
+     1
+    ],
+    [
+     "kr-sofa-w",
+     1
+    ],
+    [
+     "kr-sofa-sw",
+     1
+    ],
+    [
+     "kr-sofa-n",
+     2
+    ],
+    [
+     "kr-sofa-se",
+     1
+    ],
+    [
+     "kr-room-door",
+     1
+    ],
+    [
+     "kr-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "karaoke",
+   "jp_karaoke",
+   "karaokeroom",
+   [
+    [
+     "kr-screen",
+     3
+    ],
+    [
+     "kr-speaker",
+     3
+    ],
+    [
+     "kr-sofa-e",
+     3
+    ],
+    [
+     "kr-sofa-sw",
+     1
+    ],
+    [
+     "kr-sofa-n",
+     4
+    ],
+    [
+     "kr-room-door",
+     3
+    ],
+    [
+     "kr-sofa-w",
+     1
+    ],
+    [
+     "kr-mic-stand",
+     1
+    ],
+    [
+     "kr-table",
+     3
+    ]
+   ]
+  ],
+  [
+   "karaoke",
+   "jp_karaoke",
+   "toilet",
+   [
+    [
+     "door-open-toilet",
+     1
+    ],
+    [
+     "toilet",
+     1
+    ],
+    [
+     "toilet-handwash",
+     1
+    ]
+   ]
+  ],
+  [
+   "karaoke",
+   "jp_karaoke",
+   "karaokecorridor",
+   [
+    [
+     "kr-drink-bar",
+     1
+    ],
+    [
+     "kr-poster",
+     2
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangaopenseat",
+   [
+    [
+     "kr-pc-desk",
+     2
+    ],
+    [
+     "kr-reclining-seat",
+     2
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangareception",
+   [
+    [
+     "of-cabinet",
+     1
+    ],
+    [
+     "cv-back-shelf",
+     1
+    ],
+    [
+     "wall-clock",
+     1
+    ],
+    [
+     "kr-front",
+     2
+    ],
+    [
+     "kr-front-register",
+     1
+    ],
+    [
+     "kr-manga-island",
+     1
+    ],
+    [
+     "cv-autodoor",
+     1
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangashower",
+   [
+    [
+     "kr-shower-door",
+     1
+    ],
+    [
+     "washbasin",
+     1
+    ],
+    [
+     "shower-faucet",
+     1
+    ],
+    [
+     "towel-rack",
+     1
+    ],
+    [
+     "bath-mat",
+     1
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangadrink",
+   [
+    [
+     "kr-drink-bar",
+     1
+    ],
+    [
+     "pb-steel-locker",
+     1
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangashelves",
+   [
+    [
+     "kr-manga-shelf",
+     3
+    ],
+    [
+     "kr-manga-island",
+     2
+    ],
+    [
+     "kr-ice-cream",
+     1
+    ]
+   ]
+  ],
+  [
+   "manga-cafe",
+   "jp_manga_cafe",
+   "mangabooth",
+   [
+    [
+     "kr-booth",
+     4
+    ],
+    [
+     "kr-booth-n",
+     3
+    ]
+   ]
+  ],
+  [
+   "mall-1f",
+   "jp_mall",
+   "mall-clothes",
+   [
+    [
+     "ml-shelf-goods",
+     2
+    ],
+    [
+     "ml-fitting-room",
+     1
+    ],
+    [
+     "ml-torso-stand",
+     1
+    ],
+    [
+     "sh-register",
+     1
+    ],
+    [
+     "ml-clothes-rack",
+     1
+    ]
+   ]
+  ],
+  [
+   "mall-1f",
+   "jp_mall",
+   "mall-goods",
+   [
+    [
+     "ml-shelf-goods",
+     2
+    ],
+    [
+     "cv-gondola-v",
+     1
+    ],
+    [
+     "sh-register",
+     1
+    ],
+    [
+     "ml-display-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "mall-1f",
+   "jp_mall",
+   "mall-electronics",
+   [
+    [
+     "ml-tv-shelf",
+     2
+    ],
+    [
+     "sh-wall-shelf",
+     1
+    ],
+    [
+     "sh-register",
+     1
+    ],
+    [
+     "ml-gadget-table",
+     1
+    ]
+   ]
+  ],
+  [
+   "mall-1f",
+   "jp_mall",
+   "mall-escalator",
+   [
+    [
+     "ml-escalator-up",
+     1
+    ],
+    [
+     "ml-info-board",
+     1
+    ],
+    [
+     "houseplant",
+     1
+    ]
+   ]
+  ],
+  [
+   "mall-1f",
+   "jp_mall",
+   "mall-concourse",
+   [
+    [
+     "ml-shopfront-clothes",
+     1
+    ],
+    [
+     "cv-trash",
+     1
+    ],
+    [
+     "ml-shopfront-goods",
+     1
+    ],
+    [
+     "houseplant",
+     3
+    ],
+    [
+     "ml-shopfront-tech",
+     1
+    ],
+    [
+     "ml-bench",
+     2
+    ],
+    [
+     "ml-info-board",
+     1
+    ],
+    [
+     "cv-autodoor",
+     2
+    ],
+    [
+     "ml-fountain",
+     1
+    ]
+   ]
+  ],
+  [
+   "mall-2f",
+   "jp_mall",
+   "foodcourt",
+   [
+    [
+     "ml-food-stall",
+     1
+    ],
+    [
+     "ml-food-stall-b",
+     1
+    ],
+    [
+     "ml-food-stall-c",
+     1
+    ],
+    [
+     "ml-food-stall-d",
+     1
+    ],
+    [
+     "ml-tray-return",
+     1
+    ],
+    [
+     "houseplant",
+     2
+    ],
+    [
+     "cv-trash",
+     1
+    ],
+    [
+     "ml-poster",
+     1
+    ],
+    [
+     "ml-cinema-entrance",
+     1
+    ],
+    [
+     "ml-poster-b",
+     1
+    ],
+    [
+     "ml-bench",
+     1
+    ],
+    [
+     "ml-escalator-down",
+     1
+    ],
+    [
+     "ml-info-board",
+     1
+    ],
+    [
+     "fd-chair-s",
+     30
+    ],
+    [
+     "fd-chair-n",
+     9
+    ],
+    [
+     "ml-food-table",
+     8
+    ]
+   ]
+  ],
+  [
+   "cinema",
+   "jp_mall",
+   "cinema-lobby",
+   [
+    [
+     "ml-mall-passage",
+     1
+    ],
+    [
+     "ml-poster-c",
+     1
+    ],
+    [
+     "ml-poster",
+     1
+    ],
+    [
+     "ml-concession",
+     1
+    ],
+    [
+     "ml-poster-b",
+     1
+    ],
+    [
+     "houseplant",
+     2
+    ],
+    [
+     "ml-ticket-counter",
+     3
+    ],
+    [
+     "ml-concession-counter",
+     2
+    ],
+    [
+     "ml-bench",
+     1
+    ],
+    [
+     "ml-ticket-gate",
+     1
+    ]
+   ]
+  ],
+  [
+   "cinema",
+   "jp_mall",
+   "cinema-theater",
+   [
+    [
+     "ml-screen",
+     1
+    ],
+    [
+     "door-side-western",
+     1
+    ],
+    [
+     "ml-seat-row",
+     48
+    ],
+    [
+     "ml-aisle-light",
+     8
+    ],
+    [
+     "ml-step",
+     16
     ]
    ]
   ]

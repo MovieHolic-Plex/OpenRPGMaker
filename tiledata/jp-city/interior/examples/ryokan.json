@@ -1,0 +1,424 @@
+{
+ "name": "일본 료칸(현관·접수·다다미 객실·남탕/여탕 노천탕)",
+ "plan": [
+  "#######################",
+  "#....#....#.....#.....#",
+  "#....#....#.....#.....#",
+  "#....#....#.....#.....#",
+  "#....#....#.....#.....#",
+  "#....#....#.....#.....#",
+  "#....#....#.....#.....#",
+  "####.#.########.#.#####",
+  "#.........#.....#.....#",
+  "#.........#.....#.....#",
+  "#.........#.....#.....#",
+  "#.........#.....#.....#",
+  "#..##########.#####.###",
+  "#.....................#",
+  "#.....................#",
+  "#.....................#",
+  "#.....................#",
+  "#............##########",
+  "#............##########",
+  "#..####################"
+ ],
+ "exitWidth": 2,
+ "floor": "ht-ryokan-wood",
+ "wall": "ht-ryokan-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 0,
+   "y0": 0,
+   "x1": 10,
+   "y1": 6,
+   "floor": "tatami",
+   "wall": "juraku"
+  },
+  {
+   "x0": 11,
+   "y0": 0,
+   "x1": 22,
+   "y1": 6,
+   "floor": "ht-onsen-stone",
+   "wall": "ht-onsen-wall"
+  },
+  {
+   "x0": 11,
+   "y0": 7,
+   "x1": 22,
+   "y1": 11,
+   "floor": "ht-ryokan-wood",
+   "wall": "ht-onsen-wall"
+  },
+  {
+   "x0": 1,
+   "y0": 18,
+   "x1": 2,
+   "y1": 19,
+   "floor": "tataki"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ht-engawa-chairs",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "shoji-window",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "tokonoma",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "ht-guest-futon",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "ht-guest-futon",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "andon",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "fusuma-open",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "id": "shoji-window",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "ht-engawa-chairs",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "tokonoma",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "zabuton",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "ht-tea-set-table",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "zabuton",
+   "x": 9,
+   "y": 5
+  },
+  {
+   "id": "zabuton",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "zaisu-n",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "id": "futon-folded",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "fusuma-open",
+   "x": 6,
+   "y": 7
+  },
+  {
+   "id": "pb-wash-station",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "ht-stone-lantern",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "ht-bamboo-fence",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "ht-bamboo-fence",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "of-glass-door",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "id": "pb-wash-station",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "ht-bamboo-fence",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "ht-bamboo-fence",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "ht-stone-lantern",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "of-glass-door",
+   "x": 17,
+   "y": 7
+  },
+  {
+   "id": "washbasin",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "pb-basket-shelf",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "ht-noren-onsen-m",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "pb-basket-shelf",
+   "x": 19,
+   "y": 10
+  },
+  {
+   "id": "washbasin",
+   "x": 21,
+   "y": 10
+  },
+  {
+   "id": "ht-noren-onsen-f",
+   "x": 19,
+   "y": 12
+  },
+  {
+   "id": "slippers",
+   "x": 1,
+   "y": 16
+  },
+  {
+   "id": "slippers",
+   "x": 2,
+   "y": 16
+  },
+  {
+   "id": "ht-genkan-step",
+   "x": 1,
+   "y": 17
+  },
+  {
+   "id": "ht-genkan-step",
+   "x": 2,
+   "y": 17
+  },
+  {
+   "id": "ht-slipper-rack",
+   "x": 3,
+   "y": 15
+  },
+  {
+   "id": "umbrella-stand",
+   "x": 3,
+   "y": 18
+  },
+  {
+   "id": "genkan-door",
+   "x": 1,
+   "y": 19
+  },
+  {
+   "id": "genkan-door",
+   "x": 2,
+   "y": 19
+  },
+  {
+   "id": "tansu",
+   "x": 4,
+   "y": 15
+  },
+  {
+   "id": "sc-key-box",
+   "x": 6,
+   "y": 13
+  },
+  {
+   "id": "ht-ryokan-front",
+   "x": 5,
+   "y": 16
+  },
+  {
+   "id": "ht-ryokan-front",
+   "x": 6,
+   "y": 16
+  },
+  {
+   "id": "ht-ryokan-front",
+   "x": 7,
+   "y": 16
+  },
+  {
+   "id": "ikebana",
+   "x": 9,
+   "y": 15
+  },
+  {
+   "id": "sh-plant-pot",
+   "x": 10,
+   "y": 18
+  },
+  {
+   "id": "pb-milk-fridge",
+   "x": 10,
+   "y": 15
+  },
+  {
+   "id": "pb-massage-chair",
+   "x": 11,
+   "y": 15
+  },
+  {
+   "id": "pb-water-dispenser",
+   "x": 12,
+   "y": 15
+  }
+ ],
+ "tables": [
+  {
+   "style": "ht-rotenburo",
+   "x": 11,
+   "y": 3,
+   "w": 3,
+   "h": 2
+  },
+  {
+   "style": "ht-rotenburo",
+   "x": 19,
+   "y": 3,
+   "w": 3,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "ht-tea-cup",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "ht-bell",
+   "x": 5,
+   "y": 16
+  },
+  {
+   "id": "ht-card-key",
+   "x": 7,
+   "y": 16
+  }
+ ],
+ "rooms": [
+  {
+   "room": "guestroom",
+   "x0": 0,
+   "y0": 0,
+   "x1": 5,
+   "y1": 6
+  },
+  {
+   "room": "guestroom",
+   "x0": 6,
+   "y0": 0,
+   "x1": 10,
+   "y1": 6
+  },
+  {
+   "room": "rotenburo",
+   "x0": 11,
+   "y0": 0,
+   "x1": 22,
+   "y1": 6
+  },
+  {
+   "room": "corridor",
+   "x0": 0,
+   "y0": 7,
+   "x1": 10,
+   "y1": 12
+  },
+  {
+   "room": "datsuijo",
+   "x0": 11,
+   "y0": 7,
+   "x1": 22,
+   "y1": 12
+  },
+  {
+   "room": "genkan",
+   "x0": 0,
+   "y0": 13,
+   "x1": 3,
+   "y1": 19
+  },
+  {
+   "room": "chouba",
+   "x0": 4,
+   "y0": 13,
+   "x1": 22,
+   "y1": 19
+  }
+ ],
+ "start": [
+  1,
+  18
+ ],
+ "narrow": [
+  {
+   "x0": 5,
+   "y0": 15,
+   "x1": 8,
+   "y1": 16,
+   "why": "접수대 안쪽 직원 자리(접수대 줄 끝 틈 x8)"
+  },
+  {
+   "x0": 6,
+   "y0": 4,
+   "x1": 9,
+   "y1": 6,
+   "why": "후스마 너머 4×3 다다미 객실 안 — 좌탁 둘레 1칸(방석 자리)"
+  }
+ ],
+ "links": []
+}

@@ -1,0 +1,50 @@
+{
+ "map": {
+  "id": "jp-city-cinema",
+  "size": [
+   24,
+   14
+  ]
+ },
+ "start": [
+  1,
+  4
+ ],
+ "summary": "손 도트 실내 '영화관 — 매표·매점 로비·검표·상영관(스크린·좌석 6줄)' 24×14 (jp-city-cinema, jp_city) — 출입구에서 닿는 칸 122, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-cinema",
+  "tilesetId": "jp_city",
+  "width": 24,
+  "height": 14,
+  "reachable": 122,
+  "floorCells": 183,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 1,
+    "y": 4
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 2,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 1,
+   "y": 3,
+   "to": "jp-city-mall-2f",
+   "reached": true
+  },
+  {
+   "x": 2,
+   "y": 3,
+   "to": "jp-city-mall-2f",
+   "reached": true
+  }
+ ],
+ "reach": 122,
+ "ok": true
+}

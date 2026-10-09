@@ -1,0 +1,155 @@
+[
+ {
+  "file": "business-hotel-1f",
+  "maps": [
+   "business-hotel-1f",
+   "business-hotel-floor"
+  ],
+  "placeId": "jp-city-business-hotel-1f-13x9",
+  "name": "일본 비즈니스 호텔 실내(1층 로비 + 객실 층)",
+  "kind": "business-hotel",
+  "kindKo": "비즈니스 호텔",
+  "alias": [
+   "ビジネスホテル",
+   "ホテル",
+   "宿",
+   "비즈니스 호텔",
+   "호텔",
+   "여관",
+   "숙소",
+   "business hotel",
+   "hotel",
+   "inn"
+  ],
+  "building": "jp_business_hotel",
+  "roomKinds": {
+   "lobby": [
+    "호텔 로비",
+    [
+     "ロビー",
+     "로비"
+    ]
+   ],
+   "front": [
+    "프런트",
+    [
+     "フロント",
+     "受付",
+     "접수",
+     "체크인"
+    ]
+   ],
+   "elevatorhall": [
+    "엘리베이터 홀",
+    [
+     "エレベーターホール",
+     "승강기 앞"
+    ]
+   ],
+   "corridor": [
+    "객실 복도",
+    [
+     "廊下",
+     "복도"
+    ]
+   ],
+   "single": [
+    "싱글 객실",
+    [
+     "シングルルーム",
+     "객실",
+     "싱글룸",
+     "방"
+    ]
+   ],
+   "double": [
+    "더블 객실",
+    [
+     "ダブルルーム",
+     "객실",
+     "더블룸"
+    ]
+   ]
+  },
+  "rules": [
+   "1층: 남쪽 유리 자동문(2칸, cv-autodoor) → 대리석 로비. 동쪽 프런트(ht-front 3칸 가로 — 직원은 북쪽 칸막이 안쪽, 손님은 카운터 남쪽 두 줄), 카운터 줄 동쪽 끝 한 칸이 직원 틈. 카운터 위 호출 종(ht-bell)·카드 키(ht-card-key).",
+   "1층 북쪽 벽: 엘리베이터 두 대(ht-elevator, 발밑은 막히고 바로 앞 칸이 타는 자리) 사이에 호출 버튼(of-elevator-button), 옆에 음료 자판기(of-vending). 엘리베이터 앞은 두 줄 비운다.",
+   "1층 서쪽 로비: 낮은 탁자(ht-lobby-table, 1×2) 양옆에 서로 마주 보는 가죽 소파(ht-lobby-sofa-e · ht-lobby-sofa-w), 입구 옆 큰 화분.",
+   "객실 층(위층, 거리 문과 잇지 않는다): 서쪽 엘리베이터 홀(엘리베이터 두 대·버튼·제빙기 ht-ice-machine)이 2칸 트인 곳으로 남쪽 동서 복도(2줄, 팥색 카펫)와 이어지고, 복도 북쪽에 객실 셋 — 객실 문은 가로 칸막이 1칸 틈의 ht-room-door.",
+   "객실(4×3, 객실 카펫): 북쪽 벽에 싱글 침대(ht-single-bed 1×2)·좁은 책상과 벽걸이 TV(ht-desk-tv 2×1, 남쪽에 북향 의자)·유닛 배스 문(ht-unit-bath-door, 벽면 윗줄 걸이 — 들어가지 않는 문, 앞 칸은 비운다), 문 곁 짐 받침(ht-luggage-rack). 이웃 객실은 좌우를 뒤집고, 끝 방은 더블 침대·협탁·커튼 창.",
+   "층 이동: 1층 엘리베이터 앞 칸(발밑 남쪽 한 줄) ↔ 객실 층 같은 엘리베이터 앞 칸, 도착은 그 한 칸 남쪽. 평면·가구는 tiledata/jp-city/interior/examples/business-hotel-1f.json · business-hotel-floor.json. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-business-hotel-1f-13x9\"})."
+  ]
+ },
+ {
+  "file": "ryokan",
+  "placeId": "jp-city-ryokan-23x20",
+  "name": "일본 료칸 실내(현관·접수·다다미 객실·남탕/여탕 노천탕)",
+  "kind": "ryokan",
+  "kindKo": "료칸",
+  "alias": [
+   "旅館",
+   "温泉旅館",
+   "宿",
+   "露天風呂",
+   "료칸",
+   "온천 여관",
+   "여관",
+   "온천",
+   "노천탕",
+   "ryokan",
+   "hot spring inn",
+   "inn"
+  ],
+  "building": "jp_ryokan",
+  "roomKinds": {
+   "genkan": [
+    "료칸 현관",
+    [
+     "玄関",
+     "현관"
+    ]
+   ],
+   "chouba": [
+    "접수·로비",
+    [
+     "帳場",
+     "フロント",
+     "ロビー",
+     "접수",
+     "프런트"
+    ]
+   ],
+   "guestroom": [
+    "다다미 객실",
+    [
+     "客室",
+     "和室",
+     "객실",
+     "방"
+    ]
+   ],
+   "datsuijo": [
+    "탈의실",
+    [
+     "脱衣所",
+     "탈의장"
+    ]
+   ],
+   "rotenburo": [
+    "노천탕",
+    [
+     "露天風呂",
+     "온천",
+     "목욕탕"
+    ]
+   ]
+  },
+  "rules": [
+   "현관(남서쪽 모서리): 2칸 미닫이 출입구(genkan-door) → 타타키 한 줄(동쪽 끝 우산꽂이로 막는다) → 신발을 벗고 올라서는 큰 단(ht-genkan-step 한 줄) → 마루 첫 줄에 슬리퍼, 곁 마루에 슬리퍼 선반(ht-slipper-rack).",
+   "접수: 현관 동쪽, 나무 접수대(ht-ryokan-front 3칸 가로) — 직원은 북쪽 벽(열쇠함·장롱) 쪽, 손님은 접수대 남쪽 두 줄, 줄 동쪽 끝 한 칸이 직원 틈. 접수대 위 호출 종·열쇠.",
+   "현관에서 곧장 북쪽 2칸 트인 곳 → 객실 복도(2줄). 복도 북쪽에 다다미 객실 둘(후스마 fusuma-open, 가로 칸막이 1칸 틈). 객실: 북쪽 벽에 도코노마와 쇼지 창, 창 아래 広縁 의자(ht-engawa-chairs). 밤 방은 손님 이부자리(ht-guest-futon) 둘과 머리맡 등롱(좌탁은 치웠다), 낮 방은 좌탁(ht-tea-set-table — 차 세트가 그려져 있고 오른쪽 칸에 찻잔 ht-tea-cup·유카타 ht-yukata) 둘레에 방석·좌의자·갠 이불.",
+   "목욕: 로비 동쪽 복도(2줄) 북쪽 벽에 남탕(감색 ht-noren-onsen-m)·여탕(다홍 ht-noren-onsen-f) 노렌 → 탈의실(바구니 선반·세면대·체중계) → 유리문(of-glass-door) → 노천탕(돌 바닥, 북쪽 판벽에 붙인 바위 테 노천탕 ht-rotenburo 3×2와 씻는 자리 pb-wash-station, 남쪽 가장자리(건물 쪽 가림)에 허리 높이 대나무 울타리 ht-bamboo-fence와 그 끝 석등 ht-stone-lantern — 울타리 앞(북쪽)은 걷는 칸으로 남긴다). 남탕·여탕은 벽으로 나뉜 거울 배치. 노렌 앞 복도에 안마 의자·우유 냉장고·냉수기.",
+   "평면·가구는 tiledata/jp-city/interior/examples/ryokan.json. 거리 건물 문과 잇기: link_jp_city_interior({door, place:\"jp-city-ryokan-23x20\"})."
+  ]
+ }
+]

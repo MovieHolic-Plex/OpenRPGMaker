@@ -2747,7 +2747,7 @@ if _P3:
 {md_table(['장소 id', '이름', '종류', '맵(예제 문서)', '짜임'], rows)}
 
 ## 없는 것
-교사·학생·역무원·승객 NPC(Actor1 캐릭터를 이벤트로 놓는다), 수업·개찰 이벤트, 전철이 움직이는 연출(차내는 정지 맵). 칠판·게시판·운임표·안내판에 글자는 없다(색 덩이·선). 병원 병동·대형 쇼핑몰·지하 던전은 아직 없다.
+교사·학생·역무원·승객 NPC(Actor1 캐릭터를 이벤트로 놓는다), 수업·개찰 이벤트, 전철이 움직이는 연출(차내는 정지 맵). 칠판·게시판·운임표·안내판에 글자는 없다(색 덩이·선). 쇼핑몰·영화관·호텔·료칸·오락실은 용도 「오락·숙박·상업 실내」, 버려진 병원·학교·지하는 용도 「현대 던전」.
 '''
 
     add_doc(C_INT3, 'interior-p3-index', '일본 도시 · 일본 학교·역·사무실 실내 · 장소 목록·가져오기·거리 문 잇기·층 이동', doc_in_p3_index())
@@ -2794,11 +2794,42 @@ if _P4:
         add_doc(C_INT4, f"interior-ex-{_m}", f"일본 도시 · 현대 던전 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
 
 
+# 5묶음 — 오락·숙박·상업 실내(게임 센터·파친코·노래방·만화 카페·패밀리 레스토랑·규동집·비즈니스 호텔·료칸·쇼핑몰·영화관). 표: examples/places5*.json
+_P5 = [p for _f5 in sorted(os.listdir(_EXD)) if _f5.startswith('places5') and _f5.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f5), encoding='utf-8'))]
+_P5_FILES = [m for p in _P5 for m in (p.get('maps') or [p['file']])]
+for _p in _P5:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P5:
+    C_INT5 = new_cat('interior-leisure', f'일본 도시 · 오락·숙박·상업 실내 ({len(_P5)}곳, 맵 {len(_P5_FILES)}장)',
+                     '게임 센터·파친코·노래방·만화 카페·패밀리 레스토랑·규동집·비즈니스 호텔(로비·객실층)·료칸(노천탕)·쇼핑몰(1·2층)·영화관: '
+                     '장소 목록(장소 id·가져오기·거리 문 잇기·층 이동), 맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p5_index():
+        rows = [[f"`{p['placeId']}`", p['name'], p['kindKo'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P5]
+        rk = sorted({(k, v[0]) for p in _P5 for k, v in (p.get('roomKinds') or {}).items()})
+        return f'''# 일본 도시 — 오락·숙박·상업 실내 장소 {len(_P5)}곳
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 맵 한 장 또는 여러 장(층·영화관 — 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 첫 맵에만 잇는다.
+호텔은 쉬는 곳(RPG 여관)이다 — 프런트 칸에 숙박 이벤트를 단다. 직접 지으려면 맵마다 `build_hand_interior_room({{tileset:"jp_city", …}})`(`jp-interior-rules` 「읽는 순서 · 실행 순서」). 방 종류: {', '.join(f'`{k}` {ko}' for k, ko in rk)}.
+
+{md_table(['장소 id', '이름', '종류', '맵(예제 문서)', '짜임'], rows)}
+
+## 없는 것
+손님·점원 NPC(Actor1 캐릭터를 이벤트로 놓는다), 게임기·노래방 화면·영화 스크린의 내용(색 덩이·빛 번짐뿐, 글자·캐릭터 없음), 숙박·식사 이벤트.
+'''
+
+    add_doc(C_INT5, 'interior-leisure-index', '일본 도시 · 오락·숙박·상업 실내 · 장소 목록·가져오기·거리 문 잇기·층 이동', doc_in_p5_index())
+    for _m in _P5_FILES:
+        add_doc(C_INT5, f"interior-ex-{_m}", f"일본 도시 · 오락·숙박·상업 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES + _P5_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else C_INT2)))
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else (C_INT5 if f in _P5_FILES else C_INT2))))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)

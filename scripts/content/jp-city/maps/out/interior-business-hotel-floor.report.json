@@ -1,0 +1,62 @@
+{
+ "map": {
+  "id": "jp-city-business-hotel-floor",
+  "size": [
+   23,
+   12
+  ]
+ },
+ "start": [
+  3,
+  9
+ ],
+ "summary": "손 도트 실내 '일본 비즈니스 호텔 객실 층(엘리베이터 홀·복도·싱글·더블)' 23×12 (jp-city-business-hotel-floor, jp_city) — 출입구에서 닿는 칸 88, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-business-hotel-floor",
+  "tilesetId": "jp_city",
+  "width": 23,
+  "height": 12,
+  "reachable": 88,
+  "floorCells": 111,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 3,
+    "y": 9
+   }
+  ],
+  "exitWidth": 1,
+  "exits": [],
+  "links": 4,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "to": "jp-city-business-hotel-1f",
+   "reached": true
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "to": "jp-city-business-hotel-1f",
+   "reached": true
+  },
+  {
+   "x": 4,
+   "y": 4,
+   "to": "jp-city-business-hotel-1f",
+   "reached": true
+  },
+  {
+   "x": 5,
+   "y": 4,
+   "to": "jp-city-business-hotel-1f",
+   "reached": true
+  }
+ ],
+ "reach": 88,
+ "ok": true
+}

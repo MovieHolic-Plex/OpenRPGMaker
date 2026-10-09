@@ -1,6 +1,6 @@
 # 일본 도시 — 노면전차 거리·지하철역 키트 사전 1/1 (53종, 칸 번호 전체)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **13224칸**, 16px 칸, 시트 1536×2208px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **14465칸**, 16px 칸, 시트 1536×2416px, 한 줄 **96칸** — 번호 n 의 칸은 열 n%96, 행 n÷96(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 항목: `kit` · `name` · `w`×`h` · `anchor`(발) · `parts`(입구 anchor·간판·창) · `tiles`(1층 바닥 칸, 있으면) · `upperTiles`(키트 칸 전체, `-1` = 맵을 건드리지 않는 칸) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸) ·
 `block`(그림 원본 blocks/<block>.py) · `rules`(키트에 적힌 배치 규칙). 쓰는 법은 `jp-transit-rules`, 그림 `jp-img-transit-dict-*`.

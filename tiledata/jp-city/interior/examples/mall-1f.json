@@ -1,0 +1,305 @@
+{
+ "name": "쇼핑몰 1층 — 가게 셋(옷·잡화·전자)·분수 광장·에스컬레이터",
+ "plan": [
+  "########################",
+  "#.....#.....#.....######",
+  "#.....#.....#.....######",
+  "#.....#.....#.....######",
+  "#.....#.....#.....######",
+  "#.....#.....#.....#....#",
+  "#.....#.....#.....#....#",
+  "#..#######..####..#....#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#########....###########"
+ ],
+ "floor": "ml-floor",
+ "wall": "ml-wall",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 0,
+   "x1": 5,
+   "y1": 6,
+   "floor": "ml-shop-floor",
+   "wall": "ml-wall"
+  },
+  {
+   "x0": 7,
+   "y0": 0,
+   "x1": 11,
+   "y1": 6,
+   "floor": "ml-shop-floor",
+   "wall": "ml-wall"
+  },
+  {
+   "x0": 13,
+   "y0": 0,
+   "x1": 17,
+   "y1": 6,
+   "floor": "ml-shop-floor",
+   "wall": "ml-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ml-shelf-goods",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "ml-fitting-room",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "ml-shelf-goods",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "ml-torso-stand",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "sh-register",
+   "x": 3,
+   "y": 6
+  },
+  {
+   "id": "ml-clothes-rack",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "ml-shelf-goods",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "ml-shelf-goods",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "cv-gondola-v",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "sh-register",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "id": "ml-display-table",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "ml-tv-shelf",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "ml-tv-shelf",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "sh-wall-shelf",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "sh-register",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "id": "ml-gadget-table",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "ml-escalator-up",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "id": "ml-info-board",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "houseplant",
+   "x": 22,
+   "y": 7
+  },
+  {
+   "id": "ml-shopfront-clothes",
+   "x": 3,
+   "y": 10
+  },
+  {
+   "id": "cv-trash",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "ml-shopfront-goods",
+   "x": 7,
+   "y": 10
+  },
+  {
+   "id": "houseplant",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "ml-shopfront-tech",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "houseplant",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "houseplant",
+   "x": 1,
+   "y": 14
+  },
+  {
+   "id": "ml-bench",
+   "x": 16,
+   "y": 13
+  },
+  {
+   "id": "ml-bench",
+   "x": 19,
+   "y": 14
+  },
+  {
+   "id": "ml-info-board",
+   "x": 13,
+   "y": 14
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 9,
+   "y": 15
+  },
+  {
+   "id": "cv-autodoor",
+   "x": 11,
+   "y": 15
+  }
+ ],
+ "tables": [
+  {
+   "style": "ml-fountain",
+   "x": 4,
+   "y": 12,
+   "w": 3,
+   "h": 2
+  }
+ ],
+ "goods": [
+  {
+   "id": "ml-shopping-bag",
+   "x": 8,
+   "y": 5
+  }
+ ],
+ "rooms": [
+  {
+   "room": "mall-clothes",
+   "x0": 0,
+   "y0": 0,
+   "x1": 5,
+   "y1": 6
+  },
+  {
+   "room": "mall-goods",
+   "x0": 6,
+   "y0": 0,
+   "x1": 11,
+   "y1": 6
+  },
+  {
+   "room": "mall-electronics",
+   "x0": 12,
+   "y0": 0,
+   "x1": 17,
+   "y1": 6
+  },
+  {
+   "room": "mall-escalator",
+   "x0": 18,
+   "y0": 0,
+   "x1": 23,
+   "y1": 9
+  },
+  {
+   "room": "mall-concourse",
+   "x0": 0,
+   "y0": 7,
+   "x1": 17,
+   "y1": 9
+  },
+  {
+   "room": "mall-concourse",
+   "x0": 0,
+   "y0": 10,
+   "x1": 23,
+   "y1": 15
+  }
+ ],
+ "start": [
+  10,
+  14
+ ],
+ "exitWidth": 4,
+ "open": [
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 22,
+   "y1": 15,
+   "why": "몰 통로·분수 광장 — 손님이 오가는 트인 바닥"
+  },
+  {
+   "x0": 19,
+   "y0": 8,
+   "x1": 22,
+   "y1": 9,
+   "why": "에스컬레이터 앞 — 타고 내리는 사람이 모이는 곳"
+  }
+ ],
+ "links": [
+  {
+   "x": 20,
+   "y": 8,
+   "toMapId": "jp-city-mall-2f",
+   "toX": 19,
+   "toY": 4,
+   "direction": "up"
+  },
+  {
+   "x": 21,
+   "y": 8,
+   "toMapId": "jp-city-mall-2f",
+   "toX": 19,
+   "toY": 4,
+   "direction": "up"
+  }
+ ]
+}

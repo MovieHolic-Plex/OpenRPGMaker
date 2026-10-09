@@ -1,0 +1,517 @@
+{
+ "name": "영화관 — 매표·매점 로비·검표·상영관(스크린·좌석 6줄)",
+ "plan": [
+  "########################",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "#.........#............#",
+  "########..#............#",
+  "########...............#",
+  "########...............#",
+  "########...............#",
+  "########################"
+ ],
+ "floor": "ml-cinema-carpet",
+ "wall": "ml-cinema-wall",
+ "zones": [],
+ "objects": [
+  {
+   "id": "ml-mall-passage",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "ml-poster-c",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "ml-poster",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "id": "ml-concession",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "ml-poster-b",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "id": "houseplant",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "ml-ticket-counter",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "ml-ticket-counter",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "ml-ticket-counter",
+   "x": 5,
+   "y": 5
+  },
+  {
+   "id": "ml-concession-counter",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "ml-concession-counter",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "ml-bench",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "houseplant",
+   "x": 4,
+   "y": 8
+  },
+  {
+   "id": "ml-ticket-gate",
+   "x": 7,
+   "y": 8
+  },
+  {
+   "id": "ml-screen",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "door-side-western",
+   "x": 10,
+   "y": 12
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 17,
+   "y": 5
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 22,
+   "y": 5
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 6
+  },
+  {
+   "id": "ml-step",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "ml-step",
+   "x": 16,
+   "y": 6
+  },
+  {
+   "id": "ml-step",
+   "x": 17,
+   "y": 6
+  },
+  {
+   "id": "ml-step",
+   "x": 22,
+   "y": 6
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 7
+  },
+  {
+   "id": "ml-step",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "ml-step",
+   "x": 16,
+   "y": 7
+  },
+  {
+   "id": "ml-step",
+   "x": 17,
+   "y": 7
+  },
+  {
+   "id": "ml-step",
+   "x": 22,
+   "y": 7
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 8
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 16,
+   "y": 8
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 17,
+   "y": 8
+  },
+  {
+   "id": "ml-aisle-light",
+   "x": 22,
+   "y": 8
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 9
+  },
+  {
+   "id": "ml-step",
+   "x": 11,
+   "y": 9
+  },
+  {
+   "id": "ml-step",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "ml-step",
+   "x": 17,
+   "y": 9
+  },
+  {
+   "id": "ml-step",
+   "x": 22,
+   "y": 9
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 14,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 19,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 20,
+   "y": 10
+  },
+  {
+   "id": "ml-seat-row",
+   "x": 21,
+   "y": 10
+  },
+  {
+   "id": "ml-step",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "ml-step",
+   "x": 16,
+   "y": 10
+  },
+  {
+   "id": "ml-step",
+   "x": 17,
+   "y": 10
+  },
+  {
+   "id": "ml-step",
+   "x": 22,
+   "y": 10
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "ml-popcorn",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "id": "ml-drink-cup",
+   "x": 7,
+   "y": 5
+  }
+ ],
+ "rooms": [
+  {
+   "room": "cinema-lobby",
+   "x0": 0,
+   "y0": 0,
+   "x1": 9,
+   "y1": 13
+  },
+  {
+   "room": "cinema-theater",
+   "x0": 10,
+   "y0": 0,
+   "x1": 23,
+   "y1": 13
+  }
+ ],
+ "start": [
+  1,
+  4
+ ],
+ "inner": true,
+ "narrow": [],
+ "links": [
+  {
+   "x": 1,
+   "y": 3,
+   "toMapId": "jp-city-mall-2f",
+   "toX": 13,
+   "toY": 4,
+   "direction": "down"
+  },
+  {
+   "x": 2,
+   "y": 3,
+   "toMapId": "jp-city-mall-2f",
+   "toX": 14,
+   "toY": 4,
+   "direction": "down"
+  }
+ ]
+}

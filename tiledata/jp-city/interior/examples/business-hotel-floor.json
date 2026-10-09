@@ -1,0 +1,231 @@
+{
+ "name": "일본 비즈니스 호텔 객실 층(엘리베이터 홀·복도·싱글·더블)",
+ "plan": [
+  "#######################",
+  "#......#....#....#....#",
+  "#......#....#....#....#",
+  "#......#....#....#....#",
+  "#......#....#....#....#",
+  "#......#....#....#....#",
+  "###..######.#.#######.#",
+  "#.....................#",
+  "#.....................#",
+  "#.....................#",
+  "#.....................#",
+  "#######################"
+ ],
+ "inner": true,
+ "floor": "ht-corridor-carpet",
+ "wall": "ht-hotel-wall",
+ "ceiling": "default",
+ "zones": [
+  {
+   "x0": 8,
+   "y0": 0,
+   "x1": 22,
+   "y1": 5,
+   "floor": "ht-room-carpet",
+   "wall": "ht-hotel-wall"
+  }
+ ],
+ "objects": [
+  {
+   "id": "ht-elevator",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "of-elevator-button",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "id": "ht-elevator",
+   "x": 4,
+   "y": 3
+  },
+  {
+   "id": "ht-ice-machine",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "ht-single-bed",
+   "x": 8,
+   "y": 3
+  },
+  {
+   "id": "ht-unit-bath-door",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "id": "ht-desk-tv",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "id": "ht-luggage-rack",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "ht-room-door",
+   "x": 11,
+   "y": 6
+  },
+  {
+   "id": "ht-desk-tv",
+   "x": 13,
+   "y": 3
+  },
+  {
+   "id": "desk-chair-n",
+   "x": 14,
+   "y": 4
+  },
+  {
+   "id": "ht-unit-bath-door",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "ht-single-bed",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "ht-luggage-rack",
+   "x": 16,
+   "y": 5
+  },
+  {
+   "id": "ht-room-door",
+   "x": 13,
+   "y": 6
+  },
+  {
+   "id": "bed-double",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "bed-side-table",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "ht-unit-bath-door",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "curtain-window",
+   "x": 18,
+   "y": 1
+  },
+  {
+   "id": "ht-luggage-rack",
+   "x": 20,
+   "y": 4
+  },
+  {
+   "id": "ht-room-door",
+   "x": 21,
+   "y": 6
+  }
+ ],
+ "tables": [],
+ "goods": [
+  {
+   "id": "ht-card-key",
+   "x": 11,
+   "y": 3
+  },
+  {
+   "id": "ht-card-key",
+   "x": 13,
+   "y": 3
+  }
+ ],
+ "rooms": [
+  {
+   "room": "elevatorhall",
+   "x0": 0,
+   "y0": 0,
+   "x1": 6,
+   "y1": 5
+  },
+  {
+   "room": "single",
+   "x0": 7,
+   "y0": 0,
+   "x1": 12,
+   "y1": 5
+  },
+  {
+   "room": "single",
+   "x0": 13,
+   "y0": 0,
+   "x1": 17,
+   "y1": 5
+  },
+  {
+   "room": "double",
+   "x0": 18,
+   "y0": 0,
+   "x1": 22,
+   "y1": 5
+  },
+  {
+   "room": "corridor",
+   "x0": 0,
+   "y0": 6,
+   "x1": 22,
+   "y1": 11
+  }
+ ],
+ "start": [
+  3,
+  9
+ ],
+ "links": [
+  {
+   "x": 1,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-1f",
+   "toX": 1,
+   "toY": 5,
+   "direction": "down"
+  },
+  {
+   "x": 2,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-1f",
+   "toX": 2,
+   "toY": 5,
+   "direction": "down"
+  },
+  {
+   "x": 4,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-1f",
+   "toX": 4,
+   "toY": 5,
+   "direction": "down"
+  },
+  {
+   "x": 5,
+   "y": 4,
+   "toMapId": "jp-city-business-hotel-1f",
+   "toX": 5,
+   "toY": 5,
+   "direction": "down"
+  }
+ ]
+}

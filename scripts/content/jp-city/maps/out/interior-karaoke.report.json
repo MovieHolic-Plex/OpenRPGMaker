@@ -1,0 +1,43 @@
+{
+ "map": {
+  "id": "jp-city-karaoke",
+  "size": [
+   20,
+   17
+  ]
+ },
+ "start": [
+  2,
+  15
+ ],
+ "summary": "손 도트 실내 '일본 노래방(カラオケボックス) 실내' 20×17 (jp-city-karaoke, jp_city) — 출입구에서 닿는 칸 104, 닿지 못한 빈 바닥 0, 경고 0",
+ "tool": {
+  "mapId": "jp-city-karaoke",
+  "tilesetId": "jp_city",
+  "width": 20,
+  "height": 17,
+  "reachable": 104,
+  "floorCells": 142,
+  "unreachedFloor": [],
+  "entrance": [
+   {
+    "x": 2,
+    "y": 15
+   }
+  ],
+  "exitWidth": 2,
+  "exits": [
+   {
+    "x": 2,
+    "y": 16,
+    "width": 2
+   }
+  ],
+  "links": 0,
+  "warnings": []
+ },
+ "warnings": [],
+ "links": [],
+ "reach": 104,
+ "ok": true
+}
