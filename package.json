@@ -103,13 +103,13 @@
     "harness": "vite-node --script scripts/harness.mts --"
   },
   "dependencies": {
-    "@oh-my-pi/pi-agent-core": "^17.4.0",
+    "@oh-my-pi/pi-agent-core": "^18.6.3",
     "god-tibo-imagen": "^0.4.1",
     "jimp": "^1.6.1",
     "node-unrar-js": "2.0.2",
-    "phaser": "^3.90.0",
+    "phaser": "^4.2.1",
     "tar": "7.5.22",
-    "zod": "^4.5.4"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
