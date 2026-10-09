@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.184.2 — 2026-10-09
+
+### 기타
+
+- OpenRPGMaker public baseline after security and artifact cleanup (`0d4f13e`)
+
 ## 0.184.1 — 2026-10-09
 
 ### 기타
