@@ -116,7 +116,7 @@
   "devDependencies": {
     "@oh-my-pi/pi-ai": "^17.4.0",
     "@playwright/test": "^1.61.0",
-    "electron": "^38.8.6",
+    "electron": "^41.10.7",
     "electron-builder": "^26.15.3",
     "fake-indexeddb": "^6.2.5",
     "fix-webm-duration": "^1.0.6",
@@ -126,7 +126,14 @@
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
     "vite-node": "3.2.4",
-    "vitest": "3.2.4",
+    "vitest": "^4.1.11",
     "webm-duration-fix": "^1.0.4"
+  },
+  "overrides": {
+    "http-cache-semantics": "4.3.0",
+    "nanoid": "3.3.20",
+    "postcss": "8.5.29",
+    "source-map-js": "1.2.2",
+    "sprintf-js": "1.1.3"
   }
 }
