@@ -2,7 +2,7 @@ import { copyFile, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:
 import { constants } from "node:fs";
 import { join } from "node:path";
 import { assertSecretScanClean, collectFileRecords, parsePlayerArtifactManifest, scanSecretShapedFiles } from "./playerArtifactContract.mjs";
-import { assertExactRecords, readVerifiedPlayerBuild } from "../../community-site/scripts/lib/playerSyncVerification.mjs";
+import { assertExactRecords, readVerifiedPlayerBuild } from "./runtimeBuildVerification.mjs";
 import { runtimeManifestForFiles, jsonBytes, parseRuntimeManifest, type RuntimeManifest } from "../../src/project/gameRelease";
 import { sha256HexBytes } from "../../src/util/sha256";
 import type { DeploymentFileRecord } from "../../src/project/playerDeploymentTypes";

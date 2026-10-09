@@ -983,7 +983,7 @@
         {
           "id": "export",
           "title": "허용한 것만 내보내기",
-          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 store-server/scripts/publishBuildings.ts."
+          "summary": "사람이 현재 그림을 허용한 후보만 파일 팩으로 내보낸다(CLI 전용). 공용 설치는 install, 스토어 올리기는 슈퍼하네싱 탭의 「스토어에 올리기」 또는 OPRN_STORE_PUBLISHER (private store publisher)."
         },
         {
           "id": "install",

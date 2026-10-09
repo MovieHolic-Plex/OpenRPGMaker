@@ -9,7 +9,6 @@ import { deserialize, serialize } from "@/project/io";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import { parseReleaseManifest, releaseManifestFromZip, verifyGameRelease } from "@/project/gameRelease";
 import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
-import { operatorRuntimeWithCollector } from "../community-site/lib/releaseArchive";
 import { exerciseExport, installExportObservations, rejectBadExport, requiredRuntimePngPattern, verifyEditorTestPlay } from "./lib/exportPlayability.mjs";
 
 function arg(name: string, fallback: string): string {
@@ -149,9 +148,7 @@ try {
   if (publicationMode) {
     const manifest = await parseReleaseManifest(releaseManifestFromZip(zip));
     const trusted = await readTrustedRuntime(resolve(RUNTIME_ARCHIVE_FOLDER), manifest.publication.runtimeTarget);
-    const operator = trusted.collectorVersion === 2 ? await operatorRuntimeWithCollector(trusted,
-      await readFile(resolve(RUNTIME_ARCHIVE_FOLDER, trusted.runtimeTarget, "web/dependency-collector.js"))) : undefined;
-    await verifyGameRelease(zip, trusted, operator?.collectDependencies);
+    await verifyGameRelease(zip, trusted);
     missingImagePattern = requiredRuntimePngPattern(trusted);
     await writeFile(join(outDir, "release.json"), JSON.stringify(manifest, null, 2));
     await writeFile(join(outDir, "game.zip"), zip);

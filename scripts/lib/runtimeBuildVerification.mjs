@@ -10,10 +10,10 @@ import {
   digestFileRecords,
   normalizeRelativePath,
   scanSecretShapedFiles,
-} from "../../../scripts/lib/playerArtifactContract.mjs";
-import { parsePlayerDeploymentManifest } from "../../../scripts/lib/playerDeploymentManifest.mjs";
-import { assertLockMatchesManifest, parsePlayerArtifactLock } from "./playerSyncLock.mjs";
-import { PlayerArtifactSyncError, redactSyncFailure } from "./playerSyncError.mjs";
+} from "./playerArtifactContract.mjs";
+import { parsePlayerDeploymentManifest } from "./playerDeploymentManifest.mjs";
+import { assertLockMatchesManifest, parsePlayerArtifactLock } from "./runtimeBuildLock.mjs";
+import { PlayerArtifactSyncError, redactSyncFailure } from "./runtimeBuildError.mjs";
 
 const DEFAULT_ADAPTERS = Object.freeze({
   readText: (filePath) => readFile(filePath, "utf8"),

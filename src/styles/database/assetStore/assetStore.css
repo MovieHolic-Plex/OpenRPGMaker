@@ -1,4 +1,4 @@
-/* 에셋 스토어 창 — 웹 스토어(store-server/public/app.css)와 같은 어두운 상점. 기준은 store-server/DESIGN.md.
+/* 에셋 스토어 창 — 외부 웹 스토어와 같은 어두운 상점. 디자인 기준은 OpenRPGMaker-store/DESIGN.md.
    편집기 밝은/어두운 테마와 상관없이 창 안은 어둡다(도트 그림이 가장 잘 보이는 바탕). */
 .store-host { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; padding: 52px 16px 16px; background: rgb(6 7 10 / 0.66); }
 .store {

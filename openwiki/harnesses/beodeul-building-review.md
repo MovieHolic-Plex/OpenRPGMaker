@@ -193,13 +193,13 @@ round 8 의 돌 기단+회벽 혼합 두 장(06·07)은 질감 검사가 `WALL_M
 - **화면**: 슈퍼하네싱 탭 「건물 검수」에서 위쪽 타일셋 고르개로 전환한다(`/harness/buildings/<프로필>/`, 버들항은 옛 주소 `/harness/beodeul/` 도 유지). 프로필마다 `queue.py` 인스턴스·검수 DB·토큰이 따로다.
 - **사람이 결정한 그림은 화면에 남는다**: 허용뿐 아니라 **거절**도 같은 그림 해시에 결정이 있으면 영수증 없이 보인다(`visual_gate.exempt`). 서명 파일이 바뀌어도 거절 탭이 비지 않는다.
 - **ZIP 은 화면에서 뺐다**(`/api/export`·`export` 단계는 CLI 용으로 남음). 대신 「스토어에 올리기」: ① 허용 결정 반영(결정 로그 export → install → 참고문서·예제 다시 굽기, `scripts/content/rebuild-building-bundle.sh <프로필>`) ② **스테이징**(mdc-server:18320, 개발 로그인) 올리기 ③ **운영**(store.openrpgmaker.com) 올리기.
-  - 팩 만들기·올리기는 `store-server/scripts/publishBuildings.ts --profile <id> --target plan|staging|production` 한 곳이다(CLI 로도 쓴다). 타일셋 생성기는 스크립트의 `CREATORS` 에 프로필 id 로 등록한다(스토어 팩은 호스트 타일셋 없이 쓰이므로 참고문서를 타일셋이 직접 든다: `createBeodeulReviewedStandalone`).
+  - 팩 만들기·올리기는 `OPRN_STORE_PUBLISHER (private store publisher) --profile <id> --target plan|staging|production` 한 곳이다(CLI 로도 쓴다). 타일셋 생성기는 스크립트의 `CREATORS` 에 프로필 id 로 등록한다(스토어 팩은 호스트 타일셋 없이 쓰이므로 참고문서를 타일셋이 직접 든다: `createBeodeulReviewedStandalone`).
   - **운영은 되돌리기 어렵다.** plan 이 알려 주는 `contentHash` 를 `--confirm` 으로 돌려주고, admin-link 일회용 토큰(15분·한 번)을 환경변수 `STORE_LINK_TOKEN` 으로만 넘겨야 올라간다. 화면은 확인 체크와 토큰 입력칸을 요구하고 토큰을 저장하지 않는다.
-  - 같은 내용이 이미 올라가 있으면 건너뛰고(`DATA/store-uploads.json`), 내용이 바뀌면 같은 상품에 **판본을 더한다**(프로젝트에 넣은 id 유지). 4개 언어 글은 프로필 `store.locales` 와 `store-server/scripts/library_locales.py` `FIXED` 둘에 있어야 한다.
+  - 같은 내용이 이미 올라가 있으면 건너뛰고(`DATA/store-uploads.json`), 내용이 바뀌면 같은 상품에 **판본을 더한다**(프로젝트에 넣은 id 유지). 4개 언어 글은 프로필 `store.locales`와 외부 비공개 게시기에서 함께 관리한다.
 - 참고문서는 분류당 64문서 한도 때문에 건물 설명을 6채씩 한 문서로 묶는다(58채 → 문서 17개). 건물이 100채를 넘으면 한도가 아니라 문서 크기(12만 자)를 본다.
 - 공통 TS 틀은 `src/project/defaults/buildingBundle.ts`(`defineBuildingBundle`), 버들항은 `beodeulReviewed.ts` 가 설정만 넘긴다. 새 타일셋은 같은 틀 + `bundled.ts`/`bundledChipsetGeometry.ts`/`defaultAssets.ts` 배선(AGENTS 의 공용 번들 규칙)을 한다.
 
-**새 타일셋 추가 절차**: ① `profiles.json` 항목 ② 후보 저작(자기 하네스) → `import_candidates.py` ③ 슈퍼하네싱 탭에서 허용/거절 ④ `install.py --profile`(타일셋 고유의 그림자·기초 규칙이 있으면 `install.py` 의 그 부분만 프로필 설정으로 뺀다) ⑤ `rebuild-building-bundle.sh <프로필>` ⑥ `buildingBundle.ts` 로 TS 모듈 + 배선 ⑦ `publishBuildings.ts` `CREATORS` 등록. 기계 게이트(visual_gate)는 버들항 전용이다 — 다른 타일셋은 gate false 로 시작한다.
+**새 타일셋 추가 절차**: ① `profiles.json` 항목 ② 후보 저작(자기 하네스) → `import_candidates.py` ③ 슈퍼하네싱 탭에서 허용/거절 ④ `install.py --profile`(타일셋 고유의 그림자·기초 규칙이 있으면 `install.py` 의 그 부분만 프로필 설정으로 뺀다) ⑤ `rebuild-building-bundle.sh <프로필>` ⑥ `buildingBundle.ts` 로 TS 모듈 + 배선 ⑦ `OPRN_STORE_PUBLISHER`에 외부 게시기 등록. 기계 게이트(visual_gate)는 버들항 전용이다 — 다른 타일셋은 gate false 로 시작한다.
 
 ### 소품·울타리 프로필 `beodeul-props` (2026-10-07)
 

@@ -1,5 +1,5 @@
 /**
- * 에셋 스토어 팩 형식 `oprn-store-pack/1` — 서버(store-server/)·Electron 메인·에디터가 같이 쓴다.
+ * 에셋 스토어 팩 형식 `oprn-store-pack/1` — 외부 스토어 서버·Electron 메인·에디터가 같이 쓴다.
  * 이 파일은 편집기·브라우저 모듈을 import 하지 않는다(서버 번들에 들어간다). 타입만 project 에서 빌린다.
  * 설계: docs/superpowers/specs/2026-10-06-asset-store-design.md, 위키 openwiki/asset-store.md.
  */

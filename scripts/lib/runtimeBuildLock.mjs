@@ -1,4 +1,4 @@
-import { PlayerArtifactSyncError, syncFail } from "./playerSyncError.mjs";
+import { PlayerArtifactSyncError, syncFail } from "./runtimeBuildError.mjs";
 
 export const PLAYER_ARTIFACT_LOCK = Object.freeze({
   sentinel: "rpg-zzu/community-player-lock",
