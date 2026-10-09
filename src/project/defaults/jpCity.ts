@@ -1,4 +1,4 @@
-// 일본 도시 · 상가·주택·역·신사 (손 도트) 번들 칩셋 — modern3 팔레트 손 도트를 16px 칸으로 구운 48열 시트(2026-10).
+// 일본 도시 · 상가·주택·역·신사 (손 도트) 번들 칩셋 — modern3 팔레트 손 도트를 16px 칸으로 구운 96열 시트(2026-10, 10-08 에 48열에서 다시 놓음).
 // 시트 public/assets/jp-city/jp-city-chipset.png, 시트 메타 src/assets/jpCitySheet.json, 정의 src/assets/jpCityTileset.json 은
 // scripts/content/jp-city/bake_jp.py 가 굽는다. 참고문서는 src/assets/jpCityReferences.json(그림은 public/assets/jp-city-references/ 경로만,
 // 바이트 없음; scripts/content/jp-city/bake_refs.py 가 굽는다 — 7용도 52쪽·그림 137장). 위키: openwiki/jp-city.md. `modern_city`(oprn-modern)와 별개 번들이다 — 칸 번호 체계가 다르다.
@@ -111,18 +111,24 @@ function bundleShape(): string {
   });
 }
 
+/** 이 번들이 예전에 쓴 열 수(2026-10-08 48 → 96). 그 열 수의 사본은 칸 번호가 같은 시트다. */
+export const JP_CITY_RELAYOUT_FROM: readonly number[] = [48];
+
 /**
  * 기존 프로젝트의 사본을 번들에 맞춘다. 계열이 비었거나 다르면 `oprn-jp` 로 고친다.
  * - 한 줄 폭이 같고 칸 수가 번들 이하인 사본(같은 시트의 옛 굽기, 덧붙이기 전용): 번들 소유 칸 표를 새 굽기로 바꾼다.
  *   저자가 더한 조립 부품·오토타일 그룹(`jp-` 가 아닌 id)은 남기고, 번들 소유 `jp-` 항목은 최신으로 바꾼다. 맵·저작 참고문서는 건드리지 않는다.
  * - 더 새 번들에서 저장된(칸이 더 많은) 사본은 줄이지 않는다.
- * - 한 줄 폭이 다른 사본은 다른 시트라 칸 번호가 가리키는 그림이 다르다 — 칸 표를 번들 것으로 통째로 바꾼다(저자 항목도 번호가 무의미하므로 버린다).
+ * - 옛 열 수(JP_CITY_RELAYOUT_FROM)의 사본은 같은 시트를 다시 놓은 것이라 tilesPerRow 만 고치고 위와 같이 다룬다.
+ * - 그 밖에 한 줄 폭이 다른 사본은 다른 시트라 칸 번호가 가리키는 그림이 다르다 — 칸 표를 번들 것으로 통째로 바꾼다(저자 항목도 번호가 무의미하므로 버린다).
  */
 export function ensureJpCityTileset(tileset: TilesetDef): boolean {
   if (tileset.id !== JP_CITY_ID || !isJpCityTileset(tileset)) return false;
   let changed = false;
   if (tileset.family !== JP_CITY_FAMILY) { tileset.family = JP_CITY_FAMILY; changed = true; }
   if (!tileset.roomKit) { tileset.roomKit = { builtin: JP_CITY_ID }; changed = true; }
+  // 같은 시트를 열 수만 바꿔 다시 놓은 판(칸 번호 = 시트 위 순서라 번호는 그대로) — 옛 열 수 사본은 같은 시트로 본다(저자 항목 보존).
+  if (tileset.tilesPerRow !== data.tilesPerRow && JP_CITY_RELAYOUT_FROM.includes(tileset.tilesPerRow)) { tileset.tilesPerRow = data.tilesPerRow; changed = true; }
   if (tileset.tilesPerRow === data.tilesPerRow) {
     if (tileset.count > data.count) return changed;
     if (tileset.count === data.count && shapeSignature(tileset) === bundleShape()) return changed;

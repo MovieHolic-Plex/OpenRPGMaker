@@ -5,7 +5,7 @@
   python3 scripts/content/jp-city/bake_refs.py --dump      먼저 엔진 덤프를 새로 돌린다(약 3분: npx tsx tiledata/jp-city/refs/engine_dump.mts)
 
 입력  src/assets/jpCityTileset.json (칸 번호·그룹·오토타일·키트) · src/assets/jpCityBuildingSpec.json (건물 부품 사전·완성 예제 25)
-      public/assets/jp-city/jp-city-chipset.png (48열 16px 시트) · tiledata/jp-city/{pins,kit-index,bake-report}.json
+      public/assets/jp-city/jp-city-chipset.png (96열 16px 시트) · tiledata/jp-city/{pins,kit-index,bake-report}.json
       tiledata/jp-city/refs/engine-results.json  ← engine_dump.mts 가 만든 **진짜 도구·엔진 실측**
         (build_jp_city_building · paint_tiles · fill_region · lay_path · stamp_object · stamp_layer_block 을 실제로 호출한 결과,
          isPassable · passabilityOf · tileLayerPolicy · autotileEngine 판정)
@@ -294,7 +294,8 @@ for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roa
                ('interior_shell', 'interior'), ('interior_entry', 'interior'), ('interior_washitsu', 'interior'), ('interior_ldk', 'interior'), ('interior_wet', 'interior'), ('interior_bed', 'interior'), ('interior_doors', 'interior'),
                ('interior_konbini', 'interior'), ('interior_food', 'interior'), ('interior_shop', 'interior'), ('interior_public', 'interior'), ('interior_home2', 'interior'),
                ('interior_school', 'interior'), ('interior_gym', 'interior'), ('interior_station', 'interior'), ('interior_office', 'interior'), ('interior_post', 'interior'),
-               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior')):
+               ('dungeon_underground', 'interior'), ('dungeon_hospital', 'interior'), ('dungeon_school', 'interior'), ('dungeon_construction', 'interior'), ('dungeon_warehouse', 'interior'),
+               ('interior_amuse', 'interior'), ('interior_karaoke', 'interior'), ('interior_famires', 'interior'), ('interior_hotel', 'interior'), ('interior_mall', 'interior')):
     for _t in PIN_BLOCK.get(_b, ()): REGION[_t] = _name
 assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
 RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
@@ -2577,7 +2578,8 @@ add_doc(C_INT, 'interior-rules', '일본 도시 · 일본 집 실내 · 짓는 �
 _IN_ORDER = [o for b in ('interior_entry', 'interior_washitsu', 'interior_ldk', 'interior_wet', 'interior_bed', 'interior_doors',
                           'interior_konbini', 'interior_food', 'interior_shop', 'interior_public', 'interior_home2',
                           'interior_school', 'interior_gym', 'interior_station', 'interior_office', 'interior_post',
-                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
+                          'dungeon_underground', 'dungeon_hospital', 'dungeon_school', 'dungeon_construction', 'dungeon_warehouse',
+                          'interior_amuse', 'interior_karaoke', 'interior_famires', 'interior_hotel', 'interior_mall') for o in JPI['objects'] if _IN_BLOCK[f'jp-in-{o}'] == b]
 assert len(_IN_ORDER) == len(JPI['objects']), (len(_IN_ORDER), len(JPI['objects']))
 _chunks = []; _cur = []; _size = 0
 for _oid in _IN_ORDER:
@@ -2733,11 +2735,50 @@ if _P3:
         add_doc(C_INT3, f"interior-ex-{_m}", f"일본 도시 · 일본 학교·역·사무실 실내 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
 
 
+# 4묶음 — 현대 던전(지하철 보선 터널·하수도·폐병원·폐교·공사 중 빌딩·지하 주차장·지하상가·항만 창고). 표: examples/places4*.json (dungeon:true)
+_P4 = [p for _f4 in sorted(os.listdir(_EXD)) if _f4.startswith('places4') and _f4.endswith('.json') for p in json.load(open(os.path.join(_EXD, _f4), encoding='utf-8'))]
+_P4_FILES = [m for p in _P4 for m in (p.get('maps') or [p['file']])]
+for _p in _P4:
+    for _m in (_p.get('maps') or [_p['file']]): _IN_EX_KO[_m] = EIN['examples'][_m]['args']['name']
+if _P4:
+    C_INT4 = new_cat('interior-dungeon', f'일본 도시 · 현대 던전 ({len(_P4)}곳, 맵 {len(_P4_FILES)}장)',
+                     '지하철 보선 터널·하수도·폐병원·폐교·공사 중 빌딩·지하 주차장·밤의 지하상가·항만 창고: 장소 목록(장소 id·가져오기·거리 문 잇기·구역 이동·잠긴 문·보물 자리), '
+                     '맵마다 도구 인자 + 4층 정답 배열 + 원본 그림. 짓는 규칙·가구 사전은 용도 「일본 집 실내」와 같다.')
+
+    def doc_in_p4_index():
+        rows = [[f"`{p['placeId']}`", p['name'], ' → '.join(f"`jp-interior-ex-{m}`" for m in (p.get('maps') or [p['file']])), p['rules'][0]] for p in _P4]
+        locks = []
+        for p in _P4:
+            for m in (p.get('maps') or [p['file']]):
+                ex = json.load(open(os.path.join(_EXD, m + '.json'), encoding='utf-8'))
+                for l in ex.get('locks') or []: locks.append([f"`jp-city-{m}`", f"({l['x']},{l['y']})", l['key'], l.get('why', '')])
+        return f'''# 일본 도시 — 현대 던전 장소 {len(_P4)}곳
+
+{HEAD}
+
+**가져오기**: `import_region_reference({{id:"<장소 id>"}})` → 맵 여러 장(구역·층 — 사다리·계단·맨홀·경사로 이동 이벤트로 이미 이어져 있다). **거리 건물 문과 잇기**: `link_jp_city_interior({{door:{{x,y}}, width, place:"<장소 id>"}})` 한 번 — 첫 맵에만 잇는다(안쪽 구역은 맨 아래 줄이 막혀 있다).
+던전은 가게 규칙과 다르다: 통로가 1칸이어도 되고, 막다른 곳(보물·단서 자리 `*-item-*`, use search)·갈림길·한 바퀴 도는 고리가 있다. 넓은 곳(예제 `open`)은 몬스터·보스 자리다.
+**잠긴 문**은 그림만 문이고 통행은 열려 있다 — 아래 표의 칸에 이벤트(열쇠 아이템이 있으면 통과, 없으면 막고 대사)를 단다. 열쇠는 장소 rules 문장이 말하는 막다른 방의 보물 자리에 둔다. 사람(경비·작업자)·몬스터는 Actor1·전투 이벤트로 놓는다(그림에 없다).
+
+{md_table(['장소 id', '이름', '맵(예제 문서)', '짜임'], rows)}
+
+## 잠긴 문 (예제 `locks`)
+{md_table(['맵', '칸', '열쇠', '이유'], locks) if locks else '(없음)'}
+
+## 없는 것
+몬스터·NPC·잠금 이벤트 자체(조수가 단다), 어둠 연출(조명은 그림의 꺼진 등·비상등뿐 — 화면 색조는 이벤트로). 피·시체·사람 그림은 일부러 없다.
+'''
+
+    add_doc(C_INT4, 'interior-dungeon-index', '일본 도시 · 현대 던전 · 장소 목록·잠긴 문·가져오기·거리 문 잇기', doc_in_p4_index())
+    for _m in _P4_FILES:
+        add_doc(C_INT4, f"interior-ex-{_m}", f"일본 도시 · 현대 던전 예제 · {_IN_EX_KO[_m]}", doc_in_ex(_m))
+
+
 def img_in():
-    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES:
+    for f in list(_IN_EX) + [p['file'] for p in _P2] + _P3_FILES + _P4_FILES:
         e = EIN['examples'][f]; W, H = e['W'], e['H']
         k = max(1, min(4, 820 // (W * T), 820 // (H * T)))
-        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else C_INT2))
+        save_img(f'interior-{f}', up(render(e['layers'], W, H), k), f'{_IN_EX_KO[f]} {W}×{H}칸(×{k}, 엔진 4층 합성 — 도구가 실제로 지은 맵). 배열·입력 `jp-interior-ex-{f}`.', C_INT if f in _IN_EX else (C_INT3 if f in _P3_FILES else (C_INT4 if f in _P4_FILES else C_INT2)))
     items = [(oid, _in_obj_img(oid)) for oid in _IN_ORDER]
     for i, pg in enumerate(_in_pack(items)):
         save_img(f'interior-dict-{i + 1}', pg, f'일본 집 실내 가구 도감 {i + 1}쪽(×2, 체크 = 투명, 라벨 = 가구 id, 발자국 위로 솟은 칸 포함). 칸 번호는 `jp-interior-dict-*`.', C_INT)
