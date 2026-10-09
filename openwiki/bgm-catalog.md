@@ -57,10 +57,10 @@ Do **not** hand-edit the two generated files. Re-run the scripts.
 ## Release pack installation (2026-09-07)
 
 After `npm ci`, run `npm run bgm:install`, then `npm run bgm:verify`. The repository
-`MovieHolic-Plex/rpg-zzu` is private: automatic installation invokes `gh release download`
-using the user's existing `gh auth login` and repository permission. No token is passed in
-arguments or exposed to the browser. Without gh, download `rpg-zzu-bgm-v1.tar` from
-<https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1> and run:
+`MovieHolic-Plex/OpenRPGMaker` is public: automatic installation invokes `gh release download`.
+No token is passed in arguments or exposed to the browser. Without gh, download
+`rpg-zzu-bgm-v1.tar` from <https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1>
+and run:
 
 ```sh
 npm run bgm:install -- --archive "/path/rpg-zzu-bgm-v1.tar"

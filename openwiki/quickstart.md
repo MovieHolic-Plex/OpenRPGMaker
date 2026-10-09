@@ -77,7 +77,7 @@ Node.js 24 LTS와 npm을 설치하고, 본인에게 쓰기 권한이 있는 체�
 ## 1b. 전체 BGM은 Release 팩으로 설치
 
 그림·효과음·기본 BGM 3곡은 Git에 있지만, 전체 281곡(약 1.304 GB)은
-비공개 [bgm-v1 Release](https://github.com/MovieHolic-Plex/rpg-zzu/releases/tag/bgm-v1)에서 따로 받는다.
+공개 [bgm-v1 Release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/bgm-v1)에서 따로 받는다.
 `npm ci` 뒤 `gh auth login` + `npm run bgm:install` + `npm run bgm:verify`.
 gh가 없으면 Release의 `rpg-zzu-bgm-v1.tar`를 받아
 `npm run bgm:install -- --archive "/받은/파일/경로"`를 실행한다. 약 5 GB 여유 공간 권장.

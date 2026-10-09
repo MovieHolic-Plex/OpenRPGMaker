@@ -21,7 +21,7 @@ export function validateStillRows(stills, { release = false } = {}) {
 }
 
 export function validateStillRelease(manifest) {
-  if (manifest?.schemaVersion !== 1 || manifest.repo !== 'MovieHolic-Plex/rpg-zzu' || manifest.tag !== 'stills-v1'
+  if (manifest?.schemaVersion !== 1 || manifest.repo !== 'MovieHolic-Plex/OpenRPGMaker' || manifest.tag !== 'stills-v1'
     || manifest.archive?.fileName !== 'rpg-zzu-stills-v1.tar' || !/^[a-f0-9]{64}$/.test(manifest.archive?.sha256)
     || !Number.isSafeInteger(manifest.archive?.bytes) || manifest.archive.bytes <= 0) throw new Error('잘못된 스틸 릴리스 manifest');
   validateStillRows(manifest.stills, { release: true });

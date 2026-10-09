@@ -8,7 +8,7 @@ import { spawn } from 'node:child_process';
 import * as tar from 'tar';
 
 export const RELEASE = Object.freeze({
-  schemaVersion: 1, version: 1, repo: 'MovieHolic-Plex/rpg-zzu', tag: 'bgm-v1',
+  schemaVersion: 1, version: 1, repo: 'MovieHolic-Plex/OpenRPGMaker', tag: 'bgm-v1',
   archiveName: 'rpg-zzu-bgm-v1.tar', manifestName: 'bgm-release-v1.json',
   license: 'CC0-1.0', source: 'https://bgmreview-h4zeq64k.manus.space/',
   cdn: 'https://cheapcdn.sgp1.cdn.digitaloceanspaces.com/rpg-zzu/bgm/v1/',

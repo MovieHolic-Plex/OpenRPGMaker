@@ -9,8 +9,8 @@ const usage = `BGM 설치 (Node.js 24):
   npm run bgm:install -- --archive /경로/rpg-zzu-bgm-v1.tar
   npm run bgm:install -- --root /경로/체크아웃
   npm run bgm:verify -- --root /경로/체크아웃
-비공개 저장소이므로 기본 다운로드에는 gh 설치, gh auth login 및 저장소 접근 권한이 필요합니다.
-수동 설치: GitHub의 MovieHolic-Plex/rpg-zzu → Releases → bgm-v1에서
+기본 다운로드에는 gh 설치가 필요합니다. 공개 릴리스라 저장소 접근 권한은 필요하지 않습니다.
+수동 설치: GitHub의 MovieHolic-Plex/OpenRPGMaker → Releases → bgm-v1에서
 rpg-zzu-bgm-v1.tar를 직접 받은 뒤 --archive로 지정하세요. 수동 설치에는 gh/네트워크가 필요 없습니다.
 설정 파일은 변경하지 않습니다. 로컬 재생은 VITE_BGM_CDN_BASE를 해제한 뒤 실행하세요.`;
 

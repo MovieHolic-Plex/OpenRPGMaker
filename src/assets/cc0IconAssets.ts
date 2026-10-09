@@ -13,7 +13,7 @@ export type Cc0IconAsset = {
 };
 
 const GENERATED_SOURCE_NAME = `${PRODUCT_BRAND} generated item icons`;
-const GENERATED_SOURCE_URL = "https://github.com/MovieHolic-Plex/rpg-zzu";
+const GENERATED_SOURCE_URL = "https://github.com/MovieHolic-Plex/OpenRPGMaker";
 
 function jetrelIcon(id: string, fileName: string, name: string): Cc0IconAsset {
   // Keep historical IDs; the replacement illustrations are generated, not Jetrel art.

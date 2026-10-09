@@ -65,7 +65,7 @@ const archiveHash = await sha256(tarPath);
 
 const releaseManifest = {
   schemaVersion: 1,
-  repo: "MovieHolic-Plex/rpg-zzu",
+  repo: "MovieHolic-Plex/OpenRPGMaker",
   tag: "stills-v1",
   archive: { fileName: "rpg-zzu-stills-v1.tar", bytes: tarBytes, sha256: archiveHash },
   count: stills.length,
