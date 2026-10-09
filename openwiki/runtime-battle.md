@@ -142,6 +142,16 @@ ID·경로·공격 이동 유형·대기 속도는 유지한다. 기본 자세�
 출처·재현은 `tiledata/pixel-enemies/hydra-three/README.md`, PNG 재로드·동작 확인·실제 전투 증거는
 `verify-shots/hydra-redesign/SUMMARY.md`를 본다.
 
+## 은발 여검사 손 도트 (2026-10-03)
+
+공용 전투 피커 **손 도트 전투 · 은발 여검사**는 `charset-battler-silver-swordswoman`이다.
+기존 48px 3×8 전투 시트와 3×7 시전 시트 계약을 그대로 사용한다. `charsetBattlers.ts`의 명시
+선택 항목이며 자동 걷기 칩 대응은 없다. 배우의 `battleCharacterResourceId`에 선택하면
+리졸버·전투 피커·웹 내보내기가 같은 카탈로그로 전투 PNG와 시전 PNG를 처리한다.
+원본 이미지 없이 `scripts/asset-gen/charset-battler/silver-swordswoman.py`에서 직접 찍었다.
+출처와 재현은 `tiledata/charset-battlers/silver-swordswoman/README.md`, 런타임 확인은 `scripts/qa/runtime/silver-swordswoman.mjs`.
+사용자 프로젝트 저장소를 수정하는 작업은 아니다.
+
 ## Starter 그림 제거 (2026-10-03)
 
 사용자 지시로 `public/assets/generated/starter/` 전체를 삭제했다. 이전 체크아웃 221파일 중 최신 main에

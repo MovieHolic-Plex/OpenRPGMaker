@@ -17,7 +17,7 @@ const WALK_CHIP_BATTLERS = Array.from({ length: 32 }, (_, index) => {
 });
 
 /**
- * 걷기 칩 자동 대응이 아닌 **직업 전용** 전투 시트. 걷기 칩은 같지만 전투 도트가 다르다.
+ * 걷기 칩 자동 대응이 아닌 **명시 선택용** 전투 시트(직업 전용·독립 원화).
  * 사무라이(2026-09-28): 걷기 칩 actor3#0 은 기존 마도사가 쓰는 actor3-0 전투 시트와 겹쳐서 새 id 를 쓴다.
  * 자동 대응(charsetBattlerForCharacter)은 이 항목을 고르지 않는다 — 배우가 battleCharacterResourceId 로 명시한다.
  */
@@ -29,6 +29,15 @@ const CLASS_BATTLERS = [
     characterResourceId: "easyrpg-charset-actor3",
     characterIndex: 0,
     label: "걷기 칩 전투 · 사무라이",
+  },
+  {
+    resourceId: "charset-battler-silver-swordswoman",
+    path: "assets/generated/charset-battlers/silver-swordswoman.png",
+    castPath: "assets/generated/charset-battlers/cast/silver-swordswoman.png",
+    // 원본 걷기 칩 없이 직접 저작한 그림. 기존 배우의 자동 대응을 바꾸지 않는다.
+    characterResourceId: undefined,
+    characterIndex: 0,
+    label: "손 도트 전투 · 은발 여검사",
   },
 ];
 
