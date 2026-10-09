@@ -103,12 +103,12 @@ CHEST_BODY = [
     '...~~~~~~~~~~~~.',
     '................',
 ]
-CHEST_SHUT = [
+CHEST_SHUT = [   # 뚜껑 윗면 = 2~4행(밝은 나무 f + 널 이음 e) · 5행 = 뚜껑 앞 모서리(d) · 6행 = 뚜껑 띠와 자물쇠
     '................',
     '................',
     '..fflffffffflf..',
-    '.feekeeeeeekeed.',
-    '.eddjddddddjddc.',
+    '.ffekfffeffkffe.',
+    '.efekfffeffkfed.',
     '.dccicccccciccb.',
     '.cbbhbbrqbbhbba.',
 ] + CHEST_BODY
@@ -162,16 +162,17 @@ TORCH_FLAMES = [
      '......HJJH......'],
 ]
 
-# 세우는 화로: 쇠 그릇(윗면 = 숯불) + 세 발. 불꽃만 장면마다.
+# 세우는 화로: 쇠 그릇(아가리 타원 = 4행 뒷테 · 5~6행 숯 두 줄 · 7행 앞테, 4·7행은 양끝을 1px 씩 안으로 깎음) + 세 발.
+# 불꽃만 장면마다 바뀐다 — 불꽃은 숯에서 솟아 뒷테 가운데(6~9열)만 가리고 뒷테 양끝(4·5·10·11열)은 늘 보인다.
 BRAZIER_BASE = [
     '................',
     '................',
     '................',
     '................',
-    '................',
-    '...kllllllllj...',
-    '..kHJKJHJKJHjh..',
-    '..jkkkkkkkkkjhg.',
+    '....kllllllj....',
+    '..kGHFGJGFGHhg..',
+    '..kHJKJHJKJHhg..',
+    '...kkkkkkkkkhg..',
     '...ijjjjjjjjgg..',
     '....hggggggg....',
     '.......ig.......',
@@ -183,20 +184,20 @@ BRAZIER_BASE = [
 ]
 BRAZIER_FLAMES = [
     ['.......K........',
-     '......KL..K.....',
-     '.....KLK.KLJ....',
-     '....JKLLKLKJ....',
-     '....HJKKLKJH....'],
+     '......KL.K......',
+     '.....JLKKLJ.....',
+     '.....HJKLLKJ....',
+     '......JKKJ......'],
     ['.........K......',
-     '.....K..KL......',
-     '.....JK.LKJ.....',
-     '....JKLKLLJH....',
-     '....HJKLKJJH....'],
+     '......K.KL......',
+     '.....JKLLKJ.....',
+     '....HJKLKLJH....',
+     '......JKLJ......'],
     ['......K.........',
      '......LK.K......',
      '.....KLJKLK.....',
-     '....JLKKLKJ.....',
-     '....HJLKKJJH....'],
+     '....HJLKKLJ.....',
+     '......KJJK......'],
 ]
 
 # ================================================================================================ 줄 공통 — 뼈·거미줄
@@ -239,22 +240,24 @@ BONES_2 = [
     '............~~~.',
 ]
 # 해골·뼈 더미 2×1: 해골 셋(뒤 하나 + 앞 둘)이 뼈 무더기 위에. 뒤에서 앞으로 겹쳐 찍는다.
+# 해골 = 위·왼 밝은 뼈(w) · 오른 1열·아래 1행 뼈 어두운 단(t·s) · 눈구멍 둘 + 코 구멍 1px(z) · 이 줄(v·t 번갈아).
 SKULL = [
-    '.wwww.',
-    'wwwwwv',
-    'wzwzvv',
-    'wwvwvv',
-    '.vwvv.',
-    '.v.v..',
+    '.wwwv.',
+    'wwwwvu',
+    'wzwzvt',
+    'wvzvut',
+    '.vtvtt',
+    '..sss.',
 ]
-SKULL_SIDE = [   # 옆으로 누운 해골(오른쪽을 봄)
-    '.wwwv..',
-    'wwwwvv.',
-    'wwwzwvv',
-    'vwwwvvv',
-    '.vvvv..',
+SKULL_SIDE = [   # 옆으로 누운 해골(정수리가 왼쪽, 턱이 오른쪽) — 눈구멍 둘이 위아래로, 코 구멍이 그 사이 오른쪽, 이 줄이 오른 끝 세로
+    '.wwwvv.',
+    'wwwwzvt',
+    'wwwvvzv',
+    'wwwwzvt',
+    'vwvvvut',
+    '.sssss.',
 ]
-HEAP_BED = [   # 뼈 무더기 바닥(32×16 아래쪽)
+HEAP_BED = [   # 뼈 무더기 바닥(32×16 아래쪽) — 위 두 줄 밝은 뼈, 아래 두 줄(12·13행) 뼈 어두운 단
     '................................',
     '................................',
     '................................',
@@ -267,7 +270,7 @@ HEAP_BED = [   # 뼈 무더기 바닥(32×16 아래쪽)
     '....wwwwwwwv.wwwwwv..wwwwwwwv...',
     '..wwvwvvwvwwvwvvwwwvwwvvwvvwwv..',
     '.wvwwvvwvwvwwvwwvwvwwvwwvvwvwvv.',
-    '.vwvvwvvvwvvvwvvvwvvwvvwvvwvvvv.',
+    '.vtuvtuvtuvtvutvvutuvtuvtuvtuvv.',
     '..vvvvv~vvvvvvvv~vvvvvvvvvvvvv~.',
     '...~~~~~~~~~~~~~~~~~~~~~~~~~~~~.',
     '................................',
@@ -306,56 +309,44 @@ WEB_NE = mirror_h(WEB_NW)
 
 
 # ================================================================================================ 줄 공통 — 쇠붙이
-# 벽 쇠사슬·족쇄 1×2: 벽에 박은 쇠 막대에서 사슬 둘이 늘어져 족쇄 고리에 닿는다. 고리 = 빛 쪽 k, 그늘 쪽 g.
-CHAINS = [
-    '................',
-    '................',
-    '..kllllllllllj..',
-    '..hhhhhhhhhhhg..',
-    '...ig......ig...',
-    '...kh......kh...',
-    '...ig......ig...',
-    '...gg......gg...',
-    '...kh......kh...',
-    '...ig......ig...',
-    '...gg......gg...',
-    '...kh......kh...',
-    '...ig......ig...',
-    '...gg......gg...',
-    '...kh......kh...',
-    '...ig......ig...',
-    '...gg......gg...',
-    '...kh......kh...',
-    '...ig......ig...',
-    '...gg......gg...',
-    '..kkjg....kkjg..',
-    '.kh..ig..kh..ig.',
-    '.ig..gg..ig..gg.',
-    '..gggg....gggg..',
-    '................',
-    '................',
-    '................',
-    '................',
-    '................',
-    '................',
-    '................',
-    '................',
-]
+# 벽 쇠사슬·족쇄 1×2: 벽에 박은 쇠 막대에서 사슬 둘이 늘어져 족쇄 고리에 닿는다. 사슬 = 옆으로 선 고리(세로 한 줄, 윗끝 l)와
+# 정면 고리(3×3, 가운데 쇠 그늘)를 번갈아 — 고리마다 위·왼 = 쇠 밝은 단(l·k), 아래·오른 = 어두운 단(h·g). 족쇄 고리 윗변 2px 도 밝게.
+_LINK_EDGE = ['.lg', '.kg', '.hg']
+_LINK_RING = ['lkh', 'kgg', 'hgg']   # 고리 속은 쇠 그늘(g) — 벽 바탕보다 어두운 구멍
+_CHAIN = _LINK_EDGE + _LINK_RING + _LINK_EDGE + _LINK_RING + _LINK_EDGE + ['.k.']
 
-# 감옥 쇠창살 문 1×2: 위 들보(윗면 2줄 + 앞면) · 창살 다섯(빛 k · 그늘 g) · 가로 띠와 자물쇠 · 아래 문턱.
+
+def _chain_rows():
+    rows = ['................', '................', '..kllllllllllj..', '..ggggggggggggg.']
+    for c in _CHAIN:
+        rows.append('...' + c + '....' + c + '...')
+    rows += [
+        '..lllk....lllk..',
+        '.lkgghg..lkgghg.',
+        '.kigggg..kigggg.',
+        '..hggg....hggg..',
+    ]
+    return rows + ['................'] * (32 - len(rows))
+
+
+CHAINS = _chain_rows()
+
+# 감옥 쇠창살 문 1×2: 위 들보(윗면 3줄 1~3행 + 앞면 4~5행) · 창살 다섯(빛 k · 그늘 g) · 가로 띠와 자물쇠 · 아래 문턱(윗면 3줄 26~28행 + 앞면 29~30행).
+# 문턱 윗면 첫 줄(26행)은 창살 밑동 끝이 밝은 단(l)으로 문턱에 닿는 줄이고, 창살 사이도 문턱 윗면(k)이다.
 # 열림 = 가운데 창살 셋이 들보 속으로 올라가 끝만 보인다(올림 창살). 양끝 기둥·들보·문턱은 두 상태가 같다.
 BARS_TOP = [
     '................',
-    '................',
-    '.kllllllllllllj.',
-    '.jkkkkkkkkkkkih.',
+    '.lllllllllllllk.',
+    '.kllllllkllllkj.',
+    '.kkkkkkkkkkkkkj.',
     '.ijijijijijijih.',
-    '.hhhhhhhhhhhhhg.',
+    '.ggggggggggggggg'[:15] + '.',
 ]
 BARS_BOTTOM = [
+    '.lllllllllllllk.',
     '.kkkkkkkkkkkkkj.',
     '.iiiiiiiiiiiiih.',
-    '.hhhhhhhhhhhhhg.',
+    '.ggggggggggggggg'[:15] + '.',
     '..~~~~~~~~~~~~~.',
 ]
 BAR_ROW = '.kg.kg.kg.kg.kg.'
@@ -365,13 +356,13 @@ BARS_SHUT = BARS_TOP + [BAR_ROW] * 8 + [
     '.kjjjjkjjjjjjjh.',
     '.ihhhhjoqhhhhhg.',
     '.kg.kghnmhkg.kg.',
-] + [BAR_ROW] * 10 + BARS_BOTTOM
+] + [BAR_ROW] * 8 + ['.lhklhklhklhklh.'] + BARS_BOTTOM
 BARS_OPEN = BARS_TOP + [
     '.kg.kg.kg.kg.kg.',
     '.kg.kg.kg.kg.kg.',
     '.kg..k..k..k.kg.',
     '.kg..l..l..l.kg.',
-] + [POST_ROW] * 18 + BARS_BOTTOM
+] + [POST_ROW] * 16 + ['.lhkkkkkkkkkklh.'] + BARS_BOTTOM
 
 # 레버 1×1(벽): 쇠 벽판 + 홈 + 나무 자루 + 붉은 손잡이. 올림 = 왼쪽 위, 내림 = 오른쪽 아래. 벽판은 두 상태가 같다.
 LEVER_PLATE = [
@@ -527,12 +518,12 @@ def magic(k):
 
 
 # ================================================================================================ 줄 공통 — 나무 통·상자 더미·광산
-BARREL = [
+BARREL = [   # 뚜껑 타원 = 1행 쇠테 뒤 · 2~4행 밝은 널 뚜껑(f, 널 이음 d 두 줄) · 5행 쇠테 앞 — 몸통 널(c·d)보다 밝다
     '................',
     '.....kllllj.....',
-    '....kfeeeedh....',
-    '...kfedddddch...',
-    '...jedcdcdcbh...',
+    '....kfdffdfh....',
+    '...kffdffdffh...',
+    '...jefdffdfeh...',
     '...jkkkkkkjhg...',
     '...dedbdccbca...',
     '..jkkkkkkjjihg..',
@@ -545,10 +536,11 @@ BARREL = [
     '.....~~~~~~~~...',
     '................',
 ]
-CRATE = [   # 14×13: 윗면 3줄 + X 버팀 앞면
-    '.ffffffffffff.',
-    'feeefeeeefeeed',
-    'eddddddddddddc',
+CRATE = [   # 14×14: 윗면 4줄(0~3행, 밝은 널 f + 널 이음 e 두 줄) + 뚜껑 앞 띠(4행) + X 버팀 앞면(5~11행) + 밑 띠
+    '.ffffeffffeff.',
+    'fffffeffffefff',
+    'fffffeffffeffe',
+    'fffffeffffeffd',
     'dddddddddddddb',
     'dedccccccccedb',
     'dcedccccccedcb',
@@ -563,9 +555,11 @@ CRATE = [   # 14×13: 윗면 3줄 + X 버팀 앞면
 
 
 def crate_stack():
+    """아래 둘(16~29행: 윗면 16~19 · 앞면 20~29) + 위 하나(5~18행). 위 상자 밑이 아래 상자 윗면(16~19) 위에 얹혀,
+    아래 상자 윗면은 위 상자에 안 가린 양쪽(1~7열·22~29열)에 4줄이 다 보인다."""
     cv = Cv(32, 32)
     for x in (1, 16):
-        stamp(cv, CRATE, LEG, x, 17)
+        stamp(cv, CRATE, LEG, x, 16)
         for i in range(14):
             cv.shadow(x + 1 + i, 30)
         cv.shadow(x + 14, 29)
@@ -629,17 +623,19 @@ CART = [   # 쇠 수레(윗면 = 광석 · 금 덩이), 앞면 리벳, 바퀴 �
 ]
 
 # 기댄 곡괭이·삽 1×2: 아래 칸 = 바닥(자루 끝·삽날), 위 칸 = 벽 앞면에 기댄 자루와 곡괭이 머리.
+# 곡괭이 머리 = 자루 끝(5~6열)을 가로지르는 폭 2px 쇠 날(4~5행), 양끝이 아래로 굽은 끝(6~7행). 위·왼 = 쇠 밝은 단 l·k.
+# 삽날 = 폭 6·높이 6 의 평평한 바닥 날(22~27행, 8~13열), 위 가운데 자루 소켓(21행), 윗변 밝은 단 · 그늘 쪽(오른·아래) 쇠 0단.
 TOOLS = [
     '................',
     '................',
     '................',
-    '................',
     '.....lk.........',
-    '...lkkjh........',
-    '..kj.dbih.......',
-    '.kj..db.hg......',
-    '.j...db..hg.....',
-    '.....db...g..d..',
+    '.llllkkkjjhh....',
+    'lkkjjkjiihhhg...',
+    'kj...db....hg...',
+    'j....db.....g...',
+    '.....db.........',
+    '.....db......d..',
     '.....db.....eda.',
     '....db......dcb.',
     '....db.....db...',
@@ -651,14 +647,14 @@ TOOLS = [
     '...db....db.....',
     '..db.....db.....',
     '..db.....db.....',
-    '..db....kkjg....',
-    '..db...kljjig...',
-    '.db....kjjiig...',
-    '.db....kjiihg...',
-    '.db....jiihgg...',
-    '.db.....jhgg....',
-    'db.......hg.....',
-    'ba~.......~~....',
+    '..db......kh....',
+    '..db....lllkkh..',
+    '.db.....lkkjig..',
+    '.db.....kkjiig..',
+    '.db.....kjjihg..',
+    '.db.....kjiihg..',
+    'db......hggggg..',
+    'ba~......~~~~~~.',
     '.~~.............',
     '................',
     '................',
@@ -1609,7 +1605,7 @@ def c_chains():
 def c_bars():
     a, b = g(BARS_SHUT), g(BARS_OPEN)
     v = strip3(lambda ln: _bars_room(ln, a, b))
-    return hcat(a, b), {'kind': 'objects', 'parts': {'닫힘': a, '올림': b}, 'vignette': v}
+    return hcat(a, b), {'kind': 'objects', 'parts': {'닫힘': a, '올림': b}, 'vignette': v}   # 윗면: 들보 1~3행 · 문턱 26~28행
 
 
 def _bars_room(line, a, b):
@@ -1646,7 +1642,7 @@ def c_magic():
 def c_barrel():
     b = g(BARREL)
     v = common_scene(lambda cv: (cv.paste(b, 1 * T, 3 * T), cv.paste(b, 2 * T, 3 * T), cv.paste(b, 1 * T + 8, 4 * T)))
-    return b, {'kind': 'object', 'parts': {'통': b}, 'vignette': v}
+    return b, {'kind': 'object', 'parts': {'통': b}, 'vignette': v, 'top_rows': {'통': [1, 4]}}
 
 
 def c_crates():
