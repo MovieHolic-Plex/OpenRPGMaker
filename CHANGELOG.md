@@ -5,6 +5,43 @@
 
 <!-- releases -->
 
+## 0.185.0 — 2026-10-10
+
+### 기능
+
+- add hand-pixeled silver-haired swordswoman battler (#2400) (`3d7ae15`)
+- **start** — 새 게임 「골라서 만들기」 빠른 인터뷰 + 인터뷰 배경 1,076장(#2403 포함) (#2408) (`84153d3`)
+- **dungeon** — 던전 기물 판 props-r1 27항목 + 위임 검수 반영 (리셋 복구) (#2406) (`df0a613`)
+- **murim** — 무림 기물 판 props-r1 28항목 + 위임 검수 반영 (리셋 복구) (#2405) (`5b28f41`)
+- **object-gate** — 공용 3/4 시점 오브젝트 게이트 판정 엔진 (리셋 복구, 출구 미배선) (#2404) (`06ddfcd`)
+- **jp-city** — 5묶음 오락·숙박·상업 실내 9곳(맵 12장) (#2399) (`95d1192`)
+- **jp-city** — 4묶음 현대 던전 8곳(맵 17장) + 시트 96열 (#2398) (`3e9c8ab`)
+
+### 수정
+
+- **interior** — 방을 견본보다 작게 만들지 않고, 가구는 덩이째 자리 후보를 넣어 본다 (#2397) (`eb6bc69`)
+
+### 정리
+
+- separate store and community services (`be749f9`)
+
+### 문서
+
+- 공개본에서 뺀 포켓몬 캐릭터 하네스 폴더는 로컬 전용이라고 적는다 (#2401) (`a83f49f`)
+- put direct desktop downloads on the README (`63abfde`)
+- mark community service as archived (`87ae874`)
+
+### 빌드
+
+- **deps** — bump file-type and jimp (#2391) (`1f8e05c`)
+
+### 잡무
+
+- stop whitelisting deleted evidence trees (`fd007e5`)
+- remove obsolete public report pages (`3e58835`)
+- remove obsolete new-editor exclusions (`e4095d6`)
+- remove internal artifacts and add repo hygiene (#2394) (`c1d9934`)
+
 ## 0.184.2 — 2026-10-09
 
 ### 기타
