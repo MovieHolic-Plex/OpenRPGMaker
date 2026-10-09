@@ -78,11 +78,24 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 폴더, 같은 맵 Ctrl/Meta 토글, Shift 범위, 1024 상한 초과 맵 거부, 도구의 맵 스위처도
 갱신·선택 표시·초점·활성 맵 리빌을 확인한다. 200개는 썸네일 120개 캐시의 교체 비용을 따로 기록한다.
 
+### 새 게임 인터뷰의 선택 배경 (2026-10-04)
+
+`projectInterviewDialog.ts`는 `interviewSceneBank.ts`의 합격 배경을 먼저 조회한다. 답변 텍스트와 옵션 ID가 모두 일치하는 누적 경로만 사용하며, 직접 입력·혼합 장르·주인공/추가 메모·수정 요약은 신규 생성/비전 검수 경로로 간다. 현재와 다음 세 선택지를 대화별 캐시에 미리 디코드하고, 준비된 클릭은 같은 이벤트에서 배경을 교체한다. 첫 질문은 소개 배경 네 개를 포함해 최대 다섯 장을 준비한다. 닫으면 캐시를 해제하고 늦은 응답을 무시한다. 질문 카탈로그 지문이나 스타일 버전이 바뀌면 기존 배경 카탈로그를 사용하지 않는다.
+
+선택 배경 위의 큰 장식 제목은 제거했다. 화면 아래에는 모션·다시 그리기 버튼만 나란히 두고, 좁은 화면에서는 기존 위쪽 두 모서리를 쓴다. 다시 그리기는 부모의 `pointer-events:none`을 상속하지 않는다. 아래쪽 비네트의 진하기는 35%로 낮춰 선택한 배·소품을 가리지 않는다. 실제 인터뷰 컴포넌트의 버튼 클릭 가능 여부·선택 경로·화면 증거를 별도로 확인하며, 전체 앱 부팅이나 AI 조수 제작 성공으로 해석하지 않는다.
+
+배경 제작과 합격작 배포는 [interview-scene-bank](harnesses/interview-scene-bank.md)로 한다. 1,457개 계획은 완료됐지만 첫 생성 원본들은 도트 관문을 통과하지 못했다. 합격 배경 수가 0이면 실제 앱은 기존 생성 경로를 사용한다. `verify-shots/interview-scene-bank/`의 클릭 전환 증거는 **검증용 카탈로그**를 주입한 컴포넌트 QA이며, 원본 그림 합격이나 AI 조수 제작 성공 증거가 아니다.
+
 ### 첫 사용자 시작과 저장 안내 (2026-10-03)
 
 - (2026-10-07 바뀜) 첫 방문은 컨셉 피드를 덮는 창으로 시작한다(`src/editor/conceptFeedOverlay.ts`, 런처 홈·메뉴 「새 프로젝트」와 같은 컴포넌트).
   `editorWelcome.ts` 는 띄울지 말지(`shouldPresentEditorWelcome`)와 닫음 기억(`oprn:editor-welcome-dismissed`)만 남았다. 옛 전체 창 장면·`firstWorldArrival.ts`·포스터·「AI 없이 직접 만들기」는 지웠다.
 - 컨셉을 고르고 「▶ 이 게임 만들기」를 누르면 AI 연결 관문 → 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고 기획(`generationPending`)을 심는다 → `mode.ts` 가 바로 `prepareProjectInterviewStartup` 으로 저장·뼈대·팀 첫 생성을 넘긴다. 연결을 미루면 창이 그대로 남는다.
+- (2026-10-09) 피드 맨 위 띠 「골라서 만들기」 = 빠른 인터뷰(`src/start/quickInterview/`). 장르 하나 + 질문 셋(시작·플레이·분위기)을 그림 카드로 네 번 고르면
+  확인 화면(고른 것 칩·한 줄 메모·「이 게임 만들기」)으로 간다. 카드는 그 선택의 인터뷰 배경(CDN `thumb/`), 고르면 그 장면이 화면 전체 배경(`full/`).
+  진행 방식·첫 범위(옛 질문 4·5)는 첫 선택지를 `source: "recommended"` 로 채운다 — 그래서 배경은 3단계 깊이(장르 포함 4장)까지만 쓴다.
+  결과는 옛 인터뷰와 같은 `GameDesignBrief`(interview 포함)이고 만들기는 컨셉 카드와 같은 길(`launcherBriefHandler` / `menuBriefHandler` / `welcomeBriefHandler`)이다.
+  키보드: 1–4 고르기, Backspace 이전, Esc 닫기. 옛 5문항 인터뷰 창(`projectInterviewDialog.ts`)은 「기획 수정」용으로 남아 있다.
 - 창은 `modalStack` 에 등록한다. Escape 는 상세면 피드로, 피드면 창을 닫고 닫음을 기억한다. 「빈 프로젝트로 시작」도 닫음과 같다.
 - `welcomeGenreSystemPresetAction.ts`는 새 시드를 채택하기 전 `prepareProjectMedia`로 inline 소재를 한 파일씩 저장하고 ref로 바꾼다. 공용 소재를 포함한 시드를 곧장 복제/직렬화하면 153MB JSON 저장 직전 renderer V8 OOM을 재현했다. 준비 실패/대상 폴더·projectId 변경이면 채택하지 않으며 기존 열린 문서는 유지된다. 채택 직전에도 대상과 원래 열린 문서 객체·버전을 다시 확인해 준비 중 로컬 편집/동료 갱신을 덮어쓰지 않는다. 준비 중 안내를 표시한다. 계약 회귀는 `test/persistence/prepareProjectMedia.test.ts`.
 - 저장 칩은 `프로젝트 저장`/`저장 위치 없음`/`임시 작업 · 저장 안 됨`을 구분한다. 임시 세션은 파일 내보내기를 안내한다. 도움말과 README도 같은 용어를 쓴다.

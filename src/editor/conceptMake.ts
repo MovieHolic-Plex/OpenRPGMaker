@@ -2,6 +2,7 @@
 // 둘 다 확정 기획을 generationPending 으로 심는다. 그다음은 기존 prepareProjectInterviewStartup 이 뼈대·저장·팀 첫 생성을 넘긴다.
 import { conceptBrief } from "@/concepts/brief";
 import type { GameConcept } from "@/concepts/format";
+import type { GameDesignBrief, GamePresetId } from "@/project/gameDesignBrief";
 import { newProjectChoiceById } from "@/editor/newProjectChoices";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
@@ -12,28 +13,40 @@ export type EditorMakeDeps = {
   readonly made: (slug: string) => void;
 };
 
-function choiceFor(concept: GameConcept) {
-  const choice = newProjectChoiceById(concept.presetId);
+function choiceFor(presetId: GamePresetId) {
+  const choice = newProjectChoiceById(presetId);
   if (!choice) throw new Error("이 컨셉의 장르 틀을 찾을 수 없습니다.");
   return choice;
 }
 
+/** 컨셉 카드 → (기획, 제목). 빠른 인터뷰는 기획을 바로 준다. */
+function fromConcept(make: (brief: GameDesignBrief, title: string) => Promise<boolean>, made: (slug: string) => void) {
+  return async (concept: GameConcept, tweak: string): Promise<boolean> => {
+    if (!(await make(conceptBrief(concept, tweak), conceptProjectTitle(concept)))) return false;
+    made(concept.slug);
+    return true;
+  };
+}
+
 /** 메뉴 「새 프로젝트」: 새 폴더에 씨앗 + 기획을 저장하고 다시 읽는다. 폴더는 묻지 않는다(데스크톱 기본 위치). */
 export function menuMakeHandler(deps: EditorMakeDeps & { readonly reload: () => void }): (concept: GameConcept, tweak: string) => Promise<boolean> {
-  return async (concept, tweak) => {
-    const choice = choiceFor(concept);
+  return fromConcept(menuBriefHandler(deps), deps.made);
+}
+
+export function menuBriefHandler(deps: Omit<EditorMakeDeps, "made"> & { readonly reload: () => void }): (brief: GameDesignBrief, title: string) => Promise<boolean> {
+  return async (brief, rawTitle) => {
+    const choice = choiceFor(brief.presetId);
     if (!(await deps.ensureAiConnected(choice.label))) return false;
-    const title = conceptProjectTitle(concept);
+    const title = rawTitle.trim().slice(0, 80) || "새 게임";
     const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
-    const seed = await createProjectStartSeed(concept.presetId, title, "ai", "wide");
-    seed.gameDesignBrief = { ...conceptBrief(concept, tweak), generationPending: true };
+    const seed = await createProjectStartSeed(brief.presetId, title, "ai", "wide");
+    seed.gameDesignBrief = { ...brief, generationPending: true };
     const { saveProjectNow } = await import("@/editor/saveActions");
     if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return false;
     const suggested = await window.oprn?.start?.suggestProjectDir?.({ title }).catch(() => null);
     const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
     const created = await createProjectFolderWithSeed(title, seed, suggested?.projectDir);
     if (!created) throw new Error("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.");
-    deps.made(concept.slug);
     deps.reload();
     return true;
   };
@@ -45,21 +58,24 @@ export function menuMakeHandler(deps: EditorMakeDeps & { readonly reload: () => 
  * 첫 구간 뼈대와 생성 전달은 mode.ts 가 바로 이어서 부르는 prepareProjectInterviewStartup 이 맡는다.
  */
 export function welcomeMakeHandler(deps: EditorMakeDeps & { readonly adopt?: (project: Project) => Promise<void> }): (concept: GameConcept, tweak: string) => Promise<boolean> {
-  return async (concept, tweak) => {
-    const choice = choiceFor(concept);
+  return fromConcept(welcomeBriefHandler(deps), deps.made);
+}
+
+export function welcomeBriefHandler(deps: Omit<EditorMakeDeps, "made"> & { readonly adopt?: (project: Project) => Promise<void> }): (brief: GameDesignBrief, title: string) => Promise<boolean> {
+  return async (brief, rawTitle) => {
+    const choice = choiceFor(brief.presetId);
     if (!(await deps.ensureAiConnected(choice.label))) return false;
-    const title = conceptProjectTitle(concept);
+    const title = rawTitle.trim().slice(0, 80) || "새 게임";
     const playResolution = store.getCurrent().system.playResolution;
     const { createProjectStartSeed } = await import("@/editor/projectStartSeed");
-    const seed = await createProjectStartSeed(concept.presetId, title, "ai", "wide");
+    const seed = await createProjectStartSeed(brief.presetId, title, "ai", "wide");
     if (playResolution) seed.system.playResolution = playResolution;
-    seed.gameDesignBrief = { ...conceptBrief(concept, tweak), generationPending: true };
+    seed.gameDesignBrief = { ...brief, generationPending: true };
     const adopt = deps.adopt ?? (async (project: Project) => {
       const { adoptSeedIntoOpenProject } = await import("@/editor/welcomeGenreSystemPresetAction");
       await adoptSeedIntoOpenProject(project, "컨셉으로 새 게임 시작", { acceptUnsavedSession: true });
     });
     await adopt(seed);
-    deps.made(concept.slug);
     return true;
   };
 }

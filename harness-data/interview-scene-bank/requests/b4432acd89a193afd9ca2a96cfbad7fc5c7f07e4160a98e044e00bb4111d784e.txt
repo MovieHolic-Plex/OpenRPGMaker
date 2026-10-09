@@ -1,0 +1,21 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 관계·연애 — 대화와 사건을 통해 가까워지고, 선택에 따라 관계와 결말이 달라져요.
+SELECTED FACTS:
+1. 이야기의 시작: 조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.
+2. 중심 플레이: 추억과 사연을 발견하며 — 장소와 물건을 조사해 서로를 이해해요.
+3. 분위기: 아련하고 여운 있게 — 이별과 오해를 지나 서로를 이해해요.
+4. 진행 방식: 가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.
+LATEST CHOICE: 진행 방식: 가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.
+SCENE ID: romance--town--memory--bittersweet--routes. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+Small ordinary modern rural town, neighboring house gates and shared walkway with vacant garden seats; no university or castle.
+Prominent closed plain keepsake and revisitable place express discovering memories.
+MOOD: Rain-cleared quiet autumn, spent petals/brown leaves, vacated threshold and lingering departure. No cheerful spring sunset.
+FRESH SHOT: intimate side-on foreground object. Focal selected props left; quiet fully drawn right. Follow only the chosen branch. Never import other branch furniture or action. Do not default to the reference river/bridge/castle/tree composition. Every foreground prop remains sharply constructed from coarse square pixel clusters. Keep the entire foreground bare architectural floor and selected furniture; NO foreground plant/flower/candle/door-jamb/railing framing. Small required flowers ONLY in midground, never between the camera and the focal object. Every plane at the SAME hard pixel focus, no near-camera depth blur. No people, creature appearance, open books, writing-like marks, ANY paper sheets/posters/notices/documents/corkboards/bulletin boards even blank, ANY clocks/watch faces/numerals, logos, ANY flags/banners/tapestries/cloth insignia/fleur-de-lis/heraldry, blur or collage. Plain bare architecture only; bedrolls and care cloth are undecorated.
+PRIMARY STAGING — SELECTED PROGRESSION: Choosing whom to become closer to: several spatially separate empty meeting nooks with distinct ordinary keepsakes, connected by an actual branching walkway. No people, portraits, route labels or collage.
+NEW PHYSICAL CAMERA: elevated oblique view along an actual three-way walkway fork. THREE clearly separate empty meeting nooks EACH contain a PAIR of facing vacant seats and their own different ordinary shared closed keepsake/book/mug arrangement. Three real continuous branches visibly connect these paired places, not scattered lone benches or a diagram. Retain selected premise/mood/play props on the near LEFT.

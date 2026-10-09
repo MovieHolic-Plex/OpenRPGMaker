@@ -15,7 +15,7 @@ import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
-import { launcherMakeHandler } from "./conceptFeed/launcherMake";
+import { launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
 import { createConceptSource } from "@/concepts/source";
 
 export const START_SCREEN_TESTIDS = {
@@ -291,6 +291,16 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("span", { class: "cf-version", text: APP_VERSION }),
     ],
     onBlank: createBlank,
+    onInterview: async (brief, title) => {
+      if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+      if (state.busy) return false;
+      state.busy = true;
+      try {
+        return await launcherBriefHandler(bridge, { ensureAiConnected, goEditor, storage: window.sessionStorage })(brief, title);
+      } finally {
+        state.busy = false;
+      }
+    },
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onMake: async (concept, tweak) => {
       if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");

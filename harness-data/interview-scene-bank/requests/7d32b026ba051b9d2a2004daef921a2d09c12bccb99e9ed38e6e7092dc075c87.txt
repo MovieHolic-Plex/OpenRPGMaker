@@ -1,0 +1,16 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 관계·연애 — 대화와 사건을 통해 가까워지고, 선택에 따라 관계와 결말이 달라져요.
+SELECTED FACTS:
+1. 이야기의 시작: 다시 만난 옛 친구 — 대학에서 재회한 두 사람. 서로 모르는 시간이 있어요.
+2. 중심 플레이: 대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.
+3. 분위기: 긴장과 비밀이 있게 — 감춰진 사정 때문에 마음을 쉽게 내보일 수 없어요.
+4. 진행 방식: 한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.
+LATEST CHOICE: 진행 방식: 한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.
+SCENE ID: romance--campus--talk--secret--single. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+Redraw ONE deep relationship in a sheltered EMPTY modern brick university reading-room corridor AT NIGHT. One intimate pair of facing vacant seats at LEFT surrounds a single plain CLOSED keepsake box partly concealed behind two CLOSED reunion books. A narrow locked-looking unmarked interior threshold and continuous private passage recede behind the pair; hard moonlight shade bands make tension and secrecy clear. NO cheerful open sunset vista, warm flower celebration, distant clocktower or long campus avenue. New side-on interior threshold viewpoint with strong coarse square pixel clusters, quiet drawn right. No people, faces, portraits, writing, open books/sheets, clocks, flags or split panels.

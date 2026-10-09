@@ -5,13 +5,14 @@ import { GAME_BRIEF_ANSWER_LIMIT, GAME_BRIEF_SUMMARY_LIMIT, normalizeGameDesignB
 import { interviewPreset, type GameInterview, type InterviewGenre } from "@/project/gameInterview";
 import { INTERVIEW_SCENES, SCENE_SLOTS, blendChoices, cinematicInterviewSummary, sceneGenre } from "@/editor/cinematicInterviewQuestions";
 import { generateInterviewScene, interviewArtPrompt } from "@/editor/interviewSceneGeneration";
+import { fixedInterviewSceneKey, interviewBankScene, InterviewSceneCache, nextInterviewBankKeys } from "@/editor/interviewSceneBank";
 import type { ProjectInterviewOptions } from "./legacyProjectInterviewDialog";
 import "@/styles/shell/dialogs/cinematic-interview.css";
 export type { ProjectInterviewOptions } from "./legacyProjectInterviewDialog";
 
 type SceneOption = { id: string; label: string; detail: string; image: string };
 
-/** The production interview generates ephemeral art. Project writes start only after confirmation. */
+/** Reviewed fixed-choice scenes switch immediately; custom facts use fresh reviewed art. */
 export async function showProjectInterview(presetId: GamePresetId, options: ProjectInterviewOptions = {}): Promise<GameDesignBrief | null> {
   if (typeof document === "undefined" || !document.body || options.signal?.aborted) return null;
   // Keep older authored transcripts editable without reinterpreting their questions or dropping answers.
@@ -40,7 +41,10 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     let sceneTimer: ReturnType<typeof setTimeout> | undefined;
     let latestFocus = "새로운 세계의 첫 풍경";
     let front = 0;
-    let acceptedScene = false;
+    const openingScene = interviewBankScene("opening");
+    let acceptedScene = !!openingScene;
+    const sceneCache = new InterviewSceneCache();
+    let bankSceneKey = "opening";
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let motion = !motionPreference.matches;
     const overlay = el("div", { class: "cinematic-interview-backdrop", dataset: { testid: "project-interview" } });
@@ -53,19 +57,18 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     // The first question lives on a pixel still. The movie is never an autoplay gate.
     video.hidden = true;
     const images = [el("img", { attrs: { alt: "", draggable: "false" } }), el("img", { attrs: { alt: "", draggable: "false" } })];
-    images[0]!.src = video.poster; images[0]!.className = "is-visible";
+    images[0]!.src = openingScene?.url ?? video.poster; images[0]!.className = "is-visible";
     background.append(video, ...images, el("div", { class: "ci-vignette" }));
     const body = el("div", { class: "ci-body" });
     const top = el("div", { class: "ci-top" });
     const navigation = el("div", { class: "ci-navigation" });
     const controls = el("div", { class: "ci-controls", children: [top, body, navigation] });
-    const caption = el("aside", { class: "ci-scene-caption", children: [
-      el("span", { text: "YOUR NEXT STORY" }), el("strong", { text: "당신이 고른 세계" }),
-    ] });
+    const caption = el("aside", { class: "ci-scene-caption", attrs: { "aria-label": "배경 그림 조작" } });
     const status = el("p", { class: "ci-status", attrs: { role: "status", "aria-live": "polite" } });
     const done = (brief: GameDesignBrief | null) => {
       if (closed) return;
       closed = true; sceneToken++; sceneAbort?.abort(); clearTimeout(sceneTimer); motionPreference.removeEventListener("change", onMotionPreference); options.signal?.removeEventListener("abort", onAbort); video.pause(); video.removeAttribute("src"); video.load();
+      sceneCache.dispose();
       if (!options.container) unregisterModal(overlay);
       overlay.remove(); resolve(brief);
       if (opener instanceof HTMLElement && document.contains(opener)) opener.focus();
@@ -87,6 +90,30 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       const token = ++sceneToken;
       sceneAbort?.abort(); clearTimeout(sceneTimer);
       const controller = sceneAbort = new AbortController();
+      const applyScene = (url: string, key?: string) => {
+        if (closed || token !== sceneToken || controller.signal.aborted) return;
+        const next = 1 - front;
+        images[next]!.src = url; images[next]!.className = "is-visible";
+        images[front]!.className = ""; front = next;
+        acceptedScene = true; bankSceneKey = key ?? "";
+        video.pause(); video.hidden = true;
+        panel.dataset.artState = "accepted"; panel.dataset.scene = focus;
+        panel.dataset.sceneKey = key ?? "generated";
+        status.textContent = "";
+      };
+      const fixedKey = !force && summaryOverride === undefined ? fixedInterviewSceneKey(draft, answers) : undefined;
+      const fixedEntry = fixedKey ? interviewBankScene(fixedKey) : undefined;
+      if (fixedKey && fixedEntry) {
+        const ready = sceneCache.ready(fixedKey);
+        if (ready) { applyScene(ready.src, fixedKey); return; }
+        panel.dataset.artState = "loading";
+        status.textContent = "장면 불러오는 중…";
+        void sceneCache.load(fixedKey)!.then(image => applyScene(image.src, fixedKey)).catch(() => {
+          if (closed || token !== sceneToken) return;
+          sceneKey = ""; showScene(focus, true);
+        });
+        return;
+      }
       // The film is an arrival, not a loading fallback. After the first choice keep a
       // pixel still until the next reviewed scene is ready; never flash back to video.
       video.pause(); video.hidden = true;
@@ -104,13 +131,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
         }).then(async url => {
           const probe = new Image(); probe.src = url; await probe.decode();
           if (closed || token !== sceneToken || controller.signal.aborted) return;
-          const next = 1 - front;
-          images[next]!.src = url; images[next]!.className = "is-visible";
-          images[front]!.className = ""; front = next;
-          acceptedScene = true;
-          video.pause(); video.hidden = true;
-          panel.dataset.artState = "accepted"; panel.dataset.scene = focus;
-          status.textContent = "";
+          applyScene(url);
         }).catch(() => {
           if (closed || token !== sceneToken || controller.signal.aborted) return;
           panel.dataset.artState = "error";
@@ -136,6 +157,10 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       if (closed) return;
       body.replaceChildren();
       const ids = steps();
+      const preload = step < 0 ? ["opening", ...INTERVIEW_SCENES.map(g => g.id)] : [
+        bankSceneKey, fixedInterviewSceneKey(draft, answers) ?? "", ...nextInterviewBankKeys(draft, answers, ids[step]),
+      ];
+      sceneCache.preload([...new Set(preload.filter(Boolean))]);
       const summary = step >= ids.length;
       const title = step < 0 ? "어떤 게임을 만들까요?" : summary ? "이 게임을 만들어볼까요?" : "한 장면씩, 선명하게.";
       body.append(el("header", { class: "ci-header", children: [

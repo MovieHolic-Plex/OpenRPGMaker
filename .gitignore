@@ -267,3 +267,7 @@ qa-runs/
 /tiledata/rasak-modern/
 /tiledata/refmap/
 /public/places-mockup.html
+# 인터뷰 선택 배경 PNG 는 공개 R2(cdn.openrpgmaker.com/interview-scene-bank/)에 둔다 — 저장소에 넣지 않는다(약 2.3GB).
+# 하네스 build 는 계속 이 폴더에 쓰고, scripts/content/sync-interview-scenes.mjs push 로 올린다.
+/public/assets/harnesses/interview-scene-bank/
+/harness-data/interview-scene-bank/edit-sources/

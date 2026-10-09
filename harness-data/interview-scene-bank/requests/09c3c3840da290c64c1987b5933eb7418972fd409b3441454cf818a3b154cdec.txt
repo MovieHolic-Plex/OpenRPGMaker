@@ -1,0 +1,18 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 관계·연애 — 대화와 사건을 통해 가까워지고, 선택에 따라 관계와 결말이 달라져요.
+SELECTED FACTS:
+1. 이야기의 시작: 서로를 경계하는 두 사람 — 가면무도회에서 시작되는 조심스러운 관계.
+2. 중심 플레이: 추억과 사연을 발견하며 — 장소와 물건을 조사해 서로를 이해해요.
+3. 분위기: 아련하고 여운 있게 — 이별과 오해를 지나 서로를 이해해요.
+4. 진행 방식: 한 관계를 깊이 따라가기 — 주요 상대 한 명과 만남 → 갈등 → 변화로 이어져요.
+5. 첫 제작 범위: 관계가 달라지는 첫 사건 — 만남·작은 갈등·관계 변화 한 번까지.
+LATEST CHOICE: 첫 제작 범위: 관계가 달라지는 첫 사건 — 만남·작은 갈등·관계 변화 한 번까지.
+SCENE ID: romance--palace--memory--bittersweet--single--episode. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+Quiet AUTUMN private palace vestibule after rain with spent brown leaves and wet floor. Exactly TWO compact full EMPTY chairs face across small low LEFT table: ONE closed plain keepsake BOX and TWO ordinary prop MASKS. Actual OPEN private sheltered passage directly LEFT behind same pair, continuous intimate place. FIRST EVENT: actual tipped ordinary goblet, visible wine SPILL and SOFT white drying cloth together on SAME shared table. All required pair, event props and passage left; no large right arcade. New elevated cross-room compact event shot.
+ALL walls, DOORS and rugs completely plain and undecorated: NO banners, hanging cloth, flags, tapestry, coat of arms, fleur-de-lis, painted symbols, isolated diamonds/stars, writing or UI. Functional small latch/hinge only. No people or humanoids. Near floor bare stone/wood, no foreground plant, candle-post or rail framing; spent autumn leaves allowed when selected. High pulled-back camera: all required furniture/doorways/scope props compact in LEFT x5-45%, whole seat surfaces and backs unobscured. RIGHT half quiet continuous architecture, never important props.

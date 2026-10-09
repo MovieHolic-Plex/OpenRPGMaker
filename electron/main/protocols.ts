@@ -35,7 +35,8 @@ const MIME_BY_EXTENSION: Record<string, string> = {
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self' app:",
-  "img-src 'self' app: oprn-asset: data: blob:",
+  // 인터뷰 선택 배경은 공개 R2(cdn.openrpgmaker.com)에서 받는다 — src/editor/interviewSceneBank.ts
+  "img-src 'self' app: oprn-asset: data: blob: https://cdn.openrpgmaker.com",
   "media-src 'self' app: oprn-asset: data: blob:",
   "script-src 'self' app:",
   "style-src 'self' 'unsafe-inline' app:",

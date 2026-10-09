@@ -1,0 +1,28 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 몬스터 수집·육성 — 새로운 생물을 만나 수집하고, 함께 성장하거나 조합을 짜서 도전해요.
+SELECTED FACTS:
+1. 첫 동료: 알에서 태어난 파트너 — 처음 태어난 생물과 함께 세계를 배워요.
+2. 중심 플레이: 새로운 종을 발견하고 수집 — 다음 서식지에서 만날 생물이 궁금해요.
+3. 분위기: 따뜻한 동행과 성장 — 처음엔 낯설던 파트너가 믿음직한 동료가 돼요.
+4. 진행 방식: 거점에서 서식지를 골라 탐험 — 습지·숲·유적처럼 목적지를 선택해요.
+5. 첫 제작 범위: 첫 동료가 생기는 순간 — 첫 조우와 선택한 포획·교감·부화까지.
+LATEST CHOICE: 첫 제작 범위: 첫 동료가 생기는 순간 — 첫 조우와 선택한 포획·교감·부화까지.
+SCENE ID: monster--hatch--collect--warm--habitat--scene. This identifier is metadata; never draw it.
+
+FINAL SELECTED SCENE BRIEF. Use this brief and the selected facts above, with ONE independent camera for this image.
+True 1990s 16-bit SNES RPG pixel art. Large square pixel clusters, staircase contours, flat 2-4-tone shading, the same grid on every plane. Rich, deliberately hand-clustered architecture and woods; no painting, realistic texture, gradients, antialiasing, blur, bloom or grain.
+VERY DISTANT WIDE ESTABLISHING SHOT. All selected objects and buildings are SMALL and WHOLE on the left, with visible woodland around the entire roofs, chimneys, both eaves, walls, floors and bases. Nothing selected touches any image edge. All meaningful selected features including inner columns and steps stay before x60.3%, where the actual input panel starts. Right side is ordinary continuous woods, without any selected object. Never use a close-up, an interior filling the picture, or cropped foreground architecture.
+First companion HATCH: one naturally speckled egg with its FIRST CRACK, whole and unopened, in straw in a small protected timber-and-stone nursery cradle, a plain soft cloth and a separate open BLUE water bowl. No hatchling or invented species/body.
+COLLECTION: one whole low wooden field rack with THREE separate open trays of visibly different REEDS, LEAVES and STONES. These are actual ecological field samples, not animal bodies, pictures or diagrams. Do not draw binoculars, specimen jars, research books, collection labels, a capture net/cage, a training course, or an exclusive personal-bond tableau.
+No humans, humanoids, creature bodies, text, direction signs, printed emblems, logos, open books, paper sheets, banners, menus or panels. Natural egg speckles and material seams are not printed logos.
+Warm inviting SUNSET companionship.
+HABITAT: three REAL OPEN actual walkable INNER passages distinctly reed/water WETLAND, dense FOREST and stone RUIN. BOTH real INNER ruin columns and ALL actual stairs complete before actual x60.3 controls. Outer posts are not inner columns. No travel village or local case.
+FIRST MOMENT ONLY: small prepared nursery/cradle/crackedegg/plaincloth/BLUEwater, cleared BARE UNPADDED earth approach. No floor cushion/carpet/groundpad/growth mat/return table/home.
+INDEPENDENT DISTANT oblique cinematic camera: UPPER LEFT three REAL WHOLE actual INNER habitat passages; MIDDLE LEFT 3sample rack; LOWER LEFT WHOLE small prepared nursery/cradle/egg/plaincloth/BLUEwater. Bare unpadded earth approach; no floor mat or separate cushion.
+All selected forms SMALL and WHOLE on LEFT with background around all roof/chimney/eave edges. ALL meaningful required features before actual controls x60.3. Right only quiet continuous background woods, no castle/distant settlement/landmark/required prop. Egg clearly shows FIRST CRACK as thin BLACK angular zigzag; otherwise WHOLE UNOPENED naturally speckled egg, no creature body. Travel path only connected fences or actual illuminated lanterns; never empty signboards/direction markers. Compose a new shot beyond recolor of actual parent; no input images.
+FILE REQUIREMENT FOR THIS NEW NATIVE: FULLY OPAQUE edge-to-edge continuous landscape. Every background pixel, including dark night woods and shadows, must be opaque alpha255. No transparency anywhere, no transparent layer/cutout. This is a complete landscape background, not a transparent sprite. Native output unchanged.
