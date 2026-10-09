@@ -18,6 +18,17 @@ export function interviewSceneUrl(url: string): string {
   return url.startsWith(LOCAL_PREFIX) ? INTERVIEW_SCENE_CDN + url.slice(LOCAL_PREFIX.length) : url;
 }
 
+/**
+ * 화면용 WebP — 원본 PNG(장당 약 2MB)를 그대로 띄우지 않는다. 같은 이름으로 full/(원본 크기)·thumb/(가로 640)에 올라가 있다.
+ * 원본 PNG 가 바뀌면 이름(해시)도 바뀌므로 `sync-interview-scenes.mjs push` 가 WebP 도 다시 만든다.
+ */
+export function interviewSceneImage(key: string, size: 'full' | 'thumb'): string | undefined {
+  const entry = interviewBankScene(key);
+  if (!entry) return undefined;
+  const name = entry.url.slice(entry.url.lastIndexOf('/') + 1).replace(/\.png$/u, '.webp');
+  return `${INTERVIEW_SCENE_CDN}${size}/${name}`;
+}
+
 export function interviewBankScene(key: string): BankEntry | undefined {
   if (bank.styleVersion !== INTERVIEW_SCENE_STYLE_VERSION || bank.catalogSignature !== INTERVIEW_SCENE_CATALOG_SIGNATURE) return undefined;
   const entry = entries[key];

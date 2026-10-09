@@ -7,6 +7,12 @@ import { getLocale, t } from "@/i18n";
 import { CONCEPT_TAGS, CONCEPT_TWEAK_LIMIT, localizedConcept, type GameConcept } from "@/concepts/format";
 import { CONCEPT_FALLBACK_THUMB, type ConceptFallback, type ConceptQuery, type ConceptSource } from "@/concepts/source";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import type { InterviewGenre } from "@/project/gameInterview";
+
+/** 「골라서 만들기」 띠 — 인터뷰 첫 장면(cdn, src/editor/interviewSceneBank.ts)과 장르 바로가기. 띠 하나 때문에 장면 목록 JSON 을 피드에 싣지 않는다. */
+const QUICK_ART = "https://cdn.openrpgmaker.com/interview-scene-bank/full/opening-62062ac73a78.webp";
+const QUICK_GENRES: readonly (readonly [InterviewGenre, string])[] = [["romance", "관계·연애"], ["monster", "몬스터 수집"], ["adventure", "모험"], ["mystery", "추리"]];
 
 export const CONCEPT_FEED_TESTIDS = {
   root: "concept-feed",
@@ -24,6 +30,9 @@ export const CONCEPT_FEED_TESTIDS = {
   offline: "concept-feed-offline",
   close: "concept-feed-close",
   error: "concept-feed-error",
+  quick: "concept-feed-quick",
+  quickGenre: "concept-feed-quick-genre",
+  quickStart: "concept-feed-quick-start",
 } as const;
 
 export type ConceptFeedMode = "launcher" | "overlay";
@@ -35,6 +44,8 @@ export type ConceptFeedOptions = {
   /** 만들기. true = 시작됨(화면 넘김은 호출부 몫, 버튼은 잠근 채 둔다). false = 취소(다시 누를 수 있다). 던지면 오류 줄. */
   readonly onMake: (concept: GameConcept, tweak: string) => Promise<boolean>;
   readonly onBlank?: () => void;
+  /** 「골라서 만들기」 — 빠른 인터뷰(장르 + 질문 셋)가 낸 기획으로 만들기. 없으면 띠를 보이지 않는다. 약속은 onMake 와 같다. */
+  readonly onInterview?: (brief: GameDesignBrief, title: string) => Promise<boolean>;
   readonly onClose?: () => void;
   /** 런처만 — 「이어하기」 줄. */
   readonly continueRow?: HTMLElement | null;
@@ -133,7 +144,44 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     el("span", { text: "직접 처음부터 만들고 싶다면" }),
     el("button", { class: "cf-link", attrs: { type: "button" }, text: "빈 프로젝트로 시작", dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, on: { click: () => options.onBlank?.() } }),
   ] }) : null;
+  // ── 골라서 만들기 띠(빠른 인터뷰) ─────────────────────────────────────
+  let quick: { element: HTMLElement; destroy(): void } | null = null;
+  const closeQuick = (): void => { quick?.destroy(); quick = null; };
+  const openQuick = async (genre?: InterviewGenre): Promise<void> => {
+    if (quick || making || !options.onInterview) return;
+    const { createQuickInterview } = await import("@/start/quickInterview/quickInterview");
+    if (disposed || quick) return;
+    quick = createQuickInterview({
+      ...(genre ? { initialGenre: genre } : {}),
+      onClose: closeQuick,
+      onMake: async (brief, title) => {
+        making = true;
+        try {
+          const started = await options.onInterview!(brief, title);
+          if (!started) making = false;
+          return started;
+        } catch (error) { making = false; throw error; }
+      },
+    });
+    root.append(quick.element);
+    quick.element.querySelector<HTMLElement>(".qi-card")?.focus();
+  };
+  const quickBand = options.onInterview ? el("section", { class: "cf-quick", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
+    el("img", { class: "cf-quick-art", attrs: { src: QUICK_ART, alt: "", draggable: "false" } }),
+    el("div", { class: "cf-quick-text", children: [
+      el("strong", { text: "골라서 만들기" }),
+      el("span", { text: "장르 하나, 질문 셋. 네 번 고르면 바로 시작해요." }),
+    ] }),
+    el("div", { class: "cf-quick-genres", children: [
+      ...QUICK_GENRES.map(([id, label]) => el("button", {
+        class: "cf-quick-genre", attrs: { type: "button" }, text: label, dataset: { testid: CONCEPT_FEED_TESTIDS.quickGenre, genre: id },
+        on: { click: () => void openQuick(id) },
+      })),
+      el("button", { class: "cf-quick-go", attrs: { type: "button" }, text: "시작하기 →", dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, on: { click: () => void openQuick() } }),
+    ] }),
+  ] }) : null;
   const feed = el("section", { class: "cf-feed", children: [
+    ...(quickBand ? [quickBand] : []),
     chips,
     ...(options.continueRow ? [options.continueRow] : []),
     grid, more, offlineNote, ...(blank ? [blank] : []),
@@ -415,6 +463,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
 
   const escape = (): boolean => {
     if (making) return true;
+    if (quick) { closeQuick(); return true; }
     if (detail.hidden) return false;
     showFeed();
     return true;
@@ -434,6 +483,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     escape,
     busy: () => making,
     dispose() {
+      closeQuick();
       disposed = true;
       seq += 1;
       clearTimeout(searchTimer);

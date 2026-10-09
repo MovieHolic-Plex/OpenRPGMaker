@@ -135,3 +135,29 @@
 
 /* 데스크톱 앱 창 단추(화면 전환·앱 닫기)가 오른쪽 위에 떠 있다 — 위 막대가 그 밑으로 들어가지 않게 비운다. */
 body:has(.studio-window-controls) .cf-top { padding-right: 190px; }
+
+/* 「골라서 만들기」 띠 — 빠른 인터뷰(src/start/quickInterview) 입구. 피드 맨 위, 인터뷰 첫 장면을 배경으로. */
+.cf-quick {
+  position: relative; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  min-height: 116px; margin: 4px 0 16px; padding: 18px 22px; border-radius: 14px; overflow: hidden;
+  background: #1a1c24; isolation: isolate;
+}
+.cf-quick-art {
+  position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; object-position: center 42%;
+  image-rendering: pixelated; opacity: 0.85;
+}
+.cf-quick::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, rgba(10, 11, 16, 0.92) 0%, rgba(10, 11, 16, 0.72) 42%, rgba(10, 11, 16, 0.25) 100%);
+}
+.cf-quick-text { display: flex; flex-direction: column; gap: 2px; min-width: 220px; }
+.cf-quick-text strong { font-size: 20px; font-weight: 800; }
+.cf-quick-text span { color: #d4d2cc; font-size: 13.5px; }
+.cf-quick-genres { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.cf-quick-genre, .cf-quick-go {
+  border: 1px solid rgba(255, 255, 255, 0.18); border-radius: 999px; padding: 8px 14px;
+  background: rgba(12, 14, 20, 0.6); color: var(--cf-fg); font: inherit; font-size: 13.5px; cursor: pointer; backdrop-filter: blur(6px);
+}
+.cf-quick-genre:hover { border-color: rgba(255, 255, 255, 0.55); }
+.cf-quick-go { background: var(--accent, #e5484d); border-color: transparent; color: #fff; font-weight: 800; }
+.cf-quick-go:hover { filter: brightness(1.08); }

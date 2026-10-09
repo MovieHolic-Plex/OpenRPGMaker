@@ -2,7 +2,7 @@
 // 결과: "made" = 만들기 시작(메뉴는 이미 새로 읽는 중, 환영은 기획이 심겼다), "blank" = 빈 프로젝트로, "closed" = 닫음.
 import { createConceptFeed } from "@/start/conceptFeed/conceptFeed";
 import { createConceptSource } from "@/concepts/source";
-import { menuMakeHandler, welcomeMakeHandler } from "./conceptMake";
+import { menuBriefHandler, menuMakeHandler, welcomeBriefHandler, welcomeMakeHandler } from "./conceptMake";
 import { registerModal, unregisterModal } from "./ui/modalStack";
 
 export type ConceptFeedOverlayResult = "made" | "closed" | "blank";
@@ -51,12 +51,21 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
   const handler = mode === "menu"
     ? menuMakeHandler({ ensureAiConnected, made, reload: () => window.location.reload() })
     : welcomeMakeHandler({ ensureAiConnected, made });
+  const briefHandler = mode === "menu"
+    ? menuBriefHandler({ ensureAiConnected, reload: () => window.location.reload() })
+    : welcomeBriefHandler({ ensureAiConnected });
   const feed = createConceptFeed({
     mode: "overlay",
     source,
     onMake: async (concept, tweak) => {
       const started = await handler(concept, tweak);
       // 메뉴는 곧 새로 읽으므로 창을 그대로 둔다(만드는 중… 표시). 환영은 창을 닫고 생성 전달로 넘어간다.
+      if (started && mode === "welcome") finish("made");
+      else if (started) settled = true;
+      return started;
+    },
+    onInterview: async (brief, title) => {
+      const started = await briefHandler(brief, title);
       if (started && mode === "welcome") finish("made");
       else if (started) settled = true;
       return started;

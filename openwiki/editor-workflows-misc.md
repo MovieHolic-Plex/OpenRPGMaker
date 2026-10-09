@@ -91,6 +91,11 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - (2026-10-07 바뀜) 첫 방문은 컨셉 피드를 덮는 창으로 시작한다(`src/editor/conceptFeedOverlay.ts`, 런처 홈·메뉴 「새 프로젝트」와 같은 컴포넌트).
   `editorWelcome.ts` 는 띄울지 말지(`shouldPresentEditorWelcome`)와 닫음 기억(`oprn:editor-welcome-dismissed`)만 남았다. 옛 전체 창 장면·`firstWorldArrival.ts`·포스터·「AI 없이 직접 만들기」는 지웠다.
 - 컨셉을 고르고 「▶ 이 게임 만들기」를 누르면 AI 연결 관문 → 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고 기획(`generationPending`)을 심는다 → `mode.ts` 가 바로 `prepareProjectInterviewStartup` 으로 저장·뼈대·팀 첫 생성을 넘긴다. 연결을 미루면 창이 그대로 남는다.
+- (2026-10-09) 피드 맨 위 띠 「골라서 만들기」 = 빠른 인터뷰(`src/start/quickInterview/`). 장르 하나 + 질문 셋(시작·플레이·분위기)을 그림 카드로 네 번 고르면
+  확인 화면(고른 것 칩·한 줄 메모·「이 게임 만들기」)으로 간다. 카드는 그 선택의 인터뷰 배경(CDN `thumb/`), 고르면 그 장면이 화면 전체 배경(`full/`).
+  진행 방식·첫 범위(옛 질문 4·5)는 첫 선택지를 `source: "recommended"` 로 채운다 — 그래서 배경은 3단계 깊이(장르 포함 4장)까지만 쓴다.
+  결과는 옛 인터뷰와 같은 `GameDesignBrief`(interview 포함)이고 만들기는 컨셉 카드와 같은 길(`launcherBriefHandler` / `menuBriefHandler` / `welcomeBriefHandler`)이다.
+  키보드: 1–4 고르기, Backspace 이전, Esc 닫기. 옛 5문항 인터뷰 창(`projectInterviewDialog.ts`)은 「기획 수정」용으로 남아 있다.
 - 창은 `modalStack` 에 등록한다. Escape 는 상세면 피드로, 피드면 창을 닫고 닫음을 기억한다. 「빈 프로젝트로 시작」도 닫음과 같다.
 - `welcomeGenreSystemPresetAction.ts`는 새 시드를 채택하기 전 `prepareProjectMedia`로 inline 소재를 한 파일씩 저장하고 ref로 바꾼다. 공용 소재를 포함한 시드를 곧장 복제/직렬화하면 153MB JSON 저장 직전 renderer V8 OOM을 재현했다. 준비 실패/대상 폴더·projectId 변경이면 채택하지 않으며 기존 열린 문서는 유지된다. 채택 직전에도 대상과 원래 열린 문서 객체·버전을 다시 확인해 준비 중 로컬 편집/동료 갱신을 덮어쓰지 않는다. 준비 중 안내를 표시한다. 계약 회귀는 `test/persistence/prepareProjectMedia.test.ts`.
 - 저장 칩은 `프로젝트 저장`/`저장 위치 없음`/`임시 작업 · 저장 안 됨`을 구분한다. 임시 세션은 파일 내보내기를 안내한다. 도움말과 README도 같은 용어를 쓴다.
