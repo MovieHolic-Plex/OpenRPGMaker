@@ -27,32 +27,6 @@ dist/
 # CSS 실사용 클래스 게이트(scripts/check-css-live-classes.mjs)의 기준선. 위와 같은 이유로
 # 추적한다 — 무시되면 새 워크트리에서 게이트가 "기준선 없음"으로 exit 2 가 된다.
 !.omo/css-live-classes-baseline.json
-!.omo/evidence/
-.omo/evidence/*
-!.omo/evidence/ai-assistant-failure-modes.md
-!.omo/evidence/event-editor-ux/
-!.omo/evidence/rm2003-database-plan/
-!.omo/evidence/ai-compaction/
-!.omo/evidence/ai-apply-without-approval/
-!.omo/evidence/action-battle/
-!.omo/evidence/battle-flash-map/
-!.omo/evidence/ai-surfaces-ux/
-!.omo/evidence/ai-studio-console/
-!.omo/evidence/oprn-013/
-!.omo/evidence/oprn-017/
-!.omo/evidence/oprn-019/
-!.omo/evidence/oprn-020/
-!.omo/evidence/oprn-022/
-!.omo/evidence/oprn-024/
-!.omo/evidence/oprn-026/
-!.omo/evidence/balt-parity/
-!.omo/evidence/chipset-transparency/
-!.omo/evidence/loc-adopt/
-!.omo/evidence/loc-transition/
-!.omo/evidence/verif-scope/
-!.omo/evidence/db-ai-review/
-!.omo/evidence/generated-asset-fakes/
-!.omo/evidence/ai-intent-coverage-budget/
 !.omo/rules/
 !.omo/rules/**
 artifacts/
@@ -82,45 +56,6 @@ nul
 .omc/
 .playwright-mcp/
 evidence/
-# 위 evidence/ 는 어디에 있는 evidence 디렉터리든 잡으므로 앞에서 둔 .omo/evidence 화이트리스트를
-# 무력화한다(실측: git check-ignore -v 가 .gitignore 의 evidence/ 행을 지목했다). 증거로
-# 추적하는 .omo/evidence 하위 디렉터리는 이 뒤에서 다시 예외 처리해야 한다.
-!.omo/evidence/
-!.omo/evidence/event-editor-ux/
-!.omo/evidence/event-editor-ux/**
-!.omo/evidence/ai-compaction/
-!.omo/evidence/ai-compaction/**
-!.omo/evidence/ai-apply-without-approval/
-!.omo/evidence/ai-apply-without-approval/**
-# 실측: 위 `.omo/evidence/*` 와 바로 위 `evidence/` 가 둘 다 이 디렉터리를 잡고 `*.log` 까지 겹친다.
-# 마지막 규칙이 이기므로 추적할 증거 디렉터리는 여기(가장 뒤)에서 다시 예외 처리한다.
-!.omo/evidence/ai-place-passable-20260827/
-!.omo/evidence/ai-place-passable-20260827/**
-!.omo/evidence/ai-log-anon-delete/
-!.omo/evidence/ai-log-anon-delete/**
-!.omo/evidence/faceset-per-face/
-!.omo/evidence/faceset-per-face/**
-!.omo/evidence/assistant-resize-collapse/
-!.omo/evidence/assistant-resize-collapse/**
-!.omo/evidence/bugfix-sweep/
-!.omo/evidence/bugfix-sweep/**
-# 표면 게이트의 실효성 감사 결과(scripts/audit-gate-mutations.mjs). 게이트가 "돈다"가 아니라
-# "실제 소스 결함을 이름으로 지목한다"는 증거라, 게이트 자체와 같이 리뷰돼야 한다.
-!.omo/evidence/event-editor-guard/
-!.omo/evidence/event-editor-guard/**
-# 사이드바 레이아웃은 단위 테스트로 볼 수 없다 — 짧은 뷰포트에서 맵 진입점이 화면
-# 안에 있는지, 레이일 폭이 색상표현과 일치하는지는 및음으로만 증명된다.
-!.omo/evidence/sidebar-ux/
-!.omo/evidence/sidebar-ux/**
-# 전투 이펙트 앵커·조준 표시 증거. 좌표와 조준 표시는 단위 테스트로 볼 수 없어
-# test/runtime/battle-target-anim.spec.ts 가 찍는 스크린샷이 정본 증거다.
-# 실측: 이 디렉터리의 PNG 두 개는 `git add -f` 로만 들어갔고(규칙 17행 `.omo/evidence/*` 가
-# 잡는다), 허용목록이 없으면 이펙트를 다시 찍어도 `git add -A` 가 그 갱신을 집지 않는다.
-!.omo/evidence/battle-anim-target/
-!.omo/evidence/battle-anim-target/**
-# 체공(hop) 연출 증거: 낙하가 "떨어진다"로 읽히는지는 정지 화면으로 증명되지 않는다.
-!.omo/evidence/character-hop/
-!.omo/evidence/character-hop/**
 handoff.md
 # 세션 로컬 상태·일회성 산출물 (never commit)
 /.mcp.json
