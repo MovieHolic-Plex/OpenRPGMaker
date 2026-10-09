@@ -6,7 +6,7 @@ OpenRPGMaker 저장소는 에디터·플레이어·저작 도구를 소유한다
 | 서비스 | 저장소 | 상태 |
 | --- | --- | --- |
 | 에셋 스토어 API·Postgres·R2·운영자 화면 | [OpenRPGMaker-store](https://github.com/MovieHolic-Plex/OpenRPGMaker-store) | 비공개, 운영 서비스 분리 완료 |
-| 커뮤니티·게임 공유 Next.js 앱 | [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community) | 비공개, DNS·배포 확인 대기 |
+| 커뮤니티·게임 공유 Next.js 앱 | [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community) | 비공개·아카이브, 현재 DNS·배포 없음 |
 
 ## 에디터와 스토어
 
@@ -24,5 +24,7 @@ OpenRPGMaker 저장소는 에디터·플레이어·저작 도구를 소유한다
 커뮤니티 소스나 DB를 import하지 않으며, 커뮤니티 배포도 에디터 체크아웃의
 상위 디렉터리를 암묵적으로 읽지 않는다.
 
-커뮤니티 운영을 활성화하기 전에는 실제 DNS, 데이터베이스, object storage,
-플레이어 artifact lock의 `sourceRevision`을 확인한다.
+`openrpgmaker.com`은 현재 랜딩 페이지와 개발 블로그만 제공하며 커뮤니티·공유
+경로는 운영하지 않는다. 커뮤니티 기능을 다시 시작할 때만 레포를 복원하고 실제
+DNS, 데이터베이스, object storage, 플레이어 artifact lock의 `sourceRevision`을
+확인한다.

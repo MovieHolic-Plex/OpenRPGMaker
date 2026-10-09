@@ -56,7 +56,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
    - Test and evidence strategy: `openwiki/testing.md`
    - Screenshot-only agent UI discovery pilot: `openwiki/ui-discovery-pilot.md`
-   - Community site (separate private Next.js service): `openwiki/community-service.md` and [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community)
+   - Community site (archived private extraction; no current deployment): `openwiki/community-service.md` and [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community)
 4. Inspect the actual source files named by the focused page before editing.
 
 ## Project identity
