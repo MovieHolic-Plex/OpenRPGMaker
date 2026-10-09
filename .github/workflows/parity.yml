@@ -29,7 +29,7 @@ jobs:
   editor-player-parity:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       - run: npm run typecheck:app
       - run: npm run test:parity
@@ -37,7 +37,7 @@ jobs:
   unit-tests:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       - run: npm run typecheck:app
       - run: npm test
@@ -46,7 +46,7 @@ jobs:
   build:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       # 빌드 경고를 실패로 승격시킨다. esbuild 는 CSS 문법 오류를 경고로만 내고 exit 0 을
       # 주기 때문에, src/benchmark/ui/styles.css 가 규칙 0개로 출하되는 동안에도 CI 는
@@ -67,7 +67,7 @@ jobs:
   e2e:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
@@ -75,7 +75,7 @@ jobs:
   ax-gates:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       - run: node scripts/check-file-loc.mjs
       - run: npm run openwiki:verify
@@ -87,7 +87,7 @@ jobs:
   css-gates:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       # CSS 래칫: 다섯 지표는 내려갈 수만 있다. TOKENS.md §4.1(하드코딩 hex 금지)은
       # 기계 가드가 없어 593건(2026-07-06) → 1,940건(2026-08-28), 3.27배로 무너졌다.
@@ -124,7 +124,7 @@ jobs:
   surface-gates:
     runs-on: [self-hosted, oprn-box]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: npm ci
       # 기준선 갱신 환경변수는 CI 에서 금지다(CI 가 기준선을 다시 쓰면 래칫이 사라진다).
       # check-surface-gates.mjs 와 test/surfaceGateSupport.ts 가 각각 이를 하드 실패로 막는다.
