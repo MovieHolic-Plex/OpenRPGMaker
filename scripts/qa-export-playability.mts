@@ -9,7 +9,7 @@ import { deserialize, serialize } from "@/project/io";
 import { readStoredZipEntry, readStoredZipEntryNames } from "@/project/packageZip";
 import { parseReleaseManifest, releaseManifestFromZip, verifyGameRelease } from "@/project/gameRelease";
 import { readTrustedRuntime, RUNTIME_ARCHIVE_FOLDER } from "./lib/runtimeArchive";
-import { operatorRuntimeWithCollector } from "../community-site/lib/releaseArchive";
+import { operatorRuntimeWithCollector } from "./lib/runtimeCollector";
 import { exerciseExport, installExportObservations, rejectBadExport, requiredRuntimePngPattern, verifyEditorTestPlay } from "./lib/exportPlayability.mjs";
 
 function arg(name: string, fallback: string): string {

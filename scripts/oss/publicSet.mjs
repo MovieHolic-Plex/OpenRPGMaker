@@ -16,8 +16,6 @@ export const PUBLIC_EXCLUDE = [
   "harness/pokemon-like-field-kit", // 포챠나 원작 필드 그림을 판형으로 쓴 파생 그림(README 45행)
   // 상용 팩·외부 내려받기 학습 자료. src 는 import 하지 않는다.
   "tiledata/rasak-fantasy", "tiledata/rasak-modern", "tiledata/refmap", "tiledata/pixel-art-world",
-  // 운영 서버 주소·ssh 별칭·배포 절차.
-  "store-server/deploy", "store-server/scripts/install-staging.sh",
   // 저작권 정리로 지운 칩셋의 렌더가 박힌 파일·그 칩셋을 참조하는 예제(src 가 쓰지 않는다).
   "tiledata/tilesets/forest_harmony/recipes/reference-images.json", "public/places-mockup.html", "examples/saesol-red",
 ];

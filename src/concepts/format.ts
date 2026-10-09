@@ -1,5 +1,5 @@
 // 컨셉 피드 카드 한 장(oprn-concept/1). 스토어 서버·Electron 중계·하네스·화면이 같이 쓰는 순수 모듈이다.
-// DOM·node 의존을 두지 않는다 — store-server 와 하네스 CLI 도 이 파일을 그대로 import 한다.
+// DOM·node 의존을 두지 않는다 — 외부 스토어 서버와 하네스 CLI가 같은 계약을 사용한다.
 import { GAME_BRIEF_SLOTS, GAME_PRESET_IDS, type GameBriefSlot, type GamePresetId } from "../project/gameDesignIds";
 
 export const CONCEPT_FORMAT = "oprn-concept/1";

@@ -18,9 +18,6 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
     "package.json",
     "package-lock.json",
     "scripts/build-player-sdk.mjs",
-    "scripts/build-community.mjs",
-    "community-site/package.json",
-    "community-site/scripts/sync-player.mjs",
   ]
     .map((inputPath) => Object.freeze({ kind: "file", path: inputPath })),
   ...[
@@ -41,7 +38,6 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
     "src/project",
     "src/styles/runtime",
     "src/util",
-    "community-site/scripts/lib",
   ]
     .map((inputPath) => Object.freeze({ kind: "directory", path: inputPath })),
   ...["src/styles/tokens.css", "src/styles/dialogue.css", "src/styles/database/tabs-b-title-screen.css", "src/testing/debugSession.ts"]

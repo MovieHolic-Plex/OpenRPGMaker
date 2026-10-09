@@ -197,7 +197,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
   `anim_hit`·`anim_sword`·`anim_arrow` 는 번들 효과 시트(tackle-impact·slash-steel·projectile-shot)로 바꿨고, `ensureBundledBattleAnimations` 가 불러올 때 EasyRPG Blow·Sword1·Arrow 를 가리키는 기록을 고친다(기본 id 는 기본값으로, 저자 기록은 그림 칸만). 포켓몬 효과는 그대로.
 - **적**: EasyRPG Hornet·AI 고치/씨앗은 고르기·조수 목록에서 빠지고 id 는 도트 말벌·Scarloxy 뒷모습 별칭. 숲 말벌 종족·이슬마을 적 4종은 도트 몬스터로 옮겼다.
 - **캐시**: 도트 적 그림이 같은 주소에서 바뀌어 PWA 가 옛 그림을 내놓았다 — `public/sw.js` `CACHE_NAME` v4.
-- 이후 starter 제거: 영웅 48px·고해상도 전투 시트와 나머지 starter 파일도 사용자 지시로 삭제했다(위 절). `community-site/public/player-static` 번들은 `npm run build:community` 로 다시 깔아야 새 그림을 따른다.
+- 이후 starter 제거: 영웅 48px·고해상도 전투 시트와 나머지 starter 파일도 사용자 지시로 삭제했다(위 절). 커뮤니티 플레이어 번들은 별도 커뮤니티 저장소가 릴리스 artifact를 갱신할 때 다시 설치한다.
 
 ## 캐릭터별 전투 동작 (2026-10-03)
 

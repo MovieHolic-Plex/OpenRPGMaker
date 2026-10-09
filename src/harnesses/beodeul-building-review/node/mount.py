@@ -13,6 +13,7 @@ token that is passed to the publisher through the environment and never stored).
 import importlib.util
 import json
 import os
+import shlex
 import subprocess
 import sys
 import threading
@@ -99,7 +100,10 @@ def _run(cmd, env_extra=None, timeout=1800):
 
 
 def _publisher(profile, target, extra=None, env_extra=None):
-    code, out = _run(['npx', 'vite-node', 'store-server/scripts/publishBuildings.ts', '--profile', profile, '--target', target, *(extra or [])], env_extra, 600)
+    publisher = os.environ.get('OPRN_STORE_PUBLISHER')
+    if not publisher:
+        return {'ok': False, 'error': '스토어 게시기는 별도 비공개 저장소에서 OPRN_STORE_PUBLISHER로 연결해야 합니다.'}
+    code, out = _run([*shlex.split(publisher), '--profile', profile, '--target', target, *(extra or [])], env_extra, 600)
     line = next((l for l in reversed(out.strip().splitlines()) if l.startswith('{')), None)
     try:
         return json.loads(line) if line else {'ok': False, 'error': (out.strip().splitlines() or ['출력 없음'])[-1][:300]}
