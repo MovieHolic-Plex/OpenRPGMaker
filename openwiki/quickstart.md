@@ -168,7 +168,7 @@ Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 �
 | 테스트 플레이 창 | `src/editor/panels/testPlayModal.ts` |
 | 색·토큰·크림 셸 | `src/styles/tokens.css`, `src/styles/index.css` |
 | 웹 게임 내보내기 | `src/project/webExport.ts`, `vite.player.config.ts` |
-| 커뮤니티 사이트(공유) | [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community) + `openwiki/community-service.md` |
+| 커뮤니티 사이트(공유, 현재 미운영) | 아카이브된 [OpenRPGMaker-community](https://github.com/MovieHolic-Plex/OpenRPGMaker-community) + `openwiki/community-service.md` |
 
 두 가지 경계만 어기지 마라. **편집기는 저작 데이터(`project`)를, 런타임은 세션 상태(`session`)를 만진다.**
 그리고 `src/styles` 는 표현만 소유한다 — 동작을 CSS 로 우회하지 않는다.
