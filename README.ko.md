@@ -8,6 +8,16 @@
 
 [English](README.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
+### 앱 바로 다운로드
+
+[![Windows 다운로드 (EXE)](https://img.shields.io/badge/Windows-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20EXE-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows 다운로드 (ZIP)](https://img.shields.io/badge/Windows-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20ZIP-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
+[![Linux 다운로드 (AppImage)](https://img.shields.io/badge/Linux-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20AppImage-eab308?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
+
+Windows: EXE를 실행하거나 ZIP 압축을 풀고 `OPRN Studio.exe`를 실행하세요. Linux: AppImage에 실행 권한을 준 뒤 실행하세요.
+
+[전체 다운로드 · 릴리스 노트](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)
+
 [![Website](https://img.shields.io/badge/website-openrpgmaker.com-5865f2)](https://openrpgmaker.com/)
 [![Asset Store](https://img.shields.io/badge/asset%20store-store.openrpgmaker.com-f59e0b)](https://store.openrpgmaker.com/)
 [![Editor: SUL](https://img.shields.io/badge/editor-Sustainable%20Use-0ea5e9)](LICENSE.md)

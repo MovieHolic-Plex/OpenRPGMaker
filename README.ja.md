@@ -8,6 +8,16 @@
 
 [English](README.md) · [中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
+### アプリをダウンロード
+
+[![Windows ダウンロード (EXE)](https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20EXE-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows ダウンロード (ZIP)](https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20ZIP-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
+[![Linux ダウンロード (AppImage)](https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20AppImage-eab308?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
+
+Windows: EXE を実行するか、ZIP を展開して `OPRN Studio.exe` を実行してください。Linux: AppImage に実行権限を付けて起動してください。
+
+[すべてのダウンロード・リリースノート](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)
+
 [![Website](https://img.shields.io/badge/website-openrpgmaker.com-5865f2)](https://openrpgmaker.com/)
 [![Asset Store](https://img.shields.io/badge/asset%20store-store.openrpgmaker.com-f59e0b)](https://store.openrpgmaker.com/)
 [![Editor: SUL](https://img.shields.io/badge/editor-Sustainable%20Use-0ea5e9)](LICENSE.md)

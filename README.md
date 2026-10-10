@@ -8,6 +8,16 @@
 
 **English** · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
+### Download the desktop app
+
+[![Windows Download (EXE)](https://img.shields.io/badge/Windows-Download%20EXE-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows Download (ZIP)](https://img.shields.io/badge/Windows-Download%20ZIP-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
+[![Linux Download (AppImage)](https://img.shields.io/badge/Linux-Download%20AppImage-eab308?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
+
+Windows: run the EXE, or unzip the ZIP and run `OPRN Studio.exe`. Linux: make the AppImage executable, then run it.
+
+[All downloads & release notes](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)
+
 [![Website](https://img.shields.io/badge/website-openrpgmaker.com-5865f2)](https://openrpgmaker.com/)
 [![Asset Store](https://img.shields.io/badge/asset%20store-store.openrpgmaker.com-f59e0b)](https://store.openrpgmaker.com/)
 [![Editor: SUL](https://img.shields.io/badge/editor-Sustainable%20Use-0ea5e9)](LICENSE.md)
