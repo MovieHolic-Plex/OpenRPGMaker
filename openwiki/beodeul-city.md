@@ -87,12 +87,12 @@ source는 16px/16열/336칸이며 기존 칸 배정을 유지하고 필요한 �
 7MB `beodeulCityTileset.json` 을 constants 가 import 하지 않게 하려는 것이라 `DEFAULT_TILESET_NAME` 은 `bundled.ts` 항목 이름과 같아야 한다).
 
 - 새 프로젝트: `createBlankProject` 의 시작 맵 `createBlankMap(..., DEFAULT_TILESET_ID)`, 타일셋 목록 맨 앞이 버들항(`defaultTilesets`, `defaultResourceProfiles` 도 기본 프로필을 앞으로).
-- 빈 맵 채움: `createBlankMap` 은 버들항이면 잔디 737(`BEODEUL_PLAIN_GRASS_TILE`), 아니면 `TILE.GRASS`. **`TILE.*` 상수는 합본 마을 칸 번호다.** 버들항에서 240 은 벽이다 — 버들항 맵에 `TILE.*` 를 쓰지 마라.
+- 빈 맵 채움: `createBlankMap`/`blankFillTileFor`는 타일셋 메타데이터 또는 번들별 바닥 번호를 고른다. 버들항의 민무늬 잔디는 737(`BEODEUL_PLAIN_GRASS_TILE`)이다. **`TILE.*` 상수는 합본 마을 칸 번호라 타일셋 간 기본값으로 쓰지 않는다.** 버들항에서 240은 벽이다.
 - 합본 마을은 번들에 그대로 남는다. 합본 마을 칸 번호에 의존하는 코드·테스트(`createStarterMap`, `createLogCabinShowcaseMap`, `createFarmingDemoProject`, `scripts/natural-village/build.ts`, 테스트 약 540곳)는 `COMBINED_TOWN_TILESET_ID/NAME/TEXTURE_KEY`(같은 파일)와 `combinedTownTileset()` 를 명시한다. "기본"을 뜻하는 곳만 `DEFAULT_TILESET_*`.
 - 기존 프로젝트는 이관하지 않는다. 합본 마을 맵은 그대로 합본 마을 팔레트로 그려진다(`verify-shots/beodeul-default/bd-existing-combined-town.png`).
 - 조수(2026-10-01 변경): `defaultOutdoorTilesetId`(`forestHarmony.ts`)는 **프로젝트에 버들항이 있고 모든 맵이 버들항이면(= 새 프로젝트) 버들항**, 그 밖(합본 마을·숲마을 맵이 섞인 기존 프로젝트)은 예전처럼 `forest_harmony` 가 있으면 그것이다. 보는 맵의 계열은 `toolRunner.ts` 60~100행의 계열 규칙이 지킨다. 「마을 만들어 줘」는 버들항 프로젝트에서 `author_beodeul_town` 으로 간다 — 아래 「조수 마을 경로」.
 - 계열(2026-10-01): 버들항의 `family` 는 **`"oprn-atlas"`(생성 칩셋)** 이다. 시트 JSON 은 `"easyrpg"` 라 숲마을과 같은 계열로 묶였고, 계열 검사(`toolRunner.rejectTilesetFamilyChange`)가 버들항 맵에서 숲마을 새 맵으로 가는 것을 막지 못했다. `createBeodeulCityTileset` 이 덮어쓰고 `ensureBeodeulCityTileset` 이 옛 사본을 고친다.
-- `create_map`(2026-10-01): 버들항이면 잔디 737 로 채운다(`plainGrassTileFor`, `defaultMaps.ts`). 예전엔 `isCombinedTownCompatibleTileset` 이 거짓이라 빈칸(-1)이었다.
+- `create_map`(2026-10-01): 타일셋의 정본 메타데이터를 우선해 바닥을 채우고, 버들항은 잔디 737을 쓴다(`plainGrassTileFor`, `defaultMaps.ts`). 예전엔 모든 칩셋에 합본 마을 번호 240을 넣어 다른 타일셋에서 벽·장식처럼 보였다.
 - 시작 마을(2026-10-01): 「예제로 시작」(`projectStartSeed.ts`)과 첫 실행 안내 「작은 마을 추가하기」(`firstRunGuide.ts`)는 `createBeodeulStarterMap`(`src/editor/content/beodeulStarterMap.ts`) — `author_beodeul_town` 40×30 seed 7(주택가·시장 둘·저택) 뒤 오른쪽 남는 띠를 비우고 첫 띠 아래 길(2줄)을 동쪽 끝까지 잇는다. 첫 구간 뼈대가 (가로-1, 시작 y)에 다음 맵 문을 달기 때문이다. 시작 칸 (3, 13). 첫 실행 안내는 시작 맵이 버들항일 때만 쓰고, 옛 칩셋으로 시작한 프로젝트는 합본 마을 `createStarterMap` 그대로(계열을 섞지 않게). `createStarterMap` 자체와 샘플 모험(`createDefaultProject`)은 합본 마을 칸 번호로 꾸민 것이라 그대로다.
 - 몬스터 수집 도로(2026-10-01): `author_wild_route` 가 버들항 맵도 깐다(`wildRouteBeodeul.ts`) — 합본 마을 경로와 같은 길 계획(`planRouteCorridor`)을 포석·짙은 잎 풀(11628)·버들항 나무 키트로. **버들항엔 키큰 풀이 없어 풀숲은 짙은 잎 풀 대용이다** — 손 도트 키큰 풀을 시트에 더하는 일은 남았다. 이것이 없던 동안(#1789~) 새 프로젝트의 몬스터 수집 첫 구간 뼈대(AI 인터뷰 시작·예제로 시작)는 이 도구에서 멈췄다.
   - 2026-10-06 다시 손봄(「1번 도로가 엉망진창」): 시내 포석 → **`버들항 모랫길`** 오토타일, 잡음 경로의 계단 대각선 → **꺾임 비용 경로**(`routePathStraight`, 방향을 상태에 넣은 다익스트라) + 경유점까지 갔다 되돌아온 막다른 가지 잘라 내기(`pruneLoops`),

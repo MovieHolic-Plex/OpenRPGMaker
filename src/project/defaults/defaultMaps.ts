@@ -1,5 +1,5 @@
 import { genId } from "@/util/id";
-import type { GameMap, MapId, MapTreeNode } from "../types";
+import type { GameMap, MapId, MapTreeNode, TilesetDef } from "../types";
 import { DEFAULT_TERRAIN_GAMEPLAY } from "../terrainDesign";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
 // 2026-10-07 저작권 정리: 합본 마을·레트로 집(EasyRPG) 칩셋으로 그리던 쇼케이스 맵(통나무집·EasyRPG 집 시험장)과
@@ -8,19 +8,55 @@ import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
 const STARTER_MAP_SIZE = 30;
 
 /**
- * 새 맵 바닥 채움 칸. `TILE.GRASS`(240)는 합본 마을 시트의 칸 번호라 버들항에서는 벽이다.
- * 버들항의 민무늬 풀 칸은 737 (openwiki/beodeul-city.md).
+ * 새 맵 바닥 채움 칸.
+ *
+ * 타일 번호는 칩셋마다 독립적이라 `TILE.GRASS`(240)를 공용 기본값으로 쓰면 안 된다.
+ * 240은 옛 합본 마을 시트의 번호일 뿐이며, 다른 칩셋에서는 벽·장식·빈 칸이 될 수 있다.
  */
 const BEODEUL_PLAIN_GRASS_TILE = 737;
 
-/** 합본 마을 번호(`TILE.GRASS`)를 쓰면 안 되는 칩셋의 민무늬 풀 칸. 그 밖의 칩셋은 undefined. */
-export function plainGrassTileFor(tilesetId: string): number | undefined {
-  return tilesetId === DEFAULT_TILESET_ID ? BEODEUL_PLAIN_GRASS_TILE : undefined;
+/** 메타데이터를 아직 갖지 않은 번들 칩셋의 안전한 민무늬 바닥. */
+const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
+  beodeul_city: BEODEUL_PLAIN_GRASS_TILE,
+  joseon_baram: 0,
+  modern_city: 17,
+  jp_city: 725,
+  wizarding_world: 1,
+  scarloxy_chipset_grassland: 0,
+  scarloxy_chipset_wilds: 0,
+  atlas_biome_interior: 258,
+};
+
+type BlankFillTileset = Pick<TilesetDef, "tileMeta">;
+
+function semanticGroundTile(tileset: BlankFillTileset | undefined): number | undefined {
+  const meta = tileset?.tileMeta;
+  if (!meta) return undefined;
+  let best: { tile: number; score: number } | undefined;
+  for (let tile = 0; tile < meta.length; tile += 1) {
+    const entry = meta[tile];
+    if (!entry || entry.defaultLayer !== "lower" || entry.passage !== "passable") continue;
+    const text = [entry.label, entry.description, ...(entry.tags ?? [])].join(" ").toLowerCase();
+    let score = 0;
+    if (/grass|green|잔디|풀|초원/.test(text)) score += 6;
+    if (/ground|terrain|field|지형|마당|흙|땅/.test(text)) score += 4;
+    if (/floor|바닥|널마루|마루/.test(text)) score += 3;
+    if (/road|asphalt|sidewalk|water|wall|roof|길|도로|보도|물|벽|지붕/.test(text)) score -= 5;
+    if (score <= 0) continue;
+    if (!best || score > best.score || (score === best.score && tile < best.tile)) best = { tile, score };
+  }
+  return best?.tile;
 }
 
-export function blankFillTileFor(tilesetId: string, fallback: number = TILE.GRASS): number {
+/** 칩셋 정본 메타데이터 또는 번들 기본값에서 새 맵 바닥을 고른다. */
+export function plainGrassTileFor(tilesetId: string, tileset?: BlankFillTileset): number | undefined {
+  if (tilesetId === DEFAULT_TILESET_ID) return BEODEUL_PLAIN_GRASS_TILE;
+  return semanticGroundTile(tileset) ?? BUNDLED_PLAIN_GROUND_TILES[tilesetId];
+}
+
+export function blankFillTileFor(tilesetId: string, fallback = 0, tileset?: BlankFillTileset): number {
   if (tilesetId === "worldmap_authoring") return 0;
-  return plainGrassTileFor(tilesetId) ?? fallback;
+  return plainGrassTileFor(tilesetId, tileset) ?? (tilesetId === DEFAULT_TILESET_ID ? BEODEUL_PLAIN_GRASS_TILE : fallback);
 }
 
 export function createBlankMap(
@@ -28,7 +64,8 @@ export function createBlankMap(
   width: number,
   height: number,
   tilesetId: string = DEFAULT_TILESET_ID,
-  tileSize: number = DEFAULT_TILE_SIZE
+  tileSize: number = DEFAULT_TILE_SIZE,
+  tileset?: BlankFillTileset
 ): GameMap {
   const n = width * height;
   return {
@@ -38,7 +75,7 @@ export function createBlankMap(
     height,
     tilesetId,
     tileSize,
-    lowerTiles: new Array<number>(n).fill(blankFillTileFor(tilesetId)),
+    lowerTiles: new Array<number>(n).fill(blankFillTileFor(tilesetId, 0, tileset)),
     upperTiles: new Array<number>(n).fill(TILE.EMPTY),
     events: [],
     // 시야 차단은 선택 기능이다. 새 맵은 OFF를 명시적으로 저장한다.
