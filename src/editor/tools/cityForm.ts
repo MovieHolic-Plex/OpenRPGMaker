@@ -120,7 +120,8 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     const k = kinds(map.lowerTiles[idx(x, y)]!);
     if (!k.includes("road") && !k.includes("sand")) continue;
     if (x === 0 || y === 0 || x === W - 1 || y === H - 1) continue;
-    if (N4.filter(([dx, dy]) => paved(x + dx, y + dy)).length <= 1) deadEnds.push({ at: [x, y], kind: "cell", width: 1 });
+    // 물가에서 끝나는 길(나루·선착장)은 막다른 길이 아니다 — 아래 폭 2~3 토막 검사와 같은 예외
+    if (N4.filter(([dx, dy]) => paved(x + dx, y + dy)).length <= 1 && !N4.some(([dx, dy]) => water(x + dx, y + dy))) deadEnds.push({ at: [x, y], kind: "cell", width: 1 });
   }
   const isRoadFree = (x: number, y: number) => isStreet(x, y) && !kitOwned.has(idx(x, y));
   for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]] as const) {
@@ -194,7 +195,9 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     for (let h = 0; h < q.length; h += 1) for (const b of adj[q[h]!]!) if (!depth.has(b)) { depth.set(b, depth.get(q[h]!)! + 1); q.push(b); }
     const ds = [...depth.values()]; meanDepth = +(ds.reduce((a, b) => a + b, 0) / ds.length).toFixed(2); maxDepth = Math.max(...ds);
   }
-  const isolated = compSizes.filter((m) => m !== main).map((m) => m.reduce((b, i) => (lines[i]!.len > lines[b]!.len ? i : b), m[0]!))
+  // 물가에 닿는 떨어진 길망(강 건너 나루 들길·섬 선착장)은 배로 잇는 길이다 — 떨어진 길로 세지 않는다
+  const reachesWater = (m: number[]) => m.some((i) => lines[i]!.cells.some((c) => N4.some(([dx, dy]) => water((c % W) + dx, Math.floor(c / W) + dy))));
+  const isolated = compSizes.filter((m) => m !== main && !reachesWater(m)).map((m) => m.reduce((b, i) => (lines[i]!.len > lines[b]!.len ? i : b), m[0]!))
     .map((i) => ({ from: lines[i]!.from, to: lines[i]!.to, len: lines[i]!.len })).filter((l) => l.len >= 6);
   const longStraight = lines.filter((l) => l.len >= 45).map((l) => ({ orient: l.orient, from: l.from, to: l.to, len: l.len }));
 
@@ -282,6 +285,8 @@ export function cityFormAdvice(r: CityFormReport): string[] {
   if (r.blocks.overused.length) out.push(`블록 ${r.blocks.overused.map((o) => `${o.id}×${o.n}`).join(" ")} 3번 이상 — 두 번까지만`);
   if (r.graph.isolated.length) out.push(`길망에서 떨어진 길 ${r.graph.isolated.length}개: ${r.graph.isolated.slice(0, 5).map((l) => `${at(l.from)}→${at(l.to)}`).join(" ")}`);
   if (r.spacing.cv !== null && r.spacing.cv < 0.15 && r.spacing.vGaps.length + r.spacing.hGaps.length >= 4) out.push(`평행 대로 간격이 거의 같다(변동 ${r.spacing.cv}) — 바둑판처럼 보인다. 간격을 달리하거나 한 줄을 어긋나게`);
-  if (!r.nodes.length) out.push("광장(결절점)이 없다 — 24칸 이상 광장 하나는 필요");
+  // 광장 요구는 블록 격자 도시에만 — 마을은 광장 없는 형태(길가·물가 띠·흩어진)가 정상이다. 마을에 이 지적을 주면
+  // 조수가 길가 마을에 판석 마당을 손으로 깔다 길을 끊었다(2026-10-11 실모델 시험).
+  if (!r.nodes.length && r.blocks.count > 0) out.push("광장(결절점)이 없다 — 24칸 이상 광장 하나는 필요");
   return out;
 }

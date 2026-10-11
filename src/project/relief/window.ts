@@ -170,7 +170,8 @@ export function planReliefPatch(prev: ReliefScene | null, next: ReliefScene, ima
     // + 뒤 패스 이웃
     let x0 = Math.max(0, dx0 * T - 8 - REACH), x1 = Math.min(PW, (dx1 + 1) * T + 8 + REACH);
     if (x0 <= REACH || x1 >= PW - REACH) { x0 = 0; x1 = PW; }
-    const y0 = Math.max(0, dy0 * T - 8 + pad - cmax * T - REACH), y1 = Math.min(SH, (dy1 + 1) * T + 8 + pad + REACH);
+    // 맨 위 줄이 바뀌면 그 위 여백 채움(render.ts: 0번 줄 바닥을 화면 맨 위까지 잇는다) 전체가 바뀔 수 있다 — 화면 맨 위부터 덮는다
+    const y0 = dy0 === 0 ? 0 : Math.max(0, dy0 * T - 8 + pad - cmax * T - REACH), y1 = Math.min(SH, (dy1 + 1) * T + 8 + pad + REACH);
     const main = reliefWindowFor(x0, y0, x1, y1, W, H, pad);
     // 창에 걸친 경사로는 통째로 바뀐 칸에 넣고 다시 잰다(계단 양식이 경사로 화면 높이 전체를 본다)
     let grown = false;

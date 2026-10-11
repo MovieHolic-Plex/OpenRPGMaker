@@ -16,7 +16,7 @@ import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
 import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
 import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
-import { inspectPiLayoutQuality, piLayoutRepairPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
@@ -843,6 +843,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds);
         emit({ type: "execution_status", name: "layout_quality", ok: layout.length === 0,
           summary: layout.length ? `배치 품질 수리 뒤에도 기준 미달: ${describe(layout)}` : "배치 품질 기준 통과", data: layout });
+        // 다시 잰 숫자는 조수가 모른다 — 수리 턴의 보고가 「이상 없음」으로 끝났다(2026-10-11 사막 2건). 미달이면 고치게 하지 않고 보고에 적게만 한다.
+        if (layout.length && !fatal && !rejected && turns < maxTurns && !options.signal?.aborted) await promptResuming(piLayoutShortfallPrompt(layout));
       }
     }
     let previousInteriorIssues = '';

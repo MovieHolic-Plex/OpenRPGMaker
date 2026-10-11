@@ -1,5 +1,6 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
+import { checkKitPlacement, checkReliefPlacement } from "@/project/kitPlacementRules";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
@@ -9,7 +10,7 @@ import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { ToolError, type ToolDefinition } from "./types";
 
 type Layers = "both" | "lower" | "upper";
-type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"] };
+type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
 
 const fail = (message: string): never => { throw new ToolError(message, { code: "invalid-args" }); };
 
@@ -52,7 +53,7 @@ function resolveObject(project: Project, requestedId: string): Resolved {
     if (prefix === "kit") {
       const kit = source.structureKits?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 킷 ${innerId} 가 없습니다`);
       return { name: kit.name ?? kit.id, source, pattern: kitPattern(kit), assets: {}, defaultLayers: "both",
-        entrances: kit.parts?.filter(part => part.kind === "entrance") };
+        entrances: kit.parts?.filter(part => part.kind === "entrance"), kit };
     }
     const group = source.tileGroups?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 타일 그룹 ${innerId} 이 없습니다`);
     const preview = group.previewMap ?? fail(`타일 그룹 ${innerId} 에는 도안(previewMap)이 없습니다`);
@@ -86,7 +87,7 @@ export function sharedDesignDetail(project: Project, id: string) {
 
 export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
   { name: "stamp_object", mode: "write", domains: ["map"],
-    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner.",
+    description: "Stamp one shared object (list_spatial_designs kind:object → data.shared.rows[].id: obj:… from the shared object catalog — leafless trees, volcano peaks, climate terrain pieces, harbor parts, gatehouse, house exteriors, village props — or kit:/group: for this project's other kits) onto a map with its top-left at (x, y). Works without spatial activation. The object keeps its authored cells; when the map's tileset shows other pictures at those numbers the pictures are grafted onto the map's tileset (same tile size only) and renumbered, so place kits such as generated building exteriors, the gatehouse or harbor boats can go onto a forest village map. -1 cells leave the map as it is. layers: both (default for kits/houses), upper (default for harbor parts and volcano peaks — keeps the water/ground below) or lower. obj:house/<form> rows stamp only the exterior; use author_house for doors and interiors. Overflow past the map edge is clipped and reported. Each row carries owner (where it belongs — next to what) and passage; follow owner. On maps with height steps (relief) the drawn cells must sit on one level, off ramp/stair cells, and not right north of higher ground (it hides the bottom row); a rejection names the levels and a nearby top-left on each level. Ground paint, shadows and bridges are exempt.",
     parameters: { type: "object", properties: {
       objectId: { type: "string", description: "list_spatial_designs(kind:'object') 의 data.shared.rows[].id" },
       mapId: { type: "string" },
@@ -105,6 +106,16 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       const blank = new Array(resolved.pattern.width * resolved.pattern.height).fill(-1);
       const pattern: StampPattern = { ...resolved.pattern,
         lower: layers === "upper" ? blank : resolved.pattern.lower, upper: layers === "lower" ? blank : resolved.pattern.upper };
+      // 놓기 규칙(물레방아는 물가에 걸쳐, 배는 물 위에, 건물은 뭍에 …) — 어기면 찍지 않는다(project/kitPlacementRules.ts).
+      const kitDef = "kit" in resolved ? resolved.kit : undefined;
+      const mapTileset = project.tilesets[map.tilesetId];
+      if (kitDef && mapTileset) {
+        const broken = checkKitPlacement(map, mapTileset, kitDef.id, kitDef, Number(args.x), Number(args.y));
+        if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id });
+      }
+      // 높이 단(map.relief): 그림은 한 단 위에만, 경사로 칸 금지, 남쪽 높은 칸이 아랫줄을 덮지 않게. relief 없는 맵은 그대로.
+      const reliefBroken = checkReliefPlacement(map, resolved.source, objectId, resolved.name, pattern, Number(args.x), Number(args.y));
+      if (reliefBroken) throw new ToolError(reliefBroken, { code: "relief-placement-rule", mapId: map.id });
       installStampAssets(project, resolved.assets);
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }

@@ -5,6 +5,66 @@
 
 <!-- releases -->
 
+## 0.188.0 — 2026-10-11
+
+### 기능
+
+- **tools** — stamp_object 가 높이 단을 지킨다 — 두 단 걸침·경사로·남쪽 가림 거절 (`94f5b99`)
+- **village** — 높은 단 오르막·윗길, 갇힌 단 방지, 포구 길가 일하는 물가, 둥근 울타리 모서리 (`b156cfa`)
+
+### 수정
+
+- **relief** — mirror the top half of row 0 into the pad fill (`237cfc5`)
+- **village** — 곧은 길 45칸 미만·지붕 귀퉁이 한 칸을 단 위 땅으로 안 세기·앵커 자리 ±16 (`ced9bac`)
+- **relief** — fill the top pad above row 0 and drop smooth-ramp outlines (`fd61801`)
+- **village** — 높은 단을 가르는 울타리 거절·옛 relief 지우고 시공·덮어 짓기 안내 바로잡기 (`9e80a0c`)
+- **assistant** — 배치 품질 검사를 사막·설원의 트인 땅에 맞추고 수리 뒤 미달을 보고하게 한다 (`05eec87`)
+
+### 문서
+
+- **openwiki** — INDEX 재생성 — #2420·#2421·#2422 머지 뒤 절 좌표 (`45f0dfd`)
+- **relief** — top pad fill, borderless smooth ramps and village runtime QA (`e9cd4e4`)
+- **village** — 곧은 길 45칸 미만 규칙·지붕 귀퉁이 제외·앵커 ±16·프로브 288판 — 위키·마을 문법(번들 참고문서 갱신) (`a7c0991`)
+- **openwiki** — stamp_object 높이 단 규칙과 트인 땅 배치 기준 계약 (`fa15753`)
+
+### 테스트
+
+- **relief** — runtime QA scenario for terrain villages' top strip and ramps (`921bf3b`)
+
+## 0.187.0 — 2026-10-11
+
+### 기능
+
+- **editor** — 버들항 지형 마을 남은 점 — 늪 마른 둔덕·골 가장자리 덤불·앵커 자리·곧은 길 겹침 (`40dc010`)
+- **editor** — 버들항 마을 — 지형을 먼저 깔고 그 위에 마을, 길은 매끈한 경사로, 울타리 마감 (`5aa08dc`)
+- **village** — 버들항 마을 — 자연 물가·그림자·놓기 규칙 준수·나루·포구 물가 큰길·밀도·언덕 (`d435b8c`)
+- **tools** — 키트 놓기 규칙 — 물레방아·배·잔교·다리·건물은 stamp_object 가 거절한다 (`cc20981`)
+- **tiles** — 버들항 자연 덧그림 팩 beodeul_nature — 그림자·자연 물가·풀밭 가장자리 (`b9e1e72`)
+
+### 수정
+
+- **village** — 물레방아는 방앗간과 짝, 다리 자리는 강을 다리 폭만큼 넓힌다 (`1890290`)
+- **tiles** — 자연 덧그림 — 그림자 더 크게·집 밑동 흙 띠, 얼음 못·늪 둑, 칸은 ★ (`f91ed3a`)
+
+### 문서
+
+- **beodeul** — 그림자·자연 물가·놓기 규칙·언덕 — 위키·마을 문법 참고문서·그림 다시 굽기 (`54a734b`)
+
+## 0.186.0 — 2026-10-11
+
+### 기능
+
+- 조화 검수 수리 한 바퀴+전후 대결, 버들항 마을 형태 넷·밭 울타리 (#2416) (`909b96b`)
+
+### 문서
+
+- prominently display direct desktop downloads in all READMEs (`9221fb9`)
+- **release** — NSIS portable 은 wine 없이 리눅스에서 만들어진다 (`1d26078`)
+
+### 빌드
+
+- **desktop** — 윈도우 단일 실행 exe(portable)를 릴리스에 함께 올린다 (#2415) (`ef5ce08`)
+
 ## 0.185.0 — 2026-10-10
 
 ### 기능

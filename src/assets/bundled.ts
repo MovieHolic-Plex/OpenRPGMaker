@@ -5,6 +5,7 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import atlasVehicles from "./atlasVehiclesTileset.json";
 import beodeulCitySheet from "./beodeulCitySheet.json";
 import beodeulGroundCatalog from './beodeulGroundCatalog.json';
+import beodeulNatureCatalog from './beodeulNatureCatalog.json';
 import beodeulWarmTreesCatalog from './beodeulWarmTreesCatalog.json';
 import beodeulArchitectureCatalog from './beodeulArchitectureCatalog.json';
 import beodeulFormsCatalog from './beodeulFormsCatalog.json';
@@ -122,6 +123,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:'tex_beodeul_warm_trees',path:'assets/beodeul-warm-trees/chipset.png',name:'버들항 · 따뜻한 황록 나무·숲'},
   {textureKey:"tex_beodeul_door",path:"assets/beodeul-door/door-states.png",name:"버들항 · 문 열림 손 도트 시안"},
   {textureKey:"tex_beodeul_ground",path:"assets/beodeul-ground/chipset.png",name:"버들항 · 기초·밑동·잔디 꾸미기"},
+  // 버들항 자연 덧그림(2026-10-11) — 그림자·자연 물가·풀밭 가장자리 2층 덧그림. 재생성 scripts/content/build-beodeul-nature.py, 정의 project/defaults/beodeulNature.ts.
+  {textureKey:"tex_beodeul_nature",path:"assets/beodeul-nature/chipset.png",name:"버들항 · 자연 덧그림(그림자·물가·풀밭 가장자리)"},
   {textureKey:'tex_beodeul_architecture',path:'assets/beodeul-architecture/chipset.png',name:'버들항 · 원본 보존 민가·성당'},
   {textureKey:'tex_beodeul_forms',path:'assets/beodeul-forms/chipset.png',name:'버들항 · 건물 구조 여섯 계열'},
   {textureKey:'tex_beodeul_reviewed',path:'assets/beodeul-reviewed/chipset.png',name:'버들항 · 사람이 허용한 건물'},
@@ -160,6 +163,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === 'tex_beodeul_warm_trees') return beodeulWarmTreesCatalog.count;
   if (key === "tex_beodeul_door") return 16;
   if (key === "tex_beodeul_ground") return beodeulGroundCatalog.count;
+  if (key === "tex_beodeul_nature") return beodeulNatureCatalog.count;
   if (key === 'tex_beodeul_architecture') return beodeulArchitectureCatalog.count;
   if (key === 'tex_beodeul_forms') return beodeulFormsCatalog.count;
   if (key === 'tex_beodeul_reviewed') return beodeulReviewedCatalog.count;

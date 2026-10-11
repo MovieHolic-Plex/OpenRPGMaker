@@ -48,13 +48,15 @@ export function formatBeodeulTownNote(target: BeodeulTownTarget, targetMap: { id
     "[먼저 보이게] 사용자는 맵 위에서 마을이 지어지는 모습을 기다리고 있다. 프로젝트 요약·위키·DB·참고문서 조회로 시간을 쓰지 말고 "
       + "곧바로 author_beodeul_town 을 부른다(이 도구는 타일을 코드가 고르므로 참고문서를 먼저 읽지 않아도 된다). 확인·보충은 시공 뒤에 한다.",
     "[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. "
-      + "author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — "
+      + "author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 길 뼈대 → 앵커 건물 → 길을 보는 집 → 일터·울타리 밭·숲 덩이)으로 짓는다 — "
       + "paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.",
     "소규모 3~5채를 요청하면 author_beodeul_town({houseCount:요청한수,name,seed})을 사용한다. 서로 다른 실루엣의 집·굽은 길·우물 마당을 갖춘 40×30 잔디 마을이며 기후 theme은 생략한다. 색만 다른 같은 집을 반복하지 않는다.",
     where,
     "theme 은 말에서 고른다: 강·물레방아·시골 마을 = river(기본), 항구·포구·어촌·바닷가 = coast, 사막·오아시스 = desert, 눈·설원·겨울 = snow, 늪·습지 = swamp. "
       + "「도시·로마풍·블록」을 말할 때만 city(블록 격자 도시, 기본 60×60, 항구 호수는 harbour:true·가로 83 이상). 마을 크기는 생략하면 56×44 안팎(36×30~96×80). "
       + "같은 seed 는 같은 마을이니 다른 배치를 원하면 seed 를 바꾼다.",
+    "form(마을 형태)은 마을이 왜 거기 생겼나에서 고른다: 나루·다리·포구 길·오아시스로 드는 길가 = street, 강을 따라 늘어선 방앗간·나루 마을(river 만) = riverbank, "
+      + "농가·산촌·외딴 마을 = scatter, 장터·교역지 = plaza(이때만 광장). 중심 광장·십자 길을 기본으로 삼지 않는다. form 을 쓰면 houseCount 는 보내지 않는다.",
     "시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다(결과 data.doors·data.entrance). "
       + "NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다.",
   ].join("\n");
