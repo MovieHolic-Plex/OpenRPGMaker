@@ -8,6 +8,9 @@ import { generateTitleArt, titleArtToolCalls } from '../../src/editor/titleArtGe
 import { generateOpeningStill } from '../../src/editor/openingImageGeneration';
 import { fitTitleArtEffects } from '../../src/editor/titleArtFitting';
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog';
+import type { PiOpeningProduction } from '../../src/ai/piAgent/openingProduction';
+import type { ActivityVisual } from '../../src/ai/activityVisual';
+import { activityThumbnail, generateBestStill } from './openingStillCritic';
 import { generateProviderImage } from './ohMyPiImageRuntime';
 import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
@@ -27,6 +30,8 @@ export function createPiPresentationTool(
     readOnlyTools?: boolean;
     apply: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>;
     onCall: (record: PiToolCallRecord) => void;
+    openingProduction?: PiOpeningProduction;
+    progress?: (summary: string, toolCallId: string) => void;
     renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
   },
 ): PiToolShape {
@@ -54,8 +59,20 @@ export function createPiPresentationTool(
           return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
         };
         let resourceId: string;
+        let visuals: ActivityVisual[] = [];
+        const say = (summary: string) => options.progress?.(summary, id);
         if (definition.name === TITLE_ART_TOOL) {
-          const art = await generateTitleArt(args, { signal, generateImage,
+          const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
+          const pickingImage: typeof generateImage = count < 2 ? generateImage : async req => {
+            say(`타이틀 키아트 후보 ${count}장을 생성하는 중`);
+            const best = await generateBestStill(() => generateImage(req).then(img => ({ ok: true as const, ...img })), count,
+              { ...(options.openingProduction?.criticContext({ ...args, focus: args.focus ?? 'the key landmark or hero of the title art', captionSide: 'left' }) ?? { prompt: String(args.prompt ?? '') }) }, signal,
+              { stage: say, candidate: (cid, url) => { void activityThumbnail(url).then(uploaded => visuals.push({ kind: 'asset', title: `타이틀 후보 ${cid}`, caption: '판정 대기', phase: 'draft', target: `candidate:${id}:${cid}`, uploaded })).catch(() => undefined); } });
+            say(`판정 ${best.critique.verdict} — 선택 ${best.critique.winnerId}`);
+            if (!best.still.ok) throw new Error('타이틀 후보 생성 실패');
+            return best.still;
+          };
+          const art = await generateTitleArt(args, { signal, generateImage: pickingImage,
             fitEffects: (preset, image, fitSignal, brief) => fitTitleArtEffects(preset, image, { signal: fitSignal, brief,
               chat: async chatRequest => {
                 const vision = request.roleModels?.deep ?? { provider: request.provider, model: request.model };
@@ -70,7 +87,9 @@ export function createPiPresentationTool(
           result = { ok: true, summary: '타이틀 원화를 생성·등록하고 작품 타이틀에 연결했습니다. 등장 순서·전환은 set_title_screen으로 구성하세요.',
             data: { resourceId, titleScreen: ctx.project.system.titleScreen } };
         } else {
-          const art = await generateOpeningStill(args, { signal, generateImage,
+          const withBible = options.openingProduction?.withBible(args) ?? args;
+          const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
+          const stillOptions = { signal, generateImage,
             hasTransparentPixels: async dataUrl => {
               const { default: Jimp } = await import('jimp');
               const { data } = (await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'))).bitmap;
@@ -83,7 +102,16 @@ export function createPiPresentationTool(
               const png = await options.renderToolImage(ctx.project, 'show_title_opening', { resourceId }, refSignal);
               return png.startsWith('data:') ? png : `data:image/png;base64,${png}`;
             },
-          });
+          };
+          say(count > 1 ? `오프닝 그림 후보 ${count}장 생성 중 (${String(withBible.angle ?? withBible.focus ?? '').slice(0, 40)})` : '오프닝 그림을 생성하는 중');
+          let art: Awaited<ReturnType<typeof generateOpeningStill>>;
+          if (count > 1) {
+            const best = await generateBestStill(() => generateOpeningStill(withBible, stillOptions), count, options.openingProduction?.criticContext(withBible) ?? { prompt: String(args.prompt ?? '') }, signal,
+              { stage: say, candidate: (cid, url) => { void activityThumbnail(url).then(uploaded => visuals.push({ kind: 'asset', title: `후보 ${cid}`, caption: '판정 대기', phase: 'draft', target: `candidate:${id}:${cid}`, uploaded })).catch(() => undefined); } });
+            art = best.still;
+            say(`판정 ${best.critique.verdict} — 선택 ${best.critique.winnerId} (${best.critique.scores.map(sc => `${sc.id}:${sc.total}`).join(' ')})`);
+            if (art.ok) options.openingProduction?.critic(art.resourceId, best.critique.verdict);
+          } else art = await generateOpeningStill(withBible, stillOptions);
           if (!art.ok) throw new Error(art.summary);
           dataUrl = art.dataUrl; resourceId = art.resourceId;
           await options.apply('upsert_resource', { resource: { id: resourceId, name: art.name, kind: 'picture', dataUrl } }, signal);
@@ -98,7 +126,8 @@ export function createPiPresentationTool(
         throw error;
       }
       // Bytes belong only in the project and model image part, never in the text transcript/tool log.
-      options.onCall({ toolCallId: id, name: definition.name, args, result });
+      try { visuals = [...visuals.map(v => ({ ...v, caption: '후보' })), { kind: 'asset', title: String((result.data as { name?: string } | undefined)?.name ?? resourceId), caption: '최종 선택', phase: 'read', target: `resource:${resourceId}`, resourceId, uploaded: await activityThumbnail(dataUrl) }]; } catch { /* thumbnails are best effort */ }
+      options.onCall({ toolCallId: id, name: definition.name, args, result, visuals });
       return { details: result, content: [{ type: 'text', text: formatPiToolSuccess(result) },
         { type: 'image', mimeType: dataUrl.slice(5, dataUrl.indexOf(';')), data: dataUrl.slice(dataUrl.indexOf(',') + 1) }] };
     },

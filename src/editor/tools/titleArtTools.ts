@@ -15,6 +15,10 @@ export type TitleArtRequest = {
   readonly name: string;
   readonly title?: string;
   readonly logoSubtitle?: string;
+  /** 작품 고유 화풍(기법 문장)·주 광원·팔레트. 있으면 기본 '애니 키아트' 문장을 대체한다. */
+  readonly artStyle?: string;
+  readonly light?: string;
+  readonly palette?: string;
 };
 
 function optionalText(args: Record<string, unknown>, key: string, max: number): string | undefined {
@@ -47,7 +51,8 @@ export function prepareTitleArtRequest(args: Record<string, unknown>): TitleArtR
   const title = optionalText(args, "title", 60);
   const logoSubtitle = optionalText(args, "logoSubtitle", 60);
   const name = optionalText(args, "name", 120) ?? `타이틀 키아트: ${preset ? preset.label : prompt.slice(0, 40)}`;
-  return { ...(preset ? { preset } : {}), prompt, name, ...(title ? { title } : {}), ...(logoSubtitle ? { logoSubtitle } : {}) };
+  const artStyle = optionalText(args, "artStyle", 400), light = optionalText(args, "light", 240), palette = optionalText(args, "palette", 240);
+  return { ...(preset ? { preset } : {}), prompt, name, ...(title ? { title } : {}), ...(logoSubtitle ? { logoSubtitle } : {}), ...(artStyle ? { artStyle } : {}), ...(light ? { light } : {}), ...(palette ? { palette } : {}) };
 }
 
 /**
@@ -55,7 +60,7 @@ export function prepareTitleArtRequest(args: Record<string, unknown>): TitleArtR
  * 자유 모드면 작가 설명이 곧 장면이다(효과는 생성 뒤 그림을 보고 고른다).
  * 4:3 무대에 cover 로 깔리므로 중요한 것은 가운데 4:3 안에 둔다.
  */
-export function buildTitleArtPrompt(request: Pick<TitleArtRequest, "preset" | "prompt">): string {
+export function buildTitleArtPrompt(request: Pick<TitleArtRequest, "preset" | "prompt"> & Partial<Pick<TitleArtRequest, "artStyle" | "light" | "palette">>): string {
   const brief = request.prompt.replace(/\s+/gu, " ").trim();
   const preset = request.preset;
   return [
@@ -72,7 +77,11 @@ export function buildTitleArtPrompt(request: Pick<TitleArtRequest, "preset" | "p
       ]),
     "The screen is cropped to the central 4:3 area, so keep every important subject away from the outer left and right edges, and let the scenery continue seamlessly to both edges. Keep the left third calmer so a menu stays readable, and keep the top-left quarter free of busy detail for the game logo. Achieve this only with the scene itself (open sky, shadowed foliage, distant haze); never paint a dark box, panel, vignette band or placeholder there.",
     "The layout percentages are composition guidance only: do not draw grid lines, guides, rulers, frames or any overlay on the picture.",
-    "Render it as richly painted 2D anime-style game key art: soft atmospheric depth, warm coherent lighting, crisp foreground, hazy distance. Avoid photographic rendering and 3D-rendered surfaces.",
+    ...(request.light ? [`Main light: ${request.light}.`] : []),
+    ...(request.palette ? [`Palette: ${request.palette}.`] : []),
+    request.artStyle
+      ? `Rendering technique (follow exactly, this is the game's own look, not generic anime art): ${request.artStyle}. Avoid photographic rendering and 3D-rendered surfaces. Avoid generic fantasy-wallpaper signs: glowing floating particles everywhere, symmetrical hero silhouette on a cliff, teal-and-orange haze.`
+      : "Render it as richly painted 2D anime-style game key art: soft atmospheric depth, warm coherent lighting, crisp foreground, hazy distance. Avoid photographic rendering and 3D-rendered surfaces.",
     "Do not add any text, letters, logos, titles, watermarks, signatures, menus, buttons, borders or letterboxing.",
   ].join("\n\n");
 }
@@ -93,6 +102,10 @@ const generateTitleArt: ToolDefinition = {
       title: { type: "string", maxLength: 60 },
       logoSubtitle: { type: "string", maxLength: 60 },
       name: { type: "string", maxLength: 120 },
+      artStyle: { type: "string", maxLength: 400, description: "작품 고유 화풍(기법 문장). 오프닝 컷과 동일하게." },
+      light: { type: "string", maxLength: 240 },
+      palette: { type: "string", maxLength: 240 },
+      candidates: { type: "integer", minimum: 1, maximum: 3, description: "후보 수. 2~3이면 독립 판정자가 고른다." },
     },
   },
   run(_project, args): ToolExecResult {

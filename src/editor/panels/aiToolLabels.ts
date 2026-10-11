@@ -282,6 +282,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   remove_opening: system("오프닝 삭제"),
   list_opening_media: inspect("오프닝 소재 목록"),
   generate_opening_image: build("오프닝 그림 만들기", "spark"),
+  run_ffmpeg: build("영상·소리 가공(ffmpeg)", "spark"),
   get_game_over: inspect("게임오버 읽기"),
   set_game_over: system("게임오버 화면"),
   generate_game_over_image: build("게임오버 그림 만들기", "spark"),

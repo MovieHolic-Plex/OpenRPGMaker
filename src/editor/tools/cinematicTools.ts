@@ -877,6 +877,25 @@ const generateOpeningImage: ToolDefinition = {
   },
 };
 
+const runFfmpeg: ToolDefinition = {
+  name: "run_ffmpeg",
+  description: "ffmpeg로 리소스를 가공해 새 리소스로 등록(컷 이어붙이기·페이드·색보정·소리 믹스·길이 자르기·PNG→mp4). 인자 자리표시자 {in0}..{in7}=inputs 순서, {out}=출력. 네트워크·외부 파일 불가.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["args", "output"],
+    properties: {
+      inputs: { type: "array", maxItems: 8, items: { type: "string" }, description: "입력 리소스 id(파일 데이터가 있는 것)." },
+      args: { type: "array", minItems: 1, maxItems: 80, items: { type: "string", maxLength: 1200 }, description: "ffmpeg 인자 목록. 예 [\"-i\",\"{in0}\",\"-t\",\"3\",\"{out}\"]. -i는 {inN}만. 출력 {out} 1회." },
+      output: { type: "object", additionalProperties: false, required: ["id", "name", "kind"], properties: { id: { type: "string" }, name: { type: "string" }, kind: { type: "string", enum: ["picture", "backdrop", "movie", "music", "sound"], description: "movie=mp4, music/sound=wav, picture/backdrop=png." } } },
+    },
+  },
+  run(): ToolExecResult {
+    throw new ToolError("ffmpeg 실행 경로가 연결되지 않았습니다(호스트 전용).", { code: "ffmpeg-unavailable" });
+  },
+};
+
 const generateGameOverImage: ToolDefinition = {
   name: GAME_OVER_IMAGE_TOOL,
   description:
@@ -1032,6 +1051,7 @@ export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
   removeOpening,
   listOpeningMedia,
   generateOpeningImage,
+  runFfmpeg,
   getGameOver,
   setGameOver,
   generateGameOverImage,

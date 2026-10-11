@@ -27,6 +27,13 @@ total = focal+story+cast+composition+light+style+slop+defects (max 80). Choose t
 verdict: "accept" if the winner has total>=56 and no sub-score below 5; otherwise "regenerate" and give ONE concrete, visual prompt fix in "fix" (what to add or forbid, in English).
 Reply with JSON only: {"scores":[{"id":"...","focal":0,"story":0,"cast":0,"composition":0,"light":0,"style":0,"slop":0,"defects":0,"total":0,"notes":"one short sentence"}],"winnerId":"...","verdict":"accept|regenerate","fix":"..."}`;
 
+/** Small JPEG for the activity feed (the tool_end visual cap is 1MB per image). */
+export async function activityThumbnail(dataUrl: string): Promise<string> {
+  const image = await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'));
+  if (image.bitmap.width > 640) image.resize(640, Jimp.AUTO);
+  return `data:image/jpeg;base64,${(await image.quality(70).getBufferAsync(Jimp.MIME_JPEG)).toString('base64')}`;
+}
+
 async function shrink(dataUrl: string): Promise<string> {
   const raw = Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64');
   const image = await Jimp.read(raw);
@@ -68,10 +75,14 @@ export async function critiqueOpeningStills(candidates: readonly StillCandidate[
 /** n 장을 병렬로 만들고 판정자가 고른 한 장과 판정을 돌려준다. 실패한 후보는 건너뛰며 하나도 없으면 첫 오류를 그대로 던진다. */
 export async function generateBestStill<T extends { readonly ok: boolean; readonly dataUrl?: string }>(
   generate: () => Promise<T>, count: number, context: StillContext, signal?: AbortSignal,
+  hooks?: { readonly stage?: (summary: string) => void; readonly candidate?: (id: string, dataUrl: string) => void },
 ): Promise<{ readonly still: T; readonly critique: StillCritique; readonly candidates: readonly { id: string; still: T }[] }> {
   const results = await Promise.all(Array.from({ length: count }, (_, i) => generate().then(still => ({ id: String.fromCharCode(65 + i), still })).catch(error => ({ id: String.fromCharCode(65 + i), error }))));
+  hooks?.stage?.(`후보 ${results.length}장 중 ${results.filter(r => 'still' in r && r.still.ok).length}장 생성 완료`);
   const ok = results.filter((r): r is { id: string; still: T } => 'still' in r && r.still.ok && !!r.still.dataUrl);
   if (!ok.length) { const first = results[0]!; if ('still' in first) return { still: first.still, critique: { verdict: 'unjudged', winnerId: first.id, scores: [], fix: '모든 후보 생성 실패', judge: 'none' }, candidates: [] }; throw first.error; }
+  for (const r of ok) hooks?.candidate?.(r.id, r.still.dataUrl!);
+  hooks?.stage?.('독립 판정자가 후보를 비교하는 중');
   const critique = await critiqueOpeningStills(ok.map(r => ({ id: r.id, dataUrl: r.still.dataUrl! })), context, signal);
   return { still: ok.find(r => r.id === critique.winnerId)!.still, critique, candidates: ok };
 }

@@ -30,6 +30,7 @@ export function requestsOpeningProduction(rawTask: string): boolean {
 /** Evidence belongs to the executor, never to a model-supplied completed flag. */
 export class PiOpeningProduction {
   private plan = false;
+  private titleArt = false;
   private plannedShotCount = 0;
   private bible: Record<string, unknown> | null = null;
   private plannedAngles: string[] = [];
@@ -43,6 +44,7 @@ export class PiOpeningProduction {
     if (name === 'plan_opening') { this.plan = true; const shots = (args as { shots?: unknown } | undefined)?.shots; this.plannedShotCount = Array.isArray(shots) ? shots.length : 0;
       const bible = (args as { bible?: unknown } | undefined)?.bible; this.bible = bible && typeof bible === 'object' ? bible as Record<string, unknown> : null;
       this.plannedAngles = (Array.isArray(shots) ? shots : []).map(s => String((s as { angle?: unknown })?.angle ?? '').trim().toLowerCase()).filter(Boolean); }
+    if (name === 'generate_title_art') this.titleArt = true;
     if (name === 'review_opening') this.reviewed = this.fingerprint(project);
   }
   /** 바이블의 화풍·팔레트를 컷마다 다시 적게 하지 않는다 — 모델이 직접 준 값이 우선이다. */
@@ -75,6 +77,7 @@ export class PiOpeningProduction {
     if (!this.requested) return [];
     const issues: string[] = [];
     if (this.fingerprint(project) === this.fingerprint(base)) issues.push('오프닝 설정이 요청 전과 같습니다. 실제 변경 또는 변경하지 못한 이유를 보고하세요.');
+    if (/타이틀|title|첫\s*(?:화면|장면)|처음\s*(?:화면|장면)|시작\s*화면|켜자마자|켜면|게임을\s*켤/iu.test(this.task) && !this.titleArt) issues.push('요청에 게임을 켜자마자 보이는 첫 화면(타이틀)이 포함됩니다. 기본 이미지를 두지 말고 오프닝과 같은 화풍·모티프로 generate_title_art(artStyle·light·palette·candidates 지정)를 실행하고 set_title_screen으로 음악·효과를 구성하세요.');
     if (!this.plan) issues.push('plan_opening으로 사건·구도·연속성·플레이 진입을 설계하세요.');
     else if (!this.bible) issues.push('plan_opening의 bible(전제·질문·모티프·팔레트·화풍·글 목소리)이 없습니다. 작품 고유 연출 기준을 먼저 세우세요.');
     if (this.plannedAngles.length >= 3) {
@@ -118,4 +121,8 @@ get_opening_references에서 관련 게임의 실제 도입/타이틀 소개/홍
 애니메틱 요청이면 get_animatic_capabilities를 읽고 create_opening_animatic_shot으로 시간축 무대를 만든다. upsert_opening_layer로 배경/배우/전경/글/효과를 나누고 animate_opening_layer/animate_opening_camera, 스프라이트 sheet/pose 키, set_opening_transition, upsert_opening_audio_cue로 실제 연출한다. 하나의 완성 그림에 zoom만 적용하는 것으로 독립 배우 동작을 대신하지 않는다. 움직임은 사건의 원인과 결과를 읽히게 하며 모든 배우를 이유 없이 흔들지 않는다.
 배경 그림 속 배우는 독립 레이어가 아니다. 배경에 이미 그려진 배우 위에 같은 배우를 겹쳐 놓지 않는다. 필요하면 generate_opening_layer(role:background)로 배우 없는 장소, role:actor/prop/foreground로 실제 알파 분리 소재를 만든다. 실패한 단색 배경 제거를 투명 소재 성공이라고 하지 않는다. 기존 투명 그림과 정확한 crop/sheet도 재사용할 수 있다. 포즈를 만들지 않았다면 평면 이동을 골격 애니메이션이라고 부르지 않는다.
 inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으로 각 샷의 시작/중간/후반 실제 합성 프레임을 보고 마지막 수정 후 다시 보라. 피사체가 화면 밖으로 나갔는지, 배경/배우 외형과 조명/접지/전경 가림이 맞는지, 글이 가리지 않는지 검토하고 구체적으로 수정한다. 2D 레이어/카메라/스프라이트 애니메틱과 등록된 영상 재생을 지원한다. 3D 리깅·골격 애니메이션·자동 영상/음성 생성을 했다고 주장하지 않는다. 타이틀 WebGL 효과는 오프닝에 자동 적용되지 않는다.
+오프닝은 플레이어가 게임을 켜자마자 보는 첫 화면(타이틀)까지 포함한다. 요청이 첫 화면을 포함하면 기본 타이틀 그림을 그대로 두지 말고 bible의 화풍·모티프·팔레트로 generate_title_art(artStyle·light·palette·candidates 2~3)를 실행한 뒤 set_title_screen으로 타이틀 음악·효과를 정한다.
+효과음은 자유롭게 설계한다. generate_original_se로 장면에 맞는 소리(발걸음·바람·금속 마찰·종소리·균열 등)를 여러 개 합성하고, 장면 direction.sounds[{resourceId,atMs,volume}]로 시각 사건의 시각(atMs)에 맞춰 최대 8개까지 겹쳐 연결한다. 하나의 soundResourceId만 쓰는 것으로 끝내지 않는다. 모델은 소리를 듣지 못하므로 타이밍은 샷의 사건 시각에서 계산한다.
+영상·소리·이미지 가공이 필요하면 run_ffmpeg(inputs=리소스 id, args의 {in0}/{out})로 컷 이어붙이기·페이드·색 보정·소리 믹스·PNG→mp4를 직접 수행해 새 리소스로 등록한다. 외부 파일·네트워크는 쓸 수 없다.
+진행 중에는 지금 무엇을 하는지(후보 생성·판정·ffmpeg 등) 사용자에게 한 줄로 알리고 실행기가 띄우는 진행 표시와 모순되지 않게 한다.
 시각 전달 증거와 구성 검토는 실행기가 확인한다. 실제 출하 플레이어의 재생·음악·Skip 검증은 별도이며 이 도구만으로 완료했다고 주장하지 않는다. 막힌 단계와 미검증 범위를 정확히 보고한다.`;
