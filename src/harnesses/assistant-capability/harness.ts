@@ -30,6 +30,7 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
     { id: 'aggregate', title: '여러 실행 집계', summary: '각 기능의 최초 실제 모델 시도를 선택하고 입력 전 기동 장애와 모든 시도를 별도 보존한다.' },
     { id: 'matrix', title: '작은 명령 50개 매트릭스', summary: '50개 명령과 역할별 수행 에이전트, 저장·플레이·시각 검수 기준의 누락을 검사한다.' },
     { id: 'matrix-tools', title: '작은 명령 50개 도구 계약', summary: '격리된 결정론적 fixture에서 50개 명령의 canonical editor tool 호출, 읽기 불변·쓰기 변경 커밋을 각각 검사한다. 모델·SQLite·플레이·독립 시각 검수와 별도 집계한다.' },
+    { id: 'matrix-live', title: '작은 명령 50개 자연어 입력', summary: '실제 에디터 입력창에 50개 프롬프트를 순서대로 넣고 scripted agent transport로 응답을 고정해 적용·저장·새 context 재로드·대표 플레이를 검사한다. native provider 성공률·독립 시각 검수와 별도 집계한다.' },
   ],
   entrypoints: { cli: true, editorUi: false, assistantTool: false },
 });

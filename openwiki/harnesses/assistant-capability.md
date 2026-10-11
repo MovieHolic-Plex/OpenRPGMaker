@@ -113,6 +113,8 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `npm run harness -- assistant-capability matrix-tools --out <새 폴더>`는 격리된 결정론적 fixture를 각 명령에 준비하고 실제 `runTool`을 호출한다. 읽기 명령은 전체 프로젝트 불변, 쓰기 명령은 커밋된 변경을 확인한다. 이 단계의 50/50은 **도구 계약 통과**이며 자연어 의도 해석, 모델 호출, SQLite 새 context 재로드, 출하 플레이어, 독립 시각 검수의 통과를 뜻하지 않는다. 그 축은 `run`의 native 결과와 `self-check-runtime`/`review` 영수증에 별도로 남긴다. 구현되지 않은 명령을 `runtime: none`으로 넣어 성공률을 부풀리지 않는다.
 
+`npm run harness -- assistant-capability matrix-live --out <새 폴더>`는 50개 프롬프트를 실제 `ai-input`에 제출하고, 1~16번은 scripted `/v1/agent/run` 응답으로 YOLO 적용·저장까지, 17~50번은 대형 타일셋/DB 병합으로 UI가 멈추는 경로를 피하기 위해 같은 프롬프트의 direct transport 도구 결과를 신선한 fixture에서 검사한다. 마지막에는 그 결과를 로컬 SQLite에 한 번 저장하고 새 브라우저 context에서 맵·DB·SHA를 다시 읽으며 대표 장면 2개를 `runSceneTest`로 재생한다. 따라서 이 단계의 50/50은 **실제 입력창 제출 + 도구 실행 + 정본 저장/재로드 + 대표 플레이** 증거이지 native provider 성공률이나 독립 시각 합격이 아니다. 결과 JSON의 `uiAgentAppliedCommands`, `directTransportCommands`, `nativeModelCalls`, `visualReviews`를 함께 확인하고, direct transport를 UI agent 적용으로 부풀리지 않는다.
+
 ## 시각 검수
 
 검수자는 먼저 요청과 실제 그림을 비교한다. 조수의 자기평가를 시각 판정의 근거로 대신 쓰지 않는다. 런타임은 이동/대화 중 가림, 잘림, 글자·분기·금액을 본다. 결함은 위치·재현 장면을 적는다. 실제로 본 파일만 다음처럼 기록한다.

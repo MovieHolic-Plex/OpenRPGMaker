@@ -43,7 +43,7 @@ function addUtilityEvents(project: Project): void {
     { kind: 'wait', ms: 300 } as Command,
   ]; map.events.push(cut);
 }
-function richProject(): Project {
+export function richProject(): Project {
   const project = createCapabilityFixtureProject();
   addMap(project, 'map_plaza', '광장'); addMap(project, 'map_field', '숲길'); addMap(project, 'map_interior', '집 안');
   addUtilityEvents(project);
