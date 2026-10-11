@@ -9,14 +9,15 @@
 //   terraces  계단식 비탈 — 큰길 북쪽 집 띠 뒤로 한 단, 그 뒤로 또 한 단. 강은 높은 단을 곧게 깎은 골(0단)로 흐른다.
 //   hillside  설원 비탈 — terraces 와 같은 모양(눈 덮인 계단식 언덕), 얼음 못은 골.
 //   basin     오아시스 골 — 북쪽 모래 단을 오아시스 둘레만 곧게 깎아 낮춘 골.
+//   ridge     마른 둔덕(늪) — 북쪽이 한 단 높은 마른 땅, 늪물은 낮은 땅에만 고인다(시공기의 늪 단계가 높은 단을 물로 바꾸지 않는다).
 // 모양 규칙(3/4 시점에서는 남쪽을 보는 절벽 면만 그려진다 — 다른 방향의 단 가장자리는 땅이 어긋난 가는 선으로만 보인다):
 // 등고선은 동서로 달리고 북쪽이 높다, 열쇠점 사이는 곧고 열쇠점에서 한 줄만 꺾인다, 골 가장자리는 남북 직선,
 // 사선·둥근 단 가장자리(옛 강 골짜기·분지 고리)는 쓰지 않는다. 1칸 가시·홈은 다듬어 지운다, 물과 그 둑은 0단.
 import type { BeodeulVillageForm, BeodeulVillageTheme } from "./beodeulVillage";
 
-export const VILLAGE_TERRAINS = ["flat", "terraces", "hillside", "basin"] as const;
+export const VILLAGE_TERRAINS = ["flat", "terraces", "hillside", "basin", "ridge"] as const;
 export type VillageTerrain = (typeof VILLAGE_TERRAINS)[number];
-export const TERRAIN_LABEL: Record<VillageTerrain, string> = { flat: "평지", terraces: "계단식 비탈", hillside: "눈 덮인 비탈", basin: "오아시스 골" };
+export const TERRAIN_LABEL: Record<VillageTerrain, string> = { flat: "평지", terraces: "계단식 비탈", hillside: "눈 덮인 비탈", basin: "오아시스 골", ridge: "마른 둔덕" };
 
 /** theme 에서 고를 수 있는 지형(기본으로 고르는 것 먼저, flat 은 늘 마지막). */
 export function allowedVillageTerrains(theme: BeodeulVillageTheme): VillageTerrain[] {
@@ -24,6 +25,7 @@ export function allowedVillageTerrains(theme: BeodeulVillageTheme): VillageTerra
     case "river": case "coast": return ["terraces", "flat"];
     case "desert": return ["basin", "flat"];
     case "snow": return ["hillside", "flat"];
+    case "swamp": return ["ridge", "flat"];
     default: return ["flat"];
   }
 }
@@ -62,13 +64,15 @@ export interface VillageTerrainPlan {
   note: string;
 }
 
-/** 등고선: 12~16칸마다 열쇠점, 열쇠점 사이는 곧게(같은 줄), 열쇠점에서 한 줄만 꺾인다.
+/** 등고선: 10~13칸마다 열쇠점, 열쇠점 사이는 곧게(같은 줄), 열쇠점에서 한 줄만 꺾인다.
  *  3/4 시점에서는 남쪽을 보는 절벽 면만 그려지므로 사선·완만한 굽이(smoothstep)는 1칸 계단이 이어진 가는 선으로 보였다(2026-10-11 사용자 「지형과 길이 이상하게 이어진다」). */
+// 꺾임은 한 방향으로 이어 가다 ±1 끝에서 돌아선다(b−1 → b → b+1 → b → …) — 폭 2 뒷길은 한 줄 꺾일 때마다 한 줄이 겹쳐 이어지므로
+// 왔다 갔다(b, b+1, b, b+1 …) 하면 그 줄이 맵 끝까지 곧게 남는다(88×56 포구에서 57칸 곧은 길). 이렇게 하면 겹친 줄은 세 토막(10~13칸씩) 안에서 끊긴다.
 function contour(len: number, base: number, rand: () => number): (t: number) => number {
   const ys = new Int16Array(len);
-  let y = base, next = 12 + Math.floor(rand() * 5);
+  let y = base, dir = rand() < 0.5 ? -1 : 1, next = 10 + Math.floor(rand() * 4);
   for (let t = 0; t < len; t += 1) {
-    if (t === next && t < len - 6) { const d = rand() < 0.5 ? -1 : 1; y = Math.abs(y + d - base) <= 1 ? y + d : y - d; next += 12 + Math.floor(rand() * 5); }
+    if (t === next && t < len - 6) { if (Math.abs(y + dir - base) > 1) dir = -dir; y += dir; next += 10 + Math.floor(rand() * 4); }
     ys[t] = y;
   }
   return (t: number) => ys[Math.max(0, Math.min(len - 1, t))]!;
@@ -86,7 +90,7 @@ export function planVillageTerrain(f: TerrainFrame, name: VillageTerrain): Villa
   // 물(강·못)은 높은 단을 세로로 곧게 깎은 골에 있다 — 등고선은 동서, 골 가장자리는 남북 직선, 사선·둥근 단 가장자리는 없다.
   // 큰길 북쪽 띠 = 앵커 건물(여관 9줄)까지 앉는 폭. 맵 위가 가까우면(포구 큰길 y≈16) 집 한 채 높이(8)로 줄인다
   const yS0 = f.mainBase - 10 - Math.floor(rand() * 2);
-  const yS = yS0 >= 6 ? yS0 : f.mainBase - 8;
+  const yS = yS0 >= 6 ? yS0 : f.mainBase - 10 >= 6 ? 6 : f.mainBase - 8;
   if (yS < 6) return flat(`평지(큰길이 맵 위에 가까워 단을 둘 자리 없음, 큰길 y=${f.mainBase})`);
   const s1 = contour(W, yS, rand);
   for (let x = 0; x < W; x += 1) for (let y = 0; y < s1(x); y += 1) lv[idx(x, y)] = 1;

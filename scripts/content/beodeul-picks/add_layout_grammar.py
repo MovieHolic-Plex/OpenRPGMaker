@@ -15,7 +15,7 @@ RENDERS = [("river-3", "theme river form plaza seed 3 — 강가 광장 마을 5
            ("coast-3", "theme coast form plaza seed 3 — 포구 광장 마을 56×40: 바다·물가 길·생선 시장(물에 걸침)·잔교 T머리·배·광장, 지형 terraces(뒷길이 높은 단 위)."),
            ("desert-29", "theme desert form plaza seed 29 — 사막 오아시스 58×44: 못+풀밭 고리+야자, 표본 길·광장, 사막 집, 대상 마당, 지형 basin(북쪽 모래 단, 오아시스는 곧게 깎은 골)."),
            ("snow-11", "theme snow form plaza seed 11 — 설원 56×44: 얼음 못(얼음배·구멍)·표본 눈길·광장 모닥불·설원 집·전나무 덩이, 지형 hillside(눈 둑 절벽, 얼음 못은 골)."),
-           ("swamp-3", "theme swamp form plaza seed 3 — 늪 56×44: 진흙 섬(길·집에서 2~4칸) 밖은 늪물, 갑판 광장·늪 집·맹그로브.")]
+           ("swamp-3", "theme swamp form plaza terrain ridge seed 3 — 늪 56×44: 진흙 섬(길·집에서 2~4칸) 밖은 늪물, 갑판 광장·늪 집·맹그로브, 지형 ridge(북쪽 마른 둔덕, 늪물은 낮은 땅에만).")]
 
 def small(im, side=820):
     s = min(1.0, side / max(im.size))

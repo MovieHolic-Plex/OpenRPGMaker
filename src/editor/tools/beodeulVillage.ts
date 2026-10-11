@@ -353,7 +353,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     mainKeys.push([rx, H - 1]);
   } else if (theme === "coast" && form === "street") {
     // 포구 길가 마을: 큰길이 물가를 따라간다(물가 길이 곧 큰길) — 집은 바다를 보고 한 줄로 서고, 뒷길이 그 위에서 고리를 만든다
-    for (let x = 0, k = 0; x < W - 1; x += 12, k += 1) mainKeys.push([x, Math.min(...shoreY.slice(Math.max(0, x - 6), x + 7)) - 3 - (k % 2)]);
+    // 물가에서 3·4·5·4칸(왔다 갔다 3·4 면 폭 2 큰길이 한 줄로 겹쳐 이어져 88칸 맵에서 48칸 곧은 길이 됐다)
+    for (let x = 0, k = 0; x < W - 1; x += 12, k += 1) mainKeys.push([x, Math.min(...shoreY.slice(Math.max(0, x - 6), x + 7)) - [3, 4, 5, 4][k % 4]!]);
     mainKeys.push([W - 1, Math.min(...shoreY.slice(W - 7, W)) - 3]);
   } else if (theme === "coast") {
     const top = Math.min(...shoreY) - 9;
@@ -405,7 +406,9 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const north: { s: Street; x0: number; x1: number } | null = form === "riverbank" || form === "scatter" ? null : (() => {
     // 큰길 북쪽 띠(집 한 줄, 6~8칸) + 뒷길 북쪽 띠(집 한 줄)가 들어가게: 큰길에서 10~12칸 위, 맵 위에서 7칸 아래
     const yBase = coastStreet ? (yAt(main, Math.round(W / 2)) ?? yMainBase) : yMainBase;
-    const yN = Math.max(7, yBase - 10 - ri(0, 2));
+    // 뒷길 북쪽에 집 띠(6~8줄)가 안 들어가는 낮은 맵(포구 큰길 y≈15)이면 뒷길을 더 올려 큰길 북쪽 띠를 앵커 높이(9줄)까지 넓힌다
+    const yN0 = yBase - 10 - ri(0, 2);
+    const yN = yN0 >= 7 ? yN0 : Math.max(2, Math.min(7, yBase - 12));
     if (!terrain.northSeam && yBase - yN < 9) return null;
     const toWestEdge = riverX >= 0 ? !riverLeft : pondSide === "e";
     // 강이 서쪽이면 뒷길은 동쪽 둑(방앗간 자리 10칸을 비우고 동쪽 끝까지)
@@ -739,17 +742,34 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     if (spec.feature === "pond") return { s: main, x: pondSide === "w" ? Math.round(W * 0.2) + 10 : Math.round(W * 0.8) - 10, why: "못(오아시스)으로 드는 어귀" };
     return { s: main, x: 7, why: "큰길이 마을로 드는 어귀" };
   })();
+  // 모이는 곳은 길이 곧은 자리(앞뒤 4칸 같은 줄)에 — 길이 꺾이는 자리에 앵커·어귀·우물을 두면 폭 2 길의 아랫줄이 2~3칸 턱으로 남는다.
+  // 이미 곧으면 그대로(결과 불변).
+  if (gather.s.horizontal && form !== "plaza") { // 광장 마을은 광장 맞은편 그대로
+    const straightAt = (x: number) => { const y = yAt(gather.s, x); if (y === null) return false; for (let e = -4; e <= 4; e += 1) if (yAt(gather.s, x + e) !== y) return false; return true; };
+    const hit = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6].map((d) => gather.x + d).find((x) => x >= 4 && x < W - 4 && straightAt(x));
+    if (hit !== undefined) gather.x = hit;
+  }
   let gatherDoor: { x: number; y: number } | null = null;
   {
     const cand = have(spec.anchors).filter((id) => K(id).door);
     const order = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
     let done = false;
-    for (const off of [0, -2, 2, -4, 4, -6, 6]) {
-      for (const id of order) {
-        const k = K(id); const d = k.door!; const fx = gather.x + off; const top = yAt(gather.s, fx) ?? -1;
-        if (top < 0) continue;
-        const x = fx - d.dx, y = top - 1 - d.dy;
-        if (fits(k, x, y)) { claim(k, x, y, BLD, true); anchors.push(id); doorFronts.push({ x: fx, y: top, kit: id }); gatherDoor = { x: fx, y: top }; done = true; break; }
+    // 가까운 자리부터, 안 되면 ±10칸까지(길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
+    // 길에 바로 붙일 자리가 없으면 1~2칸 물러앉히고 문 앞을 길로 잇는다(굽은 길이 집 밑으로 파고드는 자리·좁은 집 띠) — 바로 붙는 자리를 다 본 뒤에만
+    for (const setback of [0, 1, 2]) {
+      for (const off of [0, -2, 2, -4, 4, -6, 6, -8, 8, -10, 10]) {
+        for (const id of order) {
+          const k = K(id); const d = k.door!; const fx = gather.x + off; const top = yAt(gather.s, fx) ?? -1;
+          if (top < 0) continue;
+          const x = fx - d.dx, y = top - 1 - d.dy - setback;
+          const stub = Array.from({ length: setback }, (_, j) => idx(fx, top - 1 - j));
+          if (stub.some((c) => occ[c] !== FREE) || !flatCells([...stub, idx(fx, top)])) continue;
+          if (fits(k, x, y)) {
+            claim(k, x, y, BLD, true); for (const c of stub) occ[c] = ROAD;
+            anchors.push(id); doorFronts.push({ x: fx, y: top - setback, kit: id }); gatherDoor = { x: fx, y: top }; done = true; break;
+          }
+        }
+        if (done) break;
       }
       if (done) break;
     }
@@ -1103,7 +1123,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]] as const) { if (!inMap(x + dx, y + dy)) continue; const n = idx(x + dx, y + dy); if (dist[n]! > dist[c]! + 1) { dist[n] = dist[c]! + 1; q.push(n); } } }
     const ph = rand() * 6.28, ph2 = rand() * 6.28;
     for (let c = 0; c < W * H; c += 1) {
-      if (occ[c] !== FREE) continue; const x = c % W, y = (c - x) / W;
+      if (occ[c] !== FREE || lv[c]! > 0) continue; const x = c % W, y = (c - x) / W; // 마른 둔덕(높은 단)은 늪물이 되지 않는다
       const reach = 3 + 1.4 * Math.sin(x / 4.3 + ph) * Math.cos(y / 3.7 + ph2);
       if (dist[c]! > reach + 0.8) { occ[c] = WATERC; pondCells.push(c); surfaceAt.set(c, spec.pond.water); }
       else if (dist[c]! > reach - 0.4) { occ[c] = WATERC; surfaceAt.set(c, spec.pond.ring!); bogRing.add(c); }
@@ -1165,6 +1185,19 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const c = pondCells[Math.floor(rand() * pondCells.length)]!; const k = K(choice(ringIds));
       const x = (c % W) + ri(-3, 3), y = Math.floor(c / W) + ri(-3, 3);
       if (treeFits(k, x, y, 1)) { claim(k, x, y, PROP, false); treeCount += 1; }
+    }
+  }
+  // 골 가장자리 덤불 띠: 강·못을 깎은 골의 남북 가장자리는 3/4 렌더가 옆 절벽 면을 그리지 않아(사용자 결정 r3 「동·서 옆면은 없는 게 낫다」)
+  // 땅이 어긋난 가는 선으로만 보인다 — 높은 단 쪽 가장자리 칸을 따라 덤불·나무를 이어 심어 비탈 숲처럼 덮는다.
+  // 낮은 골 쪽 가장자리 칸에도 띄엄띄엄 심어 선이 덤불 사이로 지나가게 한다(키트는 한 단 위에만 — 선 위에 걸쳐 심을 수는 없다).
+  if (hasTerrain && (shrubs.length || trees.length)) for (const cv of terrain.coves) for (const [ex, side, high] of [[cv.x0 - 1, -1, true], [cv.x1 + 1, 1, true], [cv.x0, 1, false], [cv.x1, -1, false]] as const) {
+    if (ex < 0 || ex >= W) continue;
+    for (let y = 1; y < H; y += 1) {
+      const nb = ex - side; // 선 건너 칸 — 높은 단 쪽이면 골, 골 쪽이면 높은 단
+      if (at(ex, y) !== FREE || (high ? lv[idx(ex, y)] === 0 : !inMap(nb, y) || lv[idx(nb, y)] === 0) || (!high && rand() < 0.45)) continue;
+      const k = K(choice(shrubs.length && (rand() < 0.65 || !trees.length) ? shrubs : trees));
+      const x = side < 0 ? ex - k.w + 1 : ex, yy = y + k.h - 1 < H ? y : H - k.h;
+      if (treeFits(k, x, yy, 1)) { claim(k, x, yy, PROP, false); treeCount += 1; y += k.h - 1; }
     }
   }
   // 밀도(2026-10-11 사용자 지적 「오브젝트 밀도가 너무 높다」 두 번): 덩이 시도·크기를 줄이고 빈 땅을 더 남긴다.
