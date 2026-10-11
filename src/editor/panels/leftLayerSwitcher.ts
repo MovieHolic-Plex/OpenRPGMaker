@@ -7,7 +7,7 @@ import { dismissLocationDrawModeForLayer } from "@/editor/locationDrawMode";
 import { applyRovingTabindex } from "./sidebarFocus";
 import { el } from "@/util/dom";
 
-/** 레이어 셋 + 맨 왼쪽 「높이」(높이 붓). 높이는 레이어가 아니라 도구지만 같은 줄에서 고른다(2026-09-26). */
+/** 레이어 셋 + 맨 왼쪽 「지형」. 지형은 레이어가 아니라 편집 도구지만 같은 줄에서 고른다. */
 export type LayerSwitcherKey = Layer | "relief";
 
 type LayerRow = {
@@ -19,7 +19,7 @@ type LayerRow = {
 };
 
 const LAYER_ROWS: readonly LayerRow[] = [
-  { id: "relief", copyKey: "layerRelief", testId: "layer-relief", hint: "언덕·절벽 높이 칠하기", hotkey: "" },
+  { id: "relief", copyKey: "layerRelief", testId: "layer-relief", hint: "언덕·절벽 지형 편집", hotkey: "" },
   { id: "lower", copyKey: "layerLower", testId: "layer-lower", hint: "잔디·길 등 지면", hotkey: "F5" },
   { id: "upper", copyKey: "layerUpper", testId: "layer-upper", hint: "나무·가구 등 바닥 위에 얹는 것", hotkey: "F6" },
   { id: "event", copyKey: "layerEvent", testId: "layer-event", hint: "NPC·문·보물상자 등 상호작용", hotkey: "F7" },
@@ -36,7 +36,7 @@ export function selectSidebarLayer(layer: Layer): void {
   editorState.set({ layer, tool });
 }
 
-/** 전환 줄에서 켜져 보일 칸. 높이 붓을 쥐고 있으면 레이어가 아니라 「높이」가 켜진다. */
+/** 전환 줄에서 켜져 보일 칸. 지형 도구를 쥐고 있으면 레이어가 아니라 「지형」이 켜진다. */
 export function layerSwitcherKey(state: Pick<EditorState, "layer" | "tool">): LayerSwitcherKey {
   return state.tool === "relief" ? "relief" : state.layer;
 }
