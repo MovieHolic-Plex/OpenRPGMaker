@@ -238,6 +238,30 @@ edge_lawn = table(edge_tile, LAWN)
 bank_snow = table(bank_tile, SNOW, "snow")
 bank_bog = table(bank_tile, BOG, "bog")
 bank_mud = table(bank_tile, MUD, "mud")
+# ------------------------------------------------------------------ 울타리 마감(2026-10-11 사용자 「울타리 외곽 마감이 별로, 이어져 있다는 느낌이 안 든다」)
+# 공용 기초 칩셋(beodeul_ground)의 숲 울타리는 가로(643)·세로(644)·T(645) 셋뿐이라 위 모서리는 가로 조각(난간이 반 칸 삐져나가고 세로와 5px 끊김),
+# 아래 모서리는 T(바깥으로 난간이 삐져나감), 문 옆은 난간이 허공에서 끝났다. 원본 화소로 모서리·끝 조각을 만든다:
+# 모서리 기둥 = 가로 조각의 기둥(3×11)을 가운데 열(6~8, 세로 난간 줄)에 세우고, 난간은 기둥 안쪽으로만, 세로 난간을 위/아래로 잇는다.
+GROUND = np.array(Image.open(ROOT / "public/assets/beodeul-ground/chipset.png").convert("RGBA"))
+def gtile(n): return GROUND[(n // 8) * T:(n // 8 + 1) * T, (n % 8) * T:(n % 8 + 1) * T].copy()
+FH, FV = gtile(643), gtile(644)
+def fence_piece(east: bool, west: bool, up: bool, down: bool) -> np.ndarray:
+    px = np.zeros((T, T, 4), np.uint8)
+    if east: px[:, 6:16] = FH[:, 6:16]           # 가운데 → 동쪽 난간(+ 동쪽 기둥)
+    if west: px[:, 0:10] = np.where(px[:, 0:10, 3:4] > 0, px[:, 0:10], FH[:, 0:10])
+    post = FH[3:14, 12:15] if west and not east else FH[3:14, 1:4]   # 서쪽으로 뻗으면 오른쪽 기둥(그늘 면)을
+    px[3:14, 6:9] = post
+    if up: px[0:3, 6:9] = FV[5:8, 6:9]
+    if down: px[14:16, 6:9] = FV[5:7, 6:9]
+    return px
+fence = {
+    "h": add_tile(FH.copy()), "v": add_tile(FV.copy()),
+    "tl": add_tile(fence_piece(True, False, False, True)), "tr": add_tile(fence_piece(False, True, False, True)),
+    "bl": add_tile(fence_piece(True, False, True, False)), "br": add_tile(fence_piece(False, True, True, False)),
+    "endW": add_tile(fence_piece(True, False, False, False)), "endE": add_tile(fence_piece(False, True, False, False)),
+}
+vn = FV.copy(); vn[0:1] = 0; fence["endN"] = add_tile(vn)   # 위가 문: 세로 난간 맨 윗줄을 걷어 기둥(판)에서 끝
+vs = FV.copy(); vs[15:16] = 0; fence["endS"] = add_tile(vs)
 print("tiles", len(tiles))
 
 # ------------------------------------------------------------------ 시트·목록
@@ -255,6 +279,8 @@ cat = {
     "soilTiles": sorted({n for n, px in enumerate(tiles) if (px[..., 3] == 255).any() and n in shadow_tiles}),
     "bankGrass": bank_grass, "bankLawn": bank_lawn, "edgeLawn": edge_lawn,
     "bankSnow": bank_snow, "bankBog": bank_bog, "bankMud": bank_mud,
+    # 울타리 조각: h 가로 · v 세로 · tl/tr/bl/br 모서리 · endW/endE 가로 끝(그 쪽으로 뻗고 반대쪽이 문) · endN/endS 세로 끝(문이 위/아래)
+    "fence": fence,
 }
 OUT_JSON.write_text(json.dumps(cat, ensure_ascii=False, separators=(",", ":")) + "\n")
 print("wrote", OUT_PNG, img.shape, OUT_JSON, OUT_JSON.stat().st_size)

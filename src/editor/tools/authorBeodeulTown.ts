@@ -14,6 +14,7 @@ import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
+import { VILLAGE_TERRAINS } from "./beodeulTerrain";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
 import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
@@ -48,6 +49,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "form 으로 마을 형태를 고른다 — 마을이 왜 여기 생겼나에서 고를 것: \"street\" 길가 마을(나루·다리·포구 길·오아시스로 드는 길가에 선 마을, 광장 없이 앵커가 다리 머리·어귀에), " +
     "\"riverbank\" 물가 띠 마을(river 만 — 둑을 따라 남북으로 늘어선 방앗간·나루 마을), \"scatter\" 흩어진 마을(농가·산촌 — 오솔길, 집마다 마당·텃밭), " +
     "\"plaza\" 광장 마을(장터·교역지일 때만 — 큰길 위 광장과 그 북쪽 앵커). 중심 광장·십자 길을 기본으로 삼지 말 것. 생략하면 seed 로 형태를 고른다(결과 data.form). " +
+    "terrain 으로 땅 모양을 먼저 정한다 — 지형을 깐 뒤 그 위에 물·길·집을 앉힌다: 집·소품은 한 단 위에만, 길이 단을 건너는 곳은 매끈한 경사로로 오른다(계단 없음). 생략하면 seed 로(평지가 아닌 것 우선). " +
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부). " +
     "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
@@ -67,6 +69,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       houseCount: {type:"integer",minimum:3,maximum:5,description:"집 3~5채의 작은 잔디 마을. 5이면 서로 다른 집 외형 5종. 생략하면 기존 테마 마을/도시."},
       church: {type:'boolean',description:'소규모 houseCount 모드에 석조 교회와 마당을 추가한다. 오른쪽 빈 띠를 포함해 폭 54칸. 기본 false.'},
       form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city·houseCount 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
+      terrain: { type: "string", enum: [...VILLAGE_TERRAINS], description: "지형(theme 마을만) — 마을보다 먼저 정하는 땅 모양: terraces 계단식 비탈(river·coast, 큰길 북쪽 집 띠 뒤로 한두 단, 강은 곧은 골) · hillside 눈 덮인 비탈(snow) · basin 오아시스 골(desert) · flat 평지. 생략하면 seed 로 고른다(결과 data.terrain)." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
@@ -119,12 +122,12 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
     const { houseCount: _houseCount, church: _church, ...rest } = args;
     args = rest;
     notes.push(`houseCount 는 밝은 잔디 소규모 마을 전용이라 빼고 theme ${String(args.theme)} 마을로 지었다.`);
-  } else if (args.houseCount !== undefined && typeof args.form === "string" && args.form.trim() && args.theme !== "city") {
+  } else if (args.houseCount !== undefined && ((typeof args.form === "string" && args.form.trim()) || (typeof args.terrain === "string" && args.terrain.trim())) && args.theme !== "city") {
     // 마을 형태를 고른 모델이 선택 칸을 다 채워 houseCount 도 보낸다(실측 2026-10-11: form riverbank + houseCount 5 → 소규모 마을 48×38 로 8번 반복).
     // form 은 theme 마을에만 있으므로 form 을 고른 쪽을 따른다.
     const { houseCount: _houseCount, church: _church, ...rest } = args;
     args = rest;
-    notes.push(`form ${String(args.form)} 은 theme 마을의 형태라 houseCount(소규모 잔디 마을 전용)를 빼고 지었다.`);
+    notes.push(`${args.form ? `form ${String(args.form)}` : `terrain ${String(args.terrain)}`} 은 theme 마을의 선택이라 houseCount(소규모 잔디 마을 전용)를 빼고 지었다.`);
   }
   const map = typeof args.mapId === "string" ? draft.maps[args.mapId] : undefined;
   const small = args.houseCount !== undefined;
@@ -559,7 +562,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     existing.structurePlacements = [];
   }
   const form = typeof args.form === "string" && args.form.trim() ? args.form.trim() : undefined;
-  const r = buildBeodeulVillage(draft, mapId, theme, seed, form);
+  const terrain = typeof args.terrain === "string" && args.terrain.trim() ? args.terrain.trim() : undefined;
+  const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain);
   return { summary: r.summary, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 

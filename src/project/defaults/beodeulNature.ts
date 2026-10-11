@@ -14,6 +14,8 @@ export const BEODEUL_NATURE = catalog as unknown as {
   bankGrass: number[]; bankLawn: number[]; edgeLawn: number[]; bankSnow: number[]; bankBog: number[]; bankMud: number[];
   /** 불투명 흙 화소(집 밑동)가 든 그림자 칸. */
   soilTiles: number[];
+  /** 울타리 조각(공용 숲 울타리 화소로 만든 모서리·끝 — 2026-10-11 「울타리 외곽 마감」). end* = 그 방향으로 뻗고 반대쪽이 문. */
+  fence: Record<'h' | 'v' | 'tl' | 'tr' | 'bl' | 'br' | 'endW' | 'endE' | 'endN' | 'endS', number>;
 };
 
 export function createBeodeulNatureTileset(): TilesetDef {
