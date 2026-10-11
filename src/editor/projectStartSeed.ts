@@ -19,7 +19,16 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
     const { withVerifiedPlayableSegment } = await import("@/project/playableSegment");
     const seeds = [planStart({ seedText: startSeedText(undefined, title) }).seed, STARTER_SEED];
     let playable: Project | null = null;
-    for (const seed of seeds) {
+    // 1순위: 빈 시작 맵 + 뼈대 — 뼈대가 제목에서 뽑은 구상(강가·포구 × 길가·흩어진·물가 띠 × 지형)으로 마을을 짓는다. 몬스터 칩셋 시작 맵은 마을을 못 지으니 건너뛴다.
+    if (choice?.packId !== "monster-collect") {
+      const planned = withVerifiedPlayableSegment(structuredClone(project));
+      const built = planned?.maps[planned.startMapId];
+      if (planned && built && built.width > 20) {
+        built.name = choice?.label ?? built.name;
+        playable = planned;
+      }
+    }
+    for (const seed of playable ? [] : seeds) {
       const starter = createBeodeulStarterMap(project, choice?.label, seed) ?? { map: createStarterMap(), startPos: { x: 15, y: 16 } };
       const map = starter.map;
       map.name = choice?.label ?? map.name;

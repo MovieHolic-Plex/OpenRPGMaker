@@ -16,7 +16,7 @@
 import { runTool } from "@/editor/tools";
 import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWalkBeodeul";
 import { runGameCheck } from "@/qa/gameCheck";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
@@ -214,7 +214,8 @@ function isUntouchedBlank(map: GameMap): boolean {
 }
 
 interface TownLayout {
-  readonly door: { readonly x: number; readonly y: number };
+  /** 걸어 닿는 동쪽 끝 문 자리 후보, 시작 줄에 가까운 순. 도구가 거절하면 다음 후보로 간다. */
+  readonly doors: readonly { readonly x: number; readonly y: number }[];
   readonly starter: { readonly x: number; readonly y: number };
 }
 
@@ -224,40 +225,59 @@ interface TownLayout {
  */
 function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
   if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
-  tool(ctx, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
-  const map = ctx.project.maps[start.id]!;
-  const origin = ctx.project.startPos;
+  // 시험 사본에서 짓는다 — 걸어 닿는 문 자리를 못 찾으면 마을을 채택하지 않고 빈 시작 맵 그대로 둔다(호출부가 옛 모양으로 간다).
+  const trial = { project: structuredClone(ctx.project) };
+  tool(trial, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
+  const map = trial.project.maps[start.id]!;
   const key = (x: number, y: number): number => y * map.width + x;
-  const walk = (blocked?: number): Map<number, number> => {
-    const dist = new Map<number, number>([[key(origin.x, origin.y), 0]]);
-    const queue: number[] = [key(origin.x, origin.y)];
+  const steps = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+  const walk = (from: number, blocked?: number): Map<number, number> => {
+    const dist = new Map<number, number>([[from, 0]]);
+    const queue: number[] = [from];
     for (let head = 0; head < queue.length; head++) {
       const cell = queue[head]!;
       const cx = cell % map.width, cy = Math.floor(cell / map.width);
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      for (const [dx, dy] of steps) {
         const nx = cx + dx, ny = cy + dy;
         if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
         const next = key(nx, ny);
-        if (next === blocked || dist.has(next) || !isPassable(ctx.project, map, nx, ny)) continue;
+        if (next === blocked || dist.has(next) || !isPassable(trial.project, map, nx, ny) || !canMove(trial.project, map, cx, cy, nx, ny)) continue;
         dist.set(next, dist.get(cell)! + 1);
         queue.push(next);
       }
     }
     return dist;
   };
-  if (!isPassable(ctx.project, map, origin.x, origin.y)) return null;
-  const reach = walk();
-  const doors = [...reach.keys()].filter((cell) => cell % map.width === map.width - 1)
+  // 시공기가 시작 칸을 「가장 가까운 통행 칸」으로 옮기면 갇힌 주머니일 수 있다 — 가장 큰 걸어 다니는 덩어리에서 서쪽 끝을 시작 칸으로 다시 고른다.
+  const seen = new Set<number>();
+  let largest = new Map<number, number>();
+  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+    const cell = key(x, y);
+    if (seen.has(cell) || !isPassableLanding(trial.project, map, x, y)) continue;
+    const group = walk(cell);
+    for (const member of group.keys()) seen.add(member);
+    if (group.size > largest.size) largest = group;
+  }
+  if (largest.size < 40) return null;
+  const midY = map.height / 2;
+  const origin = [...largest.keys()].sort((a, b) => (a % map.width) - (b % map.width) || Math.abs(Math.floor(a / map.width) - midY) - Math.abs(Math.floor(b / map.width) - midY))[0]!;
+  const startAt = { x: origin % map.width, y: Math.floor(origin / map.width) };
+  const reach = walk(origin);
+  const doors = [...reach.keys()].filter((cell) => cell % map.width === map.width - 1 && isPassableLanding(trial.project, map, map.width - 1, Math.floor(cell / map.width)))
     .map((cell) => ({ x: map.width - 1, y: Math.floor(cell / map.width) }));
   if (!doors.length) return null;
   // 시작 줄에 가장 가까운 문 자리 — 마을이 어느 쪽으로 열렸든 걸어 닿는 곳이다.
-  doors.sort((a, b) => Math.abs(a.y - origin.y) - Math.abs(b.y - origin.y) || a.y - b.y);
-  const door = doors[0]!;
-  // 시작 NPC: 시작 칸에서 2~7걸음, 서 있어도 문으로 가는 길이 끊기지 않는 칸. 문 칸·시작 칸은 피한다.
-  const candidates = [...reach.entries()].filter(([cell, d]) => d >= 2 && d <= 7 && cell !== key(door.x, door.y))
+  doors.sort((a, b) => Math.abs(a.y - startAt.y) - Math.abs(b.y - startAt.y) || a.y - b.y);
+  const doorCell = key(doors[0]!.x, doors[0]!.y);
+  // 시작 NPC: 시작 칸에서 2~7걸음, 서 있어도 문으로 가는 길이 끊기지 않는 칸. 문 칸은 피한다.
+  const candidates = [...reach.entries()].filter(([cell, d]) => d >= 2 && d <= 7 && cell !== doorCell)
     .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
   for (const [cell] of candidates) {
-    if (walk(cell).has(key(door.x, door.y))) return { door, starter: { x: cell % map.width, y: Math.floor(cell / map.width) } };
+    if (walk(origin, cell).has(doorCell)) {
+      trial.project.startPos = { ...startAt };
+      ctx.project = trial.project;
+      return { doors, starter: { x: cell % map.width, y: Math.floor(cell / map.width) } };
+    }
   }
   return null;
 }
@@ -287,12 +307,16 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   const town = plan ? prebuildStartTown(ctx, start, plan) : null;
   const here = ctx.project.maps[start.id]!;
   const midY = Math.min(here.height - 2, Math.max(1, ctx.project.startPos.y));
-  const door = town?.door ?? { x: here.width - 1, y: midY };
+  const doorCandidates = town?.doors ?? [{ x: here.width - 1, y: midY }];
   const starter = town?.starter ?? { x: Math.min(here.width - 2, ctx.project.startPos.x + 2), y: midY };
 
   tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: route.width, height: route.height, tilesetId: here.tilesetId });
   skeleton.paveRoute(ctx, here.tilesetId, route);
-  tool(ctx, "create_transfer_pair", { a: { mapId: here.id, x: door.x, y: door.y }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: route.entryY } });
+  // 문: 후보를 시작 줄에 가까운 순으로 시도한다 — 도구가 「걸어 닿지 않음」 따위로 거절하면 다음 후보. 마지막 후보의 오류는 그대로 던진다.
+  doorCandidates.slice(0, 12).some((door, index, list) => {
+    try { tool(ctx, "create_transfer_pair", { a: { mapId: here.id, x: door.x, y: door.y }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: route.entryY } }); return true; }
+    catch (error) { if (index === list.length - 1) throw error; return false; }
+  });
   skeleton.placeStarter(ctx, { mapId: here.id, x: starter.x, y: starter.y });
   tool(ctx, "define_ending", {
     id: SEGMENT_END_ENDING_ID,
