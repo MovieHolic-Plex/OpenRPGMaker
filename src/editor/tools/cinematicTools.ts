@@ -120,7 +120,7 @@ function resolveResourceId(
   kind: OpeningMediaKind,
   raw: unknown,
   index: number,
-  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.layers.resourceId",
+  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.sounds.resourceId" | "direction.layers.resourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   // Optional voice pickers and several model transports serialize no selection as "".
@@ -226,6 +226,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   try {
     const direction = scene.direction === undefined ? undefined : parseCinematicDirection(scene.direction);
     if (direction?.soundResourceId) resolveResourceId(project, 'sound', direction.soundResourceId, index, 'direction.soundResourceId', isKnown);
+    for (const cue of direction?.sounds ?? []) resolveResourceId(project, 'sound', cue.resourceId, index, 'direction.sounds.resourceId', isKnown);
     for (const layer of direction?.layers ?? []) resolveResourceId(project, 'image', layer.resourceId, index, 'direction.layers.resourceId', isKnown);
     return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion, ...(direction ? { direction } : {}) };
   } catch (error) {
@@ -386,7 +387,9 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
           region: { type: 'array', minItems: 3, maxItems: 8, items: { type: 'array', minItems: 2, maxItems: 2, items: { type: 'number', minimum: 0, maximum: 1 } } },
           spread: { type: 'number', minimum: 0.01, maximum: 0.5 }, speed: { type: 'number', minimum: 0, maximum: 2 },
         } } },
-        soundResourceId: { type: 'string' }, narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
+        soundResourceId: { type: 'string' },
+        sounds: { type: 'array', maxItems: 8, description: '장면 안 시각별 효과음. atMs는 장면 시작 기준.', items: { type: 'object', additionalProperties: false, required: ['resourceId', 'atMs'], properties: { resourceId: { type: 'string' }, atMs: { type: 'number', minimum: 0 }, volume: { type: 'number', minimum: 0, maximum: 1 } } } },
+        narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
       },
     },
   },
