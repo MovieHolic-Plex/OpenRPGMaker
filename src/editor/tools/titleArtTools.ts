@@ -77,6 +77,7 @@ export function buildTitleArtPrompt(request: Pick<TitleArtRequest, "preset" | "p
       ]),
     "The screen is cropped to the central 4:3 area, so keep every important subject away from the outer left and right edges, and let the scenery continue seamlessly to both edges. Keep the left third calmer so a menu stays readable, and keep the top-left quarter free of busy detail for the game logo. Achieve this only with the scene itself (open sky, shadowed foliage, distant haze); never paint a dark box, panel, vignette band or placeholder there.",
     "The layout percentages are composition guidance only: do not draw grid lines, guides, rulers, frames or any overlay on the picture.",
+    "The picture must be about THIS story: put the protagonist or the story's emblem (and its signature light source) in the lower-right two thirds as the focal point, not an empty generic landscape of ruins, castles and mist.",
     ...(request.light ? [`Main light: ${request.light}.`] : []),
     ...(request.palette ? [`Palette: ${request.palette}.`] : []),
     request.artStyle
