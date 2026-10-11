@@ -111,7 +111,7 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
   }
   // 높이 편집에는 읽기·재편집·통행 검사까지 함께 필요하다. 단어 순위 상한에
   // 걸려 조수가 평면 paint_road로 우회하지 않도록 같은 도구 묶음을 보인다.
-  if (/(절벽|경사로|고지|지붕|입체\s*지형|높이\s*지형|\bterrain\b|\brelief\b)/i.test(input.requestText)
+  if (/(절벽|경사로|고지|지붕|입체\s*지형|높이\s*지형|높낮이|단차|고도|언덕|구릉|산길|오르막|내리막|계단|평탄화|\bterrain\b|\brelief\b)/i.test(input.requestText)
     || input.intent?.tools.some(name => ["sculpt_relief", "design_terrain", "inspect_terrain", "lay_terrain_road"].includes(name))) {
     appendUnique(tools, seen, toolSchemasForNames(["read_relief", "sculpt_relief", "check_relief", "design_terrain",
       "inspect_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof", "check_terrain_access", "show_map_region"]) as OpenAiTool[]);

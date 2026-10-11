@@ -13,7 +13,7 @@ export type DelayedTooltipTarget = {
 };
 
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
-  { label: "높이", name: "높이", testid: "terrain-tool-height" },
+  { label: "지형", name: "지형 편집", testid: "terrain-tool-height" },
   { label: "표면", name: "표면", testid: "terrain-tool-surface" },
   { label: "강", name: "강", testid: "terrain-tool-river" },
   { label: "군집 선택", name: "군집 선택", testid: "terrain-tool-group" },
