@@ -282,6 +282,8 @@ export function cityFormAdvice(r: CityFormReport): string[] {
   if (r.blocks.overused.length) out.push(`블록 ${r.blocks.overused.map((o) => `${o.id}×${o.n}`).join(" ")} 3번 이상 — 두 번까지만`);
   if (r.graph.isolated.length) out.push(`길망에서 떨어진 길 ${r.graph.isolated.length}개: ${r.graph.isolated.slice(0, 5).map((l) => `${at(l.from)}→${at(l.to)}`).join(" ")}`);
   if (r.spacing.cv !== null && r.spacing.cv < 0.15 && r.spacing.vGaps.length + r.spacing.hGaps.length >= 4) out.push(`평행 대로 간격이 거의 같다(변동 ${r.spacing.cv}) — 바둑판처럼 보인다. 간격을 달리하거나 한 줄을 어긋나게`);
-  if (!r.nodes.length) out.push("광장(결절점)이 없다 — 24칸 이상 광장 하나는 필요");
+  // 광장 요구는 블록 격자 도시에만 — 마을은 광장 없는 형태(길가·물가 띠·흩어진)가 정상이다. 마을에 이 지적을 주면
+  // 조수가 길가 마을에 판석 마당을 손으로 깔다 길을 끊었다(2026-10-11 실모델 시험).
+  if (!r.nodes.length && r.blocks.count > 0) out.push("광장(결절점)이 없다 — 24칸 이상 광장 하나는 필요");
   return out;
 }

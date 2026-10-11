@@ -13,7 +13,7 @@ import { assertMapIdAvailable } from "./mapHelpers";
 import { MAP_TOOLS } from "./mapTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
+import { BEODEUL_VILLAGE_FORMS, BEODEUL_VILLAGE_THEMES, buildBeodeulVillage, themeDefaultSize, type BeodeulVillageTheme } from "./beodeulVillage";
 
 import { buildSmallBeodeulVillage } from "./beodeulSmallVillage";
 import { addBeodeulVillageChurch } from './beodeulArchitectureTools';
@@ -44,9 +44,10 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
   description:
     "버들항(beodeul_city) 타일셋으로 마을·도시를 한 번에 시공한다. houseCount 3~5를 지정하면 40×30의 소규모 밝은 잔디 마을: 별채 박공·이층·돌집·ㄱ자·낮은 집의 서로 다른 외형, 굽은 길과 샛길·우물 마당·살림·나무 군락. 새 마을을 만들 때 기존 맵은 보존한다. theme 으로 문법을 고른다. " +
     "마을(기본 theme:\"river\" 강가 마을 · \"coast\" 포구 · \"desert\" 사막 오아시스 · \"snow\" 설원 · \"swamp\" 늪 수상 마을): " +
-    "사용자가 고른 버들항 변형 마을의 문법 — 물(강·바다·못·늪)을 먼저 깔고, 굽은 큰길(폭 2) 하나가 맵을 가로지르고(강은 아치 다리로 건넘), 뒷길·이음길이 고리를 만들고(막다른 길 없음), " +
-    "큰길 위 광장(우물·좌판·벤치·등)과 그 북쪽 앵커 건물(여관·회관·대상 숙소), 길을 바라보는 집(문 앞 칸 = 길, 이웃 키트 반복 없음, 간격 1~3칸), " +
-    "용도별 소품 덩이(방앗간·포구 그물터·대상 마당·얼음낚시터), 바깥 밭·숲 덩이까지 짓는다. 집·소품은 bd-house-*·고른 조각 bd-pick-* 키트다. " +
+    "물(강·바다·못·늪)을 먼저 깔고 길·집(문 앞 칸 = 길, 이웃 키트 반복 없음)·앵커 건물(여관·회관·대상 숙소)·용도별 소품 덩이(방앗간·포구 그물터·대상 마당·얼음낚시터)·울타리 친 밭·숲 덩이까지 짓는다. 집·소품은 bd-house-*·고른 조각 bd-pick-* 키트다. " +
+    "form 으로 마을 형태를 고른다 — 마을이 왜 여기 생겼나에서 고를 것: \"street\" 길가 마을(나루·다리·포구 길·오아시스로 드는 길가에 선 마을, 광장 없이 앵커가 다리 머리·어귀에), " +
+    "\"riverbank\" 물가 띠 마을(river 만 — 둑을 따라 남북으로 늘어선 방앗간·나루 마을), \"scatter\" 흩어진 마을(농가·산촌 — 오솔길, 집마다 마당·텃밭), " +
+    "\"plaza\" 광장 마을(장터·교역지일 때만 — 큰길 위 광장과 그 북쪽 앵커). 중심 광장·십자 길을 기본으로 삼지 말 것. 생략하면 seed 로 형태를 고른다(결과 data.form). " +
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부). " +
     "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
@@ -65,6 +66,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       seed: { type: "integer", description: "배치 변주 시드(같은 값 = 같은 마을). 생략하면 7" },
       houseCount: {type:"integer",minimum:3,maximum:5,description:"집 3~5채의 작은 잔디 마을. 5이면 서로 다른 집 외형 5종. 생략하면 기존 테마 마을/도시."},
       church: {type:'boolean',description:'소규모 houseCount 모드에 석조 교회와 마당을 추가한다. 오른쪽 빈 띠를 포함해 폭 54칸. 기본 false.'},
+      form: { type: "string", enum: [...BEODEUL_VILLAGE_FORMS], description: "마을 형태(theme 마을만, city·houseCount 에는 없음): street 길가 · riverbank 물가 띠(river 만) · scatter 흩어진 · plaza 광장(장터일 때만). 생략하면 seed 로 고른다." },
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       harbour: { type: "boolean", description: `true 이고 가로 ${HARBOUR_W} 이상이면 맨 아래에 항구 호수를 붙인다(세로 ${HARBOUR_H}칸 추가).` },
     },
@@ -117,6 +119,12 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
     const { houseCount: _houseCount, church: _church, ...rest } = args;
     args = rest;
     notes.push(`houseCount 는 밝은 잔디 소규모 마을 전용이라 빼고 theme ${String(args.theme)} 마을로 지었다.`);
+  } else if (args.houseCount !== undefined && typeof args.form === "string" && args.form.trim() && args.theme !== "city") {
+    // 마을 형태를 고른 모델이 선택 칸을 다 채워 houseCount 도 보낸다(실측 2026-10-11: form riverbank + houseCount 5 → 소규모 마을 48×38 로 8번 반복).
+    // form 은 theme 마을에만 있으므로 form 을 고른 쪽을 따른다.
+    const { houseCount: _houseCount, church: _church, ...rest } = args;
+    args = rest;
+    notes.push(`form ${String(args.form)} 은 theme 마을의 형태라 houseCount(소규모 잔디 마을 전용)를 빼고 지었다.`);
   }
   const map = typeof args.mapId === "string" ? draft.maps[args.mapId] : undefined;
   const small = args.houseCount !== undefined;
@@ -550,7 +558,8 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
     }
     existing.structurePlacements = [];
   }
-  const r = buildBeodeulVillage(draft, mapId, theme, seed);
+  const form = typeof args.form === "string" && args.form.trim() ? args.form.trim() : undefined;
+  const r = buildBeodeulVillage(draft, mapId, theme, seed, form);
   return { summary: r.summary, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 
