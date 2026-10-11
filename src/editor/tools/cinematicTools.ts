@@ -346,7 +346,7 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
         text: { type: 'object', additionalProperties: false, properties: {
           layout: { type: 'string', enum: ['center', 'bottom', 'left', 'credits'] },
           font: { type: 'string', enum: ['serif', 'sans', 'pixel'] },
-          size: { type: 'integer', minimum: 8, maximum: 64, description: '논리 게임 무대 px. 기본 320×240 무대에서 14~26 권장.' },
+          size: { type: 'integer', minimum: 8, maximum: 16, description: '논리 px(무대 320×240, 화면에서 3배). 자막 10~13, 장 제목 최대 16.' },
           color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
           animation: { type: 'string', enum: CINEMATIC_TEXT_ANIMATIONS },
           delayMs: { type: 'integer', minimum: 0, maximum: 10000 },

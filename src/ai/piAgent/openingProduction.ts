@@ -79,6 +79,7 @@ export class PiOpeningProduction {
     if (this.fingerprint(project) === this.fingerprint(base)) issues.push('오프닝 설정이 요청 전과 같습니다. 실제 변경 또는 변경하지 못한 이유를 보고하세요.');
     if (/타이틀|title|첫\s*(?:화면|장면)|처음\s*(?:화면|장면)|시작\s*화면|켜자마자|켜면|게임을\s*켤/iu.test(this.task) && !this.titleArt) issues.push('요청에 게임을 켜자마자 보이는 첫 화면(타이틀)이 포함됩니다. 기본 이미지를 두지 말고 오프닝과 같은 화풍·모티프로 generate_title_art(artStyle·light·palette·candidates 지정)를 실행하고 set_title_screen으로 음악·효과를 구성하세요.');
     if (/효과음|\bsfx\b|사운드|이펙트|sound\s*effect/iu.test(this.task) && project.system.opening?.scenes?.length && !project.system.opening.scenes.some(s => s.kind === 'image' && (s.direction?.sounds?.length || s.direction?.soundResourceId))) issues.push('효과음을 요청받았지만 어느 장면에도 효과음이 연결되지 않았습니다. 장면 direction.sounds[{resourceId,atMs,volume}]로 사건 시각마다 effect를 연결하고(edit_opening op:update), 연결하지 않았다면 연결했다고 보고하지 마세요.');
+    for (const sc of project.system.opening?.scenes ?? []) if ((sc.presentation?.text?.size ?? 0) > 14) issues.push(`${sc.id}: presentation.text.size ${sc.presentation!.text!.size}는 너무 큽니다. 무대는 320×240 논리 픽셀이라 화면에서 3배로 보입니다. 자막은 10~13, 장 제목은 최대 16으로 줄이세요.`);
     if (!this.plan) issues.push('plan_opening으로 사건·구도·연속성·플레이 진입을 설계하세요.');
     else if (!this.bible) issues.push('plan_opening의 bible(전제·질문·모티프·팔레트·화풍·글 목소리)이 없습니다. 작품 고유 연출 기준을 먼저 세우세요.');
     if (this.plannedAngles.length >= 3) {
@@ -125,5 +126,6 @@ inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으�
 오프닝은 플레이어가 게임을 켜자마자 보는 첫 화면(타이틀)까지 포함한다. 요청이 첫 화면을 포함하면 기본 타이틀 그림을 그대로 두지 말고 bible의 화풍·모티프·팔레트로 generate_title_art(artStyle·light·palette·candidates 2~3)를 실행한 뒤 set_title_screen으로 타이틀 음악·효과를 정한다.
 효과음은 자유롭게 설계한다. generate_original_se로 장면에 맞는 소리(발걸음·바람·금속 마찰·종소리·균열 등)를 여러 개 합성하고, 장면 direction.sounds[{resourceId,atMs,volume}]로 시각 사건의 시각(atMs)에 맞춰 최대 8개까지 겹쳐 연결한다. 하나의 soundResourceId만 쓰는 것으로 끝내지 않는다. 모델은 소리를 듣지 못하므로 타이밍은 샷의 사건 시각에서 계산한다.
 영상·소리·이미지 가공이 필요하면 run_ffmpeg(inputs=리소스 id, args의 {in0}/{out})로 컷 이어붙이기·페이드·색 보정·소리 믹스·PNG→mp4를 직접 수행해 새 리소스로 등록한다. 외부 파일·네트워크는 쓸 수 없다.
+글자 크기: 오프닝 무대는 320×240 논리 픽셀이 3배로 보인다. presentation.text.size는 자막 10~13, 장 제목 최대 16. 글자는 그림의 주 피사체를 가리지 않는 자리(bottom)에 두고 한 컷 1~2줄로 줄인다. 큰 글씨를 기본으로 두지 않는다.
 진행 중에는 지금 무엇을 하는지(후보 생성·판정·ffmpeg 등) 사용자에게 한 줄로 알리고 실행기가 띄우는 진행 표시와 모순되지 않게 한다.
 시각 전달 증거와 구성 검토는 실행기가 확인한다. 실제 출하 플레이어의 재생·음악·Skip 검증은 별도이며 이 도구만으로 완료했다고 주장하지 않는다. 막힌 단계와 미검증 범위를 정확히 보고한다.`;
