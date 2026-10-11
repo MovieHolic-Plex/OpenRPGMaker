@@ -313,7 +313,7 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 | `design_terrain` | `planTerrainFeature` / `planTerrainDesign` | 윤곽·능선·계곡·호수·혼합·군집·잠금. 높이 delta와 점을 사용하며 고지 1·2·3 프리셋 없음 |
 | `place_terrain_house` | `planQuickHouse` | `kitId`로 현재 타일셋 원본 외관/크기 유지. `style,width,stories,roofWidth`는 크기 조절용 조립 집. 전체 집터+문 앞의 동일 높이·빈 땅 검사, 생성 kit도 등록 |
 | `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
-| `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
+| `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, 길이는 절벽 단차와 같은 칸 수(폭은 길이에 곱하지 않음), stairs=false |
 | `resize_terrain_house_roof` | `planQuickHouseDrag`의 roof 경로 | 기존 버들항 조립 집의 지붕 폭만 수정. 벽·창·문·층수·배치 ID 유지. 원본 고정 외관은 거부 |
 | `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞, 원본 `houseKits`와 조립 `houseStyles`, 경사로/계단 수, 시야 규칙 |
 | `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
