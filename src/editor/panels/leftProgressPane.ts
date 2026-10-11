@@ -24,16 +24,18 @@ const MANUAL: ReadonlySet<string> = new Set<ManualJourneyStageId>(["map", "event
 export function createLeftProgressPane(scope: () => string): { root: HTMLElement; show(): void; dispose(): void } {
   const root = el("section", { class: "left-progress-pane", attrs: { "aria-label": "작성 진행" }, dataset: { testid: "left-progress-pane" } });
   let issues: readonly string[] | null = null;
+  let validationTimer = 0;
   let renderedKey: string | null = null;
 
   const render = (): void => {
     if (root.hidden) return;
     const project = store.getCurrent();
-    issues ??= collectEditorProjectReferenceIssues(project);
     const currentScope = scope();
     const progress = loadAuthoringJourneyProgress(currentScope);
-    const stages = evaluateAuthoringJourney(project, progress, issues);
-    const nextKey = JSON.stringify([currentScope, stages]);
+    const stages = evaluateAuthoringJourney(project, progress, issues ?? []).map((stage) =>
+      issues === null && stage.id === "data" ? { ...stage, detail: "참조 검사 중…" } : stage,
+    );
+    const nextKey = JSON.stringify([currentScope, stages, issues === null]);
     if (renderedKey === nextKey) return;
     renderedKey = nextKey;
     const done = (stage: AuthoringJourneyStage) => stage.completion !== null || stage.acknowledgement !== null;
@@ -95,20 +97,34 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
 
   let queued = false;
   let disposed = false;
+  const scheduleValidation = (): void => {
+    if (validationTimer !== 0 || disposed || root.hidden || issues !== null) return;
+    validationTimer = window.setTimeout(() => {
+      validationTimer = 0;
+      if (disposed || root.hidden) return;
+      issues = collectEditorProjectReferenceIssues(store.getCurrent());
+      renderedKey = null;
+      render();
+    }, 0);
+  };
   const schedule = (): void => {
     if (queued || disposed || root.hidden) return;
+    scheduleValidation();
     queued = true;
     const run = (): void => { queued = false; if (!disposed) render(); };
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
     else queueMicrotask(run);
   };
   const unsubscribe = store.subscribe((_project, change) => {
-    if (!isTileCellChange(change)) issues = null;
+    if (!isTileCellChange(change)) {
+      issues = null;
+      renderedKey = null;
+    }
     schedule();
   });
   return {
     root,
-    show: () => { issues = null; render(); },
-    dispose: () => { disposed = true; unsubscribe(); },
+    show: () => { scheduleValidation(); render(); },
+    dispose: () => { disposed = true; clearTimeout(validationTimer); unsubscribe(); },
   };
 }

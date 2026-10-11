@@ -3198,15 +3198,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     onPlanningOpen: () => planningReuse.refresh(),
     // 바깥 클릭 판정은 데크 전체 — 레일의 ⋯ 가 바 밖에 있다(데크 조립 전엔 바 기준).
     isInside: (target) => (deckRoot ?? composerShell.commandBar).contains(target),
-    teamToggleOptions: {
-      onOpenSettings: () => teamSidebar.openSettings(),
-      initialTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
-      onTeamChange: (team) => {
-        saveAiConfig({ ...loadAiConfig(), piTeam: team });
-        teamPanel.setEnabled(team);
-        setStatus(team ? "Pi 팀 실행" : "Pi 에이전트 하나");
-      },
-    },
     effortChips: {
       initialAutonomy,
       onAutonomyChange: (level) => {
@@ -3421,6 +3412,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // The workspace owns the live team surface; wide mode temporarily moves it.
   panel.append(teamSidebar.root);
   const workspace = createAiWorkspace({ panel, deck, body, commandBar, outcome: outcomeSlot, team: teamSidebar, input,
+    showTeamUi: false,
     requestOpen: () => restoreCollapsed(), requestFold: () => { wideAssistant.close(); if (!collapsed) toggleCollapsed(); } });
   // AI 존재감 세 표면 중 지도 쪽 둘 — 지도 위 이름표와 지도 아래 상태 줄. 같은 원천(aiPresence)만 본다.
   const unmountStatusBar = mountAiStatusBar();
@@ -3428,8 +3420,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
   // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
   lockScrim.sync();
-  const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
-  // 작업 표시 헤딩이 아이콘화로 사라졌다(2026-09-21) — 크게 보기는 상단 레일 아이콘 행으로 옮긴다.
+  const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
+  // 팀 UI를 숨긴 동안에는 팀과 함께 열리는 분할 창도 노출하지 않는다.
+  wideButton.hidden = true;
   wideButton.classList.add("ai-deck-wide-open");
   wideButton.replaceChildren(deckIcon("expand"));
   deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);

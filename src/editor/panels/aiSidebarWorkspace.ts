@@ -61,7 +61,10 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     progress: item("flag", "진행", "sidebar-progress", () => activate("progress")),
     links: item("link", "연결", "sidebar-links", () => activate("links")),
     workshop: item("wrench", "공방", "sidebar-workshop", () => activate("workshop")),
-    store: item("shop", "에셋 스토어", "sidebar-store", () => activate("store"), "스토어"),
+    store: item("shop", "에셋 스토어", "sidebar-store", () => {
+      activate("store");
+      void import("@/editor/assetStore/storeWorkspace").then(({ openAssetStore }) => openAssetStore("browse"));
+    }, "스토어"),
   };
   const badge = el("span", { class: "left-activity-badge", attrs: { "aria-hidden": "true" }, dataset: { testid: "sidebar-inspect-badge" } });
   const inspectButton = item("alert", "검사", "sidebar-inspect", () => {

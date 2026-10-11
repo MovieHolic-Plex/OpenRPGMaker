@@ -437,19 +437,6 @@ export function renderAiSettingsForm(options: {
     "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
   );
 
-  // Pi 팀 실행: 팀은 경로가 아니라 Pi 루프의 실행 모드다(executionRoute.ts 머리말). 컴포저의 「팀」
-  // 토글과 같은 값을 읽고 쓴다 — 둘 중 하나가 유일한 진실이면 다른 쪽이 조용히 어긋난다.
-  const piTeamSelect = el("select", {
-    class: "ai-config-select",
-    dataset: { testid: "ai-config-pi-team" },
-    children: [
-      el("option", { attrs: { value: "single" }, text: "에이전트 하나" }),
-      el("option", { attrs: { value: "team" }, text: "팀(팀장·시공·검수)" }),
-    ],
-  }) as HTMLSelectElement;
-  piTeamSelect.value = (config.piTeam ?? DEFAULT_PI_TEAM) ? "team" : "single";
-  piTeamSelect.addEventListener("change", () => persist(false));
-  const piTeamRow = settingsRow("팀으로 작업", "팀은 팀장이 맵을 나눠 시공·검수 에이전트를 띄운다 — 검수와 수정 배정이 붙지만 느립니다. 컴포저의 「팀」 토글과 같은 값입니다.", piTeamSelect);
   const piApplySelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-config-pi-apply" },
@@ -579,7 +566,7 @@ export function renderAiSettingsForm(options: {
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
     agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
     autonomyLevel: isAutonomyLevel(autonomySelect.value) ? autonomySelect.value : "balanced",
-    piTeam: piTeamSelect.value === "team",
+    piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
     piApply: normalizePiApplyMode(piApplySelect.value),
   });
 
@@ -1031,7 +1018,7 @@ export function renderAiSettingsForm(options: {
         settingsSection("behavior", "동작", "응답 예산과 작업 진행 방식을 조정합니다.",
           // The autonomy dial stays first: it is the only way to reach the read-only (ask)
           // rail now that the composer has no mode chips, so it must not be pushed down.
-          [autonomyRow, piTeamRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
+          [autonomyRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
         settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
