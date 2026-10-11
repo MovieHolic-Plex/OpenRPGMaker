@@ -1,5 +1,5 @@
 // author_beodeul_town 마을 형태(form) 프로브 — LLM 없이 theme × form × seed 로 짓고 렌더·통계를 남긴다.
-//   bun scripts/qa/beodeul-village-forms-probe.mts [--out output/evidence/village-forms] [--seeds 3,7,11] [--themes river,coast]
+//   bun scripts/qa/beodeul-village-forms-probe.mts [--out output/evidence/village-forms] [--seeds 3,7,11] [--themes river,coast] [--forms riverbank] [--size 88x56]
 // 결과: <out>/<theme>-<form>-<seed>.png, <out>/report.json(문 앞 도달·막다른 칸·울타리·경고)
 import fs from "node:fs";
 import { renderMapPng } from "../qa-game/render.mts";
@@ -15,6 +15,8 @@ const OUT = arg("out", "output/evidence/village-forms");
 const seeds = arg("seeds", "3,7,11").split(",").map(Number);
 const themes = arg("themes", BEODEUL_VILLAGE_THEMES.join(",")).split(",") as BeodeulVillageTheme[];
 const forms = arg("forms", "").split(",").filter(Boolean);
+const size = arg("size", ""); // 예: 88x56 (생략 = theme 기본 크기)
+const [sw, sh] = size ? size.split("x").map(Number) : [];
 fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -24,8 +26,8 @@ for (const theme of themes) for (const form of allowedVillageForms(theme)) {
   for (const seed of seeds) {
     const ctx = { project: JSON.parse(baseJson) as Project };
     const t0 = Date.now();
-    const r = runTool(ctx, "author_beodeul_town", { theme, form, seed, id: `v_${theme}_${form}_${seed}` } as never);
-    const name = `${theme}-${form}-${seed}`;
+    const r = runTool(ctx, "author_beodeul_town", { theme, form, seed, id: `v_${theme}_${form}_${seed}`, ...(sw ? { width: sw, height: sh } : {}) } as never);
+    const name = `${theme}-${form}-${seed}${size ? `-${size}` : ""}`;
     if (!r.ok) { rows.push({ name, ok: false, summary: r.summary }); console.log(name, "FAIL", r.summary); continue; }
     const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
     fs.writeFileSync(`${OUT}/${name}.png`, renderMapPng(ctx.project, map).png);

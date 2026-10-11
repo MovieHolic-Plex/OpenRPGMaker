@@ -119,6 +119,12 @@ function normalizeTownArgs(draft: Project, raw: Record<string, unknown>): { args
     const { houseCount: _houseCount, church: _church, ...rest } = args;
     args = rest;
     notes.push(`houseCount 는 밝은 잔디 소규모 마을 전용이라 빼고 theme ${String(args.theme)} 마을로 지었다.`);
+  } else if (args.houseCount !== undefined && typeof args.form === "string" && args.form.trim() && args.theme !== "city") {
+    // 마을 형태를 고른 모델이 선택 칸을 다 채워 houseCount 도 보낸다(실측 2026-10-11: form riverbank + houseCount 5 → 소규모 마을 48×38 로 8번 반복).
+    // form 은 theme 마을에만 있으므로 form 을 고른 쪽을 따른다.
+    const { houseCount: _houseCount, church: _church, ...rest } = args;
+    args = rest;
+    notes.push(`form ${String(args.form)} 은 theme 마을의 형태라 houseCount(소규모 잔디 마을 전용)를 빼고 지었다.`);
   }
   const map = typeof args.mapId === "string" ? draft.maps[args.mapId] : undefined;
   const small = args.houseCount !== undefined;
