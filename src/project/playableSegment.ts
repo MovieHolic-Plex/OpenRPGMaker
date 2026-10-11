@@ -16,7 +16,10 @@
 import { runTool } from "@/editor/tools";
 import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWalkBeodeul";
 import { runGameCheck } from "@/qa/gameCheck";
-import type { Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { planStartForBrief, type StartPlan } from "@/project/startVariety";
+import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import {
   hasPlayableSegmentSkeleton,
@@ -81,10 +84,19 @@ function page(id: string, commands: readonly unknown[], conditions: readonly unk
   return { id, conditions, trigger: { kind: "action" }, graphic: { transparent: true }, commands };
 }
 
+/** 길 맵 기하 — 입구는 x=0, 구간 끝 이벤트는 x=width-2. 기본(옛 뼈대)은 24×12 · 입구/끝 줄 6. */
+interface RouteGeometry {
+  readonly width: number;
+  readonly height: number;
+  readonly entryY: number;
+  readonly endY: number;
+}
+const LEGACY_ROUTE: RouteGeometry = { width: 24, height: 12, entryY: 6, endY: 6 };
+
 interface GenreSkeleton {
   readonly routeName: string;
   /** 길 맵을 채운다(도로 시공·조우). 문을 달기 전에 부른다. */
-  readonly paveRoute: (ctx: { project: Project }, tilesetId: string) => void;
+  readonly paveRoute: (ctx: { project: Project }, tilesetId: string, route: RouteGeometry) => void;
   /** 시작 맵의 핵심 행동 이벤트. 끝나면 SEGMENT_KEY_SWITCH_ID 가 켜져야 한다. */
   readonly placeStarter: (ctx: { project: Project }, at: { mapId: string; x: number; y: number }) => void;
   readonly lockedLine: string;
@@ -98,11 +110,11 @@ interface GenreSkeleton {
 const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   "monster-collect": {
     routeName: "1번 길",
-    paveRoute(ctx) {
+    paveRoute(ctx, _tilesetId, route) {
       // 도로 야생은 Lv5 스타터가 이기고 잡을 수 있는 세기(종족 공식 Lv3). 기본 DB 의 troop_slime 은 액터 파티 척도라 스타터가 진다.
       tool(ctx, "upsert_enemy", { enemy: { id: SEGMENT_WILD_ENEMY_ID, name: "야생 슬라임", speciesId: "species_wild_slime", level: 3, monsterResourceId: "generated-enemy-slime-01" } });
       tool(ctx, "upsert_troop", { troop: { id: SEGMENT_WILD_TROOP_ID, name: "풀숲 슬라임", enemyIds: [SEGMENT_WILD_ENEMY_ID] } });
-      tool(ctx, "author_wild_route", { mapId: SEGMENT_ROUTE_MAP_ID, exits: [{ x: 0, y: 6 }, { x: 23, y: 6 }], grassPatches: 2, encounters: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }] });
+      tool(ctx, "author_wild_route", { mapId: SEGMENT_ROUTE_MAP_ID, exits: [{ x: 0, y: route.entryY }, { x: route.width - 1, y: route.endY }], grassPatches: 2, encounters: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }] });
     },
     placeStarter(ctx, at) {
       tool(ctx, "give_starter_monsters", { speciesIds: [...STARTER_SPECIES], actorEvent: { mapId: at.mapId, eventId: SEGMENT_STARTER_EVENT_ID, x: at.x, y: at.y, name: "박사" } });
@@ -136,7 +148,7 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
   "adventure-jrpg": {
     routeName: "숲길",
-    paveRoute(ctx) {
+    paveRoute(ctx, _tilesetId, _route) {
       // 계약 문장이 부르는 id 를 실제 트룹으로 둔다 — 길 조우를 바꾸고 싶으면 이 트룹을 고치면 된다.
       tool(ctx, "upsert_troop", { troop: { id: SEGMENT_WILD_TROOP_ID, name: "숲길 슬라임", enemyIds: ["enemy_slime"] } });
       tool(ctx, "set_encounter_table", { mapId: SEGMENT_ROUTE_MAP_ID, entries: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }], encounterRate: 20 });
@@ -166,11 +178,11 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
   "story-cutscene": {
     routeName: "기억의 길",
-    paveRoute(ctx, tilesetId) {
+    paveRoute(ctx, tilesetId, route) {
       // 빈 풀밭으로 두면 첫 장소 단계가 몬스터 도로(author_wild_route)로 깔았다(2026-10-07) — 만남 광장이 있는 산책길을 먼저 깐다.
       const map = ctx.project.maps[SEGMENT_ROUTE_MAP_ID]!;
       const tileset = ctx.project.tilesets[tilesetId];
-      if (canPaintStoryWalk(tileset)) paintBeodeulStoryWalk(ctx.project, map, tileset, { exit: { x: 0, y: 6 }, meet: { x: 22, y: 6 } });
+      if (canPaintStoryWalk(tileset)) paintBeodeulStoryWalk(ctx.project, map, tileset, { exit: { x: 0, y: route.entryY }, meet: { x: route.width - 2, y: route.endY } });
     },
     placeStarter(ctx, at) {
       tool(ctx, "upsert_event", {
@@ -193,13 +205,73 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
 };
 
+/** 손대지 않은 빈 시작 맵인가 — 같은 칸만 있고 이벤트·위 칸이 없다. 사람이 칠한 맵은 코드가 다시 짓지 않는다. */
+function isUntouchedBlank(map: GameMap): boolean {
+  return map.events.length === 0
+    && map.lowerTiles.every((tile) => tile === map.lowerTiles[0])
+    && map.upperTiles.every((tile) => tile === -1)
+    && !map.relief;
+}
+
+interface TownLayout {
+  readonly door: { readonly x: number; readonly y: number };
+  readonly starter: { readonly x: number; readonly y: number };
+}
+
+/**
+ * 시작 마을을 기획의 구상(형태·지형·무대)대로 미리 짓고, 시작 칸에서 걸어 닿는 동쪽 끝 문 자리와 시작 NPC 자리를 찾는다.
+ * 길을 새로 파지 않는다 — 시공기가 만든 길 위에서만 찾는다. 못 찾으면 null(호출부가 옛 뼈대로 물러난다).
+ */
+function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
+  if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
+  tool(ctx, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
+  const map = ctx.project.maps[start.id]!;
+  const origin = ctx.project.startPos;
+  const key = (x: number, y: number): number => y * map.width + x;
+  const walk = (blocked?: number): Map<number, number> => {
+    const dist = new Map<number, number>([[key(origin.x, origin.y), 0]]);
+    const queue: number[] = [key(origin.x, origin.y)];
+    for (let head = 0; head < queue.length; head++) {
+      const cell = queue[head]!;
+      const cx = cell % map.width, cy = Math.floor(cell / map.width);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = cx + dx, ny = cy + dy;
+        if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+        const next = key(nx, ny);
+        if (next === blocked || dist.has(next) || !isPassable(ctx.project, map, nx, ny)) continue;
+        dist.set(next, dist.get(cell)! + 1);
+        queue.push(next);
+      }
+    }
+    return dist;
+  };
+  if (!isPassable(ctx.project, map, origin.x, origin.y)) return null;
+  const reach = walk();
+  const doors = [...reach.keys()].filter((cell) => cell % map.width === map.width - 1)
+    .map((cell) => ({ x: map.width - 1, y: Math.floor(cell / map.width) }));
+  if (!doors.length) return null;
+  // 시작 줄에 가장 가까운 문 자리 — 마을이 어느 쪽으로 열렸든 걸어 닿는 곳이다.
+  doors.sort((a, b) => Math.abs(a.y - origin.y) - Math.abs(b.y - origin.y) || a.y - b.y);
+  const door = doors[0]!;
+  // 시작 NPC: 시작 칸에서 2~7걸음, 서 있어도 문으로 가는 길이 끊기지 않는 칸. 문 칸·시작 칸은 피한다.
+  const candidates = [...reach.entries()].filter(([cell, d]) => d >= 2 && d <= 7 && cell !== key(door.x, door.y))
+    .sort((a, b) => a[1] - b[1] || a[0] - b[0]);
+  for (const [cell] of candidates) {
+    if (walk(cell).has(key(door.x, door.y))) return { door, starter: { x: cell % map.width, y: Math.floor(cell / map.width) } };
+  }
+  return null;
+}
+
 /**
  * 장르별 첫 구간 뼈대: 시작 맵의 핵심 행동 이벤트 → 동쪽 문 → 길 맵 → 길 끝의 구간 끝(핵심 행동의 스위치가 있어야 열림).
  * 맵·문·조우·이벤트·엔딩은 실제 편집 도구로 만든다 — 모델이 쓰는 것과 같은 검증(통행·착지·커밋 게이트)을 지난다.
  * 도구가 없는 것(스위치 이름, 선택지 안 스위치, 시작 소지품)만 코드가 직접 넣는다.
  * 입력은 바꾸지 않고 새 프로젝트를 돌려준다. 이미 뼈대가 있으면 입력을 그대로 돌려준다.
+ *
+ * 모양은 기획에서 뽑은 구상(startVariety.planStart)을 따른다: 길 맵 크기·입구/끝 줄이 기획마다 다르고, 손대지 않은 빈 시작 맵은
+ * 구상의 형태·지형으로 마을을 미리 짓는다. legacy 는 예전 고정 모양(24×12, 줄 6, 빈 시작 맵) — 구상 뼈대가 판정을 못 넘을 때의 물러남이다.
  */
-export function buildPlayableSegmentSkeleton(input: Project): Project {
+export function buildPlayableSegmentSkeleton(input: Project, options: { readonly legacy?: boolean } = {}): Project {
   const genre = playableSegmentGenre(input);
   if (!genre) throw new Error("이 장르에는 첫 구간 뼈대가 없습니다: " + String(input.system.genre));
   if (hasPlayableSegmentSkeleton(input)) return input;
@@ -209,12 +281,19 @@ export function buildPlayableSegmentSkeleton(input: Project): Project {
   const ctx = { project: structuredClone(input) };
   // 구간 스위치는 먼저 정의한다 — upsert_event 참조 검사와 페이지 조건이 이 id 를 본다. 스위치 정의 도구는 없다.
   if (!ctx.project.switches.some((entry) => entry.id === SEGMENT_KEY_SWITCH_ID)) ctx.project.switches.push({ id: SEGMENT_KEY_SWITCH_ID, name: "첫 구간 핵심 행동" });
-  const midY = Math.min(start.height - 2, Math.max(1, input.startPos.y));
 
-  tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: 24, height: 12, tilesetId: start.tilesetId });
-  skeleton.paveRoute(ctx, start.tilesetId);
-  tool(ctx, "create_transfer_pair", { a: { mapId: start.id, x: start.width - 1, y: midY }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: 6 } });
-  skeleton.placeStarter(ctx, { mapId: start.id, x: Math.min(start.width - 2, input.startPos.x + 2), y: midY });
+  const plan = options.legacy ? null : planStartForBrief(input.gameDesignBrief, input.meta.title);
+  const route: RouteGeometry = plan ? { width: plan.routeW, height: plan.routeH, entryY: plan.entryY, endY: plan.endY } : LEGACY_ROUTE;
+  const town = plan ? prebuildStartTown(ctx, start, plan) : null;
+  const here = ctx.project.maps[start.id]!;
+  const midY = Math.min(here.height - 2, Math.max(1, ctx.project.startPos.y));
+  const door = town?.door ?? { x: here.width - 1, y: midY };
+  const starter = town?.starter ?? { x: Math.min(here.width - 2, ctx.project.startPos.x + 2), y: midY };
+
+  tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: route.width, height: route.height, tilesetId: here.tilesetId });
+  skeleton.paveRoute(ctx, here.tilesetId, route);
+  tool(ctx, "create_transfer_pair", { a: { mapId: here.id, x: door.x, y: door.y }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: route.entryY } });
+  skeleton.placeStarter(ctx, { mapId: here.id, x: starter.x, y: starter.y });
   tool(ctx, "define_ending", {
     id: SEGMENT_END_ENDING_ID,
     name: "첫 구간 끝",
@@ -224,7 +303,7 @@ export function buildPlayableSegmentSkeleton(input: Project): Project {
   tool(ctx, "upsert_event", {
     mapId: SEGMENT_ROUTE_MAP_ID,
     event: {
-      id: SEGMENT_END_EVENT_ID, name: "구간 끝", x: 22, y: 6, trigger: { kind: "action" },
+      id: SEGMENT_END_EVENT_ID, name: "구간 끝", x: route.width - 2, y: route.endY, trigger: { kind: "action" },
       pages: [
         page(SEGMENT_END_EVENT_ID + "_locked", [{ kind: "text", body: skeleton.lockedLine }]),
         page(SEGMENT_END_EVENT_ID + "_page", [...skeleton.endCommands, { kind: "triggerEnding", endingId: SEGMENT_END_ENDING_ID }],
@@ -251,13 +330,16 @@ export function withVerifiedPlayableSegment(project: Project): Project | null {
     return seeded;
   }
   if (!supportsPlayableSegment(project) || hasPlayableSegmentSkeleton(project)) return null;
-  try {
-    const skeleton = buildPlayableSegmentSkeleton(project);
-    const verdict = judgePlayableSegment(skeleton);
-    if (verdict.ok) return skeleton;
-    console.error("[playable-segment] 뼈대가 자동 플레이를 통과하지 못했습니다:", verdict.blockers);
-  } catch (error) {
-    console.error("[playable-segment] 뼈대를 깔지 못했습니다:", error);
+  // 기획 구상 뼈대 → 판정을 못 넘으면 옛 고정 뼈대로 물러난다(둘 다 못 넘을 때만 AI 만으로 진행).
+  for (const legacy of [false, true]) {
+    try {
+      const skeleton = buildPlayableSegmentSkeleton(project, { legacy });
+      const verdict = judgePlayableSegment(skeleton);
+      if (verdict.ok) return skeleton;
+      console.error("[playable-segment] " + (legacy ? "옛 " : "구상 ") + "뼈대가 자동 플레이를 통과하지 못했습니다:", verdict.blockers);
+    } catch (error) {
+      console.error("[playable-segment] " + (legacy ? "옛 " : "구상 ") + "뼈대를 깔지 못했습니다:", error);
+    }
   }
   return null;
 }
