@@ -12,15 +12,16 @@ FO = {'street':'길가','scatter':'흩어진','riverbank':'물가 띠','plaza':'
 TE = {'flat':'평지','terraces':'계단식 비탈','hillside':'눈 덮인 비탈','basin':'오아시스 골','ridge':'마른 둔덕'}
 def card(x):
     p = x['plan']; n = x['new']; o = x['old']; pre = p['prebuildTown']; s = x['slug']
-    note = '시작 마을을 코드가 미리 지음' if pre else f"컨셉 타일셋 {x['hint']} — 마을은 AI가 그 칩셋으로 지음(미리 안 지음)"
+    note = f"칩셋 <b>{n['tileset']}</b> · " + ('시작 마을을 코드가 미리 지음' if pre else '시작 맵은 그 칩셋의 빈 땅 — 마을은 AI가 같은 칩셋으로 지음')
     return f'''<section class="card"><h3>{html.escape(x['title'])}</h3>
 <p class="meta">{x['genre']} · 구상 <b>{TH[p['theme']]}·{FO[p['form']]}·{TE[p['terrain']]}</b> · {note}</p>
 <div class="grid"><div><h4>옛 시작 맵 {o['start'][0]}×{o['start'][1]}</h4><img src="start-variety/{s}-old-start.png"></div>
-<div class="{'' if pre else 'dim'}"><h4>새 시작 맵 {n['start'][0]}×{n['start'][1]}</h4><img src="start-variety/{s}-new-start.png"></div>
+<div><h4>새 시작 맵 {n['start'][0]}×{n['start'][1]}</h4><img src="start-variety/{s}-new-start.png"></div>
 <div><h4>옛 길 맵 {o['route'][0]}×{o['route'][1]}</h4><img class="r" src="start-variety/{s}-old-route.png"></div>
 <div><h4>새 길 맵 {n['route'][0]}×{n['route'][1]}</h4><img class="r" src="start-variety/{s}-new-route.png"></div></div></section>'''
 rs = collections.Counter(tuple(x['new']['route']) for x in R)
 forms = collections.Counter(f"{TH[x['plan']['theme']]}·{FO[x['plan']['form']]}" for x in R)
+tsets = collections.Counter(x['new']['tileset'] for x in R)
 pre = sum(1 for x in R if x['plan']['prebuildTown'])
 allok = all(x['old']['ok'] and x['new']['ok'] for x in R)
 ex = ''.join(f'<div><h4>{html.escape(e["title"])} ({e["size"][0]}×{e["size"][1]})</h4><img src="start-variety/{e["file"]}"></div>' for e in X if 'file' in e)
@@ -37,7 +38,7 @@ h1{{font-size:22px}}h3{{margin:0 0 2px}}h4{{margin:6px 0 4px;font-size:12px;colo
 <p>길 맵 <b>{len(R)}장 전부 24×12</b>, 입구·구간 끝 줄 6 고정, 시작 맵은 장르와 무관한 빈 풀밭 20×15. 「예제로 시작」은 제목이 뭐든 같은 마을(seed 7).</p></div>
 <div class="box"><h3 class="good">새</h3>
 <p>길 맵 크기 {len(rs)}종 ({', '.join(f'{w}×{h}' for (w,h) in sorted(rs))}). 마을 구상 {len(forms)}종 ({', '.join(f'{k} {v}' for k,v in forms.items())}).<br>
-시작 마을을 코드가 미리 지은 컨셉 <b>{pre}/{len(R)}</b> — 나머지는 조선·마법 학교·jp_city처럼 컨셉이 고른 타일셋이 따로 있어 마을은 AI가 그 칩셋으로 짓는다(그림이 흐린 건 그래서이고, 이 경우 길 맵 크기·줄과 프롬프트만 달라진다).</p></div></div>
+칩셋: {', '.join(f'{k} {v}' for k,v in tsets.items())} (옛: 전부 beodeul_city). 시작 마을을 코드가 미리 지은 컨셉은 버들항 {pre}/{len(R)}장 — 나머지는 컨셉의 칩셋(현대 jp_city·조선·마법 학교)의 빈 땅으로 시작 맵을 옮기고 길 맵을 그 칩셋의 길·마당으로 깐다. 마을 자체는 AI가 같은 칩셋 계열로 짓는다.</p></div></div>
 <h2>「예제로 시작」 — 제목마다 다른 마을</h2>
 <div class="ex">{ex}</div>
 <h2>컨셉 카드별 (옛 | 새)</h2>

@@ -18,6 +18,8 @@ import { canPaintStoryWalk, paintBeodeulStoryWalk } from "@/editor/tools/storyWa
 import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { blankFillTileFor } from "@/project/defaults/defaultMaps";
+import { paintStartRoute, routeStyleFor } from "@/project/startRoutePaint";
 import { planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -93,10 +95,34 @@ interface RouteGeometry {
 }
 const LEGACY_ROUTE: RouteGeometry = { width: 24, height: 12, entryY: 6, endY: 6 };
 
+/** 길 맵을 칩셋 재료로 깐다. 길·마당은 필수(실패하면 뼈대를 포기), 보도 연석 같은 장식은 못 칠해도 건너뛴다. 구상이 없으면(옛 뼈대) 깔지 않는다. */
+function paintRouteFor(ctx: { project: Project }, tilesetId: string, route: RouteGeometry, plan: StartPlan | null): void {
+  const style = routeStyleFor(tilesetId);
+  if (!plan || !style) return;
+  paintStartRoute((rect, material, optional) => {
+    try { tool(ctx, "fill_region", { mapId: SEGMENT_ROUTE_MAP_ID, rect, material }); }
+    catch (error) { if (!optional) throw error; }
+  }, style, plan, route);
+}
+
+/** 컨셉이 고른 칩셋(조선·마법 학교·일본 도시)으로 손대지 않은 빈 시작 맵을 옮긴다 — 조수는 보는 맵의 칩셋 계열을 따르므로 버들항 빈 맵에서는 컨셉의 칩셋이 영영 안 쓰인다. */
+function openBlankStartOnConceptKit(ctx: { project: Project }, startId: string, plan: StartPlan): void {
+  const kit = ctx.project.tilesets[plan.tilesetId];
+  const map = ctx.project.maps[startId];
+  if (!kit || !map || plan.tilesetId === map.tilesetId || map.tilesetId !== DEFAULT_TILESET_ID || !isUntouchedBlank(map)) return;
+  map.tilesetId = kit.id;
+  map.tileSize = kit.tileSize;
+  map.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
+  const ground = routeStyleFor(kit.id)?.ground;
+  if (ground) {
+    try { tool(ctx, "fill_region", { mapId: startId, rect: { x: 0, y: 0, w: map.width, h: map.height }, material: ground }); } catch { /* 바탕은 장식이다 — 빈 칸 그대로 둔다 */ }
+  }
+}
+
 interface GenreSkeleton {
   readonly routeName: string;
   /** 길 맵을 채운다(도로 시공·조우). 문을 달기 전에 부른다. */
-  readonly paveRoute: (ctx: { project: Project }, tilesetId: string, route: RouteGeometry) => void;
+  readonly paveRoute: (ctx: { project: Project }, tilesetId: string, route: RouteGeometry, plan: StartPlan | null) => void;
   /** 시작 맵의 핵심 행동 이벤트. 끝나면 SEGMENT_KEY_SWITCH_ID 가 켜져야 한다. */
   readonly placeStarter: (ctx: { project: Project }, at: { mapId: string; x: number; y: number }) => void;
   readonly lockedLine: string;
@@ -110,7 +136,7 @@ interface GenreSkeleton {
 const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   "monster-collect": {
     routeName: "1번 길",
-    paveRoute(ctx, _tilesetId, route) {
+    paveRoute(ctx, _tilesetId, route, _plan) {
       // 도로 야생은 Lv5 스타터가 이기고 잡을 수 있는 세기(종족 공식 Lv3). 기본 DB 의 troop_slime 은 액터 파티 척도라 스타터가 진다.
       tool(ctx, "upsert_enemy", { enemy: { id: SEGMENT_WILD_ENEMY_ID, name: "야생 슬라임", speciesId: "species_wild_slime", level: 3, monsterResourceId: "generated-enemy-slime-01" } });
       tool(ctx, "upsert_troop", { troop: { id: SEGMENT_WILD_TROOP_ID, name: "풀숲 슬라임", enemyIds: [SEGMENT_WILD_ENEMY_ID] } });
@@ -148,7 +174,9 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
   "adventure-jrpg": {
     routeName: "숲길",
-    paveRoute(ctx, _tilesetId, _route) {
+    paveRoute(ctx, tilesetId, route, plan) {
+      // 길 맵은 시작 맵의 칩셋을 따른다 — 현대 거리·조선·마법 학교 컨셉은 그 칩셋의 길과 마당으로 깐다(예전엔 길을 안 깔아 빈 풀밭이었다).
+      paintRouteFor(ctx, tilesetId, route, plan);
       // 계약 문장이 부르는 id 를 실제 트룹으로 둔다 — 길 조우를 바꾸고 싶으면 이 트룹을 고치면 된다.
       tool(ctx, "upsert_troop", { troop: { id: SEGMENT_WILD_TROOP_ID, name: "숲길 슬라임", enemyIds: ["enemy_slime"] } });
       tool(ctx, "set_encounter_table", { mapId: SEGMENT_ROUTE_MAP_ID, entries: [{ troopId: SEGMENT_WILD_TROOP_ID, weight: 1 }], encounterRate: 20 });
@@ -178,7 +206,9 @@ const SKELETONS: Record<PlayableSegmentGenre, GenreSkeleton> = {
   },
   "story-cutscene": {
     routeName: "기억의 길",
-    paveRoute(ctx, tilesetId, route) {
+    paveRoute(ctx, tilesetId, route, plan) {
+      // 버들항은 만남 광장이 있는 산책길(소품 포함)을 먼저 깐다. 다른 칩셋은 그 칩셋의 길·마당으로 깐다.
+      if (plan && tilesetId !== DEFAULT_TILESET_ID) { paintRouteFor(ctx, tilesetId, route, plan); return; }
       // 빈 풀밭으로 두면 첫 장소 단계가 몬스터 도로(author_wild_route)로 깔았다(2026-10-07) — 만남 광장이 있는 산책길을 먼저 깐다.
       const map = ctx.project.maps[SEGMENT_ROUTE_MAP_ID]!;
       const tileset = ctx.project.tilesets[tilesetId];
@@ -305,13 +335,14 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   const plan = options.legacy ? null : planStartForBrief(input.gameDesignBrief, input.meta.title);
   const route: RouteGeometry = plan ? { width: plan.routeW, height: plan.routeH, entryY: plan.entryY, endY: plan.endY } : LEGACY_ROUTE;
   const town = plan ? prebuildStartTown(ctx, start, plan) : null;
+  if (plan && !town) openBlankStartOnConceptKit(ctx, start.id, plan);
   const here = ctx.project.maps[start.id]!;
   const midY = Math.min(here.height - 2, Math.max(1, ctx.project.startPos.y));
   const doorCandidates = town?.doors ?? [{ x: here.width - 1, y: midY }];
   const starter = town?.starter ?? { x: Math.min(here.width - 2, ctx.project.startPos.x + 2), y: midY };
 
   tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: route.width, height: route.height, tilesetId: here.tilesetId });
-  skeleton.paveRoute(ctx, here.tilesetId, route);
+  skeleton.paveRoute(ctx, here.tilesetId, route, plan);
   // 문: 후보를 시작 줄에 가까운 순으로 시도한다 — 도구가 「걸어 닿지 않음」 따위로 거절하면 다음 후보. 마지막 후보의 오류는 그대로 던진다.
   doorCandidates.slice(0, 12).some((door, index, list) => {
     try { tool(ctx, "create_transfer_pair", { a: { mapId: here.id, x: door.x, y: door.y }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: route.entryY } }); return true; }

@@ -28,6 +28,8 @@ export interface StartPlan {
   /** 길 맵 입구 줄(x=0)과 구간 끝 줄. 둘이 달라 길이 한 번 꺾인다. */
   readonly entryY: number;
   readonly endY: number;
+  /** 컨셉이 고른 타일셋(기획 요약의 「타일셋:」 줄). 없으면 버들항. 시작 맵과 길 맵이 이 칩셋을 따른다(칩셋 계열은 첫 맵이 정한다). */
+  readonly tilesetId: string;
   /** 컨셉이 정한 타일셋이 버들항이 아니면 코드가 시작 마을을 미리 짓지 않는다(조선·마법 학교 등은 AI 가 자기 칩셋으로 지음). */
   readonly prebuildTown: boolean;
 }
@@ -103,7 +105,7 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   const shift = Math.floor(rng() * 7) - 3;
   const endY = Math.max(lo, Math.min(hi, entryY + shift));
   const hint = input.tilesetHint;
-  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, prebuildTown: hint === undefined || hint === "beodeul_city" };
+  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city" };
 }
 
 /** 프로젝트에서 구상을 낸다 — 뼈대(playableSegment)와 프롬프트가 같은 입력으로 같은 구상을 얻는다. */
