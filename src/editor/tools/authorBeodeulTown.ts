@@ -49,7 +49,8 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
     "form 으로 마을 형태를 고른다 — 마을이 왜 여기 생겼나에서 고를 것: \"street\" 길가 마을(나루·다리·포구 길·오아시스로 드는 길가에 선 마을, 광장 없이 앵커가 다리 머리·어귀에), " +
     "\"riverbank\" 물가 띠 마을(river 만 — 둑을 따라 남북으로 늘어선 방앗간·나루 마을), \"scatter\" 흩어진 마을(농가·산촌 — 오솔길, 집마다 마당·텃밭), " +
     "\"plaza\" 광장 마을(장터·교역지일 때만 — 큰길 위 광장과 그 북쪽 앵커). 중심 광장·십자 길을 기본으로 삼지 말 것. 생략하면 seed 로 형태를 고른다(결과 data.form). " +
-    "terrain 으로 땅 모양을 먼저 정한다 — 지형을 깐 뒤 그 위에 물·길·집을 앉힌다: 집·소품은 한 단 위에만, 길이 단을 건너는 곳은 매끈한 경사로로 오른다(계단 없음). 생략하면 seed 로(평지가 아닌 것 우선). " +
+    "terrain 으로 땅 모양을 먼저 정한다 — 지형을 깐 뒤 그 위에 물·길·집을 앉힌다: 집·소품은 한 단 위에만, 길이 단을 건너는 곳은 매끈한 경사로로 오른다(계단 없음), 길이 없는 높은 단에는 아랫길에서 오르막과 단 위 윗길(밭길·숲길, 맵 가장자리로)을 낸다. 생략하면 seed 로(평지가 아닌 것 우선). " +
+    "2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치가 나온다. 이미 지은 마을 맵은 그대로다 — 지형을 넣으려면 같은 mapId 로 다시 지으면 된다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다). " +
     "theme:\"city\" 는 로마풍 블록 격자 도시(가로 격자 → bd-block-* 블록 → 공원·가로수, harbour:true 이고 가로 83 이상이면 항구 호수)다 — 사용자가 「도시·로마풍·대도시·블록」을 말할 때만. " +
     "mapId 없으면 버들항 새 맵을 만든다(마을 기본 56×44 안팎, 36×30~96×80 / 도시 기본 60×60). mapId 가 있으면 그 버들항 맵 전체를 비우고 다시 깐다(다른 계열 맵이면 거부). " +
     "같은 seed = 같은 마을, 다른 배치는 seed 를 바꾼다. 시공 뒤 check_city_form·check_reachability 로 점검한다(마을의 문 앞 칸은 결과 data.doors). " +
@@ -563,8 +564,13 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   }
   const form = typeof args.form === "string" && args.form.trim() ? args.form.trim() : undefined;
   const terrain = typeof args.terrain === "string" && args.terrain.trim() ? args.terrain.trim() : undefined;
+  const rebuilt = !!(typeof args.mapId === "string" && args.mapId.trim());
   const r = buildBeodeulVillage(draft, mapId, theme, seed, form, terrain);
-  return { summary: r.summary, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
+  // 지형 도입(2026-10-11)으로 같은 seed 도 배치가 달라졌다 — 예전 마을 맵을 가진 사용자·조수가 알 수 있게 결과에도 짧게
+  const note = rebuilt
+    ? " 같은 mapId 로 다시 지어 맵 전체를 새로 깔았다(손으로 고친 부분은 사라졌다)."
+    : " 2026-10-11 지형 도입 이후 같은 seed 도 예전과 다른 배치다 — 기존 마을 맵에 지형을 넣으려면 같은 mapId 로 다시 지으면 된다(맵 전체를 다시 깐다 — 손으로 고친 부분은 사라진다).";
+  return { summary: r.summary + note, data: r.data, warnings: r.warnings.length ? r.warnings : undefined };
 }
 
 function uniqueId(draft: Project, prefix: string, body: string): string {

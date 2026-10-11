@@ -254,10 +254,97 @@ def fence_piece(east: bool, west: bool, up: bool, down: bool) -> np.ndarray:
     if up: px[0:3, 6:9] = FV[5:8, 6:9]
     if down: px[14:16, 6:9] = FV[5:7, 6:9]
     return px
+# 둥근 모서리(2026-10-11 사용자 「울타리는 네모보다 모서리가 둥근 사각형 느낌으로」): 옛 모서리 기둥(직각) 대신 두 난간이 사분원으로 휘어
+# 세로 난간 줄(6~8열)로 이어지는 조각. 글자는 643·644 의 실제 화소 색(A 기둥 윗면 · B 기둥 · C 기둥 그늘 · D 가로 난간 빛 · E 가로 난간 ·
+# F 세로 난간 빛 · G 세로 난간 · H 판 빛 · I 판). 가로 조각과 만나는 쪽은 난간 두 줄(위 5~7줄, 아래 10~12줄), 세로 조각과 만나는 쪽은 6~8열.
+# 3/4 시점: 땅 위 반지름 7칸 남짓의 사분원을 난간 높이(위 난간 = 땅 −7, 아래 난간 = 땅 −2)만큼 올려 그린 모양 — 위 모서리는 곡선이 칸 아래쪽,
+# 아래 모서리는 칸 위쪽으로 휜다. 빛은 가로로 누운 곳은 윗줄, 세로로 선 곳은 왼쪽 열. 손으로 고른 행 문자열이다(수식으로 만들지 않았다).
+FENCE_PAL = {"A": FH[3, 1], "B": FH[4, 1], "C": FH[4, 3], "D": FH[5, 0], "E": FH[6, 0], "F": FV[0, 6], "G": FV[0, 7], "H": FV[1, 4], "I": FV[2, 4]}
+def fence_grid(rows: list[str]) -> np.ndarray:
+    px = np.zeros((T, T, 4), np.uint8)
+    for y, r in enumerate(rows):
+        assert len(r) == T
+        for x, ch in enumerate(r):
+            if ch != ".": px[y, x] = FENCE_PAL[ch]
+    return px
+ROUND_CORNER = {
+    "tl": [
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "...........DDDDD",
+        "..........DEEEEE",
+        ".........DEEEEEE",
+        "........FEE.....",
+        ".......FGE......",
+        ".......FG..DDDDD",
+        ".......FG.DEEEEE",
+        "......FGGDEEEEEE",
+        "......FGGEE.....",
+        "......FGGE......",
+        "......FGG.......",
+    ],
+    "tr": [
+        "................",
+        "................",
+        "................",
+        "................",
+        "................",
+        "DDD.............",
+        "EEED............",
+        "EEEED...........",
+        "...EED..........",
+        "....EEF.........",
+        "DDD..EF.........",
+        "EEED..FG........",
+        "EEEED.FGG.......",
+        "...EEDFGG.......",
+        "....EEFGG.......",
+        ".....EFGG.......",
+    ],
+    "bl": [
+        "......FGG.......",
+        "......FGG.......",
+        "......FGG.......",
+        "......FGGD......",
+        "......FGGED.....",
+        "......FGGEEDDDDD",
+        ".......FG.EEEEEE",
+        ".......FG..EEEEE",
+        ".......FGD......",
+        "........FED.....",
+        ".........EEDDDDD",
+        "..........EEEEEE",
+        "...........EEEEE",
+        "................",
+        "................",
+        "................",
+    ],
+    "br": [
+        "......FGG.......",
+        "......FGG.......",
+        "......FGG.......",
+        ".....DFGG.......",
+        "....DEFGG.......",
+        "DDDDEEFGG.......",
+        "EEEEE.FG........",
+        "EEEE..FG........",
+        ".....DFG........",
+        "....DEG.........",
+        "DDDDEE..........",
+        "EEEEE...........",
+        "EEEE............",
+        "................",
+        "................",
+        "................",
+    ],
+}
 fence = {
     "h": add_tile(FH.copy()), "v": add_tile(FV.copy()),
-    "tl": add_tile(fence_piece(True, False, False, True)), "tr": add_tile(fence_piece(False, True, False, True)),
-    "bl": add_tile(fence_piece(True, False, True, False)), "br": add_tile(fence_piece(False, True, True, False)),
+    "tl": add_tile(fence_grid(ROUND_CORNER["tl"])), "tr": add_tile(fence_grid(ROUND_CORNER["tr"])),
+    "bl": add_tile(fence_grid(ROUND_CORNER["bl"])), "br": add_tile(fence_grid(ROUND_CORNER["br"])),
     "endW": add_tile(fence_piece(True, False, False, False)), "endE": add_tile(fence_piece(False, True, False, False)),
 }
 vn = FV.copy(); vn[0:1] = 0; fence["endN"] = add_tile(vn)   # 위가 문: 세로 난간 맨 윗줄을 걷어 기둥(판)에서 끝
