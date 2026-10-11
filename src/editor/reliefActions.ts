@@ -13,6 +13,8 @@ import type { ReliefData } from "@/project/relief/types";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import type { MapId, TilesetDef } from "@/project/types";
 import { terrainLocked } from "@/project/terrainDesign";
+import { clearReliefAffectedObjects } from "@/project/relief/affectedObjects";
+import { forgetEventDraftVaultEntry } from "@/project/eventDraftVault";
 
 /**
  * 「윗면 풀」로 덮기 전의 1·2층 칸. 0단으로 되돌아오면 이것으로 돌린다 — 길 위에 실수로 올린 언덕을 내리면 길이 돌아온다.
@@ -56,34 +58,43 @@ export function commitReliefEdit(
   const grass = options.topGrass ? reliefTopGrassTile(project.tilesets[map.tilesetId]) : undefined;
   let memory = coveredGround.get(mapId);
   const tileEdits: { readonly index: number; readonly ground: number; readonly overlay: number }[] = [];
-  for (let index = 0; index < next.levels.length; index++) {
-    if (terrainLocked(map.terrainDesign, index)) continue;
-    const was = before?.[index] ?? 0, now = next.levels[index] ?? 0;
-    if (was === 0 && now > 0 && grass !== undefined) {
-      const ground = layerTileAt(map, 1, index), overlay = layerTileAt(map, 2, index);
-      if (ground === grass && overlay < 0) {
-        memory?.delete(index);
-        continue;
-      }
-      if (!memory) coveredGround.set(mapId, memory = new Map());
-      // undo 후 바닥을 다시 칠했으면 이번 스트로크 직전 타일이 복원 대상이다.
-      memory.set(index, [ground, overlay]);
-      tileEdits.push({ index, ground: grass, overlay: -1 });
-    } else if (was > 0 && now === 0 && memory?.has(index)
-      && layerTileAt(map,1,index)===reliefTopGrassTile(project.tilesets[map.tilesetId]) && layerTileAt(map,2,index)<0) {
-      const [ground, overlay] = memory.get(index)!;
-      // 내리기를 undo하면 풀 윗면이 돌아온다. 다시 내려도 원래 바닥을 복원하도록
-      // 기록은 다음 0→양수 덮기나 프로젝트 전환까지 보관한다.
-      tileEdits.push({ index, ground, overlay });
-    }
+  const changedIndices = new Set<number>();
+  for (let index = 0; index < next.levels.length; index += 1) {
+    if ((before?.[index] ?? 0) !== (next.levels[index] ?? 0) || (map.relief?.ramps?.[index] ?? 0) !== (next.ramps?.[index] ?? 0)) changedIndices.add(index);
   }
-  const cells: ProjectChangeCell[] = tileEdits.map(({ index }) => ({ x: index % map.width, y: Math.floor(index / map.width), layer: "lower" as const }));
   const storedRelief = reliefIsFlat(next) ? undefined : next;
   const reliefCells = reliefChangedCells(map.relief, storedRelief, map.width, map.height);
+  const changeCells: ProjectChangeCell[] = [];
   const change: ReliefCellChange & { label: string; relief: true; cells?: readonly ProjectChangeCell[] } = {
-    label: options.label, relief: true, ...(cells.length ? { cells } : {}), ...(reliefCells === undefined ? {} : { reliefCells }),
+    label: options.label, relief: true, cells: changeCells, ...(reliefCells === undefined ? {} : { reliefCells }),
   };
+  const removedEventIds: string[] = [];
   store.updateMapTiles(mapId, (draft) => {
+    const removed = clearReliefAffectedObjects(draft, changedIndices);
+    removedEventIds.push(...removed.eventIds);
+    for (const cell of removed.cells) changeCells.push(cell);
+    for (const index of changedIndices) {
+      if (terrainLocked(map.terrainDesign, index)) continue;
+      const was = before?.[index] ?? 0, now = next.levels[index] ?? 0;
+      if (was === 0 && now > 0 && grass !== undefined) {
+        const ground = layerTileAt(draft, 1, index), overlay = layerTileAt(draft, 2, index);
+        if (ground === grass && overlay < 0) {
+          memory?.delete(index);
+          continue;
+        }
+        if (!memory) coveredGround.set(mapId, memory = new Map());
+        // undo 후 바닥을 다시 칠했으면 이번 스트로크 직전 타일이 복원 대상이다.
+        memory.set(index, [ground, overlay]);
+        tileEdits.push({ index, ground: grass, overlay: -1 });
+      } else if (was > 0 && now === 0 && memory?.has(index)
+        && layerTileAt(draft,1,index)===reliefTopGrassTile(project.tilesets[map.tilesetId]) && layerTileAt(draft,2,index)<0) {
+        const [ground, overlay] = memory.get(index)!;
+        // 내리기를 undo하면 풀 윗면이 돌아온다. 다시 내려도 원래 바닥을 복원하도록
+        // 기록은 다음 0→양수 덮기나 프로젝트 전환까지 보관한다.
+        tileEdits.push({ index, ground, overlay });
+      }
+    }
+    for (const { index } of tileEdits) changeCells.push({ x: index % map.width, y: Math.floor(index / map.width), layer: "lower" });
     if (!storedRelief) delete draft.relief;
     else draft.relief = next;
     for (const { index, ground, overlay } of tileEdits) {
@@ -91,6 +102,7 @@ export function commitReliefEdit(
       if (layerTileAt(draft, 2, index) !== overlay) setLayerTileAt(draft, 2, index, overlay);
     }
   }, change);
+  for (const eventId of removedEventIds) forgetEventDraftVaultEntry(mapId, eventId);
   return true;
 }
 
