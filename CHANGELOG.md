@@ -5,6 +5,32 @@
 
 <!-- releases -->
 
+## 0.188.0 — 2026-10-11
+
+### 기능
+
+- **tools** — stamp_object 가 높이 단을 지킨다 — 두 단 걸침·경사로·남쪽 가림 거절 (`94f5b99`)
+- **village** — 높은 단 오르막·윗길, 갇힌 단 방지, 포구 길가 일하는 물가, 둥근 울타리 모서리 (`b156cfa`)
+
+### 수정
+
+- **relief** — mirror the top half of row 0 into the pad fill (`237cfc5`)
+- **village** — 곧은 길 45칸 미만·지붕 귀퉁이 한 칸을 단 위 땅으로 안 세기·앵커 자리 ±16 (`ced9bac`)
+- **relief** — fill the top pad above row 0 and drop smooth-ramp outlines (`fd61801`)
+- **village** — 높은 단을 가르는 울타리 거절·옛 relief 지우고 시공·덮어 짓기 안내 바로잡기 (`9e80a0c`)
+- **assistant** — 배치 품질 검사를 사막·설원의 트인 땅에 맞추고 수리 뒤 미달을 보고하게 한다 (`05eec87`)
+
+### 문서
+
+- **openwiki** — INDEX 재생성 — #2420·#2421·#2422 머지 뒤 절 좌표 (`45f0dfd`)
+- **relief** — top pad fill, borderless smooth ramps and village runtime QA (`e9cd4e4`)
+- **village** — 곧은 길 45칸 미만 규칙·지붕 귀퉁이 제외·앵커 ±16·프로브 288판 — 위키·마을 문법(번들 참고문서 갱신) (`a7c0991`)
+- **openwiki** — stamp_object 높이 단 규칙과 트인 땅 배치 기준 계약 (`fa15753`)
+
+### 테스트
+
+- **relief** — runtime QA scenario for terrain villages' top strip and ramps (`921bf3b`)
+
 ## 0.187.0 — 2026-10-11
 
 ### 기능
