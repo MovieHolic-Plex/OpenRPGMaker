@@ -42,8 +42,16 @@ export async function run(argv: string[]): Promise<number> {
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
   if (stage === 'matrix-tools') {
-    const { runMatrixTools } = await import('./matrixTools');
-    return runMatrixTools(resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/matrix-tools'));
+    const root = option('out');
+    if (!root) throw Error('matrix-tools --out <새 실행 폴더>');
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrixToolsEntry.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
+  if (stage === 'matrix-live') {
+    const root = option('out');
+    if (!root) throw Error('matrix-live --out <새 실행 폴더>');
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrixLiveEntry.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
   if (stage === 'prepare') {
     const root = option('out');
