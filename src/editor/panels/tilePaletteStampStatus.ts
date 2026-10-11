@@ -25,7 +25,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   const shape = { pen: "칠하기", rect: "사각형", round: "타원" }[state.paintShape];
   const action = state.tool === "paint"
     ? tileBrushActionLabel(stamp) ?? shape
-    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "높이" }[state.tool];
+    : { erase: "지우기", fill: "채우기", select: "선택", eyedropper: "집기", pan: "화면 밀기", collision: "통행 표시", event: "이벤트", relief: "지형" }[state.tool];
   const composite = isComboBrush(stamp);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
   // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.
@@ -51,7 +51,7 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   if (stamp) row.append(el("button", { class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", dataset: { testid: "palette-stamp-clear" },
     on: { click: () => { selectTileTool("pen"); rerender(); } } }));
   if (state.tool === "relief") {
-    // 방식·크기·상한·윗면 풀·지형지물은 캔버스 아래 「높이」 막대에 있다(reliefToolbar.ts).
+    // 방식·크기·상한·윗면 풀·지형지물은 왼쪽 「지형」 패널에 있다(reliefToolbar.ts).
     row.append(el("span", { class: "relief-left-hint", text: "방식은 캔버스 아래 막대에서", dataset: { testid: "relief-left-hint" } }));
   }
   return row;
