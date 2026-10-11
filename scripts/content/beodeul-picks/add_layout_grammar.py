@@ -11,7 +11,7 @@ REF_PATH = ROOT / "src/assets/beodeulCityReferences.json"
 IMG_DIR = ROOT / "public/assets/beodeul-city/references/picks"
 SRC = ROOT / "tiledata/beodeul-city/references"
 TARGETS = {"beodeul-picks-village": "bd-pick-doc-village-grammar", "beodeul-picks-climate-village": "bd-pick-doc-climate-grammar"}
-RENDERS = [("river-3", "theme river form plaza seed 3 — 강가 광장 마을 56×44: 강(넓은 둑으로 굽이)·아치 다리·굽은 큰길·뒷길 고리·광장과 맞은편 앵커·방앗간."),
+RENDERS = [("river-3", "theme river form plaza seed 3 — 강가 광장 마을 56×44: 강(넓은 둑으로 굽이)·돌다리·굽은 큰길·뒷길 고리·광장과 맞은편 앵커·방앗간, 흙 둑 강가·그림자·북쪽 언덕."),
            ("coast-3", "theme coast form plaza seed 3 — 포구 광장 마을 56×40: 바다·물가 길·생선 시장(물에 걸침)·잔교 T머리·배·광장."),
            ("desert-29", "theme desert form plaza seed 29 — 사막 오아시스 58×44: 못+풀밭 고리+야자, 표본 길·광장, 사막 집, 대상 마당."),
            ("snow-11", "theme snow form plaza seed 11 — 설원 56×44: 얼음 못(얼음배·구멍)·표본 눈길·광장 모닥불·설원 집·전나무 덩이."),
