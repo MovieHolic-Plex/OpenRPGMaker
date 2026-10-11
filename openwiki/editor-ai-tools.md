@@ -1,5 +1,36 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## stamp_object 높이 단 규칙 · 트인 땅 배치 기준 (2026-10-11)
+
+왜: 실제 입력창 검수(`~/claude-viz/village-ai-report.md` 문제 2·3)에서 `author_beodeul_town` 이 깐 높이 마을(map.relief)에 조수가 품질 수리로
+`stamp_object` 를 불러 대추 돗자리 3×2 를 0단·1단에 걸쳐 찍었다(절벽 띠가 그림을 갈랐다). 그 수리는 배치 품질 검사가 사막 마을의 의도된 빈 땅을
+「미달」로 본 탓에 시작됐고, 수리 뒤에도 미달이었는데 조수는 「이상 없음」만 보고했다.
+
+**`stamp_object` 높이 규칙** (`src/project/kitPlacementRules.ts` `checkReliefPlacement`, 놓기 규칙 `checkKitPlacement` 다음에 호출 — `kit:`·`group:`·`obj:` 모두,
+`layers` 를 반영한 실제로 찍힐 칸 기준). 맵에 `relief` 가 없으면 아무것도 보지 않는다(기존 동작 그대로). 어기면 `ToolError(code "relief-placement-rule")`:
+
+| 검사 | 거절 조건 | 문구 |
+|---|---|---|
+| 두 단 걸침 | 그림 있는 칸(발자국)의 단이 둘 이상 | 「키트는 한 단 위에만 놓는다 — 높은 단 1 n칸 (x,y)~(x,y) / 낮은 단 0 …」 + 단마다 가장 가까운 왼위 후보 |
+| 경사로 | 발자국에 `ramps` 1~8(경사로·계단) 칸 | 「경사로·계단 칸에는 물체·집을 놓지 않는다(경사로는 단 사이 길)」 + 후보 |
+| 3/4 가림 | 열마다 그림 맨 아랫칸에서 남쪽 k줄 칸의 단 > L + k − 1 (L = 키트 단) | 「바로 남쪽이 더 높아 그림 아랫줄이 덮인다」 + 후보 |
+
+후보는 둘레 8칸 안에서 **높이만 본** 자리다(물·길·다른 놓기 규칙은 따로 — 문구에 적혀 있다). 가림 규칙은 마을 도구 `flatOn` 과 같은 식이다.
+예외(높이와 무관): 1층만 칠하는 통행 o 바닥(땅은 원래 단을 따른다) · 그림자(id `shadow`/이름 「그림자」) · 다리(`BRIDGE` 규칙 키트·id `bridge`·이름 「다리」) —
+셋은 검사하지 않는다. 한 줄 바닥 장식(높이 1·너비 ≤ 2·전부 통행 o — 풀꽃·뼈·헤더)은 걸침·가림을 보지 않고 경사로만 막는다.
+마을 도구는 찍기를 다 끝낸 뒤 relief 를 싣기 때문에(beodeulVillage.ts 12c) 새 맵 시공에는 영향이 없다 — 형태 프로브 96건 fail 0·stampFailed 0.
+**알려진 구멍:** 옛 relief 가 남은 맵에 `author_beodeul_town({mapId})` 로 다시 지으면 찍는 동안 옛 높이로 검사돼 일부 키트가 빠진다(합성 시험 stampFailed 5).
+마을 도구가 시공 시작에서 `map.relief` 를 지우면 닫힌다(그 파일은 이 변경 범위 밖). 프로브: `bun scripts/qa/stamp-relief-probe.mts [--theme --terrain --seed]`.
+
+**트인 땅 배치 기준** (`src/ai/piAgent/layoutQuality.ts`). 바닥(통행 칸)의 절반 이상이 모래·눈 재질(칸 이름표·설명 `모래|사막|눈 바닥|고원 눈|눈밭|설원|sand|snow`,
+`road` 태그 칸 제외)이면 `OPEN_LAND_LAYOUT_LIMITS`(빈 바닥 ≤45%·빈 정사각형 ≤9·대칭 ≤2.2)로 잰다. 근거: 마을 도구 `openLand` 가 사막·설원에 빈 덩이 90칸(≈9×9)·화면당
+빈 바닥 74%까지 일부러 남긴다. 실측(시드 3·7·11 + 9개, 기본 크기·64×40): 사막·설원 54맵 중 옛 기준 54맵 미달 → 새 기준 2맵(사막 seed 12·42, 빈 정사각형 10),
+풀밭(강가·포구) 0 → 0. 늪은 재질이 진흙이라 기존 기준 그대로(seed 3 의 6×6 은 여전히 권고). 통계에 `openGround`(%)·`openLand` 가 붙고 문제 문구에 「트인 땅 기준」을 밝힌다.
+**수리 프롬프트**는 relief 가 있는 맵이면 「높이 단 경계를 지켜라: 키트는 한 단 위에만, 경사로·절벽 칸에 놓지 말 것, 높이 규칙 거절이면 대안 자리로」를,
+트인 땅 맵이면 「드문드문함이 의도 — 큰 빈터에만 덩이 하나」를 덧붙이고, 끝에 「고친 곳·남긴 곳을 그대로 적고 기준 통과를 스스로 단정하지 마라」를 단다.
+**수리 뒤에도 미달이면** `piAgentRuntime` 이 `piLayoutShortfallPrompt` 를 한 번 더 보낸다 — 더 고치지 말고 최종 보고에 미달 숫자와 남긴 이유를 적게 하며
+「이상 없음·기준 통과·모두 고쳤다」를 금한다(권고는 여전히 한 번, 거부·되돌리기 없음). 다시 잰 숫자를 조수가 모른 채 보고하던 구멍을 막는다.
+
 ## 출입구 도달·문앞 좌표 계약 (2026-10-07)
 
 한 칸 외부 문은 실내 출구도 한 칸이다. `build_hand_interior_room.exitWidth` 기본 1과 남쪽 평면 틈 폭을 대조해 두 칸 틈을 거부한다. `start`는 BFS 출발점이며 폭 선언이 아니다. 넓은 대문은 그 실제 폭을 명시한다. 결과 `exits`에 위치·폭을 돌려준다. `doorAt`으로 한 칸 문을 연결할 때 `create_transfer_pair`와 `link_maps`는 상대 실내의 설치된 1층 남쪽 틈 폭도 검사한다. 가구로 틈 한쪽을 막아 폭을 숨길 수 없다. 공용 손 도트 실내 참고문서의 예제 두세 칸 출구는 `exitWidth`를 명시하며 한 칸 집 문에 복사하지 않는다.
@@ -313,7 +344,7 @@ source `defaults/beodeulArchitecture.ts`, `beodeulArchitectureTools.ts`; `author
 | `design_terrain` | `planTerrainFeature` / `planTerrainDesign` | 윤곽·능선·계곡·호수·혼합·군집·잠금. 높이 delta와 점을 사용하며 고지 1·2·3 프리셋 없음 |
 | `place_terrain_house` | `planQuickHouse` | `kitId`로 현재 타일셋 원본 외관/크기 유지. `style,width,stories,roofWidth`는 크기 조절용 조립 집. 전체 집터+문 앞의 동일 높이·빈 땅 검사, 생성 kit도 등록 |
 | `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
-| `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
+| `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, 길이는 절벽 단차와 같은 칸 수(폭은 길이에 곱하지 않음), stairs=false |
 | `resize_terrain_house_roof` | `planQuickHouseDrag`의 roof 경로 | 기존 버들항 조립 집의 지붕 폭만 수정. 벽·창·문·층수·배치 ID 유지. 원본 고정 외관은 거부 |
 | `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞, 원본 `houseKits`와 조립 `houseStyles`, 경사로/계단 수, 시야 규칙 |
 | `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
@@ -500,7 +531,7 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 ## AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
 
-> 2026-10-01: 버들항만 있는 프로젝트(새 프로젝트)는 `defaultOutdoorTilesetId` 가 **버들항**을 돌려주고, 「마을 만들어 줘」는 `author_beodeul_town` 으로 간다(`author_village` 는 버들항 대상이면 이 도구로 되돌림, 마을 계약 생략). 자세한 경로는 `openwiki/beodeul-city.md` 「조수 마을 경로」. 같은 날 오후부터 이 도구의 기본은 **마을 문법**(`theme` river·coast·desert·snow·swamp — 굽은 큰길·뒷길 고리·광장·길을 보는 집, `beodeulVillage.ts`)이고 블록 격자 도시는 `theme:"city"` 다(「마을 문법」 절). 아래 문단의 「forest_harmony 우선」은 합본·숲마을 맵이 섞인 기존 프로젝트에만 해당한다.
+> 2026-10-01: 버들항만 있는 프로젝트(새 프로젝트)는 `defaultOutdoorTilesetId` 가 **버들항**을 돌려주고, 「마을 만들어 줘」는 `author_beodeul_town` 으로 간다(`author_village` 는 버들항 대상이면 이 도구로 되돌림, 마을 계약 생략). 자세한 경로는 `openwiki/beodeul-city.md` 「조수 마을 경로」. 같은 날 오후부터 이 도구의 기본은 **마을 문법**(`theme` river·coast·desert·snow·swamp — 굽은 큰길·뒷길 고리·광장·길을 보는 집, `beodeulVillage.ts`)이고 블록 격자 도시는 `theme:"city"` 다(「마을 문법」 절). 2026-10-11: `form`(마을 형태)과 `terrain`(지형 먼저 — terraces·hillside·basin·flat, 길은 단을 매끈한 경사로로 오르고 집은 한 단 위에만)을 받는다(`beodeulTerrain.ts`, 「지형 먼저」 절). 아래 문단의 「forest_harmony 우선」은 합본·숲마을 맵이 섞인 기존 프로젝트에만 해당한다.
 
 - `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 새 프로젝트·새 맵·AI 새 야외의 기본값을 소유한다.
   기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
@@ -3031,3 +3062,34 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## refine_beodeul_courtyard_vegetation (2026-10-04)
 
 알려진 버들항 54×34 공동마당 예제의 식생/울타리 교정 도구. 전체 집/나무 배열이 일치할 때만 제거·이식을 실행한다. 집 위치/하위 바닥 배열/길/마당은 그대로, 공용 숲의 수관 앞뒤 합성·★ 풀/줄기 X·텃밭 연결 울타리로 보정한다. stone 박공은 아래층과 같은 돌 재질. 이벤트/높이/별도 지형·기물/다른 전이 도착점은 거부. 출처 beodeul-ground-dressing의 WOODLAND 문서 및 normal/error·fresh 전체 조립 예제. 기존 공동마당만 보정할 때 이 도구만 호출하며 원본 맵을 author로 다시 만들지 않는다. 도구/참고문서 허용 목록/프롬프트 정책에 등록했다.
+
+
+## 오프닝 그림 프롬프트 구조화 (2026-10-11)
+
+`generate_opening_image`는 선택 필드 `focus`·`angle`·`light`·`palette`·`captionSide`를 받고 `artStyle` 한도가 400자다(작품 화풍 문장을 컷마다 재사용).
+`buildCinematicStillPrompt`는 STORY MOMENT / FOCAL POINT / CAMERA / LIGHT AND COLOUR / STYLE / AVOID(범용 AI 벽지 징후) 구조로 조립한다. 필드를 생략하면 범용 문구로 대체되어 기존 호출은 그대로 동작한다.
+전후 비교: `scripts/qa/opening-prompt-ab.mts`(실제 이미지 제공자 호출, 첫 결과 그대로 http://mdc-server:18301/opening-prompt-ab.html). 사람 눈 판정 전의 1회 표본이며 품질 합격 근거가 아니다.
+
+### 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+
+`defaultAiConfig`와 `configForProviderSelection`(고정하지 않은 image 슬롯)은 `RECOMMENDED_IMAGE_PROVIDER_ID/MODEL`(openai-codex / codex-image-default)을 쓴다. 대화 계정을 따르지 않는다. 저장된 blob의 image 값은 고정으로 취급되어 그대로다(조용히 바꾸지 않는다).
+`generateAiImage`는 image 슬롯이 고정이 아니고 호출이 제공자를 지정하지 않았으며 ChatGPT 연결이 없고 Google 연결이 있을 때만 Google로 대신한다. `deps.fetch`를 주입한 테스트 경로에서는 상태 조회를 하지 않는다.
+같은 구조화 프롬프트 4컷 비교에서 GPT Image가 앵글·광원 지시를 더 잘 지켰지만 지시하지 않은 인물을 끼워 넣었다(http://mdc-server:18301/opening-prompt-ab-models.html). `OPENING_AB_PROVIDER`/`OPENING_AB_MODEL`로 `opening-prompt-ab.mts`를 다른 경로에 돌린다.
+
+### 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+
+- `plan_opening`은 선택 `bible`(premise·question·motifs 1~4·palette·artStyle·voice·emotionArc)과 샷별 `angle`·`beat`를 받는다. `PiOpeningProduction`이 이를 기록하고, 오프닝 제작 요청에서 bible이 없거나 계획 앵글의 절반 넘게 같으면 `inspect()`가 수리 사유를 낸다. 워커(`piAgentRuntime.ts`)는 `generate_opening_image/layer` 호출에서 `artStyle`·`palette`를 생략하면 bible 값으로 채운다(직접 준 값이 우선). 시연: `scripts/qa/opening-bible-gate.mts`(모델 호출 없음).
+- `generate_opening_image.cast`: 나와도 되는 인물·생물. 비우면 이야기 순간에 이름 난 대상만, 사람 없는 컷은 `nobody`. GPT Image가 지시 없는 망토 인물을 끼워 넣던 문제를 막는다.
+- 화풍 문장은 기법으로 쓴다. 같은 컷 3화풍(`scripts/qa/opening-style-ab.mts`)에서 "visible square pixels, 32-colour, dithering" 같은 기법 문장만 실제로 화풍이 갈렸고, gouache·HD-2D 같은 이름은 기본 시네마틱 화면으로 수렴했다.
+- 도구 선언 크기: 오프닝 가족은 `scripts/qa/measure-opening-tools.mts`로 쟀다(기준선 5,814 → 6,073). `test/aiToolCatalogBudget.test.ts`의 1,300 천장과 이 측정의 관계는 실행해 확인하지 않았다.
+
+### 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+
+`generate_opening_image.candidates`(1~3, 기본 1). 2~3이면 워커(`piAgentRuntime.ts`)가 `scripts/lib/openingStillCritic.ts`의 `generateBestStill`로 후보를 병렬 생성하고, 생성 모델과 다른 계열의 판정자(Gemini 3.8 Flash 우선, 없으면 gpt-6.1-sol)가 8항목(초점·이야기·cast·구도·빛·화풍·벽지 징후·결함, 합 80)으로 채점해 한 장만 `upsert_resource`로 등록한다. 응답 `data.critique`에 고른 이유·후보 점수·재생성 권고(`fix`)가 온다.
+`PiOpeningProduction.critic()`이 resourceId별 판정을 기록하고, 마지막 오프닝이 `regenerate` 권고를 받은 그림을 계속 쓰면 `inspect()`가 수리 사유를 낸다. 판정자 호출이 실패하면 막지 않고 첫 후보를 쓰되 verdict는 `unjudged`다(합격으로 보고하지 않는다).
+사전 검증 `scripts/qa/opening-critic-probe.mts`(지시 없는 인물 후보가 두 컷 모두 cast 3점 최하위), 실제 경로 시연 `scripts/qa/opening-critic-e2e.mts`(http://mdc-server:18301/opening-critic.html). 한계: 점수가 40~56에 몰려 순위는 쓸모 있으나 accept 기준은 약하다. 재생성 경로 자체는 시연하지 못했다.
+
+### 시연 오프닝 6컷 mp4 (2026-10-12)
+
+`scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
+계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.

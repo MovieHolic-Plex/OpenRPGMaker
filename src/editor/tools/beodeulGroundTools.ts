@@ -183,12 +183,13 @@ export function dressBeodeulGround(project:Project,mapId:string,style:'natural'|
   for(let y=1;y<map.height-1;y++) for(let x=1;x<map.width-2;x++) if(free(x,y)&&free(x+1,y)) candidates.push({x,y});
   for(let i=candidates.length-1;i>0;i--){const j=Math.floor(rand()*(i+1));[candidates[i],candidates[j]]=[candidates[j]!,candidates[i]!];}
   const grassCount=map.lowerTiles.filter((_,i)=>grass(i)).length;
-  const limit=Math.min(120,Math.max(3,Math.floor(grassCount*.035)));
+  // 2026-10-11 「오브젝트 밀도가 너무 높다」: 풀꽃 점을 잔디 3.5% → 1.6%, 간격도 넓힌다
+  const limit=Math.min(60,Math.max(3,Math.floor(grassCount*.016)));
   const centers:Point[]=[];
   const kinds=['bdg-grass-0','bdg-grass-1','bdg-grass-2','bdg-flowers-pink','bdg-grass-1','bdg-stones','bdg-grass-2','bdg-flowers-white','bdg-grass-0','bdg-flowers-blue'];
   for(const p of candidates){
     if(centers.length>=limit) break;
-    if(centers.some(c=>Math.abs(c.x-p.x)<3&&Math.abs(c.y-p.y)<2)) continue;
+    if(centers.some(c=>Math.abs(c.x-p.x)<5&&Math.abs(c.y-p.y)<3)) continue;
     if(stamp(kinds[centers.length%kinds.length]!,p.x,p.y)) centers.push(p);
   }
   return {summary:`공용 버들항 접지·잔디 꾸밈 ${placements.length}곳: ${style} · 밝은 잔디/원본 집·문·길 보존`,

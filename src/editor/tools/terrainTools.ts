@@ -5,6 +5,7 @@ import { planReliefRamp } from "@/editor/reliefRampPlan";
 import { planQuickHouse, planQuickHouseDrag, quickHouseCatalog, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
 import { inspectTerrainRoute, type TerrainRoutePoint } from "@/project/terrainRoute";
 import { terrainHeight } from "@/project/terrainGameplay";
+import { reliefSlopes } from "@/project/relief/walk";
 import { normalizeSunlight, sunlightField } from "@/project/sunlight";
 import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
 import { structurePlacementsOf } from "@/project/structurePlacements";
@@ -24,6 +25,10 @@ function tilesetFor(project: Project, map: GameMap) {
   const ts = project.tilesets[map.tilesetId];
   if (!ts) throw new ToolError(`타일셋을 찾을 수 없습니다: ${map.tilesetId}`);
   return ts;
+}
+/** Report the length of a flight, not its area. Width is a placement allowance; height is the rule. */
+function reliefRampLength(map: GameMap): number {
+  return map.relief ? Math.max(0, ...reliefSlopes(map.relief).map(s => s.dir === "n" || s.dir === "s" ? s.h : s.w)) : 0;
 }
 const designDefaults: TerrainDesignOptions = { symmetry: "none", areaShape: "polygon", width: 3, delta: 1, seed: 1,
   weights: [60, 30, 10], waterLevel: 0, maxDepth: 3, shallowWidth: 1, flattenRoad: false, unlock: false, density: 25 };
@@ -107,7 +112,7 @@ const roadTool: ToolDefinition = {
     const route = inspectTerrainRoute(project, map, points[0]!, points.at(-1)!, width);
     return { summary: `${plan.reason} · ${route.reason}`, ...(route.reachable ? {} : { warnings: ["실제 통행이 끊겼습니다. 경로를 수정하고 다시 검사하세요."] }),
       data: { reachable: route.reachable, blocked: route.blocked, featureId: map.terrainDesign?.features?.at(-1)?.id,
-        rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0 } };
+        rampLength: reliefRampLength(map) } };
   },
 };
 
@@ -133,14 +138,14 @@ const roofTool: ToolDefinition = {
 
 const rampTool: ToolDefinition = {
   name: "place_terrain_ramp", mode: "write", domains: ["map", "tile"],
-  description: "에디터 경사로 도구 그대로 곧은 절벽 가장자리에 매끈한 경사로를 놓는다(계단 아님). at은 높이가 올라가는 쪽 가장자리의 칸. 네 방향을 자동 판정하고 폭 2·4·6칸, 길이=단차+1. 아래 접근 땅이 평평하고 비어 있어야 한다. 보통 lay_terrain_road의 자동 경사로를 먼저 쓰고 필요한 접합만 보완한다.",
+  description: "에디터 경사로 도구 그대로 곧은 절벽 가장자리에 매끈한 경사로를 놓는다(계단 아님). at은 높이가 올라가는 쪽 가장자리의 칸. 네 방향을 자동 판정하고 폭 2·4·6칸, 길이=절벽 단차(절벽과 같은 높이의 칸 수)로 만든다. 아래 접근 땅이 평평하고 비어 있어야 한다. 보통 lay_terrain_road의 자동 경사로를 먼저 쓰고 필요한 접합만 보완한다.",
   parameters: { type: "object", properties: { mapId, at: point, width: { type: "integer", enum: [2, 4, 6] } }, required: ["mapId", "at"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), at = checkedPoint(map, args.at);
     const plan = planReliefRamp(map, { ...at, face: "top" }, typeof args.width === "number" ? args.width : 4, false);
     if (!plan.ok || !plan.apply) throw new ToolError(plan.reason, { code: "terrain-ramp-placement", mapId: map.id });
     plan.apply(map);
-    return { summary: plan.reason, data: { rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0 } };
+    return { summary: plan.reason, data: { rampLength: reliefRampLength(map) } };
   },
 };
 
@@ -173,7 +178,7 @@ const inspectTool: ToolDefinition = {
       features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points, options: f.options, patchCount: f.patches.length })) ?? [],
       lockedCells: map.terrainDesign?.lockedCells ?? [],
       maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
-      rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0, stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
+      rampLength: reliefRampLength(map), stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
       gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay }, houses,
       shadowCasterCount: sun?.casters.length ?? 0,
       shadowCasters: sun?.casters.slice(0, 24).map(({ id, kind, height, base }) => ({ id, kind, height, base })) ?? [],
@@ -185,7 +190,7 @@ const inspectTool: ToolDefinition = {
         }; }),
         houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
       }) };
-    return { summary: `고지 ${data.maxHeight}단 · 경사로 ${data.rampCells}칸 · 집 ${houses.length}채(평탄 ${houses.filter(h => h.flat).length}) · 시야 차단 ${data.gameplay.visionBlocking ? "켬" : "끔"}`, data };
+    return { summary: `고지 ${data.maxHeight}단 · 경사로 길이 ${data.rampLength}칸 · 집 ${houses.length}채(평탄 ${houses.filter(h => h.flat).length}) · 시야 차단 ${data.gameplay.visionBlocking ? "켬" : "끔"}`, data };
   },
 };
 

@@ -114,8 +114,10 @@ async function selfCheck() {
     const wrong=structuredClone(good);wrong.maps[MAP].events.find(e=>e.id==='ev_ember_guard').x++;
     checks.push({id:`${entry.id}:unrelated-edit-rejected`,ok:!evaluateAll(wrong)});
     if(!['inspect','plan'].includes(entry.check))checks.push({id:`${entry.id}:no-op-rejected`,ok:!evaluateAll(before)});
-    const lost=structuredClone(good);delete lost.maps.map_mist_forest;
-    checks.push({id:`${entry.id}:other-map-loss-rejected`,ok:!evaluateAll(lost)});
+    const lost=structuredClone(good);
+    const otherMapId=Object.keys(lost.maps).find(id=>id!==MAP);
+    if(otherMapId) delete lost.maps[otherMapId];
+    checks.push({id:`${entry.id}:other-map-loss-rejected`,ok:Boolean(otherMapId)&&!evaluateAll(lost)});
     if(entry.check==='graphic') {
       const wrongChip=structuredClone(good);wrongChip.maps[MAP].events.find(e=>e.id==='ev_ember_child').pages[0].graphic.sprite.id=entry.textureKey==='tex_easyrpg_charset_monster2'?'tex_easyrpg_charset_people3':'tex_easyrpg_charset_monster2';
       checks.push({id:`${entry.id}:wrong-sheet-rejected`,ok:!evaluateAll(wrongChip)});

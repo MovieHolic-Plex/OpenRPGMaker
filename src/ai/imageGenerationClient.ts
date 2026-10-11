@@ -1,5 +1,6 @@
 import { companionRequestBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 
@@ -71,8 +72,15 @@ export async function generateAiImage(
   if (!prompt) throw new ImageGenerationError("그림 설명(prompt)이 비어 있습니다.");
   const referenceImages = parseImageReferences(request.referenceImages);
   const config = loadAiConfig();
-  const providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
-  const model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
+  let providerId = request.providerId ?? config.imageProviderId ?? IMAGE_GENERATION_PROVIDER_ID;
+  let model = request.model ?? config.imageModel ?? IMAGE_GENERATION_MODEL;
+  // 사용자가 그림 경로를 고르지 않아 권장값(GPT Image)이 기본으로 들어간 경우에만, ChatGPT 연결이 없을 때 Google 로 대신한다.
+  // 고른 값은 절대 바꾸지 않는다(이 파일의 「조용히 다른 모델로 바꾸지 않는다」 계약).
+  if (!deps.fetch && !request.providerId && !config.modelSelectionOverrides?.image && providerId === RECOMMENDED_IMAGE_PROVIDER_ID
+    && await companionCredentialMissing(providerId) && !await companionCredentialMissing(IMAGE_GENERATION_PROVIDER_ID)) {
+    providerId = IMAGE_GENERATION_PROVIDER_ID;
+    model = IMAGE_GENERATION_MODEL;
+  }
 
   const doFetch = deps.fetch ?? fetch;
   const timeout = AbortSignal.timeout(IMAGE_REQUEST_TIMEOUT_MS);

@@ -105,6 +105,14 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `self-check`는 정상 결과 통과와 무변경·다른 NPC 수정·다른 맵 삭제·선택지 한쪽 결손·취소 분기의 보상·무조건 보상 결함의 거절을 확인한다. `self-check-runtime`는 알려진 정상 결과 6개를 실제 플레이하여 입력/관측 오판을 교정한다. 두 수치 모두 검증기 교정 결과이며 조수의 실모델 성공률이 아니다.
 
+## 작은 명령 50개 실행 매트릭스 (2026-10-11)
+
+50개 후보 명령과 역할별 수행 분담은 `harness-data/assistant-capability/command-matrix.json`에 고정한다. `npm run harness -- assistant-capability matrix --out <새 폴더>`는 번호·중복·담당 역할·범위·요구 판정·저장/플레이/시각 증거 선언을 검사하고 `SUMMARY.md`, `matrix-validation.json`, `agent-briefs.json`, `report.html`을 만든다.
+
+`matrix` 단계 자체는 **contract-only**다. 실제 모델 호출·SQLite 재로드·출하 플레이어 실행·독립 시각 판정은 하지 않으며, 결과에도 각각 0건으로 기록한다. 각 행에는 canonical editor tool 이름과 direct/composite 실행 분류를 함께 적고, 등록되지 않은 도구 이름은 실행 단계에서 실패한다.
+
+`npm run harness -- assistant-capability matrix-tools --out <새 폴더>`는 격리된 결정론적 fixture를 각 명령에 준비하고 실제 `runTool`을 호출한다. 읽기 명령은 전체 프로젝트 불변, 쓰기 명령은 커밋된 변경을 확인한다. 이 단계의 50/50은 **도구 계약 통과**이며 자연어 의도 해석, 모델 호출, SQLite 새 context 재로드, 출하 플레이어, 독립 시각 검수의 통과를 뜻하지 않는다. 그 축은 `run`의 native 결과와 `self-check-runtime`/`review` 영수증에 별도로 남긴다. 구현되지 않은 명령을 `runtime: none`으로 넣어 성공률을 부풀리지 않는다.
+
 ## 시각 검수
 
 검수자는 먼저 요청과 실제 그림을 비교한다. 조수의 자기평가를 시각 판정의 근거로 대신 쓰지 않는다. 런타임은 이동/대화 중 가림, 잘림, 글자·분기·금액을 본다. 결함은 위치·재현 장면을 적는다. 실제로 본 파일만 다음처럼 기록한다.

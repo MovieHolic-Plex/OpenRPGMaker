@@ -8,6 +8,16 @@
 
 [English](README.md) · **中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
+### 立即下载应用
+
+[![Windows 下载 (EXE)](https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20EXE-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows 下载 (ZIP)](https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20ZIP-2563eb?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
+[![Linux 下载 (AppImage)](https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20AppImage-eab308?style=for-the-badge)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
+
+Windows：运行 EXE，或解压 ZIP 后运行 `OPRN Studio.exe`。Linux：为 AppImage 添加执行权限后运行。
+
+[全部下载与发行说明](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest)
+
 [![Website](https://img.shields.io/badge/website-openrpgmaker.com-5865f2)](https://openrpgmaker.com/)
 [![Asset Store](https://img.shields.io/badge/asset%20store-store.openrpgmaker.com-f59e0b)](https://store.openrpgmaker.com/)
 [![Editor: SUL](https://img.shields.io/badge/editor-Sustainable%20Use-0ea5e9)](LICENSE.md)

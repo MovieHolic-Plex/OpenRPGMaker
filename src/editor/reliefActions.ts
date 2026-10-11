@@ -104,12 +104,12 @@ export function paintRoughRelief(
 ): boolean {
   const map = store.getCurrent().maps[mapId];
   if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
-  return commitReliefEdit(mapId, (relief) => roughReliefStroke(relief, x, y, mode, options), { topGrass: options.topGrass, label: "높이 붓" });
+  return commitReliefEdit(mapId, (relief) => roughReliefStroke(relief, x, y, mode, options), { topGrass: options.topGrass, label: "지형 붓" });
 }
 
 /** 러프 붓을 뗄 때 — 스트로크가 지나간 사각형 안의 작은 섬·구멍과 1칸 폭 돌기를 정리한다. */
 export function tidyReliefStroke(mapId: MapId, box: { x0: number; y0: number; x1: number; y1: number }, topGrass: boolean): boolean {
-  return commitReliefEdit(mapId, (relief) => tidyReliefRegion(relief, box), { topGrass, label: "높이 붓 정리" });
+  return commitReliefEdit(mapId, (relief) => tidyReliefRegion(relief, box), { topGrass, label: "지형 붓 정리" });
 }
 
 /** 절벽 양식(relief.style). null 이면 기본 흙벽. 높이가 하나도 없으면 쓸 곳이 없으므로 false. */

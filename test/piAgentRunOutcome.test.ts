@@ -13,6 +13,9 @@ const h = vi.hoisted(() => ({
   /** 검수 호출마다 돌려줄 지적. 비우면 매번 같은 ["density"] — 수리가 아무것도 못 바꾼 경우다. */
   findings: [] as string[][],
   reviewCalls: 0,
+  /** 전후 비교가 돌려줄 승자(맵 하나). 비우면 고친 판이 이긴다. */
+  compareWinners: [] as ("before" | "after" | "same")[],
+  compareCalls: 0,
   applyCalls: 0,
   harmonyError: false,
   requests: [] as Record<string, unknown>[],
@@ -54,6 +57,11 @@ vi.mock("@/ai/ultrabrainReview", async importOriginal => ({
     const harmonious = h.verdicts.shift() ?? h.harmony;
     const findings = h.findings.shift() ?? ["density"];
     return [{ mapId: "map_a", harmonious, summary: "review", findings: harmonious ? [] : findings }];
+  },
+  compareMapVersions: async (_before: unknown, _after: unknown, mapIds: ReadonlySet<string>) => {
+    h.compareCalls += 1;
+    const winner = h.compareWinners.shift() ?? "after";
+    return [...mapIds].map(mapId => ({ mapId, winner, reason: "compare" }));
   },
 }));
 vi.mock("@/ai/piAgent/client", () => ({
@@ -149,7 +157,7 @@ beforeEach(() => {
   h.saveKind = "saved";
   h.villageIssues.length = 0;
   h.planError = false; h.verdicts.length = 0; h.findings.length = 0;
-  h.reviewCalls = 0; h.applyCalls = 0; h.outcomes.length = 0;
+  h.reviewCalls = 0; h.compareCalls = 0; h.compareWinners.length = 0; h.applyCalls = 0; h.outcomes.length = 0;
   h.roleModels = undefined;
   h.requests.length = 0; h.results.length = 0; h.bubbles.length = 0; h.process.length = 0;
   h.assistantTexts.length = 0; h.boardStates.length = 0; h.reviewActions.length = 0;
@@ -587,15 +595,24 @@ describe("five application modes", () => {
     expect(h.requests[1]!.task).toContain("density");
     expect(h.reviewActions.every(action => action === null)).toBe(true);
   });
-  it("AUTO stops after two repairs instead of silently applying an unresolved draft", async () => {
-    // 지적이 라운드마다 달라지면 상한(2회)까지 간다 — 수리가 무언가를 바꾸고 있다는 뜻이다.
+  it("AUTO repairs once — an unresolved draft after the single repair is not silently applied", async () => {
+    // 수리는 한 바퀴뿐이다(HARMONY_REPAIR_ROUNDS) — 2026-10-11 실험에서 2차 수리판은 전후 대결에서 0/2.
     h.piApply = "auto"; h.harmony = false;
     h.findings.push(["density"], ["palette"], ["proportion"]);
     h.results.push({ project: projectWith("first") }, { project: projectWith("second") }, { project: projectWith("third") });
     await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
-    expect(h.reviewCalls).toBe(3); expect(h.applyCalls).toBe(0);
+    expect(h.reviewCalls).toBe(2); expect(h.applyCalls).toBe(0);
+    expect(h.requests.filter(request => String(request.task).includes("검수 문제만 수정"))).toHaveLength(1);
     expect(h.boardStates.at(-1)?.phase).toBe("실패");
     expect(h.reviewActions.every(action => action === null)).toBe(true);
+  });
+  it("AUTO reverts the repair when the before/after comparison prefers the earlier version", async () => {
+    h.piApply = "auto"; h.verdicts.push(false, true); h.compareWinners.push("before");
+    h.results.push({ project: projectWith("first") }, { project: projectWith("repaired") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    expect(h.compareCalls).toBe(1);
+    expect(h.process.join("\n")).toContain("이전 판으로 되돌렸어요");
+    expect(h.applyCalls, "되돌린 판은 지적이 남아 조용히 적용하지 않는다").toBe(0);
   });
   // 2026-09-18: 마을 턴에 딸려 만들어진 실내 맵이 「마을이 아니다」로 떨어졌고, 고칠 수 없는
   // 지적이라 수리 두 바퀴 내내 글자 하나 안 바뀌며 파이 에이전트를 한 번 더 태웠다.

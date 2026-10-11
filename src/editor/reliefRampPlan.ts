@@ -31,7 +31,10 @@ export function planReliefRamp(map: GameMap, pick: { x: number; y: number; face:
   candidates.sort((a,b)=>a.score-b.score);
   let failure: ReliefDoodadPlan = { ok:false, reason:"곧은 절벽과 아래 평지가 필요하다", rects:[] };
   for (const c of candidates) {
-    const {dir,ux,uy,x,y}=c, hi=reliefLevel(r,x,y), lo=reliefLevel(r,x-ux,y-uy), length=hi-lo+1;
+    // A ramp occupies one cell per cliff level. The low and high landings sit
+    // outside that strip, so a three-level cliff gets a three-cell ramp rather
+    // than an extra approach cell that makes it look like a road.
+    const {dir,ux,uy,x,y}=c, hi=reliefLevel(r,x,y), lo=reliefLevel(r,x-ux,y-uy), length=Math.max(1, hi-lo);
     // Positive transverse axis avoids direction-dependent centering of even widths.
     const ax=uy!==0 ? 1 : 0, ay=ux!==0 ? 1 : 0, half=Math.floor((width-1)/2);
     const cells: {x:number;y:number}[]=[];

@@ -41,6 +41,7 @@ import { isCustomTileset } from "@/project/tilesetKind";
 import { uiLabel } from "@/editor/uiCopy";
 import { toast } from "@/util/toast";
 import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels/sidebarFocus";
+import { ensureReliefSidePanel } from "@/editor/panels/reliefToolbar";
 
 // ── 좌패널 1면 통합 (2026-08-21) ──────────────────────────────────────────────
 // 예전에는 「칠하기 | 찾기 | 속성」 3탭이었다. 감독 지적("칠하기만 있으면 되는 거
@@ -200,9 +201,13 @@ export function refreshTilePalette(container: HTMLElement): void {
   if (!container.querySelector("[data-sidebar-surface]")) {
     const rendered = renderedPaletteInputs.get(container);
     const inputs = rendered && rendered.shell.parentElement === container ? paletteRenderInputs() : null;
-    if (rendered && inputs && inputs.length === rendered.inputs.length && inputs.every((value, index) => value === rendered.inputs[index])) return;
+    if (rendered && inputs && inputs.length === rendered.inputs.length && inputs.every((value, index) => value === rendered.inputs[index])) {
+      ensureReliefSidePanel(container);
+      return;
+    }
   }
   renderTilePalette(container);
+  ensureReliefSidePanel(container);
 }
 
 // 타일 이식 베이크는 첫 그리기 뒤에 끝난다(기본 칩셋 이식 553칸). 예전에는 상관없는 통지의 재생성이

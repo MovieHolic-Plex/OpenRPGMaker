@@ -4,7 +4,7 @@
 // 20분짜리 버전 제안과 분리한다. 패키징은 CPU 를 한 차례 다 쓴다.
 
 import { execFileSync } from "node:child_process";
-import { copyFileSync, existsSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
@@ -16,6 +16,9 @@ const lockFile = `${buildRoot}.lock`;
 const deliverHost = process.env.OPRN_WIN_DELIVER_HOST ?? "ubbio@100.112.124.41";
 const deliverDir = process.env.OPRN_WIN_DELIVER_DIR ?? "Downloads/oprn-app";
 const deliverWinDir = process.env.OPRN_WIN_DELIVER_WINDIR ?? "C:\\Users\\ubbio\\Downloads\\oprn-app";
+// Android Dev 는 tag:android-dev 라 Tailscale 으로 Windows 에 직접 붙지 못한다.
+// 빌드 산출물을 여기에 두면 Windows 가 가져간다.
+const dropDir = process.env.OPRN_DESKTOP_DROP || join(homedir(), "oprn-desktop-drop");
 
 function run(command, args, { cwd = repo, allowFailure = false } = {}) {
   try {
@@ -186,6 +189,12 @@ try {
   }
   runInherit("gh", ["release", "upload", tag, ...files, ...stable, "--clobber"], repo);
   console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable].map((file) => file.split("/").pop()).join(", ")}`);
+
+  const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
+  mkdirSync(dropDir, { recursive: true });
+  for (const file of winFiles) copyFileSync(file, join(dropDir, file.split("/").pop()));
+  writeFileSync(join(dropDir, "VERSION"), `${tag.slice(1)}\n`);
+  console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
 
   const winZip = files.find((file) => file.endsWith(".zip"));
   if (deliverHost && winZip) {
