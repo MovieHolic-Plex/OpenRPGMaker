@@ -20,7 +20,9 @@ import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
-import { planStartForBrief, type StartPlan } from "@/project/startVariety";
+import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
+import { regionReference } from "@/project/regionReferences";
+import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import {
@@ -265,12 +267,24 @@ interface TownLayout {
  * 시작 마을을 기획의 구상(형태·지형·무대)대로 미리 짓고, 시작 칸에서 걸어 닿는 동쪽 끝 문 자리와 시작 NPC 자리를 찾는다.
  * 길을 새로 파지 않는다 — 시공기가 만든 길 위에서만 찾는다. 못 찾으면 null(호출부가 옛 뼈대로 물러난다).
  */
+const PLACE_TMP_ID = "map_place_tmp";
 function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
-  if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
+  const placeRef = plan.placeId ? regionReference(plan.placeId) : undefined;
+  if (plan.placeId) {
+    if (!placeRef || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
+  } else if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
   // 시험 사본에서 짓는다 — 걸어 닿는 문 자리를 못 찾으면 마을을 채택하지 않고 빈 시작 맵 그대로 둔다(호출부가 옛 모양으로 간다).
   const trial = { project: structuredClone(ctx.project) };
-  tool(trial, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
-  const map = trial.project.maps[start.id]!;
+  if (plan.placeId && placeRef) {
+    try {
+    // 완성 장소가 시작 맵이 된다 — 장소는 자기 칩셋 판본(칸 번호가 다른 확장본)을 쓰므로 붙이지 않고 새 맵으로 가져온 뒤(시작 칸이 아직 옛 맵에 있어 무결성이 통과한다),
+    // 아래 걷기 분석이 끝나면 옛 빈 맵 자리에 같은 id 로 앉힌다.
+    tool(trial, "import_region_reference", { id: plan.placeId, newMapId: PLACE_TMP_ID, name: start.name });
+    } catch (error) { if (process.env.START_DEBUG) console.error("[start-place]", error); return null; }
+  } else {
+    tool(trial, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
+  }
+  const map = trial.project.maps[plan.placeId ? PLACE_TMP_ID : start.id]!;
   const key = (x: number, y: number): number => y * map.width + x;
   const steps = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
   const walk = (from: number, blocked?: number): Map<number, number> => {
@@ -317,11 +331,28 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
   for (const [cell] of candidates) {
     if (walk(origin, cell).has(doorCell)) {
       trial.project.startPos = { ...startAt };
+      if (plan.placeId) {
+        const placed = trial.project.maps[PLACE_TMP_ID]!;
+        delete trial.project.maps[PLACE_TMP_ID];
+        trial.project.maps[start.id] = { ...placed, id: start.id };
+        trial.project.mapTree = { mapId: start.id, children: [] } as Project["mapTree"];
+      }
       ctx.project = trial.project;
       return { doors, starter: { x: cell % map.width, y: Math.floor(cell / map.width) } };
     }
   }
   return null;
+}
+
+/** 뼈대가 붙일 완성 장소의 원본(비동기 적재)을 미리 받는다 — 뼈대 만들기는 동기라, 부르기 전에 한 번 기다린다. 실패해도 조용히(뼈대가 빈 칩셋 맵으로 물러난다). */
+export async function preparePlayableSegmentAssets(project: Project): Promise<void> {
+  const plan = planStartForBrief(project.gameDesignBrief, project.meta.title);
+  if (plan.placeId) await preloadRegionReferenceScene(plan.placeId).catch(() => undefined);
+}
+
+/** 프로젝트 없이 모든 칩셋의 시작 장소를 받아 둔다 — 하네스(qa-game)처럼 프로젝트가 동기로 만들어지는 곳용. */
+export async function preloadKitStartPlaces(): Promise<void> {
+  await Promise.all(Object.values(KIT_START_PLACES).flat().map((id) => preloadRegionReferenceScene(id).catch(() => undefined)));
 }
 
 /**
@@ -353,8 +384,10 @@ export function buildPlayableSegmentSkeleton(input: Project, options: { readonly
   const doorCandidates = town?.doors ?? [{ x: here.width - 1, y: midY }];
   const starter = town?.starter ?? { x: Math.min(here.width - 2, ctx.project.startPos.x + 2), y: midY };
 
-  tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: route.width, height: route.height, tilesetId: here.tilesetId });
-  skeleton.paveRoute(ctx, here.tilesetId, route, plan);
+  // 완성 장소로 연 시작 맵은 장소 전용 칩셋 판본을 쓴다 — 길 맵은 그 판본의 길 재료 이름이 달라 칠이 비므로 컨셉의 원래 칩셋으로 깐다.
+  const routeTilesetId = plan?.placeId && ctx.project.tilesets[plan.tilesetId] ? plan.tilesetId : here.tilesetId;
+  tool(ctx, "create_map", { id: SEGMENT_ROUTE_MAP_ID, name: skeleton.routeName, width: route.width, height: route.height, tilesetId: routeTilesetId });
+  skeleton.paveRoute(ctx, routeTilesetId, route, plan);
   // 문: 후보를 시작 줄에 가까운 순으로 시도한다 — 도구가 「걸어 닿지 않음」 따위로 거절하면 다음 후보. 마지막 후보의 오류는 그대로 던진다.
   doorCandidates.slice(0, 12).some((door, index, list) => {
     try { tool(ctx, "create_transfer_pair", { a: { mapId: here.id, x: door.x, y: door.y }, b: { mapId: SEGMENT_ROUTE_MAP_ID, x: 0, y: route.entryY } }); return true; }

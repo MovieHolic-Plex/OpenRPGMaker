@@ -336,3 +336,5 @@ synthetic and do not certify art quality or a real assistant run. The separate
 real companion requests and owned SQLite folder; its report separates planning
 success from saved-brief/assistant handoff. Gates/Vitest are not implied by a
 successful UI check.
+
+- jp_city start places (2026-10-12): `planStart.placeId` (startVariety `KIT_START_PLACES`: shopstreet/tram-street/town, school or station words pick school/tram) makes `prebuildStartTown` import the finished place as the start map (new map then swapped into the blank start id; route map keeps the concept tileset). Callers must `await preparePlayableSegmentAssets(project)` first (headless: `setRegionReferenceDownloadLoader` + `preloadKitStartPlaces`). `regionReferenceImport.currentBundledTileset` re-fits stale 48-column jp_city place tilesets via `ensureJpCityTileset` (otherwise imports became wrong-picture copies). Probe: `bun scripts/qa/jp-start-probe.mts`.

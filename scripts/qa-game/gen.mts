@@ -18,6 +18,8 @@
 //   실시간 적용     createPiPublication → applyProposedProject(스토어 커밋 게이트)  ← 패널과 같은 함수
 // 다른 점은 meta.json 의 differences 에 적는다.
 
+import { readFileSync } from "node:fs";
+import { setRegionReferenceDownloadLoader } from "../../src/project/regionReferenceImport.ts";
 import fs from "node:fs";
 import path from "node:path";
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
@@ -26,6 +28,7 @@ import { defaultTeamSpec } from "../../src/ai/piAgent/teamSpec.ts";
 import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
 import { createPiRunRecorder } from "./lib/recorder.ts";
+import { preloadKitStartPlaces } from "../../src/project/playableSegment.ts";
 import { buildBrowserSeed, type QaBrief } from "./lib/seed.ts";
 import { overrideConceptCards } from "../../src/ai/conceptCards.ts";
 export { buildBrowserSeed, type QaBrief };
@@ -55,6 +58,7 @@ import { resolveAssetResourceUrl } from "../../src/assets/generatedAssetResource
 import { setCutsceneAssetFetcher } from "../../src/editor/cutsceneArt/charsetFrames.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap as headlessBuildWorldmap } from "../lib/worldmapBuild.mjs";
+setRegionReferenceDownloadLoader(async (url: string) => JSON.parse(readFileSync(`public${url}`, "utf8")));
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -137,6 +141,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     ...(arg("autonomy") ? { autonomyLevel: arg("autonomy") as AutonomyLevel } : {}),
     ...(arg("apply") ? { piApply: arg("apply") as AiConfig["piApply"] } : {}),
   };
+  await preloadKitStartPlaces();
   const built = buildBrowserSeed(input);
   // --seed-project <project.json>: 새 프로젝트 대신 이미 있는 프로젝트(예: 포켓몬풍 데모) 위에서 같은 기획을 시킨다.
   const seed = arg("seed-project") ? deserialize(fs.readFileSync(arg("seed-project")!, "utf8")) : built.project;

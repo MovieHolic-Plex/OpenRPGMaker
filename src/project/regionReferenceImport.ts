@@ -7,6 +7,7 @@
 //
 // 타일셋은 칸 번호가 곧 그림이라, 프로젝트에 같은 id 타일셋이 있으면 같은 그림을 가리키는지(이미지·이식)를 확인하고
 // 모자란 뒤쪽 칸(이식 2550~ 등)만 붙인다. 이미 다른 그림이 앉은 칸이 하나라도 있으면 덮지 않고 사본 타일셋을 따로 둔다.
+import { ensureJpCityTileset } from "@/project/defaults/jpCity";
 import { regionReference } from "./regionReferences";
 import { preloadRegionReference, regionReferenceSnapshotScene } from "./regionReferenceSnapshots";
 import { EXTRA_LAYER_KEYS, type ExtraLayerFields } from "./mapLayers";
@@ -93,7 +94,18 @@ function linkedFloors(start: GameMap, maps: Readonly<Record<string, GameMap>>): 
   return floors;
 }
 
+/** 번들 칩셋 jp_city 는 2026-10-08 열 수를 48→96 으로 다시 놓았다(칸 번호는 그대로). 그 전에 게시된 장소(상가 거리·학교·동네 등 실외)의 칩셋은 옛 열 수라 그대로 들이면 「그림이 다르다」 사본이 되어 엉뚱한 그림이 나온다 — 번들 칸 표로 맞춘다. */
+function currentBundledTileset(scene: RegionReferenceScene): RegionReferenceScene {
+  if (scene.tileset.id !== "jp_city") return scene;
+  const tileset = structuredClone(scene.tileset);
+  return ensureJpCityTileset(tileset) ? { ...scene, tileset } : scene;
+}
+
 async function loadScene(id: string): Promise<RegionReferenceScene> {
+  return currentBundledTileset(await loadSceneRaw(id));
+}
+
+async function loadSceneRaw(id: string): Promise<RegionReferenceScene> {
   const reference = regionReference(id);
   if (!reference) throw new Error(`Unknown region reference: ${id}`);
   const download = "projectDownload" in reference && typeof reference.projectDownload === "string" ? reference.projectDownload : undefined;
