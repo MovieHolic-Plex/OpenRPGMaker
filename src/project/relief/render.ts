@@ -576,7 +576,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   }
   // 맵 북쪽 끝 위 여백(2026-10-11): 화면 맨 위 pad 줄은 들린 칸만 채워서, 북쪽 끝에 대지가 있는 맵은 그 옆 낮은 칸 위에 빈 띠가
   // 남았다(게임 카메라는 대지를 보이려 그만큼 위로 넓혀 그 띠가 검게 보였다). 맵 밖 북쪽도 땅이 이어진다고 보고, 빈 화소를 그 열의
-  // 0번 줄 바닥으로 위로 이어 채운다 — 같은 높이, 0번 줄 타일을 세로로 되풀이(mpy = 0..15). 이 화소는 0번 줄 py=0 과
+  // 0번 줄 바닥으로 위로 이어 채운다 — 같은 높이, 0번 줄 타일 윗 절반을 거울로 되풀이(mpy = 0..7). 이 화소는 0번 줄 py=0 과
   // 화면 줄 sy 위쪽 맵 줄([0, sy])만 보므로 부분 굽기 창 규칙(window.ts)이 그대로 맞는다. 맨 위 줄을 담은 창(oy = 0)에서만 한다.
   const padFill = take("padFill", u8, oy === 0 ? N : 0, 0, true);
   if (oy === 0) for (let px = 0; px < PW; px++) {
@@ -584,7 +584,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     for (let sy = Math.min(top0, SH) - 1; sy >= 0; sy--) {
       const i = sy * PW + px;
       if (kind[i] >= 0) continue;
-      const my = (((sy - top0) % T) + T) % T;
+      // 0번 줄 칸의 윗 절반(py 0..7)을 거울처럼 위로 되풀이한다(0..7, 7..0, …). 맞닿는 줄이 0번 줄 첫 줄과 같아 이음매가 없고,
+      // 칸 아래쪽에 깔린 그림자·물건 발치(같은 칸 위층 나무의 그늘 조각 등)는 여백에 고아로 되풀이되지 않는다.
+      const k = top0 - 1 - sy, my = k % T < T / 2 ? k % (T / 2) : T / 2 - 1 - k % (T / 2);
       out[i] = lc ? shift(TOP[my * T + px % T], LV[lc]) : GROUND[my * T + px % T];
       kind[i] = 0; lev[i] = lc; src[i] = px >> 4; fl[i] = c; mpy[i] = my; padFill[i] = 1;
     }
