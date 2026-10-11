@@ -53,6 +53,20 @@ describe("shared content boot fetch", () => {
     expect(Object.keys(snapshot.libraries).sort()).toEqual(["catalog", "defaults"]);
     expect(snapshot.revision).toBe("r1");
   });
+  it("does not fetch defaults a second time after a successful load in the same module instance", async () => {
+    const mod = await import("@/project/sharedContent");
+    await mod.loadSharedContent({ scope: "defaults" });
+    await mod.loadSharedContent({ scope: "defaults" });
+    expect(calls.map(c => `${c.scope} ${c.status}`)).toEqual(["defaults 200"]);
+  });
+  it("deduplicates concurrent defaults loads", async () => {
+    const mod = await import("@/project/sharedContent");
+    await Promise.all([
+      mod.loadSharedContent({ scope: "defaults" }),
+      mod.loadSharedContent({ scope: "defaults" }),
+    ]);
+    expect(calls.map(c => `${c.scope} ${c.status}`)).toEqual(["defaults 200"]);
+  });
 
   it("reuses the device copy on the next boot when the host answers 304", async () => {
     await bootOnce();
