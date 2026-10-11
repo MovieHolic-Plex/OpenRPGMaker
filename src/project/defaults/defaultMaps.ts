@@ -53,8 +53,10 @@ function semanticGroundTile(tileset: BlankFillTileset | undefined): number | und
 
 /** 칩셋 정본 메타데이터 또는 번들 기본값에서 새 맵 바닥을 고른다. */
 export function plainGrassTileFor(tilesetId: string, tileset?: BlankFillTileset): number | undefined {
-  if (tilesetId === DEFAULT_TILESET_ID) return BEODEUL_PLAIN_GRASS_TILE;
-  return semanticGroundTile(tileset) ?? BUNDLED_PLAIN_GROUND_TILES[tilesetId];
+  // 번들 칩셋은 공간별 특수 바닥(포션실·온실·건물 내부)이 더 높은 점수를 받을 수 있다.
+  // 새 맵의 정본 바닥은 먼저 고정하고, 업로드/미지 칩셋만 메타데이터에서 추론한다.
+  if (Object.hasOwn(BUNDLED_PLAIN_GROUND_TILES, tilesetId)) return BUNDLED_PLAIN_GROUND_TILES[tilesetId];
+  return semanticGroundTile(tileset);
 }
 
 export function blankFillTileFor(tilesetId: string, fallback = 0, tileset?: BlankFillTileset): number {
