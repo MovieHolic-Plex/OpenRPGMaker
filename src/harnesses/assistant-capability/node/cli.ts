@@ -37,6 +37,14 @@ export async function run(argv: string[]): Promise<number> {
     const root=resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/tool-controls');
     return stage==='discover-tools'?discoverTools(root):checkTools(root);
   }
+  if (stage === 'matrix') {
+    const child = spawn(process.execPath, [resolve('src/harnesses/assistant-capability/node/commandMatrix.mjs'), ...argv.slice(1)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
+  if (stage === 'matrix-tools') {
+    const { runMatrixTools } = await import('./matrixTools');
+    return runMatrixTools(resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/matrix-tools'));
+  }
   if (stage === 'prepare') {
     const root = option('out');
     if (!root) throw Error('prepare --out <새 실행 폴더> [--case <id>]');

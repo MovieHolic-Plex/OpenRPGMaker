@@ -1,0 +1,863 @@
+{
+  "schemaVersion": 1,
+  "suite": "assistant-small-commands-v1",
+  "description": "에디터 AI 조수의 작은 자연어 명령 50개를 실제 수행 과제로 확장하기 위한 실행 매트릭스.",
+  "executionContract": {
+    "input": "실제 에디터 입력창",
+    "persistence": "같은 SQLite projectId 저장 후 새 브라우저 context 재로드",
+    "runtime": "필요한 경우 출하 player.html과 export shim에서 실제 입력",
+    "visual": "변경·재로드·필수 플레이 화면의 독립 검수",
+    "failureStates": [
+      "fail",
+      "blocked",
+      "pending",
+      "unverified"
+    ]
+  },
+  "agents": [
+    {
+      "id": "fixture-orchestrator",
+      "role": "격리 프로젝트·SQLite·run.lock 준비"
+    },
+    {
+      "id": "map-observer",
+      "role": "맵 조회·검사 명령 수행"
+    },
+    {
+      "id": "map-builder",
+      "role": "타일·지형·오브젝트·맵 연결 수행"
+    },
+    {
+      "id": "event-author",
+      "role": "이벤트 명령·페이지 수정 수행"
+    },
+    {
+      "id": "npc-dialogue",
+      "role": "NPC·대화·일정·상점 수행"
+    },
+    {
+      "id": "database-media",
+      "role": "DB·오디오·조명·화면 연출 수행"
+    },
+    {
+      "id": "runtime-verifier",
+      "role": "출하 플레이어에서 실제 동작 확인"
+    },
+    {
+      "id": "preservation-auditor",
+      "role": "전체 프로젝트 diff·저장·재로드 감사"
+    },
+    {
+      "id": "language-robustness",
+      "role": "표현 변형·모호성·거부 동작 시험"
+    },
+    {
+      "id": "visual-reviewer",
+      "role": "실제 PNG 독립 검수"
+    }
+  ],
+  "commands": [
+    {
+      "id": "map-name-size",
+      "n": 1,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "지금 맵의 이름과 크기를 알려줘.",
+      "scope": "현재 맵",
+      "oracle": "이름·width·height가 저장된 맵과 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "get_project_summary"
+      ],
+      "executionKind": "direct",
+      "check": "tool:get_project_summary"
+    },
+    {
+      "id": "find-entrances",
+      "n": 2,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "현재 맵의 출입구를 모두 찾아줘.",
+      "scope": "현재 맵의 transfer 이벤트",
+      "oracle": "출입구 ID·좌표·목적지 목록이 실제 이벤트와 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "find_events"
+      ],
+      "executionKind": "direct",
+      "check": "tool:find_events"
+    },
+    {
+      "id": "blocked-cells",
+      "n": 3,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "이 영역의 통행 불가 칸을 표시해줘.",
+      "scope": "현재 선택 영역",
+      "oracle": "표시된 좌표가 타일 통행 규칙과 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "get_map_region"
+      ],
+      "executionKind": "direct",
+      "check": "tool:get_map_region"
+    },
+    {
+      "id": "event-list",
+      "n": 4,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "현재 맵의 이벤트 목록만 보여줘.",
+      "scope": "현재 맵",
+      "oracle": "이벤트 ID·이름·좌표가 실제 맵과 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "find_events"
+      ],
+      "executionKind": "direct",
+      "check": "tool:find_events"
+    },
+    {
+      "id": "region-preview",
+      "n": 5,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "커서 주변 5×5 영역을 미리 보여줘.",
+      "scope": "커서 중심 5×5",
+      "oracle": "요청한 영역만 렌더하고 좌표가 맞음",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "show_map_region"
+      ],
+      "executionKind": "direct",
+      "check": "tool:show_map_region"
+    },
+    {
+      "id": "paint-dirt",
+      "n": 6,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "선택 영역의 바닥을 흙으로 바꿔줘.",
+      "scope": "선택 영역의 lower layer",
+      "oracle": "선택 영역의 바닥만 흙 타일로 변경",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "paint_tiles"
+      ],
+      "executionKind": "direct",
+      "check": "tool:paint_tiles"
+    },
+    {
+      "id": "clear-region",
+      "n": 7,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 5×3 영역만 비워줘.",
+      "scope": "지정 5×3 영역",
+      "oracle": "영역 안 타일만 제거되고 이벤트·바깥 칸 보존",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "clear_region"
+      ],
+      "executionKind": "direct",
+      "check": "tool:clear_region"
+    },
+    {
+      "id": "copy-region",
+      "n": 8,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 영역을 오른쪽으로 2칸 복사해줘.",
+      "scope": "선택 영역과 오른쪽 2칸 목적지",
+      "oracle": "원본 보존·목적지 정확 복사",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "copy_map_region"
+      ],
+      "executionKind": "direct",
+      "check": "tool:copy_map_region"
+    },
+    {
+      "id": "mirror-region",
+      "n": 9,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "선택 영역을 좌우로 뒤집어줘.",
+      "scope": "선택 영역",
+      "oracle": "영역 내부만 좌우 반전",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "mirror_region"
+      ],
+      "executionKind": "direct",
+      "check": "tool:mirror_region"
+    },
+    {
+      "id": "move-start",
+      "n": 10,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "시작 위치를 여기로 옮겨줘.",
+      "scope": "현재 맵 start position",
+      "oracle": "startMapId 보존·start 좌표만 변경·통행 가능",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "set_start_position"
+      ],
+      "executionKind": "direct",
+      "check": "tool:set_start_position"
+    },
+    {
+      "id": "place-trees",
+      "n": 11,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "여기에 나무 세 그루를 놓아줘.",
+      "scope": "현재 선택 영역",
+      "oracle": "나무 3개만 배치·출입구와 동선 보존",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "paint_tiles"
+      ],
+      "executionKind": "direct",
+      "check": "tool:paint_tiles"
+    },
+    {
+      "id": "place-chest",
+      "n": 12,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 좌표에 보물 상자를 하나 놓아줘.",
+      "scope": "지정 좌표",
+      "oracle": "상자 이벤트 1개·중복 없음·좌표 일치",
+      "runtime": "interact",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "place_chest"
+      ],
+      "executionKind": "direct",
+      "check": "tool:place_chest"
+    },
+    {
+      "id": "move-door",
+      "n": 13,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 집의 문을 한 칸 왼쪽으로 옮겨줘.",
+      "scope": "대상 집의 문과 문 이벤트",
+      "oracle": "원본 건물 지붕·벽 보존·문과 전이 좌표 동시 이동",
+      "runtime": "transfer",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "move_event",
+        "patch_event_page"
+      ],
+      "executionKind": "composite",
+      "check": "tool:move_event+patch_event_page"
+    },
+    {
+      "id": "remove-barrels",
+      "n": 14,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 지역의 통을 모두 제거해줘.",
+      "scope": "지정 지역의 barrel 오브젝트",
+      "oracle": "통만 제거·다른 기물과 타일 보존",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "remove_event"
+      ],
+      "executionKind": "direct",
+      "check": "tool:remove_event"
+    },
+    {
+      "id": "place-well",
+      "n": 15,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 빈 공간에 작은 우물을 배치해줘.",
+      "scope": "지정 빈 공간",
+      "oracle": "우물 기물 배치·통행과 주변 타일 보존",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "place_props"
+      ],
+      "executionKind": "direct",
+      "check": "tool:place_props"
+    },
+    {
+      "id": "change-first-line",
+      "n": 16,
+      "agent": "event-author",
+      "mode": "write",
+      "prompt": "현재 이벤트의 첫 대사를 바꿔줘.",
+      "scope": "현재 이벤트 첫 text 명령",
+      "oracle": "첫 대사만 변경·페이지·조건·그림 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "add-switch-condition",
+      "n": 17,
+      "agent": "event-author",
+      "mode": "write",
+      "prompt": "이 이벤트에 스위치 조건을 추가해줘.",
+      "scope": "현재 이벤트 페이지 조건",
+      "oracle": "지정 스위치 조건 1개 추가·명령과 다른 조건 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "remove-move-command",
+      "n": 18,
+      "agent": "event-author",
+      "mode": "write",
+      "prompt": "이 이벤트의 이동 명령만 삭제해줘.",
+      "scope": "현재 이벤트 이동 명령",
+      "oracle": "이동 명령만 삭제·대사·분기·효과 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "insert-se",
+      "n": 19,
+      "agent": "event-author",
+      "mode": "write",
+      "prompt": "선택한 명령 뒤에 효과음을 넣어줘.",
+      "scope": "현재 선택 명령 다음 한 위치",
+      "oracle": "효과음 1개 삽입·기존 순서와 명령 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "touch-trigger",
+      "n": 20,
+      "agent": "event-author",
+      "mode": "write",
+      "prompt": "이 이벤트를 플레이어 접촉형으로 바꿔줘.",
+      "scope": "현재 이벤트 trigger",
+      "oracle": "trigger만 playerTouch로 변경",
+      "runtime": "interact",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "rename-npc",
+      "n": 21,
+      "agent": "npc-dialogue",
+      "mode": "write",
+      "prompt": "이 NPC의 이름을 ‘하린’으로 바꿔줘.",
+      "scope": "현재 NPC 표시 이름",
+      "oracle": "이벤트 ID·그래픽·대사·좌표 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "face-right",
+      "n": 22,
+      "agent": "npc-dialogue",
+      "mode": "write",
+      "prompt": "이 NPC가 오른쪽을 바라보게 해줘.",
+      "scope": "현재 NPC 기본 방향",
+      "oracle": "direction만 right로 변경",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "add-npc-line",
+      "n": 23,
+      "agent": "npc-dialogue",
+      "mode": "write",
+      "prompt": "이 NPC의 대사를 한 줄 추가해줘.",
+      "scope": "현재 이벤트 마지막 대사 뒤",
+      "oracle": "대사 1줄 append·기존 명령 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "npc-schedule",
+      "n": 24,
+      "agent": "npc-dialogue",
+      "mode": "write",
+      "prompt": "이 NPC를 하루 일정에 등록해줘.",
+      "scope": "현재 NPC schedule",
+      "oracle": "일정 1개 등록·기존 일정과 맵 이벤트 보존",
+      "runtime": "schedule",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "set_npc_schedule"
+      ],
+      "executionKind": "direct",
+      "check": "tool:set_npc_schedule"
+    },
+    {
+      "id": "npc-shop",
+      "n": 25,
+      "agent": "npc-dialogue",
+      "mode": "write",
+      "prompt": "이 NPC와 대화하면 상점이 열리게 해줘.",
+      "scope": "현재 NPC 대화 이벤트",
+      "oracle": "shop open 명령 연결·대사와 조건 보존",
+      "runtime": "shop",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "set_shop_stock"
+      ],
+      "executionKind": "direct",
+      "check": "tool:set_shop_stock"
+    },
+    {
+      "id": "potion-price",
+      "n": 26,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "회복약의 가격을 30골드로 바꿔줘.",
+      "scope": "item_potion.price",
+      "oracle": "가격만 30·아이템 ID·효과·설명 보존",
+      "runtime": "none",
+      "visual": "database",
+      "toolNames": [
+        "upsert_item"
+      ],
+      "executionKind": "direct",
+      "check": "tool:upsert_item"
+    },
+    {
+      "id": "sword-attack",
+      "n": 27,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "철검의 공격력을 5 올려줘.",
+      "scope": "철검 atk",
+      "oracle": "기존 공격력+5·다른 필드 보존",
+      "runtime": "battle",
+      "visual": "database",
+      "toolNames": [
+        "upsert_equipment"
+      ],
+      "executionKind": "direct",
+      "check": "tool:upsert_equipment"
+    },
+    {
+      "id": "item-description",
+      "n": 28,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "이 아이템에 설명문을 추가해줘.",
+      "scope": "현재 아이템 description",
+      "oracle": "설명문만 추가·효과와 가격 보존",
+      "runtime": "none",
+      "visual": "database",
+      "toolNames": [
+        "upsert_item"
+      ],
+      "executionKind": "direct",
+      "check": "tool:upsert_item"
+    },
+    {
+      "id": "create-key-item",
+      "n": 29,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "새로운 열쇠 아이템 하나를 만들어줘.",
+      "scope": "database.items",
+      "oracle": "새 ID 1개·중복 없음·유효한 이름과 설명",
+      "runtime": "none",
+      "visual": "database",
+      "toolNames": [
+        "upsert_item"
+      ],
+      "executionKind": "direct",
+      "check": "tool:upsert_item"
+    },
+    {
+      "id": "remove-shop-herb",
+      "n": 30,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "이 상점의 재고에서 약초를 제거해줘.",
+      "scope": "현재 shop stock",
+      "oracle": "약초만 재고에서 제거·다른 재고 보존",
+      "runtime": "shop",
+      "visual": "database-and-runtime",
+      "toolNames": [
+        "set_shop_stock"
+      ],
+      "executionKind": "direct",
+      "check": "tool:set_shop_stock"
+    },
+    {
+      "id": "screen-shake",
+      "n": 31,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "현재 이벤트에 화면 흔들림을 넣어줘.",
+      "scope": "현재 이벤트 연출 명령",
+      "oracle": "shake 명령 1개 삽입·기존 순서 보존",
+      "runtime": "cutscene",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "dialogue-position",
+      "n": 32,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "이 대사의 표시 위치를 아래쪽으로 바꿔줘.",
+      "scope": "현재 text.position",
+      "oracle": "position=bottom·본문과 speaker 보존",
+      "runtime": "dialogue",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "door-se",
+      "n": 33,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "문이 열릴 때 효과음을 재생해줘.",
+      "scope": "문 열림 이벤트",
+      "oracle": "door-open SE가 열림 직전에 재생",
+      "runtime": "transfer",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "night-mood",
+      "n": 34,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "이 지역을 밤 분위기로 바꿔줘.",
+      "scope": "현재 맵 scene mood",
+      "oracle": "조명·색조만 변경·타일과 이벤트 보존",
+      "runtime": "none",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "set_scene_mood"
+      ],
+      "executionKind": "direct",
+      "check": "tool:set_scene_mood"
+    },
+    {
+      "id": "remove-final-fade",
+      "n": 35,
+      "agent": "database-media",
+      "mode": "write",
+      "prompt": "현재 컷신의 마지막 페이드만 제거해줘.",
+      "scope": "현재 cutscene 마지막 beat",
+      "oracle": "마지막 fade만 제거·다른 beat 보존",
+      "runtime": "cutscene",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "patch_event_page"
+      ],
+      "executionKind": "direct",
+      "check": "tool:patch_event_page"
+    },
+    {
+      "id": "walkability-check",
+      "n": 36,
+      "agent": "runtime-verifier",
+      "mode": "read",
+      "prompt": "현재 맵에서 시작 지점까지 걸어갈 수 있는지 검사해줘.",
+      "scope": "현재 맵 walkability",
+      "oracle": "실제 경로와 막힌 칸 근거 제시",
+      "runtime": "walk",
+      "visual": "runtime",
+      "toolNames": [
+        "check_reachability"
+      ],
+      "executionKind": "direct",
+      "check": "tool:check_reachability"
+    },
+    {
+      "id": "event-playtest",
+      "n": 37,
+      "agent": "runtime-verifier",
+      "mode": "read",
+      "prompt": "이 이벤트를 실제 플레이처럼 실행해줘.",
+      "scope": "현재 이벤트",
+      "oracle": "player.html에서 실제 입력으로 실행·결과 기록",
+      "runtime": "event",
+      "visual": "runtime",
+      "toolNames": [
+        "run_scene_test"
+      ],
+      "executionKind": "direct",
+      "check": "tool:run_scene_test"
+    },
+    {
+      "id": "blocked-entrance",
+      "n": 38,
+      "agent": "runtime-verifier",
+      "mode": "read",
+      "prompt": "현재 맵의 막힌 출입구를 찾아줘.",
+      "scope": "현재 맵 출입구",
+      "oracle": "그림·전이 이벤트·통행 규칙의 불일치 제시",
+      "runtime": "none",
+      "visual": "runtime",
+      "toolNames": [
+        "find_events",
+        "run_lint"
+      ],
+      "executionKind": "composite",
+      "check": "tool:find_events+run_lint"
+    },
+    {
+      "id": "unused-switches",
+      "n": 39,
+      "agent": "runtime-verifier",
+      "mode": "read",
+      "prompt": "사용되지 않는 스위치를 찾아줘.",
+      "scope": "project.switches",
+      "oracle": "참조 0회 스위치 목록이 실제 검색과 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "find_switch_usage"
+      ],
+      "executionKind": "direct",
+      "check": "tool:find_switch_usage"
+    },
+    {
+      "id": "undo-preview",
+      "n": 40,
+      "agent": "runtime-verifier",
+      "mode": "read",
+      "prompt": "방금 변경한 내용을 되돌릴 수 있는 미리보기를 보여줘.",
+      "scope": "마지막 edit history",
+      "oracle": "실제 diff와 되돌리기 대상 표시·변경 없음",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "list_edit_history"
+      ],
+      "executionKind": "direct",
+      "check": "tool:list_edit_history"
+    },
+    {
+      "id": "door-to-plaza",
+      "n": 41,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 문을 마을 맵의 광장으로 연결해줘.",
+      "scope": "현재 문과 목적지 광장",
+      "oracle": "문앞·목적지 좌표·귀환 이벤트가 연결",
+      "runtime": "transfer",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "link_maps"
+      ],
+      "executionKind": "direct",
+      "check": "tool:link_maps"
+    },
+    {
+      "id": "align-portals",
+      "n": 42,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "두 맵 사이의 출입구 방향을 맞춰줘.",
+      "scope": "두 연결 transfer 쌍",
+      "oracle": "양쪽 방향·착지 좌표·문 그림 일치",
+      "runtime": "transfer",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "link_maps"
+      ],
+      "executionKind": "direct",
+      "check": "tool:link_maps"
+    },
+    {
+      "id": "worldmap-north",
+      "n": 43,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 맵을 월드맵의 북쪽에 연결해줘.",
+      "scope": "world graph link",
+      "oracle": "북쪽 링크 1개·기존 링크 보존",
+      "runtime": "transfer",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "plan_world"
+      ],
+      "executionKind": "direct",
+      "check": "tool:plan_world"
+    },
+    {
+      "id": "unreachable-links",
+      "n": 44,
+      "agent": "map-observer",
+      "mode": "read",
+      "prompt": "현재 맵에서 갈 수 없는 연결을 찾아줘.",
+      "scope": "world graph와 transfer",
+      "oracle": "실제 도달성 검사와 연결 목록 일치",
+      "runtime": "walk",
+      "visual": "runtime",
+      "toolNames": [
+        "lint_world"
+      ],
+      "executionKind": "direct",
+      "check": "tool:lint_world"
+    },
+    {
+      "id": "forest-path",
+      "n": 45,
+      "agent": "map-builder",
+      "mode": "write",
+      "prompt": "이 지역에 작은 숲길을 하나 추가해줘.",
+      "scope": "지정 빈 지역",
+      "oracle": "숲길만 추가·출입구와 기존 기물 보존",
+      "runtime": "walk",
+      "visual": "editor-and-runtime",
+      "toolNames": [
+        "paint_road"
+      ],
+      "executionKind": "direct",
+      "check": "tool:paint_road"
+    },
+    {
+      "id": "summarize-diff",
+      "n": 46,
+      "agent": "preservation-auditor",
+      "mode": "read",
+      "prompt": "현재 맵의 변경 사항만 요약해줘.",
+      "scope": "마지막 edit history",
+      "oracle": "실제 변경 경로와 요약 일치·쓰기 없음",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "list_edit_history"
+      ],
+      "executionKind": "direct",
+      "check": "tool:list_edit_history"
+    },
+    {
+      "id": "show-tool-log",
+      "n": 47,
+      "agent": "preservation-auditor",
+      "mode": "read",
+      "prompt": "방금 조수가 수정한 타일 목록을 보여줘.",
+      "scope": "last construction log",
+      "oracle": "실제 변경 타일 좌표·레이어 목록과 일치",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "list_edit_history"
+      ],
+      "executionKind": "direct",
+      "check": "tool:list_edit_history"
+    },
+    {
+      "id": "rewind-turn",
+      "n": 48,
+      "agent": "preservation-auditor",
+      "mode": "write",
+      "prompt": "이 지시 직전 상태로 되돌려줘.",
+      "scope": "직전 assistant turn",
+      "oracle": "대화·프로젝트 모두 직전 SHA로 복원",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "revert_last_edit"
+      ],
+      "executionKind": "direct",
+      "check": "tool:revert_last_edit"
+    },
+    {
+      "id": "plan-only",
+      "n": 49,
+      "agent": "preservation-auditor",
+      "mode": "read",
+      "prompt": "이 작업을 실행하지 말고 계획만 보여줘.",
+      "scope": "사용자 요청 전체",
+      "oracle": "실행 계획은 존재·프로젝트 SHA 불변",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "get_project_summary"
+      ],
+      "executionKind": "direct",
+      "check": "tool:get_project_summary"
+    },
+    {
+      "id": "suggest-selection-actions",
+      "n": 50,
+      "agent": "language-robustness",
+      "mode": "read",
+      "prompt": "현재 선택 영역에 할 수 있는 작업을 추천해줘.",
+      "scope": "현재 선택 영역",
+      "oracle": "현재 칩셋·레이어·통행 상태에 근거한 추천·쓰기 없음",
+      "runtime": "none",
+      "visual": "editor",
+      "toolNames": [
+        "find_empty_ground"
+      ],
+      "executionKind": "direct",
+      "check": "tool:find_empty_ground"
+    }
+  ]
+}
