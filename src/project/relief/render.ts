@@ -574,6 +574,21 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (cut.length) cut[w] = own;
     }
   }
+  // 맵 북쪽 끝 위 여백(2026-10-11): 화면 맨 위 pad 줄은 들린 칸만 채워서, 북쪽 끝에 대지가 있는 맵은 그 옆 낮은 칸 위에 빈 띠가
+  // 남았다(게임 카메라는 대지를 보이려 그만큼 위로 넓혀 그 띠가 검게 보였다). 맵 밖 북쪽도 땅이 이어진다고 보고, 빈 화소를 그 열의
+  // 0번 줄 바닥으로 위로 이어 채운다 — 같은 높이, 0번 줄 타일을 세로로 되풀이(mpy = 0..15). 이 화소는 0번 줄 py=0 과
+  // 화면 줄 sy 위쪽 맵 줄([0, sy])만 보므로 부분 굽기 창 규칙(window.ts)이 그대로 맞는다. 맨 위 줄을 담은 창(oy = 0)에서만 한다.
+  const padFill = take("padFill", u8, oy === 0 ? N : 0, 0, true);
+  if (oy === 0) for (let px = 0; px < PW; px++) {
+    const c = hf[px]!, lc = Math.round(c), top0 = pad - Math.round(c * U);
+    for (let sy = Math.min(top0, SH) - 1; sy >= 0; sy--) {
+      const i = sy * PW + px;
+      if (kind[i] >= 0) continue;
+      const my = (((sy - top0) % T) + T) % T;
+      out[i] = lc ? shift(TOP[my * T + px % T], LV[lc]) : GROUND[my * T + px % T];
+      kind[i] = 0; lev[i] = lc; src[i] = px >> 4; fl[i] = c; mpy[i] = my; padFill[i] = 1;
+    }
+  }
   // 벽 조각
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
     const i = sy * PW + sx; if (kind[i] !== 1) continue;
@@ -638,6 +653,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const eastMax = windowMaxBound(hf, PH, PW, PW, 1, 4, 1);
   const southMax = windowMaxBound(fl, PW, SH, 1, PW, 6, 1);
   // 윗면 가장자리와 그늘
+  const rampFace = (j: number) => ssl[j]! > 0 && kind[j] === 0 && !slopes[ssl[j]! - 1]!.steps;
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
     const i = sy * PW + sx; if (kind[i] !== 0) continue;
     const c = fl[i];
@@ -647,12 +663,14 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       return kind[j] === 0 && Math.abs(fl[j] - c) <= tol(i, j);
     };
     const kL = kind[sy * PW + (sx - 1 + PW) % PW];
-    if (c > 0) {
+    // 매끈한 경사로(계단 아님) 면은 테두리를 긋지 않는다(2026-10-11 사용자: 「일반 땅을 그대로 이어 놓은 느낌」). 경사로 아래쪽이 들린 만큼
+    // 옆 0단 땅과 높이가 달라 양옆에 짙은 세로선, 북쪽 끝에 가로 턱 선이 섰다. 옆 절벽 띠는 벽 화소라 제자리에서 끝난다.
+    if (c > 0 && !rampFace(i)) {
       if (sy === 0 ? oy === 0 : !top(sy - 1, sx) && kind[i - PW] !== 1) {
         out[i] = OUT_G; edge[i] = 1;
-        if (top(sy + 1, sx)) { out[i + PW] = 4; edge[i + PW] = 1; }
+        if (top(sy + 1, sx) && !rampFace(i + PW)) { out[i + PW] = 4; edge[i + PW] = 1; }
         // S.cornice (tundra-snow): a snow cornice two rows deep inside the north rim — the far edge of a raised top reads as a lip
-        if (S?.cornice && top(sy + 1, sx) && top(sy + 2, sx) && !ssl[i]) { out[i + PW] = 5; out[i + 2 * PW] = 3; edge[i + 2 * PW] = 1; }
+        if (S?.cornice && top(sy + 1, sx) && top(sy + 2, sx) && !ssl[i] && !rampFace(i + PW) && !rampFace(i + 2 * PW)) { out[i + PW] = 5; out[i + 2 * PW] = 3; edge[i + 2 * PW] = 1; }
         continue;
       }
       // 경사로 도트 옆: 경사로 옆선이 이미 테를 두르므로 외곽선을 또 긋지 않는다
@@ -660,18 +678,19 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (!top(sy, sx - 1) && kL !== 1 && !rampL) {
         out[i] = OUT_G; edge[i] = 1;
         // S.cornice: the west rim faces the light — a lit snow column inside the outline
-        if (S?.cornice && sx + 1 < PW && top(sy, sx + 1) && !ssl[i]) { out[i + 1] = 5; edge[i + 1] = 1; }
+        if (S?.cornice && sx + 1 < PW && top(sy, sx + 1) && !ssl[i] && !rampFace(i + 1)) { out[i + 1] = 5; edge[i + 1] = 1; }
         continue;
       }
       if (!top(sy, sx + 1) && (sx + 1 >= PW || kind[i + 1] !== 1) && !rampR) {
         out[i] = OUT_G; edge[i] = 1;
         // S.cornice: the east rim turns from the light — a shaded column inside the outline
-        if (S?.cornice && sx > 0 && top(sy, sx - 1) && !ssl[i]) { out[i - 1] = 2; edge[i - 1] = 1; }
+        if (S?.cornice && sx > 0 && top(sy, sx - 1) && !ssl[i] && !rampFace(i - 1)) { out[i - 1] = 2; edge[i - 1] = 1; }
         continue;
       }
     }
     if (out[i] < 0 || out[i] >= 6 || out[i] === OUT_G) continue;
-    const py = mpy[i], mp = py * PW + sx;
+    // 북쪽 여백 채움 화소는 0번 줄 py=0 에 선 것으로 본다(mpy 는 바닥 무늬 되풀이용이라 그늘 판정에 쓰면 아래 줄을 읽는다)
+    const py = padFill[i] ? 0 : mpy[i], mp = py * PW + sx;
     let s = 0;
     for (let k = 1; k <= 10 && sy - k >= 0; k++) {                   // 북쪽 벽 발치
       const jj = i - k * PW; if (kind[jj] !== 1 || (S && ssl[jj])) break;
