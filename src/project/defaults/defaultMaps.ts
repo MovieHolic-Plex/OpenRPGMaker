@@ -21,7 +21,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   joseon_baram: 0,
   modern_city: 17,
   jp_city: 725,
-  wizarding_world: 1,
+  // 1번 오크 판자와 205번 수리용 석재는 고정 조각이라 반복 시 이음선이 튄다. 반복 가능한 성채 포석 577번을 쓴다.
+  wizarding_world: 577,
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,
@@ -41,6 +42,8 @@ function semanticGroundTile(tileset: BlankFillTileset | undefined): number | und
     if (/grass|green|잔디|풀|초원/.test(text)) score += 6;
     if (/ground|terrain|field|지형|마당|흙|땅/.test(text)) score += 4;
     if (/floor|바닥|널마루|마루/.test(text)) score += 3;
+    // 고정 조각(모서리·전이·수리 슬롯)은 반복 채움에서 이음선이 튄다.
+    if (entry.repeatability === "repeat" || entry.repeatability === "auto") score += 2;
     if (/road|asphalt|sidewalk|water|wall|roof|길|도로|보도|물|벽|지붕/.test(text)) score -= 5;
     if (score <= 0) continue;
     if (!best || score > best.score || (score === best.score && tile < best.tile)) best = { tile, score };
