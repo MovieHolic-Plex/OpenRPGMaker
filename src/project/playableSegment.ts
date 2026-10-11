@@ -19,7 +19,7 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
-import { paintStartRoute, routeStyleFor } from "@/project/startRoutePaint";
+import { paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -113,9 +113,13 @@ function openBlankStartOnConceptKit(ctx: { project: Project }, startId: string, 
   map.tilesetId = kit.id;
   map.tileSize = kit.tileSize;
   map.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
+  const size = startMapSizeFor(kit.id, plan);
+  if (size) tool(ctx, "resize_map", { mapId: startId, width: size.width, height: size.height });
+  const grown = ctx.project.maps[startId]!;
+  grown.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
   const ground = routeStyleFor(kit.id)?.ground;
   if (ground) {
-    try { tool(ctx, "fill_region", { mapId: startId, rect: { x: 0, y: 0, w: map.width, h: map.height }, material: ground }); } catch { /* 바탕은 장식이다 — 빈 칸 그대로 둔다 */ }
+    try { tool(ctx, "fill_region", { mapId: startId, rect: { x: 0, y: 0, w: grown.width, h: grown.height }, material: ground }); } catch { /* 바탕은 장식이다 — 빈 칸 그대로 둔다 */ }
   }
 }
 

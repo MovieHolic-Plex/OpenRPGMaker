@@ -1,0 +1,47 @@
+{
+  "title": "편의점 야간알바가 본 살인",
+  "presetId": "story-cutscene",
+  "screenSize": "wide",
+  "brief": {
+    "version": 1,
+    "presetId": "story-cutscene",
+    "answers": {
+      "experience": {
+        "label": "핵심 경험",
+        "question": "이 게임에서 플레이어가 느낄 것은?",
+        "text": "평범한 일상 공간에서 사소한 위화감을 파고드는 생활밀착 추리",
+        "source": "recommended"
+      },
+      "activity": {
+        "label": "주로 하는 일",
+        "question": "플레이어가 주로 하는 행동은?",
+        "text": "단골과 대화, 영수증·재고 대조, 골목 탐문",
+        "source": "recommended"
+      },
+      "progression": {
+        "label": "진행",
+        "question": "게임은 어떻게 앞으로 나아가나?",
+        "text": "단골 진술의 모순이 쌓이면 새 장소가 열리고 범인 지목",
+        "source": "recommended"
+      },
+      "detail": {
+        "label": "인물과 무대",
+        "question": "누가 어디에서?",
+        "text": "구매 목록과 시간표가 알리바이 증거가 된다",
+        "source": "recommended"
+      },
+      "scope": {
+        "label": "첫 제작 범위",
+        "question": "처음 만들 구간은?",
+        "text": "편의점·골목·옥상 세 맵",
+        "source": "recommended"
+      }
+    },
+    "summary": "컨셉: 편의점 야간알바가 본 살인 — 새벽 3시, CCTV에는 아무도 안 찍혔는데 계산대엔 피 묻은 영수증이 있었다.\n주인공: 야간알바 도하준\n무대: 일본풍 도시 골목의 24시간 편의점\n첫 장면: 새벽 3시, 계산대 아래에서 피 묻은 영수증이 나온다.\n타일셋: jp_city (이 공용 번들 타일셋으로 맵을 깐다)\n핵심 경험: 평범한 일상 공간에서 사소한 위화감을 파고드는 생활밀착 추리 (추천안)\n주로 하는 일: 단골과 대화, 영수증·재고 대조, 골목 탐문 (추천안)\n진행: 단골 진술의 모순이 쌓이면 새 장소가 열리고 범인 지목 (추천안)\n인물과 무대: 구매 목록과 시간표가 알리바이 증거가 된다 (추천안)\n첫 제작 범위: 편의점·골목·옥상 세 맵 (추천안)",
+    "concept": {
+      "slug": "the-murder-the-night-shift-clerk-saw-1rhj0h",
+      "title": "편의점 야간알바가 본 살인",
+      "hook": "새벽 3시, CCTV에는 아무도 안 찍혔는데 계산대엔 피 묻은 영수증이 있었다."
+    }
+  }
+}

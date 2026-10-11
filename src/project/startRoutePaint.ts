@@ -29,6 +29,16 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
   wizarding_world: { roadWidth: 2, road: "숲길 흙", yard: "성채 포석(오토타일)" },
 };
 
+/**
+ * 시작 맵 크기 — 컨셉의 칩셋으로 옮긴 빈 시작 맵(20×15)은 거리 한 줄·건물 한 채도 못 놓는다(2026-10-12 jp_city 도그푸딩: 조수가
+ * 건물 사각형이 맵 밖이라 build_jp_city_building 을 거절당했다). 칩셋마다 거리·마을 한 장이 서는 크기를 씨앗으로 조금 흔든다.
+ */
+export function startMapSizeFor(tilesetId: string, plan: StartPlan): { width: number; height: number } | undefined {
+  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : undefined;
+  if (!base) return undefined;
+  return { width: base.w + (plan.seed % 3) * 4, height: base.h + ((plan.seed >> 2) % 3) * 3 };
+}
+
 export function routeStyleFor(tilesetId: string): RouteStyle | undefined {
   return ROUTE_STYLES[tilesetId];
 }

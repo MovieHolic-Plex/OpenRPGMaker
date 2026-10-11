@@ -113,16 +113,33 @@ export function planStartForBrief(brief: GameDesignBrief | undefined, title: str
   return planStart({ seedText: startSeedText(brief, title), stageText: brief?.summary, tilesetHint: brief ? briefTilesetHint(brief.summary) : undefined });
 }
 
+/** 칩셋마다 시작 맵을 짓는 길(조수 시스템 프롬프트의 칩셋 지침과 같은 도구 이름). 버들항 도구 author_beodeul_town 은 다른 칩셋에서 쓰지 않는다. */
+const KIT_BUILD_LINES: Readonly<Record<string, string>> = {
+  jp_city: "일본 도시(jp_city): 큰길 하나와 골목을 fill_region·lay_path(생활도로·보도 연석·횡단보도)로 먼저 내고, 건물은 list_jp_city_building_parts → build_jp_city_building 으로 세우고(문 앞 접근칸 확보), 가게·집 안은 build_hand_interior_room({tileset:\"jp_city\"}) 또는 import_region_reference 로 짓고 link_jp_city_interior 로 문과 잇는다. 먼저 list_tileset_references → read_tileset_reference 로 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  joseon_baram: "조선(joseon_baram): 완성 장소를 먼저 쓴다 — list_spatial_designs({kind:\"place\", query:\"조선\"}) 로 마을·민가·주막 같은 장소를 찾아 import_region_reference 로 가져와 기획에 맞게 고친다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  wizarding_world: "마법 학교(wizarding_world): build_wizarding_space 로 성채 공간(복도·교실·기숙사 등)을 짓고 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+};
+
 /** AI 에게 주는 첫 장소 구상 블록. 보존 대상은 연결 계약뿐이고 맵 모양은 아니라는 것을 분명히 한다. */
 export function startPlanPrompt(plan: StartPlan): string {
+  const kit = KIT_BUILD_LINES[plan.tilesetId];
+  const common = [
+    "뼈대가 지키는 것은 「핵심 행동 → 문 → 길 → 구간 끝」의 연결뿐이다. 마을·거리의 모양·광장·십자 길·가운데 앵커는 보존 대상이 아니다. 문(시작 맵 동쪽 끝)과 길 맵 연결, 뼈대 이벤트 id 는 유지한다.",
+    "광장·십자 길·한가운데 건물을 기본으로 두지 않는다. 앵커(시작 NPC·핵심 건물)는 「왜 거기에 있는지」가 있는 자리에 둔다 — 물가·길목·언덕 위처럼 지형이 말해 주는 곳.",
+  ];
+  if (kit) {
+    return [
+      `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
+      `컨셉이 고른 칩셋은 ${plan.tilesetId} 이다. 시작 맵은 이미 그 칩셋의 빈 땅으로 열려 있고, 길 맵(${plan.routeW}×${plan.routeH}, 입구 줄 ${plan.entryY}, 구간 끝 줄 ${plan.endY})은 그 칩셋의 길·마당으로 깔려 있다. 이 칩셋 안에서 시작 맵을 짓는다.`,
+      kit,
+      `거리·마을의 형태 참고: ${START_FORM_LABEL[plan.form]}(길가 = 큰길 한 줄 양옆, 흩어진 = 골목과 빈터가 번갈아, 물가 띠 = 물가를 따라 긴 띠). 이 형태에서 시작해 기획의 무대에 맞게 바꾼다.`,
+      ...common,
+    ].join("\n");
+  }
   return [
     `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
     `코드가 이 기획에서 뽑은 첫 마을의 구상: ${START_THEME_LABEL[plan.theme]} · ${START_FORM_LABEL[plan.form]} · 지형 ${START_TERRAIN_LABEL[plan.terrain]}. 길 맵은 ${plan.routeW}×${plan.routeH}, 입구 줄 ${plan.entryY}, 구간 끝 줄 ${plan.endY}.`,
-    plan.prebuildTown
-      ? "시작 맵이 이미 이 구상대로 지어져 있으면(풀밭 한 장이 아니면) 먼저 읽고 그 위에서 기획에 맞게 고친다. 아직 빈 풀밭이면 이 구상으로 author_beodeul_town({theme, form, terrain, seed}) 를 불러 먼저 짓는다."
-      : "컨셉이 고른 타일셋이 따로 있다 — 이 구상은 마을의 형태(길가·흩어진·물가 띠)와 길 맵 크기의 참고로만 쓴다.",
-    "뼈대가 지키는 것은 「핵심 행동 → 문 → 길 → 구간 끝」의 연결뿐이다. 마을의 모양·광장·십자 길·가운데 앵커는 보존 대상이 아니다.",
-    "기획의 무대·분위기가 이 구상과 어긋나면 author_beodeul_town 의 theme/form/terrain 을 직접 골라 시작 맵을 다시 짓는다. 이때 문(시작 맵 동쪽 끝)과 길 맵 연결, 뼈대 이벤트 id 는 유지한다.",
-    "광장·십자 길·한가운데 건물을 기본으로 두지 않는다. 앵커(시작 NPC·핵심 건물)는 「왜 거기에 있는지」가 있는 자리에 둔다 — 물가·길목·언덕 위처럼 지형이 말해 주는 곳.",
+    "시작 맵이 이미 이 구상대로 지어져 있으면(풀밭 한 장이 아니면) 먼저 읽고 그 위에서 기획에 맞게 고친다. 아직 빈 풀밭이면 이 구상으로 author_beodeul_town({theme, form, terrain, seed}) 를 불러 먼저 짓는다. 기획의 무대·분위기가 구상과 어긋나면 theme/form/terrain 을 직접 골라 다시 짓는다.",
+    ...common,
   ].join("\n");
 }
