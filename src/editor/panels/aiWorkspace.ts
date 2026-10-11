@@ -8,13 +8,14 @@ import { createSideThreads } from "./aiSideThreads";
 const TAB_KEY = "oprn:ai-workspace-tab";
 type Tab = "chat" | "team";
 
-/** One live workspace, with each existing session/input kept mounted. */
 export function createAiWorkspace(options: {
   panel: HTMLElement; deck: HTMLElement; body: HTMLElement; commandBar: HTMLElement; outcome: HTMLElement;
   team: ReturnType<typeof createAiTeamSidebar>; input: HTMLTextAreaElement; requestOpen(): void; requestFold(): void;
+  showTeamUi?: boolean;
 }) {
+  const showTeamUi = options.showTeamUi !== false;
   let active: Tab = "chat";
-  try { if (localStorage.getItem(TAB_KEY) === "team") active = "team"; } catch { /* Local preference is optional. */ }
+  try { if (showTeamUi && localStorage.getItem(TAB_KEY) === "team") active = "team"; } catch { /* Local preference is optional. */ }
   let explicitTeam = false;
   let wide = false;
   let studio = false;
@@ -27,7 +28,7 @@ export function createAiWorkspace(options: {
   body.id = "ai-workspace-chat"; body.setAttribute("role", "tabpanel"); body.setAttribute("aria-labelledby", chatTab.id);
   team.root.id = "ai-workspace-team"; team.root.setAttribute("role", "tabpanel"); team.root.setAttribute("aria-labelledby", teamTab.id);
   team.setEmbedded(true);
-  tabs.append(teamTab, chatTab);
+  tabs.append(...(showTeamUi ? [teamTab, chatTab] : [chatTab]));
   body.before(tabs);
   body.after(team.root);
   const logs = createWorkspaceLogs(() => team.getLogSelection(), () => options.requestOpen());
@@ -67,25 +68,31 @@ export function createAiWorkspace(options: {
     starter.hidden = !empty || studio;
     panel.classList.toggle("has-workspace-starter", empty && !studio);
     const showChat = wide || studio || active === "chat";
-    const showTeam = !studio && (wide || active === "team");
+    const showTeam = showTeamUi && !studio && (wide || active === "team");
     body.hidden = !showChat; body.inert = !showChat;
     team.root.hidden = !showTeam; team.root.inert = !showTeam;
     commandBar.hidden = !showChat && !team.root.querySelector<HTMLElement>(".ai-team-member-detail")?.hidden;
     commandBar.inert = commandBar.hidden;
     outcome.hidden = !showChat;
-    // 대화 화면에서는 탭이 없다 — 받은함 + 대화 한 화면. 조수 상세는 상태 줄 팝오버의 「조수 상세」로 들어오고, 거기서 탭으로 돌아간다.
-    tabs.hidden = wide || studio || active === "chat";
+    // 대화 화면에서는 탭이 없다 — 받은함 + 대화 한 화면. 조수 상세는 상태 줄 팝오버의 「조수 상세」로 들어오고, 거기서 탭으로 돌아온다.
+    tabs.hidden = !showTeamUi || wide || studio || active === "chat";
     panel.dataset.workspaceTab = active;
     chatTab.setAttribute("aria-selected", String(active === "chat"));
     teamTab.setAttribute("aria-selected", String(active === "team"));
     chatTab.tabIndex = active === "chat" ? 0 : -1;
-    teamTab.tabIndex = active === "team" ? 0 : -1;
+    teamTab.tabIndex = teamTab.isConnected && active === "team" ? 0 : -1;
     teamTab.textContent = count ? `조수 ${count}` : "조수";
   };
   const select = (tab: Tab, remember = true) => {
+    if (tab === "team" && !showTeamUi) {
+      active = "chat";
+      explicitTeam = false;
+      sync();
+      return;
+    }
     active = tab;
     explicitTeam = tab === "team";
-    if (remember) try { localStorage.setItem(TAB_KEY, tab); } catch { /* Preference only. */ }
+    if (remember) try { localStorage.setItem(TAB_KEY, tab); } catch { /* Local preference is optional. */ }
     if (tab === "team") team.openFirstMember();
     sync();
   };
@@ -98,9 +105,9 @@ export function createAiWorkspace(options: {
     (active === "chat" ? chatTab : teamTab).focus();
   });
   const onMember = () => { sync(); logs.refreshSelection(); };
-  const onTeam = () => { options.requestOpen(); select("team", false); };
+  const onTeam = () => { if (showTeamUi) { options.requestOpen(); select("team", false); } };
   const onMap = () => options.requestFold();
-  const onOpenTeam = () => { options.requestOpen(); select("team"); };
+  const onOpenTeam = () => { if (showTeamUi) { options.requestOpen(); select("team"); } };
   const onOpenChat = () => { options.requestOpen(); select("chat", false); };
   window.addEventListener("oprn:ai-open-team", onOpenTeam);
   window.addEventListener("oprn:ai-open-chat", onOpenChat);
