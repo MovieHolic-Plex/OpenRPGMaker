@@ -66,11 +66,11 @@ for (const { theme, form, terrain, seed, size } of plan) {
     const row = { name, ...reach, ok: true, ms: Date.now() - t0, form: d.form, gathering: d.gathering, houses: d.houses, distinct: d.distinctHouses,
       doors: doors.length, unreached: doors.filter((x) => !x.reached).length, deadCells: cf.deadEnds.filter((x) => x.kind === "cell").length,
       deadStreets: cf.deadEnds.filter((x) => x.kind === "street").length,
-      longStraight: cf.lines.longStraight.map((l) => `${l.orient}${l.len}@${l.from.join(",")}`), isolated: cf.graph.isolated.length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
+      longest: cf.lines.longestLen, longStraight: cf.lines.longStraight.map((l) => `${l.orient}${l.len}@${l.from.join(",")}`), isolated: cf.graph.isolated.length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
       stampFailed: d.stampFailed, terrain: d.terrain, relief: d.relief,
       stairs: (map.relief?.ramps ?? []).filter((v) => v >= 5 && v <= 8).length, warnings: ((r as any).diff?.warnings ?? r.warnings ?? []), summary: r.summary };
     rows.push(row);
-    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, terrain: d.terrain, lv: d.relief?.levels, ramps: d.relief?.ramps, rfail: d.relief?.fails, cut: d.relief?.cuts, straddle: d.relief?.straddle, offRoad: d.relief?.rampsOffRoad, rim: d.relief?.roadOnRim, stairs: row.stairs, upMiss: reach.upMiss, gateMiss: reach.gateMiss, reach1: reach.reach1, reach2: reach.reach2, gate2: reach.gate2, up2: reach.up2, warn: (((r as any).diff?.warnings ?? r.warnings ?? [])).length }));
+    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, longest: row.longest, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, terrain: d.terrain, lv: d.relief?.levels, ramps: d.relief?.ramps, rfail: d.relief?.fails, cut: d.relief?.cuts, straddle: d.relief?.straddle, offRoad: d.relief?.rampsOffRoad, rim: d.relief?.roadOnRim, stairs: row.stairs, upMiss: reach.upMiss, ...(d.upperLost ? { lost: d.upperLost } : {}), gateMiss: reach.gateMiss, reach1: reach.reach1, reach2: reach.reach2, gate2: reach.gate2, up2: reach.up2, warn: (((r as any).diff?.warnings ?? r.warnings ?? [])).length }));
   }
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));

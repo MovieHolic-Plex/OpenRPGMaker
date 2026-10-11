@@ -413,10 +413,16 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const yAt = (s: Street, x: number): number | null => { for (let y = 0; y < H; y += 1) if (s.cells.has(idx(x, y))) return y; return null; };
 
   /** x0→x1 구간에 12~16칸마다 열쇠점, 높이는 yBase ± 1~amp 로 번갈아(곧은 길 45칸 넘지 않게). 끝점 높이는 고정할 수 있다. */
-  const wavy = (x0: number, x1: number, yBase: number, amp: number, yStart?: number, yEnd?: number): [number, number][] => {
+  // tight: 고정한 끝(다리 앞뒤처럼 yBase 로 곧은 끝) 바로 옆 열쇠점을 12칸 거리·높이 차 amp 로 둔다 — 폭 2 길은 한 줄만 어긋나면 윗줄·아랫줄이
+  // 이어져 곧은 줄로 남고, 열쇠점 차는 easeKeys 가 가로 거리 1/6 로 묶는다. 다리 앞뒤 곧은 길과 이웃 구간이 이어져 45칸 곧은 큰길이 났다(강가 88×56 seed 7).
+  // tight 를 안 주면 예전과 같은 난수열·같은 결과.
+  const wavy = (x0: number, x1: number, yBase: number, amp: number, yStart?: number, yEnd?: number, tight = false): [number, number][] => {
     const keys: [number, number][] = []; let sg = rand() < 0.5 ? 1 : -1;
     keys.push([x0, yStart ?? yBase + sg * ri(1, amp)]);
-    for (let x = x0 + ri(12, 16); x < x1 - 8; x += ri(12, 16)) { sg = -sg; keys.push([x, yBase + sg * ri(1, amp)]); }
+    const tS = tight && yStart !== undefined, tE = tight && yEnd !== undefined;
+    if (tS && x1 - x0 >= 20) { sg = -sg; keys.push([x0 + 12, yBase + sg * amp]); }
+    for (let x = keys[keys.length - 1]![0] + ri(12, 16); x < x1 - (tE ? 20 : 8); x += ri(12, 16)) { sg = -sg; keys.push([x, yBase + sg * ri(1, amp)]); }
+    if (tE && x1 - 12 - keys[keys.length - 1]![0] >= 8) { sg = -sg; keys.push([x1 - 12, yBase + sg * amp]); }
     keys.push([x1, yEnd ?? yBase - sg * ri(1, amp)]);
     return keys;
   };
@@ -440,7 +446,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   } else if (riverX >= 0) {
     // 다리 앞뒤(강 왼쪽 4칸 ~ 오른쪽 7칸)는 곧게
     const yc = yMainBase;
-    mainKeys = [...wavy(0, riverX - 4, yc, 2, undefined, yc), ...wavy(riverX + 7, W - 1, yc, 2, yc)];
+    mainKeys = [...wavy(0, riverX - 4, yc, 2, undefined, yc, true), ...wavy(riverX + 7, W - 1, yc, 2, yc, undefined, true)];
   } else {
     mainKeys = wavy(0, W - 1, yMainBase, 3);
   }
@@ -603,8 +609,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 물가 길: 해안선 3칸 위를 따라 동서로(곶 앞에서 멈춤)
     const keys: [number, number][] = [];
     // 열쇠점 12칸마다, 물가에서 3~4칸 위로 번갈아(물가를 따라 굽고 45칸 넘게 곧지 않게)
-    for (let x = 0, k = 0; x <= W - 12; x += 12, k += 1) keys.push([x, Math.min(...shoreY.slice(Math.max(0, x - 6), x + 7)) - 3 - (k % 2)]);
-    keys.push([W - 10, Math.min(...shoreY.slice(W - 13, W - 7)) - 3]);
+    // 이웃 열쇠점이 같은 높이면(물가가 한 칸 물러난 자리에서 -3/-4 번갈이가 상쇄) 한 칸 더 올린다 — 88×56 seed 11 에서 47~51칸 곧은 물가 길이 났다
+    const pushKey = (x: number, y: number) => { const prev = keys[keys.length - 1]; keys.push([x, prev && prev[1] === y ? y - 1 : y]); };
+    for (let x = 0, k = 0; x <= W - 12; x += 12, k += 1) pushKey(x, Math.min(...shoreY.slice(Math.max(0, x - 6), x + 7)) - 3 - (k % 2));
+    pushKey(W - 10, Math.min(...shoreY.slice(W - 13, W - 7)) - 3);
     south = hStreet("물가 길", keys, lanesWidth); markStreet(south);
     connect("포구 길", Math.round(W * 0.5) + ri(-4, 4), main, south);
     connect("포구 길", ri(4, 8), main, south);
@@ -937,10 +945,10 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const cand = have(spec.anchors).filter((id) => K(id).door);
     const order = cand.map((id) => ({ id, r: rand() })).sort((a, b) => a.r - b.r).map((o) => o.id);
     let done = false;
-    // 가까운 자리부터, 안 되면 ±10칸까지(길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
+    // 가까운 자리부터, 안 되면 ±16칸까지(계단식 비탈 물가 띠 88×56 seed 11 은 ±10 안이 다 단 경계였다 — 길가 집 띠가 지형·물에 좁아진 마을에서 앵커를 놓치지 않게 — 앞 자리에서 찾으면 결과는 그대로)
     // 길에 바로 붙일 자리가 없으면 1~2칸 물러앉히고 문 앞을 길로 잇는다(굽은 길이 집 밑으로 파고드는 자리·좁은 집 띠) — 바로 붙는 자리를 다 본 뒤에만
     for (const setback of [0, 1, 2]) {
-      for (const off of [0, -2, 2, -4, 4, -6, 6, -8, 8, -10, 10]) {
+      for (const off of [0, -2, 2, -4, 4, -6, 6, -8, 8, -10, 10, -13, 13, -16, 16]) {
         for (const id of order) {
           const k = K(id); const d = k.door!; const fx = gather.x + off; const top = yAt(gather.s, fx) ?? -1;
           if (top < 0) continue;
@@ -1855,11 +1863,15 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   };
   // 갇힌 빈터 열기(2026-10-11 「고립을 방지하라」): 높은 단 위 걸을 수 있는 칸이 집 뒤·나무 사이에 갇혀 입구에서 못 닿으면,
   // 그 빈터와 닿는 쪽 사이를 막은 나무·덤불·소품(기록하지 않은 찍기) 중 가장 작은 것을 걷어 낸다(찍기 전 네 층과 그 그림자를 되돌린다). 없어질 때까지.
+  // 집·큰 건물 키트 사각형 안의 투명 귀퉁이 칸(박공 지붕 위 모서리)은 지붕 그림에 속한다 — 단 위 땅으로 세지 않는다
+  // (실측: 포구 길가 88×56 seed 11 — 오르막 바로 옆 집 지붕 귀퉁이 한 칸이 절벽·경사로 옆구리·지붕에 둘러싸여 「못 닿는 단 위 칸」으로 셌다)
+  const bldRect = new Set<number>();
+  for (const st of stamps) if (st.v === BLD) { const k = kitIndex.get(st.kit); if (k) for (let j = 0; j < k.h; j += 1) for (let i = 0; i < k.w; i += 1) if (inMap(st.x + i, st.y + j)) bldRect.add(idx(st.x + i, st.y + j)); }
   let opened = 0;
   if (m.relief) for (let it = 0; it < 60; it += 1) {
     const seen = reachMap();
     const lost = new Set<number>();
-    for (let c = 0; c < W * H; c += 1) if (!seen[c] && lv[c]! > 0 && !fenceInside.has(c) && walk(c % W, Math.floor(c / W))) lost.add(c);
+    for (let c = 0; c < W * H; c += 1) if (!seen[c] && lv[c]! > 0 && !fenceInside.has(c) && !bldRect.has(c) && walk(c % W, Math.floor(c / W))) lost.add(c);
     if (!lost.size) break;
     // 닿는 칸에서 갇힌 칸까지, 걷어 낼 찍기를 가장 적게 지나는 길(0-1 BFS: 빈 땅 0, 걷어 낼 찍기에 들어갈 때 1)
     const owner = new Map<number, Stamp>();
@@ -1906,9 +1918,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const gatesUnreached = gateInfo.filter((g) => !g.reached);
   if (gatesUnreached.length) warnings.push(`입구에서 닿지 않는 울타리 문 ${gatesUnreached.length}곳: ${gatesUnreached.slice(0, 4).map((g) => `(${g.x},${g.y}) ${g.level}단`).join(", ")}`);
   const levelReach: Record<string, { walk: number; reached: number }> = {};
+  const upperLost: { x: number; y: number; level: number }[] = []; // 못 닿는 높은 단 칸(앞 8개) — 프로브가 자리를 짚는다
   if (hasTerrain) for (let c = 0; c < W * H; c += 1) {
-    const L = lv[c]!; if (L === 0 || fenceInside.has(c) || !walk(c % W, Math.floor(c / W))) continue;
+    const L = lv[c]!; if (L === 0 || fenceInside.has(c) || bldRect.has(c) || !walk(c % W, Math.floor(c / W))) continue;
     const e = (levelReach[L] ??= { walk: 0, reached: 0 }); e.walk += 1; if (seen[c]) e.reached += 1;
+    else if (upperLost.length < 8) upperLost.push({ x: c % W, y: Math.floor(c / W), level: L });
   }
 
   const distinct = new Set(placedHouses.map((h) => h.id)).size;
@@ -1930,7 +1944,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       gathering: { why: gather.why, ...(gatherDoor ? { door: gatherDoor } : {}) }, fenceCells: fenceAt.size, ...(ferry ? { ferry } : {}),
       anchors, work: workAt, houses: placedHouses.length, distinctHouses: distinct,
       doors: doorFronts.map((d) => ({ kit: d.kit, x: d.x, y: d.y, reached: !!seen[idx(d.x, d.y)] })),
-      fenceGates: gateInfo, levelReach, opened,
+      fenceGates: gateInfo, levelReach, ...(upperLost.length ? { upperLost } : {}), opened,
       ...(bridge ? { bridge } : {}), ...(millBridge ? { millBridge } : {}), fields, trees: treeCount, filler, stamped, stampFailed: failed, nature: natureStats,
       terrain: terrain.name, ...(requestedTerrain !== null ? { requestedTerrain, terrainSwapped } : {}), ...(reliefInfo ? { relief: reliefInfo } : {}),
       upper: climbs.map((cl) => ({ level: cl.level, lanes: cl.lanes, path: cl.path, to: cl.to, use: cl.use, ...(cl.lookout ? { lookout: cl.lookout } : {}),
