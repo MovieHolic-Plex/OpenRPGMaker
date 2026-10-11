@@ -19,7 +19,7 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
-import { paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
+import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -120,6 +120,14 @@ function openBlankStartOnConceptKit(ctx: { project: Project }, startId: string, 
   const ground = routeStyleFor(kit.id)?.ground;
   if (ground) {
     try { tool(ctx, "fill_region", { mapId: startId, rect: { x: 0, y: 0, w: grown.width, h: grown.height }, material: ground }); } catch { /* 바탕은 장식이다 — 빈 칸 그대로 둔다 */ }
+  }
+  const style = routeStyleFor(kit.id);
+  if (style && !style.noMainStreet) {
+    // 큰길: 시작 칸 줄을 가로질러 동쪽 문까지. 보도 연석 같은 장식은 못 칠해도 건너뛰고, 길 자체는 필수다.
+    paintMainStreet((rect, material, optional) => {
+      try { tool(ctx, "fill_region", { mapId: startId, rect, material }); }
+      catch (error) { if (!optional) throw error; }
+    }, style, { width: grown.width, height: grown.height }, ctx.project.startPos.y);
   }
 }
 

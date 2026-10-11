@@ -17,6 +17,8 @@ export interface RouteStyle {
   readonly yard: string;
   /** 맵 바탕 재료. 칩셋의 「빈 칸」 타일이 잔디가 아닐 때(일본 도시는 흙색 자갈) 길 맵·시작 맵을 이 재료로 먼저 덮는다. 없으면 빈 칸 그대로. */
   readonly ground?: string;
+  /** true 면 시작 맵에 큰길을 깔지 않는다(성채 실내 같은 칩셋은 «거리» 가 아니다). */
+  readonly noMainStreet?: boolean;
   /** 길 양옆 띠(보도 연석 같은 것). 없으면 생략. 못 칠하면 조용히 건너뛴다(장식이다). */
   readonly edge?: string;
 }
@@ -26,7 +28,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
   beodeul_city: { roadWidth: 2, road: "버들항 길 포석", yard: "버들항 광장 판석" },
   jp_city: { roadWidth: 3, ground: "잔디", road: "생활도로", yard: "판석 광장", edge: "보도 연석" },
   joseon_baram: { roadWidth: 2, road: "조선 흙길", yard: "조선 마당" },
-  wizarding_world: { roadWidth: 2, road: "숲길 흙", yard: "성채 포석(오토타일)" },
+  wizarding_world: { roadWidth: 2, noMainStreet: true, road: "숲길 흙", yard: "성채 포석(오토타일)" },
 };
 
 /**
@@ -71,4 +73,18 @@ export function paintStartRoute(fill: Fill, style: RouteStyle, plan: StartPlan, 
   fill({ x: yardX, y: yardY, w: yardW, h: yardH }, style.yard);
   // 끝 이벤트 칸(W-2, endY)이 마당 밖이면 길로 덮는다.
   fill({ x: W - 2, y: y2, w: 1, h: 1 }, style.road);
+}
+
+/**
+ * 시작 맵의 큰길 — 시작 칸 줄을 서쪽 끝에서 동쪽 끝(문)까지 가로지르는 길 한 줄. 컨셉 칩셋으로 옮긴 빈 시작 맵에 AI 가 건물을 앉힐 기준선이다.
+ * 빈 땅 한 장에서 시작하면 조수가 거리의 뼈대부터 다시 짜야 해서 칩셋 도구(건물 조립·길 키트)를 쓰기 전에 턴이 끝난다.
+ */
+export function paintMainStreet(fill: Fill, style: RouteStyle, size: { width: number; height: number }, rowY: number): void {
+  const w = style.roadWidth;
+  const y0 = Math.max(1, Math.min(size.height - w - 1, rowY - Math.floor(w / 2)));
+  if (style.edge) {
+    fill({ x: 0, y: y0 - 1, w: size.width, h: 1 }, style.edge, true);
+    fill({ x: 0, y: y0 + w, w: size.width, h: 1 }, style.edge, true);
+  }
+  fill({ x: 0, y: y0, w: size.width, h: w }, style.road);
 }
