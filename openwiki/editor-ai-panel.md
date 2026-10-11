@@ -1279,6 +1279,22 @@ or truncated verdicts and cancellation never count as approval. Draft changes st
 Negative/unavailable reviews keep the existing manual proposal card even in auto-apply mode;
 only all-positive review allows automatic application. Findings appear in chat and the board log.
 
+### 수리는 한 바퀴 + 전후 대결로 되돌림 (2026-10-11)
+
+auto 모드의 조화 검수 수리는 **한 바퀴**(`HARMONY_REPAIR_ROUNDS = 1`, `src/ai/ultrabrainReview.ts`)다. 예전엔 2회였다.
+수리 직후 재검수와 함께 `compareMapVersions(preRepair, repaired, 수리가 바꾼 맵들)` 가 맵마다 **수리 전 판과 수리 뒤 판 두 장**을
+A/B(맵 id 해시로 자리 고정 섞기)로 보여 주고 `{"winner":"A"|"B"|"same","reason"}` 만 묻는다. 한 맵이라도 이전 판이 이기면
+`merged.project` 를 수리 전으로 되돌리고(라이브 게시분은 `publication.publish({toolName:"revert_harmony_repair"})` 로 되돌림 게시),
+검수 결과도 수리 전 것으로 돌린다 — 지적은 「더 다듬을 곳」으로 남는다. 비교 호출이 실패하면 되돌리지 않고 과정 줄만 남긴다.
+판정은 보드에 `ultrabrain-compare-<mapId>` review 행으로 남는다.
+
+근거(2026-10-10~11 마을 실험, 보고서 `claude-viz/autonomous-loop-2.html`): 독립 검수 → 수리를 바퀴마다 순서 감춘 심판에게 물었더니
+1차 수리판은 6/7 이겼고 2차 수리판은 0/2 — 결함 지적(대칭·설정 밖 건물·축 어긋남)을 그대로 따르면 장소의 얼굴이 빠졌다.
+또 같은 검수자에게 사용자가 고른 견본을 몰래 보이면 5/10 을 줘서, 절대 점수로는 개선을 못 잰다 → 점수 대신 대결.
+`HARMONY_SYSTEM_PROMPT` 도 같은 실험으로 보강했다: 중심 광장·십자 길·대칭 축을 요구하지 않고(앵커는 이유 있는 자리면 된다),
+기억에 남는 장면·넓은 면의 쓰임·집 사이 수풀·토막 울타리·막다른 길 토막을 본다.
+계약: `test/piAgentRunOutcome.test.ts` 「AUTO repairs once」·「AUTO reverts the repair …」.
+
 ### 검수 응답 재시도와 정직한 보고 (2026-09-16)
 
 두 검수 호출(Vision 관찰 · Ultrabrain 판정)은 **쓸 수 있는 응답을 받을 때까지 최대 2회** 묻는다

@@ -22,7 +22,7 @@ import { executionRoleFor } from "@/ai/buildRole";
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
-import { reviewMapHarmony, unresolvedReviewSignature } from "@/ai/ultrabrainReview";
+import { compareMapVersions, HARMONY_REPAIR_ROUNDS, reviewMapHarmony, unresolvedReviewSignature } from "@/ai/ultrabrainReview";
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
@@ -831,11 +831,14 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       }));
       harmonyApproved = reviews.every(review => review.harmonious);
       // AUTO owns bounded repair; unresolved changes never masquerade as reviewed success.
-      for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < 2; attempt++) {
+      for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < HARMONY_REPAIR_ROUNDS; attempt++) {
         surface.signal?.throwIfAborted();
         const before = unresolvedReviewSignature(reviews);
         const repairBase = publication.count ? publication.project : merged.project;
-        surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
+        // 수리 전 판 — 전후 비교에서 지면 이 판으로 돌아간다(라이브 게시분 포함).
+        const prePublished = publication.project;
+        const preReviews = reviews;
+        surface.setStatus(HARMONY_REPAIR_ROUNDS > 1 ? `AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/${HARMONY_REPAIR_ROUNDS}).` : "AI가 검수 문제를 수정하고 있어요.");
         const repaired = await stage("review", () => runPiAgentViaCompanion({
           mode: "single", provider: deep.provider, model: deep.model, project: repairBase, projectKey,
           mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
@@ -855,7 +858,35 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
             .filter(key => key.startsWith("maps."))
             .map(key => key.slice("maps.".length)),
         ]);
-        const fresh = await stage("review", () => reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck }));
+        // 재검수와 함께 «수리 전 판 vs 수리 뒤 판» 을 맵마다 나란히 묻는다. 고친 판이 지면 수리를 통째로 되돌린다 —
+        // 결함 지적을 따르다 장소의 얼굴을 깎는 일이 잦았다(2026-10-11 실험, HARMONY_REPAIR_ROUNDS 주석).
+        const repairedMaps = new Set(changedProjectKeys(preRepair, merged.project)
+          .filter(key => key.startsWith("maps.")).map(key => key.slice("maps.".length)));
+        const [fresh, verdicts] = await Promise.all([
+          stage("review", () => reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck })),
+          repairedMaps.size
+            ? stage("review", () => compareMapVersions(preRepair, merged.project, repairedMaps, command.task, config, { signal: surface.signal }))
+              .catch((error: unknown) => {
+                if (surface.signal?.aborted) throw error;
+                surface.appendProcess?.(`전후 비교를 하지 못해 고친 판을 그대로 둡니다 — ${error instanceof Error ? error.message : String(error)}`);
+                return [];
+              })
+            : Promise.resolve([]),
+        ]);
+        const worse = verdicts.filter(verdict => verdict.winner === "before");
+        for (const verdict of verdicts) {
+          push({ type: "review", agentId: `ultrabrain-compare-${verdict.mapId}`, mapId: verdict.mapId, ok: verdict.winner !== "before", findings: [`전후 비교: ${verdict.winner === "after" ? "고친 판이 낫다" : verdict.winner === "before" ? "이전 판이 낫다" : "비슷하다"} — ${verdict.reason}`] });
+        }
+        if (worse.length) {
+          merged = { ...merged, project: preRepair };
+          reviews = preReviews;
+          harmonyApproved = reviews.every(review => review.harmonious);
+          surface.appendProcess?.(`고친 판이 더 나빠 보여 이전 판으로 되돌렸어요 — ${worse.map(v => `${merged.project.maps[v.mapId]?.name ?? v.mapId}: ${v.reason}`).join(" / ")}`);
+          if (publication.count && changedProjectKeys(prePublished, publication.project).length) {
+            await stage("checkpoint", () => publication.publish({ project: prePublished, label: "수리 되돌림", toolName: "revert_harmony_repair", spatialProof: exportSpatialToolProof(prePublished) }));
+          }
+          break;
+        }
         reviews = [...reviews.filter(review => !recheck.has(review.mapId)), ...fresh];
         harmonyApproved = reviews.every(review => review.harmonious);
         // 수리가 지적을 한 글자도 못 바꿨으면 다음 라운드도 못 바꾼다 — 같은 값을 내려고
