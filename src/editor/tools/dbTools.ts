@@ -2317,6 +2317,9 @@ const setTitleScreen: ToolDefinition = {
       }
     }
 
+    // 키아트(title_art_*)는 배경 전용 — 이전 판이 로고 그림으로 남아 있으면 배경이 왼쪽 위에 작게 중복된다.
+    if (current.titleGraphic?.resourceId && /^title_art_/u.test(current.titleGraphic.resourceId)) delete current.titleGraphic;
+
     if ("backgroundLayers" in args) {
       const layers = parseTitleBackgroundLayers(args.backgroundLayers);
       if (layers.length === 0) delete current.backgroundLayers;
