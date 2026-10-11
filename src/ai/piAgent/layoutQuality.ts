@@ -211,8 +211,10 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
     const problems = layoutProblems(stats);
+    const relief = map.relief;
+    const hasRamp = relief?.ramps?.some((v) => v >= 1 && v <= 8) ?? false;
     if (problems.length) issues.push({ mapId, stats, problems, ...(roomSpecOf(project.tilesets[map.tilesetId]) ? { interior: true } : {}),
-      ...(map.relief && (hasRelief(map.relief) || map.relief.ramps?.some((v) => v >= 1 && v <= 8)) ? { relief: true } : {}) });
+      ...(relief && (hasRelief(relief) || hasRamp) ? { relief: true } : {}) });
   }
   return issues;
 }

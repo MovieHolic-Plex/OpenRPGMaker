@@ -10,7 +10,7 @@ import { rejectSettlementPropOnRoute } from "./routePropPolicy";
 import { ToolError, type ToolDefinition } from "./types";
 
 type Layers = "both" | "lower" | "upper";
-type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"] };
+type Resolved = { name: string; source: TilesetDef; pattern: StampPattern; assets: Project["assets"]["uploaded"]; defaultLayers: Layers; entrances?: StructureKitDef["parts"]; kit?: StructureKitDef };
 
 const fail = (message: string): never => { throw new ToolError(message, { code: "invalid-args" }); };
 
