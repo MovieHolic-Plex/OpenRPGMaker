@@ -51,7 +51,7 @@ let host: HTMLElement | null = null;
 let disposers: (() => void)[] = [];
 const blankUpload = (): UploadForm => ({ picked: new Set(), title: "", summary: "", description: "", tags: "", kind: "tileset", license: "OPRN-GAME", ai: "", credits: "", target: "", agree: false });
 const state: State = {
-  tab: "browse", status: null, error: null, query: { q: "", kind: "", grade: "", sort: "", page: 1 }, catalog: null, loading: false,
+  tab: "browse", status: null, error: null, query: { q: "", kind: "", grade: "", sort: "popular", page: 1 }, catalog: null, loading: false,
   selected: null, detail: null, installed: [], latest: new Map(), busy: new Map(), login: null, mine: null,
   upload: blankUpload(), uploadResult: null, uploadError: null, urlEditing: false,
 };
@@ -64,6 +64,12 @@ export function openAssetStore(tab: Tab = state.tab): void {
   closeAssetStore();
   const bridge = storeBridge();
   state.tab = tab;
+  if (tab === "browse") {
+    state.query.sort = "popular";
+    state.query.page = 1;
+    state.selected = null;
+    state.detail = null;
+  }
   host = el("div", { class: "store-host", dataset: { testid: "store-host" }, on: { click: (event) => { if (event.target === host) closeAssetStore(); } } });
   document.body.append(host);
   document.addEventListener("keydown", onKeydown);
@@ -364,7 +370,11 @@ function browseView(): HTMLElement {
   const items = state.catalog?.items ?? [];
   const plain = !state.query.q && !state.query.kind && !state.query.grade && state.query.page === 1;
   const featured = plain ? items.find((item) => item.grade === "pack" && item.cover) ?? null : null;
-  const heading = state.query.q ? `「${state.query.q}」 결과` : state.query.kind && (STORE_ITEM_KINDS as readonly string[]).includes(state.query.kind) ? kindName(state.query.kind as StoreItemKind) : "모든 에셋";
+  const heading = state.query.q
+    ? `「${state.query.q}」 결과`
+    : state.query.kind && (STORE_ITEM_KINDS as readonly string[]).includes(state.query.kind)
+      ? kindName(state.query.kind as StoreItemKind)
+      : state.query.sort === "popular" ? "인기 에셋" : "최신 에셋";
   const sortChip = (label: string, active: boolean, sort: "" | "popular") => el("button", {
     class: "store-chip" + (active ? " is-on" : ""), text: label, attrs: { type: "button", "aria-pressed": String(active) }, on: { click: () => setQuery({ sort }) },
   });

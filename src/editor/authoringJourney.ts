@@ -1,4 +1,4 @@
-import { projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import type { ProjectChangeDescriptor } from "@/project/store";
@@ -66,15 +66,21 @@ export function emptyAuthoringJourneyProgress(): AuthoringJourneyProgress {
   };
 }
 
+const projectFingerprints = new WeakMap<Project, string>();
+
 /** Stable evidence key for the committed authored project, excluding open event drafts. */
 export function authoringProjectFingerprint(project: Project): string {
-  const source = serialize(projectWithoutEventDrafts(project));
+  const cached = projectFingerprints.get(project);
+  if (cached !== undefined) return cached;
+  const source = serialize(projectViewWithoutEventDrafts(project));
   let hash = 0x811c9dc5;
   for (let index = 0; index < source.length; index += 1) {
     hash ^= source.charCodeAt(index);
     hash = Math.imul(hash, 0x01000193);
   }
-  return `v1:${(hash >>> 0).toString(16).padStart(8, "0")}:${source.length}`;
+  const fingerprint = `v1:${(hash >>> 0).toString(16).padStart(8, "0")}:${source.length}`;
+  projectFingerprints.set(project, fingerprint);
+  return fingerprint;
 }
 
 export function evaluateAuthoringJourney(

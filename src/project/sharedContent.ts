@@ -11,6 +11,8 @@ let defaultAssetHashes = new Map<string,string>();
 /** 기본 자산 id → 센 글과 그 바이트 해시. 같은 글을 다시 설치할 때 세지 않는다. */
 let defaultAssetHashSources = new Map<string,{ readonly dataUrl: string; readonly sha: string }>();
 let snapshotScope: SharedContentScope | null = null;
+const inFlightLoads = new Map<SharedContentScope, Promise<void>>();
+class SharedContentNotFoundError extends Error {}
 export const sharedContentSnapshot = () => snapshot;
 const installWaiters = new Set<() => void>();
 /**
@@ -84,36 +86,54 @@ export function sharedContentTileset(id: string): TilesetDef | undefined {
  */
 export async function loadSharedContent(options: { required?: boolean; scope?: SharedContentScope } = {}): Promise<void> {
   if(typeof window==='undefined') return;
+  const scope=options.scope ?? 'all';
   try {
-    const scope=options.scope ?? 'all';
-    // 판본(ETag)을 기기 캐시와 비교한다. 같으면 호스트가 본문 없이 304 를 주고 캐시를 쓴다 — 예전 no-store 는
-    // 공용 자료가 그대로여도 부팅마다 gzip 73MB 를 다시 받았다(2026-09-27 실측). HTTP 캐시는 본문이 커서 안 남는다.
-    const cached=await readSharedContentCache(scope);
-    const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}`,{cache:'no-store',headers:cached?{'if-none-match':cached.etag}:{},signal:AbortSignal.timeout(60000)});
-    let value: SharedContentSnapshot;
-    if(r.status===304 && cached) value=cached.value;
-    else {
-      if(!r.ok) { if(r.status===404 && !options.required) return; throw new Error(`HTTP ${r.status}`); }
-      value=await r.json() as SharedContentSnapshot;
-      const etag=r.headers.get('etag');
-      if(etag) void writeSharedContentCache(scope, etag, value);
-    }
-    // 부팅 뒤 늦게 도착한 기본 범위 응답이 이미 설치된 전체 카탈로그를 덮지 않게 한다.
-    if(scope==='defaults' && snapshotScope==='all') return;
-    // 'rest' 는 기본 라이브러리를 뺄 나머지다 — 이미 설치된 같은 판본의 기본과 합쳐야 전체가 된다.
-    // 판본이 다르면(그 사이 게시됨) 합칠 수 없으므로 전체를 다시 받는다.
-    if(scope==='rest') {
-      if(snapshotScope!=='defaults' || snapshot.revision!==value.revision) { await loadSharedContent({ ...options, scope:'all' }); return; }
-      await installSharedContent({ revision:value.revision, libraries:{ ...snapshot.libraries, ...value.libraries } });
-      snapshotScope='all';
-      return;
-    }
-    await installSharedContent(value);
-    snapshotScope=scope;
+    await loadSharedContentRaw(scope);
   } catch(error) {
+    if(error instanceof SharedContentNotFoundError && !options.required) return;
     if(options.required) throw new Error('공용 자료를 불러오지 못해 새 프로젝트 생성을 중단했습니다. 다시 시도해 주세요.', { cause: error });
     console.warn('공용 SQLite 자료를 불러오지 못했습니다.',error);
   }
+}
+
+function loadSharedContentRaw(scope: SharedContentScope): Promise<void> {
+  if(scope==='all' && snapshotScope==='all') return Promise.resolve();
+  if(scope==='defaults' && (snapshotScope==='defaults' || snapshotScope==='all')) return Promise.resolve();
+  if(scope==='rest' && snapshotScope==='all') return Promise.resolve();
+  const existing = inFlightLoads.get(scope);
+  if(existing) return existing;
+  const promise = loadSharedContentScope(scope).finally(() => {
+    if(inFlightLoads.get(scope) === promise) inFlightLoads.delete(scope);
+  });
+  inFlightLoads.set(scope, promise);
+  return promise;
+}
+
+async function loadSharedContentScope(scope: SharedContentScope): Promise<void> {
+  // 판본(ETag)을 기기 캐시와 비교한다. 같으면 호스트가 본문 없이 304 를 주고 캐시를 쓴다 — 예전 no-store 는
+  // 공용 자료가 그대로여도 부팅마다 gzip 73MB 를 다시 받았다(2026-09-27 실측). HTTP 캐시는 본문이 커서 안 남는다.
+  const cached=await readSharedContentCache(scope);
+  const r=await fetch(`${SHARED_CONTENT_ENDPOINT}?scope=${scope}`,{cache:'no-store',headers:cached?{'if-none-match':cached.etag}:{},signal:AbortSignal.timeout(60000)});
+  let value: SharedContentSnapshot;
+  if(r.status===304 && cached) value=cached.value;
+  else {
+    if(!r.ok) { if(r.status===404) throw new SharedContentNotFoundError(); throw new Error(`HTTP ${r.status}`); }
+    value=await r.json() as SharedContentSnapshot;
+    const etag=r.headers.get('etag');
+    if(etag) void writeSharedContentCache(scope, etag, value);
+  }
+  // 부팅 뒤 늦게 도착한 기본 범위 응답이 이미 설치된 전체 카탈로그를 덮지 않게 한다.
+  if(scope==='defaults' && snapshotScope==='all') return;
+  // 'rest' 는 기본 라이브러리를 뺄 나머지다 — 이미 설치된 같은 판본의 기본과 합쳐야 전체가 된다.
+  // 판본이 다르면(그 사이 게시됨) 합칠 수 없으므로 전체를 다시 받는다.
+  if(scope==='rest') {
+    if(snapshotScope!=='defaults' || snapshot.revision!==value.revision) { await loadSharedContentRaw('all'); return; }
+    await installSharedContent({ revision:value.revision, libraries:{ ...snapshot.libraries, ...value.libraries } });
+    snapshotScope='all';
+    return;
+  }
+  await installSharedContent(value);
+  snapshotScope=scope;
 }
 /**
  * 공용 구조 킷의 저장 형태. 참고문서 갱신(`applySharedTileReferenceEntries`)은 `shared_` 킷을 앞에 두고 나머지를 뒤에 잇는다.

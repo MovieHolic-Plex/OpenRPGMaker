@@ -70,6 +70,7 @@ import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
+import { generateBestStill, type StillCritique } from './openingStillCritic.ts';
 import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
@@ -416,11 +417,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       {
         if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
-          const args = params as Record<string, unknown>;
+          const args = openingProduction.withBible(params as Record<string, unknown>);
           const brief = (tool.name === 'generate_opening_layer' ? prepareOpeningLayerRequest : prepareOpeningImageRequest)(args, ctx.project);
           if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
           if (!options.generateOpeningImage) throw new Error('오프닝 그림 생성 경로가 없습니다. 생성 미완료입니다.');
-          const still = await options.generateOpeningImage(openingImageProject(ctx.project, brief.referenceResourceIds), args, signal ?? options.signal);
+          const draft = openingImageProject(ctx.project, brief.referenceResourceIds);
+          const candidates = tool.name === 'generate_opening_image' ? Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1)) : 1;
+          let critique: StillCritique | undefined;
+          let still: CinematicStillResult;
+          if (candidates > 1) ({ still, critique } = await generateBestStill(() => options.generateOpeningImage!(draft, args, signal ?? options.signal), candidates, openingProduction.criticContext(args), signal ?? options.signal));
+          else still = await options.generateOpeningImage(draft, args, signal ?? options.signal);
           signal?.throwIfAborted();
           if (!still.ok) {
             const failure = { ok: false, summary: still.summary };
@@ -428,7 +434,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             throw new Error(still.summary);
           }
           const applied = runTool(ctx, 'upsert_resource', { resource: { id: still.resourceId, name: still.name, kind: 'backdrop', dataUrl: still.dataUrl } });
-          const execution = applied.ok ? { ...applied, summary: `그림 ${still.resourceId}를 실제 생성·등록했습니다. 연결 전에 그림을 검토하세요.`, data: { status: 'generated', resourceId: still.resourceId, name: still.name } } : applied;
+          const execution = applied.ok ? { ...applied, summary: `그림 ${still.resourceId}를 실제 생성·등록했습니다. 연결 전에 그림을 검토하세요.`, data: { status: 'generated', resourceId: still.resourceId, name: still.name, ...(critique ? { critique: critiqueSummary(critique) } : {}) } } : applied;
+          if (critique && applied.ok) openingProduction.critic(still.resourceId, critique.verdict);
           recordCall({ toolCallId: id, name: tool.name, args, result: execution });
           if (!execution.ok) throw new Error(execution.summary);
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
@@ -700,6 +707,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "turn_start") {
       turns += 1;
       emit({ type: "turn", index: turns });
+      // 읽기 전용 턴(계획·질문)은 턴 상한에 걸리면 아무 말도 못 하고 죽는다(2026-10-12: 계획 턴이 읽기만 30번 하다 첫 제작 전체가 중단).
+      // 상한 가까이에서 한 번 «지금 쓰라» 고 알린다 — 읽은 것은 이미 모델의 기록에 있다.
+      if (request.readOnly && maxTurns >= 10 && turns === Math.floor(maxTurns * 0.75)) {
+        agent.steer({ role: "user", content: [{ type: "text", text: `[턴 예산] 읽기 턴이 ${maxTurns - turns}번 남았다. 더 읽지 말고 지금까지 읽은 것으로 결과(계획)를 작성해 끝내라. 부족한 정보는 가정으로 적고 실행 턴이 다시 읽는다.` }], timestamp: Date.now() });
+      }
       if (turns > maxTurns) {
         // abort 에 사유를 실어야 한다. 사유 없이 부르면 pi-agent-core 가 합성하는 aborted 메시지의
         // errorMessage 가 일반 문구 "Request was aborted" 가 되고, 아래 message_end 가 그것을 사용자에게
@@ -894,4 +906,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   emit(slimDoneEvent(done, base));
   return done;
+}
+
+/** 모델에게 돌려줄 판정 요약. 점수표 전체가 아니라 고른 이유와 다음 행동만 준다. */
+function critiqueSummary(critique: StillCritique) {
+  const winner = critique.scores.find(s => s.id === critique.winnerId);
+  return { verdict: critique.verdict, judge: critique.judge, winnerId: critique.winnerId, winnerTotal: winner?.total, winnerNotes: winner?.notes, candidates: critique.scores.map(s => ({ id: s.id, total: s.total, cast: s.cast, notes: s.notes })), ...(critique.verdict === 'regenerate' ? { fix: critique.fix } : {}) };
 }

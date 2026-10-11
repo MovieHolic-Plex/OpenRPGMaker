@@ -12,7 +12,8 @@ import type { GameMap, Project } from "@/project/types";
 
 const STARTER_WIDTH = 40;
 const STARTER_HEIGHT = 30;
-const STARTER_SEED = 7;
+/** 기획이 없을 때(옛 호출·테스트)와 구상 시드가 판정을 못 넘을 때의 물러남 시드. */
+export const STARTER_SEED = 7;
 const PAVING = "버들항 길 포석";
 const PLAIN_GRASS = 737;
 
@@ -28,12 +29,19 @@ function run(ctx: { project: Project }, name: string, args: Record<string, unkno
 }
 
 /** 버들항 시작 마을 한 장. project 는 읽기만 한다(복제본에서 짓는다). 버들항 타일셋이 없으면 undefined. */
-export function createBeodeulStarterMap(project: Project, name = "버들 마을"): BeodeulStarter | undefined {
+export function createBeodeulStarterMap(project: Project, name = "버들 마을", seed = STARTER_SEED): BeodeulStarter | undefined {
   if (!project.tilesets[DEFAULT_TILESET_ID]) return undefined;
-  const ctx = { project: { ...structuredClone({ ...project, maps: {} }), maps: {} } as Project };
+  // create_map/author_beodeul_town commit their own drafts; cloning the full preset here duplicated every bundled tileset.
+  const ctx = { project: {
+    ...project,
+    maps: {},
+    mapTree: { mapId: "", children: [] },
+    startMapId: "",
+    startPos: { x: 0, y: 0 },
+  } as Project };
   const created = run(ctx, "create_map", { name, width: STARTER_WIDTH, height: STARTER_HEIGHT, tilesetId: DEFAULT_TILESET_ID });
   const mapId = String(created.mapId ?? Object.keys(ctx.project.maps)[0]);
-  const town = run(ctx, "author_beodeul_town", { mapId, seed: STARTER_SEED, theme: "city" }); // 시작 뼈대는 블록 격자(columns/bands)를 쓴다
+  const town = run(ctx, "author_beodeul_town", { mapId, seed, theme: "city" }); // 시작 뼈대는 블록 격자(columns/bands)를 쓴다
   const map = ctx.project.maps[mapId]!;
   const columns = town.columns as { x: number; w: number }[];
   const bands = town.bands as { y: number; h: number }[];

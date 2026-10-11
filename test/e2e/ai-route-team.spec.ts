@@ -1,12 +1,11 @@
 /**
- * 실행 경로 정리(2026-09-11)의 실표면 증거 — 실제 편집기에서 토글을 만지고 요청 본문을 본다.
+ * 실행 경로 정리(2026-09-11)의 실표면 증거 — 실제 편집기에서 팀 UI가 숨겨진 상태와 요청 본문을 본다.
  *
  * 무엇을 증명하나:
  *  - 경로 셀렉트에는 두 값만 있다(조수 / Pi 에이전트). `pi-team` 은 라우트가 아니다.
- *  - 팀은 Pi 경로에서만 보이는 토글이고, 그 값은 `AiConfig.piTeam` 한 곳에 저장된다.
- *  - 팀이 켜진 평문 지시는 `/v1/agent/run` 에 `mode: "team"` 으로, 꺼진 평문은 `mode: "single"` +
- *    현재 맵 범위로 나간다 — 즉 비트가 실제 실행 모드를 정한다.
- *  - 설정 모달의 「Pi 팀 실행」은 같은 값을 읽고 쓰며, 저장하면 컴포저 토글이 즉시 따라온다.
+ *  - 팀 모드 선택 UI는 당분간 숨겨져 있지만, 저장된 `AiConfig.piTeam` 비트와 실행 본문 계약은 유지된다.
+ *  - 팀 비트가 켜진 평문 지시는 `/v1/agent/run` 에 `mode: "team"` 으로, 꺼진 평문은 `mode: "single"` +
+ *    현재 맵 범위로 나간다.
  *  - Pi 실행은 활동 로그(`channel: "pi"`)를 남긴다: 시작 pending 행 + 실패 종료 행.
  *
  * 실행:
@@ -71,7 +70,7 @@ function readConfig(page: Page): Promise<{ executionRoute?: string; piTeam?: boo
   return page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}") as { executionRoute?: string; piTeam?: boolean });
 }
 
-test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모드를 정한다", async ({ page }) => {
+test("팀 모드 UI를 숨겨도 저장된 비트가 실행 모드를 정한다", async ({ page }) => {
   // 앱 부팅이 무겁고(편집기 + Phaser) 이 스펙은 실제 전송까지 본다.
   test.setTimeout(180_000);
   const runs: AgentRunBody[] = [];
@@ -96,38 +95,17 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
 
   await boot(page);
 
-  // 1) 경로는 두 값뿐이다.
-  const route = page.getByTestId("ai-composer-route");
-  await expect(route).toBeVisible({ timeout: 30_000 });
-  log.routeOptions = await route.locator("option").evaluateAll((options) => options.map((option) => option.getAttribute("value")));
-  expect(log.routeOptions).toEqual(["session", "pi-agent"]);
 
-  // 2) 기본은 Pi 경로 — 팀 토글이 보이고 기본은 꺼짐.
-  const team = page.getByTestId("ai-composer-team");
-  const teamMode = page.getByTestId("ai-team-menu").getByRole("button", { name: "팀으로", exact: true });
-  await expect(team).toBeVisible();
-  await expect(team).toHaveAttribute("data-team", "false");
+  // 1) 팀 모드 선택 UI는 당분간 숨긴다. 기존 저장값을 직접 읽는 실행 계약은 아래에서 확인한다.
+  await expect(page.getByTestId("ai-composer-team")).toHaveCount(0);
+  await expect(page.getByTestId("ai-team-menu")).toHaveCount(0);
+  log.teamUiHidden = true;
 
-  // 3) 세션 경로에는 «몇 명이 도는가» 축이 없다 — 토글이 숨는다.
-  await route.selectOption("session");
-  await expect(team).toBeHidden();
-  log.teamToggleHiddenOnSession = true;
-  await route.selectOption("pi-agent");
-  await expect(team).toBeVisible();
-  // 4) 토글이 곧 저장값이다.
-  // 마우스를 먼저 올린 뒤 누른다(사람과 같은 순서). 그리고 첫 클릭이 삼켜질 수 있다: 패널이 idle 에서
-  // 깨어나며 줄이 움직이면 pointerdown 과 mouseup 의 대상이 갈라지고, 브라우저는 그 클릭을 공통 조상에게
-  // 보낸다(2026-09-11 실측 — 클릭 대상이 INPUT 이 아니라 DIV 로 갔다). 두 번째 클릭은 깨어 있는 패널에
-  // 닿는다. 이건 이 스펙의 편의가 아니라 패널의 기존 idle 전환 동작이다.
-  await team.click();
-  await teamMode.click();
-  await expect(teamMode).toHaveAttribute("aria-pressed", "true");
-  await page.keyboard.press("Escape");
-  const configAfterToggle = await readConfig(page);
-  log.configAfterToggle = configAfterToggle;
-  expect(configAfterToggle.piTeam).toBe(true);
-
-  // 5) 팀이 켜진 평문 → mode=team(범위는 프로젝트 전체).
+  // 2) 저장된 팀 비트가 있으면 UI 없이도 팀 실행 본문은 유지된다.
+  await page.evaluate(() => {
+    const current = JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}") as Record<string, unknown>;
+    localStorage.setItem("oprn:ai-config", JSON.stringify({ ...current, piTeam: true }));
+  });
   await page.getByTestId("ai-input").fill("집 한 채와 길");
   await page.getByTestId("ai-send").click();
   await expect.poll(() => runs.length, { timeout: 30_000 }).toBe(1);
@@ -135,7 +113,6 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
   expect(runs[0]?.mode).toBe("team");
   expect(runs[0]?.mapIds).toEqual([]);
   await expect(page.getByTestId("ai-chat-log")).toContainText("Pi 에이전트 실패");
-
   // 6) Pi 실행은 활동 로그에 남는다 — 시작 pending 행 + 실패 종료 행.
   // 종료 행을 기다린다: pending 행만 있는 순간에 at(-1) 을 읽으면 단언이 실행 순서에 따라 흔들린다.
   await expect.poll(() => activity.filter((row) => row.channel === "pi" && row.result?.pending !== true).length, { timeout: 30_000 }).toBeGreaterThanOrEqual(1);
@@ -151,23 +128,14 @@ test("팀은 경로가 아니라 Pi 의 토글이고, 그 비트가 실행 모�
   expect(settled?.instruction).toBe("집 한 채와 길");
   await page.screenshot({ path: path.join(EVIDENCE, "01-team-run-failed.png") });
 
-  // 7) 설정 모달은 같은 값을 읽고 쓴다 — 팀 옵션은 「동작」탭에 있다.
-  await page.getByTestId("topbar-ai-settings").click();
-  await page.getByTestId("ai-settings-tab-behavior").click();
-  const settingsTeam = page.getByTestId("ai-config-pi-team");
-  await expect(settingsTeam).toBeVisible();
-  await expect(settingsTeam).toHaveValue("team");
-  await settingsTeam.selectOption("single");
-  const configAfterSettings = await readConfig(page);
-  log.configAfterSettings = configAfterSettings;
-  expect(configAfterSettings.piTeam).toBe(false);
-  await page.keyboard.press("Escape");
-  await expect(settingsTeam).toBeHidden();
-
-  // 8) 설정에서 끈 것이 컴포저에 즉시 반영된다(두 표면이 같은 비트를 쓴다).
-  await expect(team).toHaveAttribute("data-team", "false");
-
-  // 9) 팀이 꺼진 평문 → mode=single + 현재 맵 범위.
+  // 7) UI를 숨긴 뒤에도 저장된 값을 끄면 다음 실행은 현재 맵 범위의 단독 실행이다.
+  await page.evaluate(() => {
+    const current = JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}") as Record<string, unknown>;
+    localStorage.setItem("oprn:ai-config", JSON.stringify({ ...current, piTeam: false }));
+  });
+  const configAfterStorage = await readConfig(page);
+  log.configAfterStorage = configAfterStorage;
+  expect(configAfterStorage.piTeam).toBe(false);
   await page.getByTestId("ai-input").fill("길 하나");
   await page.getByTestId("ai-send").click();
   await expect.poll(() => runs.length, { timeout: 30_000 }).toBe(2);

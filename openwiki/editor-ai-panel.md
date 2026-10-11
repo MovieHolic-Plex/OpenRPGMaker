@@ -991,12 +991,12 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 | 표면 | 값 | 소유 |
 |---|---|---|
 | 실행 계획 | `readOnly` · `planOnly` · `maxTurns` · `thinkingLevel` | `resolvePiRunPlan`(`src/ai/piAgent/executionRoute.ts`) ← 자율성 다이얼 |
-| 팀 | boolean | `AiConfig.piTeam` — 컴포저 「팀」 토글(`ai-composer-team`) · 설정 「Pi 팀 실행」(`ai-config-pi-team`) |
+| 팀 | boolean | `AiConfig.piTeam` — 실행 계약은 유지하되, 2026-10-12부터 컴포저 팀 토글(`ai-composer-team`)과 설정 `ai-config-pi-team`은 사용자 UI에서 숨긴다 |
 | 명시 입력 | `/pi …` · `/team …`(= `/pi team …`) | `parsePiCommand` — 언제나 최우선. 다이얼의 읽기 전용·계획보다 **세다** |
 
-- 컴포저의 「경로」 셀렉트(`ai-composer-route`)와 설정의 「지시 실행 경로」(`ai-config-route`)는 **없다** —
-  그 자리를 팀 토글이 대신한다. 토글은 다이얼이 쓰기를 허용할 때만 보인다(읽기 전용·계획 턴에서는
-  쓰기 툴이 없어 팀이 예산만 태운다).
+- 팀 모드는 당분간 일반 작업 설정과 AI 설정 모달에 노출하지 않는다. 예전에 저장된 `piTeam` 값과
+  명시적인 `/team` 입력은 실행 호환성을 위해 유지한다. 실표면 회귀는 `test/e2e/ai-route-team.spec.ts`에서
+  UI 부재와 `mode: "team"`·`mode: "single"` 요청을 함께 확인한다.
 - 질문(다이얼 「읽기 전용」)·계획(「확인」)은 세션이 아니라 Pi 가 맡는다: `readOnly` 는 요청에 실려
   워커가 쓰기 툴을 주지 않고(`readOnlyTools` + 시스템 프롬프트 한 줄), 계획 턴은 지시문 머리에 계획
   지시가 붙는다(`PLAN_ONLY_PREFIX`). 바뀐 것이 없으면 그 턴의 **답·계획 본문**을 assistant 말풍선으로

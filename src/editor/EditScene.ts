@@ -2433,14 +2433,24 @@ export class EditScene extends PhaserRuntime.Scene {
   private reliefRenderQueued = false;
   private lastReliefRenderAt = 0;
   private lastReliefRenderCost = 0;
+  private shouldDeferReliefRender(): boolean {
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    // A full page bake can occupy the main thread for hundreds of milliseconds.
+    // Keep pointer samples cheap on authored terrain maps and draw the final
+    // state on release instead of starting a bake mid-stroke.
+    return this.isPainting && !!map && map.width * map.height >= 512;
+  }
   private scheduleReliefRender(): void {
     if (this.reliefRenderQueued) return;
+    if (this.shouldDeferReliefRender()) return;
     this.reliefRenderQueued = true;
     const wait = this.isPainting
       ? Math.max(0, this.lastReliefRenderAt + this.lastReliefRenderCost * 2 - performance.now())
       : 0;
     const run = (): void => {
       this.reliefRenderQueued = false;
+      if (this.shouldDeferReliefRender()) return;
       if (!this.reliefLayer) return;
       const started = performance.now();
       this.syncReliefLiftedTiles();
@@ -3020,9 +3030,11 @@ export class EditScene extends PhaserRuntime.Scene {
     // 단순 호버)가 옛 기준점으로 카메라를 밀어 버린다.
     this.eventLayerPanCandidate = null;
     // 높이 붓: 누르면 자라던 타이머를 멈추고 지나간 자리를 정리한다(TilePaintEngine.endStroke).
-    if (this.isPainting) this.tilePaintEngine?.endStroke();
+    const wasPainting = this.isPainting;
+    if (wasPainting) this.tilePaintEngine?.endStroke();
     this.isPainting = false;
     this.lastPaintKey = "";
+    if (wasPainting && editorState.get().tool === "relief") this.scheduleReliefRender();
     this.stopPan();
     return "gesture";
   }

@@ -1,6 +1,7 @@
 # 에디터 「공방」 — 하네스를 에디터 안에서 돌린다
 
 - 들어오는 길: 왼쪽 활동 막대 렌치 「공방」(`src/editor/panels/leftWorkshopPane.ts`) → 큰 화면(`src/editor/workshop/workshopWorkspace.ts`, body 오버레이).
+- 첫 화면은 「만들기 → 고르기 → 넣기」 3단계와 만들 수 있는 대상을 먼저 설명한다. 하네스 버튼에는 제목뿐 아니라 매니페스트 summary를 보여 주고, 아직 판이 없으면 「후보 만들기 시작」으로 다음 행동을 명시한다(2026-10-12).
 - 어떤 하네스가 보이나: `workshopHarnesses(genre)` — 매니페스트 `entrypoints.editorUi` 가 true 이고 `workshop` 로더가 있고 장르가 맞는 것. 에디터는 하네스 폴더를 직접 import 하지 않는다.
 - 실행기: `src/harnesses/_core/workshop/engine.ts`. 한 판 = 후보 3장(방향 앞에서부터 3개, 2026-10-07 에 5장→3장). 한 장 = 그리기 → 깨지면 고치기 ≤2 → (실행기가 `selfCheckMessage` 를 주면 자기 점검 1 — 실내 기물은 2026-10-07 에 뺐다, 「너무 오래 걸린다」) → 독립 검수(vision) → `runner.gate` → 불통과면 다시(시도 ≤3). 3번 다 불통과여도 사람이 볼 수 있게 「검수 불통과」로 남긴다. 동시 기본 3(1~6, `oprn:workshop-concurrency`), 429 면 하나 줄이고 기다린다, 401·403 이면 멈추고 AI 설정으로 안내.
 - 모델: 표면 `workshop-draw`(감독 티어, 16384 토큰) · `workshop-review`(vision 역할, 4096). `src/ai/assistantEndpoint.ts` 표 한 줄씩. 사용자 자기 계정·조수와 같은 엔드포인트. 권장 모델(화면에도 표시, `WORKSHOP_MODEL_ADVICE`): GPT-6.1 Sol(medium) 또는 Claude Sonnet 5.5 이상.

@@ -20,16 +20,18 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
     clearChildren(root);
     root.append(
       el("h2", { class: "left-workshop-title", text: "공방" }),
-      el("p", { class: "left-workshop-lead", text: "AI 가 그림 후보를 여러 장 그리고, 고르는 건 직접 합니다. 결과는 이 프로젝트에만 남습니다." }),
+      el("p", { class: "left-workshop-lead", text: "공방은 AI에게 새 도트 후보를 만들게 하고, 마음에 드는 한 장을 직접 골라 프로젝트에 넣는 곳입니다." }),
+      el("ul", {
+        class: "left-workshop-guide",
+        children: [
+          el("li", { children: [el("strong", { text: "만들기" }), el("span", { text: " 실내 가구·맵 기물 후보를 여러 장 만듭니다." })] }),
+          el("li", { children: [el("strong", { text: "고르기" }), el("span", { text: " 결과를 비교하고 사용할 한 장을 고릅니다." })] }),
+          el("li", { children: [el("strong", { text: "넣기" }), el("span", { text: " 고른 그림을 이 프로젝트의 칩셋에 굽습니다." })] }),
+        ],
+      }),
       el("p", { class: "left-workshop-lead", dataset: { testid: "left-workshop-model-advice" }, text: WORKSHOP_MODEL_ADVICE }),
     );
-    if (!workshopAiReady()) {
-      root.append(el("button", {
-        class: "left-workshop-connect", text: "AI 설정에서 연결", attrs: { type: "button" }, dataset: { testid: "left-workshop-connect" },
-        on: { click: () => { openAiSettingsModal(); } },
-      }));
-      return;
-    }
+    const aiReady = workshopAiReady();
     const harnesses = workshopHarnesses(store.getCurrent().system.genre ?? null);
     if (harnesses.length === 0) {
       root.append(el("p", { class: "left-workshop-empty", text: "이 프로젝트에서 쓸 수 있는 공방이 아직 없습니다." }));
@@ -48,12 +50,22 @@ export function createLeftWorkshopPane(): { root: HTMLElement; show(): void; dis
             on: { click: () => { void openWorkshop(harness.id); } },
             children: [
               el("strong", { text: harness.title }),
-              el("span", { class: "left-workshop-meta", text: session ? `그리는 중 ${drawing} · 고를 차례 ${choose}` : "열기" }),
+              el("span", { class: "left-workshop-description", text: harness.summary }),
+              el("span", { class: "left-workshop-meta", text: session ? `그리는 중 ${drawing} · 고를 차례 ${choose}` : "후보 만들기 시작" }),
             ],
           })],
         });
       }),
     }));
+    if (!aiReady) {
+      root.append(
+        el("p", { class: "left-workshop-empty", text: "후보를 만들려면 AI 연결이 필요합니다. 먼저 만들 수 있는 공방을 둘러볼 수 있습니다." }),
+        el("button", {
+          class: "left-workshop-connect", text: "AI 설정에서 연결", attrs: { type: "button" }, dataset: { testid: "left-workshop-connect" },
+          on: { click: () => { openAiSettingsModal(); } },
+        }),
+      );
+    }
   };
   // 프로젝트 store 는 칠할 때마다 알린다 — 그걸 듣지 않고, 공방 세션이 바뀔 때만 다시 그린다(펼칠 때는 show).
   window.addEventListener(WORKSHOP_CHANGED_EVENT, render);

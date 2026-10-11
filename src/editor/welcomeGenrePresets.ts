@@ -11,6 +11,7 @@ import {
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
 import { gameDesignBriefContext, type GameDesignBrief } from "@/project/gameDesignBrief";
+import { planStartForBrief, startPlanPrompt } from "@/project/startVariety";
 import { sceneGenre } from "./cinematicInterviewQuestions";
 import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
 import { BATTLE_SKINS, listActiveBattleSkinIds } from "@/battle/skins/registry";
@@ -228,6 +229,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       `${GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label}`,
       gameDesignBriefContext(brief),
       preset.packId === "monster-collect" ? "확정 기획을 반영해 실제 전체72맵/60종/8체육관/리그/엔딩 캠페인을 제작하세요. 작은 시작 구간이나 설정만으로 완료하지 마세요." : "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
+      ...(preset.packId === "monster-collect" ? [] : [startPlanPrompt(planStartForBrief(brief, brief.concept?.title ?? ""))]),
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
       ...(brief.interview ? [

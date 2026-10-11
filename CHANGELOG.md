@@ -5,6 +5,69 @@
 
 <!-- releases -->
 
+## 0.190.0 — 2026-10-12
+
+### 기능
+
+- **start** — lay a main street across kit start maps as the assistant's anchor line (`b62766f`)
+- **start** — kit-aware first-place prompt, bigger kit start maps, tolerant layout+plan (`ce85ddd`)
+- **start** — follow the concept's tileset for the start and route maps (`33c8e0c`)
+- **start** — build example start and AI-mode start towns from the concept plan (`38d8eab`)
+- **start** — derive first-place shape from the concept instead of a fixed skeleton (`08b7c82`)
+
+### 수정
+
+- **assistant** — warn read-only turns before the turn cap and ask the planner to batch reads (`a4ebc6d`)
+- clear objects during relief edits (#2432) (`90e89cd`)
+
+### 빌드
+
+- **deps-dev** — bump the development-dependencies group across 1 directory with 9 updates (#2396) (`4ca73e5`)
+- **deps** — bump the production-dependencies group across 1 directory with 3 updates (#2395) (`35d3310`)
+
+### 기타
+
+- docs+test: start-variety tileset-following start maps, assistant fixes (`5236521`)
+- agent worktree base for start-variety (`7a7ce02`)
+- Improve AI sidebar discovery and defer progress validation (`8bee4b0`)
+- agent worktree base for ui-store-workflow (`d6526fa`)
+
+## 0.189.0 — 2026-10-12
+
+### 기능
+
+- **opening** — showcase pipeline scripts (gen, build via real tools, player recording) (`5bd31cb`)
+- **opening** — candidate generation with independent still critic and regenerate gate (`cc946ef`)
+- **opening** — bible, cast rule and technique-style guidance for opening production (`671a194`)
+- **ai** — default image route to ChatGPT with Google fallback when not connected (`da29a9f`)
+- **opening** — structured still prompt with focal point, angle, light and palette (`c95734d`)
+- **editor** — streamline terrain editing workflow (`84e0fb2`)
+
+### 수정
+
+- **editor** — reduce preset project startup cloning (`0303165`)
+- **release** — record the desktop package version in the drop directory (`a68dc6c`)
+- **release** — keep Windows packages for the test PC to pull (`e4ee92f`)
+- **ci** — unblock typecheck on the remote runners (`c9ee0d7`)
+- **editor** — pin bundled terrain floor choices (`5a34390`)
+- **editor** — prefer repeatable wizarding floor (`4a970d8`)
+- **editor** — choose blank floors per tileset (`421e598`)
+- **terrain** — report ramp length without width area (`66df300`)
+- **terrain** — match ramp length to cliff height (`7938c47`)
+
+### 문서
+
+- **opening** — critic loop notes (`d4e3943`)
+- **terrain** — align ramp length guidance (`f121a1d`)
+
+### 테스트
+
+- **assistant** — execute 50 small command tool contracts (#2427) (`392194c`)
+
+### 기타
+
+- agent worktree base for opening-quality (`7023b5d`)
+
 ## 0.188.0 — 2026-10-11
 
 ### 기능
