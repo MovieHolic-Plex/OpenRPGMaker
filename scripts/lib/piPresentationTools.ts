@@ -47,6 +47,7 @@ export function createPiPresentationTool(
       const args = params && typeof params === 'object' ? params as Record<string, unknown> : {};
       let result: ToolResult;
       let dataUrl: string;
+      let visuals: ActivityVisual[] = [];
       try {
         signal?.throwIfAborted();
         const generateImage = async ({ prompt, signal: imageSignal, referenceImages }: GenerateAiImageRequest) => {
@@ -59,7 +60,6 @@ export function createPiPresentationTool(
           return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
         };
         let resourceId: string;
-        let visuals: ActivityVisual[] = [];
         const say = (summary: string) => options.progress?.(summary, id);
         if (definition.name === TITLE_ART_TOOL) {
           const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
