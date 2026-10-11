@@ -5,6 +5,27 @@
 
 <!-- releases -->
 
+## 0.191.0 — 2026-10-12
+
+### 기능
+
+- **editor** — streamline terrain editing workflow (`5331a48`)
+
+### 수정
+
+- **terrain** — remove ramp length illusion from cliff outlines (`3797705`)
+- **terrain** — report ramp length without width area (`c0a2ed0`)
+- **terrain** — match ramp length to cliff height (`aee7d18`)
+
+### 문서
+
+- **terrain** — align ramp length guidance (`f6c4663`)
+
+### 테스트
+
+- **assistant** — add live 50-command input harness (`ca595de`)
+- **assistant** — execute 50 small command tool contracts (`94436e4`)
+
 ## 0.190.0 — 2026-10-12
 
 ### 기능
