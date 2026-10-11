@@ -535,7 +535,14 @@ export const BUILD_HAND_INTERIOR_ROOM_TOOL: ToolDefinition = {
     // layout(방 구성) → 배치 후보 중 하나를 rooms·connect·exit 로 바꾸고, 뒤에서 방마다 견본 가구를 심는다.
     let picked: { c: LayoutCandidate; variant: number; variants: number; furnish: boolean } | undefined;
     if (args.layout && typeof args.layout === "object") {
-      if (args.plan || args.rooms) throw new ToolError("layout 은 plan·rooms 와 함께 줄 수 없다 — 하나만 준다(layout 이 방 배치를 짠다)", { code: "layout-and-plan" });
+      // 선택 칸을 다 채우는 모델이 layout 과 plan·rooms·connect·exit 를 함께 보낸다(2026-10-12 jp_city 도그푸딩: 같은 호출 4연속 거절).
+      // layout 이 방 배치를 짜므로 layout 을 따르고, 같이 온 배치 칸은 버린 채 알린다.
+      if (args.plan || args.rooms || args.connect || args.exit) {
+        const dropped = ["plan", "rooms", "connect", "exit"].filter((key) => (args as Record<string, unknown>)[key] !== undefined);
+        const { plan: _plan, rooms: _rooms, connect: _connect, exit: _exit, ...kept } = args as Record<string, unknown>;
+        args = kept as typeof args;
+        fitNotes.push(`layout 이 방 배치를 짜므로 같이 온 ${dropped.join("·")} 는 버리고 layout 대로 지었다(plan·rooms 를 직접 주려면 layout 을 빼라)`);
+      }
       const req = args.layout as LayoutRequest & { variant?: number; furnish?: boolean };
       const variant = Math.max(0, Math.floor(req.variant ?? 0));
       let cands: LayoutCandidate[];
