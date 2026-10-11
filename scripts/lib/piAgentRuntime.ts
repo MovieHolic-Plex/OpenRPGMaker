@@ -416,7 +416,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       {
         if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
-          const args = params as Record<string, unknown>;
+          const args = openingProduction.withBible(params as Record<string, unknown>);
           const brief = (tool.name === 'generate_opening_layer' ? prepareOpeningLayerRequest : prepareOpeningImageRequest)(args, ctx.project);
           if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
           if (!options.generateOpeningImage) throw new Error('오프닝 그림 생성 경로가 없습니다. 생성 미완료입니다.');

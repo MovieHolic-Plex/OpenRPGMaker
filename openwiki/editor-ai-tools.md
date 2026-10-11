@@ -3075,3 +3075,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 `defaultAiConfig`와 `configForProviderSelection`(고정하지 않은 image 슬롯)은 `RECOMMENDED_IMAGE_PROVIDER_ID/MODEL`(openai-codex / codex-image-default)을 쓴다. 대화 계정을 따르지 않는다. 저장된 blob의 image 값은 고정으로 취급되어 그대로다(조용히 바꾸지 않는다).
 `generateAiImage`는 image 슬롯이 고정이 아니고 호출이 제공자를 지정하지 않았으며 ChatGPT 연결이 없고 Google 연결이 있을 때만 Google로 대신한다. `deps.fetch`를 주입한 테스트 경로에서는 상태 조회를 하지 않는다.
 같은 구조화 프롬프트 4컷 비교에서 GPT Image가 앵글·광원 지시를 더 잘 지켰지만 지시하지 않은 인물을 끼워 넣었다(http://mdc-server:18301/opening-prompt-ab-models.html). `OPENING_AB_PROVIDER`/`OPENING_AB_MODEL`로 `opening-prompt-ab.mts`를 다른 경로에 돌린다.
+
+### 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+
+- `plan_opening`은 선택 `bible`(premise·question·motifs 1~4·palette·artStyle·voice·emotionArc)과 샷별 `angle`·`beat`를 받는다. `PiOpeningProduction`이 이를 기록하고, 오프닝 제작 요청에서 bible이 없거나 계획 앵글의 절반 넘게 같으면 `inspect()`가 수리 사유를 낸다. 워커(`piAgentRuntime.ts`)는 `generate_opening_image/layer` 호출에서 `artStyle`·`palette`를 생략하면 bible 값으로 채운다(직접 준 값이 우선). 시연: `scripts/qa/opening-bible-gate.mts`(모델 호출 없음).
+- `generate_opening_image.cast`: 나와도 되는 인물·생물. 비우면 이야기 순간에 이름 난 대상만, 사람 없는 컷은 `nobody`. GPT Image가 지시 없는 망토 인물을 끼워 넣던 문제를 막는다.
+- 화풍 문장은 기법으로 쓴다. 같은 컷 3화풍(`scripts/qa/opening-style-ab.mts`)에서 "visible square pixels, 32-colour, dithering" 같은 기법 문장만 실제로 화풍이 갈렸고, gouache·HD-2D 같은 이름은 기본 시네마틱 화면으로 수렴했다.
+- 도구 선언 크기: 오프닝 가족은 `scripts/qa/measure-opening-tools.mts`로 쟀다(기준선 5,814 → 6,073). `test/aiToolCatalogBudget.test.ts`의 1,300 천장과 이 측정의 관계는 실행해 확인하지 않았다.

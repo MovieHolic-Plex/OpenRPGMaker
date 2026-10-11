@@ -761,9 +761,9 @@ export type OpeningImageBrief = {
   readonly artStyle: string;
   readonly referenceResourceIds: readonly string[];
   /** 연출 의도. 모두 선택이며, 비면 범용 문구 대신 프롬프트에서 생략된다. */
-  readonly focus?: string; readonly angle?: string; readonly light?: string; readonly palette?: string; readonly captionSide?: "bottom" | "top" | "left" | "right";
+  readonly focus?: string; readonly angle?: string; readonly light?: string; readonly palette?: string; readonly cast?: string; readonly captionSide?: "bottom" | "top" | "left" | "right";
 };
-const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette"] as const;
+const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette", "cast"] as const;
 
 /** SQLite media references are valid even when the worker has no browser URL bridge. */
 export function hasOpeningImage(project: Project, id: string): boolean {
@@ -855,12 +855,13 @@ const generateOpeningImage: ToolDefinition = {
       name: { type: "string" },
       shot: { type: "string", enum: ["wide", "medium", "close-up"] },
       aspectRatio: { type: "string", enum: ["16:9", "4:3"] },
-      artStyle: { type: "string", maxLength: 400, description: "작품 고유 화풍 문장(매체·붓/도트 결·명암·윤곽). 모든 컷에 같은 문장을 그대로 재사용. 기본 hand-painted 2D." },
-      focus: { type: "string", maxLength: 240, description: "시선이 가장 먼저 닿을 단 하나의 대상과 그 상태(영어 권장)." },
-      angle: { type: "string", maxLength: 240, description: "카메라 위치/앵글(low angle, overhead, over-the-shoulder, through a doorway 등). 컷마다 다르게." },
-      light: { type: "string", maxLength: 240, description: "그림 안에 보이는 주 광원과 빛의 방향·색." },
-      palette: { type: "string", maxLength: 240, description: "3~4색 + 포인트색. 모든 컷에서 같은 색 규칙." },
-      captionSide: { type: "string", enum: ["bottom", "top", "left", "right"], description: "자막을 얹을 쪽. 그 쪽을 자연스러운 저디테일 영역으로 둔다." },
+      artStyle: { type: "string", maxLength: 400, description: "화풍 문장. 컷마다 동일. 기본 hand-painted 2D." },
+      focus: { type: "string", maxLength: 240, description: "시선이 먼저 닿을 단 하나의 대상(영어)." },
+      angle: { type: "string", maxLength: 240, description: "카메라 위치. 컷마다 다르게." },
+      light: { type: "string", maxLength: 240, description: "주 광원과 방향·색." },
+      palette: { type: "string", maxLength: 240, description: "3~4색+포인트색." },
+      cast: { type: "string", maxLength: 240, description: "나와도 되는 인물·생물. 비우면 이름 난 대상만. 없으면 nobody." },
+      captionSide: { type: "string", enum: ["bottom", "top", "left", "right"], description: "자막 얹을 쪽." },
       referenceResourceIds: { type: "array", items: { type: "string" }, description: "실제 그림 ID 최대2개." },
       referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
       role: { type: 'string', enum: ['backdrop', 'foreground'], description: '기본 backdrop은 전체 배경. foreground는 독립 움직임용 투명 배경의 단일 물체·실루엣 그림. 잘린 신체/그림자 바닥/체커보드 금지.' },
@@ -972,17 +973,22 @@ const setGameOver: ToolDefinition = {
 
 const planOpening: ToolDefinition = {
   name: "plan_opening",
-  description: "샷 사건·구도·연속성·첫 행동 설계. 적용은 별도.",
+  description: "바이블+샷 사건·구도·연속성·첫 행동 설계. 적용은 별도.",
   mode: "read",
   parameters: {
     type: "object", additionalProperties: false, required: ["intent", "shots", "entry"],
     properties: {
       intent: { type: "string" },
       entry: { type: "string", description: "첫 플레이/선택으로 이어지는 끝 장면." },
+      bible: { type: "object", additionalProperties: false, required: ["premise", "question", "motifs", "palette", "artStyle", "voice"], description: "작품 고유 연출 기준. palette·artStyle은 그림 생성에 자동 적용.", properties: {
+        premise: { type: "string" }, question: { type: "string" }, motifs: { type: "array", minItems: 1, maxItems: 4, items: { type: "string" } },
+        palette: { type: "string" }, artStyle: { type: "string" }, voice: { type: "string" }, emotionArc: { type: "array", items: { type: "string" } },
+      } },
       shots: { type: "array", items: { type: "object", additionalProperties: false, required: ["event", "composition", "continuity"], properties: {
         event: { type: "string" },
         composition: { type: "string" },
         continuity: { type: "string" },
+        angle: { type: "string" }, beat: { type: "string" },
       } } },
     },
   },
@@ -990,6 +996,12 @@ const planOpening: ToolDefinition = {
     for (const key of ["intent", "entry"] as const) if (typeof args[key] !== "string" || args[key].trim().length < 2 || args[key].length > 1200) throw new ToolError(`${key}는 2~1200자 문장이어야 합니다.`, { code: "invalid-args" });
     if (!Array.isArray(args.shots) || !args.shots.length || args.shots.length > CINEMATIC_SCENE_LIMIT) throw new ToolError("샷은 1~100개여야 합니다.", { code: "invalid-args" });
     for (const shot of args.shots) for (const key of ["event", "composition", "continuity"]) if (!shot || typeof shot[key] !== "string" || shot[key].trim().length < 2 || shot[key].length > 1200) throw new ToolError(`각 샷의 ${key}는 2~1200자 문장이어야 합니다.`, { code: "invalid-args" });
+    const bible = args.bible as Record<string, unknown> | undefined;
+    if (bible !== undefined) {
+      if (!bible || typeof bible !== "object" || Array.isArray(bible)) throw new ToolError("bible은 객체여야 합니다.", { code: "invalid-args" });
+      for (const key of ["premise", "question", "palette", "artStyle", "voice"]) if (typeof bible[key] !== "string" || !(bible[key] as string).trim() || (bible[key] as string).length > 400) throw new ToolError(`bible.${key}는 1~400자 문장이어야 합니다.`, { code: "invalid-args" });
+      if (!Array.isArray(bible.motifs) || !bible.motifs.length || bible.motifs.length > 4 || bible.motifs.some(m => typeof m !== "string" || !m.trim() || m.length > 200)) throw new ToolError("bible.motifs는 1~4개의 짧은 문장이어야 합니다.", { code: "invalid-args" });
+    }
     return { summary: "샷 제작 계획을 확인했습니다. 이제 실제 그림과 장면을 제작하세요.", data: { plan: args, applied: false } };
   },
 };
