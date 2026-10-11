@@ -493,6 +493,7 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
   `ToolError(code "kit-placement-rule")`. 조수·마을 시공기·사람이 모두 이 도구를 지나므로 프롬프트가 아니라 실행기가 지킨다.
   물레방아 = 바퀴 밑 줄에 물·뭍 둘 다 · 배·물새·수련 = 전부 물 · 엎은 배 = 뭍 · 얼음 배·구멍·낚시 줄 = 얼음 · 잔교 몸통 60%/머리 80% 물 · 말뚝 밑 줄 물 ·
   생선 시장 밑 줄에 물 하나 이상 · 다리 = 바닥 가운데 줄 절반 이상 물. 표에 없는 키트라도 입구가 있는 건물은 물 칸에 못 짓는다(기둥 집·생선 시장·물레방아·등대 예외).
+  맵에 높이 단(relief)이 있으면 `checkReliefPlacement` 도 본다 — 두 단 걸침·경사로 칸·남쪽 높은 칸 가림 거절(`code "relief-placement-rule"`, 바닥 칠·그림자·다리 예외). `editor-ai-tools.md` 「stamp_object 높이 단 규칙」.
 - 다리: 옛 `bd-bridge-arch` 는 아래 두 줄이 운하 돌 둑 그림이라 자연 물가 위에서 투명한 판처럼 보였다 → 흩어진 마을은 `riverside-mill-plank-footbridge`,
   그 밖은 `mountain-pass-stone-bridge`. 다리 키트는 5칸, 강은 4칸이라 오른쪽 한 칸이 풀밭에 떠 아치 밑이 풀이었다 →
   `widenForBridge` 가 다리 자리 앞뒤(난간 위 한 줄 ~ 아치 아래 한 줄, 6줄)를 5칸 폭 물로 넓혀 다리 양 끝이 양쪽 둑에 얹힌다(물가 둑 덧그림이 넓어진 모서리를 둥글게 만든다).
