@@ -862,6 +862,7 @@ const generateOpeningImage: ToolDefinition = {
       palette: { type: "string", maxLength: 240, description: "3~4색+포인트색." },
       cast: { type: "string", maxLength: 240, description: "나와도 되는 인물·생물. 비우면 이름 난 대상만. 없으면 nobody." },
       captionSide: { type: "string", enum: ["bottom", "top", "left", "right"], description: "자막 얹을 쪽." },
+      candidates: { type: "integer", minimum: 1, maximum: 3, description: "후보 수. 2~3이면 독립 판정자가 하나를 고른다(핵심 컷 권장)." },
       referenceResourceIds: { type: "array", items: { type: "string" }, description: "실제 그림 ID 최대2개." },
       referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
       role: { type: 'string', enum: ['backdrop', 'foreground'], description: '기본 backdrop은 전체 배경. foreground는 독립 움직임용 투명 배경의 단일 물체·실루엣 그림. 잘린 신체/그림자 바닥/체커보드 금지.' },

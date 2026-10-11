@@ -33,6 +33,7 @@ export class PiOpeningProduction {
   private plannedShotCount = 0;
   private bible: Record<string, unknown> | null = null;
   private plannedAngles: string[] = [];
+  private readonly critics = new Map<string, string>();
   private reviewed = '';
   private readonly viewed = new Map<string, string>();
   private readonly animatics = new Map<string, { fingerprint: string; times: number[] }>();
@@ -50,6 +51,12 @@ export class PiOpeningProduction {
     const out = { ...args };
     for (const key of ['artStyle', 'palette'] as const) if (out[key] === undefined && typeof this.bible[key] === 'string') out[key] = this.bible[key];
     return out;
+  }
+  critic(resourceId: string, verdict: string): void { this.critics.set(resourceId, verdict); }
+  criticContext(args: Record<string, unknown>) {
+    const text = (k: string) => typeof args[k] === 'string' ? args[k] as string : undefined;
+    return { prompt: text('prompt') ?? '', focus: text('focus'), cast: text('cast'), angle: text('angle'), light: text('light'), palette: text('palette'), artStyle: text('artStyle'), captionSide: text('captionSide'),
+      motifs: Array.isArray(this.bible?.motifs) ? this.bible!.motifs as string[] : [], previousAngles: this.plannedAngles };
   }
   saw(project: Project, resourceId: string): void {
     this.viewed.set(resourceId, this.media(project, resourceId));
@@ -79,6 +86,7 @@ export class PiOpeningProduction {
     if (this.plannedShotCount && opening?.scenes.length !== this.plannedShotCount && !opening?.scenes.some(s => s.kind === 'video')) issues.push(`제출한 계획 ${this.plannedShotCount}샷과 연결된 ${opening?.scenes.length ?? 0}장면이 다릅니다. 계획을 실제 장면으로 연결하거나 변경 이유를 반영해 계획을 수정하세요.`);
     if (/설명.{0,12}(?:길|대신)|그림.{0,8}중심/iu.test(this.task) && opening?.scenes.some(s => (s.narration?.length ?? 0) > 80)) issues.push('요청은 그림으로 사건을 보여주는 도입입니다. 80자를 넘는 설명을 장면 위에 붙이지 말고 사건/동작을 실제 그림으로 옮기세요.');
     for (const id of new Set((opening?.scenes ?? []).filter(s => s.kind === 'image').map(s => s.resourceId ?? ''))) {
+      if (this.critics.get(id) === 'regenerate') issues.push(`독립 판정자가 그림 ${id}에 재생성을 권고했습니다(지시 없는 인물·결함·범용 벽지). 권고한 수정으로 다시 생성해 교체하세요.`);
       if (!id || this.viewed.get(id) !== this.media(project, id)) issues.push(`show_opening_image로 현재 그림 ${id || '(미지정)'}의 실제 이미지를 확인하세요. 이름 조회는 시각 검수가 아닙니다.`);
     }
     if (/애니메틱|animatic|독립.*레이어|캐릭터.{0,12}움직/iu.test(this.task) && !opening?.scenes.some(s => s.kind === 'animatic')) issues.push('요청한 애니메틱을 실제 합성 샷으로 저작하세요. 정지 그림의 pan/zoom만으로 애니메틱 제작을 완료하지 마세요.');
@@ -102,6 +110,7 @@ get_opening.generatedStills에는 앞선 제작에서 만든 그림과 미연결
 캐릭터와 장소가 나오면 show_opening_image로 실제 참고 외형을 보고 generate_opening_image의 referenceResourceIds로 전달한다. 새 그림은 실제 생성·등록된 resourceId만 사용한다. 생성 실패를 이름만 있는 리소스로 덮지 않는다.
 plan_opening의 bible에 한 줄 전제, 오프닝이 끝날 때의 단 하나의 질문, 반복 모티프 1~4개, 팔레트, 화풍 문장, 글의 목소리를 먼저 쓴다. 팔레트와 화풍은 이후 그림 생성에 자동 적용된다. 첫 컷은 설명이 아니라 질문을 던지는 구체적 이미지로 연다. 자막은 설명문이 아니라 bible.voice의 한 조각이며 그림에 보이는 것을 되풀이하지 않는다. 컷마다 감정이 변해야 하고(beat), 모티프가 컷을 가로질러 돌아온다. 마지막 컷은 질문을 풀지 않고 첫 행동으로 넘긴다.
 artStyle은 형용사가 아니라 기법으로 쓴다(예: "visible square pixels, 32-colour palette, hand-placed dithering, 1px outlines"). "painterly", "gouache" 같은 이름만 적으면 모델 기본 시네마틱 화면으로 수렴한다(2026-10-11 같은 컷 3화풍 시험: 기법을 적은 픽셀 문장만 화풍이 갈렸다). cast에는 나와도 되는 인물·생물을 적고, 사람이 없는 컷은 nobody로 적는다(지시하지 않은 망토 인물·군중이 끼어든다).
+첫 컷과 사건이 벌어지는 핵심 컷은 candidates:3으로 뽑는다. 독립 판정자가 고른 한 장만 등록되고, 응답의 critique에 고른 이유와 재생성 권고(fix)가 온다. 권고가 오면 fix를 프롬프트에 반영해 다시 생성한다.
 generate_opening_image는 컷마다 focus(시선이 닿을 단 하나의 대상), angle(컷마다 다른 카메라 위치), light(보이는 주 광원), palette(3~4색+포인트색), captionSide를 채우고, artStyle에는 작품 고유 화풍 문장을 정해 모든 컷에 그대로 재사용한다. 모든 컷을 눈높이 정면 엽서 구도나 같은 밝기의 소품 나열로 만들지 않는다.
 generate_opening_image의 성공 응답에는 생성된 그림이 들어온다. 외형·사건·구도를 보고 필요하면 다시 생성한다. 기존 그림도 show_opening_image로 보고 연결한다. set_opening/edit_opening 후 review_opening으로 구성 검토한다.
 get_opening_references에서 관련 게임의 실제 도입/타이틀 소개/홍보 영상과 확인 범위를 구별한다. 기법을 참고해 독자적인 사건과 화면을 저작하며 원작 소재를 게임 리소스로 복사하지 않는다.
