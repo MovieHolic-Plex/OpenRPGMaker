@@ -7,7 +7,7 @@ const [projectPath, outDir] = process.argv.slice(2);
 const projectJson = await readFile(projectPath, "utf8");
 await mkdir(outDir, { recursive: true });
 const server = await startPlayerQaServer();
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu"] });
+const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 const context = await browser.newContext({ viewport: { width: 960, height: 720 }, recordVideo: { dir: outDir, size: { width: 960, height: 720 } } });
 const pageStart = Date.now();
 const page = await context.newPage();
@@ -23,6 +23,7 @@ await page.waitForSelector("[data-testid='title-screen']", { timeout: 120000 });
 await page.waitForTimeout(800);
 const enterAt = Date.now() - pageStart;
 await page.keyboard.press("Enter");
+for (let i = 1; i < Number(process.env.TITLE_ENTERS ?? 1); i++) { await page.waitForTimeout(2200); await page.keyboard.press("Enter"); }
 const total = Number(process.env.RECORD_MS ?? 45000), every = Number(process.env.ENTER_EVERY_MS ?? 0);
 const t1 = Date.now();
 while (Date.now() - t1 < total) {
