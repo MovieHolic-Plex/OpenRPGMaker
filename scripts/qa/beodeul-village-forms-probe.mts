@@ -35,10 +35,11 @@ for (const theme of themes) for (const form of allowedVillageForms(theme)) {
     const doors = d.doors as { reached: boolean }[];
     const row = { name, ok: true, ms: Date.now() - t0, form: d.form, gathering: d.gathering, houses: d.houses, distinct: d.distinctHouses,
       doors: doors.length, unreached: doors.filter((x) => !x.reached).length, deadCells: cf.deadEnds.filter((x) => x.kind === "cell").length,
-      deadStreets: cf.deadEnds.filter((x) => x.kind === "street").length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
+      deadStreets: cf.deadEnds.filter((x) => x.kind === "street").length,
+      longStraight: cf.lines.longStraight.map((l) => `${l.orient}${l.len}@${l.from.join(",")}`), isolated: cf.graph.isolated.length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
       stampFailed: d.stampFailed, warnings: r.warnings ?? [], summary: r.summary };
     rows.push(row);
-    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, fence: row.fenceCells, fail: row.stampFailed, warn: (r.warnings ?? []).length }));
+    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, warn: (r.warnings ?? []).length }));
   }
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));

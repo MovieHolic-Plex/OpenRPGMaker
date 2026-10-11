@@ -371,7 +371,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     const yTop = ri(5, 8), yBot = H - 1 - ri(5, 8);
     const back = vStreet("뒷길", [[bx, yTop], [bx, yBot]], 1); markStreet(back);
     for (const [name, y, toEdge] of [["이음길", yTop, false], ["이음길", yBot, false], ["들길", Math.round((yTop + yBot) / 2) + ri(-2, 2), true]] as const) {
-      const lane = hStreet(name, [[mx, y], [toEdge ? W - 1 : bx, y]], toEdge ? 1 + (rand() < 0.5 ? 1 : 0) : 1);
+      // 들길은 맵 끝까지 길다 — 열쇠점으로 굽혀 45칸 넘는 곧은 길을 만들지 않는다(88×56 에서 52~55칸 곧은 들길이 check_city_form 에 걸렸다)
+      const lane = hStreet(name, toEdge ? wavy(mx, W - 1, y, 1, y) : [[mx, y], [bx, y]], toEdge ? 1 + (rand() < 0.5 ? 1 : 0) : 1);
       markStreet(lane); connectors.push(lane); if (toEdge) entryLane = lane;
     }
   } else if (form === "scatter") {
