@@ -5,6 +5,33 @@
 
 <!-- releases -->
 
+## 0.190.0 — 2026-10-12
+
+### 기능
+
+- **start** — lay a main street across kit start maps as the assistant's anchor line (`b62766f`)
+- **start** — kit-aware first-place prompt, bigger kit start maps, tolerant layout+plan (`ce85ddd`)
+- **start** — follow the concept's tileset for the start and route maps (`33c8e0c`)
+- **start** — build example start and AI-mode start towns from the concept plan (`38d8eab`)
+- **start** — derive first-place shape from the concept instead of a fixed skeleton (`08b7c82`)
+
+### 수정
+
+- **assistant** — warn read-only turns before the turn cap and ask the planner to batch reads (`a4ebc6d`)
+- clear objects during relief edits (#2432) (`90e89cd`)
+
+### 빌드
+
+- **deps-dev** — bump the development-dependencies group across 1 directory with 9 updates (#2396) (`4ca73e5`)
+- **deps** — bump the production-dependencies group across 1 directory with 3 updates (#2395) (`35d3310`)
+
+### 기타
+
+- docs+test: start-variety tileset-following start maps, assistant fixes (`5236521`)
+- agent worktree base for start-variety (`7a7ce02`)
+- Improve AI sidebar discovery and defer progress validation (`8bee4b0`)
+- agent worktree base for ui-store-workflow (`d6526fa`)
+
 ## 0.189.0 — 2026-10-12
 
 ### 기능
