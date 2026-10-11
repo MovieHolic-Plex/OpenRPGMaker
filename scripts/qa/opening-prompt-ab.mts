@@ -6,6 +6,8 @@ import { buildCinematicStillPrompt } from '../../src/editor/openingImageGenerati
 import { prepareOpeningImageRequest } from '../../src/editor/tools/cinematicTools';
 
 const out = resolve(process.argv[2] ?? `${process.env.HOME}/claude-viz/opening-prompt-ab`);
+// OPENING_AB_PROVIDER=openai-codex OPENING_AB_MODEL=codex-image-default 로 ChatGPT 이미지 경로를 같은 프롬프트로 비교한다.
+const PROVIDER = process.env.OPENING_AB_PROVIDER ?? 'google-antigravity', MODEL = process.env.OPENING_AB_MODEL ?? 'gemini-3.1-flash-image';
 const STYLE = 'moody hand-painted pixel-adjacent JRPG illustration, chunky visible brush clusters, hard-edged shadow shapes, ink-dark outlines on the focal subject only';
 const PALETTE = 'deep ink blue, bruised violet, warm amber ember as the only warm accent, bone-white highlights';
 
@@ -43,7 +45,7 @@ await writeFile(join(out, 'prompts.json'), JSON.stringify(jobs, null, 1));
 await Promise.all(jobs.map(async job => {
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
-      const image = await adapters.generateImage('google-antigravity', { prompt: job.prompt, model: 'gemini-3.1-flash-image' });
+      const image = await adapters.generateImage(PROVIDER, { prompt: job.prompt, model: MODEL });
       await writeFile(join(out, job.file), Buffer.from(image.base64, 'base64')); console.log('ok', job.file); return;
     } catch (error) { console.log('retry', job.file, String(error).slice(0, 200)); }
   }

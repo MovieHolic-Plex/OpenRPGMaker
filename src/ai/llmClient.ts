@@ -16,7 +16,7 @@ import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
-import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { companionTokenHeaders } from "@/ai/companionToken";
 
@@ -207,6 +207,8 @@ export function defaultAiConfig(): AiConfig {
     ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
     ultrabrainModel: RECOMMENDED_CODEX_MODEL,
     ultrabrainReasoningEffort: "high",
+    imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
+    imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
       deep: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },
       vision: { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: RECOMMENDED_CODEX_MODEL, thinkingLevel: "medium" },

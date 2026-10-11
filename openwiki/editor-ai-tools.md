@@ -3069,3 +3069,9 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 `generate_opening_image`는 선택 필드 `focus`·`angle`·`light`·`palette`·`captionSide`를 받고 `artStyle` 한도가 400자다(작품 화풍 문장을 컷마다 재사용).
 `buildCinematicStillPrompt`는 STORY MOMENT / FOCAL POINT / CAMERA / LIGHT AND COLOUR / STYLE / AVOID(범용 AI 벽지 징후) 구조로 조립한다. 필드를 생략하면 범용 문구로 대체되어 기존 호출은 그대로 동작한다.
 전후 비교: `scripts/qa/opening-prompt-ab.mts`(실제 이미지 제공자 호출, 첫 결과 그대로 http://mdc-server:18301/opening-prompt-ab.html). 사람 눈 판정 전의 1회 표본이며 품질 합격 근거가 아니다.
+
+### 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+
+`defaultAiConfig`와 `configForProviderSelection`(고정하지 않은 image 슬롯)은 `RECOMMENDED_IMAGE_PROVIDER_ID/MODEL`(openai-codex / codex-image-default)을 쓴다. 대화 계정을 따르지 않는다. 저장된 blob의 image 값은 고정으로 취급되어 그대로다(조용히 바꾸지 않는다).
+`generateAiImage`는 image 슬롯이 고정이 아니고 호출이 제공자를 지정하지 않았으며 ChatGPT 연결이 없고 Google 연결이 있을 때만 Google로 대신한다. `deps.fetch`를 주입한 테스트 경로에서는 상태 조회를 하지 않는다.
+같은 구조화 프롬프트 4컷 비교에서 GPT Image가 앵글·광원 지시를 더 잘 지켰지만 지시하지 않은 인물을 끼워 넣었다(http://mdc-server:18301/opening-prompt-ab-models.html). `OPENING_AB_PROVIDER`/`OPENING_AB_MODEL`로 `opening-prompt-ab.mts`를 다른 경로에 돌린다.
