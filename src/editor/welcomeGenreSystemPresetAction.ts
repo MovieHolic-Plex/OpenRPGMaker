@@ -10,7 +10,7 @@ import { normalizeGameDesignBrief, type GameDesignBrief } from "@/project/gameDe
 import { newProjectChoiceById } from "./newProjectChoices";
 import { UNNAMED_GAME_TITLE } from "./welcomeGenrePresets";
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
-import { withVerifiedPlayableSegment } from "@/project/playableSegment";
+import { preparePlayableSegmentAssets, withVerifiedPlayableSegment } from "@/project/playableSegment";
 import { projectRepository } from "@/project/persistence/repository";
 import { prepareProjectMedia } from "@/project/persistence/prepareProjectMedia";
 import { sameProjectTarget } from "@/project/persistence/target";
@@ -86,6 +86,7 @@ export async function applyWelcomeGenreSystemPresetPlan(
     retitleProject(result.project, UNNAMED_GAME_TITLE);
     // 인터뷰를 거친 AI 첫 생성이면 끝낼 수 있는 첫 구간 뼈대를 먼저 깐다(메뉴 경로는 prepareProjectInterviewStartup 이 같은 일을 한다).
     // ⚙ 시스템 프리셋(brief 없음)은 설정만 바꾸는 길이라 뼈대를 깔지 않는다.
+    await preparePlayableSegmentAssets(result.project);
     const skeleton = withVerifiedPlayableSegment(result.project);
     if (skeleton) result = { ...result, project: skeleton };
   }
