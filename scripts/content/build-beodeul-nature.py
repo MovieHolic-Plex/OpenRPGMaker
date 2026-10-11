@@ -7,7 +7,8 @@
     밑이 넓은 것(집·소품·바위)은 오른쪽·아래로 비낀 그림자. 색은 어두운 중성색 + 알파 두 단(warm-trees 그림자와 같은 51/126 결).
   - 자연 물가: 물 칸(1층 = 운하 물 몸통 23152 또는 오아시스 물)에 얹는다. 이웃 8칸 중 물 아닌 쪽으로 잔디·흙 둑이 4±1px 들어오고
     물가 1px 은 어둡게. 8이웃 256가지 → 같은 그림끼리 합친다. 굽이는 16px 주기라 이웃 칸끼리 이어진다.
-  - 풀밭 가장자리: 모래 위 풀밭 칸에 얹는다(오아시스). 풀이 아닌 쪽으로 3±1px 물러나고 가장자리 1px 은 짙은 풀.
+  - 풀밭 가장자리: 모래 위 풀밭 칸에 얹는다(오아시스). 풀이 아닌 쪽으로 4±1.8px 물러나고 가장자리 1px 은 짙은 풀.
+  - 설원 얼음 못(눈 둑)·늪 물(이끼 둑)·늪 이끼 칸(진흙 둑)도 같은 방식 — 늪·얼음 못이 칸 모양 네모로 보이던 것.
 그림: 버들항 시트의 실제 잔디(737)·오아시스 풀밭 표본 칸의 화소를 그대로 무늬로 쓴다(이웃 바닥과 이음매가 없다).
 출력: public/assets/beodeul-nature/chipset.png(16열), src/assets/beodeulNatureCatalog.json.
   python3 scripts/content/build-beodeul-nature.py
@@ -63,7 +64,9 @@ def add_tile(px: np.ndarray) -> int:
 
 # ------------------------------------------------------------------ 1. 그림자
 SKIP = re.compile(r"ground|field|wheat|wild-|heath|fern|flower|decal|boat|lily|duck|ice-|jetty|bridge|waterwheel|reed|vine-field|bed-|rug|datemat|bones|fence|lantern-str|mpart-flower|sand-patch|crab-trap|laundry|garden-|path|stones-|-mat|shadow|road|plaza|deck|water|bog|mud|snow$|pilings|mound")
-INCLUDE = re.compile(r"^bd-(tree|mpart-bush|house|prop|out)-|^bd-pick-(riverside-mill|fishing-port|desert-oasis|snowfield|swamp-stilt|walled-market|wheat-roman-road|deep-forest-path|coast-cliff-road|vineyard|wizard-tower)-")
+PLACES = "riverside-mill|fishing-port|desert-oasis|snowfield|swamp-stilt|walled-market|wheat-roman-road|deep-forest-path|coast-cliff-road|vineyard|wizard-tower"
+INCLUDE = re.compile(r"^bd-(tree|mpart-bush|house|prop|out)-|^bd-pick-(" + PLACES + ")-")
+PLACE = re.compile(r"^bd-pick-(" + PLACES + ")-")
 
 def shadow_for(k):
     im = kit_image(k); M = im[..., 3] > 40
@@ -138,7 +141,8 @@ def shadow_for(k):
 
 shadows = {}
 for kid, k in KITS.items():
-    if not INCLUDE.search(kid) or SKIP.search(kid): continue
+    # SKIP 은 장소 이름을 뗀 나머지에만 — 「snowfield」의 field, 「deep-forest-path」의 path, 「wheat-roman-road」의 road 가 키트 전체를 빼던 것
+    if not INCLUDE.search(kid) or SKIP.search(PLACE.sub("", kid)): continue
     if k["width"] > 12 or k["height"] > 12: continue
     if (k.get("ai") or {}).get("role") in ("terrain", "water", "wall"): continue
     s = shadow_for(k)
@@ -170,14 +174,31 @@ def rounded_depth(f: np.ndarray, R: float) -> np.ndarray:
 def tex_tile(n):
     return tile_px(n)
 GRASS = tex_tile(737)
-lawn_kit = KITS["bd-pick-desert-oasis-ground-lawn"]; LAWN = tex_tile(lawn_kit["rows"][1]["tiles"][1])
+def kit_tex(kid):
+    return tex_tile(KITS[kid]["rows"][1]["tiles"][1])
+LAWN = kit_tex("bd-pick-desert-oasis-ground-lawn")
+SNOW = kit_tex("bd-pick-snowfield-ground-snow")
+BOG = kit_tex("bd-pick-swamp-stilt-ground-bog")
+MUD = kit_tex("bd-pick-swamp-stilt-ground-mud")
 def shade(px, f):
     out = px.astype(float); out[..., :3] *= f; return np.clip(out, 0, 255).astype(np.uint8)
 DIRT_HI = np.array([156, 118, 76, 255], np.uint8); DIRT_LO = np.array([122, 88, 56, 255], np.uint8); DIRT_WET = np.array([84, 60, 42, 255], np.uint8)
 
-def bank_tile(mask: int, land: np.ndarray) -> np.ndarray:
-    """물 칸 덧그림: 물이 아닌 쪽에서 둑(잔디 + 흙 3px)이 6±1.5px 들어온다. 모서리는 거리 장이라 둥글다.
-    물 부분은 투명(1층 물이 보인다), 물가 1px 은 젖은 그림자, 그 안 2px 은 얕은 물빛."""
+BANK_STYLES = {
+    # 잔디·풀밭 둑: 잔디 → 짙은 풀 1px → 흙 3px → 젖은 흙 1px → 어두운 물가 → 얕은 물빛
+    "earth": {"dirt": (DIRT_HI, DIRT_LO), "wet": DIRT_WET, "lip": 0.8, "rim": (12, 26, 30, 150), "shallow": (120, 190, 180, 46)},
+    # 눈 둑(얼음 못): 흙 없이 눈 → 푸른 그늘 2px → 얼음 가장자리 어두운 선
+    "snow": {"dirt": ((176, 196, 222, 255), (160, 182, 212, 255)), "wet": (122, 146, 182, 255), "lip": 0.9, "rim": (40, 70, 110, 120), "shallow": (230, 244, 255, 60)},
+    # 이끼 늪 둑(늪 물): 이끼 → 짙은 진흙 2px → 물가 검은 선
+    # 늪 진흙 → 이끼 늪(막힘) 가장자리: 진흙 무늬가 이끼 칸으로 둥글게 들어온다. 얕은 물빛 없이 짙은 선만
+    "mud": {"dirt": ((96, 84, 52, 255), (86, 74, 46, 255)), "wet": (56, 50, 30, 255), "lip": 0.9, "rim": (20, 26, 14, 110), "shallow": (0, 0, 0, 0)},
+    "bog": {"dirt": ((74, 70, 40, 255), (62, 58, 34, 255)), "wet": (40, 38, 24, 255), "lip": 0.82, "rim": (8, 14, 10, 150), "shallow": (90, 120, 80, 40)},
+}
+
+def bank_tile(mask: int, land: np.ndarray, style: str = "earth") -> np.ndarray:
+    """물 칸 덧그림: 물이 아닌 쪽에서 둑(바닥 무늬 + 둑 띠 3px)이 5.5±0.8px 들어온다. 모서리는 거리 장이라 둥글다.
+    물 부분은 투명(1층 물·얼음이 보인다), 물가 1px 은 그늘, 그 안 2px 은 얕은 물빛."""
+    st = BANK_STYLES[style]
     d = rounded_depth(mask_field(mask), 12.0)
     r = 5.5 + wobble(0.8, 0.7)
     out = np.zeros((T, T, 4), np.uint8)
@@ -185,15 +206,15 @@ def bank_tile(mask: int, land: np.ndarray) -> np.ndarray:
     out[is_land] = land[is_land]
     dirt = is_land & (d >= r - 3.0)
     hi = (hsh(XX, YY, 5) > 0.55)
-    out[dirt & hi] = DIRT_HI; out[dirt & ~hi] = DIRT_LO
+    out[dirt & hi] = st["dirt"][0]; out[dirt & ~hi] = st["dirt"][1]
     wet = is_land & (d >= r - 1.0)
-    out[wet] = DIRT_WET
+    out[wet] = st["wet"]
     grass_lip = is_land & (d >= r - 4.0) & (d < r - 3.0)
-    out[grass_lip] = shade(land, 0.8)[grass_lip]
+    out[grass_lip] = shade(land, st["lip"])[grass_lip]
     rim = (~is_land) & (d < r + 1.0)
-    out[rim] = (12, 26, 30, 150)
+    out[rim] = st["rim"]
     shallow = (~is_land) & (d >= r + 1.0) & (d < r + 3.0)
-    out[shallow] = (120, 190, 180, 46)
+    out[shallow] = st["shallow"]
     return out
 
 def edge_tile(mask: int, tex: np.ndarray) -> np.ndarray:
@@ -214,6 +235,9 @@ def table(fn, *a):
 bank_grass = table(bank_tile, GRASS)
 bank_lawn = table(bank_tile, LAWN)
 edge_lawn = table(edge_tile, LAWN)
+bank_snow = table(bank_tile, SNOW, "snow")
+bank_bog = table(bank_tile, BOG, "bog")
+bank_mud = table(bank_tile, MUD, "mud")
 print("tiles", len(tiles))
 
 # ------------------------------------------------------------------ 시트·목록
@@ -227,9 +251,10 @@ cat = {
     "id": "beodeul_nature", "texture": "tex_beodeul_nature", "tileSize": T, "tilesPerRow": COLS, "count": rows_n * COLS,
     "note": "2층 투명 덧그림. 생성 scripts/content/build-beodeul-nature.py. 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128(같은 것이면 1).",
     "shadows": shadows,
-    # 불투명 흙 화소가 든 그림자 칸 — 길 위(4층)로는 올리지 않는다
+    # 불투명 흙 화소(집 밑동)가 든 그림자 칸
     "soilTiles": sorted({n for n, px in enumerate(tiles) if (px[..., 3] == 255).any() and n in shadow_tiles}),
     "bankGrass": bank_grass, "bankLawn": bank_lawn, "edgeLawn": edge_lawn,
+    "bankSnow": bank_snow, "bankBog": bank_bog, "bankMud": bank_mud,
 }
 OUT_JSON.write_text(json.dumps(cat, ensure_ascii=False, separators=(",", ":")) + "\n")
 print("wrote", OUT_PNG, img.shape, OUT_JSON, OUT_JSON.stat().st_size)
