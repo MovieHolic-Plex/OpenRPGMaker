@@ -120,7 +120,8 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     const k = kinds(map.lowerTiles[idx(x, y)]!);
     if (!k.includes("road") && !k.includes("sand")) continue;
     if (x === 0 || y === 0 || x === W - 1 || y === H - 1) continue;
-    if (N4.filter(([dx, dy]) => paved(x + dx, y + dy)).length <= 1) deadEnds.push({ at: [x, y], kind: "cell", width: 1 });
+    // 물가에서 끝나는 길(나루·선착장)은 막다른 길이 아니다 — 아래 폭 2~3 토막 검사와 같은 예외
+    if (N4.filter(([dx, dy]) => paved(x + dx, y + dy)).length <= 1 && !N4.some(([dx, dy]) => water(x + dx, y + dy))) deadEnds.push({ at: [x, y], kind: "cell", width: 1 });
   }
   const isRoadFree = (x: number, y: number) => isStreet(x, y) && !kitOwned.has(idx(x, y));
   for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]] as const) {
@@ -194,7 +195,9 @@ export function analyzeCityForm(project: Project, map: GameMap): CityFormReport 
     for (let h = 0; h < q.length; h += 1) for (const b of adj[q[h]!]!) if (!depth.has(b)) { depth.set(b, depth.get(q[h]!)! + 1); q.push(b); }
     const ds = [...depth.values()]; meanDepth = +(ds.reduce((a, b) => a + b, 0) / ds.length).toFixed(2); maxDepth = Math.max(...ds);
   }
-  const isolated = compSizes.filter((m) => m !== main).map((m) => m.reduce((b, i) => (lines[i]!.len > lines[b]!.len ? i : b), m[0]!))
+  // 물가에 닿는 떨어진 길망(강 건너 나루 들길·섬 선착장)은 배로 잇는 길이다 — 떨어진 길로 세지 않는다
+  const reachesWater = (m: number[]) => m.some((i) => lines[i]!.cells.some((c) => N4.some(([dx, dy]) => water((c % W) + dx, Math.floor(c / W) + dy))));
+  const isolated = compSizes.filter((m) => m !== main && !reachesWater(m)).map((m) => m.reduce((b, i) => (lines[i]!.len > lines[b]!.len ? i : b), m[0]!))
     .map((i) => ({ from: lines[i]!.from, to: lines[i]!.to, len: lines[i]!.len })).filter((l) => l.len >= 6);
   const longStraight = lines.filter((l) => l.len >= 45).map((l) => ({ orient: l.orient, from: l.from, to: l.to, len: l.len }));
 

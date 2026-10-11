@@ -37,9 +37,9 @@ for (const theme of themes) for (const form of allowedVillageForms(theme)) {
       doors: doors.length, unreached: doors.filter((x) => !x.reached).length, deadCells: cf.deadEnds.filter((x) => x.kind === "cell").length,
       deadStreets: cf.deadEnds.filter((x) => x.kind === "street").length,
       longStraight: cf.lines.longStraight.map((l) => `${l.orient}${l.len}@${l.from.join(",")}`), isolated: cf.graph.isolated.length, fields: d.fields, fenceCells: d.fenceCells, trees: d.trees,
-      stampFailed: d.stampFailed, warnings: r.warnings ?? [], summary: r.summary };
+      stampFailed: d.stampFailed, warnings: ((r as any).diff?.warnings ?? r.warnings ?? []), summary: r.summary };
     rows.push(row);
-    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, warn: (r.warnings ?? []).length }));
+    console.log(name, JSON.stringify({ ms: row.ms, houses: row.houses, unreached: row.unreached, dead: row.deadCells, deadSt: row.deadStreets, long: row.longStraight, iso: row.isolated, fence: row.fenceCells, fail: row.stampFailed, relief: d.relief ? `${d.relief.edge}${d.relief.cells}/${d.relief.high}${d.relief.stairs ? "+계단" : ""}` : 0, warn: (((r as any).diff?.warnings ?? r.warnings ?? [])).length }));
   }
 }
 fs.writeFileSync(`${OUT}/report.json`, JSON.stringify(rows, null, 1));
