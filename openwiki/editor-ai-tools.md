@@ -3082,3 +3082,9 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - `generate_opening_image.cast`: 나와도 되는 인물·생물. 비우면 이야기 순간에 이름 난 대상만, 사람 없는 컷은 `nobody`. GPT Image가 지시 없는 망토 인물을 끼워 넣던 문제를 막는다.
 - 화풍 문장은 기법으로 쓴다. 같은 컷 3화풍(`scripts/qa/opening-style-ab.mts`)에서 "visible square pixels, 32-colour, dithering" 같은 기법 문장만 실제로 화풍이 갈렸고, gouache·HD-2D 같은 이름은 기본 시네마틱 화면으로 수렴했다.
 - 도구 선언 크기: 오프닝 가족은 `scripts/qa/measure-opening-tools.mts`로 쟀다(기준선 5,814 → 6,073). `test/aiToolCatalogBudget.test.ts`의 1,300 천장과 이 측정의 관계는 실행해 확인하지 않았다.
+
+### 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+
+`generate_opening_image.candidates`(1~3, 기본 1). 2~3이면 워커(`piAgentRuntime.ts`)가 `scripts/lib/openingStillCritic.ts`의 `generateBestStill`로 후보를 병렬 생성하고, 생성 모델과 다른 계열의 판정자(Gemini 3.8 Flash 우선, 없으면 gpt-6.1-sol)가 8항목(초점·이야기·cast·구도·빛·화풍·벽지 징후·결함, 합 80)으로 채점해 한 장만 `upsert_resource`로 등록한다. 응답 `data.critique`에 고른 이유·후보 점수·재생성 권고(`fix`)가 온다.
+`PiOpeningProduction.critic()`이 resourceId별 판정을 기록하고, 마지막 오프닝이 `regenerate` 권고를 받은 그림을 계속 쓰면 `inspect()`가 수리 사유를 낸다. 판정자 호출이 실패하면 막지 않고 첫 후보를 쓰되 verdict는 `unjudged`다(합격으로 보고하지 않는다).
+사전 검증 `scripts/qa/opening-critic-probe.mts`(지시 없는 인물 후보가 두 컷 모두 cast 3점 최하위), 실제 경로 시연 `scripts/qa/opening-critic-e2e.mts`(http://mdc-server:18301/opening-critic.html). 한계: 점수가 40~56에 몰려 순위는 쓸모 있으나 accept 기준은 약하다. 재생성 경로 자체는 시연하지 못했다.
