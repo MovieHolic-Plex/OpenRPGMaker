@@ -191,6 +191,8 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const fenced = "mat" in base.base; // 울타리 조각(숲 계열)은 풀밭 마을에만
   const ts: TilesetDef = draft.tilesets[TS_ID]!;
   const map0 = draft.maps[mapId]!;
+  // 같은 mapId 로 다시 지을 때 옛 높이를 지운다 — 높이를 아는 stamp_object 가 시공 도중 옛 relief 를 보고 키트를 거절하지 않게(새 relief 는 12c 에서 싣는다)
+  delete map0.relief;
   const W = map0.width, H = map0.height;
   const rand = rng(seed * 7919 + theme.length * 131 + 17);
   const ri = (a: number, b: number) => a + Math.floor(rand() * (b - a + 1));
@@ -353,6 +355,14 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   const rampCells = new Set<number>(); // 길 경사로 칸(코드 1~4) — 문 앞·소품 자리로 쓰지 않는다
   const ramps = new Array<number>(W * H).fill(0);
   let rel: ReliefData | null = null; // 경사로까지 정한 뒤(3b) 만든다 — 문 앞 길 찾기가 단을 안다
+  // 흩어진 마을의 갈래길은 마감에서 마지막 집 문 앞까지 깎인다 — 그 끝 토막과 거기 놓인 경사로를 믿고 자리를 고르지 않는다(울타리 문·대지 이어짐 계산)
+  const branch = (c: number) => form === "scatter" && streets.some((st) => st.name === "갈래길" && st.cells.has(c));
+  /** 계획 단계에서 믿을 수 있는 한 걸음: 단은 경사로로만, 갈래길 경사로는 믿지 않는다. */
+  const trustStep = (x: number, y: number, nx: number, ny: number): boolean => {
+    const c = idx(x, y), n = idx(nx, ny);
+    if ((rampCells.has(n) || rampCells.has(c)) && (branch(n) || branch(c))) return false;
+    return !rel || reliefAllowsStep(rel, x, y, nx, ny);
+  };
   let rampCount = 0, cutCells = 0, rampFails = 0;
 
   planStep("물 자리");
@@ -1306,6 +1316,21 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
   // 문 한 칸은 길에 가까운 변(모서리 옆 칸은 피한다)에 비우고, 문 양옆은 난간이 기둥에서 끝나는 끝 조각(endW·endE·endN·endS)이다.
   // (2026-10-11 사용자 「울타리 외곽 마감이 별로, 이어져 있다는 느낌이 안 든다」 — 옛 조각 셋은 위 모서리가 반 칸 삐져나가고 세로와 끊겼다.)
   type FenceKind = "h" | "v" | "tl" | "tr" | "bl" | "br" | "endW" | "endE" | "endN" | "endS";
+  /** 계획 격자 위에서 길에서 걸어 닿는 높은 단 칸 수(나무·소품 칸은 나중에 걷어 낼 수 있어 걷는 칸으로 본다). blocked 칸은 막힌 것으로. */
+  const upperReach = (blocked: Set<number>): number => {
+    const seen = new Uint8Array(W * H); const q: number[] = [];
+    const ok = (c: number) => { const v = occ[c]; return !blocked.has(c) && (v === FREE || v === POND_RING || v === CLEAR || v === ROAD || v === PLAZAC || v === KEEP || v === PROP); };
+    for (let c = 0; c < W * H; c += 1) if ((occ[c] === ROAD || occ[c] === PLAZAC) && !blocked.has(c) && !branch(c)) { seen[c] = 1; q.push(c); }
+    let n = 0;
+    for (let h = 0; h < q.length; h += 1) { const c = q[h]!, x = c % W, y = (c - x) / W; if (lv[c]! > 0) n += 1;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const nx = x + dx, ny = y + dy; if (!inMap(nx, ny)) continue; const nn = idx(nx, ny);
+        if (seen[nn] || !ok(nn) || !trustStep(x, y, nx, ny)) continue; seen[nn] = 1; q.push(nn); } }
+    return n;
+  };
+  const keepsUpperOpen = (rect: Set<number>): boolean => {
+    let own = 0; for (const c of rect) if (lv[c]! > 0) own += 1;
+    return upperReach(rect) >= upperReach(new Set()) - own;
+  };
   const fenceAt = new Map<number, FenceKind>();
   const fenceGates: number[] = []; // 울타리 문 칸 — 13단계에서 입구로부터 닿는지 잰다
   const fenceInside = new Set<number>(); // 울타리 안 칸(밭·텃밭) — 문으로 드는 울타리 안이라 「갇힌 빈터」로 세지 않는다
@@ -1321,8 +1346,6 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 이웃 밭 울타리 사이 골에 갇히거나 올라갈 길 없는 단 위에 있으면 문까지 못 갔다). 그 걸음 자리는 CLEAR 로 비워 둔다.
     const inside = (x: number, y: number) => x >= x0 && x <= x1 && y >= y0 && y <= y1;
     const outsideOf = (c: number): number => { const x = c % W, y = (c - x) / W; const [ox, oy] = y === y0 ? [x, y - 1] : y === y1 ? [x, y + 1] : x === x0 ? [x - 1, y] : [x + 1, y]; return inMap(ox, oy) ? idx(ox, oy) : -1; };
-    // 흩어진 마을의 갈래길은 마감에서 마지막 집 문 앞까지 깎인다 — 그 끝 토막과 거기 놓인 경사로를 믿고 문 자리를 고르지 않는다
-    const branch = (c: number) => form === "scatter" && streets.some((st) => st.name === "갈래길" && st.cells.has(c));
     const walkTo = (start: number): number[] | null => {
       if (start < 0 || (occ[start] !== FREE && occ[start] !== POND_RING && occ[start] !== CLEAR)) return null;
       const prev = new Int32Array(W * H).fill(-2); prev[start] = -1; const q = [start];
@@ -1333,8 +1356,7 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
           const nx = x + dx, ny = y + dy; if (!inMap(nx, ny) || inside(nx, ny)) continue; const n = idx(nx, ny);
           if (prev[n] !== -2) continue; const v = occ[n];
           if (v !== FREE && v !== POND_RING && v !== CLEAR && v !== ROAD && v !== PLAZAC) continue;
-          if ((rampCells.has(n) || rampCells.has(c)) && (branch(n) || branch(c))) continue;
-          if (rel && !reliefAllowsStep(rel, x, y, nx, ny)) continue;
+          if (!trustStep(x, y, nx, ny)) continue;
           prev[n] = c; q.push(n);
         }
       }
@@ -1347,6 +1369,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const p = walkTo(o); if (p) { gate = c; gatePath = p; break; }
     }
     if (gate < 0 || !gatePath) return false;
+    // 높은 단 위 울타리는 그 단의 걸을 수 있는 땅을 둘로 가르지 않아야 한다(절벽 끝 띠·맵 가장자리와 함께 대지 한쪽을 막으면 그 너머가 고립된다)
+    if (hasTerrain && rel) {
+      const rect: number[] = []; for (let y = y0; y <= y1; y += 1) for (let x = x0; x <= x1; x += 1) rect.push(idx(x, y));
+      if (rect.some((c) => lv[c]! > 0) && !keepsUpperOpen(new Set(rect))) return false;
+    }
     for (const c of gatePath) if (occ[c] === FREE) occ[c] = CLEAR;
     for (let y = y0 + 1; y < y1; y += 1) for (let x = x0 + 1; x < x1; x += 1) fenceInside.add(idx(x, y));
     const gx = gate % W, gy = (gate - gx) / W;

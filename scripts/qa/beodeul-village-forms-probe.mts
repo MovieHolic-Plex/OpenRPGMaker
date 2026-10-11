@@ -1,6 +1,7 @@
 // author_beodeul_town 마을 형태(form) 프로브 — LLM 없이 theme × form × seed 로 짓고 렌더·통계를 남긴다.
 //   bun scripts/qa/beodeul-village-forms-probe.mts [--out output/evidence/village-forms] [--seeds 3,7,11] [--themes river,coast] [--forms riverbank] [--terrains terraces,flat] [--size 88x56]
 //   bun scripts/qa/beodeul-village-forms-probe.mts --cases coast:street:terraces:42:64x40,swamp:street:ridge:7   (정한 판만)
+//   … --rebuild   (seed+100 으로 먼저 지어 relief 가 남은 맵에 같은 mapId 로 다시 짓기)
 // 결과: <out>/<theme>-<form>-<seed>.png, <out>/report.json(문 앞 도달·막다른 칸·울타리·경고)
 import fs from "node:fs";
 import { renderMapPng } from "../qa-game/render.mts";
@@ -19,6 +20,7 @@ const themes = arg("themes", BEODEUL_VILLAGE_THEMES.join(",")).split(",") as Beo
 const forms = arg("forms", "").split(",").filter(Boolean);
 const terrainsArg = arg("terrains", "").split(",").filter(Boolean); // 생략 = theme 의 지형 전부
 const size = arg("size", ""); // 예: 88x56 (생략 = theme 기본 크기)
+const rebuild = process.argv.includes("--rebuild");
 fs.mkdirSync(OUT, { recursive: true });
 const base = createBlankProject() as Project; ensureBundledTilesets(base);
 const baseJson = JSON.stringify(base);
@@ -39,8 +41,15 @@ for (const { theme, form, terrain, seed, size } of plan) {
   {
     const ctx = { project: JSON.parse(baseJson) as Project };
     const t0 = Date.now();
-    const r = runTool(ctx, "author_beodeul_town", { theme, form, terrain, seed, id: `v_${theme}_${form}_${terrain}_${seed}`, ...(sw ? { width: sw, height: sh } : {}) } as never);
-    const name = `${theme}-${form}-${terrain}-${seed}${size ? `-${size}` : ""}`;
+    const id = `v_${theme}_${form}_${terrain}_${seed}`;
+    // --rebuild: 먼저 다른 seed 로 지어 옛 높이(relief)를 남긴 맵에 같은 mapId 로 다시 짓는다(높이를 아는 stamp_object 가 옛 relief 로 키트를 거절하지 않는지)
+    // 마을 집이 선 맵은 완성된 집 보호로 덮어 짓기가 거절되므로(조수 경로), 집 보호 기록만 걷어 「relief 는 남았고 보호된 집은 없는 맵」을 만든다.
+    if (rebuild) {
+      const r0 = runTool(ctx, "author_beodeul_town", { theme, form, terrain, seed: seed + 100, id, ...(sw ? { width: sw, height: sh } : {}) } as never); if (!r0.ok) console.log("rebuild first FAIL", r0.summary);
+      const m0 = ctx.project.maps[id]; if (m0) { m0.structurePlacements = []; console.log("rebuild: old relief", !!m0.relief); }
+    }
+    const r = runTool(ctx, "author_beodeul_town", rebuild ? { theme, form, terrain, seed, mapId: id } as never : { theme, form, terrain, seed, id, ...(sw ? { width: sw, height: sh } : {}) } as never);
+    const name = `${theme}-${form}-${terrain}-${seed}${size ? `-${size}` : ""}${rebuild ? "-rebuild" : ""}`;
     if (!r.ok) { rows.push({ name, ok: false, summary: r.summary }); console.log(name, "FAIL", r.summary); continue; }
     const d = r.data as any; const map = ctx.project.maps[d.mapId]!;
     fs.writeFileSync(`${OUT}/${name}.png`, renderMapPng(ctx.project, map).png);
