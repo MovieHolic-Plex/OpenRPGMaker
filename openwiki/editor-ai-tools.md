@@ -3088,3 +3088,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 `generate_opening_image.candidates`(1~3, 기본 1). 2~3이면 워커(`piAgentRuntime.ts`)가 `scripts/lib/openingStillCritic.ts`의 `generateBestStill`로 후보를 병렬 생성하고, 생성 모델과 다른 계열의 판정자(Gemini 3.8 Flash 우선, 없으면 gpt-6.1-sol)가 8항목(초점·이야기·cast·구도·빛·화풍·벽지 징후·결함, 합 80)으로 채점해 한 장만 `upsert_resource`로 등록한다. 응답 `data.critique`에 고른 이유·후보 점수·재생성 권고(`fix`)가 온다.
 `PiOpeningProduction.critic()`이 resourceId별 판정을 기록하고, 마지막 오프닝이 `regenerate` 권고를 받은 그림을 계속 쓰면 `inspect()`가 수리 사유를 낸다. 판정자 호출이 실패하면 막지 않고 첫 후보를 쓰되 verdict는 `unjudged`다(합격으로 보고하지 않는다).
 사전 검증 `scripts/qa/opening-critic-probe.mts`(지시 없는 인물 후보가 두 컷 모두 cast 3점 최하위), 실제 경로 시연 `scripts/qa/opening-critic-e2e.mts`(http://mdc-server:18301/opening-critic.html). 한계: 점수가 40~56에 몰려 순위는 쓸모 있으나 accept 기준은 약하다. 재생성 경로 자체는 시연하지 못했다.
+
+### 시연 오프닝 6컷 mp4 (2026-10-12)
+
+`scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
+계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.
