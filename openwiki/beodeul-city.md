@@ -449,6 +449,28 @@ r1 시험(`verify-shots/assistant-beodeul-village/r1/fresh`)은 「마을」에 
 - 조수는 문법 문서를 읽지 않고 도구를 바로 불렀다(도구가 문법을 지니므로 결과는 같다). 마을 이름·NPC·출입구 이벤트는 짓지 않는다.
 - 버들항 던전·필드 문법 도구는 없다(던전은 참고문서 beodeul-picks-dungeon 을 읽고 키트를 찍는다, 필드 길은 `author_wild_route` 의 버들항 시공).
 
+### 마을 형태 넷 + 이어진 밭 울타리 (2026-10-11)
+
+위 문법은 늘 「굽은 큰길 → 큰길 위 광장 → 그 북쪽 앵커」 한 구도였다. 마을 실험(`~/exp-chunks`, 보고서 village-forms.html)에서 이것이
+설정문·취향 문서·견본에서 온 고정관념으로 확인돼 `author_beodeul_town` 에 **`form`** 을 더했다(`beodeulVillage.ts` 머리 주석·`resolveVillageForm`).
+
+| form | 뼈대 | 앵커(「모이는 곳」 `data.gathering`) |
+|---|---|---|
+| `plaza` | 위 문법 그대로 | 큰길 위 광장 |
+| `street` | 큰길·뒷길 고리, 광장 단계 없음 | 다리 머리 / 포구 길 어귀 / 못으로 드는 어귀 / 마을 어귀 — 문 맞은편 판석 어귀(blob 2.6×1.4)+우물 |
+| `riverbank`(river 만) | 강을 늘 서쪽(0.2W)에 두고 동쪽 둑에 남북 둑길(폭 2)·뒷길·위아래 이음길 고리, 가운데 들길이 동쪽 끝까지(입구) | 들길이 둑길과 만나는 어귀 |
+| `scatter` | 오솔길 폭 1(풀밭 마을은 `버들항 모랫길`), 갈래길 2~3개, 집 간격 4~8, 뒷길 없음 | 오솔길 갈림길 |
+
+- form 을 빼면 **본 시공과 따로 뽑은 난수**로 고른다(`DEFAULT_FORMS`) — 같은 seed 의 광장 마을은 예전과 같다(사막·설원·늪 광장 렌더가 바이트 단위로 같았다; 강·포구는 울타리만큼 달라진다).
+- riverbank 에서 강이 늘 서쪽인 까닭: 물레방아 키트(`riverside-mill-waterwheel` 3×4)가 강의 동쪽 둑에만 걸친다. 다리가 없어 서쪽 좁은 둑의 방앗간은 닿을 길이 없다.
+- 흩어진 마을의 갈래길은 끝을 정하지 않고 길게 깐 뒤, 막다른 칸 깎기를 남은 것이 없을 때까지 돌려 마지막 집 문 앞에서 멈추게 한다(광장 마을은 예전처럼 6번).
+- **밭 울타리**: 풀밭 마을(바닥이 재료인 river·coast)의 밭 둘레 1칸과 흩어진 마을 텃밭(4~5×3, 밭두렁 `bd-pick-wizard-tower-bed-*`·배추 상자)에
+  공용 기초 칩셋 `beodeul_ground` 의 `bdg-woodland-fence-horizontal/vertical/corner` 를 `translateTiles` 로 옮겨 층 3에 잇는다(`beodeulVegetationTools.ts` 공동마당과 같은 방식, 통행·우선순위 복사).
+  조각이 셋뿐이라 위 모서리는 가로 조각, 아래 모서리만 모서리 조각. 문 한 칸(밭은 길에 가장 가까운 변, 텃밭은 집 문에 가까운 변)은 비우고 계획 격자에서 PROP 로 막아 나무가 앉지 않게 한다. 울타리 두른 밭은 모서리를 깎지 않는다.
+- 조수 쪽: 도구 설명이 「form 은 마을이 왜 여기 생겼나에서, 광장은 장터일 때만」을 말하고, 참고문서 `bd-pick-doc-village-grammar` 1절 「이 순서를 바꾸지 않는다」를 형태 표로 바꿨다(그림 `grammar-forms-river-7` = 같은 seed 네 형태).
+- 프로브(LLM 없음): `bun scripts/qa/beodeul-village-forms-probe.mts [--seeds 3,7,11] [--themes …] [--forms …] [--out …]` — 48판 모두 문 앞 도달·막다른 칸 0·경고 0. 시트 http://mdc-server:18301/village-forms-editor.html.
+- 남은 약점: 포구 street 는 광장만 빠진 plaza 와 비슷하다(포구 길·물가 길 고리가 같다). 흩어진 포구는 물가 길·포구 길 고리가 남아 덜 흩어진다. 울타리 조각이 숲 계열 하나라 모래·눈·늪 마을엔 두르지 않는다. 형태를 고르는 판단은 조수 몫이다.
+
 ## 작은 마을 길·마당 구도 보정 (2026-10-04)
 
 `naturalize_beodeul_hamlet({mapId})`는 공용 소규모 집 3~5채의 전체 배열/원점을 먼저 확인하고 원본 집·나무·출입을 보존한 채 큰길/광장과 흙 접근로/마당을 구분한다. 옛 순환 포석 샛길과 흩어진 작은 풀 장식은 정리한다. 텃밭·빨래 마당·식생 군락은 빈 칸과 문 앞 도달성을 확인하고 배치한다. 임의 배치 마을/높이 있는 맵에는 사용하지 않는다. 새 houseCount 시공은 이 구도 후 일광을 자동 적용한다. 공용 source beodeul_ground 368칸(기존304 불변), 문서 tiledata/beodeul-ground/HAMLET.md, 정상/오류 및 full 네 층 예제는 참고문서 beodeul-ground-dressing. SQLite와 플레이어 근거 verify-shots/beodeul-lived-village.
