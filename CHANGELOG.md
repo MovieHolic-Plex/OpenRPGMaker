@@ -5,6 +5,42 @@
 
 <!-- releases -->
 
+## 0.189.0 — 2026-10-12
+
+### 기능
+
+- **opening** — showcase pipeline scripts (gen, build via real tools, player recording) (`5bd31cb`)
+- **opening** — candidate generation with independent still critic and regenerate gate (`cc946ef`)
+- **opening** — bible, cast rule and technique-style guidance for opening production (`671a194`)
+- **ai** — default image route to ChatGPT with Google fallback when not connected (`da29a9f`)
+- **opening** — structured still prompt with focal point, angle, light and palette (`c95734d`)
+- **editor** — streamline terrain editing workflow (`84e0fb2`)
+
+### 수정
+
+- **editor** — reduce preset project startup cloning (`0303165`)
+- **release** — record the desktop package version in the drop directory (`a68dc6c`)
+- **release** — keep Windows packages for the test PC to pull (`e4ee92f`)
+- **ci** — unblock typecheck on the remote runners (`c9ee0d7`)
+- **editor** — pin bundled terrain floor choices (`5a34390`)
+- **editor** — prefer repeatable wizarding floor (`4a970d8`)
+- **editor** — choose blank floors per tileset (`421e598`)
+- **terrain** — report ramp length without width area (`66df300`)
+- **terrain** — match ramp length to cliff height (`7938c47`)
+
+### 문서
+
+- **opening** — critic loop notes (`d4e3943`)
+- **terrain** — align ramp length guidance (`f121a1d`)
+
+### 테스트
+
+- **assistant** — execute 50 small command tool contracts (#2427) (`392194c`)
+
+### 기타
+
+- agent worktree base for opening-quality (`7023b5d`)
+
 ## 0.188.0 — 2026-10-11
 
 ### 기능
