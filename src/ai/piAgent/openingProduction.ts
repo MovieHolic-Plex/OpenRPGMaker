@@ -77,7 +77,7 @@ export class PiOpeningProduction {
     if (!this.requested) return [];
     const issues: string[] = [];
     if (this.fingerprint(project) === this.fingerprint(base)) issues.push('오프닝 설정이 요청 전과 같습니다. 실제 변경 또는 변경하지 못한 이유를 보고하세요.');
-    if (/타이틀|title|첫\s*(?:화면|장면)|처음\s*(?:화면|장면)|시작\s*화면|켜자마자|켜면|게임을\s*켤/iu.test(this.task) && !this.titleArt) issues.push('요청에 게임을 켜자마자 보이는 첫 화면(타이틀)이 포함됩니다. 기본 이미지를 두지 말고 오프닝과 같은 화풍·모티프로 generate_title_art(artStyle·light·palette·candidates 지정)를 실행하고 set_title_screen으로 음악·효과를 구성하세요.');
+    if (/타이틀|title|첫\s*(?:화면|장면)|처음\s*(?:화면|장면)|시작\s*화면|켜자마자|켜면|게임을\s*켤/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('요청에 게임을 켜자마자 보이는 첫 화면(타이틀)이 포함됩니다. 기본 이미지를 두지 말고 오프닝과 같은 화풍·모티프로 generate_title_art(artStyle·light·palette·candidates 지정)를 실행하고 set_title_screen으로 음악·효과를 구성하세요.');
     if (/효과음|\bsfx\b|사운드|이펙트|sound\s*effect/iu.test(this.task) && project.system.opening?.scenes?.length && !project.system.opening.scenes.some(s => s.kind === 'image' && (s.direction?.sounds?.length || s.direction?.soundResourceId))) issues.push('효과음을 요청받았지만 어느 장면에도 효과음이 연결되지 않았습니다. 장면 direction.sounds[{resourceId,atMs,volume}]로 사건 시각마다 effect를 연결하고(edit_opening op:update), 연결하지 않았다면 연결했다고 보고하지 마세요.');
     for (const sc of project.system.opening?.scenes ?? []) if ((sc.presentation?.text?.size ?? 0) > 14) issues.push(`${sc.id}: presentation.text.size ${sc.presentation!.text!.size}는 너무 큽니다. 무대는 320×240 논리 픽셀이라 화면에서 3배로 보입니다. 자막은 10~13, 장 제목은 최대 16으로 줄이세요.`);
     if (!this.plan) issues.push('plan_opening으로 사건·구도·연속성·플레이 진입을 설계하세요.');
