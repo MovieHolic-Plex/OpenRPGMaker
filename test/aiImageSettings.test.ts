@@ -39,7 +39,7 @@ function form() {
 
 describe("independent image settings", () => {
   it("routes the stored Codex sentinel and preserves returned upstream metadata without changing chat", async () => {
-    const before = defaultAiConfig();
+    const before = { ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" };
     saveAiConfig(before);
     const view = form();
     view.change("ai-config-image-provider", "openai-codex");
@@ -122,7 +122,7 @@ describe("independent image settings", () => {
   });
 
   it("strongly recommends GPT for drawing and switches to it in one click without touching chat", () => {
-    const before = defaultAiConfig();
+    const before = { ...defaultAiConfig(), imageProviderId: "google-antigravity", imageModel: "gemini-3.1-flash-image" };
     saveAiConfig(before);
     const view = form();
     const note = view.get("ai-config-image-recommend");

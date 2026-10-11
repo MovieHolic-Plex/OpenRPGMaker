@@ -3062,3 +3062,34 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## refine_beodeul_courtyard_vegetation (2026-10-04)
 
 알려진 버들항 54×34 공동마당 예제의 식생/울타리 교정 도구. 전체 집/나무 배열이 일치할 때만 제거·이식을 실행한다. 집 위치/하위 바닥 배열/길/마당은 그대로, 공용 숲의 수관 앞뒤 합성·★ 풀/줄기 X·텃밭 연결 울타리로 보정한다. stone 박공은 아래층과 같은 돌 재질. 이벤트/높이/별도 지형·기물/다른 전이 도착점은 거부. 출처 beodeul-ground-dressing의 WOODLAND 문서 및 normal/error·fresh 전체 조립 예제. 기존 공동마당만 보정할 때 이 도구만 호출하며 원본 맵을 author로 다시 만들지 않는다. 도구/참고문서 허용 목록/프롬프트 정책에 등록했다.
+
+
+## 오프닝 그림 프롬프트 구조화 (2026-10-11)
+
+`generate_opening_image`는 선택 필드 `focus`·`angle`·`light`·`palette`·`captionSide`를 받고 `artStyle` 한도가 400자다(작품 화풍 문장을 컷마다 재사용).
+`buildCinematicStillPrompt`는 STORY MOMENT / FOCAL POINT / CAMERA / LIGHT AND COLOUR / STYLE / AVOID(범용 AI 벽지 징후) 구조로 조립한다. 필드를 생략하면 범용 문구로 대체되어 기존 호출은 그대로 동작한다.
+전후 비교: `scripts/qa/opening-prompt-ab.mts`(실제 이미지 제공자 호출, 첫 결과 그대로 http://mdc-server:18301/opening-prompt-ab.html). 사람 눈 판정 전의 1회 표본이며 품질 합격 근거가 아니다.
+
+### 그림 기본 경로 = ChatGPT(GPT Image) (2026-10-11)
+
+`defaultAiConfig`와 `configForProviderSelection`(고정하지 않은 image 슬롯)은 `RECOMMENDED_IMAGE_PROVIDER_ID/MODEL`(openai-codex / codex-image-default)을 쓴다. 대화 계정을 따르지 않는다. 저장된 blob의 image 값은 고정으로 취급되어 그대로다(조용히 바꾸지 않는다).
+`generateAiImage`는 image 슬롯이 고정이 아니고 호출이 제공자를 지정하지 않았으며 ChatGPT 연결이 없고 Google 연결이 있을 때만 Google로 대신한다. `deps.fetch`를 주입한 테스트 경로에서는 상태 조회를 하지 않는다.
+같은 구조화 프롬프트 4컷 비교에서 GPT Image가 앵글·광원 지시를 더 잘 지켰지만 지시하지 않은 인물을 끼워 넣었다(http://mdc-server:18301/opening-prompt-ab-models.html). `OPENING_AB_PROVIDER`/`OPENING_AB_MODEL`로 `opening-prompt-ab.mts`를 다른 경로에 돌린다.
+
+### 오프닝 바이블·cast·화풍 기법 (2026-10-11)
+
+- `plan_opening`은 선택 `bible`(premise·question·motifs 1~4·palette·artStyle·voice·emotionArc)과 샷별 `angle`·`beat`를 받는다. `PiOpeningProduction`이 이를 기록하고, 오프닝 제작 요청에서 bible이 없거나 계획 앵글의 절반 넘게 같으면 `inspect()`가 수리 사유를 낸다. 워커(`piAgentRuntime.ts`)는 `generate_opening_image/layer` 호출에서 `artStyle`·`palette`를 생략하면 bible 값으로 채운다(직접 준 값이 우선). 시연: `scripts/qa/opening-bible-gate.mts`(모델 호출 없음).
+- `generate_opening_image.cast`: 나와도 되는 인물·생물. 비우면 이야기 순간에 이름 난 대상만, 사람 없는 컷은 `nobody`. GPT Image가 지시 없는 망토 인물을 끼워 넣던 문제를 막는다.
+- 화풍 문장은 기법으로 쓴다. 같은 컷 3화풍(`scripts/qa/opening-style-ab.mts`)에서 "visible square pixels, 32-colour, dithering" 같은 기법 문장만 실제로 화풍이 갈렸고, gouache·HD-2D 같은 이름은 기본 시네마틱 화면으로 수렴했다.
+- 도구 선언 크기: 오프닝 가족은 `scripts/qa/measure-opening-tools.mts`로 쟀다(기준선 5,814 → 6,073). `test/aiToolCatalogBudget.test.ts`의 1,300 천장과 이 측정의 관계는 실행해 확인하지 않았다.
+
+### 오프닝 후보 생성 + 독립 판정자 (2026-10-11)
+
+`generate_opening_image.candidates`(1~3, 기본 1). 2~3이면 워커(`piAgentRuntime.ts`)가 `scripts/lib/openingStillCritic.ts`의 `generateBestStill`로 후보를 병렬 생성하고, 생성 모델과 다른 계열의 판정자(Gemini 3.8 Flash 우선, 없으면 gpt-6.1-sol)가 8항목(초점·이야기·cast·구도·빛·화풍·벽지 징후·결함, 합 80)으로 채점해 한 장만 `upsert_resource`로 등록한다. 응답 `data.critique`에 고른 이유·후보 점수·재생성 권고(`fix`)가 온다.
+`PiOpeningProduction.critic()`이 resourceId별 판정을 기록하고, 마지막 오프닝이 `regenerate` 권고를 받은 그림을 계속 쓰면 `inspect()`가 수리 사유를 낸다. 판정자 호출이 실패하면 막지 않고 첫 후보를 쓰되 verdict는 `unjudged`다(합격으로 보고하지 않는다).
+사전 검증 `scripts/qa/opening-critic-probe.mts`(지시 없는 인물 후보가 두 컷 모두 cast 3점 최하위), 실제 경로 시연 `scripts/qa/opening-critic-e2e.mts`(http://mdc-server:18301/opening-critic.html). 한계: 점수가 40~56에 몰려 순위는 쓸모 있으나 accept 기준은 약하다. 재생성 경로 자체는 시연하지 못했다.
+
+### 시연 오프닝 6컷 mp4 (2026-10-12)
+
+`scripts/qa/opening-showcase-gen.mts`(바이블 자동 적용·cast·후보 3장·판정자, `regenerate`면 fix를 넣어 1회 재생성 — 6컷 중 1·6컷에서 실제로 재생성 경로가 돌았다) → `scripts/qa/opening-showcase-build.mts`(실제 도구 `upsert_resource`·`generate_original_bgm`·`generate_original_se`·`set_opening`으로 프로젝트 구성, 직접 대입 없음) → `scripts/qa/runtime/opening-showcase-record.mjs`(player.html 재생 webm). 결과: http://mdc-server:18301/opening-showcase.mp4.
+계획·글·악보는 조수가 아니라 감독자(사람 대신 쓴 스크립트)가 줬다 — 실조수 품질 증거가 아니라 도구 파이프라인이 낼 수 있는 상한의 시연이다. webm에는 소리가 없어 BGM·효과음은 ffmpeg로 얹었고(장면 시작 시각은 프레임 매칭으로 맞춤) 모델은 소리를 듣지 못했다.

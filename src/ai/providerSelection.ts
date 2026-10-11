@@ -2,7 +2,7 @@ import type { AiConfig } from "./llmClient";
 import { modelForRole, type RoleModel, type SpecialistRole } from "./modelRoles";
 import { MODEL_PRESETS, tierModelFor } from "./modelPresets";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials";
-import { IMAGE_MODEL_CATALOG } from "./imageModelCatalog";
+import { IMAGE_MODEL_CATALOG, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "./imageModelCatalog";
 import { parseOhMyPiProvider } from "./ohMyPiProviders";
 import { configForUltrabrain } from "./ultrabrainConfig";
 
@@ -55,7 +55,8 @@ export function configForProviderSelection(config: AiConfig, providerId: string,
     if (brain.providerId !== next.providerId) next.ultrabrainReasoningEffort = BALANCED.ultrabrain.thinking as "low" | "medium" | "high";
   }
   if (!pinned.image) {
-    const image = IMAGE_MODEL_CATALOG.find(entry => entry.providerId === next.providerId && entry.supported)!;
+    // 그림은 대화 계정을 따르지 않는다 — 권장 경로(GPT Image)가 기본이고, 연결이 없으면 생성 시점에 Google 로 대신한다.
+    const image = IMAGE_MODEL_CATALOG.find(entry => entry.providerId === RECOMMENDED_IMAGE_PROVIDER_ID && entry.model === RECOMMENDED_IMAGE_MODEL && entry.supported)!;
     next.imageProviderId = image.providerId;
     next.imageModel = image.model;
   }
