@@ -707,6 +707,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "turn_start") {
       turns += 1;
       emit({ type: "turn", index: turns });
+      // 읽기 전용 턴(계획·질문)은 턴 상한에 걸리면 아무 말도 못 하고 죽는다(2026-10-12: 계획 턴이 읽기만 30번 하다 첫 제작 전체가 중단).
+      // 상한 가까이에서 한 번 «지금 쓰라» 고 알린다 — 읽은 것은 이미 모델의 기록에 있다.
+      if (request.readOnly && maxTurns >= 10 && turns === Math.floor(maxTurns * 0.75)) {
+        agent.steer({ role: "user", content: [{ type: "text", text: `[턴 예산] 읽기 턴이 ${maxTurns - turns}번 남았다. 더 읽지 말고 지금까지 읽은 것으로 결과(계획)를 작성해 끝내라. 부족한 정보는 가정으로 적고 실행 턴이 다시 읽는다.` }], timestamp: Date.now() });
+      }
       if (turns > maxTurns) {
         // abort 에 사유를 실어야 한다. 사유 없이 부르면 pi-agent-core 가 합성하는 aborted 메시지의
         // errorMessage 가 일반 문구 "Request was aborted" 가 되고, 아래 message_end 가 그것을 사용자에게
