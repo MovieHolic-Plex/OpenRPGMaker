@@ -133,7 +133,7 @@ const roofTool: ToolDefinition = {
 
 const rampTool: ToolDefinition = {
   name: "place_terrain_ramp", mode: "write", domains: ["map", "tile"],
-  description: "에디터 경사로 도구 그대로 곧은 절벽 가장자리에 매끈한 경사로를 놓는다(계단 아님). at은 높이가 올라가는 쪽 가장자리의 칸. 네 방향을 자동 판정하고 폭 2·4·6칸, 길이=단차+1. 아래 접근 땅이 평평하고 비어 있어야 한다. 보통 lay_terrain_road의 자동 경사로를 먼저 쓰고 필요한 접합만 보완한다.",
+  description: "에디터 경사로 도구 그대로 곧은 절벽 가장자리에 매끈한 경사로를 놓는다(계단 아님). at은 높이가 올라가는 쪽 가장자리의 칸. 네 방향을 자동 판정하고 폭 2·4·6칸, 길이=절벽 단차(절벽과 같은 높이의 칸 수)로 만든다. 아래 접근 땅이 평평하고 비어 있어야 한다. 보통 lay_terrain_road의 자동 경사로를 먼저 쓰고 필요한 접합만 보완한다.",
   parameters: { type: "object", properties: { mapId, at: point, width: { type: "integer", enum: [2, 4, 6] } }, required: ["mapId", "at"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), at = checkedPoint(map, args.at);
