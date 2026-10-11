@@ -193,6 +193,7 @@ try {
   const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
   mkdirSync(dropDir, { recursive: true });
   for (const file of winFiles) copyFileSync(file, join(dropDir, file.split("/").pop()));
+  writeFileSync(join(dropDir, "VERSION"), `${tag.slice(1)}\n`);
   console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
 
   const winZip = files.find((file) => file.endsWith(".zip"));
