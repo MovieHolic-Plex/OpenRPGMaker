@@ -1,5 +1,6 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
+import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
@@ -52,7 +53,7 @@ function resolveObject(project: Project, requestedId: string): Resolved {
     if (prefix === "kit") {
       const kit = source.structureKits?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 킷 ${innerId} 가 없습니다`);
       return { name: kit.name ?? kit.id, source, pattern: kitPattern(kit), assets: {}, defaultLayers: "both",
-        entrances: kit.parts?.filter(part => part.kind === "entrance") };
+        entrances: kit.parts?.filter(part => part.kind === "entrance"), kit };
     }
     const group = source.tileGroups?.find(entry => entry.id === innerId) ?? fail(`${tilesetId} 에 타일 그룹 ${innerId} 이 없습니다`);
     const preview = group.previewMap ?? fail(`타일 그룹 ${innerId} 에는 도안(previewMap)이 없습니다`);
@@ -105,6 +106,13 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       const blank = new Array(resolved.pattern.width * resolved.pattern.height).fill(-1);
       const pattern: StampPattern = { ...resolved.pattern,
         lower: layers === "upper" ? blank : resolved.pattern.lower, upper: layers === "lower" ? blank : resolved.pattern.upper };
+      // 놓기 규칙(물레방아는 물가에 걸쳐, 배는 물 위에, 건물은 뭍에 …) — 어기면 찍지 않는다(project/kitPlacementRules.ts).
+      const kitDef = "kit" in resolved ? resolved.kit : undefined;
+      const mapTileset = project.tilesets[map.tilesetId];
+      if (kitDef && mapTileset) {
+        const broken = checkKitPlacement(map, mapTileset, kitDef.id, kitDef, Number(args.x), Number(args.y));
+        if (broken) throw new ToolError(broken, { code: "kit-placement-rule", mapId: map.id });
+      }
       installStampAssets(project, resolved.assets);
       let result;
       try { result = stampPattern(project, map, resolved.source, pattern, Number(args.x), Number(args.y)); }
