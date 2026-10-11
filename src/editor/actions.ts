@@ -80,7 +80,8 @@ export function addMap(name: string, width = 16, height = 16, tilesetId?: string
   if (!allowMapSize(width, height)) return "";
   let newId: MapId = "";
   store.update((p) => {
-    const m = createBlankMap(name || "새 맵", width, height, tilesetId ?? defaultOutdoorTilesetId(p));
+    const selectedTilesetId = tilesetId ?? defaultOutdoorTilesetId(p);
+    const m = createBlankMap(name || "새 맵", width, height, selectedTilesetId, undefined, p.tilesets[selectedTilesetId]);
     if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     // mapTree에 루트 자식으로 추가.
@@ -101,7 +102,8 @@ export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize
   store.update((p) => {
     const parent = findTreeNode(p.mapTree, parentId);
     if (!p.maps[parentId] && !parent) return;
-    const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? defaultOutdoorTilesetId(p));
+    const selectedTilesetId = tilesetId ?? defaultOutdoorTilesetId(p);
+    const m = createBlankMap(name || "새 맵", size.width, size.height, selectedTilesetId, undefined, p.tilesets[selectedTilesetId]);
     if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);

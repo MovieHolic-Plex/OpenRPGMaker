@@ -39,7 +39,7 @@ import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/si
 import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
-import { mountReliefToolbar } from "@/editor/panels/reliefToolbar";
+import { ensureReliefSidePanel, mountReliefToolbar } from "@/editor/panels/reliefToolbar";
 import {
   closeTestPlayModal,
   openRandomTroopBattleTestModal,
@@ -218,7 +218,7 @@ export function renderEditor(main: HTMLElement): void {
   persistenceBannerHost = bannerHost;
   paintPersistenceBanner();
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, cursorDiagnostics);
-  // 「높이」 막대·지형지물 팝업 — 높이 도구일 때만 보인다(reliefToolbar.ts).
+  // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).
   disposeReliefToolbar?.();
   disposeReliefToolbar = mountReliefToolbar(canvasArea);
   aiSidebarWorkspace?.dispose();
@@ -410,6 +410,7 @@ function renderLeftDockPanels(): void {
   const allowed = new Set(leftDockPanels());
   const ids = [...leftDock.hosts.keys()].filter((id) => allowed.has(id));
   renderDockPanels(leftDock, ids);
+  ensureReliefSidePanel(leftDock.hosts.get("tiles") ?? null);
   scheduleMapTreeFit();
 }
 
@@ -871,7 +872,10 @@ function schedulePaletteOnlyRefresh(): void {
   const run = (): void => {
     paletteRefreshQueued = false;
     if (fullPanelRefreshQueued) return;
-    if (leftDock) renderDockPanels(leftDock, ["tiles"]);
+    if (leftDock) {
+      renderDockPanels(leftDock, ["tiles"]);
+      ensureReliefSidePanel(leftDock.hosts.get("tiles") ?? null);
+    }
     if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
     if (mapLockBannerRoot) renderMapEditLockBanner(mapLockBannerRoot);
   };
