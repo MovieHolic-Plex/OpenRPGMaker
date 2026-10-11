@@ -491,9 +491,16 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const stoneOffset = baseRamps.length * 6;
   const ramps = stoneStairs ? [...baseRamps, STONE_STAIR_RAMP] : baseRamps;
   const art = !!opt.rampArt;
-  // 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
+  const hasSmoothRamp = slopes.some(s => !s.steps);
+  // 경사로 옆면만 네모 절벽으로 보강한다. 진행 방향까지 한 칸씩 늘리면
+  // 단차 3칸 경사로가 검은 외곽선 때문에 5칸처럼 보인다.
   const nearRamp = slopes.length
-    ? (x: number, y: number) => slopes.some((s) => x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)
+    ? (x: number, y: number) => slopes.some((s) => {
+      const alongY = s.dir === "n" || s.dir === "s";
+      return alongY
+        ? x >= s.x - 1 && x <= s.x + s.w && y >= s.y && y < s.y + s.h
+        : x >= s.x && x < s.x + s.w && y >= s.y - 1 && y <= s.y + s.h;
+    })
     : undefined;
   const BW = h[0]?.length ?? 0;
   const bridgesIn = win && opt.bridges ? cropCells(opt.bridges, win.PW / T, win.cx, win.cy, BW, h.length) : opt.bridges;
@@ -641,13 +648,17 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
     const i = sy * PW + sx; if (kind[i] !== 0) continue;
     const c = fl[i];
+    const rampEdge = (sx > 0 && ssl[i - 1] > 0) || (sx + 1 < PW && ssl[i + 1] > 0)
+      || (sy > 0 && ssl[i - PW] > 0) || (sy + 1 < SH && ssl[i + PW] > 0);
     const top = (y: number, x: number) => {
       if (y < 0 || y >= SH || x < 0 || x >= PW) return false;
       const j = y * PW + x;
       return kind[j] === 0 && Math.abs(fl[j] - c) <= tol(i, j);
     };
     const kL = kind[sy * PW + (sx - 1 + PW) % PW];
-    if (c > 0) {
+    // 매끈한 경사로가 있는 고지의 윗면 외곽선은 경사로 길이와 무관한 세로 검은 선을 만든다.
+    // 절벽 면(아래 kind=1)의 외곽선은 남기고, 윗면 외곽선만 생략해 길이를 부풀리지 않는다.
+    if (c > 0 && !rampEdge && !hasSmoothRamp) {
       if (sy === 0 ? oy === 0 : !top(sy - 1, sx) && kind[i - PW] !== 1) {
         out[i] = OUT_G; edge[i] = 1;
         if (top(sy + 1, sx)) { out[i + PW] = 4; edge[i + PW] = 1; }
