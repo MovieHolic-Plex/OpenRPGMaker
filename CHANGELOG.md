@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.186.0 — 2026-10-11
+
+### 기능
+
+- 조화 검수 수리 한 바퀴+전후 대결, 버들항 마을 형태 넷·밭 울타리 (#2416) (`909b96b`)
+
+### 문서
+
+- prominently display direct desktop downloads in all READMEs (`9221fb9`)
+- **release** — NSIS portable 은 wine 없이 리눅스에서 만들어진다 (`1d26078`)
+
+### 빌드
+
+- **desktop** — 윈도우 단일 실행 exe(portable)를 릴리스에 함께 올린다 (#2415) (`ef5ce08`)
+
 ## 0.185.0 — 2026-10-10
 
 ### 기능
