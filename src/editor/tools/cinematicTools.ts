@@ -760,7 +760,10 @@ export type OpeningImageBrief = {
   readonly layerRole?: "background" | "actor" | "prop" | "foreground";
   readonly artStyle: string;
   readonly referenceResourceIds: readonly string[];
+  /** 연출 의도. 모두 선택이며, 비면 범용 문구 대신 프롬프트에서 생략된다. */
+  readonly focus?: string; readonly angle?: string; readonly light?: string; readonly palette?: string; readonly captionSide?: "bottom" | "top" | "left" | "right";
 };
+const OPENING_DIRECTION_FIELDS = ["focus", "angle", "light", "palette"] as const;
 
 /** SQLite media references are valid even when the worker has no browser URL bridge. */
 export function hasOpeningImage(project: Project, id: string): boolean {
@@ -789,9 +792,18 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>, projec
   const shot = args.shot ?? "wide";
   const aspectRatio = args.aspectRatio ?? "16:9";
   const artStyle = args.artStyle ?? "hand-painted 2D game art";
+  const direction: Partial<Record<typeof OPENING_DIRECTION_FIELDS[number], string>> = {};
+  for (const key of OPENING_DIRECTION_FIELDS) {
+    const value = args[key];
+    if (value === undefined) continue;
+    if (typeof value !== "string" || !value.trim() || value.length > 240) throw new ToolError(`${key}는 1~240자 문자열입니다.`, { code: "invalid-args" });
+    direction[key] = value.trim();
+  }
+  const captionSide = args.captionSide ?? "bottom";
+  if (captionSide !== "bottom" && captionSide !== "top" && captionSide !== "left" && captionSide !== "right") throw new ToolError("captionSide는 bottom/top/left/right입니다.", { code: "invalid-args" });
   if (shot !== "wide" && shot !== "medium" && shot !== "close-up") throw new ToolError("shot은 wide/medium/close-up입니다.", { code: "invalid-args" });
   if (aspectRatio !== "16:9" && aspectRatio !== "4:3" && aspectRatio !== "1:1") throw new ToolError("aspectRatio는16:9/4:3/1:1입니다.", { code: "invalid-args" });
-  if (typeof artStyle !== "string" || !artStyle.trim() || artStyle.length > 120) throw new ToolError("artStyle은 1~120자 문자열입니다.", { code: "invalid-args" });
+  if (typeof artStyle !== "string" || !artStyle.trim() || artStyle.length > 400) throw new ToolError("artStyle은 1~400자 문자열입니다.", { code: "invalid-args" });
   const references = args.referenceResourceIds ?? [];
   if (!Array.isArray(references) || references.some(id => typeof id !== "string" || !id.trim())) {
     throw new ToolError("referenceResourceIds는 실제 그림 ID 최대 2개입니다.", { code: "invalid-args" });
@@ -803,7 +815,7 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>, projec
   if (project) for (const id of referenceResourceIds) {
     if (!hasOpeningImage(project, id)) throw new ToolError(`참고 그림을 찾을 수 없습니다: ${id}`, { code: "resource-not-found" });
   }
-  return { prompt, name, shot, aspectRatio, artStyle: artStyle.trim(), referenceResourceIds };
+  return { prompt, name, shot, aspectRatio, artStyle: artStyle.trim(), referenceResourceIds, ...direction, captionSide };
 }
 
 export function prepareOpeningLayerRequest(args: Record<string, unknown>, project?: Project): OpeningImageBrief {
@@ -843,7 +855,12 @@ const generateOpeningImage: ToolDefinition = {
       name: { type: "string" },
       shot: { type: "string", enum: ["wide", "medium", "close-up"] },
       aspectRatio: { type: "string", enum: ["16:9", "4:3"] },
-      artStyle: { type: "string", maxLength: 120, description: "화풍. 기본 hand-painted 2D." },
+      artStyle: { type: "string", maxLength: 400, description: "작품 고유 화풍 문장(매체·붓/도트 결·명암·윤곽). 모든 컷에 같은 문장을 그대로 재사용. 기본 hand-painted 2D." },
+      focus: { type: "string", maxLength: 240, description: "시선이 가장 먼저 닿을 단 하나의 대상과 그 상태(영어 권장)." },
+      angle: { type: "string", maxLength: 240, description: "카메라 위치/앵글(low angle, overhead, over-the-shoulder, through a doorway 등). 컷마다 다르게." },
+      light: { type: "string", maxLength: 240, description: "그림 안에 보이는 주 광원과 빛의 방향·색." },
+      palette: { type: "string", maxLength: 240, description: "3~4색 + 포인트색. 모든 컷에서 같은 색 규칙." },
+      captionSide: { type: "string", enum: ["bottom", "top", "left", "right"], description: "자막을 얹을 쪽. 그 쪽을 자연스러운 저디테일 영역으로 둔다." },
       referenceResourceIds: { type: "array", items: { type: "string" }, description: "실제 그림 ID 최대2개." },
       referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
       role: { type: 'string', enum: ['backdrop', 'foreground'], description: '기본 backdrop은 전체 배경. foreground는 독립 움직임용 투명 배경의 단일 물체·실루엣 그림. 잘린 신체/그림자 바닥/체커보드 금지.' },

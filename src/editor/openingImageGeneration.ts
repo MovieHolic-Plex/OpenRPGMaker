@@ -39,18 +39,23 @@ export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "
     'No labels, logos, text, watermark, frames or sprite-sheet grid. One layer, not a complete opening shot.'
   ].join('\n\n');
   const screen = purpose === "gameOver" ? "game-over screen" : "opening sequence";
+  const side = brief?.captionSide ?? "bottom";
   const clearArea = purpose === "gameOver"
     ? "Keep the center and lower area calm enough for the game-over title, message and retry/title buttons."
-    : "Keep the lower 18 percent calm enough that a narration box at the bottom stays readable.";
-  const composition = brief?.shot === "close-up" ? "a close-up, emphasizing the important face, object or incident"
-    : brief?.shot === "medium" ? "a medium shot that clearly shows the characters and their immediate surroundings"
-    : "a wide establishing shot with clear foreground, middle ground and background";
+    : `Keep a quiet, low-detail area along the ${side} edge for a caption. Make it natural (sky, floor, shadow, fog) — not a flat empty band or a box.`;
+  const composition = brief?.shot === "close-up" ? "a tight close-up: one face, hand or object fills a third or more of the frame; the surroundings are only hinted"
+    : brief?.shot === "medium" ? "a medium shot that reads the characters' body language and their immediate surroundings"
+    : "a wide establishing shot with a clear foreground, middle ground and background, and a small human-scale cue";
   return [
-    `Create exactly one full-screen, ${brief?.aspectRatio ?? "16:9"} cinematic background still for the ${screen} of a 2D JRPG.`,
-    "Scene brief: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ".",
-    `Fill the entire canvas with the scene. Compose it as ${composition}. Honor the requested shot distance, viewpoint and composition: an establishing shot, medium shot and close-up must look visibly different. ${clearArea}`,
-    `Render it as ${brief?.artStyle ?? "hand-painted 2D game art"} with coherent lighting and restrained detail. Avoid photographic rendering and 3D-rendered surfaces.`,
+    `One frame from the ${screen} of a 2D JRPG, ${brief?.aspectRatio ?? "16:9"}. Treat it as a film still with a single idea, not as wallpaper.`,
+    "STORY MOMENT: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ". Show what changed and its visible consequence; do not just depict a pretty place.",
+    `FOCAL POINT: ${brief?.focus ?? "the single most important subject of the brief"}. The eye must land here first; everything else supports it and is rendered with less contrast and detail.`,
+    `CAMERA: ${composition}. ${brief?.angle ? `Vantage: ${brief.angle}.` : "Choose a deliberate vantage rather than the default eye-level view."} Avoid dead-centre symmetry: put the focal point off-centre, use leading lines and overlapping depth planes. An establishing shot, medium shot and close-up must look visibly different.`,
+    `LIGHT AND COLOUR: ${brief?.light ?? "one motivated key light source that is visible or clearly implied in the scene"}. Build a clear dark / mid / light value hierarchy; ${brief?.palette ? `use this palette: ${brief.palette}.` : "limit colour to three or four related hues plus one accent on the focal point."}`,
+    `STYLE: ${brief?.artStyle ?? "hand-painted 2D game art"}. Keep the same drawing language shot to shot. Use confident, specific marks and lived-in details (wear, asymmetry, scale cues, signs of use) that carry the story instead of generic set dressing. Avoid photographic rendering and 3D-rendered surfaces.`,
+    clearArea,
     ...(brief?.referenceResourceIds.length ? ["Use the supplied reference images to preserve the same object design, character, location, palette and drawing style while composing the requested new shot. Show the specific story change, not a repeated view of the reference. Do not copy any labels or reference-sheet layout."] : []),
+    "AVOID the generic AI-wallpaper look: glowing orbs or floating dust motes everywhere, default teal-and-orange grading, every object lit equally, a crowded shelf of props, a symmetrical postcard layout, stock hero poses, plastic or over-smoothed gradients, decorative lens flare.",
     "Do not add any text, letters, captions, logos, watermarks, signatures, interface elements, borders, letterboxing bars or icon-style framing. Do not return a sprite sheet, an item icon or a character portrait on a flat background.",
   ].join("\n\n");
 }

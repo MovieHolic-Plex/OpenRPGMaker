@@ -3062,3 +3062,10 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## refine_beodeul_courtyard_vegetation (2026-10-04)
 
 알려진 버들항 54×34 공동마당 예제의 식생/울타리 교정 도구. 전체 집/나무 배열이 일치할 때만 제거·이식을 실행한다. 집 위치/하위 바닥 배열/길/마당은 그대로, 공용 숲의 수관 앞뒤 합성·★ 풀/줄기 X·텃밭 연결 울타리로 보정한다. stone 박공은 아래층과 같은 돌 재질. 이벤트/높이/별도 지형·기물/다른 전이 도착점은 거부. 출처 beodeul-ground-dressing의 WOODLAND 문서 및 normal/error·fresh 전체 조립 예제. 기존 공동마당만 보정할 때 이 도구만 호출하며 원본 맵을 author로 다시 만들지 않는다. 도구/참고문서 허용 목록/프롬프트 정책에 등록했다.
+
+
+## 오프닝 그림 프롬프트 구조화 (2026-10-11)
+
+`generate_opening_image`는 선택 필드 `focus`·`angle`·`light`·`palette`·`captionSide`를 받고 `artStyle` 한도가 400자다(작품 화풍 문장을 컷마다 재사용).
+`buildCinematicStillPrompt`는 STORY MOMENT / FOCAL POINT / CAMERA / LIGHT AND COLOUR / STYLE / AVOID(범용 AI 벽지 징후) 구조로 조립한다. 필드를 생략하면 범용 문구로 대체되어 기존 호출은 그대로 동작한다.
+전후 비교: `scripts/qa/opening-prompt-ab.mts`(실제 이미지 제공자 호출, 첫 결과 그대로 http://mdc-server:18301/opening-prompt-ab.html). 사람 눈 판정 전의 1회 표본이며 품질 합격 근거가 아니다.
