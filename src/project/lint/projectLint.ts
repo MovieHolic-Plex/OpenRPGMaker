@@ -251,7 +251,7 @@ function checkStartPosition(project: Project, issues: LintIssue[]): void {
       mapId: map.id,
       x,
       y,
-      message: `시작 위치가 통행 불가 타일입니다: (${x}, ${y})`,
+      message: `시작 위치가 통행 불가 타일입니다: (${x}, ${y}) — 칠한 타일이 통행 불가이거나 시작 칸이 막혔습니다. set_start_position 으로 시작 위치를 통행 가능한 칸(또는 칠할 영역 밖)으로 옮기고, 눈밭처럼 걷는 바닥은 통행 가능한 타일(tile_query 의 passable)로 칠하세요.`,
     });
     return;
   }
