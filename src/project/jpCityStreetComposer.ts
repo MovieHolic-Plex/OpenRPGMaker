@@ -67,6 +67,9 @@ const LOOKS: Readonly<Record<string, ShopLook>> = {
   bento:     { grounds: ["gr.glass.aka", "gr.shutter.kii"], floorKinds: ["pairs", "slide"], floors: [1, 2], walls: ["kinari", "shiro"], roofs: ROOFS_FLAT, width: [4, 5] },
 };
 
+/** 가게 종류 → 위층 세로 간판 부착물. */
+const ROLE_SIGNS: Readonly<Record<string, string>> = { izakaya: "vsign.izakaya", ramen: "vsign.ramen", cafe: "vsign.kissa", sento: "vsign.sento", bento: "plate.bento", shop: "vsign.mark.aka" };
+
 const SHOPPING_MIX = ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "shop", "izakaya", "apartment", "bento", "cafe", "garage"];
 const RESIDENTIAL_MIX = ["house", "house", "machiya", "apartment", "house", "garage", "house", "machiya", "sento", "house"];
 
@@ -117,6 +120,20 @@ export function randomBuildingArgs(rng: () => number, role: string, w: number, a
     roof: pick(rng, look.roofs),
   };
   if (look.heads && attempt < 4 && rng() < 0.45) { args.head = pick(rng, look.heads); delete args.roof; }
+  // 외벽 부착물: 가게 종류의 간판·배관·실외기·비상계단. 충돌하면 조립기가 거절하고(DECO_CLASH) 뒤 후보는 부착물을 뺀다.
+  if (attempt < 6) {
+    const decos: Record<string, unknown>[] = [];
+    const lastCol = Math.max(0, w - 1);
+    const sign = ROLE_SIGNS[role];
+    if (sign && rng() < 0.75) decos.push({ deco: sign, col: rng() < 0.5 ? 0 : lastCol, floor: "0" });
+    if ((role === "apartment" || role === "office" || role === "garage") && floors >= 2) {
+      const r = rng();
+      if (r < 0.35) decos.push({ deco: "fe", col: Math.min(lastCol, 1 + Math.floor(rng() * Math.max(1, w - 3))), floor: "0" });
+      else if (r < 0.7) decos.push({ deco: pick(rng, ["ac.0", "ac.1"]), col: Math.floor(rng() * w), floor: String(Math.max(0, floors - 1)) });
+    }
+    if (role !== "house" && role !== "machiya" && rng() < 0.3) decos.push({ deco: "pipe", col: rng() < 0.5 ? 0 : lastCol, floor: "ground", row: 0 });
+    if (decos.length) args.decos = decos;
+  }
   return args;
 }
 
@@ -161,14 +178,21 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const alleyLane = 2 + Math.floor(rng() * 2);
   const alleyX = 4 + Math.floor(rng() * Math.max(1, W - 12 - alleyLane));
   const alleys: { x: number; w: number }[] = [];
-  if (rng() < 0.7) {
+  const mode = rng();                                           // 관통 50% · 위쪽만(T자) 20% · 아래쪽만 20% · 없음 10%
+  const north = mode < 0.7, south = mode < 0.5 || (mode >= 0.7 && mode < 0.9);
+  if (north || south) {
     alleys.push({ x: alleyX, w: alleyLane + 2 });
-    for (const [y0, y1] of [[0, road0 - 1], [road1 + 1, H - 1]] as const) {
+    const spans: (readonly [number, number])[] = [];
+    if (north) spans.push([0, road0 - 1]);
+    if (south) spans.push([road1 + 1, H - 1]);
+    for (const [y0, y1] of spans) {
       fill(alleyX, y0, 1, y1 - y0 + 1, "보도 연석", true);
       fill(alleyX + alleyLane + 1, y0, 1, y1 - y0 + 1, "보도 연석", true);
+      fill(alleyX + 1, y0, alleyLane, y1 - y0 + 1, "생활도로", true);
     }
-    fill(alleyX + 1, 0, alleyLane, H, "생활도로", true);
   }
+  // 위 가장자리 생울타리 — 건물 뒤 빈 광장이 지도 끝까지 열려 보이지 않게(골목 입구는 비운다)
+  for (const [sx, ex] of segmentsAround(W, north ? alleys : [])) fill(sx, 0, ex - sx, 1, "생울타리", true);
 
   // ── 가게 목록
   const mix = style === "residential" ? RESIDENTIAL_MIX : SHOPPING_MIX;
@@ -180,8 +204,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
 
   // 뒷줄: 골목 칸을 피해 두 구간으로 나눠 채운다
   const rows: { foot: number; segs: [number, number][]; roles: string[]; top: number }[] = [
-    { foot: backFoot, top: 0, segs: segmentsAround(W, alleys), roles: backRoles },
-    { foot: frontFoot, top: frontTop, segs: segmentsAround(W, alleys), roles: frontRoles },
+    { foot: backFoot, top: 0, segs: segmentsAround(W, north ? alleys : []), roles: backRoles },
+    { foot: frontFoot, top: frontTop, segs: segmentsAround(W, south ? alleys : []), roles: frontRoles },
   ];
   const placed: { role: string; x: number; foot: number; w: number }[] = [];
   const buildSteps: JpStreetStep[] = [];
@@ -245,10 +269,20 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     carSpans.push([cx, cx + 5]);
     steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${pick(rng, cars)}${dir}`, mapId, x: cx, y: laneY - (roadW >= 4 ? 0 : 0) }, optional: true, note: "prop" });
   }
-  // 가로등·노보리: 건물 왼쪽 끝 앞 보도 — 문(오른쪽 끝)과 안 겹치게
+  // 가로등: 길을 따라 8~10칸 간격 — 문 자리(건물 오른쪽 끝 3칸)와 골목 입구를 피한다. 노보리는 이자카야·라멘집 왼쪽 끝 앞.
+  const doorZone = (x: number, foot: number) => placed.some((b) => b.foot === foot && x >= b.x + b.w - 3 && x <= b.x + b.w);
+  const inAlley = (x: number) => alleys.some((al) => x >= al.x - 1 && x <= al.x + al.w);
+  for (const foot of [backFoot, frontFoot]) {
+    let lx = 2 + Math.floor(rng() * 5);
+    while (lx < W - 2) {
+      let x = lx;
+      while (x < W - 2 && (doorZone(x, foot) || inAlley(x))) x++;
+      if (x < W - 2) steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-prop-lamp-post", mapId, x, y: foot + 2 - 3 }, optional: true, note: "prop" });
+      lx = x + 8 + Math.floor(rng() * 3);
+    }
+  }
   for (const b of placed) {
-    if (rng() < 0.3) steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-prop-lamp-post", mapId, x: b.x, y: b.foot + 2 - 3 }, optional: true, note: "prop" });
-    else if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, mapId, x: b.x + 1, y: b.foot + 2 - 2 }, optional: true, note: "prop" });
+    if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, mapId, x: b.x + 1, y: b.foot + 2 - 2 }, optional: true, note: "prop" });
   }
 
   return {
