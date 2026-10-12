@@ -54,9 +54,17 @@ export function createPiPresentationTool(
           const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
           const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
           const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
-          const image = provider === 'openai-codex'
-            ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
-            : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
+          // Codex 는 가끔 그림 대신 글로 답한다 — 같은 요청을 몇 번 더 시도한다(후보 3장이 모두 0장이 되던 실측).
+          let image: Awaited<ReturnType<typeof generateCodexImage>> | undefined;
+          for (let attempt = 0; !image; attempt++) {
+            try {
+              image = provider === 'openai-codex'
+                ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
+                : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
+            } catch (error) {
+              if (attempt >= 3 || imageSignal?.aborted || !/이미지가 없습니다/u.test(error instanceof Error ? error.message : String(error))) throw error;
+            }
+          }
           return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
         };
         let resourceId: string;

@@ -127,6 +127,7 @@ inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으�
 효과음은 자유롭게 설계한다. generate_original_se로 장면에 맞는 소리(발걸음·바람·금속 마찰·종소리·균열 등)를 여러 개 합성하고, 장면 direction.sounds[{resourceId,atMs,volume}]로 시각 사건의 시각(atMs)에 맞춰 최대 8개까지 겹쳐 연결한다. 하나의 soundResourceId만 쓰는 것으로 끝내지 않는다. 모델은 소리를 듣지 못하므로 타이밍은 샷의 사건 시각에서 계산한다.
 영상·소리·이미지 가공이 필요하면 run_ffmpeg(inputs=리소스 id, args의 {in0}/{out})로 컷 이어붙이기·페이드·색 보정·소리 믹스·PNG→mp4를 직접 수행해 새 리소스로 등록한다. 외부 파일·네트워크는 쓸 수 없다.
 타이틀 키아트의 prompt에는 주인공이나 작품의 상징 사물을 시선의 중심에 명시한다(빈 풍경 금지). 배경 키아트를 set_title_screen의 titleGraphic(로고 그림 전용)에 넣지 않는다 — 로고 그림이 없으면 mode:text.
+오프닝 형식은 하나가 아니다. 요청에 맞춰 get_opening_direction의 recipes(storybook·cinematic·pixel-march(FF6풍 무대사 없는 행진)·title-card·trailer-montage·memory-fragment·credits-roll·duel) 중 고르거나 섞는다. 사용자가 특정 작품풍을 말하면 그 작품의 기법(연출 호흡·무대사 여부·음악 역할)을 따르고 화풍은 기법 문장으로 쓴다. 이야기를 글로 설명하는 것이 기본값이 아니다.
 글자 크기: 오프닝 무대는 320×240 논리 픽셀이 3배로 보인다. presentation.text.size는 자막 10~13, 장 제목 최대 16. 글자는 그림의 주 피사체를 가리지 않는 자리(bottom)에 두고 한 컷 1~2줄로 줄인다. 큰 글씨를 기본으로 두지 않는다.
 진행 중에는 지금 무엇을 하는지(후보 생성·판정·ffmpeg 등) 사용자에게 한 줄로 알리고 실행기가 띄우는 진행 표시와 모순되지 않게 한다.
 시각 전달 증거와 구성 검토는 실행기가 확인한다. 실제 출하 플레이어의 재생·음악·Skip 검증은 별도이며 이 도구만으로 완료했다고 주장하지 않는다. 막힌 단계와 미검증 범위를 정확히 보고한다.`;
