@@ -552,6 +552,176 @@ def _finalize():
 
 
 _CACHE = {}
+
+# ─────────────────────────── 하천 둑·다리·물가 (2026-10-12 적대적 시각 QA: 둑이 가로 줄무늬 띠로만 보여 「내려간다」는 느낌이 없었다) ───────────────────────────
+def river_wall_face(c):
+    """둑 정면 석축 1×4칸(64px): 위 4px 투명(산책로 바닥) → 갓돌 8px(밝은 단+밑그늘) → 돌 쌓기 면(엇갈린 줄눈, 아래로 갈수록 어둡고 젖음) → 맨 아래 수면 접촉선."""
+    W, H = 16, 64
+    c.R(0, 4, W, 6, K('conc', 2)); c.HL(0, 4, W, K('conc', 3)); c.HL(0, 5, W, K('conc', 3))                 # 갓돌 윗면(밝음)
+    for j in (6, 7, 8): c.VL(7, j, 1, K('conc', 0)); c.VL(15, j, 1, K('conc', 0))                               # 갓돌 이음
+    c.HL(0, 10, W, K('conc', -2)); c.HL(0, 11, W, K('sumi', 1))                                                # 갓돌 밑 그늘선
+    for y in range(12, H):
+        t = (y - 12) / (H - 12)
+        shade = 2 if t < 0.1 else 1 if t < 0.3 else 0 if t < 0.5 else -1 if t < 0.7 else -2 if t < 0.88 else -3
+        c.HL(0, y, W, K('conc', shade))
+    for k, y0 in enumerate(range(13, H - 6, 6)):                                                               # 돌 층(높이 6px, 엇갈린 줄눈)
+        c.HL(0, y0 + 5, W, K('conc', -2 if y0 < 40 else -3))
+        for ix in ((0, 8) if k % 2 == 0 else (4, 12)):
+            c.VL(ix, y0, 5, K('conc', -2 if y0 < 40 else -3)); c.P(ix + 1, y0, K('conc', 2 if y0 < 30 else 0))
+    for i in range(0, W, 2):                                                                                    # 젖은 얼룩·이끼(아래쪽)
+        c.P(i + (3 if i % 4 == 0 else 1), 49, K('kon', 0)); c.P(i, 55, K('midori', -2)); c.P(i + 1, 58, K('kon', 0))
+    c.HL(0, H - 5, W, K('kon', -1)); c.HL(0, H - 4, W, K('kon', -2)); c.HL(0, H - 3, W, K('kon', -2)); c.HL(0, H - 2, W, K('kon', -3)); c.HL(0, H - 1, W, K('sumi', 0))   # 수면 접촉선
+
+
+prop('river-wall', '하천 둑 석축 정면(갓돌+돌 쌓기 4칸)', 1, 4, solid=[(0, 0), (0, 1), (0, 2), (0, 3)], tags=['하천', '둑', '호안', '석축'],
+     rules='동서로 흐르는 하천의 북쪽 둑. 산책로 아랫줄에서 시작해 가로로 이어 붙인다(칸마다 같은 칸이라 이음새 없음). 바로 아래에 물 줄이 온다. 다리 상판이 지나는 칸은 비운다.')(river_wall_face)
+
+
+def water_shade(c):
+    """둑 밑 물 그늘: 위 5줄 짙은 남색 → 3줄 중간 남색(점 섞임) → 4줄 성긴 점으로 사라짐(수로 오토타일의 옅은 윗 테두리를 덮고 물로 부드럽게 이어짐)."""
+    for y in range(5): c.HL(0, y, 16, K('kon', -2))
+    for y in range(5, 8):
+        c.HL(0, y, 16, K('kon', -1))
+        for x in range(16):
+            if (x + y) % 3 == 0: c.P(x, y, K('kon', -2))
+    for y in range(8, 12):
+        for x in range(16):
+            if (x * 3 + y * 5) % (4 + (y - 8)) == 0: c.P(x, y, K('kon', -1))
+
+
+prop('water-shade', '물 위 그늘(둑·다리 밑)', 1, 1, other='flat', tags=['하천', '물', '그늘'],
+     rules='둑 벽 바로 아래 물 첫 줄 전체와, 다리 상판 양옆의 물 줄에 찍는다(투명 덧그림).')(water_shade)
+
+
+def _rail_body(c):
+    c.R(0, 0, 16, 16, K('ita', -1))
+    for y in range(0, 16, 4): c.HL(0, y + 3, 16, K('ita', -2))
+    c.VL(4, 0, 16, OL); c.VL(11, 0, 16, OL)
+    c.R(5, 0, 6, 16, K('conc', 2)); c.VL(5, 0, 16, K('conc', 3)); c.VL(6, 0, 16, K('conc', 3)); c.VL(10, 0, 16, K('conc', 0))
+    c.VL(8, 0, 16, K('conc', 1))
+
+
+def bridge_rail_v(c):
+    """남북 다리 난간(이음 없는 가로대): 위에서 본 석재 윗면 6px, 왼쪽 밝음·가운데 줄눈·오른쪽 그늘. 기둥은 bridge-post 로 따로."""
+    _rail_body(c)
+
+
+def bridge_post(c):
+    """난간 기둥(굵은 머리 + 받침): 다리 끝·중간에 찍는다."""
+    _rail_body(c)
+    c.R(2, 4, 12, 8, K('conc', 3)); c.R(3, 5, 10, 6, K('conc', 2)); c.HL(3, 5, 10, K('conc', 3)); c.R(3, 9, 10, 2, K('conc', 0))
+    c.HL(2, 3, 12, OL); c.HL(2, 12, 12, OL); c.VL(1, 4, 8, OL); c.VL(14, 4, 8, OL)
+    c.R(6, 6, 4, 2, K('sumi', 1))
+
+
+prop('bridge-post', '다리 난간 기둥', 1, 1, solid=[(0, 0)], tags=['다리', '난간', '하천'], rules='다리 양 끝과 3칸마다 난간 위에 찍는다.')(bridge_post)
+
+
+prop('bridge-rail-v', '남북 다리 난간(석재 윗면+기둥머리)', 1, 1, solid=[(0, 0)], tags=['다리', '난간', '하천'],
+     rules='남북으로 놓인 다리 상판 양쪽 가장자리 칸에 세로로 잇는다(위 칸과 이어짐). 상판 폭 바깥쪽에 둔다.')(bridge_rail_v)
+
+
+def _stone_rows(c, y0, y1, shift):
+    for y in range(y0, y1):
+        k = (y + shift) % 16
+        t = K('conc', 2) if k < 4 else K('conc', 1) if k < 8 else K('conc', 0) if k < 12 else K('conc', -1)
+        c.HL(0, y, 16, t)
+    for yy in range(y0, y1):
+        if (yy + shift) % 4 == 3: c.HL(0, yy, 16, K('sumi', 1))
+        else:
+            for x in range(((yy + shift) // 4 % 2) * 8 + 3, 16, 8): c.P(x, yy, K('sumi', 1))
+
+
+def bank_lip(c):
+    """건너편(남쪽) 둑 석축 윗단: 위 2px 물 접촉 그늘, 이어서 줄눈 있는 돌 14px(위가 밝고 아래로 젖어 어두움)."""
+    for x in range(16):
+        c.P(x, 0, K('kon', -1)); c.P(x, 1, K('kon', -2))
+    c.HL(0, 2, 16, K('sumi', 1))
+    _stone_rows(c, 3, 16, 0)
+
+
+prop('bank-lip', '건너편 둑 윗가장자리+풀 비탈(물 접촉 그늘+갓돌+불투명 풀)', 1, 1, other='flat', tags=['하천', '둑'],
+     rules='하천 남쪽 풀 비탈 줄 위에 가로로 이어 찍는다(투명 덧그림, 아래는 비탈 풀이 보인다).')(bank_lip)
+
+
+
+def _shadow(c, right):
+    """다리 그림자: 투명 바탕(밑 물무늬가 비침) 위에 짙은 남색 점 — 다리 쪽 가장자리일수록 촘촘."""
+    for x in range(16):
+        d = x if right else 15 - x          # 다리 쪽이 0
+        for y in range(16):
+            thr = 16 - d
+            if ((x * 7 + y * 11) % 16) < thr * 1.0: c.P(x, y, K('kon', -2) if d < 6 else K('kon', -1))
+
+
+def water_dark(c):
+    _shadow(c, True)
+
+
+def water_dark_r(c):
+    _shadow(c, False)
+
+
+prop('water-dark-r', '다리 오른쪽 그림자', 1, 1, other='flat', tags=['하천', '그림자', '다리'], rules='다리 상판 오른쪽 물 위.')(water_dark_r)
+prop('water-dark', '다리 밑 어두운 물', 1, 1, other='flat', tags=['하천', '물', '그늘', '다리'],
+     rules='다리 상판 양옆의 물 칸 전부에 찍는다(상판 밑이 어둡게 보인다).')(water_dark)
+
+
+def water_rim_s(c):
+    """수로 오토타일 남쪽 가장자리의 옅은 테두리를 어두운 물 가장자리로 덮는다(아래 4px)."""
+    for x in range(16):
+        c.P(x, 12, K('kon', 0)); c.P(x, 13, K('kon', -1)); c.P(x, 14, K('kon', -2)); c.P(x, 15, K('kon', -2))
+
+
+prop('water-rim-s', '물 남쪽 가장자리 어두운 띠', 1, 1, other='flat', tags=['하천', '물'],
+     rules='하천 물 줄의 맨 아랫줄 전체에 가로로 이어 찍는다(투명 덧그림).')(water_rim_s)
+
+
+
+def bridge_joint(c):
+    """다리 상판 신축 이음: 가로 어두운 줄 + 밝은 줄(아스팔트 위 투명 덧그림), 양 가장자리 돌 연석 한 점."""
+    c.HL(0, 7, 16, K('sumi', 1)); c.HL(0, 8, 16, K('conc', 1))
+
+
+prop('bridge-joint', '다리 상판 신축 이음', 1, 1, other='flat', tags=['다리', '노면'],
+     rules='다리 상판 길 칸(난간 사이)에 가로로 이어 찍는다. 상판 양끝과 가운데에 한 줄씩.')(bridge_joint)
+
+
+
+def bridge_plank(c):
+    """다리 상판 널(남북 다리: 널을 동서로 깐 가로줄): 4px 널 하나씩, 위쪽 밝은 줄·아래 어두운 틈, 엇갈린 이음, 못 머리."""
+    for y0 in range(0, 16, 4):
+        k = y0 // 4
+        c.R(0, y0, 16, 4, K('ita', 0)); c.HL(0, y0, 16, K('ita', 1)); c.HL(0, y0 + 3, 16, K('ita', -2))
+        jx = (k * 7 + 3) % 16
+        c.VL(jx, y0 + 1, 2, K('ita', -2))
+        c.P(2, y0 + 1, K('tekko', -1)); c.P(13, y0 + 1, K('tekko', -1))
+        for x in range(16):
+            if (x * 5 + k * 9) % 13 == 0: c.P(x, y0 + 2, K('ita', -1))
+
+
+prop('bridge-plank', '다리 상판 널(남북 다리)', 1, 1, other='flat', tags=['다리', '노면', '목재'],
+     rules='남북 다리 상판 칸(난간 사이)을 위아래로 이어 채운다(위 칸과 이어짐). 거리 아스팔트 위에 덮는다.')(bridge_plank)
+
+
+
+def bank_slope(c):
+    """석축 아랫단: 돌 6px(가장 밝은 갓돌 줄 포함) 위에 풀 비탈 10px — 물에서 올라가 풀밭으로 이어짐."""
+    c.HL(0, 0, 16, K('conc', 3))
+    _stone_rows(c, 1, 6, 8)
+    c.HL(0, 6, 16, K('sumi', 1))
+    for y in range(7, 16):
+        c.HL(0, y, 16, K('midori', 0) if y < 12 else K('midori', 1))
+        for x in range(16):
+            v = (x * 5 + y * 9) % 10
+            if v == 0: c.P(x, y, K('midori', 2))
+            elif v == 4: c.P(x, y, K('midori', -1))
+
+
+prop('bank-slope', '풀 비탈 둘째 줄(어두운 풀+흙 가장자리)', 1, 1, other='flat', tags=['하천', '둑'],
+     rules='bank-lip 바로 아랫줄에 가로로 이어 찍는다(불투명).')(bank_slope)
+
+
 NOTES = ('손 도트 거리 소품 %d종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). '
          '근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음.')
 
