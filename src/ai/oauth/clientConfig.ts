@@ -1,11 +1,12 @@
 // 다른 회사 앱의 공개 OAuth 클라이언트 값 — Antigravity 데스크톱 앱의 client id·secret, Codex CLI 의 client id.
 //
 // 설치형 앱의 client_secret 은 OAuth 규격상 비밀이 아니지만(RFC 8252 §8.5), 남의 앱 자격이라
-// 공개 저장소(OpenRPGMaker)에 우리 손으로 적지 않는다(2026-10-08 사용자 결정). 값은 실행 환경이 넣는다:
+// 공개 저장소(OpenRPGMaker)에 우리 손으로 적지 않는다(2026-10-08 사용자 결정). 앞선 것이 이긴다:
 //   1. 환경변수 OPRN_ANTIGRAVITY_CLIENT_ID · OPRN_ANTIGRAVITY_CLIENT_SECRET · OPRN_CODEX_CLIENT_ID
-//   2. configureOAuthClients() — Node 진입점이 설치된 참조 구현(@oh-my-pi/pi-ai)에서 읽어 넣는다
-//      (scripts/lib/oauthClients.mjs, aiAuthRuntime.ts).
-//   3. 빌드 주입 __OPRN_OAUTH_CLIENTS__ — 배포용 Electron 메인(scripts/build-electron.mjs)
+//   2. ~/.oprn/oauth-clients.json (또는 OPRN_OAUTH_CLIENTS_FILE)
+//   3. 설치된 @oh-my-pi/pi-catalog KDL / @oh-my-pi/pi-ai 소스 (scripts/lib/oauthClients.mjs)
+//   4. 빌드 주입 __OPRN_OAUTH_CLIENTS__ — 배포용 Electron 메인(scripts/build-electron.mjs)
+// 예시는 scripts/oauth-clients.example.json. 2·3은 configureOAuthClients() 로 넣는다.
 // 이 모듈은 node:* 를 쓰지 않는다 — 형제 모듈들과 같이 브라우저/Node/테스트에서 동일하게 돈다.
 
 export type OAuthClientKey = "antigravityClientId" | "antigravityClientSecret" | "codexClientId";
@@ -45,7 +46,7 @@ export function oauthClient(key: OAuthClientKey): string {
   const value = fromEnv(key) ?? configured[key] ?? fromBuild(key);
   if (!value) {
     throw new Error(
-      `${ENV_NAMES[key]} 가 설정되지 않았다 — 환경변수로 넣거나, @oh-my-pi/pi-ai 가 설치된 Node 에서 실행해야 한다(scripts/lib/oauthClients.mjs).`,
+      `${ENV_NAMES[key]} 가 설정되지 않았다. 환경 변수, ~/.oprn/oauth-clients.json(또는 OPRN_OAUTH_CLIENTS_FILE), 설치된 @oh-my-pi/pi-catalog·pi-ai, 또는 빌드 주입 중 하나가 필요하다(scripts/oauth-clients.example.json).`,
     );
   }
   return value;

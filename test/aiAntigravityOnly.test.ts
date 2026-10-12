@@ -1,4 +1,4 @@
-// 에디터가 고를 수 있는 제공자는 Antigravity 와 Codex 둘이다 — 셋째는 없다.
+// 에디터가 고를 수 있는 구독 제공자는 Antigravity 와 Codex 다. Grok 은 API 키로 더해진다.
 //
 // 이 파일은 원래 "Antigravity 하나로 강제" 를 고정했다. 감독 요구가 바뀌어 Codex 도 1급
 // 선택지가 됐으므로 계약을 뒤집되, 그때 잡았던 회귀는 그대로 지킨다:
@@ -18,6 +18,7 @@ import {
 } from "@/ai/llmClient";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { DEFAULT_OH_MY_PI_PROVIDER, OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
+import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 
 let storage: Map<string, string>;
 
@@ -50,11 +51,21 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
     expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
   });
 
-  it("셋째 제공자는 존재하지 않는다", () => {
+  it("레지스트리는 ChatGPT, Google, Grok 이다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
       CODEX_PROVIDER_ID,
       ANTIGRAVITY_PROVIDER_ID,
+      XAI_PROVIDER_ID,
     ]);
+  });
+
+  it("저장된 Grok 선택은 load/save 왕복을 살아남고 브라우저 키는 비어 있다", () => {
+    saveAiConfig({ ...defaultAiConfig(), providerId: XAI_PROVIDER_ID, model: "grok-4.7" });
+    expect(loadAiConfig().providerId).toBe(XAI_PROVIDER_ID);
+    expect(loadAiConfig().model).toBe("grok-4.7");
+    expect(loadAiConfig().apiKey).toBe("");
+    expect(storage.get(AI_CONFIG_STORAGE_KEY) ?? "").not.toContain("xai-");
+    expect(storedProviderId()).toBe(XAI_PROVIDER_ID);
   });
 
   it("Codex 의 옛 공장 기본 gpt-5.6-sol 은 gpt-6.1-sol 로 올리고, 모델 없는 Codex blob 에 Gemini 를 채우지 않는다", () => {

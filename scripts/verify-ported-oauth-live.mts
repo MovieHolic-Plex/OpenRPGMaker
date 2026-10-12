@@ -21,10 +21,11 @@ import {
 } from "../src/ai/oauth/codexDeviceOAuth";
 import { createOhMyPiAuthStore, defaultOhMyPiAuthPath } from "./lib/ohMyPiAuthStore.mjs";
 import { configureOAuthClients } from "../src/ai/oauth/clientConfig.ts";
-import { readOAuthClientsFromPiAi } from "./lib/oauthClients.mjs";
+import { readOAuthClientsFromPiAi, readOAuthClientsFromSettings } from "./lib/oauthClients.mjs";
 
-// 남의 앱 OAuth 클라이언트 값은 저장소에 없다 — 설치된 참조 구현에서 읽는다(src/ai/oauth/clientConfig.ts).
+// 남의 앱 OAuth 클라이언트 값은 저장소에 없다. 패키지 다음 소유자 설정 파일이 덮고, 환경변수가 최종이다.
 configureOAuthClients(readOAuthClientsFromPiAi());
+configureOAuthClients(readOAuthClientsFromSettings());
 
 const wantsRefresh = process.argv.includes("--refresh");
 /** 실제 승인까지 기다린다. 사용자가 브라우저에서 코드를 넣어야 끝난다. */

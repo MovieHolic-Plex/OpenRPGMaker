@@ -30,12 +30,24 @@
 ## 남의 앱 OAuth 클라이언트 값
 
 Antigravity 데스크톱 앱의 client id·secret 과 Codex CLI 의 client id 는 **저장소에 적지 않는다**(2026-10-08 결정 — 공개 저장소에 남의 앱 자격을 올리지 않는다).
-`src/ai/oauth/clientConfig.ts` 의 `oauthClient()` 가 환경변수(`OPRN_ANTIGRAVITY_CLIENT_ID`·`OPRN_ANTIGRAVITY_CLIENT_SECRET`·`OPRN_CODEX_CLIENT_ID`) →
-`configureOAuthClients()` 로 넣은 값 → 빌드 주입 `__OPRN_OAUTH_CLIENTS__` 순으로 읽는다.
-Node 진입점(`scripts/lib/aiAuthRuntime.ts`, `scripts/verify-ported-oauth-live.mts`)은 설치된 `@oh-my-pi/pi-ai` 소스에서 읽어 넣고
-(`scripts/lib/oauthClients.mjs` — pi-ai 의 exports 가 require 를 막아 탐색 경로로 폴더를 찾는다), 배포 Electron 메인은
-`scripts/build-electron.mjs` 가 같은 값을 빌드 때 주입한다. 새 진입점이 이 OAuth 모듈을 직접 부르면 같은 설정 한 줄을 넣어야 한다.
+`src/ai/oauth/clientConfig.ts` 의 `oauthClient()` 가 다음 순서로 읽는다. 앞선 값이 이긴다.
+
+1. 환경 변수 `OPRN_ANTIGRAVITY_CLIENT_ID`, `OPRN_ANTIGRAVITY_CLIENT_SECRET`, `OPRN_CODEX_CLIENT_ID`
+2. `~/.oprn/oauth-clients.json` 또는 `OPRN_OAUTH_CLIENTS_FILE` (키 이름은 위 세 필드의 camelCase. 예시 `scripts/oauth-clients.example.json`)
+3. 설치된 `@oh-my-pi/pi-catalog` 의 `google-antigravity.kdl`·`openai-codex.kdl`, 없으면 `@oh-my-pi/pi-ai` 소스의 옛 상수 (`scripts/lib/oauthClients.mjs`)
+4. 빌드 주입 `__OPRN_OAUTH_CLIENTS__` (`scripts/build-electron.mjs`)
+
+18.9 부터 Antigravity 값은 pi-ai 의 `decode("...")` 상수가 아니라 pi-catalog KDL 에 있다. 옛 읽기만 있으면 Google 로그인이 `OPRN_ANTIGRAVITY_CLIENT_ID 가 설정되지 않았다` 로 멈춘다.
+Node 진입점(`scripts/lib/aiAuthRuntime.ts`, `scripts/verify-ported-oauth-live.mts`)은 3 다음에 2 를 `configureOAuthClients()` 로 넣는다. 패키징된 앱에는 node_modules 가 없으므로 빌드가 3을 주입하고, 사용자 PC 의 설정 파일이 실행 때 덮는다.
 테스트는 가짜 값으로 `configureOAuthClients` 를 부른다.
+
+직접 등록한 Google/OpenAI 앱은 Antigravity·Codex 가 이미 허용한 redirect 와 스코프가 아니다. 그 클라이언트로는 이 로그인이 되지 않는다. 패키지가 읽는 공개 클라이언트를 쓰거나, 그 앱이 허용한 값만 설정 파일에 넣는다.
+
+- Google(Antigravity): 인가 `https://accounts.google.com/o/oauth2/v2/auth`, 토큰 `https://oauth2.googleapis.com/token`, redirect `http://127.0.0.1:<바인드된 포트>/oauth-callback` (선호 포트 51121, Google 은 루프백 포트를 고정하지 않는다).
+- ChatGPT(Codex) 브라우저: redirect 는 `http://localhost:1455/auth/callback` 만. 포트가 바뀌면 실패한다.
+- ChatGPT 디바이스: `https://auth.openai.com/codex/device`, 콜백 `https://auth.openai.com/deviceauth/callback`, 토큰 `https://auth.openai.com/oauth/token`.
+
+Grok 은 이 OAuth 클라이언트를 쓰지 않는다. xAI 추론 API 는 `https://api.x.ai/v1` 의 Bearer API 키(`XAI_API_KEY` 또는 AI 설정에 붙여 넣기)다. `https://auth.x.ai` 에 디바이스 코드 엔드포인트는 있지만 이 제품용 client id 가 공개돼 있지 않아 연결하지 않는다.
 
 ## 공개 저장소 내보내기 (OpenRPGMaker)
 

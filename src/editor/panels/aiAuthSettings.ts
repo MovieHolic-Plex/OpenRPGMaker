@@ -1,18 +1,13 @@
 // editor/panels/aiAuthSettings.ts
-// AI 연결 방식 패널 — **Google 계정**(Antigravity) 과 **ChatGPT 계정**(Codex) 로그인을 고른다.
+// AI 연결 방식 패널 — Google·ChatGPT 구독 로그인과 Grok API 키.
 //
-// 사용자가 보는 이름은 로그인하는 계정 이름 하나다(Google / ChatGPT, 레지스트리 label).
-// 제품명(Gemini·Antigravity·Codex)은 카드 보조 줄에만 쓴다 — 카드·패널·칩이 제각각 다른 이름을
-// 쓰던 것(2026-09-23 실측)을 막는다.
+// 사용자가 보는 이름은 레지스트리 label 하나다(Google / ChatGPT / Grok).
+// 제품명(Gemini·Antigravity·Codex·xAI)은 카드 보조 줄에만 쓴다.
 //
-// 둘의 공통 계약:
-//  - 전송은 로컬 동반 서비스(oh-my-pi)다.
-//  - 자격 증명은 동반 서비스의 ~/.oprn/oh-my-pi-auth.json 에만 있다.
-//  - 둘 다 oauth 이므로 브라우저에는 API 키 입력칸도, 저장되는 비밀도 없다.
-//
-// AiConnectionKindId 의 "API 키" 값은 주입 설정의 타입 호환을 위해 남아 있지만 이 레지스트리에
-// apiKey 제공자는 없다. 화면에서 그 가지를 눌러도 가짜 제공자를 만들거나 키 입력을 되살리지 않고,
-// 같은 두 구독 제공자를 보여 준다. `configForConnectionKind` 가 전송/비밀 정규화를 강제한다.
+// 공통 계약:
+//  - 전송은 로컬 동반 서비스다. 브라우저 blob 의 apiKey·baseUrl 은 항상 빈 문자열이다.
+//  - 자격은 ~/.oprn/oh-my-pi-auth.json 에만 있다.
+//  - 구독 제공자에는 키 입력칸을 만들지 않는다. Grok 만 키 칸을 만들고, 저장은 동반 서비스로 보낸다.
 
 import {
   completeOAuthPaste,
@@ -20,6 +15,7 @@ import {
   type CompanionLoginStart,
   disconnectCompanionAuth,
   fetchChatGptAuthStatus,
+  saveCompanionApiKey,
   hasStoredCompanionCredential,
   hasUsableCompanionCredential,
   setCompanionEnvScan,
@@ -41,6 +37,7 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import {
   refreshAiConnectionStatus,
@@ -87,12 +84,16 @@ const TIMEOUT_COPY = "시간이 지나 로그인을 멈췄어요. 다시 시도�
 type Tone = "connected" | "disconnected" | "offline" | "checking";
 
 /**
- * OAuth 제공자 두 개의 빠른 선택 카드. 제목은 로그인하는 계정(「Google 계정」·「ChatGPT 계정」),
- * 보조 줄은 사용자가 따로 들어 봤을 제품명이다(「Gemini · Antigravity」·「Codex」) — 사용자가
- * "agy" 로 부르는 것을 카드에서 찾을 수 있게 한다. Google 쪽은 **구독을 암시하지 않는다**(CLI
- * 장르 용어도 쓰지 않는다). 이 카드는 보기 좋은 경로일 뿐 — 동일 providerId 는 아래 select 와 공유한다.
+ * 빠른 선택 카드. 제목은 로그인하는 계정 또는 제품 이름, 보조 줄은 제품명이다.
+ * Grok 은 구독 창이 아니라 xAI Console API 키다. 카드와 아래 select 는 같은 providerId 를 쓴다.
  */
 const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: string; hint: string }>[] = [
+  {
+    id: CODEX_PROVIDER_ID,
+    label: "ChatGPT 계정",
+    sub: "Codex",
+    hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.",
+  },
   {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google 계정",
@@ -100,10 +101,10 @@ const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: strin
     hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.",
   },
   {
-    id: CODEX_PROVIDER_ID,
-    label: "ChatGPT 계정",
-    sub: "Codex",
-    hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.",
+    id: XAI_PROVIDER_ID,
+    label: "Grok",
+    sub: "xAI API",
+    hint: "xAI Console의 API 키로 연결합니다. 구독 로그인과는 다른 경로입니다.",
   },
 ];
 
@@ -122,8 +123,7 @@ export function renderAiAuthSettings(
    */
   onStatus?: (next: AiAuthStatusSnapshot) => void,
 ): AiAuthSettingsView {
-  // 연결 종류 선택 UI 는 없다 — 이 레지스트리의 제공자는 전부 oauth 이고, 예전 「API 키」
-  // 카드는 지원 제공자가 없는 죽은 선택지였다(고르면 같은 두 제공자만 다시 보였다).
+  // 연결 종류 선택 UI 는 없다. 카드가 제공자를 고르고, 종류는 providerId 에서 파생한다.
   const kind = editorConnectionKind(config);
   let providerId = parseOhMyPiProvider(config.providerId);
   let stored = false;
@@ -131,6 +131,8 @@ export function renderAiAuthSettings(
   let pollAttempt = 0;
   let disposed = false;
   let loginExpiresAt = 0;
+  /** 기기 로그인 블록이 열려 있는지. DOM `hidden` 속성과 프로퍼티가 어긋나도 이 값만 본다. */
+  let deviceFlowVisible = false;
   /**
    * 인증 연산 세대 카운터. 제공자/종류 변경과 명시적 취소가 이 값을 올린다 — 진행 중(나 비동기 대기)인
    * 연산은 시작 시점의 세대·제공자를 붙들고, 그게 현재와 다르면 UI 를 건드리지 않는다.
@@ -285,7 +287,7 @@ export function renderAiAuthSettings(
    * 텍스트에는 제공자 이름만 넣는다(옛 결함 ③).
    */
   const fillProviders = (): void => {
-    // 둘 다 oauth 이므로 종류와 무관하게 같은 두 제공자를 채운다. 첫 항목은 기본 제공자다.
+    // 종류와 무관하게 레지스트리 전체를 채운다. 첫 항목은 권장 제공자(ChatGPT)다.
     const rows = providersForKind(kind);
     providerSelect.replaceChildren(
       ...rows.map((row) => el("option", { text: row.label, attrs: { value: row.id } })),
@@ -294,9 +296,66 @@ export function renderAiAuthSettings(
     providerSelect.disabled = rows.length <= 1;
   };
 
-  // API 키 입력은 없다. 이 레지스트리의 두 제공자는 모두 oauth 이고 시크릿은 동반 서비스의
-  // 디스크 저장소에만 있다. 숨은 input 으로 남겨도 fake DOM·브라우저 자동완성·미래 collect 경로가
-  // 값을 읽을 수 있으므로 DOM 자체를 만들지 않는다.
+  // 키 칸은 API 키 제공자(Grok)일 때만 DOM 에 만든다. 구독 제공자에 숨은 input 을 두면
+  // 자동완성과 이후 collect 경로가 값을 읽을 수 있다. 저장은 동반 서비스로만 보내고 칸은 비운다.
+  const keySlot = el("div", { dataset: { testid: "ai-companion-key-slot" } });
+  let keyInput: HTMLInputElement | null = null;
+  let keySaveButton: HTMLButtonElement | null = null;
+
+  const saveTypedApiKey = (): void => {
+    const value = keyInput?.value.trim() ?? "";
+    if (!value || ohMyPiAuthKind(providerId) !== "apiKey") return;
+    opGeneration += 1;
+    const gen = opGeneration;
+    const provider = providerId;
+    const isCurrent = (): boolean => !disposed && gen === opGeneration && provider === providerId;
+    setStatus("키 저장 중…", "checking");
+    void saveCompanionApiKey(provider, value)
+      .then((auth) => {
+        if (!isCurrent()) return;
+        if (keyInput) keyInput.value = "";
+        applyStatus(auth);
+      })
+      .catch((error: unknown) => {
+        if (!isCurrent()) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      });
+  };
+
+  /** 구독 제공자에서는 키 DOM 을 없애고, API 키 제공자에서만 비밀번호 칸을 만든다. */
+  const syncKeyField = (): void => {
+    if (ohMyPiAuthKind(providerId) !== "apiKey") {
+      keyInput = null;
+      keySaveButton = null;
+      keySlot.replaceChildren();
+      return;
+    }
+    if (keyInput && keySaveButton) return;
+    keyInput = el("input", {
+      class: "ai-config-input",
+      attrs: {
+        type: "password",
+        autocomplete: "off",
+        spellcheck: "false",
+        placeholder: "xai-…",
+        "aria-label": "xAI API 키",
+      },
+      dataset: { testid: "ai-companion-api-key" },
+    }) as HTMLInputElement;
+    keySaveButton = el("button", {
+      class: "ai-assistant-action",
+      text: "키 저장",
+      attrs: { type: "button" },
+      dataset: { testid: "ai-companion-save-key" },
+    }) as HTMLButtonElement;
+    keySaveButton.addEventListener("click", () => saveTypedApiKey());
+    keySlot.replaceChildren(el("div", {
+      class: "ai-auth-key-row",
+      dataset: { testid: "ai-companion-key-row" },
+      children: [keyInput, keySaveButton],
+    }));
+  };
 
   // ── 동작 버튼 ─────────────────────────────────────────────────────────────
   const loginButton = el("button", {
@@ -476,22 +535,24 @@ export function renderAiAuthSettings(
   const applyChrome = (): void => {
     const meta = getOhMyPiProvider(providerId);
     const providerKind = ohMyPiAuthKind(providerId);
-    // 두 제공자는 모두 oauth 이므로 키 입력 분기가 없다. 안내도 providerId 하드코딩 대신
-    // 레지스트리 authKind 를 따라가 새 제공자를 추가할 때 잘못된 키 안내가 생기지 않게 한다.
-    // 카드 설명을 그대로 되풀이하지 않는다 — 패널 안내는 **다음에 무슨 일이 일어나는지**를 말한다.
+    // 안내는 레지스트리 authKind 를 따른다. 카드 설명을 되풀이하지 않고 다음에 일어날 일을 말한다.
     const label = meta?.label ?? providerId;
-    providerHelp.textContent = providerKind !== "oauth"
-      ? `${label} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`
-      : stored
-        ? `${label} 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.`
-        : `로그인을 누르면 새 창이 열리고 ${label} 계정으로 로그인합니다. API 키는 필요 없어요.`;
+    providerHelp.textContent = providerKind === "apiKey"
+      ? stored
+        ? `${label} API 키로 연결되어 있어요. 키는 이 컴퓨터의 연결 서비스에만 있고, 브라우저에는 저장되지 않습니다.`
+        : `${label} 는 xAI Console(https://console.x.ai)에서 만든 API 키로 연결합니다. 키는 브라우저에 남지 않습니다.`
+      : providerKind !== "oauth"
+        ? `${label} 는 이 에디터에서 지원하지 않는 자격 종류입니다.`
+        : stored
+          ? `${label} 계정으로 연결되어 있어요. 다른 계정을 쓰려면 연결 해제 후 다시 로그인하세요.`
+          : `로그인을 누르면 새 창이 열리고 ${label} 계정으로 로그인합니다. API 키는 필요 없어요.`;
     loginButton.textContent = stored
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";
     disconnectButton.hidden = !stored;
-    // 로그인 전에는 「로그인」 이 이 화면의 유일한 다음 단계다 — 다른 회색 버튼과 같은 무게로 두지 않는다.
     loginButton.classList.toggle("is-primary", !stored && providerKind === "oauth");
-    // 퀵 카드의 보이기/체크·탭 순서도 같은 크롬 갱신 경로에서 맞춘다.
+    syncKeyField();
+    keySaveButton?.classList.toggle("is-primary", providerKind === "apiKey" && !stored);
     applyQuickChrome();
   };
 
@@ -501,15 +562,15 @@ export function renderAiAuthSettings(
    * 키보드 사용자가 돌아올 수 있도록 첫 카드만 `tabindex=0` 으로 남기고 둘 다 체크 해제로 둔다.
    */
   function applyQuickChrome(): void {
-    const inOAuth = kind === "oauth";
-    quickBlock.hidden = !inOAuth;
-    quickGroup.hidden = !inOAuth;
+    // 카드는 제공자 선택이다. Grok 을 골랐을 때도 Google·ChatGPT 카드가 남아 있어야 돌아온다.
+    quickBlock.hidden = false;
+    quickGroup.hidden = false;
     for (const [id, button] of quickButtons) {
-      const active = inOAuth && providerId === id;
+      const active = providerId === id;
       button.setAttribute("aria-checked", String(active));
       button.setAttribute("tabindex", active ? "0" : "-1");
     }
-    if (inOAuth && !quickButtons.has(providerId)) {
+    if (!quickButtons.has(providerId)) {
       const first = [...quickButtons.keys()][0];
       if (first) quickButtons.get(first)?.setAttribute("tabindex", "0");
     }
@@ -562,7 +623,7 @@ export function renderAiAuthSettings(
   }
 
   const emit = (): void => {
-    onChange({ kind, providerId });
+    onChange({ kind: ohMyPiAuthKind(providerId) === "oauth" ? "oauth" : "apiKey", providerId });
   };
 
   // ── 상태 조회 ─────────────────────────────────────────────────────────────
@@ -622,7 +683,7 @@ export function renderAiAuthSettings(
       return;
     }
     if (!usable && auth.pendingLogin) {
-      if (deviceBlock.hidden) restoreLoginFlow(auth.pendingLogin);
+      if (!deviceFlowVisible) restoreLoginFlow(auth.pendingLogin);
       applyChrome();
       return;
     }
@@ -770,6 +831,7 @@ export function renderAiAuthSettings(
    * 무엇을 눌러야 하는지 두 갈래로 보였다. 다시 시작하려면 「취소」 뒤 「로그인」 이다.
    */
   function setDeviceFlowVisible(visible: boolean): void {
+    deviceFlowVisible = visible;
     deviceBlock.hidden = !visible;
     actionsRow.hidden = visible;
     envScanAgain.dataset.flowHidden = visible ? "true" : "false";
@@ -1003,8 +1065,13 @@ export function renderAiAuthSettings(
           return refreshStatus(gen, provider);
         }
         if (login.needsApiKey) {
-          // 레지스트리의 두 제공자는 oauth 다. 동반 서비스가 키 필요를 돌려주면 제공자 계약이
-          // 어긋난 것이므로 존재하지 않는 키 입력 경로를 안내하지 않고 다시 로그인을 요구한다.
+          if (ohMyPiAuthKind(provider) === "apiKey") {
+            setStatus("API 키 필요", "disconnected");
+            hint.textContent = login.instructions || "API 키를 붙여 넣은 뒤 저장하세요.";
+            hint.hidden = false;
+            keyInput?.focus();
+            return;
+          }
           setStatus("구독 로그인 필요", "disconnected");
           hint.textContent = login.instructions
             || "이 제공자는 구독 로그인만 지원합니다. 연결 서비스를 확인한 뒤 다시 로그인하세요.";
@@ -1104,6 +1171,7 @@ export function renderAiAuthSettings(
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
           el("div", { class: "ai-auth-state", children: [status] }),
           providerHelp,
+          keySlot,
           envScanBox,
           actionsRow,
           deviceBlock,
@@ -1117,8 +1185,12 @@ export function renderAiAuthSettings(
       ],
     }),
     focus: () => {
-      // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
-      // API 키 입력은 두 제공자 모두에게 존재하지 않는다.
+      // 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
+      // Grok 이고 아직 저장 키가 없으면 키 칸으로 보낸다.
+      if (ohMyPiAuthKind(providerId) === "apiKey" && !stored) {
+        keyInput?.focus();
+        return;
+      }
       quickButtons.get(providerId)?.focus();
     },
     recheck: () => {

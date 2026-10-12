@@ -447,7 +447,7 @@ describe("키 온보딩과 설정 접근성", () => {
     expect(modal).not.toBeNull();
     expect(findByTestId(panel, "ai-config")).toBeNull();
     // 첫 포커스는 선택된 제공자 카드 — 종류 카드는 사라졌다.
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal!, "ai-auth-quick-google-antigravity"));
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal!, "ai-auth-quick-openai-codex"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {

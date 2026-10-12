@@ -14,6 +14,7 @@ import {
   publicProviderStatus,
   refreshProvider,
   resolveRequestApiKey,
+  saveProviderApiKey,
   seedOAuthForTests,
   setEnvScanDecision,
   startProviderLogin,
@@ -216,12 +217,8 @@ export async function createOhMyPiAdapters() {
       cancelProviderLogin(provider);
       return publicProviderStatus(provider);
     },
-    async saveKey(provider) {
-      // 지원 제공자 둘 다 구독 로그인이다. API 키를 받는 생기면 사용자가
-      // 키를 붙여넣고 연결된 상태를 기다리다 401 로 새는 경로가 다시 생긴다.
-      const error = new Error(`${provider} 는 구독 로그인 전용이라 API 키를 쓰지 않습니다.`);
-      error.status = 400;
-      throw error;
+    async saveKey(provider, apiKey) {
+      return saveProviderApiKey(provider, apiKey);
     },
     async refresh(provider) {
       return refreshProvider(provider);

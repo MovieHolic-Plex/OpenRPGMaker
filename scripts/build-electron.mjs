@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
-import { readOAuthClientsFromPiAi } from "./lib/oauthClients.mjs";
+import { readOAuthClientsFromPiAi, readOAuthClientsFromSettings } from "./lib/oauthClients.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
@@ -58,7 +58,7 @@ function assertNoTopLevelImportMeta(file) {
 // 남의 앱 OAuth 클라이언트 값(src/ai/oauth/clientConfig.ts)은 저장소에 없다. 패키징된 앱에는 node_modules 가 없으므로
 // 빌드 때 설치된 참조 구현에서 읽어 주입한다. 환경변수가 있으면 그것이 이긴다. 못 읽으면 로그인만 실패한다.
 const OAUTH_ENV = { antigravityClientId: "OPRN_ANTIGRAVITY_CLIENT_ID", antigravityClientSecret: "OPRN_ANTIGRAVITY_CLIENT_SECRET", codexClientId: "OPRN_CODEX_CLIENT_ID" };
-const oauthClients = readOAuthClientsFromPiAi();
+const oauthClients = { ...readOAuthClientsFromPiAi(), ...readOAuthClientsFromSettings() };
 for (const [key, name] of Object.entries(OAUTH_ENV)) if (process.env[name]?.trim()) oauthClients[key] = process.env[name].trim();
 const missingOAuth = Object.keys(OAUTH_ENV).filter((key) => !oauthClients[key]);
 if (missingOAuth.length) process.stderr.write(`warning: OAuth 클라이언트 값 없음 — ${missingOAuth.join(", ")} (해당 로그인은 패키지 앱에서 실패한다)\n`);

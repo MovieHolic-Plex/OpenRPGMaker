@@ -9,9 +9,8 @@
 //  - 전송 축  = authMode. 에디터는 **항상** companion 이다(주입 게이트웨이는 UI 가 없다).
 //  - 자격 축  = providerId → ohMyPiAuthKind. 사용자가 고르는 것은 이쪽이다.
 //
-// 레지스트리에는 Antigravity·Codex 두 제공자만 있고 둘 다 oauth 다. 그래서 자격 축은 실질적으로
-// 한 값이고, 사용자의 선택은 "어느 구독으로 갈 것인가"다. 두 제공자 모두 자격을 동반 서비스가
-// 자기 저장소(~/.oprn/oh-my-pi-auth.json)에 보관하므로 **브라우저에 비밀을 남기지 않는다.**
+// 레지스트리에는 ChatGPT·Google(oauth)과 Grok(apiKey)이 있다. 자격은 동반 서비스
+// 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 **브라우저에 비밀을 남기지 않는다.**
 // `configForConnectionKind` 가 그것을 강제한다.
 
 import { DEFAULT_BASE_URL, type AiConfig } from "@/ai/llmClient";
@@ -24,32 +23,30 @@ import {
 } from "@/ai/ohMyPiProviders";
 
 /**
- * 사용자가 고르는 연결 방식. 두 값을 유지하지만 레지스트리에는 oauth 제공자만 있으므로
- * "API 키" 쪽에 내놓을 제공자가 없다 — 가짜 apiKey 제공자를 만들어 채우지 않는다.
+ * 사용자가 고르는 연결 방식. 목록 자체는 종류와 무관하게 레지스트리 전체다 —
+ * Grok 에서 Google·ChatGPT 로 돌아올 수 있어야 한다.
  */
 export type AiConnectionKindId = "oauth" | "apiKey";
 
 /**
  * 설정이 어느 종류에 속하는지 — providerId 에서 파생한다. 저장 필드가 아니다.
- * 두 제공자가 모두 구독 로그인이므로 실제로 나오는 값은 항상 "oauth" 다.
+ * Grok 은 "apiKey", 구독 두 제공자는 "oauth" 다. 모르는 id 는 옛 기본(Google)으로 스냅된다.
  */
 export function editorConnectionKind(config: AiConfig): AiConnectionKindId {
   return ohMyPiAuthKind(config.providerId) === "oauth" ? "oauth" : "apiKey";
 }
 
 /**
- * 종류별 제공자 목록 — 두 종류 모두 같은 두 제공자(Antigravity·Codex)를 돌려준다.
+ * 종류별 제공자 목록 — 두 종류 모두 레지스트리 전체를 돌려준다.
  *
- * 종류로 목록을 갈랐던 이유는 apiKey 제공자가 따로 있었기 때문이다. 지금은 둘 다 구독 로그인이라
- * "API 키" 쪽에 내놓을 제공자가 없는데, 그렇다고 빈 select 를 세우면 종류를 눌렀을 때 고를 것이
- * 사라져 화면이 고장난 것처럼 보인다(실측: 제공자를 하나로 강제했을 때 apiKey 필터가 빈 select 를
- * 만들었다). 순서는 레지스트리 순서 = 기본 제공자 우선이다 — 첫 항목이 곧 권장값이다.
+ * 종류로 목록을 갈라 빈 select 가 되면, 고른 제공자에서 다른 제공자로 돌아올 수 없다.
+ * 순서는 레지스트리 순서다. 첫 항목은 새로 설정할 때의 권장값(ChatGPT)이다.
  */
 export function providersForKind(_kind: AiConnectionKindId): readonly OhMyPiProvider[] {
   return OH_MY_PI_PROVIDERS;
 }
 
-/** 제공자가 둘이므로 사용자에게 실제 선택권이 있다 — UI 는 선택기를 활성화한다. */
+/** 제공자가 여럿이므로 사용자에게 실제 선택권이 있다 — UI 는 선택기를 활성화한다. */
 export function editorHasProviderChoice(): boolean {
   return OH_MY_PI_PROVIDERS.length > 1;
 }
