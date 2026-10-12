@@ -1153,7 +1153,12 @@ function validateResourceReferences(
   if (beat.kind === "music" && beat.resourceId) resources.push(beat.resourceId);
   if (beat.kind === "say" && beat.face?.resourceId) resources.push(beat.face.resourceId);
   for (const resourceId of resources) {
-    if (!context.resourceIds.has(resourceId)) errors.push(`${path}: 존재하지 않는 리소스 '${resourceId}'를 참조했습니다.`);
+    if (!context.resourceIds.has(resourceId)) {
+      // 손으로 옮겨 적다 틀린 id(GUID 한 글자)가 흔하다 — 앞부분이 가장 길게 같은 실제 id 를 알려 준다.
+      const common = (id: string): number => { let n = 0; while (n < id.length && n < resourceId.length && id[n] === resourceId[n]) n += 1; return n; };
+      const near = [...context.resourceIds].map((id) => ({ id, n: common(id) })).filter((c) => c.n >= 12).sort((a, b) => b.n - a.n).slice(0, 3).map((c) => c.id);
+      errors.push(`${path}: 존재하지 않는 리소스 '${resourceId}'를 참조했습니다.${near.length ? ` 비슷한 실제 id: ${near.join(", ")} — list_resources 로 확인해 정확히 복사하세요.` : ""}`);
+    }
   }
 }
 
