@@ -58,6 +58,7 @@ import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclara
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
+import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS } from "@/ai/piAgent/goalCommand";
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
@@ -2166,7 +2167,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           };
           paintConversationSpend();
         },
-      }, piRunOptionsFor(plan, opts));
+      }, {
+        ...piRunOptionsFor(plan, opts),
+        ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
+      });
     } finally {
       progress.finish();
       if (canvasProgress === progress) canvasProgress = null;
@@ -2280,7 +2284,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     card.setStatus("의도 읽는 중…");
     const explicit = parsePiCommand(run.text, store.getCurrent(), run.mapId);
     let command: ParsedPiCommand;
-    let options: PiRunOptions = {};
+    let options: PiRunOptions = explicit?.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {};
     if (explicit) command = explicit;
     else {
       const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });

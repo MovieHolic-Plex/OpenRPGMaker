@@ -3,6 +3,7 @@
 // 스위치에서 막힘. 작은 수정 12과제는 gpt 12/12·gemini 11/12. 그래서 사용자가 시공만 다른 모델로 둘 수 있게 한다(src/ai/modelRoles.ts).
 import { getTool } from "@/editor/tools";
 import { isGenrePresetBriefRequest } from "./genrePresetBrief";
+import { isGoalCampaignTask } from "./piAgent/goalCommand";
 import type { SpecialistRole } from "./modelRoles";
 
 /**
@@ -11,7 +12,7 @@ import type { SpecialistRole } from "./modelRoles";
  * 장르 프리셋 기획으로 게임 전체를 짓는 실행은 맵이 대부분이라 시공으로 본다.
  */
 export function isSpatialBuildRun(task: string | undefined, initialToolNames: readonly string[] | undefined): boolean {
-  if (isGenrePresetBriefRequest(task)) return true;
+  if (isGenrePresetBriefRequest(task) || (task && isGoalCampaignTask(task))) return true;
   return (initialToolNames ?? []).some((name) => {
     const tool = getTool(name);
     const domains: readonly string[] = tool?.domains ?? [];

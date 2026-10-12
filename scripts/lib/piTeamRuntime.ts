@@ -1,3 +1,5 @@
+import { GOAL_MAX_TURNS, GOAL_TIMEOUT_MS, isGoalCampaignTask } from "../../src/ai/piAgent/goalCommand.ts";
+import { inspectGoalCampaign } from "../../src/ai/piAgent/goalCampaignInspection.ts";
 import { createHash } from 'node:crypto';
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
@@ -125,15 +127,18 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
    */
   let seamRejection: string | null = null;
 
-  const baseTeam = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
+  const goalCampaign = isGoalCampaignTask(request.task);
+  const savedTeam = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
+  const baseTeam = goalCampaign ? { ...savedTeam, workBudget: GOAL_MAX_TURNS } : savedTeam;
+  if (goalCampaign) options = { ...options, timeoutMs: request.timeoutMs ?? GOAL_TIMEOUT_MS };
   // 프리셋 첫 생성은 가장 작은 플레이 구간만 만든다 — 팀원 한 배정의 턴을 줄인다(PRESET_FIRST_BUILD_RULES 와 짝).
   // 사용자가 팀원마다 정한 값이 더 작으면 그 값을 쓴다.
-  const team = isGenrePresetBriefRequest(request.task)
+  const team = !goalCampaign && isGenrePresetBriefRequest(request.task)
     ? { ...baseTeam, members: baseTeam.members.map((member) => ({ ...member, maxTurns: Math.min(member.maxTurns, PRESET_FIRST_BUILD_MEMBER_TURNS) })) }
     : baseTeam;
   // enabledMembers applies the shared workBudget, which otherwise overwrites
   // the preset cap above. Bound the actual child requests after normalization.
-  const boundMember = (member: PiTeamMember): PiTeamMember => isGenrePresetBriefRequest(request.task)
+  const boundMember = (member: PiTeamMember): PiTeamMember => !goalCampaign && isGenrePresetBriefRequest(request.task)
     ? { ...member, maxTurns: Math.min(member.maxTurns, team.members.find(m => m.id === member.id)!.maxTurns) }
     : member;
   const builders = enabledMembers(team, "builder").map(boundMember);
@@ -143,7 +148,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const segmentGate = Boolean(authoringHarnessFor(base)) || isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
   // Bespoke authoring harnesses keep their own stronger contracts. The three
   // seeded genres first author actual play, before the coordinator can decorate.
-  const coreFirst = isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
+  const coreFirst = !goalCampaign && isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
@@ -720,6 +725,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (authoringHarnessFor(base) && (!authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
           throw new Error('현재 첫 만남의 시각 검수가 없거나, 검수 후 내용이 바뀌었습니다. 실제 맵 이미지를 보는 review_map 검수를 통과한 뒤 finish 하세요.');
         }
+        if (goalCampaign) {
+          const progress = inspectGoalCampaign(working);
+          if (progress.issues.length) throw new Error("장기 목표 미완료: " + progress.issues.join(" / ") + ". 부족한 장소와 콘텐츠를 제작한 뒤 다시 finish 하세요.");
+        }
         const outstanding = mailbox.outstanding();
         finished = str((params as Record<string, unknown>)?.report, "report");
         finishAccepted = true;
@@ -1079,7 +1088,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
   // 살아 있으므로, 브라우저의 수용 게이트가 확인할 수 있게 병합 시점에 증거를 다시 찍는다.
   authorMergedSpatialProposal(working, base);
+  const goalIssues = goalCampaign ? inspectGoalCampaign(working).issues : [];
+  const stoppedEarly = orchDone.stoppedEarly ?? (goalIssues.length ? "장기 목표 미완료: " + goalIssues.join(" / ") : goalCampaign && !finishAccepted ? "장기 목표의 검증된 finish 호출이 없습니다." : undefined);
   const done: PiAgentDoneEvent = {
+    ...(stoppedEarly ? { stoppedEarly } : {}),
     ...(openingProduction ? { openingProduction } : {}),
     interiorCompletion,
     type: "done",

@@ -10,6 +10,7 @@ import type { PiTeamRoleId } from "./protocol";
 import { describeTeamMembers, type PiTeamSpec } from "./teamSpec";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
+import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "./goalCommand";
 
 /**
  * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
@@ -26,6 +27,16 @@ export const PRESET_FIRST_BUILD_RULES = [
 ] as const;
 /** 프리셋 첫 생성에서 팀원 한 명이 쓰는 턴 상한. 기본(200~300)의 절반 아래 — 구간이 작으니 한 배정이 길 이유가 없다. */
 export const PRESET_FIRST_BUILD_MEMBER_TURNS = 120;
+
+/** Explicit /goal replaces the small first-demo rule. */
+export const GOAL_CAMPAIGN_RULES = [
+  `[장기 목표 제작] 사용자가 /goal 로 요청했다. 최소 ${GOAL_MIN_MAPS}개 맵을 실제로 만들고 끝까지 연결한다.`,
+  `먼저 확정 기획에서 서로 다른 장소와 핵심 행동을 10개 이상 정한다. 아래는 역할 참고이며 장르·무대에 맞지 않으면 대체한다. 모든 게임에 마을·숲·동굴·탑을 반복하지 않는다:\n${GOAL_CAMPAIGN_MAP_BLUEPRINT}`,
+  "맵 배정마다 확정 무대, 그 장소의 핵심 행동과 결과, 다른 장소와 다른 지형·동선, 금지된 장르 요소를 task에 명시한다. 전투 없는 기획에는 전투·보스·장비를 넣지 않는다.",
+  "맵마다 다른 장소 역할과 실제 콘텐츠를 배정한다. 같은 마을·집·길을 복제해 맵 수를 채우지 않는다.",
+  "한 턴에 여러 개의 서로 겹치지 않는 맵을 배정하고, 각 담당자는 지형·구조물·이벤트/NPC/전투/보물 중 해당 장소에 필요한 것을 실제로 만든다.",
+  `finish 전 get_project_summary 또는 실제 맵 목록으로 맵이 ${GOAL_MIN_MAPS}개 이상인지, 각 맵에 이벤트·인카운터 같은 실제 플레이 콘텐츠가 있는지, 시작 맵에서 모든 맵으로 이동 가능한지, 각 맵이 빈 바닥이 아닌지 확인한다. 부족하면 finish 하지 말고 남은 맵과 콘텐츠 작업을 계속 배정한다.`,
+] as const;
 
 export interface PiTeamRole {
   readonly id: PiTeamRoleId;
@@ -70,7 +81,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...(isGenrePresetBriefRequest(task) ? [] : teamWorkflowPrompt()),
-        ...(isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
+        ...(isGoalCampaignTask(task) ? GOAL_CAMPAIGN_RULES : isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
         ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",

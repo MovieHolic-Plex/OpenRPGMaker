@@ -18,6 +18,7 @@ import { executionRoleFor } from "@/ai/buildRole";
 //   /pi map_a,map_b <지시>  맵마다 에이전트 하나씩 병렬
 //   team <지시>            팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
 //   team map_a,map_b <지시> 팀장이 쓸 후보 맵을 제한
+//   /goal <목표>            최소 10개 맵과 연결·상호작용 콘텐츠를 채우는 장기 캠페인 팀 런
 //   (`/team …`·`/pi team …` 도 호환된다. 일반 지시는 Pi로 바로 실행한다.)
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
@@ -75,6 +76,8 @@ import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 import { discardConstructionLogs, offerConstructionLogs } from "@/editor/agentConstructionReveal";
 import { describeMergeConflicts } from "@/project/projectMerge";
+import { inspectGoalCampaign, goalProductionIssues } from "@/ai/piAgent/goalCampaignInspection";
+import { GOAL_CAMPAIGN_MARKER, GOAL_MAX_TURNS, GOAL_MIN_MAPS, GOAL_TIMEOUT_MS, goalCampaignTask, goalCommandBody, isGoalCampaignTask } from "@/ai/piAgent/goalCommand";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -105,6 +108,8 @@ export interface ParsedPiCommand {
    * 버렸다(2026-09-17 실측). 범위를 좁히는 것은 사용자가 좁혔을 때뿐이다.
    */
   readonly scopedByUser?: boolean;
+  /** `/goal` opts into the long-running campaign contract (minimum 10 connected maps). */
+  readonly goalMode?: boolean;
   readonly task: string;
 }
 
@@ -125,16 +130,22 @@ export function mergesMapBundles(input: { team: boolean; mapIds: readonly string
   return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
 }
 
-/** 일반 지시는 기본 Pi 경로. `team …`·`/team …`·`/pi team …` → 팀 모드. 맵 토큰은 실제 id일 때만 인정한다. */
+/** 일반 지시는 기본 Pi 경로. `team …`·`/team …`·`/pi team …` → 팀 모드, `/goal …` → 장기 캠페인 팀 모드. 맵 토큰은 실제 id일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
   let mode: PiAgentMode = "single";
   let rest: string | null = null;
-  const teamPrefix = /^(?:team|\/team)(?=\s|$)/u.exec(trimmed);
+  const goalBody = goalCommandBody(trimmed);
+  const goalMode = goalBody !== null;
+  if (goalBody !== null) {
+    mode = "team";
+    rest = goalBody;
+  }
+  const teamPrefix = !goalMode && /^(?:team|\/team)(?=\s|$)/u.exec(trimmed);
   if (teamPrefix) {
     mode = "team";
     rest = trimmed.slice(teamPrefix[0].length).trim();
-  } else if (/^\/pi(?=\s|$)/u.test(trimmed)) {
+  } else if (!goalMode && /^\/pi(?=\s|$)/u.test(trimmed)) {
     rest = trimmed.slice(PI_COMMAND_PREFIX.length).trim();
     if (/^team(?=\s|$)/u.test(rest)) {
       mode = "team";
@@ -143,7 +154,11 @@ export function parsePiCommand(text: string, project: Project, currentMapId: str
   }
   if (rest === null) return null;
   const fallback = mode === "team" ? [] : currentMapId ? [currentMapId] : [];
-  if (!rest) return { mode, mapIds: fallback, currentMapId, task: "" };
+  if (!rest) return { mode, mapIds: fallback, currentMapId, ...(goalMode ? { goalMode: true } : {}), task: "" };
+  // `/goal` always owns the whole campaign. A leading token that happens to be a
+  // map id is part of the brief, never a scope restriction that would make the
+  // ten-map contract impossible.
+  if (goalMode) return { mode, mapIds: [], currentMapId, goalMode: true, task: goalCampaignTask(rest) };
   const [first = "", ...others] = rest.split(/\s+/);
   const mapIds = splitMapList(first, project);
   if (mapIds && others.length > 0) return { mode, mapIds, currentMapId, scopedByUser: true, task: others.join(" ") };
@@ -155,6 +170,10 @@ export function parsePiCommand(text: string, project: Project, currentMapId: str
  * 현재 맵은 기본 대상으로 함께 보낸다 — 사용자는 보통 «지금 보고 있는 맵» 을 고치라고 말한다(실측 2026-09-15).
  */
 export function plainPiCommand(text: string, mode: PiAgentMode, currentMapId: string | null): ParsedPiCommand {
+  const goalBody = goalCommandBody(text);
+  if (goalBody !== null) {
+    return { mode: "team", mapIds: [], currentMapId, goalMode: true, task: goalBody ? goalCampaignTask(goalBody) : "" };
+  }
   return { mode, mapIds: mode === "team" ? [] : currentMapId ? [currentMapId] : [], currentMapId, task: text.trim() };
 }
 
@@ -172,6 +191,8 @@ export interface PiRunOptions {
   readonly planOnly?: boolean;
   /** 다이얼의 작업 예산 → Pi 턴 상한. */
   readonly maxTurns?: number;
+  /** `/goal` 장기 제작 런의 전체 벽시계 상한. */
+  readonly timeoutMs?: number;
   /**
    * 그 상한을 정한 다이얼 단계의 이름(「균형」 등). 워커는 숫자만 알기 때문에 상한에 걸려 멈췄을 때
    * 「무엇을 올리면 되는지」를 말할 수 없다 — 이름은 여기서만 붙일 수 있다.
@@ -271,6 +292,7 @@ export async function runPiCommand(
   surface: PiCommandSurface,
   options: PiRunOptions = {},
 ): Promise<boolean> {
+  if (command.goalMode) options = { ...options, maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS };
   const projectKey = aiProjectRunKey();
   editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());
   const claim = editorAiMapRuns.acquire(projectKey, mapRunScope({
@@ -297,12 +319,19 @@ async function runOwnedPiCommand(
 
 async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits, projectKey: string): Promise<boolean> {
   if (!command.task) {
-    surface.appendBubble("system", "지시를 바로 입력하세요. 팀 작업은 team <지시>로 시작합니다.");
+    surface.appendBubble("system", command.goalMode
+      ? "사용자 목표를 `/goal 목표 내용` 형식으로 입력하세요. 예: `/goal 항구 지방을 탐험하는 RPG를 처음부터 만들어줘`"
+      : "지시를 바로 입력하세요. 팀 작업은 team <지시>로 시작합니다.");
     return false;
   }
   let interviewClaim: Awaited<ReturnType<typeof claimProjectInterviewExecution>> = null;
   let interviewWorkerStarted = false;
-  if (isGenrePresetBriefRequest(command.task)) {
+  // The welcome preset now arrives as `/goal …`, so its campaign contract wraps the
+  // old genre marker. Keep the one-shot generation claim tied to the pending brief,
+  // otherwise generationPending would remain set forever after the first run.
+  const presetGenerationRequest = isGenrePresetBriefRequest(command.task)
+    || command.goalMode && store.getCurrent().gameDesignBrief?.generationPending === true;
+  if (presetGenerationRequest) {
     const identity = JSON.stringify(store.getProjectIdentity());
     await prepareProjectInterviewBootAssets();
     surface.signal?.throwIfAborted();
@@ -381,7 +410,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 끝낼 수 있는 첫 구간(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 상태가 합격한 뼈대면, AI 결과도 구간 끝까지
   // 갈 수 있어야 남는다. 못 가면 적용하지 않고, 이미 실시간 반영한 부분은 시작 상태(합격본)로 되돌린다.
   // 이후 요청에는 걸지 않는다 — 사용자가 구간 끝을 옮기거나 다음 길로 넓히는 것은 막을 일이 아니다.
-  const segmentGate = !readOnly && isGenrePresetBriefRequest(command.task) && playableSegmentGateApplies(base);
+  const segmentGate = !readOnly && presetGenerationRequest && playableSegmentGateApplies(base);
   /** 합격이면 null. 불합격이면 되돌리고 알린 뒤 막힌 곳을 돌려준다. */
   const enforcePlayableSegment = async (candidate: Project): Promise<string[] | null> => {
     if (!segmentGate) return null;
@@ -479,6 +508,16 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   };
   sync();
   const teamSpec = team ? loadTeamSpec() : undefined;
+  // /goal is deliberately a larger run than the user's saved team preset. Keep the
+  // saved team roles, but raise the coordinator/member budget for this invocation.
+  const effectiveTeamSpec = teamSpec && command.goalMode
+    ? {
+      ...teamSpec,
+      workBudget: GOAL_MAX_TURNS,
+      orchestratorNotes: `${teamSpec.orchestratorNotes}\n${GOAL_CAMPAIGN_MARKER}: 최소 10개 맵과 관련 콘텐츠를 채울 때까지 조기 종료하지 말 것.`.trim(),
+      members: teamSpec.members.map(member => ({ ...member, maxTurns: Math.max(member.maxTurns, GOAL_MAX_TURNS) })),
+    }
+    : teamSpec;
   const scopeText = team
     ? (command.mapIds.length > 0 ? `후보 맵 ${command.mapIds.join(", ")}` : "프로젝트 전체")
     : groups.map((g) => g.join(",") || "전체").join(" · ");
@@ -596,22 +635,22 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     }
     if (turns > 0 || tokens > 0) surface.onSpend?.({ turns, tokens });
   };
+  const modelTask = composePiTask(command.goalMode && !isGoalCampaignTask(command.task) ? goalCampaignTask(command.task) : command.task, options.intentNote);
+  let executionTask = modelTask;
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
-    const modelTask = composePiTask(command.task, options.intentNote);
-    let executionTask = modelTask;
     if (needsUltrabrainPlanTurn({ readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
-      const planned = await stage("plan", () => runPiAgentViaCompanion(buildUltrabrainPlanRequest({
+      const planned = await stage("plan", () => runPiAgentViaCompanion({ ...buildUltrabrainPlanRequest({
         brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-      }), { signal: surface.signal, onEvent: raw => {
+      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") {
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
@@ -637,7 +676,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       executionTask = withUltrabrainPlan(modelTask, plan);
     }
     results = await stage("exec", () => settleMapRuns(groups.map((mapIds, index) => runPiAgentViaCompanion(
-      buildPiRunRequest({
+      { ...buildPiRunRequest({
         team, planOnly: options.planOnly, readOnly, applyMode,
         brain, deep, writer: modelForRole(config, "writer"),
         modelTask, executionTask, mapIds, ...here, project: base, projectKey,
@@ -645,11 +684,11 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.toolDomains ? { toolDomains: options.toolDomains } : {}),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-        ...(teamSpec ? { teamSpec } : {}),
+        ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
         preferCallerThinking,
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
-      }),
-      { signal: surface.signal, onEvent: wrap(mapIds, index),
+      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+      { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).
           if (isUiInBackground()) discardConstructionLogs();
@@ -732,9 +771,74 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   for (const spill of merged.spills) {
     surface.appendProcess?.(`범위 밖 변경을 버렸습니다 \`${spill.mapIds.join(",")}\`: ${spill.keys.map((key) => `\`${key}\``).join(", ")}`);
   }
-  let changed = summarizeChanges(base, merged.project);
-  const toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
+  let toolCalls = results.reduce((sum, done) => sum + done.stats.toolCalls, 0);
   toolErrorCount += results.reduce((sum, done) => sum + done.stats.toolErrors, 0);
+  // A /goal run has a hard production floor. If the first coordinator stops after
+  // the familiar two-map demo, immediately re-enter it with the current draft and
+  // ask for the missing maps instead of reporting a misleading success.
+  if (command.goalMode && team && !readOnly) {
+    const goalProgress = inspectGoalCampaign;
+    let latest = results[0]!;
+    for (let pass = 0; pass < 2; pass += 1) {
+      const progress = goalProgress(merged.project);
+      const productionIssues = goalProductionIssues(latest);
+      if (!progress.issues.length && !productionIssues.length && !latest.stoppedEarly) break;
+      const remaining = Math.max(0, GOAL_MIN_MAPS - progress.mapCount);
+      const contentRemaining = progress.emptyMapIds.length;
+      const unreachableRemaining = Math.max(0, progress.mapCount - progress.reachableMapCount);
+      surface.setStatus(`장기 목표를 이어서 만드는 중… (맵 ${progress.mapCount}/${GOAL_MIN_MAPS}, 콘텐츠 ${progress.contentMapCount}/${GOAL_MIN_MAPS})`);
+      surface.appendProcess?.(`현재 맵 ${progress.mapCount}개·콘텐츠 맵 ${progress.contentMapCount}개·이동 가능 맵 ${progress.reachableMapCount}개입니다. 부족한 맵 ${remaining}개, 콘텐츠 ${contentRemaining}개, 연결 ${unreachableRemaining}개를 이어서 요청합니다.`);
+      let completion: PiAgentDoneEvent;
+      try {
+      surface.signal?.throwIfAborted();
+      completion = await stage("goal", () => runPiAgentViaCompanion({ ...buildPiRunRequest({
+        team: true, planOnly: false, readOnly: false, applyMode,
+        brain, deep, writer: modelForRole(config, "writer"),
+        modelTask,
+        executionTask: `${executionTask}\n\n[재개] 현재 프로젝트에는 맵 ${progress.mapCount}개, 실제 콘텐츠 맵 ${progress.contentMapCount}개, 시작 맵에서 이동 가능한 맵 ${progress.reachableMapCount}개가 있다. 최소 ${GOAL_MIN_MAPS}개 맵과 ${GOAL_MIN_MAPS}개 콘텐츠 맵을 만들고 모든 맵을 실제 이동 이벤트로 연결할 때까지 부족한 맵·연결·장소·상호작용 콘텐츠를 계속 채워라. 현재 미완료 진단: ${[...progress.issues, ...productionIssues, latest.stoppedEarly ?? ""].filter(Boolean).join(" / ")}. 부족한 작업을 끝낸 뒤 검수하고 finish 하라.`,
+        mapIds: [], ...here, project: merged.project, projectKey,
+        scopedByUser: false, mapBundleMerge: false,
+        ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
+        ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
+        ...(effectiveTeamSpec ? { teamSpec: effectiveTeamSpec } : {}),
+        preferCallerThinking,
+        ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
+      }), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) }, {
+        signal: surface.signal,
+        returnIncompleteResult: true,
+        onEvent: wrap([], groups.length + pass),
+        onCheckpoint: readOnly || applyMode === "review" ? undefined : checkpoint => stage("checkpoint", () => publication.publish(checkpoint)),
+      }));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        ghost.dispose();
+        publishFinalOutcome();
+        boardState = surface.signal?.aborted ? markTeamBoardAborted(boardState) : markTeamBoardFailed(boardState, message);
+        sync();
+        finishLog({ applied: publication.count > 0, changedCount: publication.count, error: message });
+        surface.setStatus(surface.signal?.aborted ? "대기" : "장기 목표를 마치지 못했어요.");
+        surface.appendBubble("system", `장기 목표 이어가기가 멈췄어요. ${message} 이미 반영한 변경은 남아 있습니다.`);
+        return false;
+      }
+      spendStats.push(completion.stats);
+      reportSpend();
+      toolCalls += completion.stats.toolCalls;
+      toolErrorCount += completion.stats.toolErrors;
+      const beforeCompletion = merged.project;
+      merged = { ...merged, project: completion.project };
+      adoptSpatialToolProof(merged.project, completion.spatialProof, publication.count ? publication.project : base);
+      latest = completion;
+      results = [completion];
+      if (!changedProjectKeys(beforeCompletion, completion.project).length && completion.stoppedEarly) break;
+    }
+    const finalGoalProgress = goalProgress(merged.project);
+    const finalGoalIssues = [...finalGoalProgress.issues, ...goalProductionIssues(latest), ...(latest.stoppedEarly ? [latest.stoppedEarly] : [])];
+    if (finalGoalIssues.length) {
+      stoppedByLimit = true;
+      streamErrors.push(`장기 목표 미완료: ${finalGoalIssues.join(" / ")}`);
+    }
+  }
+  let changed = summarizeChanges(base, merged.project);
   let changedKeys = changedProjectKeys(base, merged.project);
   changedCount = changedKeys.length;
   unpublishedChanges = changedProjectKeys(publication.project, merged.project).length > 0;
@@ -846,6 +950,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: execThinkingLevel,
           // 수리 실행도 같은 의도 선별 목록에서 시작한다 — 없으면 새 Agent 가 전체 카탈로그(≈113k 토큰)를 매 호출 받는다.
           ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
+          ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}),
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => stage("checkpoint", () => publication.publish(c)) }));
         const preRepair = merged.project;
         merged = { ...merged, project: repaired.project };

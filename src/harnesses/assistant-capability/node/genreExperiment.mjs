@@ -94,7 +94,9 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
   if (existsSync(out)) throw Error('Original trial evidence must not be overwritten');
   mkdirSync(out, { recursive: true });
   symlinkSync(resolve(caseDir, 'project'), resolve(out, 'project'));
-  const task = options.prompt ?? entry.prompt;
+  const presetBoot = options.inputMode === 'preset-boot';
+  if (presetBoot && (attempt !== 1 || !entry.brief)) throw Error('preset-boot requires an initial saved brief');
+  const task = options.prompt ?? entry.prompt ?? entry.brief?.summary;
   writeFileSync(resolve(out, 'task.txt'), task);
   const releaseSlot = await acquireSlot(root, caseId, attempt, manifest.cases);
   const claim = resolve(caseDir, 'run.lock');
@@ -108,6 +110,7 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
   const result = { caseId, attempt, task, inputMode: options.inputMode ?? 'natural', errors, requests,
     firstTrial: attempt === 1, directContentRepairByOperator: false };
   try {
+    const bootBaseline = presetBoot ? stored(resolve(caseDir, 'project')) : null;
     host = await startCaseHost(root, entry, out);
     browser = await firefox.launch({ firefoxUserPrefs: { 'network.notify.changed': false,
       'network.notify.IPv6': false, 'network.captive-portal-service.enabled': false, 'network.connectivity-service.enabled': false } });
@@ -124,29 +127,35 @@ export async function runGenreTrial(rootArg, caseId, options = {}) {
           const url = new URL(request.url());
           requests.push({ endpoint: url.pathname, model: body.model,
             provider: body.provider ?? url.searchParams.get('provider') ?? request.headers()['x-oprn-provider'], mode: body.mode, runId: body.runId,
-            at: new Date().toISOString(), taskPrefix: String(body.task ?? '').slice(0, 100) });
+            at: new Date().toISOString(), taskPrefix: String(body.task ?? '').slice(0, 100),
+            goalCampaign: String(body.task ?? '').includes('[OPRN_GOAL_CAMPAIGN]'), maxTurns: body.maxTurns, timeoutMs: body.timeoutMs });
         } catch { requests.push({ endpoint: new URL(request.url()).pathname, observationError: true }); }
         json(resolve(out, 'requests.json'), requests);
       });
     };
     let editor = await newEditor(browser, host.url, host.projectDir, {}, { onPage: setup });
     context = editor.context; page = editor.page;
-    phase = 'baseline'; await saveEditor(page);
-    const before = stored(host.projectDir);
+    phase = 'baseline'; if (!presetBoot) await saveEditor(page);
+    const before = bootBaseline ?? stored(host.projectDir);
     json(resolve(out, 'before.json'), before.project);
     json(resolve(out, 'baseline.json'), { projectId: before.projectId, revision: before.revision, sha256: before.sha256 });
     await page.screenshot({ path: resolve(out, 'before.png') });
-    await page.getByTestId('ai-composer-settings').click();
-    await page.getByTestId('ai-composer-autonomy').selectOption('balanced');
-    await page.getByTestId('ai-composer-settings').click();
+    if (!presetBoot) {
+      await page.getByTestId('ai-composer-settings').click();
+      await page.getByTestId('ai-composer-autonomy').selectOption('balanced');
+      await page.getByTestId('ai-composer-settings').click();
+    }
     phase = 'native-input';
     json(resolve(out, 'input-readiness.json'), await page.evaluate(() => ({
       status: window.__oprnAiBridge?.status(),
       loginOverlayVisible: Boolean(document.querySelector('[data-testid="ai-lock-scrim"]:not([hidden])')),
     })));
     const submitted = options.inputMode === 'pi-command' ? '/pi ' + task : task;
-    await page.getByTestId('ai-input').fill(submitted);
-    await page.getByTestId('ai-send').click();
+    if (!presetBoot) {
+      await page.getByTestId('ai-input').fill(submitted);
+      await page.getByTestId('ai-send').click();
+    }
+    result.automaticPresetBoot = presetBoot;
     phase = 'internal-ai'; progress({ submitted: true });
     timer = setInterval(() => {
       void page.evaluate(() => ({ events: window.__capEvents ?? [], status: window.__oprnAiBridge?.status() }))

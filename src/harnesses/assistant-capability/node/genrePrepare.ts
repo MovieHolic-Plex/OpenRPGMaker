@@ -2,6 +2,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from
 import { resolve } from 'node:path';
 import { backup, DatabaseSync } from 'node:sqlite';
 import { createBlankProject } from '@/project/defaults';
+import { createProjectStartSeed } from '@/editor/projectStartSeed';
+import { normalizeGameDesignBrief } from '@/project/gameDesignBrief';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
 
@@ -18,7 +20,10 @@ for (const entry of manifest.cases) {
   if (existsSync(resolve(projectDir, 'project.sqlite'))) throw Error(`Existing canonical case refused: ${entry.id}`);
   mkdirSync(dir, { recursive: true });
   copyFileSync(pinned, resolve(dir, 'shared-content.sqlite'));
-  const project = createBlankProject();
+  const project = entry.brief
+    ? await createProjectStartSeed(entry.brief.presetId, entry.label, 'ai', 'wide')
+    : createBlankProject();
+  if (entry.brief) project.gameDesignBrief = { ...normalizeGameDesignBrief(entry.brief), generationPending: true };
   project.meta.title = `조수 장르 제작 실측 · ${entry.label}`;
   const store = await initLocalProjectStore({ projectDir });
   try {
@@ -26,7 +31,7 @@ for (const entry of manifest.cases) {
     const snapshot = store.loadSnapshot()!;
     writeFileSync(resolve(dir, 'fixture.json'), JSON.stringify({ caseId: entry.id, projectDir,
       projectId: store.projectId, revision: snapshot.revision, sha256: snapshot.sha256,
-      port: entry.port, source: 'createBlankProject', seededGameplay: false }, null, 2));
+      port: entry.port, source: entry.brief ? 'createProjectStartSeed + generationPending' : 'createBlankProject', seededGameplay: false }, null, 2));
   } finally { store.close(); }
   console.log(`Prepared separate canonical project: ${entry.id}, port ${entry.port}`);
 }
