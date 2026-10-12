@@ -1,4 +1,5 @@
 import { MONSTER_GAME_TOOLS } from './monsterGameTools';
+import { bindStreetToolLookup } from "./jpCityStreetTool";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
@@ -333,6 +334,7 @@ const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) =>
 export function getTool(name: string): ToolDefinition | undefined {
   return TOOL_BY_NAME.get(name);
 }
+bindStreetToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;
