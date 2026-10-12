@@ -662,6 +662,22 @@ def _(c):
     c.P(7, 1, K('shiro', 1)); c.P(8, 2, K('shiro', 0))
 
 
+# 탁자 위 그릇이 탁자 앞 모서리 밖으로 걸쳐 보이던 것(2026-10-12 「커피가 탁자에서 떨어질 것 같다」) — 그림 바닥이 7행(탁자 윗면 끝 직전)을 넘으면
+# 넘은 만큼(최대 6) 위로 올려 받침이 윗면에 앉게 한다. 위로 넘친 윗부분(김 따위)은 잘린다. 카운터(윗면 3~8행) 위에서도 같은 선이라 걸치지 않는다.
+def _seat_on_surface(fn):
+    def draw(c):
+        fn(c)
+        a = c.a
+        rows = [y for y in range(a.shape[0]) if a[y, :, 3].any()]
+        if not rows: return
+        shift = min(6, max(0, rows[-1] - 7))
+        if shift:
+            a[:-shift] = a[shift:].copy(); a[-shift:] = 0
+    return draw
+for _gid in ('fd-coffee-cup', 'fd-beer-mug', 'fd-tokkuri', 'fd-water-set', 'fd-teishoku', 'fd-condiments'):
+    R.goods[_gid]['draw'] = _seat_on_surface(R.goods[_gid]['draw'])
+
+
 # 놓는 법(조수가 읽는 placementRules) — 가구마다 어디에·무엇 옆에.
 PLACE = {
     'fd-stool': '카운터 앞(손님 쪽, 카운터 바로 남쪽 줄)에 1칸 간격 없이 한 줄로. 라멘집·이자카야·초밥집 카운터석, 초밥집은 문 곁 대기석으로도 한 줄.',
