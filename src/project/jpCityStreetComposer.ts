@@ -234,6 +234,13 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
     bands.push(band);
   }
+  // 하천 건너편 띠: 건물 키가 지붕 위를 다 못 채우므로 띠 윗부분은 강변 공원(잔디+판석 길)으로 쓰고 건물 띠는 낮춘다.
+  let riverPark: { y0: number; y1: number } | undefined;
+  if (riverGap >= 0 && bands[riverGap + 1]) {
+    const sb = bands[riverGap + 1]!, rvp = bands[riverGap]!.gap!.river!;
+    const newTop = Math.max(sb.top, sb.foot - 9);
+    if (newTop - (rvp.prom0 + 2) >= 2) { riverPark = { y0: rvp.prom0 + 2, y1: newTop - 1 }; sb.top = newTop; }
+  }
   const ground = style === "residential" ? "잔디" : "자갈 참배길";
   fill(0, 0, W, H, ground);
   for (const b of bands) if (b.gap) {
@@ -247,8 +254,10 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (style !== "residential") {
         const nf = bands[bands.indexOf(b) + 1]?.foot ?? H - 3;
         fill(0, rv.prom0 + 2, W, Math.max(0, nf - rv.prom0 - 1), "판석 광장");
-        const lawn = nf - 7 - (rv.prom0 + 3);                 // 건물 지붕 위 빈 구역은 잔디밭(판석 한 장 깔기 금지)
-        if (lawn >= 2) fill(0, rv.prom0 + 3, W, lawn - 1, "잔디");
+        if (riverPark) {                                       // 강변 공원: 잔디밭 + 산책로에서 건물 띠로 내려가는 판석 길
+          fill(0, riverPark.y0, W, riverPark.y1 - riverPark.y0 + 1, "잔디");
+          for (let px = 6 + Math.floor(rng() * 6); px < W - 3; px += 12 + Math.floor(rng() * 6)) fill(px, riverPark.y0, 2, riverPark.y1 - riverPark.y0 + 1, "판석 광장");
+        }
       }   // 강변 남쪽 광장: 자갈 노이즈 대신 판석
     } else {
       fill(0, g.sw1, W, 2, "보도 연석");
@@ -301,7 +310,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     const rv = g.river;
     // 둑: 갓돌 + 돌 쌓기 정면 석축(1×4칸 키트, rail~wall0+2 줄) · 둑 밑 물 그늘 · 건너편 둑 가장자리 — 길이 지나는 칸은 비운다(상판이 둑을 덮는다).
     for (let x = 0; x < W; x++) {
-      if (streets.some((s2) => x >= s2.x && x < s2.x + s2.w)) continue;
+      if (streets.some((s2) => x >= s2.x && x < s2.x + s2.w && s2.from <= bands.indexOf(b) && s2.to > bands.indexOf(b))) continue;   // 하천을 건너는 길만 둑을 비운다
       stamp("jp-river-wall", x, rv.rail, "bank");
       stamp("jp-water-shade", x, rv.water0, "bank");
       stamp("jp-water-rim-s", x, rv.water1, "bank");
@@ -527,13 +536,16 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   });
 
   // ── 6. 가로등·전봇대/전선·곡면거울·정류장: 띠마다. 문 자리와 세로 길 어귀는 피한다.
+  // 키 큰 소품(가로등·전봇대·입간판)은 건물 칸 위에 서면 외벽·문을 가린다 → 건물이 서지 않은 열(골목·빈터·세로 길 어귀)에만 둔다.
+  const clearCols = (x: number, w: number, foot: number) => !placed.some((pb) => pb.foot === foot && x < pb.x + pb.w && x + w > pb.x);
+  const inStreetAny = (x: number) => streets.some((s2) => x >= s2.x - 1 && x <= s2.x + s2.w);
   const poleXsByBand: number[][] = [];
   const wireSteps: JpStreetStep[] = [];
   bands.forEach((b, bi) => {
     let lx = 2 + Math.floor(rng() * 5);
     while (lx < W - 2) {
       let x = lx;
-      while (x < W - 2 && (doorZone(x, b.foot) || inStreet(x, bi))) x++;
+      while (x < W - 2 && (doorZone(x, b.foot) || inStreet(x, bi) || !clearCols(x, 2, b.foot))) x++;
       if (x < W - 2) stamp("jp-prop-lamp-post", x, b.foot + 2 - 3);
       lx = x + 8 + Math.floor(rng() * 3);
     }
@@ -542,7 +554,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       let pxs = 3 + Math.floor(rng() * 5);
       while (pxs < W - 4) {
         let x = pxs;
-        while (x < W - 4 && (doorZone(x, b.foot) || doorZone(x + 1, b.foot) || inStreet(x, bi) || inStreet(x + 1, bi))) x++;
+        while (x < W - 4 && (doorZone(x, b.foot) || doorZone(x + 1, b.foot) || inStreet(x, bi) || inStreet(x + 1, bi) || !clearCols(x, 2, b.foot))) x++;
         if (x < W - 4) poleXs.push(x);
         pxs = x + 12 + Math.floor(rng() * 5);
       }
@@ -559,14 +571,17 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     for (const id of bi === 0 ? ["jp-bus-stop", "jp-hydrant-sign"] : rng() < 0.4 ? ["jp-bus-stop"] : []) {
       for (let t = 0; t < 12; t++) {
         const x = 2 + Math.floor(rng() * (W - 4));
-        if (doorZone(x, b.foot) || inStreet(x, bi) || poleXs.some((q) => x >= q - 1 && x <= q + 2)) continue;
+        if (doorZone(x, b.foot) || inStreet(x, bi) || !clearCols(x, 2, b.foot) || poleXs.some((q) => x >= q - 1 && x <= q + 2)) continue;
         stamp(id, x, b.foot + 2 - 2);
         break;
       }
     }
   });
   for (const b of placed) {
-    if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) stamp(`jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, b.x + 1, b.foot + 2 - 2);
+    if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) {
+      const nx = [b.x - 1, b.x + b.w].find((cx) => cx >= 0 && cx < W - 1 && clearCols(cx, 1, b.foot) && !inStreetAny(cx));   // 문·외벽을 가리지 않게 건물 바로 옆 빈 열에
+      if (nx !== undefined) stamp(`jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, nx, b.foot + 2 - 2);
+    }
   }
 
   steps.splice(wireAt, 0, ...wireSteps);
