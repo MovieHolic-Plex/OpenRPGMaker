@@ -162,11 +162,11 @@ describe("backdrop motion on the battle DOM", () => {
 });
 
 describe("backdrop motion stylesheet", () => {
-  const css = readFileSync(resolve(process.cwd(), "src/styles/runtime/battle/24-backdrop-motion.css"), "utf8");
+  const css = readFileSync(resolve(process.cwd(), "src/styles/runtime/battle/30-backdrop-motion.css"), "utf8");
   const index = readFileSync(resolve(process.cwd(), "src/styles/runtime/index.css"), "utf8");
 
   it("is imported into the runtime layer", () => {
-    expect(index).toContain('@import "./battle/24-backdrop-motion.css" layer(runtime);');
+    expect(index).toContain('@import "./battle/30-backdrop-motion.css" layer(runtime);');
   });
 
   it("drives scroll and palette keyframes from the JS variables", () => {

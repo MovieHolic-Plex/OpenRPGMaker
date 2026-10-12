@@ -26,4 +26,5 @@
 @import "./dialogs/ai-settings-modal.css" layer(shell);
 @import "./dialogs/local-diagnostics.css" layer(shell);
 @import "./dialogs/project-folder-picker.css" layer(shell);
+@import "./dialogs/project-start.css" layer(shell);
 @import "./header-layer-switcher.css" layer(shell);

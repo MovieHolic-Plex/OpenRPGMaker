@@ -81,7 +81,7 @@ const RUNTIME_IMPORTS = [
   "./battle/22-hit-feel.css",
   "./battle/23-entry-exit.css",
   "./battle/24-input-prompt.css",
-  "./battle/24-backdrop-motion.css",
+  "./battle/30-backdrop-motion.css",
   "./battle/25-rolling-hp.css",
   // 전용 스킨·겹 배경·레트로 모션도 출하 CSS에 실려야 한다.
   "./battle-skins/_retro2003.css",

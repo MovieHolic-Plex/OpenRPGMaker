@@ -32,7 +32,7 @@
 @import "./battle/22-hit-feel.css" layer(runtime);
 @import "./battle/23-entry-exit.css" layer(runtime);
 @import "./battle/24-input-prompt.css" layer(runtime);
-@import "./battle/24-backdrop-motion.css" layer(runtime);
+@import "./battle/30-backdrop-motion.css" layer(runtime);
 @import "./battle/25-rolling-hp.css" layer(runtime);
 @import "./battle-skins/_retro2003.css" layer(runtime);
 @import "./battle-skins/_battle-look.css" layer(runtime);
