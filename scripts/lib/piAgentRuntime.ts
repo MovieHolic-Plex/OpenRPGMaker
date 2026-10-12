@@ -804,6 +804,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
       return;
     }
+    if (event.type === "message_end" && process.env.OPRN_TURN_DIAG) {
+      const m = event.message as { role?: string; content?: Array<{ type?: string; text?: string; name?: string }>; stopReason?: string; usage?: unknown } | undefined;
+      if (m?.role === "assistant") emit({ type: "execution_status", name: "turn.diag", ok: true, summary: `stop=${m.stopReason} blocks=${(m.content ?? []).map(b => b.type === "text" ? `text(${(b.text ?? "").length})` : b.type === "toolCall" ? `call:${b.name}` : String(b.type)).join(",") || "none"} text=${JSON.stringify((m.content ?? []).filter(b => b.type === "text").map(b => b.text).join(" ").slice(0, 160))}` });
+    }
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
