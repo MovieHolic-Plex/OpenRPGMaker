@@ -146,7 +146,7 @@ export function startPlanPrompt(plan: StartPlan): string {
     return [
       `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
       `시작 맵은 이미 완성된 일본 도시 장소(${plan.placeId}, 건물·도로·소품·문 앞 접근칸이 짜여 있다)로 열려 있다. 길 맵(${plan.routeW}×${plan.routeH})은 그 칩셋의 길로 깔려 있다. 이 맵을 지우거나 풀밭으로 다시 칠하지 않는다(fill_region 으로 잔디·큰 면을 덮지 말 것 — 보도·도로·광장이 사라진다) — 기획에 맞게 이어서 만든다.`,
-      "해야 할 일: ① get_map_region/show_map_region 으로 건물 문 칸을 읽는다. ② 기획의 핵심 장소(가게·집·역 등)를 문마다 하나씩 골라 link_jp_city_interior 로 완성 실내를 잇는다 — 장소 id 예: jp-city-konbini-14x12, jp-city-ramen-9x9, jp-city-izakaya-14x14, jp-city-kissaten-10x9, jp-city-bakery-10x14, jp-city-bookstore-11x14, jp-city-pharmacy-11x13, jp-city-clinic-14x9, jp-city-koban-14x9, jp-city-house-interior-21x15 (list_spatial_designs({kind:\"place\", query:\"일본\"}) 로 전체). 기획에 없는 가게는 건드리지 않아도 된다. ③ 실내에 기획의 인물·단서·이벤트를 둔다. ④ 필요한 부분만 build_jp_city_building·fill_region 으로 고친다.",
+      "해야 할 일: ① get_map_region/show_map_region 으로 건물 문 칸을 읽는다. ② 기획의 핵심 장소(가게·집·역 등)를 문마다 하나씩 골라 link_jp_city_interior 로 완성 실내를 잇는다 — 장소 id 예: jp-city-konbini-14x12, jp-city-ramen-9x9, jp-city-izakaya-14x14, jp-city-kissaten-10x9, jp-city-bakery-10x14, jp-city-bookstore-11x14, jp-city-pharmacy-11x13, jp-city-clinic-14x9, jp-city-koban-14x9, jp-city-house-interior-21x15 (list_spatial_designs({kind:\"place\", query:\"일본\"}) 로 전체). 문은 간판·차양·외형이 그 가게와 어울리는 건물에서 고른다(show_map_region 으로 건물을 보고 — 아파트 문에 편의점을 잇지 않는다). 기획에 없는 가게는 건드리지 않아도 된다. ③ 실내에 기획의 인물·단서·이벤트를 둔다. ④ 필요한 부분만 build_jp_city_building·fill_region 으로 고친다.",
       "뼈대가 지키는 것은 핵심 행동 → 시작 맵 동쪽 끝 문 → 길 맵 → 구간 끝의 연결이다. 이벤트 id 와 문은 유지한다.",
     ].join("\n");
   }

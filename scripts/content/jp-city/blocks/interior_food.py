@@ -159,7 +159,7 @@ def _(c):
 def _chair(d):
     m = 'ita'; yb = 16
     def f(c):
-        def seat(x0, w): c.R(x0, yb + 3, w, 4, K(m, 1)); c.HL(x0, yb + 3, w, K(m, 2)); c.HL(x0, yb + 6, w, K(m, -2))
+        def seat(x0, w): c.R(x0, yb + 3, w, 4, K('aka', 0)); c.HL(x0, yb + 3, w, K('aka', 2)); c.HL(x0, yb + 6, w, K('aka', -2))   # 붉은 방석 — 어두운 마루 위에서 의자가 구분되게
         if d == 's':
             c.R(4, 6, 8, 9, K(m, 0)); box(c, 4, 6, 8, 9, K(m, -3)); c.HL(5, 7, 6, K(m, 1))
             seat(3, 10); c.R(3, yb + 7, 10, 2, K(m, -1)); c.HL(3, yb + 8, 10, K(m, -3))
@@ -653,13 +653,27 @@ def _(c):
     c.HL(2, 7, 10, K('tekko', 3)); c.HL(2, 8, 10, K('tekko', 0)); c.R(12, 6, 3, 3, K('ita', -2)); c.HL(12, 6, 3, K('ita', 0))
 
 
-@R.good('fd-coffee-cup', '커피 잔', desc='하얀 잔과 받침, 안에 갈색 커피 한 줄. 킷사텐 탁자 위.')
+@R.good('fd-coffee-cup', '커피 잔', desc='작은 하얀 잔과 받침, 안에 갈색 커피 한 줄. 킷사텐 탁자 위(탁자 윗면 안쪽에 앉는 크기).')
 def _(c):
-    c.R(2, 10, 12, 3, K('shiro', 2)); box(c, 2, 10, 12, 3, K('conc', 0)); c.HL(3, 10, 10, K('shiro', 3))
-    c.R(4, 4, 8, 7, K('shiro', 3)); c.VL(4, 4, 7, K('shiro', 3)); c.VL(11, 4, 7, K('shiro', 0)); c.HL(4, 10, 8, K('shiro', -1)); c.HL(4, 4, 8, K('shiro', 2))
-    c.R(5, 5, 6, 1, K('soil', -2)); c.P(6, 5, K('soil', 0))
-    c.VL(12, 5, 3, K('shiro', 2)); c.P(13, 6, K('shiro', 2)); c.P(12, 8, K('shiro', 1))
-    c.P(7, 1, K('shiro', 1)); c.P(8, 2, K('shiro', 0))
+    c.R(3, 5, 10, 2, K('shiro', 2)); c.HL(3, 5, 10, K('shiro', 3)); c.HL(3, 6, 10, K('conc', 0))       # 받침
+    c.R(5, 1, 6, 4, K('shiro', 3)); c.VL(10, 1, 4, K('shiro', 0)); c.HL(5, 4, 6, K('shiro', -1))     # 잔
+    c.HL(6, 1, 4, K('soil', -2)); c.P(11, 2, K('shiro', 2)); c.P(11, 3, K('shiro', 2))                # 커피·손잡이·김
+
+
+# 탁자 위 그릇이 탁자 앞 모서리 밖으로 걸쳐 보이던 것(2026-10-12 「커피가 탁자에서 떨어질 것 같다」) — 그림 바닥이 7행(탁자 윗면 끝 직전)을 넘으면
+# 넘은 만큼(최대 6) 위로 올려 받침이 윗면에 앉게 한다. 위로 넘친 윗부분(김 따위)은 잘린다. 카운터(윗면 3~8행) 위에서도 같은 선이라 걸치지 않는다.
+def _seat_on_surface(fn):
+    def draw(c):
+        fn(c)
+        a = c.a
+        rows = [y for y in range(a.shape[0]) if a[y, :, 3].any()]
+        if not rows: return
+        shift = min(6, max(0, rows[-1] - 7))
+        if shift:
+            a[:-shift] = a[shift:].copy(); a[-shift:] = 0
+    return draw
+for _gid in ('fd-beer-mug', 'fd-tokkuri', 'fd-water-set', 'fd-teishoku', 'fd-condiments'):
+    R.goods[_gid]['draw'] = _seat_on_surface(R.goods[_gid]['draw'])
 
 
 # 놓는 법(조수가 읽는 placementRules) — 가구마다 어디에·무엇 옆에.
