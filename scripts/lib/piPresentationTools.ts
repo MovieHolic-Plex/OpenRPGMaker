@@ -19,6 +19,26 @@ import type { Project } from '../../src/project/types';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
 
+export function createWorkerImageGenerator(request: PiAgentRequest, keyFor: (provider: string) => string | undefined) {
+  return async ({ prompt, signal: imageSignal, referenceImages }: GenerateAiImageRequest) => {
+    const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
+    const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
+    const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
+    // Codex 는 가끔 그림 대신 글로 답한다 — 같은 요청을 몇 번 더 시도한다(후보 3장이 모두 0장이 되던 실측).
+    let image: Awaited<ReturnType<typeof generateCodexImage>> | undefined;
+    for (let attempt = 0; !image; attempt++) {
+      try {
+        image = provider === 'openai-codex'
+          ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
+          : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
+      } catch (error) {
+        if (attempt >= 3 || imageSignal?.aborted || !/이미지가 없습니다/u.test(error instanceof Error ? error.message : String(error))) throw error;
+      }
+    }
+    return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
+  };
+}
+
 /** Replace the UI handoff with a real, exclusive authoring tool in the Bun worker. */
 export function createPiPresentationTool(
   definition: { name: string; description: string; parameters: unknown },
@@ -50,23 +70,7 @@ export function createPiPresentationTool(
       let visuals: ActivityVisual[] = [];
       try {
         signal?.throwIfAborted();
-        const generateImage = async ({ prompt, signal: imageSignal, referenceImages }: GenerateAiImageRequest) => {
-          const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
-          const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
-          const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
-          // Codex 는 가끔 그림 대신 글로 답한다 — 같은 요청을 몇 번 더 시도한다(후보 3장이 모두 0장이 되던 실측).
-          let image: Awaited<ReturnType<typeof generateCodexImage>> | undefined;
-          for (let attempt = 0; !image; attempt++) {
-            try {
-              image = provider === 'openai-codex'
-                ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
-                : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
-            } catch (error) {
-              if (attempt >= 3 || imageSignal?.aborted || !/이미지가 없습니다/u.test(error instanceof Error ? error.message : String(error))) throw error;
-            }
-          }
-          return { dataUrl: `data:${image.mimeType};base64,${image.base64}`, mimeType: image.mimeType, model: image.model, provider: image.provider };
-        };
+        const generateImage = createWorkerImageGenerator(request, keyFor);
         let resourceId: string;
         const say = (summary: string) => options.progress?.(summary, id);
         if (definition.name === TITLE_ART_TOOL) {

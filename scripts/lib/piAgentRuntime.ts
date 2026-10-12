@@ -26,7 +26,8 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
-import { createPiPresentationTool, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
+import { createPiPresentationTool, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
@@ -228,6 +229,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   await preparePiWorkerSharedContent();
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
+  // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
+  setCutsceneArtGenerator(createWorkerImageGenerator(request, provider => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined)));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
