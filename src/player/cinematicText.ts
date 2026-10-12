@@ -21,7 +21,7 @@ export function animateCinematicText(options: {
   element.dataset.layout = style.layout === 'credits' && (reducedMotion || durationMs === 0) ? 'center' : style.layout;
   element.dataset.font = style.font;
   element.dataset.animation = reducedMotion ? 'none' : style.animation;
-  element.style.fontSize = `${Math.min(style.size, CINEMATIC_TEXT_SIZE_MAX)}px`;
+  element.style.fontSize = `${Math.max(13, Math.min(style.size, CINEMATIC_TEXT_SIZE_MAX))}px`;
   element.style.color = style.color;
   const fullText = element.textContent ?? '';
   let started = false;
