@@ -59,7 +59,7 @@ export function argsFor(id:string): { tool:string; args:Record<string,unknown> }
     case 'change-first-line': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{commands:[{kind:'text',speaker:'테스트 NPC',body:'바뀐 대사'},moveCommand,choiceCommand]})}];
     case 'add-switch-condition': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{conditions:[{kind:'switch',switchId:'sw_ember_q1_started',value:true}],commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},moveCommand,choiceCommand]})}];
     case 'remove-move-command': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},choiceCommand]})}];
-    case 'insert-se': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},{kind:'setWeather',weather:'none'},choiceCommand]})}];
+    case 'insert-se': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},{kind:'playAudio',resourceId:'cc0-se-osx-door-open',loop:false},choiceCommand]})}];
     case 'touch-trigger': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{trigger:{kind:'playerTouch'}})}];
     case 'rename-npc': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{name:'하린'})}];
     case 'face-right': return [{tool:'patch_event_page',args:pagePatch('ev_utility_npc',{graphic:{sprite:{type:'bundled',id:'tex_easyrpg_charset_people3'},direction:'right',pattern:31}})}];
@@ -71,13 +71,13 @@ export function argsFor(id:string): { tool:string; args:Record<string,unknown> }
     case 'item-description': return [{tool:'upsert_item',args:{item:{id:'item_potion',description:'회복하는 물약'}}}];
     case 'create-key-item': return [{tool:'upsert_item',args:{item:{id:'item_new_key',name:'새 열쇠',description:'잠긴 문을 연다',type:'keyItem',price:0}}}];
     case 'remove-shop-herb': return [{tool:'set_shop_stock',args:{mapId:MAP,eventId:'ev_test_shop',stock:[{itemId:'item_potion',seasons:['spring'],priceOverride:20}]}}];
-    case 'screen-shake': return [{tool:'patch_event_page',args:pagePatch('ev_test_cutscene',{commands:[{kind:'text',body:'장면'},{kind:'setLighting',ambient:0.5,color:'#ffffff'},{kind:'setLighting',ambient:0.2,color:'#000000'}]})}];
+    case 'screen-shake': return [{tool:'patch_event_page',args:pagePatch('ev_test_cutscene',{commands:[{kind:'text',body:'장면'},{kind:'m2Command',commandId:'m2-048-shake-screen',fields:{intensity:'3',durationMs:300,direction:'both'}}]})}];
     case 'dialogue-position': return [{tool:'patch_event_page',args:pagePatch('ev_test_cutscene',{commands:[{kind:'text',body:'장면',position:'bottom'}]})}];
-    case 'door-se': return [{tool:'patch_event_page',args:pagePatch('ev_test_door',{commands:[{kind:'text',body:'문이 열립니다'}]})}];
+    case 'door-se': return [{tool:'patch_event_page',args:pagePatch('ev_test_door',{commands:[{kind:'text',body:'문이 열립니다'},{kind:'playAudio',resourceId:'cc0-se-osx-door-open',loop:false}]})}];
     case 'night-mood': return [{tool:'set_scene_mood',args:{mapId:MAP,weather:{kind:'none'},lighting:{ambient:0.25,color:'#101522',sources:[]}}}];
-    case 'remove-final-fade': return [{tool:'patch_event_page',args:pagePatch('ev_test_cutscene',{commands:[{kind:'text',body:'장면'}]})}];
+    case 'remove-final-fade': return [{tool:'patch_event_page',args:pagePatch('ev_test_cutscene',{commands:[{kind:'text',body:'장면'},{kind:'m2Command',commandId:'m2-044-hide-screen',fields:{}},{kind:'wait',ms:300}]})}];
     case 'walkability-check': return [{tool:'check_reachability',args:{mapId:MAP,from:{x:8,y:8},targets:[{x:9,y:8}]}}];
-    case 'event-playtest': return [{tool:'run_scene_test',args:{mapId:MAP,start:{x:8,y:8},steps:[{kind:'interact',eventId:'ev_utility_npc'}]}}];
+    case 'event-playtest': return [{tool:'run_scene_test',args:{mapId:MAP,start:{x:18,y:8},steps:[{kind:'interact',eventId:'ev_utility_npc'}]}}];
     case 'blocked-entrance': return [{tool:'find_events',args:{mapId:MAP,commandKind:'transfer'}}];
     case 'unused-switches': return [{tool:'find_switch_usage',args:{switchId:'sw_unused'}}];
     case 'undo-preview': return [{tool:'list_edit_history',args:{mapId:MAP,limit:5}}];
