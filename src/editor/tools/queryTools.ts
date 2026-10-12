@@ -534,7 +534,7 @@ const listResources: ToolDefinition = {
       throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
     }
     // 모델이 선택 인자를 빈 값(null·"")으로 채워 보내는 일이 잦다 — 얼굴 전용 인자는 빈 값이면 없는 것으로 본다.
-    if (args.portraitMode === null || args.portraitMode === "" || (kind !== "faceset" && args.portraitMode !== undefined && !["face", "bust", "full"].includes(String(args.portraitMode)))) delete args.portraitMode;
+    if (args.portraitMode === null || args.portraitMode === "" || kind !== "faceset") delete args.portraitMode;
     if (args.portraitMode !== undefined && (kind !== "faceset" || !["face", "bust", "full"].includes(String(args.portraitMode)))) {
       throw new ToolError("portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다.", { code: "invalid-args" });
     }
