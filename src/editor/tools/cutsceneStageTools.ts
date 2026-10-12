@@ -145,9 +145,14 @@ const scriptCutsceneStaged: ToolDefinition = {
     actors: [{ name: "인물", character: { resourceId: "tex_easyrpg_charset_actor1", characterIndex: 0 }, at: { fx: 0.5, fy: 0.6 } }, { name: "트럭", resourceId: "cutscene_sprite_y", facing: "left" }],
     steps: [{ do: "enter", actor: "트럭", from: "right", to: { touch: "인물", overlap: 0.35, dy: 6 }, ms: 520 }, { do: "expect", touching: ["트럭", "인물"] }, { do: "flash" }, { do: "fling", actor: "인물", withPrevious: true }],
   },
-  async prepare(args): Promise<void> {
+  async prepare(args, project): Promise<void> {
     const actors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     for (const actor of actors) {
+      // generate_cutscene_art 그림이 character 로 넘어오면 run 이 resourceId 배우로 바로잡는다 — 캐릭터셋 프레임 준비는 건너뛴다.
+      const asCharacter = characterOf(actor);
+      if (asCharacter && (project?.assets.uploaded[asCharacter.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(asCharacter.resourceId))) {
+        actor.resourceId = asCharacter.resourceId; delete actor.character;
+      }
       const picIds = [actor.resourceId, ...(Array.isArray(actor.poses) ? (actor.poses as Raw[]).map((p) => p.resourceId) : [])].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
       for (const id of picIds) {
         if (bundledSizes.has(id)) continue;
