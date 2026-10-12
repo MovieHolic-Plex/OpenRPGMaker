@@ -5,6 +5,52 @@
 
 <!-- releases -->
 
+## 0.200.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — integrated shopfront kits (door + ground floor drawn as one), prop overlap pruning, exact door approach cells (#2468) (`f4c8347`)
+- **opening** — objective in-game cutscene verification — deterministic probe (visibility/scale/motion/overlap/sound) + independent judge, gate relies on them instead of the assistant's report (`d83a117`)
+- **cutscene** — missing-resource error suggests nearest real ids (`d8c0ec9`)
+- **opening** — in-game guidance is vocabulary + universal quality criteria, not an FF6 recipe (`bf76581`)
+- **stage** — general mood/scale vocabulary — actor scale, bob walk for single-picture actors, tint/weather/letterbox/camera steps (`0056e60`)
+- **stage** — reject cutscenes where an actor never enters/moves/shows (`8dcfae8`)
+- **opening** — in-game gate requires made cutscene sprites to appear in start-map events (`8e6391d`)
+- **opening** — in-game cutscene openings (FF6 march on the real map) — detection, gate, recipe, tools (`3334b54`)
+
+### 수정
+
+- **opening** — quote typo in gate hint (`4006e8e`)
+- **opening** — in-game gate tells the model to load script_cutscene_staged via find_tools first (`16ae72b`)
+- **stage** — blank schema-filled character no longer replaces a picture actor with default Actor1 (`bf8a140`)
+- **stage** — drop picture-id character even when resourceId is also given (`6bdaa23`)
+- **opening** — in-game gate no longer says 'no event' when an auto event already exists (`a4c8b14`)
+- **stage** — treat cutscene_sprite_* passed as character as picture actors in run; clearer not-prepared error (`9489b2d`)
+- **pi-worker** — read bundled /assets pictures (charset frames) from public/ in the worker (`d7024a6`)
+- **stage** — skip charset frame prep for picture-resource actors passed as character (`cc2080a`)
+- **stage** — picture resources passed as actor.character are treated as resourceId actors (`d6a21ca`)
+- **lint** — start-position message tells how to fix it (`d89b2d3`)
+- **opening** — in-game opening gets up to 5 completion rekicks that demand tool calls (`346e1bd`)
+- **tools** — portraitMode is faceset-only; ignore it for other kinds (`c08ae30`)
+- **tools** — list_resources ignores empty portraitMode instead of failing every call (`f5eb3a2`)
+- **worker** — cutscene art uses the worker image route (fetch URL invalid in Bun worker) (`e8a2732`)
+
+### CI
+
+- run workflows on GitHub-hosted runners (`de56530`)
+
+### 잡무
+
+- **qa** — headless harness preloads cutscene tools (`4201126`)
+- **qa** — log cutscene tool args in headless activity (`536c2dc`)
+- **qa** — bridge only map/animatic renders (`d939339`)
+- **qa** — bridge chromium flags (`c639ed0`)
+- **qa** — headless harness can render maps via the browser bridge (`2cc1f83`)
+
+### 기타
+
+- agent worktree base for opening-assistant (`11128c3`)
+
 ## 0.199.0 — 2026-10-12
 
 ### 기능
