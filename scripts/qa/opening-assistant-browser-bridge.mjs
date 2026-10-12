@@ -4,7 +4,7 @@ import {createServer} from 'node:http';
 import {chromium} from '@playwright/test';
 const [base, imageProvider, imageModel] = process.argv.slice(2);
 if (!base) throw Error('Usage: opening-assistant-browser-bridge.mjs <dev-origin> [image-provider image-model]');
-const browser = await chromium.launch({headless:true});
+const browser = await chromium.launch({headless:true,args:['--no-sandbox','--disable-background-networking','--disable-features=NetworkChangeNotifier']});
 const page = await browser.newPage();
 await page.route('**/opening-assistant-qa.html', route => route.fulfill({contentType:'text/html',body:'<!doctype html><title>Opening authoring QA</title>'}));
 await page.goto(new URL('/opening-assistant-qa.html',base).href);

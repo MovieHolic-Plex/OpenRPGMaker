@@ -27,6 +27,13 @@ export function requestsOpeningProduction(rawTask: string): boolean {
     && !/오프닝(?:\s*기능)?(?:을|은|만)?\s*(?:끄|꺼|비활성|삭제)|(?:disable|remove)\s+(?:the\s+)?opening/iu.test(task);
 }
 
+/** 정지 컷 나열이 아니라 «실제 맵 위에서 인물이 움직이는 인게임 장면»으로 여는 오프닝 요청. */
+export function requestsInGameOpening(rawTask: string): boolean {
+  const task = withoutAuthoringPresetManual(rawTask);
+  return /오프닝|opening\b|도입/iu.test(task)
+    && /인게임|in-?game|게임\s*화면|실제\s*(?:맵|장면|게임\s*화면)|맵\s*(?:위|에서)|(?:캐릭터|병사|로봇|기계|인물|주인공)\w*\s*(?:가|이)?\s*(?:직접\s*)?(?:걸어|걷|행진|움직|달려)|컷신|연출\s*장면|그림\s*(?:나열|슬라이드)\s*(?:말고|아니)/iu.test(task);
+}
+
 /** Evidence belongs to the executor, never to a model-supplied completed flag. */
 export class PiOpeningProduction {
   private plan = false;
@@ -38,7 +45,14 @@ export class PiOpeningProduction {
   private reviewed = '';
   private readonly viewed = new Map<string, string>();
   private readonly animatics = new Map<string, { fingerprint: string; times: number[] }>();
-  constructor(readonly requested: boolean, private readonly task = '') {}
+  readonly inGame: boolean;
+  /** 인게임 컷신 객관 측정+독립 판정 결과 — 시작 맵 이벤트 명령 지문에 묶인다(바뀌면 무효). */
+  private cutsceneReview?: { readonly fingerprint: string; readonly probeIssues: readonly string[]; readonly judge?: { readonly verdict: string; readonly fix: string; readonly scores: Readonly<Record<string, number>>; readonly judge: string } };
+  recordCutsceneReview(fingerprint: string, probeIssues: readonly string[], judge?: { verdict: string; fix: string; scores: Record<string, number>; judge: string }): void { this.cutsceneReview = { fingerprint, probeIssues, ...(judge ? { judge } : {}) }; }
+  hasCutsceneReview(fingerprint: string): boolean { return this.cutsceneReview?.fingerprint === fingerprint; }
+  cutsceneFingerprint(project: Project): string { return JSON.stringify(project.maps[project.startMapId]?.events ?? []); }
+  cutsceneReviewSummary(): string { const r = this.cutsceneReview; return r ? `측정 문제 ${r.probeIssues.length}건, 독립 판정 ${r.judge ? `${r.judge.judge}:${r.judge.verdict}` : '없음'}` : '미실시'; }
+  constructor(readonly requested: boolean, private readonly task = '') { this.inGame = requested && requestsInGameOpening(task); }
   record(name: string, ok: boolean, project: Project, args?: unknown): void {
     if (!ok) return;
     if (name === 'plan_opening') { this.plan = true; const shots = (args as { shots?: unknown } | undefined)?.shots; this.plannedShotCount = Array.isArray(shots) ? shots.length : 0;
@@ -76,6 +90,26 @@ export class PiOpeningProduction {
   inspect(project: Project, base: Project): string[] {
     if (!this.requested) return [];
     const issues: string[] = [];
+    if (this.inGame) {
+      const start = project.maps[project.startMapId], before = base.maps[base.startMapId];
+      const events = JSON.stringify(start?.events ?? []);
+      if (!start || (events === JSON.stringify(before?.events ?? []) && !/"kind":"auto"/u.test(events))) issues.push('인게임 오프닝을 요청받았지만 시작 맵에 연출 이벤트가 없습니다. 시작 맵을 장면에 맞게 만들고 script_cutscene(또는 script_cutscene_staged)을 trigger:"auto", once:true로 넣으세요(find_tools 로 script_cutscene_staged 를 먼저 불러온 뒤 호출).');
+      else {
+        if (!/"kind":"auto"/u.test(events)) issues.push('시작 맵의 오프닝 이벤트가 자동 실행(trigger:"auto")이 아닙니다. 새 게임 직후 자동으로 재생되어야 합니다.');
+        if (!/"kind":"(?:move|moveRoute|setMoveRoute|camera)|m2-[0-9]+-(?:move|scroll|camera)|moveActor|scroll/iu.test(events)) issues.push('오프닝 이벤트에 인물 이동·카메라 연출이 없습니다. 인물이 걷고 카메라가 따라가거나 훑는 연출을 넣으세요.');
+      }
+      // 객관 검증 — 조수의 보고가 아니라 측정치와 독립 판정자의 판정을 근거로 삼는다(runtime 이 바로 앞에서 실행해 기록한다).
+      if (this.cutsceneReview && this.cutsceneReview.fingerprint === this.cutsceneFingerprint(project)) {
+        issues.push(...this.cutsceneReview.probeIssues);
+        const j = this.cutsceneReview.judge;
+        if (j?.verdict === 'regenerate') issues.push(`독립 판정자(${j.judge})가 컷신을 합격시키지 않았습니다(${Object.entries(j.scores).map(([k, v]) => `${k} ${v}`).join(', ')}). 권고: ${j.fix}`);
+      } else if (start && /"kind":"auto"/u.test(events)) issues.push('컷신의 객관 검증(측정·독립 판정)이 아직 실행되지 않았습니다.');
+      // 만들어 둔 컷신 소품 그림이 있는데 이벤트가 하나도 안 쓰면(기본 Actor1 걷기만 나오는 실측) 병기·소품이 화면에 안 나온다.
+      const madeSprites = Object.keys(project.assets.uploaded).filter(id => /^cutscene_sprite_/u.test(id));
+      if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 배우를 {name, resourceId:'cutscene_sprite_...'} 로 넘겨 script_cutscene_staged 를 다시 호출하세요(도구가 아직 안 불려 있으면 먼저 find_tools 로 script_cutscene_staged 를 찾아 불러온 다음 호출). 기본 주인공(Actor1) 그림만 나오면 안 됩니다.`);
+      if (/타이틀|title|켜자마자|첫\s*화면/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('게임을 켜자마자 보이는 타이틀 화면이 기본 그림입니다. generate_title_art로 작품 전용 그림을 만드세요.');
+      return issues;
+    }
     if (this.fingerprint(project) === this.fingerprint(base)) issues.push('오프닝 설정이 요청 전과 같습니다. 실제 변경 또는 변경하지 못한 이유를 보고하세요.');
     if (/타이틀|title|첫\s*(?:화면|장면)|처음\s*(?:화면|장면)|시작\s*화면|켜자마자|켜면|게임을\s*켤/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('요청에 게임을 켜자마자 보이는 첫 화면(타이틀)이 포함됩니다. 기본 이미지를 두지 말고 오프닝과 같은 화풍·모티프로 generate_title_art(artStyle·light·palette·candidates 지정)를 실행하고 set_title_screen으로 음악·효과를 구성하세요.');
     if (/효과음|\bsfx\b|사운드|이펙트|sound\s*effect/iu.test(this.task) && project.system.opening?.scenes?.length && !project.system.opening.scenes.some(s => s.kind === 'image' && (s.direction?.sounds?.length || s.direction?.soundResourceId))) issues.push('효과음을 요청받았지만 어느 장면에도 효과음이 연결되지 않았습니다. 장면 direction.sounds[{resourceId,atMs,volume}]로 사건 시각마다 effect를 연결하고(edit_opening op:update), 연결하지 않았다면 연결했다고 보고하지 마세요.');
@@ -123,6 +157,7 @@ get_opening_references에서 관련 게임의 실제 도입/타이틀 소개/홍
 애니메틱 요청이면 get_animatic_capabilities를 읽고 create_opening_animatic_shot으로 시간축 무대를 만든다. upsert_opening_layer로 배경/배우/전경/글/효과를 나누고 animate_opening_layer/animate_opening_camera, 스프라이트 sheet/pose 키, set_opening_transition, upsert_opening_audio_cue로 실제 연출한다. 하나의 완성 그림에 zoom만 적용하는 것으로 독립 배우 동작을 대신하지 않는다. 움직임은 사건의 원인과 결과를 읽히게 하며 모든 배우를 이유 없이 흔들지 않는다.
 배경 그림 속 배우는 독립 레이어가 아니다. 배경에 이미 그려진 배우 위에 같은 배우를 겹쳐 놓지 않는다. 필요하면 generate_opening_layer(role:background)로 배우 없는 장소, role:actor/prop/foreground로 실제 알파 분리 소재를 만든다. 실패한 단색 배경 제거를 투명 소재 성공이라고 하지 않는다. 기존 투명 그림과 정확한 crop/sheet도 재사용할 수 있다. 포즈를 만들지 않았다면 평면 이동을 골격 애니메이션이라고 부르지 않는다.
 inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으로 각 샷의 시작/중간/후반 실제 합성 프레임을 보고 마지막 수정 후 다시 보라. 피사체가 화면 밖으로 나갔는지, 배경/배우 외형과 조명/접지/전경 가림이 맞는지, 글이 가리지 않는지 검토하고 구체적으로 수정한다. 2D 레이어/카메라/스프라이트 애니메틱과 등록된 영상 재생을 지원한다. 3D 리깅·골격 애니메이션·자동 영상/음성 생성을 했다고 주장하지 않는다. 타이틀 WebGL 효과는 오프닝에 자동 적용되지 않는다.
+인게임 오프닝: 요청이 «그림 나열이 아니라 실제 게임 장면/캐릭터가 움직이는 연출/컷신»이면 system.opening 장면을 만들지 않는다. 시작 맵을 이야기에 맞게 직접 지은 뒤(맵 도구) 그 맵 위에서 script_cutscene_staged(또는 script_cutscene)에 trigger:"auto", once:true로 연출한다. 순서와 조합은 이야기가 정한다 — 정해진 틀이 없다. 쓸 수 있는 어휘: 배우 입장·이동·퇴장(enter/move/exit, anim:'walk'=캐릭터셋 걷기 프레임 / 'bob'=걷기 프레임 없는 그림의 발걸음 출렁임), 배우 크기(scale %), 화면 색조(tint: 밤·노을·피·회상), 날씨(weather), 영화식 띠(letterbox), 맵 카메라(camera), 대사·내레이션(say), 효과음·음악(se/bgm), 암전·번쩍임·흔들림(fade/flash/shake), 맵 이동(transfer). 무엇을 쓸지는 «이 장면이 관객에게 어떤 감정을 주려는가»에서 고른다. 어떤 연출이든 지킬 기준: ①중심 대상이 화면에 보이고 움직인다(안 보이는 배우 금지) ②크기·간격이 화면과 어울린다(풍경 속 인물은 작게, 겹치지 않게) ③색조·날씨가 이야기의 시간·기분과 맞는다 ④글자가 읽힌다 ⑤소리가 시각 사건과 같은 시각에 실제로 깔린다 ⑥끝나면 조작이 넘어간다. 먼저 read_directing_guide를 읽고, 배치·미리보기(show_map_region·preview_cutscene)를 눈으로 확인해 위 기준을 점검한다. 효과음은 generate_original_se로 장면에 맞게 합성해 se 단계에 넣는다.
 오프닝은 플레이어가 게임을 켜자마자 보는 첫 화면(타이틀)까지 포함한다. 요청이 첫 화면을 포함하면 기본 타이틀 그림을 그대로 두지 말고 bible의 화풍·모티프·팔레트로 generate_title_art(artStyle·light·palette·candidates 2~3)를 실행한 뒤 set_title_screen으로 타이틀 음악·효과를 정한다.
 효과음은 자유롭게 설계한다. generate_original_se로 장면에 맞는 소리(발걸음·바람·금속 마찰·종소리·균열 등)를 여러 개 합성하고, 장면 direction.sounds[{resourceId,atMs,volume}]로 시각 사건의 시각(atMs)에 맞춰 최대 8개까지 겹쳐 연결한다. 하나의 soundResourceId만 쓰는 것으로 끝내지 않는다. 모델은 소리를 듣지 못하므로 타이밍은 샷의 사건 시각에서 계산한다.
 영상·소리·이미지 가공이 필요하면 run_ffmpeg(inputs=리소스 id, args의 {in0}/{out})로 컷 이어붙이기·페이드·색 보정·소리 믹스·PNG→mp4를 직접 수행해 새 리소스로 등록한다. 외부 파일·네트워크는 쓸 수 없다.

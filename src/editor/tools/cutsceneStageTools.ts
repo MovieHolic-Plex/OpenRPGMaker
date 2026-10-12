@@ -36,12 +36,12 @@ const STEP_SCHEMA: JsonSchema = {
   additionalProperties: false,
   required: ["do"],
   properties: {
-    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect"] },
+    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera"] },
     withPrevious: { type: "boolean", description: "앞 단계와 같은 때에 시작(동시 진행). say 는 불가." },
     actor: { type: "string" }, to: PLACE_SCHEMA,
     from: { type: "string", enum: ["left", "right", "top", "bottom"], description: "enter: 들어오는 화면 가장자리" },
     exitTo: { type: "string", enum: ["left", "right", "top", "bottom"], description: "exit: 나가는 가장자리" },
-    ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk"], description: "walk: 캐릭터셋 걷기 프레임 교체" },
+    ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk", "bob"], description: "walk: 캐릭터셋 걷기 프레임 교체 / bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)이 발걸음 박자로 위아래 출렁이며 나아감" },
     pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
     position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom." },
@@ -53,6 +53,10 @@ const STEP_SCHEMA: JsonSchema = {
     dir: { type: "string", enum: ["left", "right", "top", "bottom", "up", "down"], description: "fling: 날아가는 방향 / turn: 바라볼 방향(up·down·left·right)" },
     animationId: { type: "string", description: "animate: 게임의 전투 애니메이션 id(database.battleAnimations, 예: anim_scarloxy_fire)" },
     direction: { type: "string", enum: ["in", "out"], description: "fade: 검정으로 사라짐(out)/나타남(in)" },
+    tintColor: { type: "string", description: "tint: 화면 색조 — 'night'류 이름 대신 '#rrggbb' 또는 'r,g,b,알파'(예: '20,30,80,0.45' 푸른 밤, '255,140,60,0.25' 노을, 'none' 해제)" },
+    weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather: 날씨(intensity 0~1)" },
+    show: { type: "boolean", description: "letterbox: 영화식 위아래 띠 켜기/끄기" },
+    mode: { type: "string", enum: ["pan", "follow", "fixed", "return"], description: "camera: 맵 카메라(x,y 맵 칸, zoom 배율)" }, zoom: { type: "number" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
 };
@@ -69,6 +73,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
+    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎." },
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
     event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
@@ -86,6 +91,8 @@ function characterOf(actor: Raw): { resourceId: string; characterIndex: number }
   const c = actor.character;
   if (!c || typeof c !== "object" || Array.isArray(c)) return undefined;
   const r = c as Raw;
+  // 스키마가 빈 값으로 채운 character({resourceId:""})는 «캐릭터셋 없음»이다 — 그림 배우(resourceId)가 이미 있으면 기본 Actor1 로 바꿔치지 않는다.
+  if (typeof actor.resourceId === "string" && actor.resourceId.trim() && !(typeof r.resourceId === "string" && r.resourceId.trim())) return undefined;
   return { resourceId: typeof r.resourceId === "string" && r.resourceId.trim() ? r.resourceId.trim() : DEFAULT_CHARSET, characterIndex: Math.max(0, Math.min(7, Math.trunc(Number(r.characterIndex ?? 0)))) };
 }
 
@@ -145,9 +152,14 @@ const scriptCutsceneStaged: ToolDefinition = {
     actors: [{ name: "인물", character: { resourceId: "tex_easyrpg_charset_actor1", characterIndex: 0 }, at: { fx: 0.5, fy: 0.6 } }, { name: "트럭", resourceId: "cutscene_sprite_y", facing: "left" }],
     steps: [{ do: "enter", actor: "트럭", from: "right", to: { touch: "인물", overlap: 0.35, dy: 6 }, ms: 520 }, { do: "expect", touching: ["트럭", "인물"] }, { do: "flash" }, { do: "fling", actor: "인물", withPrevious: true }],
   },
-  async prepare(args): Promise<void> {
+  async prepare(args, project): Promise<void> {
     const actors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     for (const actor of actors) {
+      // generate_cutscene_art 그림이 character 로 넘어오면 run 이 resourceId 배우로 바로잡는다 — 캐릭터셋 프레임 준비는 건너뛴다.
+      const asCharacter = characterOf(actor);
+      if (asCharacter && (project?.assets.uploaded[asCharacter.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(asCharacter.resourceId))) {
+        if (typeof actor.resourceId !== "string") actor.resourceId = asCharacter.resourceId; delete actor.character;
+      }
       const picIds = [actor.resourceId, ...(Array.isArray(actor.poses) ? (actor.poses as Raw[]).map((p) => p.resourceId) : [])].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
       for (const id of picIds) {
         if (bundledSizes.has(id)) continue;
@@ -175,6 +187,11 @@ const scriptCutsceneStaged: ToolDefinition = {
     const viewport = draft.system.playResolution ?? DEFAULT_PLAY_RESOLUTION;
     const rawActors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     if (rawActors.length === 0) throw new ToolError("actors 가 비어 있습니다.", { code: "invalid-args" });
+    // generate_cutscene_art 소품은 캐릭터셋이 아니라 그림이다 — character 로 넘겨도 resourceId 배우로 바로잡는다(반복 실패 실측).
+    for (const raw of rawActors) {
+      const c = characterOf(raw);
+      if (c && (draft.assets.uploaded[c.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(c.resourceId))) { if (typeof raw.resourceId !== "string") raw.resourceId = c.resourceId; delete raw.character; }
+    }
     for (const raw of rawActors) {
       const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
       if (heroCharacter && !/actor[1-4]$/iu.test(heroCharacter.resourceId)) {
@@ -192,7 +209,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       const character = characterOf(raw);
       if (character && raw.ghost !== true) {
         const prepared = preparedActors.get(charKey(character.resourceId, character.characterIndex));
-        if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다 — 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
+        if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다(character.resourceId='${character.resourceId}') — 그림 소품(cutscene_sprite_*)이면 character 대신 resourceId 로 넘기고, 캐릭터셋이면 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
         if ("error" in prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임을 만들지 못했습니다: ${prepared.error}`, { code: "character-frames-failed" });
         for (const frame of Object.values(prepared.frames)) {
           draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 프레임`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
@@ -235,7 +252,9 @@ const scriptCutsceneStaged: ToolDefinition = {
         if (!draft.assets.uploaded[id] && !bundledSizes.has(id)) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
         poses[String(p.name)] = id;
       }
-      return { name, width: size.width, height: size.height, facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
+      const k = (scale ?? 100) / 100;
+      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
     });
     let backdrop: { id: string; width: number; height: number } | undefined;
     if (typeof args.backdropResourceId === "string" && args.backdropResourceId.trim()) {
@@ -251,6 +270,12 @@ const scriptCutsceneStaged: ToolDefinition = {
       if (step.do === "animate" && !knownAnimations.has(step.animationId)) {
         throw new ToolError(`animate: 전투 애니메이션 '${step.animationId}' 가 없습니다 — get_database_records(collection:"battleAnimations") 로 id 를 조회하세요(예: ${[...knownAnimations].slice(0, 4).join(", ")}).`, { code: "unknown-animation" });
       }
+    }
+    // 배우가 어떤 단계에서도 등장·이동하지 않으면 화면에 안 보이거나 가만히 선 채로 끝난다(조수가 at 만 주고 단계를 비운 실측).
+    const stepList = normalizeSteps(args.steps);
+    for (const actor of actors) {
+      const appears = stepList.some((step) => ["enter", "move", "show"].includes(String(step.do)) && (step as Raw).actor === actor.name);
+      if (!appears) throw new ToolError(`배우 '${actor.name}' 이(가) 어떤 단계에서도 등장하지 않습니다 — {do:'enter',actor:'${actor.name}',from:'left',to:{fx:0.5,fy:0.6},ms:2400} 처럼 enter/move/show 단계를 넣으세요. 줄지어 걸을 때는 withPrevious:true 로 함께 움직이게 하고, 끝에는 exit 로 내보내세요.`, { code: "actor-never-appears" });
     }
     let result: ReturnType<typeof compileStage>;
     try {

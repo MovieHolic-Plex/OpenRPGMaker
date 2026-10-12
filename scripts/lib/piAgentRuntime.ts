@@ -26,7 +26,15 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
-import { createPiPresentationTool, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
+import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
+import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
+import { critiqueCutscene } from './cutsceneCritic.ts';
+import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
+import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
+import { readFileSync as readBundledAsset } from 'node:fs';
+import { join as joinBundledAsset } from 'node:path';
+import { createPiPresentationTool, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
@@ -228,6 +236,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   await preparePiWorkerSharedContent();
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
+  // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
+  // «/assets/…» 번들 그림(캐릭터셋 걷기 프레임)도 워커에는 fetch 가 없어 저장소 public/ 에서 읽는다.
+  setCutsceneAssetFetcher(async url => `data:image/png;base64,${readBundledAsset(joinBundledAsset(process.cwd(), 'public', url.replace(/^\/+/u, '').split('?')[0]!)).toString('base64')}`);
+  setCutsceneArtGenerator(createWorkerImageGenerator(request, provider => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined)));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
@@ -557,7 +569,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se']) {
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'script_cutscene', 'script_cutscene_staged', 'read_directing_guide', 'show_map_region', 'upsert_event']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }
@@ -856,13 +868,35 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
+    const reviewInGameCutscene = async (): Promise<void> => {
+      if (!openingProduction.inGame) return;
+      const start = ctx.project.maps[ctx.project.startMapId];
+      const candidates = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto'));
+      const event = candidates.sort((a, b) => JSON.stringify(b.pages).length - JSON.stringify(a.pages).length)[0];
+      const page = event?.pages?.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto');
+      if (!start || !event || !page) return;
+      const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
+      if (openingProduction.hasCutsceneReview(fingerprint)) return;
+      const probe = probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION);
+      emit({ type: 'execution_status', name: 'cutscene.review', ok: probe.issues.length === 0, summary: `컷신 객관 측정: ${probe.summary}${probe.issues.length ? ` — 문제 ${probe.issues.length}건` : ' — 통과'}`, data: probe });
+      if (probe.issues.length || !options.renderToolImage) { openingProduction.recordCutsceneReview(fingerprint, probe.issues); return; }
+      emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
+      let mapImage: string | undefined, sheetImage: string | undefined;
+      try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x: 0, y: 0, w: start.width, h: start.height }, options.signal)}`; } catch { mapImage = undefined; }
+      try { sheetImage = (await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }))[0]?.dataUrl; } catch { sheetImage = undefined; }
+      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
+      openingProduction.recordCutsceneReview(fingerprint, [], critique);
+      emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
+    };
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 5 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+      await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
-      if (!issues.length || signature === previousOpeningIssues) break;
+      if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).

@@ -20,7 +20,7 @@ await page.addInitScript(() => { try { localStorage.clear(); } catch {} window._
 await page.route("**/__runtime-qa/project.json", (r) => r.fulfill({ status: 200, contentType: "application/json", body: projectJson }));
 await page.goto(`${server.url}/player.html`, { waitUntil: "domcontentloaded" });
 await page.waitForSelector("[data-testid='title-screen']", { timeout: 120000 });
-await page.waitForTimeout(800);
+await page.waitForTimeout(Number(process.env.TITLE_WAIT_MS ?? 800));
 const enterAt = Date.now() - pageStart;
 await page.keyboard.press("Enter");
 for (let i = 1; i < Number(process.env.TITLE_ENTERS ?? 1); i++) { await page.waitForTimeout(2200); await page.keyboard.press("Enter"); }

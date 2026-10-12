@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import Jimp from 'jimp';
+import { spawn } from 'node:child_process';
 import { buildModel } from '@oh-my-pi/pi-catalog/build';
 import { runPiAgent } from '../lib/piAgentRuntime';
 import { resolveRequestApiKey } from '../lib/aiAuthRuntime';
@@ -30,19 +31,33 @@ for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { p
 const log: unknown[] = [];
 const t0 = Date.now();
 const note = (e: any) => {
-  const row = { t: Math.round((Date.now() - t0) / 1000), type: e.type, name: e.name, ok: e.ok, summary: String(e.summary ?? e.text ?? e.message ?? '').slice(0, 300), visuals: e.visuals?.map((v: any) => ({ title: v.title, caption: v.caption })) };
+  const row = { t: Math.round((Date.now() - t0) / 1000), type: e.type, name: e.name, ok: e.ok, summary: String(e.summary ?? e.text ?? e.message ?? '').slice(0, 300), visuals: e.visuals?.map((v: any) => ({ title: v.title, caption: v.caption })), ...(e.type === 'tool_start' && /^script_cutscene/u.test(String(e.name)) ? { args: e.args } : {}) };
   if (['assistant', 'error', 'execution_status', 'tool_start', 'tool_end'].includes(e.type)) { log.push(row); fs.writeFileSync(path.join(out, 'activity.json'), JSON.stringify(log, null, 1)); console.log(`[${row.t}s] ${row.type} ${row.name ?? ''} ${row.summary.slice(0, 140)}${row.visuals?.length ? ` (그림 ${row.visuals.length}장)` : ''}`); }
   if (e.type === 'tool_end' && e.visuals) for (const [i, v] of e.visuals.entries()) if (v.uploaded?.startsWith('data:')) fs.writeFileSync(path.join(out, `${e.id.slice(-8)}-${i}-${v.caption}.jpg`), Buffer.from(v.uploaded.split(',')[1], 'base64'));
 };
 let live = project;
 const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: 'high' as const, imageProvider, imageModel,
-  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening'] };
+  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
+// 맵·애니메틱 미리보기는 실제 브라우저 렌더러(편집기 dev 서버)로 그린다 — --browser-url 이 있을 때만.
+const origin = arg('browser-url');
+let bridgePort = 0; let bridge: ReturnType<typeof spawn> | undefined;
+if (origin) {
+  bridge = spawn('node', [path.resolve('scripts/qa/opening-assistant-browser-bridge.mjs'), origin], { stdio: ['ignore', 'pipe', 'ignore'] });
+  bridgePort = await new Promise<number>((resolve, reject) => { let acc = ''; const t = setTimeout(() => reject(Error('bridge timeout')), 90000); bridge!.stdout!.on('data', c => { acc += c; const l = acc.split('\n').find(x => x.startsWith('{"ready":')); if (l) { clearTimeout(t); resolve(JSON.parse(l).port); } }); });
+}
 const adapters = await createOhMyPiAdapters();
 const genImage = async (req: { prompt: string }) => { for (let a = 0; ; a++) { try { const r = await adapters.generateImage('openai-codex', { prompt: req.prompt, model: 'codex-image-default' }); return { dataUrl: `data:image/png;base64,${r.base64}`, mimeType: 'image/png', model: 'codex-image-default', provider: 'openai-codex' }; } catch (e) { if (a >= 3) throw e; } } };
 const done = await runPiAgent(request as never, {
   model: model as never, apiKey: prov.apiKey, providerApiKeys, timeoutMs: Number(arg('timeout-ms', '3000000')),
   generateOpeningImage: (p: Project, args: Record<string, unknown>) => generateCinematicStill(args, 'opening', { generateImage: genImage as never, resolveReference: async (id: string) => { const u = p.assets.uploaded[id]?.dataUrl; if (!u?.startsWith('data:image')) throw new Error('참고 그림을 읽을 수 없습니다: ' + id); return u; } }),
-  renderToolImage: async (p: Project, _name: string, data: any) => {
+  renderToolImage: async (p: Project, name: string, data: any) => {
+    if (bridgePort && ['show_map_region', 'inspect_interior_layout', 'preview_opening_animatic', 'preview_opening_reference'].includes(name)) {
+      const r = await fetch(`http://127.0.0.1:${bridgePort}/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project: p, toolName: name, data }) });
+      const j = await r.json() as { png?: string; error?: string };
+      if (!r.ok || !j.png) throw new Error(j.error ?? '브라우저 렌더 실패');
+      const img = await Jimp.read(Buffer.from(j.png, 'base64')); if (img.bitmap.width > 640) img.resize(640, Jimp.AUTO);
+      return (await img.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
+    }
     const id = data?.resourceId as string | undefined; const url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
     if (!url?.startsWith('data:image')) throw new Error('그림 데이터를 찾을 수 없습니다: ' + id);
     const img = await Jimp.read(Buffer.from(url.split(',')[1]!, 'base64')); if (img.bitmap.width > 512) img.resize(512, Jimp.AUTO);
@@ -55,4 +70,5 @@ live = done.project;
 fs.writeFileSync(path.join(out, 'project.json'), JSON.stringify(live));
 fs.writeFileSync(path.join(out, 'SUMMARY.json'), JSON.stringify({ task, model: arg('model'), stats: done.stats, issues: done.openingProduction?.issues, stoppedEarly: done.stoppedEarly, finalText: (done as any).text ?? (done as any).finalMessage }, null, 1));
 console.log('DONE', out, JSON.stringify(done.stats), done.openingProduction?.issues);
+bridge?.kill('SIGTERM');
 process.exit(0);
