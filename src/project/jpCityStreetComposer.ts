@@ -223,7 +223,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
     bands.push(band);
   }
-  const ground = style === "residential" ? "잔디" : "판석 광장";
+  const ground = style === "residential" ? "잔디" : "자갈 참배길";
   fill(0, 0, W, H, ground);
   for (const b of bands) if (b.gap) {
     fill(0, b.gap.sw1, W, 2, "보도 연석");
@@ -343,6 +343,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       }
     }
   };
+  const wireAt = steps.length;                                  // 전선은 큰 건물·공원 칠 같은 구획 단계보다 먼저 찍는다
   bands.forEach((b, bi) => {
     const segs = segmentsAround(W, [...streets.filter((s) => bi >= s.from && bi <= s.to), ...(river ? [{ x: river.x - 1, w: river.w + 2 }] : [])]);
     for (const [sx, ex] of segs) {
@@ -447,6 +448,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
 
   // ── 6. 가로등·전봇대/전선·곡면거울·정류장: 띠마다. 문 자리와 세로 길 어귀는 피한다.
   const poleXsByBand: number[][] = [];
+  const wireSteps: JpStreetStep[] = [];
   bands.forEach((b, bi) => {
     let lx = 2 + Math.floor(rng() * 5);
     while (lx < W - 2) {
@@ -468,7 +470,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     poleXs.forEach((x, i) => {
       stamp("jp-prop-utility-pole2", x, b.foot + 2 - 4);
       const nx = poleXs[i + 1];
-      if (nx !== undefined && nx - (x + 2) >= 2 && nx - (x + 2) <= 17) stamp(`jp-wire-${nx - (x + 2) + 3}`, x + 2, b.foot + 2 - 4);
+      // 전선 키트는 아래층 칸을 비워 찍으므로 건물 위에 찍으면 1층 외벽을 지운다 → 건물보다 먼저(yardSteps 앞)에 찍고 건물이 아래층을 다시 덮게 한다.
+      if (nx !== undefined && nx - (x + 2) >= 2 && nx - (x + 2) <= 17) wireSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${nx - (x + 2) + 3}`, mapId, x: x + 2, y: b.foot + 2 - 4 }, optional: true, note: "prop" });
     });
     poleXsByBand.push(poleXs);
     for (const s of streets) if (bi >= s.from && bi <= s.to) stamp("jp-prop-curve-mirror", s.x + s.w, b.foot + 2 - 2);
@@ -485,6 +488,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) stamp(`jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, b.x + 1, b.foot + 2 - 2);
   }
 
+  steps.splice(wireAt, 0, ...wireSteps);
   const zoneNames: Record<JpBlockZone, string> = { shop: "상가", house: "주택", park: "공원", parking: "주차장" };
   return {
     steps,

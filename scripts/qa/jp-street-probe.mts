@@ -18,7 +18,8 @@ for (let seed = 1; seed <= Number(arg("seeds", "6")); seed++) {
   runTool(ctx, "resize_map", { mapId: id, width: W, height: H }); { const kit = p.tilesets.jp_city!; p.maps[id]!.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit)); }
   const plan = planJpCityStreet({ mapId: id, width: W, height: H, seed, style: arg("style", "shopping") as "shopping", shops: seed % 2 ? ["konbini", "ramen"] : ["cafe", "izakaya"] });
   const errs: string[] = [];
-  const r = runJpStreetPlan(plan, (tool, args) => { const res = runTool(ctx, tool, args); if (!res.ok) { errs.push(`${tool}: ${res.summary.slice(0, 120)}`); throw new Error(res.summary); } });
+  const skipRe = process.env.SKIP ? new RegExp(process.env.SKIP) : undefined;
+  const r = runJpStreetPlan(plan, (tool, args) => { if (skipRe && skipRe.test(String(args.objectId ?? ""))) return; const res = runTool(ctx, tool, args); if (!res.ok) { errs.push(`${tool}: ${res.summary.slice(0, 120)}`); throw new Error(res.summary); } });
   { const m = ctx.project.maps[id]!; let n = 0; for (let y = 14; y < 18; y++) for (let x = 0; x < W; x++) if ((m.upperTiles[y * W + x] ?? -1) >= 0) n++; if (process.env.V) console.log("upper cells in road", n); }
   fs.writeFileSync(`${OUT}/street-${seed}.png`, renderMapPng(ctx.project, ctx.project.maps[id]!).png);
   console.log(seed, plan.summary, JSON.stringify(r)); if (process.env.V) console.log(errs.slice(0, 8).join("\n"));
