@@ -183,7 +183,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     // generate_cutscene_art 소품은 캐릭터셋이 아니라 그림이다 — character 로 넘겨도 resourceId 배우로 바로잡는다(반복 실패 실측).
     for (const raw of rawActors) {
       const c = characterOf(raw);
-      if (c && typeof raw.resourceId !== "string" && draft.assets.uploaded[c.resourceId]?.kind === "picture") { raw.resourceId = c.resourceId; delete raw.character; }
+      if (c && typeof raw.resourceId !== "string" && (draft.assets.uploaded[c.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(c.resourceId))) { raw.resourceId = c.resourceId; delete raw.character; }
     }
     for (const raw of rawActors) {
       const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
@@ -202,7 +202,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       const character = characterOf(raw);
       if (character && raw.ghost !== true) {
         const prepared = preparedActors.get(charKey(character.resourceId, character.characterIndex));
-        if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다 — 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
+        if (!prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임이 준비되지 않았습니다(character.resourceId='${character.resourceId}') — 그림 소품(cutscene_sprite_*)이면 character 대신 resourceId 로 넘기고, 캐릭터셋이면 같은 인자로 다시 호출하세요.`, { code: "character-not-prepared" });
         if ("error" in prepared) throw new ToolError(`배우 '${name}' 의 캐릭터 프레임을 만들지 못했습니다: ${prepared.error}`, { code: "character-frames-failed" });
         for (const frame of Object.values(prepared.frames)) {
           draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 프레임`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
