@@ -86,6 +86,8 @@ function characterOf(actor: Raw): { resourceId: string; characterIndex: number }
   const c = actor.character;
   if (!c || typeof c !== "object" || Array.isArray(c)) return undefined;
   const r = c as Raw;
+  // 스키마가 빈 값으로 채운 character({resourceId:""})는 «캐릭터셋 없음»이다 — 그림 배우(resourceId)가 이미 있으면 기본 Actor1 로 바꿔치지 않는다.
+  if (typeof actor.resourceId === "string" && actor.resourceId.trim() && !(typeof r.resourceId === "string" && r.resourceId.trim())) return undefined;
   return { resourceId: typeof r.resourceId === "string" && r.resourceId.trim() ? r.resourceId.trim() : DEFAULT_CHARSET, characterIndex: Math.max(0, Math.min(7, Math.trunc(Number(r.characterIndex ?? 0)))) };
 }
 
