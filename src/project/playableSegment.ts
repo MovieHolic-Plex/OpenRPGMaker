@@ -22,6 +22,7 @@ import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
+import { planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -270,12 +271,29 @@ interface TownLayout {
 const PLACE_TMP_ID = "map_place_tmp";
 function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: StartPlan): TownLayout | null {
   const placeRef = plan.placeId ? regionReference(plan.placeId) : undefined;
-  if (plan.placeId) {
+  if (plan.composeStreet) {
+    if (start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
+  } else if (plan.placeId) {
     if (!placeRef || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[plan.tilesetId] || !isUntouchedBlank(start)) return null;
   } else if (!plan.prebuildTown || start.tilesetId !== DEFAULT_TILESET_ID || !ctx.project.tilesets[DEFAULT_TILESET_ID] || !isUntouchedBlank(start)) return null;
   // 시험 사본에서 짓는다 — 걸어 닿는 문 자리를 못 찾으면 마을을 채택하지 않고 빈 시작 맵 그대로 둔다(호출부가 옛 모양으로 간다).
   const trial = { project: structuredClone(ctx.project) };
-  if (plan.placeId && placeRef) {
+  if (plan.composeStreet) {
+    // 구성기가 씨앗으로 거리를 새로 짠다 — 칩셋을 옮기고 맵을 키운 뒤 땅·도로·건물·소품을 도구 호출로 깐다.
+    try {
+      const kit = trial.project.tilesets[plan.tilesetId]!;
+      const size = startMapSizeFor(kit.id, plan) ?? { width: 52, height: 34 };
+      const width = Math.max(48, size.width), height = Math.max(34, size.height);
+      tool(trial, "resize_map", { mapId: start.id, width, height });
+      const blank = trial.project.maps[start.id]!;
+      blank.tilesetId = kit.id; blank.tileSize = kit.tileSize;
+      blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
+      const text = ctx.project.gameDesignBrief?.summary ?? "";
+      const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style: streetStyleFromText(text), shops: shopsFromText(text) });
+      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args));
+      if (outcome.built < 4) return null;
+    } catch (error) { if (process.env.START_DEBUG) console.error("[start-street]", error); return null; }
+  } else if (plan.placeId && placeRef) {
     try {
     // 완성 장소가 시작 맵이 된다 — 장소는 자기 칩셋 판본(칸 번호가 다른 확장본)을 쓰므로 붙이지 않고 새 맵으로 가져온 뒤(시작 칸이 아직 옛 맵에 있어 무결성이 통과한다),
     // 아래 걷기 분석이 끝나면 옛 빈 맵 자리에 같은 id 로 앉힌다.
@@ -284,7 +302,7 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
   } else {
     tool(trial, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
   }
-  const map = trial.project.maps[plan.placeId ? PLACE_TMP_ID : start.id]!;
+  const map = trial.project.maps[plan.placeId && !plan.composeStreet ? PLACE_TMP_ID : start.id]!;
   const key = (x: number, y: number): number => y * map.width + x;
   const steps = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
   const walk = (from: number, blocked?: number): Map<number, number> => {
@@ -331,7 +349,7 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
   for (const [cell] of candidates) {
     if (walk(origin, cell).has(doorCell)) {
       trial.project.startPos = { ...startAt };
-      if (plan.placeId) {
+      if (plan.placeId && !plan.composeStreet) {
         const placed = trial.project.maps[PLACE_TMP_ID]!;
         delete trial.project.maps[PLACE_TMP_ID];
         trial.project.maps[start.id] = { ...placed, id: start.id };

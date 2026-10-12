@@ -34,18 +34,20 @@ export interface StartPlan {
   readonly prebuildTown: boolean;
   /** 컨셉 칩셋에 완성 야외 장소가 있으면 그 id — 시작 맵이 이 장소를 통째로 붙여 열린다(조수가 빈 풀밭에서 처음부터 짓지 않게). 지금은 jp_city 만. */
   readonly placeId?: string;
+  /** 컨셉 칩셋이 jp_city 이고 학교·역 같은 특정 장소가 아니면, 완성 장소를 붙이지 않고 구성기(jpCityStreetComposer)가 씨앗으로 거리를 새로 짠다. */
+  readonly composeStreet?: boolean;
 }
 
 /** 칩셋별 완성 야외 장소. 학교·역 낱말이면 그 장소, 아니면 씨앗이 상가 거리·노면전차 거리·동네 한 장 중 고른다. */
 export const KIT_START_PLACES: Readonly<Record<string, readonly string[]>> = {
-  jp_city: ["jp-city-shopstreet-48x40", "jp-city-tram-street-48x30", "jp-city-town-96x80"],
+  jp_city: ["jp-city-school-68x48", "jp-city-tram-street-48x30"],
 };
 export function kitStartPlaceId(tilesetId: string | undefined, seed: number, stageText: string): string | undefined {
   const list = tilesetId ? KIT_START_PLACES[tilesetId] : undefined;
   if (!list) return undefined;
   if (/학교|교실|교정|등교|수업|동아리/u.test(stageText)) return "jp-city-school-68x48";
   if (/역|전차|전철|지하철|열차/u.test(stageText)) return "jp-city-tram-street-48x30";
-  return list[seed % list.length];
+  return undefined;
 }
 
 export const START_THEME_LABEL: Record<StartTheme, string> = { river: "강가 마을", coast: "포구", desert: "사막 오아시스", snow: "설원 마을", swamp: "늪 수상 마을" };
@@ -120,7 +122,8 @@ export function planStart(input: { readonly seedText: string; readonly stageText
   const endY = Math.max(lo, Math.min(hi, entryY + shift));
   const hint = input.tilesetHint;
   const placeId = kitStartPlaceId(hint, seed, stage);
-  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}) };
+  const composeStreet = hint === "jp_city" && !placeId;
+  return { seed, theme, form, terrain, routeW, routeH, entryY, endY, tilesetId: hint ?? "beodeul_city", prebuildTown: hint === undefined || hint === "beodeul_city", ...(placeId ? { placeId } : {}), ...(composeStreet ? { composeStreet } : {}) };
 }
 
 /** 프로젝트에서 구상을 낸다 — 뼈대(playableSegment)와 프롬프트가 같은 입력으로 같은 구상을 얻는다. */
@@ -142,6 +145,14 @@ export function startPlanPrompt(plan: StartPlan): string {
     "뼈대가 지키는 것은 「핵심 행동 → 문 → 길 → 구간 끝」의 연결뿐이다. 마을·거리의 모양·광장·십자 길·가운데 앵커는 보존 대상이 아니다. 문(시작 맵 동쪽 끝)과 길 맵 연결, 뼈대 이벤트 id 는 유지한다.",
     "광장·십자 길·한가운데 건물을 기본으로 두지 않는다. 앵커(시작 NPC·핵심 건물)는 「왜 거기에 있는지」가 있는 자리에 둔다 — 물가·길목·언덕 위처럼 지형이 말해 주는 곳.",
   ];
+  if (kit && plan.composeStreet) {
+    return [
+      `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
+      `시작 맵은 코드의 거리 구성기가 이 씨앗으로 짠 일본 도시 거리(뒷줄·앞줄 건물, 보도, 도로, 횡단보도, 가로등·자판기·노보리)로 이미 열려 있다. 길 맵(${plan.routeW}×${plan.routeH})은 그 칩셋의 길이다. 이 거리를 지우거나 풀밭으로 덮지 않는다.`,
+      "해야 할 일: ① get_map_region/show_map_region 으로 거리와 건물 문을 읽는다. ② 기획의 가게와 안 맞으면 compose_jp_city_street({mapId, seed:다른 값, style, shops:[기획의 가게…], replace:true}) 로 다시 짜거나 build_jp_city_building 으로 건물 몇 채만 고친다(문 앞 접근칸을 유지). ③ 기획의 핵심 장소를 문마다 골라 link_jp_city_interior 로 완성 실내를 잇는다 — 장소 id 예: jp-city-konbini-14x12, jp-city-ramen-9x9, jp-city-izakaya-14x14, jp-city-kissaten-10x9, jp-city-bakery-10x14, jp-city-bookstore-11x14, jp-city-pharmacy-11x13, jp-city-clinic-14x9, jp-city-koban-14x9, jp-city-house-interior-21x15. 문은 간판·차양이 그 가게와 어울리는 건물에서 고른다. ④ 실내에 기획의 인물·단서·이벤트를 둔다.",
+      "뼈대가 지키는 것은 핵심 행동 → 시작 맵 동쪽 끝 문 → 길 맵 → 구간 끝의 연결이다. 이벤트 id 와 문은 유지한다.",
+    ].join("\n");
+  }
   if (kit && plan.placeId) {
     return [
       `[첫 장소 구상 — 씨앗 ${plan.seed}]`,
