@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.195.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — street composer v5 — door types/positions per role, entrance props beside built doors (#2452) (`baca316`)
+- **jp-city** — street composer v4 — utility poles with wires, curve mirrors, bus stop, hydrant sign (#2451) (`1747c35`)
+
 ## 0.194.0 — 2026-10-12
 
 ### 기능
