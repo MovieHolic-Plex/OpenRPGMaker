@@ -5,6 +5,18 @@
 
 <!-- releases -->
 
+## 0.196.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — river with promenade, grass slopes, sakura/bench/lamps and railed bridges (#2458) (`5d28445`)
+- **jp-city** — town composer — river with bridges, landmark buildings, rear walls (#2456) (`2deb5eb`)
+- **jp-city** — block-based town composer — road network, blocks with zones (shop/house/park/parking), 2-3 building bands (#2455) (`0215140`)
+
+### 수정
+
+- **jp-city** — wires erased building ground floors (stamp before buildings); gravel base ground distinct from walls (#2457) (`aea9192`)
+
 ## 0.195.0 — 2026-10-12
 
 ### 기능
