@@ -83,7 +83,7 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     if (!stillCurrent()) return;
     const config = resolveSurfaceAiConfig("chat");
     const autoSend = isAssistantEndpointReady(config, getAiConnectionStatus(config));
-    // 프리셋 첫 생성은 팀(팀장·시공·검수)이 맡는다 — 이 한 턴만이다. 사용자 팀 설정은 바꾸지 않는다.
+    // 프리셋 첫 생성은 `/goal` 팀 캠페인(팀장·시공·검수)이 맡는다. 사용자 팀 설정은 바꾸지 않는다.
     const preparedBrief = store.getCurrent().gameDesignBrief ?? brief;
     setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, preparedBrief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, preparedBrief), team: true });
     queuedKey = JSON.stringify([scope, store.getCurrent().gameDesignBrief]);

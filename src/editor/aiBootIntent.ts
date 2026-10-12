@@ -19,7 +19,8 @@ export type AiBootIntentTarget = {
  * 핸드오프가 실어 보내는 실행 옵션.
  *
  * `team`: 이 한 턴만 팀(팀장·시공·검수)으로 돌린다. 프리셋으로 시작하는 첫 생성이 맵 여러 장·이벤트·DB 를
- * 한꺼번에 만드는 일이라 팀이 맡는다(2026-09-27 합의). 사용자의 팀 설정(`AiConfig.piTeam`)은 바꾸지 않는다 —
+ * 한꺼번에 만드는 일이라 팀이 맡는다(2026-09-27 합의). 프리셋 핸드오프의 실제 지시문은 `/goal`로 시작한다.
+ * 사용자의 팀 설정(`AiConfig.piTeam`)은 바꾸지 않는다 —
  * 그다음의 「집 한 채」 같은 작은 요청까지 팀으로 돌면 느려지기 때문이다.
  */
 export type AiBootIntentRunOptions = {
@@ -37,7 +38,7 @@ export type PendingWelcomePipeline = {
   readonly displayText?: string;
   readonly autoSend: boolean;
   readonly source: "chip" | "free-text";
-  /** 이 첫 턴만 팀으로 돌린다. 프리셋 경로만 켠다. */
+  /** 이 프리셋 캠페인 핸드오프를 팀으로 돌린다. 프리셋 경로만 켠다. */
   readonly team?: boolean;
 };
 

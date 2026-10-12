@@ -12,6 +12,8 @@ import { defaultYieldToUi } from "../yieldToUi";
 import { loadAiConfig } from '../llmClient';
 
 export interface RunPiAgentClientOptions {
+  /** Campaign supervisor retains the partial result to repair it; it must inspect production issues before completion. */
+  readonly returnIncompleteResult?: boolean;
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
   readonly onEvent?: (event: PiAgentEvent) => void;
   readonly signal?: AbortSignal;
@@ -300,6 +302,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   // done 이 왔으면 워커가 거절을 받아 넘긴 것이다(적용 검증 거부·맵 소실 거절은 그 변경만 되돌리고 계속한다) —
   // 그 뒤 끝난 실행을 첫 거절로 실패 처리하면 다 한 작업이 「실패」로 보인다. 멈춰야 할 거절이면 워커가 done 없이 끝난다.
   if (checkpointError && !stale && !done) throw checkpointError;
+  if (done && options.returnIncompleteResult) return done;
   if (done?.interiorCompletion?.length) throw new PiAgentClientError(`실내 미완료: ${done.interiorCompletion.length}개 맵에 검사 문제가 남아 완료 처리하지 않았습니다. 실행 기록의 실내 검사 결과를 확인하세요.`);
   if (done?.monsterGameProduction?.issues.length) throw new PiAgentClientError('전체 몬스터 게임 제작 미완료: ' + done.monsterGameProduction.issues.join(' '));
   if (done?.gameSystemProduction?.issues.length) throw new PiAgentClientError('게임 시스템 제작 미완료: ' + done.gameSystemProduction.issues.join(' '));
