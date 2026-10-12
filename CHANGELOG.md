@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.198.0 — 2026-10-12
+
+### 기능
+
+- **editor** — open the tile palette on terrain and prefab cards (#2462) (`d801b09`)
+
 ## 0.197.0 — 2026-10-12
 
 ### 기능
