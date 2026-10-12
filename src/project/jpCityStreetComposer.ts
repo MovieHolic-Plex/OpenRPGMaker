@@ -310,6 +310,32 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       lx = x + 8 + Math.floor(rng() * 3);
     }
   }
+  // 전봇대와 전선: 뒷줄 앞 보도에 12~16칸 간격으로 세우고(문 자리·골목 입구 피함) 두 대 사이를 전선으로 잇는다. 전봇대 2×5 는 발이 보도 바깥줄.
+  const poleXs: number[] = [];
+  let pxs = 3 + Math.floor(rng() * 5);
+  while (pxs < W - 4) {
+    let x = pxs;
+    while (x < W - 4 && (doorZone(x, backFoot) || doorZone(x + 1, backFoot) || inAlley(x) || inAlley(x + 1))) x++;
+    if (x < W - 4) poleXs.push(x);
+    pxs = x + 12 + Math.floor(rng() * 5);
+  }
+  poleXs.forEach((x, i) => {
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-prop-utility-pole2", mapId, x, y: sw1 + 1 - 4 }, optional: true, note: "prop" });
+    const nx = poleXs[i + 1];
+    if (nx !== undefined && nx - (x + 2) >= 2 && nx - (x + 2) <= 17) steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${nx - (x + 2) + 3}`, mapId, x: x + 2, y: sw1 + 1 - 4 }, optional: true, note: "prop" });
+  });
+  // 골목 어귀: 큰길로 나가는 쪽에 곡면거울. 버스 정류장·소화전 표지는 문 자리를 피한 보도에 하나씩.
+  for (const al of alleys) {
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-prop-curve-mirror", mapId, x: al.x + al.w, y: sw1 + 1 - 2 }, optional: true, note: "prop" });
+  }
+  for (const id of ["jp-bus-stop", "jp-hydrant-sign"]) {
+    for (let t = 0; t < 12; t++) {
+      const x = 2 + Math.floor(rng() * (W - 4));
+      if (doorZone(x, backFoot) || inAlley(x) || poleXs.some((q) => x >= q - 1 && x <= q + 2) || x < 1) continue;
+      steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${id}`, mapId, x, y: sw1 + 1 - 2 }, optional: true, note: "prop" });
+      break;
+    }
+  }
   for (const b of placed) {
     if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-prop-nobori-${pick(rng, ["aka", "sora", "midori"])}`, mapId, x: b.x + 1, y: b.foot + 2 - 2 }, optional: true, note: "prop" });
   }
