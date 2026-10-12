@@ -228,16 +228,22 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     px += w + 3 + Math.floor(rng() * 6);
   }
 
-  // 차: 도로 한복판에 1~3대(서로 안 겹치게, 횡단보도는 비운다)
+  // 차·노면 표시: 일본의 작은 상점가·주택가 길은 중앙선이 없다(폭 5.5m 미만 생활도로) — 가장자리 흰 선과 「30」 표시, 대개 일방통행. 그래서 차는 모두 같은 방향으로,
+  // 한 줄로 달리게 하고 양방향처럼 마주 보는 차를 두지 않는다. 길 위 「30」은 같은 방향 글자로(동쪽행 jp-mark-30-e · 서쪽행 jp-mark-30-w, 4×2).
+  const eastbound = rng() < 0.5;
+  const dir = eastbound ? "" : "-r";
   const cars = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-red", "jp-prop-car-blue", "jp-prop-car-taxi", "jp-prop-car-green", "jp-prop-car-navy"];
   const nCars = 1 + Math.floor(rng() * 3);
-  const carSpans: [number, number][] = [[cwX - 1, cwX + 4]];
+  const carSpans: [number, number][] = [[cwX - 1, cwX + 7]];
+  const laneY = road0 + (roadW >= 4 ? 1 : 0);                       // 길 가운데 줄 — 한 줄 주행
+  const markX = 2 + Math.floor(rng() * Math.max(1, W - 12));
+  carSpans.push([markX - 1, markX + 5]);
+  steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-mark-30-${eastbound ? "e" : "w"}`, mapId, x: markX, y: laneY }, optional: true, note: "road" });
   for (let c = 0; c < nCars; c++) {
     const cx = 1 + Math.floor(rng() * Math.max(1, W - 7));
-    if (carSpans.some(([a, b]) => cx < b && cx + 5 > a)) continue;
+    if (carSpans.some(([a2, b2]) => cx < b2 && cx + 5 > a2)) continue;
     carSpans.push([cx, cx + 5]);
-    const east = rng() < 0.5;
-    steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${pick(rng, cars)}${east ? "" : "-r"}`, mapId, x: cx, y: road0 + (roadW >= 4 ? (east ? 1 : 0) : 0) }, optional: true, note: "prop" });
+    steps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${pick(rng, cars)}${dir}`, mapId, x: cx, y: laneY - (roadW >= 4 ? 0 : 0) }, optional: true, note: "prop" });
   }
   // 가로등·노보리: 건물 왼쪽 끝 앞 보도 — 문(오른쪽 끝)과 안 겹치게
   for (const b of placed) {
