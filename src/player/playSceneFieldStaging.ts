@@ -1,5 +1,5 @@
 import { characterBaseOrigin } from "./characterOrigin";
-import type Phaser from "phaser";
+import Phaser from "phaser";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { StepResult } from "@/player/interpreter/types";
 import { characterSpriteY } from "@/player/characterDepth";
@@ -296,7 +296,7 @@ function applyLook(scene: PlaySceneContext, sprite: Phaser.GameObjects.Sprite, r
   const definite = look as SpriteLook;
 
   if (definite.tint) {
-    if (definite.tintFill) sprite.setTintFill(hexToInt(definite.tint));
+    if (definite.tintFill) sprite.setTint(hexToInt(definite.tint)).setTintMode(Phaser.TintModes.FILL);
     else sprite.setTint(hexToInt(definite.tint));
   } else sprite.clearTint();
   sprite.setFlipX(definite.flip === true);
@@ -329,7 +329,7 @@ function spawnAfterimage(scene: PlaySceneContext, sprite: Phaser.GameObjects.Spr
   ghost.setScale(sprite.scaleX, sprite.scaleY);
   ghost.setAngle(sprite.angle);
   ghost.setFlipX(sprite.flipX);
-  ghost.setTintFill(0x9ec8ff);
+  ghost.setTint(0x9ec8ff).setTintMode(Phaser.TintModes.FILL);
   ghost.setAlpha(0.45);
   ghost.setDepth(sprite.depth - 1);
   scene.tweens.add({ targets: ghost, alpha: 0, duration: 300, onComplete: () => ghost.destroy() });

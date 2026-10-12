@@ -190,7 +190,7 @@ export function compileStage(input: StageInput): StageResult {
   const directionOf = (dx: number, dy: number): "up" | "down" | "left" | "right" => (Math.abs(dx) >= Math.abs(dy) ? (dx < 0 ? "left" : "right") : dy < 0 ? "up" : "down");
 
   /** 한 걸음 시퀀스 → 시각 표. 시작 시각 t0. */
-  const moveEvents = (a: ActorState, to: { x: number; y: number }, ms: number, ease: keyof typeof EASE, anim: "walk" | undefined, t0: number, order: { n: number }): TimedEvent[] => {
+  const moveEvents = (a: ActorState, to: { x: number; y: number }, ms: number, ease: keyof typeof EASE, anim: "walk" | "bob" | undefined, t0: number, order: { n: number }): TimedEvent[] => {
     const events: TimedEvent[] = [];
     const walkFrames = anim === "walk" ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
     // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.

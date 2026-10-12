@@ -83,7 +83,7 @@ function rays(g: Phaser.GameObjects.Graphics, e: AtmosphereEffect, t: number, w:
       const half = spread * band / 4;
       g.fillStyle(color, e.opacity * 0.018 * (0.7 + 0.3 * Math.sin(t * 0.7 + i)));
       g.fillPoints([{ x: x - half / 4, y: 0 }, { x: x + half / 4, y: 0 },
-        { x: x - h * 0.32 + half, y: h }, { x: x - h * 0.32 - half, y: h }], true);
+        { x: x - h * 0.32 + half, y: h }, { x: x - h * 0.32 - half, y: h }] as Phaser.Math.Vector2[], true);
     }
   }
 }
@@ -108,8 +108,8 @@ function particles(g: Phaser.GameObjects.Graphics, e: AtmosphereEffect, t: numbe
       const r = radius * 7, rotation = t * 0.25 + phase;
       g.lineStyle(0.65, color, alpha * 0.65); g.strokeCircle(x, y, r);
       const points = Array.from({ length: 6 }, (_, n) => ({ x: x + Math.cos(rotation + n * Math.PI / 3) * r * 0.78, y: y + Math.sin(rotation + n * Math.PI / 3) * r * 0.78 }));
-      g.strokePoints([points[0]!, points[2]!, points[4]!], true);
-      g.strokePoints([points[1]!, points[3]!, points[5]!], true);
+      g.strokePoints([points[0]!, points[2]!, points[4]!] as Phaser.Math.Vector2[], true);
+      g.strokePoints([points[1]!, points[3]!, points[5]!] as Phaser.Math.Vector2[], true);
       for (let n = 0; n < 6; n++) {
         const a = rotation + n * Math.PI / 3;
         g.lineBetween(x + Math.cos(a) * r, y + Math.sin(a) * r, x + Math.cos(a) * r * 1.2, y + Math.sin(a) * r * 1.2);
@@ -142,7 +142,7 @@ function particles(g: Phaser.GameObjects.Graphics, e: AtmosphereEffect, t: numbe
       const points = [[-long, 0], [-long * 0.3, -short], [long, 0], [long * 0.3, short]].map(([dx, dy]) => ({
         x: x + dx! * Math.cos(rotation) - dy! * Math.sin(rotation), y: y + dx! * Math.sin(rotation) + dy! * Math.cos(rotation),
       }));
-      g.fillStyle(!e.tint && i % 3 === 0 ? (kind === "petals" ? 0xffe9f2 : 0xb65a31) : color, alpha); g.fillPoints(points, true);
+      g.fillStyle(!e.tint && i % 3 === 0 ? (kind === "petals" ? 0xffe9f2 : 0xb65a31) : color, alpha); g.fillPoints(points as Phaser.Math.Vector2[], true);
       if (kind === "leaves") { g.lineStyle(0.4, 0x764329, alpha * 0.8); g.lineBetween(points[0]!.x, points[0]!.y, points[2]!.x, points[2]!.y); }
     } else if (kind === "leaks" || kind === "sand") {
       g.lineStyle(kind === "leaks" ? 0.8 : 0.5, color, alpha * 0.65);

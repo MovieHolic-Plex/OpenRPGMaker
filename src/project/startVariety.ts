@@ -42,7 +42,7 @@ export interface StartPlan {
 export const KIT_START_PLACES: Readonly<Record<string, readonly string[]>> = {
   jp_city: ["jp-city-school-68x48", "jp-city-tram-street-48x30"],
 };
-export function kitStartPlaceId(tilesetId: string | undefined, seed: number, stageText: string): string | undefined {
+export function kitStartPlaceId(tilesetId: string | undefined, _seed: number, stageText: string): string | undefined {
   const list = tilesetId ? KIT_START_PLACES[tilesetId] : undefined;
   if (!list) return undefined;
   if (/학교|교실|교정|등교|수업|동아리/u.test(stageText)) return "jp-city-school-68x48";
