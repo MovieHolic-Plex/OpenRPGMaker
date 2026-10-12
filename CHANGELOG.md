@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.197.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — horizontal river with embankment wall face, stairs, far-bank promenade; streets cross as railed bridges (#2460) (`8469bf4`)
+
+### 테스트
+
+- **assistant** — raise small command visual score (`77e2573`)
+
 ## 0.196.0 — 2026-10-12
 
 ### 기능
