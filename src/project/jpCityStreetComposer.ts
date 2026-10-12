@@ -245,8 +245,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     const to = from === 0 && r >= 0.5 ? Math.floor(rng() * N) : N - 1;
     streets.push({ x, lane, w: lane + 2, from: Math.min(from, to), to: Math.max(from, to) });
   }
+  const BANK = 4;                                                // 하천 양옆 둔치: 산책로 3 + 비탈 1
   let river: { x: number; w: number } | undefined;
-  const inStreet = (x: number, k?: number) => streets.some((s) => x >= s.x - 1 && x <= s.x + s.w && (k === undefined || (k >= s.from && k <= s.to))) || (river !== undefined && x >= river.x - 2 && x <= river.x + river.w + 1);
+  const inStreet = (x: number, k?: number) => streets.some((s) => x >= s.x - 1 && x <= s.x + s.w && (k === undefined || (k >= s.from && k <= s.to))) || (river !== undefined && x >= river.x - BANK - 1 && x <= river.x + river.w + BANK);
   for (const s of streets) {
     for (let k = s.from; k <= s.to; k++) {
       const y0 = k === s.from ? (k === 0 ? 0 : bands[k - 1]!.gap!.road1 + 1) : bands[k - 1]!.gap!.road1 + 1;
@@ -257,26 +258,42 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   }
   // 하천: 세로로 지도를 가로지르는 물길(45%). 큰길은 다리(보도·도로를 물 위에 다시 깔고 양옆 가드레일)로 건넌다. 건물·소품·세로 길은 물을 피한다.
-  if (W >= 44 && rng() < 0.45) {
+  if (W >= 50 && rng() < 0.45) {
     const rw = 4 + Math.floor(rng() * 2);
     for (let t = 0; t < 12 && !river; t++) {
-      const x = 8 + Math.floor(rng() * Math.max(1, W - 16 - rw));
-      if (streets.some((s2) => x < s2.x + s2.w + 6 && x + rw > s2.x - 6)) continue;
+      const x = 12 + Math.floor(rng() * Math.max(1, W - 24 - rw));
+      if (streets.some((s2) => x < s2.x + s2.w + 6 + BANK && x + rw > s2.x - 6 - BANK)) continue;
       river = { x, w: rw };
     }
   }
   if (river) {
-    fill(river.x, 0, river.w, H, "수로");
-    for (const b of bands) if (b.gap) {
+    const r = river, x0 = r.x - BANK, x1 = r.x + r.w + BANK;
+    fill(x0, 0, x1 - x0, H, "판석 광장");                             // 산책로(둔치)
+    fill(r.x - 1, 0, 1, H, "잔디");                                   // 물가 풀 비탈 — 산책로보다 한 단 낮게 내려가는 둑
+    fill(r.x + r.w, 0, 1, H, "잔디");
+    fill(r.x, 0, r.w, H, "수로");
+    for (const b of bands) if (b.gap) {                              // 큰길은 다리로 건넌다: 산책로 칸은 길이 이어지고, 물·비탈 칸에는 난간 달린 다리 상판
       const g = b.gap;
-      fill(river.x - 1, g.sw1, river.w + 2, 2, "보도 연석");
-      fill(river.x - 1, g.road0, river.w + 2, g.roadW, "생활도로");
-      fill(river.x - 1, g.road1 + 1, river.w + 2, 2, "보도 연석");
-      fill(river.x - 1, g.sw1, river.w + 2, 1, "블록담", true);
-      fill(river.x - 1, g.road1 + 2, river.w + 2, 1, "블록담", true);
+      fill(x0, g.sw1, x1 - x0, 2, "보도 연석");
+      fill(x0, g.road0, x1 - x0, g.roadW, "생활도로");
+      fill(x0, g.road1 + 1, x1 - x0, 2, "보도 연석");
+      for (let x = r.x - 1; x <= r.x + r.w; x++) {
+        const edge = x === r.x - 1 ? "l" : x === r.x + r.w ? "r" : null;
+        stamp(edge ? `jp-bwall-end-${edge}` : "jp-bwall-plain", x, g.sw1, "bridge");                       // 위쪽 난간(윗면)
+        stamp(edge ? `jp-bwallf-end-${edge}` : "jp-bwallf-plain", x, g.road1 + 2, "bridge");            // 아래쪽 난간(정면 2줄 — 다리 옆구리)
+      }
+      stamp("jp-prop-lamp-post", r.x - 1, g.sw1 + 1 - 2, "bridge");
+      stamp("jp-prop-lamp-post", r.x + r.w, g.sw1 + 1 - 2, "bridge");
+    }
+    // 둔치 소품: 띠마다 양쪽 산책로에 벚나무·벤치·가로등. 큰길 보도 줄(다리 어귀)은 피한다.
+    for (const b of bands) {
+      for (let y = b.top + 1, k = 0; y + 5 <= b.foot; y += 8, k++) {
+        stamp(`jp-prop-tree-${k % 2 === 0 ? "sakura" : pick(rng, ["zelkova", "ginkgo"])}`, k % 2 === 0 ? x0 : r.x + r.w, y, "bank");
+      }
+      for (let y = b.top + 4; y + 1 < b.foot; y += 9) { stamp("jp-prop-bench", x0, y, "bank"); stamp("jp-prop-lamp-post", r.x + r.w + 1, y - 2, "bank"); }
     }
   }
-  const obstacles: { x: number; w: number }[] = [...streets.map((s2) => ({ x: s2.x, w: s2.w })), ...(river ? [{ x: river.x - 1, w: river.w + 2 }] : [])];
+  const obstacles: { x: number; w: number }[] = [...streets.map((s2) => ({ x: s2.x, w: s2.w })), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])];
   // 횡단보도: 폭 4 큰길마다 하나(키트 6×4) — 세로 길 어귀는 피한다.
   const crossings: { x: number; road: number }[] = [];
   bands.forEach((b, i) => {
@@ -345,7 +362,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   };
   const wireAt = steps.length;                                  // 전선은 큰 건물·공원 칠 같은 구획 단계보다 먼저 찍는다
   bands.forEach((b, bi) => {
-    const segs = segmentsAround(W, [...streets.filter((s) => bi >= s.from && bi <= s.to), ...(river ? [{ x: river.x - 1, w: river.w + 2 }] : [])]);
+    const segs = segmentsAround(W, [...streets.filter((s) => bi >= s.from && bi <= s.to), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])]);
     for (const [sx, ex] of segs) {
       const w = ex - sx;
       const r = rng();
@@ -389,7 +406,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   });
   // 맨 위 가장자리 생울타리 — 첫 띠 뒤가 지도 끝까지 열려 보이지 않게(세로 길 어귀는 비운다)
-  for (const [sx, ex] of segmentsAround(W, [...streets.filter((s) => s.from === 0), ...(river ? [{ x: river.x - 1, w: river.w + 2 }] : [])])) fill(sx, 0, ex - sx, 1, "생울타리", true);
+  for (const [sx, ex] of segmentsAround(W, [...streets.filter((s) => s.from === 0), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])])) fill(sx, 0, ex - sx, 1, "생울타리", true);
   steps.push(...yardSteps, ...buildSteps);
 
   // ── 3. 큰길 표식: 외측선(교차로·횡단보도 칸 제외), 보행 신호등
