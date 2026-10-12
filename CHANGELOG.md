@@ -5,6 +5,34 @@
 
 <!-- releases -->
 
+## 0.194.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — street composer v3 — road edge lines, ped signals, yards/parking lots between buildings (#2449) (`8b22265`)
+- **opening** — more opening recipes (FF6 pixel-march, title-card, trailer, memory, credits) + image retry (`3f3e88a`)
+- **opening** — headless real-assistant harness, SFX-link gate, fixes found by real run (`8283ba8`)
+- **opening** — assistant ffmpeg tool, progress+thumbnails, title-screen scope, title art style/candidates (`dce6084`)
+- **opening** — multi-cue timed SFX (direction.sounds) (`c51a604`)
+
+### 수정
+
+- **title** — remove editorial logo text-stroke (hollow CJK glyphs) (`9353938`)
+- **title** — editorial logo — remove text-stroke that hollowed CJK glyphs; brighter fills, per-style fills, bigger size (`a8ff7df`)
+- **opening** — legible captions — full-width dark band, min 13px, heavier weight (`decea77`)
+- **title** — drop stale key-art titleGraphic on any set_title_screen (`a936c8d`)
+- **title** — reject background art as titleGraphic; title art must carry the story focal point (`7b0e10d`)
+- **opening** — cap raw presentation images sent to model; title gate accepts existing custom art (`7d319f5`)
+- **opening** — text size is stage-logical (320x240) — smaller presets, render clamp, schema+gate (`869e167`)
+
+### 잡무
+
+- **opening** — recorder title-enter + network flags (`eedf101`)
+
+### 기타
+
+- agent worktree base for opening-assistant (`52e6c39`)
+
 ## 0.193.0 — 2026-10-12
 
 ### 기능
