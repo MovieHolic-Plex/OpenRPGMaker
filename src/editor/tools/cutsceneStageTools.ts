@@ -262,6 +262,12 @@ const scriptCutsceneStaged: ToolDefinition = {
         throw new ToolError(`animate: 전투 애니메이션 '${step.animationId}' 가 없습니다 — get_database_records(collection:"battleAnimations") 로 id 를 조회하세요(예: ${[...knownAnimations].slice(0, 4).join(", ")}).`, { code: "unknown-animation" });
       }
     }
+    // 배우가 어떤 단계에서도 등장·이동하지 않으면 화면에 안 보이거나 가만히 선 채로 끝난다(조수가 at 만 주고 단계를 비운 실측).
+    const stepList = normalizeSteps(args.steps);
+    for (const actor of actors) {
+      const appears = stepList.some((step) => ["enter", "move", "show"].includes(String(step.do)) && (step as Raw).actor === actor.name);
+      if (!appears) throw new ToolError(`배우 '${actor.name}' 이(가) 어떤 단계에서도 등장하지 않습니다 — {do:'enter',actor:'${actor.name}',from:'left',to:{fx:0.5,fy:0.6},ms:2400} 처럼 enter/move/show 단계를 넣으세요. 줄지어 걸을 때는 withPrevious:true 로 함께 움직이게 하고, 끝에는 exit 로 내보내세요.`, { code: "actor-never-appears" });
+    }
     let result: ReturnType<typeof compileStage>;
     try {
       result = compileStage({ viewport, ...(backdrop ? { backdrop } : {}), actors, steps: normalizeSteps(args.steps), whiteResourceId: CUTSCENE_WHITE_RESOURCE_ID });
