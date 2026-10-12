@@ -19,8 +19,10 @@
 //   node scripts/verify-gates.mjs --save-baseline          # 현재 상태를 기준선으로 저장
 //   node scripts/verify-gates.mjs --baseline <path>        # 기준선 대비 회귀만 실패 처리
 //   node scripts/verify-gates.mjs --json                   # 기계 판독용 출력
-//   node scripts/verify-gates.mjs --only typecheck|tests|css|surface
+//   node scripts/verify-gates.mjs --only typecheck|tests|css|surface|browser
 //                                                          # css 는 수 초, surface 는 수십 초, 나머지는 수 분
+//   node scripts/verify-gates.mjs --only tests --shard 1/4
+//                                                          # vitest 파일 샤드. 기준선 저장과 함께 쓸 수 없다.
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -46,18 +48,34 @@ const changedArgs = changedArg
       ? ["--changed", changedArg.slice("--changed=".length)]
       : ["--changed"])
   : [];
+// `--shard <index>/<count>` — vitest 샤드. GitHub 호스티드 16GB 에서는 워커 1개 × 힙 12GB 라
+// 스위트 전체가 잡 상한(240분) 안에 안 끝난다(2026-10-12, run 38238570454: 239분에 취소).
+// 샤드마다 실패 파일만 기준선과 대조하므로, 다른 샤드의 파일은 회귀로 세지 않는다.
+const shardArg = value("--shard", null);
+if (shardArg != null && !/^[1-9]\d*\/[1-9]\d*$/.test(shardArg)) {
+  throw new Error(`--shard 는 <index>/<count> 형식이어야 한다: ${shardArg}`);
+}
+if (shardArg != null) {
+  const [shardIndex, shardCount] = shardArg.split("/").map((part) => Number(part));
+  if (shardIndex > shardCount) throw new Error(`--shard 인덱스가 개수보다 크다: ${shardArg}`);
+}
 if (changedArg && flag("--save-baseline")) {
   // 부분집합 실행을 기준선으로 저장하면 기준선이 그 부분집합이 돼 다음 전체 실행의
   // 모든 실패가 "신규 회귀"로 보고된다(게이트 무력화).
   throw new Error("--save-baseline 과 --changed 는 함께 쓸 수 없다 — 기준선이 부분집합이 된다.");
 }
+if (shardArg && flag("--save-baseline")) {
+  throw new Error("--save-baseline 과 --shard 는 함께 쓸 수 없다 — 기준선이 부분집합이 된다.");
+}
 
-function run(command, commandArgs, env) {
+function run(command, commandArgs, env, options = {}) {
+  const inherit = options.stdio === "inherit";
   const result = spawnSync(command, commandArgs, {
     cwd: process.cwd(),
     encoding: "utf8",
     shell: process.platform === "win32",
     maxBuffer: 64 * 1024 * 1024,
+    stdio: inherit ? "inherit" : "pipe",
     ...(env ? { env } : {}),
   });
   // spawnSync 의 status 가 진짜 종료 코드다. 파이프를 거치면 마지막 명령의 코드로 뒤바뀐다
@@ -150,14 +168,21 @@ function testsGate() {
   // A runner/bootstrap failure must not be allowed to reuse evidence from an older run.
   // Remove the fixed evidence file first; only this invocation may recreate it.
   rmSync(reportPath, { force: true });
+  // JSON 리포터는 끝날 때까지 한 줄도 안 찍는다. spawnSync 가 파이프로 받으면 그 출력도
+  // 프로세스 종료 전까지 로그에 안 나온다. 호스티드 잡이 상한에 잘리면 원인 로그가 0줄이 된다
+  // (run 38238570454). CI 에서만 파일 이름을 흘리고, 판정은 계속 JSON 파일로 한다.
+  const streamTests = process.env.GITHUB_ACTIONS === "true";
+  if (shardArg) console.log(`[verify-gates] vitest shard ${shardArg}`);
   const { code, signal, error, out } = run("node", [
     "scripts/run-vitest.mjs",
     "run",
     "--configLoader",
     "bundle",
     "--reporter=json",
+    ...(streamTests ? ["--reporter=verbose"] : []),
     "--outputFile",
     reportPath,
+    ...(shardArg ? [`--shard=${shardArg}`] : []),
     // 워커 수 상한. 이건 **상한일 뿐**이고, cgroup 으로 묶인 환경(CI 슬라이스)에서는
     // run-vitest.mjs 가 메모리 예산을 보고 이보다 낮출 수 있다 — 워커당 힙이 최악 파일의
     // 피크(3.13GB) 아래로 내려가면 그 파일이 heap limit 으로 죽기 때문이다.
@@ -169,7 +194,7 @@ function testsGate() {
     "--maxWorkers=8",
     "--minWorkers=1",
     ...changedArgs,
-  ]);
+  ], undefined, streamTests ? { stdio: "inherit" } : {});
 
   if (!existsSync(reportPath)) {
     // 여기서 죽는 경우가 진짜 곤란한 경우다 — 리포트가 없으니 무엇이 실패했는지도 모른다.
