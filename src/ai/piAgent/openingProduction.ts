@@ -46,6 +46,12 @@ export class PiOpeningProduction {
   private readonly viewed = new Map<string, string>();
   private readonly animatics = new Map<string, { fingerprint: string; times: number[] }>();
   readonly inGame: boolean;
+  /** 인게임 컷신 객관 측정+독립 판정 결과 — 시작 맵 이벤트 명령 지문에 묶인다(바뀌면 무효). */
+  private cutsceneReview?: { readonly fingerprint: string; readonly probeIssues: readonly string[]; readonly judge?: { readonly verdict: string; readonly fix: string; readonly scores: Readonly<Record<string, number>>; readonly judge: string } };
+  recordCutsceneReview(fingerprint: string, probeIssues: readonly string[], judge?: { verdict: string; fix: string; scores: Record<string, number>; judge: string }): void { this.cutsceneReview = { fingerprint, probeIssues, ...(judge ? { judge } : {}) }; }
+  hasCutsceneReview(fingerprint: string): boolean { return this.cutsceneReview?.fingerprint === fingerprint; }
+  cutsceneFingerprint(project: Project): string { return JSON.stringify(project.maps[project.startMapId]?.events ?? []); }
+  cutsceneReviewSummary(): string { const r = this.cutsceneReview; return r ? `측정 문제 ${r.probeIssues.length}건, 독립 판정 ${r.judge ? `${r.judge.judge}:${r.judge.verdict}` : '없음'}` : '미실시'; }
   constructor(readonly requested: boolean, private readonly task = '') { this.inGame = requested && requestsInGameOpening(task); }
   record(name: string, ok: boolean, project: Project, args?: unknown): void {
     if (!ok) return;
@@ -92,6 +98,12 @@ export class PiOpeningProduction {
         if (!/"kind":"auto"/u.test(events)) issues.push('시작 맵의 오프닝 이벤트가 자동 실행(trigger:"auto")이 아닙니다. 새 게임 직후 자동으로 재생되어야 합니다.');
         if (!/"kind":"(?:move|moveRoute|setMoveRoute|camera)|m2-[0-9]+-(?:move|scroll|camera)|moveActor|scroll/iu.test(events)) issues.push('오프닝 이벤트에 인물 이동·카메라 연출이 없습니다. 인물이 걷고 카메라가 따라가거나 훑는 연출을 넣으세요.');
       }
+      // 객관 검증 — 조수의 보고가 아니라 측정치와 독립 판정자의 판정을 근거로 삼는다(runtime 이 바로 앞에서 실행해 기록한다).
+      if (this.cutsceneReview && this.cutsceneReview.fingerprint === this.cutsceneFingerprint(project)) {
+        issues.push(...this.cutsceneReview.probeIssues);
+        const j = this.cutsceneReview.judge;
+        if (j?.verdict === 'regenerate') issues.push(`독립 판정자(${j.judge})가 컷신을 합격시키지 않았습니다(${Object.entries(j.scores).map(([k, v]) => `${k} ${v}`).join(', ')}). 권고: ${j.fix}`);
+      } else if (start && /"kind":"auto"/u.test(events)) issues.push('컷신의 객관 검증(측정·독립 판정)이 아직 실행되지 않았습니다.');
       // 만들어 둔 컷신 소품 그림이 있는데 이벤트가 하나도 안 쓰면(기본 Actor1 걷기만 나오는 실측) 병기·소품이 화면에 안 나온다.
       const madeSprites = Object.keys(project.assets.uploaded).filter(id => /^cutscene_sprite_/u.test(id));
       if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 배우를 {name, resourceId:'cutscene_sprite_...'} 로 넘겨 script_cutscene_staged 를 다시 호출하세요(도구가 아직 안 불려 있으면 먼저 find_tools 로 script_cutscene_staged 를 찾아 불러온 다음 호출). 기본 주인공(Actor1) 그림만 나오면 안 됩니다.`);

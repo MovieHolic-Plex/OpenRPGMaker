@@ -27,6 +27,10 @@ import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
+import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
+import { cutscenePreviewImages } from '../../src/editor/tools/cutscenePreviewTools';
+import { critiqueCutscene } from './cutsceneCritic.ts';
+import { DEFAULT_PLAY_RESOLUTION } from '../../src/project/playResolution';
 import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
 import { readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
@@ -864,8 +868,30 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: "execution_status", name: "plan_execution_rekick", ok: false, summary: "계획만 다시 쓰고 바뀐 것 없이 끝나 실행을 한 번 더 요청합니다." });
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
+    // 인게임 컷신은 조수의 보고가 아니라 객관 측정 + 독립 판정자로 검증한다(openingProduction.recordCutsceneReview).
+    const reviewInGameCutscene = async (): Promise<void> => {
+      if (!openingProduction.inGame) return;
+      const start = ctx.project.maps[ctx.project.startMapId];
+      const candidates = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto'));
+      const event = candidates.sort((a, b) => JSON.stringify(b.pages).length - JSON.stringify(a.pages).length)[0];
+      const page = event?.pages?.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto');
+      if (!start || !event || !page) return;
+      const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
+      if (openingProduction.hasCutsceneReview(fingerprint)) return;
+      const probe = probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION);
+      emit({ type: 'execution_status', name: 'cutscene.review', ok: probe.issues.length === 0, summary: `컷신 객관 측정: ${probe.summary}${probe.issues.length ? ` — 문제 ${probe.issues.length}건` : ' — 통과'}`, data: probe });
+      if (probe.issues.length || !options.renderToolImage) { openingProduction.recordCutsceneReview(fingerprint, probe.issues); return; }
+      emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
+      let mapImage: string | undefined, sheetImage: string | undefined;
+      try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x: 0, y: 0, w: start.width, h: start.height }, options.signal)}`; } catch { mapImage = undefined; }
+      try { sheetImage = (await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }))[0]?.dataUrl; } catch { sheetImage = undefined; }
+      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
+      openingProduction.recordCutsceneReview(fingerprint, [], critique);
+      emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
+    };
     let previousOpeningIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 5 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+      await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
       previousOpeningIssues = signature;
