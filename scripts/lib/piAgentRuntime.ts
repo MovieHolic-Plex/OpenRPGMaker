@@ -27,6 +27,9 @@ import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
+import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFrames';
+import { readFileSync as readBundledAsset } from 'node:fs';
+import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
@@ -230,6 +233,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   // 워커에는 브라우저 fetch 경로가 없다 — 컷신 배우/배경 그림도 오프닝 그림과 같은 이미지 경로로 만든다("fetch() URL is invalid" 실측).
+  // «/assets/…» 번들 그림(캐릭터셋 걷기 프레임)도 워커에는 fetch 가 없어 저장소 public/ 에서 읽는다.
+  setCutsceneAssetFetcher(async url => `data:image/png;base64,${readBundledAsset(joinBundledAsset(process.cwd(), 'public', url.replace(/^\/+/u, '').split('?')[0]!)).toString('base64')}`);
   setCutsceneArtGenerator(createWorkerImageGenerator(request, provider => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined)));
   const base = request.project;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
