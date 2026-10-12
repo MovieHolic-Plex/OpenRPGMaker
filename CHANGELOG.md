@@ -5,6 +5,28 @@
 
 <!-- releases -->
 
+## 0.192.0 — 2026-10-12
+
+### 기능
+
+- **start** — jp_city concepts open on a finished street place; fix stale 48-column jp_city place tilesets on import (`8df789f`)
+
+### 수정
+
+- **jp-city** — redraw restaurant chairs in 3/4 view with attached backrests (`8c622e3`)
+- **jp-city** — smaller coffee cup, red chair cushions so chairs read on dark floors (`80d9b65`)
+- **jp-city** — table goods sit on the tabletop instead of hanging over the front edge (`044b72d`)
+
+### 테스트
+
+- **assistant** — score small command model quality (`18469d9`)
+- **assistant** — verify all small commands through editor UI (`6e64ffe`)
+
+### 기타
+
+- **start** — pick door buildings that look like the shop (`30d43a1`)
+- docs+prompt: jp_city start places, forbid grass overpaint (`aa469fb`)
+
 ## 0.191.0 — 2026-10-12
 
 ### 기능
