@@ -115,7 +115,7 @@ function mapTreeParentId(tree: unknown, mapId: string): string | undefined {
 
 // ---------------------------------------------------------------------------
 // 움직이는 전투 배경(마더2식) — 트룹의 backdropAnimation 을 정규화하고 CSS 변수로 옮긴다.
-// 실제 움직임은 styles/runtime/battle/24-backdrop-motion.css 의 keyframes 가 그린다(스크롤·물결·색 순환).
+// 실제 움직임은 styles/runtime/battle/30-backdrop-motion.css 의 keyframes 가 그린다(스크롤·물결·색 순환).
 // prefers-reduced-motion 이면 CSS 가 전부 멈춘다.
 // ---------------------------------------------------------------------------
 

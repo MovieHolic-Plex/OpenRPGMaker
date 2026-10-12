@@ -1,7 +1,7 @@
 /**
  * 움직이는 전투 배경(트룹 backdropAnimation)을 배경 노드에 건다.
  *
- * - 스크롤·색 순환: CSS 변수 + keyframes(styles/runtime/battle/24-backdrop-motion.css).
+ * - 스크롤·색 순환: CSS 변수 + keyframes(styles/runtime/battle/30-backdrop-motion.css).
  * - 물결 왜곡: 줄(scanline)마다 가로로 밀리는 마더2식 왜곡은 CSS 로 그릴 수 없어 캔버스 한 장을 배경 안에 깐다.
  *   캔버스가 있으면 스크롤도 캔버스가 그린다(CSS 스크롤은 data-backdrop-wave="canvas" 로 꺼진다).
  * - prefers-reduced-motion: 아무 것도 걸지 않는다. 배경은 정지 그림 그대로다(data-backdrop-motion-reduced).
@@ -21,7 +21,7 @@ const MOTION_VAR_NAMES = [
   "--battle-backdrop-palette-duration",
 ] as const;
 
-/** CSS 스크롤이 까는 타일 크기와 같아야 캔버스·CSS 가 같은 그림을 그린다(24-backdrop-motion.css). */
+/** CSS 스크롤이 까는 타일 크기와 같아야 캔버스·CSS 가 같은 그림을 그린다(30-backdrop-motion.css). */
 const TILE_W = 640;
 const TILE_H = 480;
 /** 물결 한 주기의 세로 길이(px). 마더2 배경처럼 화면에 몇 굽이가 보이게 한다. */
