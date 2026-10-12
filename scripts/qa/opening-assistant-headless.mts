@@ -51,7 +51,7 @@ const done = await runPiAgent(request as never, {
   model: model as never, apiKey: prov.apiKey, providerApiKeys, timeoutMs: Number(arg('timeout-ms', '3000000')),
   generateOpeningImage: (p: Project, args: Record<string, unknown>) => generateCinematicStill(args, 'opening', { generateImage: genImage as never, resolveReference: async (id: string) => { const u = p.assets.uploaded[id]?.dataUrl; if (!u?.startsWith('data:image')) throw new Error('참고 그림을 읽을 수 없습니다: ' + id); return u; } }),
   renderToolImage: async (p: Project, name: string, data: any) => {
-    if (bridgePort && !(name === 'show_opening_image' || (name === 'show_title_opening' && data?.resourceId))) {
+    if (bridgePort && ['show_map_region', 'inspect_interior_layout', 'preview_opening_animatic', 'preview_opening_reference'].includes(name)) {
       const r = await fetch(`http://127.0.0.1:${bridgePort}/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project: p, toolName: name, data }) });
       const j = await r.json() as { png?: string; error?: string };
       if (!r.ok || !j.png) throw new Error(j.error ?? '브라우저 렌더 실패');
