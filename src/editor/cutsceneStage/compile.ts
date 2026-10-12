@@ -26,9 +26,9 @@ export interface PlaceSpec {
 export type StageStep =
   | { readonly do: "show"; readonly actor: string; readonly to?: PlaceSpec; readonly pose?: string }
   | { readonly do: "hide"; readonly actor: string }
-  | { readonly do: "move"; readonly actor: string; readonly to: PlaceSpec; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" }
-  | { readonly do: "enter"; readonly actor: string; readonly from: Side; readonly to: PlaceSpec; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" }
-  | { readonly do: "exit"; readonly actor: string; readonly to: Side; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" }
+  | { readonly do: "move"; readonly actor: string; readonly to: PlaceSpec; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" | "bob" }
+  | { readonly do: "enter"; readonly actor: string; readonly from: Side; readonly to: PlaceSpec; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" | "bob" }
+  | { readonly do: "exit"; readonly actor: string; readonly to: Side; readonly ms?: number; readonly ease?: "linear" | "in" | "out" | "inout"; readonly anim?: "walk" | "bob" }
   | { readonly do: "pose"; readonly actor: string; readonly pose: string }
   | { readonly do: "fling"; readonly actor: string; readonly dir?: Side; readonly ms?: number; readonly spin?: number }
   | { readonly do: "say"; readonly speaker?: string; readonly text: string; readonly context?: string; readonly autoAdvance?: boolean; readonly position?: "auto" | "top" | "center" | "bottom" }
@@ -47,6 +47,11 @@ export type StageStep =
   | { readonly do: "clear" }
   | { readonly do: "transfer"; readonly mapId: string; readonly x: number; readonly y: number; readonly facing?: "up" | "down" | "left" | "right"; readonly fade?: "black" | "white" | "none" }
   | { readonly do: "fade"; readonly direction: "in" | "out"; readonly ms?: number }
+  /** 분위기 — 화면 색조(밤·노을·피)·날씨·영화식 띠·카메라. 배우와 상관없이 그 시각에 걸린다. */
+  | { readonly do: "tint"; readonly tintColor: string; readonly ms?: number }
+  | { readonly do: "weather"; readonly weather: "none" | "rain" | "storm" | "snow" | "fog"; readonly intensity?: number; readonly ms?: number }
+  | { readonly do: "letterbox"; readonly show: boolean; readonly ms?: number }
+  | { readonly do: "camera"; readonly mode: "pan" | "follow" | "fixed" | "return"; readonly x?: number; readonly y?: number; readonly zoom?: number; readonly ms?: number }
   | { readonly do: "expect"; readonly touching: readonly [string, string]; readonly min?: number };
 
 export type TimedStep = StageStep & { readonly withPrevious?: boolean };
@@ -62,6 +67,8 @@ export interface StageActor {
   readonly walk?: Readonly<Partial<Record<Side | "down" | "up", readonly [string, string, string]>>>;
   readonly at?: PlaceSpec;
   readonly z?: number;
+  /** 그림 크기 배율(%). 큰 그림을 화면에 맞게 줄일 때. width·height 는 이미 이 배율이 곱해진 값이다. */
+  readonly scale?: number;
   /** 맵 위의 실제 인물(주인공·NPC)이 서 있는 화면 자리를 표시만 한다 — 그림은 그리지 않고, touch·at·expect 의 기준으로만 쓴다. at 필수. */
   readonly ghost?: boolean;
   /** 맵 위 실제 배우를 조종하는 대상: "player" 또는 이벤트 id. 있으면 그림이 아니라 맵 명령(moveActor·animation)으로 움직인다. */
@@ -176,7 +183,7 @@ export function compileStage(input: StageInput): StageResult {
     const p = topLeft(a);
     return [
       ...(a.shown ? [{ kind: "picture", action: "erase", pictureId: a.pictureId }] : []),
-      { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: resourceOf(a), x: p.x, y: p.y },
+      { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: resourceOf(a), x: p.x, y: p.y, ...(a.spec.scale && a.spec.scale !== 100 ? { scale: a.spec.scale } : {}) },
     ];
   };
 
@@ -186,7 +193,9 @@ export function compileStage(input: StageInput): StageResult {
   const moveEvents = (a: ActorState, to: { x: number; y: number }, ms: number, ease: keyof typeof EASE, anim: "walk" | undefined, t0: number, order: { n: number }): TimedEvent[] => {
     const events: TimedEvent[] = [];
     const walkFrames = anim === "walk" ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
-    const segments = walkFrames ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
+    // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.
+    const bob = anim === "bob" && !walkFrames;
+    const segments = walkFrames || bob ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
     const from = { x: a.x, y: a.y };
     for (let i = 1; i <= segments; i += 1) {
       const t = t0 + ((i - 1) * ms) / segments;
@@ -199,7 +208,8 @@ export function compileStage(input: StageInput): StageResult {
         events.push({ t, order: order.n++, beat: { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: frame, x: cur.x, y: cur.y } });
       }
       const dest = topLeft(a, px, py);
-      events.push({ t, order: order.n++, beat: { kind: "picture", action: "move", pictureId: a.pictureId, x: dest.x, y: dest.y, durationMs: round(ms / segments) } });
+      const lift = bob && i % 2 === 1 ? Math.max(2, round(a.spec.height * 0.04)) : 0;
+      events.push({ t, order: order.n++, beat: { kind: "picture", action: "move", pictureId: a.pictureId, x: dest.x, y: dest.y - lift, durationMs: round(ms / segments), ...(a.spec.scale && a.spec.scale !== 100 ? { scale: a.spec.scale } : {}) } });
     }
     if (walkFrames) {
       a.walkPhase += segments;
@@ -421,6 +431,10 @@ export function compileStage(input: StageInput): StageResult {
           break;
         }
         case "fade": events.push({ t: 0, order: order.n++, beat: { kind: "fade", direction: step.direction, durationMs: step.ms ?? 600, wait: true } }); end(step.ms ?? 600); break;
+        case "tint": events.push({ t: 0, order: order.n++, beat: { kind: "tint", color: step.tintColor, durationMs: step.ms ?? 800, wait: false } }); break;
+        case "weather": events.push({ t: 0, order: order.n++, beat: { kind: "weather", weather: step.weather, intensity: step.intensity ?? 0.6, durationMs: step.ms ?? 800 } }); break;
+        case "letterbox": events.push({ t: 0, order: order.n++, beat: { kind: "letterbox", show: step.show, durationMs: step.ms ?? 500, keep: false } }); break;
+        case "camera": events.push({ t: 0, order: order.n++, beat: { kind: "camera", mode: step.mode, ...(step.x !== undefined ? { x: step.x } : {}), ...(step.y !== undefined ? { y: step.y } : {}), ...(step.zoom !== undefined ? { zoom: step.zoom } : {}), durationMs: step.ms ?? 800, wait: false } }); end(step.ms ?? 800); break;
         case "shake": events.push({ t: 0, order: order.n++, beat: { kind: "shake", intensity: step.intensity ?? 9, durationMs: step.ms ?? 900 } }); break;
         case "se": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "se", resourceId: step.resourceId } }); break;
         case "bgm": events.push({ t: 0, order: order.n++, beat: { kind: "music", action: "bgm", resourceId: step.resourceId } }); break;

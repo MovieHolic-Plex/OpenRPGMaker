@@ -36,12 +36,12 @@ const STEP_SCHEMA: JsonSchema = {
   additionalProperties: false,
   required: ["do"],
   properties: {
-    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect"] },
+    do: { type: "string", enum: ["show", "hide", "move", "enter", "exit", "pose", "fling", "say", "wait", "flash", "shake", "se", "bgm", "whiteout", "dewhite", "turn", "animate", "clear", "transfer", "fade", "expect", "tint", "weather", "letterbox", "camera"] },
     withPrevious: { type: "boolean", description: "앞 단계와 같은 때에 시작(동시 진행). say 는 불가." },
     actor: { type: "string" }, to: PLACE_SCHEMA,
     from: { type: "string", enum: ["left", "right", "top", "bottom"], description: "enter: 들어오는 화면 가장자리" },
     exitTo: { type: "string", enum: ["left", "right", "top", "bottom"], description: "exit: 나가는 가장자리" },
-    ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk"], description: "walk: 캐릭터셋 걷기 프레임 교체" },
+    ms: { type: "number", minimum: 0 }, ease: { type: "string", enum: ["linear", "in", "out", "inout"] }, anim: { type: "string", enum: ["walk", "bob"], description: "walk: 캐릭터셋 걷기 프레임 교체 / bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)이 발걸음 박자로 위아래 출렁이며 나아감" },
     pose: { type: "string" }, spin: { type: "number" }, intensity: { type: "number" },
     speaker: { type: "string" }, text: { type: "string" }, context: { type: "string", enum: ["speech", "narration", "thought", "whisper", "shout"] }, autoAdvance: { type: "boolean" },
     position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: "say 대화창 위치. 생략=auto: 지금 화면의 인물·그림을 가리지 않는 쪽(위/아래)을 도구가 고른다. 고정하려면 top·center·bottom." },
@@ -53,6 +53,10 @@ const STEP_SCHEMA: JsonSchema = {
     dir: { type: "string", enum: ["left", "right", "top", "bottom", "up", "down"], description: "fling: 날아가는 방향 / turn: 바라볼 방향(up·down·left·right)" },
     animationId: { type: "string", description: "animate: 게임의 전투 애니메이션 id(database.battleAnimations, 예: anim_scarloxy_fire)" },
     direction: { type: "string", enum: ["in", "out"], description: "fade: 검정으로 사라짐(out)/나타남(in)" },
+    tintColor: { type: "string", description: "tint: 화면 색조 — 'night'류 이름 대신 '#rrggbb' 또는 'r,g,b,알파'(예: '20,30,80,0.45' 푸른 밤, '255,140,60,0.25' 노을, 'none' 해제)" },
+    weather: { type: "string", enum: ["none", "rain", "storm", "snow", "fog"], description: "weather: 날씨(intensity 0~1)" },
+    show: { type: "boolean", description: "letterbox: 영화식 위아래 띠 켜기/끄기" },
+    mode: { type: "string", enum: ["pan", "follow", "fixed", "return"], description: "camera: 맵 카메라(x,y 맵 칸, zoom 배율)" }, zoom: { type: "number" },
     touching: { type: "array", items: { type: "string" }, description: "expect: 이 시점에 몸이 닿아야 하는 두 배우" }, min: { type: "number", minimum: 0, maximum: 1 },
   },
 };
@@ -69,6 +73,7 @@ const ACTOR_SCHEMA: JsonSchema = {
     poses: { type: "array", items: { type: "object", additionalProperties: false, required: ["name", "resourceId"], properties: { name: { type: "string" }, resourceId: { type: "string" } } }, description: "이름 붙은 추가 그림(예: 놀란 자세)" },
     facing: { type: "string", enum: ["left", "right"], description: "그림이 바라보는 방향(기본: 캐릭터 right, 소품 left)" },
     at: PLACE_SCHEMA,
+    scale: { type: "number", minimum: 10, maximum: 300, description: "그림 크기 배율(%) — 큰 그림(병기·몬스터)을 화면 높이에 맞게 줄일 때. 풍경 속 작은 행렬은 화면 높이의 20% 안팎." },
     z: { type: "integer", minimum: 2, maximum: 80, description: "겹침 순서(클수록 위)" },
     ghost: { type: "boolean", description: "맵 위에 실제로 서 있는 인물(주인공)을 배우로 삼는다 — 그림은 안 그리고 touch/at/expect·turn·animate 의 기준으로만 쓴다. 화면 자리는 tile 로 주면 도구가 카메라를 계산한다(at 직접 지정도 가능)." },
     event: { type: "string", description: "맵 위에 실제로 있는 NPC·몬스터 이벤트 id(place_npc 로 먼저 둔다) — 그림이 아니라 맵 걷기로 움직인다. move 의 to 는 {tile:{x,y}} 또는 {at:'주인공',side,gap(칸)}." },
@@ -247,7 +252,9 @@ const scriptCutsceneStaged: ToolDefinition = {
         if (!draft.assets.uploaded[id] && !bundledSizes.has(id)) throw new ToolError(`배우 '${name}' 포즈 '${String(p.name)}' 의 resourceId '${id}' 가 등록된 그림이 아닙니다.`, { code: "unknown-resource" });
         poses[String(p.name)] = id;
       }
-      return { name, width: size.width, height: size.height, facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
+      const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
+      const k = (scale ?? 100) / 100;
+      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
     });
     let backdrop: { id: string; width: number; height: number } | undefined;
     if (typeof args.backdropResourceId === "string" && args.backdropResourceId.trim()) {
