@@ -77,7 +77,7 @@ for (const name of files) {
 }
 
 if (violations.length > 0) {
-  console.error(`\nGitHub 호스티드 러너를 쓰는 워크플로가 ${violations.length}건 있다:\n`);
+  console.error(`\n소유자 컴퓨터에서 도는 워크플로가 ${violations.length}건 있다:\n`);
   for (const { name, line, hosted } of violations) {
     console.error(`  ${DIR}/${name}:${line}  runs-on: ${hosted.join(", ")}`);
   }

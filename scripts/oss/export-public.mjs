@@ -4,7 +4,7 @@
 //   node scripts/oss/export-public.mjs [--ref origin/main] [--out ~/oss-export/OpenRPGMaker] [--git]
 //
 // 1. publicSet.mjs 의 제외 경로를 뺀 트리를 git archive 로 푼다.
-// 2. self-hosted 러너를 쓰는 워크플로를 뺀다 — 공개 저장소의 포크 PR 이 이 서버에서 돌면 안 된다.
+// 2. runs-on 이 self-hosted 인 워크플로만 뺀다. 주석에 그 단어가 있는 호스티드 워크플로는 남긴다.
 // 3. 텍스트 파일 안의 내부 호스트·홈 경로·tailnet IP 를 공개용 값으로 바꾼다(원본 저장소는 그대로).
 // 4. PUBLIC_EXPORT.json 에 원본 커밋·뺀 것·바꾼 것을 남긴다.
 // --git 이면 출력 폴더를 커밋 하나짜리 git 저장소로 만든다. 푸시는 하지 않는다.
@@ -32,13 +32,34 @@ execFileSync("git", ["archive", "--format=tar", `--output=${tarFile}`, ref, "--"
 execFileSync("tar", ["-x", "-f", tarFile, "-C", out]);
 rmSync(tarFile);
 
-// ── 2. self-hosted 워크플로 빼기 ───────────────────────
+function workflowUsesOwnerRunner(source) {
+  const lines = source.split("\n");
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index].replace(/#.*$/, "");
+    const match = /^(\s*)runs-on:\s*(.*)$/.exec(line);
+    if (!match) continue;
+    const [, indent, rest] = match;
+    const blob = [rest];
+    if (!rest.trim()) {
+      for (let next = index + 1; next < lines.length; next += 1) {
+        const item = lines[next].replace(/#.*$/, "");
+        const pad = item.match(/^\s*/)[0].length;
+        if (!/^\s+-/.test(item) || pad <= indent.length) break;
+        blob.push(item);
+      }
+    }
+    if (/\bself-hosted\b/.test(blob.join("\n"))) return true;
+  }
+  return false;
+}
+
+// ── 2. 소유자 컴퓨터 러너를 쓰는 워크플로 빼기 ─────────
 const droppedWorkflows = [];
 const workflowDir = path.join(out, ".github", "workflows");
 if (existsSync(workflowDir)) {
   for (const name of readdirSync(workflowDir)) {
     const file = path.join(workflowDir, name);
-    if (/self-hosted/.test(readFileSync(file, "utf8"))) {
+    if (workflowUsesOwnerRunner(readFileSync(file, "utf8"))) {
       rmSync(file);
       droppedWorkflows.push(`.github/workflows/${name}`);
     }
