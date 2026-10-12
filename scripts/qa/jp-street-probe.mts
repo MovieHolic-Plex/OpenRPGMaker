@@ -12,7 +12,7 @@ const OUT = arg("out", "output/evidence/jp-street"); fs.mkdirSync(OUT, { recursi
 for (let seed = 1; seed <= Number(arg("seeds", "6")); seed++) {
   const p = createNewProjectSeed("adventure-jrpg", "t") as Project; ensureBundledTilesets(p);
   const ctx = { project: p };
-  const W = 52, H = 34;
+  const W = Number(arg("w", "52")), H = Number(arg("h", "34"));
   const id = p.startMapId;
   { const m = p.maps[id]!, kit = p.tilesets.jp_city!; m.tilesetId = kit.id; m.tileSize = kit.tileSize; m.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit)); }
   runTool(ctx, "resize_map", { mapId: id, width: W, height: H }); { const kit = p.tilesets.jp_city!; p.maps[id]!.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit)); }
