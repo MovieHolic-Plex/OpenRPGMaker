@@ -37,7 +37,7 @@ const note = (e: any) => {
 };
 let live = project;
 const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: 'high' as const, imageProvider, imageModel,
-  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening'] };
+  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
 // 맵·애니메틱 미리보기는 실제 브라우저 렌더러(편집기 dev 서버)로 그린다 — --browser-url 이 있을 때만.
 const origin = arg('browser-url');
 let bridgePort = 0; let bridge: ReturnType<typeof spawn> | undefined;
