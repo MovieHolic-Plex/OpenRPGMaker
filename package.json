@@ -116,6 +116,7 @@
     "@playwright/test": "^1.63.0",
     "electron": "^44.5.1",
     "electron-builder": "^26.15.3",
+    "esbuild": "^0.27.2",
     "fake-indexeddb": "^6.2.5",
     "fix-webm-duration": "^1.0.6",
     "happy-dom": "^20.14.5",
