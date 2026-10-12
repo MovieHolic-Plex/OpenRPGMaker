@@ -14,7 +14,8 @@ export function presentationArtImages(project: Project): { resourceId: string; d
   return presentationArtIds(project).flatMap(resourceId => {
     const asset = project.assets.uploaded[resourceId];
     const dataUrl = asset?.dataUrl;
-    return asset && dataUrl && /^data:image\/(png|jpeg|webp);base64,/u.test(dataUrl)
+    // 원본(수 MB)을 그대로 모델 요청에 싣지 않는다 — 큰 그림은 실행기가 줄인 렌더로 따로 전달한다(요청 한도 413 방지).
+    return asset && dataUrl && dataUrl.length <= 700_000 && /^data:image\/(png|jpeg|webp);base64,/u.test(dataUrl)
       ? [{ resourceId, dataUrl, label: asset.name }] : [];
   });
 }

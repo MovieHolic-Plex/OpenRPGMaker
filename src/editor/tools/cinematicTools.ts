@@ -120,7 +120,7 @@ function resolveResourceId(
   kind: OpeningMediaKind,
   raw: unknown,
   index: number,
-  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.layers.resourceId",
+  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId" | "direction.sounds.resourceId" | "direction.layers.resourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   // Optional voice pickers and several model transports serialize no selection as "".
@@ -226,6 +226,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   try {
     const direction = scene.direction === undefined ? undefined : parseCinematicDirection(scene.direction);
     if (direction?.soundResourceId) resolveResourceId(project, 'sound', direction.soundResourceId, index, 'direction.soundResourceId', isKnown);
+    for (const cue of direction?.sounds ?? []) resolveResourceId(project, 'sound', cue.resourceId, index, 'direction.sounds.resourceId', isKnown);
     for (const layer of direction?.layers ?? []) resolveResourceId(project, 'image', layer.resourceId, index, 'direction.layers.resourceId', isKnown);
     return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion, ...(direction ? { direction } : {}) };
   } catch (error) {
@@ -345,7 +346,7 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
         text: { type: 'object', additionalProperties: false, properties: {
           layout: { type: 'string', enum: ['center', 'bottom', 'left', 'credits'] },
           font: { type: 'string', enum: ['serif', 'sans', 'pixel'] },
-          size: { type: 'integer', minimum: 8, maximum: 64, description: '논리 게임 무대 px. 기본 320×240 무대에서 14~26 권장.' },
+          size: { type: 'integer', minimum: 8, maximum: 16, description: '논리 px(무대 320×240, 화면에서 3배). 자막 10~13, 장 제목 최대 16.' },
           color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
           animation: { type: 'string', enum: CINEMATIC_TEXT_ANIMATIONS },
           delayMs: { type: 'integer', minimum: 0, maximum: 10000 },
@@ -386,7 +387,9 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
           region: { type: 'array', minItems: 3, maxItems: 8, items: { type: 'array', minItems: 2, maxItems: 2, items: { type: 'number', minimum: 0, maximum: 1 } } },
           spread: { type: 'number', minimum: 0.01, maximum: 0.5 }, speed: { type: 'number', minimum: 0, maximum: 2 },
         } } },
-        soundResourceId: { type: 'string' }, narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
+        soundResourceId: { type: 'string' },
+        sounds: { type: 'array', maxItems: 8, description: '장면 안 시각별 효과음. atMs는 장면 시작 기준.', items: { type: 'object', additionalProperties: false, required: ['resourceId', 'atMs'], properties: { resourceId: { type: 'string' }, atMs: { type: 'number', minimum: 0 }, volume: { type: 'number', minimum: 0, maximum: 1 } } } },
+        narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
       },
     },
   },
@@ -874,6 +877,25 @@ const generateOpeningImage: ToolDefinition = {
   },
 };
 
+const runFfmpeg: ToolDefinition = {
+  name: "run_ffmpeg",
+  description: "ffmpeg로 리소스를 가공해 새 리소스로 등록(컷 이어붙이기·페이드·색보정·소리 믹스·길이 자르기·PNG→mp4). 인자 자리표시자 {in0}..{in7}=inputs 순서, {out}=출력. 네트워크·외부 파일 불가.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    additionalProperties: false,
+    required: ["args", "output"],
+    properties: {
+      inputs: { type: "array", maxItems: 8, items: { type: "string" }, description: "입력 리소스 id(파일 데이터가 있는 것)." },
+      args: { type: "array", minItems: 1, maxItems: 80, items: { type: "string", maxLength: 1200 }, description: "ffmpeg 인자 목록. 예 [\"-i\",\"{in0}\",\"-t\",\"3\",\"{out}\"]. -i는 {inN}만. 출력 {out} 1회." },
+      output: { type: "object", additionalProperties: false, required: ["id", "name", "kind"], properties: { id: { type: "string" }, name: { type: "string" }, kind: { type: "string", enum: ["picture", "backdrop", "movie", "music", "sound"], description: "movie=mp4, music/sound=wav, picture/backdrop=png." } } },
+    },
+  },
+  run(): ToolExecResult {
+    throw new ToolError("ffmpeg 실행 경로가 연결되지 않았습니다(호스트 전용).", { code: "ffmpeg-unavailable" });
+  },
+};
+
 const generateGameOverImage: ToolDefinition = {
   name: GAME_OVER_IMAGE_TOOL,
   description:
@@ -1029,6 +1051,7 @@ export const CINEMATIC_TOOLS: readonly ToolDefinition[] = [
   removeOpening,
   listOpeningMedia,
   generateOpeningImage,
+  runFfmpeg,
   getGameOver,
   setGameOver,
   generateGameOverImage,

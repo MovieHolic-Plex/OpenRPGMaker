@@ -25,13 +25,15 @@ export type CinematicPresentation = {
 };
 
 export const CINEMATIC_PRESENTATION_DEFAULTS = {
-  subtitle: { text: { layout: 'bottom', font: 'sans', size: 14, color: '#fff8ea', animation: 'rise', delayMs: 350, revealMs: 700, exitMs: 350 }, transition: { enter: 'dissolve', enterMs: 650, exitMs: 0 }, letterbox: 6 },
-  prologue: { text: { layout: 'center', font: 'serif', size: 18, color: '#f5e7cd', animation: 'typewriter', delayMs: 300, revealMs: 1600, exitMs: 600 }, transition: { enter: 'fade', enterMs: 800, exitMs: 600 }, letterbox: 0 },
-  chapter: { text: { layout: 'center', font: 'serif', size: 26, color: '#f4d69c', animation: 'rise', delayMs: 250, revealMs: 900, exitMs: 500 }, transition: { enter: 'iris', enterMs: 800, exitMs: 550 }, letterbox: 0 },
-  memory: { text: { layout: 'left', font: 'serif', size: 17, color: '#eee7ff', animation: 'blur', delayMs: 450, revealMs: 1100, exitMs: 600 }, transition: { enter: 'fade', enterMs: 900, exitMs: 650 }, letterbox: 7 },
-  credits: { text: { layout: 'credits', font: 'sans', size: 16, color: '#fff8ea', animation: 'scroll', delayMs: 0, revealMs: 0, exitMs: 500 }, transition: { enter: 'fade', enterMs: 700, exitMs: 600 }, letterbox: 0 },
+  subtitle: { text: { layout: 'bottom', font: 'sans', size: 13, color: '#fff8ea', animation: 'rise', delayMs: 350, revealMs: 700, exitMs: 350 }, transition: { enter: 'dissolve', enterMs: 650, exitMs: 0 }, letterbox: 6 },
+  prologue: { text: { layout: 'center', font: 'serif', size: 13, color: '#f5e7cd', animation: 'typewriter', delayMs: 300, revealMs: 1600, exitMs: 600 }, transition: { enter: 'fade', enterMs: 800, exitMs: 600 }, letterbox: 0 },
+  chapter: { text: { layout: 'center', font: 'serif', size: 16, color: '#f4d69c', animation: 'rise', delayMs: 250, revealMs: 900, exitMs: 500 }, transition: { enter: 'iris', enterMs: 800, exitMs: 550 }, letterbox: 0 },
+  memory: { text: { layout: 'left', font: 'serif', size: 13, color: '#eee7ff', animation: 'blur', delayMs: 450, revealMs: 1100, exitMs: 600 }, transition: { enter: 'fade', enterMs: 900, exitMs: 650 }, letterbox: 7 },
+  credits: { text: { layout: 'credits', font: 'sans', size: 11, color: '#fff8ea', animation: 'scroll', delayMs: 0, revealMs: 0, exitMs: 500 }, transition: { enter: 'fade', enterMs: 700, exitMs: 600 }, letterbox: 0 },
 } as const;
 
+/** 무대는 320×240 논리 픽셀이다(화면 3배면 글자도 3배). 이보다 큰 글자는 화면을 덮는다. */
+export const CINEMATIC_TEXT_SIZE_MAX = 16;
 export function resolveCinematicPresentation(value: CinematicPresentation) {
   const defaults = CINEMATIC_PRESENTATION_DEFAULTS[value.preset ?? 'subtitle'];
   return {

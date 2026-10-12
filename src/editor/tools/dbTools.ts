@@ -2302,6 +2302,10 @@ const setTitleScreen: ToolDefinition = {
         typeof graphic.x === "number" && Number.isFinite(graphic.x) ? Math.trunc(graphic.x) : base.x;
       const y =
         typeof graphic.y === "number" && Number.isFinite(graphic.y) ? Math.trunc(graphic.y) : base.y;
+      const backgroundId = typeof args.backgroundResourceId === "string" ? args.backgroundResourceId : current.backgroundResourceId;
+      if (resourceId && (resourceId === backgroundId || /^title_art_/u.test(resourceId))) {
+        throw new ToolError("titleGraphic.resourceId는 투명 배경의 로고 그림 전용입니다. 배경 키아트(title_art_*)를 로고로 한 번 더 얹으면 왼쪽 위에 배경이 작게 중복됩니다. 로고 그림이 없으면 mode:\"text\"로 두세요.", { code: "invalid-args" });
+      }
       if (mode === "text" && !resourceId) delete current.titleGraphic;
       else {
         current.titleGraphic = {
@@ -2312,6 +2316,9 @@ const setTitleScreen: ToolDefinition = {
         };
       }
     }
+
+    // 키아트(title_art_*)는 배경 전용 — 이전 판이 로고 그림으로 남아 있으면 배경이 왼쪽 위에 작게 중복된다.
+    if (current.titleGraphic?.resourceId && /^title_art_/u.test(current.titleGraphic.resourceId)) delete current.titleGraphic;
 
     if ("backgroundLayers" in args) {
       const layers = parseTitleBackgroundLayers(args.backgroundLayers);

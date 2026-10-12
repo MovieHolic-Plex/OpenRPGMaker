@@ -70,7 +70,8 @@ import type { ToolContext, ToolResult } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
 import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
-import { generateBestStill, type StillCritique } from './openingStillCritic.ts';
+import { runFfmpegHost, type FfmpegRequest } from './piFfmpegTool.ts';
+import { activityThumbnail, generateBestStill, type StillCritique } from './openingStillCritic.ts';
 import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
 // 조수 도구는 이 Bun 일꾼 안에서 돈다 — 편집기 기본값(상대 /v1 fetch)은 여기서 닿지 않으므로 월드맵 빌드를 프로세스 안에서 부른다.
@@ -282,7 +283,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       if (request.readOnly || options.readOnlyTools) return undefined;
       const definition = allowedDefinitions.find(tool => tool.name === name);
       if (!definition) return undefined;
-      return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall,
+      return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall, openingProduction,
+        progress: (summary, toolCallId) => emit({ type: 'execution_status', name: 'presentation.progress', ok: true, summary, data: { toolCallId } }),
         apply: async (toolName, args, signal) => {
           const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, charsetGate, ...scopeGuard });
           if (!write) throw new Error(`그림 등록/연결 도구가 없습니다: ${toolName}`);
@@ -408,7 +410,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       finally { if (--liveDepth === 0) ctx.project = ownProject; }
     } } : wrapped;
   };
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources'].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -416,7 +418,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       signal?.throwIfAborted();
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       {
-        if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
+        if (tool.name === 'run_ffmpeg') {
+          const args = params as unknown as FfmpegRequest;
+          if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 리소스를 만들 수 없습니다.');
+          emit({ type: 'execution_status', name: 'ffmpeg.progress', ok: true, summary: `ffmpeg 처리 중: ${args.output?.name ?? ''} (${args.output?.kind ?? ''})`, data: { toolCallId: id } });
+          const made = await runFfmpegHost(ctx.project, args, signal ?? options.signal);
+          const applied = runTool(ctx, 'upsert_resource', { resource: { id: made.resourceId, name: made.name, kind: made.kind, dataUrl: made.dataUrl } });
+          const execution = applied.ok ? { ...applied, summary: `ffmpeg 결과 ${made.resourceId}(${made.kind}, ${(made.bytes / 1048576).toFixed(1)}MB)를 등록했습니다.`, data: { status: 'generated', resourceId: made.resourceId, kind: made.kind, bytes: made.bytes } } : applied;
+          const visuals: ActivityVisual[] = made.kind === 'picture' || made.kind === 'backdrop' ? await activityThumbnail(made.dataUrl).then(uploaded => [{ kind: 'asset' as const, title: made.name, caption: 'ffmpeg 결과', phase: 'read' as const, target: `resource:${made.resourceId}`, resourceId: made.resourceId, uploaded }]).catch(() => []) : [];
+          recordCall({ toolCallId: id, name: tool.name, args: params, result: execution, visuals });
+          if (!execution.ok) throw new Error(execution.summary);
+          result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
+        } else if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
           const args = openingProduction.withBible(params as Record<string, unknown>);
           const brief = (tool.name === 'generate_opening_layer' ? prepareOpeningLayerRequest : prepareOpeningImageRequest)(args, ctx.project);
           if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
@@ -425,7 +438,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const candidates = tool.name === 'generate_opening_image' ? Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1)) : 1;
           let critique: StillCritique | undefined;
           let still: CinematicStillResult;
-          if (candidates > 1) ({ still, critique } = await generateBestStill(() => options.generateOpeningImage!(draft, args, signal ?? options.signal), candidates, openingProduction.criticContext(args), signal ?? options.signal));
+          const thumbs: ActivityVisual[] = [], thumbJobs: Promise<unknown>[] = [];
+          const stage = (summary: string): void => emit({ type: 'execution_status', name: 'opening.image.progress', ok: true, summary, data: { toolCallId: id } });
+          stage(candidates > 1 ? `오프닝 그림 후보 ${candidates}장을 생성하는 중 (${String(args.angle ?? args.focus ?? '').slice(0, 40)})` : '오프닝 그림을 생성하는 중');
+          if (candidates > 1) ({ still, critique } = await generateBestStill(() => options.generateOpeningImage!(draft, args, signal ?? options.signal), candidates, openingProduction.criticContext(args), signal ?? options.signal, {
+            stage,
+            candidate: (cid, url) => { thumbJobs.push(activityThumbnail(url).then(uploaded => thumbs.push({ kind: 'asset', title: `후보 ${cid}`, caption: '판정 대기', phase: 'draft', target: `candidate:${id}:${cid}`, uploaded })).catch(() => undefined)); },
+          }));
           else still = await options.generateOpeningImage(draft, args, signal ?? options.signal);
           signal?.throwIfAborted();
           if (!still.ok) {
@@ -436,7 +455,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           const applied = runTool(ctx, 'upsert_resource', { resource: { id: still.resourceId, name: still.name, kind: 'backdrop', dataUrl: still.dataUrl } });
           const execution = applied.ok ? { ...applied, summary: `그림 ${still.resourceId}를 실제 생성·등록했습니다. 연결 전에 그림을 검토하세요.`, data: { status: 'generated', resourceId: still.resourceId, name: still.name, ...(critique ? { critique: critiqueSummary(critique) } : {}) } } : applied;
           if (critique && applied.ok) openingProduction.critic(still.resourceId, critique.verdict);
-          recordCall({ toolCallId: id, name: tool.name, args, result: execution });
+          if (critique) stage(`판정 ${critique.verdict} — 선택 ${critique.winnerId}${critique.scores.length ? ` (${critique.scores.map(s => `${s.id}:${(s as { total?: number }).total ?? ''}`).join(' ')})` : ''}`);
+          await Promise.all(thumbJobs);
+          const finalThumb = await activityThumbnail(still.dataUrl).catch(() => undefined);
+          const visuals: ActivityVisual[] = [...thumbs.map(v => v.target.endsWith(`:${critique?.winnerId}`) ? { ...v, caption: '선택됨' } : { ...v, caption: '탈락' }), ...(finalThumb ? [{ kind: 'asset' as const, title: still.name ?? still.resourceId, caption: '최종 선택', phase: 'read' as const, target: `resource:${still.resourceId}`, resourceId: still.resourceId, uploaded: finalThumb }] : [])];
+          recordCall({ toolCallId: id, name: tool.name, args, result: execution, visuals });
           if (!execution.ok) throw new Error(execution.summary);
           result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
         } else result = await tool.execute(id, params, signal);
@@ -534,7 +557,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']) {
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio', 'generate_title_art', 'get_title_screen', 'set_title_screen', 'show_title_opening', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
   if (monsterGameProduction.requested) for (const name of MONSTER_GAME_INITIAL_TOOLS) { const shape=shapeFor(name);if(shape)declare(shape); }

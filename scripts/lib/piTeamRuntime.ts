@@ -1014,7 +1014,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...FIRST_PRESENTATION_INSTRUCTIONS] },
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
           toolNames: ['get_title_screen', 'get_opening', 'get_map_region', 'get_event', 'show_map_region',
-            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media',
+            'generate_title_art', 'generate_opening_image', 'run_ffmpeg', 'generate_original_bgm', 'generate_original_se', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media',
             'plan_opening', 'edit_opening', 'show_opening_image', 'review_opening'],
           onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);

@@ -190,6 +190,7 @@ export function playCinematicSequence(options: {
     let textPlayback: ReturnType<typeof animateCinematicText> | undefined;
     let frame: HTMLElement | undefined;
     let narrationTimer: ReturnType<typeof setTimeout> | undefined;
+    const soundTimers: ReturnType<typeof setTimeout>[] = [];
     const animations: Animation[] = [];
     let effects: HTMLCanvasElement | undefined;
     let alive = true;
@@ -210,6 +211,7 @@ export function playCinematicSequence(options: {
       releaseMedia();
       clearTimeout(advanceTimer);
       clearTimeout(narrationTimer);
+      soundTimers.forEach(clearTimeout);
       clearTimeout(exitTimer);
       paintFrames.forEach(id => view.cancelAnimationFrame(id));
       textPlayback?.stop();
@@ -393,6 +395,11 @@ export function playCinematicSequence(options: {
           const delay = scene.presentation ? 0 : direction?.narrationDelayMs ?? 0;
           if (delay > 0) { narration.hidden = true; narrationTimer = setTimeout(() => { if (alive) narration.hidden = false; }, delay); }
           if (direction?.soundResourceId) { const audio = el('audio', {}); root.append(audio); addMedia(audio, direction.soundResourceId); }
+          for (const cue of direction?.sounds ?? []) soundTimers.push(setTimeout(() => {
+            if (!alive || !mediaActive) return;
+            const audio = el('audio', {}); root.append(audio); addMedia(audio, cue.resourceId);
+            if (cue.volume !== undefined) audio.volume = Math.min(1, getPlayerPreferences().se * cue.volume);
+          }, cue.atMs));
         }
         if (scene.narrationAudioResourceId && mediaActive) {
           const audio = el('audio', {}); root.append(audio); addMedia(audio, scene.narrationAudioResourceId);

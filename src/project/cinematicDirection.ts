@@ -8,6 +8,8 @@ export type CinematicDirection = {
   transition?: { kind: 'cut' | 'dissolve' | 'fade' | 'flash'; durationMs: number };
   effects?: TitleEffect[];
   soundResourceId?: string;
+  /** 장면 안의 시각별 효과음(여러 개). soundResourceId 는 장면 시작 한 번짜리로 그대로 유지한다. */
+  sounds?: { resourceId: string; atMs: number; volume?: number }[];
   narrationDelayMs?: number;
 };
 
@@ -30,7 +32,7 @@ export function parseCinematicDirection(value: unknown): CinematicDirection {
     if (!Array.isArray(raw) || raw.length !== 2) throw new TypeError('effect: [x,y] 좌표가 필요합니다.');
     return [number(raw[0], 0, 1, 'effect.x'), number(raw[1], 0, 1, 'effect.y')];
   };
-  const input = record(value, ['camera', 'transition', 'effects', 'soundResourceId', 'narrationDelayMs', 'layers'], 'direction');
+  const input = record(value, ['camera', 'transition', 'effects', 'soundResourceId', 'sounds', 'narrationDelayMs', 'layers'], 'direction');
   const out: CinematicDirection = {};
   if (input.layers !== undefined) out.layers = parseCinematicLayers(input.layers);
   if (input.camera !== undefined) {
@@ -71,6 +73,16 @@ export function parseCinematicDirection(value: unknown): CinematicDirection {
   if (input.soundResourceId !== undefined) {
     if (typeof input.soundResourceId !== 'string' || !input.soundResourceId.trim()) throw new TypeError('soundResourceId: 효과음 id가 필요합니다.');
     out.soundResourceId = input.soundResourceId.trim();
+  }
+  if (input.sounds !== undefined) {
+    if (!Array.isArray(input.sounds) || input.sounds.length > 8) throw new TypeError('sounds: 효과음 시각 목록은 최대 8개입니다.');
+    out.sounds = input.sounds.map(raw => {
+      const cue = record(raw, ['resourceId', 'atMs', 'volume'], 'sounds');
+      if (typeof cue.resourceId !== 'string' || !cue.resourceId.trim()) throw new TypeError('sounds.resourceId: 효과음 id가 필요합니다.');
+      const result: NonNullable<CinematicDirection['sounds']>[number] = { resourceId: cue.resourceId.trim(), atMs: number(cue.atMs, 0, 120000, 'sounds.atMs') };
+      if (cue.volume !== undefined) result.volume = number(cue.volume, 0, 1, 'sounds.volume');
+      return result;
+    }).sort((a, b) => a.atMs - b.atMs);
   }
   if (input.narrationDelayMs !== undefined) out.narrationDelayMs = number(input.narrationDelayMs, 0, 2000, 'narrationDelayMs');
   return out;

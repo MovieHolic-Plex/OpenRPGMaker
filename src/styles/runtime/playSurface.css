@@ -382,9 +382,10 @@
 .cinematic-frame[data-presented="true"] .cinematic-narration {
   position: relative; z-index: 2; margin: 0; padding: 0; background: none;
   max-width: 84%; width: max-content; line-height: 1.75; letter-spacing: .025em;
-  text-shadow: 0 2px 12px #000, 0 1px 3px #000;
+  text-shadow: 0 0 6px #000, 0 2px 12px #000, 0 1px 3px #000; font-weight: 500;
 }
-.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 14px); max-height: 35%; text-align: center; padding: 7px 14px; background: linear-gradient(90deg, transparent, #0009 15%, #0009 85%, transparent); }
+/* 하단 자막: 배경 질감 위에서도 읽히도록 가장자리까지 이어지는 어두운 띠(글자 대비 우선). */
+.cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="bottom"] { position: absolute; bottom: calc(var(--cinematic-letterbox) + 8px); left: 0; right: 0; width: auto; max-width: none; max-height: 40%; text-align: center; padding: 10px 8%; background: linear-gradient(0deg, #000d 0%, #000c 65%, #0000 100%); }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="left"] { position: absolute; left: 9%; top: 27%; width: 68%; text-align: left; }
 .cinematic-frame[data-presented="true"] .cinematic-narration[data-layout="credits"] { position: absolute; top: 0; max-height: none; overflow: visible; text-align: center; }
 .cinematic-narration[data-font="serif"] { font-family: 'Noto Serif KR', 'Nanum Myeongjo', 'Batang', Georgia, serif; }
