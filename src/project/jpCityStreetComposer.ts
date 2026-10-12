@@ -10,6 +10,9 @@
 // 건물은 부품 사전에서 무작위로 조립하되 조립기(buildJpCityBuilding)가 거절하면(층 쌍·간판 충돌·문 막힘…) 다른 조합으로 다시 시도한다.
 // 순수 계획 → 도구 호출 목록으로 만든다: 호출 쪽(뼈대 · compose_jp_city_street 도구)이 실제로 실행한다.
 
+import { addMapLocation } from "@/project/mapNamedLocations";
+import type { GameMap } from "@/project/types";
+
 export type JpStreetStyle = "shopping" | "residential";
 
 export interface JpStreetShop {
@@ -19,8 +22,12 @@ export interface JpStreetShop {
 
 export interface JpStreetStep { readonly tool: string; readonly args: Record<string, unknown>; readonly optional?: boolean; readonly note?: string }
 
+export interface JpStreetBuilding { readonly role: string; readonly x: number; readonly foot: number; readonly w: number }
+
 export interface JpStreetPlan {
   readonly steps: readonly JpStreetStep[];
+  /** 계획한 건물(후보 `try:N` 의 N 번째). 실제로 지어진 것만 `runJpStreetPlan` 결과에 남는다. */
+  readonly buildings: readonly JpStreetBuilding[];
   /** 걸어 다니는 큰길 줄(보도 둘 사이) — 시작 칸·문 후보를 고르는 기준. */
   readonly walkRows: readonly number[];
   readonly summary: string;
@@ -150,11 +157,18 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // 횡단보도: 폭 4 도로에는 횡단보도 도로 키트(6×4)를 겹쳐 찍는다. 면 채우기 재료가 아니라 키트로만 놓을 수 있다.
   const cwX = 3 + Math.floor(rng() * Math.max(1, W - 12));
   if (roadW === 4) steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-road-lane-crosswalk-h", mapId, x: cwX, y: road0 }, optional: true, note: "road" });
-  // 골목: 뒷줄·앞줄 사이 세로 골목 하나쯤(도로와 같은 재료) — 씨앗이 x 와 폭을 정한다
-  const alleyX = 4 + Math.floor(rng() * Math.max(1, W - 12));
-  const alleyW = 2 + Math.floor(rng() * 2);
+  // 골목: 지도를 위아래로 가로지르는 샛길 하나(70%) — 양옆 보도 한 칸씩 + 가운데 생활도로. 큰길과 만나는 곳은 도로가 이어진다(사거리).
+  const alleyLane = 2 + Math.floor(rng() * 2);
+  const alleyX = 4 + Math.floor(rng() * Math.max(1, W - 12 - alleyLane));
   const alleys: { x: number; w: number }[] = [];
-  if (rng() < 0.7) { alleys.push({ x: alleyX, w: alleyW }); fill(alleyX, 0, alleyW, sw1, "생활도로", true); }
+  if (rng() < 0.7) {
+    alleys.push({ x: alleyX, w: alleyLane + 2 });
+    for (const [y0, y1] of [[0, road0 - 1], [road1 + 1, H - 1]] as const) {
+      fill(alleyX, y0, 1, y1 - y0 + 1, "보도 연석", true);
+      fill(alleyX + alleyLane + 1, y0, 1, y1 - y0 + 1, "보도 연석", true);
+    }
+    fill(alleyX + 1, 0, alleyLane, H, "생활도로", true);
+  }
 
   // ── 가게 목록
   const mix = style === "residential" ? RESIDENTIAL_MIX : SHOPPING_MIX;
@@ -167,7 +181,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // 뒷줄: 골목 칸을 피해 두 구간으로 나눠 채운다
   const rows: { foot: number; segs: [number, number][]; roles: string[]; top: number }[] = [
     { foot: backFoot, top: 0, segs: segmentsAround(W, alleys), roles: backRoles },
-    { foot: frontFoot, top: frontTop, segs: [[0, W]], roles: frontRoles },
+    { foot: frontFoot, top: frontTop, segs: segmentsAround(W, alleys), roles: frontRoles },
   ];
   const placed: { role: string; x: number; foot: number; w: number }[] = [];
   const buildSteps: JpStreetStep[] = [];
@@ -233,6 +247,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
 
   return {
     steps,
+    buildings: placed,
     walkRows: [sw1 + 1, road0, road0 + 1, sw2, H - 2],
     summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 뒷줄 발 y${backFoot}, 도로 y${road0}~${road1}(폭 ${roadW}), 앞줄 발 y${frontFoot}, 골목 ${alleys.length}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
   };
@@ -250,22 +265,45 @@ function segmentsAround(width: number, alleys: readonly { x: number; w: number }
  * 계획을 실행한다. `call` 은 도구 하나를 부르고 실패하면 던진다(headless 는 runTool, 도구 안에서는 getTool().run).
  * build_jp_city_building 은 같은 건물의 후보(note try:N)를 순서대로 시도해 첫 성공에서 멈춘다. 선택 단계의 실패는 건너뛴다.
  */
-export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: Record<string, unknown>) => void): { built: number; skipped: number; props: number } {
+export interface JpStreetBuiltBuilding extends JpStreetBuilding { readonly rect?: { x0: number; y0: number; w: number; h: number }; readonly doors: readonly { x: number; y: number }[] }
+
+export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: Record<string, unknown>) => { rect?: { x0: number; y0: number; w: number; h: number }; doors?: readonly { x: number; y: number }[] } | void): { built: number; skipped: number; props: number; buildings: JpStreetBuiltBuilding[] } {
   let built = 0, skipped = 0, props = 0;
+  const buildings: JpStreetBuiltBuilding[] = [];
   const done = new Set<string>();
   for (const step of plan.steps) {
     const tryKey = step.note?.startsWith("try:") ? step.note : undefined;
     if (tryKey && done.has(tryKey)) continue;
     try {
-      call(step.tool, step.args);
-      if (tryKey) { done.add(tryKey); built++; }
+      const result = call(step.tool, step.args);
+      if (tryKey) {
+        done.add(tryKey); built++;
+        const b = plan.buildings[Number(tryKey.slice(4))];
+        if (b) buildings.push({ ...b, ...(result?.rect ? { rect: result.rect } : {}), doors: result?.doors ?? [] });
+      }
       else if (step.note === "prop") props++;
     } catch (error) {
       if (!step.optional) throw error;
-      if (tryKey && !plan.steps.some((s) => s.note === tryKey && s !== step && plan.steps.indexOf(s) > plan.steps.indexOf(step))) skipped++;
+      if (tryKey && !plan.steps.some((s2) => s2.note === tryKey && plan.steps.indexOf(s2) > plan.steps.indexOf(step))) skipped++;
     }
   }
-  return { built, skipped, props };
+  return { built, skipped, props, buildings };
+}
+
+const ROLE_KO: Readonly<Record<string, string>> = { konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
+
+/** 지어진 건물마다 이름 붙은 위치(로케이션)를 남긴다 — 어느 문이 어느 가게인지 조수(list_map_locations)가 읽고 실내를 맞게 잇는다. */
+export function labelStreetBuildings(map: GameMap, buildings: readonly JpStreetBuiltBuilding[]): string[] {
+  const lines: string[] = [];
+  for (const b of buildings) {
+    if (!b.rect) continue;
+    const door = b.doors[0];
+    const label = ROLE_KO[b.role] ?? b.role;
+    const note = door ? `종류 ${b.role} · 문 (${door.x},${door.y}) · 문 앞 접근칸 (${door.x},${door.y + 1}) — 이 문에 ${label} 실내를 link_jp_city_interior 로 잇는다` : `종류 ${b.role}`;
+    const added = addMapLocation(map, { name: `${label} 건물`, x: b.rect.x0, y: b.rect.y0, w: b.rect.w, h: b.rect.h, note, tags: ["jp-building", b.role] });
+    if (added.ok) lines.push(`${label} 문 (${door ? `${door.x},${door.y}` : "?"})`);
+  }
+  return lines;
 }
 
 /** 기획 글에서 가게 낱말을 뽑아 거리에 꼭 넣을 가게 목록으로 — 한 번 나온 순서대로, 중복 없이. */

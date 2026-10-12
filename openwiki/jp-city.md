@@ -357,3 +357,4 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 도구 `compose_jp_city_street`(`src/editor/tools/jpCityStreetTool.ts`, `JP_CITY_TOOLS`·`JP_CITY_EXPOSED_TOOLS`): `{mapId, seed, style: shopping|residential, shops[], replace}`. 복제본에서 짠 뒤 반영, 손댄 맵은 `replace:true`. 레지스트리와 순환이라 `bindStreetToolLookup` 로 조회 함수를 꽂는다.
 - 시작 흐름: jp_city 컨셉(학교·역 낱말이 아니면, `plan.composeStreet`)은 `prebuildStartTown` 이 구성기로 시작 맵을 짠다(기획 글의 가게 낱말 → `shopsFromText`, 스타일 → `streetStyleFromText`). 학교·역 낱말은 완성 장소(`placeId`) 붙이기가 남아 있다.
 - 증거: `bun scripts/qa/jp-street-probe.mts --seeds 6 --out <새 폴더>`(Read 도구는 같은 경로 이미지를 캐시하니 폴더를 바꿀 것). 알려진 한계: 도로 점선·중앙선은 면 채우기 재료가 아니라 못 깐다, 횡단보도는 폭 4 도로만, 가게 간판(`decos`)은 아직 안 넣는다.
+- (2026-10-12 후속) 골목은 지도를 위아래로 가로지르는 샛길(양옆 보도+가운데 도로)이라 큰길과 사거리로 이어진다. 지어진 건물마다 이름 붙은 위치(`labelStreetBuildings`, 태그 `jp-building`·종류)를 남겨 `list_map_locations` 로 어느 문이 어느 가게인지 읽고 `link_jp_city_interior` 를 맞게 잇는다(편의점 실내를 아파트 문에 잇던 문제).
