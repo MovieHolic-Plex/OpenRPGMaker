@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -56,6 +57,7 @@ describe("sidebar painting workflow", () => {
     resetTileToolbarMenusForTests();
     localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
+    resetSmartPaletteForTests();
     store.replace(createBlankProject());
     await historyChange(() => resetMapEditHistory());
     editorState.set({
@@ -66,6 +68,7 @@ describe("sidebar painting workflow", () => {
     host.dataset.testid = "left-palette-root";
     document.body.append(host);
     renderTilePalette(host);
+    host.querySelector<HTMLElement>('[data-testid="palette-tab-tiles"]')?.click();
     unsubscribe = editorState.subscribe(() => renderTilePalette(host));
   });
 

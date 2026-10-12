@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 // Explicit screenshots are the evidence; avoid tracing every tile DOM node on each action.
 test.use({ trace: "off" });
@@ -79,6 +80,7 @@ test("sidebar retains focus, reachable controls and usable map space", async ({ 
     // Every size keeps the same assertions; capture the tightest layout once.
     if (width === 1024) await page.screenshot({ path: testInfo.outputPath(`sidebar-${width}.png`) });
   }
+  await showIndividualTiles(page);
   const search = page.getByTestId("tile-search-input");
   await search.fill("ab");
   await page.keyboard.press("Home");

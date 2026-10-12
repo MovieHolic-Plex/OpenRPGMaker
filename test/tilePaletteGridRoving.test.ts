@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { GRID_PALETTE_COLUMNS } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -28,11 +29,14 @@ describe("tile palette grid roving tabindex", () => {
 
   beforeEach(() => {
     restore = installFakeDom();
+    resetSmartPaletteForTests();
     store.replace(createBlankProject());
     container = document.createElement("div");
+    container.dataset.testid = "left-palette-root";
     document.body.append(container);
     editorState.set({ tool: "paint", layer: "lower", currentMapId: store.getCurrent().startMapId });
     renderTilePalette(container);
+    container.querySelector<HTMLElement>('[data-testid="palette-tab-tiles"]')?.click();
   });
 
   afterEach(() => {

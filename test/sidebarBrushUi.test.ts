@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
+import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { makeGridPalette } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
@@ -35,12 +36,14 @@ describe("sidebar brush and source gestures", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     resetTileToolbarMenusForTests();
+    resetSmartPaletteForTests();
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId, tool: "paint", layer: "lower", selectedTile: 0, paintShape: "pen", brushSize: 1, activePaletteStamp: null });
     host = document.createElement("div");
     host.dataset.testid = "left-palette-root";
     document.body.append(host);
     renderTilePalette(host);
+    host.querySelector<HTMLElement>('[data-testid="palette-tab-tiles"]')?.click();
     unsubscribe = editorState.subscribe(() => renderTilePalette(host));
   });
   afterEach(() => {

@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
 import { seedProjectForEditor } from "./projectSeed";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -15,6 +16,7 @@ test("칠하기 탭은 타일 팔레트를 구조물 선반보다 먼저·넓게
 
   await page.getByTestId("layer-lower").first().click({ force: true });
   await expect(page.getByTestId("palette-work-pane-paint")).toBeVisible({ timeout: 15_000 });
+  await showIndividualTiles(page);
   await expect(page.getByTestId("tile-palette")).toBeVisible({ timeout: 15_000 });
 
   const geom = await page.evaluate(() => {

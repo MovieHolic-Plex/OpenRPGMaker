@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 test("editor copies the first five RM2000 workbench shell affordances", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -26,6 +27,7 @@ test("editor copies the first five RM2000 workbench shell affordances", async ({
     node.scrollTop = 64;
   });
   // chipset-tile 클릭 시 window 스크롤이 튀지 않는지 검증.
+  await showIndividualTiles(page);
   await page.getByTestId("chipset-tile-6").click();
   await expect(page.getByTestId("selected-tile-status")).toContainText("6");
   await expect.poll(() => page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(beforeWindowScroll);

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -28,6 +29,7 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
 
   // Default edit surface is the event layer — switch to a tile layer so the chipset palette renders.
   await page.getByTestId("layer-lower").click();
+  await showIndividualTiles(page);
   // The RM2K palette sheet is data-testid="tile-palette" (band UI was removed from the product).
   await expect(page.getByTestId("tile-palette")).toBeVisible();
   const chipsetImage = page.locator("[data-testid='tile-palette'] img");

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 type DebugState = {
   project: {
@@ -158,6 +159,7 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   await expect(page.getByTestId("toolbar-undo")).toBeVisible();
   await expect(page.getByTestId("toolbar-redo")).toBeVisible();
 
+  await showIndividualTiles(page);
   const beforeFill = await debugState(page);
   const beforeFillMap = currentMap(beforeFill);
   const beforeFillTileCount = countTiles(beforeFillMap.lowerTiles, FILL_TILE);
@@ -300,6 +302,7 @@ test("requested map toolbar controls drive select area, zoom, pen, rectangle, ro
   await page.getByTestId("toolbar-map-zoom").click();
   await expect.poll(async () => (await debugState(page)).editor.zoom).not.toBe(beforeZoom);
 
+  await showIndividualTiles(page);
   await page.getByTestId("toolbar-select-area").click();
   await dragMapFromVisiblePoint(page, 2, 1);
   await expect.poll(async () => {

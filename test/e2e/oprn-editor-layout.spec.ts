@@ -1,6 +1,7 @@
 import { appendFile, mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 const COMPACT_SHELL_VIEWPORTS = [
   { width: 1024, height: 768 },
@@ -242,6 +243,7 @@ async function editorWorkspaceFrame(page: Page): Promise<{
 test("chipset palette exposes category-only vertical scrolling", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&paletteVerticalCategoryScroll=1");
+  await showIndividualTiles(page);
 
   const palette = page.getByTestId("tile-palette");
   await expect(palette).toBeVisible();
@@ -272,6 +274,7 @@ test("chipset palette exposes category-only vertical scrolling", async ({ page }
 test("chipset palette keeps its scroll position when selecting a visible scrolled tile", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 520 });
   await page.goto("/?freshProject=1&paletteSelectKeepsScroll=1");
+  await showIndividualTiles(page);
 
   const palette = page.getByTestId("tile-palette");
   const paletteRoot = page.getByTestId("left-palette-root");
@@ -300,6 +303,7 @@ test("chipset palette keeps its scroll position when selecting a visible scrolle
 test("chipset palette routes vertical wheel scrolling while hovering tiles", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/?freshProject=1&paletteVerticalWheel=1");
+  await showIndividualTiles(page);
 
   const palette = page.getByTestId("tile-palette");
   const paletteRoot = page.getByTestId("left-palette-root");
@@ -330,6 +334,7 @@ test("chipset palette routes vertical wheel scrolling while hovering tiles", asy
 test("left sidebar keeps an RM2000-style compact palette over map tree", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1&leftSidebarReference=1");
+  await showIndividualTiles(page);
 
   const leftPanel = page.locator(".left-panel");
   const paletteRoot = page.getByTestId("left-palette-root");
@@ -404,6 +409,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
 test("검색·분류 필터가 본 팔레트를 직접 걸러낸다 (별개 그리드 없음)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 560 });
   await page.goto("/?freshProject=1&quickTilePicker=1");
+  await showIndividualTiles(page);
 
   // 별개 그리드는 더 이상 존재하지 않는다.
   await expect(page.getByTestId("quick-tile-picker")).toHaveCount(0);
@@ -412,7 +418,7 @@ test("검색·분류 필터가 본 팔레트를 직접 걸러낸다 (별개 그�
   await expect(page.getByTestId("palette-work-tab-paint")).toHaveCount(0);
   await expect(page.getByTestId("palette-work-tab-props")).toHaveCount(0);
 
-  // 필터 바는 탭을 누르지 않아도 처음부터 보인다.
+  // 필터 바는 개별 타일 탭에 있다. 지형·프리팹 탭은 카드 검색을 따로 쓴다.
   await expect(page.getByTestId("palette-filter-bar")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
   await expect(page.getByTestId("layer-lower")).toContainText("바닥");
@@ -624,6 +630,7 @@ test("middle mouse drag pans the map without changing the selected layer", async
 test("selected tile is previewed on map hover before placement", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1&tileHoverPreview=1");
+  await showIndividualTiles(page);
 
   await page.getByTestId("chipset-band-a3").click();
   await page.getByTestId("chipset-tile-132").click();

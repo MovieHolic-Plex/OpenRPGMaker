@@ -3,6 +3,7 @@ import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { editorState, editorStateChangedOnlyToolPick } from '@/editor/editorState';
 import { renderTilePalette, syncMountedPaletteToolPick } from '@/editor/panels/tilePalette';
+import { resetSmartPaletteForTests } from '@/editor/panels/tilePaletteSmart';
 import { resetTileToolbarMenusForTests } from '@/editor/panels/tileToolbarMenus';
 import { createBlankProject } from '@/project/defaults';
 import { store } from '@/project/store';
@@ -20,12 +21,14 @@ describe('focused sidebar', () => {
     resetModalStackForTest();
     localStorage.removeItem(SIDEBAR_PINS_KEY);
     resetInspectionPinsForTests();
+    resetSmartPaletteForTests();
     store.replace(createBlankProject());
     editorState.set({ currentMapId: store.getCurrent().startMapId, layer: 'lower', tool: 'paint', paintShape: 'pen', brushSize: 1, activePaletteStamp: null });
     host = document.createElement('div');
     host.dataset.testid = 'left-palette-root';
     document.body.append(host);
     renderTilePalette(host);
+    host.querySelector<HTMLElement>('[data-testid="palette-tab-tiles"]')?.click();
     unsubscribe = editorState.subscribe(() => renderTilePalette(host));
   });
   afterEach(() => {
