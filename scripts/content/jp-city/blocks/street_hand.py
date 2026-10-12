@@ -709,6 +709,58 @@ def wall_drain(c):
 prop('wall-drain', '둑 벽 배수구', 1, 1, other='flat', tags=['하천', '둑'], rules='북쪽 둑 벽(river-wall) 가운데 줄에 드문드문 덮어 찍는다.')(wall_drain)
 
 
+def bridge_abut(c):
+    """둑 벽면을 타고 내려가는 돌 접근로: 줄눈 돌 바닥 + 양옆 어두운 측벽 2px(상판이 벽을 덮지 않고 돌 경사로로 보임)."""
+    _stone_rows(c, 0, 16, 2)
+    for y in range(16):
+        c.P(0, y, K('sumi', 1)); c.P(15, y, K('sumi', 1))
+        c.P(1, y, K('conc', -2)); c.P(14, y, K('conc', -2))
+    for y in (0, 8): c.HL(2, y, 12, K('conc', 3))
+
+
+prop('bridge-abut', '다리 돌 접근로(교대)', 1, 1, other='flat', tags=['다리', '하천'], rules='다리 상판이 둑 벽면을 지나는 칸에 널 대신 찍는다.')(bridge_abut)
+
+
+def bridge_pier(c):
+    """물 위 상판 마지막 칸: 널 위쪽 + 아래 5px 어두운 보 밑면과 물그림자."""
+    for y0 in range(0, 8, 4):
+        c.R(0, y0, 16, 4, K('ita', 0)); c.HL(0, y0, 16, K('ita', 1)); c.HL(0, y0 + 3, 16, K('ita', -2))
+    c.R(0, 8, 16, 3, K('ita', -2)); c.HL(0, 8, 16, OL)
+    for y in range(11, 16):
+        for x in range(16):
+            if (x + y) % 2 == 0: c.P(x, y, K('kon', -2))
+
+
+prop('bridge-pier', '다리 밑면(물 위 끝)', 1, 1, other='flat', tags=['다리', '하천'], rules='물 줄 맨 아래 상판 칸.')(bridge_pier)
+
+
+def water_streak(c):
+    """긴 물결 하이라이트 두 줄."""
+    c.HL(1, 4, 6, K('sora', 3)); c.HL(3, 5, 3, K('sora', 2)); c.HL(8, 11, 7, K('sora', 3)); c.HL(10, 12, 3, K('sora', 2))
+
+
+prop('water-streak', '긴 물결', 1, 1, other='flat', tags=['하천', '물'], rules='수면 위에 드문드문.')(water_streak)
+
+
+def mark_center_v_l(c):
+    """차선이 짝수일 때 두 차선 사이(칸 왼쪽 가장자리) 중앙 점선."""
+    c.R(0, 1, 2, 5, K('kii', 1)); c.R(0, 9, 2, 5, K('kii', 1))
+
+
+prop('mark-center-v-l', '세로 길 중앙선(칸 왼쪽 가장자리)', 1, 1, other='flat', tags=['노면', '중앙선'], rules='차선 수가 짝수인 세로 길.')(mark_center_v_l)
+
+
+def bridge_lip(c):
+    """물 위 상판 첫 칸: 위 4px 어두운 그림자(아스팔트 위로 드리움)·보 윤곽, 아래 널."""
+    c.R(0, 0, 16, 3, K('sumi', 1)); c.HL(0, 3, 16, OL)
+    c.R(0, 4, 16, 12, K('ita', 0)); c.HL(0, 4, 16, K('ita', 2))
+    for y0 in (8, 12):
+        c.HL(0, y0, 16, K('ita', -2)); c.HL(0, y0 + 1, 16, K('ita', 1))
+
+
+prop('bridge-lip', '물 위 상판 시작(턱)', 1, 1, other='flat', tags=['다리', '하천'], rules='물 줄 맨 위 상판 칸.')(bridge_lip)
+
+
 def water_glint(c):
     """수면 반짝임: 투명 바탕에 밝은 점 5개."""
     for x, y in ((2, 3), (3, 3), (10, 7), (11, 7), (6, 12)): c.P(x, y, K('sora', 3))

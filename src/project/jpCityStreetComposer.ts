@@ -212,6 +212,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const base = Math.floor(bandTotal / N);
   const heights = Array.from({ length: N }, () => base);
   heights[0] = Math.max(11, base + Math.floor(rng() * 4) - 1);
+  if (riverGap >= 0) heights[0] = Math.max(9, Math.min(heights[0]!, bandTotal - 11 * (N - 1)));
   for (let i = 1; i < N; i++) heights[i] = Math.max(9, Math.floor((bandTotal - heights[0]!) / (N - 1)));
   interface Gap { sw1: number; road0: number; road1: number; sw2: number; roadW: number; river?: { rail: number; wall0: number; water0: number; water1: number; slope: number; mid: number; slope2: number; prom0: number }; end: number }
   interface Band { top: number; foot: number; gap?: Gap }
@@ -243,6 +244,12 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       fill(0, rv.water0, W, riverW, "수로");                              // 물(둑 정면 벽 2줄 아래로 내려앉은 수면)
       fill(0, rv.slope, W, 3, "판석 광장");                                    // 건너편 풀 비탈
       fill(0, rv.prom0, W, 2, "판석 광장");                              // 건너편 산책로
+      if (style !== "residential") {
+        const nf = bands[bands.indexOf(b) + 1]?.foot ?? H - 3;
+        fill(0, rv.prom0 + 2, W, Math.max(0, nf - rv.prom0 - 1), "판석 광장");
+        const lawn = nf - 7 - (rv.prom0 + 3);                 // 건물 지붕 위 빈 구역은 잔디밭(판석 한 장 깔기 금지)
+        if (lawn >= 2) fill(0, rv.prom0 + 3, W, lawn - 1, "잔디");
+      }   // 강변 남쪽 광장: 자갈 노이즈 대신 판석
     } else {
       fill(0, g.sw1, W, 2, "보도 연석");
       fill(0, g.road0, W, g.roadW, "생활도로");
@@ -281,7 +288,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
       for (let y = segStart; y <= y1; y += 2) {                      // 중앙 점선: 가로길·하천 구간은 비운다
         if (bands.some((bb) => bb.gap && y >= bb.gap.sw1 - 1 && y <= bb.gap.end)) continue;
-        stamp("jp-mark-center-v", s2.x + 1 + Math.floor(s2.lane / 2), y, "road");
+        stamp(s2.lane % 2 === 0 ? "jp-mark-center-v-l" : "jp-mark-center-v", s2.x + 1 + Math.floor(s2.lane / 2), y, "road");
       }
       if (k < N - 1) segStart = bands[k]!.gap!.end - 1;
     }
@@ -304,7 +311,10 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
     // 다리: 거리 상판이 그대로 이어지고 양옆에 석재 난간(기둥머리), 상판 밑 양옆 물은 어둡게.
     for (const s2 of streets) if (s2.from <= bands.indexOf(b) && s2.to > bands.indexOf(b)) {
-      for (let x = s2.x + 1; x < s2.x + s2.w - 1; x++) for (let y = rv.rail; y <= rv.slope2; y++) stamp("jp-bridge-plank", x, y, "bridge");   // 목재 널 상판(거리 아스팔트와 구분)
+      for (let x = s2.x + 1; x < s2.x + s2.w - 1; x++) for (let y = rv.rail; y <= rv.slope2; y++) {
+        if (y < rv.water0 || y >= rv.slope) continue;                 // 둑 벽면 구간은 아스팔트가 그대로 이어진다(벽을 널로 덮지 않음)
+        stamp(y === rv.water0 ? "jp-bridge-lip" : y === rv.water1 ? "jp-bridge-pier" : "jp-bridge-plank", x, y, "bridge");
+      }   // 목재 널 상판(거리 아스팔트와 구분)
       for (let y = rv.rail; y <= rv.slope2; y++) {
         const post = y === rv.rail || y === rv.slope2 || ((y - rv.rail) % 3 === 0 && rv.slope2 - y >= 2);
         stamp(post ? "jp-bridge-post" : "jp-bridge-rail-v", s2.x, y, "bridge");
@@ -323,9 +333,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (streets.some((s2) => dx >= s2.x - 1 && dx <= s2.x + s2.w)) continue;
       stamp("jp-wall-drain", dx, rv.wall0 + 1, "bank");
     }
-    for (let gx = 2 + Math.floor(rng() * 4); gx < W - 1; gx += 3 + Math.floor(rng() * 4)) {   // 수면 반짝임(물무늬 반복 깨기)
+    for (let gx = 2 + Math.floor(rng() * 4); gx < W - 1; gx += 2 + Math.floor(rng() * 3)) {   // 수면 반짝임(물무늬 반복 깨기)
       if (streets.some((s2) => gx >= s2.x - 1 && gx <= s2.x + s2.w)) continue;
-      stamp("jp-water-glint", gx, rv.water0 + 1 + Math.floor(rng() * Math.max(1, riverW - 2)), "bank");
+      stamp(rng() < 0.5 ? "jp-water-streak" : "jp-water-glint", gx, rv.water0 + 1 + Math.floor(rng() * Math.max(1, riverW - 2)), "bank");
     }
     const free = (x: number, w: number) => !streets.some((s2) => x < s2.x + s2.w + 1 && x + w > s2.x - 1);
     for (let tx = 2 + Math.floor(rng() * 6); tx + 4 < W; tx += 11 + Math.floor(rng() * 5)) if (free(tx, 4)) riverTrees.push({ band: bands.indexOf(b), x: tx, y: rv.prom0 });   // 벚나무는 구획이 정해진 뒤 건물과 안 겹치는 것만 심는다
@@ -541,7 +551,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       stamp("jp-prop-utility-pole2", x, b.foot + 2 - 4);
       const nx = poleXs[i + 1];
       // 전선 키트는 아래층 칸을 비워 찍으므로 건물 위에 찍으면 1층 외벽을 지운다 → 건물보다 먼저(yardSteps 앞)에 찍고 건물이 아래층을 다시 덮게 한다.
-      if (nx !== undefined && nx - (x + 2) >= 2 && nx - (x + 2) <= 17) wireSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${nx - (x + 2) + 3}`, mapId, x: x + 2, y: b.foot + 2 - 4 }, optional: true, note: "prop" });
+      const covered = (() => { let n = 0; for (let q = x + 2; q < nx! ; q++) if (placed.some((pb) => pb.foot === b.foot && q >= pb.x && q < pb.x + pb.w)) n++; return nx === undefined ? 0 : n / Math.max(1, nx - x - 2); })();
+      if (nx !== undefined && covered >= 0.9 && nx - (x + 2) >= 2 && nx - (x + 2) <= 17) wireSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-wire-${nx - (x + 2) + 3}`, mapId, x: x + 2, y: b.foot + 2 - 4 }, optional: true, note: "prop" });
     });
     poleXsByBand.push(poleXs);
     for (const s of streets) if (bi >= s.from && bi <= s.to) stamp("jp-prop-curve-mirror", s.x + s.w, b.foot + 2 - 2);
