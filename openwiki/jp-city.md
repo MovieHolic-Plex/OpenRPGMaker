@@ -348,3 +348,12 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 계단 63칸(54 + 지하철역 계단 9, `star` + stair·계단·사다리 태그)은 정정 대상이 아니다 — 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`). 처음 어긋남으로 센 것은 덤프의 기대값 오류였고 `engine_dump.mts` 가 이 규칙을 안다.
 - 한계(문서에 명시): 도로 키트 칸(3616~)은 오토타일 멤버가 아니라 이음새에서 끊긴다 · 예제 3개(`machiya_izakaya` `L_machiya_annex` `L_flats_lot`)는 도구가 `DECO_CLASH` 로 거부한다 · `stamp_layer_block` 은 3층 오토타일을 재성형하지 않는다 · 투명 덧그림을 layer "1"·"3" 로 칠하면 도구가 3층으로 돌려 놓고 재성형하지 않는다.
 - 새 블록·키트 계열을 더하면 `bake_refs.py` 에 용도·문서를 덧붙이고 이 표를 갱신한다. `finalize` 가 **모든 키트가 문서에 나왔는지** 단언하므로 문서 없이 키트만 더하면 굽기가 실패한다(키트 id 접두로 계열을 가르는 정규식은 `jp-prop-` 처럼 **하이픈까지** 써야 한다 — `jp-prop` 만 쓰면 `jp-propane` 이 빠진다).
+
+## 거리 구성기 `compose_jp_city_street` (2026-10-12)
+
+완성 장소를 붙이면 같은 컨셉 틀이 같은 거리로 나온다(사용자 지적: 견본을 늘려도 해결이 안 된다). 구성기는 **규칙으로 거리를 짠다**.
+
+- 정본 `src/project/jpCityStreetComposer.ts`(순수): `planJpCityStreet({mapId,width,height,seed,style,shops})` → 도구 호출 목록. 짜임 = [뒷줄 건물][보도 2][도로 3~4][보도 2][앞줄 건물][맨 아래 보도 2], 세로 골목 0~1, 횡단보도 키트(폭 4 도로만), 차 1~3, 가로등·노보리·자판기·자전거·화분·벤치. 건물은 가게 종류(`LOOKS`: 1층·층 띠·벽·지붕·간판 범위)에서 무작위 조립하고 `build_jp_city_building` 이 거절하면(`try:N` 후보 12개, 점점 단순) 다음 후보로 간다 — 첫 성공에서 멈춘다. 층 수는 남는 줄로 제한(앞줄 건물이 보도·도로를 덮지 않게). `runJpStreetPlan(plan, call)` 이 실행.
+- 도구 `compose_jp_city_street`(`src/editor/tools/jpCityStreetTool.ts`, `JP_CITY_TOOLS`·`JP_CITY_EXPOSED_TOOLS`): `{mapId, seed, style: shopping|residential, shops[], replace}`. 복제본에서 짠 뒤 반영, 손댄 맵은 `replace:true`. 레지스트리와 순환이라 `bindStreetToolLookup` 로 조회 함수를 꽂는다.
+- 시작 흐름: jp_city 컨셉(학교·역 낱말이 아니면, `plan.composeStreet`)은 `prebuildStartTown` 이 구성기로 시작 맵을 짠다(기획 글의 가게 낱말 → `shopsFromText`, 스타일 → `streetStyleFromText`). 학교·역 낱말은 완성 장소(`placeId`) 붙이기가 남아 있다.
+- 증거: `bun scripts/qa/jp-street-probe.mts --seeds 6 --out <새 폴더>`(Read 도구는 같은 경로 이미지를 캐시하니 폴더를 바꿀 것). 알려진 한계: 도로 점선·중앙선은 면 채우기 재료가 아니라 못 깐다, 횡단보도는 폭 4 도로만, 가게 간판(`decos`)은 아직 안 넣는다.
