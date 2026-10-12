@@ -209,11 +209,29 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   ];
   const placed: { role: string; x: number; foot: number; w: number }[] = [];
   const buildSteps: JpStreetStep[] = [];
+  const yardSteps: JpStreetStep[] = [];
+  const carsYard = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-blue", "jp-prop-car-red"];
+  const yard = (gx: number, gw: number, foot: number, top: number) => {
+    // 건물 사이 빈터: 넓으면 주차장(아스팔트 3줄+블록담+차 한 대), 아니면 생울타리 두른 앞마당(+넓으면 가로수)
+    const f = (x: number, y: number, w: number, h: number, material: string) => { if (w > 0 && h > 0) yardSteps.push({ tool: "fill_region", args: { mapId, rect: { x, y, w, h }, material }, optional: true }); };
+    if (gw >= 6 && rng() < 0.55) {
+      f(gx, foot - 2, gw, 3, "생활도로");
+      f(gx, foot - 3, gw, 1, "블록담");
+      yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/${pick(rng, carsYard)}`, mapId, x: gx + Math.floor((gw - 5) / 2), y: foot - 2 }, optional: true, note: "prop" });
+    } else {
+      f(gx, Math.max(top, foot - 4), gw, Math.min(4, foot - top), "잔디");
+      f(gx, foot, gw, 1, "생울타리");
+      if (gw >= 4 && foot - 6 >= top) yardSteps.push({ tool: "stamp_object", args: { objectId: `kit:jp_city/jp-prop-tree-${pick(rng, ["zelkova", "ginkgo", "sakura"])}`, mapId, x: gx + Math.floor((gw - 4) / 2), y: foot - 5 }, optional: true, note: "prop" });
+    }
+  };
   for (const row of rows) {
     let ri = 0;
     for (const [sx, ex] of row.segs) {
       const packed = packRow(rng, ex - sx, row.roles.slice(ri).concat(row.roles.slice(0, ri)), true);
       ri += packed.length;
+      let cur = 0;
+      for (const b of packed) { if (b.x - cur >= 2) yard(sx + cur, b.x - cur, row.foot, row.top); cur = b.x + b.w; }
+      if (ex - sx - cur >= 2) yard(sx + cur, ex - sx - cur, row.foot, row.top);
       for (const b of packed) {
         placed.push({ role: b.role, x: sx + b.x, foot: row.foot, w: b.w });
         // 같은 건물에 대한 후보 입력 12개(점점 단순) — 첫 성공을 쓴다(buildJpCityBuilding 이 거절하면 다음)
@@ -227,8 +245,19 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       }
     }
   }
-  steps.push(...buildSteps);
+  steps.push(...yardSteps, ...buildSteps);
 
+  // 도로 가장자리 흰 선(외측선): 횡단보도·골목 교차로 칸은 비운다. 신호등은 횡단보도 양끝 보도에.
+  const skipX = (x: number) => (roadW === 4 && x >= cwX && x < cwX + 6) || alleys.some((al) => x >= al.x && x < al.x + al.w);
+  for (let x = 0; x < W; x++) {
+    if (skipX(x)) continue;
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-mark-edge-n", mapId, x, y: road0 }, optional: true, note: "road" });
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-mark-edge-s", mapId, x, y: road1 }, optional: true, note: "road" });
+  }
+  if (roadW === 4) {
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-road-signal-ped", mapId, x: cwX - 1, y: road0 - 2 }, optional: true, note: "prop" });
+    steps.push({ tool: "stamp_object", args: { objectId: "kit:jp_city/jp-road-signal-ped-green", mapId, x: cwX + 6, y: road1 + 1 }, optional: true, note: "prop" });
+  }
   // ── 소품: 보도 바깥줄(도로 쪽)에 낮은 소품을 흩뿌린다 — 문 앞 접근칸(건물 발 바로 아래 줄)은 비운다
   const props = ["jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori", "jp-prop-planter", "jp-prop-pot", "jp-prop-bench", "jp-prop-post-box", "jp-prop-bike-rack", "jp-prop-a-frame", "jp-prop-garbage-net", "jp-prop-bollard"];
   const propH: Record<string, number> = { "jp-prop-vending-aka": 2, "jp-prop-vending-sora": 2, "jp-prop-vending-midori": 2, "jp-prop-bike-sora": 2, "jp-prop-bike-aka": 2, "jp-prop-bike-midori": 2, "jp-prop-planter": 1, "jp-prop-pot": 2, "jp-prop-bench": 1, "jp-prop-post-box": 2, "jp-prop-bike-rack": 1, "jp-prop-a-frame": 1, "jp-prop-garbage-net": 1, "jp-prop-bollard": 1 };
