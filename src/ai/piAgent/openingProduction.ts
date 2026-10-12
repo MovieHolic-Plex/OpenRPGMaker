@@ -87,7 +87,7 @@ export class PiOpeningProduction {
     if (this.inGame) {
       const start = project.maps[project.startMapId], before = base.maps[base.startMapId];
       const events = JSON.stringify(start?.events ?? []);
-      if (!start || events === JSON.stringify(before?.events ?? [])) issues.push('인게임 오프닝을 요청받았지만 시작 맵에 연출 이벤트가 없습니다. 시작 맵을 장면에 맞게 만들고 script_cutscene(또는 script_cutscene_staged)을 trigger:"auto", once:true로 넣으세요.');
+      if (!start || (events === JSON.stringify(before?.events ?? []) && !/"kind":"auto"/u.test(events))) issues.push('인게임 오프닝을 요청받았지만 시작 맵에 연출 이벤트가 없습니다. 시작 맵을 장면에 맞게 만들고 script_cutscene(또는 script_cutscene_staged)을 trigger:"auto", once:true로 넣으세요.');
       else {
         if (!/"kind":"auto"/u.test(events)) issues.push('시작 맵의 오프닝 이벤트가 자동 실행(trigger:"auto")이 아닙니다. 새 게임 직후 자동으로 재생되어야 합니다.');
         if (!/"kind":"(?:move|moveRoute|setMoveRoute|camera)|m2-[0-9]+-(?:move|scroll|camera)|moveActor|scroll/iu.test(events)) issues.push('오프닝 이벤트에 인물 이동·카메라 연출이 없습니다. 인물이 걷고 카메라가 따라가거나 훑는 연출을 넣으세요.');
