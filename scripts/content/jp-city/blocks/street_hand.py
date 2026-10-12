@@ -645,26 +645,77 @@ prop('bank-lip', '건너편 둑 윗가장자리+풀 비탈(물 접촉 그늘+갓
 
 
 
-def _shadow(c, right):
-    """다리 그림자: 투명 바탕(밑 물무늬가 비침) 위에 짙은 남색 점 — 다리 쪽 가장자리일수록 촘촘."""
+def _side(c, right):
+    """다리 옆 물: 다리 쪽 5px 은 상판 밑면(어두운 나무 보 + 윤곽, 아래에 교각 물거품), 나머지는 투명 바탕에 다리에서 멀어질수록 성긴 그림자 점."""
     for x in range(16):
         d = x if right else 15 - x          # 다리 쪽이 0
         for y in range(16):
-            thr = 16 - d
-            if ((x * 7 + y * 11) % 16) < thr * 1.0: c.P(x, y, K('kon', -2) if d < 6 else K('kon', -1))
+            if 3 <= d < 7 and (d < 5 or (x + y) % 2 == 0): c.P(x, y, K('kon', -2) if d < 5 else K('kon', -1))
 
 
 def water_dark(c):
-    _shadow(c, True)
+    _side(c, False)
 
 
 def water_dark_r(c):
-    _shadow(c, False)
+    _side(c, True)
 
 
-prop('water-dark-r', '다리 오른쪽 그림자', 1, 1, other='flat', tags=['하천', '그림자', '다리'], rules='다리 상판 오른쪽 물 위.')(water_dark_r)
-prop('water-dark', '다리 밑 어두운 물', 1, 1, other='flat', tags=['하천', '물', '그늘', '다리'],
-     rules='다리 상판 양옆의 물 칸 전부에 찍는다(상판 밑이 어둡게 보인다).')(water_dark)
+prop('water-dark-r', '다리 오른쪽 밑면', 1, 1, other='flat', tags=['하천', '그림자', '다리'], rules='다리 상판 오른쪽 물 위.')(water_dark_r)
+prop('water-dark', '다리 왼쪽 밑면', 1, 1, other='flat', tags=['하천', '물', '그늘', '다리'],
+     rules='다리 상판 왼쪽의 물 칸에 찍는다.')(water_dark)
+
+
+def crosswalk_v(c):
+    """남북 길의 횡단보도(차 진행 방향 줄무늬): 흰 세로 막대 4px 2개 + 닳은 점."""
+    for x0 in (1, 9):
+        c.R(x0, 0, 6, 16, K('shiro', 2)); c.VL(x0 + 5, 0, 16, K('shiro', 0))
+        for y in range(0, 16, 5): c.P(x0 + 1 + (y % 3), y, K('shiro', 0))
+
+
+prop('crosswalk-v', '횡단보도(세로 줄무늬)', 1, 1, other='flat', tags=['노면', '횡단보도'], rules='다리 어귀 두 줄, 길 차선 칸마다 같은 줄에 찍는다.')(crosswalk_v)
+
+
+def mark_center_v(c):
+    """세로 길 중앙 점선: 칸 가운데 노란 4px 2개 사이 틈."""
+    c.R(7, 1, 2, 5, K('kii', 1)); c.R(7, 9, 2, 5, K('kii', 1)); c.VL(7, 1, 5, K('kii', 2)); c.VL(7, 9, 5, K('kii', 2))
+
+
+prop('mark-center-v', '세로 길 중앙선', 1, 1, other='flat', tags=['노면', '중앙선'], rules='세로 길 가운데 차선 칸에 찍는다.')(mark_center_v)
+
+
+def foot_shadow(c):
+    """건물 밑 접지 그림자: 위 3줄만 가로 점·선(아래로 옅어짐), 나머지 투명."""
+    c.HL(0, 0, 16, K('sumi', 1))
+    for x in range(16):
+        c.P(x, 1, K('sumi', 0) if x % 2 == 0 else K('sumi', 1))
+        if x % 3 == 0: c.P(x, 2, K('sumi', 0))
+
+
+prop('foot-shadow', '건물 밑 접지 그림자', 1, 1, other='flat', tags=['그림자'], rules='건물 맨 아래 줄 바로 아래 칸에 폭만큼 찍는다.')(foot_shadow)
+
+
+def wall_drain(c):
+    """둑 벽 배수구: 어두운 둥근 구멍 + 아래로 번진 이끼·물때 줄."""
+    for y in range(16):
+        c.HL(0, y, 16, K('conc', 1) if y < 8 else K('conc', 0))
+        if y % 4 == 3: c.HL(0, y, 16, K('sumi', 1))
+    c.R(5, 3, 6, 5, OL); c.R(6, 4, 4, 3, K('kon', -2)); c.HL(5, 2, 6, K('conc', 3))
+    for y in range(8, 16):
+        for x in (6 + (y % 2), 8, 9 + (y % 3 == 0)):
+            if x < 16: c.P(x, y, K('midori', -2) if y < 12 else K('kon', -1))
+
+
+prop('wall-drain', '둑 벽 배수구', 1, 1, other='flat', tags=['하천', '둑'], rules='북쪽 둑 벽(river-wall) 가운데 줄에 드문드문 덮어 찍는다.')(wall_drain)
+
+
+def water_glint(c):
+    """수면 반짝임: 투명 바탕에 밝은 점 5개."""
+    for x, y in ((2, 3), (3, 3), (10, 7), (11, 7), (6, 12)): c.P(x, y, K('sora', 3))
+    c.P(12, 2, K('shiro', 2)); c.P(5, 9, K('shiro', 2))
+
+
+prop('water-glint', '수면 반짝임', 1, 1, other='flat', tags=['하천', '물'], rules='수면 위에 드문드문 찍는다.')(water_glint)
 
 
 def water_rim_s(c):
@@ -705,13 +756,21 @@ prop('bridge-plank', '다리 상판 널(남북 다리)', 1, 1, other='flat', tag
 
 
 
+def bank_mid(c):
+    """건너편 석축 가운데 단: 줄눈 돌 16px 전부."""
+    _stone_rows(c, 0, 16, 5)
+
+
+prop('bank-mid', '건너편 석축 가운데 단', 1, 1, other='flat', tags=['하천', '둑'], rules='bank-lip 아래, bank-slope 위.')(bank_mid)
+
+
 def bank_slope(c):
     """석축 아랫단: 돌 6px(가장 밝은 갓돌 줄 포함) 위에 풀 비탈 10px — 물에서 올라가 풀밭으로 이어짐."""
     c.HL(0, 0, 16, K('conc', 3))
     _stone_rows(c, 1, 6, 8)
     c.HL(0, 6, 16, K('sumi', 1))
     for y in range(7, 16):
-        c.HL(0, y, 16, K('midori', 0) if y < 12 else K('midori', 1))
+        c.HL(0, y, 16, K('midori', -1) if y < 12 else K('midori', 0))
         for x in range(16):
             v = (x * 5 + y * 9) % 10
             if v == 0: c.P(x, y, K('midori', 2))

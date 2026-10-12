@@ -109,7 +109,8 @@ function packRow(rng: () => number, width: number, roles: readonly string[], gap
   let x = gaps ? 1 + Math.floor(rng() * 2) : 0;
   let i = 0;
   while (x < width - 3) {
-    const role = roles[i % roles.length]!;
+    let role = roles[i % roles.length]!;
+    if (out.length && out[out.length - 1]!.role === role) { i++; role = roles[i % roles.length]!; }   // 같은 종류 연속 금지(쌍둥이 방지)
     const look = LOOKS[role]!;
     let w = look.width[0] + Math.floor(rng() * (look.width[1] - look.width[0] + 1));
     if (x + w > width) w = width - x;
@@ -206,13 +207,13 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const riverGap = N >= 3 ? (rng() < 0.6 ? N - 2 : -1) : (W >= 40 && rng() < 0.4 ? 0 : -1);
   const riverW = 4 + Math.floor(rng() * 2);
   const roadWs = Array.from({ length: N - 1 }, (_, i) => (i === riverGap ? 0 : style === "residential" ? 3 : i === 0 && rng() < 0.7 ? 4 : rng() < 0.3 ? 4 : 3));
-  const gapRows = roadWs.reduce((a2, w2, i) => a2 + (i === riverGap ? 10 + riverW : w2 + 4), 0);
+  const gapRows = roadWs.reduce((a2, w2, i) => a2 + (i === riverGap ? 11 + riverW : w2 + 4), 0);
   const bandTotal = H - 2 - gapRows;                               // 건물 띠들이 쓸 줄 수(마지막 띠 발은 H-3, 아래 보도 2줄)
   const base = Math.floor(bandTotal / N);
   const heights = Array.from({ length: N }, () => base);
   heights[0] = Math.max(11, base + Math.floor(rng() * 4) - 1);
   for (let i = 1; i < N; i++) heights[i] = Math.max(9, Math.floor((bandTotal - heights[0]!) / (N - 1)));
-  interface Gap { sw1: number; road0: number; road1: number; sw2: number; roadW: number; river?: { rail: number; wall0: number; water0: number; water1: number; slope: number; slope2: number; prom0: number }; end: number }
+  interface Gap { sw1: number; road0: number; road1: number; sw2: number; roadW: number; river?: { rail: number; wall0: number; water0: number; water1: number; slope: number; mid: number; slope2: number; prom0: number }; end: number }
   interface Band { top: number; foot: number; gap?: Gap }
   const bands: Band[] = [];
   let cy = 0;
@@ -221,7 +222,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     const band: Band = { top, foot };
     if (i < N - 1) {
       if (i === riverGap) {
-        const rv = { rail: foot + 3, wall0: foot + 4, water0: foot + 7, water1: foot + 6 + riverW, slope: foot + 7 + riverW, slope2: foot + 8 + riverW, prom0: foot + 9 + riverW };
+        const rv = { rail: foot + 3, wall0: foot + 4, water0: foot + 7, water1: foot + 6 + riverW, slope: foot + 7 + riverW, mid: foot + 8 + riverW, slope2: foot + 9 + riverW, prom0: foot + 10 + riverW };
         band.gap = { sw1: foot + 1, road0: foot + 3, road1: rv.water1, sw2: rv.prom0, roadW: 0, river: rv, end: rv.prom0 + 1 };
       } else {
         const roadW = roadWs[i]!;
@@ -240,7 +241,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       const rv = g.river;
       fill(0, g.sw1, W, 2, "판석 광장");                                 // 강변 산책로(위, 건물 문 앞)
       fill(0, rv.water0, W, riverW, "수로");                              // 물(둑 정면 벽 2줄 아래로 내려앉은 수면)
-      fill(0, rv.slope, W, 1, "판석 광장");                                    // 건너편 풀 비탈
+      fill(0, rv.slope, W, 3, "판석 광장");                                    // 건너편 풀 비탈
       fill(0, rv.prom0, W, 2, "판석 광장");                              // 건너편 산책로
     } else {
       fill(0, g.sw1, W, 2, "보도 연석");
@@ -278,6 +279,10 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       fill(s2.x, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, "보도 연석", true);
       fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
+      for (let y = segStart; y <= y1; y += 2) {                      // 중앙 점선: 가로길·하천 구간은 비운다
+        if (bands.some((bb) => bb.gap && y >= bb.gap.sw1 - 1 && y <= bb.gap.end)) continue;
+        stamp("jp-mark-center-v", s2.x + 1 + Math.floor(s2.lane / 2), y, "road");
+      }
       if (k < N - 1) segStart = bands[k]!.gap!.end - 1;
     }
   }
@@ -294,20 +299,33 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       stamp("jp-water-shade", x, rv.water0, "bank");
       stamp("jp-water-rim-s", x, rv.water1, "bank");
       stamp("jp-bank-lip", x, rv.slope, "bank");
+      stamp("jp-bank-mid", x, rv.mid, "bank");
       stamp("jp-bank-slope", x, rv.slope2, "bank");
     }
     // 다리: 거리 상판이 그대로 이어지고 양옆에 석재 난간(기둥머리), 상판 밑 양옆 물은 어둡게.
     for (const s2 of streets) if (s2.from <= bands.indexOf(b) && s2.to > bands.indexOf(b)) {
       for (let x = s2.x + 1; x < s2.x + s2.w - 1; x++) for (let y = rv.rail; y <= rv.slope2; y++) stamp("jp-bridge-plank", x, y, "bridge");   // 목재 널 상판(거리 아스팔트와 구분)
       for (let y = rv.rail; y <= rv.slope2; y++) {
-        const post = y === rv.rail || y === rv.slope2 || (y - rv.rail) % 3 === 0;
+        const post = y === rv.rail || y === rv.slope2 || ((y - rv.rail) % 3 === 0 && rv.slope2 - y >= 2);
         stamp(post ? "jp-bridge-post" : "jp-bridge-rail-v", s2.x, y, "bridge");
         stamp(post ? "jp-bridge-post" : "jp-bridge-rail-v", s2.x + s2.w - 1, y, "bridge");
       }
-      for (let y = rv.water0 + 3; y < rv.water1; y++) {
+      for (let cx = s2.x + 1; cx < s2.x + 1 + s2.lane; cx++) {          // 다리 어귀 횡단보도
+        stamp("jp-crosswalk-v", cx, rv.rail - 2, "road");
+        stamp("jp-crosswalk-v", cx, rv.prom0, "road");
+      }
+      for (let y = rv.water0 + 1; y < rv.water1; y++) {
         if (s2.x - 1 >= 0) stamp("jp-water-dark", s2.x - 1, y, "bridge");
         if (s2.x + s2.w < W) stamp("jp-water-dark-r", s2.x + s2.w, y, "bridge");
       }
+    }
+    for (let dx = 4 + Math.floor(rng() * 5); dx < W - 1; dx += 8 + Math.floor(rng() * 7)) {         // 둑 벽 배수구
+      if (streets.some((s2) => dx >= s2.x - 1 && dx <= s2.x + s2.w)) continue;
+      stamp("jp-wall-drain", dx, rv.wall0 + 1, "bank");
+    }
+    for (let gx = 2 + Math.floor(rng() * 4); gx < W - 1; gx += 3 + Math.floor(rng() * 4)) {   // 수면 반짝임(물무늬 반복 깨기)
+      if (streets.some((s2) => gx >= s2.x - 1 && gx <= s2.x + s2.w)) continue;
+      stamp("jp-water-glint", gx, rv.water0 + 1 + Math.floor(rng() * Math.max(1, riverW - 2)), "bank");
     }
     const free = (x: number, w: number) => !streets.some((s2) => x < s2.x + s2.w + 1 && x + w > s2.x - 1);
     for (let tx = 2 + Math.floor(rng() * 6); tx + 4 < W; tx += 11 + Math.floor(rng() * 5)) if (free(tx, 4)) riverTrees.push({ band: bands.indexOf(b), x: tx, y: rv.prom0 });   // 벚나무는 구획이 정해진 뒤 건물과 안 겹치는 것만 심는다
@@ -428,6 +446,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       if (endLimit - cur >= 2) yard(sx + cur, endLimit - cur, b.foot, b.top);
       for (const bb of packed) {
         placed.push({ role: bb.role, x: sx + bb.x, foot: b.foot, w: bb.w, top: b.top });
+        for (let fx = 0; fx < bb.w; fx++) stamp("jp-foot-shadow", sx + bb.x + fx, b.foot + 1, "ground");   // 접지 그림자(건물이 뜨지 않게)
         // 같은 건물에 대한 후보 입력 12개(점점 단순) — 첫 성공을 쓴다(buildJpCityBuilding 이 거절하면 다음)
         for (let attempt = 0; attempt < 12; attempt++) {
           buildSteps.push({
