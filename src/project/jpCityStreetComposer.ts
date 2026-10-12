@@ -202,33 +202,52 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
 
   // ── 1. 도로망: 가로 큰길(N-1 줄) 사이에 건물 띠(N 줄). 건물 문은 모두 남쪽이라 띠마다 아래에 길이 있다.
   const N = H >= 46 ? 3 : 2;
-  const roadWs = Array.from({ length: N - 1 }, (_, i) => (style === "residential" ? 3 : i === 0 && rng() < 0.7 ? 4 : rng() < 0.3 ? 4 : 3));
-  const gapRows = roadWs.reduce((a, w) => a + w + 4, 0);
+  // 하천 띠: 큰길 하나를 하천으로 바꾼다(건물 문은 강변 산책로를 향한다). 3줄 지도는 마지막 큰길 60%, 2줄 지도는 40%. 3/4 시점에서 둑의 정면 벽이 보이도록 하천은 가로로 흐른다.
+  const riverGap = N >= 3 ? (rng() < 0.6 ? N - 2 : -1) : (W >= 40 && rng() < 0.4 ? 0 : -1);
+  const riverW = 3 + Math.floor(rng() * 2);
+  const roadWs = Array.from({ length: N - 1 }, (_, i) => (i === riverGap ? 0 : style === "residential" ? 3 : i === 0 && rng() < 0.7 ? 4 : rng() < 0.3 ? 4 : 3));
+  const gapRows = roadWs.reduce((a2, w2, i) => a2 + (i === riverGap ? 8 + riverW : w2 + 4), 0);
   const bandTotal = H - 2 - gapRows;                               // 건물 띠들이 쓸 줄 수(마지막 띠 발은 H-3, 아래 보도 2줄)
   const base = Math.floor(bandTotal / N);
   const heights = Array.from({ length: N }, () => base);
   heights[0] = Math.max(11, base + Math.floor(rng() * 4) - 1);
   for (let i = 1; i < N; i++) heights[i] = Math.max(9, Math.floor((bandTotal - heights[0]!) / (N - 1)));
-  interface Band { top: number; foot: number; gap?: { sw1: number; road0: number; road1: number; sw2: number; roadW: number } }
+  interface Gap { sw1: number; road0: number; road1: number; sw2: number; roadW: number; river?: { rail: number; wall0: number; water0: number; water1: number; slope: number; prom0: number }; end: number }
+  interface Band { top: number; foot: number; gap?: Gap }
   const bands: Band[] = [];
   let cy = 0;
   for (let i = 0; i < N; i++) {
     const top = cy, foot = i === N - 1 ? H - 3 : top + heights[i]! - 1;
     const band: Band = { top, foot };
     if (i < N - 1) {
-      const roadW = roadWs[i]!;
-      const road0 = foot + 3;
-      band.gap = { sw1: foot + 1, road0, road1: road0 + roadW - 1, sw2: road0 + roadW, roadW };
-      cy = band.gap.sw2 + 2;
+      if (i === riverGap) {
+        const rv = { rail: foot + 3, wall0: foot + 4, water0: foot + 6, water1: foot + 5 + riverW, slope: foot + 6 + riverW, prom0: foot + 7 + riverW };
+        band.gap = { sw1: foot + 1, road0: foot + 3, road1: rv.water1, sw2: rv.prom0, roadW: 0, river: rv, end: rv.prom0 + 1 };
+      } else {
+        const roadW = roadWs[i]!;
+        const road0 = foot + 3;
+        band.gap = { sw1: foot + 1, road0, road1: road0 + roadW - 1, sw2: road0 + roadW, roadW, end: road0 + roadW + 1 };
+      }
+      cy = band.gap.end + 1;
     }
     bands.push(band);
   }
   const ground = style === "residential" ? "잔디" : "자갈 참배길";
   fill(0, 0, W, H, ground);
   for (const b of bands) if (b.gap) {
-    fill(0, b.gap.sw1, W, 2, "보도 연석");
-    fill(0, b.gap.road0, W, b.gap.roadW, "생활도로");
-    fill(0, b.gap.road1 + 1, W, 2, "보도 연석");
+    const g = b.gap;
+    if (g.river) {
+      const rv = g.river;
+      fill(0, g.sw1, W, 2, "판석 광장");                                 // 강변 산책로(위, 건물 문 앞)
+      fill(0, rv.rail, W, 1, "생울타리", true);                              // 둑 위 난간
+      fill(0, rv.water0, W, riverW, "수로");                              // 물(둑 정면 벽 2줄 아래로 내려앉은 수면)
+      fill(0, rv.slope, W, 1, "잔디");                                    // 건너편 풀 비탈
+      fill(0, rv.prom0, W, 2, "판석 광장");                              // 건너편 산책로
+    } else {
+      fill(0, g.sw1, W, 2, "보도 연석");
+      fill(0, g.road0, W, g.roadW, "생활도로");
+      fill(0, g.road1 + 1, W, 2, "보도 연석");
+    }
   }
   fill(0, H - 2, W, 2, "보도 연석");
 
@@ -245,55 +264,48 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     const to = from === 0 && r >= 0.5 ? Math.floor(rng() * N) : N - 1;
     streets.push({ x, lane, w: lane + 2, from: Math.min(from, to), to: Math.max(from, to) });
   }
-  const BANK = 4;                                                // 하천 양옆 둔치: 산책로 3 + 비탈 1
-  let river: { x: number; w: number } | undefined;
-  const inStreet = (x: number, k?: number) => streets.some((s) => x >= s.x - 1 && x <= s.x + s.w && (k === undefined || (k >= s.from && k <= s.to))) || (river !== undefined && x >= river.x - BANK - 1 && x <= river.x + river.w + BANK);
-  for (const s of streets) {
-    for (let k = s.from; k <= s.to; k++) {
-      const y0 = k === s.from ? (k === 0 ? 0 : bands[k - 1]!.gap!.road1 + 1) : bands[k - 1]!.gap!.road1 + 1;
-      const y1 = k === s.to ? (k === N - 1 ? H - 1 : bands[k]!.gap!.road0 - 1) : bands[k]!.gap!.road0 - 1;
-      fill(s.x, y0, 1, y1 - y0 + 1, "보도 연석", true);
-      fill(s.x + s.w - 1, y0, 1, y1 - y0 + 1, "보도 연석", true);
-      fill(s.x + 1, y0, s.lane, y1 - y0 + 1, "생활도로", true);
+  // 하천을 건너는 세로 길이 하나는 있어야 한다(다리).
+  if (riverGap >= 0 && !streets.some((s2) => s2.from <= riverGap && s2.to > riverGap)) {
+    if (streets[0]) streets[0] = { ...streets[0]!, from: 0, to: N - 1 };
+    else { const lane = 2 + Math.floor(rng() * 2); streets.push({ x: 6 + Math.floor(rng() * Math.max(1, W - 14 - lane)), lane, w: lane + 2, from: 0, to: N - 1 }); }
+  }
+  const inStreet = (x: number, k?: number) => streets.some((s2) => x >= s2.x - 1 && x <= s2.x + s2.w && (k === undefined || (k >= s2.from && k <= s2.to)));
+  for (const s2 of streets) {
+    let segStart = s2.from === 0 ? 0 : bands[s2.from - 1]!.gap!.end - (bands[s2.from - 1]!.gap!.river ? 1 : 1);
+    for (let k = s2.from; k <= s2.to; k++) {
+      const crossRiver = k < s2.to && bands[k]!.gap!.river !== undefined;
+      if (crossRiver) continue;                                      // 하천을 건너 다음 띠까지 한 번에 깐다(다리)
+      const y1 = k === s2.to ? (k === N - 1 ? H - 1 : bands[k]!.gap!.road0 - 1) : bands[k]!.gap!.road0 - 1;
+      fill(s2.x, segStart, 1, y1 - segStart + 1, "보도 연석", true);
+      fill(s2.x + s2.w - 1, segStart, 1, y1 - segStart + 1, "보도 연석", true);
+      fill(s2.x + 1, segStart, s2.lane, y1 - segStart + 1, "생활도로", true);
+      if (k < N - 1) segStart = bands[k]!.gap!.end - 1;
     }
   }
-  // 하천: 세로로 지도를 가로지르는 물길(45%). 큰길은 다리(보도·도로를 물 위에 다시 깔고 양옆 가드레일)로 건넌다. 건물·소품·세로 길은 물을 피한다.
-  if (W >= 50 && rng() < 0.45) {
-    const rw = 4 + Math.floor(rng() * 2);
-    for (let t = 0; t < 12 && !river; t++) {
-      const x = 12 + Math.floor(rng() * Math.max(1, W - 24 - rw));
-      if (streets.some((s2) => x < s2.x + s2.w + 6 + BANK && x + rw > s2.x - 6 - BANK)) continue;
-      river = { x, w: rw };
+  // 둑 정면 벽(물 위 2줄)과 다리 난간, 물가 계단·벚나무 — 길이 지나는 칸은 비운다(길 상판이 둑을 덮는다).
+  bands.forEach((b) => {
+    const g = b.gap;
+    if (!g?.river) return;
+    const rv = g.river;
+    for (let x = 0; x < W; x++) {
+      if (streets.some((s2) => x >= s2.x && x < s2.x + s2.w)) continue;
+      stamp("jp-bwallf-plain", x, rv.wall0, "bank");
     }
-  }
-  if (river) {
-    const r = river, x0 = r.x - BANK, x1 = r.x + r.w + BANK;
-    fill(x0, 0, x1 - x0, H, "판석 광장");                             // 산책로(둔치)
-    fill(r.x - 1, 0, 1, H, "잔디");                                   // 물가 풀 비탈 — 산책로보다 한 단 낮게 내려가는 둑
-    fill(r.x + r.w, 0, 1, H, "잔디");
-    fill(r.x, 0, r.w, H, "수로");
-    for (const b of bands) if (b.gap) {                              // 큰길은 다리로 건넌다: 산책로 칸은 길이 이어지고, 물·비탈 칸에는 난간 달린 다리 상판
-      const g = b.gap;
-      fill(x0, g.sw1, x1 - x0, 2, "보도 연석");
-      fill(x0, g.road0, x1 - x0, g.roadW, "생활도로");
-      fill(x0, g.road1 + 1, x1 - x0, 2, "보도 연석");
-      for (let x = r.x - 1; x <= r.x + r.w; x++) {
-        const edge = x === r.x - 1 ? "l" : x === r.x + r.w ? "r" : null;
-        stamp(edge ? `jp-bwall-end-${edge}` : "jp-bwall-plain", x, g.sw1, "bridge");                       // 위쪽 난간(윗면)
-        stamp(edge ? `jp-bwallf-end-${edge}` : "jp-bwallf-plain", x, g.road1 + 2, "bridge");            // 아래쪽 난간(정면 2줄 — 다리 옆구리)
-      }
-      stamp("jp-prop-lamp-post", r.x - 1, g.sw1 + 1 - 2, "bridge");
-      stamp("jp-prop-lamp-post", r.x + r.w, g.sw1 + 1 - 2, "bridge");
+    for (const s2 of streets) if (s2.from <= bands.indexOf(b) && s2.to > bands.indexOf(b)) {
+      for (let y = rv.rail; y <= rv.slope; y++) { stamp("jp-bwall-plain", s2.x, y, "bridge"); stamp("jp-bwall-plain", s2.x + s2.w - 1, y, "bridge"); }
     }
-    // 둔치 소품: 띠마다 양쪽 산책로에 벚나무·벤치·가로등. 큰길 보도 줄(다리 어귀)은 피한다.
-    for (const b of bands) {
-      for (let y = b.top + 1, k = 0; y + 5 <= b.foot; y += 8, k++) {
-        stamp(`jp-prop-tree-${k % 2 === 0 ? "sakura" : pick(rng, ["zelkova", "ginkgo"])}`, k % 2 === 0 ? x0 : r.x + r.w, y, "bank");
-      }
-      for (let y = b.top + 4; y + 1 < b.foot; y += 9) { stamp("jp-prop-bench", x0, y, "bank"); stamp("jp-prop-lamp-post", r.x + r.w + 1, y - 2, "bank"); }
+    const free = (x: number, w: number) => !streets.some((s2) => x < s2.x + s2.w + 1 && x + w > s2.x - 1);
+    for (let t = 0; t < 10; t++) {                                  // 물가로 내려가는 돌계단 하나
+      const sx = 2 + Math.floor(rng() * Math.max(1, W - 12));
+      if (!free(sx, 8)) continue;
+      stamp("jp-prop-stairs-stone8", sx, rv.rail, "bank");
+      break;
     }
-  }
-  const obstacles: { x: number; w: number }[] = [...streets.map((s2) => ({ x: s2.x, w: s2.w })), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])];
+    for (let tx = 2 + Math.floor(rng() * 6); tx + 4 < W; tx += 10 + Math.floor(rng() * 5)) {
+      if (free(tx, 4)) stamp(`jp-prop-tree-${rng() < 0.6 ? "sakura" : pick(rng, ["zelkova", "ginkgo"])}`, tx, rv.prom0 - 4, "bank");
+    }
+  });
+  const obstacles: { x: number; w: number }[] = streets.map((s2) => ({ x: s2.x, w: s2.w }));
   // 횡단보도: 폭 4 큰길마다 하나(키트 6×4) — 세로 길 어귀는 피한다.
   const crossings: { x: number; road: number }[] = [];
   bands.forEach((b, i) => {
@@ -362,7 +374,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   };
   const wireAt = steps.length;                                  // 전선은 큰 건물·공원 칠 같은 구획 단계보다 먼저 찍는다
   bands.forEach((b, bi) => {
-    const segs = segmentsAround(W, [...streets.filter((s) => bi >= s.from && bi <= s.to), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])]);
+    const segs = segmentsAround(W, streets.filter((s) => bi >= s.from && bi <= s.to));
     for (const [sx, ex] of segs) {
       const w = ex - sx;
       const r = rng();
@@ -406,13 +418,13 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     }
   });
   // 맨 위 가장자리 생울타리 — 첫 띠 뒤가 지도 끝까지 열려 보이지 않게(세로 길 어귀는 비운다)
-  for (const [sx, ex] of segmentsAround(W, [...streets.filter((s) => s.from === 0), ...(river ? [{ x: river.x - BANK, w: river.w + 2 * BANK }] : [])])) fill(sx, 0, ex - sx, 1, "생울타리", true);
+  for (const [sx, ex] of segmentsAround(W, streets.filter((s) => s.from === 0))) fill(sx, 0, ex - sx, 1, "생울타리", true);
   steps.push(...yardSteps, ...buildSteps);
 
   // ── 3. 큰길 표식: 외측선(교차로·횡단보도 칸 제외), 보행 신호등
   const skipX = (x: number, road: number) => crossings.some((c) => c.road === road && x >= c.x && x < c.x + 6) || streets.some((s) => x >= s.x && x < s.x + s.w);
   bands.forEach((b, i) => {
-    if (!b.gap) return;
+    if (!b.gap || b.gap.river) return;
     for (let x = 0; x < W; x++) {
       if (skipX(x, i)) continue;
       stamp("jp-mark-edge-n", x, b.gap.road0, "road");
@@ -444,7 +456,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   // ── 5. 차·노면: 큰길마다 일방통행 한 줄(중앙선 없음), 길 위 「30」 표시.
   const cars = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-red", "jp-prop-car-blue", "jp-prop-car-taxi", "jp-prop-car-green", "jp-prop-car-navy"];
   bands.forEach((b, bi) => {
-    if (!b.gap) return;
+    if (!b.gap || b.gap.river) return;
     const eastbound = rng() < 0.5;
     const laneY = b.gap.road0 + (b.gap.roadW >= 4 ? 1 : 0);
     const spans: [number, number][] = crossings.filter((c) => c.road === bi).map((c) => [c.x - 1, c.x + 7] as [number, number]);
@@ -511,8 +523,8 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     steps,
     buildings: placed,
     mapId, seed: opts.seed,
-    walkRows: [...bands.flatMap((b) => (b.gap ? [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2] : [])), H - 2],
-    summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${river ? `, 하천 x${river.x}~${river.x + river.w - 1}` : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
+    walkRows: [...bands.flatMap((b) => (b.gap ? (b.gap.river ? [b.foot + 2, b.gap.sw2] : [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2]) : [])), H - 2],
+    summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
   };
 }
 
