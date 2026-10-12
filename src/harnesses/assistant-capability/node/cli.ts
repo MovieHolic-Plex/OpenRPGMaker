@@ -59,6 +59,12 @@ export async function run(argv: string[]): Promise<number> {
     const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrixUiAllEntry.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
     return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
   }
+  if (stage === 'matrix-score') {
+    const root = option('out');
+    if (!root) throw Error('matrix-score --out <새 실행 폴더>');
+    const child = spawn('bun', [resolve('src/harnesses/assistant-capability/node/matrixScoreEntry.ts'), resolve(root)], { stdio: 'inherit', cwd: process.cwd() });
+    return await new Promise<number>((done, reject) => { child.once('error', reject); child.once('exit', code => done(code ?? 1)); });
+  }
   if (stage === 'prepare') {
     const root = option('out');
     if (!root) throw Error('prepare --out <새 실행 폴더> [--case <id>]');

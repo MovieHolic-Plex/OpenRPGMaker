@@ -117,6 +117,8 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `npm run harness -- assistant-capability matrix-ui-all --out <새 폴더>`는 50개 명령을 각각 새로 저장한 SQLite fixture에서 시작해 실제 `ai-input` 제출과 scripted `/v1/agent/run` 적용 이벤트를 거친다. 명령 사이에는 같은 Firefox 컨텍스트를 페이지 재로드해 fixture를 다시 읽고, 저장 완료 후 `stored(projectDir)`로 정본을 확인한다. 에디터가 같은 agent 요청을 재전송할 수 있으므로 각 명령의 응답을 캐시해 비멱등 도구가 두 번 실행되지 않게 한다. 결과 JSON의 `uiAgentAppliedCommands`가 50이고 `directTransportCommands`가 0이어야 이 단계가 통과한다. 이 단계도 모델 제공자 성공과 독립 시각 판정은 측정하지 않는다.
 
+`npm run harness -- assistant-capability matrix-score --out <새 폴더>`는 50개 명령 각각의 canonical tool·범위·인자를 실제 `opencodex/gpt-6-astra`에 묻고 자연어 이해력과 판단 품질을 계산한다. 같은 50개에 대해 도구 적용 전후 PNG 100장을 생성하고, 5개씩 묶은 10회의 실제 비전 모델 호출로 시각 품질을 채점한다. `matrix-score.json`에는 모델 응답 원문, 호출 수, 실패, 명령별 점수와 전후 이미지 SHA를 남긴다. 모델 응답이 없거나 시각 점수가 빠진 항목은 정적 픽셀 점수로 승격하지 않으며 상태를 `incomplete`로 기록한다. `status: scored`는 50개 채점 완료를, `qualityGate: pass|fail`는 자연어 ≥60/100·판단 ≥60/100·시각 ≥2/5 기준을 각각 뜻한다. 시각 모델 점수는 사람 검수의 대체가 아니며, 이 단계는 실제 모델이 도구를 호출했다는 뜻이 아니라 모델의 해석·판단 품질을 별도로 측정한다.
+
 ## 시각 검수
 
 검수자는 먼저 요청과 실제 그림을 비교한다. 조수의 자기평가를 시각 판정의 근거로 대신 쓰지 않는다. 런타임은 이동/대화 중 가림, 잘림, 글자·분기·금액을 본다. 결함은 위치·재현 장면을 적는다. 실제로 본 파일만 다음처럼 기록한다.
