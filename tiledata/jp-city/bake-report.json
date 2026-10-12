@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 14465,
+  "count": 14490,
   "tilesPerRow": 96,
   "rows": 151,
   "sheetPx": [
@@ -11,7 +11,7 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 10962,
+  "block_cells": 10987,
   "legacy": 366,
   "legacy_ids": [
    5137,
@@ -45,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 10962
+   "block": 10987
   }
  },
  "pc_counts": {
   "star": 5796,
-  "solid": 2841,
+  "solid": 2847,
   "floor": 3671,
   "solidfloor": 1006,
-  "flat": 630,
+  "flat": 649,
   "blank": 155
  },
  "kits": {
-  "total": 1160,
+  "total": 1182,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 984
+   "block-kit": 1006
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 984
+  "block_kit": 1006
  },
  "groups": {
   "total": 341,
@@ -215,11 +215,11 @@
    },
    {
     "name": "street_hand",
-    "cells": 453,
+    "cells": 478,
     "autotiles": 0,
     "groups": 1,
-    "kits": 62,
-    "notes": "손 도트 거리 소품 62종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
+    "kits": 84,
+    "notes": "손 도트 거리 소품 84종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
    },
    {
     "name": "school",
@@ -464,7 +464,7 @@
   ]
  },
  "reassembly": {
-  "kits_checked": 1160,
+  "kits_checked": 1182,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -479,7 +479,7 @@
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
-   "mark": 17,
+   "mark": 19,
    "bwall": 4,
    "bwallf": 3,
    "gatepost": 1,
@@ -496,6 +496,13 @@
    "torii": 1,
    "gas": 1,
    "school": 9,
+   "river": 1,
+   "water": 6,
+   "bridge": 7,
+   "bank": 3,
+   "crosswalk": 1,
+   "foot": 1,
+   "wall": 1,
    "tetsubo": 1,
    "noboribou": 1,
    "ichirinsha": 1,
@@ -531,8 +538,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 14465,
-  "kits_checked": 1160,
+  "tiles_checked": 14490,
+  "kits_checked": 1182,
   "groups_checked": 341,
   "autotiles_checked": 17
  },
@@ -548,10 +555,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "b773a64d506cd75a903ee3f52fb21fda04366ed9",
+ "sheet_hash": "39cc3263744d5ccd5dd0f276730099ae5c3b2beb",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1160,
+  "kits_checked": 1182,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -566,7 +573,7 @@
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
-   "mark": 17,
+   "mark": 19,
    "bwall": 4,
    "bwallf": 3,
    "gatepost": 1,
@@ -583,6 +590,13 @@
    "torii": 1,
    "gas": 1,
    "school": 9,
+   "river": 1,
+   "water": 6,
+   "bridge": 7,
+   "bank": 3,
+   "crosswalk": 1,
+   "foot": 1,
+   "wall": 1,
    "tetsubo": 1,
    "noboribou": 1,
    "ichirinsha": 1,
@@ -618,8 +632,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 14465,
-  "kits_checked": 1160,
+  "tiles_checked": 14490,
+  "kits_checked": 1182,
   "groups_checked": 341,
   "autotiles_checked": 17
  },
