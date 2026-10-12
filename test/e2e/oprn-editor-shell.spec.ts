@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 test("editor shell keeps RM2K3 workbench controls visible and mode switches cleanly", async ({ page }, testInfo) => {
@@ -15,6 +16,7 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
   await expect(page.getByTestId("tool-paint")).toBeVisible();
   await expect(page.getByTestId("tool-fill")).toBeVisible();
   await expect(page.getByTestId("tool-erase")).toBeVisible();
+  await showIndividualTiles(page);
   await expect(page.getByTestId("tile-palette")).toBeVisible();
   await expect(page.getByTestId("map-tree")).toBeVisible();
 
@@ -53,6 +55,7 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
   }
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toHaveCount(1);
   await expect(page.getByTestId("tool-grid")).toHaveCount(1);
+  await showIndividualTiles(page);
   await expect(page.getByTestId("tile-palette")).toHaveCount(1);
   await expect(page.getByTestId("map-tree")).toHaveCount(1);
 

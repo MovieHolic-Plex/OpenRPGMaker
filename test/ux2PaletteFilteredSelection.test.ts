@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { clearFavoriteTilesForTest, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderTilePalette, selectPaletteTile, syncMountedPaletteLayerSelection, syncMountedPaletteSelection } from "@/editor/panels/tilePalette";
+import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { resetSidebarSurfaceForTests } from "@/editor/panels/sidebarSurface";
 import { combinedTownTileset, createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -46,6 +47,7 @@ describe("UX2 filtered palette and closed auxiliary bodies", () => {
     store.replace(project);
     editorState.set({ currentMapId: project.startMapId, layer: "lower", tool: "paint", paintShape: "pen", selectedTile: 0, activePaletteStamp: null, autoConnectMode: true, clusterAssistMode: true });
     renderTilePalette(root);
+    root.querySelector<HTMLElement>('[data-testid="palette-tab-tiles"]')?.click();
     filter("all");
     unsubscribe = editorState.subscribe(() => {
       if (!syncMountedPaletteLayerSelection() && !syncMountedPaletteSelection()) renderTilePalette(root);
@@ -54,6 +56,7 @@ describe("UX2 filtered palette and closed auxiliary bodies", () => {
   }
   beforeEach(() => {
     vi.useFakeTimers();
+    resetSmartPaletteForTests();
     clearFavoriteTilesForTest();
     resetSidebarSurfaceForTests();
     root = document.createElement("div");

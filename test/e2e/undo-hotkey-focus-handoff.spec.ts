@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 // 실측 회귀(2026-08-27): Phaser 캔버스는 포커스를 받지 않아, 어시스턴트 입력창에 한 번 타이핑하면
 // 맵을 칠한 뒤 누른 Ctrl+Z 가 맵이 아니라 프롬프트 글자를 지웠다("마을에 길 하나" → "마을에 길 하").
@@ -60,6 +61,7 @@ test("Ctrl+Z undoes the map edit after the assistant composer held focus", async
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
   await page.getByTestId("tool-paint").click();
+  await showIndividualTiles(page);
   await page.getByTestId("chipset-tile-7").click();
 
   const composer = page.getByTestId("ai-input");
@@ -88,6 +90,7 @@ test("editor tool hotkeys still reach the map after the tile search box held foc
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
   await page.getByTestId("tool-paint").click();
+  await showIndividualTiles(page);
   await page.getByTestId("tile-search-input").click();
 
   const point = await canvasPaintPoint(page);
@@ -103,6 +106,7 @@ test("Ctrl+Z inside a text field still belongs to the browser", async ({ page })
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 60_000 });
   await page.getByTestId("tool-paint").click();
+  await showIndividualTiles(page);
   await page.getByTestId("chipset-tile-7").click();
 
   const point = await canvasPaintPoint(page);

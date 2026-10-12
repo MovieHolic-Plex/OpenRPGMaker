@@ -1,4 +1,5 @@
 import { expect, type Page, type TestInfo } from "@playwright/test";
+import { showIndividualTiles } from "./showIndividualTiles";
 
 export type RuntimeState = {
   readonly mapId: string;
@@ -197,6 +198,7 @@ async function expectControlsDoNotOverlap(page: Page, pairs: readonly (readonly 
 
 export async function captureEditorViewport(capture: EditorViewportCapture): Promise<void> {
   await expect(capture.page.getByTestId("edit-canvas")).toBeVisible();
+  await showIndividualTiles(capture.page);
   await expectCanvasHasPixels(capture.page, "edit-canvas");
   await expectControlsDoNotOverlap(capture.page, capture.overlapPairs);
   await capture.page.screenshot({ path: capture.testInfo.outputPath(`${capture.name}.png`), fullPage: true });

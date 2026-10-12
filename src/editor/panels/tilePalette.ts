@@ -33,6 +33,14 @@ import {
   filterTileIndexes,
   type TileCategoryId,
 } from "@/editor/panels/tilePaletteFilter";
+import { paletteHasSmartCatalog } from "@/editor/panels/tilePaletteCatalog";
+import {
+  clearSmartTerrainSelection,
+  currentPaletteView,
+  makePaletteSmartBody,
+  makePaletteSmartTabs,
+  smartPaletteInputToken,
+} from "@/editor/panels/tilePaletteSmart";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -43,18 +51,11 @@ import { toast } from "@/util/toast";
 import { captureFocus, restoreFocus, applyRovingTabindex } from "@/editor/panels/sidebarFocus";
 import { ensureReliefSidePanel } from "@/editor/panels/reliefToolbar";
 
-// ── 좌패널 1면 통합 (2026-08-21) ──────────────────────────────────────────────
-// 예전에는 「칠하기 | 찾기 | 속성」 3탭이었다. 감독 지적("칠하기만 있으면 되는 거
-// 아닌가")대로 3탭 중 2개가 칠하기가 아니었고, 실측 결함이 붙어 있었다:
-//   · 찾기  = 팔레트 2차 구현. 별개 셀·별개 그리드·96개 상한, 오토타일 대표 1칸
-//             규칙 미적용 → 같은 타일 그림판이 탭에 따라 다르게 보였다. 게다가 고른 타일을
-//             그 자리에서 칠할 수 없었다(그리기 툴바가 칠하기 탭에만 있었다).
-//   · 속성  = 타일셋 저작 표면. 지면 종류 입력이 **두 개**였고(인스펙터 안 + 탭 하단),
-//             `describeChipsetTile` 가드가 없어 기본 타일 그림판이 아닌 타일셋에서 메타가
-//             전부 오답이었다. 빈 상태 안내는 "다른 탭으로 가라"였다.
-//   · 붓의 동작을 바꾸는 연결 Auto/Manual 토글이 칠할 때 보이지 않았다.
-// 이제 한 면이다: 선택칩 → 도구 → 필터 한 줄 → 팔레트 → 붓 보조 → 타일 속성 → 킷.
-// 탭 전환 0회. 검색·카테고리는 팔레트 자체를 필터링한다.
+// ── 좌패널 팔레트 ─────────────────────────────────────────────────────────────
+// 메타데이터가 있는 타일셋은 지형 / 프리팹 / 최근 / 개별 타일 네 탭이다
+// (tilePaletteCatalog.ts · tilePaletteSmart.ts). 지형 카드는 오토타일 대표 칸을
+// 고르고 기존 엔진이 이웃을 맞춘다. 프리팹 카드는 paletteStampFromKit 스탬프다.
+// 개별 타일 탭과, 그룹·킷이 없는 타일셋은 예전 격자·검색·7분류를 그대로 쓴다.
 
 // 분류 목록과 필터 계산은 panels/tilePaletteFilter.ts 로 옮겼다 — 구조물 편집기도 같은
 // 검색·분류를 쓰는데, 여기 있던 비공개 함수는 아래 모듈 전역을 직접 읽어서 그대로
@@ -86,8 +87,9 @@ type PaletteScroll = {
  * 레이어·필터 전환마다 다시 짓던 것이 사라진다. 기본 리플로우 판은 칸 집합 자체가 레이어·필터로 바뀌므로 넣는다.
  */
 function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
-  if (usesSourceSheet(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, "custom"].join("|");
-  return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, "grid"].join("|");
+  const view = paletteHasSmartCatalog(tileset) ? currentPaletteView(tileset) : "raw";
+  if (usesSourceSheet(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, view, "custom"].join("|");
+  return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, view, "grid"].join("|");
 }
 
 /** 필터가 켜져 있으면 기본 판은 칸 집합이 달라져 못 살린다. 커스텀 판은 언제나 살린다. */
@@ -190,6 +192,7 @@ function paletteRenderInputs(): readonly unknown[] | null {
     activeTileCategory,
     tileSearchQuery,
     showQuickTileNumbers,
+    smartPaletteInputToken(tileset),
   ];
 }
 
@@ -497,6 +500,16 @@ function makePaletteSurface(input: {
     root.append(palette);
     return { root, palette, sheetSlot: null };
   }
+  const smart = paletteHasSmartCatalog(tileset);
+  const smartView = smart ? currentPaletteView(tileset) : "tiles";
+  if (smart) root.append(makePaletteSmartTabs(tileset, renderPalettePreservingViewport));
+  if (smart && smartView !== "tiles") {
+    const catalogBody = makePaletteSmartBody(tileset, renderPalettePreservingViewport, selectPaletteTile);
+    root.append(catalogBody);
+    root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
+    appendPaletteUtilities(root, tileset, state, assist.section);
+    return { root, palette: catalogBody, sheetSlot: null };
+  }
   const visibleTiles = filteredTileIdSet(tileset);
   root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
   const emptyHint = makePaletteEmptyHint(tileLayer);
@@ -537,24 +550,27 @@ function makePaletteSurface(input: {
   root.append(sheetSlot ?? palette);
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
-  // ⋯ 검사·기록 메뉴는 도구막대 행 끝으로 옮겼다(2026-09-17) — 이 줄엔 붓 보조·조합만 남는다.
-  const utilities = el('div', { class: 'sidebar-utilities', children: [assist.section] });
-  // 타일 속성은 인라인이 아니라 창이다 — 인스펙터 본문 346px 가 좌패널(526px)에서
-  // 팔레트를 2px 로 눌렀다. 진입은 위 선택칩의 ⚙. (tilePropsDialog.ts 헤더 주석)
+  appendPaletteUtilities(root, tileset, state, assist.section);
 
-  // 구조 킷 선반은 팔레트 **아래**. 원래 위였는데, 당시 주석("등록 전에는 렌더 안 됨")대로
-  // 보통 비어 있어서 공짜였다. 2026-07-20 에 내장 집 킷이 합류하면서 선반이 상시 렌더로 바뀌었고
-  // 실측 팔레트 창 446px 중 192px(43%)을 점거해 타일 팔레트를 접힘선 아래로 밀어냈다.
-  // 타일 선택이 이 면의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
-  // 「조합」 = 검토를 통과한 큐레이션 Combo Brush 목록 (OPRN-OUT-022).
-  // 구조 킷 선반보다 **먼저** 온다: 내장 조합은 항상 있고, 킷은 사용자가 등록해야 생긴다.
-  if (comboBrushShelfEntries(tileset).length > 0) utilities.append(makeSidebarSurface({ id: 'combos', label: '조합', triggerId: 'sidebar-combo-brushes',
+  return { root, palette, sheetSlot };
+}
+
+/**
+ * 붓 보조 · 조합 · 내 구조물. 지형/프리팹 탭과 개별 타일 탭이 같은 줄을 쓴다.
+ * 구조 킷 선반은 접혀 있고, 캔버스는 열릴 때만 만든다(버들항 725킷).
+ */
+function appendPaletteUtilities(
+  root: HTMLElement,
+  tileset: TilesetDef,
+  state: ReturnType<typeof editorState.get>,
+  assistSection?: HTMLElement,
+): void {
+  const utilities = el("div", { class: "sidebar-utilities" });
+  if (assistSection) utilities.append(assistSection);
+  if (comboBrushShelfEntries(tileset).length > 0) utilities.append(makeSidebarSurface({ id: "combos", label: "조합", triggerId: "sidebar-combo-brushes",
     rerender: renderPalettePreservingViewport,
     body: () => makeComboBrushShelf({ rerender: renderPalettePreservingViewport, tileset })! }));
-
-  // Trigger availability needs metadata only. Build assembled canvases only
-  // when makeSidebarSurface actually opens the body (725 kits in Beodeul).
-  if (tileset.structureKits?.some((kit) => kit.kind === "section")) utilities.append(makeSidebarSurface({ id: 'kits', label: '내 구조물', triggerId: 'sidebar-structure-kits',
+  if (tileset.structureKits?.some((kit) => kit.kind === "section")) utilities.append(makeSidebarSurface({ id: "kits", label: "내 구조물", triggerId: "sidebar-structure-kits",
     rerender: renderPalettePreservingViewport,
     body: () => makeStructureKitShelf({
       tileset,
@@ -562,8 +578,6 @@ function makePaletteSurface(input: {
       rerender: renderPalettePreservingViewport,
     })! }));
   root.append(utilities);
-
-  return { root, palette, sheetSlot };
 }
 
 /**
@@ -1016,6 +1030,7 @@ export function selectPaletteTile(index: number): void {
     }
     const keepTools = new Set(["paint", "fill", "erase", "event"]);
     const switchToPaint = (!keepTools.has(state.tool) || state.tool === 'erase' && !!tileset && hasWorldmapBrushes(tileset)) && nextLayer !== "event";
+    clearSmartTerrainSelection();
     editorState.set({
       activePaletteStamp: null,
       layer: nextLayer,
@@ -1108,7 +1123,8 @@ function readPaletteScroll(container: HTMLElement): PaletteScroll {
 
 function paletteViewportElement(container: HTMLElement): HTMLElement | null {
   // 구 클러스터 팔레트(tile-palette-clusters)는 RM2K 팔레트로 대체·삭제됨 (2026-07-17).
-  return container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  return container.querySelector<HTMLElement>('[data-testid="tile-palette"]')
+    ?? container.querySelector<HTMLElement>('[data-testid="palette-smart-body"]');
 }
 
 function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {

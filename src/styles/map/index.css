@@ -3,6 +3,7 @@
 @import "./core.part-2.css" layer(map);
 @import "./palette-player.css" layer(map);
 @import "./tile-palette-clusters.css" layer(map);
+@import "./tile-palette-smart.css" layer(map);
 @import "./harness-suggestion.css" layer(map);
 @import "./harness-suggestion.part-2.css" layer(map);
 @import "./harness-suggestion.part-3.css" layer(map);
