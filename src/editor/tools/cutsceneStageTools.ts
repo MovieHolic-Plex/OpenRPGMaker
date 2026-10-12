@@ -151,7 +151,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       // generate_cutscene_art 그림이 character 로 넘어오면 run 이 resourceId 배우로 바로잡는다 — 캐릭터셋 프레임 준비는 건너뛴다.
       const asCharacter = characterOf(actor);
       if (asCharacter && (project?.assets.uploaded[asCharacter.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(asCharacter.resourceId))) {
-        actor.resourceId = asCharacter.resourceId; delete actor.character;
+        if (typeof actor.resourceId !== "string") actor.resourceId = asCharacter.resourceId; delete actor.character;
       }
       const picIds = [actor.resourceId, ...(Array.isArray(actor.poses) ? (actor.poses as Raw[]).map((p) => p.resourceId) : [])].filter((id): id is string => typeof id === "string" && id.trim().length > 0);
       for (const id of picIds) {
@@ -183,7 +183,7 @@ const scriptCutsceneStaged: ToolDefinition = {
     // generate_cutscene_art 소품은 캐릭터셋이 아니라 그림이다 — character 로 넘겨도 resourceId 배우로 바로잡는다(반복 실패 실측).
     for (const raw of rawActors) {
       const c = characterOf(raw);
-      if (c && typeof raw.resourceId !== "string" && (draft.assets.uploaded[c.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(c.resourceId))) { raw.resourceId = c.resourceId; delete raw.character; }
+      if (c && (draft.assets.uploaded[c.resourceId]?.kind === "picture" || /^cutscene_(sprite|backdrop)_/u.test(c.resourceId))) { if (typeof raw.resourceId !== "string") raw.resourceId = c.resourceId; delete raw.character; }
     }
     for (const raw of rawActors) {
       const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
