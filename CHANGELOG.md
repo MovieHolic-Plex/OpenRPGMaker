@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.199.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — river street — embankment walls, bridges, riverfront park, prop overlap rules (#2465) (`a6f57c8`)
+
 ## 0.198.0 — 2026-10-12
 
 ### 기능
