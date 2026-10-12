@@ -457,11 +457,11 @@
 /* ── 로고 질감 ─────────────────────────────────────────────────────────────
    글꼴은 번들하지 않는다(CDN 금지) — 설치돼 있으면 Cinzel/Trajan, 아니면 세리프. */
 .rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style] {
-  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #d7dde6 38%, #7c8796 52%, #eef2f6 64%, #9aa4b1 100%);
-  --oprn-logo-edge: rgb(10 14 24 / 85%);
-  --oprn-logo-glow: rgb(0 0 0 / 55%);
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #f1f4f8 45%, #cfd8e3 56%, #ffffff 100%);
+  --oprn-logo-edge: rgb(6 10 20 / 92%);
+  --oprn-logo-glow: rgb(0 0 0 / 80%);
   font-family: "Cinzel", "Trajan Pro", "Cormorant SC", Georgia, "Noto Serif KR", serif;
-  font-size: 23px;
+  font-size: 27px;
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.1;
@@ -592,6 +592,18 @@
   .rm-title-screen .rm-title-screen-title[data-logo-style] {
     animation: none !important;
   }
+}
+
+/* 고른 로고 질감이 편집형 기본 은색에 덮이지 않게 한다(특이도 동일 수준으로 뒤에서 덮음). */
+.rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style="gold"] {
+  --oprn-logo-fill: linear-gradient(180deg, #fff6d0 0%, #f7d56b 42%, #d9a23a 56%, #ffe9a0 100%);
+}
+.rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style="glow"] {
+  --oprn-logo-fill: linear-gradient(180deg, #ffffff 0%, #e4f6ff 50%, #a9e0ff 100%);
+  --oprn-logo-glow: rgb(120 200 255 / 80%);
+}
+.rm-title-screen.rm-title-screen-editorial[data-logo-style] .rm-title-screen-title[data-logo-style="stone"] {
+  --oprn-logo-fill: linear-gradient(180deg, #f2eee3 0%, #d9d4c8 50%, #b9b2a3 100%);
 }
 
 /* ── 로고 반짝임 설정(logoShine) ─────────────────────────────────────────────
