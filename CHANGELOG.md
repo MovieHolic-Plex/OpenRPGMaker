@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.193.0 — 2026-10-12
+
+### 기능
+
+- **jp-city** — street composer — T/through alleys, spaced lamps avoiding doors, hedge back edge, facade signs (#2448) (`9951f0a`)
+- route preset generation through goal campaigns (#2444) (`bb66bbf`)
+- **jp-city** — street composer — seeded rule-based streets instead of pasted samples; compose_jp_city_street tool; jp starts use it (`bf9d00e`)
+
+### 수정
+
+- **jp-city** — one-way lane look — no oncoming cars, 30 marking, no centerline on narrow streets (`e1074a2`)
+- **jp-city** — connect alley to the main road with sidewalks; label each building's door so interiors match shops (`4033064`)
+
+### 기타
+
+- docs+test: street composer (`f97097b`)
+
 ## 0.192.0 — 2026-10-12
 
 ### 기능
