@@ -22,12 +22,14 @@ export interface JpStreetShop {
 
 export interface JpStreetStep { readonly tool: string; readonly args: Record<string, unknown>; readonly optional?: boolean; readonly note?: string }
 
-export interface JpStreetBuilding { readonly role: string; readonly x: number; readonly foot: number; readonly w: number; /** 이 건물이 선 띠의 맨 윗줄(건물 위 뒷마당 채우기 한계) */ readonly top?: number }
+export interface JpStreetBuilding { readonly role: string; readonly x: number; readonly foot: number; readonly w: number; /** 이 건물이 선 띠의 맨 윗줄(건물 위 뒷마당 채우기 한계) */ readonly top?: number; /** 일체형 정면 키트의 문 왼쪽 칸(절대 x) — 문 앞 접근칸 보호용 */ readonly doorX?: number }
 
 export interface JpStreetPlan {
   readonly steps: readonly JpStreetStep[];
   /** 계획한 건물(후보 `try:N` 의 N 번째). 실제로 지어진 것만 `runJpStreetPlan` 결과에 남는다. */
   readonly buildings: readonly JpStreetBuilding[];
+  /** 놓기로 한 소품이 차지한 칸(겹침 정리 뒤) — 현관 소품이 피한다 */
+  readonly propRects?: readonly { x: number; y: number; w: number; h: number }[];
   /** 걸어 다니는 큰길 줄(보도 둘 사이) — 시작 칸·문 후보를 고르는 기준. */
   readonly walkRows: readonly number[];
   readonly summary: string;
@@ -82,7 +84,7 @@ const ROLE_DOORS: Readonly<Record<string, readonly string[]>> = {
 /** 현관 앞 꾸밈: 문 양옆 보도 칸에 놓는 낮은 소품(종류별). id → [w,h]. 문 바로 앞 칸(접근칸)은 비운다. */
 const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number, number])[]>> = {
   house: [["jp-prop-pot", 1, 2], ["jp-prop-post-box", 1, 2], ["jp-pots", 2, 1], ["jp-prop-planter", 2, 1]],
-  machiya: [["jp-prop-pot", 1, 2], ["jp-pots", 2, 1], ["jp-prop-lantern-post", 1, 3]],
+  machiya: [["jp-prop-pot", 1, 2], ["jp-pots", 2, 1], ["jp-prop-stone-lantern", 1, 2]],
   apartment: [["jp-prop-post-box", 1, 2], ["jp-prop-bike-sora", 2, 2], ["jp-prop-bike-aka", 2, 2], ["jp-prop-planter", 2, 1]],
   office: [["jp-prop-planter", 2, 1], ["jp-prop-bollard", 1, 1], ["jp-prop-post-box", 1, 2]],
   konbini: [["jp-prop-bike-rack", 2, 1], ["jp-prop-vending-aka", 2, 2], ["jp-prop-a-frame", 1, 1]],
@@ -91,7 +93,7 @@ const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number
   ramen: [["jp-prop-a-frame", 1, 1], ["jp-prop-bike-rack", 2, 1], ["jp-prop-vending-sora", 2, 2]],
   shop: [["jp-prop-a-frame", 1, 1], ["jp-prop-planter", 2, 1], ["jp-prop-pot", 1, 2]],
   garage: [["jp-prop-cone", 1, 1], ["jp-prop-barricade3", 3, 1]],
-  sento: [["jp-prop-pot", 1, 2], ["jp-prop-bench", 2, 1], ["jp-prop-lantern-post", 1, 3]],
+  sento: [["jp-prop-pot", 1, 2], ["jp-prop-bench", 2, 1], ["jp-prop-stone-lantern", 1, 2]],
   bento: [["jp-prop-a-frame", 1, 1], ["jp-prop-bike-rack", 2, 1]],
 };
 
@@ -99,6 +101,15 @@ const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number
 const LANDMARKS: readonly { id: string; w: number; h: number }[] = [
   { id: "jp-bldg-mansion4", w: 11, h: 11 }, { id: "jp-bldg-zakkyo5", w: 7, h: 14 }, { id: "jp-bldg-office6", w: 9, h: 15 }, { id: "jp-bldg-mansion6-slim", w: 7, h: 15 }, { id: "jp-bldg-clinic", w: 9, h: 8 }, { id: "jp-bldg-post-office", w: 9, h: 8 }, { id: "jp-bldg-supermarket", w: 14, h: 6 }, { id: "jp-bldg-koban", w: 6, h: 6 },
 ];
+
+/** 겹침 검사용 소품 칸 크기(w,h) — 키트 색인 tiledata/jp-city/kit-index.json 의 값. 모르는 id 는 검사하지 않는다. */
+const PROP_SIZE: Readonly<Record<string, readonly [number, number]>> = {
+  "jp-bus-stop": [1, 3], "jp-hydrant-sign": [1, 3], "jp-pots": [2, 1], "jp-prop-a-frame": [1, 1], "jp-prop-barricade3": [3, 1], "jp-prop-bench": [2, 1],
+  "jp-prop-bike-aka": [2, 2], "jp-prop-bike-midori": [2, 2], "jp-prop-bike-rack": [2, 1], "jp-prop-bike-sora": [2, 2], "jp-prop-bollard": [1, 1], "jp-prop-cone": [1, 1],
+  "jp-prop-curve-mirror": [1, 3], "jp-prop-garbage-net": [2, 1], "jp-prop-lamp-post": [1, 4], "jp-prop-lantern-post": [1, 3], "jp-prop-planter": [2, 1], "jp-prop-post-box": [1, 2],
+  "jp-prop-pot": [1, 2], "jp-prop-stone-lantern": [1, 2], "jp-prop-utility-pole2": [2, 5], "jp-prop-vending-aka": [2, 2], "jp-prop-vending-midori": [2, 2], "jp-prop-vending-sora": [2, 2],
+  "jp-prop-nobori-aka": [1, 2], "jp-prop-nobori-sora": [1, 2], "jp-prop-nobori-midori": [1, 2],
+};
 
 const SHOPPING_MIX = ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "shop", "izakaya", "apartment", "bento", "cafe", "garage"];
 const RESIDENTIAL_MIX = ["house", "house", "machiya", "apartment", "house", "garage", "house", "machiya", "sento", "house"];
@@ -137,8 +148,20 @@ function shuffle<T>(rng: () => number, list: readonly T[]): T[] {
 
 const pick = <T>(rng: () => number, list: readonly T[]): T => list[Math.floor(rng() * list.length)]!;
 
+/** 일체형 1층 가게 정면(문 + 1층을 한 장으로 그린 키트 jp-sf-<종류>-<폭>-<L|R>, scripts/content/jp-city/blocks/shopfront_art.py)이 있는 종류. 차고는 셔터 문이라 조립기 그림을 그대로 쓴다. */
+const SF_ROLES: ReadonlySet<string> = new Set(["konbini", "izakaya", "ramen", "cafe", "shop", "bento", "office", "apartment", "house", "machiya", "sento"]);
+const SF_MIN_W = 3, SF_MAX_W = 9;
+/** 키트의 문 왼쪽 칸(shopfront_art.door_col 과 같다). */
+export function sfDoorCol(w: number, side: "L" | "R"): number {
+  if (w <= 3) return side === "L" ? 0 : 1;
+  return side === "L" ? 1 : w - 3;
+}
+export function sfKitId(role: string, w: number, side: "L" | "R"): string | undefined {
+  return SF_ROLES.has(role) && w >= SF_MIN_W && w <= SF_MAX_W ? `jp-sf-${role}-${w}-${side}` : undefined;
+}
+
 /** 건물 한 채의 조립 입력을 뽑는다. `attempt` 가 늘수록 단순한 조합(층 수 ↓, 간판 없음)으로 물러난다. */
-export function randomBuildingArgs(rng: () => number, role: string, w: number, attempt: number, rowsAvail = 99): Record<string, unknown> {
+export function randomBuildingArgs(rng: () => number, role: string, w: number, attempt: number, rowsAvail = 99, side: "L" | "R" = rng() < 0.5 ? "L" : "R"): Record<string, unknown> {
   const look = LOOKS[role] ?? LOOKS.shop!;
   // 1층(3줄)+지붕(2~3줄)을 빼고 남는 줄을 층(2줄)으로 — 건물이 앞 보도·도로를 덮지 않게
   const cap = Math.max(1, Math.floor((rowsAvail - 5) / 2));
@@ -155,10 +178,15 @@ export function randomBuildingArgs(rng: () => number, role: string, w: number, a
   // 문: 종류와 자리를 바꾼다(기본은 오른쪽 끝 · 기본문). 막히면(DOOR_BLOCKED·DECO_CLASH) 뒤 후보가 기본으로 물러난다.
   if (attempt < 8) {
     const doorPool = ROLE_DOORS[role] ?? ROLE_DOORS.shop!;
-    const type = pick(rng, doorPool);
-    const dw = type === "machiya" ? 3 : 2;
-    const spots = [...new Set([n0(0), Math.floor((w - dw) / 2), w - dw])].filter((c) => c >= 0 && c <= w - dw);
-    args.door = { type, col: pick(rng, spots) };
+    let type = pick(rng, doorPool);
+    if (sfKitId(role, w, "L")) {                                   // 일체형 정면이 문 자리를 정한다(문 2칸, 왼쪽 또는 오른쪽) — 조립기 문은 밑그림일 뿐 곧 덮인다
+      if (type === "machiya") type = "lattice";
+      args.door = { type, col: sfDoorCol(w, side) };
+    } else {
+      const dw = type === "machiya" ? 3 : 2;
+      const spots = [...new Set([n0(0), Math.floor((w - dw) / 2), w - dw])].filter((c) => c >= 0 && c <= w - dw);
+      args.door = { type, col: pick(rng, spots) };
+    }
   }
   if (look.heads && attempt < 4 && rng() < 0.45) { args.head = pick(rng, look.heads); delete args.roof; }
   // 외벽 부착물: 가게 종류의 간판·배관·실외기·비상계단. 충돌하면 조립기가 거절하고(DECO_CLASH) 뒤 후보는 부착물을 뺀다.
@@ -464,13 +492,15 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
       const endLimit = lmEnd ? w : packW;
       if (endLimit - cur >= 2) yard(sx + cur, endLimit - cur, b.foot, b.top);
       for (const bb of packed) {
-        placed.push({ role: bb.role, x: sx + bb.x, foot: b.foot, w: bb.w, top: b.top });
-        for (let fx = 0; fx < bb.w; fx++) stamp("jp-foot-shadow", sx + bb.x + fx, b.foot + 1, "ground");   // 접지 그림자(건물이 뜨지 않게)
+        const side: "L" | "R" = rng() < 0.5 ? "L" : "R";
+        const doorX = sfKitId(bb.role, bb.w, side) ? sx + bb.x + sfDoorCol(bb.w, side) : undefined;
+        placed.push({ role: bb.role, x: sx + bb.x, foot: b.foot, w: bb.w, top: b.top, ...(doorX !== undefined ? { doorX } : {}) });
+        for (let fx = 0; fx < bb.w; fx++) if (doorX === undefined || sx + bb.x + fx < doorX || sx + bb.x + fx > doorX + 1) stamp("jp-foot-shadow", sx + bb.x + fx, b.foot + 1, "ground");   // 접지 그림자(건물이 뜨지 않게)
         // 같은 건물에 대한 후보 입력 12개(점점 단순) — 첫 성공을 쓴다(buildJpCityBuilding 이 거절하면 다음)
         for (let attempt = 0; attempt < 12; attempt++) {
           buildSteps.push({
             tool: "build_jp_city_building",
-            args: { mapId, x: sx + bb.x, y: b.foot, ...randomBuildingArgs(rng, bb.role, bb.w, attempt, b.foot - b.top + 1) },
+            args: { mapId, x: sx + bb.x, y: b.foot, ...randomBuildingArgs(rng, bb.role, bb.w, attempt, b.foot - b.top + 1, side) },
             optional: true, note: `try:${placed.length - 1}`,
           });
         }
@@ -501,7 +531,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const props = ["jp-prop-vending-aka", "jp-prop-vending-sora", "jp-prop-vending-midori", "jp-prop-bike-sora", "jp-prop-bike-aka", "jp-prop-bike-midori", "jp-prop-planter", "jp-prop-pot", "jp-prop-bench", "jp-prop-post-box", "jp-prop-bike-rack", "jp-prop-a-frame", "jp-prop-garbage-net", "jp-prop-bollard"];
   const propH: Record<string, number> = { "jp-prop-vending-aka": 2, "jp-prop-vending-sora": 2, "jp-prop-vending-midori": 2, "jp-prop-bike-sora": 2, "jp-prop-bike-aka": 2, "jp-prop-bike-midori": 2, "jp-prop-planter": 1, "jp-prop-pot": 2, "jp-prop-bench": 1, "jp-prop-post-box": 2, "jp-prop-bike-rack": 1, "jp-prop-a-frame": 1, "jp-prop-garbage-net": 1, "jp-prop-bollard": 1 };
   const propW: Record<string, number> = { "jp-prop-vending-aka": 2, "jp-prop-vending-sora": 2, "jp-prop-vending-midori": 2, "jp-prop-bike-sora": 2, "jp-prop-bike-aka": 2, "jp-prop-bike-midori": 2, "jp-prop-planter": 2, "jp-prop-pot": 1, "jp-prop-bench": 2, "jp-prop-post-box": 1, "jp-prop-bike-rack": 2, "jp-prop-a-frame": 1, "jp-prop-garbage-net": 2, "jp-prop-bollard": 1 };
-  const doorZone = (x: number, foot: number) => placed.some((b) => b.foot === foot && x >= b.x + b.w - 3 && x <= b.x + b.w);
+  const doorZone = (x: number, foot: number) => placed.some((b) => b.foot === foot && (b.doorX !== undefined ? x >= b.doorX - 1 && x <= b.doorX + 2 : x >= b.x + b.w - 3 && x <= b.x + b.w));
   bands.forEach((b, bi) => {
     const rowY = b.foot + 2;
     let px = 1 + Math.floor(rng() * 3);
@@ -590,10 +620,32 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
     if (!nb) continue;
     stamp(`jp-prop-tree-${rng() < 0.6 ? "sakura" : "zelkova"}`, t.x, t.y, "bank");
   }
+  const propRectsOut: { x: number; y: number; w: number; h: number }[] = [];
+  // 겹침 정리: 키 큰 소품·보도 소품이 건물 1층 칸(발 위 3줄) 위에 서거나 다른 소품과 같은 칸을 쓰면 뒤에 놓은 것을 뺀다 — 「건물과 가로등이 겹쳐 문·외벽을 가린다」 방지.
+  {
+    const rects = placed.map((pb) => {
+      const lm = pb.role === "landmark" ? LANDMARKS.find((l) => l.w === pb.w) : undefined;
+      return { x: pb.x, y: pb.foot - (lm ? lm.h - 1 : 2), w: pb.w, h: lm ? lm.h : 3 };
+    });
+    const hit = (a: { x: number; y: number; w: number; h: number }, b: { x: number; y: number; w: number; h: number }) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    const claimed: { x: number; y: number; w: number; h: number }[] = [];
+    for (let i = 0; i < steps.length; i++) {
+      const st = steps[i]!;
+      if (st.tool !== "stamp_object" || st.note !== "prop") continue;
+      const id = String(st.args.objectId ?? "").replace("kit:jp_city/", "");
+      const sz = PROP_SIZE[id];
+      if (!sz) continue;
+      const r = { x: Number(st.args.x), y: Number(st.args.y), w: sz[0], h: sz[1] };
+      if (rects.some((b2) => hit(r, b2)) || claimed.some((b2) => hit(r, b2))) { steps.splice(i, 1); i--; continue; }
+      claimed.push(r);
+    }
+    propRectsOut.push(...claimed);
+  }
   const zoneNames: Record<JpBlockZone, string> = { shop: "상가", house: "주택", park: "공원", parking: "주차장" };
   return {
     steps,
     buildings: placed,
+    propRects: propRectsOut,
     mapId, seed: opts.seed,
     walkRows: [...bands.flatMap((b) => (b.gap ? (b.gap.river ? [b.foot + 2, b.gap.sw2] : [b.foot + 2, b.gap.road0, b.gap.road0 + 1, b.gap.sw2]) : [])), H - 2],
     summary: `${style === "residential" ? "주택가" : "상가 거리"} ${W}×${H} — 띠 ${N}줄(발 ${bands.map((b) => `y${b.foot}`).join("·")}), 큰길 ${N - 1}(폭 ${roadWs.join("·")}), 세로 길 ${streets.length}${riverGap >= 0 ? ", 하천(가로)" : ""}, 구획 ${zones.map((z) => zoneNames[z.zone]).join("·")}, 건물 ${placed.length}채(${placed.map((p) => p.role).join("·")})`,
@@ -634,6 +686,22 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       if (tryKey && !plan.steps.some((s2) => s2.note === tryKey && plan.steps.indexOf(s2) > plan.steps.indexOf(step))) skipped++;
     }
   }
+  // 일체형 1층: 조립기가 그린 1층 3줄(문 포함)을 비우고 문과 한 장으로 그린 가게 정면 키트를 찍는다.
+  for (const b of buildings) {
+    if (!b.rect || !b.doors.length) continue;
+    const door = b.doors[0]!;
+    const dc = door.x - b.rect.x0;
+    const side: "L" | "R" | undefined = dc === sfDoorCol(b.rect.w, "L") ? "L" : dc === sfDoorCol(b.rect.w, "R") ? "R" : undefined;
+    const kit = side ? sfKitId(b.role, b.rect.w, side) : undefined;
+    if (!kit) continue;
+    const foot = b.rect.y0 + b.rect.h - 1;
+    const clear = Array.from({ length: 3 }, () => Array.from({ length: b.rect!.w }, () => -2));
+    try {
+      call("stamp_layer_block", { mapId: plan.mapId, x: b.rect.x0, y: foot - 2, layers: { "3": clear, "4": clear }, reshape: false });
+      call("stamp_object", { objectId: `kit:jp_city/${kit}`, mapId: plan.mapId, x: b.rect.x0, y: foot - 2 });
+      props++;
+    } catch (e) { if (process.env.SFDBG) console.error("sf fail", kit, String((e as Error).message).slice(0, 200)); }
+  }
   // 뒷담: 건물이 띠 꼭대기까지 닿지 않으면 지붕 위 한 줄에 블록담을 둘러 뒤가 허공처럼 비어 보이지 않게 한다(건물 뒤는 블록 안쪽 뒷마당).
   for (const b of buildings) {
     if (!b.rect || b.top === undefined) continue;
@@ -641,6 +709,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
     if (wy - b.top >= 2) { try { call("fill_region", { mapId: plan.mapId, rect: { x: b.rect.x0, y: wy, w: b.rect.w, h: 1 }, material: "블록담" }); } catch { /* 건너뜀 */ } }
   }
   // 현관 꾸밈: 실제로 지어진 문 양옆 보도 칸에 종류별 소품(화분·우편함·입간판·자전거…). 문 바로 앞 접근칸은 비운다.
+  const taken: { x: number; y: number; w: number; h: number }[] = [...(plan.propRects ?? [])];
   const drng = mulberry((plan.seed ^ 0x51ed270b) >>> 0);
   for (const b of buildings) {
     if (!b.rect || !b.doors.length) continue;
@@ -651,10 +720,14 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
     const sides = [left, right].filter((x) => x >= b.rect!.x0 && x < b.rect!.x0 + b.rect!.w);
     for (const sx of sides) {
       if (drng() < 0.35) continue;
-      const [id, pw, ph] = pool[Math.floor(drng() * pool.length)]!;
+      const low = pool.filter((q) => q[2] === 1);                   // 건물 칸(발 줄)을 덮지 않게 보도 첫 줄(발 바로 아래)에 한 줄짜리만
+      if (!low.length) continue;
+      const [id, pw] = low[Math.floor(drng() * low.length)]!;
       const x = sx === left ? sx - pw + 1 : sx;
       if (x < b.rect.x0 || x + pw > b.rect.x0 + b.rect.w) continue;
-      try { call("stamp_object", { objectId: `kit:jp_city/${id}`, mapId: plan.mapId, x, y: dy + 1 - ph + 1 }); props++; } catch { /* 자리가 막히면 건너뜀 */ }
+      const r = { x, y: dy + 1, w: pw, h: 1 };
+      if (taken.some((t) => r.x < t.x + t.w && r.x + r.w > t.x && r.y < t.y + t.h && r.y + r.h > t.y)) continue;
+      try { call("stamp_object", { objectId: `kit:jp_city/${id}`, mapId: plan.mapId, x, y: dy + 1 }); props++; taken.push(r); } catch { /* 자리가 막히면 건너뜀 */ }
     }
   }
   return { built, skipped, props, buildings };

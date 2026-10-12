@@ -364,3 +364,10 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 다리: 벽면 구간은 도로 아스팔트가 이어지고 물 위에만 널(bridge-lip/plank/pier). 난간 bridge-rail-v + bridge-post, 어귀 횡단보도.
 - 키 큰 소품(가로등·전봇대·입간판·버스 정류장)은 건물 칸 위에 두지 않는다(clearCols). 전선은 두 전봇대 사이가 건물일 때만.
 - 세로 길 중앙선은 차선 수가 짝수면 mark-center-v-l.
+
+## 일체형 1층 정면 (2026-10-12)
+- 조립기의 1층 띠와 문 부착물을 따로 그리면 문이 스티커처럼 붙어서, 문 + 1층을 한 장으로 그린 키트 `jp-sf-<종류>-<폭 3~9>-<L|R>` 를 만들었다(`blocks/shopfront_art.py`, `street_hand.py` 가 등록). 11종: konbini·izakaya·ramen·cafe·shop·bento·office·apartment·house·machiya·sento. 차고는 셔터 문이라 조립기 그림을 쓴다.
+- 문은 2칸 폭·36px 높이(Actor1 24×32 + 머리 위 4px). 막힘은 아래 두 줄 전부. 폭마다 문이 왼쪽(L)·오른쪽(R).
+- 거리 조립기(`runJpStreetPlan`)는 `build_jp_city_building` 이 지은 뒤 1층 3줄의 3·4층을 `stamp_layer_block`(-2)로 비우고 키트를 덮어 찍는다. 문 칸은 건물마다 미리 정한 side(`sfDoorCol`)로 조립기에 `door.col` 을 줘서 같은 자리에 둔다.
+- 겹침: 계획 단계에서 소품 크기표(`PROP_SIZE`)로 건물 1층 칸·다른 소품과 겹치는 소품을 뺀다(`propRects`). 현관 소품은 한 줄짜리만 보도 첫 줄에(건물 칸 위 3층 덮어쓰기 금지). 문 앞 접근칸은 `doorX` 로 정확히 비운다.
+- 미리보기: 문 옆에 Actor1 프레임을 세워 크기를 비교한다(`/tmp/sf_one.py` 같은 임시 스크립트로 `shopfront_art.draw` 호출).
