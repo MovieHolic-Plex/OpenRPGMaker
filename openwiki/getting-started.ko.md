@@ -196,7 +196,7 @@ CDN 스트리밍을 계속 쓰거나 새 팩을 제작하는 관리자는 [`open
 <details>
 <summary>AI 어시스턴트 연결</summary>
 
-AI 설정에는 제공자가 셋입니다. ChatGPT(Codex)와 Google(Antigravity)은 구독 OAuth 이고, Grok 은 xAI API 키입니다. `npm run dev` 는 로그인·완료를 페이지와 **같은 포트**에 붙입니다. 별도 터미널은 필요 없습니다.
+AI 설정에는 제공자가 넷입니다. ChatGPT(Codex), Google(Antigravity), Grok 구독은 OAuth 이고, Grok API 는 xAI API 키입니다. `npm run dev` 는 로그인·완료를 페이지와 **같은 포트**에 붙입니다. 별도 터미널은 필요 없습니다.
 `npm start`와 팀 호스트는 공유 호스트라 AI가 기본으로 꺼져 있습니다. 소유자만 쓰려면 `OPRN_HOST_OWNER_AI=1`을 붙여 실행하고, 그 계정으로 로그인해야 합니다. 개인 실행기(`npm run mac:launch`)는 루프백 전용이라 이 스위치가 필요 없습니다.
 
 ```bash
@@ -212,10 +212,13 @@ Google 로그인이 「클라이언트 ID가 없다」고 하면, 설치된 `@oh
 | Google client id | `OPRN_ANTIGRAVITY_CLIENT_ID` |
 | Google client secret | `OPRN_ANTIGRAVITY_CLIENT_SECRET` |
 | ChatGPT client id | `OPRN_CODEX_CLIENT_ID` |
+| Grok client id | `OPRN_XAI_CLIENT_ID` |
 
 직접 만든 Google/OpenAI 앱으로는 이 로그인이 되지 않습니다. redirect 와 스코프가 Antigravity·Codex 공개 클라이언트에 묶여 있습니다. 그 값을 설정에 넣을 때의 redirect 는 Google `http://127.0.0.1:51121/oauth-callback`(루프백 포트는 달라질 수 있음), ChatGPT 브라우저 `http://localhost:1455/auth/callback` 뿐입니다. 자세한 주소는 `openwiki/licensing.md` 의 OAuth 절입니다.
 
-Grok 은 OAuth 가 아닙니다. [xAI 콘솔](https://console.x.ai)에서 키를 만들어 AI 설정의 Grok 카드에 붙여 넣거나, 서버에 `XAI_API_KEY` 를 두고 「고급: 서버에 저장된 연결 정보 찾아보기」에서 찾아보기를 허용합니다. 기본 모델은 `grok-4.7`, 주소는 `https://api.x.ai/v1` 입니다. xAI 디바이스 로그인은 이 앱용 client id 가 공개돼 있지 않아 연결하지 않았습니다. 그림 생성은 Grok 이 아니라 기존 이미지 제공자를 그대로 씁니다.
+Grok 계정 카드는 oh-my-pi 와 같은 디바이스 코드 로그인입니다. 설치된 `@oh-my-pi/pi-catalog` 가 client id 를 채우므로, 개발 머신에서는 `OPRN_XAI_CLIENT_ID` 를 따로 넣지 않아도 됩니다. 패키지에 카탈로그가 없으면 환경 변수나 `~/.oprn/oauth-clients.json` 의 `xaiClientId` 가 필요합니다. 그 값은 저장소에 적지 않습니다. 로그인은 xAI 가 보여주는 주소에서 코드를 입력하는 방식이고, 카탈로그는 SuperGrok 또는 X Premium+ 구독을 전제로 합니다. 기본 모델은 `grok-4.7` 입니다.
+
+구독 대신 API 키를 쓰려면 Grok API 카드를 고칩니다. [xAI 콘솔](https://console.x.ai)에서 키를 만들어 붙여 넣거나, 서버에 `XAI_API_KEY` 를 두고 「고급: 서버에 저장된 연결 정보 찾아보기」에서 찾아보기를 허용합니다. 주소는 `https://api.x.ai/v1` 입니다. 그림 생성은 Grok 이 아니라 기존 이미지 제공자를 그대로 씁니다.
 
 - **DEV (`npm run dev`)**: vite 가 `/auth/*`·`/v1/chat/completions` 를 페이지와 같은 출처에 붙입니다.
 - **단독 동반 서비스**가 필요할 때만:

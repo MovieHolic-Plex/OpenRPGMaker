@@ -2,14 +2,14 @@
 //
 // 설치형 앱의 client_secret 은 OAuth 규격상 비밀이 아니지만(RFC 8252 §8.5), 남의 앱 자격이라
 // 공개 저장소(OpenRPGMaker)에 우리 손으로 적지 않는다(2026-10-08 사용자 결정). 앞선 것이 이긴다:
-//   1. 환경변수 OPRN_ANTIGRAVITY_CLIENT_ID · OPRN_ANTIGRAVITY_CLIENT_SECRET · OPRN_CODEX_CLIENT_ID
+//   1. 환경변수 OPRN_ANTIGRAVITY_CLIENT_ID · OPRN_ANTIGRAVITY_CLIENT_SECRET · OPRN_CODEX_CLIENT_ID · OPRN_XAI_CLIENT_ID
 //   2. ~/.oprn/oauth-clients.json (또는 OPRN_OAUTH_CLIENTS_FILE)
 //   3. 설치된 @oh-my-pi/pi-catalog KDL / @oh-my-pi/pi-ai 소스 (scripts/lib/oauthClients.mjs)
 //   4. 빌드 주입 __OPRN_OAUTH_CLIENTS__ — 배포용 Electron 메인(scripts/build-electron.mjs)
 // 예시는 scripts/oauth-clients.example.json. 2·3은 configureOAuthClients() 로 넣는다.
 // 이 모듈은 node:* 를 쓰지 않는다 — 형제 모듈들과 같이 브라우저/Node/테스트에서 동일하게 돈다.
 
-export type OAuthClientKey = "antigravityClientId" | "antigravityClientSecret" | "codexClientId";
+export type OAuthClientKey = "antigravityClientId" | "antigravityClientSecret" | "codexClientId" | "xaiClientId";
 export type OAuthClients = Record<OAuthClientKey, string>;
 
 declare const __OPRN_OAUTH_CLIENTS__: Partial<OAuthClients> | undefined;
@@ -18,6 +18,7 @@ const ENV_NAMES: Record<OAuthClientKey, string> = {
   antigravityClientId: "OPRN_ANTIGRAVITY_CLIENT_ID",
   antigravityClientSecret: "OPRN_ANTIGRAVITY_CLIENT_SECRET",
   codexClientId: "OPRN_CODEX_CLIENT_ID",
+  xaiClientId: "OPRN_XAI_CLIENT_ID",
 };
 
 let configured: Partial<OAuthClients> = {};

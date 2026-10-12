@@ -17,6 +17,7 @@ const savedEnv = {
   OPRN_ANTIGRAVITY_CLIENT_ID: process.env.OPRN_ANTIGRAVITY_CLIENT_ID,
   OPRN_ANTIGRAVITY_CLIENT_SECRET: process.env.OPRN_ANTIGRAVITY_CLIENT_SECRET,
   OPRN_CODEX_CLIENT_ID: process.env.OPRN_CODEX_CLIENT_ID,
+  OPRN_XAI_CLIENT_ID: process.env.OPRN_XAI_CLIENT_ID,
   OPRN_OAUTH_CLIENTS_FILE: process.env.OPRN_OAUTH_CLIENTS_FILE,
 };
 
@@ -62,6 +63,7 @@ describe("OAuth 클라이언트 출처", () => {
     delete process.env.OPRN_ANTIGRAVITY_CLIENT_ID;
     delete process.env.OPRN_ANTIGRAVITY_CLIENT_SECRET;
     delete process.env.OPRN_CODEX_CLIENT_ID;
+    delete process.env.OPRN_XAI_CLIENT_ID;
     assert.throws(() => oauthClient("codexClientId"), /OPRN_CODEX_CLIENT_ID/);
     assert.throws(() => oauthClient("codexClientId"), /oauth-clients\.json/);
 
@@ -71,6 +73,7 @@ describe("OAuth 클라이언트 출처", () => {
       antigravityClientId: "owner.apps.googleusercontent.com",
       antigravityClientSecret: "owner-secret",
       codexClientId: "  ",
+      xaiClientId: "owner-xai-client",
       ignored: "nope",
     }));
     try {
@@ -78,10 +81,12 @@ describe("OAuth 클라이언트 출처", () => {
       assert.deepEqual(fromFile, {
         antigravityClientId: "owner.apps.googleusercontent.com",
         antigravityClientSecret: "owner-secret",
+        xaiClientId: "owner-xai-client",
       });
       configureOAuthClients({ codexClientId: "from-package" });
       configureOAuthClients(fromFile);
       assert.equal(oauthClient("codexClientId"), "from-package");
+      assert.equal(oauthClient("xaiClientId"), "owner-xai-client");
       const redirectUri = `http://127.0.0.1:${CALLBACK_PORT}${CALLBACK_PATH}`;
       const url = new URL(buildAntigravityAuthorizationUrl({ state: "state-1", redirectUri }));
       assert.equal(url.origin + url.pathname, "https://accounts.google.com/o/oauth2/v2/auth");
@@ -101,5 +106,12 @@ describe("OAuth 클라이언트 출처", () => {
     assert.equal(secret.startsWith("GOCSPX-"), true, `antigravity secret prefix missing (len=${secret.length})`);
     assert.equal(codex.startsWith("app_"), true, `codex id prefix missing (len=${codex.length})`);
     assert.equal(secret.length > 8, true, `antigravity secret too short (len=${secret.length})`);
+    const xai = clients.xaiClientId ?? "";
+    assert.equal(xai.length, 36, "xai client id length");
+    assert.equal(xai[8], "-");
+    assert.equal(xai[13], "-");
+    assert.equal(xai[18], "-");
+    assert.equal(xai[23], "-");
+    assert.equal(/^[0-9a-f-]+$/i.test(xai), true, "xai client id charset");
   });
 });

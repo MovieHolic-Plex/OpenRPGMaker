@@ -1,8 +1,7 @@
-// 에디터가 고를 수 있는 LLM 제공자 레지스트리 — ChatGPT·Google 구독 로그인과 Grok API 키.
+// 에디터가 고를 수 있는 LLM 제공자 레지스트리 — ChatGPT·Google·Grok 구독 로그인과 Grok API 키.
 //
-// 예전에는 oh-my-pi 카탈로그 69종을 그대로 베껴 두었고, 그건 고를 수 없는 선택지였다.
-// 구독 로그인은 ChatGPT(Codex)와 Google(Antigravity)뿐이고, Grok 은 xAI 가 공개한
-// API 키만 받는다(OAuth client id 는 이 앱에 공개되지 않아 붙이지 않는다).
+// Grok 구독은 pi-catalog 의 `xai-oauth` 디바이스 코드다. client id 는 환경 변수·설정 파일·
+// 설치된 카탈로그에서 읽고 저장소에 적지 않는다. API 키 제공자 `xai` 는 그 대체의 경로다.
 // 비밀은 브라우저에 남지 않는다. 자격은 동반 서비스의 ~/.oprn/oh-my-pi-auth.json 에만 있다.
 //
 // id 문자열은 src/ai/oauth/credentials.ts 에서 가져온다 — 전송 계층(packRequestApiKey)과 UI 가
@@ -11,7 +10,13 @@
 // 상대 경로 + 확장자로 가져온다: 이 모듈은 브라우저 번들뿐 아니라 **순수 Node**(동반 서비스의
 // scripts/lib/aiAuthRuntime.ts)에서도 로드된다. Node 는 `@/` 별칭도, 확장자 없는 지정자도 풀지 못한다.
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials.ts";
-import { XAI_API_KEY_ENV, XAI_DEFAULT_MODEL, XAI_PROVIDER_ID } from "./xaiProvider.ts";
+import {
+  XAI_API_KEY_ENV,
+  XAI_DEFAULT_MODEL,
+  XAI_OAUTH_PROVIDER_ID,
+  XAI_OAUTH_TOKEN_ENV,
+  XAI_PROVIDER_ID,
+} from "./xaiProvider.ts";
 
 /**
  * 자격 증명 종류. oauth 는 구독 로그인, apiKey 는 동반 서비스 디스크에만 두는 키,
@@ -56,8 +61,15 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
     authKind: "oauth",
   },
   {
-    id: XAI_PROVIDER_ID,
+    id: XAI_OAUTH_PROVIDER_ID,
     label: "Grok",
+    defaultModel: XAI_DEFAULT_MODEL,
+    envVars: [XAI_OAUTH_TOKEN_ENV],
+    authKind: "oauth",
+  },
+  {
+    id: XAI_PROVIDER_ID,
+    label: "Grok API",
     defaultModel: XAI_DEFAULT_MODEL,
     envVars: [XAI_API_KEY_ENV],
     authKind: "apiKey",

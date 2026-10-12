@@ -12,7 +12,7 @@ import {
   type AiConfig,
 } from "@/ai/llmClient";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
-import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 import {
   OH_MY_PI_AUTH_KIND_LABEL,
   OH_MY_PI_PROVIDERS,
@@ -58,11 +58,11 @@ describe("전송 축 — authMode 만이 정한다", () => {
 });
 
 describe("자격 증명 축 — providerId 만이 정한다", () => {
-  it("각 제공자의 자격 종류는 레지스트리와 같고 Grok 만 API 키다", () => {
+  it("각 제공자의 자격 종류는 레지스트리와 같고 Grok API 만 키다", () => {
     for (const provider of OH_MY_PI_PROVIDERS) {
       expect(ohMyPiAuthKind(provider.id), provider.id).toBe(provider.authKind);
     }
-    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(2);
+    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(3);
     expect(ohMyPiProvidersByAuthKind("apiKey").map((provider) => provider.id)).toEqual(["xai"]);
     expect(ohMyPiProvidersByAuthKind("local")).toHaveLength(0);
   });
@@ -84,9 +84,10 @@ describe("자격 증명 축 — providerId 만이 정한다", () => {
 });
 
 describe("에디터의 제공자 선택 — 구독 둘과 Grok", () => {
-  it("구독 제공자는 oauth, Grok 은 apiKey 로 읽힌다", () => {
+  it("구독 제공자는 oauth, Grok API 는 apiKey 로 읽힌다", () => {
     expect(editorConnectionKind({ ...GATEWAY, providerId: CODEX_PROVIDER_ID })).toBe("oauth");
     expect(editorConnectionKind({ ...GATEWAY, providerId: ANTIGRAVITY_PROVIDER_ID })).toBe("oauth");
+    expect(editorConnectionKind({ ...GATEWAY, providerId: XAI_OAUTH_PROVIDER_ID })).toBe("oauth");
     expect(editorConnectionKind({ ...GATEWAY, providerId: XAI_PROVIDER_ID })).toBe("apiKey");
     // 사라진 제공자 id 는 기본 제공자(oauth)로 스냅되므로 여기서도 oauth 다.
     expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("oauth");
@@ -97,6 +98,7 @@ describe("에디터의 제공자 선택 — 구독 둘과 Grok", () => {
       expect(providersForKind(kind).map((provider) => provider.id)).toEqual([
         CODEX_PROVIDER_ID,
         ANTIGRAVITY_PROVIDER_ID,
+        XAI_OAUTH_PROVIDER_ID,
         XAI_PROVIDER_ID,
       ]);
     }

@@ -14,7 +14,7 @@ import path from "node:path";
 
 const decodeBase64 = (value) => Buffer.from(value, "base64").toString("utf8");
 
-const SETTINGS_KEYS = ["antigravityClientId", "antigravityClientSecret", "codexClientId"];
+const SETTINGS_KEYS = ["antigravityClientId", "antigravityClientSecret", "codexClientId", "xaiClientId"];
 
 /** 소유자 설정 파일. 환경 변수 OPRN_OAUTH_CLIENTS_FILE 이 있으면 그 경로다. */
 export function defaultOAuthClientsSettingsPath(env = process.env) {
@@ -65,6 +65,7 @@ export function readOAuthClientsFromPiAi() {
   const codexTs = readFile(piAi, "src/registry/oauth/openai-codex.ts");
   const antigravityKdl = readFile(catalog, "src/compat/rules/auth/google-antigravity.kdl");
   const codexKdl = readFile(catalog, "src/compat/rules/auth/openai-codex.kdl");
+  const xaiKdl = readFile(catalog, "src/compat/rules/auth/xai-oauth.kdl");
 
   const encoded = (name) => antigravityTs.match(new RegExp(`const ${name} = decode\\(\\s*"([A-Za-z0-9+/=]+)"`))?.[1];
   const tsId = encoded("CLIENT_ID");
@@ -74,6 +75,7 @@ export function readOAuthClientsFromPiAi() {
   const kdlId = antigravityKdl ? readQuotedAuthField(antigravityKdl, "client-id") : undefined;
   const kdlSecret = antigravityKdl ? readQuotedAuthField(antigravityKdl, "client-secret") : undefined;
   const kdlCodex = codexKdl ? readQuotedAuthField(codexKdl, "client-id") : undefined;
+  const kdlXai = xaiKdl ? readQuotedAuthField(xaiKdl, "client-id") : undefined;
 
   const id = kdlId || (tsId ? decodeBase64(tsId) : undefined);
   const secret = kdlSecret || (tsSecret ? decodeBase64(tsSecret) : undefined);
@@ -82,11 +84,12 @@ export function readOAuthClientsFromPiAi() {
     ...(id ? { antigravityClientId: id } : {}),
     ...(secret ? { antigravityClientSecret: secret } : {}),
     ...(codexId ? { codexClientId: codexId } : {}),
+    ...(kdlXai ? { xaiClientId: kdlXai } : {}),
   };
 }
 
 /**
- * 소유자 JSON. 키는 antigravityClientId, antigravityClientSecret, codexClientId.
+ * 소유자 JSON. 키는 antigravityClientId, antigravityClientSecret, codexClientId, xaiClientId.
  * 파일이 없거나 JSON 이 아니면 빈 객체. 값은 로그에 남기지 않는다.
  * @param {NodeJS.ProcessEnv} [env]
  * @returns {Partial<import("../../src/ai/oauth/clientConfig.ts").OAuthClients>}

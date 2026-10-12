@@ -5,7 +5,7 @@
 // 없어졌다 — 대신 "두 제공자의 pi-catalog 목록만 해석된다" 를 고정한다.
 import { describe, expect, it } from "vitest";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
-import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 import { OH_MY_PI_PROVIDERS, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 async function loadCatalog() {
@@ -100,6 +100,9 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(models).not.toContain("grok-imagine");
     expect(isModelValidForAuthMode("chatgpt", "grok-4.7", XAI_PROVIDER_ID)).toBe(true);
     expect(isModelValidForAuthMode("chatgpt", "grok-4.7", CODEX_PROVIDER_ID)).toBe(false);
+    const oauthModels = modelCatalogForAuthMode("chatgpt", XAI_OAUTH_PROVIDER_ID).flatMap((group) => group.models);
+    expect(oauthModels).toEqual(models);
+    expect(defaultModelForAuthMode("chatgpt", XAI_OAUTH_PROVIDER_ID)).toBe("grok-4.7");
   });
 });
 

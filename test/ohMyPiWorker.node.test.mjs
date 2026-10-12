@@ -26,7 +26,7 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
     const adapters = await createOhMyPiAdapters();
     const providers = await adapters.listProviders();
 
-    assert.deepEqual(providers.map((row) => row.id), [CODEX, ANTIGRAVITY, "xai"]);
+    assert.deepEqual(providers.map((row) => row.id), [CODEX, ANTIGRAVITY, "xai-oauth", "xai"]);
     for (const row of providers.filter((provider) => provider.id !== "xai")) {
       assert.equal(row.authKind, "oauth", `${row.id} authKind`);
       assert.equal(row.hasLogin, true, `${row.id} hasLogin`);
@@ -41,7 +41,7 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
 
   it("구독 제공자는 로그인 URL 을 돌려주고 API 키 저장은 거절한다", async () => {
     const adapters = await createOhMyPiAdapters();
-    for (const provider of [CODEX, ANTIGRAVITY]) {
+    for (const provider of [CODEX, ANTIGRAVITY, "xai-oauth"]) {
       const login = await adapters.login(provider, {});
       assert.equal(login.provider, provider);
       assert.ok(String(login.verificationUrl).length > 0, `${provider} verificationUrl`);
@@ -54,7 +54,7 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
 
   it("갱신은 저장된 자격을 새 값으로 바꾸고, 해제는 워커까지 닿는다", async () => {
     const adapters = await createOhMyPiAdapters();
-    for (const provider of [ANTIGRAVITY, CODEX]) {
+    for (const provider of [ANTIGRAVITY, CODEX, "xai-oauth"]) {
       await adapters.seedOAuth(provider, {
         access: "old",
         refresh: "r",
@@ -95,6 +95,28 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
 
     await adapters.logout("xai");
     assert.equal(await runtime.resolveRequestApiKey("xai"), undefined);
+  });
+
+  it("Grok 구독은 디바이스 로그인 스텁이고 요청 키는 access 문자열이다", async () => {
+    const adapters = await createOhMyPiAdapters();
+    const runtime = await import("../scripts/lib/aiAuthRuntime.ts");
+    const login = await adapters.login("xai-oauth", {});
+    assert.equal(login.provider, "xai-oauth");
+    assert.equal(login.verificationUrl, "https://oauth.example.test/xai-oauth");
+    assert.equal(login.userCode, "TEST-OK");
+    await assert.rejects(() => adapters.saveKey("xai-oauth", "sk-nope"), /API 키/);
+
+    await adapters.seedOAuth("xai-oauth", {
+      access: "xai-oauth-access",
+      refresh: "xai-oauth-refresh",
+      expires: Date.now() + 60 * 60 * 1000,
+    });
+    const key = await runtime.resolveRequestApiKey("xai-oauth");
+    assert.equal(key, "xai-oauth-access");
+    assert.equal(String(key).startsWith("{"), false);
+
+    await adapters.logout("xai-oauth");
+    assert.equal(await runtime.resolveRequestApiKey("xai-oauth"), undefined);
   });
 
   it("모르는 제공자는 상태·로그인·갱신 모두 400 으로 거절한다", async () => {

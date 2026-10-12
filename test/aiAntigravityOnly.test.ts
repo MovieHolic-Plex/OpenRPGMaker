@@ -18,7 +18,7 @@ import {
 } from "@/ai/llmClient";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { DEFAULT_OH_MY_PI_PROVIDER, OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
-import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 
 let storage: Map<string, string>;
 
@@ -51,15 +51,20 @@ describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
     expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
   });
 
-  it("레지스트리는 ChatGPT, Google, Grok 이다", () => {
+  it("레지스트리는 ChatGPT, Google, Grok 구독, Grok API 이다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
       CODEX_PROVIDER_ID,
       ANTIGRAVITY_PROVIDER_ID,
+      XAI_OAUTH_PROVIDER_ID,
       XAI_PROVIDER_ID,
     ]);
   });
 
-  it("저장된 Grok 선택은 load/save 왕복을 살아남고 브라우저 키는 비어 있다", () => {
+  it("저장된 Grok 구독과 API 키 선택은 load/save 왕복을 살아남고 브라우저 키는 비어 있다", () => {
+    saveAiConfig({ ...defaultAiConfig(), providerId: XAI_OAUTH_PROVIDER_ID, model: "grok-4.7" });
+    expect(loadAiConfig().providerId).toBe(XAI_OAUTH_PROVIDER_ID);
+    expect(loadAiConfig().model).toBe("grok-4.7");
+    expect(loadAiConfig().apiKey).toBe("");
     saveAiConfig({ ...defaultAiConfig(), providerId: XAI_PROVIDER_ID, model: "grok-4.7" });
     expect(loadAiConfig().providerId).toBe(XAI_PROVIDER_ID);
     expect(loadAiConfig().model).toBe("grok-4.7");

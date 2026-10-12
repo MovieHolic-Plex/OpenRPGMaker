@@ -139,7 +139,7 @@ describe("설정 자동 저장", () => {
     const values = (): readonly string[] =>
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
-    expect(values()).toEqual(["openai-codex", "google-antigravity", "xai"]);
+    expect(values()).toEqual(["openai-codex", "google-antigravity", "xai-oauth", "xai"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 

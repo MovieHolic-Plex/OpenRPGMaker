@@ -9,7 +9,7 @@
 //  - 전송 축  = authMode. 에디터는 **항상** companion 이다(주입 게이트웨이는 UI 가 없다).
 //  - 자격 축  = providerId → ohMyPiAuthKind. 사용자가 고르는 것은 이쪽이다.
 //
-// 레지스트리에는 ChatGPT·Google(oauth)과 Grok(apiKey)이 있다. 자격은 동반 서비스
+// 레지스트리에는 ChatGPT·Google·Grok 구독(oauth)과 Grok API 키(apiKey)가 있다. 자격은 동반 서비스
 // 저장소(~/.oprn/oh-my-pi-auth.json)에만 있고 **브라우저에 비밀을 남기지 않는다.**
 // `configForConnectionKind` 가 그것을 강제한다.
 
@@ -30,7 +30,7 @@ export type AiConnectionKindId = "oauth" | "apiKey";
 
 /**
  * 설정이 어느 종류에 속하는지 — providerId 에서 파생한다. 저장 필드가 아니다.
- * Grok 은 "apiKey", 구독 두 제공자는 "oauth" 다. 모르는 id 는 옛 기본(Google)으로 스냅된다.
+ * Grok API 는 "apiKey", 구독 제공자는 "oauth" 다. 모르는 id 는 옛 기본(Google)으로 스냅된다.
  */
 export function editorConnectionKind(config: AiConfig): AiConnectionKindId {
   return ohMyPiAuthKind(config.providerId) === "oauth" ? "oauth" : "apiKey";

@@ -88,8 +88,8 @@ function optionTexts(select: FakeElement | null): readonly string[] {
   return (select?.querySelectorAll("option") ?? []).map((option) => option.textContent ?? "");
 }
 
-/** 마운트는 선택 제공자 다음에 나머지 카드도 조회한다. Grok 이 있어 비선택 카드는 둘이다. */
-function hangIdleCardFetches(count = 2): void {
+/** 마운트는 선택 제공자 다음에 나머지 카드도 조회한다. 제공자가 넷이라 비선택 카드는 셋이다. */
+function hangIdleCardFetches(count = 3): void {
   for (let i = 0; i < count; i += 1) {
     fetchChatGptAuthStatus.mockImplementationOnce(() => new Promise(() => undefined));
   }
@@ -111,7 +111,9 @@ describe("연결 방식은 제공자 카드다", () => {
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
     expect(gemini?.getAttribute("role")).toBe("radio");
     expect(codex?.getAttribute("role")).toBe("radio");
+    const grokOauth = findByTestId(root, "ai-auth-quick-xai-oauth");
     const grok = findByTestId(root, "ai-auth-quick-xai");
+    expect(grokOauth?.getAttribute("role")).toBe("radio");
     expect(grok?.getAttribute("role")).toBe("radio");
     // 공장 기본은 ChatGPT — 선택된 카드만 탭 순서에 들어간다(roving tabindex).
     expect(codex?.getAttribute("aria-checked")).toBe("true");
@@ -119,16 +121,17 @@ describe("연결 방식은 제공자 카드다", () => {
     expect(gemini?.getAttribute("aria-checked")).toBe("false");
     expect(gemini?.getAttribute("tabindex")).toBe("-1");
     expect(grok?.getAttribute("aria-checked")).toBe("false");
+    expect(grokOauth?.getAttribute("aria-checked")).toBe("false");
     dispose();
   });
 
-  it("제공자 목록은 두 구독 제공자 그대로다", async () => {
+  it("제공자 목록은 구독 셋과 Grok API 다", async () => {
     // 예전 계약은 "Antigravity 하나뿐, select 는 비활성" 이었다. Codex 가 1급 선택지가 됐으므로
     // 목록은 둘이다. select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
     const { root, dispose } = await render();
     const select = findByTestId(root, "ai-oh-my-pi-provider");
 
-    expect(optionValues(select)).toEqual(["openai-codex", "google-antigravity", "xai"]);
+    expect(optionValues(select)).toEqual(["openai-codex", "google-antigravity", "xai-oauth", "xai"]);
     expect(select?.disabled).toBe(false);
     // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
     expect(select?.getAttribute("hidden")).toBe("");
@@ -150,7 +153,7 @@ describe("API 키 입력칸은 구독 제공자에 없고 Grok 에만 있다", (
   it("구독 제공자에서는 키 입력 DOM 이 존재하지 않는다", async () => {
     const { providers } = await loadDeps();
     const oauth = providers.OH_MY_PI_PROVIDERS.filter((provider) => provider.authKind === "oauth");
-    expect(oauth.map((provider) => provider.id)).toEqual(["openai-codex", "google-antigravity"]);
+    expect(oauth.map((provider) => provider.id)).toEqual(["openai-codex", "google-antigravity", "xai-oauth"]);
     for (const provider of oauth) {
       const { root, dispose } = await render(provider.id);
       expect(findByTestId(root, "ai-companion-key-row"), provider.id).toBeNull();
@@ -182,8 +185,8 @@ describe("API 키 입력칸은 구독 제공자에 없고 Grok 에만 있다", (
     dispose();
   });
 
-  it("두 제공자 모두 'API 키가 필요 없다'고 안내한다", async () => {
-    for (const providerId of ["google-antigravity", "openai-codex"]) {
+  it("구독 제공자는 'API 키가 필요 없다'고 안내한다", async () => {
+    for (const providerId of ["google-antigravity", "openai-codex", "xai-oauth"]) {
       const { root, dispose } = await render(providerId);
       expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "", providerId)
         .toContain("API 키는 필요 없어요");
@@ -631,14 +634,16 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("퀵 그룹은 ChatGPT·Google·Grok 카드를 보여 주고 기본은 ChatGPT 다", async () => {
+  it("퀵 그룹은 ChatGPT·Google·Grok 구독·Grok API 카드를 보여 주고 기본은 ChatGPT 다", async () => {
     const { root, dispose } = await render();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    const grokOauth = findByTestId(root, "ai-auth-quick-xai-oauth");
     const grok = findByTestId(root, "ai-auth-quick-xai");
     expect(gemini).not.toBeNull();
     expect(codex).not.toBeNull();
+    expect(grokOauth).not.toBeNull();
     expect(grok).not.toBeNull();
     expect(codex?.getAttribute("aria-checked")).toBe("true");
     expect(codex?.getAttribute("tabindex")).toBe("0");
@@ -670,16 +675,21 @@ describe("OAuth 빠른 선택", () => {
     dispose();
   });
 
-  it("화살표가 카드 셋을 순환한다", async () => {
+  it("화살표가 카드 넷을 순환한다", async () => {
     const { root, dispose } = await render();
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const codex = findByTestId(root, "ai-auth-quick-openai-codex");
+    const grokOauth = findByTestId(root, "ai-auth-quick-xai-oauth");
     const grok = findByTestId(root, "ai-auth-quick-xai");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
     expect(gemini?.getAttribute("aria-checked")).toBe("true");
     expect(gemini?.getAttribute("tabindex")).toBe("0");
     expect(codex?.getAttribute("aria-checked")).toBe("false");
+
+    findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
+    expect(grokOauth?.getAttribute("aria-checked")).toBe("true");
+    expect(grokOauth?.getAttribute("tabindex")).toBe("0");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
     expect(grok?.getAttribute("aria-checked")).toBe("true");

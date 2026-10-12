@@ -8,7 +8,7 @@
 // 카탈로그 밖 ID 를 채우면 무효 모델 경고가 뜬다.
 
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "./oauth/credentials";
-import { XAI_PROVIDER_ID } from "./xaiProvider";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "./xaiProvider";
 import type { RoleModel, SpecialistRole } from "./modelRoles";
 
 /** 빠른 모델(비용·지연 우선)과 최상위 모델(품질 우선) 두 티어. */
@@ -40,6 +40,7 @@ const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, s
   [CODEX_PROVIDER_ID]: { fast: "gpt-6.1-sol", strong: "gpt-6.1-sol" },
   // Grok 빠른 쪽은 작은 채팅 모델, 품질 쪽은 현재 플래그십. 이미지·음성 id 는 넣지 않는다.
   [XAI_PROVIDER_ID]: { fast: "grok-4.3", strong: "grok-4.7" },
+  [XAI_OAUTH_PROVIDER_ID]: { fast: "grok-4.3", strong: "grok-4.7" },
 };
 
 /** 티어의 실제 모델 ID. 매핑이 없는 제공자면 null — 호출부는 그 역할의 모델을 건드리지 않는다. */

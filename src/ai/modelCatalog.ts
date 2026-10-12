@@ -1,6 +1,6 @@
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
-import { XAI_MODELS, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
+import { XAI_MODELS, XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 
 export interface AiModelCatalogGroup {
   readonly label: string;
@@ -65,6 +65,7 @@ const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
   [CODEX_PROVIDER_ID]: CODEX_MODELS,
   [XAI_PROVIDER_ID]: XAI_MODELS,
+  [XAI_OAUTH_PROVIDER_ID]: XAI_MODELS,
 };
 
 /**

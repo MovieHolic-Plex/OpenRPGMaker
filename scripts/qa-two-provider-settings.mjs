@@ -15,7 +15,7 @@ applyLegacyEnvAliases();
 
 const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9801";
 const OUT = process.argv[2] ?? "output/evidence/two-provider-settings";
-const EXPECTED = ["openai-codex", "google-antigravity", "xai"];
+const EXPECTED = ["openai-codex", "google-antigravity", "xai-oauth", "xai"];
 
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1500, height: 950 } });
@@ -53,7 +53,7 @@ async function openSettings() {
 
 let select = await openSettings();
 const options = await select.locator("option").evaluateAll((nodes) => nodes.map((n) => n.value));
-check("provider select offers ChatGPT, Google, and Grok", options, EXPECTED);
+check("provider select offers ChatGPT, Google, Grok OAuth, and Grok API", options, EXPECTED);
 check("provider select is enabled (user really has a choice)", await select.isEnabled(), true);
 check("factory default is ChatGPT", await select.inputValue(), "openai-codex");
 await page.screenshot({ path: path.join(OUT, "01-provider-select-antigravity.png") });

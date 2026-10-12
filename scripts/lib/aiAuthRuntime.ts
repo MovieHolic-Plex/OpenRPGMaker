@@ -37,7 +37,13 @@ import {
   refreshAntigravityToken,
 } from "../../src/ai/oauth/antigravityOAuth.ts";
 import { getOhMyPiProvider, OH_MY_PI_PROVIDERS } from "../../src/ai/ohMyPiProviders.ts";
-import { XAI_KEY_INSTRUCTIONS } from "../../src/ai/xaiProvider.ts";
+import { XAI_KEY_INSTRUCTIONS, XAI_OAUTH_PROVIDER_ID } from "../../src/ai/xaiProvider.ts";
+import {
+  packXaiOAuthAccess,
+  pollXaiDeviceAuthorization,
+  refreshXaiOAuthToken,
+  startXaiDeviceAuthorization,
+} from "../../src/ai/oauth/xaiDeviceOAuth.ts";
 import { createOhMyPiAuthStore, defaultOhMyPiAuthPath } from "./ohMyPiAuthStore.mjs";
 import { startOAuthCallbackServer } from "./oauth/loopbackCallbackServer.mjs";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
@@ -407,6 +413,30 @@ async function launchProviderLogin(id: string, options: { remote?: boolean }, ab
       ...init,
       signal: init?.signal ? AbortSignal.any([abort.signal, init.signal]) : abort.signal,
     });
+  if (id === XAI_OAUTH_PROVIDER_ID) {
+    const started = await startXaiDeviceAuthorization({ fetch: loginFetch, signal: abort.signal });
+    if (abort.signal.aborted) throw abort.signal.reason;
+    const login = {
+      verificationUrl: started.verificationUrl,
+      userCode: started.userCode,
+      instructions: started.instructions,
+      startedAt,
+      expiresAt: startedAt + started.expiresInSeconds * 1000,
+    };
+    trackLogin(id, abort, pollXaiDeviceAuthorization({
+      deviceCode: started.deviceCode,
+      intervalSeconds: started.intervalSeconds,
+      expiresInSeconds: started.expiresInSeconds,
+      signal: abort.signal,
+      fetch: loginFetch,
+    }), login);
+    return { connected: false, provider: id, ...login };
+  }
+
+  if (id !== ANTIGRAVITY_PROVIDER_ID && id !== CODEX_PROVIDER_ID) {
+    throw httpError(`${id} 로그인 흐름이 없습니다.`, 400);
+  }
+
   if (id === CODEX_PROVIDER_ID) {
     const started = await beginCodexLogin({
       openCallbackServer: (options) => startOAuthCallbackServer(options),
@@ -481,28 +511,29 @@ async function launchProviderLogin(id: string, options: { remote?: boolean }, ab
 /** 갱신 호출 본체. 호출자는 반드시 `refreshSingleFlight` 를 거친다. API 키 제공자는 토큰 갱신이 없다. */
 async function refreshProviderNow(id: string) {
   if (getOhMyPiProvider(id)?.authKind !== "oauth") return publicProviderStatus(id);
-  const oauthId = id as PortedOAuthProviderId;
-  adoptOmpCliCredentials(oauthId);
-  const credentials = credentialsOf(oauthId);
+  adoptOmpCliCredentials(id);
+  const credentials = credentialsOf(id);
   if (!credentials) return publicProviderStatus(id);
   if (testStub()) {
     // 대기 한 번: 동시 호출이 실제로 겹치게 해서 single-flight 를 시험할 수 있게 한다.
     await new Promise((resolve) => setTimeout(resolve, 10));
     refreshStats.attempts += 1;
     if (process.env.OPRN_OH_MY_PI_TEST_REFRESH_FAIL === "1") throw new Error("stub refresh failed");
-    store.setOAuth(oauthId, { ...credentials, access: "stub-refreshed", expires: Date.now() + 60_000 });
-    return { ...publicProviderStatus(oauthId), refreshed: true };
+    store.setOAuth(id, { ...credentials, access: "stub-refreshed", expires: Date.now() + 60_000 });
+    return { ...publicProviderStatus(id), refreshed: true };
   }
   refreshStats.attempts += 1;
-  const refreshed = oauthId === CODEX_PROVIDER_ID
-    ? await refreshCodexToken({ refreshToken: credentials.refresh })
-    : await refreshAntigravityToken({
-        refreshToken: credentials.refresh,
-        projectId: credentials.projectId ?? "",
-      });
+  const refreshed = id === XAI_OAUTH_PROVIDER_ID
+    ? await refreshXaiOAuthToken({ refreshToken: credentials.refresh })
+    : id === CODEX_PROVIDER_ID
+      ? await refreshCodexToken({ refreshToken: credentials.refresh })
+      : await refreshAntigravityToken({
+          refreshToken: credentials.refresh,
+          projectId: credentials.projectId ?? "",
+        });
   // 저장본 위에 병합한다: 갱신 응답은 orgId/projectId 같은 로그인 시점 메타데이터를 담지 않는다.
-  store.setOAuth(oauthId, { ...credentials, ...refreshed }, {
-    ...(store.get(oauthId)?.source === "omp" ? { source: "omp" } : {}),
+  store.setOAuth(id, { ...credentials, ...refreshed }, {
+    ...(store.get(id)?.source === "omp" ? { source: "omp" } : {}),
   });
   return { ...publicProviderStatus(id), refreshed: true };
 }
@@ -520,7 +551,7 @@ export const AUTO_REFRESH_BACKOFF_MAX_MS = 10 * 60_000;
 /** 상태 응답이 기다리는 최대 시간. 브라우저 상태 요청 제한(COMPANION_TIMEOUT_MS 6초)보다 짧아야 한다. */
 const STATUS_REFRESH_WAIT_MS = 4_000;
 
-function refreshSingleFlight(id: PortedOAuthProviderId) {
+function refreshSingleFlight(id: string) {
   const existing = inflightRefresh.get(id);
   if (existing) return existing;
   const work = refreshProviderNow(id)
@@ -542,7 +573,7 @@ function refreshSingleFlight(id: PortedOAuthProviderId) {
 export async function refreshProvider(provider: string) {
   const id = requireKnown(provider);
   if (getOhMyPiProvider(id)?.authKind !== "oauth") return publicProviderStatus(id);
-  return refreshSingleFlight(id as PortedOAuthProviderId);
+  return refreshSingleFlight(id);
 }
 
 /** 만료됐지만 갱신 토큰이 있어 사용자 조작 없이 되살릴 수 있는 저장본인가. */
@@ -574,7 +605,7 @@ export async function providerStatus(provider: string) {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timedOut = new Promise<"pending">((resolve) => { timer = setTimeout(() => resolve("pending"), STATUS_REFRESH_WAIT_MS); });
   try {
-    const outcome = await Promise.race([refreshSingleFlight(id as PortedOAuthProviderId), timedOut]);
+    const outcome = await Promise.race([refreshSingleFlight(id), timedOut]);
     // 늦는 갱신은 뒤에서 계속 돈다. 다음 폴링이 결과를 본다.
     if (outcome === "pending") return { ...publicProviderStatus(id), refreshing: true };
     return publicProviderStatus(id);
@@ -600,7 +631,11 @@ export function seedOAuthForTests(
   provider: string,
   credentials: { access: string; refresh: string; expires: number; projectId?: string },
 ) {
-  store.setOAuth(requireOAuth(provider), credentials);
+  const id = requireKnown(provider);
+  if (getOhMyPiProvider(id)?.authKind !== "oauth") {
+    throw httpError(`${id} 는 구독 로그인이 아닙니다.`, 400);
+  }
+  store.setOAuth(id, credentials);
 }
 
 /** API 키 제공자만 받는다. 구독 로그인 제공자에 키를 붙이면 400. 빈 키도 400. 값은 동반 서비스 디스크에만 둔다. */
@@ -643,7 +678,8 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
     const stored = row?.kind === "apiKey" && typeof row.apiKey === "string" ? row.apiKey.trim() : "";
     return stored || undefined;
   }
-  const oauthId = requireOAuth(id);
+  const bearer = id === XAI_OAUTH_PROVIDER_ID;
+  const oauthId = bearer ? undefined : requireOAuth(id);
   if (envScanDecision() === "allow") {
     const envVars = getOhMyPiProvider(id)?.envVars ?? [];
     for (const name of envVars) {
@@ -667,7 +703,10 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
       await refreshProvider(id);
     } catch (error) {
       // 아직 살아 있는 토큰이면 조기 갱신 실패로 요청을 막지 않는다 — 원래 토큰으로 진행한다.
-      if (!expired && isUsableCredentials(id, credentialsOf(id))) return packRequestApiKey(oauthId, credentialsOf(id)!);
+      if (!expired && isUsableCredentials(id, credentialsOf(id))) {
+        const current = credentialsOf(id)!;
+        return bearer ? packXaiOAuthAccess(current) : packRequestApiKey(oauthId!, current);
+      }
       // 갱신실패의 흔한 원인은 refresh_token 재사용이다 — codex CLI 같은 다른 도구가 먼저 갱신하면 우리 저장본의 refresh 토큰은 이미 소모된 뒤다.
       // 그럴 때 CLI 로그인은 더 신선할 수 있으므로 채용을 시도하고, 그것도 쓸 수 없으면 원래 오류를 올린다.
       // 이 경로가 없으면 한 번 낙은 저장본 행이 검색·완성을 영구히 막는다(2026-09-21 실측).
@@ -678,7 +717,7 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
     credentials = credentialsOf(id);
     if (!credentials) return undefined;
   }
-  return packRequestApiKey(oauthId, credentials);
+  return bearer ? packXaiOAuthAccess(credentials) : packRequestApiKey(oauthId!, credentials);
 }
 
 export const AUTH_STORE_PATH = defaultOhMyPiAuthPath();

@@ -1,13 +1,13 @@
 // editor/panels/aiAuthSettings.ts
-// AI 연결 방식 패널 — Google·ChatGPT 구독 로그인과 Grok API 키.
+// AI 연결 방식 패널 — Google·ChatGPT·Grok 구독 로그인과 Grok API 키.
 //
-// 사용자가 보는 이름은 레지스트리 label 하나다(Google / ChatGPT / Grok).
+// 사용자가 보는 이름은 레지스트리 label 하나다(Google / ChatGPT / Grok / Grok API).
 // 제품명(Gemini·Antigravity·Codex·xAI)은 카드 보조 줄에만 쓴다.
 //
 // 공통 계약:
 //  - 전송은 로컬 동반 서비스다. 브라우저 blob 의 apiKey·baseUrl 은 항상 빈 문자열이다.
 //  - 자격은 ~/.oprn/oh-my-pi-auth.json 에만 있다.
-//  - 구독 제공자에는 키 입력칸을 만들지 않는다. Grok 만 키 칸을 만들고, 저장은 동반 서비스로 보낸다.
+//  - 구독 제공자에는 키 입력칸을 만들지 않는다. Grok API 만 키 칸을 만들고, 저장은 동반 서비스로 보낸다.
 
 import {
   completeOAuthPaste,
@@ -37,7 +37,7 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
-import { XAI_PROVIDER_ID } from "@/ai/xaiProvider";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import {
   refreshAiConnectionStatus,
@@ -85,7 +85,7 @@ type Tone = "connected" | "disconnected" | "offline" | "checking";
 
 /**
  * 빠른 선택 카드. 제목은 로그인하는 계정 또는 제품 이름, 보조 줄은 제품명이다.
- * Grok 은 구독 창이 아니라 xAI Console API 키다. 카드와 아래 select 는 같은 providerId 를 쓴다.
+ * Grok 구독은 디바이스 코드이고, Grok API 는 xAI Console 키다. 카드와 아래 select 는 같은 providerId 를 쓴다.
  */
 const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: string; hint: string }>[] = [
   {
@@ -101,10 +101,16 @@ const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: strin
     hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.",
   },
   {
+    id: XAI_OAUTH_PROVIDER_ID,
+    label: "Grok 계정",
+    sub: "SuperGrok",
+    hint: "xAI 구독(SuperGrok 또는 X Premium+)으로 기기 코드를 입력해 로그인합니다.",
+  },
+  {
     id: XAI_PROVIDER_ID,
-    label: "Grok",
+    label: "Grok API",
     sub: "xAI API",
-    hint: "xAI Console의 API 키로 연결합니다. 구독 로그인과는 다른 경로입니다.",
+    hint: "xAI Console의 API 키로 연결합니다. 구독 로그인이 안 될 때의 대체 경로입니다.",
   },
 ];
 

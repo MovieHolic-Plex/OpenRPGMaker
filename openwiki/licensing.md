@@ -32,9 +32,9 @@
 Antigravity 데스크톱 앱의 client id·secret 과 Codex CLI 의 client id 는 **저장소에 적지 않는다**(2026-10-08 결정 — 공개 저장소에 남의 앱 자격을 올리지 않는다).
 `src/ai/oauth/clientConfig.ts` 의 `oauthClient()` 가 다음 순서로 읽는다. 앞선 값이 이긴다.
 
-1. 환경 변수 `OPRN_ANTIGRAVITY_CLIENT_ID`, `OPRN_ANTIGRAVITY_CLIENT_SECRET`, `OPRN_CODEX_CLIENT_ID`
-2. `~/.oprn/oauth-clients.json` 또는 `OPRN_OAUTH_CLIENTS_FILE` (키 이름은 위 세 필드의 camelCase. 예시 `scripts/oauth-clients.example.json`)
-3. 설치된 `@oh-my-pi/pi-catalog` 의 `google-antigravity.kdl`·`openai-codex.kdl`, 없으면 `@oh-my-pi/pi-ai` 소스의 옛 상수 (`scripts/lib/oauthClients.mjs`)
+1. 환경 변수 `OPRN_ANTIGRAVITY_CLIENT_ID`, `OPRN_ANTIGRAVITY_CLIENT_SECRET`, `OPRN_CODEX_CLIENT_ID`, `OPRN_XAI_CLIENT_ID`
+2. `~/.oprn/oauth-clients.json` 또는 `OPRN_OAUTH_CLIENTS_FILE` (키 이름은 위 필드의 camelCase. 예시 `scripts/oauth-clients.example.json`)
+3. 설치된 `@oh-my-pi/pi-catalog` 의 `google-antigravity.kdl`·`openai-codex.kdl`·`xai-oauth.kdl`, 없으면 `@oh-my-pi/pi-ai` 소스의 옛 상수 (`scripts/lib/oauthClients.mjs`)
 4. 빌드 주입 `__OPRN_OAUTH_CLIENTS__` (`scripts/build-electron.mjs`)
 
 18.9 부터 Antigravity 값은 pi-ai 의 `decode("...")` 상수가 아니라 pi-catalog KDL 에 있다. 옛 읽기만 있으면 Google 로그인이 `OPRN_ANTIGRAVITY_CLIENT_ID 가 설정되지 않았다` 로 멈춘다.
@@ -46,8 +46,7 @@ Node 진입점(`scripts/lib/aiAuthRuntime.ts`, `scripts/verify-ported-oauth-live
 - Google(Antigravity): 인가 `https://accounts.google.com/o/oauth2/v2/auth`, 토큰 `https://oauth2.googleapis.com/token`, redirect `http://127.0.0.1:<바인드된 포트>/oauth-callback` (선호 포트 51121, Google 은 루프백 포트를 고정하지 않는다).
 - ChatGPT(Codex) 브라우저: redirect 는 `http://localhost:1455/auth/callback` 만. 포트가 바뀌면 실패한다.
 - ChatGPT 디바이스: `https://auth.openai.com/codex/device`, 콜백 `https://auth.openai.com/deviceauth/callback`, 토큰 `https://auth.openai.com/oauth/token`.
-
-Grok 은 이 OAuth 클라이언트를 쓰지 않는다. xAI 추론 API 는 `https://api.x.ai/v1` 의 Bearer API 키(`XAI_API_KEY` 또는 AI 설정에 붙여 넣기)다. `https://auth.x.ai` 에 디바이스 코드 엔드포인트는 있지만 이 제품용 client id 가 공개돼 있지 않아 연결하지 않는다.
+- Grok 구독(`xai-oauth`): 디바이스 코드 `https://auth.x.ai/oauth2/device/code`. 토큰 주소는 `https://auth.x.ai/.well-known/openid-configuration` 의 `token_endpoint` 이고, HTTPS `x.ai` / `*.x.ai` 만 받는다. client id 는 `OPRN_XAI_CLIENT_ID` 또는 설정 키 `xaiClientId`, 없으면 설치된 pi-catalog `auth/xai-oauth.kdl`. 값은 저장소에 적지 않는다. API 키 제공자 `xai`(`XAI_API_KEY`, `https://api.x.ai/v1`)는 그 대체다.
 
 ## 공개 저장소 내보내기 (OpenRPGMaker)
 

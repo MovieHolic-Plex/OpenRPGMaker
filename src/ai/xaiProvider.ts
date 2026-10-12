@@ -1,14 +1,14 @@
-// Grok (xAI) — 에디터 제공자 id 는 pi-catalog 의 `xai` 와 같아야 한다.
-// getBundledModel("xai", "grok-4.7") 가 https://api.x.ai/v1 의 OpenAI 호환 전송을 이미 알고 있다.
-//
-// 공식 추론 API 인증은 Bearer API 키다(콘솔 https://console.x.ai, 환경 변수 XAI_API_KEY).
-// auth.x.ai 에 OIDC(인가·토큰·디바이스 코드)가 있지만, xAI 가 이 앱용 client id 를 공개하지 않는다.
-// 다른 제품의 client id 를 저장소에 넣지 않으므로 디바이스 로그인은 연결하지 않는다.
+// Grok (xAI) — 제공자 id 는 pi-catalog 와 같아야 한다.
+// `xai` 는 API 키, `xai-oauth` 는 SuperGrok / X Premium+ 디바이스 로그인이다.
+// getBundledModel 이 둘 다 https://api.x.ai/v1 의 OpenAI 호환 전송을 안다.
+// OAuth client id 는 저장소에 적지 않는다. oauthClient("xaiClientId") 가 읽는다.
 
 export const XAI_PROVIDER_ID = "xai";
+export const XAI_OAUTH_PROVIDER_ID = "xai-oauth";
 export const XAI_API_BASE_URL = "https://api.x.ai/v1";
 export const XAI_DEFAULT_MODEL = "grok-4.7";
 export const XAI_API_KEY_ENV = "XAI_API_KEY";
+export const XAI_OAUTH_TOKEN_ENV = "XAI_OAUTH_TOKEN";
 
 /** 채팅에 쓰는 모델만. 이미지·음성 id 는 채팅 완료에서 400 이 된다. */
 export const XAI_MODELS = [
