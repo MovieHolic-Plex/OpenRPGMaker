@@ -40,8 +40,12 @@ function addUtilityEvents(project: Project): void {
   const cut = clone(fixtureEvent(childId)); cut.id = 'ev_test_cutscene'; cut.x = 16; cut.y = 8;
   cut.pages = [clone(cut.pages![0]!)]; cut.pages[0]!.id='cut_page'; cut.pages[0]!.commands = [
     { kind: 'text', body: '장면' } as Command,
+    { kind: 'm2Command', commandId: 'm2-044-hide-screen', fields: {} } as Command,
     { kind: 'wait', ms: 300 } as Command,
+    { kind: 'm2Command', commandId: 'm2-045-show-screen', fields: {} } as Command,
   ]; map.events.push(cut);
+  const shopPage = map.events.find(event => event.id === 'ev_test_shop')?.pages?.[0];
+  shopPage?.commands.push({ kind:'shop', itemIds:['item_herb'], stock:[{itemId:'item_herb',seasons:['spring']}], allowSell:true, quantityMode:'select', shopType:'normal', messageType:'welcome' } as Command);
 }
 export function richProject(): Project {
   const project = createCapabilityFixtureProject();
@@ -100,25 +104,25 @@ export function runMatrixTools(root: string): number {
   run(16,'change-first-line','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',speaker:'테스트 NPC',body:'바뀐 대사'},moveCommand,{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]}]}));
   run(17,'add-switch-condition','patch_event_page',patchArgs(richProject(),{conditions:[{kind:'switch',switchId:'sw_ember_q1_started',value:true}],commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},moveCommand,{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]}]}));
   run(18,'remove-move-command','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]}]}));
-  run(19,'insert-se','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},{kind:'moveEvent',eventId:'ev_utility_npc',route:{moves:[{kind:'playSe',resourceId:'se_cursor'}],repeat:false}},{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]}]}));
+  run(19,'insert-se','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},{kind:'playAudio',resourceId:'cc0-se-osx-door-open',loop:false},{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]}]}));
   run(20,'touch-trigger','patch_event_page',patchArgs(richProject(),{trigger:{kind:'playerTouch'}}));
   run(21,'rename-npc','patch_event_page',patchArgs(richProject(),{name:'하린'}));
   run(22,'face-right','patch_event_page',patchArgs(richProject(),{graphic:{sprite:{type:'bundled',id:'tex_easyrpg_charset_people3'},direction:'right',pattern:31}}));
   run(23,'add-npc-line','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',speaker:'테스트 NPC',body:'첫 대사'},moveCommand,{kind:'choices',options:[{text:'예',branch:[]},{text:'아니오',branch:[]}],cancelBehavior:'branch',cancelBranch:[]},{kind:'text',speaker:'테스트 NPC',body:'추가 대사'}]}));
   run(24,'npc-schedule','set_npc_schedule',{mapId,eventId:'ev_utility_npc',schedule:[{when:{hourRange:[8,18]},at:{mapId,x:12,y:8},activity:'work'}]});
-  run(25,'npc-shop','set_shop_stock',{mapId,eventId:'ev_test_shop',stock:[{itemId:'item_potion',seasons:['spring'],priceOverride:20}]});
+  run(25,'npc-shop','set_shop_stock',{mapId,eventId:'ev_test_shop',stock:[{itemId:'item_herb',seasons:['spring']},{itemId:'item_potion',seasons:['spring'],priceOverride:20}]});
   run(26,'potion-price','upsert_item',{item:{id:'item_potion',price:30}});
   run(27,'sword-attack','upsert_equipment',{equipment:{id:'equip_iron_sword',statBonuses:{attack:10}}});
   run(28,'item-description','upsert_item',{item:{id:'item_potion',description:'회복하는 물약'}});
   run(29,'create-key-item','upsert_item',{item:{id:'item_new_key',name:'새 열쇠',description:'잠긴 문을 연다',type:'keyItem',price:0}});
   run(30,'remove-shop-herb','set_shop_stock',{mapId,eventId:'ev_test_shop',stock:[{itemId:'item_potion',seasons:['spring'],priceOverride:20}]});
-  run(31,'screen-shake','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'장면'},{kind:'setLighting',ambient:0.5,color:'#ffffff'},{kind:'setLighting',ambient:0.2,color:'#000000'}]},'ev_test_cutscene'));
+  run(31,'screen-shake','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'장면'},{kind:'m2Command',commandId:'m2-048-shake-screen',fields:{intensity:'3',durationMs:300,direction:'both'}}]},'ev_test_cutscene'));
   run(32,'dialogue-position','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'장면',position:'bottom'}]},'ev_test_cutscene'));
-  run(33,'door-se','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'문이 열립니다'}]},'ev_test_door'));
+  run(33,'door-se','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'문이 열립니다'},{kind:'playAudio',resourceId:'cc0-se-osx-door-open',loop:false}]},'ev_test_door'));
   run(34,'night-mood','set_scene_mood',{mapId,weather:{kind:'none'},lighting:{ambient:0.25,color:'#101522',sources:[]}});
-  run(35,'remove-final-fade','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'장면'}]},'ev_test_cutscene'));
+  run(35,'remove-final-fade','patch_event_page',patchArgs(richProject(),{commands:[{kind:'text',body:'장면'},{kind:'m2Command',commandId:'m2-044-hide-screen',fields:{}},{kind:'wait',ms:300}]},'ev_test_cutscene'));
   run(36,'walkability-check','check_reachability',{mapId,from:{x:8,y:8},targets:[{x:9,y:8}]},'read');
-  run(37,'event-playtest','run_scene_test',{mapId,start:{x:8,y:8},steps:[{kind:'interact',eventId:'ev_utility_npc'}]},'read');
+  run(37,'event-playtest','run_scene_test',{mapId,start:{x:18,y:8},steps:[{kind:'interact',eventId:'ev_utility_npc'}]},'read');
   run(38,'blocked-entrance','find_events',{mapId,commandKind:'transfer'},'read');
   run(39,'unused-switches','find_switch_usage',{switchId:'sw_unused'},'read');
   run(40,'undo-preview','list_edit_history',{mapId,limit:5},'read');
