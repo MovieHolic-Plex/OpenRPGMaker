@@ -175,6 +175,11 @@ const scriptCutsceneStaged: ToolDefinition = {
     const viewport = draft.system.playResolution ?? DEFAULT_PLAY_RESOLUTION;
     const rawActors = Array.isArray(args.actors) ? (args.actors as Raw[]) : [];
     if (rawActors.length === 0) throw new ToolError("actors 가 비어 있습니다.", { code: "invalid-args" });
+    // generate_cutscene_art 소품은 캐릭터셋이 아니라 그림이다 — character 로 넘겨도 resourceId 배우로 바로잡는다(반복 실패 실측).
+    for (const raw of rawActors) {
+      const c = characterOf(raw);
+      if (c && typeof raw.resourceId !== "string" && draft.assets.uploaded[c.resourceId]?.kind === "picture") { raw.resourceId = c.resourceId; delete raw.character; }
+    }
     for (const raw of rawActors) {
       const heroCharacter = raw.hero === true ? characterOf(raw) : undefined;
       if (heroCharacter && !/actor[1-4]$/iu.test(heroCharacter.resourceId)) {
