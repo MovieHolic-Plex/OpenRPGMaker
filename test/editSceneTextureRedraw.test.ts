@@ -78,12 +78,32 @@ it("uses the same scheduler for map-switch tileset completion", () => {
     cancelCameraFocus() {}, renderStateKey: () => "", viewChromeKey: () => "", cameraViewKey: () => "",
   });
   prototype.redraw.call(scene);
-  expect(callbacks).toHaveLength(1);
-  expect(callbacks[0]).toBe(scene.requestTextureRedraw);
-  callbacks[0]();
+  // 맵 전환은 업로드 시트와 번들 시트를 같이 싣는다. 완료 콜백은 같은 한 프레임으로 모인다.
+  expect(callbacks).toHaveLength(2);
+  expect(callbacks.every((callback) => callback === scene.requestTextureRedraw)).toBe(true);
+  callbacks[0]!();
   scene.requestTextureRedraw();
   frame();
   expect(scene.redraw).toHaveBeenCalledTimes(1);
+});
+
+it("loads bundled chipsets when a map change is not a tile stroke", () => {
+  scene.redrawForStoreChange({ scope: "map", mapId: "current" });
+  expect(bundled.ensureBundledProjectTextures).toHaveBeenCalledTimes(1);
+  expect(tilesets.ensureUploadedTilesetTextures).toHaveBeenCalledTimes(1);
+});
+
+it("loads bundled chipsets when an event graphic is added without tile cells", () => {
+  scene.redrawForStoreChange({ scope: "map", mapId: "current", eventId: "event-1" });
+  expect(bundled.ensureBundledProjectTextures).toHaveBeenCalledTimes(1);
+});
+
+it("does not scan textures on a tile stroke or a relief sample", () => {
+  scene.redrawForStoreChange({ scope: "map", mapId: "current", cells: [{ x: 1, y: 2, layer: "lower" }] });
+  scene.redrawForStoreChange({ scope: "map", mapId: "current", relief: true });
+  expect(bundled.ensureBundledProjectTextures).not.toHaveBeenCalled();
+  expect(tilesets.ensureUploadedTilesetTextures).not.toHaveBeenCalled();
+  expect(bundled.ensureUploadedCharsetTextures).not.toHaveBeenCalled();
 });
 
 it("cancels queued redraw and ignores late completions after disposal", () => {

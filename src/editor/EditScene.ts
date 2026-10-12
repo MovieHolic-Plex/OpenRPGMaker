@@ -55,7 +55,7 @@ import {
   type MapEdgeSides,
 } from "@/editor/mapEdgeGrow";
 import { mapSizeLimitMessage } from "@/project/mapSizeLimits";
-import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
+import { isTileCellChange, store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
@@ -1052,11 +1052,13 @@ export class EditScene extends PhaserRuntime.Scene {
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
     // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
     // 실어 주지 않으면 그 캐릭셋을 쓴 이벤트가 새로고침 전까지 빈 칸으로 보인다.
-    // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
-    // 예외: 이벤트를 넣는 맵 편집(eventId 가 있고 칸 목록이 없다). AI 작업함 배치가 이 경로다 —
-    // 이게 없으면 번들 캐릭셋(상자·주민)을 처음 쓰는 이벤트가 빈 칸 표식으로만 보였다(2026-09-28 실측).
-    const addsEventGraphic = change.scope === "map" && Boolean(change.eventId) && !change.cells?.length;
-    if (change.scope !== "map" || addsEventGraphic) {
+    // 타일 칠하기·높이 붓은 포인터마다 나간다. 그 표본(cells/relief)마다 업로드 목록을 훑지 않는다.
+    // 맵 설정의 칩셋 교체도 scope 가 "map" 이지만 칸 목록이 없다. 부팅은 그때 맵이 쓰던
+    // 텍스처만 싣는다. 여기서 안 실으면 새 칩셋 칸이 Phaser __MISSING(검은 칸, 초록 테두리·대각선)으로
+    // 그려지고 `Texture "__MISSING" has no frame "tile_N"` 경고가 칸마다 난다.
+    // 팔레트 썸네일은 CSS 배경이라 이 텍스처와 무관하게 멀쩡하고, 칸 번호는 undo 에 남는다.
+    // 이벤트를 넣는 맵 편집(eventId, 칸 목록 없음)도 같은 쪽이다 — 번들 캐릭셋이 빈 칸으로 남던 경로(2026-09-28).
+    if (!isTileCellChange(change)) {
       ensureUploadedCharsetTextures(this, store.getCurrent(), this.requestTextureRedraw);
       ensureUploadedEventSpriteTextures(this, store.getCurrent(), this.requestTextureRedraw);
       ensureUploadedTilesetTextures(this, store.getCurrent(), this.requestTextureRedraw, { onlyMapTilesets: true });
@@ -2274,9 +2276,11 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid) return;
     const mapChanged = this.lastRenderedMapId !== mid;
     if (mapChanged) {
-      // 다른 맵으로 넘어갔다 — 그 맵의 업로드 타일셋은 아직 안 올렸을 수 있다(부팅은 쓰는 맵 것만 올린다).
+      // 다른 맵으로 넘어갔다 — 그 맵의 칩셋은 부팅 때 안 올렸을 수 있다(부팅은 쓰는 맵 것만 올린다).
       // 맵 전환은 editorState 변경이라 redrawForStoreChange 를 타지 않는다.
+      // 업로드 시트와 번들 시트(조선 등)를 같이 싣는다. 번들을 빼면 전환 직후 캔버스가 __MISSING 이다.
       ensureUploadedTilesetTextures(this, store.getCurrent(), this.requestTextureRedraw, { onlyMapTilesets: true });
+      ensureBundledProjectTextures(this, store.getCurrent(), this.requestTextureRedraw);
       this.navigationGeometry = null;
       this.lastNavGeometryKey = "";
       this.lastPointerTile = null;

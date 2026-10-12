@@ -498,6 +498,8 @@ const bundledLoadsInFlight = new WeakMap<Phaser.Scene, Set<string>>();
  * `loadBundledAssets` 는 preload 한 번뿐이고 그때 프로젝트가 쓰던 텍스처만 싣는다. 실측(2026-09-23):
  * 조수가 새 프로젝트 맵을 숲마을 칩셋으로 바꾸자 편집 캔버스 전체가 Phaser 의 "빠진 텍스처" 빗금으로
  * 그려졌다(`__MISSING tile_1141` 경고 수만 건). 새로고침해야 보이던 것이 이 함수로 그 자리에서 보인다.
+ * EditScene 은 타일 칠(칸 목록·높이 붓)을 뺀 맵 변경과 맵 전환에서 이 함수를 부른다. 칩셋 교체를
+ * 타일 칠과 같이 건너뛰면 조선처럼 부팅에 안 실린 시트가 검은 칸·초록 대각(`__MISSING`)으로 남는다.
  */
 export function ensureBundledProjectTextures(
   scene: Phaser.Scene,
