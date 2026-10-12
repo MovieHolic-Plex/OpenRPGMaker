@@ -860,12 +860,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       await promptResuming(PLAN_EXECUTION_REKICK);
     }
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 5 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
-      if (!issues.length || signature === previousOpeningIssues) break;
+      if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
-      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.\n' + signature);
+      await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
