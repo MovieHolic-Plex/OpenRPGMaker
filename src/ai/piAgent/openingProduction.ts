@@ -87,14 +87,14 @@ export class PiOpeningProduction {
     if (this.inGame) {
       const start = project.maps[project.startMapId], before = base.maps[base.startMapId];
       const events = JSON.stringify(start?.events ?? []);
-      if (!start || (events === JSON.stringify(before?.events ?? []) && !/"kind":"auto"/u.test(events))) issues.push('인게임 오프닝을 요청받았지만 시작 맵에 연출 이벤트가 없습니다. 시작 맵을 장면에 맞게 만들고 script_cutscene(또는 script_cutscene_staged)을 trigger:"auto", once:true로 넣으세요.');
+      if (!start || (events === JSON.stringify(before?.events ?? []) && !/"kind":"auto"/u.test(events))) issues.push('인게임 오프닝을 요청받았지만 시작 맵에 연출 이벤트가 없습니다. 시작 맵을 장면에 맞게 만들고 script_cutscene(또는 script_cutscene_staged)을 trigger:"auto", once:true로 넣으세요(find_tools 로 'script_cutscene_staged' 를 먼저 불러온 뒤 호출).');
       else {
         if (!/"kind":"auto"/u.test(events)) issues.push('시작 맵의 오프닝 이벤트가 자동 실행(trigger:"auto")이 아닙니다. 새 게임 직후 자동으로 재생되어야 합니다.');
         if (!/"kind":"(?:move|moveRoute|setMoveRoute|camera)|m2-[0-9]+-(?:move|scroll|camera)|moveActor|scroll/iu.test(events)) issues.push('오프닝 이벤트에 인물 이동·카메라 연출이 없습니다. 인물이 걷고 카메라가 따라가거나 훑는 연출을 넣으세요.');
       }
       // 만들어 둔 컷신 소품 그림이 있는데 이벤트가 하나도 안 쓰면(기본 Actor1 걷기만 나오는 실측) 병기·소품이 화면에 안 나온다.
       const madeSprites = Object.keys(project.assets.uploaded).filter(id => /^cutscene_sprite_/u.test(id));
-      if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 배우를 {name, resourceId:'cutscene_sprite_...'} 로 넘겨 script_cutscene_staged 를 다시 호출하세요. 기본 주인공(Actor1) 그림만 나오면 안 됩니다.`);
+      if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 배우를 {name, resourceId:'cutscene_sprite_...'} 로 넘겨 script_cutscene_staged 를 다시 호출하세요(도구가 아직 안 불려 있으면 먼저 find_tools 로 'script_cutscene_staged' 를 찾아 불러온 다음 호출). 기본 주인공(Actor1) 그림만 나오면 안 됩니다.`);
       if (/타이틀|title|켜자마자|첫\s*화면/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('게임을 켜자마자 보이는 타이틀 화면이 기본 그림입니다. generate_title_art로 작품 전용 그림을 만드세요.');
       return issues;
     }
