@@ -157,23 +157,27 @@ def _(c):
 
 
 def _chair(d):
+    # 3/4 탑뷰: 방석 윗면(밝은 붉은 면)이 보이고 그 앞에 앞 테두리, 아래로 다리. 등받이는 방석 가장자리에 붙어 솟는다(떠 있지 않게).
     m = 'ita'; yb = 16
+    def cushion(c, x0, x1, y0=yb):
+        w = x1 - x0 + 1
+        c.R(x0, y0, w, 6, K('aka', 1)); c.HL(x0, y0, w, K('aka', 3)); c.HL(x0, y0 + 5, w, K('aka', -1))   # 윗면
+        c.R(x0, y0 + 6, w, 3, K(m, 0)); c.HL(x0, y0 + 6, w, K(m, 2)); c.HL(x0, y0 + 8, w, K(m, -3))      # 앞 테두리
+    def legs(c, x0, x1, y0=yb + 9):
+        for x in (x0 + 1, x1 - 2): c.R(x, y0, 2, 7, K(m, -1)); c.VL(x, y0, 7, K(m, 1)); c.VL(x + 1, y0, 7, K(m, -3))
     def f(c):
-        def seat(x0, w): c.R(x0, yb + 3, w, 4, K('aka', 0)); c.HL(x0, yb + 3, w, K('aka', 2)); c.HL(x0, yb + 6, w, K('aka', -2))   # 붉은 방석 — 어두운 마루 위에서 의자가 구분되게
-        if d == 's':
-            c.R(4, 6, 8, 9, K(m, 0)); box(c, 4, 6, 8, 9, K(m, -3)); c.HL(5, 7, 6, K(m, 1))
-            seat(3, 10); c.R(3, yb + 7, 10, 2, K(m, -1)); c.HL(3, yb + 8, 10, K(m, -3))
-            for x in (4, 10): c.R(x, yb + 9, 2, 6, K(m, -1)); c.VL(x, yb + 9, 6, K(m, 0))
-        elif d == 'n':
-            c.R(3, 8, 10, 13, K(m, -1)); box(c, 3, 8, 10, 13, K(m, -3)); c.HL(4, 9, 8, K(m, 0))
-            for y in (12, 16): c.HL(5, y, 6, K(m, -2))
-            c.R(3, yb + 6, 10, 2, K(m, -1)); c.HL(3, yb + 7, 10, K(m, -3))
-            for x in (4, 10): c.R(x, yb + 8, 2, 7, K(m, -2)); c.VL(x, yb + 8, 7, K(m, -1))
-        else:
-            bx = 3 if d == 'e' else 11
-            c.R(bx, 6, 2, 12, K(m, 0)); c.VL(bx, 6, 12, K(m, 2)); c.VL(bx + 1, 6, 12, K(m, -3))
-            seat(3, 10); c.R(3, yb + 7, 10, 2, K(m, -1)); c.HL(3, yb + 8, 10, K(m, -3))
-            for x in (3, 11): c.R(x, yb + 9, 2, 6, K(m, -1)); c.VL(x, yb + 9, 6, K(m, 0))
+        if d == 's':        # 등받이가 북쪽(뒤)에 — 방석 뒤 가장자리에서 위로
+            c.R(4, yb - 9, 8, 10, K(m, 0)); box(c, 4, yb - 9, 8, 10, K(m, -3)); c.HL(5, yb - 8, 6, K(m, 3))
+            for y in (yb - 5, yb - 2): c.HL(5, y, 6, K(m, -2))
+            cushion(c, 3, 12); legs(c, 3, 12)
+        elif d == 'n':      # 등받이가 남쪽(앞)에 — 방석을 가리며 서 있고 뒷면(널)이 보인다
+            cushion(c, 3, 12); legs(c, 3, 12)
+            c.R(3, yb - 6, 10, 14, K(m, -1)); box(c, 3, yb - 6, 10, 14, K(m, -3)); c.HL(4, yb - 5, 8, K(m, 1))
+            for y in (yb - 1, yb + 3): c.HL(5, y, 6, K(m, -2))
+        else:               # e: 등받이가 서쪽, w: 동쪽 — 방석 옆에 붙은 두꺼운 판(위 모서리 밝게)
+            bx, x0, x1 = (3, 4, 13) if d == 'e' else (10, 2, 11)
+            legs(c, x0, x1); cushion(c, x0, x1)
+            c.R(bx, yb - 8, 3, 15, K(m, 0)); box(c, bx, yb - 8, 3, 15, K(m, -3)); c.HL(bx, yb - 8, 3, K(m, 3)); c.VL(bx + 1, yb - 6, 11, K(m, 1))
     return f
 
 
