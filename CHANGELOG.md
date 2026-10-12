@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.200.1 — 2026-10-12
+
+### 수정
+
+- **css** — keep the battle band note inside the comment so minify can parse it (`97ba910`)
+- **css** — close the battle submenu comment so the app build can minify (`6ac4960`)
+- **player** — compile against Phaser 4 so CI typecheck passes (`d7f9e4b`)
+- **ci** — let GitHub-hosted runners start the test suite (`d3eca29`)
+
+### CI
+
+- pin hosted actions so the public repo policy accepts them (`e7da5a8`)
+
 ## 0.200.0 — 2026-10-12
 
 ### 기능
