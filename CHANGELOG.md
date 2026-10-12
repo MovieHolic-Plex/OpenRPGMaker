@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.200.2 — 2026-10-13
+
+### 수정
+
+- **ci** — shard the full test gate across four GitHub runners (`75f1533`)
+
 ## 0.200.1 — 2026-10-12
 
 ### 수정
