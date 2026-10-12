@@ -22,7 +22,7 @@ import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { paintMainStreet, paintStartRoute, routeStyleFor, startMapSizeFor } from "@/project/startRoutePaint";
 import { preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { regionReference } from "@/project/regionReferences";
-import { planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
+import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, shopsFromText, streetStyleFromText } from "@/project/jpCityStreetComposer";
 import { KIT_START_PLACES, planStartForBrief, type StartPlan } from "@/project/startVariety";
 import type { GameMap, Project } from "@/project/types";
 import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
@@ -80,9 +80,10 @@ export function playableSegmentGateApplies(project: Project): boolean {
   return supportsPlayableSegment(project) && hasPlayableSegmentSkeleton(project) && judgePlayableSegment(project).ok;
 }
 
-function tool(ctx: { project: Project }, name: string, args: Record<string, unknown>): void {
+function tool(ctx: { project: Project }, name: string, args: Record<string, unknown>): Record<string, unknown> | undefined {
   const result = runTool(ctx, name, args);
   if (!result.ok) throw new Error("첫 구간 뼈대 " + name + " 실패: " + result.summary + " " + JSON.stringify(result.issues ?? []));
+  return (result as { data?: Record<string, unknown> }).data;
 }
 
 function page(id: string, commands: readonly unknown[], conditions: readonly unknown[] = []): Record<string, unknown> {
@@ -290,8 +291,9 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
       blank.lowerTiles.fill(blankFillTileFor(kit.id, 0, kit));
       const text = ctx.project.gameDesignBrief?.summary ?? "";
       const streetPlan = planJpCityStreet({ mapId: start.id, width, height, seed: plan.seed, style: streetStyleFromText(text), shops: shopsFromText(text) });
-      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args));
+      const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never);
       if (outcome.built < 4) return null;
+      labelStreetBuildings(trial.project.maps[start.id]!, outcome.buildings);
     } catch (error) { if (process.env.START_DEBUG) console.error("[start-street]", error); return null; }
   } else if (plan.placeId && placeRef) {
     try {
