@@ -833,6 +833,9 @@ prop('bank-slope', '풀 비탈 둘째 줄(어두운 풀+흙 가장자리)', 1, 1
      rules='bank-lip 바로 아랫줄에 가로로 이어 찍는다(불투명).')(bank_slope)
 
 
+import shopfront_art                                      # noqa: E402
+shopfront_art.register(prop)
+
 NOTES = ('손 도트 거리 소품 %d종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). '
          '근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음.')
 
