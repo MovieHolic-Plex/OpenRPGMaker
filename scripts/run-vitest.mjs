@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { availableParallelism } from "node:os";
+import { availableParallelism, totalmem } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
@@ -185,8 +185,14 @@ function heapForWorkers(usableMb, workers) {
  * 전체 vitest 실행이 78분쯤 출력 없이 사라졌다. 그 재발 방지가 이 함수의 존재 이유다.
  */
 function cgroupBudget(args) {
-  const memoryMax = cgroupLimit("memory.max", (raw) => (raw === "max" ? null : Number(raw)));
-  const cpus = cgroupCpus();
+  let memoryMax = cgroupLimit("memory.max", (raw) => (raw === "max" ? null : Number(raw)));
+  let cpus = cgroupCpus();
+  // GitHub 호스티드 러너는 cgroup 이 max(무제한)로 찍힌다. VM 은 4코어/16GB 인데
+  // 그 값을 안 보면 --maxWorkers=8 × 힙 8GB 가 그대로 나가 잡이 죽는다.
+  if (memoryMax == null && cpus == null && process.env.GITHUB_ACTIONS === "true") {
+    memoryMax = totalmem();
+    cpus = availableParallelism();
+  }
   const hasMemory = memoryMax != null && Number.isFinite(memoryMax);
   if (!hasMemory && cpus == null) return null;
 
@@ -272,6 +278,18 @@ function withWorkerCap(args, budget) {
   return workerArgs;
 }
 
+function dropUnsupportedMinWorkers(args) {
+  if (VITEST_SUPPORTS_MIN_WORKERS) return args;
+  const stripped = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg.startsWith("--minWorkers=")) continue;
+    if (arg === "--minWorkers") { index += 1; continue; }
+    stripped.push(arg);
+  }
+  return stripped;
+}
+
 const packagePath = fileURLToPath(import.meta.resolve("vitest/package.json"));
 const vitestVersion = JSON.parse(readFileSync(packagePath, "utf8")).version;
 const VITEST_SUPPORTS_MIN_WORKERS = Number.parseInt(vitestVersion.split(".")[0], 10) < 4;
@@ -280,7 +298,9 @@ const root = canonicalizeWindowsDrive(process.cwd());
 const requestedArgs = canonicalizeRootArgs(process.argv.slice(2), root);
 // cgroup 상한이 있으면(= CI 슬라이스) 워커 수와 힙을 예산에 맞춘다. 없으면 그대로 간다.
 const budget = cgroupBudget(requestedArgs);
-const args = withWorkerCap(requestedArgs, budget);
+// vitest 4+ 는 --minWorkers 가 없다. 예산으로 워커를 깎지 않으면 플래그가 그대로 전달돼
+// `Unknown option --minWorkers` 로 리포트도 못 내고 죽는다 (GitHub 호스티드, 2026-10-12).
+const args = dropUnsupportedMinWorkers(withWorkerCap(requestedArgs, budget));
 const result = spawnSync(process.execPath, [vitestCli, ...args], {
   cwd: root,
   env: { ...process.env, NODE_OPTIONS: withHeapOption(process.env.NODE_OPTIONS, budget) },
