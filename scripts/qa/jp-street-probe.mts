@@ -9,7 +9,7 @@ import { blankFillTileFor } from "../../src/project/defaults/defaultMaps.ts";
 import type { Project } from "../../src/project/types.ts";
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "output/evidence/jp-street"); fs.mkdirSync(OUT, { recursive: true });
-for (let seed = 1; seed <= Number(arg("seeds", "6")); seed++) {
+for (let seed = Number(arg("from", "1")); seed <= Number(arg("seeds", "6")); seed++) {
   const p = createNewProjectSeed("adventure-jrpg", "t") as Project; ensureBundledTilesets(p);
   const ctx = { project: p };
   const W = Number(arg("w", "52")), H = Number(arg("h", "34"));
