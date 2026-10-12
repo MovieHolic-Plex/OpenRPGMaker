@@ -476,7 +476,7 @@
   background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-stroke: 0.6px var(--oprn-logo-edge);
+  -webkit-text-stroke: 0; /* text-stroke 는 한글 굵은 글꼴에서 글자 속을 윤곽색으로 채워 비어 보였다(실측). 윤곽은 아래 drop-shadow */
   text-shadow: none;
   filter: drop-shadow(0 2px 0 var(--oprn-logo-edge)) drop-shadow(0 4px 10px var(--oprn-logo-glow));
   animation: rm-title-logo-shine 6s ease-in-out 1.2s infinite;
