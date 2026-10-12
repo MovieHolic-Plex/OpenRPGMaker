@@ -31,7 +31,7 @@ for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { p
 const log: unknown[] = [];
 const t0 = Date.now();
 const note = (e: any) => {
-  const row = { t: Math.round((Date.now() - t0) / 1000), type: e.type, name: e.name, ok: e.ok, summary: String(e.summary ?? e.text ?? e.message ?? '').slice(0, 300), visuals: e.visuals?.map((v: any) => ({ title: v.title, caption: v.caption })) };
+  const row = { t: Math.round((Date.now() - t0) / 1000), type: e.type, name: e.name, ok: e.ok, summary: String(e.summary ?? e.text ?? e.message ?? '').slice(0, 300), visuals: e.visuals?.map((v: any) => ({ title: v.title, caption: v.caption })), ...(e.type === 'tool_start' && /^script_cutscene/u.test(String(e.name)) ? { args: e.args } : {}) };
   if (['assistant', 'error', 'execution_status', 'tool_start', 'tool_end'].includes(e.type)) { log.push(row); fs.writeFileSync(path.join(out, 'activity.json'), JSON.stringify(log, null, 1)); console.log(`[${row.t}s] ${row.type} ${row.name ?? ''} ${row.summary.slice(0, 140)}${row.visuals?.length ? ` (그림 ${row.visuals.length}장)` : ''}`); }
   if (e.type === 'tool_end' && e.visuals) for (const [i, v] of e.visuals.entries()) if (v.uploaded?.startsWith('data:')) fs.writeFileSync(path.join(out, `${e.id.slice(-8)}-${i}-${v.caption}.jpg`), Buffer.from(v.uploaded.split(',')[1], 'base64'));
 };
