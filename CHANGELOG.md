@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.200.3 — 2026-10-13
+
+### 수정
+
+- **ci** — raise the CSS ratchet to the tree the full gate can actually reach (`2589157`)
+
 ## 0.200.2 — 2026-10-13
 
 ### 수정
