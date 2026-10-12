@@ -24,6 +24,11 @@ export interface JpStreetStep { readonly tool: string; readonly args: Record<str
 
 export interface JpStreetBuilding { readonly role: string; readonly x: number; readonly foot: number; readonly w: number; /** 이 건물이 선 띠의 맨 윗줄(건물 위 뒷마당 채우기 한계) */ readonly top?: number; /** 일체형 정면 키트의 문 왼쪽 칸(절대 x) — 문 앞 접근칸 보호용 */ readonly doorX?: number }
 
+function nodeEnvFlag(name: string): boolean {
+  const value = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.[name];
+  return Boolean(value);
+}
+
 export interface JpStreetPlan {
   readonly steps: readonly JpStreetStep[];
   /** 계획한 건물(후보 `try:N` 의 N 번째). 실제로 지어진 것만 `runJpStreetPlan` 결과에 남는다. */
@@ -235,7 +240,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const riverGap = N >= 3 ? (rng() < 0.6 ? N - 2 : -1) : (W >= 40 && rng() < 0.4 ? 0 : -1);
   const riverW = 4 + Math.floor(rng() * 2);
   const roadWs = Array.from({ length: N - 1 }, (_, i) => (i === riverGap ? 0 : style === "residential" ? 3 : i === 0 && rng() < 0.7 ? 4 : rng() < 0.3 ? 4 : 3));
-  const gapRows = roadWs.reduce((a2, w2, i) => a2 + (i === riverGap ? 11 + riverW : w2 + 4), 0);
+  const gapRows = roadWs.reduce<number>((a2, w2, i) => a2 + (i === riverGap ? 11 + riverW : w2 + 4), 0);
   const bandTotal = H - 2 - gapRows;                               // 건물 띠들이 쓸 줄 수(마지막 띠 발은 H-3, 아래 보도 2줄)
   const base = Math.floor(bandTotal / N);
   const heights = Array.from({ length: N }, () => base);
@@ -413,7 +418,7 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   let poolPtr = 0;
   const housePool = shuffle(rng, RESIDENTIAL_MIX);
   const zones: { band: number; sx: number; ex: number; zone: JpBlockZone }[] = [];
-  const placed: { role: string; x: number; foot: number; w: number; top?: number }[] = [];
+  const placed: JpStreetBuilding[] = [];
   const buildSteps: JpStreetStep[] = [];
   const yardSteps: JpStreetStep[] = [];
   const carsYard = ["jp-prop-car-white", "jp-prop-car-silver", "jp-prop-car-black", "jp-prop-car-blue", "jp-prop-car-red"];
@@ -700,7 +705,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
       call("stamp_layer_block", { mapId: plan.mapId, x: b.rect.x0, y: foot - 2, layers: { "3": clear, "4": clear }, reshape: false });
       call("stamp_object", { objectId: `kit:jp_city/${kit}`, mapId: plan.mapId, x: b.rect.x0, y: foot - 2 });
       props++;
-    } catch (e) { if (process.env.SFDBG) console.error("sf fail", kit, String((e as Error).message).slice(0, 200)); }
+    } catch (e) { if (nodeEnvFlag("SFDBG")) console.error("sf fail", kit, String((e as Error).message).slice(0, 200)); }
   }
   // 뒷담: 건물이 띠 꼭대기까지 닿지 않으면 지붕 위 한 줄에 블록담을 둘러 뒤가 허공처럼 비어 보이지 않게 한다(건물 뒤는 블록 안쪽 뒷마당).
   for (const b of buildings) {

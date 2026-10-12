@@ -12,9 +12,8 @@ import {
 /**
  * 화면 왜곡 렌더러 — 세션의 `m2Runtime.screen.distortion` 을 카메라 후처리로 그린다.
  *
- * - 물결·모자이크: 카메라에 붙이는 **사용자 정의 후처리 파이프라인 하나**(`OprnScreenDistort`).
- *   Phaser 내장 Pixelate 는 칸 네 귀퉁이를 섞어 번져 보여서 SNES 모자이크(딱 떨어지는 블록)가 안 된다.
- *   물결은 HDMA 처럼 **줄마다 가로로** 민다.
+ * - 물결·모자이크: 카메라 필터 `OprnScreenDistort` (Phaser 4). 내장 Pixelate 는 칸 귀퉁이를
+ *   섞어 번져 보여서 SNES 모자이크(딱 떨어지는 블록)가 안 된다. 물결은 HDMA 처럼 줄마다 가로로 민다.
  * - 기울기: `camera.setRotation`. 캔버스 렌더러에서도 된다.
  *
  * WebGL 이 아니면(캔버스 렌더러) 물결·모자이크는 그리지 않는다 — 콘솔에 한 번만 알린다.
@@ -23,7 +22,7 @@ import {
  * 전환은 씬 시계(`scene.time.now`) 기준이다 — QA 프레임 제어로 굴려도 같은 그림이 나온다.
  */
 
-const PIPELINE_KEY = "OprnScreenDistort";
+const FILTER_NODE = "OprnScreenDistort";
 
 /** 물결 한 주기의 세로 길이(게임 px). SNES 수중 물결 느낌의 촘촘함. */
 const WAVE_PERIOD_PX = 24;
@@ -31,6 +30,7 @@ const WAVE_PERIOD_PX = 24;
 const WAVE_SPEED = 0.004;
 
 const FRAG_SHADER = `
+#pragma phaserTemplate(shaderName)
 #define SHADER_NAME OPRN_SCREEN_DISTORT_FS
 precision mediump float;
 uniform sampler2D uMainSampler;
@@ -47,7 +47,7 @@ void main() {
 }
 `;
 
-type DistortPipeline = Phaser.Renderer.WebGL.Pipelines.PostFXPipeline & {
+type DistortController = Phaser.Filters.Controller & {
   amp: number;
   lineScale: number;
   phase: number;
@@ -62,40 +62,36 @@ type DistortionState = {
   startedAt: number;
   durationMs: number;
   pipelineAttached: boolean;
+  filter: DistortController | null;
 };
 
 const states = new WeakMap<object, DistortionState>();
-let pipelineClass: (new (game: Phaser.Game) => DistortPipeline) | null = null;
 let warnedNoWebgl = false;
 
-function distortPipelineClass(): new (game: Phaser.Game) => DistortPipeline {
-  if (pipelineClass) return pipelineClass;
-  const PhaserRuntime = getLoadedPhaser();
-  class OprnScreenDistortPipeline extends PhaserRuntime.Renderer.WebGL.Pipelines.PostFXPipeline {
-    amp = 0;
-    lineScale = 0;
-    phase = 0;
-    blockX = 0;
-    blockY = 0;
-
-    constructor(game: Phaser.Game) {
-      super({ game, name: PIPELINE_KEY, fragShader: FRAG_SHADER });
-    }
-
-    onPreRender(): void {
-      this.set1f("uAmp", this.amp);
-      this.set1f("uLineScale", this.lineScale);
-      this.set1f("uPhase", this.phase);
-      this.set2f("uBlock", this.blockX, this.blockY);
-    }
-  }
-  pipelineClass = OprnScreenDistortPipeline as unknown as new (game: Phaser.Game) => DistortPipeline;
-  return pipelineClass;
+function webglNodes(scene: PlaySceneContext): Phaser.Renderer.WebGL.RenderNodes.RenderNodeManager | null {
+  const renderer = scene.game.renderer;
+  if (!("renderNodes" in renderer)) return null;
+  return renderer.renderNodes;
 }
 
-function webglPipelines(scene: PlaySceneContext): Phaser.Renderer.WebGL.PipelineManager | null {
-  const renderer = scene.renderer as Partial<Phaser.Renderer.WebGL.WebGLRenderer>;
-  return renderer && "pipelines" in renderer && renderer.pipelines ? renderer.pipelines : null;
+function ensureFilterNode(scene: PlaySceneContext): boolean {
+  const nodes = webglNodes(scene);
+  if (!nodes) return false;
+  if (nodes.getNode(FILTER_NODE)) return true;
+  const PhaserRuntime = getLoadedPhaser();
+  const node = new PhaserRuntime.Renderer.WebGL.RenderNodes.BaseFilterShader(FILTER_NODE, nodes, undefined, FRAG_SHADER);
+  const shader = node as Phaser.Renderer.WebGL.RenderNodes.BaseFilterShader & {
+    setupUniforms(controller: Phaser.Filters.Controller, _drawingContext: Phaser.Renderer.WebGL.DrawingContext): void;
+  };
+  shader.setupUniforms = function (controller, _drawingContext) {
+    const fx = controller as DistortController;
+    this.programManager.setUniform("uAmp", fx.amp);
+    this.programManager.setUniform("uLineScale", fx.lineScale);
+    this.programManager.setUniform("uPhase", fx.phase);
+    this.programManager.setUniform("uBlock", [fx.blockX, fx.blockY]);
+  };
+  nodes.addNode(FILTER_NODE, node);
+  return true;
 }
 
 function targetOf(scene: PlaySceneContext): ScreenDistortion {
@@ -110,7 +106,7 @@ export function updateScreenDistortion(scene: PlaySceneContext): void {
   let state = states.get(scene);
   if (!state) {
     // 첫 프레임(새 게임·불러오기)은 전환 없이 그 상태로 선다.
-    state = { displayed: target, from: target, to: target, startedAt: now, durationMs: 0, pipelineAttached: false };
+    state = { displayed: target, from: target, to: target, startedAt: now, durationMs: 0, pipelineAttached: false, filter: null };
     states.set(scene, state);
   } else if (!screenDistortionsEqual(state.to, target)) {
     state.from = state.displayed;
@@ -131,39 +127,39 @@ function applyScreenDistortion(scene: PlaySceneContext, state: DistortionState, 
   if ((camera as unknown as { rotation: number }).rotation !== radians) camera.setRotation(radians);
 
   const needsShader = shown.wave > 0.01 || shown.mosaic > 1;
-  const pipelines = webglPipelines(scene);
-  if (!pipelines) {
-    if (needsShader && !warnedNoWebgl) {
+  if (!needsShader) {
+    if (state.filter) {
+      camera.filters.internal.remove(state.filter);
+      state.filter = null;
+      state.pipelineAttached = false;
+    }
+    return;
+  }
+  if (!ensureFilterNode(scene)) {
+    if (!warnedNoWebgl) {
       warnedNoWebgl = true;
       console.warn("[player] 화면 왜곡(물결·모자이크)은 WebGL 렌더러에서만 그려집니다.");
     }
     return;
   }
-  if (!needsShader) {
-    if (state.pipelineAttached) {
-      camera.removePostPipeline(PIPELINE_KEY);
-      state.pipelineAttached = false;
-    }
-    return;
-  }
-  if (!pipelines.postPipelineClasses.has(PIPELINE_KEY)) {
-    pipelines.addPostPipeline(PIPELINE_KEY, distortPipelineClass() as unknown as typeof Phaser.Renderer.WebGL.Pipelines.PostFXPipeline);
-  }
-  if (!state.pipelineAttached) {
-    camera.setPostPipeline(PIPELINE_KEY);
+  if (!state.filter) {
+    const filter = new (getLoadedPhaser()).Filters.Controller(camera, FILTER_NODE) as DistortController;
+    filter.amp = 0;
+    filter.lineScale = 0;
+    filter.phase = 0;
+    filter.blockX = 0;
+    filter.blockY = 0;
+    camera.filters.internal.add(filter);
+    state.filter = filter;
     state.pipelineAttached = true;
   }
-  const attached = camera.getPostPipeline(PIPELINE_KEY);
-  const pipeline = (Array.isArray(attached) ? attached[0] : attached) as DistortPipeline | undefined;
-  if (!pipeline) return;
   // 셰이더 uv 는 카메라 화면 0~1 이다. 게임 px(월드 px) 단위 세기를 화면에 보이는 월드 크기로 나눈다 —
   // 캔버스 해상도·화면 배율(고해상도 + 줌, 16px 칸 확대)이 무엇이든 «게임 px» 가 같은 크기로 보인다.
-  // (캔버스 폭으로 나누던 첫 구현은 칸 확대 프로젝트에서 모자이크가 두 배로 컸다.)
   const viewWidth = Math.max(1, camera.worldView.width || camera.width / Math.max(0.0001, camera.zoom));
   const viewHeight = Math.max(1, camera.worldView.height || camera.height / Math.max(0.0001, camera.zoom));
-  pipeline.amp = shown.wave / viewWidth;
-  pipeline.lineScale = (2 * Math.PI * viewHeight) / WAVE_PERIOD_PX;
-  pipeline.phase = now * WAVE_SPEED;
-  pipeline.blockX = shown.mosaic > 1 ? shown.mosaic / viewWidth : 0;
-  pipeline.blockY = shown.mosaic > 1 ? shown.mosaic / viewHeight : 0;
+  state.filter.amp = shown.wave / viewWidth;
+  state.filter.lineScale = (2 * Math.PI * viewHeight) / WAVE_PERIOD_PX;
+  state.filter.phase = now * WAVE_SPEED;
+  state.filter.blockX = shown.mosaic > 1 ? shown.mosaic / viewWidth : 0;
+  state.filter.blockY = shown.mosaic > 1 ? shown.mosaic / viewHeight : 0;
 }

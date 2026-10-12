@@ -41,6 +41,10 @@ import {
 
 export * from "./playableSegmentContract";
 
+function nodeEnv(name: string): string | undefined {
+  return (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.[name];
+}
+
 const SEGMENT_WILD_ENEMY_ID = "enemy_segment_wild";
 const CAPTURE_ITEM_ID = "item_capture_orb";
 const STARTER_SPECIES = ["species_leafling", "species_sparkit", "species_aqualing"] as const;
@@ -294,13 +298,13 @@ function prebuildStartTown(ctx: { project: Project }, start: GameMap, plan: Star
       const outcome = runJpStreetPlan(streetPlan, (name, args) => tool(trial, name, args) as never);
       if (outcome.built < 4) return null;
       labelStreetBuildings(trial.project.maps[start.id]!, outcome.buildings);
-    } catch (error) { if (process.env.START_DEBUG) console.error("[start-street]", error); return null; }
+    } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-street]", error); return null; }
   } else if (plan.placeId && placeRef) {
     try {
     // 완성 장소가 시작 맵이 된다 — 장소는 자기 칩셋 판본(칸 번호가 다른 확장본)을 쓰므로 붙이지 않고 새 맵으로 가져온 뒤(시작 칸이 아직 옛 맵에 있어 무결성이 통과한다),
     // 아래 걷기 분석이 끝나면 옛 빈 맵 자리에 같은 id 로 앉힌다.
     tool(trial, "import_region_reference", { id: plan.placeId, newMapId: PLACE_TMP_ID, name: start.name });
-    } catch (error) { if (process.env.START_DEBUG) console.error("[start-place]", error); return null; }
+    } catch (error) { if (nodeEnv("START_DEBUG")) console.error("[start-place]", error); return null; }
   } else {
     tool(trial, "author_beodeul_town", { mapId: start.id, theme: plan.theme, form: plan.form, terrain: plan.terrain, seed: plan.seed });
   }

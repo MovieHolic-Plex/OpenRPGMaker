@@ -435,7 +435,7 @@ function damageEnemyByNpc(
   });
   victim.hp = outcome.hp;
   victim.flashMs = ENEMY_FLASH_MS;
-  scene.eventSprites.get(victim.eventId)?.setTintFill(0xffffff);
+  scene.eventSprites.get(victim.eventId)?.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
   if (pos) {
     spawnDamageNumber(scene, characterSpriteX(pos.x, mapTileSize(scene.map)), characterSpriteY(pos.y, mapTileSize(scene.map)) - 20, String(Math.max(0, Math.round(damage))), "#d7c7ff");
   }
@@ -597,7 +597,7 @@ function damagePlayer(
   state.playerIframesMs = state.config.playerIframesMs;
   state.playerFlashMs = PLAYER_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_PLAYER_HURT_MS);
-  scene.player.setTintFill(state.guarding ? 0x88bbff : 0xff7777);
+  scene.player.setTint(state.guarding ? 0x88bbff : 0xff7777).setTintMode(Phaser.TintModes.FILL);
   scene.cameras.main.shake(90, 0.006);
   playActionSe(SE_PLAYER_HURT_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(fromTileX, mapTileSize(scene.map)), characterSpriteY(fromTileY, mapTileSize(scene.map)) - 20, `-${dealt}`, state.guarding ? "#9bd0ff" : "#ff6655");
@@ -781,7 +781,7 @@ function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, 
   enemy.hp = Math.max(0, enemy.hp - damage);
   enemy.flashMs = ENEMY_FLASH_MS;
   state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_HIT_ENEMY_MS);
-  scene.eventSprites.get(enemy.eventId)?.setTintFill(0xffffff);
+  scene.eventSprites.get(enemy.eventId)?.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
   scene.cameras.main.shake(60, 0.004);
   playActionSe(SE_HIT_ENEMY_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(tileX, mapTileSize(scene.map)), characterSpriteY(tileY, mapTileSize(scene.map)) - 20, String(damage), "#ffe066");
@@ -817,7 +817,7 @@ function playEnemyDeathBeat(scene: PlaySceneContext, enemy: ActionEnemyState): v
   ghost.setOrigin(sprite.originX, sprite.originY);
   ghost.setDisplaySize(sprite.displayWidth, sprite.displayHeight);
   ghost.setDepth(COMBAT_DEPTH);
-  ghost.setTintFill(0xffffff);
+  ghost.setTint(0xffffff).setTintMode(Phaser.TintModes.FILL);
   scene.tweens.add({
     targets: ghost,
     alpha: 0,
@@ -1061,7 +1061,7 @@ function strokeArcBand(
     points.push({ x: centerX + Math.cos(rad) * inner, y: centerY + Math.sin(rad) * inner });
   }
   graphics.fillStyle(color, alpha);
-  graphics.fillPoints(points, true, true);
+  graphics.fillPoints(points as Phaser.Math.Vector2[], true, true);
 }
 
 // 뜨는 데밌지 숫자. 타일이 16px 이라 12px 글자는 적 스프라이트를 토막 덮어버렸다.

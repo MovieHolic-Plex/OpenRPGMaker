@@ -193,31 +193,26 @@ export class AgentConstructionRevealRenderer {
     for (const k of ks) {
       const c = values.cells[k]!;
       const x = (c % width) * ts, y = Math.floor(c / width) * ts;
-      if (!fresh) {
-        // DynamicTexture.clear 는 dirty 일 때만 지우고 dirty 를 내린다 — 다음 칸부터 조용히 안 지워진다(Phaser 3.90).
-        texture.dirty = true;
-        texture.clear(x, y, ts, ts);
-      }
+      if (!fresh) texture.clear(x, y, ts, ts);
       if ((values.lower?.[k] ?? -1) < 0) texture.fill(EMPTY_CELL, 1, x, y, ts, ts);
     }
-    texture.beginDraw();
     for (const k of ks) {
       const c = values.cells[k]!;
       const x = (c % width) * ts, y = Math.floor(c / width) * ts;
       for (const tile of [values.lower?.[k] ?? -1, values.lowerOverlay?.[k] ?? -1, values.upper?.[k] ?? -1, values.upperOverlay?.[k] ?? -1]) {
         if (tile < 0) continue;
         const name = `tile_${tile}`;
-        if (this.scene.textures.getFrame(active.textureKey, name)) texture.batchDrawFrame(active.textureKey, name, x, y);
+        if (this.scene.textures.getFrame(active.textureKey, name)) texture.stamp(active.textureKey, name, x, y, { originX: 0, originY: 0 });
       }
     }
-    texture.endDraw();
+    texture.render();
   }
 
   private clearBlueprintCell(active: Active, c: number): void {
     const width = active.plan.width;
     const texture = active.blueprint.texture as unknown as Phaser.Textures.DynamicTexture;
-    texture.dirty = true;
     texture.clear((c % width) * PLAN_PX, Math.floor(c / width) * PLAN_PX, PLAN_PX, PLAN_PX);
+    texture.render();
   }
 
   /** 계획 칸 여럿을 분류 색으로 — 한 Graphics 에 모아 덮개에 한 번 찍는다. */

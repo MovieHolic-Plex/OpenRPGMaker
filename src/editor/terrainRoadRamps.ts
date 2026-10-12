@@ -11,7 +11,8 @@ export function connectTerrainRoad(map: GameMap, road: TerrainPoint[], width: nu
   for (let n = 1; n < road.length; n++) {
     const a = road[n-1]!, b = road[n]!, ai = a.y * map.width + a.x, bi = b.y * map.width + b.x;
     if (Math.abs(a.x-b.x)+Math.abs(a.y-b.y) !== 1 || reliefAllowsStep(r,a.x,a.y,b.x,b.y)) continue;
-    const low = r.levels[ai]! < r.levels[bi]! ? a : b, high = low === a ? b : a;
+    const low: TerrainPoint = r.levels[ai]! < r.levels[bi]! ? a : b;
+    const high: TerrainPoint = low === a ? b : a;
     const dx = high.x-low.x, dy = high.y-low.y, dir: RampDir = dx > 0 ? "e" : dx < 0 ? "w" : dy > 0 ? "s" : "n", lo = r.levels[low.y*map.width+low.x]!, hi = r.levels[high.y*map.width+high.x]!;
     // Keep a flat landing at bends: move the height break one cell along the straight exit.
     const before = road[n-2], after = road[n+1];
@@ -23,11 +24,15 @@ export function connectTerrainRoad(map: GameMap, road: TerrainPoint[], width: nu
     }
     const maxLength = hi-lo+1, half = Math.floor((width-1)/2); let placed = false;
     for (let side = -half; side < width - half; side++) {
-      const X = low.x + (dy ? side : 0), Y = low.y + (dx ? side : 0), Hx = X+dx, Hy = Y+dy;
+      const X: number = low.x + (dy ? side : 0);
+      const Y: number = low.y + (dx ? side : 0);
+      const Hx = X + dx, Hy = Y + dy;
       if (X<0 || Y<0 || X>=map.width || Y>=map.height || Hx<0 || Hy<0 || Hx>=map.width || Hy>=map.height || r.levels[Y*map.width+X] !== lo || r.levels[Hy*map.width+Hx] !== hi) continue;
       const flight: number[] = [];
       for (let d=0; d<maxLength; d++) {
-        const x=X-d*dx,y=Y-d*dy,i=y*map.width+x;
+        const x: number = X - d * dx;
+        const y: number = Y - d * dy;
+        const i = y * map.width + x;
         if(x<0||y<0||x>=map.width||y>=map.height||r.levels[i]!==lo||!terrainEditable(map,i)||!touched.has(i)) break;
         const centerIndex = road.findIndex(p=>p.x===x&&p.y===y);
         if(centerIndex>0 && centerIndex<road.length-1) { const prev=road[centerIndex-1]!,next=road[centerIndex+1]!; if(prev.x!==next.x && prev.y!==next.y) break; }
