@@ -21,11 +21,12 @@
     "maphead maphead"
     "toolbar toolbar"
     "options options"
+    "tabs tabs"
     "filter filter"
     "sheet sheet"
     "status status"
     "utils utils";
-  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto auto;
+  grid-template-rows: auto auto auto auto auto minmax(0, 1fr) auto auto;
 }
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .sidebar-map-header,
@@ -55,6 +56,28 @@
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-filter-bar {
   grid-area: filter;
   margin: 0;
+}
+
+/* 탭·카드 본문은 이름이 없는 칸으로 자동 배치되면 2열 격자(1fr | auto)의
+   좁은 칸에 들어가 글자가 한 글자씩 세로로 접힌다. 둘 다 전폭 행에 고정한다. */
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-smart-tabs {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 3px;
+  grid-area: tabs;
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .palette-smart {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  grid-area: sheet;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-work-pane.is-paint > .chipset-sheet {
@@ -89,6 +112,12 @@
   font-size: 11px;
   height: 24px;
   padding: 0 18px 0 6px;
+}
+
+.editor-layout .left-panel-stack .palette-catalog-search {
+  font-size: 12px;
+  height: 26px;
+  padding: 0 8px;
 }
 
 /* 「이웃 연결」「구조 보조」 행의 72px 라벨 칸(.tile-brush-row grid)은 네 글자 라벨에

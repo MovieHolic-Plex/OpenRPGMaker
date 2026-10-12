@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { clearFavoriteTilesForTest, recordRecentTile } from "@/editor/panels/tileBrushTools";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
-import { PALETTE_CARD_WINDOW, resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
+import { PALETTE_CARD_ROW_PX, PALETTE_CARD_WINDOW, PALETTE_THUMB_PX, resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef, TilesetDef } from "@/project/types";
@@ -127,8 +127,9 @@ describe("smart tile palette", () => {
     expect(find("tile-palette")).toBeNull();
     const card = find("palette-terrain-auto:dirt-road");
     expect(card?.querySelector(".palette-card-name")?.textContent).toBe("조선 흙길");
-    const cell = card?.querySelector<HTMLElement>(".palette-card-cell");
-    expect(cell?.getAttribute("style")).toContain("calc(-1 * 100%)");
+    const sprite = card?.querySelector<HTMLElement>(".palette-card-sprite");
+    expect(sprite?.getAttribute("style")).toContain(`calc(-1 * ${PALETTE_THUMB_PX}px)`);
+    expect(sprite?.getAttribute("style")).not.toContain("100%");
     editorState.set({ activePaletteStamp: { width: 1, height: 1, cells: [], source: { startTile: 0, endTile: 0 } } });
     card?.click();
     expect(editorState.get()).toMatchObject({
@@ -198,7 +199,8 @@ describe("smart tile palette", () => {
     expect(body?.clientHeight ?? 0).toBe(0);
     expect(host.querySelectorAll(".palette-card").length).toBeLessThanOrEqual(PALETTE_CARD_WINDOW);
     expect(host.querySelectorAll(".palette-card").length).toBeGreaterThan(0);
-    expect(host.querySelector<HTMLElement>(".palette-card-spacer")?.style.height).toBe(`${40 * 112}px`);
+    const rows = Math.ceil(80 / 3);
+    expect(host.querySelector<HTMLElement>(".palette-card-spacer")?.style.height).toBe(`${rows * PALETTE_CARD_ROW_PX - 4}px`);
   });
 
   it("falls back to the raw grid when the tileset has no catalog", () => {

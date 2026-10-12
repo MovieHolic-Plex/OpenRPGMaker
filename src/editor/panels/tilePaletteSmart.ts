@@ -33,8 +33,12 @@ export type PaletteViewId = "terrain" | "prefab" | "recent" | "tiles";
 
 /** 한 화면에 만드는 카드 수. 나머지는 스크롤할 때 채운다. */
 export const PALETTE_CARD_WINDOW = 24;
-const CARD_ROW_PX = 112;
-const CARD_COLUMNS = 2;
+/** 높이를 재기 전에 쓰는 줄 간격(카드 + 간격). 붙은 뒤에는 실제 카드 높이로 바꾼다. */
+export const PALETTE_CARD_ROW_PX = 80;
+const CARD_GAP_PX = 4;
+const CARD_COLUMNS = 3;
+/** 시트에서 잘라 내는 칸. 이보다 크면 조선·버들항 시트의 background-size 가 텍스처 한도를 넘긴다. */
+export const PALETTE_THUMB_PX = 32;
 const SEARCH_DELAY_MS = 120;
 
 const viewByTileset = new Map<string, PaletteViewId>();
@@ -391,25 +395,33 @@ function makeCardButton(input: {
 }
 
 function singleThumb(tileset: TilesetDef, tile: number): HTMLElement {
-  const cell = el("span", {
-    class: "palette-card-cell",
-    attrs: { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, tile, "100%") },
+  return el("span", {
+    class: "palette-card-thumb",
+    attrs: { "aria-hidden": "true" },
+    children: [tileCell(tileset, tile)],
   });
-  return el("span", { class: "palette-card-thumb", attrs: { "aria-hidden": "true" }, children: [cell] });
 }
 
 function mosaicThumb(tileset: TilesetDef, mosaic: { readonly columns: number; readonly tiles: readonly number[] }): HTMLElement {
+  const columns = Math.max(1, mosaic.columns);
   const thumb = el("span", {
     class: "palette-card-thumb is-mosaic",
-    attrs: { "aria-hidden": "true", style: `grid-template-columns:repeat(${Math.max(1, mosaic.columns)}, 1fr)` },
+    attrs: { "aria-hidden": "true", style: `grid-template-columns:repeat(${columns}, minmax(0, 1fr))` },
   });
-  for (const tile of mosaic.tiles) {
-    thumb.append(el("span", {
-      class: "palette-card-cell" + (tile < 0 ? " is-empty" : ""),
-      attrs: tile < 0 ? { "aria-hidden": "true" } : { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, tile, "100%") },
-    }));
-  }
+  for (const tile of mosaic.tiles) thumb.append(tileCell(tileset, tile));
   return thumb;
+}
+
+function tileCell(tileset: TilesetDef, tile: number): HTMLElement {
+  if (tile < 0) return el("span", { class: "palette-card-cell is-empty", attrs: { "aria-hidden": "true" } });
+  return el("span", {
+    class: "palette-card-cell",
+    attrs: { "aria-hidden": "true" },
+    children: [el("span", {
+      class: "palette-card-sprite",
+      attrs: { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, tile, PALETTE_THUMB_PX) },
+    })],
+  });
 }
 
 function selectTerrainCard(card: TerrainCard): void {
@@ -453,23 +465,26 @@ function mountCardWindow<T>(
     }));
     return;
   }
-  const rows = Math.ceil(items.length / CARD_COLUMNS);
+  const rowCount = Math.ceil(items.length / CARD_COLUMNS);
   const spacer = el("div", { class: "palette-card-spacer" });
-  spacer.style.height = `${rows * CARD_ROW_PX}px`;
   const windowEl = el("div", { class: "palette-card-window" });
   spacer.append(windowEl);
   host.append(spacer);
+  let stride = PALETTE_CARD_ROW_PX;
 
   const paint = (): void => {
+    const card = windowEl.querySelector<HTMLElement>(".palette-card");
+    const measured = card?.offsetHeight ?? 0;
+    if (measured > 0) stride = measured + CARD_GAP_PX;
+    spacer.style.height = `${Math.max(stride - CARD_GAP_PX, rowCount * stride - CARD_GAP_PX)}px`;
     const height = host.clientHeight;
-    const start = height > 0
-      ? Math.max(0, Math.floor(host.scrollTop / CARD_ROW_PX) - 1) * CARD_COLUMNS
-      : 0;
-    const visible = height > 0
-      ? (Math.ceil(height / CARD_ROW_PX) + 3) * CARD_COLUMNS
-      : PALETTE_CARD_WINDOW;
-    const end = Math.min(items.length, start + visible);
-    windowEl.style.top = `${Math.floor(start / CARD_COLUMNS) * CARD_ROW_PX}px`;
+    const startRow = height > 0 ? Math.max(0, Math.floor(host.scrollTop / stride) - 1) : 0;
+    const start = startRow * CARD_COLUMNS;
+    const visibleRows = height > 0
+      ? Math.ceil(height / stride) + 3
+      : Math.ceil(PALETTE_CARD_WINDOW / CARD_COLUMNS);
+    const end = Math.min(items.length, start + visibleRows * CARD_COLUMNS);
+    windowEl.style.top = `${startRow * stride}px`;
     windowEl.replaceChildren();
     for (let index = start; index < end; index += 1) {
       const item = items[index];
@@ -478,4 +493,5 @@ function mountCardWindow<T>(
   };
   paint();
   host.addEventListener("scroll", paint, { passive: true });
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(paint);
 }
