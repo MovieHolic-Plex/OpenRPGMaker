@@ -1,7 +1,7 @@
 name: ci-full
 
 # 전체 게이트 — main 푸시 + 야간 스케줄 + 수동.
-# 다른 브랜치의 푸시마다 돌리지는 않는다. 한 번에 한 시간 안팎이고, oprn-full 러너는 하나다.
+# 다른 브랜치의 푸시마다 돌리지는 않는다. 한 번에 한 시간 안팎이고, GitHub 호스티드 러너에서 돈다.
 #
 # 왜 이 모양인가 (2026-09-17 실측, 2026-09-27 에 낮 실행을 열었다):
 #   전체 vitest 는 2,338 파일 / 22,546 케이스 = 약 4.3 CPU-시간이다. 워커 수(8/16/24/32),
@@ -11,11 +11,9 @@ name: ci-full
 #   자리는 이제 슬라이스로 갈라 두었다. 박스는 32코어/98GB 이고, fast 4대(8코어/32GB)와
 #   이 레인(6코어/20GB)이 동시에 최대로 들어가도 부모 한도(16코어/56GB) 안이다.
 #
-#   실행은 self-hosted 러너에서 하고, 러너는 systemd 슬라이스 안에 있다.
-#   ci.slice(16코어/56GB) 아래에 ci-fast.slice(8코어/32GB, 러너 4)와 ci-full.slice(6코어/20GB)가 있고,
-#   이 잡만 **oprn-full** 라벨을 쓴다 — 러너도 슬라이스도 fast 레인과 분리돼 있다.
-#   한 시간짜리 잡이 푸시 레인을 막지 않고, 겹쳐 돌아도 전체 vitest 가 굶지 않는다.
-#   "전체 vitest 두 개 동시 실행"은 위의 concurrency group 과 oprn-full 러너 1개가 막는다.
+#   실행은 GitHub 호스티드 러너(ubuntu-latest)에서 한다. 이 저장소는 공개라
+#   소유자 컴퓨터의 self-hosted 러너에서 포크 코드를 돌리지 않는다 (2026-10-12).
+#   "전체 vitest 두 개 동시 실행"은 위의 concurrency group 이 막는다.
 #   main 이 연달아 머지되면 진행 중인 잡은 끝내고, 대기 중인 옛 커밋만 최신 커밋으로 바뀐다.
 #
 # 판정은 verify-gates.mjs 가 한다. 이 스크립트는 .omo/gates-baseline.json 과 대조해
@@ -36,11 +34,16 @@ concurrency:
 
 jobs:
   gates:
-    runs-on: [self-hosted, oprn-full]
-    # 러너가 1개라 앞선 잡을 기다릴 수 있다. self-hosted 잡 상한은 5일이라 여유롭게 잡아도 된다.
+    runs-on: ubuntu-latest
+    # 호스티드 잡 상한은 6시간이다. 게이트 본체와 플레이크 재확인이 그 안에 들어온다.
     timeout-minutes: 240
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
 
       - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
         run: |
@@ -83,9 +86,6 @@ jobs:
       #   충분하다. 잡 상한 240분, 게이트 본체 75분이라 여유는 있다.
       - name: 전체 게이트 (기준선 대비 회귀만 실패)
         id: gates
-        env:
-          # verify-gates 의 타입체크만 이 락을 잡는다. 힙 10GB 를 ci-fast 와 동시에 열지 않기 위해서다.
-          OPRN_TYPECHECK_LOCK: /home/dev/ci/typecheck.lock
         run: node scripts/verify-gates.mjs --flake-budget-min=90
 
       # 게이트가 실패해도 자원 리포트는 반드시 남긴다 — 조용히 죽는 경우가 바로 이걸로 진단된다.
@@ -93,30 +93,28 @@ jobs:
         if: always()
         run: node scripts/ci-resource-report.mjs report "전체 게이트"
 
-      # 리포트를 **박스 디스크에** 남긴다. actions/upload-artifact 를 쓰지 않는 이유:
-      # 계정의 아티팩트 저장소 쿼터가 이미 차 있다(2026-09-17 실측, 첫 ci-full 실행에서
-      # `Failed to CreateArtifact: Artifact storage quota has been hit`). 이 저장소가 쓰는
-      # 아티팩트는 0개·0.0MB 이므로 다른 저장소가 먹은 것이고, 여기서 고칠 수 없다.
-      # 어차피 러너가 우리 박스라 업로드는 왕복일 뿐이다 — 로컬에 두면 용량 제한도,
-      # 14일 만료도 없고 `jq` 로 바로 열어볼 수 있다.
+      # 호스티드 러너 디스크는 잡이 끝나면 사라진다. 판정 파일은 잡 요약에 경로만 남기고
+      # 아티팩트로 올린다. 계정 아티팩트 쿼터가 차 있으면 이 단계가 게이트를 실패시키진 않는다.
       - name: vitest 리포트 보관
         if: always()
         run: |
           set -euo pipefail
-          dest="$HOME/ci/reports/$(date -u +%Y%m%d-%H%M%S)-run${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          dest="${RUNNER_TEMP}/gates-report"
           mkdir -p "$dest"
-          # gates-report.json 이 **판정**이다(회귀 목록·플레이크 제외분). vitest-report 는
-          # 원시 출력이고, baseline 은 무엇과 비교했는지다. 셋이 있어야 나중에 재구성된다.
           for f in .omo/gates-report.json .omo/gates-vitest-report.json .omo/gates-baseline.json; do
             [ -f "$f" ] && cp "$f" "$dest/" || echo "없음: $f"
           done
           git rev-parse HEAD > "$dest/commit.txt"
-          echo "보관 위치: $dest"
           ls -la "$dest"
           {
             echo "### vitest 리포트"
             echo ""
-            echo "러너 박스의 \`$dest\` 에 있다 (아티팩트 쿼터 소진으로 업로드 대신 로컬 보관)."
+            echo "판정 파일은 이 잡의 아티팩트 \`gates-report\` 에 있다."
           } >> "$GITHUB_STEP_SUMMARY"
-          # 30일 넘은 보관본은 지운다. 리포트 하나가 수 MB 라 방치하면 쌓인다.
-          find "$HOME/ci/reports" -maxdepth 1 -type d -mtime +30 -exec rm -rf {} + 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: gates-report
+          path: ${{ runner.temp }}/gates-report
+          if-no-files-found: warn
