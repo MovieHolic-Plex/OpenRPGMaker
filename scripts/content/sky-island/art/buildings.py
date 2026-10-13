@@ -373,7 +373,7 @@ def _windmill(c, f=0):
     c.P(hub[0] - 1, hub[1] - 1, 'brass', 5)
 
 
-A('windmill', '풍차(돌림 마루 + 돛 날개, 3프레임 회전)', 4, 7, 'structure', ['풍차', '방앗간', '애니메이션'], '섬 바람받이 끝, 밭 옆. 날개가 돈다. 문(가운데 왼쪽) 아래 접근칸 비움.', entrance=[1], frames=3,
+A('windmill', '풍차(돌림 마루 + 돛 날개, 3프레임 회전)', 4, 7, 'structure', ['풍차', '방앗간', '애니메이션'], '섬 바람받이 끝, 밭 옆. 날개가 돈다. 문(가운데 두 칸에 걸침) 아래 접근칸 비움.', entrance=[1, 2], frames=3,
   gate_name='round windmill tower seen from above-front: round stone plinth, circular wooden balcony deck, conical cap roof, sails')(_windmill)
 
 

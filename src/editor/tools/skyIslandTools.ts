@@ -21,7 +21,7 @@ const STYLE_KO: Readonly<Record<SkyComposeStyle, string>> = {
 };
 /** 빈 맵을 자동으로 늘리는 크기(최소 크기보다 조금 넉넉하게). 방은 방 크기 그대로. */
 const AUTO_SIZE: Readonly<Record<SkyComposeStyle, { w: number; h: number }>> = {
-  village: { w: 50, h: 34 }, shrine: { w: 46, h: 40 }, dock: { w: 50, h: 30 }, archipelago: { w: 54, h: 42 },
+  village: { w: 50, h: 34 }, shrine: { w: 46, h: 40 }, dock: { w: 52, h: 30 }, archipelago: { w: 54, h: 42 },
   "room-cottage": SKY_MIN_SIZE["room-cottage"], "room-shrine": SKY_MIN_SIZE["room-shrine"], "room-cabin": SKY_MIN_SIZE["room-cabin"], "room-observatory": SKY_MIN_SIZE["room-observatory"],
 };
 
@@ -61,7 +61,7 @@ export const COMPOSE_SKY_ISLAND_MAP_TOOL: ToolDefinition = {
     + "dock = 비공정 부두(섬 끝 잔교 + 계류된 비공정·부두 관리소·등대·짐 마당·바람 자루 + 밧줄 다리로 이은 창고 섬), "
     + "archipelago = 섬 넷을 밧줄 다리 셋·돌다리 하나로 이은 섬 사슬(집·풍차와 밭·우물 쉼터·천문대), "
     + "room-cottage·room-shrine·room-cabin·room-observatory = 오두막·신전·비공정 선실·천문대 실내 방(벽 두 줄 + 창, 가구는 벽 따라, 아래 출구 깔개). "
-    + "빈 맵이 작으면 알맞은 크기로 늘린다(마을 50×34·신전 46×40·부두 50×30·섬 사슬 54×42, 방은 방 크기). 손댄 맵은 replace:true 여야 다시 깐다(이벤트는 남는다). "
+    + "빈 맵이 작으면 알맞은 크기로 늘린다(마을 50×34·신전 46×40·부두 52×30·섬 사슬 54×42, 방은 방 크기). 손댄 맵은 replace:true 여야 다시 깐다(이벤트는 남는다). "
     + "시작 칸에서 모든 건물 문 접근칸·다리 끝·실내 출구에 닿는지 엔진 통행으로 확인하고, 안 되면 맵을 바꾸지 않는다. 결과 data.buildings[].doors 를 link_sky_island_interior 에 준다.",
   parameters: {
     type: "object",
