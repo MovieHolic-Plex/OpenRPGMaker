@@ -215,10 +215,12 @@ const scriptCutsceneStaged: ToolDefinition = {
         for (const frame of Object.values(prepared.frames)) {
           draft.assets.uploaded[frame.id] = { id: frame.id, name: `컷신 캐릭터 프레임`, kind: "picture", dataUrl: frame.dataUrl, meta: { width: prepared.width, height: prepared.height } };
         }
+        // 캐릭터셋 배우도 scale(%)을 따른다 — 24×32 칩을 화면에서 키우려면 필요하다(이전에는 무시되어 13% 크기로 나왔다).
+        const charScale = typeof raw.scale === "number" && raw.scale > 0 ? Math.max(10, Math.min(300, raw.scale)) : 100;
         const f = (role: string): string => prepared.frames[role]!.id;
         const trio = (d: string): readonly [string, string, string] => [f(`walk${d}0`), f(`walk${d}1`), f(`walk${d}2`)];
         return {
-          name, width: prepared.width, height: prepared.height, facing: raw.facing === "left" ? "left" : "right",
+          name, width: Math.round(prepared.width * charScale / 100), height: Math.round(prepared.height * charScale / 100), ...(charScale !== 100 ? { scale: charScale } : {}), facing: raw.facing === "left" ? "left" : "right",
           // 방향 정지 포즈 — pose 단계로 «트럭 쪽을 돌아본다» 같은 연출을 한다.
           poses: { default: f("walkDown1"), down: f("walkDown1"), up: f("walkUp1"), left: f("walkLeft1"), right: f("walkRight1"), ...Object.fromEntries((Array.isArray(raw.poses) ? (raw.poses as Raw[]) : []).map((p) => [String(p.name), String(p.resourceId)])) },
           walk: { down: trio("Down"), up: trio("Up"), left: trio("Left"), right: trio("Right") },
