@@ -2610,7 +2610,7 @@ function cleanOptionalString(raw: unknown): string | undefined {
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
   description:
-    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
   mode: "write",
@@ -4062,7 +4062,7 @@ export { ensureNamedSwitch };
  */
 const patchEventPage: ToolDefinition = {
   name: "patch_event_page",
-  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
+  description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 요청하지 않은 필드(대사의 speaker·얼굴, 명령의 다른 인자)는 원래 값 그대로 다시 적는다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
   mode: "write",
   parameters: {
     type: "object",

@@ -138,13 +138,19 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   if (!plan.planOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;
-    const declared = await declareIntentCached(input.declarer(), buildIntentFacts({
+    const declareFacts = buildIntentFacts({
       project,
       userText: text,
       currentMapId,
       selection,
       hasActivePlan: input.hasActivePlan,
-    }));
+    });
+    let declared = await declareIntentCached(input.declarer(), declareFacts);
+    // 공급자가 한 번 느렸다고 지시 전체를 버리지 않는다 — 시간 초과만 한 번 더 시도한다(분류 호출은 폴백을 캐시하지 않는다).
+    // 실측 2026-10-13: 동시 실행 5건 중 2건이 「시간 초과(30000ms)」로 턴이 시작도 못 하고 끝났다.
+    if (declared.intent.source === "fallback" && !plan.readOnly && /시간 초과/u.test(declared.error ?? "")) {
+      declared = await declareIntentCached(input.declarer(), declareFacts);
+    }
     if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.

@@ -89,6 +89,8 @@ export function nativeProject(): Project {
   // Keep every authored NPC on the map and give the ones the prompts refer to a name a person would see.
   byId('ev_ember_guard').x = 22; byId('ev_ember_guard').y = 12;
   byId('ev_utility_npc').name = '마을 주민';
+  // A real NPC's lines are spoken under its own name; a mismatched placeholder speaker invites the assistant to "fix" it unasked.
+  for (const page of byId('ev_utility_npc').pages ?? []) for (const command of page.commands) if (command.kind === 'text') command.speaker = '마을 주민';
   byId('ev_test_shop').name = '잡화점 주인';
   byId('ev_test_cutscene').name = '장면 연출';
   const shopPage = byId('ev_test_shop').pages[0];
@@ -465,8 +467,16 @@ export function judge(id: string, input: JudgeInput): Verdict {
     }
     case 'remove-final-fade': return eventEdit(input, CUT, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
-      const last = [...was].reverse().find((command: any) => command.kind === 'm2Command' && /m2-04[45]/.test(String(command.commandId)));
-      return last && isDeepStrictEqual(now, was.filter((command: any) => command !== last)) ? pass('마지막 페이드만 제거') : fail('마지막 페이드만 지워지지 않았다');
+      const isFade = (command: any) => command.kind === 'm2Command' && /m2-04[45]/.test(String(command.commandId));
+      const lastIndex = was.map(isFade).lastIndexOf(true);
+      if (lastIndex < 0) return fail('fixture 에 페이드가 없다');
+      // A fade is a hide-screen ... show-screen block (the wait between them is its duration), so "the final fade" is the last show-screen
+      // alone or that closing block; anything outside the block, or any other command inside it, may not go.
+      const firstIndex = was.findIndex(isFade);
+      const removed = was.filter((command: any) => !now.some((kept: any) => isDeepStrictEqual(kept, command)));
+      const block = was.slice(firstIndex, lastIndex + 1);
+      const inBlock = removed.length >= 1 && removed.includes(was[lastIndex]) && removed.every((command: any) => block.includes(command) && (isFade(command) || command.kind === 'wait'));
+      return inBlock && isDeepStrictEqual(now, was.filter((command: any) => !removed.includes(command))) ? pass(`마지막 페이드 ${removed.length}명령만 제거`) : fail('마지막 페이드만 지워지지 않았다');
     });
     case 'walkability-check': return readOnly(input, id, () => called(tools, 'check_reachability', 'run_scene_test', 'get_map_region') && /가능|불가|도달|걸어/.test(answer) ? pass('도달 가능 여부 보고') : fail('도달성 검사 호출 또는 결론이 없다'));
     case 'event-playtest': return readOnly(input, id, () => called(tools, 'run_scene_test') ? pass('이벤트 실행') : fail('run_scene_test 호출이 없다'));
@@ -481,7 +491,9 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const transferOf = (project: Project, mapId: string, eventId: string) => mapOf(project, mapId).events.find((event: any) => event.id === eventId)?.pages?.flatMap((page: any) => page.commands).find((command: any) => command.kind === 'transfer');
       const out = transferOf(after, MAP, DOOR), back = transferOf(after, 'map_plaza', 'ev_plaza_back');
       if (!out || !back) return fail('두 출입구 중 하나가 사라졌다');
-      if (!['right', 'retain'].includes(out.direction) || !['left', 'retain'].includes(back.direction)) return fail(`방향이 가는 쪽 ${out.direction}, 돌아오는 쪽 ${back.direction} 이다`);
+      // A missing direction means retain at runtime (playSceneMapCommands), so it is the same answer as 'retain'.
+      const dirOut = out.direction ?? 'retain', dirBack = back.direction ?? 'retain';
+      if (!['right', 'retain'].includes(dirOut) || !['left', 'retain'].includes(dirBack)) return fail(`방향이 가는 쪽 ${out.direction}, 돌아오는 쪽 ${back.direction} 이다`);
       const keep = (project: Project) => { const copy = normalizeContent(project); for (const [mapId, eventId] of [[MAP, DOOR], ['map_plaza', 'ev_plaza_back']]) for (const event of copy.maps[mapId].events) if (event.id === eventId) for (const page of event.pages) for (const command of page.commands) if (command.kind === 'transfer') delete command.direction; return copy; };
       return isDeepStrictEqual(keep(before), keep(after)) ? pass(`출입구 방향 정렬(가는 쪽 ${out.direction}, 돌아오는 쪽 ${back.direction})`) : fail('방향 밖의 내용(좌표·목적지)이 바뀌었다');
     }

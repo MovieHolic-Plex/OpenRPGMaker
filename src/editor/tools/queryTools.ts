@@ -227,17 +227,21 @@ const getMapRegion: ToolDefinition = {
         `영역 ${x1 - x0}×${y1 - y0}이 큼 — 다음엔 뷰포트 근처(≤24×24)로 좁혀 조회하세요. 호수는 data.water.bounds를 쓰세요.`,
       );
     }
+    // 모델이 격자를 손으로 세면 틀린다(실측 2026-10-13: 7칸을 나열하며 «총 6칸»). 세어서 준다.
+    const blockedCells: Array<{ x: number; y: number }> = [];
+    rows.forEach((row, dy) => [...row].forEach((glyph, dx) => { if (glyph === "#" && blockedCells.length < 400) blockedCells.push({ x: x0 + dx, y: y0 + dy }); }));
     const waterSummary = water
       ? `물 ${water.cellCount}칸 bounds=(${water.x},${water.y}) ${water.w}×${water.h}`
       : "물 0칸";
     return {
-      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, ${waterSummary}`,
+      summary: `${map.name}(${map.id}) 영역 (${x0},${y0})~(${x1},${y1}) — 이벤트 ${events.length}개, 통행 불가(#) ${blockedCells.length}칸, ${waterSummary}`,
       data: {
         // 읽은 맵 id 를 결과에 되돌려준다 — 수정 요청에서 모델이 "무엇을 읽었는지"와 "무엇에 쓸지"를
         // 다른 맵으로 잘못 잇는 사고를 줄인다(2026-08-29 modify 진단 근본원인 15).
         mapId: map.id,
         mapName: map.name,
         grid: rows,
+        blockedCells,
         legend: { "#": "통행 불가/벽", ".": "통행 가능", "~": "물/호수", T: "나무", E: "이벤트" },
         events,
         water: water
