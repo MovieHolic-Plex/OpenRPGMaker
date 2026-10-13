@@ -388,3 +388,14 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 `tiledata/jp-city/blocks/_gate_assembled/<역할>-<L|R>-w<폭묶음>.png` 로 내면 `object-gate review --batch /tmp/jp-asm-chunk-N.jsonl`(kind structure)로 판정한다.
 `gate_kinds.check_all` 은 띠 화소가 PASS 조립 그림 안에 그대로 있을 때만 통과시킨다(리포트에 `covered by assembled <표본>`). 띠를 고치면 build → review 를 다시 한다.
 주의: 거리 구성기의 평지붕 건물(윗면 거의 없음)은 판정이 대부분 불합격 — 조립 표본은 roof.hip 으로 짓는다. 구성기 지붕 선택 개선은 별건.
+
+## 빈터 쓰임 단계 `fillLotUses` (2026-10-14)
+
+「거리·광장의 빈 땅이 거슬린다」(사용자) → 구성기 끝에 남은 대지를 «쓰임»으로 채운다. 코드 `src/project/jpCityLotUse.ts`, 호출은 `runJpStreetPlan(plan, call, view)` 끝(지도를 읽어야 하므로 `view` 를 준 호출만 — 도구·`playableSegment`·프로브).
+- 남은 땅 = 건물·도로·보도·물·담이 아닌 맨 대지. 가장 큰 빈 직사각형(최대 16×10, 아래 기준)부터 크기·위치·구획으로 쓰임 하나: 코인 주차(**보도에 닿는 자리만**, 생활도로 + `jp-lot-bay` 2층 + 차 + `jp-lot-board`), 놀이터(기구를 먼저 놓고 생울타리를 그 둘레에 맞춤, 입구 2칸은 보도 쪽), 텃밭(`jp-lot-veg`), 공사장(`jp-lot-cabin` + 철망 + `jp-keijiban`·콘, 보도 쪽 대지만), 광장(판석 위 `jp-lot-fountain`|`jp-lot-clock` + 둘레 짜임 3가지 중 하나 + `jp-lot-kiosk`), 골목 틈(아래 5줄에 둘까지), 지붕 바로 뒤 띠(실외기·가스통·빨래 장대·화분).
+- 건물 둘레 1칸·이미 선 소품 둘레 1칸은 비운다. 쓰임 사이 1칸 여백. 같은 씨앗이면 같은 결과.
+- 멈춤: 「반경 2칸 안에 소품 없는 대지」 비율 ≤ 7%, 또는 직사각형이 바닥나거나 쓰임 수 상한. 내부 계산은 측정기 `scripts/qa/jpLotEmptiness.mts` 와 같은 분류(하천 석축·다리·노면 표시 키트는 «길·물», 소품 아님)여야 한다 — 다르면 일찍 멈춘다.
+- 손댄 맵: `compose_jp_city_street({mapId, lotsOnly:true, style})` 가 다시 짜지 않고 빈터만 채운다(건물은 타일로 찾는다 — 건물·집·가게 키트 목록이 측정기와 같아야 한다).
+- 생울타리·철망·블록담은 `fill_region`/`build_wall` 이 받지 않는다(위층 4방 오토타일) → 4방 비트(N1 E2 S4 W8)로 `variantMap` 칸을 골라 `stamp_layer_block` 3층으로 찍는다(`edgeLine`). **구성기 본문의 `fill(…, "생울타리"/"블록담")` 은 optional 단계라 조용히 실패한다**(미수정, 별건).
+- 측정: `bun scripts/qa/jp-street-probe.mts --from 3 --seeds 3 --w 64 --h 56 --style shopping` 이 `empty <seed> X%` 와 `.empty.json`(마스크)을 낸다. `NOLOT=1` 이면 이 단계 없이(비교용).
+- 키트 그림 `scripts/content/jp-city/blocks/lot_art.py`(`ENABLED` 만 굽는다, `street_hand.py` 가 등록). 관문 실패로 빠진 것: `jp-lot-pay`·`jp-lot-hoarding`·`jp-lot-notice`.
