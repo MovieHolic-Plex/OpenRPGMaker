@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d300ee1e50a9b57ebb9e59ea003f81f07bbb9c64da2363917a61b29486fb17f3",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "경고 표지판(굵은 상자형 표지, 주황 면과 위험 띠)",
+ "label": "sf-station/sf-sign-chunky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "box-shaped sign housing",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thick box-shaped sign shows a clearly foreshortened, upward-facing top surface from row 3 to row 10 (8 source pixels tall) above the south-facing front display panel (rows 11-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8565
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warning sign box / panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign is drawn in a pure flat front elevation with a 1px top outline and 1px edge highlight (row 2-3). There is no visible top surface showing the depth of the box-shaped sign.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14313
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "box-shaped warning sign / standing terminal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign is drawn in flat front elevation. The light gray region at rows 3–9 is a top bezel/casing mirroring the lower bezel at rows 29–31, not a horizontal top plane viewed from above. The actual top edge has only a 1–2px dark cap line at rows 1–2 with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 15575
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thick box-shaped warning sign on a base/post",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the thick sign box is clearly visible across rows 3-9 (7 rows tall) in a lighter shade with top-edge highlighting, while the south front face occupies rows 11-27 with the warning emblem and hazard stripes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12383
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "1862223e8dd9aee0",
+   "2f5fa605cce311e9"
+  ],
+  "24": [
+   "03014062962185f7",
+   "2f377add96d868db",
+   "365c51d285854432",
+   "475d59f0678100a9",
+   "527bad409c118dec",
+   "968aee9db34060c5",
+   "acc46904328a4260",
+   "b6ec0cea52841350",
+   "bcdf29139a1796aa",
+   "ca8e32c4e1426e1c",
+   "d04a8e668a30dd0f",
+   "fc790dc5e0b16788"
+  ],
+  "32": [
+   "c3cee820fdf1125f",
+   "dc32416d0e2a890d",
+   "e3a7f773191086c4"
+  ],
+  "48": [
+   "162903cfd459c19a",
+   "1b3343107987c876",
+   "3b0228c7418b6e9e",
+   "75fcc23c9246e024",
+   "b534f3dc1ab7e880",
+   "e9c7cd029a6ad2ee"
+  ]
+ }
+}

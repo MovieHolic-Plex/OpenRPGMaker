@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51fbfeb4fda2bd42c964e32996e148ae914b23b105977cf0121b103f406ae8af",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "station corridor floor with horizontal cyan guide light strip, two variants",
+ "label": "sf-station/sf-deck-lane-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "station corridor floor tiles with embedded cyan guide strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed top-down with embedded glowing strips across rows 6-9; entirely horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3652
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "station corridor floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tiles showing top-down horizontal surface with an embedded cyan light strip across rows 6-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4117
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "station corridor floor tiles with cyan light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3146
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corridor floor tiles with embedded guide light strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal floor terrain tiles viewed from above with a recessed/embedded light strip across the middle, appropriate for JRPG floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3297
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.507Z",
+ "cells": {
+  "16": [
+   "24b9e4d6848a1acf",
+   "edd47edfae853827"
+  ],
+  "24": [
+   "03a506f489d8ea59",
+   "360c428286563051",
+   "4f67073d1ca48b76",
+   "6ed1237d6f671ea3",
+   "7794033756ca61c3",
+   "854657f069d3d404",
+   "9664783354f97cef",
+   "a50577a30a9330d7",
+   "dabcfbf840b5649a",
+   "e1a6ce37ade3945c",
+   "f03bdddaacba3185",
+   "fcfc00c04e85968d"
+  ],
+  "32": [
+   "9512ba092d483ee4",
+   "cae5a45e1fae026e"
+  ],
+  "48": [
+   "152884fba64bd6a2",
+   "1728070de1a18f03",
+   "35636ac58785bdeb",
+   "a2d71332fc05a7e1",
+   "cbfd8e0d5d5e7a7f",
+   "d8e68a68af75f5fd"
+  ]
+ }
+}

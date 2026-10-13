@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5aa9f2bd6cd2f923ce01d014b0723e03cd49cc8d178dd4fa44bf8f9f44c1668",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 상자 더미(쌓은 상자 윗면들)",
+ "label": "sf-station/sf-street-crate-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked cargo crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cargo crates show clear foreshortened top surfaces (5 rows on the left crate, 7 rows on the right crate) drawn lighter than the darker front faces, correctly conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7608
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked cargo boxes / crates",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The right container clearly shows a 7-pixel-tall lighter top surface (rows 3-9) above its darker front face (rows 10-15 with latch). The left crate similarly shows an illuminated top surface (rows 5-9) supporting a smaller stacked crate above a darker front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7952
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked and side-by-side cargo crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both crates distinctly show horizontal top faces seen from above (5 rows tall on the left crate, 7 rows tall on the right crate) connected to darker south-facing vertical front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked cargo boxes and metal container",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crates clearly display both their foreshortened top surfaces and south front faces. The right metal crate has a 7-pixel-tall top surface (rows 3-9) above its darker front face with latch (rows 10-15). The left wooden crate similarly shows a 5-pixel-tall top surface (rows 6-10) supporting a smaller stacked crate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11205
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.344Z",
+ "cells": {
+  "16": [
+   "37a5665c96886b3d",
+   "669d47099a9f2b87"
+  ],
+  "24": [
+   "05187a19c4a29432",
+   "2141d2517ffe5efa",
+   "3a769dec78a09b8a",
+   "476e3b08e71adb5e",
+   "4d4421a51be0d8ac",
+   "5deb3c5fe69d5c45",
+   "8bdd9900a15fa363",
+   "c5d314248bd983b2",
+   "d72888661ddf1c02",
+   "daeaacaaef01c8aa",
+   "e6b09e512a7f4b91",
+   "f3a6b0f3ff5718ce"
+  ],
+  "32": [
+   "50cc7bcf466b1d4a",
+   "73423ab10a779d6f"
+  ],
+  "48": [
+   "08ab38fcedfa3c13",
+   "2c4f51ee59a71222",
+   "4f3680de666d8352",
+   "7d0f91e0a7f652dd",
+   "8949a462ffa13dc7",
+   "e15bb84a09f98549"
+  ]
+ }
+}

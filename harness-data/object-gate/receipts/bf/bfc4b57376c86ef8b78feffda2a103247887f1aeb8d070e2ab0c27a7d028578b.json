@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfc4b57376c86ef8b78feffda2a103247887f1aeb8d070e2ab0c27a7d028578b",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "소형 안테나 접시(받침 윗면과 작은 접시)",
+ "label": "sf-station/sf-dish-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "antenna base and dish",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal base clearly displays a 5-pixel-tall top surface (rows 21-25 in lighter tone) before dropping down to the south front face (rows 26-31 in darker tone). The dish and pole are mounted on this base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "antenna dish on a pedestal base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal base displays a 6-pixel-tall top surface (rows 20-25) in lighter tone with the front face below it (rows 26-31) in shadow, and the antenna dish above is tilted upward in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8107
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "antenna dish on pedestal base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pedestal base clearly displays a foreshortened top surface (rows 20-25, ~5-6 rows tall) distinguished by lighter shading above the darker south face (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7349
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "antenna base pedestal with dish",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block clearly shows a 6-pixel-tall horizontal top surface (rows 20-25) rendered in a lighter tone above the darker south face (rows 26-31). Both faces are properly oriented for 3/4 view with no isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7292
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.304Z",
+ "cells": {
+  "16": [
+   "61e02afd9b0010c6",
+   "c01c38c36c1af3da"
+  ],
+  "24": [
+   "014fba57e666c849",
+   "0415aee096a354ec",
+   "5e5b8a0e996d5fe4",
+   "71b3cd49fdbd82fe",
+   "71f070b28a57ca82",
+   "77ce0c6218a852ad",
+   "875c0d700e3f59cb",
+   "ac12f919014c52c3",
+   "c8ac4f377a821141",
+   "cb6e27a0626be6e6",
+   "cd4f39015e31b2fc",
+   "e1d179e0ff8c9775"
+  ],
+  "32": [
+   "338a544c30f1cbbd",
+   "44eeb3f485ca9ea1",
+   "98c7ba3e560f9da5"
+  ],
+  "48": [
+   "0428705b5f39ddb4",
+   "36becd37dc13aeb0",
+   "53a52e8ca74f58c8",
+   "85cc891a95dadb83",
+   "ae912302f8d661b0",
+   "d2149f792a2bf44c"
+  ]
+ }
+}

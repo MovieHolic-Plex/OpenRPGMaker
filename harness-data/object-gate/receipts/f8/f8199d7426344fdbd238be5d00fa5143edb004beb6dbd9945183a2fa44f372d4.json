@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8199d7426344fdbd238be5d00fa5143edb004beb6dbd9945183a2fa44f372d4",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "네온 쓰레기통(원통 몸통 + 윗면 구멍)",
+ "label": "sf-station/sf-street-trash-bin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical neon trash can",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical body has an elliptical top surface spanning rows 3-8 containing a visible 3-row opening hole (rows 5-7), and a vertical front face with a neon strip (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical trash can",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly rendered as an elliptical surface spanning rows 3-8 with a visible 3-row black opening in the center (rows 5-7), meeting the front cylinder body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5307
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical neon trash can",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly rendered in 3/4 view as a foreshortened ellipse spanning rows 3-8 (6 rows tall), complete with an elliptical opening hole (rows 5-7) on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6123
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical neon trash can",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an elliptical surface spanning rows 3-8 (6 rows tall) containing a 3-row elliptical dark opening (rows 5-7). The south-facing front body extends down to row 14 featuring a horizontal neon stripe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5717
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:06.342Z",
+ "cells": {
+  "16": [
+   "3c2a2e49cf9a4e8d"
+  ],
+  "24": [
+   "0873b31d1bb1291e",
+   "0c138c18d79ed066",
+   "1c47574a336e0572",
+   "24d0dada0575e978",
+   "74fd2458adc8f47d",
+   "8db00445e95b72d8"
+  ],
+  "32": [
+   "0c31d1e2c96935a0",
+   "1b907c08435189f9",
+   "1c2bafaff808fa2c",
+   "3aa84e6be8c54369",
+   "c062f57dc6ef131c",
+   "df5beab0185cc0ed"
+  ],
+  "48": [
+   "17ad99c5d0ed0f65",
+   "1d07da4264f20077",
+   "353b767052159756",
+   "d33cda7b0c47b895",
+   "de3830bd59af6ef4",
+   "ef1cf833279b5f92"
+  ]
+ }
+}

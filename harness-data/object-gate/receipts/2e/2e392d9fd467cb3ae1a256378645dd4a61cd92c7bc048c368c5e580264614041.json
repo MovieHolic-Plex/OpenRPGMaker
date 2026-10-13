@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e392d9fd467cb3ae1a256378645dd4a61cd92c7bc048c368c5e580264614041",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark cargo bay floor with yellow safety lines, two variants",
+ "label": "sf-station/sf-cargo-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark cargo bay floor tiles with yellow safety lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles covering the full height with horizontal and vertical yellow stripe variants.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4047
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dark cargo bay floor tiles with painted yellow safety stripes; entirely flat horizontal ground surface spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3608
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo bay floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tiles showing dark cargo bay floor panels with yellow painted safety lines, fully viewed as flat ground from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2833
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dark cargo bay floor tiles with yellow safety lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles viewed from above displaying horizontal and vertical yellow safety marking variants across dark metal plating.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3016
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:41.508Z",
+ "cells": {
+  "16": [
+   "10fe499fe13e3573",
+   "e3279f54f0604233"
+  ],
+  "24": [
+   "2438f6abe166c360",
+   "27b7fb5015741368",
+   "48a05682c1e08e45",
+   "594eceb11351d8dd",
+   "69acb4462dff594e",
+   "71354c94a8256555",
+   "96865628b279a447",
+   "9b91886686eba0c7",
+   "ada8b80ddd8a8d36",
+   "b0de2a8885fdb990",
+   "c8ee7f90e3b48709",
+   "e8c9cf8c477e8425"
+  ],
+  "32": [
+   "07e456df42987fe6",
+   "c747f8714fe6dc81"
+  ],
+  "48": [
+   "0a9598de4c11a47e",
+   "1e991537b0e78523",
+   "262fe8fd17dc74aa",
+   "4c19d97b86bf9131",
+   "a3f2d48d9356dac9",
+   "e451f233271d8bd3"
+  ]
+ }
+}

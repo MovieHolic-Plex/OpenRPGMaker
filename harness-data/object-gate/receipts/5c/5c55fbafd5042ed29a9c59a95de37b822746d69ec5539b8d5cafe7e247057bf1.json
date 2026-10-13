@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c55fbafd5042ed29a9c59a95de37b822746d69ec5539b8d5cafe7e247057bf1",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "대형 주거 모듈(긴 평지붕, 창 두 줄과 가운데 문)",
+ "label": "sf-station/sf-hab-module-3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large residential module",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a large top/roof surface spanning from row 6 to row 24 (19 pixel rows) above the vertical south facade (rows 25-62), correctly demonstrating top-down 3/4 perspective without isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "residential module building",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large visible roof spanning rows 6 to 24 (19 rows tall) above the front vertical facade (rows 25 to 61).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3891
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large residential module building",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large foreshortened roof visible from rows 6 to 25 (approx. 20 pixel rows) resting above the south-facing front wall with windows and a central entrance door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3945
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large residential module building",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large sloped roof visible from above spanning rows 6 to 24 (19 pixel rows) above the vertical south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3708
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:12.241Z",
+ "cells": {
+  "16": [
+   "1c20a527d6da16c8",
+   "1cf4dc092506f98d",
+   "237545dd01b94d28",
+   "2a3793dbd6f88cf8",
+   "2dcbb71921cb5828",
+   "3f8ebd09eda54b31",
+   "4a4661a7a8703c6b",
+   "5b07da4c01fa0733",
+   "80f1fa8928b41904",
+   "84d7248446646770",
+   "8bbbe23e7ae9e929",
+   "91789d8edddd6214",
+   "946698aa1404c5df",
+   "9757e1a66090c593",
+   "9ac817dd57650a47",
+   "ba340b7d338201f2",
+   "c14b1c6488a455da",
+   "d173166c79074705",
+   "dd665527b6067b15",
+   "e05ae42ae87cfc9f",
+   "e05e9df7b056c839",
+   "f85995700e68c70d",
+   "fb6b989c019dae06",
+   "fe29530cc7eb3f5d"
+  ],
+  "24": [
+   "01e0cd9ee72f6dee",
+   "23061e58a22df994",
+   "244717212a4ec513",
+   "2451198547dd5bc5",
+   "5214005e4aada3b3",
+   "55852fbf04c58fcf",
+   "5c84452e0279a796",
+   "7476456d7fd0bcc2",
+   "797bc270917cdcd5",
+   "80ab99bb4263fefa",
+   "81ce7521e8372642",
+   "8453e5e233d65668",
+   "9292cf04b571a6e0",
+   "9ff98e8f0d4dff02",
+   "a39f6136438142b0",
+   "a78dfb1ecb220a23",
+   "abe95f27c4e33a7c",
+   "b5badd0324b33bcc",
+   "bf4966bfa1c4450f",
+   "df36542bf63b92fe",
+   "f248c6cb2a760c0c",
+   "f2ed1fda4e984c2d",
+   "f5fc74a67e372ef1",
+   "f64608f2c9f7ec52"
+  ],
+  "32": [
+   "08767e0decca5818",
+   "1741ca67df9b98ac",
+   "5d41a6b45f33fe17",
+   "74ec27de8e1b07cf",
+   "ae3a776f2cdce0c0",
+   "edb4ab5ed8f3f6c7"
+  ],
+  "48": [
+   "014cc48faba38d63",
+   "26062afc893e40b6",
+   "459f6a277ad01d3f",
+   "6273a3b0d79f2d9b",
+   "98ff5ab06cb5561b",
+   "ac08f667d570b1e3",
+   "f5fdae7ae7eb7405",
+   "f7cdad02fc7b3c51"
+  ]
+ }
+}

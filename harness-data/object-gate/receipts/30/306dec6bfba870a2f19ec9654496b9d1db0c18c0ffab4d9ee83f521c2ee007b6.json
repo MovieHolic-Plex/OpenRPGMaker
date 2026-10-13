@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "306dec6bfba870a2f19ec9654496b9d1db0c18c0ffab4d9ee83f521c2ee007b6",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "1인 침대(흰 매트리스 + 베개 + 담요 윗면)",
+ "label": "sf-station/sf-bed-single",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "single bed mattress with blanket",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress and cyan blanket) occupies rows 2 to 9 (~8 rows), and the south-facing front edge/skirt occupies rows 10 to 13, showing standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4473
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single bed with mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress and blanket) clearly occupies rows 1-9 (9 rows tall), with the front face of the bed frame occupying rows 10-13, conforming accurately to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4864
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mattress with blanket and pillow occupies rows 2 to 9 (8 rows), clearly visible from above, with the south front face extending across rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3295
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single bed",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress with pillow and blanket) spans rows 2 to 9 (8 rows tall), followed by a clear front face spanning rows 10 to 13 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3404
+  }
+ ],
+ "decidedAt": "2026-10-13T15:25:00.448Z",
+ "cells": {
+  "16": [
+   "8e00662d6f4efa3e",
+   "c189452b14538ba7"
+  ],
+  "24": [
+   "0d36929b88e05057",
+   "0e8ef588bf9911cf",
+   "1203b21ccac897da",
+   "8ff62c7c53871298",
+   "9abfa9028f4fd581",
+   "a01f1fc5e1ad1f98",
+   "ae2d13e34d5aa2f2",
+   "dda04216fb328da0",
+   "de9dcf8266099b9d",
+   "df17fadcad363237",
+   "e3ca90fcd40e5169",
+   "e61ab3cfec34d9b2"
+  ],
+  "32": [
+   "04708e76992ab840",
+   "894392d1012bbd73"
+  ],
+  "48": [
+   "2d8dd689142de90e",
+   "447a0ad171c0125b",
+   "6869a01019fe6dcd",
+   "8892f91a26f14459",
+   "abf5430690aebf79",
+   "b6671a4af4336b1f"
+  ]
+ }
+}

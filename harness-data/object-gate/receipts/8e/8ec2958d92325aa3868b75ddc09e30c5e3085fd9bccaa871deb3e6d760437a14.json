@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ec2958d92325aa3868b75ddc09e30c5e3085fd9bccaa871deb3e6d760437a14",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "실험실 세면 작업대(상판 + 푹 들어간 싱크 + 수전)",
+ "label": "sf-station/sf-lab-sink-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laboratory sink workbench",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench shows an extensive top surface spanning rows 1 to 9 (approx. 9 source pixel rows) with a recessed sink basin, followed by a front face from row 11 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "laboratory sink workbench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface spans rows 1-10 (10 pixel rows tall) featuring a recessed sink basin with water and faucet apparatus, while the south front face occupies rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4883
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laboratory sink workbench",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop top surface spans rows 1 to 9 (9 rows tall) featuring a recessed sink basin and faucet, with the front cabinet face extending from row 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6387
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "laboratory sink workbench / counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is clearly visible from above across rows 1-10 with an inset sink and fixture, while the front face of the counter spans rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3328
+  }
+ ],
+ "decidedAt": "2026-10-13T15:26:40.170Z",
+ "cells": {
+  "16": [
+   "53a03cc6958d562f",
+   "e5cd1c3e7b61813c"
+  ],
+  "24": [
+   "0d8655edaf321854",
+   "264b680723c98a18",
+   "28834913b7692891",
+   "3908af8ddee14361",
+   "395afca16c09b648",
+   "4084234bb0f7d460",
+   "8fc4e4555363d017",
+   "9a5f7dd2cb7713c1",
+   "ac60e17693780263",
+   "c64d9b3ddbb9f156",
+   "d32aedbfffc37a85",
+   "f3a7c7eb8d729ba9"
+  ],
+  "32": [
+   "0172d842a0eba9aa",
+   "9594e115bc1bc3f6"
+  ],
+  "48": [
+   "2091614cd9c4b19d",
+   "2df3ee19840fe039",
+   "53a62eec08aae87b",
+   "72133ae3c3618e35",
+   "c1b1375a43593bcd",
+   "f20a20c8a60f7fed"
+  ]
+ }
+}

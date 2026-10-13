@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2ee19b6a950b4dc4ed465eb033ec0ef5ce912891636426bc4605932b4a4eb69",
+ "width": 48,
+ "height": 32,
+ "kind": "flat",
+ "name": "화물 리프트 발판(바닥 원판 + 노랑 테두리 + 중앙 시안 표식)",
+ "label": "sf-station/sf-cargo-lift-pad",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo lift floor platform with hazard stripes and center glowing symbol",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor platform/plate viewed entirely from above across all 32 pixel rows, complete with hazard borders, floor paneling, and center marking.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4121
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo lift floor platform with hazard border and cyan center emblem",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat industrial cargo lift platform seen completely from above, occupying rows 0 to 31 as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5175
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo lift platform floor plate",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire surface represents a flat cargo lift floor plate viewed from above, occupying all 32 rows with top-down hazard stripes and floor markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3817
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo lift floor platform",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-embedded cargo lift platform seen from above as a flat horizontal surface with hazard borders and a central glowing marker.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2784
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.425Z",
+ "cells": {
+  "16": [
+   "13fcaadb2872ff47",
+   "6e170d8f779253a6",
+   "bb5e1ecf6b25c21a",
+   "bff93db43991b4ff",
+   "e92f140938fa4802",
+   "f202ff7c4816ddbc"
+  ],
+  "24": [
+   "02f8a26bf60334ed",
+   "240bb5fa118f58fd",
+   "2d9dae1deda846ea",
+   "6ebb29a9c4fc22ad",
+   "89b594d7dc5d26da",
+   "991ce1dbcd317995",
+   "aa39fa73c9d3d2c3",
+   "e345eca3252e2cee"
+  ],
+  "32": [
+   "1251a349c45e230c",
+   "54d9770259af7b8b",
+   "7e541cca2b78cbd8",
+   "c07ce6b22a736050",
+   "f2d14c7aaee2159c",
+   "fa3b9521169963b4"
+  ],
+  "48": [
+   "084dd7ba9f0b640d",
+   "bfc6c9a4fee84849"
+  ]
+ }
+}

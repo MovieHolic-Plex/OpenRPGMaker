@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5979fb4d747b590626ba820294d58bb8a83bf0d8a81d4f3dac8b4b77bc57df31",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "신호등 비콘(굵은 받침 위의 램프 상자)",
+ "label": "sf-station/sf-beacon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp box and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper lamp box (rows 0-8) and the base (rows 7-15) are drawn straight-on in pure front elevation without any visible top surface seen from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp box on base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp box at the top is drawn in pure front elevation with only a 1px black outline at row 0 and no visible top roof/cap surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp box and base plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the lamp housing and the base are drawn as flat rectangular front-facing blocks with horizontal color bands and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5715
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lamp box and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp box at the top terminates with a flat 1px horizontal black outline at row 0 with no visible top surface. The entire object is rendered in pure front elevation without any foreshortened horizontal top face seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6238
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.305Z",
+ "cells": {
+  "16": [
+   "3cd5af52c12aad7b"
+  ],
+  "24": [
+   "410fe392afa3a430",
+   "6afa4faadebfdf55",
+   "aa37ec59d9d8e878",
+   "c5011e0c5026c7fa",
+   "ec4b829e6158456b",
+   "f75b1fce7b56f363"
+  ],
+  "32": [
+   "2bb992b99a054a55",
+   "517896ba5d9a996c",
+   "742f2283c541dd85",
+   "88991208881855d9",
+   "952dafbfe84af8b3",
+   "c04e4272bca45e40"
+  ],
+  "48": [
+   "3732b6c28c98e58a",
+   "5d4aeefca39fe9a0",
+   "625fb12981b0dde6",
+   "62afb71fdf3b84b3",
+   "a11f94868b6acc1f",
+   "e4bec598449a3c44"
+  ]
+ }
+}

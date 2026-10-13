@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a306981100f559dc569df17ab8b9affdfe72616edefa932c688efbcb7170b200",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "조리 카운터(스테인리스 상판 + 가열판 + 아래 수납)",
+ "label": "sf-station/sf-galley-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kitchen cooking counter with stainless steel top and lower cabinets",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the counter is clearly rendered from rows 1 to 9 (9 rows tall) showing cooking elements, sink, and cutting board, with the front cabinet face spanning rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6576
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kitchen counter with stainless top and lower storage drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stainless counter top occupies rows 1-9 (9 rows tall) with installed appliances visible from above, and rows 11-15 form the front-facing cabinet doors and drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6393
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top, integrated appliances, and lower storage cabinets",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface is clearly visible from above across rows 1-9 (9 rows tall) featuring a stove, sink, and board, while the cabinet front face occupies rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5379
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cooking counter with stainless steel top and lower drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stainless steel countertop surface occupies rows 1 to 9 (9 pixel rows), showing cooking elements, sink, and board in 3/4 top-down perspective, with the front drawer cabinets visible below on rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5651
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.424Z",
+ "cells": {
+  "16": [
+   "27fbfeef42552e7e",
+   "b45c4e5af0430adc",
+   "df0da7b8711b17df"
+  ],
+  "24": [
+   "6f8b378f4a36a719",
+   "7aff4104d2f4bfca",
+   "918f5f017594b14c",
+   "9bc00cc7818ee80a"
+  ],
+  "32": [
+   "192e81a31ebeb787",
+   "576071f0eb6d6ad5",
+   "58d9b6c6033e6b83",
+   "63f6b8a9c8f7a857",
+   "9dcaedeb68f2ea1a",
+   "b5f72c4ef6fd432f",
+   "b633d2e61550b558",
+   "b8f58fc7d48be98b",
+   "ba12a8680f05b58c",
+   "caa85f707455a5e7",
+   "d3b660cbe767a74e",
+   "d50ce8fd6343626e"
+  ],
+  "48": [
+   "4fc877627eb0fb52",
+   "78ca4d7fe7a1dbe6"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59eef3f0bb10127eef0a19090b859d46ef0afa0aa1dfdb8cc6bea28af5f02891",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "흄 후드 실험장(윗면 환기구 + 유리 앞창 + 안의 기구)",
+ "label": "sf-station/sf-fume-hood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fume hood lab station with upper exhaust hood and lower windowed chamber",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood is drawn in pure front elevation: the upper tapered canopy has vents and panels on its vertical face with no visible horizontal top surface (0px depth), and the interior floor/chamber also has no depth perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5975
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fume hood is drawn entirely from a direct front elevation. The upper exhaust/control section and lower chamber show only vertical front faces with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6727
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fume hood laboratory unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fume hood (upper vent/exhaust housing and lower glass work chamber) is drawn strictly in front elevation. The top of the cabinet has no visible top surface (0px, capped with a 1px outline), and the interior containers are also flat rectangles without visible tops or openings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fume hood laboratory cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in pure front elevation with zero top surface visible. The upper hood section (rows 2-12) displays a front-facing vent and control screen, and the lower windowed chamber shows bottles with flat front profiles, with no foreshortened top plane depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6321
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.422Z",
+ "cells": {
+  "16": [
+   "2500b29ecc0fbed6",
+   "6065dc9ce952721f",
+   "837a44c36a4a78a6",
+   "e3a1a2b8f7bd1cfc"
+  ],
+  "24": [
+   "01f0cf5d31c3d87e",
+   "040c5ac1ad7efd33",
+   "14a59fab4ba5aa02",
+   "153c001535e98496",
+   "17470f0d6efaf08e",
+   "2ad779c7897a6bef",
+   "2d0bbe72def0c16f",
+   "3cba2cc31abe0218",
+   "3fe237586f554bbf",
+   "456b9d97888074f8",
+   "4b3a65002e7f34e6",
+   "4be848f000a51538",
+   "4d262de51db017cd",
+   "6a08c064d21f6be8",
+   "812866d9c2495d97",
+   "96e3480e87c39aed",
+   "98853209778d06a9",
+   "bd6526530271d802",
+   "c8c8c1f3217dad47",
+   "d71b31202ba69f2f",
+   "df7aed0a48cbe53b",
+   "e00bc74fd3ca8746",
+   "e6d63435347c03d5",
+   "e79122afcb7ac492"
+  ],
+  "32": [
+   "455a0cb2c212abe4"
+  ],
+  "48": [
+   "20f8d53e53bb5fca",
+   "30163ec6272aae0b",
+   "332aa8e3bb7e533b",
+   "3b17369746dfa07c",
+   "73ff3f61e3bb4f22",
+   "af568ea281847a6b"
+  ]
+ }
+}

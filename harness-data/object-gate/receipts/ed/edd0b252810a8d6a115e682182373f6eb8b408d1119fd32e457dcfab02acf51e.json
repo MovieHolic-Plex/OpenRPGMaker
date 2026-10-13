@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "edd0b252810a8d6a115e682182373f6eb8b408d1119fd32e457dcfab02acf51e",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 팔레트 적재(받침 판 + 상자 둘 + 그물 띠)",
+ "label": "sf-station/sf-cargo-pallet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo pallet load with crates",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crates and pallet clearly show their top surfaces in standard 3/4 top-down perspective. For the left crate, rows 1-6 form the visible top face (6 rows tall) while rows 7-12 form the south face. The right crate similarly shows its top surface (rows 3-7) and south face (rows 9-13), resting on a visible pallet surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16547
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo pallet loaded with two crates",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both cargo boxes clearly show their top surfaces (left orange crate top is rows 1-6, right crate top is rows 3-8, both ~6px tall) as well as their front south faces resting on the pallet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo pallet loaded with two boxes",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both boxes on the pallet clearly display distinct top surfaces (rows 1-6 on the left box, rows 3-8 on the right box) drawn in bright lighting, contrasting with their shaded south front faces below them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10726
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo boxes on pallet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both cargo crates are rendered as pure vertical front elevations with flat rectangular outlines and 0 visible pixel rows of top surfaces, despite being viewed from a top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 15670
+  }
+ ],
+ "decidedAt": "2026-10-13T15:28:17.425Z",
+ "cells": {
+  "16": [
+   "0ea22e3ef91ea4f1",
+   "179ab5900c8433ce"
+  ],
+  "24": [
+   "0192bfa125090804",
+   "18b2bb722a628953",
+   "23fea534656da4ae",
+   "29ffaafaf59b425f",
+   "3b96829548ea2fbb",
+   "5534a8009a169922",
+   "5d9674d79e9100d9",
+   "70b63fec9f214073",
+   "a7049fd30edf98ad",
+   "c639dbf43d39f339",
+   "ce27292560395169",
+   "d4ea8820e6b20afc"
+  ],
+  "32": [
+   "1f3120323f8faa38",
+   "ca01d2952b792fca"
+  ],
+  "48": [
+   "0da639580bdefa94",
+   "604540e2c4e5681a",
+   "a7abeb3422587de6",
+   "aaf2db6a8efe239b",
+   "dc31428719772520",
+   "e418d69422a0526e"
+  ]
+ }
+}

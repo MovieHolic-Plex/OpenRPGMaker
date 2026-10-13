@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "221cc68a5e0176a8ae735e4cb84cb5e5da3242e60d868853822a09309b26a7cc",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "중간 달 바위(가로로 긴 회색 돌덩이)",
+ "label": "sf-station/sf-rock-regolith-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontally elongated grey rock",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock is rendered in 3/4 top-down perspective with a foreshortened top surface spanning rows 3-10 (approx 8 rows) and a shaded south-facing lower edge across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4422
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontally elongated oval rock",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock is drawn in 3/4 top-down perspective with a broad, illuminated upper surface spanning rows 4 to 10 (~7 rows) and a shaded south face in rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9755
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "smooth elongated grey rock",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly visible top surface spanning rows 4 to 9 (approx 6 rows) with lighter tones and highlights, followed by a shaded south-facing front slope in rows 10 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4305
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal oval rock/boulder",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder has an oval top-down foreshortened silhouette (rows 3-14) with a broad, lit top surface spanning rows 3 to 10 (~8 rows) and a shaded south face along rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3799
+  }
+ ],
+ "decidedAt": "2026-10-13T15:29:27.306Z",
+ "cells": {
+  "16": [
+   "2bc5f45e9393b91e",
+   "c9f1add93e38f568"
+  ],
+  "24": [
+   "03d121590df694f2",
+   "0de4d549ca925a62",
+   "115265c0eb0b83e3",
+   "390beb221b6b7ce7",
+   "42a8ed775000f0de",
+   "44dcc652d8aa970a",
+   "6ff7ee0538b1eb89",
+   "85d2e27de27c58ab",
+   "a81f58c9a5c8aedd",
+   "d850df53b71e7272",
+   "e385a2758a48b417",
+   "eb9b7f0de703fa39"
+  ],
+  "32": [
+   "282e48a07d0973f4",
+   "4cebc5420b695105"
+  ],
+  "48": [
+   "0fa709a0c7e6f465",
+   "614d8b15d61e6d60",
+   "626c15e4c089afd1",
+   "9a2d0dadef0a2979",
+   "c5e98ff1fa3c470b",
+   "ca15f39d339f8017"
+  ]
+ }
+}
