@@ -356,7 +356,7 @@ modern3 팔레트(154색) 손 도트로 그린 **일본 상가 거리** 칩셋�
 - **움직이는 칸**: 없다(`animationStrips` {len(D['animationStrips'])}개). 연못·수로 물도 정지 그림이다.
 - **실내**: 없다. 거리와 건물 외관만이다. 실내는 다른 칩셋의 실내 맵으로 만든다.
 - **止まれ(정지) 글자**: 역삼각 표지(`jp-road-sign-tomare`, 글자 없음)와 별개로 노면 글자 키트 `jp-road-mark-tomare-n/e/s/w`(JIS 16×16 글리프, 운전자가 읽는 방향 4가지)가 있다. 위에서 보는 지도에서는 동·서·남행은 글자가 돌아가 있어 읽기 어렵다 — 북행(글자가 바로 선다)을 우선 쓴다.
-- **구역 세트**: 주택가(블록 담·문기둥·카포트·생활 소품)·생활도로(가장자리 표시·「30」)·전봇대·전선·작은 신사·학교 정문은 용도 「손 도트 거리 시설」, 역·학교·신사 건물은 용도 「손 도트 건물」. 공원은 소품(나무·놀이기구·벤치)으로 짓는다. 동네 한 장 조립 예제는 장소 「일본 도시 · 동네 한 장」(`scripts/content/jp-city/maps/town.mjs`).
+- **구역 세트**: 주택가(문기둥·카포트·생활 소품)·생활도로(가장자리 표시·「30」)·전봇대·전선·작은 신사·학교 정문은 용도 「손 도트 거리 시설」, 역·학교·신사 건물은 용도 「손 도트 건물」. 공원은 소품(나무·놀이기구·벤치)으로 짓는다. 동네 한 장 조립 예제는 장소 「일본 도시 · 동네 한 장」(`scripts/content/jp-city/maps/town.mjs`).
 - 다른 칩셋(버들항·현대 도시·조선·EasyRPG)의 칸 번호를 이 맵에 섞지 않는다. 같은 번호가 전혀 다른 그림이다.
 
 ## 읽는 순서
@@ -424,7 +424,7 @@ def doc_sheet_map():
         ('at4', '선형 4방 오토타일', '10세트(블록담·생울타리·철망·가드레일·선로·중앙선·점선·횡단보도 둘·점자블록) — 용도 「오토타일」'),
         ('roadblock', '도로 키트 블록', '도로·교차로·건널목·지하도·육교·표지 키트의 재료 칸 112칸(오토타일 칸을 화소 그대로 복사한 칸 포함) — 용도 「도로·교차로 키트」'),
         ('bldgblock', '손 도트 건물 키트 블록', f'손 도트 일본 건물 {sum(1 for k in KITS if k.startswith("jp-bldg-"))}종(주택·아파트·가게·음식점·상업·공공·공장)의 재료 칸. **키트로 통째 찍는다** — 용도 「손 도트 건물」'),
-        ('streethand', '손 도트 거리 시설 블록', f'전봇대·전선·노면 표시·블록 담·문기둥·카포트·생활 소품·도리이 등 {len(STREETH)}종 키트의 재료 칸. **키트로 찍는다**(전봇대·전선 4층, 노면 표시 2층) — 용도 「손 도트 거리 시설」'),
+        ('streethand', '손 도트 거리 시설 블록', f'전봇대·전선·노면 표시·문기둥·카포트·생활 소품·도리이 등 {len(STREETH)}종 키트의 재료 칸. **키트로 찍는다**(전봇대·전선 4층, 노면 표시 2층) — 용도 「손 도트 거리 시설」'),
         ('schoolblock', '손 도트 小学校 블록', f'교정 흙·트랙 선·놀이기구·수영장·정문 등 小学校 키트 {len(EXAMPLE_KITS["school"])}종의 재료 칸. **키트로 찍는다**(트랙 선 2층) — 용도 「손 도트 小学校」'),
         ('transitstreet', '손 도트 노면전차 거리 블록', f'노면전차 레일·차막이·정류장 섬·導流帯·가선·전주·지하철 출입구 키트 {len(EXAMPLE_KITS["transit_street"])}종의 재료 칸. **키트로 찍는다**(레일 2층, 가선 4층) — 용도 「탈것·노면전차·지하철」'),
         ('interior', '손 도트 일본 집 실내 블록', f'바닥 7·벽면 5·천장 띠·가구 {len(INTERIOR_KITS)}종·탁자·탁상 물건의 재료 칸. **build_hand_interior_room({{tileset:"jp_city"}}) 로 짓는다**(낱칸으로 칠하지 않는다) — 용도 「일본 집 실내」'),
@@ -1865,9 +1865,16 @@ assert sorted(SH['kits']) == sorted(STREETH), (len(SH['kits']), len(STREETH))
 SH_GROUPS = [
     ('pole', '전봇대·전선(4층)', r'^jp-(pole|wire)'),
     ('mark', '노면 표시(2층)', r'^jp-mark-'),
-    ('wall', '블록 담·문기둥·대문·카포트', r'^jp-(bwall|gate|carport|tsukigime)'),
+    ('wall', '문기둥·대문·카포트', r'^jp-(gate|carport)'),
     ('life', '생활·길가 소품', r'^jp-(propane|ac-unit|pots|monohoshi|keijiban|gomi-box|jizo|mirror2|hydrant-sign|bus-stop)'),
     ('landmark', '거점 소품(도리이·주유소 캐노피·학교 정문)', r'^jp-(torii|gas-canopy|school-gate)'),
+    ('river', '하천(북쪽 석축 벽·물·그림자·배수구)', r'^jp-(river-wall|water-|wall-drain|foot-shadow)'),
+    ('bank', '하천 남쪽 둑(3단 석축)', r'^jp-bank-'),
+    ('bridge', '다리·어귀 횡단보도', r'^jp-(bridge-|crosswalk-v)'),
+    ('pave', '벽돌 보도 바닥', r'^jp-pave-'),
+    ('rail', '철도(선로·울타리 땅·고가·열차·승강장)', r'^jp-(rail-|via-|train-|platform-)'),
+    ('rooftop', '지붕 면·옥상·벽 덩굴', r'^jp-(roof-|ivy|glory|sat-dish|water-tank)'),
+    ('sf', '일체형 1층 정면(문+1층 한 장, 11종×폭 3~9)', r'^jp-sf-'),
 ]
 
 
@@ -1877,10 +1884,10 @@ def sh_group(kid):
     raise AssertionError(kid)
 
 
-SH_LAYER = {'pole': '4', 'mark': '2', 'wall': '3', 'life': '3', 'landmark': '3'}
+SH_LAYER = {'pole': '4', 'mark': '2', 'wall': '3', 'life': '3', 'landmark': '3', 'river': '3', 'bank': '3', 'bridge': '3', 'pave': '3', 'rail': '3', 'rooftop': '3', 'sf': '3'}
 C_SH = new_cat('street-hand', f'일본 도시 · 손 도트 거리 시설 {len(STREETH)}종',
                f'실제 일본 주택가·생활도로 조사(tiledata/jp-city/research)에서 나온 거리 시설 {len(STREETH)}종: 콘크리트·나무 전봇대와 전선(4층), 생활도로 가장자리 側溝·흰 선·グレーチング·「30」(2층 투명 덧그림), '
-               '블록 담(투각·펜스)·문기둥·대문·카포트·月極 표지, 프로판 봄베·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·주황 커브미러·소화전 표지·버스 정류장, 도리이·주유소 캐노피·학교 정문. '
+               '문기둥·대문·카포트·月極 표지, 프로판 봄베·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·주황 커브미러·소화전 표지·버스 정류장, 도리이·주유소 캐노피·학교 정문. '
                '키트 id·크기·층·칸 번호 전체 배열·엔진 통행 코드, 전봇대·전선 이음 공식, 정답 조립(주택 앞 담·생활도로·전봇대 줄) 전체 1~4층 배열과 정상/오류(3층에 찍은 전선·어긋난 전선·대문 막음) 그림과 좌표.')
 
 
@@ -1899,19 +1906,19 @@ def doc_sh_rules():
 
 {HEAD}
 
-**무엇인가.** 「일본 동네」로 읽히는 신호(조사 `tiledata/jp-city/research/README.md` 2절: 전봇대+처진 전선, 보도 없는 생활도로의 흰 路側帯 선과 側溝, 주황 「30」·커브미러, 블록 담, 프로판 봄베·화분·실외기)를
+**무엇인가.** 「일본 동네」로 읽히는 신호(조사 `tiledata/jp-city/research/README.md` 2절: 전봇대+처진 전선, 보도 없는 생활도로의 흰 路側帯 선과 側溝, 주황 「30」·커브미러, 프로판 봄베·화분·실외기)를
 손 도트 키트로 그린 것이다. 그림 원본 `scripts/content/jp-city/blocks/street_hand.py`. 분류: {', '.join(f'{n} {cnt[k]}' for k, n, _ in SH_GROUPS)}.
 
 ## 층 (이 용도에서 가장 중요)
 {md_table(['분류', '찍는 층', '찍는 도구', '왜'], [
-    ['전봇대 `jp-pole`·`jp-pole-guy`·`jp-pole-wood`, 전선 `jp-wire-*`', '**4층**', '`stamp_layer_block` layers {{"4": 키트 upperTiles}}', '전봇대는 길가에 서서 뒤(북쪽) 건물 앞을 가린다. 3층에 찍으면 그 칸의 건물·지붕 칸이 **지워진다**(오류 `upper-overwritten`)'],
+    ['전봇대 `jp-pole`·`jp-pole-wood`, 전선 `jp-wire-*`', '**4층**', '`stamp_layer_block` layers {{"4": 키트 upperTiles}}', '전봇대는 길가에 서서 뒤(북쪽) 건물 앞을 가린다. 3층에 찍으면 그 칸의 건물·지붕 칸이 **지워진다**(오류 `upper-overwritten`)'],
     ['노면 표시 `jp-mark-*`', '**2층**', '`stamp_layer_block` layers {{"2": …}}', '투명 덧그림(통행 걸음, 캐릭터 아래). 1층 길 칸은 그대로 둔다'],
     ['담·문기둥·대문·카포트·생활·거점 소품', '3층', '`stamp_object`(`kit:jp_city/<id>`)', '밑동 막힘, 윗부분 ★. 카포트 밑에 차를 세우려면 카포트를 4층에 둔다(동네 예제)'],
 ])}
 - 엔진 통행 실측(정답 조립 맵): 전봇대 밑동(4층 막힘 칸) {', '.join(f"({q['x']},{q['y']}) {'걸음' if q['passable'] else '막힘'}" for q in pr['poleFoot'])} ·
-  노면 표시 칸 ({pr['mark']['x']},{pr['mark']['y']}) {'걸음' if pr['mark']['passable'] else '막힘'} · 블록 담 ({pr['wall']['x']},{pr['wall']['y']}) {'걸음' if pr['wall']['passable'] else '막힘'}.
+  노면 표시 칸 ({pr['mark']['x']},{pr['mark']['y']}) {'걸음' if pr['mark']['passable'] else '막힘'} · 문기둥 ({pr['wall']['x']},{pr['wall']['y']}) {'걸음' if pr['wall']['passable'] else '막힘'}.
 - **4층 ★ 칸은 아래층 통행을 바꾸지 않는다** — 엔진은 위층부터 내려가며 빈칸과 ★ 를 건너뛰고 처음 만난 칸의 통행을 쓴다. 전봇대 윗부분(★)이 건물 막힘 칸 위에 겹친 칸도 그대로 막힘이다
-  (실측: 6×12 판의 블록 담 (2,5) 위에 전봇대 키트를 4층 (1,2) 에 찍으면 그 칸 4층은 `{pr['starOverWall'][0]['l4Passage']}` 이고 엔진 통행은 {'걸음' if pr['starOverWall'][0]['passable'] else '막힘'} — 담 위 칸 (2,4) 는 {'걸음' if pr['starOverWall'][1]['passable'] else '막힘'}).
+  (실측: 6×12 판의 문기둥 (2,5) 위에 전봇대 키트를 4층 (1,2) 에 찍으면 그 칸 4층은 `{pr['starOverWall'][0]['l4Passage']}` 이고 엔진 통행은 {'걸음' if pr['starOverWall'][0]['passable'] else '막힘'} — 그 위 칸 (2,4) 는 {'걸음' if pr['starOverWall'][1]['passable'] else '막힘'}).
 
 ## 전봇대·전선 공식
 1. 전봇대 키트는 폭 3 × 높이 10(나무 9). 기둥은 가운데 열(키트 x+1), 완목은 키트 폭 3칸 전체. 밑동(키트 x+1, 맨 아래 줄)만 막힘.
@@ -1925,8 +1932,8 @@ def doc_sh_rules():
 - 「30」 `jp-mark-30`(2×4)은 남북 길 가운데 두 열에 세로로 둔다 — 그 두 열은 가장자리 표시를 빼고 깐다. 교차로 칸에는 가장자리 표시를 깔지 않는다.
 - 보도 없는 길이다: 연석·보도 포석을 길가에 깔지 않는다(서양식 실수, 조사 README 2절).
 
-## 집 앞 (블록 담·문기둥)
-- 집 키트 발 줄 바로 아래 한 줄에 담을 세운다: 양 끝 `jp-bwall-end-l`/`-end-r`, 가운데 `jp-bwall-plain`, 4칸마다 `jp-bwall-sukashi`(투각). 펜스 얹은 담은 `jp-bwallf-*`(1×2 — 집 발 줄과 겹치므로 집을 한 줄 위에 세운다).
+## 집 앞 (문기둥)
+- 담은 세우지 않는다(3/4 관문을 통과한 담 그림이 없다). 담 대신 문기둥·대문만 둔다.
 - **문 앞 접근칸(집 `access`) 열은 비운다**(대문 자리). 그 왼쪽 칸에 `jp-gatepost`(표찰·인터폰·우편함). 대문 짝 `jp-gate`(2×1)은 닫힌 그림이라 접근칸에 두면 막힌다(오류 `door-access-blocked`).
 - 프로판 봄베 `jp-propane` 은 집 옆벽 칸, 실외기 `jp-ac-unit`·화분 `jp-pots` 은 집 옆 빈칸. 접근칸에 두지 않는다.
 
@@ -1935,18 +1942,26 @@ def doc_sh_rules():
 6. 검사: 접근칸 도달(≥6칸), 3층 건물 칸이 지워지지 않았는지, 전선 x = 전봇대 x + 3.
 
 ## 정답 조립 `street-hand-scene` ({SH['W']}×{SH['H']}칸, 그림 `jp-img-street-hand-scene`, 전체 배열 `jp-street-hand-ex`)
-집 `{SH['house']['id']}` ({SH['house']['x']},{SH['house']['y']}) · 담 줄 y={SH['wallY']}(대문 열 x={SH['doorCol']}) · 생활도로 y={SH['lane'][0]}~{SH['lane'][1]} · 전봇대 {', '.join(f'({x},{f})' for x, f in SH['poles'])}(밑동 기준).
+집 `{SH['house']['id']}` ({SH['house']['x']},{SH['house']['y']}) · 문기둥 줄 y={SH['wallY']}(대문 열 x={SH['doorCol']}) · 생활도로 y={SH['lane'][0]}~{SH['lane'][1]} · 전봇대 {', '.join(f'({x},{f})' for x, f in SH['poles'])}(밑동 기준).
 문 앞 접근칸 ({g['access']['x']},{g['access']['y']}) 도달 {g['access']['reach']}.
 
 ## 정상/오류 — 자동 좌표 검증 (엔진 변조 실험)
 {md_table(['코드', '변조', '검출 칸(맵 좌표 x,y)', '그림'], [
     ['`upper-overwritten`', '전봇대·전선을 3층(`stamp_layer_block` "3")에 찍음', f"{len(er['onL3']['errors'])}칸: " + ', '.join(f"({e['x']},{e['y']})" for e in er['onL3']['errors'][:8]) + (' …' if len(er['onL3']['errors']) > 8 else ''), '`jp-img-err-street-hand-layer`'],
     ['`pole-arm-overwritten`', '전선을 전봇대 x + **2** 에 찍음(한 칸 왼쪽)', f"{len(er['shift']['errors'])}칸: " + ', '.join(f"({e['x']},{e['y']})" for e in er['shift']['errors'][:8]), '`jp-img-err-street-hand-wire`'],
-    ['`door-access-blocked`', '대문 열에도 담을 세움', ', '.join(f"({e['x']},{e['y']})" for e in er['gate']['errors']) + f" (도달 {er['gate']['access']['reach']})", '`jp-img-err-street-hand-gate`'],
+    ['`door-access-blocked`', '접근칸에 닫힌 대문 jp-gate 를 둠', ', '.join(f"({e['x']},{e['y']})" for e in er['gate']['errors']) + f" (도달 {er['gate']['access']['reach']})", '`jp-img-err-street-hand-gate`'],
 ])}
 - 정상 대조: 같은 맵의 정답 조립 — 세 코드 모두 0건(접근칸 도달 {g['access']['reach']}).
 - **검사 범위**: 칸 번호·층·통행·접근칸 도달(구조)만. 전선이 건물 간판을 가리는 정도(미감)·이벤트·밤 조명은 보지 않는다.
 - **레이어 정정 조건**: 전봇대·전선이 3층에 있으면 4층으로 옮기고 3층은 원래 건물 칸으로 되돌린다(지워진 칸은 건물 키트를 다시 찍어 복구). 노면 표시가 1층에 있으면 길 칸이 사라지므로 1층을 길로 되돌리고 표시는 2층에.
+
+## 하천·다리·철도·일체형 정면·지붕 (2026-10-12~13 추가 키트, 모두 3층 `stamp_object` — 예외는 아래 표시)
+3/4 계약: **서 있는 키트(전주·열차·탱크·석축 벽·승강장)는 윗면이 보이는 덩어리**이고, **띠 키트(선로·고가·둑·보도)는 가로로 이어 깔아 땅·건물 몸통 밑에 들어간다.** 어느 것도 옆면을 그리지 않는다. 키트 `rules` 의 배치 문장이 정본이다.
+- **하천 거리(조립 순서 — 구성기 `riverGap`)**: ① 북쪽 둑 `jp-river-wall`(1×4, 가로로 이어 붙임, 아래에 물 줄) + 배수구 `jp-wall-drain` → ② 물 줄 `jp-water-dark`·`-dark-r`·`-shade`·`-streak`·`-glint`·`-rim-s` 를 섞어 깐다(물 위 반짝임·긴 물결) → ③ 남쪽 둑 `jp-bank-lip`→`jp-bank-mid`→`jp-bank-slope` 3단 + 강변 공원(잔디+판석) → ④ 다리: 벽면 구간은 도로 아스팔트가 이어지고 **물 위 칸에만** 상판 `jp-bridge-lip`/`jp-bridge-plank`/`jp-bridge-joint`, 교각 `jp-bridge-pier`·접합부 `jp-bridge-abut`, 양옆 난간 `jp-bridge-rail-v` + `jp-bridge-post` → ⑤ 어귀 두 줄에 `jp-crosswalk-v`(차선 칸마다 같은 줄). 다리 상판이 지나는 칸의 석축 벽은 비운다. `jp-foot-shadow` 는 둑 밑 그늘 한 줄.
+- **보도 바닥** `jp-pave-a`/`-b`(교대 무작위) 와 `jp-pave-manhole`(20칸마다): 보도 칸 전체에 사방 이음으로 깐다.
+- **일체형 1층 정면 `jp-sf-<종류>-<폭 3~9>-<L|R>`**(konbini·izakaya·ramen·cafe·shop·bento·office·apartment·house·machiya·sento, 143종): 띠가 아니라 **건물 1층 3줄 전체를 덮어 찍는 정면 한 장**이다. 먼저 `build_jp_city_building` 으로 건물을 짓고 1층 3줄의 3·4층을 `stamp_layer_block`(-2)로 비운 뒤 키트를 덮는다. 문은 2칸 폭·**L = 문이 왼쪽 / R = 오른쪽**, 문 앞 접근칸(문 바로 아래 보도)은 비운다(오류 `door-access-blocked`). 막힘은 아래 두 줄 전부. 위층·지붕은 조립기가 그린다. 차고는 셔터 문이라 이 키트가 없다.
+- **철도 — 계획만 있고 아직 합성기에 연결되지 않았다(planned, not yet wired)**: 키트는 시트에 있고 단품으로 `stamp_object` 가능하다. 계획된 조립 띠(위→아래): 보도(pave) → `jp-rail-verge`(1×2 울타리+잔디) → `jp-rail-h`(1×4 선로, 가로로 쭉) → verge → 보도. 건널목은 `jp-rail-xing` 을 선로에 덮고 `jp-rail-xing-bars` 를 얹는다(통로 칸의 verge 는 비움). 전주 줄은 **4층**(`jp-rail-wire` 4×1 를 전주 사이에 이어 찍음 — 전봇대처럼 4층). 열차 `jp-train-car-a`/`-b`(4×3)는 선로 위에 A B A B 4량. 고가는 `jp-via-span`(1×4, 위 3칸이 높은 바닥) 을 깔고 4~6칸마다 `jp-via-pier`, 열차를 그 윗면에 얹는다. 간이 승강장은 `jp-platform-edge`(1×2, 노란 점자 블록)를 4~10칸. 위 순서는 계획이지 검증된 정답 조립이 아니다.
+- **지붕·옥상·벽 덧그림**: `jp-roof-orange|navy|green|charcoal`(2×2 골함석 지붕 면, 가로로 이어 붙임, 위 줄이 용마루)은 단품이며 건물 조립기의 지붕 스타일에는 아직 연결되지 않았다. 옥상 `jp-water-tank`(1×2)·`jp-sat-dish`(1×1)는 평지붕 칸 위에 하나씩. 덩굴 `jp-ivy`·`jp-glory`(1×2)는 건물 벽 앞 **4층** 덧그림(윗면 3/4 계약 면제 — 식물).
 
 ## 없는 것
 전선 대각 구간 없음(가로·세로 직선만) · 변압기 없는 전봇대 없음(모두 변압기 달림, 나무 전봇대만 없음) · 신호등 달린 전봇대 없음 · 밤 조명 없음 · 「止まれ」 글자는 도로 키트 `jp-road-mark-tomare-*`.
@@ -2020,10 +2035,10 @@ def img_sh():
     W, H = SH['W'], SH['H']
     gi = render(SH['good']['layers'], W, H)
     mark_cells(gi, [(SH['good']['access']['x'], SH['good']['access']['y'])], 1, color=(40, 220, 80, 255), width=1)
-    save_img('street-hand-scene', panels([(f'정답 — 집·블록 담·문기둥(3층), 側溝·흰 선·「30」(2층), 전봇대·전선(4층). 초록 = 문 앞 접근칸 (도달 {SH["good"]["access"]["reach"]})', gi)]),
+    save_img('street-hand-scene', panels([(f'정답 — 집·문기둥(3층), 側溝·흰 선·「30」(2층), 전봇대·전선(4층). 초록 = 문 앞 접근칸 (도달 {SH["good"]["access"]["reach"]})', gi)]),
              f'손 도트 거리 시설 정답 조립 street-hand-scene({W}×{H}칸, 원본 해상도). 전체 배열 `jp-street-hand-ex`.', C_SH)
     er = SH['errors']
-    for key, nm, title in (('onL3', 'layer', '전봇대·전선을 3층에: upper-overwritten'), ('shift', 'wire', '전선을 x+2 에: pole-arm-overwritten'), ('gate', 'gate', '대문 열을 담으로 막음: door-access-blocked')):
+    for key, nm, title in (('onL3', 'layer', '전봇대·전선을 3층에: upper-overwritten'), ('shift', 'wire', '전선을 x+2 에: pole-arm-overwritten'), ('gate', 'gate', '접근칸을 닫힌 대문으로 막음: door-access-blocked')):
         bi = render(er[key]['layers'], W, H)
         mark_cells(bi, [(e['x'], e['y']) for e in er[key]['errors']][:120], 1, width=1)
         save_img(f'err-street-hand-{nm}', panels([('정상', render(SH['good']['layers'], W, H)), (f'오류 — {title} {len(er[key]["errors"])}칸', bi)]),

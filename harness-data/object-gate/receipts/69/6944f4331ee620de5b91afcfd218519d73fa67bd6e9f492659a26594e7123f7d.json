@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6944f4331ee620de5b91afcfd218519d73fa67bd6e9f492659a26594e7123f7d",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-roof-green",
+ "label": "jp/jp-roof-green",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese green tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body (rows 1-25) consists of the south-facing sloped top surface of the tiled roof, terminating at the lower eave fascia band (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6559
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese green tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire upper expanse from row 1 to row 25 depicts the top foreshortened slope of a green roof with vertical tile ridges, terminating at an eave line and underside at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green tiled roof section",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a green pitched tile roof showing its full foreshortened slope across rows 1-25, terminating in an eave/fascia band at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "green tiled roof slope with eaves",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main section (rows 1-25) is the foreshortened sloping surface of a Japanese-style tiled roof seen from above, terminating in front eaves and fascia at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3395
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "70584f492b5eb816",
+   "a238cbb76777a947",
+   "de3ea6c1fc3e5d93"
+  ],
+  "24": [
+   "00582d96dda69c73",
+   "1e975d286e1cb902",
+   "23cdc25d95ca380d",
+   "32b137228057b97a",
+   "4185a8044a031fa8",
+   "53117d1ca0009cc4",
+   "5b0b3ad090a5416e",
+   "5ded51e2922bc7a3",
+   "5eeef798e0e78a67",
+   "6836cccffa056526",
+   "71f0a5650b56ec59",
+   "75fa071de632baa9",
+   "8eb52f28f491d25a",
+   "a13c80c61a81ff58",
+   "a38d46742db9fb79",
+   "b7eeea768f4b79bb",
+   "d454f2c5503601ab",
+   "d48c6697691ac87a",
+   "edf823f4b3e7d349",
+   "ee8889d07826266d",
+   "f13cc9c3643ca88f",
+   "f9f96d7aad94ca0f",
+   "fb35a1c7249a8de7"
+  ],
+  "32": [
+   "24d2542f1ff94cdb"
+  ],
+  "48": [
+   "168e99b28dff8a16",
+   "436cea5bf3a2a491",
+   "6e7ebad027329efa",
+   "a650ba62da5268bc",
+   "bbcdfdc7a76b1a57",
+   "ecb37af8499d7f12"
+  ]
+ }
+}

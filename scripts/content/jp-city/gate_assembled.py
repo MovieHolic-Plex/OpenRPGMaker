@@ -12,7 +12,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 OUT = os.path.join(REPO, 'tiledata', 'jp-city', 'blocks', '_gate_assembled')
 STRIP_DIR = os.path.join(REPO, 'tiledata', 'jp-city', 'blocks', 'street_hand', '_gate')
-SHEET = os.path.join(REPO, 'public', 'assets', 'jp-city', 'jp-city-chipset.png')
+SHEET = os.environ.get('JP_SHEET') or os.path.join(REPO, 'public', 'assets', 'jp-city', 'jp-city-chipset.png')   # JP_SHEET: 임시 굽기 시트로 시험할 때만
 MANIFEST = os.path.join(OUT, 'manifest.json')
 GROUPS = ((3, 4, 5, 6), (7, 8, 9))
 GAP = 16
@@ -32,6 +32,10 @@ LOOK = {
     'machiya': dict(ground='gr.machiya', floorKind='tile', floors=1, wall='kinari', roof='roof.tile', door='lattice'),
     'sento': dict(ground='gr.machiya', floorKind='tile', floors=1, wall='hodo', roof='roof.tile', door='lattice'),
 }
+# composer 가 실제로 찍는 지붕(jpCityStreetComposer.ts ROOFS_FLAT+ROOFS_TILE). 지붕 종류마다 office 띠 L 로 폭 5~8 건물 한 줄을 따로 낸다.
+ROOF_KINDS = ['roof.plain.plain', 'roof.plain.tank', 'roof.ac.plain', 'roof.ac.tank', 'roof.ac.cyl', 'roof.stair.tank',
+              'roof.tile', 'roof.slate', 'roof.hip', 'roof.hip.slate']
+ROOF_WIDTHS = (5, 6, 7, 8)
 OVERRIDE = {}   # (role,w) -> dict(...) 표본별 지붕 교체 자리. 기본 지붕: 평지붕(roof.plain.* — 윗면 판정 대부분 불합격, 2026-10-13 실측 6/7 fail)이 아니라 윗면이 보이는 roof.hip(composer 의 ROOFS_TILE 중 하나)
 
 
@@ -57,6 +61,10 @@ def plan():
         for grp in GROUPS:
             members = [(w, ws[w]) for w in grp if w in ws]
             if members: samples.append(dict(name=sample_name(role, side, grp), role=role, side=side, members=members))
+    ow = by.get(('office', 'L'), {})
+    for rk in ROOF_KINDS:
+        members = [(w, ow[w]) for w in ROOF_WIDTHS if w in ow]
+        if members: samples.append(dict(name='roof-' + rk[5:].replace('.', '_'), role='office', side='L', members=members, roof=rk))
     return samples
 
 
@@ -67,7 +75,8 @@ def build():
     for s in samples:
         for w, kid in s['members']:
             L = dict(LOOK[s['role'] if s['role'] in LOOK else 'office'], **OVERRIDE.get((s['role'], w), {}))
-            req.append(dict(name=kid, role=s['role'], w=w, side=s['side'], floors=L['floors'], floorKind=L['floorKind'], wall=L['wall'], ground=L['ground'], roof=L['roof'], doorType=L['door']))
+            if s.get('roof'): L['roof'] = s['roof']
+            req.append(dict(name=s['name'] + '|' + kid, role=s['role'], w=w, side=s['side'], floors=L['floors'], floorKind=L['floorKind'], wall=L['wall'], ground=L['ground'], roof=L['roof'], doorType=L['door']))
     tmp_in, tmp_out = '/tmp/jp-asm-in.json', '/tmp/jp-asm-out.json'
     json.dump(req, open(tmp_in, 'w'))
     r = subprocess.run(['node', os.path.join(HERE, 'gate_assembled.mjs'), tmp_in, tmp_out], cwd=REPO, capture_output=True, text=True)
@@ -82,7 +91,7 @@ def build():
     for s in samples:
         parts = []
         for w, kid in s['members']:
-            d = res[kid]
+            d = res[s['name'] + '|' + kid]
             if not d['ok']: print('조립 실패', kid, d['errors'][:2]); bad += 1; continue
             R = d['rect']; im = Image.new('RGBA', (R['w'] * T, R['h'] * T), (0, 0, 0, 0))
             for p in d['placements']:

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bea0077946833df7e318f2a90ababa6bf58c64bd2fa3845c596d5561294dbc33",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "jp-sat-dish",
+ "label": "jp/jp-sat-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish reflector",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a satellite dish, not a closed cylinder. The dish and stand are drawn in flat front elevation: the mounting base at the bottom is a 1px flat horizontal bar with no visible top surface, and the dish itself lacks top-down foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11650
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The satellite dish and its stand are drawn in pure front elevation: the dish is a flat oval facing the viewer, the pole is vertical with no depth, and the base at row 15 is a flat 1px horizontal bar with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite dish",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The satellite dish is drawn in pure front elevation facing straight at the viewer, showing no top surface (top_rows = 0) of the dish rim, mounting bracket, or base. It is also misclassified as a closed cylinder.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9562
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parabolic dish on mount",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is a satellite dish on a post, not a closed cylinder. The dish face is drawn facing almost directly forward/upward with no depth or thickness to the dish edge or base, appearing as a 2D cutout elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7109
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "0a780ec955715994"
+  ],
+  "24": [
+   "3051e1d269dd3022",
+   "37663e12d94fbdcc",
+   "5dd1aef593ce3b95",
+   "d7c88ea41d59a26c",
+   "e71c6818f69289f8",
+   "f237a3f162acb641"
+  ],
+  "32": [
+   "2fab403971670cfd",
+   "37baea2b99ee30b9",
+   "4d49b31e3e057e6b",
+   "bbb62618e9570772",
+   "bc21ace7e6ae71b5",
+   "d1525aac112c9fa7"
+  ],
+  "48": [
+   "1581ca3f15df292b",
+   "219629995ebb08cc",
+   "35f836920aa4093a",
+   "49728b616c700991",
+   "6abce6e460c76905",
+   "75ecd351574ea7b7"
+  ]
+ }
+}

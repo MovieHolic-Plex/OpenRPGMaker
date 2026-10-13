@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "536b28755d54f0a2ed02db4bd6c010085d22c6f0f6edddf6feb7bdb7b645b8be",
+ "width": 64,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "jp-rail-wire",
+ "label": "jp/jp-rail-wire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "overhead rail catenary wire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overhead suspended wire/cable composed of 1-pixel thick catenary curve and dropper wires; flat linear element analogous to chains or cobwebs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail catenary wire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overhead/hanging rail catenary wire consisting of thin 1-2px cable spans and vertical droppers; correctly classified as a flat/hanging element without 3D volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4667
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway overhead catenary wire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overhead rail catenary wire consisting of a messenger wire, droppers, and contact wire. As a flat suspended wire element (analogous to hanging chains/cables in the wall_mounted/flat category), it has no 3D volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8779
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "overhead rail wire / catenary wire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin catenary suspension wire and contact wire; linear suspended element with no substantial volume or top surface required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7772
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.124Z",
+ "cells": {
+  "16": [
+   "624b8f5e6015c885",
+   "6398c92cd151230a",
+   "931e4b28878b039c",
+   "afbb9aa2c4a19e1b"
+  ],
+  "24": [
+   "0f6dbab46f00ab2f",
+   "2fad71c086e459d8",
+   "48f0c2b100c245db",
+   "587f0917c47a80a1",
+   "5e6d55d5fa67ad4e",
+   "64910da1e5e30a73",
+   "7777d27cc3bad5a2",
+   "7e85dbb632ef205b",
+   "7f9721fbcdb2d43b",
+   "89f82ddfa3813616",
+   "8fd8cec3c1a0f082",
+   "b69626c560aa6d0a",
+   "b9a04d764f1a246f",
+   "c1730f136d557e40",
+   "c4940520854fecd6",
+   "dbdc1e9f2f035673",
+   "f284db0b1d99a4a7",
+   "f6bf56a37a20cd21"
+  ],
+  "32": [
+   "0d72cc342dc1b0fd",
+   "120ff98b6f43fc4c",
+   "1e3fd8f2689ea177",
+   "e800e46122f08d24"
+  ],
+  "48": [
+   "0ed405852d27a1e1",
+   "1a77c9c0df94475c",
+   "22979e5b00643e12",
+   "27d3a114b79f9e3d",
+   "3872f49c407d8051",
+   "3cff2d42d8f73c05",
+   "408d26ca60236b3e",
+   "4b3ee1e9c24a57da",
+   "75ad79012e106aa7",
+   "862d37e1ffcbd9b5",
+   "c279f398e8cd46a7",
+   "f066de49224e020d"
+  ]
+ }
+}

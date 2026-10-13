@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e8b0c8591a638e3954bca6fc5adfb2fb8e95e3246bbc4369f1fb1013664da150",
+ "width": 64,
+ "height": 48,
+ "kind": "box",
+ "name": "jp-train-car-b",
+ "label": "jp/jp-train-car-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car roof is clearly visible from above across rows 1-17 complete with rooftop equipment/AC units, above the vertical side face from row 19 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car roof is clearly visible from above across rows 1-17 with two large roof-mounted AC units/equipment, above the front-facing side with doors and windows (rows 20-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8970
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-18 form the expansive top surface (train roof) complete with rooftop AC units and equipment, positioned above the south side face (rows 19-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7563
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car shows its extensive roof surface from rows 1 to 18 with rooftop equipment (AC units/vents) seen from above, transitioning at row 19 to the vertical south-facing side wall with doors and windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5397
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.125Z",
+ "cells": {
+  "16": [
+   "00f60b68c1744714",
+   "1ab40b337e0aaeda",
+   "3a7860272b937b9e",
+   "3bc598537fe9dcc2",
+   "5771f2b714743438",
+   "5cef8d80084218f2",
+   "9414ce0ed1725ac7",
+   "a4a2ab0addba5889",
+   "a74dcf6eac956195",
+   "b54c533f174e3699",
+   "b7543ba2a1bc0d45",
+   "dadf9989235e6927"
+  ],
+  "24": [
+   "2212a1d5944efcc8",
+   "28994450530cb20d",
+   "35c0f7af8a021ff3",
+   "3dfd6cf2ab4c26fe",
+   "749780115de73b55",
+   "9c680a8c71b917c4",
+   "a80038c885706f7c",
+   "b8584ff94db8ca93",
+   "c8f570b9a9bb0c15",
+   "c95cfdc1488a69c1",
+   "cc090e98c1e2c96b",
+   "ce11b3cc4be47b1e",
+   "d5c4ea89eda9a6c5",
+   "d665b8e8eb248e93",
+   "d73e336089dc7027",
+   "da28cf0c4647d55f",
+   "e9b3ab9913eb7e5e",
+   "f9d907e7b788033d"
+  ],
+  "32": [
+   "1488f4f669f3ffa7",
+   "3e7c6794f658e91e",
+   "68668515dcf2ebee",
+   "a7f7a5c4136ca35e",
+   "cbc73aa26c38d1a8",
+   "d360ffe14cf94e52",
+   "db3fb3689c12b638",
+   "e227fd11de898a7e"
+  ],
+  "48": [
+   "2d8a155c967367ea",
+   "2da14ccc08c1fe41",
+   "3d0cc2819f1b4f5d",
+   "9118c133135be99e",
+   "c58223be6e119857",
+   "ce814dc78e9500ac"
+  ]
+ }
+}

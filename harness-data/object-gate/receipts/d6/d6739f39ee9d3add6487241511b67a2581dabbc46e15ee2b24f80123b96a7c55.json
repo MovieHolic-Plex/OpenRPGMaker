@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6739f39ee9d3add6487241511b67a2581dabbc46e15ee2b24f80123b96a7c55",
+ "width": 16,
+ "height": 64,
+ "kind": "flat",
+ "name": "jp-rail-xing-bars",
+ "label": "jp/jp-rail-xing-bars",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail crossing road bars / ground decal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of flat ground bars/markings with transparency between them, lying planar on the ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8882
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted road markings (crossing bars)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor decals representing painted road stripes viewed from directly above in perspective, lying flat on the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6871
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "road marking bars / pavement decal",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite consists of horizontal white painted warning bars designed as a flat road decal lying directly on the pavement surface, viewed correctly from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "road surface marking / deceleration bars",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat pavement marking / road decal intended to lie flat on the road surface, viewed correctly from above as a ground overlay.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11425
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.014Z",
+ "cells": {
+  "16": [
+   "1af2d0758dc8164e",
+   "f0822575a12e03b9"
+  ],
+  "24": [
+   "3ec84b999d2912f0",
+   "3fa0f6e780b8fdca",
+   "46d9889df8a2098f",
+   "7a2a75cda6dc722e",
+   "81c37450d3d4b328",
+   "8bf2d33063fd0d0e",
+   "8c1b6073f8d508a0",
+   "8e046a0846bf2ff5",
+   "95e57c23c5a02fbd",
+   "9ab877c754ec82c2",
+   "9db41d0c0881659a",
+   "bd3e4e75b99a5b1a",
+   "cdc5af361817da6e",
+   "d5c93583e3595643",
+   "e4cc2b1ac94902b1"
+  ],
+  "32": [
+   "0c007ef39eb9211a",
+   "31089919c2a7e865",
+   "385abac7d3e4f1d1",
+   "8836ee41ee160d87",
+   "975cfbd3ef1d5df0",
+   "daf9e651bf563e70"
+  ],
+  "48": [
+   "020ceafa3a9b6939",
+   "18634f688760435f",
+   "45d5796e36765f5f",
+   "874af47cb8f45a06",
+   "a3ffdcf8f4a34baa",
+   "acf0bef5ffae71c8",
+   "b839a9afb0f61c28",
+   "b9e2237cf35bfadb",
+   "c9c41eeab04a0e0a",
+   "cf2d1b130f03e852",
+   "dfa62f68bb47680b",
+   "e7c27f639f73ae67"
+  ]
+ }
+}

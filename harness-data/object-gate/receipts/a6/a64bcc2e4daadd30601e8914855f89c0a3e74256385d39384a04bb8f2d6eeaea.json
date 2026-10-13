@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a64bcc2e4daadd30601e8914855f89c0a3e74256385d39384a04bb8f2d6eeaea",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-rail-verge",
+ "label": "jp/jp-rail-verge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway embankment and grass verge",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The embankment features a large horizontal top surface spanning rows 0-25 (track and grass verge) and a south-facing front cliff/dirt elevation on rows 26-31, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11778
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway embankment and grassy verge",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grassy top surface of the verge/embankment is foreshortened and clearly visible across rows 9 to 25 (17 source pixels tall), descending to a 6-pixel front-facing dirt cliff face at rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7943
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway verge and embankment",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The embankment features a 17-row foreshortened top surface (grass and trackbed, rows 9–25) and a 6-row vertical south-facing dirt cliff face (rows 26–31), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5244
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grassy railway embankment and verge",
+    "kind_matches": false,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a terrain embankment (grass surface from row 9 to 25 and dirt cliff from row 26 to 31) topped by a railing, not a structure (gate, pavilion, sealed door, building). Furthermore, the railing at rows 0-8 is drawn as a flat front elevation without top surfaces on its horizontal beams.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 9050
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.124Z",
+ "cells": {
+  "16": [
+   "a618c24087eb661a",
+   "d8671502dbeeefa8"
+  ],
+  "24": [
+   "1ac68fba8fea8618",
+   "3843a4491e381dd5",
+   "83a77ec15049eec7",
+   "847113b1e072c436",
+   "8c41b31592e20012",
+   "9c6b2a1ef30d90e5",
+   "b6e5de9c8835a5ea",
+   "cf1be90e23aaee98",
+   "dce01c02505d725e",
+   "e160562925a5cac3",
+   "e9fe2d05514b91c5",
+   "eb6e105e9ebd3c25"
+  ],
+  "32": [
+   "535f4df8c0ce8636",
+   "6d8465521380826b",
+   "740f4482292fe76a"
+  ],
+  "48": [
+   "24fee92b92b66138",
+   "563060fc32e65d61",
+   "6b872384bcf6bee8",
+   "79f64b061b547842",
+   "7dd4bfb2418c3753",
+   "fa9550106e107c2a"
+  ]
+ }
+}

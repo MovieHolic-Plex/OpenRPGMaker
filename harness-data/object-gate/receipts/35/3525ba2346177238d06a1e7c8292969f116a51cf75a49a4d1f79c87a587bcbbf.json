@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3525ba2346177238d06a1e7c8292969f116a51cf75a49a4d1f79c87a587bcbbf",
+ "width": 64,
+ "height": 48,
+ "kind": "box",
+ "name": "jp-train-car-a",
+ "label": "jp/jp-train-car-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train car and associated structures are drawn in a completely flat 2D side-scroller elevation with horizontal stripes, side-facing doors, and windows, showing 0 rows of any foreshortened top roof surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5320
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train car is drawn in a pure side-scroller / front elevation view with no visible foreshortened roof (top surface). Both the train body, doors, windows, and undercarriage are completely flat vertical projections with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6382
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train car / carriage is drawn entirely in a flat 2D side elevation view; there is no foreshortened top roof surface visible from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4971
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "train car and station wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train car and station structure are rendered in a pure 2D side-scroller / front elevation perspective with 0 top rows visible on the train roof, floor, or platform.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5348
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:16.125Z",
+ "cells": {
+  "16": [
+   "121ab87bda9a5df4",
+   "21bd7e2cb41d2c30",
+   "2982d130e6e3fe19",
+   "3a84e5bd86befc8b",
+   "3af79ffa1bf12d91",
+   "6ac298b765c7d8f8",
+   "73b9aa462c193d36",
+   "8985d2b83033db38",
+   "9814f635ec1bbbb1",
+   "d0c5547c2f708a73",
+   "e60dda7cee60d0f5",
+   "f30a0d424cc11665"
+  ],
+  "24": [
+   "09a933f0e3ddb8c8",
+   "0f61662efbab15d3",
+   "1283efb5d7754fe4",
+   "132ec15d579eac65",
+   "29869459d8a3741c",
+   "4f9c136a9d37136a",
+   "6473b063be0d458a",
+   "70472e7f1b003b09",
+   "80b61e2e7112edb4",
+   "891ea9295191b8a5",
+   "9c23943b08e70c33",
+   "a0aa47476983856f",
+   "c690b3f03c132dfc",
+   "da9df5a8bffe7f62",
+   "efcb6dac40e2c786",
+   "f5b596f1e7fad6f7",
+   "f7f3e3b16d642ef0",
+   "f89e20a52518ab6a"
+  ],
+  "32": [
+   "1e0defbc456fa8a0",
+   "73ae8f1a55faa10d",
+   "74d188183dbdfd8f",
+   "74e9e57e6d58b84b",
+   "b5da3236ffcbc276",
+   "e7dfbdf0cb440166",
+   "f765b582d23a0aa6",
+   "f8444530e1e39309"
+  ],
+  "48": [
+   "5456af126861f777",
+   "57c03d73e3141739",
+   "669d35d203a7c5db",
+   "bb9def61e218bbd0",
+   "bdd9c4ea10a19c65",
+   "f1d265ecd541d396"
+  ]
+ }
+}

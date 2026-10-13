@@ -1021,5 +1021,275 @@
     "y": 64
    }
   ]
+ },
+ "roof-plain_plain": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-plain_plain.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-plain_tank": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-plain_tank.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-ac_plain": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-ac_plain.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-ac_tank": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-ac_tank.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-ac_cyl": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-ac_cyl.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-stair_tank": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-stair_tank.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-tile": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-tile.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-slate": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-slate.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-hip": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-hip.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
+ },
+ "roof-hip_slate": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/roof-hip_slate.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 96,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 208,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 336,
+    "y": 128
+   }
+  ]
  }
 }

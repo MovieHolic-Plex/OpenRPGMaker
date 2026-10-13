@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6cf05c2d6ff89ff7406fb805639d08e2dc6de3c76674df5aa8afb20ffc421bf6",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal2",
+ "label": "jp/jp-rail-signal2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal box and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the signal head and the base box are drawn as flat rectangles in pure front elevation with only a 1px outline on top and no visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4594
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal box head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box head (rows 1-19) and base box (rows 37-45) are drawn as flat rectangular boxes within 1px vertical borders, showing only flat front elevation faces without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4744
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signal box and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal structure (top head box, striped pole, and base box) is drawn as flat 2D rectangles in pure front elevation with no visible top surfaces showing depth or 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6082
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway signal head on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 1-19) and base unit (rows 37-45) are drawn as pure 2D rectangles facing straight toward the camera with only a 1px outline on top and no visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6166
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.015Z",
+ "cells": {
+  "16": [
+   "55cb2c4d7a1fc5ec",
+   "abeceab58b218ea8",
+   "bd0140a0b8a1d01e"
+  ],
+  "24": [
+   "1dd3cd0d1d242709",
+   "33bc9945707720e4",
+   "b43b60422e43a0c2",
+   "ebd1beeb3512ef1a",
+   "ec39aed62c165c49",
+   "f6c481637184d85c"
+  ],
+  "32": [
+   "19d30e752c018e81",
+   "2b7c08fbb0e6e651",
+   "37a347a82c70549f",
+   "3ba2d60141b6c283",
+   "438d10327b8bb034",
+   "672ad869da545bdf",
+   "9e00fa7f3309a03f",
+   "a9c52d94f64ae9a2",
+   "b50258a8e0fe8a2b",
+   "e6a0901eba2867b3",
+   "ebcdf00cd63513eb",
+   "ec7b3ec26cc946d1"
+  ],
+  "48": [
+   "537f3e307393391b",
+   "9217a6dbdcd16e8c",
+   "9aa62782ee4b82c9"
+  ]
+ }
+}

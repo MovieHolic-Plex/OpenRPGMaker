@@ -57,7 +57,8 @@ interface ShopLook {
   readonly width: readonly [number, number];
 }
 
-const ROOFS_FLAT = ["roof.plain.plain", "roof.plain.tank", "roof.ac.plain", "roof.ac.tank", "roof.ac.cyl", "roof.stair.plain", "roof.stair.tank"];
+// roof.stair.plain 은 조립 건물 3/4 관문 불합격(2026-10-13, 판정자 4/4 정면 입면도) → 쓰지 않는다
+const ROOFS_FLAT = ["roof.plain.plain", "roof.plain.tank", "roof.ac.plain", "roof.ac.tank", "roof.ac.cyl", "roof.stair.tank"];
 const ROOFS_TILE = ["roof.tile", "roof.slate", "roof.hip", "roof.hip.slate"];
 
 /** 가게 종류 → 외형 범위. 범위 안에서 씨앗이 고른다(범위 밖은 조립기가 어색하다고 거절하는 조합). */

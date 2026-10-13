@@ -34,6 +34,14 @@ EXACT = {
     'river-wall': 'terrain', 'bank-lip': 'terrain', 'bank-mid': 'terrain', 'bank-slope': 'terrain', 'rail-h': 'terrain',
 }
 
+# 철도·고가·보도·골함석·덩굴 키트(blocks/rail_art.py) — 종류 표는 그쪽이 정본이다.
+try:
+    sys.path.insert(0, os.path.join(HERE, 'blocks'))
+    import rail_art as _rail_art
+    EXACT.update({k[3:]: v for k, v in _rail_art.kinds().items()})
+except Exception:       # pragma: no cover
+    pass
+
 
 def kind_of(kit_id: str) -> str:
     k = kit_id[3:] if kit_id.startswith('jp-') else kit_id

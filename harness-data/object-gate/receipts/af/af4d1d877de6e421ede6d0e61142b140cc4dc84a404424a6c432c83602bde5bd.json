@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af4d1d877de6e421ede6d0e61142b140cc4dc84a404424a6c432c83602bde5bd",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "jp-ivy",
+ "label": "jp/jp-ivy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "climbing ivy vine / leaf clusters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ivy consists of flat clusters of leaves and stems hanging or climbing vertically with no horizontal top surfaces or 3D depth shown (top_rows: 0). Drawn entirely as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10443
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60011,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "climbing ivy / hanging wall vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ivy clings vertically to a wall/cliff surface without a horizontal top plane. Leaf clusters have top-down lighting (lighter green on upward-facing edges) consistent with 3/4 perspective, with no missing horizontal surfaces or isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "climbing ivy vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ivy is drawn entirely in a flat front elevation hanging down a vertical plane with no visible horizontal top surface or depth (0 source pixel rows for top).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14056
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "728560f1310300af",
+   "c5026d490486d4ef"
+  ],
+  "24": [
+   "01010bd5b7d0b831",
+   "02dba8178814f7cd",
+   "117b4f3cdcb8afa2",
+   "4a01d392725535f5",
+   "62e6279a2de5c673",
+   "789e513d0fd17611",
+   "82d8be64a3bd5107",
+   "89f89416f3d18982",
+   "aa282c7fee4637ee",
+   "bd8d9a721f836158",
+   "e68c9fe590be87ca",
+   "f22b3b79d3de84a9"
+  ],
+  "32": [
+   "6bfa022b3474d076",
+   "c246fc72da7a3882",
+   "e9a85c62db3099a0"
+  ],
+  "48": [
+   "0febfc45f83f1b13",
+   "1d3384efc953b9c6",
+   "3ad618f88e014239",
+   "5ac395a6365c7646",
+   "65a0c77099c3aa6c",
+   "8e5dc4f819200ada"
+  ]
+ }
+}

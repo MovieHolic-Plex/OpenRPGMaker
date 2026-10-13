@@ -1025,6 +1025,8 @@ prop('rail-signal', '건널목 경보기', 1, 3, solid=[(0, 2)], tags=['철도',
 
 import shopfront_art                                      # noqa: E402
 shopfront_art.register(prop)
+import rail_art                                          # noqa: E402
+rail_art.register(prop)
 
 # 3/4 관문(object-gate)을 통과하지 못해 키트에서 뺀 소품 — 조립기·거리 구성기·마을 시연 지도 어디에도 찍히지 않거나(rail-fence·rail-signal·tsukigime·pole-guy)
 # town.mjs 시연 담에서만 쓰였다(bwall*·bwallf-plain/end-r). 얇은 가로 담·펜스는 한 칸(16×16) 안에서 판정자가 정면 입면도로 읽는다(2026-10-13, 3라운드).

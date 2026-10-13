@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d692a3ca286b44ac33b2dccb219838b7350e09dea52f267a28455219763d3c6c",
+ "width": 16,
+ "height": 64,
+ "kind": "structure",
+ "name": "jp-via-pier",
+ "label": "jp/jp-via-pier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "viaduct pier / bridge support column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire viaduct pier is drawn as a flat architectural front elevation. All horizontal ledges (pillar base at row 60, crossbeam at row 39, and girder flanges) are represented solely by 1px highlight lines with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7837
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "viaduct bridge deck and support pier",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the viaduct deck (road/walkway surface) is clearly visible across rows 1–13 (13 rows tall) with front fascia, girder, pier cap, and pillar descending beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7108
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "viaduct pier and deck structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire viaduct structure and pier are drawn as a flat architectural front elevation; the horizontal crossbeams, lintels, and base show only 1-2px edge highlight lines rather than receding top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19449
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "viaduct pier (support column, crossbeam, and superstructure)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pier column, base plinth (rows 59-61), and crossbeam (rows 39-45) are drawn as a completely flat architectural front elevation with 1px edge highlights rather than visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5953
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.016Z",
+ "cells": {
+  "16": [
+   "114e70648f60d022",
+   "70eeb7abd1322382",
+   "95aeb7cef254a18a",
+   "aa8b934d06d4a265"
+  ],
+  "24": [
+   "0b4ff7016b0662d2",
+   "2c88a3c724d5c571",
+   "32e6583fa2835ed5",
+   "33cf1e68a16f50b7",
+   "46dfbdf471ab5cd9",
+   "66a48898b9f01a85",
+   "67e942508f28eca6",
+   "6e90c8620105487e",
+   "74777e5d181bc0e4",
+   "8f500b7f82d902b1",
+   "9799d3b7c769fea2",
+   "981434948f32edcd",
+   "a4cebe082c8270ae",
+   "a85b438f686b26a1",
+   "d00958b1b93759a7",
+   "e5b259d463c53465",
+   "f84b0c6667c640b2",
+   "fa45ba1a56b409c0"
+  ],
+  "32": [
+   "84b6e364bcf8e7fe",
+   "851917e831f1aa12",
+   "8c59415b50968769",
+   "a42cbe0e86a1660b",
+   "a99c05a2fbc618af",
+   "ed992eadbea2ec70"
+  ],
+  "48": [
+   "17bdc3b903b3a1b1",
+   "3da994e6715c7807",
+   "7b697a894f11b7e4",
+   "8b38a02dfe866d04",
+   "92720fa8efccd57a",
+   "98ff717eff990e41",
+   "9c8be5774cdc7a97",
+   "af802a93e79264e2",
+   "b2d2896f44c8a338",
+   "dbab186806b7e5f1",
+   "eee4ad09e4dfd855",
+   "f33ef0c7413e548b"
+  ]
+ }
+}

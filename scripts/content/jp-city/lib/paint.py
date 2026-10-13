@@ -120,18 +120,29 @@ def floor_band(kind, wall, n, vs):
 # ───────── 옥상 띠 (32px) ─────────
 def roof_band(n, left='plain', right='plain'):
     W = n * 16; T = 32; c = Cv(W, T)
-    c.R(0, 0, W, T, K('hodo', 3)); c.R(0, 0, W, 5, K('hodo', 4)); c.HL(0, 0, W, K('conc', 5)); c.HL(0, 5, W, K('hodo', 1))
-    for j in range(7, T - 6): c.HL(1, j, W - 2, K('hodo', 3 if j % 8 else 2))
-    for i in range(16, W, 16): c.VL(i, 7, T - 13, K('hodo', 2))
-    if left == 'ac':
-        c.R(1, 6, 14, 4, K('tekko', 3)); c.HL(1, 6, 14, K('tekko', 5)); c.R(1, 10, 14, 8, K('tekko', 2)); c.R(2, 12, 8, 5, K('tekko', 0))
-        for i in range(3, 10, 2): c.VL(i, 12, 5, K('tekko', 1))
-        c.VL(14, 10, 8, K('tekko', 0)); c.HL(1, 18, 14, K('conc', -3))
+    # 평지붕 윗면: 사방 파라펫 테(윗면 캡 + 안쪽 벽면) 안에 깊이 ≥4줄(여기 18줄)의 낮은 지붕 슬래브 — 방수 시트 질감·이음선·뒤 파라펫 그림자
+    c.R(0, 0, W, T, K('conc', 3))
+    c.R(0, 0, W, 2, K('conc', 5)); c.R(0, 2, W, 3, K('conc', 1)); c.HL(0, 4, W, K('conc', -2))                 # 뒤 파라펫: 윗면 캡 2줄 + 안쪽 벽면 3줄
+    c.R(0, 0, 2, T, K('conc', 5)); c.R(W - 2, 0, 2, T, K('conc', 5)); c.VL(2, 5, 22, K('conc', -2)); c.VL(W - 3, 5, 22, K('conc', -2))  # 좌우 파라펫 윗면
+    for j in range(5, T - 6):
+        for i in range(3, W - 3): c.P(i, j, K('hodo', 1 if ((i % 16) // 2 + j) % 7 else 0))                          # 방수 시트 알갱이(낮은 슬래브, 벽보다 어둡다)
+    for i in range(16, W - 3, 16): c.VL(i, 5, T - 11, K('hodo', -1))                                           # 시트 이음선
+    c.R(3, 5, W - 6, 3, K('hodo', -2)); c.R(3, 8, W - 6, 1, K('hodo', -1))                                      # 뒤 파라펫 밑 그림자
+    c.R(3, T - 10, W - 6, 4, K('hodo', 2)); c.HL(3, T - 11, W - 6, K('hodo', 3))                               # 앞쪽 밝은 가장자리(앞 파라펫 안쪽 모서리)
+    if left == 'ac':         # 실외기 상자: 밝은 윗면 6줄 + 앞면 8줄(그릴) + 오른쪽·아래로 드리운 그림자(낮은 슬래브 위에 솟아 있다)
+        c.R(14, 7, 2, 12, K('hodo', -2)); c.R(3, 19, 13, 3, K('hodo', -2))
+        c.R(2, 4, 12, 6, K('tekko', 5)); c.HL(2, 4, 12, K('shiro', 4)); c.VL(2, 4, 6, K('shiro', 3)); c.R(2, 10, 12, 9, K('tekko', 2)); c.R(3, 12, 8, 5, K('tekko', 0))
+        for i in range(4, 11, 2): c.VL(i, 12, 5, K('tekko', 1))
+        c.VL(13, 10, 9, K('tekko', 0)); c.HL(2, 19, 12, K('conc', -3))
+    if right == 'plain':     # 점검 해치 상자(R1 칸 안): 밝은 윗면 6줄 + 앞면 7줄 + 오른쪽·아래 그림자
+        x = W - 14; c.R(x + 9, 8, 2, 12, K('hodo', -2)); c.R(x + 2, 18, 9, 3, K('hodo', -2))
+        c.R(x, 5, 9, 6, K('shiro', 3)); c.HL(x, 5, 9, K('shiro', 5)); c.VL(x, 5, 6, K('shiro', 4)); c.R(x, 11, 9, 7, K('conc', 2)); c.VL(x + 8, 11, 7, K('conc', -1)); c.HL(x, 17, 9, K('conc', -2)); c.R(x + 2, 13, 4, 4, K('tekko', 1)); c.VL(x + 4, 13, 4, K('tekko', -1))
     if right == 'tank':
         x = W - 26; c.R(x, 7, 12, 8, K('tairu', 2)); c.HL(x, 7, 12, K('tairu', 4)); c.R(x + 12, 9, 2, 8, K('conc', 0)); c.R(x, 15, 12, 2, K('tekko', 1))
-    if left == 'stair':      # 옥탑(塔屋): 계단실 상자 + 문
-        c.R(1, 3, 14, 18, K('conc', 2)); c.HL(1, 3, 14, K('conc', 5)); c.R(1, 3, 2, 18, K('conc', 3)); c.VL(14, 3, 18, K('conc', -1)); c.HL(1, 20, 14, K('conc', -2))
-        c.R(5, 9, 6, 11, K('tekko', 1)); c.R(6, 10, 4, 9, K('tekko', 2)); c.VL(8, 10, 9, K('tekko', -1)); c.R(1, 3, 14, 2, K('conc', 4))
+    if left == 'stair':      # 옥탑(塔屋): 밝은 윗면 6줄 + 앞면 + 문 + 오른쪽·아래 그림자
+        c.R(14, 7, 2, 13, K('hodo', -2)); c.R(3, 20, 13, 3, K('hodo', -2))
+        c.R(2, 3, 12, 7, K('shiro', 3)); c.HL(2, 3, 12, K('shiro', 5)); c.VL(2, 3, 7, K('shiro', 4)); c.R(2, 10, 12, 10, K('conc', 2)); c.VL(13, 10, 10, K('conc', -1)); c.HL(2, 19, 12, K('conc', -2))
+        c.R(5, 12, 6, 7, K('tekko', 1)); c.R(6, 13, 4, 6, K('tekko', 2)); c.VL(8, 13, 6, K('tekko', -1))
     if right == 'cyl':       # 고가수조: 원통 + 다리 + 사다리
         x = W - 30
         for j in range(5, 17):
@@ -140,10 +151,7 @@ def roof_band(n, left='plain', right='plain'):
                 c.P(x + i, j, K('tairu', 3 - min(3, int(dd * 3.4))) if j >= 7 else K('tairu', 4))
         c.HL(x, 6, 14, K('tairu', 5)); c.HL(x, 16, 14, K('tairu', -2)); c.HL(x, 11, 14, K('tairu', 0))
         c.R(x + 1, 17, 2, 6, K('tekko', 1)); c.R(x + 11, 17, 2, 6, K('tekko', 1)); c.HL(x, 23, 14, K('conc', -2)); c.VL(x + 15, 7, 15, K('tekko', 3))
-    # 뒤 난간(핸드레일): 뒤 파라펫 위 가는 기둥
-    for i in range(2, W - 2, 8): c.R(i, 1, 1, 4, K('tekko', 3))
-    c.HL(1, 1, W - 2, K('tekko', 4))
-    c.HL(0, T - 5, W, K('conc', 5)); c.R(0, T - 4, W, 2, K('conc', 4)); c.HL(0, T - 2, W, K('conc', 2)); c.HL(0, T - 1, W, K('hodo', 0))
+    c.R(0, T - 6, W, 2, K('conc', 5)); c.R(0, T - 4, W, 2, K('conc', 4)); c.HL(0, T - 2, W, K('conc', 2)); c.HL(0, T - 1, W, K('hodo', 0))   # 앞 파라펫: 윗면 캡 2줄 + 바깥 벽면 4줄
     return c
 
 def terrace_band(n):          # 16px: 셋백 아래 테라스 윗면

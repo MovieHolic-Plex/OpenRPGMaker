@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d67511574a75f500971b45b474a47f37c671c2f6a579c2072df1c3115bea7244",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-rail-verge",
+ "label": "jp/jp-rail-verge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal railing on a grass verge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing posts and horizontal beams (rows 0-13) are drawn in pure front elevation with vertical shading and flat horizontal cross-sections, showing zero pixel rows of top surface on any beam or post cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6749
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railing structure on grassy verge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing atop the verge is drawn in pure front elevation with only a 1px outline for the top rail (row 1) and no visible horizontal top surface on the rail or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6590
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railing and grass verge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing posts and horizontal members are drawn in pure front elevation with a 1px dark contour and no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7323
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railing on grass verge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing posts and horizontal beams (rows 1-13) are drawn in pure front elevation with flat rectangular silhouettes and zero rows of visible top surface on any rail or post.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5324
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.015Z",
+ "cells": {
+  "16": [
+   "a7b7bdce7997f6ab",
+   "db032bab734ece06"
+  ],
+  "24": [
+   "0117735708cc328b",
+   "03af8f43b61d7d14",
+   "1e14b0688ecd1278",
+   "50a3a3d0805a5934",
+   "777414f5c7f3e702",
+   "77e794291636a4b0",
+   "88e5c9d633af123f",
+   "a4d5832a2584c267",
+   "bfcb37647edcb9b1",
+   "e2c90aa3d5e643e0",
+   "ef1914b51006db27",
+   "f20f415b5c33b7aa"
+  ],
+  "32": [
+   "3a93b9dbc9bf10e1",
+   "3abc2888b851495b",
+   "fc770b3c8f296998"
+  ],
+  "48": [
+   "2187ae128c935029",
+   "6d18a4ba93e0bf44",
+   "897e49cfc1eb40d8",
+   "978d1481b2a89e30",
+   "99a5a9c5f8cb6dc0",
+   "b7e7c1a3917ce389"
+  ]
+ }
+}
