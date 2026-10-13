@@ -24,7 +24,7 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
   fillsCurrentMapId: true,
   description: "해적 군도 칩셋(pirate_isles) 맵 한 장을 종류째 짠다 — 견본이 아니라 씨앗마다 다른 배치가 나온다(계획 → 섬·해안 → 건물(문 앞 길) → 소품, 놓을 때마다 통행 검사). "
     + "kind: harbor(해적 항구 마을: 바다·돌 방파제·판자 부두·정박한 배·해적 범선·술집·창고·시장 광장) | beach(열대 섬 해변 마을: 섬·모래 둘레·오두막·광장 모닥불·토템·물 위 수상 가옥·쪽배) | "
-    + "fort(해안 요새: 성벽·포대 탑·문루·대포·안뜰 병영·망루·옆 통로) | wreck(난파선과 보물 동굴 섬) | ship(배 안: 선장실·선원 선실·주방·선창) | tavern(해적 술집 안) | hut(섬 오두막 안) | cave(보물 동굴 안). "
+    + "fort(해안 요새: 성벽·포대 탑·남벽 문루·바다 겨눈 대포·안뜰 병영·망루 — 문루 문 앞 접근칸과 안뜰 안쪽 칸을 이동 이벤트로 잇는다) | wreck(난파선과 보물 동굴 섬) | ship(배 안: 선장실·선원 선실·주방·선창) | tavern(해적 술집 안) | hut(섬 오두막 안) | cave(보물 동굴 안). "
     + `맵 크기 하한: ${sizes(PIRATE_MIN_SIZE)} (권장 ${sizes(PIRATE_DEFAULT_SIZE)}). `
     + "손댄 맵은 replace:true 여야 다시 짠다(땅·기물을 지우고 이벤트는 남긴다). 결과의 건물·구역 이름표(list_map_locations)에 문 앞 접근칸 좌표가 있다 — 거기에 이동 이벤트를 단다.",
   parameters: {

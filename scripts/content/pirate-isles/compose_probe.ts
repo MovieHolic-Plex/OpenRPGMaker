@@ -11,7 +11,7 @@ for (const spec of (process.env.SPECS ?? "harbor:1,beach:1,fort:1,wreck:1,ship:1
   const w = wS ? Number(wS) : sz.w, h = hS ? Number(hS) : sz.h;
   const map: any = { id: "m", name: "m", width: w, height: h, tilesetId: "pirate_isles", tileSize: 16, lowerTiles: new Array(w * h).fill(0), upperTiles: new Array(w * h).fill(-1), events: [] };
   const r = composePirateIslesMap(map, ts, kind as PirateMapKind, seed);
-  out[spec] = { w, h, lower: map.lowerTiles, l2: map.lowerOverlayTiles ?? null, upper: map.upperTiles, layers: map.extraLayers ?? null, summary: r.summary, placed: r.placed, areas: r.areas, spawn: r.spawn, skipped: r.skipped, unreachable: r.unreachable };
+  out[spec] = { w, h, lower: map.lowerTiles, l2: map.lowerOverlayTiles ?? null, upper: map.upperTiles, layers: map.extraLayers ?? null, summary: r.summary, placed: r.placed, areas: r.areas, spawn: r.spawn, skipped: r.skipped, unreachable: r.unreachable, portals: r.portals };
   console.log(spec, r.summary, "skipped", r.skipped);
 }
 writeFileSync(process.env.OUT ?? "/tmp/pic/out.json", JSON.stringify(out));
@@ -34,7 +34,7 @@ if (process.env.EXAMPLES) {
     const kind = spec.split(":")[0]!; const n = m.w * m.h;
     const fill = (a: number[] | null) => (a ? a.map((v) => (v == null ? -1 : v)) : new Array(n).fill(-1));
     const ex = { id: `pi-ex-${kind}`, name: NAME[kind]![0], desc: NAME[kind]![1], kind, seed: Number(spec.split(":")[1]), w: m.w, h: m.h,
-      lower: m.lower, l2: fill(m.l2), upper: fill(m.upper), place: m.placed.map((p: any) => [p.id, p.x, p.y]), areas: m.areas, spawn: m.spawn, summary: m.summary };
+      lower: m.lower, l2: fill(m.l2), upper: fill(m.upper), place: m.placed.map((p: any) => [p.id, p.x, p.y]), areas: m.areas, spawn: m.spawn, portals: m.portals ?? [], summary: m.summary };
     writeFileSync(`${dir}/pi-ex-${kind}.json`, JSON.stringify(ex));
   }
 }

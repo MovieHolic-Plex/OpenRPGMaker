@@ -97,11 +97,12 @@ def check_map(ex, place, lower, l2, upper):
                 i = ay * W + ax
                 if not (lower[i] >= 0 and passable(lower[i]) and passable(l2[i]) and passable(upper[i])):
                     out.append(('PI-DOOR-BLOCKED', ax, ay, f'{pid} 문 앞 접근칸이 막혔다'))
-    out += islands(W, H, lower, l2, upper)
+    out += islands(W, H, lower, l2, upper, ex.get('portals', []))
     return out
 
 
-def islands(W, H, lower, l2, upper):
+def islands(W, H, lower, l2, upper, portals=()):
+    """걷는 칸 덩이 — 이동 이벤트 쌍(portals: 요새 대문 안팎)으로 이어진 덩이는 하나로 본다."""
     ok = [lower[i] >= 0 and passable(lower[i]) and passable(l2[i]) and passable(upper[i]) for i in range(W * H)]
     comp = [-1] * (W * H); sizes = []
     for s in range(W * H):
@@ -114,8 +115,17 @@ def islands(W, H, lower, l2, upper):
                 if 0 <= nx < W and 0 <= ny < H and ok[j] and comp[j] < 0: comp[j] = cid; stack.append(j)
         sizes.append(n)
     if len(sizes) <= 1: return []
-    main = max(range(len(sizes)), key=lambda c: sizes[c])
-    return [('PI-ISLAND', i % W, i // W, f'갇힌 통행 주머니({sizes[comp[i]]}칸) — 주 통로와 이어지지 않는다') for i in range(W * H) if ok[i] and comp[i] != main]
+    par = list(range(len(sizes)))
+    def find(c):
+        while par[c] != c: par[c] = par[par[c]]; c = par[c]
+        return c
+    for pa, pb in portals:
+        ia, ib = pa['y'] * W + pa['x'], pb['y'] * W + pb['x']
+        if comp[ia] >= 0 and comp[ib] >= 0: par[find(comp[ia])] = find(comp[ib])
+    tot = collections.Counter()
+    for c in range(len(sizes)): tot[find(c)] += sizes[c]
+    main = max(tot, key=lambda r: tot[r])
+    return [('PI-ISLAND', i % W, i // W, f'갇힌 통행 주머니({tot[find(comp[i])]}칸) — 주 통로와 이어지지 않는다') for i in range(W * H) if ok[i] and find(comp[i]) != main]
 
 
 def stamp_into(ex, arrs, pid, x0, y0):
@@ -248,7 +258,7 @@ c0['documents'].append(dict(id='pi-order', name='해적 군도 · 읽는 순서�
     '| kind | 무엇 | 권장 크기 | 하한 |', '|---|---|---|---|',
     '| harbor | 해적 항구 마을: 남쪽 바다·돌 방파제·판자 부두 2~3·정박한 배·해적 범선·북쪽 집 줄·큰길·방파제 앞 창고 줄·시장 광장·등대 | 56×40 | 44×34 |',
     '| beach | 열대 섬 해변 마을: 깊은 바다로 둘러싼 섬, 모래 둘레·풀 안쪽, 모래길 두 줄과 광장(모닥불·토템), 오두막들, 부두 끝 수상 가옥 둘·쪽배 | 52×40 | 40×32 |',
-    '| fort | 해안 요새: 성벽 사각(윗면+앞면 두 줄)·모퉁이 포대 탑·남벽 문루(잠긴 대문)·성벽 위 대포·안뜰 병영·망루·포탄·옆 통로 | 48×40 | 40×34 |',
+    '| fort | 해안 요새: 성벽 사각(윗면+앞면 두 줄)·모퉁이 포대 탑·남벽 문루(잠긴 대문)·남벽 위 대포(바다 겨눔)·안뜰 병영·망루·보급 마당 — 대문 이동 이벤트로 안팎을 잇는다 | 48×40 | 40×34 |',
     '| wreck | 난파선과 보물 동굴 섬: 작은 섬, 북쪽 보물 동굴 입구와 바위, 남쪽 해변에 박힌 난파선과 흩어진 짐, 흙길 | 46×36 | 36×30 |',
     '| ship | 배 안: 선장실(위 큰 방) + 선원 선실·주방·선창 | 36×26 | 30×22 |',
     '| tavern | 해적 술집 안: 홀(바 선반·벽난로·탁자) + 부엌·창고·뒷방 | 32×24 | 26×20 |',

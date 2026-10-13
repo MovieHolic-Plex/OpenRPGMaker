@@ -7,9 +7,9 @@
 // 종류
 //   harbor  해적 항구 마을: 남쪽 바다 + 돌 방파제(가운데) + 양옆 모래 해변 + 판자 부두 2~3개(배 정박) + 북쪽 건물 줄·큰길·방파제 앞 창고 줄·시장 광장.
 //   beach   열대 섬 해변 마을: 깊은 바다로 둘러싼 섬(모래 둘레 + 풀 안쪽) + 모래길 두 줄과 광장(모닥불·토템) + 오두막들 + 물 위 수상 가옥·부두·쪽배.
-//   fort    해안 요새: 남쪽 바다·해변 위 돌 성벽(윗면 걷는 길 그림 + 앞면 두 줄) 사각 + 모퉁이 포대 + 문루 + 안뜰(병영·깃대·포탄·화약) + 옆 통로.
+//   fort    해안 요새: 남쪽 바다·해변 위 돌 성벽(윗면 걷는 길 그림 + 앞면 두 줄) 사각 + 모퉁이 포대 + 남벽 문루(대문 안팎은 이동 이벤트로 잇는다 — 통행 검사는 portal 로 붙여 본다) + 안뜰(병영·망루·깃대·보급 마당·우물).
 //   wreck   난파선과 보물 동굴 섬: 작은 섬 + 북쪽 바위 둔덕의 보물 동굴 입구 + 남쪽 해변에 박힌 난파선·흩어진 짐 + 흙길.
-//   ship    배 안(실내): 선장실·선실(해먹)·주방·선창. 벽 천장 + 앞면 두 줄, 방끼리 남북 문 통로.
+//   ship    배 안(실내): 뱃머리가 뾰족한 선체 — 위 줄 선장실·선원 선실·주방, 복도(위 갑판 계단), 아래 줄 선창·포 갑판(남쪽 뱃전 대포). 벽 천장 + 앞면 두 줄.
 //   tavern  해적 술집 안(실내): 큰 홀(바 카운터·탁자·벽난로) + 부엌·창고.
 //   hut     섬 오두막 안(실내): 작은 방 하나.
 //   cave    보물 동굴 안(실내): 바위 벽 굴 + 안쪽 보물 방.
@@ -41,6 +41,8 @@ export interface PirateComposeResult {
   readonly spawn: { x: number; y: number };
   readonly skipped: number;
   readonly unreachable: number;
+  /** 이동 이벤트로 이을 두 칸(요새 대문 안팎) — 통행 검사가 붙여 본 쌍. */
+  readonly portals: readonly (readonly [{ x: number; y: number }, { x: number; y: number }])[];
   readonly summary: string;
 }
 
@@ -261,13 +263,15 @@ class Board {
 
   /** 찍은 뒤 must 칸들이 출발점에서 닿지 않으면 되돌린다. */
   stampSafe(id: string, x: number, y: number, start: Pt, must: readonly Pt[], ground: "land" | "water" | "wall" = "land"): boolean {
+    const pocketsBefore = this.strandedCount(start);
     this.journal = [];
     const takenBefore = this.taken.slice();
     const ok = this.stamp(id, x, y, ground);
     const journal = this.journal;
     this.journal = null;
     if (!ok) return false;
-    if (this.reachesAll(start, must)) return true;
+    // 닿아야 할 칸이 모두 닿고, 새로 갇힌 걷는 칸(기물 사이 주머니)이 생기지 않아야 남긴다
+    if (this.reachesAll(start, must) && this.strandedCount(start) <= pocketsBefore) return true;
     for (let j = journal.length - 1; j >= 0; j--) setLayerTileAt(this.map, journal[j]!.layer, journal[j]!.i, journal[j]!.prev);
     for (let i = 0; i < this.taken.length; i++) this.taken[i] = takenBefore[i]!;
     this.placed.pop();
@@ -301,6 +305,13 @@ class Board {
     for (const p of must) (this.inb(p.x, p.y) && seen[this.idx(p.x, p.y)] === 1 ? keep : dropped).push(p);
     must.length = 0; must.push(...keep);
     return must;
+  }
+  /** 걷는 칸인데 출발점에서 닿지 않는 칸 수. */
+  strandedCount(start: Pt): number {
+    const seen = this.reach(start);
+    let n = 0;
+    for (let i = 0; i < seen.length; i++) if (!seen[i] && this.walkable(i % this.w, Math.floor(i / this.w))) n++;
+    return n;
   }
   reachesAll(start: Pt, must: readonly Pt[]): boolean {
     const seen = this.reach(start);
@@ -919,12 +930,16 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const caveX = rx - 1, caveY = ry - 1;
   b.rect(caveX - 1, caveY - 1, 5, 5, "g");
   // 난파선 자리(땅 격자로 먼저 고른다): 배 밑 두 줄이 모래, 그 아래가 물 — 남쪽 반에서
-  let wreck: Pt | null = null;
-  for (let t = 0; t < 120 && !wreck; t++) {
-    const x = b.int(2, Wd - 7), y = b.int(Math.round(cy), Hd - 4);
+  // 후보: 배 밑 줄 바로 아래가 거의 물(배 뒤에 갇힌 모래 주머니가 남지 않게) — 물에 많이 닿은 자리부터
+  const cands: { x: number; y: number; wet: number }[] = [];
+  for (let y = Math.round(cy); y < Hd - 4; y++) for (let x = 2; x < Wd - 7; x++) {
     let ok = true; for (let k = 0; k < 5; k++) { if (b.g(x + k, y + 2) !== "s") ok = false; if (b.g(x + k, y + 1) !== "s" && b.g(x + k, y + 1) !== "g") ok = false; }
-    if (ok && (WATER.includes(b.g(x + 2, y + 4)) || WATER.includes(b.g(x + 2, y + 3)))) wreck = { x, y };
+    if (!ok) continue;
+    let wet = 0; for (let k = -1; k <= 5; k++) if (WATER.includes(b.g(x + k, y + 3))) wet++;
+    if (wet >= 4) cands.push({ x, y, wet: wet + hash01(x, y, b.seed) });
   }
+  cands.sort((a, c) => c.wet - a.wet);
+  let wreck: Pt | null = cands[0] ?? null;
   const cave = plotOf(b, "cave-entrance", caveX, caveY);
   const caveAcc = cave?.access ?? { x: caveX + 1, y: caveY + 3 };
   // 동굴 앞 → 난파선 옆 모래까지 굽은 길(흙길 → 모래길)
@@ -941,7 +956,8 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   }
   b.prune(spawn, must);
   for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if ("pv".includes(b.g(x, y))) b.markClear(x, y);
-  if (wreck && b.stampSafe("shipwreck", wreck.x, wreck.y, spawn, must)) {
+  if (wreck && !b.stampSafe("shipwreck", wreck.x, wreck.y, spawn, must)) wreck = cands.slice(1, 40).find((c) => b.stampSafe("shipwreck", c.x, c.y, spawn, must)) ?? null;
+  if (wreck) {
     b.markNear(wreck.x, wreck.y, 5, 3);
     areas.push({ name: NAME_KO.shipwreck!, x: wreck.x, y: wreck.y, w: 5, h: 3, tag: "shipwreck" });
     // 떠밀려 온 짐: 난파선 한쪽 모래에 한 무더기(서로 한 칸씩 띄움) + 부서진 쪽배
@@ -1229,7 +1245,7 @@ export function composePirateIslesMap(map: GameMap, tileset: TilesetDef, kind: P
   const top = [...counts.entries()].sort((a, c) => c[1] - a[1]).slice(0, 8).map(([id, n]) => `${id}×${n}`).join(", ");
   const kindKo: Record<PirateMapKind, string> = { harbor: "해적 항구 마을", beach: "열대 섬 해변 마을", fort: "해안 요새", wreck: "난파선·보물 동굴 섬", ship: "배 안", tavern: "해적 술집 안", hut: "섬 오두막 안", cave: "보물 동굴 안" };
   return {
-    kind, seed, placed: b.placed, areas: out.areas, spawn: out.spawn, skipped: b.skipped, unreachable,
+    kind, seed, placed: b.placed, areas: out.areas, spawn: out.spawn, skipped: b.skipped, unreachable, portals: b.portals,
     summary: `${kindKo[kind]} ${map.width}×${map.height} (seed ${seed}) — 구역·건물 ${out.areas.length}곳 · 기물 ${b.placed.length}개(${top})${unreachable ? ` · 닿지 않는 문 ${unreachable}` : ""}`,
   };
 }
