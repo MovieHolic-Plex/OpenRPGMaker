@@ -3,6 +3,7 @@
 import { isJpCityTileset, JP_CITY_FAMILY, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 import { labelStreetBuildings, planJpCityStreet, runJpStreetPlan, type JpStreetStyle } from "@/project/jpCityStreetComposer";
+import { fillLotUses } from "@/project/jpCityLotUse";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { clearTileStack } from "@/project/mapOverlayTiles";
 import type { GameMap, Project } from "@/project/types";
@@ -33,6 +34,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       style: { type: "string", enum: ["shopping", "residential"] },
       shops: { type: "array", items: { type: "string", enum: ["konbini", "izakaya", "ramen", "cafe", "shop", "office", "apartment", "house", "machiya", "garage", "sento", "bento"] }, description: "거리에 꼭 넣을 가게(앞에서부터 건물에 배정)" },
       replace: { type: "boolean", description: "이미 칠한 맵을 지우고 다시 짠다" },
+      lotsOnly: { type: "boolean", description: "다시 짜지 않고 이미 지은 jp_city 맵의 남은 빈 대지만 쓰임(코인 주차·골목 자판기·놀이터·텃밭·공사장·광장 꾸밈)으로 채운다 — 건물을 손으로 더하거나 옮긴 뒤 부른다" },
     },
     additionalProperties: false,
   },
@@ -44,6 +46,22 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     const tileset = draft.tilesets[map.tilesetId];
     if (!tileset || !isJpCityTileset(tileset)) {
       throw new ToolError(`맵 '${map.name}'(${mapId}) 의 칩셋 '${map.tilesetId}' 은 일본 도시(${JP_CITY_ID}, 계열 ${JP_CITY_FAMILY})가 아니다 — 이 도구는 jp_city 맵에서만 동작한다.`, { code: "wrong-tileset", mapId });
+    }
+    if (args.lotsOnly === true) {
+      const style0: JpStreetStyle = args.style === "residential" ? "residential" : "shopping";
+      const work = structuredClone(draft);                              // 복제본에서 채우고 끝나면 반영(중간 실패로 반쯤 채운 맵이 남지 않게)
+      const lot = fillLotUses({ mapId, seed: typeof args.seed === "number" ? args.seed : 0, style: style0, view: () => ({ map: work.maps[mapId]!, tileset: work.tilesets[work.maps[mapId]!.tilesetId]! }), call: (name, a) => {
+        const tool = lookup(name);
+        if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });
+        return tool.run(work, a).data;
+      } });
+      draft.maps[mapId] = work.maps[mapId]!;
+      for (const [id, ts] of Object.entries(work.tilesets)) draft.tilesets[id] = ts;
+      const kinds = [...new Set(lot.uses.map((u) => u.use))].join("·") || "없음";
+      return {
+        summary: `빈터 쓰임 ${lot.uses.length}곳(${kinds}) · 소품 ${lot.props}개 — 소품 없는 대지 ${(lot.emptyBefore * 100).toFixed(0)}% → ${(lot.emptyAfter * 100).toFixed(0)}%. show_map_region 으로 확인한다.`,
+        data: { mapId, uses: lot.uses, props: lot.props, emptyBefore: lot.emptyBefore, emptyAfter: lot.emptyAfter },
+      };
     }
     if (map.width < 40 || map.height < 28) throw new ToolError(`맵이 작다(${map.width}×${map.height}) — 40×28 이상으로 resize_map 한 뒤 부른다`, { code: "map-too-small", mapId });
     if (!isUntouched(map) && args.replace !== true) throw new ToolError("이미 칠한 맵이다 — 지우고 다시 짜려면 replace:true 를 준다(이벤트는 남는다)", { code: "map-not-blank", mapId });
