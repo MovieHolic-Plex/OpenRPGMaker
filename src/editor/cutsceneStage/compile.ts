@@ -126,9 +126,14 @@ export function compileStage(input: StageInput): StageResult {
   const { viewport: { width: W, height: H } } = input;
   const states = new Map<string, ActorState>();
   let whiteUp = false;
+  const usedPictures = new Set<string>();
   input.actors.forEach((spec, index) => {
     if (states.has(spec.name)) throw new StageError(`배우 이름 '${spec.name}' 이 중복됩니다.`);
-    states.set(spec.name, { spec, pictureId: `pic${spec.z ?? 2 + index}`, x: W / 2, y: H / 2, ...(spec.tile ? { tile: { ...spec.tile } } : {}), shown: false, pose: "default", walkPhase: 0 });
+    // 같은 z 를 둔 배우가 같은 그림 번호를 쓰면 «지워지기 전에 다시 표시» 충돌이 난다 — 겹치면 한 칸씩 위로 민다(층 순서는 유지).
+    let z = spec.z ?? 2 + index;
+    while (usedPictures.has(`pic${z}`) || z === 90) z += 1;
+    usedPictures.add(`pic${z}`);
+    states.set(spec.name, { spec, pictureId: `pic${z}`, x: W / 2, y: H / 2, ...(spec.tile ? { tile: { ...spec.tile } } : {}), shown: false, pose: "default", walkPhase: 0 });
   });
   const actorOf = (name: unknown, stepIndex: number): ActorState => {
     const found = typeof name === "string" ? states.get(name) : undefined;
