@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee8d5ed74b3dd95d07821257ff571487352e2cc38a99373779518ee629a24d64",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop cabbage mature growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_cabbage_mature",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage head",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbage head is rendered with a 3/4 downward angle showing rounded, overlapping leaves across its top surface (rows 6-10) before curving down to the front and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabbage head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabbage is drawn directly from the side like a 2D side-scroller icon, with leaf striations running vertically down the sphere and a stem at the bottom edge. There is no top-down foreshortening or visible top surface showing the upper rosette/curved top leaves from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7833
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rounded cabbage head with layered leaves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbage has a broad rounded, top-facing crown visible across several source-pixel rows, with a darker lower/front leaf mass; it is not a flat front elevation and has no receding isometric side face or container opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 159522
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded cabbage head",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbage is a rounded, volumetric leafy mound with a visibly modeled upper surface across its back and upper rows, rather than a flat front elevation. Its darker lower foliage forms the south-facing portion; no receding isometric side face or opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 112770
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "449d8d7ed82df88f"
+  ],
+  "24": [
+   "4e1acc99483e7eea",
+   "6cb4708152b05c75",
+   "a2cbfd064e0236ba",
+   "b26fd31cc933f203",
+   "dc9beebfd3dc58c7",
+   "e075a309d7514003"
+  ],
+  "32": [
+   "869ee9a290522ad4",
+   "bec66a23608e6936",
+   "c1d5b34fea576c0b",
+   "d2b06dd58352ff6c",
+   "d4896bd656efce99",
+   "f69004a8ba5d7c56"
+  ],
+  "48": [
+   "4445600e71cda6b8",
+   "7440de88fbf0ba5b",
+   "7fe02246d726c44b",
+   "a920c8b1e0ec4674",
+   "ac41d3f98703fcdc",
+   "e07e53cddfac85c4"
+  ]
+ }
+}

@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "282aea983cfe0f30204ba1e41ac8ba89e11875cd8785e306d17a3a00f3fb7790",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop cabbage young growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_cabbage_young",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage head and outer leaves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The young cabbage is rendered as a rounded organic mound occupying rows 7-14. The upper dome and leaves viewed from above span rows 7-10 with overhead highlights, before sloping down into the shadowed front/base in rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4688
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabbage head",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The young cabbage head displays a foreshortened top dome spanning rows 7-9 (3 rows) with highlight shading before sloping down toward the front and base leaves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5158
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 124556,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "young cabbage plant",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The leafy mound has a broad visible upper surface spanning several source-pixel rows, with darker foliage forming the south/front portion; it is not a flat front elevation and has no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 116396
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "72b1e6ea09da84b6"
+  ],
+  "24": [
+   "0f877315b03113d9",
+   "2a71fad4d1756807",
+   "4339783e87b51c98",
+   "73b87544be84d60e",
+   "a93c48c725fa6c30",
+   "c2d8ff08f6f08233"
+  ],
+  "32": [
+   "6040371d4b8f165b",
+   "80ab37c277097710",
+   "8da089002abbca35",
+   "db749d73e8c1773e",
+   "f14b3962725f6e93",
+   "fe2991a39323a328"
+  ],
+  "48": [
+   "1c9f704bcb96dfc0",
+   "4793407b347307e7",
+   "4f0b0cae831aa06b",
+   "77e3e2d28ed535e4",
+   "7b854788a2cfb4c4",
+   "fb6252c59c9a8695"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ddfeabaa73b5208df1771f11f7101979d33ee1865e0023764c719d39376fe162",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cNW (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cNW",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wooden post is visible from rows 3 to 6 (4 rows tall), and the horizontal rails also clearly show their top surfaces (rows 4-5 and 10-12) above their front-facing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6202
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post has a clearly defined top surface spanning rows 3-6 (4 rows tall) in lighter wood matching the foreshortened top faces of the horizontal rails (rows 4-5 and 10-11, each 2 rows tall), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8675
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post and rails have clearly visible horizontal top surfaces several source pixels deep, with their south-facing front faces below; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 51472
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The post and both rails have clearly visible horizontal top surfaces several pixels deep, with south-facing darker front faces beneath; no receding isometric side face or pure elevation is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 192504
+  }
+ ],
+ "decidedAt": "2026-10-13T10:25:33.788Z",
+ "cells": {
+  "16": [
+   "6e8be6c6286f1d9c"
+  ],
+  "24": [
+   "21997ff13e0015eb",
+   "3b2703f119af5758",
+   "95ac95e3cf792ccb",
+   "aaac001dc7dbc5de",
+   "d0bea7ecaed44c0a",
+   "e15b4f6fd4bb3049"
+  ],
+  "32": [
+   "336a9eb3e808d1e8",
+   "3b4272b3ba8a3371",
+   "54d531848dbd069a",
+   "9500f2a7c0744f48",
+   "aae8ec55ba34be48",
+   "fd21f2c0c078f97b"
+  ],
+  "48": [
+   "0e80306a33c3356d",
+   "c097da8c0205a74b",
+   "d03ce0b94dcc9d8c",
+   "d752ea6430663eb1",
+   "deb34323d9d07577",
+   "f4c2b7b0f55e2dd0"
+  ]
+ }
+}

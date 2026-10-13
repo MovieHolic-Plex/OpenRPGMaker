@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6095a9bcd5e68c5a6fd1b2b0638377428d696f0cafc0285d7d246263750d994e",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop tomato young growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_tomato_young",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "growing plant with support stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stake is a straight 1px vertical column with no top end visible, and the leaves are arranged as a flat 2D silhouette viewed directly from the front with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4776
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato plant foliage on stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stake is a vertical 1px line with no visible top end, and the foliage is drawn as a flat 2D silhouette facing straight forward with no top-down perspective or volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3814
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "young tomato plant foliage and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is rendered as a flat, symmetric front-facing foliage silhouette with no distinct above-visible top surface on the main foliage mass.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 40288
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "young tomato plant foliage and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is a flat, front-facing cluster of leaves around a vertical stem; no top-facing surface of the main foliage mass is shown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 36367
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "b0a14e7790398298"
+  ],
+  "24": [
+   "13c35c576a1d303d",
+   "1931bb24b67b515e",
+   "504153d4a7739566",
+   "716dd67d6b229d0a",
+   "8feb69e82aa4d495",
+   "9a8a22c5afa4f455"
+  ],
+  "32": [
+   "0f814fc5ab153058",
+   "3a196f040d381dce",
+   "48d44265d61ea7fb",
+   "693cec310d4c5cee",
+   "6d1a7dbe94c98da7",
+   "d5f186cff01fd34a"
+  ],
+  "48": [
+   "1c813ded93b7a5ab",
+   "3c9620b01cda0cd1",
+   "60a3d73fc9e92486",
+   "87dbadb1be23b261",
+   "a1be40a1a009e6e2",
+   "efb1c133a5ba5a6e"
+  ]
+ }
+}

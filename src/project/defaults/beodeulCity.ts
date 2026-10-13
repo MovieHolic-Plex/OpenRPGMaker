@@ -22,6 +22,13 @@ export const BEODEUL_CITY_TILES_PER_ROW: number = data.tilesPerRow;
  * (scripts/content/beodeul-picks/bake_picks.py, 키트 `bd-pick-*`). 덧붙이기 전용 — 앞 칸 번호는 바뀌지 않는다.
  */
 export const BEODEUL_CITY_BASE_COUNT = 23936;
+/**
+ * 농장(beodeul_farm, 2026-10-13): 고른 조각 꼬리(27,648칸) 바로 뒤 768칸. 오토타일 `farmland`(농사 런타임이 경작지를 그릴 때 읽는 id)·
+ * `farmland_watered`, 작물 9칸, 울타리 7칸, 키트 `bd-farm-*`. 번들이 소유하며 덧붙이기 전용이다(scripts/content/beodeul-farm/bake_farm.py).
+ */
+export const BEODEUL_FARM_BASE = 27648;
+export const BEODEUL_FARM_KIT_PREFIX = "bd-farm-";
+export const BEODEUL_FARM_AUTOTILE_IDS: readonly string[] = ["farmland", "farmland_watered"];
 /** 고른 조각 키트 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const BEODEUL_PICK_KIT_PREFIX = "bd-pick-";
 /**
@@ -105,8 +112,12 @@ export function ensureBeodeulCityTileset(tileset: TilesetDef): boolean {
   if (citySheet && tileset.count >= BEODEUL_CITY_BASE_COUNT) {
     // 더 새 번들에서 저장된 사본(꼬리가 더 긴 것)은 칸 표를 줄이지 않는다.
     if (tileset.count > data.count) return familyFixed;
+    // 농장 꼬리(27,648~28,415)가 생기기 전에 저장된 사본은 그 자리에 공방·기물 이식 칸(tileGrafts)을 이미 쓰고 있을 수 있다.
+    // 번들 꼬리를 덮으면 그 칸의 통행·그림이 바뀌므로 그 사본은 농장 칸을 받지 않는다(밭은 단색 흙 폴백).
+    if ((tileset.tileGrafts ?? []).some(graft => graft.targetTile >= BEODEUL_FARM_BASE && graft.targetTile < data.count)) return familyFixed;
     const extended = extendPickedParts(tileset);
-    return mergeShippedKits(tileset) || extended || familyFixed;
+    const farm = mergeShippedFarm(tileset);
+    return mergeShippedKits(tileset) || extended || farm || familyFixed;
   }
   const fresh = createBeodeulCityTileset();
   tileset.count = fresh.count;
@@ -154,7 +165,7 @@ function mergeShippedKits(tileset: TilesetDef): boolean {
   const current = tileset.structureKits ?? [];
   let changed = false;
   const kept = current.filter(kit => {
-    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX)) return true;
+    if (!kit.id.startsWith(BEODEUL_PICK_KIT_PREFIX) && !kit.id.startsWith(BEODEUL_FARM_KIT_PREFIX)) return true;
     const ship = shippedById.get(kit.id);
     if (!ship) { changed = true; return false; }                       // a pick that was dropped from the bundle
     if (JSON.stringify(ship) !== JSON.stringify(kit)) { changed = true; return false; }
@@ -165,4 +176,30 @@ function mergeShippedKits(tileset: TilesetDef): boolean {
   if (!missing.length && !changed) return false;
   tileset.structureKits = [...kept, ...structuredClone(missing)];
   return true;
+}
+
+/**
+ * 농장 오토타일·칸 묶음은 번들 소유(같은 id 는 번들 것으로 바꾸고, 없으면 더한다). 칸 그림·표는 extendPickedParts 가 꼬리째 들여온다.
+ * 이 단계가 없으면 칸만 생기고 `farmland` 그룹이 없어 기존 프로젝트의 농사 런타임이 단색 흙 폴백을 쓴다.
+ */
+function mergeShippedFarm(tileset: TilesetDef): boolean {
+  let changed = false;
+  const groups = [...(tileset.autotileGroups ?? [])];
+  for (const shipped of data.autotileGroups as unknown as AutotileGroup[]) {
+    if (!BEODEUL_FARM_AUTOTILE_IDS.includes(shipped.id)) continue;
+    const i = groups.findIndex(group => group.id === shipped.id);
+    if (i < 0) { groups.push(structuredClone(shipped)); changed = true; }
+    else if (JSON.stringify(groups[i]) !== JSON.stringify(shipped)) { groups[i] = structuredClone(shipped); changed = true; }
+  }
+  if (changed) tileset.autotileGroups = groups;
+  const tileGroups = [...(tileset.tileGroups ?? [])];
+  let groupsChanged = false;
+  for (const shipped of data.tileGroups as unknown as TileGroupMetadata[]) {
+    if (!shipped.id.startsWith("beodeul:farm")) continue;
+    const i = tileGroups.findIndex(group => group.id === shipped.id);
+    if (i < 0) { tileGroups.push(structuredClone(shipped)); groupsChanged = true; }
+    else if (JSON.stringify(tileGroups[i]) !== JSON.stringify(shipped)) { tileGroups[i] = structuredClone(shipped); groupsChanged = true; }
+  }
+  if (groupsChanged) tileset.tileGroups = tileGroups;
+  return changed || groupsChanged;
 }

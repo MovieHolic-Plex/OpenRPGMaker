@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98b1a8c1e012f564a5d82ee1c2f9003130bfcf4cb5d3b7376cda246c3fe0bf60",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "tilled soil field autotile 4x3 plot with edges and corners",
+ "label": "beodeul_farm/soil_plot",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilled soil plot",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain autotile plot viewed from 3/4 top-down perspective, with horizontal furrows correctly depicted across the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3669
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilled soil field plot",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground patch showing furrowed soil rows viewed from above spanning rows 2 to 45.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3768
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular tilled soil terrain field",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a broad horizontal terrain surface with many visible rows of soil texture and furrows, bounded by autotile edges and corners. It is not a standing object or pure front elevation, and no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 73819
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 222406,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.883Z",
+ "cells": {
+  "16": [
+   "02e9476767d7a654",
+   "1ec04b67985124b7",
+   "2d66808fad4de6d9",
+   "2df8596569a8ee20",
+   "5ccd9f7a092b1ad7",
+   "64d94920babaf9ac",
+   "723733750401d198",
+   "aa2e88aa9d0ac8a8",
+   "d91bfed94f84ec28"
+  ],
+  "24": [
+   "2063afdecf0c8215",
+   "31edf12ed5ad4581",
+   "492a30554918c5ad",
+   "5eacc2526fea3878",
+   "60620e1ed0a726e9",
+   "70d338cbc7329833",
+   "71094ae6a420b97b",
+   "7681c84fe9b4d069",
+   "91dea30e9fbed2b3",
+   "91e5a98b77f4066b",
+   "980276a4e6f5e209",
+   "9e3ec774aa3aa83d",
+   "a07620cec599a6f1",
+   "a833fe1ae899a127",
+   "b8d3f93e1e16168c",
+   "bd75310586f4e097",
+   "c5751f70bfff51c9",
+   "f26de43dddb07bf7"
+  ],
+  "32": [
+   "1ef378cfb4435545",
+   "4490ae37402fa494",
+   "4f9cd426495b528a",
+   "5b6466ee394449c6",
+   "66743fe9cafc26ae",
+   "8d40043c8babb177",
+   "f0ef9659fde4c3a8",
+   "fef93f32dba45e9d"
+  ],
+  "48": [
+   "0c44a00a2249796e",
+   "2e731f52c6cf23f9",
+   "47ccc02d8f571c7e",
+   "8746e5987f851965",
+   "abdd55903bb6bfb4",
+   "cb75eee6efb47947"
+  ]
+ }
+}

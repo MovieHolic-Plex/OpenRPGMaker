@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7a18502cd6c3e5a204d1bb8311963066ff5ba0ce56ac648287f2c85861936e0",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece h (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_h",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post shows a foreshortened top surface with end-grain wood texture spanning rows 3-6 (4 source pixel rows tall), and the horizontal rails show light top surfaces (3 source pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7974
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post has a clearly defined 4-row top surface (rows 3-6) and the horizontal rails show distinct top planes (rows 4-5 and 10-11) foreshortened above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6502
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence with two horizontal rails and posts",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The two rails and post tops have clearly visible two-pixel horizontal top surfaces above their darker south-facing front faces; no receding isometric side face or enclosed opening is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 190820
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence with two horizontal rails and vertical posts",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both horizontal rails have visible two-row top surfaces above their darker south-facing front faces; the frame remains open and shows no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 70286
+  }
+ ],
+ "decidedAt": "2026-10-13T10:25:33.787Z",
+ "cells": {
+  "16": [
+   "2c9e94f33ce2e9c7"
+  ],
+  "24": [
+   "0099e5f087043ba5",
+   "0ac578a72e945a6c",
+   "327eb39842aca5f6",
+   "600369f0d24e9b07",
+   "645cc4a0d332fa46",
+   "f20530bfb7c55a76"
+  ],
+  "32": [
+   "2865d511251413e6",
+   "4703c1add699741c",
+   "6979cada239c9106",
+   "ca590ea22402c255",
+   "e1823de5ad61ec93",
+   "f88443b3bf0cc870"
+  ],
+  "48": [
+   "11694bfcf3415702",
+   "1a9bff047faf405b",
+   "4950e6db9488ab38",
+   "6a56b2b1c526f6f1",
+   "ae9340f674df2df0",
+   "bce7da89ae45dcb7"
+  ]
+ }
+}

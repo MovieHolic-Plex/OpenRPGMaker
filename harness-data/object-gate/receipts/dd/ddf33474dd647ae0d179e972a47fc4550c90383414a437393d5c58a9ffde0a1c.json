@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ddf33474dd647ae0d179e972a47fc4550c90383414a437393d5c58a9ffde0a1c",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop tomato sprout growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_tomato_sprout",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato sprout plant",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprout is drawn completely flat from the front/side elevation (like a 2D platformer sprite) with no foreshortened top surfaces or depth visible on the leaves or stem.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato sprout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprout is drawn as a completely flat 2D front elevation (cross-shaped stem and leaves) with no foreshortening or visible top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4417
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato sprout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is a flat front-facing pixel silhouette with no visible above-facing surface on its main body; only leaf/stem shapes are shown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 100647
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato sprout foliage and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The organic sprout is shown as a small irregular foliage silhouette with no distinct horizontal top surface on the main body; there is also no receding isometric side face or container opening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 155076
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "49132f63d7add9e5"
+  ],
+  "24": [
+   "11f5a0c750789149",
+   "52043f171f885e71",
+   "55c5a764ad04759e",
+   "7365b4b639d0832d",
+   "9ff92d736d8450b4",
+   "f07c2c0bb7ea1157"
+  ],
+  "32": [
+   "330e5b8ec82fd7a1",
+   "5255f02be90630fe",
+   "5ad326c26ce476c5",
+   "62f7f46a99ea0ec2",
+   "922fc092a2aa8d82",
+   "be88153e56392c0b"
+  ],
+  "48": [
+   "0a297d6c2f7e90e9",
+   "25820472c4fbc09c",
+   "35fe2c9a0206937c",
+   "88d0b02e87dae189",
+   "970d0008c6e13a74",
+   "edaf855fd709b03a"
+  ]
+ }
+}

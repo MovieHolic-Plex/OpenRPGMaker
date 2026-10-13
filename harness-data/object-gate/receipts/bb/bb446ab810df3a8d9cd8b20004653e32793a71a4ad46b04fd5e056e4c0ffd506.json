@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb446ab810df3a8d9cd8b20004653e32793a71a4ad46b04fd5e056e4c0ffd506",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop cabbage sprout growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_cabbage_sprout",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage sprout foliage",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small sprout displays the upper surface of its leaf rosette across rows 11-13 with lighter highlight shading, terminating in shaded undersides and stem in rows 14-15 consistent with a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabbage sprout foliage",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small sprout shows a foreshortened top cluster of light green leaves spanning rows 11-12 before descending into darker shaded undersides and short stems on rows 14-15, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4893
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "cabbage sprout foliage",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The leafy canopy has a broad visible upper surface across several source-pixel rows, with darker foliage along the south/front edge; it is not a flat front elevation and has no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 70450
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rounded cabbage sprout foliage",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The low rounded foliage has a visible upper green surface over roughly 3 source rows, with darker lower/front foliage beneath; it is not a flat elevation and has no receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 178238
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "7c884890f548524f"
+  ],
+  "24": [
+   "3f8817ff37df32b0",
+   "99489f79fc08e818",
+   "ab50170f689cca80",
+   "c54e49fa2e0007cc",
+   "c77f7daa9ae88df7",
+   "e6cbbc7bf2e7777a"
+  ],
+  "32": [
+   "0e9e800545f018e6",
+   "19df53f9984c52d5",
+   "2fa326063ed57720",
+   "5a115582a73b8f46",
+   "8ef7b5f46dda84d9",
+   "b10ca72fc84bab5e"
+  ],
+  "48": [
+   "2c939263633c0e2a",
+   "2f15382e3bc9fcd1",
+   "673580b881e153eb",
+   "7e753f48e1a3a7d4",
+   "9dafc08be46cdabe",
+   "b506cb8c474fb45c"
+  ]
+ }
+}
