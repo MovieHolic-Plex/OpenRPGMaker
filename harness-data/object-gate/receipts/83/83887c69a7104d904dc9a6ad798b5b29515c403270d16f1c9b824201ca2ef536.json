@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83887c69a7104d904dc9a6ad798b5b29515c403270d16f1c9b824201ca2ef536",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "pile of burlap grain sacks",
+ "label": "pirate-isles/pi-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The three sacks are stacked in a 2D frontal pyramid arrangement with vertical front silhouettes and no foreshortened top surfaces visible. Grain sacks also do not fit the organic kind category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9119
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn as flat circular shapes stacked in a 2D vertical pyramid with no visible top surfaces or depth foreshortening, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of burlap sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The three sacks are drawn in pure front elevation as a flat 2D pyramid. The lower sacks have vertical outlines (rows 8-13) with no top surface exposed, and the top sack's tied neck is drawn in side profile rather than viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of burlap grain sacks",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn in flat 2D front elevation like a side-view icon, with the gathered neck and tied string forming the direct northern silhouette rather than showing the rounded top surface foreshortened from a 45-degree angle. Furthermore, burlap sacks do not match the organic category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 15226
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.409Z",
+ "cells": {
+  "16": [
+   "a51d7ef55c770715"
+  ],
+  "24": [
+   "78ab8a9b71fcafbe",
+   "85c7f67b47442deb",
+   "c284d41c3d69d8d7",
+   "c2bbac54254741ee",
+   "f23700e490eebe9b",
+   "fa486721af896f0e"
+  ],
+  "32": [
+   "1469f482de804e07",
+   "33846bff4bf89e4c",
+   "8634ef1a3e414d01",
+   "b2cb7b8ec67f7a38",
+   "c9a71d7e70f9275e",
+   "dee01c2aff9ac7a3"
+  ],
+  "48": [
+   "457f121c9b83ee7f",
+   "60cd0b99076b540b",
+   "8a4a79af9a22db3e",
+   "91ae6a68abb97a04",
+   "a65e3dd52f14542f",
+   "e7e6411b8fbd59db"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be60ee7f2b22447b64582d5c319d2b0b246d48df39d717dc50f943067a37df83",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "stump of a thick ship mast with a sawn round top face, iron rings, standing in a round wedged deck collar, all seen from above at 3/4",
+ "label": "pirate-isles/pi-mast-base",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ship mast stump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn cut face at the top of the mast stump is drawn as an elliptical surface spanning rows 1 to 3 (3 pixel rows tall) with inner grain/growth ring detail, sitting atop the cylindrical front face with iron bands and wedged deck collar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17971
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mast stump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn round top face of the mast is drawn as an ellipse from row 1 to row 3 (3 pixel rows tall) above the cylindrical trunk and collar base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5082
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mast stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn circular top surface of the mast is clearly rendered as a foreshortened elliptical face spanning rows 1-4 (4 pixel rows tall), above the iron-banded cylindrical front face and deck collar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ship mast stump",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sawn circular top of the mast stump is clearly rendered as a 3-row high elliptical wood face (rows 1-3) above the cylindrical trunk.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4469
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:15.865Z",
+ "cells": {
+  "16": [
+   "b4b1437fb4f70a71"
+  ],
+  "24": [
+   "049f21d44e2720dd",
+   "0861de6cf0e936d1",
+   "2e1b5cac17add743",
+   "bdc94c56d99722ba",
+   "ca4c048e3de17e73",
+   "eac3471ee9930cc4"
+  ],
+  "32": [
+   "1ce0c338cc9661a8",
+   "3e3e2476be07fcbc",
+   "92aa693127e73f60",
+   "971426a21beab2d8",
+   "b8165134f5b108e0",
+   "ee585a3afa4b6f53"
+  ],
+  "48": [
+   "38a0635aafb98e17",
+   "4b8d2dd5157e3f2c",
+   "64acfc8d49ba9315",
+   "88974c9923d92550",
+   "ace001f6288c5cce",
+   "ec144fd91f09e264"
+  ]
+ }
+}

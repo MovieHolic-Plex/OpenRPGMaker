@@ -384,28 +384,37 @@ def _fort_gate(c):
     c.outline()
 
 
-@piece('watchtower', 'tall wooden watchtower on four legs with thatched lookout platform and ladder', 2, 5, 'structure', group='buildings',
-       solid=[(0, 4), (1, 4)], tags=['망루', '건물'], desc='나무 망루(네 다리·사다리·짚 지붕 망대). 해변·요새 모퉁이.')
+@piece('watchtower', 'tall wooden watchtower on four legs with an open plank lookout platform seen from above, railing and a small flag', 2, 5, 'structure', group='buildings',
+       solid=[(0, 4), (1, 4)], tags=['망루', '건물'], desc='나무 망루(네 다리·사다리·트인 망대 마루). 해변·요새 모퉁이.')
 def _watch(c):
     for (x0, x1) in ((5, 7), (25, 23)):
-        c.line(x0, 78, x1 + (2 if x0 < 16 else -2), 34, K('dark', 1 if x0 < 16 else -1)); c.line(x0 + 1, 78, x1 + (3 if x0 < 16 else -1), 34, K('dark', 0))
+        c.line(x0, 78, x1 + (2 if x0 < 16 else -2), 38, K('dark', 1 if x0 < 16 else -1)); c.line(x0 + 1, 78, x1 + (3 if x0 < 16 else -1), 38, K('dark', 0))
     for (x0, x1) in ((9, 10), (21, 20)):
-        c.line(x0, 74, x1, 36, K('dark', -1))
-    for y in (46, 60): c.HL(7, y, 18, K('dark', 0)); c.HL(7, y + 1, 18, K('dark', -2))
-    c.line(8, 47, 23, 59, K('dark', -1)); c.line(23, 47, 8, 59, K('dark', -2))
-    for k in range(8): c.HL(13, 40 + k * 5, 6, K('wood', 1))              # 사다리
-    c.VL(13, 36, 42, K('wood', 0)); c.VL(18, 36, 42, K('wood', -1))
-    # 망대 마루 + 난간
-    for j in range(9):                                                            # 망대 마루 윗면(사다리꼴, 뒤가 좁다)
-        a = 4 - j // 3; b = 28 + j // 3
-        planks(c, a, 24 + j, b - a, 1, 'wood', 1, bw=5, plen=9, s=12 + j, vertical=True, nails=False)
-    c.HL(4, 24, 24, K('wood', -1))
-    c.R(1, 33, 30, 3, K('dark', 0)); c.HL(1, 33, 30, K('dark', 2)); c.HL(1, 35, 30, K('dark', -2))
-    c.HL(4, 19, 24, K('wood', 2)); c.HL(4, 20, 24, K('wood', -1))                 # 뒤 난간
-    for i in range(5, 28, 4): c.VL(i, 20, 4, K('wood', 0))
-    for (x, y) in ((8, 27), (20, 29)): crate_like = c.R(x, y, 5, 3, K('wood', 2)); c.R(x, y + 3, 5, 2, K('wood', -1))   # 망대 위 작은 상자
-    for px in (4, 26): c.R(px, 12, 2, 13, K('wood', 0)); c.VL(px, 12, 13, K('wood', 2))
-    hip_roof(c, 0, 0, 32, 15, 'thatch', inset=9, s=12, tier=4)
+        c.line(x0, 74, x1, 40, K('dark', -1))
+    for y in (50, 63): c.HL(7, y, 18, K('dark', 0)); c.HL(7, y + 1, 18, K('dark', -2))
+    c.line(8, 51, 23, 62, K('dark', -1)); c.line(23, 51, 8, 62, K('dark', -2))
+    c.VL(13, 38, 40, K('wood', 0)); c.VL(18, 38, 40, K('wood', -1))
+    for k in range(8): c.HL(13, 42 + k * 5, 6, K('wood', 1))              # 사다리
+    # 망대 마루 윗면(14줄, 뒤가 살짝 좁다) + 앞면 보
+    for j in range(14):
+        a = 3 - j // 5; b = 29 + j // 5
+        planks(c, a, 20 + j, b - a, 1, 'wood', 1, bw=5, plen=9, s=12 + j, vertical=True, nails=False)
+    c.HL(3, 20, 26, K('wood', -2))
+    c.R(1, 34, 30, 4, K('dark', 0)); c.HL(1, 34, 30, K('dark', 2)); c.HL(1, 37, 30, K('dark', -2))
+    c.R(14, 30, 5, 4, K('shadow', 1)); c.HL(14, 30, 5, K('shadow', 0))               # 사다리 구멍
+    # 난간: 네 모퉁이 기둥 + 뒤·옆 가로대(앞은 낮은 판)
+    for (px, py) in ((3, 12), (27, 12)): c.R(px, py, 2, 9, K('wood', 0)); c.VL(px, py, 9, K('wood', 2))
+    for (px, py) in ((1, 24), (29, 24)): c.R(px, py, 2, 11, K('wood', 0)); c.VL(px, py, 11, K('wood', 2))
+    c.HL(3, 13, 26, K('wood', 2)); c.HL(3, 14, 26, K('wood', -1))
+    c.line(3, 13, 1, 24, K('wood', 1)); c.line(28, 13, 30, 24, K('wood', -1))
+    c.HL(1, 25, 2, K('wood', 2)); c.HL(29, 25, 2, K('wood', 1))
+    # 마루 위: 작은 통 + 망원경 받침
+    barrel(c, 8, 22, 3, 1.6, 4, 'wood', s=3)
+    c.R(21, 24, 5, 3, K('wood', 2)); c.HL(21, 24, 5, K('wood', 3)); c.R(21, 27, 5, 2, K('wood', -1))
+    c.line(22, 23, 26, 21, K('gold', 1))
+    # 깃대(뒤 오른쪽 모퉁이)
+    c.R(27, 0, 2, 13, K('dark', 1)); c.VL(27, 0, 13, K('dark', 3))
+    for j in range(5): c.HL(20, 1 + j, 7, K('red', 1 if j < 2 else 0 if j < 4 else -1))
     c.outline()
 
 
@@ -541,4 +550,179 @@ def _wreck(c):
         for y in range(yb - h + 1, min(48, yb + 2)):
             c.P(x, y, K('sand', 2 if y == yb - h + 1 else 1 if y < yb else 0))
     return
+    c.outline()
+
+
+# ------------------------------------------------------------------ 추가 건물(2판)
+@piece('hut-palm', 'beach hut with palm-leaf thatch roof and plank walls', 3, 4, 'structure', group='buildings',
+       solid=[(x, y) for x in range(3) for y in range(1, 4)], entrance=(1, 3), tags=['집', '오두막', '해변', '건물'],
+       desc='야자잎 지붕 해변 오두막(판자 벽). 문은 맨 아래 가운데.')
+def _hut_palm(c):
+    PW, PH = 48, 64
+    wall_planks(c, 4, 34, 40, 30, 'wood', 0, s=21)
+    c.VL(4, 34, 30, K('shadow', 2)); c.VL(43, 34, 30, K('shadow', 1))
+    shutter_window(c, 33, 41, 6, 7, 'wood', 'wood', sill=True)
+    door(c, 16, 38, 12, 23, 'wood', 'dark', s=21); step(c, 14, 60, 16, 'stone')
+    # 야자잎 지붕: 사다리꼴 + 잎 결(사선 잎맥, 들쭉날쭉 처마)
+    h = 38
+    for j in range(h):
+        a = int(round(10 * (1 - j / (h - 1)))); b = PW - 1 - a
+        for i in range(a, b + 1):
+            k = (i * 2 + j) % 7
+            t = (1 if k < 3 else 0 if k < 5 else -1) + (1 if j > h * .3 else 0) - (1 if j < 3 else 0)
+            if i - a < 2: t += 1
+            if b - i < 2: t -= 2
+            c.P(i, j, K('leaf', t))
+    for i in range(0, PW):
+        if hsh(i, 0, 3) % 2: c.P(i, h, K('leaf', -1)); c.P(i, h + 1, K('leaf', -2) if hsh(i, 1, 3) % 2 else None)
+    for j in range(2, h - 2, 6): c.HL(10 - j // 4, j, PW - 20 + j // 2, K('leaf', -2))
+    c.HL(10, 0, 28, K('wood', -1)); c.HL(11, 1, 26, K('wood', 1))                     # 용마루 묶음
+    under_eave(c, 5, h, 38, 2)
+    c.outline()
+
+
+@piece('longhouse', 'long thatched village meeting house on low stilts with wide porch', 5, 4, 'structure', group='buildings',
+       solid=[(x, y) for x in range(5) for y in range(1, 4)], entrance=(2, 3), tags=['마을회관', '오두막', '건물'],
+       desc='짚 지붕 긴 마을 회관(낮은 말뚝·넓은 마루). 문은 맨 아래 가운데.')
+def _longhouse(c):
+    PW, PH = 80, 64
+    wall_bamboo(c, 4, 30, 72, 24, s=22, bands=(4, 15))
+    c.VL(4, 30, 24, K('shadow', 2)); c.VL(75, 30, 24, K('shadow', 1))
+    for wx in (10, 22, 54, 66): shutter_window(c, wx, 34, 6, 7, 'thatch', 'wood', sill=False)
+    door(c, 34, 31, 12, 23, 'wood', 'dark', s=22)
+    planks(c, 1, 54, 78, 5, 'wood', 1, bw=3, plen=13, s=22, nails=False); c.HL(1, 54, 78, K('wood', -1))   # 마루 윗면
+    c.R(1, 59, 78, 2, K('dark', 1)); c.HL(1, 60, 78, K('dark', -2))
+    for px in (3, 20, 58, 75): c.R(px, 61, 2, 3, K('dark', -1))
+    for k in range(3): c.R(34, 59 + k, 12, 1, K('wood', 1 - k))                       # 디딤
+    hip_roof(c, 0, 0, PW, 34, 'thatch', inset=14, s=22)
+    under_eave(c, 5, 34, 70, 2)
+    c.outline()
+
+
+@piece('boathouse', 'open-front wooden boathouse shed on the shore with a boat inside', 4, 4, 'structure', group='buildings',
+       solid=[(0, 1), (3, 1), (0, 2), (3, 2), (0, 3), (3, 3), (1, 1), (2, 1)], tags=['배 창고', '항구', '건물'],
+       desc='앞이 트인 배 창고(안에 작은 배). 물가에 두고 앞 두 칸은 걸어 들어간다.')
+def _boathouse(c):
+    PW = 64
+    # 안쪽 어두운 그늘 + 뒷벽
+    c.R(6, 30, 52, 34, K('shadow', 2)); planks(c, 6, 30, 52, 12, 'dark', -1, bw=4, plen=40, vertical=True, s=23, nails=False)
+    # 안의 배(앞쪽으로 보임)
+    for x in range(14, 50):
+        u = (x - 14) / 36; hw = 6 * (1.0 if u < .7 else max(0, (1 - u) / .3) ** .6)
+        for y in range(int(48 - hw), int(48 + hw * .5)): c.P(x, y, K('wood', 0 if y < 48 - hw + 2 else -2))
+        for y in range(int(48 + hw * .5), int(48 + hw * .5) + 4): c.P(x, y, K('wood', -1 if y % 2 else -2))
+    # 기둥 + 옆벽
+    wall_planks(c, 2, 30, 6, 34, 'wood', 0, s=24); wall_planks(c, 56, 30, 6, 34, 'wood', -1, s=25)
+    for px in (6, 55): c.R(px, 30, 3, 34, K('dark', 1)); c.VL(px, 30, 34, K('dark', 2))
+    hip_roof(c, 0, 0, PW, 32, 'thatch', inset=10, s=23)
+    under_eave(c, 6, 32, 52, 3)
+    c.outline()
+
+
+@piece('captain-house', 'grand two-storey pirate captain mansion with tile roof, balcony and flag', 6, 6, 'structure', group='buildings',
+       solid=[(x, y) for x in range(6) for y in range(1, 6)], entrance=(2, 5), tags=['저택', '선장', '건물'],
+       desc='해적 선장 저택(2층·발코니·기와 지붕·해골 깃발). 마을 높은 곳. 문은 맨 아래 왼쪽에서 세 번째 칸.')
+def _captain(c):
+    PW, PH = 96, 96
+    wall_plaster(c, 3, 36, 90, 60, s=26)
+    c.R(3, 36, 90, 3, K('teal', -1)); c.HL(3, 64, 90, K('teal', 0)); c.HL(3, 65, 90, K('teal', -2))     # 칠한 띠
+    for wx in (10, 24, 64, 78): shutter_window(c, wx, 44, 8, 10, 'red', 'wood')
+    for wx in (10, 24, 64, 78): shutter_window(c, wx, 72, 8, 10, 'red', 'wood')
+    # 발코니(가운데 2층)
+    c.R(36, 44, 24, 12, K('shadow', 0)); door(c, 42, 43, 12, 14, 'wood', 'dark', s=26)
+    c.R(32, 58, 32, 4, K('wood', 1)); c.HL(32, 58, 32, K('wood', 3)); c.R(32, 62, 32, 2, K('wood', -2))
+    for i in range(32, 64, 3): c.VL(i, 52, 6, K('iron', 0))
+    c.HL(32, 51, 32, K('iron', 1))
+    door(c, 42, 70, 12, 23, 'wood', 'dark', arch=True, s=27)
+    for px in (36, 58): c.R(px, 66, 3, 27, K('plaster', 2)); c.VL(px, 66, 27, K('plaster', 3)); c.VL(px + 2, 66, 27, K('plaster', 0))
+    step(c, 34, 92, 28, 'stone')
+    hip_roof(c, 0, 0, PW, 40, 'terra', inset=16, s=26)
+    under_eave(c, 4, 40, 88, 2)
+    box(c, 16, 10, 8, 3, 7, 'stone', tt=2, ft=0); c.R(17, 10, 6, 2, K('shadow', 0))
+    c.R(76, 0, 2, 24, K('wood', 0)); c.R(78, 1, 10, 7, K('shadow', 1)); c.R(81, 2, 3, 3, K('bone', 3)); c.P(81, 3, K('shadow', 0)); c.P(83, 3, K('shadow', 0))
+    c.outline()
+
+
+@piece('fort-bastion', 'round stone fort bastion tower with crenellated top and cannon', 3, 4, 'structure', group='buildings',
+       solid=[(x, y) for x in range(3) for y in range(4)], tags=['요새', '포대', '건물'], desc='둥근 돌 포대 탑(윗면 여장·대포). 성벽 모퉁이.')
+def _bastion(c):
+    cx = 24
+    for y in range(22, 62):
+        for x in range(2, 46):
+            nx = (x + .5 - cx) / 21.5
+            if abs(nx) > 1: continue
+            row = (y - 22) // 5; u = (x + (row % 2) * 3) % 7
+            t = (1 if nx < -.5 else 0 if nx < .2 else -1 if nx < .7 else -2)
+            if (y - 22) % 5 == 4 or u == 6: t -= 2
+            elif (y - 22) % 5 == 0: t += 1
+            c.P(x, y, K('stone', t))
+    c.ellf(cx, 62, 21.5, 2.5, lambda x, y, nx, ny, d: K('stone', -3) if ny > 0 else None)
+    c.ellf(cx, 18, 22, 10, lambda x, y, nx, ny, d: K('stone', 1 if d > .72 else -1 + (1 if (x // 4 + y // 3) % 3 == 0 else 0)))   # 윗면(포대 마루)
+    for k in range(10):
+        a = math.pi * (1.05 + k * 0.1) if k < 10 else 0
+        a = 2 * math.pi * k / 10
+        x = cx + 19.5 * math.cos(a); y = 18 + 8.5 * math.sin(a)
+        box(c, int(x) - 3, int(y) - 3, 6, 3, 3, 'stone', tt=3, ft=0)
+    # 대포(윗면 위, 남쪽 겨눔)
+    c.R(19, 14, 10, 6, K('wood', 0)); c.HL(19, 14, 10, K('wood', 2))
+    c.R(22, 10, 4, 14, K('iron', 0)); c.VL(22, 10, 14, K('iron', 2)); c.ellf(24, 24, 2, 1, lambda x, y, nx, ny, d: K('shadow', 0))
+    c.R(18, 40, 3, 8, K('shadow', 0)); c.R(27, 40, 3, 8, K('shadow', 0))                # 총안
+    c.outline()
+
+
+@piece('fort-barracks', 'stone fort barracks with terracotta roof and iron-banded door', 5, 4, 'structure', group='buildings',
+       solid=[(x, y) for x in range(5) for y in range(1, 4)], entrance=(2, 3), tags=['요새', '병영', '건물'], desc='요새 병영(돌벽·기와 지붕). 문은 맨 아래 가운데.')
+def _barracks(c):
+    house(c, 5, 4, 34, 'stone', 'terra', wins=(8, 22, 50, 64), s=28)
+    c.outline()
+
+
+@piece('chapel', 'small whitewashed island chapel with bell tower and tile roof', 4, 6, 'structure', group='buildings',
+       solid=[(x, y) for x in range(4) for y in range(2, 6)], entrance=(1, 5), tags=['예배당', '마을', '건물'],
+       desc='작은 회칠 예배당(종탑·기와 지붕). 문은 맨 아래 왼쪽에서 두 번째 칸.')
+def _chapel(c):
+    PW, PH = 64, 96
+    wall_plaster(c, 3, 56, 58, 40, s=29, timber=False)
+    c.VL(3, 56, 40, K('shadow', 2)); c.VL(60, 56, 40, K('shadow', 1))
+    door(c, 18, 70, 12, 23, 'wood', 'dark', arch=True, s=29); step(c, 16, 92, 16, 'stone')
+    for wx in (40, 50):
+        c.R(wx, 64, 5, 10, K('plaster', -1)); c.R(wx + 1, 65, 3, 8, K('blue', 1)); c.HL(wx + 1, 65, 3, K('blue', 3))
+        c.ell(wx + 2.5, 64, 2.5, 2, K('plaster', -1))
+    hip_roof(c, 0, 28, PW, 32, 'terra', inset=10, s=29)
+    under_eave(c, 4, 60, 56, 2)
+    # 종탑(지붕 위로 솟은 상자 + 아치 + 종 + 작은 모임지붕)
+    box(c, 6, 30, 18, 4, 30, 'plaster', tt=2, ft=0)
+    c.R(10, 38, 10, 12, K('shadow', 0)); c.ellf(15, 38, 5, 3, lambda x, y, nx, ny, d: K('shadow', 0))
+    c.ellf(15, 44, 3, 3, lambda x, y, nx, ny, d: K('gold', 2 if nx < 0 else 0)); c.R(13, 46, 5, 1, K('gold', -1))
+    hip_roof(c, 3, 14, 24, 17, 'terra', inset=8, s=30)
+    c.R(14, 6, 2, 9, K('iron', 0)); c.HL(12, 9, 6, K('iron', 0))
+    c.outline()
+
+
+@piece('fish-shack', 'small plank fish shack on the pier with net hanging and fish sign', 3, 4, 'structure', group='buildings',
+       solid=[(x, y) for x in range(3) for y in range(1, 4)], entrance=(1, 3), tags=['어부', '항구', '건물'], desc='부두 위 판자 어부 오두막(그물·생선 간판). 문은 맨 아래 가운데.')
+def _fishshack(c):
+    house(c, 3, 4, 30, 'planks', 'thatch', wins=(), s=31, sign='fish', base='wood')
+    for y in range(40, 52):
+        for x in range(5, 14):
+            if (x + y) % 3 == 0 or (x - y) % 3 == 0: c.P(x, y, K('teal', 0))
+    c.outline()
+
+
+@piece('smokehouse', 'small clay smokehouse with smoke vent and stacked firewood', 2, 3, 'structure', group='buildings',
+       solid=[(0, 1), (1, 1), (0, 2), (1, 2)], entrance=(0, 2), tags=['훈제', '마을', '건물'], desc='흙 훈제 오두막(연기 구멍·장작). 문은 맨 아래 왼쪽.')
+def _smoke(c):
+    PW = 32
+    for y in range(22, 48):
+        for x in range(2, 30):
+            t = 0 if x < 10 else -1 if x < 24 else -2
+            if hsh(x // 2, y // 2, 32) % 7 == 0: t += 1
+            c.P(x, y, K('terra', t + 1))
+    c.HL(2, 47, 28, K('terra', -2))
+    door(c, 4, 25, 11, 21, 'wood', 'dark', s=32)
+    for k in range(3):                                                        # 장작 더미(옆)
+        for i in range(3): lit_blob(c, 20 + i * 3.5, 44 - k * 3, 1.8, 1.6, 'wood', -k % 2, s=k * 3 + i)
+    hip_roof(c, 0, 0, PW, 26, 'thatch', inset=6, s=32, tier=4)
+    box(c, 11, 2, 8, 3, 4, 'terra', tt=1, ft=-1); c.R(12, 2, 6, 2, K('shadow', 0))
+    under_eave(c, 3, 26, 26, 2)
     c.outline()

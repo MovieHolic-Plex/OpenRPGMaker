@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc91d122dede832570715dfb83529f02d5cc8cedf517ddd761a0f6a08a264437",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "black powder keg with red band",
+ "label": "pirate-isles/pi-keg-powder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "powder keg / barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The keg is drawn in pure front elevation: the red hoops at rows 8 and 13 are completely flat horizontal lines instead of elliptical curves, and the vertical staves extend all the way to the top edge with no top circular cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5811
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing wooden powder keg with red hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the staves run vertically from top to bottom, the red hoops are perfectly straight horizontal lines across rows 7 and 13, and no foreshortened elliptical top cap or lid surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6656
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel keg",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The keg is drawn in pure front elevation: the red bands are straight horizontal lines without any perspective curvature, and there is no visible elliptical top cap, only an arched front silhouette with a bung at the top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7531
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "powder keg / barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is rendered in pure front elevation: the red hoops across the body are completely flat horizontal lines, and there is no visible elliptical top surface/cap of the cylinder (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5704
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.408Z",
+ "cells": {
+  "16": [
+   "b276b7341acb25ef"
+  ],
+  "24": [
+   "64c7b1e1671036fc",
+   "6cd9c689f50ed102",
+   "ac0fc53f541e9e4d",
+   "bccd8dc6b7d8386e",
+   "e7b4a679809bb3c4",
+   "fe2e0828599d8807"
+  ],
+  "32": [
+   "8d46d245a5240cb4",
+   "8e9b71ce8cc5a387",
+   "9e1f15fd1ddf2254",
+   "c0d22ae7f085a1bd",
+   "dd9669e9621f0de6",
+   "f5dca63afe7ac064"
+  ],
+  "48": [
+   "08a7882b5220fa17",
+   "0d7ee786c3177657",
+   "11713431efb6b2d8",
+   "324d513426176ee4",
+   "340cd6bfebe841a2",
+   "af343db281899431"
+  ]
+ }
+}

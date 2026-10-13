@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8417f92fa5da2b21b60e0ce76d79477f83f243e2f73a6c8c273ff8d61cf6a719",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "closed wooden treasure chest with flat lid on top, iron bands and gold lock",
+ "label": "pirate-isles/pi-chest-closed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation with lid (rows 2-7) and base (rows 8-15) divided by a central seam and lock; there is no top surface visible, only a 1px outline at row 1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5174
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight-on in pure front elevation; the vertical iron bands run completely straight down the entire height with no foreshortened top lid surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3319
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn straight from the front with a 1px top outline at row 1; rows 2-7 show the front face of the lid, row 8 is the horizontal opening seam with the lock, and rows 9-15 form the chest base front. The vertical iron bands run completely straight without any plane change or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5573
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed wooden treasure chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is rendered entirely in front elevation with straight vertical iron bands extending from the top edge (row 1) to the bottom (row 15). The division at row 8 separates the front of the lid from the front of the base, leaving no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4151
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "0e3f9f1f2e70eb1d"
+  ],
+  "24": [
+   "2bfbf12c6d464c53",
+   "388b6de813e06b3f",
+   "734f8c0e3d69bf46",
+   "82bf1d845d92ec3e",
+   "a07fe3f354131c92",
+   "eea5614523dffa08"
+  ],
+  "32": [
+   "03b5673290559819",
+   "28316f1ded12d4bf",
+   "2e977ce6fd58138d",
+   "7adee31ded19d7db",
+   "9a4bae0dc5deb467",
+   "d3e2a8fd05763dcf"
+  ],
+  "48": [
+   "8057a739b398f796",
+   "8c4562a943e74cc9",
+   "a2ed5813e0abd01a",
+   "cc8c435276974a50",
+   "ce76c96c2737f041",
+   "e36c34d580d2caa9"
+  ]
+ }
+}

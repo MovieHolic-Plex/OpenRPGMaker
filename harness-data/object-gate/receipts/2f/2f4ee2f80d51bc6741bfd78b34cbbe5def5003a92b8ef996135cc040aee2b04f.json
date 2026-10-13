@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f4ee2f80d51bc6741bfd78b34cbbe5def5003a92b8ef996135cc040aee2b04f",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "brass-ringed world globe on a carved wooden tripod stand",
+ "label": "pirate-isles/pi-globe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "world globe on wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stand and its base (rows 26-30) are drawn in a completely flat front elevation with straight horizontal bands and no top surface or elliptical foreshortening visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5752
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "globe sphere and tripod stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The globe, meridian ring, and tripod base are drawn in straight front/side elevation with zero top-down tilt: the brass ring has no elliptical perspective, the stand legs are drawn flat, and the base terminates in a completely straight horizontal line at rows 29-30 rather than an elliptical curve seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5742
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "globe and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The globe stand and base are drawn in flat front elevation. The base (rows 27-31) has no visible top surface (0 rows), showing only a vertical front face rather than an elliptical 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7290
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "globe and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The globe, support arm, and base are drawn in pure front elevation. The circular wooden base shows no elliptical top surface (row 27 is drawn as a flat horizontal line), and the meridian ring/arm has no 3/4 downward tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6741
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.186Z",
+ "cells": {
+  "16": [
+   "000b30c6043a1969",
+   "793c47fbe53676b4"
+  ],
+  "24": [
+   "02f00d795fb54d61",
+   "45945c62ae7b1165",
+   "61f38240ed8e8bd6",
+   "8b0cf66c3e52e50c",
+   "8ccb086125901946",
+   "8e8b7a30965f0527",
+   "95625a3ffc696c96",
+   "9b7a6fefc759c89b",
+   "a3ac2267a9e7ffe9",
+   "cfd76263d3baef4c",
+   "d52244aaf835b396",
+   "fbe233faf8ee7696"
+  ],
+  "32": [
+   "217a3427a683fe1b",
+   "af1ca7850da54f37",
+   "f903297ba5d2d11f"
+  ],
+  "48": [
+   "1bc7cd3844197fa4",
+   "2d4bf1a59afd70ea",
+   "33ee68a07cf3c1c7",
+   "45a4ae2b1894c935",
+   "a43999b26acac1d6",
+   "ed598fa8ea65fca5"
+  ]
+ }
+}

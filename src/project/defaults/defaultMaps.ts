@@ -23,6 +23,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   jp_city: 725,
   // 1번 오크 판자와 205번 수리용 석재는 고정 조각이라 반복 시 이음선이 튄다. 반복 가능한 성채 포석 577번을 쓴다.
   wizarding_world: 577,
+  // 해적 군도: 맨 모래(pi-sand 첫 칸, 자리 키 핀 고정).
+  pirate_isles: 1,
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,

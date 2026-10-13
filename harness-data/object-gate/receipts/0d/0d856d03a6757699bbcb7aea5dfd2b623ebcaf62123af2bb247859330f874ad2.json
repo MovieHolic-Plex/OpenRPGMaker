@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d856d03a6757699bbcb7aea5dfd2b623ebcaf62123af2bb247859330f874ad2",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "sailor's canvas hammock slung between two hold posts, with a rolled red blanket inside",
+ "label": "pirate-isles/pi-hold-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canvas hammock",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a suspended canvas hammock, not an open frame or rack (there are no horizontal beams or base connecting the two hold posts, so kind_matches is false). Even if evaluated as a frame, it shows no top faces on any structural beams or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22873
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canvas hammock slung between hold posts",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from above at a 3/4 angle: between the back rim (row 3) and front rim (row 10) is a 6-row deep view into the interior canvas cradle, where the rolled red blanket rests, with the shaded south underbelly visible below at rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9146
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canvas hammock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from a 3/4 downward angle with a wide 6-row opening (rows 4-9) clearly revealing the interior canvas bed and the rolled blanket resting inside, bordered by a defined front rim at row 10 and the south-facing outer underbelly along rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 9069
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canvas hammock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hammock is viewed from above at a 3/4 angle, looking down into its canvas basin: the back rim is at row 3 and the front rim drops to row 10, revealing 6 rows of interior canvas depth where the rolled blanket rests.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 10817
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "0013eaac5628e88a",
+   "bd12f708bab3f77c"
+  ],
+  "24": [
+   "456cb54713072691",
+   "49576316fd3f1e01",
+   "782f34ae500248f0",
+   "a1762e5fd7e96682",
+   "a2246e8934d69310",
+   "a2869c551a110869",
+   "bceff42077bb966b",
+   "c23027a86a8cca7f",
+   "ce29d4a52cd4dd83",
+   "d285bd2102e8f1ec",
+   "da342ccd46776b88",
+   "eb65afb764b94d86"
+  ],
+  "32": [
+   "439fcdc806fb39f3",
+   "5d37d3e4155ff32e"
+  ],
+  "48": [
+   "346e6baa1a4fda90",
+   "485ab635132fab2e",
+   "62d972336911dd92",
+   "702de9b46e99b670",
+   "c4546340f87a5434",
+   "f0998ded5d6e9245"
+  ]
+ }
+}

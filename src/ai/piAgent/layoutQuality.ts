@@ -1,4 +1,5 @@
 import { roomSpecOf } from "@/editor/handInterior/builder";
+import { isPirateIslesTilesetDef } from "@/ai/pirateIslesPolicy";
 import { tileAt } from "@/project/collision";
 import { hasRelief } from "@/project/relief/walk";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -207,6 +208,9 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     const map = project.maps[mapId];
     if (!map || skip.has(mapId)) continue;
     if (map.width * map.height < MIN_CELLS) continue;
+    // 구성기(compose_pirate_isles_map)로 짠 해적 군도 맵은 바다·해변·부두·광장이 용도로 비운 칸이다 — 이 검사는 그것을 「빈 바닥」으로 세어 소품을 흩뿌리게 한다.
+    // 구역 이름표(pirate-area)가 있는 pirate_isles 맵은 묻지 않는다(SF 구성기와 같은 이유).
+    if (isPirateIslesTilesetDef(project.tilesets[map.tilesetId]) && (map.locations ?? []).some((l) => (l.tags ?? []).includes("pirate-area"))) continue;
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;

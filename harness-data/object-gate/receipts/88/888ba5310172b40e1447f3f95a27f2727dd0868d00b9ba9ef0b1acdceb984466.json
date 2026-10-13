@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "888ba5310172b40e1447f3f95a27f2727dd0868d00b9ba9ef0b1acdceb984466",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "heap of fishing nets with floats lying on the ground",
+ "label": "pirate-isles/pi-nets",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of fishing net on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The net is depicted as a foreshortened elliptical mound lying flat on the floor spanning rows 5-14, viewed from the 3/4 perspective with visible surface texture and floats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3226
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elliptical pile of teal netting with orange floats lying on the ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The heap forms a foreshortened ellipse spanning rows 5 to 14, showing the top-down 3/4 view of netting spread on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3264
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "heap of teal fishing nets with orange floats lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The net forms an elliptical patch viewed from above at a 3/4 angle, covering rows 5-13 with floats distributed across the surface plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3039
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "heap of fishing nets lying on the ground",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The heap forms a foreshortened ellipse spanning rows 5 to 14, presenting its top surface with scattered floats in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6433
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.409Z",
+ "cells": {
+  "16": [
+   "aa5326876cb5dccc"
+  ],
+  "24": [
+   "27cf01c7e4cbbc9b",
+   "412fc3d8d8cdbdde",
+   "4e240eda01547f78",
+   "725e500f23eb6bb8",
+   "7866cdb99058ddea",
+   "922c46154af76e53"
+  ],
+  "32": [
+   "274ac023011db71c",
+   "28337d9984a2d562",
+   "604c42f3358dac80",
+   "b8784ebd73b54c50",
+   "d42e71c93d25b8c2",
+   "ee641a7f43aaae72"
+  ],
+  "48": [
+   "013a690389fe37d9",
+   "0c5541c4a6fd201e",
+   "547ef98722a3549e",
+   "64e13521131e7664",
+   "a4711da1a424f44e",
+   "f560e70d7731e692"
+  ]
+ }
+}

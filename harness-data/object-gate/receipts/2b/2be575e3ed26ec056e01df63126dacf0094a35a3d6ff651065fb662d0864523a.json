@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2be575e3ed26ec056e01df63126dacf0094a35a3d6ff651065fb662d0864523a",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "fish drying rack with hanging fish",
+ "label": "pirate-isles/pi-fish-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wooden crossbeam and support posts of drying rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top crossbeam is only 2 source pixels tall (rows 8-9, shaded as a highlight and shadow of a flat front-facing bar) with no top surface visible in 3/4 perspective, rendering the rack in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4239
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden frame rack with horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbeam is only 3 pixels tall overall (rows 7-9) with row 7 acting as a 1px edge highlight rather than a foreshortened top surface. The frame is drawn in flat front elevation with no depth to the beams or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7286
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal wooden beam and supporting posts of drying rack",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal crossbeam is only 2px tall (rows 8-9) representing a flat front elevation with a 1px highlight; it lacks a distinct top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5592
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drying rack frame with hanging fish",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame consists of two vertical posts and a crossbeam that is only 2px tall total (1px highlight, 1px shadow). There is no visible top surface foreshortened from above on the beam or posts, rendering the entire rack in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7814
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.412Z",
+ "cells": {
+  "16": [
+   "a1b605489eb943ed",
+   "b76ba02c5435c9eb",
+   "d0087d8b2ed65ffa",
+   "e9311305edf541ce"
+  ],
+  "24": [
+   "0787059ccc9bfec4",
+   "0dedcdd82625c798",
+   "1271a8748e47ae35",
+   "255c78ecbccd1f0c",
+   "26a4ebb95b4395b8",
+   "42e322a317a0164f",
+   "458045fda8b6fab6",
+   "6e21903e18aa8f02",
+   "6e4100d41ae515b9",
+   "713c66b039a96d79",
+   "8c0fa8b3f4750a1f",
+   "906c883ecd9b4783",
+   "913ce5391a225d7c",
+   "9789dc4a6b74d629",
+   "9ac6a22279f87058",
+   "b7e91a9f0f047f4f",
+   "c5e119d5ccdc32e4",
+   "cf344fbfeff66781",
+   "d57e10571d8888f3",
+   "ed4167798228a3b1",
+   "fc6703672acedf38"
+  ],
+  "32": [
+   "6cf6bc147e5395da"
+  ],
+  "48": [
+   "020a1255e269f932",
+   "0329d642fe926258",
+   "05cc25db2420027a",
+   "099fe575ef422459",
+   "3fd51426ecbd3efa",
+   "6a24fdf97979645b"
+  ]
+ }
+}

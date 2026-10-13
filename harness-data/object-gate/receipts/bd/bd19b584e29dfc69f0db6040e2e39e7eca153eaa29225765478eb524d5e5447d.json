@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd19b584e29dfc69f0db6040e2e39e7eca153eaa29225765478eb524d5e5447d",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "wooden drying rack seen from above at an angle, fishing net draped over the top rails and hanging down the front",
+ "label": "pirate-isles/pi-net-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden drying rack with fishing net",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame and crossbeams are drawn as flat rectangles in pure front elevation; the top beam (rows 4-6) and middle beam (rows 14-16) have only 1px edge highlights and no foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6319
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden drying frame with net",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drying rack is drawn as a flat 2D archway/goalpost in pure front elevation. Neither the top horizontal beam (rows 4-6) nor the middle crossbar (rows 14-16) shows a foreshortened top surface, and the frame has no depth or base feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3807
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden frame rack with draped fishing net",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden frame is drawn in flat front elevation like a goalpost. Neither the top horizontal beam nor the crossbar shows a foreshortened top surface (only a 1px edge line at row 4 and row 14), and the vertical legs extend straight down with no depth or visible base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5880
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden drying rack frame with draped net",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn entirely in a flat front elevation (like a soccer goal). Both horizontal bars (top at rows 4-6 and middle crossbar at rows 14-16) consist only of 1px highlight and 1px front face with no foreshortened top surfaces, and the vertical posts extend straight down to flat cut-off feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4296
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "000e8b00ee3f7b4b",
+   "3addd80f3400b942",
+   "a1696aafce4c68bc",
+   "dba80d263fe06a11"
+  ],
+  "24": [
+   "11a739056c83a991",
+   "13a4facd3144da7e",
+   "13c39571301624ff",
+   "16e8b0b2a43349e2",
+   "187a28d058b0218e",
+   "19cb06e5bb796f64",
+   "1bb0e61bf22bf8a9",
+   "3532064c870fc63a",
+   "6c670639ee6a6296",
+   "7a7ec62d9aa717a4",
+   "87d687b00a8d3c0b",
+   "9165a20df7b1f072",
+   "942d6033b6f9baa6",
+   "9e312f5760a8bebc",
+   "a4379ee3da748044",
+   "a6a416f1ba9004f1",
+   "af73cc31bd23e14c",
+   "d07ddcec7046706d",
+   "d23752e7395e0706",
+   "dd8518da6b11b309",
+   "e0df859304b9fdff",
+   "e70c1b511dc946fd",
+   "e835499ece75201f",
+   "fc9cd47349bf8a05"
+  ],
+  "32": [
+   "a81e955d4d955948"
+  ],
+  "48": [
+   "043ef5b7d79059d7",
+   "c7d223b8aa1e1c83",
+   "d11464adf9314fd8",
+   "d4b2298ba93cf4ca",
+   "e680e00383aac5e6",
+   "eb77f9e8a3dafc0d"
+  ]
+ }
+}

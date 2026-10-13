@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d750f8fa53a87527128f03e71db4530600e07df4d73fc0fc2d3321b395d2581f",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "bamboo pole fence section lashed with rope",
+ "label": "pirate-isles/pi-fence-bamboo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical bamboo poles with horizontal binding rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure 2D side/front elevation. The horizontal lashings/rails at rows 6 and 11 are only 1px thick with no top surfaces, and the vertical bamboo poles have only 1px rounded caps/highlights rather than elliptical top cut surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo pole fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo fence is drawn as a flat architectural front elevation. Neither the cut tops of the vertical bamboo poles (which end in 1px outlines/highlights rather than visible top cut faces) nor the horizontal cross rails (only 2px tall stripes with no visible top surface) show a top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10153
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo fence with vertical poles and horizontal crossrails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is rendered in a pure 2D side-scroller front elevation. The horizontal rails are flat 2-pixel stripes with no top surface, and the vertical bamboo poles show only 1-pixel highlight caps rather than foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9765
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo fence with vertical poles and horizontal cross-rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bamboo poles and horizontal cross-rails are drawn in direct front elevation with no visible top surfaces (horizontal rails at rows 5-6 and 11 are flat 1-2px bands with no top face foreshortening, and vertical poles show no top cut ellipses/surfaces).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7985
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.412Z",
+ "cells": {
+  "16": [
+   "3919543277c574ba",
+   "da5ad740b984dd4d"
+  ],
+  "24": [
+   "07ac4f6381f8b7db",
+   "3ed7e80e16e1fe3d",
+   "64241e1be022c0cb",
+   "6e574f5c44404914",
+   "73a29ace64b40979",
+   "8043e8210c051897",
+   "8c59c3dc41974975",
+   "a64c279b6556be99",
+   "b22b32cc429fbb22",
+   "c5d0873f226e0e9d",
+   "f628e92bdb879e86",
+   "fa0c63267d389754"
+  ],
+  "32": [
+   "8920095078aadf96",
+   "f3be1420c3b51d64"
+  ],
+  "48": [
+   "10e43a6f98769231",
+   "2c535dbc3a24ddac",
+   "557f46ec7ab83f9f",
+   "72c8189a2b42a824",
+   "77bbe0e2e2ecaf39",
+   "e8c6243a42c38710"
+  ]
+ }
+}

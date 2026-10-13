@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c0b9088d083365158a576cfe9d21400d1b68dd2b840166106bcf55a376a4623",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "carved wooden tiki totem pole with painted faces on a square stone base, flat carved head top",
+ "label": "pirate-isles/pi-totem",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carved wooden totem pole on stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat carved head top has a clearly depicted elliptical top surface measuring about 5 rows (rows 1-5), and the stone base beneath it also shows a large top surface of about 4-5 rows (rows 24-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3433
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carved wooden totem pole on stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The totem pole clearly shows an elliptical top surface on its head (rows 1-5, ~5 rows tall) and the stone base plinth clearly exposes its horizontal top plane (rows 25-28, 4 rows tall) in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3266
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carved wooden totem pole on stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat carved top of the head is clearly foreshortened and visible (rows 1-5, approx 5 rows tall), and the square stone base also shows a 4-row top surface (rows 25-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4725
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "totem pole cylinder with carved head",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat carved head shows a clear top surface spanning rows 1-5 (approx 5 rows tall) in proper 3/4 view, and the stone base below also displays a distinct top surface across rows 25-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3471
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.329Z",
+ "cells": {
+  "16": [
+   "57179d9b17f262b2",
+   "dfc2b66886bfdb94"
+  ],
+  "24": [
+   "1190b34c6932d8ad",
+   "16c3bd8bdc34f300",
+   "2d8c1363303ca0a0",
+   "534f0543c3f57f0a",
+   "5f415884e9110071",
+   "7e8c5c553551583b",
+   "85114276cd155af7",
+   "887af8847d59265d",
+   "bbc46b81b24aac48",
+   "ed05315e93defebf",
+   "ef8fb6bc16601e96",
+   "f423ac3a4b7c57c8"
+  ],
+  "32": [
+   "4d064bb046e6ad18",
+   "87bf07887d0dd763",
+   "bdea210f6c84aff4"
+  ],
+  "48": [
+   "145136da4651e2ee",
+   "1dd5a8f4d16d33f2",
+   "83448461ceba5556",
+   "8442006416570853",
+   "89360d8d9c380e46",
+   "9bfe5f6f09da1b43"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d9e1eab49f2f8996ce2658864a392eb7554775de116ed9cbda2aebf51d44d07",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "two wide-mouthed terracotta storage jars seen from above at 3/4, dark open mouths with water inside",
+ "label": "pirate-isles/pi-clay-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta storage jars",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars show wide open mouths viewed from above with dark interior shadows and blue water inside (top jar opening spans rows 2-5, bottom jar spans rows 8-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two terracotta storage jars with water inside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly show wide open circular rims viewed from a 3/4 top-down angle, exposing foreshortened interior openings filled with water (rows 2-5 on the rear jar, rows 8-10 on the front jar).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3982
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta storage jars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both jars clearly show wide open mouths in 3/4 perspective filled with water (back jar opening spans rows 2-5, front jar spans rows 8-10) above their south-facing rounded bellies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4435
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two wide-mouthed terracotta jars filled with water",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both terracotta jars display clearly foreshortened elliptical openings showing interior depth and blue water inside (larger jar opening spans rows 2-5, 4 rows tall; smaller jar opening spans rows 8-10, 3 rows tall) above their rounded southern front bellies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4302
+  }
+ ],
+ "decidedAt": "2026-10-13T19:35:50.750Z",
+ "cells": {
+  "16": [
+   "0ba7210a1c585ebf"
+  ],
+  "24": [
+   "011d4d888974327b",
+   "8720f3a5666dfe70",
+   "bb10d677747fb3ec",
+   "c64ffd3cfe04d44e",
+   "d3e8dcf03198be71",
+   "ff997775d239c8b9"
+  ],
+  "32": [
+   "24f732b982c984bd",
+   "3a028e0bfd1f15a8",
+   "6714be07d1077af2",
+   "88e6e135e7c803c1",
+   "92d7bf17667a9591",
+   "bfa9d4efbfbc27ec"
+  ],
+  "48": [
+   "2d779018c162b635",
+   "35fb39a8954d55e8",
+   "51c05f059549ea2b",
+   "7344cfd46ea21089",
+   "8e70f75a61d2fb7d",
+   "9700c1ca2ecd5f13"
+  ]
+ }
+}

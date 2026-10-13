@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d475475b130f0540615b8955e4f89351f93c5d47d8f51ebe24c809c627f12cb",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "captain's high-backed wooden armchair with red leather seat cushion, back toward the north",
+ "label": "pirate-isles/pi-captain-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "armchair seat cushion and frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair faces south with the red seat cushion clearly visible from above across rows 7-10 (approx. 4 rows deep) before dropping to the front edge and chair legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4983
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "captain's high-backed wooden armchair",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red leather seat surface is clearly foreshortened and visible from above across rows 7-10 (4 pixel rows tall) between the armrests, above the south wooden frame and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4875
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "armchair with high back and cushion seat",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion seat surface is clearly foreshortened and visible from above across rows 7-10, with the vertical backrest above it and the front apron below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5166
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with high back and cushion seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red leather seat surface is clearly seen from above across rows 7 to 11 (5 rows tall), with appropriate shading and depth between the backrest and the front apron.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4927
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.185Z",
+ "cells": {
+  "16": [
+   "bbff5d0790abfb2b"
+  ],
+  "24": [
+   "1214b4981e89729b",
+   "4dd474eac910343d",
+   "7914b7301f8044b3",
+   "8f8b5052ae0a2130",
+   "b71b88c3aa622e3d",
+   "cbaca48ee01f263f"
+  ],
+  "32": [
+   "0d4ed5ab39649846",
+   "0fac50a2260389c8",
+   "15c80527041d93ae",
+   "3d8e6796ef916500",
+   "780f16d21e34873b",
+   "b4c078e56b150e3a"
+  ],
+  "48": [
+   "217edd2bdc1e4cd6",
+   "2213994e748353bb",
+   "5fdf73d0aeee896a",
+   "8f83e9db1083a244",
+   "909c67e2978c4bfb",
+   "9672a6f17e64e8c7"
+  ]
+ }
+}

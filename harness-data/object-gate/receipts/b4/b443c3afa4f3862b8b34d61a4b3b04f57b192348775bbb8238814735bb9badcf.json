@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b443c3afa4f3862b8b34d61a4b3b04f57b192348775bbb8238814735bb9badcf",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "wooden ship bunk bed with pillow at the north end and a folded blue wool blanket",
+ "label": "pirate-isles/pi-bunk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bunk bed with mattress, pillow and blanket",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal mattress surface (pillow, sheets, folded blanket) is clearly visible from above across rows 7 to 26 (~20 rows), conforming properly to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4982
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bunk bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed mattress with pillow and folded blue blanket is clearly visible from above, spanning rows 7 to 26 (approx. 20 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4528
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ship bunk bed mattress and frame",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed surface is clearly viewed from above in 3/4 perspective, showing the pillow and folded blue blanket across rows 6 to 26 (~21 rows) framed by vertical side rails and horizontal crossbeams.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4403
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bunk bed with mattress, pillow, and folded blanket",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mattress surface with pillow and folded blue blanket is clearly viewed from above across rows 7 to 26 (approx 20 pixel rows), framed within the wooden bunk structure in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4704
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.186Z",
+ "cells": {
+  "16": [
+   "43f6a1ea7c4745f4",
+   "83b0014bf97f53b7"
+  ],
+  "24": [
+   "03027f4be8d06d74",
+   "0dcdc5ac8d13a67f",
+   "2202d535a8ac4fc9",
+   "3a9d4fe7c4adf49c",
+   "4265fd9590237aa1",
+   "63035b73053a5e91",
+   "6390e66fdb7b88f9",
+   "8285107185064ddf",
+   "846903ad3cf91442",
+   "9bd1d7d854434074",
+   "ec0f190aaaf74cce",
+   "f05d9f5de53f0b55"
+  ],
+  "32": [
+   "51baf678cee6606b",
+   "840b78d58e143369",
+   "e8595e0bdb96c351"
+  ],
+  "48": [
+   "3ea01be48a19e96c",
+   "68dc29b2eb32e1ca",
+   "7419b0a4198080c5",
+   "97a25f0ee6697dc5",
+   "aff41011a3160b7a",
+   "cdd3b84e41191119"
+  ]
+ }
+}

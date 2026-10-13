@@ -5,6 +5,18 @@ import math
 from pi_core import *
 
 
+def slab_top(c, x, y, w, h, mat, t=1, inset=1, horiz=True, s=0):
+    """원근 윗면: 뒤 모서리가 inset 만큼 좁은 사다리꼴, 가로 판 결, 뒤 모서리 어둡게·앞 모서리 밝게."""
+    for j in range(h):
+        k = round(inset * (1 - j / max(1, h - 1)))
+        tt = t + (1 if j >= h - 2 else 0)
+        for i in range(x + k, x + w - k):
+            v = tt - (1 if horiz and j % 3 == 2 else 0) - (1 if (hsh(i // 5, j // 3, s) % 7 == 0) else 0)
+            c.P(i, y + j, K(mat, v))
+        if j == 0: c.HL(x + k, y, w - 2 * k, K(mat, t - 2))
+    c.HL(x, y + h - 1, w, K(mat, t + 2))
+
+
 def crate_draw(c, x, y, w=14, top=6, front=8, mat='wood', s=0, mark=False):
     box(c, x, y, w, top, front, mat, tt=2, ft=-1, tex='planks', s=s)
     fy = y + top
@@ -15,9 +27,31 @@ def crate_draw(c, x, y, w=14, top=6, front=8, mat='wood', s=0, mark=False):
         c.R(x + w // 2 - 2, y + 2, 4, 2, K('red', 0)); c.P(x + w // 2 - 2, y + 2, K('red', 2))
 
 
-@piece('barrel', 'wooden barrel with iron hoops', 1, 1, 'round_body', group='props', solid=[(0, 0)], tags=['통', '항구'], desc='나무통(쇠테).')
+@piece('barrel', 'wooden barrel seen from above at an angle: big light elliptical lid on top, curved iron hoops', 1, 1, 'round_body', group='props', solid=[(0, 0)], tags=['통', '항구'], desc='나무통(쇠테).')
 def _barrel(c):
-    barrel(c, 8, 1, 6, 2.6, 10, 'wood', s=1); c.outline()
+    cx, top, rx, ry, bh = 8, 1, 6.5, 3.2, 6
+    cy = top + ry
+    for y in range(int(cy), int(cy + bh + ry) + 1):
+        for x in range(1, 16):
+            nx = (x + .5 - cx) / rx
+            if abs(nx) > 1: continue
+            bot = cy + bh + ry * math.sqrt(1 - nx * nx)
+            if y > bot: continue
+            t = 1 if nx < -.45 else 0 if nx < .1 else -1 if nx < .6 else -2
+            if (x - 2) % 3 == 0 and abs(nx) < .9: t -= 1
+            c.P(x, y, K('wood', t))
+    for dy in (2, 5):
+        for x in range(1, 16):
+            nx = (x + .5 - cx) / rx
+            if abs(nx) > 1: continue
+            yy = int(round(cy + dy + ry * 0.9 * math.sqrt(1 - nx * nx)))
+            c.P(x, yy, K('iron', 1 if nx < -.3 else -1 if nx > .4 else 0))
+    def lid(x, y, nx, ny, d):
+        if d > .78: return K('iron', -2) if ny < -.2 else K('wood', 3)
+        if (x - 2) % 3 == 0: return K('wood', 1)
+        return K('sand', 0 if ny < .2 else -1)
+    c.ellf(cx, cy, rx, ry, lid)
+    c.outline()
 
 
 @piece('barrels', 'stack of three wooden barrels, two below and one on top', 2, 2, 'round_body', group='props', solid=[(0, 1), (1, 1)], tags=['통', '항구'],
@@ -28,10 +62,15 @@ def _barrels(c):
     c.outline()
 
 
-@piece('keg-powder', 'black powder keg with red band', 1, 1, 'round_body', group='props', solid=[(0, 0)], tags=['통', '화약', '요새'], desc='화약통(붉은 띠). 대포 곁.')
+@piece('keg-powder', 'black powder keg seen from above at an angle: round lid disk with rim and fuse plug on top, red band below', 1, 1, 'round_body', group='props', solid=[(0, 0)], tags=['통', '화약', '요새'], desc='화약통(붉은 띠). 대포 곁.')
 def _keg(c):
-    barrel(c, 8, 2, 6, 2.6, 9, 'dark', hoop='red', s=5)
-    c.R(7, 1, 2, 2, K('iron', 1)); c.outline()
+    barrel(c, 8, 1, 6, 3.5, 7, 'dark', hoop='red', s=5, lid=False)
+    def lid(x, y, nx, ny, d):
+        if d > .8: return K('iron', -2 if ny < 0 else 1)
+        return K('wood', 1 if ny < 0 else 0)
+    c.ellf(8, 4.5, 6, 3.5, lid)
+    c.R(9, 3, 2, 2, K('iron', 1)); c.P(9, 3, K('iron', 3)); c.P(11, 2, K('thatch', 1))
+    c.outline()
 
 
 @piece('crate', 'wooden cargo crate with cross brace', 1, 1, 'box', group='props', solid=[(0, 0)], tags=['상자', '항구'], desc='나무 화물 상자.')
@@ -47,11 +86,20 @@ def _crates(c):
     c.outline()
 
 
-@piece('sacks', 'pile of burlap grain sacks', 1, 1, 'organic', group='props', solid=[(0, 0)], tags=['자루', '항구'], desc='곡식 자루 더미.')
+@piece('sacks', 'open burlap grain sack showing grain inside, with a closed sack behind', 1, 1, 'container', group='props', solid=[(0, 0)], tags=['자루', '항구'], desc='곡식 자루(앞은 열려 곡식이 보이고 뒤는 묶음).')
 def _sacks(c):
-    for (cx, cy, rx, ry) in ((5, 11, 4.5, 4), (11, 11, 4.5, 4), (8, 6, 4.5, 3.6)):
-        lit_blob(c, cx, cy, rx, ry, 'cloth', -1, s=int(cx * cy))
-        c.HL(int(cx) - 1, int(cy - ry) + 1, 3, K('thatch', -2))
+    lit_blob(c, 11, 5, 4, 4.2, 'cloth', -1, s=7)                                   # 뒤 묶은 자루
+    c.R(10, 0, 3, 2, K('cloth', 0)); c.HL(10, 0, 3, K('cloth', 2)); c.HL(9, 2, 5, K('thatch', -2))
+    for y in range(8, 16):                                                           # 앞 자루 몸통
+        r = 6 + (1 if 9 < y < 14 else 0)
+        for x in range(7 - r, 7 + r + 1):
+            nx = (x + .5 - 7) / (r + .5)
+            t = 1 if nx < -.4 else 0 if nx < .2 else -1 if nx < .7 else -2
+            if y == 15: t -= 1
+            if (x + y * 2) % 7 == 0: t -= 1
+            c.P(x, y, K('cloth', t))
+    c.ellf(7, 7.5, 6, 3, lambda x, y, nx, ny, d: K('cloth', 2 if ny < 0 else 1) if d > .62 else
+           (K('gold', 1 if (x + y) % 3 else 2) if ny > -.3 else K('gold', -1)))       # 접은 아가리 + 곡식
     c.outline()
 
 
@@ -116,49 +164,56 @@ def _cannon(c):
     c.outline()
 
 
-@piece('cannonballs', 'pyramid stack of iron cannonballs', 1, 1, 'other', group='props', solid=[(0, 0)], tags=['대포', '요새'], desc='쌓은 포탄 피라미드.')
+@piece('cannonballs', 'low wooden tray holding a pyramid of iron cannonballs', 1, 1, 'other', group='props', solid=[(0, 0)], tags=['대포', '요새'], desc='나무 받침 위 포탄 더미.')
 def _balls(c):
-    for (x, y) in ((4, 12), (8, 12), (12, 12), (6, 8.5), (10, 8.5), (8, 5)):
-        lit_blob(c, x, y, 2.4, 2.2, 'iron', 0, s=int(x * 3 + y))
+    box(c, 0, 6, 16, 6, 4, 'wood', tt=1, ft=-1, tex='planks', s=3)
+    for (x, y) in ((4, 9), (8, 9), (12, 9), (6, 6.5), (10, 6.5), (8, 4)):
+        lit_blob(c, x, y, 2.3, 2.0, 'iron', 0, s=int(x * 3 + y))
     c.outline()
 
 
-@piece('flagpole', 'tall wooden flagpole flying a black pirate flag with a white skull', 1, 3, 'column', group='props', solid=[(0, 2)], tags=['깃발', '해적'],
-       desc='해적 깃대(검은 해골 깃발, 글자 없음). 요새·부두 광장.')
+@piece('flagpole', 'pirate flag on a short pole planted in a big square stone pedestal block seen from above, black flag with white skull', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['깃발', '해적'],
+       desc='해적 깃대(넓은 돌 받침·검은 해골 깃발, 글자 없음). 요새·부두 광장.')
 def _flag(c):
-    c.R(3, 40, 7, 3, K('stone', 2)); c.HL(3, 40, 7, K('stone', 3)); c.R(3, 43, 7, 3, K('stone', -1)); c.HL(3, 45, 7, K('stone', -2))   # 받침돌(윗면)
-    c.R(5, 2, 2, 38, K('wood', 0)); c.VL(5, 2, 38, K('wood', 2))
-    c.ell(6, 2, 1.5, 1, K('gold', 2))
-    for j in range(9):
-        wv = int(round(math.sin(j / 2.5)))
-        for i in range(9):
-            c.P(7 + i, 3 + j + int(round(math.sin((i + 1) / 2.2) * 1.2)), K('shadow', 1 if i < 3 else 2 if (i + j) % 5 else 1))
-    sx, sy = 10, 5
-    c.R(sx, sy, 3, 3, K('bone', 3)); c.P(sx, sy + 1, K('shadow', 0)); c.P(sx + 2, sy + 1, K('shadow', 0)); c.P(sx + 1, sy + 3, K('bone', 1))
-    c.line(sx - 1, sy + 4, sx + 3, sy + 6, K('bone', 2)); c.line(sx + 3, sy + 4, sx - 1, sy + 6, K('bone', 2))
+    slab_top(c, 1, 17, 14, 6, 'stone', 1, inset=1, s=2)
+    stones(c, 1, 23, 14, 8, 'stone', -1, bh=4, s=2); c.HL(1, 30, 14, K('stone', -3))
+    c.ellf(8, 19.5, 2.5, 1.3, lambda x, y, nx, ny, d: K('shadow', 1))
+    c.R(7, 1, 2, 19, K('wood', 0)); c.VL(7, 1, 19, K('wood', 2))
+    c.R(6, 0, 4, 2, K('gold', 1)); c.HL(6, 0, 4, K('gold', 3))
+    for j in range(8):
+        for i in range(7):
+            c.P(9 + i, 2 + j + int(round(math.sin((i + 1) / 2.2) * 1.0)), K('shadow', 1 if i < 2 else 2 if (i + j) % 5 else 1))
+    sx, sy = 11, 4
+    c.R(sx, sy, 3, 2, K('bone', 3)); c.P(sx, sy + 1, K('shadow', 0)); c.P(sx + 2, sy + 1, K('shadow', 0)); c.P(sx + 1, sy + 2, K('bone', 1))
+    c.line(sx - 1, sy + 3, sx + 3, sy + 5, K('bone', 2)); c.line(sx + 3, sy + 3, sx - 1, sy + 5, K('bone', 2))
     c.outline()
 
 
-@piece('lantern-post', 'wooden lantern post with a glowing oil lamp', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['등불', '항구'], desc='등불 기둥(기름 등).')
+@piece('lantern-post', 'harbor brazier lamp: iron post with a wide open fire bowl on top seen from above, flame inside the bowl, round stone base', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['등불', '항구'], desc='부두 화로 등(쇠 기둥 위 불 그릇).')
 def _lpost(c):
-    c.R(5, 27, 6, 3, K('stone', 2)); c.HL(5, 27, 6, K('stone', 3)); c.R(5, 30, 6, 2, K('stone', -1))
-    c.R(7, 6, 3, 21, K('wood', 0)); c.VL(7, 6, 21, K('wood', 2)); c.VL(9, 6, 21, K('wood', -2))
-    c.R(8, 4, 6, 2, K('iron', 0)); c.HL(8, 4, 6, K('iron', 2))
-    c.R(10, 6, 5, 7, K('iron', -1)); c.R(11, 7, 3, 5, K('fire', 2)); c.P(11, 8, K('fire', 3)); c.HL(10, 6, 5, K('iron', 1))
-    c.ell(12.5, 5, 2, 1, K('iron', 1))
+    c.ellf(8, 27, 6, 3, lambda x, y, nx, ny, d: K('stone', 2 if ny < -.2 else 1 if ny < .3 else -1))
+    c.ellf(8, 29.5, 6, 2, lambda x, y, nx, ny, d: K('stone', -2) if ny > 0 else None)
+    c.R(7, 9, 3, 18, K('iron', 0)); c.VL(7, 9, 18, K('iron', 2)); c.VL(9, 9, 18, K('iron', -2))
+    for y in range(6, 11):
+        w = 6 - (y - 6)
+        c.HL(8 - w, y, 2 * w + 1, K('iron', -1 if y > 7 else 0)); c.P(8 - w, y, K('iron', 1))
+    c.ellf(8, 5.5, 6, 3, lambda x, y, nx, ny, d: K('iron', 2 if ny > 0 else 0) if d > .65 else K('fire', 1 if ny < 0 else 0))
+    for (x, y, t) in ((8, 0, 2), (7, 1, 2), (9, 1, 3), (8, 2, 3), (6, 3, 1), (10, 3, 1), (7, 4, 3), (9, 4, 2), (8, 5, 3), (5, 5, 0), (11, 5, 0)):
+        c.P(x, y, K('fire', t))
     c.outline()
 
 
-@piece('tiki-torch', 'bamboo tiki torch with burning flame', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['횃불', '마을'], desc='대나무 횃불(불꽃). 마을 길가·모닥불 곁.')
+@piece('tiki-torch', 'bamboo tiki torch on a round stone base, flame burning in an open bowl seen from above', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['횃불', '마을'], desc='대나무 횃불(돌 받침·불꽃). 마을 길가·모닥불 곁.')
 def _tiki(c):
-    for y in range(10, 30):
+    c.ellf(8, 27, 6, 3, lambda x, y, nx, ny, d: K('stone', 2 if ny < -.2 else 1 if ny < .3 else -1) if d > .35 or ny > 0 else K('sand', -1))
+    c.ellf(8, 29.5, 6, 2, lambda x, y, nx, ny, d: K('stone', -2) if ny > 0 else None)
+    for y in range(10, 27):
         c.P(7, y, K('thatch', 1)); c.P(8, y, K('thatch', 0)); c.P(9, y, K('thatch', -2))
         if y % 6 == 0: c.HL(7, y, 3, K('thatch', -2))
-    c.ell(8, 30, 3, 1.2, K('rock', -1))
-    c.R(5, 6, 7, 5, K('thatch', -1)); c.HL(5, 6, 7, K('thatch', 2)); c.HL(5, 10, 7, K('thatch', -3))
-    c.ellf(8.5, 5, 2.5, 1.2, lambda x, y, nx, ny, d: K('shadow', 1))                            # 통 아가리
-    for (x, y, t) in ((8, 0, 2), (7, 1, 1), (9, 1, 3), (8, 2, 3), (7, 3, 2), (9, 3, 1), (8, 4, 2), (6, 3, 0), (10, 2, 0)):
-        c.P(x, y, K('fire', t + 1))
+    c.R(3, 7, 11, 4, K('thatch', -1)); c.HL(3, 10, 11, K('thatch', -3))
+    c.ellf(8.5, 6.5, 5.5, 3, lambda x, y, nx, ny, d: K('thatch', 2 if ny < 0 else 1) if d > .6 else K('shadow', 1))   # 그릇 테 + 아가리
+    for (x, y, t) in ((8, 0, 2), (7, 1, 1), (9, 1, 3), (8, 2, 3), (7, 3, 2), (9, 3, 2), (8, 4, 3), (6, 4, 1), (10, 4, 1), (8, 5, 2), (7, 6, 1), (9, 6, 1), (6, 2, 0), (10, 2, 0)):
+        c.P(x, y, K('fire', t))
     c.outline()
 
 
@@ -218,18 +273,14 @@ def _tstools(c):
     c.outline()
 
 
-@piece('chest-closed', 'closed wooden treasure chest with iron bands and gold lock', 1, 1, 'box', group='props', solid=[(0, 0)], tags=['보물', '상자'], desc='닫힌 보물 상자(쇠 띠·금 자물쇠).')
+@piece('chest-closed', 'closed wooden treasure chest seen from above at an angle: flat plank lid top face, darker front with gold lock', 1, 1, 'box', group='props', solid=[(0, 0)], tags=['보물', '상자'], desc='닫힌 보물 상자(쇠 띠·금 자물쇠).')
 def _chest(c):
-    # 둥근 뚜껑(윗면) + 몸통(앞면)
-    for y in range(2, 8):
-        for x in range(1, 15):
-            t = 2 if y < 4 else 1 if y < 6 else 0
-            c.P(x, y, K('wood', t - (1 if (x % 5 == 0) else 0)))
-    c.HL(1, 2, 14, K('wood', 0)); c.HL(2, 1, 12, K('wood', 1))
-    c.R(1, 8, 14, 7, K('wood', -1)); c.HL(1, 8, 14, K('wood', -3)); c.HL(1, 14, 14, K('wood', -3))
-    for bx in (3, 11):
-        c.R(bx, 1, 2, 14, K('iron', 0)); c.VL(bx, 1, 14, K('iron', 2))
-    c.R(7, 7, 2, 4, K('gold', 2)); c.P(7, 9, K('shadow', 0)); c.P(8, 7, K('gold', 0))
+    slab_top(c, 1, 2, 14, 6, 'wood', 1, inset=1, s=4)
+    c.R(1, 8, 14, 7, K('wood', -1)); c.HL(1, 14, 14, K('wood', -3)); c.VL(1, 8, 7, K('wood', 0)); c.VL(14, 8, 7, K('wood', -2))
+    for bx in (4, 10):
+        for j in range(6): c.P(bx + (1 if j < 3 and bx < 8 else -1 if j < 3 else 0) * 0, 2 + j, K('iron', 1 if j < 5 else 2))
+        c.R(bx, 8, 2, 7, K('iron', -1)); c.VL(bx, 8, 7, K('iron', 1))
+    c.R(7, 8, 2, 3, K('gold', 2)); c.P(7, 9, K('shadow', 0)); c.P(8, 10, K('gold', 0))
     c.outline()
 
 
@@ -257,167 +308,184 @@ def _gold(c):
     c.outline()
 
 
-@piece('bollard', 'iron mooring bollard on the quay', 1, 1, 'column', group='props', solid=[(0, 0)], tags=['계선주', '항구'], desc='쇠 계선주(부두 가장자리에 배를 매는 기둥).')
+@piece('bollard', 'iron mooring bollard bolted on a square stone quay block, mushroom cap seen from above', 1, 1, 'column', group='props', solid=[(0, 0)], tags=['계선주', '항구'], desc='쇠 계선주(돌 받침, 배를 매는 기둥).')
 def _bollard(c):
-    c.R(4, 12, 8, 3, K('iron', -1)); c.HL(4, 12, 8, K('iron', 1))
+    box(c, 0, 8, 16, 5, 3, 'stone', tt=1, ft=-1, s=5)
     for y in range(5, 12):
         for x in range(5, 11):
             nx = (x + .5 - 8) / 3
             c.P(x, y, K('iron', 1 if nx < -.3 else 0 if nx < .4 else -2))
-    c.ellf(8, 4.5, 4, 2, lambda x, y, nx, ny, d: K('iron', 2 if ny < 0 else 0))
-    c.ellf(8, 4.5, 2, 1, lambda x, y, nx, ny, d: K('iron', 3))
-    for k in range(5): c.P(4 + k * 2, 8 + k % 2, K('thatch', 0)); c.P(5 + k * 2, 8 + k % 2, K('thatch', -1))   # 감긴 밧줄
+    c.ellf(8, 4, 5, 3, lambda x, y, nx, ny, d: K('iron', 3 if d < .4 and ny < .2 else 2 if ny < 0 else 0) if d > .0 else None)
+    c.ellf(8, 4, 5, 3, lambda x, y, nx, ny, d: K('iron', -2) if d > .8 and ny > .2 else None)
+    for k in range(5): c.P(4 + k * 2, 8 + k % 2, K('thatch', 0)); c.P(5 + k * 2, 8 + k % 2, K('thatch', -1))
     c.outline()
 
 
-@piece('pier-post', 'thick wooden pier post with rope wrap', 1, 1, 'column', group='props', solid=[(0, 0)], tags=['말뚝', '항구'], desc='굵은 나무 부두 말뚝(밧줄 감김).')
+@piece('pier-post', 'thick round wooden pier post, sawn top end with tree rings seen from above, rope wrap', 1, 1, 'column', group='props', solid=[(0, 0)], tags=['말뚝', '항구'], desc='굵은 나무 부두 말뚝(밧줄 감김).')
 def _ppost(c):
     for y in range(4, 15):
-        for x in range(5, 11):
-            nx = (x + .5 - 8) / 3
-            c.P(x, y, K('dark', (2 if nx < -.3 else 1 if nx < .4 else -1) - (1 if (y + x) % 5 == 0 else 0)))
-    c.ellf(8, 4, 3, 1.6, lambda x, y, nx, ny, d: K('wood', 1 if d > .5 else 0 if (x + y) % 2 else -1))
-    for k in range(3): c.HL(5, 8 + k * 2, 6, K('thatch', 0 if k % 2 else -1)); c.P(5, 8 + k * 2, K('thatch', 1))
+        for x in range(3, 13):
+            nx = (x + .5 - 8) / 5
+            c.P(x, y, K('dark', (1 if nx < -.4 else 0 if nx < .3 else -2) - (1 if (y + x) % 5 == 0 else 0)))
+    c.ellf(8, 15, 5, 1.2, lambda x, y, nx, ny, d: K('dark', -3) if ny > 0 else None)
+    c.ellf(8, 4, 5, 3, lambda x, y, nx, ny, d: K('dark', 1) if d > .82 else K('sand', 0 if .4 < d < .6 else 2 if ny < 0 else 1))
+    c.P(8, 4, K('sand', -1))
+    for k in range(2): c.HL(3, 9 + k * 2, 10, K('thatch', 0 if k % 2 else -1)); c.P(3, 9 + k * 2, K('thatch', 1))
     c.outline()
 
 
-@piece('signpost', 'wooden signpost with three blank arrow boards', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['푯말', '마을'], desc='갈림길 푯말(빈 화살 판 셋, 글자 없음).')
+@piece('signpost', 'square wooden signpost seen from above at an angle: thick post with flat light top face, three blank arrow boards, stone foot', 1, 2, 'column', group='props', solid=[(0, 1)], tags=['푯말', '마을'], desc='갈림길 푯말(빈 화살 판 셋, 글자 없음).')
 def _sign(c):
-    c.R(7, 4, 3, 26, K('wood', 0)); c.VL(7, 4, 26, K('wood', 2)); c.VL(9, 4, 26, K('wood', -2))
-    c.ell(8.5, 4, 1.5, 1, K('wood', 2))
-    for (y, d, w) in ((6, 1, 7), (11, -1, 7), (16, 1, 6)):
-        x0 = 9 if d > 0 else 1
-        c.R(x0, y, w, 4, K('wood', 1)); c.HL(x0, y, w, K('wood', 2)); c.HL(x0, y + 3, w, K('wood', -2))
-        tip = x0 + w if d > 0 else x0 - 1
-        c.P(tip, y + 1, K('wood', 0)); c.P(tip, y + 2, K('wood', -1))
-    c.R(5, 29, 7, 2, K('sand', -1))
+    c.R(2, 25, 12, 3, K('stone', 2)); c.HL(2, 25, 12, K('stone', 0)); c.R(2, 28, 12, 3, K('stone', -1)); c.HL(2, 30, 12, K('stone', -3))
+    c.R(5, 6, 6, 20, K('wood', -1)); c.VL(5, 6, 20, K('wood', 0)); c.VL(10, 6, 20, K('wood', -3))
+    c.R(5, 2, 6, 4, K('sand', 1)); c.HL(5, 2, 6, K('wood', 0)); c.HL(5, 5, 6, K('sand', 2))           # 윗면(밝은 나뭇결)
+    for (y, d, w) in ((8, 1, 5), (13, -1, 5), (18, 1, 5)):
+        x0 = 11 if d > 0 else 0
+        c.R(x0, y, w, 2, K('sand', 1)); c.HL(x0, y, w, K('wood', 1))
+        c.R(x0, y + 2, w, 3, K('wood', 0)); c.HL(x0, y + 4, w, K('wood', -2))
     c.outline()
 
 
-@piece('fence', 'short wooden picket fence section', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['울타리', '마을'], desc='나무 울타리 한 칸(가로).')
+def fence_rail(c, x, y, w, mat='wood', t=1):
+    """울타리 맨 위 가로대: 위에서 본 판(3줄, 뒤 모서리 어둡게) + 앞면 1줄."""
+    c.HL(x, y, w, K(mat, t - 2)); c.R(x, y + 1, w, 2, K(mat, t + 1)); c.HL(x, y + 2, w, K(mat, t)); c.HL(x, y + 3, w, K(mat, t - 2))
+
+
+@piece('fence', 'wooden fence section of round log posts with sawn tops seen from above, two rails', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['울타리', '마을'], desc='나무 울타리 한 칸(가로).')
 def _fence(c):
-    for x in range(1, 31, 5):
-        c.R(x, 3, 3, 12, K('wood', 0)); c.VL(x, 3, 12, K('wood', 2)); c.VL(x + 2, 3, 12, K('wood', -2))
-        c.ell(x + 1.5, 3, 1.5, 1, K('wood', 2))
-    for y in (6, 11): c.HL(0, y, 32, K('wood', 1)); c.HL(0, y + 1, 32, K('wood', -2))
+    for y in (7, 11): c.HL(0, y, 32, K('wood', 1)); c.HL(0, y + 1, 32, K('wood', -2))
+    for x in range(0, 32, 4):
+        top = 3 + (x // 4) % 2
+        c.R(x, top + 1, 3, 15 - top - 1, K('wood', 0)); c.VL(x, top + 1, 15 - top - 1, K('wood', 1)); c.VL(x + 2, top + 1, 15 - top - 1, K('wood', -2))
+        c.R(x, top - 2, 3, 3, K('sand', 1)); c.P(x + 1, top - 1, K('sand', -1)); c.HL(x, top - 2, 3, K('wood', -1)); c.HL(x, top, 3, K('sand', 2))
     c.outline()
 
 
-@piece('fence-bamboo', 'bamboo pole fence section lashed with rope', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['울타리', '마을'], desc='대나무 울타리 한 칸.')
+@piece('fence-bamboo', 'bamboo pole fence section, hollow cut bamboo tops seen from above, lashed with rope', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['울타리', '마을'], desc='대나무 울타리 한 칸.')
 def _fbamboo(c):
     for x in range(0, 32, 3):
-        h = 10 + (x // 3) % 3
-        for y in range(15 - h, 15):
-            c.P(x, y, K('thatch', 1)); c.P(x + 1, y, K('thatch', -1))
-            if (y + x) % 7 == 0: c.HL(x, y, 2, K('thatch', -2))
-        c.P(x, 15 - h, K('thatch', 3)); c.P(x + 1, 15 - h, K('thatch', 2))
-    for y in (6, 11): c.HL(0, y, 32, K('wood', -1))
+        top = 4 + (x // 3) % 2
+        for y in range(top, 15):
+            c.P(x, y, K('thatch', 1)); c.P(x + 1, y, K('thatch', -1)); c.P(x + 2, y, K('thatch', -2))
+            if (y + x) % 7 == 0: c.HL(x, y, 3, K('thatch', -2))
+        c.R(x, top - 2, 3, 3, K('thatch', 2)); c.P(x + 1, top - 1, K('shadow', 1)); c.HL(x, top - 2, 3, K('thatch', 3))   # 자른 대 끝(구멍)
+    for y in (7, 11): c.HL(0, y, 32, K('wood', -1)); c.HL(0, y + 1, 32, K('thatch', -3))
     c.outline()
 
 
-@piece('net-rack', 'wooden drying rack with fishing nets hanging', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['그물', '항구'], desc='그물 말리는 나무 틀(아래 줄 막힘).')
+def rack_frame(c, x0, x1, yb, yf, post_h, mat='wood'):
+    """3/4 시렁 틀: 뒤 기둥 둘(yb) + 앞 기둥 둘(yf) + 위 가로대 사각(윗면으로 보인다)."""
+    for px in (x0, x1 - 2):
+        c.R(px, yb, 2, post_h, K(mat, -1)); c.R(px, yf, 2, post_h, K(mat, 0)); c.VL(px, yf, post_h, K(mat, 2))
+    c.HL(x0, yb, x1 - x0, K(mat, 1)); c.HL(x0, yb - 1, x1 - x0, K(mat, -1))
+    c.R(x0, yf, x1 - x0, 2, K(mat, 1)); c.HL(x0, yf, x1 - x0, K(mat, 3)); c.HL(x0, yf + 2, x1 - x0, K(mat, -2))
+    for px in (x0, x1 - 2): c.R(px, yb, 2, yf - yb, K(mat, 1))
+
+
+@piece('net-rack', 'low wooden drying table seen from above at an angle, slatted top face covered by a spread fishing net, net hanging over the front edge', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['그물', '항구'], desc='그물 말리는 나무 틀(아래 줄 막힘).')
 def _netrack(c):
-    for px in (3, 27):
-        c.R(px, 6, 3, 24, K('wood', 0)); c.VL(px, 6, 24, K('wood', 2)); c.ell(px + 1.5, 6, 1.5, 1, K('wood', 2))
-    c.R(1, 7, 30, 3, K('wood', 1)); c.HL(1, 7, 30, K('wood', 3)); c.HL(1, 9, 30, K('wood', -2))
-    for y in range(10, 24):
-        for x in range(6, 27):
-            sag = int(3 * math.sin(math.pi * (x - 6) / 21))
-            if y > 22 + sag - 3 + sag: continue
-            if (x + y) % 3 == 0 or (x - y) % 3 == 0: c.P(x, y + sag // 2, K('teal', 1 if (x + y) % 2 else 0))
-    for (x, y) in ((9, 21), (16, 24), (23, 21)): c.P(x, y, K('red', 2)); c.P(x + 1, y, K('red', 0))
+    slab_top(c, 1, 8, 30, 10, 'wood', 0, inset=2, s=7)
+    c.R(1, 18, 30, 3, K('wood', -1)); c.HL(1, 20, 30, K('wood', -3))
+    for lx in (2, 28): c.R(lx, 21, 2, 8, K('wood', -1)); c.VL(lx, 21, 8, K('wood', 0))
+    for y in range(9, 24):
+        for x in range(4, 28):
+            if y >= 18 and y > 18 + int(6 * math.sin(math.pi * (x - 4) / 24)): continue
+            if (x + y) % 3 == 0 or (x - y) % 3 == 0: c.P(x, y, K('teal', 2 if y < 18 else 0 if (x + y) % 2 else -1))
+    for (x, y) in ((8, 11), (16, 14), (23, 10), (12, 20), (20, 21)): c.P(x, y, K('red', 2)); c.P(x + 1, y, K('red', 0))
     c.outline()
 
 
-@piece('fish-rack', 'fish drying rack with hanging fish', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['생선', '마을'], desc='생선 말리는 시렁(매단 생선).')
+@piece('fish-rack', 'low wooden fish drying table seen from above at an angle, split fish laid out on the slatted top face', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['생선', '마을'], desc='생선 말리는 시렁(가로대 위 생선).')
 def _fishrack(c):
-    for px in (3, 27):
-        c.R(px, 8, 2, 22, K('wood', 0)); c.VL(px, 8, 22, K('wood', 2))
-    c.R(1, 8, 30, 2, K('wood', 1)); c.HL(1, 8, 30, K('wood', 3))
+    slab_top(c, 1, 8, 30, 10, 'wood', 0, inset=2, s=8)
+    c.R(1, 18, 30, 3, K('wood', -1)); c.HL(1, 20, 30, K('wood', -3))
+    for lx in (2, 28): c.R(lx, 21, 2, 8, K('wood', -1)); c.VL(lx, 21, 8, K('wood', 0))
     for k in range(6):
-        x = 7 + k * 4; L = 7 + k % 2
-        c.VL(x, 10, 2, K('thatch', -1))
-        for j in range(L):
-            c.P(x - 1, 12 + j, K('blue', 1)); c.P(x, 12 + j, K('iron', 1 if j < L // 2 else 0)); c.P(x + 1, 12 + j, K('blue', -1))
-        c.P(x - 1, 12 + L, K('blue', 0)); c.P(x + 1, 12 + L, K('blue', 0))
+        x = 5 + k * 4; y = 10 + (k % 2)
+        c.R(x, y, 3, 6, K('iron', 1)); c.VL(x, y, 6, K('blue', 2)); c.VL(x + 2, y, 6, K('blue', -1)); c.HL(x, y + 5, 3, K('blue', 0)); c.P(x + 1, y + 1, K('coral', 1))
     c.outline()
 
 
-@piece('hammock', 'rope hammock strung between two posts', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['그물 침대', '해변'], desc='두 기둥 사이 그물 침대.')
+@piece('hammock', 'woven rope hammock strung between two posts, deep hollow cloth bed seen from above', 2, 1, 'frame', group='props', solid=[(0, 0), (1, 0)], tags=['그물 침대', '해변'], desc='두 기둥 사이 그물 침대.')
 def _hammock(c):
-    for px in (1, 29):
-        c.R(px, 0, 2, 16, K('wood', 0)); c.VL(px, 0, 16, K('wood', 2)); c.ell(px + 1, 0, 1, 1, K('wood', 2))
-    for x in range(3, 29):
-        sag = int(5 * math.sin(math.pi * (x - 3) / 26))
-        for j in range(4):
-            c.P(x, 3 + sag + j, K('cloth', (2 if j == 0 else 1 if j < 3 else -1) - (1 if x % 4 == 0 else 0)))
-    c.line(3, 2, 6, 4, K('thatch', -1)); c.line(28, 2, 25, 4, K('thatch', -1))
+    for px in (0, 30):
+        c.R(px, 2, 2, 14, K('wood', 0)); c.VL(px, 2, 14, K('wood', 2)); c.R(px, 0, 2, 2, K('sand', 1))
+    def bed(x, y, nx, ny, d):
+        if d > .84: return K('thatch', -2) if ny < 0 else K('thatch', 2)
+        if ny < -.25: return K('thatch', -1)
+        if x % 6 == 3: return K('red', 0 if ny < .4 else -1)
+        return K('thatch', 1 if (x + y) % 4 else 0)
+    c.ellf(16, 8, 13.5, 6, bed)
+    c.line(2, 3, 3, 7, K('thatch', -1)); c.line(29, 3, 29, 7, K('thatch', -1))
     c.outline()
 
 
-@piece('totem', 'carved wooden tiki totem pole with painted face', 1, 2, 'figure', group='props', solid=[(0, 1)], tags=['토템', '마을'], desc='새긴 나무 토템(칠한 얼굴). 마을 광장.')
+@piece('totem', 'carved wooden tiki totem pole with painted faces on a square stone base, flat carved head top', 1, 2, 'figure', group='props', solid=[(0, 1)], tags=['토템', '마을'], desc='새긴 나무 토템(칠한 얼굴). 마을 광장.')
 def _totem(c):
-    c.R(3, 27, 10, 3, K('stone', 2)); c.HL(3, 27, 10, K('stone', 3)); c.R(3, 30, 10, 2, K('stone', -1))
-    for y in range(4, 27):
+    box(c, 0, 24, 16, 5, 3, 'stone', tt=1, ft=-1, s=8)
+    for y in range(5, 26):
         for x in range(4, 12):
             nx = (x + .5 - 8) / 4
             c.P(x, y, K('wood', (1 if nx < -.3 else 0 if nx < .4 else -2)))
-    c.ellf(8, 4, 4, 1.8, lambda x, y, nx, ny, d: K('wood', 2))
-    for fy in (7, 17):
+    c.ellf(8, 4, 5, 3, lambda x, y, nx, ny, d: K('wood', 3 if d < .4 else 2 if ny < .3 else 1))
+    c.ellf(8, 4, 5, 3, lambda x, y, nx, ny, d: K('teal', 1) if .55 < d < .75 else None)
+    for fy in (8, 17):
         c.R(5, fy, 2, 2, K('bone', 3)); c.R(9, fy, 2, 2, K('bone', 3)); c.P(6, fy + 1, K('shadow', 0)); c.P(10, fy + 1, K('shadow', 0))
         c.R(5, fy + 4, 6, 2, K('red', 1)); c.HL(6, fy + 4, 4, K('bone', 2))
-        c.HL(4, fy - 1, 8, K('teal', 1))
     c.R(1, 14, 3, 2, K('wood', 1)); c.R(12, 14, 3, 2, K('wood', -1))
     c.outline()
 
 
-@piece('palisade', 'sharpened log palisade wall section', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['목책', '요새'], desc='뾰족 통나무 목책 한 칸(가로 2칸, 아래 줄 막힘).')
+@piece('palisade', 'thick log palisade wall section, flat sawn log ends visible along the top', 2, 2, 'frame', group='props', solid=[(0, 1), (1, 1)], tags=['목책', '요새'], desc='통나무 목책 한 칸(가로 2칸, 아래 줄 막힘).')
 def _palisade(c):
     for x in range(0, 32, 4):
-        h = 22 + (x // 4) % 2 * 2
-        top = 30 - h
-        for y in range(top, 30):
+        for y in range(10, 31):
             for i in range(4):
                 t = (1 if i == 0 else 0 if i < 2 else -1 if i < 3 else -3)
-                if (y - top) % 9 == 8: t -= 1
+                if (y - 10) % 9 == 8: t -= 1
                 c.P(x + i, y, K('wood', t))
-        c.P(x + 1, top - 2, K('wood', 2)); c.HL(x + 1, top - 1, 2, K('wood', 1)); c.HL(x, top, 4, K('wood', 0))
-        c.ellf(x + 2, top + 1, 2, 1, lambda xx, yy, nx, ny, d: K('wood', 2))
-    for y in (12, 22): c.HL(0, y, 32, K('thatch', -1)); c.HL(0, y + 1, 32, K('thatch', -3))
+    c.R(0, 2, 32, 8, K('wood', -3))
+    for (row, yy, off) in ((0, 3, 2), (1, 7, 0)):                                   # 윗면: 통나무 마구리 두 줄(뒤·앞)
+        for x in range(off, 32, 4):
+            for (dx, dy, t) in ((1, -1, 1), (2, -1, 1), (0, 0, 1), (1, 0, 2), (2, 0, 2), (3, 0, 0), (0, 1, 0), (1, 1, 1), (2, 1, 1), (3, 1, -1), (1, 2, -1), (2, 2, -1)):
+                c.P(x + dx, yy + dy, K('sand' if t >= 1 else 'wood', t - row))
+            c.P(x + 1, yy, K('wood', 1))
+    for y in (15, 24): c.HL(0, y, 32, K('thatch', -1)); c.HL(0, y + 1, 32, K('thatch', -3))
     c.outline()
 
 
-@piece('lobster-traps', 'stacked wooden lobster traps with rope', 1, 1, 'box', group='props', solid=[(0, 0)], tags=['통발', '항구'], desc='쌓은 나무 통발.')
+@piece('lobster-traps', 'two stacked slatted wooden lobster traps, slatted lids seen from above', 1, 1, 'box', group='props', solid=[(0, 0)], tags=['통발', '항구'], desc='쌓은 나무 통발.')
 def _traps(c):
-    for (x, y) in ((1, 7), (8, 8), (4, 1)):
-        box(c, x, y, 8, 3, 5, 'wood', tt=1, ft=-1)
-        for i in range(x + 1, x + 8, 2): c.VL(i, y + 3, 5, K('shadow', 1))
-        c.HL(x, y + 5, 8, K('wood', 0))
+    box(c, 0, 7, 16, 5, 4, 'wood', tt=1, ft=-1)
+    for i in range(1, 16, 3): c.VL(i, 8, 3, K('shadow', 1)); c.VL(i, 12, 3, K('shadow', 1))
+    box(c, 2, 0, 11, 5, 4, 'wood', tt=2, ft=-1)
+    for i in range(3, 13, 3): c.VL(i, 1, 3, K('shadow', 1)); c.VL(i, 5, 3, K('shadow', 1))
+    c.line(13, 2, 15, 9, K('thatch', -1))
     c.outline()
 
 
-@piece('oar-rack', 'rack of leaning oars and a paddle', 1, 2, 'frame', group='props', solid=[(0, 1)], tags=['노', '항구'], desc='세워 둔 노 걸이.')
+@piece('oar-rack', 'wooden oar stand box seen from above with oars standing upright in it', 1, 2, 'frame', group='props', solid=[(0, 1)], tags=['노', '항구'], desc='세워 둔 노 걸이.')
 def _oars(c):
-    c.R(1, 22, 14, 3, K('wood', 1)); c.HL(1, 22, 14, K('wood', 3)); c.R(1, 25, 14, 4, K('wood', -1)); c.HL(1, 28, 14, K('wood', -3))
+    box(c, 0, 17, 16, 8, 6, 'wood', tt=1, ft=-1, tex='planks', s=9)
     for k in range(4):
-        x = 3 + k * 3
-        c.line(x, 22, x + 1, 2, K('wood', 2 - k % 2)); c.R(x, 1, 3, 6, K('wood', 1 - k % 2)); c.HL(x, 1, 3, K('wood', 2))
+        x = 2 + k * 3 + (k % 2)
+        y0 = 1 + (k % 2) * 2
+        c.R(x, y0, 3, 8, K('wood', 2)); c.VL(x + 2, y0, 8, K('wood', 0)); c.HL(x, y0, 3, K('wood', 3)); c.HL(x, y0 + 7, 3, K('wood', -1))
+        c.R(x + 1, y0 + 8, 2, 22 - y0 - 8, K('wood', 1)); c.VL(x + 2, y0 + 8, 22 - y0 - 8, K('wood', -1))
+        c.R(x, 21, 4, 2, K('shadow', 1))
     c.outline()
 
 
-@piece('dock-crane', 'wooden dock crane with pulley and hanging cargo net', 2, 3, 'structure', group='props', solid=[(0, 2), (1, 2)], tags=['기중기', '항구'],
-       desc='부두 나무 기중기(도르래·매단 화물 그물). 방파제 가장자리.')
+@piece('dock-crane', 'wooden dock crane house with a plank roof seen from above, big treadwheel in front, jib arm with pulley and a hanging crate', 2, 3, 'structure', group='props', solid=[(0, 2), (1, 2), (0, 1)], tags=['기중기', '항구'],
+       desc='부두 나무 기중기(판자 지붕 집·바퀴·팔·매단 상자). 방파제 가장자리.')
 def _crane(c):
-    box(c, 2, 36, 14, 6, 6, 'wood', tt=1, ft=-1, tex='planks', s=9)
-    c.R(7, 4, 4, 32, K('dark', 1)); c.VL(7, 4, 32, K('dark', 3)); c.VL(10, 4, 32, K('dark', -1))
-    c.line(9, 6, 29, 4, K('dark', 1)); c.line(9, 7, 29, 5, K('dark', -1)); c.line(9, 20, 26, 5, K('dark', 0))
-    c.ell(28, 6, 2, 2, K('iron', 0)); c.P(28, 6, K('iron', 2))
-    c.VL(28, 8, 18, K('thatch', -1))
-    for y in range(26, 36):
-        for x in range(22, 34):
-            if ((x - 22) + y) % 3 == 0 or ((x - 22) - y) % 3 == 0:
-                if abs(x - 28) <= 6 - (35 - y) // 3: c.P(x, y, K('thatch', 0))
-    crate_draw(c, 23, 28, 10, 3, 5, s=3)
+    slab_top(c, 1, 18, 20, 10, 'wood', 1, inset=2, s=9)                  # 집 지붕(윗면)
+    c.R(1, 28, 20, 16, K('wood', -1)); c.VL(1, 28, 16, K('wood', 0)); c.VL(20, 28, 16, K('wood', -3)); c.HL(1, 43, 20, K('wood', -3))
+    c.ellf(11, 36, 7, 7, lambda x, y, nx, ny, d: K('dark', 1 if ny < 0 else -1) if d > .78 else (K('dark', 0) if abs(nx) < .12 or abs(ny) < .12 else None))
+    c.R(10, 35, 2, 2, K('iron', 2))
+    c.line(16, 20, 30, 4, K('dark', 1)); c.line(16, 21, 30, 5, K('dark', -1)); c.line(16, 26, 28, 6, K('dark', 0))
+    c.ellf(29, 5, 2, 2, lambda x, y, nx, ny, d: K('iron', 2 if ny < 0 else 0)); c.VL(29, 7, 10, K('thatch', -1))
+    crate_draw(c, 24, 17, 10, 4, 5, s=3)
     c.outline()
 
 

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a8455c95544946b9c41059c0f39f311876cd60fe48cba667b85b8fe986191b6c",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "big ornate closed treasure chest seen from above at 3/4: deep domed lid with gold bands and corner plates, big gold lock",
+ "label": "pirate-isles/pi-chest-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed treasure chest lid and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest lid is clearly visible and foreshortened from row 1 to row 6 (approx. 6 rows), lit brighter than the darker front vertical face (rows 8-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9829
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "treasure chest lid and front",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows its front face from rows 8 to 15 (8 rows) and the top of the lid foreshortened from rows 2 to 6 (5 rows), clearly showing the top surface from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9553
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed treasure chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chest lid occupies rows 1 to 6 (brightly illuminated horizontal surface), separated by the horizontal rim/band at row 7 from the shadowed south-facing front face below (rows 8-15). The lock clasp also clearly shows a top horizontal surface at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6256
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chest lid and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The domed lid is seen foreshortened from above across rows 1-6 down to the horizontal seam and lock at row 7, with the front face of the chest body occupying rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6292
+  }
+ ],
+ "decidedAt": "2026-10-13T19:41:01.300Z",
+ "cells": {
+  "16": [
+   "57d5cf5454c35d12",
+   "876cd849795ded59"
+  ],
+  "24": [
+   "0ff2e9fbe83bdc6d",
+   "487be032a6ee97b1",
+   "6c8e1e73b34e9de6",
+   "72616f8af5892d64",
+   "9ca055afaf44fbc1",
+   "a09d10b8d85ca4ca",
+   "aaad556857597fee",
+   "c57f8c7dab5fe6ea",
+   "d9f29b9a3cff0ae2",
+   "eae5d1f7bcc53e97",
+   "f630d6eb52030cad",
+   "fc60cc537f6b8ee0"
+  ],
+  "32": [
+   "40dbf8c8c5eed5c7",
+   "c397b9b27b05d50e"
+  ],
+  "48": [
+   "0c148a746c9c76ca",
+   "47d296d25c7e01c3",
+   "6918935e206d9c16",
+   "73a09b823550209e",
+   "ba847cd3d1129a3e",
+   "e4da33f6284d3d3d"
+  ]
+ }
+}

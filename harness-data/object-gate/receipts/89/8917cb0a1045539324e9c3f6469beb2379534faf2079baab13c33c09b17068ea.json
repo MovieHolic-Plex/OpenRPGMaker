@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8917cb0a1045539324e9c3f6469beb2379534faf2079baab13c33c09b17068ea",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel seen from above at an angle: round wooden lid disk with dark rim on top, staved body with iron hoops below",
+ "label": "pirate-isles/pi-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the object is drawn with a flat horizontal boundary (rows 0-1) rather than a foreshortened elliptical top cap. The interior coloring is garbled with disconnected yellow and brown bands (rows 1-3, 4, 5-7) rather than a coherent horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12955
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with straight horizontal iron hoops and no foreshortened top ellipse/lid visible. The arched top silhouette simply reflects the tapered chime of the barrel from a side/front angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13665
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with completely flat horizontal hoops (rows 7-8 and 11) and flat horizontal band divisions across rows 3-5. There is no visible top ellipse showing the lid surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12942
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is depicted in flat front elevation. The iron hoops (rows 7-8, 11) and bottom edge (row 14) are straight horizontal lines rather than elliptical arcs curving downwards, and there is no visible elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14346
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:04.820Z",
+ "cells": {
+  "16": [
+   "388c20d2ffa0388c"
+  ],
+  "24": [
+   "197acdcaa85ce454",
+   "40fc55f818cf62f5",
+   "77a665392015fcd1",
+   "862c9ee8a5133234",
+   "93aae0b852953078",
+   "d4d07b32632cac48"
+  ],
+  "32": [
+   "273b033f7efcb2d3",
+   "3987cddd2f96069b",
+   "48f2acd33087459f",
+   "75648181e3d31a6a",
+   "85c0e53a6b5c7cd5",
+   "f708abf3a47a0c97"
+  ],
+  "48": [
+   "170f89e20c826b82",
+   "30f1a0061bdd87c9",
+   "50c4d9fc5a5cac48",
+   "8c717469cb68649f",
+   "95609bfb4a48119c",
+   "b1dff39c606cf797"
+  ]
+ }
+}

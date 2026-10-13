@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56d9109df90c05c6f578110a2660bdd5c9c626b53d0a99bc4b5b7672aeaa1660",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "open burlap grain sack showing grain inside, with a closed sack behind",
+ "label": "pirate-isles/pi-sacks",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open burlap grain sack in foreground",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open sack has a clearly visible 5-row opening (rows 5-9) displaying grain inside seen from above in 3/4 view, with the sack front body extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4578
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "open burlap grain sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foreground grain sack features a clearly visible 5-row tall opening (rows 5-9) showing grain inside, foreshortened in 3/4 perspective above the front body (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open burlap grain sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foreground open sack has a clearly visible elliptical opening spanning rows 5 to 9 (5 rows tall) filled with grain and interior shading, viewed from above at a 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "open burlap grain sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The open grain sack displays a clearly foreshortened elliptical opening filled with grain across rows 5–9 (5 rows tall) viewed from above, with the south face occupying rows 10–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  }
+ ],
+ "decidedAt": "2026-10-13T19:25:15.328Z",
+ "cells": {
+  "16": [
+   "3d7d6b81ff595efb"
+  ],
+  "24": [
+   "1c875726d2258e11",
+   "55b947f52aeb5709",
+   "99a226a937e1f3cc",
+   "9e3755483ba0a552",
+   "bf1bee405b5e3bfc",
+   "cf2b919ac7edc809"
+  ],
+  "32": [
+   "1743bf9fb01d39a2",
+   "4902026fc340da67",
+   "6c727cd6d8057e8e",
+   "7c0fcb3c025c4ea1",
+   "e1ba6e97953e4d2f",
+   "e2c63db5b20492aa"
+  ],
+  "48": [
+   "54e273d2d7275a86",
+   "80adeb7be674d823",
+   "add89671d91d0251",
+   "b152324d69358ca1",
+   "b827a5684fc19544",
+   "d89bc461c11f7bf0"
+  ]
+ }
+}

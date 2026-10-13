@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0612b18b63451fd81ef9a3dca057ad6bdf5ef1e64c28156d1c78198b28c3a58e",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "small plank fish shack on the pier with net hanging and fish sign",
+ "label": "pirate-isles/pi-fish-shack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "thatched roof fish shack",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thatched roof presents a large southward-facing slope spanning rows 0 to 36 (37 pixels tall) above the vertical plank facade, fitting the standard RPG Maker building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3621
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "thatched plank shack",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, tiered thatched roof surface visible from rows 0 to 36 foreshortened toward the camera above the south-facing plank wall (rows 38-63), typical of standard top-down RPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3998
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "thatched roof fish shack",
+    "kind_matches": true,
+    "top_rows": 37,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large foreshortened front roof slope visible from rows 0 to 36 (37 rows tall) above the vertical wooden south wall (rows 38 to 63), adhering to classic RPG Maker 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4205
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched roof fish shack",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing thatched roof slope extending from row 1 to row 36 above the front wall, properly exhibiting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8807
+  }
+ ],
+ "decidedAt": "2026-10-13T19:16:35.210Z",
+ "cells": {
+  "16": [
+   "287cdd5f27102c39",
+   "45629e5f4ecfb44e",
+   "4a062c8c4259abba",
+   "4da37530a9b617c3",
+   "56d783df2691d3fe",
+   "8d5356b1dc7fcf9c",
+   "9029a756d48d44cc",
+   "e312bfc3735a66c8",
+   "e91c118dad778a52",
+   "ec0b88a5ba0982b9",
+   "f118ed96b6750abc",
+   "f8066999a6875560"
+  ],
+  "24": [
+   "17b315479f1d7d6a",
+   "17e2ce9d15e0fccc",
+   "2b8e722b63c5ffe3",
+   "5f3e1c5b0999e625",
+   "6f68627982bc4dd2",
+   "7b8208e22f8f1e4f",
+   "846780d61c47ef3c",
+   "a1c1734a9ad1288b",
+   "b055515f1a7a1b89",
+   "b7af1b34ab643dba",
+   "bce5f03435e925f1",
+   "e99edf7298279766"
+  ],
+  "32": [
+   "01a4541635d606ac",
+   "4095eefaf187fe4a",
+   "63be1e9aaadaeeef",
+   "71df4c38ac044aea",
+   "9e22cb883459b47b",
+   "b1af0c08dffe94ea",
+   "b3f48a7b72b0b8fb",
+   "c27645c07bc37f94",
+   "dfeb253e9dce38fc",
+   "e83c5058c53589a4",
+   "ea404da5057694b8",
+   "fd85438280789e5a"
+  ],
+  "48": [
+   "243fa546e36f15b2",
+   "3a023e954c44fb6c",
+   "e6055fe2e25ed4c3",
+   "fd7695b605ff95a0"
+  ]
+ }
+}

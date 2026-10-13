@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9c01adb6f0f6a38c176ecdbe1ad864cd74a10d1b90be1f04fe10bf14ebc373b",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "round dartboard with red and cream segments and two darts stuck in it",
+ "label": "pirate-isles/pi-dartboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dartboard hanging flat on a wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted object correctly drawn flat against the vertical wall surface without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7638
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dartboard face with segmented target and darts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular dartboard mounted flat to a vertical wall surface, displaying its circular face with segments and darts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7296
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round dartboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular dartboard mounted flat against a vertical wall, depicted frontally as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3488
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dartboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular dartboard mounted flat against the north wall, correctly rendered flat for its kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3783
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.189Z",
+ "cells": {
+  "16": [
+   "47e18c08cbeeb918"
+  ],
+  "24": [
+   "816f205301756076",
+   "9a2e7e58d986afa3",
+   "ad57d1bd13d736d0",
+   "df034c8f37a7984d",
+   "e4a3b040cae1c9b9",
+   "f65dd986548e0890"
+  ],
+  "32": [
+   "45732ad2f90c7e80",
+   "948873a0702ba1eb",
+   "9563074d29db6f57",
+   "ae031ab2b016f011",
+   "cb967f40a136922e",
+   "fb2dda6ee0caf244"
+  ],
+  "48": [
+   "023f90da995c1760",
+   "340aadb6300582cf",
+   "40060ca630124c5f",
+   "52f05907b2e61a62",
+   "8b1fb33f95ceaf81",
+   "ec7797fe5ebce34d"
+  ]
+ }
+}

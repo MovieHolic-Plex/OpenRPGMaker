@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec09adbb859e8efac9d767819b35ab6beb7c5b94b243635a68aa6ca3167909e1",
+ "width": 32,
+ "height": 16,
+ "kind": "other",
+ "name": "small wooden rowboat with two benches and oars, floating",
+ "label": "pirate-isles/pi-rowboat",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden rowboat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat is seen from a top-down 3/4 perspective: the interior floor and benches are visible looking down into the hull (rows 3-9), and the south exterior hull face curves down into the water (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9431
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden rowboat hull and interior",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat clearly displays its interior floor and benches viewed from above (rows 3-9, about 7 rows tall) alongside its south-facing exterior hull (rows 10-14), providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 5795
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boat hull with interior and benches",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the boat is fully visible from above across rows 2-9 showing floorboards and benches, while the south-facing exterior hull is visible below along rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6093
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rowboat hull and interior",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rowboat is shown in proper 3/4 perspective: the interior floor, planks, and two cross-benches are visible looking down into the boat across rows 2–9 (~8 rows deep), while the south hull and gunwale are shown facing the camera across rows 10–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8725
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:28.475Z",
+ "cells": {
+  "16": [
+   "3f5a958ce9e4471f",
+   "7df4b9dd911f7ac3"
+  ],
+  "24": [
+   "363f695151854d03",
+   "39a294184414312b",
+   "3d218c0b1ac373f7",
+   "4538505c57052448",
+   "464aed41c7d8bab8",
+   "48b198b0de30cfe9",
+   "a3288b9646a0c500",
+   "ac10c59be9560e12",
+   "af850e8c4df56295",
+   "bc379897d0f71488",
+   "ca7f15e63372bee1",
+   "eec21e9e32aff830"
+  ],
+  "32": [
+   "c348371abb041b39",
+   "c71a98dfae865d04"
+  ],
+  "48": [
+   "2d9b7f813330d024",
+   "3d0ce04e8ce7f82f",
+   "3ffa0a6a77f1552f",
+   "4acfd670f5843582",
+   "644eee69d074a856",
+   "94f8f1bbff365873"
+  ]
+ }
+}

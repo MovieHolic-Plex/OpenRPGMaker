@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fba6a132c75f65c4e1dacb6124936a9aad33cd910b11aae7ec281823229cc797",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "thick wooden pier post with rope wrap",
+ "label": "pirate-isles/pi-pier-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical post is shaded with vertical stripes that continue directly to the top edge without any visible flat elliptical cut face or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5980
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden pier post cylinder with rope wraps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation: the rope wraps are flat horizontal 1px stripes without curve, vertical shading extends unbroken to the rounded tip, and there is no foreshortened top cut surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8737
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pier post / wooden piling",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is drawn in pure front elevation: the rope wraps are completely straight horizontal 1px stripes without elliptical curvature, and the top lacks a visible flat cut surface (end grain), appearing simply as a rounded silhouette edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11466
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pier post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical pier post is drawn entirely from a side/front elevation. The top is rounded off with no foreshortened elliptical cut surface, and the rope wraps across the shaft are straight horizontal lines without perspective curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4257
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.412Z",
+ "cells": {
+  "16": [
+   "cdaf150ef16b2e45"
+  ],
+  "24": [
+   "14e0036b13371351",
+   "452755ebadb81561",
+   "8e1ab90affacd680",
+   "b8552b8598d3f8f7",
+   "e67d306053d2d0f5",
+   "e7d58c560a796fab"
+  ],
+  "32": [
+   "216a898f9670d57b",
+   "38cb9d33014d3db7",
+   "3e2e548898821c17",
+   "5ebbd9efc76762b7",
+   "6ad691e02513fc9e",
+   "cd15b0624c1b78d4"
+  ],
+  "48": [
+   "38527a88b9eaca9b",
+   "576574ea7f63c261",
+   "a083e7641112b34b",
+   "a0fb6afd8218fde4",
+   "b9cb2236f315cbc5",
+   "d88832b7466459a8"
+  ]
+ }
+}

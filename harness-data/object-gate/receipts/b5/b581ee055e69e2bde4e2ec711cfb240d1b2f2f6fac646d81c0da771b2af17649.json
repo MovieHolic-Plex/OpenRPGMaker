@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b581ee055e69e2bde4e2ec711cfb240d1b2f2f6fac646d81c0da771b2af17649",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "wooden stand with two ale kegs lying on their sides, brass taps facing south and a drip tray with a mug",
+ "label": "pirate-isles/pi-keg-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ale kegs on wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ale kegs make up the largest solid volume of the sprite and are drawn in flat front elevation with straight horizontal bands and outlines across the top (0px top surface/ellipse). Furthermore, the kegs are drawn upright instead of lying on their sides.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8932
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden stand with two ale kegs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The ale kegs forming the upper half of the object are drawn in pure front elevation with vertical staves and horizontal hoops, completely lacking the top ellipse/surface required for cylindrical objects in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9262
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden stand with two ale kegs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two kegs forming the upper and largest volume of the sprite are drawn in pure front elevation with completely flat horizontal hoops and outlines at row 1, showing 0 rows of elliptical top surface as required for cylindrical objects in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8484
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden stand with two ale kegs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two kegs forming the upper half and largest solid volume of the sprite are drawn in pure front elevation: their tops are flat 1px lines at row 1 with no elliptical top surface visible, despite being viewed from a 45-degree top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13857
+  }
+ ],
+ "decidedAt": "2026-10-13T19:28:41.188Z",
+ "cells": {
+  "16": [
+   "0fef7dcfb6ae61c5",
+   "7be81dc9f13fdfc5",
+   "b4d9ee6d41e20ee5",
+   "e9738556bd8fb43f"
+  ],
+  "24": [
+   "0a2b0b81efd47a5e",
+   "0f20e771c8950313",
+   "3746fb672d1f2e42",
+   "37afb00b69ddf5fa",
+   "3b706cf743d3d3ac",
+   "3e555519c455dfe1",
+   "456fb8175718d1d4",
+   "46b68d343c21b401",
+   "60d4372fdfb7bf1e",
+   "64f80eda31d3f3bd",
+   "89910cc63b338c55",
+   "8fb7a681b23346fa",
+   "9006cfbd917a6bac",
+   "af14685deef19dfa",
+   "afab3749947ff46d",
+   "b011a7c47ebcf0fc",
+   "b7fd0270ce0fa8e5",
+   "ba1731064bf5579c",
+   "c110150bf9f3ca49",
+   "c8ce830cda101175",
+   "e4dc8ab3ebb60758",
+   "e5dc100163986e6e",
+   "e865e4ac19377239",
+   "fd613887f0131ad1"
+  ],
+  "32": [
+   "649895be6861831f"
+  ],
+  "48": [
+   "279cbdb12f31f686",
+   "43f059171c1ab0f6",
+   "94a33d51e17b004f",
+   "a453ac3d0297228a",
+   "a469e9b0fcfa8f6a",
+   "c36e7a547c406282"
+  ]
+ }
+}

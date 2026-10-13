@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1364c9083336d1500d3f575cb0ee9c26868068ed36e1b1fa6050993ac1eef1a",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "rope hammock strung between two posts",
+ "label": "pirate-isles/pi-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope hammock cloth suspended between posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat front elevation showing only a draped vertical cloth hanging in a catenary curve between the posts. In a 3/4 top-down view, the inside sleeping surface/trough of the hammock should be visible from above between a rear and front suspension rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8922
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curved hammock sling",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat curved band in pure front elevation with no visible top interior surface/bed seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hammock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn in pure front elevation as a flat sagging band between two vertical posts, showing no interior bed surface, width, or top depth visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10364
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hammock cloth / bed",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat 2D ribbon sagging in pure front elevation between two posts. There is no visible top surface or interior bed basin seen from above (top_rows = 0, opening_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6068
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "9ea83e6d9e2a42fa",
+   "a756d38c6e30a3ad"
+  ],
+  "24": [
+   "1ca5898e0fca97d4",
+   "2365c83c0c50baa3",
+   "2e55c9b719af9bcd",
+   "34afc1bab28d5cb1",
+   "582429eb40cf2bbe",
+   "631dd76bf147da49",
+   "6e9faa515b1a8654",
+   "a1eca02bffc8c727",
+   "a73d510ad68e3880",
+   "be3fa7dda397d178",
+   "c6c42f39fd709af0",
+   "e1a933ca1d916b57"
+  ],
+  "32": [
+   "061009361849038c",
+   "bc2c447aa2b27b57"
+  ],
+  "48": [
+   "58b0784c67300a03",
+   "7b2dfd496bcefab8",
+   "823bc67b3f433ca5",
+   "829491a1fea81099",
+   "8bab208f99e63f16",
+   "d85b6eb10123149f"
+  ]
+ }
+}

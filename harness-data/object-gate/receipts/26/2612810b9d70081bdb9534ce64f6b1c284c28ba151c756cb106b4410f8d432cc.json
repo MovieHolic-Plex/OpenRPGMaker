@@ -1,0 +1,147 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2612810b9d70081bdb9534ce64f6b1c284c28ba151c756cb106b4410f8d432cc",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "sharpened log palisade wall section",
+ "label": "pirate-isles/pi-palisade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sharpened log palisade wall section with horizontal crossbeams",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade wall is drawn in pure 2D front elevation (side-scroller view). The sharpened tips of the logs are flat 2D silhouettes without any 3/4 downward perspective, and the horizontal crossbeams are only 2 pixels tall total with just a 1px highlight line for a top edge rather than a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5892
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sharpened logs and horizontal crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade wall is drawn in a pure 2D side-scroller front elevation. The sharpened log tips are drawn in silhouette profile, the logs are vertical columns without top depth, and the two horizontal crossbeams are only 2px tall flat bars (1px highlight, 1px shadow) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7841
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sharpened log palisade wall with horizontal crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade is drawn as a flat front elevation / side-scroller view. The sharpened log tips are drawn straight-on in silhouette and the horizontal crossbeams are only 2 pixels tall with at most a 1px highlight line across row 12 and row 22, lacking any foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical sharpened logs and horizontal crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The palisade wall and its horizontal crossbeams are drawn in flat front elevation with no visible top surfaces; the crossbeams are only 2 pixels tall total (1px highlight, 1px shadow) and the sharpened log tops show no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4522
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "3895cdfde6ad2518",
+   "4bac555dd28e0a49"
+  ],
+  "24": [
+   "0283ed4299ea088a",
+   "0351091011270892",
+   "159dce86ef215983",
+   "1c98be46106c7ee0",
+   "2b1aa44067accdba",
+   "37f5a0825ba2bf39",
+   "45ff346b11ee42c3",
+   "4dcd662430b933a3",
+   "50db0ff812d3ef05",
+   "5b8bacf1e4b43a4b",
+   "9b1da7d3f085e7c0",
+   "a31b60fd81570294",
+   "b0879df0a33accaa",
+   "bbf096fadb654342",
+   "bd12c0d93b199ce4",
+   "c3fdadb9a0627ef3",
+   "c55dc03ed10505aa",
+   "ef179e9cee40252c",
+   "f960c4475a43da04",
+   "ff3e44f03e446fe4"
+  ],
+  "32": [
+   "d9aebba60228336f"
+  ],
+  "48": [
+   "212b9bc977162fff",
+   "2ae007954ba82299",
+   "42160d64416d1589",
+   "60019f20506567d3",
+   "64eb2ec50a312ac0",
+   "c60503b76bd87c8f"
+  ]
+ }
+}

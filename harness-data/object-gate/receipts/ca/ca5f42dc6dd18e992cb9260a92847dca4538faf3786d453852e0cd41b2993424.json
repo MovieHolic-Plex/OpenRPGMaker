@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca5f42dc6dd18e992cb9260a92847dca4538faf3786d453852e0cd41b2993424",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "stacked wooden lobster traps with rope",
+ "label": "pirate-isles/pi-lobster-traps",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top trap shows a clear 4-row top surface (rows 0-3) above its 4-row front slatted face (rows 4-7). Lower traps also show partially exposed top surfaces (rows 8-9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11971
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The uppermost trap shows a 3-row foreshortened top surface (rows 1-3) above its 5-row slatted south face (rows 4-8). The exposed top surface of the lower-right trap is also visible at rows 9-10.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 3행 < 4"
+   ],
+   "ms": 16144
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The traps are drawn in pure front elevation showing only their vertical slatted front faces (rails and vertical slit openings). There is no horizontal top surface showing the top of the upper trap or the tops of the lower traps foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12183
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked wooden lobster traps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The traps are drawn entirely in straight front elevation: each trap consists of a solid top rail, two rows of slatted openings with a divider, and a bottom rail. There is no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12681
+  }
+ ],
+ "decidedAt": "2026-10-13T19:19:03.413Z",
+ "cells": {
+  "16": [
+   "bf1dc80702c1afcd"
+  ],
+  "24": [
+   "12cc95b1133247b3",
+   "24e111ec9bf32158",
+   "2eaf299c3d1141e8",
+   "3a1a3dd9c2a587fd",
+   "4e12585aafe19ab4",
+   "78a70ef59711edd9"
+  ],
+  "32": [
+   "354d2d1546b15a97",
+   "3c76b48c10d3de10",
+   "6c330939bbbbcae2",
+   "a2883a79ba8b152b",
+   "b3d614f5578c4097",
+   "cefe52916376027f"
+  ],
+  "48": [
+   "0179c8569ac7f39c",
+   "04ce908f15d37a2b",
+   "90a6d97d61b9d79e",
+   "d60bc620e4dc3c38",
+   "e522eec7264c5185",
+   "ec4b434283e5409c"
+  ]
+ }
+}
