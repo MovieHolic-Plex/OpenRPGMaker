@@ -7,6 +7,7 @@ import { runTool } from "../../src/editor/tools/index.ts";
 import { planJpCityStreet, runJpStreetPlan } from "../../src/project/jpCityStreetComposer.ts";
 import { blankFillTileFor } from "../../src/project/defaults/defaultMaps.ts";
 import type { Project } from "../../src/project/types.ts";
+import { measureLotEmptiness } from "./jpLotEmptiness.mts";
 const arg = (n: string, d: string) => { const i = process.argv.indexOf(`--${n}`); return i >= 0 ? process.argv[i + 1] ?? d : d; };
 const OUT = arg("out", "output/evidence/jp-street"); fs.mkdirSync(OUT, { recursive: true });
 for (let seed = Number(arg("from", "1")); seed <= Number(arg("seeds", "6")); seed++) {
@@ -23,5 +24,6 @@ for (let seed = Number(arg("from", "1")); seed <= Number(arg("seeds", "6")); see
   { const m = ctx.project.maps[id]!; let n = 0; for (let y = 14; y < 18; y++) for (let x = 0; x < W; x++) if ((m.upperTiles[y * W + x] ?? -1) >= 0) n++; if (process.env.V) console.log("upper cells in road", n); }
   if (process.env.DUMPX) { const m = ctx.project.maps[id]!; const x = Number(process.env.DUMPX); for (let y = 12; y < 26; y++) console.log(y, m.lowerTiles[y * W + x], m.upperTiles[y * W + x]); }
   fs.writeFileSync(`${OUT}/street-${seed}.png`, renderMapPng(process.env.NOMARK ? { ...ctx.project, startMapId: "__none__" } : ctx.project, ctx.project.maps[id]!).png);
+  { const m = ctx.project.maps[id]!; const e = measureLotEmptiness(ctx.project, m); console.log(`empty ${seed} ${(e.ratio * 100).toFixed(1)}% (${e.empty}/${e.lot})`); fs.writeFileSync(`${OUT}/street-${seed}.map.json`, JSON.stringify({ width: m.width, height: m.height, tilesetId: m.tilesetId, lowerTiles: m.lowerTiles, upperTiles: m.upperTiles, upperOverlayTiles: m.upperOverlayTiles, lowerOverlayTiles: m.lowerOverlayTiles })); fs.writeFileSync(`${OUT}/street-${seed}.empty.json`, JSON.stringify({ w: m.width, h: m.height, ratio: e.ratio, empty: e.empty, lot: e.lot, mask: Array.from(e.mask) })); }
   console.log(seed, plan.summary, JSON.stringify(r)); if (process.env.V) console.log(errs.slice(0, 8).join("\n"));
 }

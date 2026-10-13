@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d790650880ba55a3b28ef7f8244c9163827a24a0b02494d915e0ab323210fc5c",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "jp-lot-pay",
+ "label": "jp_city/street_hand/jp-lot-pay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking lot pay machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine and its enclosing frame are drawn in a flat straight-on elevation with only a 1-2px dark border at row 3-4 where the top surface should be foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5512
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking payment kiosk / ticket machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The payment machine is drawn in a pure front elevation with only a 1px/2px dark outline at row 3. There is no visible top surface for either the outer canopy/housing or the machine body itself.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking payment kiosk / ticket machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in flat front elevation with a 1px dark border at row 3 and completely vertical South-facing panels below; there is no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4962
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parking lot payment machine in a frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire payment machine and outer frame are rendered in pure front elevation with no visible top surface (row 3 is just a 1px border outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 3103
+  }
+ ],
+ "decidedAt": "2026-10-13T17:27:07.784Z",
+ "cells": {
+  "16": [
+   "c0057d341c0f636d",
+   "f420f46079d687b7"
+  ],
+  "24": [
+   "092a896d7e5122cf",
+   "102c3f67ccc73659",
+   "1c687fea4a36429c",
+   "1f39fc74dc9a13f3",
+   "5f2a825d40c1409c",
+   "63338706e48f5a41",
+   "6eaf1491eba01a81",
+   "6fe4d00984841b81",
+   "7c96531311cdd409",
+   "9e6451c75c6b203f",
+   "b94d941bf88e46c2",
+   "fbbaa099cdd847e5"
+  ],
+  "32": [
+   "47aeacb9fbef5933",
+   "5a6ec90f3784552a",
+   "7736cd5ce1e60f77"
+  ],
+  "48": [
+   "3ed3e8c128a9b215",
+   "66e2b1be4de2adee",
+   "a1c6ee735de2c415",
+   "c99a97aba1def923",
+   "e06a60b5cd73faa0",
+   "f7cc2af4a279eaf5"
+  ]
+ }
+}
