@@ -497,3 +497,98 @@ def _flowers(c):
         mat = ('red', 'gold', 'coral')[k % 3]
         c.P(x, y, K(mat, 2)); c.P(x + 1, y, K(mat, 0)); c.P(x, y - 1, K(mat, 3))
     c.outline(K('grass', -2))
+
+
+# ---------------------------------------------------------------- 해변·섬 추가 조각
+@piece('treasure-x', 'red painted X mark on the sand with a small dug mound, a buried treasure spot', 1, 1, 'flat', group='props', tags=['보물', '해변'], desc='보물 묻은 자리(모래 위 붉은 X 표시와 작은 흙더미, 걸어 지나간다).')
+def _treasure_x(c):
+    c.ellf(11, 11, 3.5, 2, lambda x, y, nx, ny, d: K('sand', 1 if ny < 0 else -2))
+    for k in range(-4, 5):
+        for (dx, dy) in ((0, 0), (1, 0)):
+            c.P(7 + k + dx, 7 + k + dy, K('red', 1 if k < 0 else 0)); c.P(7 + k + dx, 7 - k + dy, K('red', 0 if k < 0 else -1))
+    c.P(12, 9, K('sand', -1)); c.P(13, 10, K('sand', -2))
+
+
+@piece('broken-rowboat', 'broken old rowboat half buried in the sand, seen from above with a cracked hull and missing planks', 2, 1, 'debris', group='props', tags=['배', '해변', '난파'], desc='모래에 반쯤 묻힌 부서진 노 젓는 배(걸어 지나간다).')
+def _broken_boat(c):
+    for x in range(3, 29):
+        u = (x - 3) / 26
+        hw = 5.5 * (1 if u < .7 else max(0.0, (1 - u) / .3) ** .6)
+        top, bot = 8 - hw * .6, 8 + hw * .6
+        for y in range(int(round(top)), int(round(bot)) + 1):
+            edge = y <= top + 1 or y >= bot - 1
+            if not edge and 12 < x < 18: c.P(x, y, K('sand', -1 if (x + y) % 3 else 0)); continue
+            c.P(x, y, K('wood', (1 if y <= top + 1 else 0) if edge else (-2 if (x + y) % 4 else -1)))
+        if bot + 1 < 16: c.P(x, int(round(bot)) + 1, K('wood', -2))
+    for x in (9, 21): c.VL(x, 5, 6, K('wood', 1))
+    for (x, y) in ((14, 13), (16, 12), (12, 14), (19, 13)): c.P(x, y, K('sand', 1)); c.P(x + 1, y, K('sand', 0))
+    c.outline()
+    c.R(13, 12, 5, 2, K('sand', 0)); c.HL(14, 14, 3, K('sand', -1))
+
+
+@piece('skull-rock', 'large grey sea rock shaped like a skull with two dark hollow eyes, mossy top', 2, 2, 'organic', group='nature', solid=[(0, 1), (1, 1), (0, 0), (1, 0)], tags=['바위', '해적', '보물'],
+       desc='해골 바위(눈구멍 둘 난 큰 바위, 이끼 윗면). 보물섬·동굴 곁 표식.')
+def _skull_rock(c):
+    lit_blob(c, 16, 15, 14, 13, 'rock', 0, s=7)
+    c.ellf(16, 8, 10, 5, lambda x, y, nx, ny, d: K('moss', 1 if ny < 0 else 0) if d < .85 and (x + y) % 5 else None)
+    for ex in (10, 22):
+        c.ellf(ex, 16, 4, 3.5, lambda x, y, nx, ny, d: K('shadow', 0 if d < .6 else 1))
+    c.ellf(16, 22, 2, 2, lambda x, y, nx, ny, d: K('shadow', 1))
+    for x in range(10, 23, 3): c.R(x, 26, 2, 3, K('rock', 1)); c.VL(x + 2, 26, 3, K('shadow', 1))
+    c.outline()
+
+
+@piece('tide-pool', 'small rock tide pool with clear water and a starfish, flat on the beach', 1, 1, 'flat', group='nature', tags=['해변', '물'], desc='모래 위 작은 바위 웅덩이(물·불가사리, 걸어 지나간다).')
+def _tidepool(c):
+    c.ellf(8, 9, 7, 5, lambda x, y, nx, ny, d: K('rock', 1 if ny < 0 else -1) if d > .62 else (K('shallow', 1 if (x + y) % 5 else 2) if ny > -.2 else K('shallow', -1)))
+    c.P(7, 10, K('coral', 2)); c.P(6, 10, K('coral', 0)); c.P(8, 10, K('coral', 0)); c.P(7, 9, K('coral', 1)); c.P(7, 11, K('coral', 0))
+    c.outline()
+
+
+@piece('palm-stump', 'cut palm tree stump with ringed bark and a flat sawn top seen from above', 1, 1, 'organic', group='nature', solid=[(0, 0)], tags=['야자', '해변'], desc='잘린 야자 그루터기(앉을 수 있다).')
+def _stump(c):
+    for y in range(6, 14):
+        for x in range(4, 13):
+            nx = (x + .5 - 8.5) / 4.5
+            c.P(x, y, K('sand', (0 if nx < -.3 else -1 if nx < .4 else -2) - (1 if y % 3 == 0 else 0)))
+    c.ellf(8.5, 14, 5, 1.5, lambda x, y, nx, ny, d: K('sand', -3) if ny > 0 else None)
+    c.ellf(8.5, 6, 4.5, 2.6, lambda x, y, nx, ny, d: K('sand', 2 if d < .3 else 1 if d < .65 else 0) if d < .85 else K('sand', -1))
+    c.ellf(8.5, 6, 4.5, 2.6, lambda x, y, nx, ny, d: K('sand', -1) if .45 < d < .55 else None)
+    c.line(3, 13, 1, 15, K('grass', 0)); c.line(13, 13, 15, 15, K('grass', -1))
+    c.outline()
+
+
+@piece('bamboo-raft', 'bamboo raft floating on the water seen from above, lashed poles, a paddle and a small crate', 2, 1, 'other', group='boats', solid=[(0, 0), (1, 0)], tags=['배', '뗏목', '물'], desc='대나무 뗏목(물 위, 노·작은 상자).')
+def _raft(c):
+    for k in range(5):
+        y = 3 + k * 2
+        for x in range(3, 29):
+            c.P(x, y, K('thatch', 2 if k == 0 else 1)); c.P(x, y + 1, K('thatch', -1 if k < 4 else -2))
+        c.P(3, y, K('thatch', 3)); c.P(28, y + 1, K('thatch', -2))
+    for x in (6, 16, 25): c.VL(x, 3, 10, K('wood', -1))
+    c.R(3, 13, 26, 1, K('thatch', -3))
+    crate_draw(c, 18, 2, 7, 3, 4, s=2)
+    c.line(5, 6, 13, 10, K('wood', 1)); c.R(11, 9, 4, 2, K('wood', 0))
+    c.outline()
+    from pi_boats import waterline
+    waterline(c, 0, 32, s=5)
+
+
+@piece('crab', 'small red crab on the sand seen from above, claws raised', 1, 1, 'debris', group='nature', tags=['해변', '게'], desc='모래 위 붉은 게(장식, 걸어 지나간다).')
+def _crab(c):
+    c.ellf(8, 9, 3.5, 2.5, lambda x, y, nx, ny, d: K('red', 2 if ny < -.2 else 1 if ny < .3 else -1))
+    for (x0, y0, x1, y1) in ((5, 9, 2, 7), (11, 9, 14, 7), (5, 10, 3, 12), (11, 10, 13, 12), (6, 11, 5, 13), (10, 11, 11, 13)):
+        c.line(x0, y0, x1, y1, K('red', -1))
+    for (x, y) in ((2, 5), (14, 5)): c.R(x - 1, y, 3, 2, K('red', 1)); c.P(x, y, K('red', 3))
+    c.P(7, 7, K('shadow', 0)); c.P(9, 7, K('shadow', 0))
+    c.outline()
+
+
+@piece('log-bench', 'log bench: a split log seat with flat light top seen from above, resting on two stumps', 2, 1, 'seat', group='props', solid=[(0, 0), (1, 0)], tags=['의자', '마을', '모닥불'], desc='통나무 의자(모닥불·광장 곁).')
+def _logbench(c):
+    for lx in (5, 23): c.R(lx, 10, 4, 5, K('wood', -1)); c.VL(lx, 10, 5, K('wood', 0)); c.HL(lx, 14, 4, K('wood', -3))
+    c.R(2, 4, 28, 5, K('sand', 1)); c.HL(2, 4, 28, K('wood', 0)); c.HL(2, 8, 28, K('sand', 2))
+    for x in range(5, 28, 7): c.HL(x, 6, 3, K('sand', 0))
+    c.R(2, 9, 28, 3, K('wood', -1)); c.HL(2, 11, 28, K('wood', -3))
+    c.ellf(2.5, 7.5, 1.5, 3.5, lambda x, y, nx, ny, d: K('sand', 0 if d < .5 else -1)); c.ellf(29.5, 7.5, 1.5, 3.5, lambda x, y, nx, ny, d: K('sand', 0 if d < .5 else -1))
+    c.outline()

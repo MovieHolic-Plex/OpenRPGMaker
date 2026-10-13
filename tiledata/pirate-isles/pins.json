@@ -1,7 +1,7 @@
 {
 "version": 1,
 "tilesPerRow": 48,
-"count": 1152,
+"count": 1166,
 "cells": {
 "sand/0.0": 1,
 "sand/1.0": 2,
@@ -1153,6 +1153,20 @@
 "ship-window/0.0": 1148,
 "ship-window/1.0": 1149,
 "wall-map/0.0": 1150,
-"wall-map/1.0": 1151
+"wall-map/1.0": 1151,
+"treasure-x/0.0": 1152,
+"broken-rowboat/0.0": 1153,
+"broken-rowboat/1.0": 1154,
+"skull-rock/0.0": 1155,
+"skull-rock/1.0": 1156,
+"skull-rock/0.1": 1157,
+"skull-rock/1.1": 1158,
+"tide-pool/0.0": 1159,
+"palm-stump/0.0": 1160,
+"bamboo-raft/0.0": 1161,
+"bamboo-raft/1.0": 1162,
+"crab/0.0": 1163,
+"log-bench/0.0": 1164,
+"log-bench/1.0": 1165
 }
 }
