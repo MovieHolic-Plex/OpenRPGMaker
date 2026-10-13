@@ -78,8 +78,9 @@ export const GOTHIC_POINTER_LINE =
 /** gothic_manor 맵이 범위에 있을 때만 붙는 상세 순서. */
 export const GOTHIC_DETAIL_LINE =
   "이 작업의 맵은 고딕 저택 칩셋(gothic_manor)이다. ① 새 장소는 build_gothic_place({place, name, seed}) 로 짓는다 — 둘레 철책·정문·건물·길·소품이 한 번에 들어가고 모든 문까지 길이 이어진다. "
-  + "② 결과의 entrances(건물 문 칸)·exits(정문)·doorCells(실내 문)에 이동 이벤트(transfer)를 달아 맵을 잇는다. 문 아래 접근 칸에는 NPC·물건을 세우지 않는다. "
-  + "③ 저택 한 채는 바깥(manor-grounds) + 안(hall·library·bedroom…)을 따로 지어 문으로 잇는다. 은신처(옷장·침대)는 기물 앞 칸에 상호작용 이벤트를 건다. "
+  + "② 맵을 이을 때는 결과의 transferEndpoints[].endpoint 를 create_transfer_pair 의 a/b 에 그대로 넣는다(바깥 건물 문은 doorAt 까지 들어 있다 — 좌표를 고쳐 쓰지 않는다). 문 아래 접근 칸에는 NPC·물건을 세우지 않는다. "
+  + "③ 한 요청 = 바깥 한 장 + 안 한 장 이상: 흉가 저택 → manor-grounds + hall, 공동묘지·예배당 → graveyard + chapel, 미술관 → gallery-plaza + gallery. 따로 지어 문으로 잇는다. 은신처(옷장·침대)는 기물 앞 칸에 상호작용 이벤트를 건다. "
+  + "지은 맵을 크기·밀도만 바꾸려고 다시 짓지 않는다(들어오는 문이 어긋난다) — 더할 것은 stamp_object 로. "
   + "④ 소품을 더할 때만 list_tileset_references({tilesetId:\"gothic_manor\"}) 의 gm-kits-… 사전 id 로 stamp_object 하고, 끝나면 check_reachability 로 정문에서 모든 문에 닿는지 본다.";
 
 /** 시스템 프롬프트에 붙일 줄들. 칩셋이 프로젝트에 없으면 아무것도 붙이지 않는다. */
@@ -98,6 +99,6 @@ export function formatGothicNote(target: GothicTarget, targetMap: { id: string; 
   return [
     "[고딕 저택 시공 — gothic_manor] 이 요청의 칩셋은 번들 고딕 저택(gothic_manor)이다. 판타지 성 칩셋·버들항 도구는 쓰지 않는다.",
     where,
-    "순서: build_gothic_place({place, name, seed}) 로 장소 한 장(야외 manor-grounds·graveyard·gallery-plaza, 실내 hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery) → 결과 entrances·exits·doorCells 에 transfer → check_reachability. 낱칸으로 처음부터 칠하지 않는다.",
+    "순서: build_gothic_place({place, name, seed}) 로 장소 한 장(야외 manor-grounds·graveyard·gallery-plaza, 실내 hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery) → 바깥 한 장과 안 한 장(흉가 저택 manor-grounds+hall · 묘지 graveyard+chapel · 미술관 gallery-plaza+gallery) → 두 결과의 transferEndpoints[].endpoint 를 create_transfer_pair 의 a/b 에 그대로 → check_reachability. 지은 맵을 다시 짓지 않는다. 낱칸으로 처음부터 칠하지 않는다.",
   ].join("\n");
 }

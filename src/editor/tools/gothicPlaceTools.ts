@@ -7,6 +7,7 @@ import gothicSpaceSpec from "@/assets/gothicSpaceSpec.json";
 import { composeGothicPlace, GOTHIC_PLACE_INFO, GOTHIC_PLACE_KINDS, type GothicPlaceKind } from "@/editor/gothic/composer";
 import { buildWizardingSpace, type WizardingDoorInput, type WizardingFurnitureInput, type WizardingSpaceInput, type WizardingSpaceSpec } from "@/editor/wizarding/builder";
 import { createGothicManorTileset, ensureGothicManorTileset, GOTHIC_MANOR_ID, isGothicManorTileset } from "@/project/defaults/gothicManor";
+import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { MAP_TOOLS } from "./mapTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -34,6 +35,24 @@ function isBlankMap(map: GameMap): boolean {
   if (map.lowerTiles.some((t) => t !== first)) return false;
   for (const layer of [map.upperTiles, map.lowerOverlayTiles ?? [], map.upperOverlayTiles ?? []]) if (layer.some((t) => t >= 0)) return false;
   return true;
+}
+
+/** 다른 맵·커먼 이벤트의 transfer 중 이 맵을 가리키는데 새 크기·새 벽에 걸리는 것을 시작 칸으로 옮긴다(다시 짓기가 들어오는 문을 깨지 않게). */
+function retargetIncomingTransfers(draft: Project, mapId: string, spawn: { x: number; y: number }): number {
+  const map = draft.maps[mapId]!;
+  let moved = 0;
+  const walk = (node: unknown): void => {
+    if (Array.isArray(node)) { for (const n of node) walk(n); return; }
+    if (!node || typeof node !== "object") return;
+    const o = node as Record<string, unknown>;
+    if (o.kind === "transfer" && o.mapId === mapId && typeof o.x === "number" && typeof o.y === "number" && !isPassable(draft, map, o.x, o.y)) {
+      o.x = spawn.x; o.y = spawn.y; moved++;
+    }
+    for (const v of Object.values(o)) if (v && typeof v === "object") walk(v);
+  };
+  for (const m of Object.values(draft.maps)) walk(m.events ?? []);
+  walk(draft.commonEvents ?? []);
+  return moved;
 }
 
 export const LIST_GOTHIC_PLACES_TOOL: ToolDefinition = {
@@ -107,7 +126,7 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
     + "야외(manor-grounds·graveyard·gallery-plaza)는 둘레 철책·돌담과 남쪽 정문, 북쪽 본 건물, 곁 건물·연못·묘비 줄·고사목·등불·안개까지 놓고, 모든 건물 문 앞까지 길을 잇는다. "
     + "실내(hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery)는 벽 고리·문·바닥·러너·가구·덧그림을 짓는다(doors·furniture·density 로 조절). "
     + "mapId 가 비어 있는 맵이면 그 맵에 짓고, 이미 그린 맵이면 overwrite:true 가 있어야 다시 짓는다. mapId 없이 name 을 주면 새 맵을 만든다. "
-    + "결과의 entrances(건물 문 칸)·exits(정문)·doorCells(실내 문)에 이동 이벤트(transfer)를 단다. 오류가 있으면 맵을 바꾸지 않는다. 이 칩셋 맵을 낱칸 칠하기로 처음부터 그리지 않는다.",
+    + "맵을 이을 때는 결과의 transferEndpoints[].endpoint 를 create_transfer_pair 의 a/b 에 그대로 넣는다(건물 문은 doorAt 포함). 지은 맵을 크기만 바꾸려 다시 짓지 않는다. 오류가 있으면 맵을 바꾸지 않는다. 이 칩셋 맵을 낱칸 칠하기로 처음부터 그리지 않는다.",
   parameters: {
     type: "object",
     properties: {
@@ -147,6 +166,11 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
         ...(seed !== undefined ? { seed } : {}), ...(density ? { density } : {}), ...(typeof args.fog === "boolean" ? { fog: args.fog } : {}) }, tileset);
       built = { ...r, indoor: false };
       extra = { entrances: r.entrances.map((e) => ({ building: e.name, kit: e.kit, x: e.x, y: e.y, access: e.access })), exits: r.exits,
+        transferEndpoints: [
+          ...r.entrances.filter((e, i, all) => !all.some((o, j) => j < i && o.kit === e.kit && o.y === e.y && Math.abs(o.x - e.x) === 1))
+            .map((e) => ({ building: e.name.split("(")[0], endpoint: { mapId: "@", x: e.access.x, y: e.access.y, doorAt: { x: e.access.x, y: e.access.y - 1 } } })),
+          ...r.exits.map((c) => ({ building: "정문", endpoint: { mapId: "@", x: c.x, y: c.y } })),
+        ],
         placed: r.placed.filter((p) => p.role !== "decal").map((p) => ({ kit: p.kit, x: p.x, y: p.y, role: p.role })) };
       const doorText = r.entrances.map((e) => `${e.name.split("(")[0]}(${e.x},${e.y})`).join(" ");
       next = `건물 문 ${r.entrances.length}곳 ${doorText} — 문 칸에 실내 맵으로 가는 이동 이벤트(transfer)를 달고(그 아래 접근 칸은 비워 둔다), 정문 ${r.exits.map((c) => `(${c.x},${c.y})`).join(" ")} 에 바깥 맵 이동을 단다. 실내는 build_gothic_place({place:"hall"|"library"|"gallery"…}).`;
@@ -165,7 +189,8 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
       built = r;
       const step = { n: [0, 1], s: [0, -1], w: [1, 0], e: [-1, 0] } as const;
       const keepClear = r.doorCells.flatMap((d) => [1, 2].map((k) => ({ x: d.x + step[d.side][0] * k, y: d.y + step[d.side][1] * k }))).filter((c) => c.x >= 0 && c.y >= 0 && c.x < r.width && c.y < r.height);
-      extra = { doorCells: r.doorCells, keepClear, placed: r.placed.filter((p) => p.role === "furniture").map((p) => ({ kit: p.kit, x: p.x, y: p.y })), components: r.components };
+      extra = { doorCells: r.doorCells, keepClear,
+        transferEndpoints: r.doorCells.map((d, i) => ({ building: i === 0 ? "주 출입구" : `출입구 ${i + 1}`, endpoint: { mapId: "@", x: d.x, y: d.y } })), placed: r.placed.filter((p) => p.role === "furniture").map((p) => ({ kit: p.kit, x: p.x, y: p.y })), components: r.components };
       next = `출입구 ${r.doorCells.map((d) => `${d.side}(${d.x},${d.y})`).join(" ")} 에 이동 이벤트(transfer)를 단다(문 앞 ${keepClear.map((c) => `(${c.x},${c.y})`).join(" ")} 은 비운다). 은신처(옷장·침대)는 기물 앞 칸에 상호작용 이벤트를 건다.`;
     }
     const errors = built.issues.filter((i) => i.severity === "error");
@@ -185,7 +210,15 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
     }
     const map = draft.maps[mapId]!;
     const W = built.width, H = built.height;
-    const keptEvents = (map.events ?? []).filter((e) => e.x >= 0 && e.y >= 0 && e.x < W && e.y < H);
+    const inside = (e: { x: number; y: number }) => e.x >= 0 && e.y >= 0 && e.x < W && e.y < H;
+    const keptEvents = (map.events ?? []).filter(inside);
+    // 맵 밖으로 나간 나가는 문(transfer 이벤트)은 버리지 않고 새 출입구 칸으로 옮긴다 — 다시 짓기가 돌아가는 길을 끊지 않게.
+    const freeDoors = ((extra.doorCells as { x: number; y: number }[] | undefined) ?? []).filter((d) => !keptEvents.some((e) => e.x === d.x && e.y === d.y));
+    let movedDoors = 0;
+    for (const e of (map.events ?? []).filter((ev) => !inside(ev))) {
+      const door = JSON.stringify(e).includes('"kind":"transfer"') ? freeDoors.shift() : undefined;
+      if (door) { keptEvents.push({ ...e, x: door.x, y: door.y }); movedDoors++; }
+    }
     const droppedEvents = (map.events ?? []).length - keptEvents.length;
     const nextMap: GameMap = {
       ...map,
@@ -200,9 +233,18 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
     if (draft.startMapId === mapId) draft.startPos = { x: built.spawn.x, y: built.spawn.y };
     const warnings = built.issues.filter((i) => i.severity === "warning").map((i) => i.message);
     if (droppedEvents) warnings.push(`맵 밖으로 나간 이벤트 ${droppedEvents}개를 지웠다`);
+    if (movedDoors) warnings.push(`맵 밖으로 나간 나가는 문 이벤트 ${movedDoors}개를 새 출입구 칸으로 옮겼다`);
+    const retargeted = created ? 0 : retargetIncomingTransfers(draft, mapId, built.spawn);
+    if (retargeted) warnings.push(`다른 맵에서 이 맵으로 오는 이동 ${retargeted}개가 새 벽·맵 밖을 가리켜 시작 칸 (${built.spawn.x},${built.spawn.y}) 으로 옮겼다 — 문 앞으로 다시 잇는 것이 좋다`);
+    const stranded = keptEvents.filter((e) => !isPassable(draft, nextMap, e.x, e.y)).length;
+    if (stranded) warnings.push(`남긴 이벤트 ${stranded}개가 새 벽·가구 칸 위에 있다 — 옮기거나 지운다`);
+    const endpoints = (extra.transferEndpoints as { building: string; endpoint: Record<string, unknown> }[] | undefined) ?? [];
+    for (const t of endpoints) t.endpoint.mapId = mapId;
+    if (endpoints.length) extra.transferEndpoints = endpoints;
+    const endpointText = endpoints.length ? ` create_transfer_pair 의 a/b 에는 transferEndpoints[].endpoint 를 그대로 넣는다: ${endpoints.slice(0, 4).map((t) => `${t.building}=${JSON.stringify(t.endpoint)}`).join(" · ")}.` : "";
     return {
       summary: `${built.ko} ${W}×${H} 를 ${created ? "새 맵" : "맵"} '${nextMap.name}'(${mapId}, ${GOTHIC_MANOR_ID}) 에 지었다 — 시작 칸 (${built.spawn.x},${built.spawn.y}), 걸어 닿는 칸 ${built.walkableCount}`
-        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: ${next} NPC 는 list_npc_graphics 로 고른 걷기 칩으로 place_npc.`,
+        + `${warnings.length ? ` · 경고 ${warnings.length}: ${warnings.slice(0, 3).join(" / ")}` : ""}. 다음: ${next}${endpointText} NPC 는 list_npc_graphics 로 고른 걷기 칩으로 place_npc.`,
       data: { mapId, created, tilesetId: GOTHIC_MANOR_ID, place, width: W, height: H, spawn: built.spawn, walkableCount: built.walkableCount, ...extra, warnings },
       ...(warnings.length ? { warnings } : {}),
     };
