@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d46a93f57b68144e92ac41f29204654a9e393fb85634de0c1a2161ef020007fc",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 공장 마당 흙(보도 경계)",
+ "label": "sky-steam/steam-at-yard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain autotile (factory dirt with stone border)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing dirt ground framed by pavement/curb border seen entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2985
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dirt ground autotile with border curb",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile representing factory yard dirt ground bordered by concrete edging, viewed from above as appropriate for top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4186
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "factory yard dirt terrain with sidewalk border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile showing dirt ground framed by a concrete sidewalk curb, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3554
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground autotile with pavement border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain autotile representing factory yard dirt enclosed by concrete curb tiles, viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3182
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.281Z",
+ "cells": {
+  "16": [
+   "0a7eb65025552af9",
+   "0f5ebd58671c2995",
+   "8c147cbbfd49262a",
+   "98394fae07f03ff5",
+   "abae79015bdefb51",
+   "c9f4746ed3966dfe",
+   "cc8df24a87531f9f",
+   "d194f104e5bcffef",
+   "d76970288a9629d2",
+   "dc596dfbc30f5904"
+  ],
+  "24": [
+   "224c2542abfe4abb",
+   "282cdda486c7edd0",
+   "47717ce65d9e0a07",
+   "54952cdde8cccb75",
+   "55004e504fc7c225",
+   "5f0a625a9e0fdbf0",
+   "655d371676f787ed",
+   "8dde96a75d3db93f",
+   "903ac421462d6d7e",
+   "99eb316089c2ca0f",
+   "b30981cf569d4a29",
+   "b3cad13a22da39d5",
+   "d05c678295f952aa",
+   "d41a2855e0b8af7a",
+   "eb3a4f9bce168837",
+   "f92a4cdbfed42aab",
+   "fa3e0fda910d2dc3"
+  ],
+  "32": [
+   "2c6e8ac80f77fbb9",
+   "2d685836f8a01d99",
+   "4fb34184589443e1",
+   "57bbe5957951c002",
+   "6479149ddf279552",
+   "6a0b4e2182dca718",
+   "cd64b30993fd9793",
+   "fb029cfc17631da2"
+  ],
+  "48": [
+   "39510aca691d16d4",
+   "525691889272bbd2",
+   "5acb81f6ad02f201",
+   "8fe4379272c4c7eb",
+   "cdc4c341c8313313",
+   "e66f308460087755"
+  ]
+ }
+}

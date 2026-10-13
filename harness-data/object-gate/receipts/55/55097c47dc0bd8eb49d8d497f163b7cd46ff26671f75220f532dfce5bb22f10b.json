@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55097c47dc0bd8eb49d8d497f163b7cd46ff26671f75220f532dfce5bb22f10b",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "큰 가스등(3칸, 꺼짐·낮)",
+ "label": "sky-steam/steam-gaslamp-tall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp head cap and post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern hood shows a foreshortened top surface across rows 1-5 (approx 5 rows), and the base plinth also clearly shows its top surface facing the camera across rows 39-42 (4 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5509
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street lamp head and post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lamp has a domed metal cap showing its top surface spanning rows 1 to 5 (~4 source pixels) with a finial at the top, and the base plinth at rows 40-42 clearly displays a foreshortened top horizontal surface around the pole socket.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7645
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall street lamp / gas lantern on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base plinth at rows 40-42 shows a foreshortened top surface, but the main body (the lantern head and post) is drawn in pure front elevation. The lantern glass and cap rims (rows 5-6, 7, and 13) are completely straight horizontal lines rather than elliptical curves viewed from a high angle, and the lantern top shows no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13154
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall gas lamp / lamppost",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap at rows 1-4 shows a 4-row foreshortened top surface, and the base plinth at rows 39-42 also clearly displays a top-down circular platform surrounding the pole.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5780
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.280Z",
+ "cells": {
+  "16": [
+   "326c2440d5a4ba1d",
+   "a0a944c9e5365392",
+   "fbdb18263e9c9520"
+  ],
+  "24": [
+   "24752a159070dcb7",
+   "24f372dffb06ff9e",
+   "63d7cdfbf233c0ff",
+   "64d2aa52cbf4fa0d",
+   "846638c2f8c26daa",
+   "a60ea361fd104332"
+  ],
+  "32": [
+   "1a779374e28c2fa6",
+   "216d3c62f93d3bb0",
+   "33170769aa801c69",
+   "340d23e42a728878",
+   "49ea58520c0c22fd",
+   "5dfe848908e5754e",
+   "64c001f5a348551a",
+   "98e1265df6c5ec19",
+   "c7eab8bc0a348199",
+   "d62315cec2d75fe5",
+   "df049c84fd692b77",
+   "e269342fac25ff8f"
+  ],
+  "48": [
+   "43e62323d0303e22",
+   "599c583c123946f9",
+   "f4f48b3be6b02b81"
+  ]
+ }
+}

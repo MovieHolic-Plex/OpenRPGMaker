@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b780967fdf86cba21e7361591dcc96c7f150833d4912e6ec7088e3b5466ebf3",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 자갈 차도(보도 연석)",
+ "label": "sky-steam/steam-at-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobblestone roadway autotile with curb border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard RPG Maker format autotile representing ground terrain (cobblestone paving with surrounding stone curb), viewed from top-down 3/4 perspective without any receding isometric faces or front elevation flaws.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6001
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone road autotile with stone curb",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard RPG Maker autotile block layout showing cobblestone ground surface bordered by stone curbs; represents flat terrain viewed from top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobblestone pavement autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard RPG Maker autotile block representing a flat cobblestone road/pavement with curb borders; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone roadway autotile block with curb border",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard top-down autotile ground texture representing a cobblestone pavement with raised curb edges; the entire field represents a horizontal terrain surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4321
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.281Z",
+ "cells": {
+  "16": [
+   "09084d80295f40ab",
+   "0d3b797d178b1309",
+   "3b3acd35ba3d4da0",
+   "3c218c2edf489904",
+   "43f9cd1a129fe052",
+   "5a4aa91c8fe2342f",
+   "9498cf0ad40faa00",
+   "9eee1ba69648ff35",
+   "cf5ce1b6fcb5e38a",
+   "ee7ecd6dce9663d2"
+  ],
+  "24": [
+   "36b120124a91ac0f",
+   "38633b30ef4d61a5",
+   "6d12f21dd494178f",
+   "7304f881e918181a",
+   "7f9920bb250321ad",
+   "8794f1097cb0916b",
+   "8fec3b7466550f4f",
+   "9ca83e9052907225",
+   "a14869c73640cd15",
+   "adef58167e2df3b4",
+   "aff4c556d392dfb9",
+   "b0dc67c2801887ee",
+   "b31177bfa51797ad",
+   "b59336cfec731b25",
+   "d534e070ba8b4fa6",
+   "e7ac0d58d0566e44",
+   "fbf0092a24b2f0b7"
+  ],
+  "32": [
+   "015384ac4f78368f",
+   "11845661348415ba",
+   "3a56c205b2d0b917",
+   "93842badf957e9ce",
+   "b55d263f41fbbe65",
+   "bfc8f207fc49cfb6",
+   "edda59c19ca5bd8e",
+   "fd038ae89af5b82c"
+  ],
+  "48": [
+   "0804b8f124265f2f",
+   "108aef51ad312ee0",
+   "16ad770ff69d9c29",
+   "58e470d3123fe026",
+   "6e98f97ed27edfac",
+   "ee75faa06c81cf96"
+  ]
+ }
+}

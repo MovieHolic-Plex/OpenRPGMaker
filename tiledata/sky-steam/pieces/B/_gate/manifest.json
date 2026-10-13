@@ -116,6 +116,49 @@
   ]
  },
  {
+  "id": "steam-gaslamp-tall-lit",
+  "name": "큰 가스등(3칸, 켜짐·밤)",
+  "w": 1,
+  "h": 3,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gaslamp-tall-lit"
+  ],
+  "tags": [
+   "가로등",
+   "거리",
+   "밤"
+  ]
+ },
+ {
+  "id": "steam-gaslamp-tall",
+  "name": "큰 가스등(3칸, 꺼짐·낮)",
+  "w": 1,
+  "h": 3,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gaslamp-tall"
+  ],
+  "tags": [
+   "가로등",
+   "거리"
+  ]
+ },
+ {
   "id": "steam-gaslamp",
   "name": "가스등(꺼짐·낮)",
   "w": 1,
@@ -3465,7 +3508,7 @@
  },
  {
   "id": "steam-at-deck",
-  "name": "오토타일: 비공정 부두 강판 갑판(밖=하늘)",
+  "name": "오토타일: 비공정 부두 판자 갑판(구름 바다 위, 아래층)",
   "w": 4,
   "h": 3,
   "kind": "terrain",
@@ -3625,6 +3668,24 @@
   ],
   "tags": [
    "실내",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-at-ceiling",
+  "name": "오토타일: 실내 천장 테(방 테두리 전체)",
+  "w": 4,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-ceiling"
+  ],
+  "tags": [
+   "오토타일",
+   "실내",
+   "천장",
    "벽"
   ]
  },

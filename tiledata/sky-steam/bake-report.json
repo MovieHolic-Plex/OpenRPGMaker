@@ -1,0 +1,37 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 1695,
+  "kits_checked": 139,
+  "groups_checked": 27,
+  "autotiles_checked": 8
+ },
+ "reassembly": {
+  "kits": 139,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 1695,
+  "rows": 36,
+  "sheetPx": [
+   768,
+   576
+  ],
+  "strips": 61,
+  "kits": 139,
+  "groups": 27,
+  "autotiles": 8
+ },
+ "adopted": {
+  "A": 50,
+  "B": 98
+ },
+ "rejected": [],
+ "reassembly_from_files": 0
+}

@@ -76,7 +76,7 @@ def furnace_anim(c, f):
     c.outline()
 
 
-def lamp2(c, f, lit):
+def lamp2(c, f, lit, post=10):
     """가스등: 둥근 등 = 세운 원통 유리(불빛) + 위 원판 뚜껑(타원 5줄, 위에서 보임) + 꼭지. 기둥 고리 없음. 둥근 돌 받침도 원판 뚜껑(6줄)."""
     cylinder(c, 3, 5, 10, 4, 6, 'glass', 0, bands=(), rivet_bands=False)
     if lit:                                   # 유리 안 작은 불꽃(가운데만) — 유리 원통 모양은 꺼진 등과 같다
@@ -87,15 +87,27 @@ def lamp2(c, f, lit):
     for X in ((5, 11) if lit else (5, 8, 11)): c.VL(X, 8, 6, K('iron', -2))
     cylinder(c, 2, 1, 12, 6, 1, 'iron', 0, bands=(), rivet_bands=False, lid=True)
     c.P(8, 0, K('brass', 3)); c.P(8, 1, K('brass', 1))
-    c.R(6, 15, 4, 10, K('iron', 0)); c.VL(6, 15, 10, K('iron', 2)); c.VL(9, 15, 10, K('iron', -2))
-    cylinder(c, 2, 23, 12, 6, 3, 'stone', 0, bands=(), lid=True)
-    c.ell(8, 26, 2, 1, K('iron', -1)); c.P(7, 25, K('iron', 1))
+    c.R(6, 15, 4, post, K('iron', 0)); c.VL(6, 15, post, K('iron', 2)); c.VL(9, 15, post, K('iron', -2))
+    b = 13 + post
+    cylinder(c, 2, b, 12, 6, 3, 'stone', 0, bands=(), lid=True)
+    c.ell(8, b + 3, 2, 1, K('iron', -1)); c.P(7, b + 2, K('iron', 1))
     c.outline()
 
 
 @piece('steam-gaslamp-lit', '가스등(켜짐·밤)', 1, 2, kind='column', line='B', solid=[(0, 1)], tags=['가로등', '거리', '밤'])
 def gaslamp_lit(c):
     lamp2(c, 0, True)
+
+
+@piece('steam-gaslamp-tall-lit', '큰 가스등(3칸, 켜짐·밤)', 1, 3, kind='column', line='B', solid=[(0, 2)], tags=['가로등', '거리', '밤'])
+def gaslamp_tall_lit(c):
+    """QA S2 수정: 사람(32px)보다 높은 48px 가스등 — 기둥만 길다."""
+    lamp2(c, 0, True, post=26)
+
+
+@piece('steam-gaslamp-tall', '큰 가스등(3칸, 꺼짐·낮)', 1, 3, kind='column', line='B', solid=[(0, 2)], tags=['가로등', '거리'])
+def gaslamp_tall(c):
+    lamp2(c, 0, False, post=26)
 
 
 @piece('steam-gaslamp', '가스등(꺼짐·낮)', 1, 2, kind='column', line='B', solid=[(0, 1)], tags=['가로등', '거리'])

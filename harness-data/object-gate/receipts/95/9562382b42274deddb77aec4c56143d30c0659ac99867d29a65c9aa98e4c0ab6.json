@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9562382b42274deddb77aec4c56143d30c0659ac99867d29a65c9aa98e4c0ab6",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 비공정 부두 강판 갑판(밖=하늘)",
+ "label": "sky-steam/steam-at-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship dock deck autotile",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid autotile terrain layout representing a top-down wooden and steel airship deck floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3987
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship dock deck autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting a top-down wooden deck surrounded by a steel border.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4143
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship dock / deck autotile with wooden plank floor and steel frame borders",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain autotile showing horizontal wood decking surrounded by a metal border/railing, viewed correctly from above as floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3453
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "autotile deck floor and border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid autotile terrain template showing wooden deck planks bordered by metallic edges/frames, viewed top-down with appropriate south rim face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3336
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.281Z",
+ "cells": {
+  "16": [
+   "1b72ecde90aa21b9",
+   "23ec2829a3a41ce0",
+   "31fe4e2c6f6e17f9",
+   "4512543bf017c772",
+   "5e59c0ef8d66b7d4",
+   "974a2542604780c4",
+   "c53b38a82666056a",
+   "cfa12ffb4636e99a",
+   "d07143b8d6a9f8ad",
+   "d36e794f0010e787"
+  ],
+  "24": [
+   "0beddf33970c405b",
+   "3759601719aae725",
+   "3ad1d8b410119efe",
+   "3f54aca3f3250b95",
+   "4b290bd3cfd1f334",
+   "4da3cdf8b692068d",
+   "50db4eee0d5c5bdf",
+   "59447ef28febbae2",
+   "5caef467d2fedae1",
+   "70dd9363f4854f3d",
+   "89aac615b2680f8d",
+   "cdabd082e7a3ee28",
+   "d7a451e1e425b644",
+   "d9e2457adb8120dd",
+   "e1a4956bc7032766",
+   "e27730d1036d1867",
+   "fcd87324914d51b0"
+  ],
+  "32": [
+   "1d0add7aa5810754",
+   "22dffdbfedae190d",
+   "578455e8129c2baa",
+   "68c6048ad9fe6dc0",
+   "78ec48550cb20383",
+   "78f20cd91ea58624",
+   "909d5f2eca563a0b",
+   "a2431feaa3164d7f"
+  ],
+  "48": [
+   "287babb28cd5983b",
+   "6e2b189531ac9415",
+   "6f165a836cdce872",
+   "8534fa8cdd948599",
+   "df385b52e5b47c49",
+   "e650db049e6dd9db"
+  ]
+ }
+}

@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9df4a5e83232fcd710b0865a0711b529ef6137db0eee6e87117da53e2300b131",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 실내 천장 테(방 테두리 전체)",
+ "label": "sky-steam/steam-at-ceiling",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceiling border autotile block",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain autotile representing an indoor ceiling/room border structure viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4540
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "indoor ceiling border autotile block",
+    "kind_matches": true,
+    "top_rows": 44,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard top-down autotile block for indoor ceiling/room boundary framing, correctly formatted as 2D flat/top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6893
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "autotile block for room ceiling border",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain autotile layout consisting of a large 32x32px block and connecting elements, representing a ceiling/room border terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4314
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ceiling border autotile block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid autotile terrain template representing an indoor ceiling border/frame. As a flat terrain autotile element, 3/4 perspective requirements for standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3338
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.284Z",
+ "cells": {
+  "16": [
+   "05c69e724abf5aa4",
+   "4ec2480626f9c816",
+   "6b3ceba6ba424110",
+   "7764c94885158321",
+   "a13940f98159dff9",
+   "b19f59591475f990",
+   "d709af28ebbc6fc1",
+   "d7177967fd3f4741",
+   "dce25b789f9d92de",
+   "f1da3316b2a456f0"
+  ],
+  "24": [
+   "004992ab80d0aac4",
+   "2fbedcd2de4481b2",
+   "332770be2da563ea",
+   "40c250b355767d74",
+   "4606ee2eb6a846df",
+   "6431128a99e9491c",
+   "6e7bb25254ed94bd",
+   "7eaacab319bc2450",
+   "8d1ee229d603255a",
+   "a6f8d24ec5d1699e",
+   "c139bb081ad05a52",
+   "c231ad436c2fd814",
+   "d77cf17d4a2a437b",
+   "e052e9a766400014",
+   "e4d0cdbcac4fe380",
+   "fa6252324b584bcf",
+   "faea6e014556d24e"
+  ],
+  "32": [
+   "04dd3c27bbd42912",
+   "56a8a998b2ec800a",
+   "758db5bfac0d1f2b",
+   "8e7ebfdd419ac2b4",
+   "914ce392baa87a98",
+   "bb31ceb263667ff9",
+   "d43b485e94015042",
+   "e1ce358b748484fd"
+  ],
+  "48": [
+   "777b001a6b8cbbd3",
+   "a2c34753c35c1d5d",
+   "a43d4793671df8de",
+   "b0232c60c5cc8ea3",
+   "bd3848df79dd6794",
+   "c15e3691da0af685"
+  ]
+ }
+}

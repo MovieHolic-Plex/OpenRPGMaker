@@ -18,15 +18,18 @@ T16 = 16
 # ---------------------------------------------------------------- 16px 주기 무늬(절대 좌표)
 
 def tex_flag(x, y, t=1):
-    """보도 판석: 8×8 판, 판마다 색, 위·왼 빛 1px, 아래·오른 틈."""
+    """보도 판석(QA S3 수정): 16×8 큰 판을 줄마다 반 칸(8px) 엇갈려 쌓는다. 판마다 톤·잔결, 위 빛·아래 틈 — 격자 대신 쌓기."""
     i, j = x % 16, y % 16
-    row = j // 8; off = (row % 2) * 4
-    n = ((i + off) % 16) // 8; ki = (i + off) % 8; kj = j % 8
-    r = hv(n + row * 7, 3, 11)
-    tt = t + (-1 if r < .3 else (1 if r > .8 else 0))
-    if kj == 7 or ki == 7: return K('stone', t - 2)
-    if kj == 0 or ki == 0: return K('stone', tt + 1)
-    if (ki * 3 + kj * 5 + n) % 23 == 0: return K('stone', tt - 1)
+    row = j // 8; kj = j % 8
+    ii = (i + row * 8) % 16
+    n = (x + row * 8) // 16
+    r = hv(n % 2 + row * 3, row, 11)
+    tt = t + (-1 if r < .35 else (1 if r > .8 else 0))
+    if kj == 7: return K('stone', t - 2)
+    if ii == 15: return K('stone', t - 2) if kj < 7 else K('stone', t - 2)
+    if kj == 0: return K('stone', tt + 1)
+    if ii == 0: return K('stone', tt + 1) if kj < 4 else K('stone', tt)
+    if hv(ii, kj + row * 8, 13) > .93: return K('stone', tt - 1)
     return K('stone', tt)
 
 
@@ -64,9 +67,9 @@ def tex_brickpave(x, y, t=0):
     n = ((i + off) % 16) // 8; ki = (i + off) % 8
     r = hv(n + row * 3, 2, 31)
     tt = t + (-1 if r < .3 else (1 if r > .85 else 0))
-    if kj == 3 or ki == 7: return K('brick', t - 3)
-    if kj == 0: return K('brick', tt + 1)
-    return K('brick', tt)
+    if kj == 3 or ki == 7: return K('stone', -3)
+    if kj == 0: return K('brick', tt)
+    return K('brick', tt - 1)
 
 
 def tex_plate(x, y, t=0):
@@ -84,11 +87,13 @@ def tex_plate(x, y, t=0):
 
 
 def tex_grate(x, y, t=0):
+    """쇠 격자 바닥(QA B3 수정): 8px 칸살, 살은 철 t, 구멍은 철 t-2(검정 대신) — 기계보다 조용하게."""
     i, j = x % 16, y % 16
-    a, b = i % 4, j % 4
-    if a == 0 or b == 0: return K('iron', t + 1 if b == 0 else t)
+    a, b = i % 8, j % 8
+    if b == 0: return K('iron', t + 1)
+    if a == 0: return K('iron', t)
     if b == 1: return K('iron', t - 3)
-    return K('soot', -4) if (a + b) % 2 else K('iron', -4)
+    return K('iron', t - 2) if (a + b) % 3 else K('iron', t - 3)
 
 
 def tex_planks(x, y, t=0):
@@ -170,17 +175,32 @@ def curb_px(inner_tex, outer_tex, kerb=2.5):
     return draw
 
 
+def cloud_px(tx, ty):
+    """줄 A 구름 바다 변형 0 과 같은 화소(16 주기) — 갑판 바깥 모서리를 구름으로 채워 아래층 불투명 칸이 되게 한다."""
+    from sky_a_lib import hn as _hn
+    x, y = tx % 16, ty % 16
+    r = _hn(x, y, 1); r2 = _hn((x // 2) % 8, (y // 2) % 8, 9)
+    t = 1 + (1 if r2 > .62 else 0) + (1 if r > .93 else 0) - (1 if r2 < .25 else 0) - (1 if r < .05 else 0)
+    return K('cloud', t)
+
+
 def deck_px(c, X, Y, d, side, tx, ty):
-    """비공정 부두 갑판(밖 = 투명, 하늘이 보임): 가장자리 놋쇠 테 + 경고 띠, 남쪽 경계에는 갑판 두께(앞면 거더) 5px."""
-    if side == 'S':
-        if d < 0: return
-        if d < 4: c.P(X, Y, K('iron', -2 if d < 1 else (-1 if d < 2.5 else 0)) if (tx % 4) else K('iron', -3)); return
-        if d < 5: c.P(X, Y, K('iron', 3)); return
+    """비공정 부두 갑판(QA D3 수정, 밖 = 투명): 가운데 판자 갑판, 가장자리 리벳 철 테 3px + 놋쇠 선,
+    남쪽 경계에는 갑판 두께 = 철 거더 앞면 6px(X 격자 + 아래 그림자) — 공중에 뜬 판으로 읽힌다."""
+    if d < 0: c.P(X, Y, cloud_px(tx, ty)); return          # 둥근 바깥 모서리 = 구름(아래층 불투명, 구름 바다와 이어짐)
+    if side == 'S' and d >= 0 and d < 6:
+        k = (tx % 8)
+        if d < 1: c.P(X, Y, K('iron', -4)); return
+        if d < 1.8 or d > 5: c.P(X, Y, K('iron', -1)); return
+        if k == 0 or abs((d - 1.8) * 2 - k) < .8 or abs((d - 1.8) * 2 - (8 - k)) < .8: c.P(X, Y, K('iron', 0)); return
+        c.P(X, Y, K('iron', -3)); return
     if d < 0: return
     if d < 1: c.P(X, Y, OL); return
-    if d < 2.5: c.P(X, Y, K('brass', 2 if side in ('N', 'W') else 0)); return
-    if d < 4: c.P(X, Y, K('brass', 3) if (tx // 3 + ty // 3) % 2 else K('iron', -3)); return
-    c.P(X, Y, tex_plate(tx, ty, 0))
+    if side == 'S' and d < 7: c.P(X, Y, K('brass', 3) if d < 7 and d >= 6 else K('iron', 1)); return
+    if d < 1.6: c.P(X, Y, K('brass', 2 if side in ('N', 'W') else 0)); return
+    if d < 4: c.P(X, Y, K('iron', 2) if ((tx + ty) % 4 == 0) else K('iron', 0 if side in ('N', 'W') else -1)); return
+    if d < 4.8: c.P(X, Y, K('iron', -2)); return
+    c.P(X, Y, tex_planks(tx, ty, 0))
 
 
 @piece('steam-at-cobble', '오토타일: 자갈 차도(보도 연석)', 4, 3, kind='terrain', line='B', tags=['오토타일', '차도', '자갈'])
@@ -201,7 +221,7 @@ def at_brickpave(c):
     c.a[:] = src.a
 
 
-@piece('steam-at-deck', '오토타일: 비공정 부두 강판 갑판(밖=하늘)', 4, 3, kind='terrain', line='B', tags=['오토타일', '부두', '갑판'])
+@piece('steam-at-deck', '오토타일: 비공정 부두 판자 갑판(구름 바다 위, 아래층)', 4, 3, kind='terrain', line='B', tags=['오토타일', '부두', '갑판'])
 def at_deck(c):
     src = blob_source(deck_px)
     c.a[:] = src.a
@@ -283,14 +303,15 @@ def rail_ties(c, sh):
             g = sh(x, y)
             if g is None: continue
             s, along, nx, ny = g
-            if 2.2 <= s <= 13.8 and int(math.floor(along)) % 4 in (0, 1):
-                c.P(x, y, K('wood', -1 if int(math.floor(along)) % 4 == 0 else -2))
+            k = int(math.floor(along)) % 8
+            if 1.5 <= s <= 14.5 and k in (0, 1, 2):                 # QA Y1: 굵고 어두운 침목(8px 마다 3px)
+                c.P(x, y, K('wood', 0 if k == 0 else (-2 if k == 1 else -3)))
 
 
 def ballast(x, y):
     i, j = x % 16, y % 16
     r = hv(i, j, 51)
-    return K('stone', -2 + (r > .55) + (r > .88) - (r < .12))
+    return K('stone', -1 + (r > .5) + (r > .88) - (r < .15))
 
 
 def pipe_junction(c):
@@ -432,3 +453,17 @@ def t_wall(c):
             ceiling(c, k * 16, 0)
             wall_face(c, k * 16, 16, mat, v)
             k += 1
+
+
+def ceiling_px(c, X, Y, d, side, tx, ty):
+    """천장 테(벽 윗면, 방 바깥 테두리): 아주 어두운 판 + 방 쪽 경계에 놋쇠 몰딩 2px(빛) + 그 안 그림자 1px. 방향 무관(사다리 무늬 없음)."""
+    if d < 1.2: c.P(X, Y, K('brass', 1 if side in ('N', 'W') else -1)); return
+    if d < 2.2: c.P(X, Y, K('brass', -2)); return
+    if d < 3.2: c.P(X, Y, K('soot', -4)); return
+    c.P(X, Y, K('soot', -3 if (tx * 3 + ty * 5) % 11 else -4))
+
+
+@piece('steam-at-ceiling', '오토타일: 실내 천장 테(방 테두리 전체)', 4, 3, kind='terrain', line='B', tags=['오토타일', '실내', '천장', '벽'])
+def at_ceiling(c):
+    src = blob_source(ceiling_px)
+    c.a[:] = src.a

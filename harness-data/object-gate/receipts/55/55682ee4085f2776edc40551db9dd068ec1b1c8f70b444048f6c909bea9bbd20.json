@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "55682ee4085f2776edc40551db9dd068ec1b1c8f70b444048f6c909bea9bbd20",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도 판석(채움 4변형)",
+ "label": "sky-steam/steam-t-flag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pavement flagstones",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tileable stone pavement/brick terrain texture. As flat terrain, standing object perspective rules do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4024
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sidewalk flagstone pavement pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain paving stones seen from above in top-down JRPG perspective; valid terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3470
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone paving tiles / wall masonry blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing sidewalk flagstones/pavers laid out in a running bond pattern; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sidewalk flagstone paving tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tiles representing stone sidewalk paving; viewed correctly from above as a floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4330
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.283Z",
+ "cells": {
+  "16": [
+   "12d5e4bddd5e8dc6",
+   "413b1326f3951300",
+   "5dd488fff80d7821",
+   "9d4ff286ff55d35a"
+  ],
+  "24": [
+   "0ef0fe02740d8089",
+   "1ad674feb229ed3d",
+   "3af9107becf4ae6c",
+   "3f53d81d2ba5f1fd",
+   "4200d7d2b8b981a3",
+   "420c3a583ae612b0",
+   "55254fba90c9a43d",
+   "67389f17f4eeaf69",
+   "7164298676780a31",
+   "8eb30b70b0c479ce",
+   "9b89e619030193e4",
+   "a920a546edfb184e",
+   "b072eefb72a11719",
+   "c0e4339e5e600217",
+   "d638497b5fb92685",
+   "e5454abde0c737e4",
+   "ecb1f9282f0d7f69",
+   "eef95aea296d5237"
+  ],
+  "32": [
+   "00e29093dd1c8201",
+   "2a4a8fc3e646fb6c",
+   "5f13a35a5005065c",
+   "93a61c979f3d5264"
+  ],
+  "48": [
+   "0f272c0030f44d64",
+   "24ded880c57bc1e1",
+   "32fc3b7bb43318c8",
+   "39d9543019f60afb",
+   "5708eea2b32da909",
+   "572ca01fc764858f",
+   "7fb9ca80d307ceb8",
+   "9d3a6dd2aea11143",
+   "9d970ca39c33da11",
+   "bdee4ce8eabd9828",
+   "bf98586767cccc3d",
+   "f00d01e6fa3674fc"
+  ]
+ }
+}

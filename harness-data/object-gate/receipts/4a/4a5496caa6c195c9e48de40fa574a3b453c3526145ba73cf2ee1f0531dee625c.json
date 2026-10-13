@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4a5496caa6c195c9e48de40fa574a3b453c3526145ba73cf2ee1f0531dee625c",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 벽돌 포장 광장(보도 경계)",
+ "label": "sky-steam/steam-at-brickpave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick paved plaza terrain autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid top-down terrain autotile showing brick pavement enclosed by stone curbing across the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4041
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick paved plaza autotile ground",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard top-down terrain autotile representing brick pavement with a stone curb; functions correctly as a ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick paved plaza autotile with stone curb border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile representing flat brick pavement bordered by concrete or stone sidewalk curbing, correctly viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3309
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick paved plaza autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is an autotile layout for brick pavement with a stone curb. As a flat terrain ground surface viewed from above, the entire tile represents horizontal ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4578
+  }
+ ],
+ "decidedAt": "2026-10-13T16:38:20.281Z",
+ "cells": {
+  "16": [
+   "12cbbbec143d5ec0",
+   "1a366c898ed9075d",
+   "1dea50c1cf81d41f",
+   "66d4c1a4f906e4a9",
+   "8051df8d680d4b51",
+   "8f2a15ee99625719",
+   "90171876579d4876",
+   "c6fac58ef4ec3c5f",
+   "e35d0c8f9e10fc45",
+   "f44a07eb2fcf9198"
+  ],
+  "24": [
+   "07b263c487800bdd",
+   "1339c498aff2c8f3",
+   "487f70822af9c2d4",
+   "4abc2f9a2106ee66",
+   "5e03ff244660984a",
+   "69779653e401bb90",
+   "7067ec93c73dadac",
+   "78277a0ea784b6ec",
+   "821033b01a8a69a0",
+   "a103fe224836343b",
+   "c239592afb9103e6",
+   "c2395b7c18975307",
+   "d33b4df6775cfbb1",
+   "d87c9fd0419cd6c9",
+   "e1fb8e16ea141e86",
+   "f4f515da478e44d6",
+   "ff148a3d3b6d7bdd"
+  ],
+  "32": [
+   "097f133bd14a0435",
+   "63314459a23f61df",
+   "81eec4e3219d6c97",
+   "9cb31a1c8072b38e",
+   "b64d361d61a8fcbb",
+   "d4d440bac1d16709",
+   "d97e039402975061",
+   "eb6941003d431ecd"
+  ],
+  "48": [
+   "01e6a44d766ac7d3",
+   "0fdc99dfd8dfb84b",
+   "14e8702a6d79ce71",
+   "2db402960b22ea5e",
+   "f0b421e27fc9ade4",
+   "f23950c12ed2342c"
+  ]
+ }
+}

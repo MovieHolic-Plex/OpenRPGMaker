@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "245c30dad4bfc67991b5e6417ec6f27db0d0a6b440a57b19b936a60546f33497",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 비공정 부두 판자 갑판(구름 바다 위, 아래층)",
+ "label": "sky-steam/steam-at-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank deck autotile with metal border",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is an autotile terrain block representing wooden floor decking with a metal rim. Viewed correctly from top-down perspective with horizontal plank layout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14740
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship dock wooden plank deck autotile",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid autotile terrain representing a horizontal wooden plank deck surface with surrounding metal borders viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship dock wooden deck autotile",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a standard floor autotile block showing horizontal wooden planking from above with metal borders, appropriately rendered for top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4221
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship dock wooden plank deck autotile",
+    "kind_matches": true,
+    "top_rows": 36,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Standard top-down autotile format showing horizontal wooden deck surface framed by metallic borders and lower edge walling, appropriately represented as flat terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3761
+  }
+ ],
+ "decidedAt": "2026-10-13T16:42:19.912Z",
+ "cells": {
+  "16": [
+   "1f314f72459b50ff",
+   "31fe4e2c6f6e17f9",
+   "4512543bf017c772",
+   "57f52a5ae38c2df4",
+   "5e59c0ef8d66b7d4",
+   "a4fe65e08b5c1670",
+   "c1c7c2641feb0372",
+   "cfa12ffb4636e99a",
+   "d07143b8d6a9f8ad",
+   "efe1e43703090658"
+  ],
+  "24": [
+   "0497f324c455cba7",
+   "112bd6645bba5320",
+   "3759601719aae725",
+   "3ff0592a97e0d443",
+   "4da3cdf8b692068d",
+   "506464870a407c00",
+   "5a9a7fd2ef3ba106",
+   "6c17fe2635eba9c4",
+   "86ffc4d931cd0700",
+   "ab450a04e0e377ea",
+   "bd1a45909f7d900d",
+   "d57ebedc66102aa8",
+   "d9e2457adb8120dd",
+   "eaef5002a1a02ea8",
+   "fa15399e73500697",
+   "fcd87324914d51b0",
+   "fd71448d26925dab"
+  ],
+  "32": [
+   "04dfb7fd0c91bccf",
+   "21617e36c4a0b145",
+   "2c781e5a9f559bb1",
+   "6b194f91990a8996",
+   "96d08ecdd20580c8",
+   "da2bfbcda58857fd",
+   "daaf0c88b00a492b",
+   "dff7679f24b51c3a"
+  ],
+  "48": [
+   "4f3654511b94c6e8",
+   "5b5e1a73750648e1",
+   "61f2f95ac52f65ec",
+   "a6ec9f4530659eba",
+   "b743da9f67393da5",
+   "f64a48fca62e87ac"
+  ]
+ }
+}
