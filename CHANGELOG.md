@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.207.1 — 2026-10-14
+
+### 수정
+
+- **ci** — keep the interaction surface inside the CI heap (`ee10c6f`)
+
 ## 0.207.0 — 2026-10-14
 
 ### 기능
