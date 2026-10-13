@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4062df1aebca1fc33b80643845d89eb19a1bad176c1be9d94ac234c43412f9a1",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "정원석(큰 바위)",
+ "label": "sengoku-edo/se-rock-big",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large garden rock",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper plane of the boulder is highlighted and covered with moss spanning rows 4 to 13, sloping down into darker south-facing rock planes below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5741
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large garden rock with moss patches",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly delineated illuminated top surface from rows 4 to 12 containing moss and light grey highlights, transitioning to shadowed front/lower surfaces below row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large garden rock",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock shows a distinct upward-facing top surface (rows 4–13) covered in moss and lighter highlights, separated from the darker, steeper south-facing lower section (rows 14–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5834
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large garden rock",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rock has a clearly delineated upper/top surface from row 4 to row 12 illuminated and covered in moss patches viewed from an elevated angle, transitioning down to mid-tone and shadowed lower southern facets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4154
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.070Z",
+ "cells": {
+  "16": [
+   "4c2c4d6177366980",
+   "8cf3299f9d059ff5",
+   "9062927cc132f09c",
+   "b2e58d041fb68293"
+  ],
+  "24": [
+   "0c03b46d9e0cfee9",
+   "131d4d2af0078f15",
+   "1eff18383af234cc",
+   "20432fdc429727cb",
+   "209337a7ebabbad8",
+   "318f79000c11e669",
+   "39331f23c5df2e0a",
+   "5594f423c94ad421",
+   "644fd61d6cb02677",
+   "68370982744ce1ce",
+   "6e7fe819c099d737",
+   "83fdf7370cde386f",
+   "8ba30d97f14334a6",
+   "8f59ff630c7e51c9",
+   "90a20f5997d00593",
+   "b4c0d8c82c496c84",
+   "b7d97e61a981d82a",
+   "c3c4f6e9085612e9",
+   "c9e9c77638665dac",
+   "d9b51b3468220715",
+   "e53fdfcb2f190b52",
+   "e5f90893910cdacf"
+  ],
+  "32": [
+   "478cabd9eb101752"
+  ],
+  "48": [
+   "22bd24cc677b28eb",
+   "39e3ddda0acdc494",
+   "5338495c4d3d61b2",
+   "55ba0570362b0da5",
+   "64a1ee256ab56f44",
+   "d7f77b0971b0f0b6"
+  ]
+ }
+}

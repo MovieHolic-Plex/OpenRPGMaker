@@ -543,27 +543,9 @@ def _(c):
    '참배길 입구. 가운데 두 칸으로 지나간다. 기둥 칸(맨 아래 양 끝)만 막힘. 앞뒤로 돌길(cobble).',
    walk=[(0, 0), (1, 0), (2, 0), (3, 0), (1, 1), (2, 1), (1, 2), (2, 2), (0, 1), (3, 1)])
 def _(c):
-    # 가사기(맨 위 들보): 윗면 검은 갓 4행 + 붉은 앞면 4행, 양끝 들림
-    for i in range(64):
-        d = min(i, 63 - i)
-        lift = 3 if d < 3 else 2 if d < 7 else 1 if d < 12 else 0
-        y = 2 - lift + 2
-        c.P(i, y - 1, 'sumi', 1)
-        c.P(i, y, 'kuro', 5); c.P(i, y + 1, 'kuro', 4); c.P(i, y + 2, 'kuro', 3)
-        for k in range(3, 7): c.P(i, y + k, 'shu', 4 if k == 3 else 3 if k < 6 else 2)
-        c.P(i, y + 7, 'sumi', 1)
-    # 누키(아래 가로대): 윗면 2 + 앞면 3
-    for i in range(3, 61):
-        c.P(i, 15, 'shu', 5); c.P(i, 16, 'shu', 4); c.P(i, 17, 'shu', 3); c.P(i, 18, 'shu', 3); c.P(i, 19, 'shu', 1)
-    c.P(2, 15, 'sumi', 1); c.P(61, 15, 'sumi', 1); c.VL(2, 15, 5, 'sumi', 1); c.VL(61, 15, 5, 'sumi', 1)
-    # 가쿠즈카(가운데 짧은 기둥) + 빈 현판(글자 없음)
-    c.R(29, 11, 6, 4, 'shu', 3); c.R(28, 12, 8, 3, 'kuro', 2); c.HL(28, 12, 8, 'kuro', 4)
-    # 기둥 둘(굵게 6) + 검은 밑동
-    for x in (7, 51):
-        for j in range(12, 48):
-            c.P(x, j, 'sumi', 1); c.P(x + 1, j, 'shu', 5); c.P(x + 2, j, 'shu', 4); c.P(x + 3, j, 'shu', 3); c.P(x + 4, j, 'shu', 2); c.P(x + 5, j, 'sumi', 1)
-        c.R(x, 40, 6, 7, 'kuro', 2); c.HL(x, 40, 6, 'kuro', 4); c.HL(x, 47, 6, 'sumi', 1)
-        c.R(x - 1, 46, 8, 2, 'ishi', 4); c.HL(x - 1, 47, 8, 'sumi', 1)
+    from arch import torii_draw
+    torii_draw(c, 64, 48, (7, 51))
+
 
 
 @B('shrine', '신사 본전(동판 지붕 + 치기·가쓰오기, 붉은 기둥 + 금줄, 폭 6)', 6, 5, [2, 3], ['신사', '본전', '배전', '참배길'],

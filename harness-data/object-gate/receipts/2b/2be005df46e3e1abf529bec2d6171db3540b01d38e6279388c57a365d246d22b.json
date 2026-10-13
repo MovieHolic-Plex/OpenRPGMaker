@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2be005df46e3e1abf529bec2d6171db3540b01d38e6279388c57a365d246d22b",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "도리이(붉은 신사 문, 폭 4)",
+ "label": "sengoku-edo/se-torii",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate (kasagi, shimaki, nuki lintels and pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The torii is drawn in pure 2D front elevation (side-scroller style). Both lintels have vertically cut flat ends with no depth, the crossbeam (nuki) has no visible top surface, the dark brown band is the front face of the upper kasagi beam rather than a receding roof plane, and the pillar bases are completely flat 1px horizontal lines showing no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13393
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure front architectural elevation. The horizontal lintel (nuki) at rows 14-20 has zero top surface visible, the pillar bases and plinths at rows 40-47 show only flat horizontal lines with no top depth, and the dark band on the upper curved beam (rows 2-5) is a flat 2D copper cap outline following the front profile rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10900
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Torii gate (shrine archway)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure front elevation: the lintels, pillars, beam ends, and base stones are rendered flat with no top surfaces visible from a 45-degree angle. The beam ends (rows 14-19) and stone bases (rows 45-47) are completely flat horizontal/vertical lines without elliptical perspective or visible top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7156
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "torii gate (kasagi, shimaki, nuki beams and pillars)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat 2D architectural front elevation. The dark upper band (rows 2-5) represents the front profile of the curved kasagi beam above the red shimaki (rows 6-9), not a top surface. Neither the lintels, the crossbeam, nor the pillar bases/plinths show any top surfaces receding in 3/4 perspective (the pedestal bases at row 46 are only 1px tall flat lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6904
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.067Z",
+ "cells": {
+  "16": [
+   "13188f32a45d9a10",
+   "2f645acc7e4744ad",
+   "58d9ef0af212341a",
+   "5dfd5cdcf323da28",
+   "9e9e4c0bed9d44e7",
+   "b520d514c49070bd",
+   "de11f595c85caf09",
+   "e6d55b0d71b12322",
+   "f0d41de563f97560"
+  ],
+  "24": [
+   "0336c56ae82305f8",
+   "15def82489a3814b",
+   "1fe7eb7dcc1194ef",
+   "37059384f0127044",
+   "382b24da7981b637",
+   "3f5d2a608103ec17",
+   "41ba14245c260013",
+   "5ef35ba049423f53",
+   "6676bb2fabb9906a",
+   "888fec3cc34ba695",
+   "b5f3a0a032c05ea0",
+   "be105e2948492b46",
+   "d987430b8c5ea8a8"
+  ],
+  "32": [
+   "0113418ee3d9a22f",
+   "0912273bfea51800",
+   "125d3d9d576b5341",
+   "1b1da611f2e3eb2d",
+   "45b6f443247a80e2",
+   "4febcfb57f24a44a",
+   "d8d57b6fa34a07da",
+   "e3887a579d168c5a"
+  ],
+  "48": [
+   "17f1673438fc2f23",
+   "2c4ec9fa0a375520",
+   "4ce7b455c32bbcc4",
+   "5b2596d5c0fbc2e5",
+   "9578fbfecd2ebe05",
+   "959b0bd06129b3ef"
+  ]
+ }
+}

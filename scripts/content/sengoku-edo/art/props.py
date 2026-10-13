@@ -34,6 +34,56 @@ def slab(c, x, y, w, top, front, mat, tt=None, back=True):
     c.HL(x, y - 1, w, 'sumi', 1); c.HL(x, y + top + front, w, 'sumi', 1)
 
 
+def cap(c, cx, y, wb, wf, top, front, mat, tt=None, back_t=None):
+    """위에서 내려다본 갓·지붕 판: 윗면 = 뒤(위) 폭 wb → 앞 폭 wf 사다리꼴(밝게, 뒤 가장자리 어두운 선, 왼쪽 빛·오른쪽 반 그늘),
+    그 아래 앞 띠 front 행(어둡게). 가운데 cx. 윤곽 sumi."""
+    n = NT[MI[mat]]
+    tt = n - 1 if tt is None else tt
+    for j in range(top):
+        k = j / max(1, top - 1)
+        w = int(round(wb + (wf - wb) * k))
+        x0 = int(round(cx - w / 2))
+        for i in range(w):
+            t = tt if i < w * 0.55 else tt - 1
+            if j == 0: t = tt - 3 if back_t is None else back_t
+            elif j == top - 1: t = tt
+            c.P(x0 + i, y + j, mat, clamp(mat, t))
+        c.P(x0 - 1, y + j, 'sumi', 1); c.P(x0 + w, y + j, 'sumi', 1)
+    x0 = int(round(cx - wf / 2))
+    for j in range(front):
+        for i in range(wf):
+            c.P(x0 + i, y + top + j, mat, clamp(mat, tt - 3 - (1 if j == front - 1 else 0) - (1 if i > wf * 0.6 else 0)))
+        c.P(x0 - 1, y + top + j, 'sumi', 1); c.P(x0 + wf, y + top + j, 'sumi', 1)
+    c.HL(int(round(cx - wb / 2)), y - 1, wb, 'sumi', 1)
+    c.HL(x0, y + top + front, wf, 'sumi', 1)
+
+
+def disc(c, cx, cy, rx, ry, band, mat, tt=None, inner=None):
+    """위에서 본 둥근(타원) 윗면 + 그 아래 옆면 띠 band 행(원기둥·받침돌·갓). inner=(재질,단)이면 윗면 안쪽을 다른 색(물·재)."""
+    n = NT[MI[mat]]
+    tt = n - 1 if tt is None else tt
+    for xi in range(int(cx - rx), int(cx + rx) + 1):
+        dx = (xi + 0.5 - cx) / rx
+        if abs(dx) > 1: continue
+        yb = cy + ry * math.sqrt(1 - dx * dx)
+        for yy in range(int(round(yb)), int(round(yb)) + band):
+            t = tt - 2 if dx < -0.35 else tt - 3 if dx < 0.4 else tt - 4
+            if yy == int(round(yb)) + band - 1: t -= 1
+            c.P(xi, yy, mat, clamp(mat, t))
+    def f(X, Y, dx, dy, d):
+        if inner and d < 0.62: return inner
+        if d > 0.86: return (mat, clamp(mat, tt - 2 if dy < 0 else tt))
+        return (mat, clamp(mat, tt if dx < 0.25 else tt - 1))
+    c.ell(cx, cy, rx, ry, f)
+    # 윤곽
+    for xi in range(int(cx - rx) - 1, int(cx + rx) + 2):
+        dx = (xi + 0.5 - cx) / rx
+        if abs(dx) > 1: continue
+        yt = cy - ry * math.sqrt(1 - dx * dx); yb = cy + ry * math.sqrt(1 - dx * dx)
+        c.P(xi, int(round(yt)) - 1, 'sumi', 1)
+        c.P(xi, int(round(yb)) + band, 'sumi', 1)
+
+
 def blob(c, cx, cy, rx, ry, mat, base, s=0, rough=0.18):
     """잎 덩이: 왼위 빛 · 오른아래 그늘 · 가장자리 들쭉 · 잎결 점."""
     n = NT[MI[mat]]
@@ -209,41 +259,28 @@ def _(c):
 # ═══════════════ 석물·신사·절 ═══════════════
 @P('lantern-stone', '석등(가스가 등롱)', 1, 2, 'column', ['석등', '신사', '절', '정원'], '참배길 양옆에 짝으로·정원. 아랫칸만 막힘.')
 def _(c):
-    slab(c, 3, 27, 10, 2, 2, 'ishi', 5)             # 받침
-    c.R(6, 18, 4, 9, 'ishi', 3); c.VL(6, 18, 9, 'ishi', 5); c.VL(9, 18, 9, 'ishi', 1); c.VL(5, 18, 9, 'sumi', 1); c.VL(10, 18, 9, 'sumi', 1)
-    slab(c, 3, 15, 10, 2, 1, 'ishi', 5)             # 중대
-    c.R(4, 9, 8, 6, 'ishi', 3)                       # 화사(불창)
-    c.R(6, 10, 4, 4, 'hi', 2); c.R(6, 10, 2, 2, 'hi', 3)
-    c.VL(4, 9, 6, 'ishi', 5); c.VL(11, 9, 6, 'ishi', 1); c.VL(3, 9, 6, 'sumi', 1); c.VL(12, 9, 6, 'sumi', 1)
-    # 갓(삿갓 지붕): 윗면 밝게 사다리꼴 + 들린 끝
-    for j in range(5):
-        w = 6 + j * 2
-        x0 = 8 - w // 2
-        for i in range(w):
-            t = 6 if j < 2 else 5 if i < w // 2 else 4
-            if j == 4: t = 2
-            c.P(x0 + i, 3 + j, 'ishi', t)
-        c.P(x0 - 1, 3 + j, 'sumi', 1); c.P(x0 + w, 3 + j, 'sumi', 1)
-    c.HL(2, 8, 12, 'sumi', 1)
-    c.R(7, 0, 2, 3, 'ishi', 5); c.P(8, 1, 'ishi', 3); c.HL(7, 0, 2, 'ishi', 6)
+    disc(c, 8, 27, 7.5, 3, 2, 'ishi')                 # 받침돌: 위에서 본 넓은 둥근 윗면
+    c.R(6, 18, 4, 8, 'ishi', 3); c.VL(6, 18, 8, 'ishi', 5); c.VL(9, 18, 8, 'ishi', 1); c.VL(5, 18, 8, 'sumi', 1); c.VL(10, 18, 8, 'sumi', 1)
+    disc(c, 8, 17, 6, 2.6, 2, 'ishi')                 # 중대
+    c.R(5, 11, 6, 4, 'ishi', 3); c.R(6, 11, 4, 3, 'hi', 2); c.R(6, 11, 2, 2, 'hi', 3)
+    c.VL(4, 11, 4, 'sumi', 1); c.VL(11, 11, 4, 'sumi', 1)
+    disc(c, 8, 6, 7.5, 4.2, 2, 'ishi')                # 갓: 위에서 본 큰 타원 윗면(9행)
+    for x, y in ((8, 4), (4, 6), (12, 6), (8, 9), (6, 5), (10, 5)): c.P(x, y, 'ishi', 4)
+    c.R(7, 0, 2, 3, 'ishi', 6); c.P(8, 1, 'ishi', 4)
+
 
 
 @P('lantern-snow', '눈보기 석등(유키미, 넓은 갓)', 2, 2, 'column', ['석등', '정원', '연못'], '연못가·정원 물가.')
 def _(c):
-    for x in (9, 20):
-        c.R(x, 20, 3, 9, 'ishi', 3); c.VL(x, 20, 9, 'ishi', 5); c.VL(x - 1, 20, 9, 'sumi', 1); c.VL(x + 3, 20, 9, 'sumi', 1)
-    c.R(11, 12, 10, 8, 'ishi', 3); c.R(13, 13, 6, 5, 'hi', 2); c.R(13, 13, 3, 2, 'hi', 3)
-    c.VL(10, 12, 8, 'sumi', 1); c.VL(21, 12, 8, 'sumi', 1)
-    for j in range(7):
-        w = 14 + j * 3
-        x0 = 16 - w // 2
-        for i in range(w):
-            t = 6 if j < 3 else 5 if i < w // 2 else 4
-            if j == 6: t = 2
-            c.P(x0 + i, 4 + j, 'ishi', t)
-        c.P(x0 - 1, 4 + j, 'sumi', 1); c.P(x0 + w, 4 + j, 'sumi', 1)
-    c.HL(5, 11, 23, 'sumi', 1)
-    c.R(14, 1, 4, 3, 'ishi', 5); c.HL(14, 1, 4, 'ishi', 6); c.HL(14, 0, 4, 'sumi', 1)
+    for x in (8, 22):                                 # 다리 + 발돌(둥근 윗면)
+        c.R(x, 19, 3, 8, 'ishi', 3); c.VL(x, 19, 8, 'ishi', 5); c.VL(x - 1, 19, 8, 'sumi', 1); c.VL(x + 3, 19, 8, 'sumi', 1)
+        disc(c, x + 1.5, 27, 3.5, 1.6, 2, 'ishi')
+    c.R(11, 14, 10, 5, 'ishi', 3); c.R(13, 14, 6, 4, 'hi', 2); c.R(13, 14, 3, 2, 'hi', 3)
+    c.VL(10, 14, 5, 'sumi', 1); c.VL(21, 14, 5, 'sumi', 1)
+    disc(c, 16, 8, 15, 5, 2, 'ishi')                  # 넓은 갓: 위에서 본 큰 타원 윗면(11행)
+    for x, y in ((16, 5), (10, 8), (22, 8), (16, 11), (12, 6), (20, 6)): c.P(x, y, 'ishi', 4)
+    c.R(15, 1, 3, 4, 'ishi', 6); c.HL(15, 0, 3, 'sumi', 1); c.VL(14, 1, 4, 'sumi', 1); c.VL(18, 1, 4, 'sumi', 1)
+
 
 
 @P('komainu', '고마이누(돌 사자, 받침 위, 오른쪽 봄)', 1, 2, 'figure', ['신사', '석상', '고마이누'], '신사 앞 참배길 양옆(왼쪽에 이것, 오른쪽에 se-komainu-l).')
@@ -258,7 +295,7 @@ def _(c):
 
 def komainu(c, flip):
     """앉은 돌 사자: 큰 머리 + 곱슬 갈기 + 앞다리 기둥 + 말린 꼬리, 받침 윗면 4행."""
-    slab(c, 1, 23, 14, 4, 4, 'ishi', 5)
+    disc(c, 8, 24, 7.5, 3.6, 4, 'ishi')               # 둥근 받침: 위에서 본 윗면(사자는 뒤쪽에 앉고 앞이 드러난다)
     sh = ['.....aaaa..',
           '....aaaaaa.',
           '...aaaeaaaa',
@@ -281,13 +318,14 @@ def komainu(c, flip):
             x = (13 - i) if flip else (2 + i)
             lit = (i < 5) != flip
             if ch == 'a': t = 5 if lit else 4
-            elif ch == 'e': c.P(x, 7 + j, 'sumi', 0); continue
+            elif ch == 'e': c.P(x, 5 + j, 'sumi', 0); continue
             elif ch == 'n': t = 3
             elif ch == 't': t = 4
             elif ch == 'l': t = 6 if lit else 5
             else: t = 4 if lit else 3
             if ch in 'ab' and (i + j) % 3 == 0 and j < 6: t -= 1
-            c.P(x, 7 + j, 'ishi', t)
+            if j < 2 and ch == 'a': t = 6                 # 머리 윗면(갈기 꼭대기)
+            c.P(x, 5 + j, 'ishi', t)
     outline_ramp(c)
 
 
@@ -300,15 +338,18 @@ def _(c):
 
 @P('ema-rack', '에마 걸이(작은 지붕 + 나무 판 여럿)', 2, 2, 'frame', ['신사', '에마'], '신사 마당 옆쪽.')
 def _(c):
-    gable_roof(c, 0, 0, 32, 11, ridge=3, oni=False)
+    cap(c, 16, 23, 26, 30, 5, 3, 'ishi')              # 돌 받침: 윗면 5행
     for x in (3, 26):
-        c.R(x, 11, 3, 19, 'ki', 3); c.VL(x, 11, 19, 'ki', 5); c.VL(x - 1, 11, 19, 'sumi', 1); c.VL(x + 3, 11, 19, 'sumi', 1)
-    for row, y in enumerate((13, 21)):
-        c.HL(4, y - 1, 24, 'ki', 2)
+        c.R(x, 9, 3, 16, 'ki', 3); c.VL(x, 9, 16, 'ki', 5); c.VL(x - 1, 9, 16, 'sumi', 1); c.VL(x + 3, 9, 16, 'sumi', 1)
+    for row, y in enumerate((11, 18)):
+        cap(c, 16, y - 2, 26, 26, 2, 1, 'ki')        # 가로대 윗면
         for k in range(6):
-            x = 6 + k * 4
-            c.R(x, y, 3, 5, 'ki', 5); c.HL(x, y, 3, 'ki', 6); c.P(x + 1, y + 2, 'shu' if (k + row) % 3 == 0 else 'ki', 3)
-    slab(c, 1, 28, 30, 2, 2, 'ishi', 5)
+            x = 5 + k * 4
+            c.R(x, y + 1, 3, 4, 'ki', 5); c.HL(x, y + 1, 3, 'ki', 6); c.P(x + 1, y + 2, 'shu' if (k + row) % 3 == 0 else 'ki', 3)
+            c.HL(x, y + 5, 3, 'sumi', 1)
+    cap(c, 16, 1, 20, 32, 6, 2, 'kawara')             # 작은 지붕: 위에서 본 기와 윗면 6행
+    for x in range(2, 30, 3): c.VL(x, 3, 4, 'kawara', 3)
+
 
 
 @P('chozuya', '데미즈야(손 씻는 곳, 지붕 + 돌 물확)', 2, 3, 'structure', ['신사', '절', '데미즈야'], '도리이 안쪽 참배길 옆. 둘레 1칸 비움.')
@@ -346,42 +387,36 @@ def _(c):
 
 @P('jizo', '지장보살 석상(붉은 턱받이)', 1, 2, 'figure', ['석상', '지장', '가도', '농촌', '절'], '가도 갈림길·마을 어귀·절 담 밑. 둘이나 셋 나란히.')
 def _(c):
-    slab(c, 2, 24, 12, 3, 4, 'ishi', 5)
-    c.ell(8, 18, 4.5, 6, lambda X, Y, dx, dy, d: ('ishi', 5 if dx < -0.3 else 4 if dx < 0.3 else 3))
-    c.ell(8, 9, 3.6, 3.8, lambda X, Y, dx, dy, d: ('ishi', 6 if dx < -0.2 and dy < 0 else 4 if dx < 0.4 else 3))
-    for j in range(13, 18):
-        w = 4 + (j - 13)
-        c.HL(8 - w // 2, j, w, 'shu', 4 if j == 13 else 3)
-    c.P(7, 9, 'ishi', 2); c.P(9, 9, 'ishi', 2)
-    outline_ramp(c, ('ishi',))
+    disc(c, 8, 24, 7, 3.4, 4, 'ishi')                 # 둥근 받침돌: 위에서 본 윗면(석상은 뒤쪽)
+    c.ell(8, 15, 4.5, 6, lambda X, Y, dx, dy, d: ('ishi', 5 if dx < -0.3 else 4 if dx < 0.3 else 3))
+    c.ell(8, 6, 3.8, 4, lambda X, Y, dx, dy, d: ('ishi', 6 if dy < -0.2 else 5 if dx < 0 else 4 if dx < 0.4 else 3))
+    for j in range(10, 15):
+        w = 4 + (j - 10)
+        c.HL(8 - w // 2, j, w, 'shu', 4 if j == 10 else 3)
+    c.P(7, 7, 'ishi', 2); c.P(9, 7, 'ishi', 2)
+    c.R(11, 24, 2, 1, 'shu', 3); c.P(4, 24, 'kusa', 4)
+
 
 
 @P('hokora', '길가 작은 사당(호코라, 붉은 문)', 1, 2, 'structure', ['신사', '사당', '농촌', '가도'], '논두렁·가도 갈림길·마을 어귀. 앞에 지장·석등 하나.')
 def _(c):
-    slab(c, 1, 25, 14, 3, 4, 'ishi', 5)
-    c.R(3, 13, 10, 12, 'ki', 3); c.VL(3, 13, 12, 'ki', 5); c.VL(12, 13, 12, 'ki', 1)
-    c.R(5, 15, 6, 9, 'shu', 2); c.VL(8, 15, 9, 'shu', 1); c.HL(5, 15, 6, 'shu', 4)
-    c.VL(2, 13, 12, 'sumi', 1); c.VL(13, 13, 12, 'sumi', 1)
-    gable_roof(c, 0, 4, 16, 10, ridge=3, oni=False)
+    cap(c, 8, 21, 13, 16, 6, 4, 'ishi')               # 돌 받침: 윗면 6행(사당은 뒤쪽)
+    c.R(3, 12, 10, 10, 'ki', 3); c.VL(3, 12, 10, 'ki', 5); c.VL(12, 12, 10, 'ki', 1)
+    c.R(5, 14, 6, 7, 'shu', 2); c.VL(8, 14, 7, 'shu', 1); c.HL(5, 14, 6, 'shu', 4)
+    c.VL(2, 12, 10, 'sumi', 1); c.VL(13, 12, 10, 'sumi', 1)
+    c.R(6, 24, 4, 2, 'shikkui', 4); c.P(7, 23, 'kusa', 4)  # 공물(받침 윗면 위)
+    cap(c, 8, 2, 8, 16, 7, 2, 'kawara')               # 지붕: 위에서 본 기와 윗면 7행
+    for x in range(2, 15, 3): c.VL(x, 4, 4, 'kawara', 3)
+    c.R(7, 0, 2, 2, 'kin', 3)
+
 
 
 @P('torii-small', '작은 도리이(붉은, 폭 3)', 3, 3, 'structure', ['신사', '도리이', '농촌'], '작은 사당·여우 신사 앞. 가운데 칸으로 지나간다.',
    walk=[[0, 0], [1, 0], [2, 0], [1, 1], [1, 2], [0, 1], [2, 1]])
 def _(c):
-    for i in range(48):
-        d = min(i, 47 - i)
-        lift = 2 if d < 3 else 1 if d < 8 else 0
-        y = 6 - lift
-        c.P(i, y - 1, 'sumi', 1)
-        c.P(i, y, 'kuro', 5); c.P(i, y + 1, 'kuro', 3)
-        for k in range(2, 5): c.P(i, y + k, 'shu', 4 if k == 2 else 3 if k < 4 else 2)
-        c.P(i, y + 5, 'sumi', 1)
-    for i in range(4, 44):
-        c.P(i, 16, 'shu', 5); c.P(i, 17, 'shu', 3); c.P(i, 18, 'shu', 3); c.P(i, 19, 'sumi', 1)
-    for x in (6, 37):
-        for j in range(11, 47):
-            c.P(x, j, 'sumi', 1); c.P(x + 1, j, 'shu', 5); c.P(x + 2, j, 'shu', 4); c.P(x + 3, j, 'shu', 2); c.P(x + 4, j, 'sumi', 1)
-        c.R(x, 41, 5, 6, 'kuro', 2); c.HL(x, 41, 5, 'kuro', 4); c.HL(x - 1, 47, 7, 'sumi', 1)
+    from arch import torii_draw
+    torii_draw(c, 48, 48, (5, 37), pw=6)
+
 
 
 # ═══════════════ 다리·배·물가 ═══════════════
@@ -459,22 +494,22 @@ def _(c):
 
 @P('water-wheel', '물레방아(나무 바퀴 + 받침)', 2, 3, 'structure', ['물레방아', '농촌', '강', '물방앗간'], '물방앗간·농가 옆 물길(물 칸) 가장자리.')
 def _(c):
-    cx, cy, r = 16, 22, 15
-    for y in range(cy - r, cy + r + 1):
-        for x in range(cx - r, cx + r + 1):
-            d = math.hypot(x - cx + 0.5, y - cy + 0.5)
-            if d > r: continue
-            if d > r - 3: c.P(x, y, 'ki', 4 if x < cx else 2 if y > cy else 3)
-            elif d < 3: c.P(x, y, 'ki', 5 if x < cx else 2)
-            else:
-                ang = math.atan2(y - cy, x - cx)
-                if (ang * 8 / math.pi) % 2 < 0.45: c.P(x, y, 'ki', 3)
-    for k in range(16):
-        a = k * math.pi / 8
-        x = int(round(cx + math.cos(a) * (r + 1))); y = int(round(cy + math.sin(a) * (r + 1)))
-        c.R(x - 1, y - 1, 3, 3, 'ki', 4 if y < cy else 2)
-    outline_ramp(c, ('ki',))
-    c.R(13, 2, 6, 6, 'ki', 2); slab(c, 11, 2, 10, 3, 2, 'ki', 5)
+    # 축이 동서인 물레방아를 위·앞에서: 바퀴는 좁은 세로 띠(테 + 날개 판 윗면이 줄무늬), 둘레 돌 축대 받침, 위로 들어오는 홈통 물
+    disc(c, 16, 41, 13, 3, 3, 'ishi')                 # 물받이 돌 웅덩이(둥근 윗면 + 물)
+    c.ell(16, 41, 9, 1.8, lambda *a: ('mizu', 4))
+    for y in range(12, 41):
+        for x in range(9, 23):
+            ph = (y + 1) % 4
+            t = 6 if ph == 0 else 5 if ph == 1 else 3 if ph == 2 else 2
+            if x in (9, 22): t = 2
+            if x in (10, 21): t = 4
+            c.P(x, y, 'ki', t)
+    for y in range(12, 41): c.P(8, y, 'sumi', 1); c.P(23, y, 'sumi', 1)
+    c.R(5, 24, 4, 4, 'ki', 2); c.R(23, 24, 4, 4, 'ki', 2)             # 축 끝
+    cap(c, 16, 1, 18, 22, 7, 2, 'ki', 6)              # 홈통: 위에서 본 윗면 7행 + 물
+    c.R(10, 3, 12, 4, 'mizu', 4); c.HL(10, 3, 12, 'mizu', 3); c.HL(11, 5, 4, 'mizu', 6)
+    for k in range(3): c.P(15 + k, 11, 'mizu', 5)
+
 
 
 # ═══════════════ 거리·시장 ═══════════════
@@ -511,15 +546,16 @@ def _(c):
 
 @P('stall-fish', '생선 노점(나무 판 + 생선 줄)', 2, 2, 'low_furniture', ['시장', '노점', '생선', '나루터'], '나루터·강가 시장.')
 def _(c):
-    for x in (4, 25): c.R(x, 22, 3, 8, 'ki', 2)
-    slab(c, 2, 10, 28, 9, 4, 'ki', 5)
-    for row in range(2):
+    for x in (4, 25): c.R(x, 24, 3, 7, 'ki', 2); c.HL(x, 31, 3, 'sumi', 1)
+    cap(c, 16, 6, 26, 30, 12, 5, 'ki', 6)             # 생선 판: 위에서 본 윗면 12행 + 앞판 5행
+    for row in range(3):
         for k in range(4):
-            x = 5 + k * 6; y = 12 + row * 4
+            x = 5 + k * 6 + (row % 2) * 2; y = 8 + row * 3
             c.HL(x, y, 4, 'ishi', 6); c.HL(x, y + 1, 5, 'ishi', 4); c.P(x + 4, y, 'ishi', 3); c.P(x, y + 1, 'sumi', 1)
-    c.R(2, 4, 28, 5, 'kuro', 3)
-    for k in range(5): c.R(4 + k * 5, 5, 3, 2, 'mizu', 4)
-    slab(c, 2, 3, 28, 2, 3, 'ki', 5)
+    c.R(4, 17, 6, 1, 'take', 4)
+    for k in range(4): c.R(4 + k * 7, 19, 4, 2, 'ki', 3)
+    c.ell(28, 20, 3, 2, lambda X, Y, dx, dy, d: ('kaya', 5 if dy < 0 else 3))
+
 
 
 @P('bench-red', '붉은 천 평상(찻집 의자)', 2, 1, 'seat', ['평상', '찻집', '쉼터'], '찻집 앞·참배길 쉼터. 처마 밑 1칸 띄워.')
@@ -558,11 +594,14 @@ def _(c):
 
 @P('street-lantern', '길가 등롱(나무 기둥 사각 등)', 1, 2, 'column', ['등롱', '가도', '성하마을', '다리'], '큰길·다리 끝·참배길. 5~6칸 간격.')
 def _(c):
-    slab(c, 3, 26, 10, 3, 3, 'ishi', 5)
-    c.R(6, 15, 4, 11, 'ki', 3); c.VL(6, 15, 11, 'ki', 5); c.VL(9, 15, 11, 'ki', 1); c.VL(5, 15, 11, 'sumi', 1); c.VL(10, 15, 11, 'sumi', 1)
-    c.R(3, 6, 10, 9, 'washi', 3); c.R(4, 7, 4, 7, 'hi', 3); c.R(8, 7, 4, 7, 'washi', 2)
-    c.VL(3, 6, 9, 'ki', 4); c.VL(12, 6, 9, 'ki', 2); c.VL(2, 6, 9, 'sumi', 1); c.VL(13, 6, 9, 'sumi', 1)
-    slab(c, 2, 2, 12, 3, 1, 'ki', 5)
+    disc(c, 8, 28, 6, 2.2, 2, 'ishi')                 # 둥근 돌 받침
+    c.R(6, 16, 4, 11, 'ki', 3); c.VL(6, 16, 11, 'ki', 5); c.VL(9, 16, 11, 'ki', 1); c.VL(5, 16, 11, 'sumi', 1); c.VL(10, 16, 11, 'sumi', 1)
+    c.R(3, 10, 10, 6, 'washi', 3); c.R(4, 10, 4, 5, 'hi', 3); c.R(8, 10, 4, 5, 'washi', 2)
+    c.VL(3, 10, 6, 'ki', 4); c.VL(12, 10, 6, 'ki', 2); c.VL(2, 10, 6, 'sumi', 1); c.VL(13, 10, 6, 'sumi', 1); c.HL(3, 16, 10, 'sumi', 1)
+    disc(c, 8, 5, 7.5, 4, 2, 'kawara')                # 갓 지붕: 위에서 본 큰 타원 윗면(9행)
+    for x, y in ((8, 3), (5, 5), (11, 5), (8, 7)): c.P(x, y, 'kawara', 3)
+    c.R(7, 0, 2, 2, 'kawara', 6)
+
 
 
 @P('sake-barrels', '술통 더미(짚 두른 통 셋)', 2, 2, 'round_body', ['술통', '술도가', '가게', '나루터'], '술도가 앞·나루터 짐.')
@@ -582,23 +621,30 @@ def _(c):
 
 @P('rice-bales', '쌀섬 더미(짚 섬 다섯)', 2, 2, 'round_body', ['쌀섬', '곡식', '쌀가게', '농가', '창고'], '쌀가게 앞·창고 옆·농가 마당.')
 def _(c):
-    for cx, cy in ((8, 24), (24, 24), (16, 24), (12, 14), (20, 14)):
-        c.ell(cx, cy, 6.5, 5, lambda X, Y, dx, dy, d: ('kaya', 6 if dy < -0.5 else 5 if dx < -0.2 else 4 if dx < 0.4 else 3))
-        for y in range(cy - 4, cy + 5):
-            for x in (cx - 3, cx + 2):
-                if c.get(x, y): c.P(x, y, 'kaya', 2)
-        c.ell(cx - 5, cy, 1.5, 3, lambda X, Y, dx, dy, d: ('kaya', 5))
+    """선 쌀섬 넷(뒤 둘·앞 둘): 위에서 보이는 둥근 짚 뚜껑(타원 5행) + 새끼줄 띠 몸통."""
+    def bale(cx, top, body):
+        for y in range(top + 2, top + 2 + body):
+            for x in range(cx - 6, cx + 7):
+                dx = (x - cx + 0.5) / 6.5
+                t = 5 if dx < -0.4 else 4 if dx < 0.3 else 3
+                if (y - top) % 4 == 0: t = 2
+                c.P(x, y, 'kaya', t)
+        c.ell(cx + 0.5, top + 2, 6.5, 2.6, lambda X, Y, dx, dy, d: ('kaya', 6 if d < 0.55 else 5 if dx < 0.3 else 4))
+        c.P(cx, top + 2, 'kaya', 3); c.P(cx + 1, top + 2, 'kaya', 3)
+    bale(9, 0, 11); bale(23, 1, 10)
+    bale(8, 13, 12); bale(22, 14, 11)
     outline_ramp(c)
+
 
 
 @P('bucket-stack', '방화 물통 더미(받침 위 통 여섯)', 1, 1, 'round_body', ['물통', '방화', '성하마을'], '상가 처마 밑·골목 어귀.')
 def _(c):
-    slab(c, 1, 11, 14, 2, 2, 'ki', 5)
-    for k, (cx, cy) in enumerate(((4, 8), (8, 8), (12, 8), (6, 4), (10, 4), (8, 0))):
-        c.R(cx - 2, cy + 1, 4, 3, 'ki', 3); c.VL(cx - 2, cy + 1, 3, 'ki', 5)
-        c.HL(cx - 2, cy + 1, 4, 'kuro', 1)
-        c.HL(cx - 1, cy, 2, 'mizu', 4)
-    outline_ramp(c)
+    def bucket(cx, cy):
+        disc(c, cx, cy, 3.5, 2.2, 4, 'ki', 6, inner=('mizu', 4))
+        c.HL(int(cx - 3), int(cy + 4), 7, 'kuro', 2)
+    bucket(8, 3)
+    bucket(4.5, 9); bucket(11.5, 9)
+
 
 
 @P('palanquin', '가마(카고, 지붕 덮은 상자 + 장대)', 2, 1, 'box', ['가마', '가도', '무가', '여관'], '여관·무가 대문 앞 마당.')
@@ -610,12 +656,25 @@ def _(c):
 
 @P('cart', '짐수레(나무 바퀴 둘 + 짐)', 2, 2, 'other', ['수레', '짐', '가도', '농촌', '시장'], '시장·창고 앞·농가 마당.')
 def _(c):
-    slab(c, 2, 8, 26, 8, 3, 'ki', 5)
-    for x in (4, 22):
-        c.ell(x + 3, 22, 5, 6, lambda X, Y, dx, dy, d: ('ki', 2) if d < 0.45 else ('ki', 4 if dx < 0 else 1))
-    c.R(28, 12, 4, 2, 'ki', 4)
-    for k in range(3): c.R(5 + k * 7, 4, 6, 6, 'kaya', 4); c.HL(5 + k * 7, 4, 6, 'kaya', 6); c.VL(10 + k * 7, 4, 6, 'kaya', 2)
-    outline_ramp(c)
+    for x in (1, 28):                                 # 바퀴(축이 동서 — 위에서는 좁은 세로 타원 테)
+        c.ell(x + 1.5, 18, 2.6, 8, lambda X, Y, dx, dy, d: ('ki', 2) if d < 0.4 else ('ki', 5 if dy < -0.3 else 3 if dy < 0.4 else 1))
+    # 짐칸: 위에서 들여다본 열린 상자 — 네 변 테(윗면 밝게) + 안쪽 바닥 판자(깊이 방향 결) + 짧은 앞판
+    x0, y0, w, h = 4, 4, 24, 16
+    for j in range(h):
+        d = int(round(2 * (h - 1 - j) / (h - 1)))
+        for i in range(d, w - d):
+            rim = j < 2 or j >= h - 2 or i - d < 2 or w - d - 1 - i < 2
+            if rim: t = 6 if j < h - 2 else 5
+            else: t = 3 if (i - d) % 5 == 4 else 4
+            c.P(x0 + i, y0 + j, 'ki', t)
+        c.P(x0 + d - 1, y0 + j, 'sumi', 1); c.P(x0 + w - d, y0 + j, 'sumi', 1)
+    c.HL(x0 + 2, y0 - 1, w - 4, 'sumi', 1)
+    c.R(x0, y0 + h, w, 4, 'ki', 2); c.HL(x0, y0 + h, w, 'ki', 3); c.HL(x0, y0 + h + 4, w, 'sumi', 1)
+    c.VL(x0 - 1, y0 + h, 4, 'sumi', 1); c.VL(x0 + w, y0 + h, 4, 'sumi', 1)
+    for k in range(2):                                # 실은 쌀섬(둥근 끝 윗면)
+        disc(c, 11 + k * 9, 9, 3.5, 2, 4, 'kaya', 6)
+    for x in (10, 20): c.R(x, 25, 2, 6, 'ki', 3); c.HL(x, 31, 2, 'sumi', 1)
+
 
 
 @P('firewood', '장작더미(쌓은 장작 + 짚 덮개)', 2, 1, 'organic', ['장작', '농가', '대장간'], '농가·대장간 벽 옆.')
@@ -646,18 +705,24 @@ def _(c):
 
 @P('rice-rack', '볏단 걸이(하사, 나무 틀 + 볏단)', 3, 2, 'frame', ['볏단', '논', '농촌', '가을'], '가을 논두렁 옆. 길을 막지 않게 논 쪽에.')
 def _(c):
-    for x in (2, 22, 42):
-        c.R(x, 4, 4, 26, 'ki', 3); c.VL(x, 4, 26, 'ki', 5); c.VL(x - 1, 4, 26, 'sumi', 1); c.VL(x + 4, 4, 26, 'sumi', 1)
-    c.R(0, 6, 48, 3, 'ki', 4); c.HL(0, 6, 48, 'ki', 6); c.HL(0, 9, 48, 'sumi', 1)
-    for k in range(10):
+    for x in (3, 23, 43):                             # 기둥: 둥근 꼭대기 윗면
+        c.R(x, 4, 4, 24, 'ki', 3); c.VL(x, 4, 24, 'ki', 5); c.VL(x - 1, 4, 24, 'sumi', 1); c.VL(x + 4, 4, 24, 'sumi', 1)
+        disc(c, x + 2, 4, 2.5, 1.4, 1, 'ki', 6)
+        disc(c, x + 2, 28, 3.5, 1.5, 2, 'tsuchi', 4)
+    for k in range(10):                               # 가로대에 걸친 볏단: 위에서 보면 ∧ 꼴로 넘긴 짚 묶음 윗면(밝게) + 늘어진 앞쪽
         x = 1 + k * 5
-        for j in range(10, 22):
+        for j in range(5):                            # 윗면(가로대 위로 넘긴 등)
             for i in range(4):
-                t = 5 if i == 0 else 4 if i < 3 else 3
+                c.P(x + i, 7 + j, 'kaya', 6 if j < 3 and i < 3 else 5)
+        c.HL(x, 6, 4, 'sumi', 1)
+        for j in range(12, 22):
+            for i in range(4):
+                t = 4 if i < 2 else 3
                 if j > 18: t = 2 if (i + j) % 2 else 3
                 c.P(x + i, j, 'kaya', t)
-        c.HL(x, 9, 4, 'kaya', 6)
+        c.VL(x + 4, 7, 15, 'kaya', 1)
     c.HL(0, 22, 48, 'sumi', 1)
+
 
 
 @P('well', '우물(나무 정자 틀 + 두레박)', 2, 2, 'container', ['우물', '마을', '농촌', '성하마을'], '골목 마당·농가 마당·절 부엌 옆. 둘레 1칸 비움.')
@@ -677,30 +742,39 @@ def _(c):
 
 @P('pots', '항아리 무리(물독·장독)', 2, 1, 'container', ['항아리', '농가', '부엌', '가게'], '농가·가게 뒤뜰·부엌 문 옆.')
 def _(c):
-    for cx, rx, top in ((8, 6, 2), (21, 5, 5)):
-        for y in range(top + 2, 15):
+    for cx, rx, top in ((9, 7, 0), (23, 6, 4)):
+        for y in range(top + 3, 15):
             k = (y - top) / (15 - top)
-            hw = rx * (0.8 + 0.4 * math.sin(k * math.pi))
+            hw = rx * (0.85 + 0.3 * math.sin(k * math.pi))
             for x in range(int(cx - hw), int(cx + hw) + 1):
                 dx = (x - cx) / max(1, hw)
                 c.P(x, y, 'tsuchi', 4 if dx < -0.4 else 3 if dx < 0.3 else 2)
-        c.ell(cx, top + 2, rx * 0.7, 2, lambda X, Y, dx, dy, d: ('kuro', 1) if d < 0.5 else ('tsuchi', 5))
+        # 아가리: 위에서 본 둥근 테 + 안쪽 물(5행)
+        c.ell(cx, top + 3, rx * 0.85, 2.8, lambda X, Y, dx, dy, d: ('tsuchi', 5) if d > 0.62 else ('mizu', 2 if dy < 0 else 3))
     outline_ramp(c)
+
 
 
 @P('fence-bamboo', '대 울타리(겐닌지 담, 1칸)', 1, 2, 'structure', ['울타리', '대나무', '정원', '다실'], '정원·다실 둘레, 가로로 잇는다.')
 def _(c):
     for x in range(16):
-        for y in range(6, 28):
+        for y in range(9, 28):
             k = x % 4
             t = 5 if k == 0 else 4 if k == 1 else 3 if k == 2 else 1
-            if y in (12, 21): t = 2
+            if y in (15, 22): t = 2
             c.P(x, y, 'kaya', t)
-        c.HL(x, 12, 1, 'kuro', 2)
-    for y in (12, 21): c.HL(0, y, 16, 'kuro', 3)
-    # 윗 덮개(쪼갠 대 둥근 갓): 윗면 4행
-    c.R(0, 2, 16, 4, 'take', 4); c.HL(0, 2, 16, 'take', 5); c.HL(0, 5, 16, 'take', 2); c.HL(0, 1, 16, 'sumi', 1)
+    for y in (15, 22): c.HL(0, y, 16, 'kuro', 3)
+    # 윗 덮개: 위에서 본 쪼갠 대 갓 윗면 6행(깊이 방향 줄 + 둥근 대 끝 단면)
+    c.HL(0, 1, 16, 'sumi', 1)
+    for y in range(2, 8):
+        for x in range(16):
+            t = 2 if y == 2 else 5 if y < 6 else 4
+            if x % 4 == 3 and 2 < y < 7: t = 3
+            c.P(x, y, 'take', t)
+    for x in (1, 9): c.ell(x + 2, 4.5, 1.6, 1.2, lambda *a: ('take', 2))
+    c.HL(0, 8, 16, 'take', 1)
     c.HL(0, 28, 16, 'kaya', 1); c.HL(0, 29, 16, 'sumi', 1)
+
 
 
 @P('stepping-stones', '디딤돌(정원 징검돌)', 1, 1, 'flat', ['디딤돌', '정원', '다실'], '이끼·자갈 위에 문·다실까지 한 줄로. 걸을 수 있다.')

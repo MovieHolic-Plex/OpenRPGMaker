@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c48565a619d80451f2461a6cbadbbdcd5c312aff867b61fd81016e53e05e246f",
+ "width": 48,
+ "height": 48,
+ "kind": "organic",
+ "name": "벚나무(분홍 꽃 둥근 수관)",
+ "label": "sengoku-edo/se-tree-cherry",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cherry blossom tree (foliage canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat side-scroller/platformer elevation. The trunk is a straight vertical pole terminating in a completely flat horizontal base at rows 45-46 with no top-down perspective or rounded grounding, and the canopy is rendered straight-on from the side rather than viewed from a 45-degree angle above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5998
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cherry blossom tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D platformer/side-scroller front elevation rather than in 3/4 top-down RPG perspective. The canopy shows a frontal silhouette with visible underside shading, and the cylindrical trunk ends at rows 45-46 in a completely flat horizontal base line with no circular ground footprint or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6842
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canopy and trunk of cherry blossom tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure 2D side/front elevation: the canopy is viewed straight from the side with no foreshortened top volume, the trunk is a straight vertical pole, and the base ends in a completely flat horizontal bar (rows 44-46) without any 3/4 top-down ground contact or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7285
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canopy and trunk of cherry tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in 2D side-scroller front elevation. The trunk is a straight vertical rectangle ending in a completely flat horizontal base (rows 44-46) with no elliptical footprint or 3/4 depth, and the canopy underside is flat without showing top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5622
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "04a04b9a6dd7d49e",
+   "08b5ad8457631034",
+   "b9ceaa2bbce1fb22",
+   "c04c11587613ce97",
+   "c4091e326a51bdbe",
+   "e82a30d4d7e15eca",
+   "f07cc22e5c2a024d"
+  ],
+  "24": [
+   "096391df11b2c706",
+   "3a266a9a2a505ce2",
+   "6d48ce57cc21f3e2",
+   "df22b71d126e5fc4"
+  ],
+  "32": [
+   "0191634bc1635178",
+   "1c1b775c7d31536b",
+   "29cda72c39fec420",
+   "40147df5e1905019",
+   "4780687155ac00c2",
+   "55dc96fb607e794a",
+   "5c1d89967691107c",
+   "6275e3428f8bb4d1",
+   "6bb0f2186abd2258",
+   "78ef80857c638683",
+   "98c7252a560e1707",
+   "a0c92f3d0af900b6",
+   "a5769d632d5392c4",
+   "b1753c0f09d50485",
+   "b240adb61010db41",
+   "cc04f535f1ec74f0",
+   "e0f6227f07c27562",
+   "eb2dbcee3b2d4a39",
+   "f16002612a2d849d",
+   "f6eb48aad433047a",
+   "fe8d5e605e5f1a15",
+   "ffef0b9ab2276f0d"
+  ],
+  "48": [
+   "bb8ab079caa8e0d6"
+  ]
+ }
+}

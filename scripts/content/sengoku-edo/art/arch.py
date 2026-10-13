@@ -413,3 +413,60 @@ def chochin(c, x, y, mat='washi', band='kuro', h=7, w=5, glow=False):
             if glow: c.P(x + i, y + j, 'hi', 3 if i < w - 2 else 2)
             else: c.P(x + i, y + j, mat, clamp(mat, t))
     c.HL(x + 1, y + h - 1, w - 2, band, 1)
+
+
+def torii_draw(c, W, H, px_, pw=6):
+    """3/4 도리이: 가사기 = 위에서 내려다본 긴 판(뒤 가장자리가 양 끝 4px 좁은 사다리꼴 윗면 7행, 깊이 방향 결) + 붉은 앞면 3행, 양끝 들림.
+    누키 = 윗면 3행 + 앞면 2행(양끝이 기둥 밖으로 나온다). 기둥 밑 둥근 돌 받침(타원 윗면)."""
+    import math
+    top = 7
+    for j in range(top):
+        d = int(round(4 * (top - 1 - j) / (top - 1)))
+        for i in range(d, W - d):
+            e = min(i, W - 1 - i)
+            lift = 3 if e < 3 else 2 if e < 7 else 1 if e < 12 else 0
+            y = 2 - lift + j
+            t = 5 if i < W * 0.6 else 4
+            if j == 0: t = 2
+            elif (i - d) % 6 == 5 and j < top - 1: t -= 1
+            if j == top - 1: t = 5
+            c.P(i, y, 'kuro', t)
+            if j == 0: c.P(i, y - 1, 'sumi', 1)
+    for i in range(W):
+        e = min(i, W - 1 - i)
+        lift = 3 if e < 3 else 2 if e < 7 else 1 if e < 12 else 0
+        y = 2 - lift + top
+        for k in range(3): c.P(i, y + k, 'shu', 4 if k == 0 else 3 if k < 2 else 2)
+        c.P(i, y + 3, 'sumi', 1)
+    for j in range(top):
+        d = int(round(4 * (top - 1 - j) / (top - 1)))
+        for i in (d - 1, W - d):
+            if 0 <= i < W:
+                e = min(i, W - 1 - i); lift = 3 if e < 3 else 2 if e < 7 else 1 if e < 12 else 0
+                c.P(i, 2 - lift + j, 'sumi', 1)
+    nb = 17
+    for i in range(1, W - 1):
+        c.P(i, nb - 1, 'sumi', 1)
+        c.P(i, nb, 'shu', 3 if i % 7 else 4); c.P(i, nb + 1, 'shu', 5); c.P(i, nb + 2, 'shu', 5)   # 누키 윗면 3행
+        c.P(i, nb + 3, 'shu', 2); c.P(i, nb + 4, 'shu', 1); c.P(i, nb + 5, 'sumi', 1)
+    c.VL(0, nb - 1, 7, 'sumi', 1); c.VL(W - 1, nb - 1, 7, 'sumi', 1)
+    m = W // 2
+    c.R(m - 3, 13, 6, 4, 'shu', 3); c.R(m - 4, 13, 8, 3, 'kuro', 2); c.HL(m - 4, 13, 8, 'kuro', 4)
+    for x in px_:
+        for j in range(12, H - 6):
+            if nb - 1 <= j <= nb + 5: continue
+            c.P(x, j, 'sumi', 1)
+            for q in range(pw - 2): c.P(x + 1 + q, j, 'shu', 5 if q == 0 else 4 if q < (pw - 2) // 2 else 3 if q < pw - 3 else 2)
+            c.P(x + pw - 1, j, 'sumi', 1)
+        c.R(x, H - 11, pw, 5, 'kuro', 2); c.HL(x, H - 11, pw, 'kuro', 4); c.VL(x, H - 11, 5, 'sumi', 1); c.VL(x + pw - 1, H - 11, 5, 'sumi', 1)
+        cx = x + pw / 2; cy = H - 5; rx = pw / 2 + 2.5; ry = 2.2
+        for xi in range(int(cx - rx), int(cx + rx) + 1):
+            dx = (xi + 0.5 - cx) / rx
+            if abs(dx) > 1: continue
+            yb = cy + ry * math.sqrt(1 - dx * dx)
+            for yy in range(int(round(yb)), min(H - 1, int(round(yb)) + 2)): c.P(xi, yy, 'ishi', 3 if dx < 0.3 else 2)
+            yt = cy - ry * math.sqrt(1 - dx * dx)
+            for yy in range(int(round(yt)), int(round(yb))):
+                if not (x <= xi < x + pw and yy < cy - 0.5): c.P(xi, yy, 'ishi', 6 if dx < 0.2 else 5)
+            c.P(xi, int(round(yt)) - 1 if not (x <= xi < x + pw) else int(round(yt)), 'sumi', 1) if not (x <= xi < x + pw) else None
+            c.P(xi, min(H - 1, int(round(yb)) + 2), 'sumi', 1)

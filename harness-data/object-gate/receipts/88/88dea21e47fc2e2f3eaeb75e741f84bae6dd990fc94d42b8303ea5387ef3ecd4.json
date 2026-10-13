@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "88dea21e47fc2e2f3eaeb75e741f84bae6dd990fc94d42b8303ea5387ef3ecd4",
+ "width": 32,
+ "height": 64,
+ "kind": "organic",
+ "name": "삼나무(곧고 높은 원뿔, 가도 가로수)",
+ "label": "sengoku-edo/se-tree-cedar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "conical foliage and trunk of cedar tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cedar tree is drawn in a pure front elevation typical of a side-scroller. There is no 3/4 top-down foreshortening on the foliage tiers or trunk base (the trunk bottom at row 61-62 is completely flat), showing 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5467
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cedar tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in a pure front elevation suited for a side-scroller. It tapers vertically to a pointed tip with no top-down perspective visible on the tiers, and the trunk base is completely flat.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "conical cedar tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in pure front elevation suitable for a side-scroller: the vertical tip spires straight up from row 0 without top-down foreshortening, the foliage tiers are stacked flat vertically, and the trunk base is essentially flat (row 61) showing no ground ellipse or top surface view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7616
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The conifer is drawn as a flat 2D side elevation: foliage tiers are stacked vertically without top-down foreshortening, the tip is a vertical spike, and the trunk base at row 61-62 is a completely flat horizontal line without ground perspective curvature.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7821
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.069Z",
+ "cells": {
+  "16": [
+   "0f27fd525adb9495",
+   "58c8737c75429742",
+   "5dabe717f036c0b8",
+   "8360bc0561615660",
+   "9cdb7ee5b6fd3703",
+   "f9b700f3c34df381",
+   "fc6d3652fe1ced5d",
+   "fd141948f38e93b8"
+  ],
+  "24": [
+   "03b68f6c110d36d4",
+   "07bab5dce04b43c2",
+   "19051a455c288c70",
+   "2ded9417ecf2bfb7",
+   "350a2a6873769cc9",
+   "3d842261ccff72d6",
+   "4426ae8153eb7958",
+   "48f9b4bc0a0b0286",
+   "54cdd10483ac8971",
+   "558b9316a7d8145f",
+   "5a59ad2a64284aba",
+   "62a91f5978f247d5",
+   "65494bb287b795b6",
+   "6f8d0d7ca5aa8cbc",
+   "7110b565a58c3bd6",
+   "798cdf457160f6ec",
+   "7b1fc8cbee85f60f",
+   "833cae2803a64b6f",
+   "8ff58a9ed5983433",
+   "9f9e6f92686b9b4b",
+   "9ff2e359d4443589",
+   "a26ea707f6f7174a",
+   "aa99bdd21da255d2",
+   "b9613cbecd803cd2",
+   "be82b3c3dec1b66f",
+   "bf6287797e82c36c",
+   "d01bbec45623f2d6",
+   "d52eb16948650484",
+   "d550ad3be33e1c73",
+   "d62b77551c00c30a",
+   "d88ece7a2dd90018",
+   "dca1737467ec2501"
+  ],
+  "32": [
+   "90e28d0dd2c66e8b",
+   "e4a933e070025f93"
+  ],
+  "48": [
+   "21dc8a4b35d9acff",
+   "2ff465619a933de1",
+   "30b3080f29a6dbbd",
+   "34ece9518fbd3af7",
+   "5ac743c910dce2a6",
+   "80323f2a949180e6",
+   "afca8e4af6e85593",
+   "b1ed940c57de2e6c",
+   "b7f3723f2c891aae",
+   "f677d6fef8f3de4d",
+   "f98ce359c10a013b",
+   "fc658d087dce75cb"
+  ]
+ }
+}

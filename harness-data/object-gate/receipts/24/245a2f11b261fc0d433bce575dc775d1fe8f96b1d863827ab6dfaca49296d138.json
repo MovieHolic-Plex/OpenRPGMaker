@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "245a2f11b261fc0d433bce575dc775d1fe8f96b1d863827ab6dfaca49296d138",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "방 사이 미닫이(열린 후스마 틈)",
+ "label": "sengoku-edo/se-door-fusuma",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "open sliding door (fusuma) gap and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall opening / sliding door shown flat on the vertical wall plane with transparent doorway opening, door edge, and floor rail; valid flat wall element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6876
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fusuma sliding door and frame opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat wall/doorway fixture (sliding door opening) spanning the vertical wall plane (16x32px). As a wall fixture, it lies flat on the vertical wall surface and appropriately shows no top horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10211
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sliding screen opening (fusuma gap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-level sliding door frame and opening depicted flat along the vertical wall plane, consistent with wall-mounted/wall-integrated architectural features.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5291
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sliding door opening (fusuma gap)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall opening / sliding door screen mounted flat on a vertical partition wall; as a wall feature, it is drawn flat facing south with no top surface required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5472
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "c2ba55759b7f98fe",
+   "dd114f6faccac715"
+  ],
+  "24": [
+   "0302b749eea64592",
+   "30da90f72300647f",
+   "4f11355de0eb3037",
+   "5463b3f9a8bb6c1f",
+   "7108b507a1edffa0",
+   "71dd7e3085753c85",
+   "71fbc0d72583a09d",
+   "82a5c14f3345c4de",
+   "8a4a8a9087c584f0",
+   "9396542447d8b953",
+   "cec3c729e7b8ff56",
+   "f7c9661278045cf3"
+  ],
+  "32": [
+   "1aa23af18ff85c7a",
+   "629edee1ae6fad6a",
+   "db39aa9aa426c630"
+  ],
+  "48": [
+   "09fc8ce5aa1e736a",
+   "1f5e3d31e7ab3abe",
+   "504a2526aeb71068",
+   "8758cfdf96a429fa",
+   "990156cea3381a3e",
+   "f14419c977951bc3"
+  ]
+ }
+}

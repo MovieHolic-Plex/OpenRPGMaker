@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b072563c1c08551373267fa2603435175439b1ebab2449ebc43e911c85dfe869",
+ "width": 32,
+ "height": 48,
+ "kind": "tall_furniture",
+ "name": "물건 선반(피륙·상자, 벽 앞)",
+ "label": "sengoku-edo/se-goods-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main outer frame has only a 1px border at row 2 with no visible top surface, and the shelves are drawn directly from the front with horizontal divider lines instead of visible shelf top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall shelving unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the shelving unit has only a 1px dark border and 1px edge highlight (rows 2-3) before entering the shelf cavity, with no top surface visible. The shelves and frame are drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5244
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall shelf/bookcase cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf frame has only a 1px dark border at row 1 with no visible top surface foreshortened from above (top_rows: 0). The entire unit is drawn as a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4097
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall storage shelf / bookcase filled with goods and bolts of cloth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the shelving unit has only a 1px dark border at row 2 with no visible horizontal top surface, and the shelves are drawn as straight horizontal bands in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4340
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "046c6e37523b5400",
+   "4856d8103c8b868a",
+   "4da18754f4862e31",
+   "e29a99831edc0ec3",
+   "e2d9e3f48031354b",
+   "f6c6d22063dcb178"
+  ],
+  "24": [
+   "1882cc413a473a72",
+   "1ccc9d2aaa4a4a85",
+   "2a61f6946c66f96d",
+   "38a44fd8779c4f92",
+   "6ba3c9efa05e2df3",
+   "724c3eb4c03d85a4",
+   "8d5b3d9cc4b1662a",
+   "cb56db0889cdb914",
+   "cbd697b5fd66af25",
+   "e2cee43aead25354",
+   "e7b9bf89e7f327a8",
+   "f98785a87ab469b5"
+  ],
+  "32": [
+   "30de77dd279f522b",
+   "364afc01e8b9af14",
+   "a0111d3265af744c",
+   "e0482b7f2b577393"
+  ],
+  "48": [
+   "74b8a1ac8e814a7f",
+   "e371de0e0dced576",
+   "f550d8142bd4ef3b"
+  ]
+ }
+}

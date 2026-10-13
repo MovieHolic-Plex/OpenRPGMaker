@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36b62ee9eec4caa0bbe3612497827a61a2f2d30f4ad0e2d5f27bd3a80b74d476",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "채소밭(이랑 + 잎)",
+ "label": "sengoku-edo/se-field",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vegetable garden furrow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a ground terrain tile showing repeating horizontal garden furrows with small vegetable foliage viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3026
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vegetable garden ridges with crops",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Farmland ground tile showing repeating horizontal ridges and furrows with planted crops, viewed top-down as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3542
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vegetable garden ridges with crops",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Farmland terrain tile consisting of horizontal soil furrows and crop patches viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2763
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vegetable garden furrow terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts repeating horizontal garden furrows with soil and crop foliage, functioning as a ground/terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2823
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "2743bd56a8bacebf"
+  ],
+  "24": [
+   "05e6a7843b283f8e",
+   "1a7916433878ceab",
+   "679012df181d2299",
+   "67d3967543ae64bb",
+   "8cf5fc9b652e7faa",
+   "d90aeed5abda9332"
+  ],
+  "32": [
+   "0a9155791524e044",
+   "3e3c97a045d5d867",
+   "619b68b7303e516c",
+   "b2a5ae3512858937",
+   "c7faba6ca3feddfe",
+   "e15e11eefc4b7525"
+  ],
+  "48": [
+   "6402e0d8e20327b1",
+   "88da0a7333bccdec",
+   "8fa97286d494f445",
+   "a4698f433ec5a207",
+   "a835b1ef2b82c2c0",
+   "b13e8f6d02129087"
+  ]
+ }
+}

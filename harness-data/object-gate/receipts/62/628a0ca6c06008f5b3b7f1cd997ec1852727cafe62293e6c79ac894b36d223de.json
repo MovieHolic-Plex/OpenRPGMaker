@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "628a0ca6c06008f5b3b7f1cd997ec1852727cafe62293e6c79ac894b36d223de",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "북(타이코, 받침 위)",
+ "label": "sengoku-edo/se-taiko",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "taiko drum on base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cream-colored drumhead is rendered as a clear 5-row tall ellipse (rows 6-10) seen from above at a 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "taiko drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top drumhead membrane is rendered as an elliptical surface spanning rows 6 to 10 (5 source pixel rows tall), clearly visible from a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "taiko drum on base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum head (cream-colored membrane) is drawn as a clearly foreshortened ellipse spanning rows 6 to 10 (5 source pixels tall), correctly depicting the top surface in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3174
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "taiko drum on a stand",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top skin of the drum is drawn as a foreshortened ellipse spanning rows 6 through 10 (5 source pixel rows tall) above the cylindrical drum body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3266
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "79b9138726cd0a5e",
+   "f6a2f9c971857237"
+  ],
+  "24": [
+   "15aa1e503e93d514",
+   "29d6cd4ed5700c9b",
+   "663088a385d95bd9",
+   "8201615c58a46707",
+   "867e1f67b4e9f624",
+   "8f137cb44dc8d127",
+   "9f1e4665b6585aa3",
+   "a01a98c50f8b89a0",
+   "ecb304e76d0b0ed4",
+   "ee374ce4d8842466",
+   "ef5c640adfa897c5",
+   "fc3551db225e1bbe"
+  ],
+  "32": [
+   "2133383e468c6928",
+   "f1ff94ee614e93dd",
+   "f74321d80a516897"
+  ],
+  "48": [
+   "948900ce5ac672bd",
+   "9b327217ee2d6c1d",
+   "c203bc063d6cc9db",
+   "d71598c96a251f37",
+   "d99e09e8cc110ab8",
+   "e75bb35652b13dc6"
+  ]
+ }
+}

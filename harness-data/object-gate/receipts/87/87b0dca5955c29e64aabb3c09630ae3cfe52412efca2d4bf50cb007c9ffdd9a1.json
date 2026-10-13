@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "87b0dca5955c29e64aabb3c09630ae3cfe52412efca2d4bf50cb007c9ffdd9a1",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "에마 걸이(작은 지붕 + 나무 판 여럿)",
+ "label": "sengoku-edo/se-ema-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ema plaque rack with tiled roof and stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The small roof displays a clear sloped top plane spanning rows 1-6 (approx. 6 rows tall) above its eave line, and the stone base platform clearly shows its top surface from row 24 to 27 (4 rows tall) before dropping down to the front vertical face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ema rack with roof and stone base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows a 7-row sloped top surface (rows 0-6), the horizontal frame rails show top edges, and the base plinth has a clear 4-row deep horizontal top surface (rows 24-27) in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5208
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ema plaque rack with roof and base plinth",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof pitch is clearly viewed from above (rows 0-6, ~7 rows) and the stone base has an extensive top surface visible (rows 24-27, 4 rows), correctly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5158
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden ema rack with roof and stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes down facing south across rows 1-6, and the stone base platform clearly shows a 4-row deep top surface across rows 24-27 before dropping to its front face at row 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5544
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.181Z",
+ "cells": {
+  "16": [
+   "30858b1406f1ff91",
+   "a218e4723997a008",
+   "aa186053d78a317b",
+   "f869ae032a3801bc"
+  ],
+  "24": [
+   "10b20967bb31cb56",
+   "13e26eb0eb9b4635",
+   "25dfb46b9468a0cd",
+   "33632376a2f44064",
+   "43f492d9d1ce10f3",
+   "47a945edd732666f",
+   "53d8518e3ed1e5af",
+   "714e85253b6e299a",
+   "86e13afac87d0ef3",
+   "8d84e5988b9ac3f6",
+   "8fce5d42800206de",
+   "932537088a28b8eb",
+   "9e5bf7fe5b0c7f40",
+   "a380350284bc51ad",
+   "a565dc873c1ccb81",
+   "b223d1967253dc58",
+   "c0b9d4536cf40452",
+   "c1fb16972d6c2455",
+   "cd5b4648ba94c1c7",
+   "d984198648da492e",
+   "de52367e0d5ea4f3",
+   "e2b628bbcf6841f4",
+   "e58980ace934ce1c",
+   "f3a6a9ea57283201"
+  ],
+  "32": [
+   "3e6f585ce1ceee95"
+  ],
+  "48": [
+   "17e77424cde9dbf4",
+   "48c1a2cc8bee1c09",
+   "589e145444b3c745",
+   "64cc93bd08c40f45",
+   "cbd21579e921527f",
+   "f2626bfe63392b8c"
+  ]
+ }
+}

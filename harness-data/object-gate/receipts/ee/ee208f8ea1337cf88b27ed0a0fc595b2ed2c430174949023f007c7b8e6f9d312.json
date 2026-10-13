@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee208f8ea1337cf88b27ed0a0fc595b2ed2c430174949023f007c7b8e6f9d312",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "밥상 소반(오젠, 밥그릇·국그릇)",
+ "label": "sengoku-edo/se-meal-tray",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soban (small low dining table) with dishes on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table spans rows 5-10 (approx. 6 rows) holding several dishes, followed by the front apron/face on rows 11-15 and legs on rows 16-17, correctly presenting 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27332
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "soban dining table",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above spanning rows 4 to 9 (approx. 6 rows) with bowls placed on it, meeting a front edge/apron from rows 10 to 15 supported by legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3492
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "small dining table (soban)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from rows 4 to 9 (6 pixel rows tall) with dishes placed on top, followed by a front edge at row 10, front apron from rows 11 to 15, and legs at rows 16-17.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7683
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "small dining table (soban) with dishes",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from rows 4 to 10 (approx 7 rows) holding bowls and dishes, with the front apron (rows 11-15) and legs (rows 16-17) facing south in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4072
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "9312e078882716fe",
+   "ed20763fd760d40c"
+  ],
+  "24": [
+   "336e6f1a580fa003",
+   "44d16c6e7a6043d1",
+   "4c7f9235b2b0f8f3",
+   "53a431e4ce0aaf1a",
+   "62271dffd8304c4a",
+   "7960d42935d954d7",
+   "7f0d914f694136ed",
+   "ac2e92c31d4b0a32",
+   "d9fc264b2749d951"
+  ],
+  "32": [
+   "3b2106451b2ee509",
+   "aaee422d5989b2ac",
+   "d303aceb4e0c4228"
+  ],
+  "48": [
+   "0d4d376f5cbbf568",
+   "0e75c0ad1e0ef4a9",
+   "1b65d9ee29a18c08",
+   "4bcf19264a8b049b",
+   "7ca21177ec287d7e",
+   "d8e0ec7017e98529"
+  ]
+ }
+}

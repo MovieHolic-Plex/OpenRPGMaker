@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "80ccf61ecee6f1fabc8c8f045383532d93dd8914e3325b251c416f2d28973fc5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "이끼 낀 돌길",
+ "label": "sengoku-edo/se-cobble-moss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mossy stone paving/path terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting stone pavers with moss growing in the joints, viewed appropriately as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mossy stone pavement ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone pavers with moss growing in the joints, viewed from above as floor/ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3044
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone paving with moss in crevices",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing mossy stone pavers viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5962
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone path tile with moss",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing mossy stone pavers viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2909
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "229b754be85d1b6f"
+  ],
+  "24": [
+   "3e4b019433ae28dd",
+   "50d968993fbc1641",
+   "51d48ae134bf9efa",
+   "66c69ebed10b3848",
+   "8e75ca1e9cd9558d",
+   "c882f91c886ede32"
+  ],
+  "32": [
+   "5c207fd55d568d68",
+   "883f7a3e54ea41f5",
+   "9113bd84070dd706",
+   "9a2516ae50401b06",
+   "e4a12880689312db",
+   "e55ceb008fbb71af"
+  ],
+  "48": [
+   "0a3371274a9a99d2",
+   "40f358df64c1959c",
+   "7cb48cb96a56ee34",
+   "9ee00d08b6d34884",
+   "a66fed88dffe2eef",
+   "b861b0ec85ab27e5"
+  ]
+ }
+}

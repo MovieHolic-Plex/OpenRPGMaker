@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ec3cd95df52a25ab24b949d8d71a9e37824cecee7ee973641ca7c3dc6fc049e",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "물레방아(나무 바퀴 + 받침)",
+ "label": "sengoku-edo/se-water-wheel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a large wooden water wheel (rows 15-44) drawn completely flat in pure 2D front elevation without depth, thickness, or visible top surfaces on the paddles/rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4394
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water wheel is drawn as a completely flat 2D circular elevation with zero depth or visible top/horizontal surfaces on its rim, paddles, or axle (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the large water wheel (rows 14-44), which is drawn as a completely flat 2D elevation with no top surface, rim thickness, or horizontal paddle depth visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4998
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is the large watermill wheel (rows 14-44), which is drawn entirely flat in pure 2D front elevation with zero top surface or depth to its paddles, rim, or axle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5869
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.182Z",
+ "cells": {
+  "16": [
+   "21f8e30ead5aa610",
+   "2ca9eaae3e379885",
+   "94dc053d5fce1b6e",
+   "b0cc0a2bb49e740b",
+   "f3c53a759a047f2a",
+   "f7813114fe2bacad"
+  ],
+  "24": [
+   "0c8d6c040fcb2ea3",
+   "104ae77beab8824f",
+   "25e91d287c12288a",
+   "556484c50b43702a",
+   "5cf4592baf1ea524",
+   "6ff5f93889e72167",
+   "70348a3bd76a0db1",
+   "823f91c01d886b91",
+   "97ccfdcb08864040",
+   "aed87bb300d7c550",
+   "beebc665e34a0003",
+   "c74d363b59507a60"
+  ],
+  "32": [
+   "3de5a52cfb29ddcf",
+   "9a14f37debcdc864",
+   "aea918ad184c067c",
+   "c9a9a96a78f99764"
+  ],
+  "48": [
+   "877084ae65b1647f",
+   "f6b0e95610dab249",
+   "fc24d53be996f324"
+  ]
+ }
+}

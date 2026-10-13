@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1ad05a30cf3cd8d9e0506313eb3fa8d241fe6abcef56ccd89e0841233bb37bb",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "해자·강물",
+ "label": "sengoku-edo/se-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water terrain tile showing ripples on a horizontal surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water surface tile with ripple/wave patterns across the entire 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water surface tile viewed from above with wave patterns, correctly representing flat water terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3434
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tile showing rippling surface and depth shading from above; valid terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3075
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "db81100dc06d6e96"
+  ],
+  "24": [
+   "38ddec9b3a5129dc",
+   "852ae8e2f1ed0c14",
+   "9e4f527e285607c9",
+   "c50ea36e63a4c742",
+   "d3d94adbdf690d4e",
+   "d9eff9426862cdf3"
+  ],
+  "32": [
+   "0428cdfcca99ff74",
+   "11d7aec38dd3fb72",
+   "2461022e02513b96",
+   "596e911202513f41",
+   "59a88babb74fbb90",
+   "9df071a056564b16"
+  ],
+  "48": [
+   "2596b29b49ed27bc",
+   "7736808ccab9c527",
+   "78634ce3f0c77021",
+   "7cbd5eec70d2d135",
+   "90cdfb43d56f7346",
+   "a36ac0056e789722"
+  ]
+ }
+}

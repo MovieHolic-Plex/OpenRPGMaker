@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2c29fd46f515048eb69e6a60c593e87aa8f265756b5c45bc8ab550d9b18d646",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "풀밭 가장자리(동쪽 흙길)",
+ "label": "sengoku-edo/se-grass-edge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain edge meeting dirt path",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground autotile transition from grass to dirt path on the east edge, fully seen top-down as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass to dirt edge ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile showing a flat top-down ground transition from grass to a dirt path on the east edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11514
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to dirt path ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing the eastern edge of grass meeting a dirt path, viewed from directly above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass to dirt path ground transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down ground surface with grass meeting a dirt path along the east edge; entirely top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6230
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.060Z",
+ "cells": {
+  "16": [
+   "293a9c6fa73a77ea"
+  ],
+  "24": [
+   "33856bc4efba0988",
+   "43f1ff4df631271c",
+   "9ac43a34e7ad810b",
+   "9de93549c6695419",
+   "c2aa03478d452c17",
+   "d4951f43792b02f8"
+  ],
+  "32": [
+   "04f68a9b0e5058a5",
+   "0ff1cc64ae905120",
+   "208d200f8a808f73",
+   "4654b74d31726f37",
+   "51fb58f5174c7c46",
+   "9a7f21ab04e30722"
+  ],
+  "48": [
+   "2058e7d7234909b4",
+   "34c4ef04cb389e9c",
+   "7f4394a8b09cb0c2",
+   "94065c8f161e2333",
+   "bcbf0d067da1cdaa",
+   "f71d821b42268649"
+  ]
+ }
+}

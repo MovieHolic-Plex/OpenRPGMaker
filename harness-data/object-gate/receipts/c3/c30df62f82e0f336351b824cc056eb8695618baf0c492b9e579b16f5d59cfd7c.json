@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c30df62f82e0f336351b824cc056eb8695618baf0c492b9e579b16f5d59cfd7c",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "돈궤(쇠 장식 작은 궤)",
+ "label": "sengoku-edo/se-cash-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "small chest (돈궤)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible from rows 7 to 11 (5 rows tall), clearly differentiated in shading from the front face (rows 12 to 18) which features the lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6169
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small wooden chest with brass/iron corner mounts and lock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest spans rows 7-11 (5 rows tall), highlighted along its front edge at row 11 before transitioning via a shadow seam at row 12 to the south front face (rows 13-18) which features the lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6496
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed wooden chest with metal fittings",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible from above across rows 7-11 (5 rows tall, lighter top-down lighting with a front edge highlight on row 11), followed by a shadow line on row 12 and the darker south-facing front face on rows 13-18 with a central lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7675
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed wooden money chest with metal fittings",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is visible from above, spanning rows 7-11 (5 pixel rows tall) above the front face (rows 12-18) which features the lock plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7143
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "d4c7ac0ce9171f1d",
+   "e516ae23cd579f57"
+  ],
+  "24": [
+   "192f8b0cc2b953ae",
+   "21f55cbe5eaf4770",
+   "2601ca2c7e683149",
+   "423bfaff05c05126",
+   "5547227920ccdfb5",
+   "5d3776125495e2d5",
+   "c6d70f259ccb76a1",
+   "d6c93e3878602fd6",
+   "eb666b04ad5b8e0c"
+  ],
+  "32": [
+   "21b85f35e896481d",
+   "cd0bb31793a15581",
+   "d90f00de8c936925"
+  ],
+  "48": [
+   "209f308753937ac5",
+   "39810b63b6ed3c2e",
+   "4944e79c781528d2",
+   "9d60c799b6feceba",
+   "ac1d6dc791ebc9f3",
+   "d11d034a9a1ca440"
+  ]
+ }
+}

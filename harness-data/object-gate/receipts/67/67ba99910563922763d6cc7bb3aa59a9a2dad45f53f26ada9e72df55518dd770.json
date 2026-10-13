@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67ba99910563922763d6cc7bb3aa59a9a2dad45f53f26ada9e72df55518dd770",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "물독(큰 질항아리 + 나무 뚜껑)",
+ "label": "sengoku-edo/se-water-jar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large water crock with lid and water inside",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the crock is clearly foreshortened and viewed from above across rows 6-9 (approx 3-4 rows), showing the interior filled with blue water and partially covered by a wooden lid with a dipper/ladle handle.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4278
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large earthenware water jar with a half wooden lid and ladle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is viewed from above across rows 6-9, showing blue water inside partially covered by a wooden lid, with a ladle handle protruding upward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water jar / crock with wooden lid and ladle",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the jar is visible from rows 6 to 9 (4 source pixel rows), showing a half-lid, blue water inside, and a ladle handle, before meeting the front rim at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3725
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large water crock with lid and water visible",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the crock is clearly visible from above spanning rows 6 to 9 (about 4 rows tall), showing blue water and a partially covering wooden lid/ladle before the front wall drops down to row 23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4492
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.078Z",
+ "cells": {
+  "16": [
+   "58c583b9e913c095",
+   "d22762e1503d292d"
+  ],
+  "24": [
+   "019f646382716886",
+   "443bc1f166e2e137",
+   "725c87f6a8bb54c7",
+   "766c0ddaf45d1b30",
+   "82ab162cfa02d104",
+   "9105a0b862d7d1e8",
+   "d823ba50f57ae99d",
+   "d875a3b0a492c4d7",
+   "f26d3a7061ea17fb"
+  ],
+  "32": [
+   "09ee86cc8b5a2e85",
+   "33a447bf4e5bc68f",
+   "94140c55e5d2f20e"
+  ],
+  "48": [
+   "68aef1cf854a0f5f",
+   "6b70e30f39aa9485",
+   "bc26c73e7ddbc618",
+   "d2867a584c91c3b0",
+   "e804c7efed9494c5",
+   "fa47e45a47385eb5"
+  ]
+ }
+}

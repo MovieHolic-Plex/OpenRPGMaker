@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84221f0bcb65c7f99ecd2a3808d57c54dbac72f518575519ef582f08f944585f",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "칼걸이(긴칼·짧은칼 두 자루)",
+ "label": "sengoku-edo/se-sword-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sword rack frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rack frame consists of flat 2D vertical posts and a 2px horizontal crossbeam (rows 13-14) with no top surface foreshortening. The top horizontal bar/sword (rows 7-8) is also a completely flat 2px band drawn in pure front elevation. Do not give credit to the base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8452
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "weapon rack / sword stand with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire weapon rack is drawn in pure front elevation: the horizontal bar/sword at rows 8-9 and crossbeam at rows 13-14 are flat 2px-tall bands with no foreshortened top surfaces. The base plinth is also drawn straight-on without a clear top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6595
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sword rack frame and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The weapon rack and its base are drawn in pure front elevation: both horizontal bars/swords are flat 2px strips with no top surface, and the base is a front-facing rectangle (rows 17-23) bordered on all four sides with horizontal shading rather than showing a top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7728
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sword rack (frame)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sword rack and its horizontal bars are drawn entirely in flat front elevation with no visible horizontal top surfaces on the beams or base feet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7170
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.077Z",
+ "cells": {
+  "16": [
+   "0973a7399956f901",
+   "66f4560131b9ce31"
+  ],
+  "24": [
+   "761828c9f6a25241",
+   "a0eccc9016016cff",
+   "e549f4e6cac418c8",
+   "eaa7ddfa8283bb97",
+   "eb9dc832e4ab421f",
+   "ebb881dfb1c0a4d5"
+  ],
+  "32": [
+   "2bfdb6fb9cc4b0ef",
+   "bb90fdf652facd5b",
+   "f6659719919aa571"
+  ],
+  "48": [
+   "076ee42df6487591",
+   "6ab7fcc087489aae",
+   "7baa88721ba28832",
+   "82ff2624fa3ab4ae",
+   "b22cd869c40c60b8",
+   "c94d1a76dca3edd4"
+  ]
+ }
+}

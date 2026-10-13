@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1eac409363ec6382b120e6308f8e4a9f32fd9b70e23a3419669d31e2bf35cf5c",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "길가 작은 사당(호코라, 붉은 문)",
+ "label": "sengoku-edo/se-hokora",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shrine roof and chamber",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine's roof/lintel (rows 4-13) and red-doored body (rows 14-23) are drawn as completely flat front elevations with only a 1px horizontal outline at the top and no visible top surface or slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shrine roof and body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roof and shrine body are drawn in a completely flat front elevation with no visible top slope or horizontal surface on the roof (rows 4-12 are a flat rectangular front face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4698
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shrine roof and body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine roof (rows 3-13) and body (rows 14-24) are drawn as a flat front elevation with no visible top surface or roof slope whatsoever, showing only a 1px outline along the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4916
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shrine roof and body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main shrine body and its roof (rows 4-24) are drawn in a flat front elevation. The roof has only a single outline and highlight row at row 4-5 without any visible top surface or roof slope foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5499
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.071Z",
+ "cells": {
+  "16": [
+   "464a875114cefa90",
+   "7151389abf66209b"
+  ],
+  "24": [
+   "14c7921519846429",
+   "308d0b0ab574001e",
+   "35417bb784a18f7c",
+   "7bc996381a7ba373",
+   "7da2f3746a3808ff",
+   "8809a170af7dd6b4",
+   "896fa537cfd45c64",
+   "89e20c83084bda02",
+   "9c0791a199d18f1b",
+   "a90d976188d15a38",
+   "c845a52bc5be9adf",
+   "f27cce9c4595e45b"
+  ],
+  "32": [
+   "6b7ccf34d83ce427",
+   "96107086e19414f4",
+   "fc367c2ed858fea4"
+  ],
+  "48": [
+   "0491b83d540107e6",
+   "17a4fc312f4ffc2e",
+   "4bc8748f2429063e",
+   "50ebee2687c72677",
+   "67a37c5b73706b39",
+   "c85ef50002f1660f"
+  ]
+ }
+}

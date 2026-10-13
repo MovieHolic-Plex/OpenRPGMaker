@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef6af81246aad5a59b12d73bca444fa2eb807fa2dd81306680febfa4f87afb88",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "길가 등롱(나무 기둥 사각 등)",
+ "label": "sengoku-edo/se-street-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "roadside lantern with stone cap, lantern box, wooden pole, and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, light box, wooden pole, and stone base are all rendered in pure front elevation with straight horizontal bands and no visible top surface or 3/4 downward tilt anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roadside lantern on wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation with straight horizontal bands for the roof brim, lantern frame, and base. None of the horizontal planes (roof, lantern top, base top) show any top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5641
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "roadside lantern with wooden post, glowing lamp head, and domed cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal boundaries (cap rim, lamp casing, and base) are drawn with straight horizontal lines with no visible top surface or 3/4 foreshortening, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5586
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "roadside lantern on wooden post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern (metal cap, light chamber, wooden post, and stone base) is rendered in pure front elevation with straight horizontal bands and flat 2D silhouettes, showing no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5726
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.182Z",
+ "cells": {
+  "16": [
+   "9b7b702a774ced40",
+   "f26c164476a5e187"
+  ],
+  "24": [
+   "0c503f85c0ac2d59",
+   "0fc81fac26fc46a2",
+   "211328e89d490394",
+   "32a347b710a7d3f7",
+   "3c499c1b9cc04889",
+   "4590b05ebd265357",
+   "9c760b956b822236",
+   "c3bc4b6af78ba044",
+   "ca6fbfa48cfecb57",
+   "e36cf6999c915f83",
+   "f04df958c0665897",
+   "fcaff3bebf63279d"
+  ],
+  "32": [
+   "30b62e205ed3c22a",
+   "b6a8f4351689615b",
+   "cbb40c2fe70a2158"
+  ],
+  "48": [
+   "535ef7bb41a1904f",
+   "849421659a615d13",
+   "bee18ab3a2083b19",
+   "c039bc2f8c1f2c97",
+   "c68766529939cc6f",
+   "e90a5e8d37f4da8f"
+  ]
+ }
+}

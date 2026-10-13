@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a25e9bdf520a6d1a9d08c29ee796bf57f12d68ec8fb1911922b5b526ea39f6f5",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "논두렁(남동쪽 둑)",
+ "label": "sengoku-edo/se-paddy-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rice paddy embankment terrain",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the south-east corner of a rice paddy. Both the flooded field and the top surface of the grassy ridges are viewed from above, with the south edge showing a 2px front slope/cliff.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6375
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rice paddy field with southeast ridge (levee)",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a flooded rice paddy with young crops bordered by a raised ridge on the south and east. The horizontal top of the field and levee are viewed from top-down/3/4 view with a south bank face at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4812
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rice paddy water and levee ridge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a flooded rice paddy with planted seedlings bordered by grassy levee ridges along the south and east sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4431
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rice paddy field terrain tile with south and east ridges",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing flooded rice paddy (rows 0-11) and top surface of surrounding bunds/ridges (rows 12-13 and east columns), with a 2-pixel south embankment face at rows 14-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4950
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.062Z",
+ "cells": {
+  "16": [
+   "75f44117eee363f0"
+  ],
+  "24": [
+   "30027ce7221aced0",
+   "57e2928ffeb12e2a",
+   "bcfa5b585854b0ff",
+   "cee624c7a91e4519",
+   "d76dec465b4449b2",
+   "f7263ea2d2adf239"
+  ],
+  "32": [
+   "12fda6b451acb54f",
+   "614419d0a96903d8",
+   "65e20e7d9cde6cca",
+   "858049ced75a0fdb",
+   "c8202ebd00422362",
+   "c87dff33ad51ac4a"
+  ],
+  "48": [
+   "24509692ee5af617",
+   "5ab63bc65a9c3fbf",
+   "5bcd75944013f4ce",
+   "6965ca54ac2d8343",
+   "a8c7619a04b41d79",
+   "c00fd59e51586993"
+  ]
+ }
+}

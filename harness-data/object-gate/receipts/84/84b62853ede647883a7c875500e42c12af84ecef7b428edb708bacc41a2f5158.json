@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84b62853ede647883a7c875500e42c12af84ecef7b428edb708bacc41a2f5158",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "우물(나무 정자 틀 + 두레박)",
+ "label": "sengoku-edo/se-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden well basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin clearly shows a foreshortened top surface around the opening (rows 12-24) above the front face (rows 25-30). The interior opening looking down into the water is visible across rows 14-22 (~8 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6558
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "well basin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well basin clearly shows a foreshortened top surface (rows 12-24) with a large opening (rows 14-21) revealing water inside, and a vertical south front face (rows 25-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5109
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square wooden well basin",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the well is viewed from above across rows 11-24, clearly revealing the rim and interior water surface (rows 15-21, 7 rows tall). The south face of the well is foreshortened below at rows 25-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5709
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden well base with opening and water",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the well spans rows 12 to 25, surrounding an open well hole (rows 14-21) showing the interior shadow and blue water from above. The south vertical face of the well extends below from row 26 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6878
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.074Z",
+ "cells": {
+  "16": [
+   "1d4973c7eb146bce",
+   "4a050a2f7493f5a7",
+   "9450b57c1d582697",
+   "e5db463539a7a983"
+  ],
+  "24": [
+   "122e4b5ee362a6a5",
+   "1234f4cd71d61b0d",
+   "21538ce9052bd72a",
+   "294c84227c6d3108",
+   "2ebc8242a3d80993",
+   "3130139cdda85a5a",
+   "48c83394b19a1e3c",
+   "55806193878848f6",
+   "5b21fbf9b33bf419",
+   "79f940e91b23ec8b",
+   "7ba78da29cab7300",
+   "7effbad2a5310d25",
+   "8828edddaf4ba7dc",
+   "9d4da7133ea572cb",
+   "a59eeb6e5b7b12db",
+   "b033f65fef42eaa6",
+   "b374760179aeed2b",
+   "b4dfd1b28c26d268",
+   "cad7c15de313dbde",
+   "d0636aa95d314694",
+   "d49ff5f95403381a",
+   "d893982eca743772",
+   "d8961cdac5ff2100",
+   "e4ee20b2603670fb"
+  ],
+  "32": [
+   "ec4e91c1b02b653e"
+  ],
+  "48": [
+   "02004ca0c3dfdbd0",
+   "15bdec6352ca5fb1",
+   "2b51e8dfb8ca19a5",
+   "cfadc3b7cad26078",
+   "dc6b9319f3f0168d",
+   "df777501e58ef934"
+  ]
+ }
+}

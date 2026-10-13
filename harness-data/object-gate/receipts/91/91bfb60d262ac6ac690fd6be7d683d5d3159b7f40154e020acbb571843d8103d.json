@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91bfb60d262ac6ac690fd6be7d683d5d3159b7f40154e020acbb571843d8103d",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "대 울타리(겐닌지 담, 1칸)",
+ "label": "sengoku-edo/se-fence-bamboo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fence is drawn in flat front elevation: the green bamboo cap at the top is shaded purely as a front-facing horizontal cylinder (top highlight to bottom shadow), the horizontal rails are completely flat 2px bands with no top surface, and the vertical slats show no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23883
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo fence panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure front elevation with no visible top surface or depth. The green top capping (rows 2-5) is shaded as a front-facing horizontal cylinder with a drop shadow underneath, and the horizontal tie rails (rows 12-13, 21-22) are flat horizontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9926
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo fence section with horizontal green cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top bamboo cap of the fence is rendered across rows 2-5 (4 source pixel rows) with top-to-bottom shading representing its curved/slanted upper surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4735
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo fence with top coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green bamboo roof coping across the top of the fence shows 4 rows (rows 2-5) of foreshortened top slope/surface with downward shading, rather than a flat 0-2px rim line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15618
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.074Z",
+ "cells": {
+  "16": [
+   "40bbf1ff3e0ffd7c",
+   "9c98e2bce12c2e25"
+  ],
+  "24": [
+   "1d1bf1e12a2433a9",
+   "388b30998531f65d",
+   "3b773a1be9862113",
+   "43ba6e35c0141003",
+   "509177c5dc09faa3",
+   "7907ba645dd6f77a",
+   "d2d938940ef2213f",
+   "e23dba773e0571fe",
+   "e55a9dad023c10f1",
+   "f0bc99d651337e19",
+   "f3297e5053c1232c",
+   "f7e11390926831ed"
+  ],
+  "32": [
+   "2c508d79e8c3d598",
+   "60568bb590042833",
+   "7d60c8692b52bd27"
+  ],
+  "48": [
+   "0f7f963af48867ea",
+   "12c04bbd43558936",
+   "1fa00f4c61ffda23",
+   "5eaa5b6c55df7fdb",
+   "adb7d8482e5febe8",
+   "c49a9b807654b637"
+  ]
+ }
+}

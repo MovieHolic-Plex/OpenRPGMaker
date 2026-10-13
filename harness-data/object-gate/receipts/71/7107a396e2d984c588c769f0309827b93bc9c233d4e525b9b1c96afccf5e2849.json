@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7107a396e2d984c588c769f0309827b93bc9c233d4e525b9b1c96afccf5e2849",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "물가 돌 축대(남쪽 뭍)",
+ "label": "sengoku-edo/se-water-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water and stone embankment edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting water surface meeting a stone embankment/shore along the southern edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3942
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water and stone embankment terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing water surface (rows 0-13) meeting a stone embankment edge (rows 14-15). Plausibly represents flat water and embankment terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3944
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water surface with stone embankment edge at bottom",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting top-down water surface (rows 0-12) meeting a stone bank edge at rows 13-15; valid top-down terrain plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water surface with stone shore edge",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a water surface (rows 0-13) meeting a stone edge/shore at the south (rows 14-15), properly viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.063Z",
+ "cells": {
+  "16": [
+   "32fa7df78d50c667"
+  ],
+  "24": [
+   "25edbef363868822",
+   "4f4160da6f476197",
+   "6adca893ed81b7cf",
+   "b8a3eaf143596bd9",
+   "f452e5763bcc9e44",
+   "f8f02b9806c960c2"
+  ],
+  "32": [
+   "048a14d7d13e0f7a",
+   "71e7a18fd4be54d4",
+   "8266ed12bdbf075a",
+   "85622546b8f7ba97",
+   "caf6b3ffe634cc1a",
+   "cc7eb3378c793b6e"
+  ],
+  "48": [
+   "0a7422962bbcd9a4",
+   "44b244cf040c1a31",
+   "53fd4585640d4b67",
+   "a2cede5a153edc1d",
+   "a3e65e577d356220",
+   "db5a527639606d46"
+  ]
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3df3ab8140968fe0efd7a59cbc3c189264a5a9616b762b1a24bbf64f079862e",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "작은 소나무(정원 다듬은 솔)",
+ "label": "sengoku-edo/se-tree-pine-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "trimmed pine foliage pads",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The foliage pads are drawn as foreshortened horizontal disks (ellipses) viewed from above, with the main upper canopy pad displaying roughly 7 rows of illuminated top surface (rows 2-9) before transitioning to the underside.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9437
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "manicured pine foliage pads and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat side-scroller front elevation: the cloud-pruned foliage pads are drawn as 2D side-view silhouettes without foreshortened top surfaces, the trunk is a straight vertical rectangle, and the base rests on a completely flat horizontal line (row 30) with no depth or curved ground contact.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6407
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trimmed pine foliage canopy",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pruned pine cloud canopy shows foreshortened horizontal pads seen from above; the upper main pad displays a visible top surface spanning rows 3-8 (about 6px tall) before curving down to its shaded south rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trimmed pine tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in flat side-scroller / front elevation: the trunk is a perfectly vertical cylinder with a completely flat horizontal base line (rows 29-30), and the cloud-pruned foliage pads are drawn from the side without any visible 3/4 top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7306
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.068Z",
+ "cells": {
+  "16": [
+   "3ebd5bc3b728df85",
+   "744b334e2d8d71ba",
+   "7facf2ac573ae1f7",
+   "f4586768286726e8"
+  ],
+  "24": [
+   "03fae34c4f0816c2",
+   "133190208e78bcae",
+   "172aad7bf3ad727c",
+   "27ae5816b0cdd412",
+   "2909ea669c6f31a0",
+   "2b6df893b639dba8",
+   "323b3ced1864d292",
+   "421bd1cb6f3f4963",
+   "4a4b90e797756c98",
+   "528e1e212c8c3a31",
+   "5b0ae879372826f8",
+   "5e2ec9acabf65148",
+   "5e8d2da3845b8e6b",
+   "82e1c68df69a348b",
+   "8682ad1a519c2b72",
+   "adcb0580c8e94213",
+   "d11cb2584514d709",
+   "db597f247cb77481",
+   "e9d87170fcca9230",
+   "f083594f6fa27ea1",
+   "f6d53cb40aaf3418"
+  ],
+  "32": [
+   "8b0ad6686a323ef7"
+  ],
+  "48": [
+   "3f1a44af5e4fbdff",
+   "88bb95d40d383bbb",
+   "a3cee67f6e026d7f",
+   "b4641d9049d1f82b",
+   "b4dcea212210f33e",
+   "bd48d6e7e972fc3f"
+  ]
+ }
+}

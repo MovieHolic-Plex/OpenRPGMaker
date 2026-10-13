@@ -1,0 +1,64 @@
+{
+ "outdoor_gate": {
+  "provisional_profile_uncalibrated": 119,
+  "covered_by_assembled": 0,
+  "blocked": [
+   [
+    "se-water-wheel",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ],
+   [
+    "se-rice-rack",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ],
+   [
+    "se-fence-bamboo",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ]
+  ],
+  "pieces": 119
+ },
+ "interior_gate": {
+  "objects": 35,
+  "floors": 4,
+  "walls": 5,
+  "provisional": 44,
+  "covered_by_assembled": 0,
+  "dropped": [
+   [
+    "se-byobu",
+    "불합격 판정자 과반 fail · 정면 입면도 · 윗면 0행 < 3"
+   ]
+  ]
+ },
+ "tiles": {
+  "count": 1014,
+  "rows": 22,
+  "sheetPx": [
+   768,
+   352
+  ],
+  "kits": 110,
+  "groups": 56,
+  "outdoor_pieces": 119,
+  "interior_objects": 35,
+  "interior_floors": 4,
+  "interior_walls": 5,
+  "colors_outside_palette": 0
+ },
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 1014,
+  "kits_checked": 110,
+  "groups_checked": 56,
+  "autotiles_checked": 0
+ },
+ "reassembly": {
+  "kits": 110,
+  "checked": 75,
+  "mismatched": 0,
+  "ids": []
+ }
+}

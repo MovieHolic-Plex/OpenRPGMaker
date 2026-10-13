@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8e386582cc9c7b35bdf7c92b4bb01b62f88a21be850768227c313da9531652a",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "다도 도구(검은 쟁반 + 찻사발·물병)",
+ "label": "sengoku-edo/se-tea-set",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tea tray / low tea table with tea set",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main tray surface is seen from above spanning rows 4 to 10 with tea utensils resting on top, followed by a south-facing front edge/skirt on rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4421
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tea tray",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tea tray has a clearly visible top surface from rows 3 to 10 (8 rows tall) holding tea utensils, with a south-facing front rim/edge visible below it on rows 11 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3934
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tea tray / low tea table with tea bowl and vessels",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main tray surface is foreshortened and clearly visible across rows 4 to 10 (approx. 7 rows) holding a tea bowl and vessels, with the front lip/face shown below at rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3475
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tea tray / low tea table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tray spans rows 3 to 10 (8 rows tall) and shows items placed on it viewed from above (including a tea bowl with green tea visible). Rows 11-13 form the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4576
+  }
+ ],
+ "decidedAt": "2026-10-13T19:37:02.185Z",
+ "cells": {
+  "16": [
+   "47d9386d4b6dbefe"
+  ],
+  "24": [
+   "05d580dbb18a155e",
+   "0e9624a0b620b59f",
+   "2bd9956c1bb8adff",
+   "5cd6a188f483916d",
+   "8d961f5c347c0cfa",
+   "de001a5420169555"
+  ],
+  "32": [
+   "1f457700f7412a48",
+   "4dd8831f9b2f04e8",
+   "58c6ea0808533324",
+   "a06ee626e8e97b9b",
+   "b32d6c4316253aca",
+   "f698cb58d8d1a238"
+  ],
+  "48": [
+   "07bc07184ceb313b",
+   "3bd54f879b747a39",
+   "54fc82c14efb7bf1",
+   "9bcc5eb9e59a487e",
+   "cb26f93b3c56cf1e",
+   "f3591fcd7827fbbd"
+  ]
+ }
+}

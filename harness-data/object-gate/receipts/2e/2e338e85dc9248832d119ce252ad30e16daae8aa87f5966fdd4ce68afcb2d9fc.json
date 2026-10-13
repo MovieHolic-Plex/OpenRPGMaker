@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e338e85dc9248832d119ce252ad30e16daae8aa87f5966fdd4ce68afcb2d9fc",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "앉은뱅이 책상(붓·벼루)",
+ "label": "sengoku-edo/se-writing-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low wooden desk with paper, brush, and inkstone",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 7-12 (6 rows) displaying the paper, brush, and inkstone, while the front face extends from rows 13-16 (4 rows), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3047
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low floor desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is visible from row 7 to 12 (6 rows) displaying paper, a brush, and an inkstone, followed by a 4-row front face from row 13 to 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3191
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low floor desk with writing supplies on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 7 to 12 (6 rows) displaying paper, a brush, and an inkstone, followed by a south-facing front side spanning rows 13 to 16.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2799
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low wooden desk with paper, brush, and inkstone",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low desk spans rows 7-12 (6 rows) displaying paper, inkstone, and brush, while rows 13-16 show the front vertical face in proper 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3784
+  }
+ ],
+ "decidedAt": "2026-10-13T19:27:04.079Z",
+ "cells": {
+  "16": [
+   "63bf66ec3991c7d8",
+   "a977b1d7d0f373e1"
+  ],
+  "24": [
+   "10199e3086c3ca40",
+   "2c97db55a0006308",
+   "55115a340f17db9a",
+   "83c29944a2c0784b",
+   "b3bbae847e594ecd",
+   "bb3b3aa9a291322b",
+   "d1357469b4326059",
+   "e01484e929b58ec6",
+   "e0e96f982d478fb2"
+  ],
+  "32": [
+   "7883fd8b563bb9d5",
+   "9707b37dd4d5d287",
+   "b382cfd16e86bb5b"
+  ],
+  "48": [
+   "088d377b6e315bb0",
+   "09f0dc79e439c12b",
+   "2e3cc2e7973b0995",
+   "9bd05bee1131d257",
+   "cd9655de7656c67c",
+   "f4d38c28eb871998"
+  ]
+ }
+}
