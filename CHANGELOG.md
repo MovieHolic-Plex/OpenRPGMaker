@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.203.0 — 2026-10-13
+
+### 기능
+
+- **beodeul** — beodeul_farm first pass - farmland autotile, crops, fence pieces (`76e97ea`)
+
 ## 0.202.1 — 2026-10-13
 
 ### 수정
