@@ -14,6 +14,7 @@
 import { describe, expect, it } from "vitest";
 import { resolve } from "node:path";
 import { editorState } from "@/editor/editorState";
+import { finishCommandListMount } from "@/editor/panels/eventEditor/commandList";
 import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
 import { store } from "@/project/store";
 import type { Command, EventPage, EventPageCondition, GameEvent } from "@/project/types";
@@ -438,6 +439,10 @@ function captureShell(selectedPageIndex: number, variant: ShellVariant = {}): Sh
   const container = document.createElement("div");
   try {
     renderEventEditorContent(container, mapId, ev.id);
+    // 목록은 프레임으로 나눠 붙는다. happy-dom 은 그 프레임을 돌리지 않으므로,
+    // 측정 전에 끝까지 붙여야 로딩 자리표시자가 기준선이 되지 않는다.
+    const commandList = container.querySelector<HTMLElement>(".cmd-list");
+    if (commandList) finishCommandListMount(commandList);
     if (variant.flow) {
       // 플로우는 지연 렌더다. 세그먼트를 실제로 눌러서 host 가 채워진 뒤에 잰다 —
       // 버튼이 사라지면 여기서 던져서 «입구가 없어진 회귀» 도 같이 잡힌다.

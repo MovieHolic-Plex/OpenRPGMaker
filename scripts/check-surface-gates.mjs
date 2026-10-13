@@ -97,10 +97,14 @@ if (!failures.length) {
   const outs = [];
   for (const [index, axis] of present.entries()) {
     const resultFile = resolve(resultDir, `axis-${index}.json`);
+    const needsGc = axis.path.includes("eventEditorInteractionSurface");
     const one = run(
       "node",
       ["scripts/run-vitest.mjs", "run", "--configLoader", "bundle", axis.path, "--reporter=default", "--reporter=json", `--outputFile.json=${resultFile}`],
-      { VITE_CACHE_DIR: process.env.VITE_CACHE_DIR ?? ".vite-cache/surface-gates" }
+      {
+        VITE_CACHE_DIR: process.env.VITE_CACHE_DIR ?? ".vite-cache/surface-gates",
+        ...(needsGc ? { NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --expose-gc`.trim() } : {}),
+      }
     );
     outs.push(one.out);
     if (one.code !== 0) snapshot.code = one.code || 1;

@@ -49,11 +49,12 @@ const FLOOR = resolve(process.cwd(), "test/fixtures/eventEditorPortalSurface.flo
 // badge testids/spans/labels and six testid floors migrate; other drift stays red.
 // Do not regenerate these identities from the current catalog or DOM capture.
 // 2026-09-23: 탭 1 에 「아이템 제시」(presentItem) 버튼이 더해져 탭 1·그리드·즐겨찾기 해시를 갱신했다.
+// 2026-10-13: 탭 2·3·4 에 파티/전투/연출 명령이 더해져 그 세 탭 해시만 갱신했다.
 const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
   commandPicker: "3943af8350cc4374023d49d2e894f9e4c1ca1f538912c8ba57c6638999b9d1f4",
-  commandPickerTab2: "a1b03238fc6d6ba727f40db05dfe3b40da8fd83655fc3746a95a825d816958a0",
-  commandPickerTab3: "d0526f63dd0edb3e61650249314232e6a521be9913f7c1d44551395b6d8e6140",
-  commandPickerTab4: "12e9f10bcba86a8f79db482fa54fcbdc94792ebed41764e245bacd5f2a94fc95",
+  commandPickerTab2: "03aa5e4513d6d74f2b777adb102676559b67656765e68c79080095c305138ea9",
+  commandPickerTab3: "c75ea2666474d1f7256c17096b2ecbaf92c5a76468f7c4ba9b78013d8b0ad179",
+  commandPickerTab4: "b9261a8d0bd1b7f1418280002db1831e5c045c060a6fc2b360c0db51513bacf1",
   commandPickerSearch: "8ed69ecef4ef73962ab06aafa4c8a340684783e3fc833ba7f110d3170f8b1366",
   commandPickerSearchInformational: "1f94b355d4aa302c096fd5fd0c3f7d0d70abb5543bba8b752d0b20893ae5f5dc",
   commandPickerSearchEmpty: "9958c02a4288731e18cf62a97656f15b6f5bdc1a4da839ff508539b1851c587d",

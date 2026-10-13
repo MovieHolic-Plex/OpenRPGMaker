@@ -70,7 +70,7 @@
   ],
   "choices": [
    "event-choice-cancel-branch",
-   "event-choice-cancel-disallow"
+   "event-choice-cancel-choice1"
   ],
   "craftRecipe": [
    "craft-recipe-result-variable>select#0"
@@ -141,6 +141,9 @@
    "play-movie-skippable-select",
    "play-movie-wait-select"
   ],
+  "presentItem": [
+   "present-item-options-item-0"
+  ],
   "promoteActor": [
    "promote-actor-select",
    "promote-class-select"
@@ -199,6 +202,10 @@
   "text": [
    "event-command-text-body",
    "event-command-text-speaker"
+  ],
+  "tradeMonster": [
+   "trade-monster-from-select",
+   "trade-monster-to-select"
   ],
   "transfer": [
    "transfer-player-direction-down",

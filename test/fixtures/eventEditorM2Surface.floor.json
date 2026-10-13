@@ -82,7 +82,7 @@
  "m2-029-change-system-graphic": {
   "testidCount": 7,
   "controlCount": 3,
-  "selectOptionCount": 11,
+  "selectOptionCount": 5,
   "classCount": 8,
   "labelCount": 3,
   "textCount": 2
@@ -218,7 +218,7 @@
  "m2-051-show-picture": {
   "testidCount": 9,
   "controlCount": 5,
-  "selectOptionCount": 7,
+  "selectOptionCount": 4,
   "classCount": 22,
   "labelCount": 1,
   "textCount": 3
@@ -322,7 +322,7 @@
  "m2-069-change-parallax-back": {
   "testidCount": 8,
   "controlCount": 2,
-  "selectOptionCount": 7,
+  "selectOptionCount": 4,
   "classCount": 22,
   "labelCount": 1,
   "textCount": 5
@@ -514,7 +514,7 @@
  "m2-102-change-battleback": {
   "testidCount": 5,
   "controlCount": 1,
-  "selectOptionCount": 4,
+  "selectOptionCount": 1,
   "classCount": 8,
   "labelCount": 1,
   "textCount": 2
