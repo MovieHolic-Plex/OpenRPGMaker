@@ -1,0 +1,20 @@
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-parquet-a.png", "kind": "terrain", "name": "헤링본 오크 마루 A", "label": "gothic_manor/gm-fl-parquet-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-parquet-b.png", "kind": "terrain", "name": "헤링본 오크 마루 B", "label": "gothic_manor/gm-fl-parquet-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-marble-a.png", "kind": "terrain", "name": "체크 대리석 A", "label": "gothic_manor/gm-fl-marble-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-marble-b.png", "kind": "terrain", "name": "체크 대리석 B", "label": "gothic_manor/gm-fl-marble-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-flag-a.png", "kind": "terrain", "name": "지하 돌 판석 A", "label": "gothic_manor/gm-fl-flag-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-flag-b.png", "kind": "terrain", "name": "지하 돌 판석 B", "label": "gothic_manor/gm-fl-flag-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-tile-a.png", "kind": "terrain", "name": "부엌 테라코타 타일 A", "label": "gothic_manor/gm-fl-tile-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-tile-b.png", "kind": "terrain", "name": "부엌 테라코타 타일 B", "label": "gothic_manor/gm-fl-tile-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-boards-a.png", "kind": "terrain", "name": "낡은 널마루 A", "label": "gothic_manor/gm-fl-boards-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-boards-b.png", "kind": "terrain", "name": "낡은 널마루 B", "label": "gothic_manor/gm-fl-boards-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-carpet-a.png", "kind": "terrain", "name": "붉은 벨벳 융단 바닥 A", "label": "gothic_manor/gm-fl-carpet-a"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-fl-carpet-b.png", "kind": "terrain", "name": "붉은 벨벳 융단 바닥 B", "label": "gothic_manor/gm-fl-carpet-b"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-runner-ns.png", "kind": "flat", "name": "복도 러너(남북)", "label": "gothic_manor/gm-runner-ns"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-runner-ew.png", "kind": "flat", "name": "복도 러너(동서)", "label": "gothic_manor/gm-runner-ew"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-runner-n-end.png", "kind": "flat", "name": "복도 러너 북쪽 끝(술 장식)", "label": "gothic_manor/gm-runner-n-end"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-runner-s-end.png", "kind": "flat", "name": "복도 러너 남쪽 끝(술 장식)", "label": "gothic_manor/gm-runner-s-end"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-rug-persian.png", "kind": "flat", "name": "빛바랜 페르시아 깔개", "label": "gothic_manor/gm-rug-persian"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-ov-stain.png", "kind": "flat", "name": "바닥 검붉은 얼룩", "label": "gothic_manor/gm-ov-stain"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-ov-dust.png", "kind": "flat", "name": "먼지·깨진 판자 조각", "label": "gothic_manor/gm-ov-dust"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-redo/tiledata/gothic-manor/_gate/int_floors/gm-ov-cobweb.png", "kind": "flat", "name": "구석 거미줄", "label": "gothic_manor/gm-ov-cobweb"}

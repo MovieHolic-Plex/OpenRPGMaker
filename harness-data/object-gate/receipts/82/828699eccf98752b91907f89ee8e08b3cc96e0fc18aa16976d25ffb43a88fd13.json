@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "828699eccf98752b91907f89ee8e08b3cc96e0fc18aa16976d25ffb43a88fd13",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "구석 거미줄",
+ "label": "gothic_manor/gm-ov-cobweb",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corner cobweb decal",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat corner cobweb/decal radiating from the top-left corner across rows 0 to 14, correctly rendered as a surface overlay without front elevation or isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corner cobweb",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The corner spiderweb is a 2D surface decal/overlay extending across rows 0 to 14 with radiating strands and cross-threads.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3668
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corner cobweb decal",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a corner cobweb decal radiating from the top-left corner across rows 0 to 14, viewed flat against the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3663
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corner cobweb",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobweb decal spread across the top-left corner, fully viewed as a flat plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3079
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.502Z",
+ "cells": {
+  "16": [
+   "5a296a97ed3545f9"
+  ],
+  "24": [
+   "08f9f68cd12d47d4",
+   "245b26696ff93d83",
+   "2a57289a7cda426d",
+   "7d27e14c2ee2798a",
+   "d9ac3940def7a667",
+   "df9b894947ac9287"
+  ],
+  "32": [
+   "21c65b727d4519b4",
+   "25e34c8e112decd4",
+   "6f5caf1d32604dc5",
+   "6f9fab4ec7bea869",
+   "ca08fe90738ff6c7",
+   "dc5eebd077c0986e"
+  ],
+  "48": [
+   "14c85aca9b787463",
+   "176a442f9f6f0ced",
+   "5aa16d1a07559984",
+   "9ce60923b53dec5f",
+   "e376429f9c7caecc",
+   "ea5de4314584c417"
+  ]
+ }
+}

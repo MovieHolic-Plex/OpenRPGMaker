@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3fefd69281565529f1481873399bf2d486e243b0b7948c4eb841b650f692710c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "기울어진 묘비",
+ "label": "gothic_manor/gm-tomb-tilt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tilted gravestone / stele",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tilted gravestone features a distinct, 4-row light-toned top surface (rows 0-3) above the front-facing stone slab (rows 4-11), properly depicting the top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6928
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tilted gravestone (stele)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The headstone tilts sideways and shows an isometric side face along the right edge (cols 12-13) rather than a top surface. The arched top has no visible top thickness/receding cut face (top_rows = 0), terminating directly at the outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tilted tombstone / stele with snow cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tombstone is drawn in a pure front elevation leaning to the right, with a snow cap at the top (rows 0-4) that drips down the front face. No foreshortened top surface or thickness of the slab is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tilted gravestone with rounded top and dirt base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tombstone spans rows 0-3 (approx 4 pixel rows) showing a distinct foreshortened horizontal/rounded top surface highlighted in light grey, above the darker front face with inscription lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5089
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.452Z",
+ "cells": {
+  "16": [
+   "f69dc06121c74fa6"
+  ],
+  "24": [
+   "126b6364d4f8fbfe",
+   "16bf92a09ae2dacf",
+   "524ecedfe4f28d3e",
+   "86c4c969db3c4023",
+   "8ea6946de80deaa5",
+   "a0a93f39a6424ea2"
+  ],
+  "32": [
+   "02e348f345050ae6",
+   "0e2c339351933062",
+   "75ffece6f7d551e6",
+   "94add2d34d0077e9",
+   "ade823d1dbf14d63",
+   "d3f62cbf2758d64b"
+  ],
+  "48": [
+   "37b201a52f97d961",
+   "8be52ab57d638d23",
+   "a2437d129684ee19",
+   "cc831d77905f8b10",
+   "e6ce84973d48c8b9",
+   "f625c808b1ba8cbb"
+  ]
+ }
+}

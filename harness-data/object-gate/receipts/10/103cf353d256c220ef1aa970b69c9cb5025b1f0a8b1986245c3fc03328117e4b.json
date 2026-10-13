@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "103cf353d256c220ef1aa970b69c9cb5025b1f0a8b1986245c3fc03328117e4b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "등불 돌기둥(쇠 등롱)",
+ "label": "gothic_manor/gm-lantern-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical metal/stone lantern pillar",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the pillar displays a clear foreshortened elliptical top surface spanning approximately rows 4-11 (around 8 source pixel rows tall), properly conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4375
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical lantern pillar",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular surface of the pillar is fully rendered as a foreshortened ellipse spanning rows 3 to 10 (approx. 8 rows tall), clearly demonstrating the top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4628
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical lantern pillar",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the column features a prominent 8-row elliptical top surface (rows 4 to 11) matching top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2985
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical stone lantern pillar with lit central window",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular surface of the pillar is fully visible as a 7-8 row foreshortened ellipse (rows 3/4-10) above the front cylinder face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3548
+  }
+ ],
+ "decidedAt": "2026-10-13T16:52:42.785Z",
+ "cells": {
+  "16": [
+   "63fada5a14ea4dd9",
+   "cc4b4f31cb803c10"
+  ],
+  "24": [
+   "1c8e3d291cbcf4cf",
+   "25cbfeadaed6e4c0",
+   "3be4dd67312198dc",
+   "5a5346cac0db4edc",
+   "8a7fd69b290a4390",
+   "ae7f2fa623e64c6c",
+   "b7be060352364d2d",
+   "c13e4d1d8f0941bb",
+   "ccb8f13efa1dd2ad",
+   "df994bd1e01d5a9d",
+   "e2a54b69cc0e23e9",
+   "ef78f43c767765f4"
+  ],
+  "32": [
+   "336ca891b8fc0209",
+   "9d9870dc9ff4f2df",
+   "e725276cecf57922"
+  ],
+  "48": [
+   "78984a2cb5c5b1e3",
+   "821493da7cd106ad",
+   "c659df1127a7f5e5",
+   "e38cffc2c558970e",
+   "e6bf8553794088dd",
+   "edb858bafc7c6598"
+  ]
+ }
+}

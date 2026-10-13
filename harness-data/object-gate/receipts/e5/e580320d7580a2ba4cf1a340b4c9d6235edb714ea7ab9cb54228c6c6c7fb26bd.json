@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e580320d7580a2ba4cf1a340b4c9d6235edb714ea7ab9cb54228c6c6c7fb26bd",
+ "width": 48,
+ "height": 48,
+ "kind": "terrain",
+ "name": "안개 이끼 덩이(풀밭 가장자리)",
+ "label": "gothic_manor/gm-fogmoss",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "moss clump terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch with a misty border viewed from the top-down 3/4 perspective, properly mapped onto the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3506
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "moss terrain patch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat ground terrain/autotile patch depicting mossy grass with a misty border over dark ground. As a flat terrain tile, it represents horizontal ground rather than a standing 3D object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6066
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground moss/terrain patch with misty border",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain/ground autotile block depicting mist moss on grass, viewed as a top-down horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4065
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "moss terrain patch",
+    "kind_matches": true,
+    "top_rows": 40,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain patch/autotile depicting a mossy ground clump with misty borders on dark terrain, viewed top-down across approximately 40 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4835
+  }
+ ],
+ "decidedAt": "2026-10-13T17:01:50.506Z",
+ "cells": {
+  "16": [
+   "0abb4d2c9677640d",
+   "172bdaa0c8f1b3ec",
+   "1a55599692c322b4",
+   "63ec8a4f12585d7a",
+   "83d44a4b6625f7c2",
+   "8623c47531c8589d",
+   "af42d1b44494af36",
+   "d19b93c8e2238fcf",
+   "e742c7ffb62f8fbf"
+  ],
+  "24": [
+   "2db79cc2fea2eb0b",
+   "40b1171f758005bf",
+   "ba2ff9ac7a72ecee",
+   "d464cf8c3a0f136c"
+  ],
+  "32": [
+   "003909ab3535a739",
+   "0941ef5cad08f6be",
+   "09a2eec8d4df7b3b",
+   "0ae7fa9bf6316c9c",
+   "1aacb8dee0716d47",
+   "3178b5140a9b6db6",
+   "3ef034c1aff36ed0",
+   "43a6646b841334e9",
+   "498babc67401a381",
+   "5b82fb1e894a0306",
+   "7d0c7e2d92991be1",
+   "90ca1c1ba38b0f7b",
+   "9d3794ca27597333",
+   "b5579338febf6c7d",
+   "b68f96b14e5459b3",
+   "b78e3e5be9f6e625",
+   "c543b8f4030b8e00",
+   "c65bee38ea011196",
+   "d3a7811e23672e1b",
+   "e0888d5c7857ac79",
+   "e191a6003e8c0f0b",
+   "e7b0a1d9c575315e",
+   "ed7bc03046ca1479",
+   "f951fb9ab7e0a515"
+  ],
+  "48": [
+   "8b6b8c75cec7ed0c"
+  ]
+ }
+}

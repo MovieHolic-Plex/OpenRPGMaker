@@ -2,24 +2,32 @@
 import os, sys, math, random
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from gmlib import REG, Cv, K, OL, OL2, run_module   # noqa: E402
-from gmdraw import *                                  # noqa: E402,F403
+from gmdraw import *
+from _bld import range_roof                                  # noqa: E402,F403
 from _bld import *                                    # noqa: E402,F403
 
 MODULE = 'bld_misc'
 
 
 @REG.piece('gm-bld-gatehouse', '문루(둥근 탑 둘·첨두 아치 통로)', 7, 7,
-           ['SSSSSSS', 'SSSSSSS', 'SSCCCSS', 'SSCCCSS', 'SSCCCSS', 'SSCCCSS', 'SSCCCSS'],
+           ['SS...SS', 'SSSSSSS', 'SSCCCSS', 'SSCCCSS', 'SSCCCSS', 'SSCCCSS', 'SSC.CSS'],
            'architecture', 'grounds', role='building', kind='structure', tags=['문루', '정문', '성문', '아치'],
            desc='저택 영지 입구 문루: 원뿔 지붕 둥근 탑 둘 사이 총안 성벽과 첨두 아치 통로(가운데 3칸은 지나갈 수 있다 — 아치 윗부분이 사람 위에 그려진다), 아치 위 문장 방패.',
            rules='가운데 x 2~4 세 칸이 통로. 양옆에 철책·돌담을 잇는다. 통로 아래로 길을 낸다.')
 def _gatehouse(c):
     yb = 111; cx = 56
-    # 가운데 성벽(총안) + 아치
+    # 가운데 성벽: 두꺼운 벽 윗면(성벽 길, 밝음 10행) + 앞 가장자리 총안 + 앞면
+    c.R(22, 18, 68, 12, K('stone', 5))
+    for x in range(22, 90):
+        for y in range(18, 30):
+            if (x - 22) % 11 == 0 or (y - 18) % 6 == 0: c.P(x, y, K('stone', 4))
+            elif hsh(x, y, 70) < .06: c.P(x, y, K('stone', 6))
+    c.HL(22, 17, 68, K('stone', 1)); c.HL(22, 18, 68, K('stone', 3))         # 뒷변(어둠)
     masonry(c, 22, 36, 68, yb - 36, 'stone', 3, seed=71)
-    for x in range(22, 90, 8):              # 총안: 윗면이 보이는 머리돌
-        c.R(x, 28, 5, 8, K('stone', 4)); c.R(x, 28, 5, 3, K('stone', 5)); c.HL(x, 28, 5, K('stone', 6)); c.VL(x + 4, 31, 5, K('stone', 2))
-    c.R(22, 36, 68, 3, K('stone', 5)); c.HL(22, 36, 68, K('stone', 6)); c.HL(22, 39, 68, K('stone', 1))
+    c.R(22, 30, 68, 6, K('stone', 3)); c.HL(22, 30, 68, K('stone', 2))
+    for x in range(23, 88, 9):              # 총안 머리돌: 윗면 4행 + 앞면 6행
+        c.R(x, 24, 6, 4, K('stone', 6)); c.HL(x, 24, 6, K('stone', 5)); c.R(x, 28, 6, 8, K('stone', 4)); c.VL(x + 5, 28, 8, K('stone', 2)); c.VL(x, 24, 12, K('stone', 5))
+    c.HL(22, 36, 68, K('stone', 5)); c.HL(22, 37, 68, K('stone', 1))
     prof, _ = arch_profile(40)
     for i in range(40):
         top = 54 + prof[i]
@@ -29,13 +37,14 @@ def _gatehouse(c):
             else: c.clear(36 + i, y)                                                   # 아래는 비워 길이 보이게
     for i in range(40):                       # 아치 안 천장 띠
         c.P(36 + i, 54 + prof[i] + 1, K('stone', 2))
-    c.R(cx - 5, 41, 10, 10, K('stone', 5)); c.ellipse(cx, 45, 4, 5, K('velvet', 3)); c.VL(cx, 41, 9, K('gold', 4)); c.HL(cx - 3, 45, 7, K('gold', 4))
-    # 탑 둘
+    c.R(cx - 5, 40, 10, 11, K('stone', 5)); c.ellipse(cx, 45, 4, 5, K('velvet', 3)); c.VL(cx, 41, 9, K('gold', 4)); c.HL(cx - 3, 45, 7, K('gold', 4))
+    # 탑 둘: 원통 몸 + 위 둥근 고리 윗면 + 원뿔 지붕
     for tx in (16, 96):
-        round_wall(c, tx, 15, 30, yb, seed=72 + tx)
-        lancet(c, tx - 3, 50, 6, 14, lit=(tx > 50)); lancet(c, tx - 3, 80, 6, 14)
-        c.R(tx - 16, 28, 32, 3, K('stone', 5)); c.HL(tx - 16, 28, 32, K('stone', 6)); c.HL(tx - 16, 31, 32, K('stone', 1))
-        spire_cone(c, tx, 28, 17, 26, seed=tx)
+        round_wall(c, tx, 15, 34, yb, seed=72 + tx)
+        lancet(c, tx - 3, 52, 6, 14, lit=(tx > 50)); lancet(c, tx - 3, 82, 6, 14)
+        c.ellipse(tx, 32, 17, 6, K('stone', 5)); c.ellipse(tx, 32, 17, 6, K('stone', 2), fill=False)
+        c.ellipse(tx, 31, 13, 4, K('stone', 6))
+        spire_cone(c, tx, 32, 14, 30, seed=tx)
     keep = lambda x, y: c.opaque(x, y) and y < yb - 2
     ivy(c, 26, yb - 2, 40, spread=6, seed=7, keep=keep)
     finish(c)
@@ -46,33 +55,31 @@ def _gatehouse(c):
            desc='회색 돌 작은 묘소. 두꺼운 돌판 박공 지붕(윗면 슬레이트 대신 돌 경사면), 앞 박공 삼각에 십자, 기둥 둘, 무쇠 쌍문, 3단 계단, 양옆 돌 항아리.',
            rules='문 x 1~2 맨 아래 줄. 묘지 안쪽·끝에 둔다. 앞에 묘비 줄을 세운다.')
 def _mausoleum(c):
-    yb = 79; cx = 32
-    # 돌 지붕: 남북 박공(앞이 보이는) — 돌 판 경사
-    yf = gable_roof(c, 6, 58, cx, 38, rise=16, depth=12, m='stone', seed=81)
-    gable_face(c, 6, 58, cx, 38, yf, base=4, seed=82)
-    c.VL(cx, 26, 9, K('iron', 3)); c.HL(cx - 2, 29, 5, K('iron', 3)); c.P(cx, 26, K('iron', 5))
-    c.R(6, 37, 52, 3, K('stone', 5)); c.HL(6, 37, 52, K('stone', 6)); c.HL(6, 40, 52, K('stone', 1))    # 처마 돌띠
-    masonry(c, 8, 41, 48, yb - 41 - 6, 'stone', 3, seed=83, course=5, blen=(6, 12))
-    for px in (12, 46):                       # 기둥(원통)
-        cyl3(c, px + 3, 40, 3.5, 1.5, 30, m='bone', tb=5, fb=4)
-    # 쇠 쌍문
-    prof, _ = arch_profile(18)
-    for i in range(18):
-        for y in range(46 + prof[i], yb - 6):
-            t = 3 if i not in (8, 9) else 1
-            if (y - 46) % 6 == 0: t = 4
-            if i in (0, 17): t = 2
-            c.P(cx - 9 + i, y, K('iron', t))
-        c.P(cx - 9 + i, 45 + prof[i], K('stone', 6))
-    c.P(cx - 2, 62, K('gold', 5)); c.P(cx + 1, 62, K('gold', 5))
+    yb = 79; cx = 32; ye = 46
+    # 돌판 지붕: 동서 용마루 앞 경사면(위에서 넓게 보임) + 가운데 앞으로 나온 낮은 박공(삼각 페디먼트)
+    range_roof(c, 6, 58, ye, 30, m='slate', seed=81, crest=False, moss=.06, ov=2)
+    yf = cross_gable(c, cx, 16, ye + 1, rise=14, depth=12, m='stone', roof='stone', seed=82, finial=False)
+    cross(c, cx, int(yf(cx)) - 9, 8)
+    c.R(4, ye, 56, 3, K('stone', 5)); c.HL(4, ye, 56, K('stone', 6)); c.HL(4, ye + 3, 56, K('stone', 1))    # 처마 돌띠
+    masonry(c, 8, ye + 4, 48, yb - ye - 10, 'stone', 3, seed=83, course=5, blen=(6, 12))
+    for px in (13, 45):                       # 기둥(원통)
+        cyl3(c, px + 3, ye + 3, 3.5, 1.5, yb - ye - 13, m='bone', tb=5, fb=4)
+    prof, _ = arch_profile(16)                 # 쇠 쌍문
+    for i in range(16):
+        for y in range(ye + 8 + prof[i], yb - 6):
+            t = 3 if i not in (7, 8) else 1
+            if (y - ye - 8) % 6 == 0: t = 4
+            if i in (0, 15): t = 2
+            c.P(cx - 8 + i, y, K('iron', t))
+        c.P(cx - 8 + i, ye + 7 + prof[i], K('stone', 6))
+    c.P(cx - 2, ye + 18, K('gold', 5)); c.P(cx + 1, ye + 18, K('gold', 5))
     for k in range(3):                        # 계단
         ww = 40 + k * 6; y = yb - 9 + k * 3
         c.R(cx - ww // 2, y, ww, 2, K('stone', 5)); c.HL(cx - ww // 2, y, ww, K('stone', 6)); c.HL(cx - ww // 2, y + 2, ww, K('stone', 2))
-    for ux in (6, 56):                        # 돌 항아리
+    for ux in (5, 58):                        # 돌 항아리
         c.R(ux - 3, yb - 8, 7, 3, K('stone', 4)); c.HL(ux - 3, yb - 8, 7, K('stone', 5))
         c.ellipse(ux + .5, yb - 12, 3, 3, K('stone', 4)); c.ellipse(ux - .5, yb - 13, 1.5, 1.5, K('stone', 6))
         c.ellipse(ux + .5, yb - 15, 3, 1.2, K('stone', 2))
-    moss_top(c, 8, 41, 48, seed=3)
     ivy(c, 10, yb - 7, 22, spread=4, seed=81, keep=lambda x, y: c.opaque(x, y) and y < yb - 7, density=.7)
     finish(c)
 
@@ -82,29 +89,22 @@ def _mausoleum(c):
            desc='땅으로 내려가는 납골당 입구: 윗면이 보이는 두꺼운 돌 테두리 안에 아래로 내려가는 계단, 안쪽 끝에 어두운 첨두 아치, 테두리 위에 해골 부조와 이끼.',
            rules='계단 아래(맨 아래 줄 x 1~2 앞 칸)에 들어가기 이벤트를 둔다. 지하 납골당 맵으로 잇는다.')
 def _crypt(c):
-    # 뒤쪽 아치 벽(낮게 솟음)
-    masonry(c, 12, 10, 40, 24, 'stone', 3, seed=91, course=4)
-    prof, _ = arch_profile(16)
-    for i in range(16):
-        for y in range(16 + prof[i], 34): c.P(24 + i, y, K('ink', 0 if y > 22 else 1))
-        c.P(24 + i, 15 + prof[i], K('stone', 6))
-    gable = lambda x: 10 - max(0, 20 - abs(x + .5 - 32)) * .3
-    for x in range(10, 54):
-        y0 = int(gable(x)) - 3
-        for y in range(y0, 10): c.P(x, y, K('stone', 5 if y < y0 + 2 else 4))
-        c.P(x, y0, K('stone', 6))
-    c.R(29, 3, 6, 5, K('bone', 5)); c.R(30, 4, 1, 2, K('ink', 1)); c.R(33, 4, 1, 2, K('ink', 1)); c.HL(30, 7, 4, K('bone', 3))   # 해골 부조
-    # 테두리(윗면 보이는 두꺼운 돌 턱) + 계단
-    block3(c, 4, 34, 10, 6, 22, m='stone', tb=5, fb=3, tex='masonry', seed=92)
-    block3(c, 50, 34, 10, 6, 22, m='stone', tb=5, fb=3, tex='masonry', seed=93)
-    for k in range(7):                        # 아래로 내려가는 계단: 위 단이 밝고 아래로 갈수록 어둡다
-        y = 34 + k * 4
+    # 낮은 돌 집채: 동서 돌판 지붕(앞 경사면) + 입구 위로 앞으로 나온 낮은 박공(페디먼트·해골 판) + 앞으로 내려가는 계단
+    range_roof(c, 8, 56, 30, 26, m='slate', seed=90, crest=False, moss=.08, ov=3)
+    yf = cross_gable(c, 32, 13, 31, rise=11, depth=10, m='stone', roof='stone', seed=94, finial=False)
+    ty = int(yf(32))
+    c.R(29, ty + 4, 7, 5, K('bone', 5)); c.P(30, ty + 5, K('ink', 1)); c.P(33, ty + 5, K('ink', 1)); c.HL(30, ty + 8, 5, K('bone', 3))   # 박공 해골 판
+    c.R(4, 31, 56, 3, K('stone', 5)); c.HL(4, 31, 56, K('stone', 6)); c.HL(4, 34, 56, K('stone', 1))
+    masonry(c, 8, 35, 48, 5, 'stone', 3, seed=91, course=5)
+    c.R(23, 35, 18, 5, K('ink', 1)); c.HL(23, 35, 18, K('stone', 2))
+    block3(c, 4, 36, 10, 6, 22, m='stone', tb=6, fb=3, seed=92)
+    block3(c, 50, 36, 10, 6, 22, m='stone', tb=6, fb=3, seed=93)
+    for k in range(6):                        # 앞에서 안으로 내려가는 계단: 위 단이 밝고 아래로 갈수록 어둡다
+        y = 60 - k * 4
         t = 5 - k * .6
-        c.R(14, y, 36, 2, K('stone', t)); c.HL(14, y, 36, K('stone', t + 1)); c.R(14, y + 2, 36, 2, K('stone', t - 2))
-    c.R(14, 34, 36, 1, K('stone', 6))
-    for y in range(34, 62):
+        c.R(14, y - 2, 36, 2, K('stone', t)); c.HL(14, y - 2, 36, K('stone', t + 1)); c.R(14, y, 36, 2, K('stone', t - 2))
+    for y in range(38, 62):
         c.P(14, y, K('ink', 1)); c.P(49, y, K('ink', 1))
-    moss_top(c, 4, 34, 10, seed=5, amount=.6); moss_top(c, 50, 34, 10, seed=6, amount=.5)
     finish(c)
 
 
@@ -184,34 +184,37 @@ def _shed(c):
            rules='문 x 2~3 맨 아래 줄. 저택 뒤뜰·정원에.')
 def _greenhouse(c):
     yb = 79; xl, xr = 4, 92; cx = 48
-    # 유리 지붕(동서, 윗면 넓게)
-    for y in range(14, 40):
-        for x in range(xl, xr):
-            f = (y - 14) / 26
-            t = 5 if f < .25 else 4 if f < .6 else 3
+    # 유리 지붕: 동서 용마루 앞 경사(위에서 넓게) — 양 끝은 비스듬한 끝 경사(어두운 유리)라 사다리꼴
+    yr, ye = 10, 42
+    for y in range(yr, ye):
+        f = (y - yr) / (ye - yr); inset = int((1 - f) * 12)
+        for x in range(xl + inset, xr - inset):
+            end = x < xl + 12 - int(f * 12) + 6 or x > xr - 12 + int(f * 12) - 7
+            t = 5 if f < .3 else 4 if f < .65 else 3
+            if end: t -= 1 if x < cx else 2
             col = K('glass', t)
-            if (x - xl) % 8 == 0 or (y - 14) % 7 == 0: col = K('iron', 2 if f > .3 else 4)
-            if hsh((x - xl) // 8, (y - 14) // 7, 5) < .12 and (x - xl) % 8 and (y - 14) % 7: col = K('ink', 1)   # 깨진 칸
+            row_h = 4 + int(f * 4)                                       # 처마 쪽 칸이 더 크다(원근)
+            if (x - xl) % 10 == 0 or int((y - yr) ** 1.15) % row_h == 0: col = K('iron', 2 if f > .4 else 4)
+            if hsh((x - xl) // 10, (y - yr) // 6, 5) < .1 and (x - xl) % 10: col = K('ink', 1)   # 깨진 칸
+            if not end and (x - y) % 23 in (0, 1) and f < .7: col = K('glass', 6)             # 비스듬한 빛 반사
             c.P(x, y, col)
-    for x in range(xl + 3, xr, 16): c.P(x, 16, K('glass', 6)); c.P(x + 1, 16, K('glass', 6))
-    c.HL(xl, 13, xr - xl, K('iron', 4)); c.HL(xl, 12, xr - xl, K('iron', 1))
-    for x in range(xl + 4, xr - 2, 8): c.P(x, 11, K('iron', 3)); c.P(x, 10, K('iron', 5))
-    # 유리 앞벽: 안이 보인다(마른 화분·덩굴)
-    for y in range(40, yb - 8):
+    c.HL(xl + 12, yr - 1, xr - xl - 24, K('iron', 1)); c.HL(xl + 12, yr, xr - xl - 24, K('iron', 5))
+    for x in range(xl + 14, xr - 12, 8): c.VL(x, yr - 3, 3, K('iron', 2)); c.P(x, yr - 4, K('iron', 5))
+    c.HL(xl, ye, xr - xl, K('iron', 4)); c.HL(xl, ye + 1, xr - xl, K('iron', 1))
+    # 유리 앞벽(낮게): 안이 보인다(마른 화분·덩굴)
+    for y in range(ye + 2, yb - 8):
         for x in range(xl, xr):
             col = K('glass', 2 if y < 52 else 1)
             if (x - xl) % 11 == 0: col = K('iron', 3)
-            if y == 40 or y == 41: col = K('iron', 4 if y == 40 else 1)
             c.P(x, y, col)
     for px in range(xl + 5, xr - 6, 13):
         c.R(px, yb - 15, 6, 6, K('brick', 4)); c.HL(px, yb - 15, 6, K('brick', 6)); c.HL(px + 1, yb - 14, 4, K('dirt', 2))
         for k in range(5): c.P(px + 1 + k, yb - 17 - (k * 3) % 5, K('bark', 3 + k % 2))
-    ivy(c, 20, yb - 10, 18, spread=6, seed=13, keep=lambda x, y: c.opaque(x, y) and 40 < y < yb - 9, density=.6)
-    # 문
+    ivy(c, 20, yb - 10, 18, spread=6, seed=13, keep=lambda x, y: c.opaque(x, y) and ye + 2 < y < yb - 9, density=.6)
     prof, _ = arch_profile(16)
     for i in range(16):
-        for y in range(48 + prof[i], yb - 8): c.P(cx - 8 + i, y, K('glass', 3) if i not in (0, 7, 8, 15) else K('iron', 3))
-        c.P(cx - 8 + i, 47 + prof[i], K('iron', 4))
+        for y in range(50 + prof[i], yb - 8): c.P(cx - 8 + i, y, K('glass', 3) if i not in (0, 7, 8, 15) else K('iron', 3))
+        c.P(cx - 8 + i, 49 + prof[i], K('iron', 4))
     masonry(c, xl, yb - 8, xr - xl, 8, 'stone', 3, seed=131, course=4)
     c.HL(xl, yb - 8, xr - xl, K('stone', 5))
     finish(c)

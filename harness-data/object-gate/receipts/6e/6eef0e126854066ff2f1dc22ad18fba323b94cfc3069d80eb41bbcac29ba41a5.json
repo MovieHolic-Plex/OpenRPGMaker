@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6eef0e126854066ff2f1dc22ad18fba323b94cfc3069d80eb41bbcac29ba41a5",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "무쇠 가스등(넓은 받침)",
+ "label": "gothic_manor/gm-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron gas lamp post with lantern head and pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the lantern (rows 0-4), the lantern housing, and the rings along the pole are drawn in pure front elevation with straight horizontal bands and no visible top surface at the upper termination.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron gas lamp post with lantern and pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the pedestal base has a top surface, the main column and lantern assembly are drawn in pure front elevation: the lamp cap/roof (rows 1-4) is a flat rectangle with no top face visible, the pole rings are perfectly flat horizontal bands, and the lantern housing shows no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6225
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap of the lantern (rows 1-4) is drawn in pure front elevation as a flat rectangle with no visible top surface (top_rows: 0), and the pole rings are flat horizontal bands with no top-down curvature. Although the pedestal at the bottom has a top surface, the top end of the column/lantern itself shows no top surface or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8632
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron gas lamp post and lantern head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top end of the lamp (cap at rows 0-4) is drawn in pure front elevation with 0px of visible top surface. The decorative rings on the post and the lantern housing are also completely flat horizontal lines. Although the base plinth has a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6823
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.456Z",
+ "cells": {
+  "16": [
+   "2213f74981cec7ce",
+   "745996af21a8b5d0",
+   "aa0b819e9bcf19e9"
+  ],
+  "24": [
+   "0acb3796833511d0",
+   "2670b4c329dd0b4f",
+   "29c7bd0226ceaa78",
+   "5ec2b62159af9b90",
+   "c3e26b08eba1e3e9",
+   "e526ade278df1d68"
+  ],
+  "32": [
+   "1a57a31b6a1e3284",
+   "1da41d1682a3cb0d",
+   "299345c088c3859d",
+   "29f18a3ed5c60f22",
+   "2d5dd1e8cd6e8664",
+   "47aa017abffd0ffb",
+   "71170d125d7f2d31",
+   "73b107927ad5f4fc",
+   "8f8ef67b47458676",
+   "a61c3fb9b19ec5ad",
+   "aea308dd9f2d75c3",
+   "d119c92cf290a58c"
+  ],
+  "48": [
+   "053d54e522e6c571",
+   "c3980a320da895c3",
+   "d93f928ebcbb0c7c"
+  ]
+ }
+}

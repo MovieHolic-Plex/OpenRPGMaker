@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9559fc1ada04155631e272582bbd9a3b18ca77dcfa5bafced095fa8e2d6feb8",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "나무 관(닫힘)",
+ "label": "gothic_manor/gm-coffin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "closed wooden coffin lying horizontally",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin lid is clearly visible from above, spanning approximately 8 rows (rows 1-8) with a cross emblem, and the south-facing front side spans rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed wooden coffin",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin lid is clearly viewed from above across rows 1-8 (8 rows tall) with a cross emblem, and the south-facing side wall is visible below it across rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4577
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "closed wooden coffin",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coffin clearly displays its top lid surface spanning about 8 pixel rows (rows 1-9) with a cross emblem, above a south front face of about 6 pixel rows (rows 10-15) with fittings, correctly rendered in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed wooden coffin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the coffin is clearly foreshortened and visible from above across rows 2-8 (~7 rows tall with a cross emblem), while the south vertical face spans rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4837
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.462Z",
+ "cells": {
+  "16": [
+   "6f6bf002d408dad8",
+   "9bd61001eb3df7eb"
+  ],
+  "24": [
+   "3aad5710b883a443",
+   "3bb84450cf43175c",
+   "4aed9b51b5139972",
+   "711202922367597e",
+   "8bd86ce194796e77",
+   "97cc07214400a876",
+   "b9fc0fdc0998aced",
+   "be1df96866636c20",
+   "c145b82b72eee5fe",
+   "dc527ee798e179d4",
+   "e3997e4c894368ae",
+   "f043acfc17df8208"
+  ],
+  "32": [
+   "0d6d1679bc949112",
+   "cc703abaf9036175"
+  ],
+  "48": [
+   "4016db8217ebf946",
+   "41fd59aa2e581eac",
+   "5763fa44acc3e1dd",
+   "89a92e45194c09f4",
+   "acebf265f1c1e28b",
+   "e6533eea71c3900f"
+  ]
+ }
+}

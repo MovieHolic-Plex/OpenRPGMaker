@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef66e7b5ca7ac8d3b7cc4bda9420ecc11b009963f22a8e343fc06c18252557a3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "부엌 테라코타 타일 A",
+ "label": "gothic_manor/gm-fl-tile-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of a 2x2 grid of terracotta floor tiles with grout lines, correctly represented as flat ground/floor terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4373
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile grid with top-down horizontal surface visible across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3274
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four terracotta square floor tiles with grout lines, representing horizontal floor terrain viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terracotta floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/ground terrain tile depicting four square terracotta tiles separated by grout; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3992
+  }
+ ],
+ "decidedAt": "2026-10-13T17:05:38.310Z",
+ "cells": {
+  "16": [
+   "faaa7e4b061c228f"
+  ],
+  "24": [
+   "5956dea577fad8c3",
+   "753a63670b6e917a",
+   "8ab51c648c49cd59",
+   "9dd863a8a5e98ee7",
+   "af494fd3f506fd10",
+   "e67ce5fe571e5aa2"
+  ],
+  "32": [
+   "2e56bfb73ce26cd8",
+   "590cc09d537d18bd",
+   "9b84fbcdaee0fdd1",
+   "b0f5445ec516b6b8",
+   "b5a1ba86e902358f",
+   "bd9d0b70c0b55389"
+  ],
+  "48": [
+   "19510fad885ba504",
+   "2d02a5f96533e2ff",
+   "39ea903fc0b5f18f",
+   "4e3ffe9d8f3e576e",
+   "d050367ee4029be4",
+   "fbe949777ee58cfb"
+  ]
+ }
+}

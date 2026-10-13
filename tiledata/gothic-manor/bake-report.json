@@ -1,0 +1,84 @@
+{
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 1604,
+  "kits_checked": 137,
+  "groups_checked": 62,
+  "autotiles_checked": 8
+ },
+ "reassembly": {
+  "kits": 137,
+  "mismatched": 0,
+  "ids": []
+ },
+ "palette": {
+  "cells_off_palette": 0
+ },
+ "tiles": {
+  "count": 1604,
+  "rows": 34,
+  "sheetPx": [
+   768,
+   544
+  ],
+  "strips": 43,
+  "kits": 137,
+  "groups": 62,
+  "autotiles": 8
+ },
+ "adopted": {
+  "pieces": 166,
+  "autotiles": 5,
+  "runs": 3,
+  "outdoor": 85,
+  "interior": 89
+ },
+ "by_module": {
+  "terrain": 10,
+  "bld_manor": 6,
+  "bld_chapel": 1,
+  "bld_misc": 11,
+  "yard2": 2,
+  "gy_props": 18,
+  "yard_props": 13,
+  "int_walls": 40,
+  "int_floors": 20,
+  "int_furn": 20,
+  "int_gallery": 9,
+  "yard3": 16
+ },
+ "assembled": [
+  {
+   "label": "gothic_manor/assembled/room-manor",
+   "verdict": "pass",
+   "sha": "bd09d12a6b16",
+   "covers": 17
+  },
+  {
+   "label": "gothic_manor/assembled/hearth-manor",
+   "verdict": "pass",
+   "sha": "4d8e4cd49743",
+   "covers": 5
+  },
+  {
+   "label": "gothic_manor/assembled/room-stone",
+   "verdict": "pass",
+   "sha": "a1e04dfbb812",
+   "covers": 17
+  },
+  {
+   "label": "gothic_manor/assembled/room-gallery",
+   "verdict": "pass",
+   "sha": "9037f8433b95",
+   "covers": 17
+  }
+ ],
+ "rejected": [],
+ "roomkit": {
+  "floors": 6,
+  "walls": 4
+ },
+ "reassembly_from_files": 0
+}

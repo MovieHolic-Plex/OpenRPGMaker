@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0dea7e82ea061946a96f39d6ea3d0c608ef305534084b07821b663044ec1b88",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "부엌 작업대(칼·빵·고기)",
+ "label": "gothic_manor/gm-kitchen-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kitchen workbench / counter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden countertop surface is clearly visible from rows 2 to 16 (15 source pixel rows) with bread, meat, and a knife resting on top, followed by the south-facing front of the counter below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3738
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kitchen workbench / countertop with food items",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden countertop surface is clearly visible from above, spanning approximately 15 rows (rows 2 to 16) with bread, meat, and a knife placed on it, followed by the front face extending downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3336
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kitchen workbench / counter",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top surface spans rows 2 to 16 (15 rows) displaying items laid on top, followed by a front edge and south face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3068
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kitchen workbench counter",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden top surface of the workbench spans from row 2 to row 16 (~14 source pixels tall) with bread, meat, and knife laid on it, followed by the front face extending from row 17 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2912
+  }
+ ],
+ "decidedAt": "2026-10-13T16:41:44.504Z",
+ "cells": {
+  "16": [
+   "48cc08fd7077fa21",
+   "8a7ebf00006bbc10",
+   "ac2cc032ebc8fc38",
+   "b0542547bcbe0c5f"
+  ],
+  "24": [
+   "0261a495f1cbecbc",
+   "090f4dd8fa937e4a",
+   "0bcdcb4a93c737ea",
+   "1d4ab1082836e8b4",
+   "24b4055c0f1b3659",
+   "32b24f52b413749e",
+   "3f5b5c873dac863f",
+   "46ed466be7cd20b4",
+   "4a40251310863603",
+   "5499ccabf2f8a72b",
+   "54cccfe8efe8c2a4",
+   "566afeaf15048d06",
+   "5b0d99cc8f6e7b83",
+   "5f5867d24471222d",
+   "80ab6e2f9262a57b",
+   "82ae9b582bae2347",
+   "96da09ec79992b86",
+   "99c6d80632a6c69d",
+   "ac54d56299007265",
+   "ad84986f8983195e",
+   "b9c433c1922c9bb4",
+   "c717d2002795fe61",
+   "ec084d6c9d32c921",
+   "fc71dbf2d801d5e0"
+  ],
+  "32": [
+   "9514486ba5ee7d56"
+  ],
+  "48": [
+   "49ad5553e4e18a40",
+   "5b6b6ae1e0ae0a24",
+   "5fbdfa4f42ce16b3",
+   "aea7fbd33549e379",
+   "c012f56b8dde4758",
+   "cf66d87c59ef1195"
+  ]
+ }
+}

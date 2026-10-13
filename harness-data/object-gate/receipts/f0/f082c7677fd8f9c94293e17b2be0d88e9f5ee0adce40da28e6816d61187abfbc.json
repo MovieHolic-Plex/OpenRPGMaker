@@ -1,0 +1,164 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f082c7677fd8f9c94293e17b2be0d88e9f5ee0adce40da28e6816d61187abfbc",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "썩은 나무 말뚝 울타리 (3칸 줄 + 모퉁이 견본)",
+ "label": "gothic_manor/gm-fence-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden picket fence with rails and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal cross-rails are drawn in pure front elevation with no visible horizontal top surfaces (0 px of top plane on the rails or post tops, which are drawn as flat 2D pointed profiles).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8050
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden picket fence with posts and cross rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure 2D front elevation like a side-scroller asset. The vertical pickets have 2D flat triangular pointed tops without visible foreshortened top surfaces, and the horizontal cross rails are completely flat (no visible top surface/depth rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9115
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden stake fence with horizontal cross rails and vertical posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure 2D front elevation (side-scroller style). Both the vertical posts with 2D triangular picket points and the horizontal rails have 0px of visible top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7902
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden picket fence with posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal crossbars are drawn entirely in flat front elevation. The pointed picket tops are rendered as flat 2D triangles (rows 16-19) with no foreshortened top faces, and the horizontal rails are only 2-3 pixels tall with a 1px edge highlight rather than visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7947
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:15.455Z",
+ "cells": {
+  "16": [
+   "3ae1ccadaed1b687",
+   "6f1d46eebd660b29",
+   "740c2ac46a7fd66a",
+   "e2263411243e9d1b"
+  ],
+  "24": [
+   "0225c14cab0ec1ad",
+   "0695f13cfd0a7678",
+   "0ea01ac9f03d5c3c",
+   "20df0bbd5ea395af",
+   "35b061ed4eba4f3f",
+   "37aefe26d5975955",
+   "3fa3193ca219282c",
+   "425adc27c7e2f2a5",
+   "465349a67c3e3451",
+   "501b8a7561b93568",
+   "557d3c068d440da6",
+   "59123f3a22842680",
+   "742457f9bbb0fc8a",
+   "7c73e6518e0cc40f",
+   "86b44d50e6c8e08f",
+   "8b6a82fb03333022",
+   "8eef78d35768d270",
+   "93843cfb48f55d5b",
+   "b0b301570dfcf21c",
+   "c043e6ec05b68177",
+   "c82a91f6dda49b56",
+   "cd4dba6ae6755d43",
+   "d87074b6d8b2b45e",
+   "dc0ad17e75864251",
+   "e829765c58de8bee",
+   "ea52addd1a7690af",
+   "f3ac141730ab3406",
+   "fe8f8a288e1cd1da",
+   "ff5c0fa2205a2232"
+  ],
+  "32": [
+   "abdefbcce24de524",
+   "b2c6cbba768e9974"
+  ],
+  "48": [
+   "04af3556ddb4effd",
+   "16cb01514027367f",
+   "2d66081d3b66c7d9",
+   "3170a86a079ba12f",
+   "49642988ce20800e",
+   "4a6bd118daa32d39",
+   "55b0fc84c9645776",
+   "6f330705bdbc7790",
+   "781970fb5d78e996",
+   "8fdabe6e0fda049d",
+   "a759b0dc5f83ecf6",
+   "ed8b6d689c823935"
+  ]
+ }
+}

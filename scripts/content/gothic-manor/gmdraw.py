@@ -381,3 +381,49 @@ def finish(c, inset=False, tex=False):
     """유색 외곽선(바깥 1px). tex=True 면 먼저 돌 결을 입힌다."""
     if tex: texture_pass(c)
     c.outline(inset=inset)
+
+
+def slab_top(c, x0, y0, w, h, m='stone', t=6, seams=5):
+    """위에서 본 판 윗면: 밝은 면 + 뒤로 물러나는 세로 이음 + 어두운 뒷변(위) + 앞 모서리 빛(아래)."""
+    c.R(x0, y0, w, h, K(m, t))
+    if seams:
+        for x in range(x0 + 3, x0 + w - 1, seams): c.VL(x, y0 + 1, h - 2, K(m, t - 1))
+    c.HL(x0, y0, w, K(m, 2))
+
+
+def slab(c, x0, y0, w, top, front, m='stone', t=6, fb=3, seams=5):
+    """윗면 top 행 + 앞면 front 행 상자(앞면 왼 빛·오른 그늘·밑 어둠)."""
+    slab_top(c, x0, y0, w, top, m, t, seams)
+    if front <= 0: return
+    c.R(x0, y0 + top, w, front, K(m, fb)); c.HL(x0, y0 + top, w, K(m, fb + 1))
+    c.VL(x0, y0 + top, front, K(m, fb + 1)); c.VL(x0 + w - 1, y0 + top, front, K(m, fb - 1)); c.HL(x0, y0 + top + front - 1, w, K(m, 1))
+
+
+def ptop(c, x0, y0, w, h, m='stone', t=6, inset=2, seams=0, back=None):
+    """원근 윗면: 뒤(위)가 inset 만큼 좁은 사다리꼴 판 — 위에서 비스듬히 내려다본 수평면으로 읽힌다.
+    세로 이음(seams 간격)은 앞에서 뒤로 가운데 쪽으로 모인다. 뒷변 어두운 선 · 앞 모서리 밝은 선. 반환: 행마다 (왼 x, 오른 x)."""
+    cx = x0 + (w - 1) / 2; rows = []
+    for r in range(h):
+        f = r / max(1, h - 1); ins = int(round(inset * (1 - f)))
+        xl, xr = x0 + ins, x0 + w - 1 - ins
+        rows.append((xl, xr))
+        for x in range(xl, xr + 1): c.P(x, y0 + r, K(m, t if r > h // 3 else max(1, t - 1)))
+        c.P(xl, y0 + r, K(m, t - 2)); c.P(xr, y0 + r, K(m, max(1, t - 3)))
+    if seams:
+        k = 1.0 - 2 * inset / max(1, w)
+        for xf in range(x0 + seams, x0 + w - 1, seams):
+            for r in range(1, h - 1):
+                f = r / max(1, h - 1); s = k + (1 - k) * f
+                c.P(int(round(cx + (xf - cx) * s)), y0 + r, K(m, max(1, t - 2)))
+    c.HL(rows[0][0], y0, rows[0][1] - rows[0][0] + 1, K(m, back if back is not None else 1))
+    c.HL(x0, y0 + h - 1, w, K(m, min(6, t)))
+    return rows
+
+
+def pslab(c, x0, y0, w, top, front, m='stone', t=6, fb=3, inset=2, seams=0):
+    """원근 윗면(사다리꼴) + 앞면 상자."""
+    rows = ptop(c, x0, y0, w, top, m, t, inset, seams)
+    if front > 0:
+        c.R(x0, y0 + top, w, front, K(m, fb)); c.HL(x0, y0 + top, w, K(m, 1))
+        c.VL(x0, y0 + top, front, K(m, fb + 1)); c.VL(x0 + w - 1, y0 + top, front, K(m, max(1, fb - 1))); c.HL(x0, y0 + top + front - 1, w, K(m, 1))
+    return rows

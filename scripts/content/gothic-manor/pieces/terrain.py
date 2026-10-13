@@ -3,7 +3,8 @@
 import os, sys, math, random
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from gmlib import REG, Cv, K, OL, OL2, run_module   # noqa: E402
-from gmdraw import *                                  # noqa: E402,F403
+from gmdraw import *
+from gmdraw import slab, slab_top                                  # noqa: E402,F403
 
 MODULE = 'terrain'
 SP = 'grounds'
@@ -238,36 +239,54 @@ def _ov_plot(c):
 
 
 # ───────────────────────── 줄(담·철책·산울타리) ─────────────────────────
-def _stone_post(c, x0=4, w=8, top=4, y0=2):
-    block3(c, x0, y0, w, top, 14 - y0 - top, m='stone', tb=5, fb=3)
-    c.R(x0 - 1, y0, w + 2, 2, K('stone', 6)); c.HL(x0 - 1, y0 + 2, w + 2, K('stone', 4))
+def _slab_top(c, x0, y0, w, h, m='stone', t=6):
+    """위에서 본 돌판 윗면: 밝은 면 + 뒤로 물러나는 세로 이음 + 어두운 뒷변 + 앞 모서리 빛."""
+    c.R(x0, y0, w, h, K(m, t))
+    for x in range(x0 + 3, x0 + w - 1, 5): c.VL(x, y0 + 1, h - 2, K(m, t - 1))
+    c.HL(x0, y0, w, K(m, 2)); c.HL(x0, y0 + h - 1, w, K(m, t))
+
+
+def _stone_post(c, cx=8, y0=0, r=5.5):
+    """둥근 돌기둥: 위에서 보이는 타원 갓 윗면(밝음) + 원통 몸(왼 빛 → 오른 그늘)."""
+    for y in range(y0 + 4, 16):
+        for x in range(int(cx - r + .5), int(cx + r + .5)):
+            u = (x + .5 - (cx - r)) / (2 * r)
+            c.P(x, y, K('stone', 4 if u < .3 else 3 if u < .7 else 2))
+    c.ellipse(cx, y0 + 4.5, r + .8, 3.6, K('stone', 3))
+    c.ellipse(cx, y0 + 3.5, r + .8, 3.4, K('stone', 6))
+    c.ellipse(cx - .5, y0 + 3, r * .5, 1.6, K('stone', 5))
+    c.HL(int(cx - r), 15, int(2 * r), K('stone', 1))
 
 
 @REG.run('gm-fence-iron', '무쇠 창살 철책(돌 받침)', 'architecture', SP, kind='frame',
          desc='낮은 돌 받침(윗면 보임) 위 창끝 무쇠 철책. 동서 줄은 창살이 서 있는 정면, 남북 줄은 위에서 본 받침 띠와 창끝 점, 끝·모퉁이는 돌기둥(갓돌).',
-         rules='저택·묘지 둘레. 문 자리는 철문 조각(gm-gate-iron)을 끼운다. 줄 하나로 칠하면 모퉁이·끝이 알아서 맞는다.', tags=['철책', '울타리', '담'])
+         rules='저택·묘지 둘레. 문 자리는 철문 조각(gm-gate-iron-open)을 끼운다. 줄 하나로 칠하면 모퉁이·끝이 알아서 맞는다.', tags=['철책', '울타리', '담'])
 def _fence(c, n, e, s, w):
     horiz = e or w
     vert = n or s
     if horiz:
         x0 = 0 if w else 6; x1 = 16 if e else 10
-        for x in range(x0, x1):                    # 창살(3px 간격)
-            if (x - 1) % 3 == 0:
-                c.VL(x, 2, 9, K('iron', 3)); c.P(x, 1, K('iron', 5)); c.P(x, 0, K('iron', 4))
-                c.P(x - 1, 2, K('iron', 2)); c.P(x + 1, 2, K('iron', 2))
-        c.HL(x0, 4, x1 - x0, K('iron', 2)); c.HL(x0, 3, x1 - x0, K('iron', 4))     # 위 가로대
-        block3(c, x0, 10, x1 - x0, 3, 3, m='stone', tb=5, fb=3, outline=False)
+        slab(c, x0, 8, x1 - x0, 6, 2, seams=5)                   # 받침 윗면 6행(창살은 그 가운데에 선다)
     if vert:
-        y0 = 0 if n else 6; y1 = 16 if s else 10
-        c.R(5, y0, 6, y1 - y0, K('stone', 5)); c.VL(5, y0, y1 - y0, K('stone', 6)); c.VL(10, y0, y1 - y0, K('stone', 3))
-        for y in range(y0, y1):
-            if (y - 1) % 3 == 0: c.P(7, y, K('iron', 1)); c.P(8, y, K('iron', 4)); c.P(8, y + 1, K('ink', 1))
-        if not s: c.R(5, y1, 6, 3, K('stone', 3)); c.HL(5, y1 + 2, 6, K('stone', 1))
-    if not (horiz and not vert and (e and w)):     # 끝·모퉁이·외톨이 = 돌기둥
-        if (horiz and vert) or not horiz or not (e and w):
-            if not (vert and not horiz and n and s):
-                _stone_post(c)
+        y0 = 0 if n else 4; y1 = 16 if s else 12
+        slab_top(c, 3, y0, 10, y1 - y0)
+        c.VL(3, y0, y1 - y0, K('stone', 2)); c.VL(12, y0, y1 - y0, K('stone', 2))
+        if not s: c.R(3, y1, 10, 3, K('stone', 3)); c.HL(3, y1 + 2, 10, K('stone', 1))
+    post = not (horiz and not vert and (e and w)) and ((horiz and vert) or not horiz or not (e and w)) and not (vert and not horiz and n and s)
+    if post: _stone_post(c)
     c.outline()
+    if horiz:
+        for x in range(x0, x1):                    # 창살: 받침 윗면 가운데(11행)에 선다 — 앞쪽 윗면 3행이 창살 앞에 보인다
+            if x % 4 == 1 and not (post and 2 <= x <= 13):
+                c.VL(x, 1, 10, K('iron', 4)); c.VL(x + 1, 1, 10, K('iron', 1))
+                c.P(x, 0, K('iron', 6)); c.P(x + 1, 0, K('iron', 3))
+                c.P(x, 11, K('stone', 3)); c.P(x + 1, 11, K('stone', 3)); c.P(x + 2, 12, K('stone', 4))
+        for xx in range(x0, x1):                   # 가로대: 위에서 보이는 윗면 2행(밝음) + 앞면 1행
+            if post and 2 <= xx <= 13: continue
+            for (y, t) in ((2, 6), (3, 5), (4, 1), (6, 6), (7, 5), (8, 1)): c.P(xx, y, K('iron', t))
+    if vert:
+        for y in range(y0, y1):
+            if (y - 1) % 3 == 0 and not (post and y < 16): c.P(7, y, K('iron', 1)); c.P(8, y, K('iron', 5)); c.P(8, y + 1, K('stone', 4))
 
 
 @REG.run('gm-wall-stone', '이끼 낀 낮은 돌담', 'architecture', SP, kind='box',
@@ -326,41 +345,38 @@ def _hedge(c, n, e, s, w):
     c.outline()
 
 
-@REG.piece('gm-gate-iron', '무쇠 쌍문(닫힘, 돌기둥 둘)', 3, 2, ['SSS', 'SSS'], 'architecture', SP, role='fence', kind='structure', states='gm-gate-iron',
-           tags=['철문', '정문', '문'], desc='철책 사이에 끼우는 무쇠 쌍문(닫힘): 양옆 돌기둥(갓돌 윗면·돌 공 장식), 가운데 아치형 창살 문짝 둘, 자물쇠.',
-           rules='철책 줄 안에 3칸을 비우고 끼운다. 열린 상태는 gm-gate-iron-open 으로 바꿔 찍는다.')
-def _gate(c):
-    _gate_draw(c, open_=False)
-
-
-@REG.piece('gm-gate-iron-open', '무쇠 쌍문(열림)', 3, 2, ['SCS', 'SCS'], 'architecture', SP, role='fence', kind='structure', states='gm-gate-iron',
-           tags=['철문', '정문', '문'], desc='무쇠 쌍문이 안쪽으로 열린 상태: 가운데 칸으로 지나갈 수 있다.', rules='gm-gate-iron 과 같은 자리에 바꿔 찍는다.')
+@REG.piece('gm-gate-iron-open', '무쇠 쌍문(열림)', 3, 2, ['SCS', 'SCS'], 'architecture', SP, role='fence', kind='structure',
+           tags=['철문', '정문', '문'], desc='무쇠 쌍문이 안쪽으로 열린 상태: 가운데 칸으로 지나갈 수 있다.', rules='철책(gm-fence-iron) 줄 안에 3칸을 비우고 끼운다. 가운데 칸으로 지나간다 — 저택·묘지 정문.')
 def _gate_open(c):
     _gate_draw(c, open_=True)
 
 
 def _gate_draw(c, open_):
-    for px in (0, 37):                           # 돌기둥
-        block3(c, px + 1, 6, 10, 5, 21, m='stone', tb=5, fb=3, tex='masonry', seed=px)
-        c.R(px, 5, 12, 3, K('stone', 6)); c.HL(px, 8, 12, K('stone', 3))
-        c.ellipse(px + 6, 2.5, 3, 3, K('stone', 5)); c.P(px + 5, 1, K('stone', 6))
-    if not open_:
-        for x in range(11, 37):
-            mid = 24
-            top = 8 + int(abs(x - mid) * .25)
-            if (x - 11) % 3 == 1:
-                c.VL(x, top, 30 - top, K('iron', 3)); c.P(x, top - 1, K('iron', 5))
-        for y in (12, 20, 28): c.HL(11, y, 26, K('iron', 2)); c.HL(11, y - 1, 26, K('iron', 4))
-        c.VL(24, 9, 21, K('iron', 1)); c.R(23, 18, 3, 3, K('gold', 4)); c.P(23, 18, K('gold', 6))
-        for k in range(3): c.P(17 + k, 14 + k, K('iron', 4)); c.P(31 - k, 14 + k, K('iron', 4))
-    else:
-        for side, x0 in ((-1, 11), (1, 30)):     # 안쪽으로 열린 문짝: 좁아 보이는 비스듬한 면
-            for k in range(6):
-                x = x0 + k
-                top = 8 + k
-                c.VL(x, top, 22 - k, K('iron', 3 if k % 2 == 0 else 2)); c.P(x, top - 1, K('iron', 5))
-            c.HL(x0, 20, 6, K('iron', 2))
+    slab(c, 10, 22, 28, 8, 2, seams=5)                          # 문턱 돌 윗면 8행
+    for px in (6, 42):                           # 둥근 돌기둥: 타원 갓 윗면 + 원통 몸
+        for y in range(8, 32):
+            for x in range(px - 6, px + 6):
+                u = (x + .5 - (px - 6)) / 12
+                c.P(x, y, K('stone', 4 if u < .3 else 3 if u < .7 else 2))
+            if y % 6 == 0: c.HL(px - 6, y, 12, K('stone', 2))
+        c.ellipse(px, 8.5, 7, 4, K('stone', 3)); c.ellipse(px, 7, 7, 4, K('stone', 6)); c.ellipse(px - 1, 6, 3.5, 1.8, K('stone', 5))
+        c.ellipse(px, 4, 2.5, 2.5, K('stone', 4)); c.P(px - 1, 3, K('stone', 6)); c.HL(px - 6, 31, 12, K('stone', 1))
     c.outline()
+    bar = lambda x, top, bot: (c.VL(x, top, bot - top, K('iron', 4)), c.VL(x + 1, top, bot - top, K('iron', 1)), c.P(x, top - 1, K('iron', 6)), c.P(x, bot, K('stone', 3)), c.P(x + 1, bot, K('stone', 3)))
+    rail = lambda x0, w, y: [c.HL(x0, y + k, w, K('iron', t)) for k, t in ((0, 6), (1, 5), (2, 1))]
+    if not open_:
+        for x in range(13, 36):                  # 닫힌 문짝은 문턱 뒷변(22) 위에 선다 — 문턱 윗면 8행이 앞에 그대로 보인다
+            top = 4 + int(abs(x - 24) * .25)
+            if (x - 13) % 3 == 0: bar(x, top, 22)
+        rail(13, 23, 8); rail(13, 23, 15)
+        c.R(23, 11, 3, 3, K('gold', 4)); c.P(23, 11, K('gold', 6))
+    else:
+        for x0 in (13, 31):                      # 안쪽으로 열린 문짝: 좁은 비스듬한 면
+            for k in range(5):
+                x = x0 + k
+                d = k if x0 == 13 else 4 - k
+                c.VL(x, 6 + d, 20 - d, K('iron', 4 if k % 2 == 0 else 2)); c.P(x, 5 + d, K('iron', 6))
+            rail(x0, 5, 14)
 
 
 if __name__ == '__main__':

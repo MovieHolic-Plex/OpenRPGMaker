@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8315199ab8732a90a18b35c30558c9beee3024c4675a26a298298fe35d2a2a77",
+ "width": 48,
+ "height": 64,
+ "kind": "container",
+ "name": "마른 분수(천사상·석조 수반)",
+ "label": "gothic_manor/gm-bld-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone basin of the fountain",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 14,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone basin clearly shows a foreshortened elliptical rim and deep interior opening visible from above (rows 36 to 51, ~14 rows tall) along with a front-facing exterior vertical wall (rows 52 to 62).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4214
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fountain basin with central angel statue pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone basin is drawn in standard 3/4 top-down view with a broad elliptical opening visible from row 36 down to row 51 (approximately 15 rows of interior floor/depth visible around the pedestal), surrounded by a well-foreshortened rim and front curved face down to row 61.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4608
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fountain basin with central statue pedestal",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone basin is drawn in clear 3/4 perspective, showing a foreshortened elliptical rim and a deep visible interior opening (~15 rows tall, rows 37-51) before the front wall drops down to row 62.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fountain basin",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": true,
+    "opening_rows": 15,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening from row 36 to row 51 with clearly visible interior depth and top rim, matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3894
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.459Z",
+ "cells": {
+  "16": [
+   "0d5b5963cc3cde3f",
+   "1cab848c1bdbcb5d",
+   "2453954b967e8a06",
+   "29791b09e9db572a",
+   "65b3c559d7af3559",
+   "7b96c5a02480662a",
+   "ac6beb74c390a5e4",
+   "b2b18ee3daad9db5",
+   "d7603d3c62ea39a5",
+   "f633898acfca2cd9"
+  ],
+  "24": [
+   "097554a26fa218e8",
+   "64d3eb6dacec5a75",
+   "6cf38379b1cc39c3",
+   "6d8e16434edaddf2",
+   "79e2400649d9f669",
+   "814765f1af2852fb",
+   "8303438dbd8f92d5",
+   "8ea321e8f1c3d85d",
+   "915a700b01f909aa",
+   "a5ae958e2a2adfaf",
+   "b1edac0104205c11",
+   "c688be098b3e1629"
+  ],
+  "32": [
+   "241659e956872371",
+   "4c6681cc9a79173f",
+   "608643a6e07a1916",
+   "75651746f7173d79",
+   "785f8ec931a425e4",
+   "870ab0a0a5f24f99",
+   "9e7e7eef8a392d27",
+   "b070aa2d244f7c68",
+   "bc0b475a06d50e0a",
+   "cacaaf60bacd1666",
+   "d285a9c5047411bd",
+   "f422ed5fea82f58b"
+  ],
+  "48": [
+   "5f66254bd2f8ab60",
+   "c295a2cfe315feaa",
+   "d6b4f3eb08c7a50b",
+   "d90896802a723871"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06b5ee6c45977b6f9d18bd2594798de63dc1d7b9eadb5d03bd022da7b603a09b",
+ "width": 48,
+ "height": 64,
+ "kind": "organic",
+ "name": "마른 수양버들(늘어진 가지)",
+ "label": "gothic_manor/gm-willow-dead",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dried weeping willow tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree trunk and drooping branches are drawn entirely in flat 2D side-scroller / front elevation view without any foreshortened top surfaces or 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5163
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "withered weeping willow tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn entirely in front elevation with no 3/4 top-down perspective: the base of the trunk sits flat on row 61 like a side-scroller asset with 0 rows of visible top surface or rounded depth, and all hanging branches hang in a flat vertical 2D plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5654
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dried weeping willow tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree and hanging branches are rendered entirely in a flat 2D side-scroller elevation with no top-down foreshortening or visible top surface; the base of the trunk at row 61-62 is also a completely flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4174
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bare weeping willow tree trunk and drooping branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure 2D side/front elevation typical of a platformer, with a flat cut base at the bottom and branches spreading strictly in the 2D plane without any 3/4 top-down foreshortening or visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4393
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.173Z",
+ "cells": {
+  "16": [
+   "04f23c3777c7a55e",
+   "14fab34b02a36e09",
+   "49b1568bc1683beb",
+   "7ada1184aae4dd1d",
+   "8671fc19258d8253",
+   "86d6e4073640034b",
+   "a12b73e9eb8613e9",
+   "acaefbba245bfb08",
+   "bba2244bb48ad774",
+   "dcb91a68560e40a4",
+   "f4a272bc2f69d4ca",
+   "fa36e305d1037317"
+  ],
+  "24": [
+   "155c9e0d347e8ddd",
+   "1adc98c4f9b5bb06",
+   "4141353e229d3a03",
+   "4bf2bcd4bdfe3286",
+   "781d00382e63a7ba",
+   "971357867329799e",
+   "b31a554b1d2622dc",
+   "b55ca627d7d520f9",
+   "dc720f881490ec84",
+   "e85bb7112e036c99",
+   "e9667aad49e9eace",
+   "fc67bb948ac31c2e"
+  ],
+  "32": [
+   "263c392c32b15556",
+   "3ef0a55d71a1da4e",
+   "4a3fa94cf620b56c",
+   "5588adf31fa48eb0",
+   "55a62b40dfd7253a",
+   "6401e5e626834c83",
+   "7aaa10ecfacaacb0",
+   "893491cc526c041c",
+   "93d608f3782fd51b",
+   "e54c07993c56d485",
+   "e7a6540636bedadb",
+   "eca06fcd94ce4bd7"
+  ],
+  "48": [
+   "0f44c28e9b724fc1",
+   "5ad66218297ab0f5",
+   "7b7d0031f2fd7a84",
+   "fe77a08b55811a23"
+  ]
+ }
+}

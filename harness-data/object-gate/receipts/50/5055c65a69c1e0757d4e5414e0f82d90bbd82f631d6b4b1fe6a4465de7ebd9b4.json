@@ -1,0 +1,210 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5055c65a69c1e0757d4e5414e0f82d90bbd82f631d6b4b1fe6a4465de7ebd9b4",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "지하 납골당 입구(내려가는 돌계단·아치)",
+ "label": "gothic_manor/gm-bld-crypt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crypt entrance archway and stairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper crypt structure and pediment (rows 0-32) are drawn in pure front elevation with no visible roof or horizontal top surface receding backwards, showing only a flat architectural facade.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7939
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crypt entrance building and staircase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper crypt structure, its pediment with skull carving, and stone wall are rendered as a pure flat front elevation. There is 0px of visible top roof surface or depth behind the gable.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6400
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone crypt entrance with arch and pediment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire upper mausoleum/crypt structure (rows 0-32) is drawn in pure flat front elevation. The pediment/roof at the top shows only its South vertical face with a skull motif, completely lacking any top slope or roof surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone crypt entrance building with arched doorway and descending stairs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crypt facade and pediment are rendered as a pure flat front elevation. The triangular pediment (rows 0-10) with the skull motif represents a vertical front face with zero visible roof slope or top surface receding backwards, and the wall below it is purely front-facing.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6559
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.458Z",
+ "cells": {
+  "16": [
+   "07c770b71e213586",
+   "2f09952918eaf86b",
+   "32938645c99e0b06",
+   "423cddd3e477d798",
+   "4d91c85080a9e670",
+   "820153be5f76864d",
+   "8a01c26f930a85bd",
+   "a0aab9999a3f86f1",
+   "a60c4132528a37e5",
+   "c14a42a73d26f3e1",
+   "c53751d496381ed0",
+   "ec49979a8f152764",
+   "f62a17de87486c1f",
+   "fdf8f76e4acd1e7d",
+   "ffa1ad1cda7c7a7c"
+  ],
+  "24": [
+   "03b44192487b6e8c",
+   "08d7cc85afdda1a7",
+   "0a7b4f520679e399",
+   "0c6aa6e71b5001dd",
+   "12a565b9d93529b3",
+   "13e8f4d6aa58c6f4",
+   "17f2d669e07faf74",
+   "1bbe252c9498aa45",
+   "28115b49f413721c",
+   "2f794e9bdabc8284",
+   "36dc4b27f49a8922",
+   "3752a1153647bdda",
+   "42fa6941a1eca9e8",
+   "4514119eeb59af1d",
+   "45e531c09f750e9b",
+   "469e9d0deac9b6ef",
+   "489d497911a82551",
+   "4a885756a7bc3781",
+   "4d4cb77b98b8b546",
+   "5137840fcd5cafe4",
+   "523bd9bddaeae45d",
+   "52bbb3690812a168",
+   "5b3c133470983142",
+   "5c73c2dff387b953",
+   "5fab99df1803e4bf",
+   "697272b1865a1be4",
+   "70b7740849c85f2d",
+   "7866e011042b641c",
+   "7b7b5feab5628a8b",
+   "7e1bcbec2f8979d9",
+   "82c0b8d866f26933",
+   "93c5c6596c0c3118",
+   "a2227726012920d6",
+   "a3cbab4a1572308f",
+   "ad9b50f36f09df95",
+   "b16081e81778b64e",
+   "be12f18ca196b1c8",
+   "c53fed1502ca8187",
+   "c8cf7d1d476223bb",
+   "d039e3a89cd04d4c",
+   "d11b0a408b2c91b5",
+   "d1b4b2d1675d3504",
+   "d5120419ba45837e",
+   "d6d9c9ea69c3ea2f",
+   "dfa57e36aa3d5c6e",
+   "e371c6f1cd58fd8f",
+   "edcd348f5e18d12d",
+   "febbc2a6c70c2de5",
+   "fedcec4d83d615e4",
+   "ff8fc5ebde655bd2"
+  ],
+  "32": [
+   "55c9ce5ad0e3157b",
+   "e1762ee55f761dc4",
+   "f40d7e499ab9b88a",
+   "f515b0b15a07bb96"
+  ],
+  "48": [
+   "29af60a803ff4d28",
+   "3748916352b59507",
+   "3968e093115aea61",
+   "51376431af7ec7d0",
+   "53d85c932019f56c",
+   "5f1bbc7e14fe5c7d",
+   "63dea19ebac046b9",
+   "70cb903f220f6f53",
+   "7b484f4da9f6a13d",
+   "85e75f3b75792d08",
+   "8a2e02efec73544c",
+   "928f85ef1b6d32dc",
+   "97eef3efb03714cf",
+   "a8926fe6ea12901c",
+   "b7f6ecfca3d610b2",
+   "b96844c6e724c0cc",
+   "bfb934dab8f7ace0",
+   "cb5054cbf2dab135",
+   "cb6a4d1e2aff46d0",
+   "d488d6521770d784",
+   "e460528f26388d42",
+   "ebacd53f1492e29d",
+   "f02d9189cfebde5b",
+   "ff842007358d51e2"
+  ]
+ }
+}

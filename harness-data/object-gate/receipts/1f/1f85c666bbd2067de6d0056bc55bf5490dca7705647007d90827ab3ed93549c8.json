@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f85c666bbd2067de6d0056bc55bf5490dca7705647007d90827ab3ed93549c8",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "작은 고사목",
+ "label": "gothic_manor/gm-dead-tree-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dead tree trunk and branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree and its cut/broken branches are drawn entirely in front elevation with no visible top cross-sections or top surfaces. The base flare at rows 44-46 is only 2-3px tall without a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5887
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dead tree trunk and bare branches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn as a flat 2D side-scroller elevation with no foreshortening or top surfaces on the branch cutoffs, a flat rectangular vertical hollow (rows 33-36), and a near-flat base line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25127
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trunk and branches of a dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree and its broken branch tips are drawn entirely as a 2D flat silhouette/front elevation with no top-down foreshortening or visible top cut surfaces (0px top). The hollow in the trunk (rows 33-37) is also drawn as a flat rectangular patch from direct front view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "trunk and branches of a dead tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The dead tree is drawn entirely in front elevation with branches branching only in the 2D plane, jagged profile branch tips with no top cross-sections, a flat rectangular hollow on the trunk (rows 33-36), and a flat bottom base line.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6785
+  }
+ ],
+ "decidedAt": "2026-10-13T16:14:51.461Z",
+ "cells": {
+  "16": [
+   "138b0c50d7f73dc4",
+   "ac6807c899b18019",
+   "ae1a4dcaab5f9f91",
+   "b8e812a2dea0a91f",
+   "c7bb07c922f60d27",
+   "ee49d6a72168be5f"
+  ],
+  "24": [
+   "05ca345faab0ee0e",
+   "161586900b4bd74a",
+   "1af72adf0e2c6823",
+   "40dc9f3c5733d1cf",
+   "5ac6c0d8c9fd2d8a",
+   "a0287941a03fefa2",
+   "c50ffbadcbe5dc26",
+   "cacc627d1e07e51d",
+   "d20f09b980370d19",
+   "eea45f016b3d36a9",
+   "ff82240f5585df80",
+   "ffa59fbb53ec4578"
+  ],
+  "32": [
+   "00ae3fac242538d2",
+   "a34965ffd48f37d5",
+   "cf45334e6560b7fd",
+   "fffe8d0975f5285a"
+  ],
+  "48": [
+   "3482a52004bf71f9",
+   "b3c8bc1e4ee2a185",
+   "d149d90e1f1f24df"
+  ]
+ }
+}

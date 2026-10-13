@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98d18e6a830fae8c34b0b12188d1d0a36d9c76d5d5ca7a55446c5f49601eeb61",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "해시계 받침",
+ "label": "gothic_manor/gm-sundial",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone sundial pillar/pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The column has a clearly visible top surface from row 8 to 15 (about 7-8 pixel rows) displaying the sundial dial/gnomon in 3/4 view, with the vertical front stone pillar extending from row 16 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6395
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sundial pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the column/pedestal is prominently visible across rows 8 to 15 (8 pixel rows), displaying the foreshortened sundial mounted on it, while the vertical stone face extends below from row 16 downward.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7358
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar / sundial pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the pedestal is clearly visible from rows 8 to 15 (8 rows tall), holding the sundial, before transitioning at row 16 to the vertical brick front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sundial on stone pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pedestal is clearly visible from row 8 to row 14 (approx. 7 pixels deep) displaying the sundial face, atop the vertical stone column body below row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4849
+  }
+ ],
+ "decidedAt": "2026-10-13T16:24:27.174Z",
+ "cells": {
+  "16": [
+   "9e10dae6bc2336d2",
+   "ef186bf674758518"
+  ],
+  "24": [
+   "51eb6697f3e36725",
+   "5cd09e77332a25c3",
+   "5e43abbec73e710c",
+   "8fc5a79e4410a494",
+   "ae95c4183cdcc285",
+   "c7f29f51d1061a8b",
+   "e117437d661d488c",
+   "e34f5b8b8778cfa2",
+   "e4c840b216fa596e"
+  ],
+  "32": [
+   "aa1582f6f707e3a5",
+   "b037fccd22ee69ea",
+   "f3ff3fda50426a28"
+  ],
+  "48": [
+   "1b6c756c6c9387a0",
+   "3a0e4f743ce28437",
+   "5ee91c0e1676472d",
+   "9e786a4b8cbd2ca4",
+   "a23fe1688725b0a9",
+   "dd5fdfe1d6df1115"
+  ]
+ }
+}

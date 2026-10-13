@@ -8,15 +8,18 @@ MODULE = 'gy_props'
 SP = 'graveyard'
 
 
-def plinth(c, x, y, w, top=3, front=3, m='stone', tb=5, fb=3, seed=0):
+def plinth(c, x, y, w, top=3, front=3, m='stone', tb=6, fb=3, seed=0):
     """받침돌: 윗면(밝음) + 앞면(어둠), 뒷변 어두운 선은 외곽선이 맡는다."""
     block3(c, x, y, w, top, front, m=m, tb=tb, fb=fb, seed=seed)
 
 
-def headstone(c, x, y_face, w, h, depth=4, m='stone', arch=True, seed=0, mark='cross', tilt=0):
-    """두꺼운 돌 묘비: 앞면(첨두/둥근 머리) + 그 위로 depth 행 윗면(돌 두께를 위에서 본 면). tilt 는 위로 갈수록 x 를 민다."""
+def headstone(c, x, y_face, w, h, depth=5, m='stone', arch=True, seed=0, mark='cross', tilt=0, pointed=False):
+    """두꺼운 돌 묘비: 앞면(어둠, 둥근/첨두 머리) + 그 위로 depth 행 윗면(돌 두께를 위에서 본 밝은 면) + 어두운 뒷변.
+    tilt 는 위로 갈수록 x 를 민다."""
     r = w / 2
+    prof = arch_profile(w)[0] if pointed else None
     def ftop(i):
+        if pointed: return prof[i]
         if not arch: return 0
         dx = abs(i + .5 - r) / r
         return int(round(r * .8 * (1 - math.sqrt(max(0, 1 - dx * dx))))) if dx < 1 else int(r)
@@ -24,128 +27,58 @@ def headstone(c, x, y_face, w, h, depth=4, m='stone', arch=True, seed=0, mark='c
         t0 = y_face + ftop(i)
         for yy in range(t0, y_face + h):
             sh = int((y_face + h - yy) * tilt)
-            u = i / max(1, w - 1)
-            t = 4 if u < .25 else 3 if u < .75 else 2
-            if yy == t0: t = 4
+            t = 3 if 0 < i < w - 2 else (4 if i == 0 else 2)
+            if yy == t0: t = 2                                   # 윗면 앞 모서리 밑 그늘
             c.P(x + i + sh, yy, K(m, t))
-        for k in range(1, depth + 1):          # 윗면: 앞 머리선 위로
+        for k in range(1, depth + 1):          # 윗면: 앞 머리선 위로 depth 행(깨끗한 밝은 면)
             sh = int((y_face + h - (t0 - k)) * tilt)
-            t = 6 if k == depth else 5
-            if k == 1: t = 5
+            t = 5 if k == 1 else 6
             c.P(x + i + sh, t0 - k, K(m, t))
-    for i in range(w):
-        t0 = y_face + ftop(i); sh = int((y_face + h - t0) * tilt)
-        c.P(x + i + sh, t0 - depth - 1, K(m, 2))            # 뒷변(어두운 선)
-        c.P(x + i + sh, t0, K(m, 3))                         # 앞 모서리 아래 그늘
+        sh = int((y_face + h - (t0 - depth - 1)) * tilt)
+        c.P(x + i + sh, t0 - depth - 1, K(m, 1))                # 뒷변(어두운 선)
     cx = x + w // 2
     if mark == 'cross':
         yy = y_face + h // 2 - 2; sh = int(h // 2 * tilt)
-        c.VL(cx + sh, yy, 6, K(m, 1)); c.HL(cx - 2 + sh, yy + 2, 5, K(m, 1))
+        c.VL(cx + sh, yy, 5, K(m, 1)); c.HL(cx - 2 + sh, yy + 1, 5, K(m, 1))
     elif mark == 'lines':
-        for k in range(3): c.HL(x + 2, y_face + 5 + k * 2, w - 4, K(m, 2))
+        for k in range(2): c.HL(x + 2, y_face + 3 + k * 2, w - 4, K(m, 1))
     elif mark == 'skull':
-        c.R(cx - 2, y_face + 4, 5, 3, K('bone', 4)); c.P(cx - 1, y_face + 5, K('ink', 1)); c.P(cx + 1, y_face + 5, K('ink', 1)); c.HL(cx - 1, y_face + 7, 3, K('bone', 3))
-    moss_top(c, x, y_face + ftop(w // 2) - depth, w, seed=seed, amount=.25)
+        c.R(cx - 2, y_face + 2, 5, 3, K('bone', 4)); c.P(cx - 1, y_face + 3, K('ink', 1)); c.P(cx + 1, y_face + 3, K('ink', 1)); c.HL(cx - 1, y_face + 5, 3, K('bone', 3))
 
 
 @REG.piece('gm-tomb-round', '둥근 머리 묘비(두꺼운 돌·십자 새김)', 1, 1, ['S'], 'nature', SP, role='prop', kind='column',
            tags=['묘비', '무덤'], desc='둥근 머리의 두꺼운 회색 묘비: 위에서 보이는 돌 두께(윗면 4행), 십자 새김, 받침돌, 이끼.',
            rules='묘지에 2~3칸 간격 줄로. 앞(아래) 칸은 비워 둔다.')
 def _tomb_round(c):
-    plinth(c, 1, 11, 14, 2, 4, seed=1)
-    headstone(c, 3, 3, 10, 9, depth=3, seed=1)
-    finish(c, tex=True)
-
-
-@REG.piece('gm-tomb-arch', '첨두 머리 묘비(해골 새김)', 1, 1, ['S'], 'nature', SP, role='prop', kind='column',
-           tags=['묘비', '무덤'], desc='뾰족한 첨두 머리의 두꺼운 묘비, 해골 부조, 받침돌.', rules='묘지 줄 사이사이에 섞는다.')
-def _tomb_arch(c):
-    plinth(c, 2, 11, 12, 2, 4, seed=2)
-    w = 9; x = 4; yf = 3
-    prof, _ = arch_profile(w)
-    for i in range(w):
-        t0 = yf + prof[i]
-        for yy in range(t0, 12):
-            u = i / (w - 1); c.P(x + i, yy, K('stone', 4 if u < .25 else 3 if u < .75 else 2))
-        for k in range(1, 4): c.P(x + i, t0 - k, K('stone', 6 if k == 3 else 5))
-        c.P(x + i, t0 - 4, K('stone', 2))
-    c.R(7, 6, 4, 3, K('bone', 4)); c.P(7, 7, K('ink', 1)); c.P(9, 7, K('ink', 1)); c.HL(8, 9, 2, K('bone', 3))
-    finish(c, tex=True)
-
-
-@REG.piece('gm-tomb-tilt', '기울어진 묘비', 1, 1, ['S'], 'nature', SP, role='prop', kind='column',
-           tags=['묘비', '무덤', '폐허'], desc='한쪽으로 기운 두꺼운 묘비(윗면 보임), 반쯤 묻힌 받침, 흙 덩이.', rules='오래된 묘지 구역에 섞는다.')
-def _tomb_tilt(c):
-    c.R(2, 12, 12, 3, K('dirt', 3)); c.HL(2, 12, 12, K('dirt', 4)); c.HL(3, 14, 10, K('dirt', 2))
-    headstone(c, 3, 4, 9, 9, depth=4, seed=3, mark='lines', tilt=.35)
-    finish(c, tex=True)
+    plinth(c, 1, 11, 14, 3, 3, seed=1)
+    headstone(c, 3, 7, 10, 6, depth=5, seed=1)
+    finish(c)
 
 
 @REG.piece('gm-tomb-broken', '부서진 묘비(그루터기 + 쓰러진 조각)', 1, 1, ['S'], 'nature', SP, role='prop', kind='column',
            tags=['묘비', '폐허'], desc='위가 부러진 묘비 그루터기(깨진 윗면이 보임)와 앞에 쓰러진 머리 조각.', rules='폐허 묘지에.')
 def _tomb_broken(c):
-    plinth(c, 2, 10, 12, 2, 4, seed=4)
-    for i in range(9):
-        top = 4 + (i * 7) % 3 + (1 if i > 5 else 0)
-        for yy in range(top, 11): c.P(4 + i, yy, K('stone', 4 if i < 3 else 3 if i < 7 else 2))
-        for k in range(1, 4): c.P(4 + i, top - k, K('stone', 5 if k < 3 else 6))
-    c.R(1, 13, 6, 2, K('stone', 5)); c.HL(1, 13, 6, K('stone', 6)); c.HL(1, 15, 6, K('stone', 2))
-    finish(c, tex=True)
+    plinth(c, 2, 11, 12, 3, 3, seed=4)
+    for i in range(9):                         # 부러진 그루터기: 깨진 윗면 5행(밝음) + 앞면
+        top = 6 + (i * 7) % 3 + (1 if i > 5 else 0)
+        for yy in range(top, 12): c.P(4 + i, yy, K('stone', 4 if i < 2 else 3 if i < 7 else 2))
+        c.P(4 + i, top, K('stone', 2))
+        for k in range(1, 5): c.P(4 + i, top - k, K('stone', 6 if k < 3 else 5) if hsh(i, k, 4) > .2 else K('stone', 4))
+        c.P(4 + i, top - 5, K('stone', 1))
+    block3(c, 0, 12, 6, 2, 2, m='stone', tb=6, fb=3)                      # 쓰러진 머리 조각
+    finish(c)
 
 
 @REG.piece('gm-tomb-cross', '돌 십자가 묘비', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='column',
            tags=['십자가', '묘비'], desc='두꺼운 돌 십자가(팔·머리 윗면이 보임) + 두 단 받침.', rules='묘지 줄 끝·중요한 무덤에.')
 def _tomb_cross(c):
-    plinth(c, 1, 23, 14, 3, 5, seed=5)
-    plinth(c, 3, 19, 10, 2, 3, seed=6)
-    x = 6; w = 5
-    for yy in range(6, 20):
-        for i in range(w): c.P(x + i, yy, K('stone', 4 if i == 0 else 2 if i == w - 1 else 3))
-    for k in range(1, 4): c.HL(x, 6 - k, w, K('stone', 5 if k < 3 else 6))
-    for yy in range(9, 13):
-        for i in range(14):
-            if 5 <= i < 9: continue
-            c.P(1 + i, yy, K('stone', 4 if i < 3 else 3 if i < 11 else 2))
-    for k in range(1, 3): c.HL(1, 9 - k, 5, K('stone', 5 if k == 1 else 6)); c.HL(10, 9 - k, 5, K('stone', 5 if k == 1 else 6))
-    moss_top(c, 6, 3, 5, seed=5, amount=.3)
-    finish(c, tex=True)
-
-
-@REG.piece('gm-tomb-celtic', '켈트 고리 십자가', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='column',
-           tags=['십자가', '묘비'], desc='고리가 있는 켈트 돌 십자가(윗면 두께가 보임), 받침돌.', rules='묘지 가운데 길가에.')
-def _tomb_celtic(c):
-    plinth(c, 2, 23, 12, 3, 5, seed=7)
-    c.ellipse(8, 10, 7, 7, K('stone', 4))
-    c.ellipse(7.5, 9.5, 7, 7, K('stone', 5), fill=False)
-    c.ellipse(8, 10, 4.6, 4.6, (0, 0, 0, 0))
-    for yy in range(2, 24):
-        for i in range(4): c.P(6 + i, yy, K('stone', 4 if i == 0 else 2 if i == 3 else 3))
-    for yy in range(8, 12):
-        for i in range(14):
-            if 5 <= i < 9: continue
-            c.P(1 + i, yy, K('stone', 4 if i < 3 else 3 if i < 11 else 2))
-    for k in range(1, 3): c.HL(6, 2 - k + 1, 4, K('stone', 6 - k + 1)); c.HL(1, 8 - k, 5, K('stone', 5)); c.HL(10, 8 - k, 5, K('stone', 5))
-    c.HL(6, 0, 4, K('stone', 6))
-    for k in range(3): c.P(7, 14 + k * 3, K('stone', 1)); c.P(8, 15 + k * 3, K('stone', 5))
-    finish(c, tex=True)
-
-
-@REG.piece('gm-tomb-obelisk', '돌 오벨리스크', 1, 3, ['C', 'S', 'S'], 'nature', SP, role='prop', kind='column',
-           tags=['오벨리스크', '묘비', '기념비'], desc='높은 돌 오벨리스크: 꼭대기 피라미드(윗면 두 면이 보임), 가는 몸, 넓은 두 단 받침(윗면).', rules='묘지 가운데·갈림길에 하나.')
-def _obelisk(c):
-    plinth(c, 1, 38, 14, 4, 6, seed=8)
-    plinth(c, 3, 33, 10, 3, 3, seed=9)
-    for yy in range(8, 33):
-        f = (yy - 8) / 25
-        hw = 3 + f * 1.4
-        for x in range(int(8 - hw), int(8 + hw) + 1):
-            u = (x - (8 - hw)) / (2 * hw)
-            c.P(x, yy, K('stone', 5 if u < .3 else 3 if u < .7 else 2))
-    for k in range(6):            # 피라미드 머리: 왼 면 밝음 · 오른 면 어둠
-        y = 7 - k; hw = 3 - k * .5
-        for x in range(int(8 - hw), int(8 + hw) + 1): c.P(x, y, K('stone', 6 if x < 8 else 3))
-    for k in range(4): c.P(7, 14 + k * 4, K('stone', 2)); c.P(8, 14 + k * 4, K('stone', 2))
-    finish(c, tex=True)
+    slab(c, 0, 20, 16, 8, 4, seams=5)                                    # 넓은 받침: 윗면 8행
+    slab(c, 3, 15, 10, 5, 3, seams=4)                                     # 둘째 단: 윗면 5행
+    for x0, w in ((0, 5), (11, 5)):                                       # 팔: 윗면 4행 + 앞면 3행
+        slab(c, x0, 6, w, 4, 3, seams=0)
+    slab(c, 5, 0, 6, 4, 13, seams=0)                                      # 세로: 머리 윗면 4행 + 긴 앞면
+    c.R(5, 4, 6, 13, K('stone', 3)); c.VL(5, 4, 13, K('stone', 4)); c.VL(10, 4, 13, K('stone', 2)); c.HL(5, 4, 6, K('stone', 4))
+    finish(c)
 
 
 @REG.piece('gm-tomb-chest', '돌 궤 무덤(뚜껑 윗면·조각 판)', 2, 2, ['SS', 'SS'], 'nature', SP, role='prop', kind='box',
@@ -165,21 +98,15 @@ def _tomb_chest(c):
            tags=['석관', '관', '납골당'], desc='두꺼운 대리석 석관: 박공 모양 뚜껑(윗면 두 경사가 보임), 앞면 해골 부조와 띠, 받침.', rules='납골당·묘소 안에. 둘레를 비워 둔다.')
 def _sarc(c):
     st = 'bone'
-    for y in range(3, 15):                      # 박공 뚜껑: 뒤 경사(어둡게) · 용마루 · 앞 경사(밝게)
-        for x in range(1, 31):
-            if y < 7: t = 4
-            elif y == 7: t = 6
-            else: t = 5 if y < 11 else 4
-            if x == 1: t -= 1
-            if x == 30: t -= 2
-            c.P(x, y, K(st, t))
-    c.HL(2, 2, 28, K(st, 2)); c.HL(1, 14, 30, K(st, 2))
-    for x in (3, 28): c.VL(x, 4, 10, K(st, 3))
-    c.R(2, 15, 28, 13, K(st, 3)); c.VL(2, 15, 13, K(st, 4)); c.VL(29, 15, 13, K(st, 1)); c.HL(2, 15, 28, K(st, 2))
+    block3(c, 1, 3, 30, 10, 3, m=st, tb=5, fb=3, seed=14)               # 두꺼운 뚜껑: 윗면 10행
+    c.HL(1, 2, 30, K(st, 1))
+    c.R(13, 5, 6, 6, K(st, 6)); c.HL(13, 5, 6, K(st, 6)); c.HL(13, 11, 6, K(st, 3)); c.VL(18, 5, 6, K(st, 3))   # 뚜껑 위 십자 돋을새김
+    c.R(15, 4, 2, 9, K(st, 6)); c.R(11, 7, 10, 2, K(st, 6)); c.HL(11, 9, 10, K(st, 3)); c.VL(17, 4, 9, K(st, 3))
+    c.R(3, 16, 26, 12, K(st, 3)); c.VL(3, 16, 12, K(st, 4)); c.VL(28, 16, 12, K(st, 1)); c.HL(3, 16, 26, K(st, 2))
     for px in (5, 13, 21):
         c.R(px, 18, 7, 7, K(st, 2)); c.HL(px, 24, 7, K(st, 4)); c.VL(px + 6, 18, 7, K(st, 4))
     c.R(14, 19, 5, 3, K(st, 5)); c.P(15, 20, K('ink', 1)); c.P(17, 20, K('ink', 1)); c.HL(15, 22, 3, K(st, 4))
-    c.HL(1, 28, 30, K(st, 2)); c.R(1, 28, 30, 3, K('stone', 3)); c.HL(1, 28, 30, K('stone', 5))
+    c.R(1, 28, 30, 3, K('stone', 3)); c.HL(1, 28, 30, K('stone', 5))
     finish(c, tex=True)
 
 
@@ -220,28 +147,34 @@ def _mound(c):
     finish(c, tex=True)
 
 
-@REG.piece('gm-urn', '받침 위 돌 항아리(장례 항아리)', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='column',
+@REG.piece('gm-urn', '받침 위 돌 항아리(장례 항아리)', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='container',
            tags=['항아리', '묘지', '정원'], desc='네모 받침(윗면 보임) 위 천을 두른 돌 장례 항아리(뚜껑 윗면 타원).', rules='묘지 입구·계단 양옆에 한 쌍.')
 def _urn(c):
-    block3(c, 2, 18, 12, 4, 10, m='stone', tb=5, fb=3, tex='masonry', seed=12)
-    c.R(4, 16, 8, 2, K('stone', 4)); c.HL(4, 16, 8, K('stone', 5))
-    c.ellipse(8, 11, 5, 5, K('stone', 4)); c.ellipse(7, 10, 3, 3, K('stone', 5)); c.P(6, 8, K('stone', 6))
-    for y in range(8, 16): c.P(12, y, K('stone', 2)); c.P(11, y, K('stone', 3))
-    c.ellipse(8, 5, 4, 1.6, K('stone', 5)); c.ellipse(8, 5, 4, 1.6, K('stone', 6), fill=False); c.R(7, 2, 2, 3, K('stone', 5))
-    c.R(2, 10, 2, 3, K('stone', 4)); c.R(12, 10, 2, 3, K('stone', 2)); c.P(2, 10, K('stone', 5))
-    c.HL(4, 13, 8, K('stone', 2))
-    finish(c, tex=True)
+    block3(c, 2, 18, 12, 5, 9, m='stone', tb=6, fb=3, seed=12)
+    c.R(5, 15, 6, 3, K('stone', 3)); c.HL(5, 15, 6, K('stone', 4))      # 굽
+    prof = [3, 4, 5, 5.5, 6, 6, 5.5, 5, 4, 3]
+    for j, hw in enumerate(prof):                                        # 몸: 어깨가 넓은 항아리
+        y = 6 + j
+        for x in range(int(round(8 - hw)), int(round(8 + hw))):
+            u = (x - (8 - hw)) / (2 * hw)
+            c.P(x, y, K('stone', 5 if u < .3 else 4 if u < .62 else 3 if u < .85 else 2))
+    c.HL(3, 9, 10, K('stone', 2)); c.HL(3, 10, 10, K('stone', 5))        # 띠
+    c.ellipse(8, 3.5, 6, 3.5, K('stone', 6)); c.ellipse(8, 3.5, 6, 3.5, K('stone', 4), fill=False)   # 넓은 아가리 테(위에서 보임)
+    c.ellipse(8, 3.8, 4.4, 2.4, K('ink', 1)); c.HL(6, 4, 3, K('ivy', 2)); c.P(9, 3, K('ivy', 3))
+    finish(c)
 
 
 @REG.piece('gm-lantern-pillar', '등불 돌기둥(쇠 등롱)', 1, 2, ['C', 'S'], 'nature', 'grounds', role='prop', kind='column',
            tags=['가로등', '등불', '기둥'], desc='뭉툭한 사각 돌기둥(갓돌 윗면 보임) 위에 불 켜진 무쇠 등롱(지붕 윗면 보임).', rules='길가·문 양옆에 2~4칸 간격.')
 def _lantern_pillar(c):
-    block3(c, 3, 14, 10, 4, 14, m='stone', tb=5, fb=3, tex='masonry', seed=13)
-    c.R(2, 13, 12, 2, K('stone', 6)); c.HL(2, 15, 12, K('stone', 2))
-    c.R(5, 6, 6, 7, K('glow', 4)); c.VL(5, 6, 7, K('iron', 3)); c.VL(10, 6, 7, K('iron', 1)); c.VL(7, 7, 5, K('glow', 6)); c.HL(5, 12, 6, K('iron', 2))
-    for k in range(4): c.HL(4 + k, 5 - k, 8 - 2 * k, K('iron', 4 - (k == 0)))
-    c.HL(4, 5, 8, K('iron', 5)); c.P(7, 0, K('iron', 4))
-    finish(c, tex=True)
+    for y in range(9, 30):                                                # 둥근 돌기둥: 원통 몸
+        for x in range(2, 14):
+            u = (x + .5 - 2) / 12; c.P(x, y, K('stone', 4 if u < .3 else 3 if u < .7 else 2))
+        if y % 6 == 0: c.HL(2, y, 12, K('stone', 2))
+    c.HL(2, 29, 12, K('stone', 1))
+    c.ellipse(8, 9, 7, 4.4, K('stone', 2)); c.ellipse(8, 8, 7, 4.4, K('stone', 6)); c.ellipse(7, 7, 3.5, 1.8, K('stone', 5))   # 타원 갓 윗면
+    c.R(5, 14, 6, 9, K('iron', 1)); c.R(6, 15, 4, 7, K('glow', 4)); c.VL(7, 16, 5, K('glow', 6)); c.HL(5, 14, 6, K('iron', 3))   # 앞면 등 감실
+    finish(c)
 
 
 @REG.piece('gm-bench', '돌 벤치(쇠 다리)', 2, 1, ['SS'], 'nature', 'grounds', role='prop', kind='seat',
@@ -364,24 +297,6 @@ def _coffin_open(c):
     finish(c, tex=True)
 
 
-@REG.piece('gm-statue-mourner', '애도하는 두건 석상', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='figure',
-           tags=['석상', '조각상', '애도'], desc='두건을 쓰고 고개 숙인 대리석 애도자 석상, 넓은 받침(윗면 보임).', rules='묘소 양옆·묘지 입구에.')
-def _mourner(c):
-    plinth(c, 1, 24, 14, 3, 5, m='stone', seed=15)
-    st = 'stone'
-    for y in range(4, 24):
-        f = (y - 4) / 20
-        hw = 2.5 + f * 3.5
-        for x in range(int(8 - hw), int(8 + hw) + 1):
-            u = (x - (8 - hw)) / (2 * hw)
-            t = 5 if u < .3 else 4 if u < .6 else 3 if u < .85 else 2
-            c.P(x, y, K(st, t))
-    for y in range(8, 24, 3): c.P(9, y, K(st, 2)); c.P(6, y + 1, K(st, 4))
-    c.ellipse(8, 5, 3, 3, K(st, 4)); c.R(7, 5, 3, 3, K('ink', 2)); c.P(6, 3, K(st, 6))      # 두건 속 그늘 얼굴
-    c.R(6, 11, 5, 3, K(st, 5)); c.HL(6, 13, 5, K(st, 3))
-    finish(c, tex=True)
-
-
 @REG.piece('gm-statue-gargoyle', '받침 위 가고일 석상', 1, 2, ['C', 'S'], 'nature', 'grounds', role='prop', kind='figure',
            tags=['가고일', '석상', '조각상'], desc='날개 접고 웅크린 돌 가고일(뿔·드러낸 이빨), 네모 받침(윗면 보임).', rules='문 양옆·계단 끝에 한 쌍.')
 def _gargoyle(c):
@@ -393,18 +308,6 @@ def _gargoyle(c):
     c.ellipse(8, 7, 3, 3, K(st, 4)); c.P(6, 3, K(st, 5)); c.P(10, 3, K(st, 3)); c.P(6, 4, K(st, 4)); c.P(10, 4, K(st, 3))
     c.P(7, 7, K('velvet', 5)); c.P(9, 7, K('velvet', 5)); c.HL(7, 9, 3, K('ink', 1)); c.P(7, 10, K('bone', 5)); c.P(9, 10, K('bone', 5))
     c.R(5, 15, 2, 2, K(st, 3)); c.R(9, 15, 2, 2, K(st, 2))
-    finish(c, tex=True)
-
-
-@REG.piece('gm-crow-post', '까마귀가 앉은 부러진 돌기둥', 1, 2, ['C', 'S'], 'nature', SP, role='prop', kind='column',
-           tags=['까마귀', '기둥', '폐허'], desc='위가 부러진 돌기둥(깨진 윗면 보임) 위에 앉은 검은 까마귀(붉은 눈).', rules='묘지·길목에 하나씩. 까마귀 떼는 두셋을 흩어서.')
-def _crow_post(c):
-    block3(c, 4, 12, 8, 4, 18, m='stone', tb=5, fb=3, tex='masonry', seed=17)
-    c.P(4, 12, (0, 0, 0, 0)); c.P(11, 12, (0, 0, 0, 0)); c.P(10, 12, K('stone', 3))
-    # 까마귀
-    c.ellipse(8, 8, 3.5, 2.5, K('ink', 2)); c.ellipse(6, 5, 2, 2, K('ink', 2)); c.HL(3, 5, 2, K('iron', 2)); c.P(6, 4, K('velvet', 5))
-    c.line(10, 8, 13, 10, K('ink', 1)); c.P(7, 7, K('iron', 3)); c.P(8, 7, K('iron', 3))
-    c.P(7, 11, K('iron', 2)); c.P(9, 11, K('iron', 2))
     finish(c, tex=True)
 
 
