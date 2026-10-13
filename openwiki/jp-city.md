@@ -380,3 +380,10 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 ## 조수 지침: compose 우선 (2026-10-13)
 
 `jpCityPolicy.ts` 의 포인터·상세·노트를 «거리 한 장 = `compose_jp_city_street` 먼저, 이후 build_jp_city_building/fill_region 로 부분 보정, link_jp_city_interior 로 실내 잇기» 로 다시 썼다. 라우팅은 `describesCityStreet`(번화가·상점가·도심·시가지·주택가·downtown 등)를 jp_city 맵이 이미 있는 프로젝트에서만 허용하고 미국풍/modern_city 낱말은 제외한다. 세부는 `openwiki/editor-ai-tools.md` 「일본 도시 조수 연결」.
+
+## 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+
+`jp-sf-*` 는 건물 1층 부품이라 윗면이 없다. 띠를 한 장씩 판정하지 않고 `gate_assembled.py build` 가 띠 + 위층 + 지붕(조립기 `buildJpCityBuilding` 결과를 시트 칸으로 합성)을
+`tiledata/jp-city/blocks/_gate_assembled/<역할>-<L|R>-w<폭묶음>.png` 로 내면 `object-gate review --batch /tmp/jp-asm-chunk-N.jsonl`(kind structure)로 판정한다.
+`gate_kinds.check_all` 은 띠 화소가 PASS 조립 그림 안에 그대로 있을 때만 통과시킨다(리포트에 `covered by assembled <표본>`). 띠를 고치면 build → review 를 다시 한다.
+주의: 거리 구성기의 평지붕 건물(윗면 거의 없음)은 판정이 대부분 불합격 — 조립 표본은 roof.hip 으로 짓는다. 구성기 지붕 선택 개선은 별건.

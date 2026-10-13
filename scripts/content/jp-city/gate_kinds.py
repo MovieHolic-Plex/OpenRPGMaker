@@ -11,6 +11,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 GATE_DIR = os.path.join(REPO, 'tiledata', 'jp-city', 'blocks', 'street_hand', '_gate')
 sys.path.insert(0, os.path.join(REPO, 'src', 'harnesses', '_core'))
+sys.path.insert(0, HERE)
 
 # id(접두 jp- 뺀 것) -> 종류. 이름이 패턴인 것은 kind_of() 가 처리.
 EXACT = {
@@ -45,15 +46,22 @@ def kind_of(kit_id: str) -> str:
 
 
 # 지금 관문을 통과하지 못한다고 알려진 키트(이유 포함). 영수증이 통과로 나오기 전에는 계속 막는다 — 이 목록은 면제가 아니라 안내다.
-KNOWN_FAILING = {
-    'sf-*': '상가 입면 띠(jp-sf-*): 정면 입면만 있고 윗면이 없다(elevation strip without top face) — 윗면 지붕/차양 행을 그려야 함',
-}
+KNOWN_FAILING = {}
+
+# 부품(part_of): 건물의 1층 띠(jp-sf-*)는 지붕·위층이 따로 있는 키트라 혼자서는 윗면을 보일 수 없다.
+# 띠 + 위층 + 지붕을 조립기가 짓는 대로 합친 「조립 건물」 그림(gate_assembled.py, kind=structure, 같은 판정자·같은 기준)이
+# 통과 영수증을 갖고 그 그림이 띠를 화소 그대로(정수 오프셋) 품고 있을 때만 띠가 덮인다. 띠를 다시 그리면 자동으로 덮임이 풀린다.
+PART_OF_PREFIX = ('sf-',)
+
+
+def is_part(kit_id: str) -> bool:
+    k = kit_id[3:] if kit_id.startswith('jp-') else kit_id
+    return k.startswith(PART_OF_PREFIX)
 
 
 def known_failing_reason(kit_id: str) -> str:
     k = kit_id[3:] if kit_id.startswith('jp-') else kit_id
     if k in KNOWN_FAILING: return KNOWN_FAILING[k]
-    if k.startswith('sf-'): return KNOWN_FAILING['sf-*']
     return ''
 
 
@@ -65,9 +73,14 @@ def gate_kits() -> list[str]:
 def check_all(context: str = 'bundle') -> dict:
     """모든 _gate 키트의 영수증 확인. {'ok':[...], 'bad':[(id, kind, why)], 'total':n}. 모델 호출 없음."""
     import object_gate as OG
-    ok, bad, prov = [], [], []
+    ok, bad, prov, covered = [], [], [], []
+    import gate_assembled as GA
     for kid in gate_kits():
         kind = kind_of(kid)
+        if is_part(kid):
+            name, st = GA.covering(kid, context)
+            if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else ''))); continue
+            bad.append((kid, kind, st)); continue
         try:
             why = OG.refusal(os.path.join(GATE_DIR, kid + '.png'), kind=kind, context=context)
         except Exception as e:  # 깨진 PNG 등
@@ -75,11 +88,13 @@ def check_all(context: str = 'bundle') -> dict:
         if why and '보정되지 않았다' in why:                      # 판정 자체는 통과했지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
             prov.append(kid); continue
         (bad if why else ok).append((kid, kind, why) if why else kid)
-    return dict(ok=ok, prov=prov, bad=bad, total=len(ok) + len(prov) + len(bad))
+    return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, total=len(ok) + len(prov) + len(covered) + len(bad))
 
 
 def report(res: dict, file=sys.stdout) -> None:
-    print(f"[3/4 관문] street_hand 키트 {res['total']}개 중 통과 {len(res['ok'])} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    print(f"[3/4 관문] street_hand 키트 {res['total']}개 중 통과 {len(res['ok'])} + 조립 건물 영수증으로 덮임 {len(res.get('covered', []))} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    for kid, name in res.get('covered', [])[:3]: print(f'  {kid}: covered by assembled {name}', file=file)
+    if res.get('covered'): print(f"  … 띠 {len(res['covered'])}개 모두 'covered by assembled <표본>' (조립 건물 영수증, kind=structure)", file=file)
     if res['bad']:
         print(f"{'kit':34} {'kind':13} 사유", file=file)
         for kid, kind, why in res['bad']:
@@ -93,6 +108,7 @@ def enforce() -> None:
     """bake 진입 관문. 미통과 키트가 있으면 표를 찍고 종료(코드 3). JP_GATE=skip 이면 큰 경고 후 통과."""
     res = check_all()
     if not res['bad'] and res['total']:
+        if res.get('covered'): print(f"[3/4 관문] 상가 띠 {len(res['covered'])}개는 조립 건물 영수증으로 덮임(covered by assembled)", file=sys.stderr)
         if res.get('prov'):
             print(f"[3/4 관문] 통과 {len(res['ok'])} · 임시통과 {len(res['prov'])} — 판정 프로필이 아직 「보정 안 됨」이다. 보고에 「관문 임시통과(프로필 미보정)」라고 적을 것.", file=sys.stderr)
         else:
