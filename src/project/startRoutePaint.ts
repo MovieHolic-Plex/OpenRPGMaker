@@ -29,6 +29,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
   jp_city: { roadWidth: 3, ground: "잔디", road: "생활도로", yard: "판석 광장", edge: "보도 연석" },
   joseon_baram: { roadWidth: 2, road: "조선 흙길", yard: "조선 마당" },
   wizarding_world: { roadWidth: 2, noMainStreet: true, road: "숲길 흙", yard: "성채 포석(오토타일)" },
+  sky_steam: { roadWidth: 3, road: "오토타일: 자갈 차도(보도 연석)", yard: "오토타일: 벽돌 포장 광장(보도 경계)" },
 };
 
 /**
@@ -36,7 +37,7 @@ export const ROUTE_STYLES: Readonly<Record<string, RouteStyle>> = {
  * 건물 사각형이 맵 밖이라 build_jp_city_building 을 거절당했다). 칩셋마다 거리·마을 한 장이 서는 크기를 씨앗으로 조금 흔든다.
  */
 export function startMapSizeFor(tilesetId: string, plan: StartPlan): { width: number; height: number } | undefined {
-  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : undefined;
+  const base = tilesetId === "jp_city" ? { w: 52, h: 34 } : tilesetId === "joseon_baram" ? { w: 48, h: 36 } : tilesetId === "wizarding_world" ? { w: 48, h: 36 } : tilesetId === "sky_steam" ? { w: 48, h: 32 } : undefined;
   if (!base) return undefined;
   return { width: base.w + (plan.seed % 3) * 4, height: base.h + ((plan.seed >> 2) % 3) * 3 };
 }
