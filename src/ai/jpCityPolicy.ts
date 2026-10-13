@@ -101,6 +101,7 @@ export const JP_CITY_POINTER_LINE =
   "일본 풍 거리(상가·상점가·번화가·주택가·골목·도심)는 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다). "
   + "거리·마을·동네 한 장은 **compose_jp_city_street 가 기본**이다 — 손으로 fill_region→도로→건물을 하나씩 쌓지 않는다. 인자 style:\"shopping\"(상가·번화가·도심·역 앞)|\"residential\"(주택가), shops:[기획의 가게(konbini·izakaya·ramen·cafe·shop·office·apartment·house·machiya·garage·sento·bento)], seed(다르면 다른 거리). "
   + "맵 크기가 구성을 정한다: 40×28 이상(권장 50×36), 높이 46↑ 이면 큰길 둘+하천·다리 후보, 높이 52↑ 상가면 고층 스카이라인 — 강·고층은 인자가 아니라 크기+seed 로 나오니 원하면 create_map/resize_map 으로 키우고 seed 를 바꿔 replace:true 로 다시 짠다. "
+  + "compose 는 끝에 남은 빈 대지를 쓰임(보도에 닿는 코인 주차·골목 자판기/자전거·생울타리 놀이터·텃밭·공사장·광장 분수/시계탑·화단·매점)으로 스스로 채운다 — 건물을 손으로 더하거나 옮긴 뒤에는 compose_jp_city_street({lotsOnly:true, style}) 를 한 번 더 불러 새로 생긴 빈터만 채운다(빈 땅에 소품을 하나씩 흩뿌리지 않는다). "
   + "짠 뒤: 건물 하나만 고칠 때만 build_jp_city_building(id 는 list_jp_city_building_parts), 땅·소품 보정은 fill_region·stamp_object(kit:jp_city/…), 탈것은 set_map_transit. author_beodeul_town 은 쓰지 않는다. "
   + "집·가게 실내(현관·LDK·편의점·음식점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
   + "건물 문과 잇기는 link_jp_city_interior({door:{x,y}, place:<실내 장소 id> 또는 interiorMapId}) 하나로 한다(문 좌표·이름표는 list_map_locations).";
@@ -118,6 +119,7 @@ export const JP_CITY_DETAIL_LINE =
   "이 작업의 맵은 일본 도시 칩셋(jp_city)이다. 거리·마을·동네를 짓거나 새로 짜는 요청이면 ① 맵이 비어 있어도 땅부터 깔지 말고 compose_jp_city_street({seed, style, shops}) 를 먼저 한 번 부른다 — 땅·도로·횡단보도·차·건물·가로등·자판기가 한 번에 나온다(칠한 맵은 replace:true, 이벤트는 남는다). "
   + "② 짠 뒤 show_map_region 으로 보고 list_map_locations 의 건물 이름표로 기획과 맞추며 고친다: 가게가 안 맞으면 shops·seed 를 바꿔 다시 짜거나 build_jp_city_building({x,y=발,w,floors,…}) 로 그 건물만 교체(문 앞 접근칸 유지, 사각형 겹침 주의). "
   + "③ 세부 보정만 손으로: fill_region/lay_path(땅 — 칠하기 전 " + JP_START_READ_LIST + "), stamp_object({objectId:\"kit:jp_city/jp-road-lane-x\", x, y}) 도로 키트(jp-road-lane-h|v·-t-s|w|n|e·-x·-bend-*·-end-*, jp-road-trunk-*, jp-fumikiri-*; 없는 이름 금지), 투명 덧그림(중앙선·점선·횡단보도)은 paint_tiles layer \"2\" 만. "
+  + "빈 대지는 낱개 stamp 로 메우지 말고 compose_jp_city_street({lotsOnly:true}) 로 채운다. 손으로 꼭 놓을 땐 쓰임 짜임 그대로: 코인 주차(보도에 닿는 자리만 — 생활도로 + 칸 선 jp-lot-bay + 차 + 요금 기둥 jp-lot-board), 놀이터(jp-lot-slide·jp-lot-sandbox·jp-lot-spring + 벤치, 생울타리 입구는 보도 쪽), 텃밭(jp-lot-veg 두둑 + 빨래 장대 jp-monohoshi), 공사장(현장 사무소 jp-lot-cabin + 철망 + jp-keijiban·콘), 광장(jp-lot-fountain 또는 jp-lot-clock + jp-lot-planter·벤치 + 매점 jp-lot-kiosk). 지붕 바로 위·건물 뒤 길 없는 자리에 주차장·놀이터를 두지 않는다. "
   + "④ 가게·집 안은 link_jp_city_interior 로 문마다 잇고(import_region_reference 완성 실내 또는 build_hand_interior_room({tileset:\"jp_city\"})), 이벤트는 그 뒤에 둔다. "
   + "⑤ 차·버스·전차가 다니는 거리면 set_map_transit({auto:{}})(정류장 auto.busStops, 노면전차 2층 레일 jp-tram-rail-h + auto.tram:true), 확인은 inspect_map_transit·check_reachability·run_lint. 학교·지하철역은 완성 장소(jp-city-school-68x48 등, import_region_reference). "
   + "처음부터 build_jp_city_building 을 여러 번 부르는 손 시공은 «건물 한두 채 추가·교체» 같은 작은 수정에만 쓴다. 건물·소품을 낱칸 번호로 칠하지 않는다.";
@@ -132,13 +134,13 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
   const where = target.mapId && !target.lived
     ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 jp_city 이고 비어 있다 → 이 맵에 짓는다.`
     : target.mapId
-      ? `지금 맵 '${target.mapId}' 는 jp_city 이고 이미 내용이 있다 → get_map_region 으로 빈 땅을 찾아 거기에 건물을 더한다(기존 칸을 지우지 않는다).`
+      ? `지금 맵 '${target.mapId}' 는 jp_city 이고 이미 내용이 있다 → get_map_region 으로 빈 땅을 찾아 거기에 건물을 더하고(기존 칸을 지우지 않는다), 끝에 compose_jp_city_street({lotsOnly:true}) 로 남은 빈터만 쓰임으로 채운다.`
       : "jp_city 맵이 아직 없다 → create_map({name, width:50, height:36, tilesetId:\"jp_city\"}) 로 새 맵을 만든다. 지금 보는 맵이 다른 계열이면 실행기가 거부한다 — 그때는 칠하지 말고 ask_tileset_change(toTilesetId:\"jp_city\", reason) 로 사용자에게 견본을 보이고 이 턴을 끝낸다.";
   return [
     "[일본 거리 시공 — jp_city] 이 요청의 칩셋은 번들 일본 도시(jp_city, 계열 oprn-jp)다. author_beodeul_town 은 버들항 전용이라 쓰지 않는다 — "
       + "거리·마을·동네 한 장은 compose_jp_city_street({seed, style:\"shopping\"|\"residential\", shops}) 가 기본이다(손으로 땅→도로→건물을 쌓지 않는다). 낱칸 번호로 건물을 칠하지 않는다.",
     where,
-    "순서: (새 맵이면 40×28 이상, 권장 50×36·큰 도심은 60×56) compose_jp_city_street → show_map_region·list_map_locations 로 확인 → 안 맞는 건물만 build_jp_city_building, 땅·소품은 fill_region·stamp_object(먼저 " + JP_START_READ_LIST + ") → "
+    "순서: (새 맵이면 40×28 이상, 권장 50×36·큰 도심은 60×56) compose_jp_city_street → show_map_region·list_map_locations 로 확인 → 안 맞는 건물만 build_jp_city_building(손으로 건물을 더했으면 이어서 compose_jp_city_street({lotsOnly:true}) 로 빈터만 채운다 — 소품을 흩뿌리지 않는다), 땅·소품은 fill_region·stamp_object(먼저 " + JP_START_READ_LIST + ") → "
       + "문마다 link_jp_city_interior 로 실내 잇기 → check_reachability → 차·버스가 다니는 거리면 set_map_transit({auto:{}}). 건물 한두 채 수정이면 compose 없이 build_jp_city_building 만 쓴다. "
       + "건물을 띠 밖에 손으로 놓지 않는다(문 앞에 보도 줄이 있어야 한다), 옥상 간판 head 는 3층+·폭 6+ 건물에만(비워 두는 게 기본), 대지는 자갈 한 가지로 깔고 잔디는 담·생울타리로 두른 앞마당 줄에만 쓴다.",
   ].join("\n");

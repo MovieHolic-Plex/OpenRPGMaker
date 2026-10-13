@@ -1875,6 +1875,7 @@ SH_GROUPS = [
     ('rail', '철도(선로·울타리 땅·고가·열차·승강장)', r'^jp-(rail-|via-|train-|platform-)'),
     ('rooftop', '지붕 면·옥상·벽 덩굴', r'^jp-(roof-|ivy|glory|sat-dish|water-tank)'),
     ('sf', '일체형 1층 정면(문+1층 한 장, 11종×폭 3~9)', r'^jp-sf-'),
+    ('lot', '빈터 쓰임(코인 주차 칸 선·요금 기둥·놀이 기구·텃밭 두둑·현장 사무소·화단·시계탑·분수·매점 — compose 의 빈터 단계가 짜임째 놓는다, lotsOnly:true)', r'^jp-lot-'),
 ]
 
 
@@ -1884,7 +1885,7 @@ def sh_group(kid):
     raise AssertionError(kid)
 
 
-SH_LAYER = {'pole': '4', 'mark': '2', 'wall': '3', 'life': '3', 'landmark': '3', 'river': '3', 'bank': '3', 'bridge': '3', 'pave': '3', 'rail': '3', 'rooftop': '3', 'sf': '3'}
+SH_LAYER = {'pole': '4', 'mark': '2', 'wall': '3', 'life': '3', 'landmark': '3', 'river': '3', 'bank': '3', 'bridge': '3', 'pave': '3', 'rail': '3', 'rooftop': '3', 'sf': '3', 'lot': '3'}
 C_SH = new_cat('street-hand', f'일본 도시 · 손 도트 거리 시설 {len(STREETH)}종',
                f'실제 일본 주택가·생활도로 조사(tiledata/jp-city/research)에서 나온 거리 시설 {len(STREETH)}종: 콘크리트·나무 전봇대와 전선(4층), 생활도로 가장자리 側溝·흰 선·グレーチング·「30」(2층 투명 덧그림), '
                '문기둥·대문·카포트·月極 표지, 프로판 봄베·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·주황 커브미러·소화전 표지·버스 정류장, 도리이·주유소 캐노피·학교 정문. '
