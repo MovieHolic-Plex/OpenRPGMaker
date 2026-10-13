@@ -1,0 +1,182 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d92e27e9237f4e1ebadf7b6ba837e5d41fd9a4fa45b1c1500a125f8f0a9ce33",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-8-R",
+ "label": "jp_city/street_hand/jp-sf-house-8-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with sliding screens, entrance gate, and upper wall/railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a pure 2D front architectural elevation: the ground foundation, sliding screens, door frame, lintels, and upper wall/railing show zero top surfaces from the required 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with shoji screens and pent roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a foreshortened pent roof / awning slope over the ground-floor screens spanning rows 8 to 21 (14 rows tall) ending in an eave rim at row 22, correctly rendering the top slope in top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6092
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese-style building facade with shoji screens, sliding door, and upper railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation (side-scroller style). The upper railing (rows 0-7), intermediate eave/wall (rows 8-22), door frame (row 12), and stone base/plinth (rows 41-46) show no top surfaces whatsoever from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7599
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "traditional Japanese building facade (shoji wall, sliding door, upper wall/eave)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The base walkway/foundation (rows 42-46), the shoji walls, the door frame with its 2px lintel (rows 12-13), and the horizontal beams/eaves have zero top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5884
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.389Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "290bb6d989ef48d3",
+   "2ae9bd926f197337",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "7219a3eeb3a1f274",
+   "880f0566290ec000",
+   "93bf0752a996d81b",
+   "987780e0119584a9",
+   "c8270065076e290d",
+   "d674fc781eedc625",
+   "d7f8182d9dbff791",
+   "e90c0ec68e56973c",
+   "f442f020ca930fe5"
+  ],
+  "24": [
+   "177305c50e2f9c87",
+   "17f8e74d71e43cac",
+   "2f1906a10d509f83",
+   "41cf78a067c1f3f1",
+   "58ce681bc5a5544d",
+   "73dadca27857852c",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "7ae5f98d397f48ae",
+   "8caa35b13418b1dd",
+   "8e32a500204168c2",
+   "8e97174111b1b3ce",
+   "9e4ce79c1416c7e9",
+   "9ea66f44c2974d4c",
+   "a7037e721b792c03",
+   "a9fb495d0ecf76c8",
+   "ab020a091bfd8ebd",
+   "afaccb327b183d4a",
+   "b386a884f7ba736f",
+   "cc28768b21c302f5",
+   "ccd584d411a90b55",
+   "cea75a9d03bbdc49",
+   "cf9d842153ece800",
+   "d9ef2af06b346a31",
+   "de61cad1e578bbd2",
+   "ed4fb25411808263",
+   "f4e8a3471de92577",
+   "fc9fa9603528f078"
+  ],
+  "32": [
+   "098da21e3ab329db",
+   "0ef347b801dbd239",
+   "10375af510286b61",
+   "3331d7b775de2cb4",
+   "4af21a7bc778f696",
+   "608196995e05a192",
+   "78d05e25e226abb2",
+   "8d5f64218621e123",
+   "967335e452ebdc7d",
+   "afffdae768e4984e",
+   "caef57966de8a9b1",
+   "d91baceb21aafaeb",
+   "e33c3ce897a2c3c0",
+   "e802b23945b9b511",
+   "ebb5b19476be3799",
+   "f25e35f416a381ef"
+  ],
+  "48": [
+   "2ab56b38465161b4",
+   "371f92c9f57fffb1",
+   "4d361bb55e9bc17b",
+   "6f8211c4527b7de0",
+   "84cb34ab3a1def35",
+   "9105f8eb35c6e8f9",
+   "9332d149b9342cc2",
+   "b920be171d5808b7",
+   "c0f17ba4d94c1869"
+  ]
+ }
+}

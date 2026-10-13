@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "969d665580bdd496c63609ea5e7905598a3ab680d021c710652e7544fc014756",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-3-L",
+ "label": "jp_city/street_hand/jp-sf-sento-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese bathhouse (sento) entrance facade with tiled roof awning, noren curtains, and sliding door",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features an angled tiled roof awning across the top (rows 1–7, 7 pixel rows tall) displaying multiple tiers of foreshortened roof tiles seen from above before dropping into the vertical facade and doorway.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7296
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento entrance facade with tiled roof and noren doorway",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof along the top spans rows 1-8 (approx 8 rows tall) showing multiple courses of tiles angled toward the viewer in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5847
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bathhouse entrance facade with tiled roof and noren curtain",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building facade features a foreshortened tiled roof slope along rows 1–8 (8 rows tall) viewed from above in classic 3/4 perspective before transitioning down to the wall, door frame, and entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building entrance facade with tiled eave and curtained doorway",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a foreshortened tiled roof eave across rows 1-7 (7 rows tall) showing the top surface slope above the entrance, consistent with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7125
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.383Z",
+ "cells": {
+  "16": [
+   "1021a383568bcde2",
+   "255685ecbb86d80d",
+   "4229c9e2eaf330e5",
+   "4614ffdbff7ebee1",
+   "492309af242ec3ef",
+   "8a0024a5ea16da93",
+   "aaca9d2628aa7a68",
+   "c03732f0dc187032",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "409757a64748d497",
+   "782c79bff4c9f600",
+   "9c1827b7431e9358",
+   "bbd22fae374c4258"
+  ],
+  "32": [
+   "07988cd2ae39fe50",
+   "103695322d35172a",
+   "1f36f99eef96caaf",
+   "21c869f06c2b1431",
+   "2e248121f3876cf6",
+   "3ebf3ade6233e88e",
+   "41aff0883a3a6495",
+   "47a10a0772e59af6",
+   "5227d978ced2b499",
+   "594f1fc3f90ce9ca",
+   "5a410a7116d83362",
+   "7afea169d3be7bef",
+   "8ea05c627e83c95b",
+   "8fc24f45986fc64a",
+   "9f21704b9e822afe",
+   "aab543655a84be34",
+   "af780400f5bd491e",
+   "bea8c332c8d7bccb",
+   "ca55bd4d7af05bfe",
+   "ceda84f12b24dd40",
+   "d07cb7061febf5b7",
+   "df9bee4de69e96a7",
+   "f533e34431522903",
+   "f7b3f970312a99be"
+  ],
+  "48": [
+   "a652b2fe515f208a"
+  ]
+ }
+}

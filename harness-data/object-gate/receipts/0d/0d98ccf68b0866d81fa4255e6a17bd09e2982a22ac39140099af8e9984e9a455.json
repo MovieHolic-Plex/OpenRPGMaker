@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d98ccf68b0866d81fa4255e6a17bd09e2982a22ac39140099af8e9984e9a455",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-3-R",
+ "label": "jp_city/street_hand/jp-sf-apartment-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame and surrounding wall panels are rendered in flat front elevation with no visible top surface on the lintel (rows 11-12) or the lower side panel (rows 22-23).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5885
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator or automated entrance door structure with control panel and intercom/mailboxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway frame, door, side control panel, and adjacent mailbox/panel unit are all rendered in straight-on orthographic front elevation. The lintel/frame at row 11-12 has no visible top surface foreshortened from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator entrance structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The protruding elevator frame and adjacent wall paneling are drawn strictly from the front; the lintel at rows 11-12 is only a 2px outline border with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 28149
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator entrance with adjacent control/mailbox panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame and adjacent panels are drawn in pure front elevation; the top of the elevator frame (rows 11-12) and side panel (rows 23-24) are only 2px outlines with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4653
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.046Z",
+ "cells": {
+  "16": [
+   "1b87e3af4ed40949",
+   "2765fa619518beb4",
+   "3eb26e7df878c649",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "d093264fece2ad31",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "0e77f89e54513e55",
+   "6cbbe934858095bf",
+   "c2567cdec3df62ee",
+   "cb490db3a4d5c9d0"
+  ],
+  "32": [
+   "0611e738ed3705e0",
+   "138558a498c66ee4",
+   "13fadc1cbfefe845",
+   "1a27e4abb7736a56",
+   "1dffbb9eac64677b",
+   "2682244b48b39228",
+   "2cc20f758514cf53",
+   "3009eec69d61a9ab",
+   "33fea46f15e2b21b",
+   "4966b995e29ccf90",
+   "56f0e0e45356d7bb",
+   "5daf48d0ec522093",
+   "699b50a329243be9",
+   "729cfa6dd010fac3",
+   "874f6d0673f3dcfd",
+   "887ec35fd42cc56c",
+   "b695fed0f4a25ca4",
+   "bd853372eb0d8b76",
+   "bf890e6ac3d754eb",
+   "c882380679dfba55",
+   "d6397f851e9e331c",
+   "dd2c5ebd304bd75b",
+   "e0a155fa6bc7f957",
+   "ea4915df5f61de22"
+  ],
+  "48": [
+   "6f1cb47eb5d2b9e4"
+  ]
+ }
+}

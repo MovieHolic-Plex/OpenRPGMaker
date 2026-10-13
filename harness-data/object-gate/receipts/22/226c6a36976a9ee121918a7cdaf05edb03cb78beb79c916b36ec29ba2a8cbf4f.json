@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "226c6a36976a9ee121918a7cdaf05edb03cb78beb79c916b36ec29ba2a8cbf4f",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp/jp-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "utility pole with crossarms and transformer",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and horizontal crossarms are drawn in flat front elevation with straight horizontal edges and no visible top surfaces (the base plinth has a top ellipse, but plinths do not give credit for the main body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7914
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole shaft and crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole shaft and its horizontal crossbeams are drawn in flat front elevation with straight horizontal lines and no foreshortened top surfaces. The rounded cap at the very top is drawn from the side/front without an exposed horizontal top surface, and per instructions the elliptical base plinth at the bottom cannot be credited.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "utility pole with crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossarms and pole top are drawn in flat front elevation with only 1px outlines along horizontal edges and no visible foreshortened top surfaces. The circular base at the bottom is merely a plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6909
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "utility pole with crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, and attached transformer/equipment are drawn in flat front elevation with strictly horizontal edges; no top surfaces of the crossarms or pole top are visible (only the base plinth has an ellipse, which does not count for the main body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6750
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.898Z",
+ "cells": {
+  "16": [
+   "0e7ec7c661f209b8",
+   "1af00400fbbaf917",
+   "1e63e6b6ad44f95e",
+   "22e568db10da44a8",
+   "2b691b6148ff91e1",
+   "4be84ee4f0b2f202",
+   "4dd1622b7fcbad70",
+   "64173115257e3fce",
+   "8c8804fde7ca08f6",
+   "aa89bc5f51204ee6",
+   "bdf177300bab65ef",
+   "c3e0cecdb13272d2",
+   "d4a42f69e5c4fe40",
+   "e9cbe2afef36b772",
+   "f46104698f4e4ee4"
+  ],
+  "24": [
+   "03a8d5b9e8cf003a",
+   "13b6dbf3d701fc92",
+   "2048930db266953e",
+   "28bddc426f7d10c1",
+   "30d52f728ef173f8",
+   "347a66da70d40a56",
+   "35f275a3f0e374cb",
+   "3a054700728d2f49",
+   "4e6d172a31b8e8b0",
+   "706d18b8cfd83112",
+   "708dea15822b3cde",
+   "7220ca47c1460a5d",
+   "7a737ad13fddd17f",
+   "7cce48e33375a12e",
+   "8c3b747f3e5885c8",
+   "8ce4bc2fbab9f636",
+   "8f472c928be6b550",
+   "95c2a6e076b9f563",
+   "96f6c9b929f9a63d",
+   "9f8e7ccb4fcc9380",
+   "ac66401035ec656f",
+   "b3eb05fc0151e593",
+   "bf153764acc00a95",
+   "c321623137313ff9",
+   "cc57cda01fce67af",
+   "cdf314306d51ce02",
+   "e08627fcdbef0032",
+   "ff2c054df247e515"
+  ],
+  "32": [
+   "196c3120e70f1088",
+   "1eb857c633ae70e7",
+   "20edf0f2818a3a22",
+   "21b74d0099b583bf",
+   "2f323da5faf3d536",
+   "45d6f8a0f6bc44fe",
+   "52350f1fb1c54be5",
+   "527ae81fcfe91abe",
+   "5569b09c9fcfc675",
+   "5643ebbd589bd5dd",
+   "5e597ee43077dbd8",
+   "68ea42b173b38a96",
+   "71e83b19d2ebe4a3",
+   "8eeeec38f7ee905e",
+   "963f8c660f950612",
+   "97b26722796334e9",
+   "9f9e0ec873d67cbd",
+   "aca95f461ebc3f76",
+   "c799e26508db13f7",
+   "da83ea637f3d9b09",
+   "dae5a5437795b090",
+   "f26ca446a4587ed0",
+   "f402739030dead58"
+  ],
+  "48": [
+   "1330a8166ab9e050",
+   "3b26c31be6ae4574",
+   "5aa88d17adf0ac6d",
+   "8cc76eb9903ece2b",
+   "b1b8dade554412a2",
+   "c0d0f16f0b0b15b8",
+   "d047216c184639c7",
+   "f162592acf4bbd67"
+  ]
+ }
+}

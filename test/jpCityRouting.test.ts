@@ -28,8 +28,18 @@ describe("jpCityTargetFor — 일본 낱말 없는 요청", () => {
   it("프로젝트에 jp_city 맵이 있으면 새 맵 생성 요청도 jp_city 로 간다", () => {
     expect(jpCityTargetFor(withJpMap(), create, "현대 번화가 만들어줘", START, false)).toEqual({});
   });
-  it("jp_city 맵이 없으면(일본·칩셋 이름도 없음) 가지 않는다", () => {
-    expect(jpCityTargetFor(createBlankProject(), create, "번화가 만들어줘", START, false)).toBeNull();
+  it("jp_city 맵이 없으면 약한 낱말(주택가·골목)만으로는 가지 않는다", () => {
+    expect(jpCityTargetFor(createBlankProject(), create, "주택가 골목 만들어줘", START, false)).toBeNull();
+  });
+  it("jp_city 맵이 없어도 분명한 현대 도시 낱말(번화가·상점가·도심)은 jp_city 로 간다(2026-10-13 실시험 0/10 수정)", () => {
+    for (const text of ["현대 도시 상점가 거리를 하천이 흐르게 만들어 줘", "번화가 만들어줘", "도심 맵"]) {
+      expect(jpCityTargetFor(createBlankProject(), create, text, START, false)).toEqual({});
+    }
+  });
+  it("미국풍·성 요청은 빈 프로젝트에서도 가지 않는다", () => {
+    for (const text of ["미국풍 번화가", "new york downtown", "성 하나 만들어줘"]) {
+      expect(jpCityTargetFor(createBlankProject(), create, text, START, false)).toBeNull();
+    }
   });
   it("미국풍 낱말이 있으면 jp_city 맵이 있어도 가지 않는다", () => {
     expect(jpCityTargetFor(withJpMap(), create, "미국풍 번화가 만들어줘", START, false)).toBeNull();

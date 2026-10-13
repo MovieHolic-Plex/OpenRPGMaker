@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5073b6a4295a78923ebb1f1c8cf46827cb336d5e9e0f60cad6d475d5c7e78b46",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-3-L",
+ "label": "jp_city/street_hand/jp-sf-shop-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop entrance facade with door and display stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (door frame, door, awning, and display shelf) is drawn in a flat 2D architectural front elevation with no visible top surfaces (only a 2px horizontal rim above the door at rows 11-12).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6572
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront door and display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway, lintel, upper beam, and counter are drawn in flat front elevation with no visible horizontal top surfaces or foreshortened top planes (only a 2px dark cap at row 11-12).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6463
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shop entrance and storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The storefront (doorway, upper beam, and right stall/window) is drawn entirely straight-on in flat front elevation with 0px of visible top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with door and display stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper horizontal beam/signboard (rows 1-8), the door lintel overhang (rows 11-12), the stall awning (rows 22-28), and the shelves, is drawn in pure architectural front elevation with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4898
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.385Z",
+ "cells": {
+  "16": [
+   "1c372062ce5489b1",
+   "23f92e3b7442d9c8",
+   "3c32a3d19f916d0c",
+   "591233ec525de138",
+   "5e251f604203b043",
+   "6d8d6a2b2522f31c",
+   "aaca9d2628aa7a68",
+   "b1a8b5449b59fe87",
+   "b6bd9406b33aec05"
+  ],
+  "24": [
+   "7ab2f1b10e4870ed",
+   "98bf035d996857d0",
+   "bf0fe84bbe7bfa7d",
+   "f15205d150c089af"
+  ],
+  "32": [
+   "1771bb1d68da726f",
+   "4c409ea2fb688a68",
+   "5ab3fd46effa0ba1",
+   "5cf5e4b4190f2a6b",
+   "5f82b0882d8c6cd9",
+   "68e73df1ce8ec176",
+   "6c77695969ecb44f",
+   "7378d4c1bd6569c4",
+   "7d50272ab8068f66",
+   "8545bc111e1405ab",
+   "8e21c7e43fbdfbef",
+   "901769ada0453956",
+   "915636e6de70b5f6",
+   "94522ab2fdb814a3",
+   "9698a898448baa6c",
+   "ac7e9b2e04bf7c2b",
+   "b8b356bc19858eb6",
+   "ba673ed7b98c3ecc",
+   "c9a69974cde2df83",
+   "ca55bd4d7af05bfe",
+   "dfcaaefe0a8d43a3",
+   "e6a9fe4273314f1b",
+   "e72ad257ff0229ca",
+   "f06e4cae71af669e"
+  ],
+  "48": [
+   "b76b539ea1778b5f"
+  ]
+ }
+}

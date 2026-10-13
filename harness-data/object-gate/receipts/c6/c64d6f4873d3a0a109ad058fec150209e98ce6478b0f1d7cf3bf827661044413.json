@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c64d6f4873d3a0a109ad058fec150209e98ce6478b0f1d7cf3bf827661044413",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-monohoshi",
+ "label": "jp/jp-monohoshi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "covered clothes drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The roof canopy provides 7 rows of downward-sloping top surface (rows 2-8). However, the hanging laundry items (blue and green cloths) are drawn in oblique projection with visible receding right/east side faces (columns 9 and 30), violating the pure south-facing 3/4 view projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 17267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roofed laundry drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a canopy/roof over the drying rack spanning rows 2 to 8 (7 source pixel rows), presenting its top slope visible from the top-down perspective, with hanging laundry beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12675
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laundry drying rack with roof canopy",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shelter's roof slopes forward toward the camera, presenting a 7-row visible top surface (rows 1-8). The base also shows a 2-row top plinth below the posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10007
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "roofed laundry drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "While the awning/roof shows a 7-row top slope, the hanging laundry (notably the green cloth on the right and blue cloth on the left) is drawn with receding isometric right-side faces, violating the south-facing 3/4 orthographic projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 15066
+  }
+ ],
+ "decidedAt": "2026-10-13T13:01:15.258Z",
+ "cells": {
+  "16": [
+   "02f9964358217950",
+   "17fdfa37f8e41769",
+   "2de53544fef0f91c",
+   "cfeb2034ea0e7186",
+   "d35ca39a79ce9bde",
+   "d5650e4cea0e7b94"
+  ],
+  "24": [
+   "0da717c223d86aa3",
+   "27fdc38adfaa93a2",
+   "9158626a7231db80",
+   "b232a92918cbc82e",
+   "bab9158ea0ec4ace",
+   "c257ddb28385a0dc",
+   "ca227cca4e5f3fb1",
+   "d94d827f951490bc"
+  ],
+  "32": [
+   "16f6c7311b0453bb",
+   "2d5d6e09bdeb2035",
+   "84b201dd2953e77a",
+   "85026eb455eefde9",
+   "acb437e9a159af77",
+   "ea0889de4530414b"
+  ],
+  "48": [
+   "6739ba592a9791d3",
+   "d219403e186922df"
+  ]
+ }
+}

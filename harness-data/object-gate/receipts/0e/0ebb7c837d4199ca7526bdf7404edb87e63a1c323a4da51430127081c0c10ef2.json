@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ebb7c837d4199ca7526bdf7404edb87e63a1c323a4da51430127081c0c10ef2",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "jp-tsukigime",
+ "label": "jp/jp-tsukigime",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking signboard on two legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parking sign is drawn entirely in a flat front elevation with no visible top surface of the board frame or legs from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7220
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard on two legs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a monthly parking (tsukigime) signboard mounted on two posts, drawn in pure front elevation with no visible top edge/depth at all (0px top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6199
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn in a pure front elevation with no visible top edge/surface showing depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6149
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "parking lot sign board on two posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and its legs are drawn in pure front elevation with no visible top surface or depth, completely facing the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5757
+  }
+ ],
+ "decidedAt": "2026-10-13T13:07:14.374Z",
+ "cells": {
+  "16": [
+   "0525494551122286",
+   "4d76b181d05b15fd",
+   "51d5e736432069cd",
+   "d14a2b8dc0516522"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "03fc7851fb018639",
+   "0582437a1fbfcfc6",
+   "0b8ed291de40ab86",
+   "0de09f5323b080ea",
+   "135e80afbb12895c",
+   "1d5c0d5a2a947d5d",
+   "2ee9e01d296c5f38",
+   "4022975e61c4b58a",
+   "5995352d0765f583",
+   "5f954f51c4716893",
+   "669fab931783ad7c",
+   "79aff99a9b0a6292",
+   "8a60c8a51bb67d4a",
+   "8c6ee720a05cd46e",
+   "8d872c904f3c9f4a",
+   "9d32ce5a83de3be3",
+   "b1b4d0974fcacd8c",
+   "b543545a9ea3a6d0",
+   "dfda9e951b75356b",
+   "e6d94c2e3109f65a",
+   "ecc4af6a00a2fece",
+   "f957c241e9058482",
+   "fd3fbcab7d1c6029"
+  ],
+  "32": [
+   "fd80121288d6350c"
+  ],
+  "48": [
+   "08a3f855d5b1cc43",
+   "60b75fc93070f08f",
+   "6f1b34bc1baa7344",
+   "72e48412e74698f6",
+   "7e9226f0f0aa5a2f",
+   "a6911b80eaa1c908"
+  ]
+ }
+}

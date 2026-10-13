@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3354f14a82d73011441325297eca42c3d9561a962b34c252dce53c62cf98175d",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boundary wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation with no visible top surface or coping depth (rows 1-2 are only 1-2px edge lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boundary wall with openwork/screen panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall structure is drawn entirely in flat front elevation with horizontal and vertical bars; there is no top surface visible along the wall cap/lintel (row 1 is merely a 1px dark line/beam).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4083
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn entirely in flat front elevation with no visible top surface or foreshortened horizontal depth on the upper beam (only a 1px border line at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4331
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "openwork wall segment with screen and paneled base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn in flat front elevation with horizontal beams, windows/grille, and base paneling, showing no foreshortened top surface or thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5967
+  }
+ ],
+ "decidedAt": "2026-10-13T12:59:17.705Z",
+ "cells": {
+  "16": [
+   "c1da0f45911d7bb7"
+  ],
+  "24": [
+   "29eaa93044af9ba1",
+   "2e0a8bc99d85ce80",
+   "4a97efc258e93088",
+   "8449c3b907e01db4",
+   "c9cb7820b6f1cf31",
+   "d7d63e2753c902c8"
+  ],
+  "32": [
+   "007c21dc4e50ec85",
+   "04a85581c59427f7",
+   "35643a7c5d7f09b0",
+   "6bc4bdc2cfbe49c6",
+   "6ed2d7fe33bb1c5c",
+   "eea17d108829885c"
+  ],
+  "48": [
+   "6155b0aa071a265b",
+   "6485f307fa092bbd",
+   "7bafa56cb871a72c",
+   "bb83da14dd6d7e2f",
+   "cbc5a1476dc61efe",
+   "dd2193ee699d47ef"
+  ]
+ }
+}

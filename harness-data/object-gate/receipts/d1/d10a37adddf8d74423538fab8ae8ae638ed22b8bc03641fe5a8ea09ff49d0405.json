@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d10a37adddf8d74423538fab8ae8ae638ed22b8bc03641fe5a8ea09ff49d0405",
+ "width": 64,
+ "height": 48,
+ "kind": "box",
+ "name": "jp-train-car-a",
+ "label": "jp/jp-train-car-a",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car roof is clearly visible from above across rows 1-17 complete with rooftop AC/vent units, transitioning at row 18-19 to the vertical south-facing car body (windows, doors, stripes).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6552
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car roof is clearly visible from above across rows 1–18, complete with rooftop equipment/vents, while the south-facing side of the carriage shows the doors, windows, and green stripe below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10890
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car shows a large foreshortened top roof surface (rows 1-17, 17 rows tall) containing rooftop equipment, above the south-facing side wall with windows and doors (rows 20-39).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "train car",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The train car features a large top surface (roof) spanning rows 1-17 with visible rooftop equipment (AC units/vents) seen from above, positioned over the front-facing car body (windows, doors, and stripe).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6933
+  }
+ ],
+ "decidedAt": "2026-10-13T14:18:29.295Z",
+ "cells": {
+  "16": [
+   "02fed8312e585192",
+   "121ab87bda9a5df4",
+   "21bd7e2cb41d2c30",
+   "3a84e5bd86befc8b",
+   "3af79ffa1bf12d91",
+   "6ac298b765c7d8f8",
+   "73b9aa462c193d36",
+   "8985d2b83033db38",
+   "9814f635ec1bbbb1",
+   "b6a09ff9c1df6019",
+   "d0c5547c2f708a73",
+   "f30a0d424cc11665"
+  ],
+  "24": [
+   "09a933f0e3ddb8c8",
+   "0f61662efbab15d3",
+   "132ec15d579eac65",
+   "34b240088af6ce06",
+   "35329bafc4fd6757",
+   "42f66261450ef642",
+   "4f9c136a9d37136a",
+   "6473b063be0d458a",
+   "80b61e2e7112edb4",
+   "891ea9295191b8a5",
+   "9c23943b08e70c33",
+   "a0aa47476983856f",
+   "c690b3f03c132dfc",
+   "c8256064a65ed9ac",
+   "da9df5a8bffe7f62",
+   "f5b596f1e7fad6f7",
+   "f7f3e3b16d642ef0",
+   "fa440b6e984fbcd9"
+  ],
+  "32": [
+   "12bf6b33790e9471",
+   "1e0defbc456fa8a0",
+   "376ce712ade4232e",
+   "66cb15520a2f3b4c",
+   "74d188183dbdfd8f",
+   "b5da3236ffcbc276",
+   "cface4366124e899",
+   "f765b582d23a0aa6"
+  ],
+  "48": [
+   "3370c84f1863334d",
+   "38ae398a01716d1e",
+   "5456af126861f777",
+   "bdd9c4ea10a19c65",
+   "d150c5114b3bc700",
+   "e9b83f8b9184665a"
+  ]
+ }
+}

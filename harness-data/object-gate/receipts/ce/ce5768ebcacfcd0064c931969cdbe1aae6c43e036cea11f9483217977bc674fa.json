@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce5768ebcacfcd0064c931969cdbe1aae6c43e036cea11f9483217977bc674fa",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-4-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ramen shop storefront facade with noren curtain and glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building storefront is drawn as a flat 2D architectural elevation; neither the top header/sign band, awning, doorframe lintel, nor window sills display any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6778
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ramen shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (signboard, awning/upper wall, noren curtain, entrance door, and flanking display windows) is drawn in pure flat front elevation with no visible horizontal top surfaces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4110
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront entrance with awning and sliding glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top signboard/fascia (rows 1-8), the red awning/lintel (rows 9-23), and the doorframe, is drawn in pure front elevation with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4823
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ramen shop storefront with awning, central entrance door, and flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (upper sign/beam, red awning, entrance frame, door, and windows) is drawn as a flat 2D architectural front elevation with no visible top surfaces or receding planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3610
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.381Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "2cc4bc2716f9d246",
+   "31836a5a65ac806a",
+   "408c41d74bcd1ab0",
+   "4f5624c2557ef79d",
+   "87343fd141dcf5a6",
+   "a82473e0c094cf36",
+   "b133644178093c6e",
+   "bbf792126b343f24",
+   "d387225d45ed8a74"
+  ],
+  "24": [
+   "01cae67a6c012307",
+   "1e84a71d1ab42e8e",
+   "38bd476235c8adc7",
+   "39266895c84cecc9",
+   "4d8eb555589737bf",
+   "4f0142bcc4ee1b42",
+   "520202b86a5c361a",
+   "5a966b77a704fb14",
+   "802db1cb92c1be84",
+   "849f8c91f58612d8",
+   "9f606c89e5b74ce3",
+   "b0655e3630a95122",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123",
+   "bb4c21e856f5580d",
+   "c45581e90b4c9f75",
+   "efe2377f6077e7a1",
+   "f3dc04d74abad4b4"
+  ],
+  "32": [
+   "270381b914b17e6a",
+   "2cd6a070af17913b",
+   "2fcb207e01013c79",
+   "3620f9235385df2a",
+   "adf37e7240e63270",
+   "ced134f489fdc2cc",
+   "d26958d7d5bd06fa",
+   "d66c92268b09beb4"
+  ],
+  "48": [
+   "5413edc21c223c68",
+   "78f7ea27f9ada22a",
+   "a55e5cb0274f4f68",
+   "de1eb7236cbcf2e0",
+   "eb611ee35c6352d0",
+   "f68dfb5b88bfede8"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8d0671f61371f54106b72c2aa338c26041241fdbf42f76fd345241fb21f507b",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp/jp-bwall-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall section with plaster upper and stone block base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts a wall purely in front elevation with no visible top surface or roof slope (top_rows = 0); row 0-1 is merely an edge line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6795
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical elevation consisting of plaster (rows 2-9) over a stone base (rows 10-15) with only a 1-2px border along rows 0-1, lacking any visible top surface or coping.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5626
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is drawn entirely in pure front elevation with plaster and stone foundation; there is no visible top surface or roof slope (only a 1px border at row 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5414
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 sprite is a flat vertical wall elevation with a plaster upper section and stone base, showing no top surface or cap (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4804
+  }
+ ],
+ "decidedAt": "2026-10-13T13:01:15.256Z",
+ "cells": {
+  "16": [
+   "cada8f24141f36d3"
+  ],
+  "24": [
+   "3cac1244b27ce2bf",
+   "736ddaf18d648c24",
+   "a45f1c6bdce62ca9",
+   "bb5330b21432a9f6",
+   "d1780e0e5df33322",
+   "e4bfe66bf4b3d81e"
+  ],
+  "32": [
+   "030ef78c6697154b",
+   "4fdef85db4bef1ee",
+   "6f47f881729c2690",
+   "94e4cc6d461e60b8",
+   "aa6af0fb5b6f4d78",
+   "e21b40bc29dbc46d"
+  ],
+  "48": [
+   "149ac0d50ba9b241",
+   "1843a430c4a3d599",
+   "24aa4154ab1800cd",
+   "7143ef5dec8758ce",
+   "769f0d51d9cca41c",
+   "f6c65a47bea4b39e"
+  ]
+ }
+}

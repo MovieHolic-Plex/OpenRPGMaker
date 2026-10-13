@@ -18,7 +18,7 @@ modern3 팔레트(154색) 손 도트로 그린 일본 도시(상가·주택·역
 
 - 정의 모듈 `src/project/defaults/jpCity.ts` — `createJpCityTileset`, `ensureJpCityTileset`, `ensureJpCityReferences`, `isJpCityTileset`.
 - 굽기가 만드는 파일(굽기 담당 소유): `public/assets/jp-city/jp-city-chipset.png`, 시트 메타 `src/assets/jpCitySheet.json`(`count`, `tilesPerRow`), 정의 `src/assets/jpCityTileset.json`(`name`·`tileSize`·`passability`·`priority`·`terrain`·`tileMeta`·`tileGroups`·`autotileGroups`·`animationStrips`·`structureKits`), 굽기 스크립트·소스 `scripts/content/jp-city/`, 자리 키 핀·출처 `tiledata/jp-city/`.
-- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 8용도 55쪽·그림 147장. `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
+- 참고문서 `src/assets/jpCityReferences.json` (`TilesetReferenceCategory[]`, 이미지 바이트 없음 — `/assets/jp-city-references/*.png` 경로만). 15용도 145쪽·그림 267장 (2026-10-13 재굽기: 거리 시설에 하천·다리·철도·일체형 정면 143종·지붕·옥상 키트 추가, 계획 단계 철도는 「아직 연결 안 됨」 표시). `createJpCityTileset` 이 들고 태어나고 `ensureJpCityReferences` 가 기존 프로젝트에 채운다. 굽기·검증은 아래 「AI 참고문서」 절.
 - 배선: `src/assets/bundled.ts`(시트 import·항목·`bundledChipsetFrameCount`), `src/assets/bundledChipsetGeometry.ts`(열 수), `src/project/defaults/defaultAssets.ts`(`ensureBundledTilesets` 기존 사본 블록·`bundledEasyRpgTilesetBase`; 새 프로젝트는 `defaultTilesets()` 가 번들 목록을 돌며 자동 포함), `src/project/tilesetFamily.ts`, `src/project/tilesetHarness/combinedTown.ts`(RM2k3 투명 칩 보정 제외), `test/bundledTilesetIdParity.test.ts`.
 
 ## 굽기 규약 (TS 가 기대하는 것)
@@ -212,6 +212,7 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 - 전봇대 `jp-pole`(3×10, 변압기·완목·노란 지선 커버) · `jp-pole-guy` · `jp-pole-wood`(3×9). 전선 `jp-wire-5`~`jp-wire-20`(폭 L−3 × 3): **왼쪽 전봇대 키트 x + 3, 맨 위 줄 y 에 4층**. 세로 `jp-wire-v6/8/10`.
 - 노면(2층 투명 덧그림, `pc=flat`): `jp-mark-edge-{n,s,w,e}`(側溝 + 路側帯 흰 선) · `-grate` · `jp-mark-line-*` · `jp-mark-30`(2×4 주황) · `jp-mark-lockplate`(코인 주차 잠금판).
 - 담·문: `jp-bwall-{plain,sukashi,end-l,end-r}` · 펜스 얹은 `jp-bwallf-*`(1×2) · `jp-gatepost`(표찰·인터폰·우편함, 1×1) · `jp-gate` · `jp-carport`(4×3) · `jp-tsukigime`(月極 표지).
+- **빠진 키트(2026-10-13, 3/4 관문 불합격으로 거리 키트 220종에서 제외):** `jp-bwall-{plain,sukashi,end-l,end-r}` · `jp-bwallf-{plain,end-l,end-r}` · `jp-rail-fence` · `jp-rail-signal` · `jp-tsukigime` · `jp-pole-guy`. 위 담·문·전봇대 줄의 해당 이름은 옛 기록이다 — 새 시트/타일셋/참고문서에서는 쓰지 않는다. `bake_refs.py` 소스에서는 이미 뺐고, 산출물(`jpCityReferences.json`)은 재생성 대기.
 - 생활·길가: `jp-propane` · `jp-ac-unit` · `jp-pots` · `jp-monohoshi` · `jp-keijiban` · `jp-gomi-box` · `jp-jizo` · `jp-mirror2`(주황 커브미러) · `jp-hydrant-sign` · `jp-bus-stop`. 거점: `jp-torii` · `jp-gas-canopy` · `jp-school-gate`.
 - `ai.role` 은 enum(`building castle fence roof terrain water wall prop`) 안이어야 한다(`bake_lib.py` 검사) — 전선·표시는 `prop`, 담·문은 `wall`.
 - **층 규칙**: 전봇대·전선은 건물 앞에 서므로 4층(3층에 찍으면 건물 칸을 지운다 — 참고문서 `upper-overwritten`). 엔진 통행은 4→1층 순으로 빈칸·★ 를 건너뛰므로 4층 ★ 가 3층 막힘 칸을 풀지 않는다.
@@ -380,3 +381,10 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 ## 조수 지침: compose 우선 (2026-10-13)
 
 `jpCityPolicy.ts` 의 포인터·상세·노트를 «거리 한 장 = `compose_jp_city_street` 먼저, 이후 build_jp_city_building/fill_region 로 부분 보정, link_jp_city_interior 로 실내 잇기» 로 다시 썼다. 라우팅은 `describesCityStreet`(번화가·상점가·도심·시가지·주택가·downtown 등)를 jp_city 맵이 이미 있는 프로젝트에서만 허용하고 미국풍/modern_city 낱말은 제외한다. 세부는 `openwiki/editor-ai-tools.md` 「일본 도시 조수 연결」.
+
+## 상가 띠 3/4 관문 = 조립 건물 영수증 (2026-10-13)
+
+`jp-sf-*` 는 건물 1층 부품이라 윗면이 없다. 띠를 한 장씩 판정하지 않고 `gate_assembled.py build` 가 띠 + 위층 + 지붕(조립기 `buildJpCityBuilding` 결과를 시트 칸으로 합성)을
+`tiledata/jp-city/blocks/_gate_assembled/<역할>-<L|R>-w<폭묶음>.png` 로 내면 `object-gate review --batch /tmp/jp-asm-chunk-N.jsonl`(kind structure)로 판정한다.
+`gate_kinds.check_all` 은 띠 화소가 PASS 조립 그림 안에 그대로 있을 때만 통과시킨다(리포트에 `covered by assembled <표본>`). 띠를 고치면 build → review 를 다시 한다.
+주의: 거리 구성기의 평지붕 건물(윗면 거의 없음)은 판정이 대부분 불합격 — 조립 표본은 roof.hip 으로 짓는다. 구성기 지붕 선택 개선은 별건.

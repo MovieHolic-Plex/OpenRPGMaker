@@ -1,0 +1,209 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be10e463a80fb6b4b3b66c63807d019f7fe9139dc3d10673534d989ae4c589ee",
+ "width": 144,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-9-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-9-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store building facade with automatic sliding doors and shop windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation (side-scroller style). The door frame, shelves in the windows, lintel, and base curb show zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6294
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store facade with sliding entrance doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a pure front elevation typical of a 2D side-scroller. The door frame lintel is a flat 1-2px horizontal band with no top surface, the interior shelves show only flat vertical product faces without visible top shelf surfaces, and the structure lacks any 3/4 perspective top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9466
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "convenience store facade with sliding doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation like a side-scroller backdrop. The door frame lintel is only 2px thick with no top surface, and the fascia/roof band lacks any top slope or depth (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9070
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store building facade with entrance door and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper signage band, entrance door frame, and window shelves, is drawn in pure 2D front elevation like an architectural elevation or side-scroller backdrop. No foreshortened top surfaces, roof slopes, or lintel tops are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6118
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.646Z",
+ "cells": {
+  "16": [
+   "04a8744fffab93af",
+   "0e47803fb2708dbe",
+   "111f96b51c7e191f",
+   "2511bf4d2df94637",
+   "368005c35bb837d9",
+   "3ee408aa7fdef523",
+   "4f3a7dd9ec722387",
+   "6e7445b757447f4c",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8d89cb2a840e7e2c",
+   "9584da2e409f93c6",
+   "96f131cc674d1d0a",
+   "a6fc34552180ddaa",
+   "df2a5dc56a26c9c3",
+   "e02b4494a8b6c0b5",
+   "e09dad0b84f07f9a",
+   "ed308cd86f7435b5",
+   "f55540ca3fe07e9c",
+   "f57dd59d8e0ee44e",
+   "f77f37bb52b582e0",
+   "fb9836fdba5cb433"
+  ],
+  "24": [
+   "1aade4e273efb8f2",
+   "2081a47fc4027ab9",
+   "4e618c1aaa06ecbb",
+   "5bef23f4929c03eb",
+   "60cc4c8e12b98566",
+   "656363ce95cefca8",
+   "846954c132b3b796",
+   "9668c652d8c17a1a",
+   "a1d96bd3a8fb599a",
+   "bf5cf87cacc2fc1e",
+   "e83041444e05749d",
+   "eab716304f112388"
+  ],
+  "32": [
+   "0601f6d123e9f6ac",
+   "08d406b6dd672534",
+   "08d85dddeef53405",
+   "0b97c2cfa13c36c4",
+   "0de6a39a1f79857f",
+   "117f83fb662f20f5",
+   "18aa8c121a177e32",
+   "20799caf55f0888f",
+   "235b5ad7fb6ca501",
+   "2418e7edde377a2c",
+   "27010703ecbb0a39",
+   "30549b5023a7c1f5",
+   "3203727622bcb895",
+   "34266402cb58cedd",
+   "36693e293c2f1228",
+   "374cc9861d77fac4",
+   "3a6d26686013c712",
+   "3be31e01b4e31f0a",
+   "414013319e216ee7",
+   "437fc27cd0bd215e",
+   "48af82213a482ab5",
+   "4bc72f6cfbe6ef98",
+   "4d865431aa8e8428",
+   "560a8718367e0763",
+   "6330454538f4b1c6",
+   "698f209bf0f74cb7",
+   "72ecb6b17864d40e",
+   "7a67d4f2448b962e",
+   "91ebabc71e0a1604",
+   "953862884a4bf5b6",
+   "a0b8bdb7cd210cea",
+   "a32515b2008a679e",
+   "aa4c53e150b76d05",
+   "b538c5880016bd85",
+   "b8144dc6051bc675",
+   "bddd7fd48d05ca60",
+   "bff3694b68ef6cc0",
+   "c25084f45db210b2",
+   "c3f382079df8d841",
+   "c5b38acf295e2d2b",
+   "c73630b505caa750",
+   "c9e85c04c7296f36",
+   "cf1115a38686efef",
+   "d48357051175353a",
+   "d5a681bfe8d19aa6",
+   "dbbb4713286f40b6",
+   "dbde8a4174bcee15",
+   "dc60cd4be3668208",
+   "e039c4a465fbea93",
+   "e0e7f489dc168dfc",
+   "e3c38cf19ce589f8",
+   "e893cee1e6109638",
+   "eccb0feb4f65bd57",
+   "ed29a106279bcf02",
+   "ed2a15fde5e686a3"
+  ],
+  "48": [
+   "14b6343b741bbd4c",
+   "b63dadeabe2bcee2",
+   "c922d6e5beae9c5b"
+  ]
+ }
+}

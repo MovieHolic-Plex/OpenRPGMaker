@@ -622,10 +622,9 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
     const log: { kit: string; x: number; y: number; layer: string; ok: boolean; summary: string }[] = [];
     const st = (id: string, x: number, y: number, layer: string) => { const r = layer === "3" ? stampKit(p, id, x, y) : stampL(p, id, x, y, layer); log.push({ kit: id, x, y, layer, ok: r.ok, summary: r.summary }); };
     st(HOUSE, HX, HY, "3");
-    for (let x = HX; x < HX + hk.width; x++) {
-      if (x === doorCol && !o.closeGate) continue;
-      st(x === doorCol - 1 ? "jp-gatepost" : x === HX ? "jp-bwall-end-l" : x === HX + hk.width - 1 ? "jp-bwall-end-r" : (x - HX) % 4 === 2 ? "jp-bwall-sukashi" : "jp-bwall-plain", x, WALL_Y, "3");
-    }
+    // 블록 담(jp-bwall*)은 3/4 관문 불합격으로 키트에서 뺐다 — 문 왼쪽 문기둥만, 「오류」는 닫힌 대문 jp-gate(2×1)를 접근칸에 둔다
+    st("jp-gatepost", doorCol - 1, WALL_Y, "3");
+    if (o.closeGate) st("jp-gate", doorCol, WALL_Y, "3");
     st("jp-propane", HX + hk.width, WALL_Y - 1, "3");
     st("jp-mirror2", 16, 10, "3");
     let g = 0;
@@ -654,7 +653,7 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   const pk = kitOf("jp-pole");
   const starOverWall = (() => {
     const { p, map } = mkProject(6, 12, SW);
-    stampKit(p, "jp-bwall-plain", 2, 5); stampL(p, "jp-pole", 1, 2, "4");
+    stampKit(p, "jp-gatepost", 2, 5); stampL(p, "jp-pole", 1, 2, "4");
     const t4 = map.upperOverlayTiles?.[5 * 6 + 2] ?? -1;
     const walk = (x: number, y: number) => isPassable(p, map, x, y);
     return [{ x: 2, y: 5, l3: map.upperTiles[5 * 6 + 2], l4: t4, l4Passage: t4 >= 0 ? TS.tileMeta![t4]!.passage : null, passable: walk(2, 5) }, { x: 2, y: 4, l3: map.upperTiles[4 * 6 + 2], l4: map.upperOverlayTiles?.[4 * 6 + 2] ?? -1, l4Passage: null, passable: walk(2, 4) }];
@@ -662,7 +661,7 @@ const OWN_CATEGORY_BLOCKS = new Set<string>([...EXAMPLE_BLOCKS, "transit_street"
   OUT.streetHand = {
     kits: HAND, W, H, house: { id: HOUSE, x: HX, y: HY }, wallY: WALL_Y, doorCol, poles: POLES, lane: LANE,
     good: { log: good.log, layers: good.layers, access: good.access },
-    probes: { poleFoot: POLES.map(([x, f]) => ({ x: x + 1, y: f, passable: pass(x + 1, f) })), mark: { x: 8, y: LANE[0], passable: pass(8, LANE[0]) }, wall: { x: HX + 3, y: WALL_Y, passable: pass(HX + 3, WALL_Y) }, starOverWall },
+    probes: { poleFoot: POLES.map(([x, f]) => ({ x: x + 1, y: f, passable: pass(x + 1, f) })), mark: { x: 8, y: LANE[0], passable: pass(8, LANE[0]) }, wall: { x: doorCol - 1, y: WALL_Y, passable: pass(doorCol - 1, WALL_Y) }, starOverWall },
     errors: {
       onL3: { layers: onL3.layers, log: onL3.log, errors: diff(good.layers["3"], onL3.layers["3"], houseCells).map((c) => ({ code: "upper-overwritten", ...c })) },
       shift: { layers: shift.layers, errors: diff(good.layers["4"], shift.layers["4"], poleArm).map((c) => ({ code: "pole-arm-overwritten", ...c })) },

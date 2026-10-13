@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3022e62530904a9e1d5c56d1fac95c20e4e742be5b71e1f7f9163e99c98596df",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal",
+ "label": "jp/jp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail signal equipment cabinet and mast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large lower cabinet (rows 24-46) and the signal head at the top are drawn in flat front elevation with no visible horizontal top surfaces (only a 1px border on the cabinet top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6370
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail signal equipment cabinet and signal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the signal head at the top and the large equipment cabinet at the bottom (rows 24-46) are drawn in pure front elevation with no visible horizontal top surfaces foreshortened in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7413
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal post with equipment cabinet and signal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure 2D front elevation: the cabinet at the base (rows 24-46), pole (rows 10-24), and signal head (rows 0-9) show zero top foreshortening or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5221
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail signal post and equipment cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper signal head and the large lower equipment cabinet are drawn entirely in straight front elevation with no visible top surface (0 rows of top depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4232
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.745Z",
+ "cells": {
+  "16": [
+   "d4e68e3363c12955",
+   "dddb2ff9b34774ff",
+   "df08e73790ccaaed"
+  ],
+  "24": [
+   "4f099b48bbf255bf",
+   "58fb1e8775e0f151",
+   "5d6b9284d10554a0",
+   "6e592b437d64d8a5",
+   "83411f26e0831484",
+   "88ab1707aa790e21"
+  ],
+  "32": [
+   "03cc1c607fb33db6",
+   "0c3ea951885ccd92",
+   "45d6b16031d783d8",
+   "616f3cee8cf9790b",
+   "62ee820d077ea366",
+   "7d09f9777fb7aed1",
+   "80f197ccc15b8ae8",
+   "c65b3fb434927546",
+   "d18991d12a06ef3b",
+   "d68af6829948fa15",
+   "f0201927149aede6",
+   "fd7dccdc20a3592a"
+  ],
+  "48": [
+   "4abe7918bd74f413",
+   "7ddf8bfe5c2e89ea",
+   "d89a8c5c4013c093"
+  ]
+ }
+}

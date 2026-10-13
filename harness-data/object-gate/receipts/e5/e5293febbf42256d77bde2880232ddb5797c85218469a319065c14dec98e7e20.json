@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5293febbf42256d77bde2880232ddb5797c85218469a319065c14dec98e7e20",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "jp-bank-slope",
+ "label": "jp_city/street_hand/jp-bank-slope",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grassy bank slope transitioning to paved curb/walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile is a terrain transition showing an embankment/slope with banded grass textures below a paved surface, appropriately flattened in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3249
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grassy bank slope and upper edge",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a riverbank or grassy slope descending from a paved edge; properly formatted as top-down terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4155
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bank slope terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting an embankment/slope with an upper paved edge/railing transitioning into grassy slope. Accurately classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4172
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bank slope terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts an embankment slope with road/railing and stepped grass textures, correctly formatted as a terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4748
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.354Z",
+ "cells": {
+  "16": [
+   "429d21c9ef4246a9"
+  ],
+  "24": [
+   "182d1fc789cd82a4",
+   "300b2bd173a13055",
+   "a77db03a1d3146ac",
+   "cb08ea93121ad4d4",
+   "d6d6b2f89468df47",
+   "d9ce582e72e3cf62"
+  ],
+  "32": [
+   "1cf9d81b555670b1",
+   "25fba60c13578eb7",
+   "91f8e52878aa19af",
+   "a343a68bd70db795",
+   "b944d21d402c1a04",
+   "e3261cab19a81c0b"
+  ],
+  "48": [
+   "276de2812e9e3446",
+   "3dd3a91371703c65",
+   "6672563b483bc0ab",
+   "66bd026126d053c0",
+   "6af811af7ed8984a",
+   "e59a35e80aa72b93"
+  ]
+ }
+}

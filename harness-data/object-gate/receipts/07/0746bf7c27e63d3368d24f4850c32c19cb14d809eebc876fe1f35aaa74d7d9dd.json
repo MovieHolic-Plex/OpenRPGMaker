@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0746bf7c27e63d3368d24f4850c32c19cb14d809eebc876fe1f35aaa74d7d9dd",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-school-gate",
+ "label": "jp_city/street_hand/jp-school-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school gate pillars and metal sliding gates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and sliding metal gates are drawn in pure front elevation; the pillar tops have only a 1px highlight line under the outline (rows 5-6) with no foreshortened top surfaces or caps visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete gate pillars and metal gate wings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gateposts and metal fence wings are drawn in pure front elevation; the pillar tops and fence rails have no visible horizontal top surfaces (only a 1px outline and 1px highlight row).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5352
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Gate pillars and connecting fence sections",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars are flat upright rectangles with no distinct visible top planes. The fence sections likewise have only thin horizontal upper edges, not surfaces extending from back to front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15922
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Two tall rectangular gateposts with barred gate panels",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gateposts are flat upright rectangles without distinct top surfaces. The gate panels have only a one-row horizontal top strip above the vertical bars, not a surface extending from back to front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 14769
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.283Z",
+ "cells": {
+  "16": [
+   "585f9e9c17f35d45",
+   "6787730eeba1689f",
+   "8008dd4749762b4d",
+   "a5c36b33bbf04654",
+   "f2706a9f716fe209",
+   "fe83d7675bacf7c5"
+  ],
+  "24": [
+   "1df28726604868ad",
+   "31817b285d8f901d",
+   "36c6e7b1b53dd7b8",
+   "53c8731fe4e519da",
+   "7a35e0c25d3faa2b",
+   "7b5e531dd6c1cfaa",
+   "a46cb4c8c797a262",
+   "a5c6f1556497114e",
+   "ba01f249561f85ae",
+   "bd71b18d1361a219",
+   "cff9902bb93932e4",
+   "d632f427a02e1bec",
+   "d690f92fea5ad3e4",
+   "d97be43b6ddb5514"
+  ],
+  "32": [
+   "8de538c0d449f925",
+   "b811786bb101d24e"
+  ],
+  "48": [
+   "47421f178735a552",
+   "5c4263f88e30e3c6",
+   "99e0235bdd6e3f6f",
+   "eb774b40310666af"
+  ]
+ }
+}

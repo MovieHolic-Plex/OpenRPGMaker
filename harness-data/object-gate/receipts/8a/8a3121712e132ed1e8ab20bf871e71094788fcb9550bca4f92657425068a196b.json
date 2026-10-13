@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a3121712e132ed1e8ab20bf871e71094788fcb9550bca4f92657425068a196b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-pave-manhole",
+ "label": "jp/jp-pave-manhole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular manhole cover set into pavement",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is a flat floor feature viewed from above spanning rows 3-13, correctly depicted flush with the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5400
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "manhole cover",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is a flat ground plate seen foreshortened from above, occupying rows 2 to 13 within the pavement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4655
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "manhole cover",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is a flat ground decal embedded in the pavement, fully visible from above across rows 2-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5494
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "manhole cover",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The manhole cover is a flat circular floor decal embedded in pavement, viewed flat from above covering rows 2 through 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4006
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.013Z",
+ "cells": {
+  "16": [
+   "0346b8945092c686"
+  ],
+  "24": [
+   "0817c5b3fcdff792",
+   "16f063e5d623b85f",
+   "1c06c1e5c55209b1",
+   "31ce12a79142777c",
+   "749e58782c3ae238",
+   "a0a1b9f2ce5221fa"
+  ],
+  "32": [
+   "1cc53ab4b9eee31e",
+   "60c5ea55bb855fc8",
+   "739108a740a20ea7",
+   "98d8249ead6bf2cd",
+   "b01c4990e4e5b659",
+   "ea9d71e52cff887e"
+  ],
+  "48": [
+   "016f0acfdc9e5983",
+   "2274f95d641fe01b",
+   "2ace6ab5cd56b3f6",
+   "2cf9b4437e87e6e3",
+   "91f129279c0af438",
+   "ad0e457f4536f7aa"
+  ]
+ }
+}

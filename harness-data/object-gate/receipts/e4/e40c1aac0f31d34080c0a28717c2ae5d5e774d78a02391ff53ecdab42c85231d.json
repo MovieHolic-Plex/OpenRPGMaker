@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e40c1aac0f31d34080c0a28717c2ae5d5e774d78a02391ff53ecdab42c85231d",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-5-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-5-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator door structure and wall panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, door, lintel (rows 11-12), and flanking wall consoles are drawn entirely in flat front elevation with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5013
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and surrounding wall consoles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and flanking wall panels are drawn completely flat from the front. The top lintel of the door frame (rows 11-13) is a 2-3px front-facing bar with 0 rows of visible top surface, typical of a side-scroller/platformer front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5583
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator / sealed doorway structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and flanking control panels are drawn in a flat front elevation. The lintel/cap atop the elevator frame at rows 11-13 is just a 2-3px flat dark bar with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6779
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator door structure and wall panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, lintel (rows 11-13), and flanking wall consoles are rendered as a completely flat architectural front elevation with no visible top surfaces or top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5569
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.383Z",
+ "cells": {
+  "16": [
+   "146c33490fba78be",
+   "3b4f2a78fbd0ce51",
+   "3eb26e7df878c649",
+   "5907b440a2fa6761",
+   "7274d7f1839ddc54",
+   "7727236b97e114cf",
+   "7c5cb9bd9d5b2ba3",
+   "91981ea6408a53ff",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "f1996fd2dc8b1403",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "01da106c02fb43a7",
+   "34c30ebf083ef679",
+   "350c8c25dd871f3e",
+   "35e8f16067efe3f5",
+   "3ee00633e8db6aa5",
+   "4e93e6b1d1bc9bf6",
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "68d47530df1fa8ad",
+   "6cbbe934858095bf",
+   "739d1afb44e259f9",
+   "7893b55467cb67e5",
+   "9d896e0c4ee546b6",
+   "ae3a0d8ba55937ce",
+   "af98f6ce88300766",
+   "ba2212941e28906b",
+   "bf964bbf998c89e6",
+   "cb490db3a4d5c9d0",
+   "d0586a0783fd79b9",
+   "d2a571194789c371",
+   "e5e7d91ddda5ac56",
+   "e93b68ec21c3da9f",
+   "f33bbd27ad833c8f",
+   "f806422325865dcd"
+  ],
+  "32": [
+   "0611e738ed3705e0",
+   "10caef1948e610d3",
+   "138558a498c66ee4",
+   "16388ba57d30fc0c",
+   "1a27e4abb7736a56",
+   "2006347199d2efc6",
+   "20ea0907f8cafeee",
+   "2a76e30c67708bd6",
+   "2cc20f758514cf53",
+   "3d8e8d270f214c36",
+   "410ec1895fe0e48a",
+   "4516b58e657f580c",
+   "4c83d13cb627f76e",
+   "55679e6cb73d83bd",
+   "5f43e757999dd3d0",
+   "6fff55e22bcdb4e2",
+   "7bb9562367d23f6a",
+   "8142f38fba08c41f",
+   "851718a7857904c5",
+   "874f6d0673f3dcfd",
+   "88a749e2cca07139",
+   "9320c2bea6dec3f4",
+   "a1f31f8ea58e9e67",
+   "ae6b368b728e6080",
+   "b017562f09af4bc4",
+   "b104d74a7187e35f",
+   "baf1fc2eaad93232",
+   "bd853372eb0d8b76",
+   "bf890e6ac3d754eb",
+   "cbbdd0594162d604",
+   "d10590bf4187d11e",
+   "dcbabbb6a0667b8e",
+   "e0a155fa6bc7f957",
+   "e13511a97da6fd7e",
+   "f4e540f67a16da9e",
+   "fce13890dfd51b38"
+  ],
+  "48": [
+   "1bf58c7c42bb9dfc",
+   "3d966878401be1f0",
+   "571ccded101d1baf",
+   "b73654eef9319d09",
+   "c001f81f1f7ccc3b",
+   "c6d9147b46c27c53"
+  ]
+ }
+}

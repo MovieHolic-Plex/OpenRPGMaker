@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ffb0ce01d46aea68983c8090e9c2ec900cef433005a1c3ae67266dd3703d711",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-5-L",
+ "label": "jp_city/street_hand/jp-sf-house-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style house facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front architectural elevation. The door frame has only a 2px flat cap line (rows 11-12) and the side eaves/lintels are only 1-2px thick, with no foreshortened top surfaces or slopes visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese house facade with central entrance and shoji windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat 2D architectural elevation: the central entrance cap/lintel (rows 11-12) is only 2px thick with no visible top surface, the eave lines and base curb show no horizontal depth, and the entire facade lacks top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9267
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large house/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is rendered as a flat frontal elevation. The roof is only a thin horizontal cap with no substantial visible top slope or surface, and no other main-body horizontal surfaces are shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 64755
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large house facade with central roof and windowed front",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat front elevation; the roof is only a thin horizontal cap with no meaningful visible top slope or surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 47699
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.248Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "19f3b005f3abafdc",
+   "20cd01004168c324",
+   "23fc116f784ec49c",
+   "3ec1d52afc1db08a",
+   "4001b576cf7a0aed",
+   "46002ced684ed322",
+   "475c5a3309c6d585",
+   "5858809b753ca6ea",
+   "c8270065076e290d",
+   "e116f80cf2e29b40",
+   "e542bd1ba4dc3d63",
+   "ff2dc7ac1ed95f62"
+  ],
+  "24": [
+   "028fbc430a802441",
+   "201fa010714cce8b",
+   "2f1906a10d509f83",
+   "41cf78a067c1f3f1",
+   "58ce681bc5a5544d",
+   "722a3906a6b0bd58",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "7cb1ccc9940da0d5",
+   "9ea66f44c2974d4c",
+   "aa2cd99a9999e6cf",
+   "afaccb327b183d4a",
+   "b386a884f7ba736f",
+   "cea75a9d03bbdc49",
+   "cf9d842153ece800",
+   "d22278e8a3f1318c",
+   "d3b6dbd35b8733bb",
+   "d5817ea0fc8f5459",
+   "d5ad5d2b084192f8",
+   "db89ffa972b1a5a2",
+   "dc06379c54156869",
+   "eeec6d46b4b40418",
+   "fa3c02656e75b4fc",
+   "fd9b5eab1b5cfacc"
+  ],
+  "32": [
+   "0ebf653c506f6997",
+   "0ef347b801dbd239",
+   "0fa6f9e07856ed37",
+   "1e7c8103b531f9e7",
+   "2df1faebbb6af8e3",
+   "389d5217bf9642e1",
+   "462f58545c9a1a4b",
+   "4dd793bbcd0dcb22",
+   "55d43b1e7353dda5",
+   "5ada7613c6b78c57",
+   "5c0a01a863b7fd23",
+   "5d573e4bd95e8a38",
+   "65b2eacbfcf5cd83",
+   "66d426a73b9e49e9",
+   "67d12a60be9e624b",
+   "681b5900482ce637",
+   "712a54f3d3a229eb",
+   "71e911c4c015df88",
+   "82af1325e1a44d78",
+   "8ae8faa78aa262c9",
+   "910b22fb68db3eb7",
+   "9a8ae5d21ebe86ea",
+   "9b41a89946d10144",
+   "bc26a77e6cda57ee",
+   "bf1a41120d2ea75c",
+   "c332cb8ae6543ec3",
+   "c623cb4802285074",
+   "c94f2351c7ce56c3",
+   "cb10c89df2b7ef71",
+   "cd580f2441bae477",
+   "df9f176fc478e082",
+   "e1213c3b2d80eee6",
+   "e802b23945b9b511",
+   "ed83341839f6ada9",
+   "f22eab749512da01",
+   "f2911b24c83c8034"
+  ],
+  "48": [
+   "13d5618873397222",
+   "27a160f84ba681f0",
+   "63e933d9c207fe88",
+   "7a031fa78f6d77db",
+   "ad1eaa640ecd1e5a",
+   "b1e986479943657c"
+  ]
+ }
+}

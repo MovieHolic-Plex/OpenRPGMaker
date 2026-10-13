@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9d03fbfdc96533d15260b7d47cca4e290896eb0ccfc8d28f724923edcbbd3e9",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-bus-stop",
+ "label": "jp_city/street_hand/jp-bus-stop",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop pole with round sign, timetable board, and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop is drawn in pure front elevation: the circular top sign is a flat face-on circle, the timetable board is a flat vertical rectangle with no top plane, and the base has only a 1px highlight.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7158
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop pole with sign and timetable board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop is drawn as a flat front elevation: the circular head sign is face-on, the timetable board shows no top plane, and the pole and base lack 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4976
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Bus-stop signpost with a large rectangular timetable panel and circular upper sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main sign panels and supporting pole are drawn as flat front silhouettes. The rectangular panel has only a one-pixel top border, with no visible horizontal top surface or pole cut face. The base does not establish a top surface for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11225
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular bus-stop signboard mounted on a pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large rectangular signboard is shown straight-on, with a horizontal border but no visible top surface. The circular upper sign and pole are also flat frontal silhouettes; the base does not establish a top surface on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6299
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.481Z",
+ "cells": {
+  "16": [
+   "17606cc3c950d2f4",
+   "2e782b906f73cbd8",
+   "b0ba960e6da9dd50"
+  ],
+  "24": [
+   "1e2cd79302980fd6",
+   "204474d8cb8f8559",
+   "8799e723b5c603fc",
+   "abcdf0d1cfe9c5d6",
+   "ad978807833ad0e6",
+   "b5670fefc918b1f0"
+  ],
+  "32": [
+   "1bd288469ec835fe",
+   "1d7c3fe1c18676a7",
+   "56fdddc2be86e7d5",
+   "7863c1ba25964555",
+   "9e28f2d353e75df1",
+   "a01d54dd7c2e41b1",
+   "a91b9825783492d3",
+   "c3191ba1f380e33f",
+   "c768016bad04eaec",
+   "da114a1784df4135",
+   "dd22136a99e1c9d5",
+   "ee2accfd153704c8"
+  ],
+  "48": [
+   "7a664c9482d42d48",
+   "a6dc43be292ab663",
+   "ffe388846f249dbb"
+  ]
+ }
+}

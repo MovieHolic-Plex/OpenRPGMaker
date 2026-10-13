@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2e13b68421d621e0fa0d52df79ef97c0d6ce50117cda301406f61448ade3e34",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp/jp-bwallf-end-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building wall section",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall section displays a 4-row checkered horizontal top surface (rows 0-3) above the vertical wall front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7186
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall section with roof/wall-top, wooden panel, screen, and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall shows 4 rows (rows 0-3) of tiled horizontal surface viewed from above before transitioning to the front-facing eaves, wall panels, and stone foundation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese-style wall section with stone base and tiled wall-top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 depict the top surface of the wall coping/walkway (4 pixel rows tall) above the vertical wall facade and stone base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5466
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese building wall with tiled roof eave",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0–3 show a 4-row deep tiled roof/eave surface viewed from above before dropping into the front-facing wooden beams, slats, and lower wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6990
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.897Z",
+ "cells": {
+  "16": [
+   "8f7d15bcbcc99ef9",
+   "c7feef3e313d9dd2"
+  ],
+  "24": [
+   "0d4657e101001159",
+   "127a3e177ede9fec",
+   "23f31b973d1f0933",
+   "39d35ded78820a69",
+   "4fae713c00be778c",
+   "50a983ce24e32228",
+   "606d264604be1b32",
+   "67f35c432bc7c46f",
+   "6e853d5639b73749",
+   "9a80d82311cf4a77",
+   "a991263619e3765e",
+   "eb4437a7d5835a0b"
+  ],
+  "32": [
+   "1eb5447143817a74",
+   "670ecd444d412704",
+   "9d1acb44650e5141"
+  ],
+  "48": [
+   "20346fc9fb7f6914",
+   "4e6cff3b58d64c93",
+   "527d35b5231e41b7",
+   "64b4956f17058473",
+   "9547e2d1a226ec51",
+   "af62aa1d2d3dffdd"
+  ]
+ }
+}

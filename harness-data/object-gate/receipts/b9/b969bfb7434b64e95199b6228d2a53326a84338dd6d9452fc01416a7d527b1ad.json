@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b969bfb7434b64e95199b6228d2a53326a84338dd6d9452fc01416a7d527b1ad",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall (sukashi wall section)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite depicts the vertical front face of a wall (cream upper section and dark stone lower section) with no top surface or wall cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4595
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wall section (upper latticed wall with lower stone wainscot)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile depicts a vertical front wall face (rows 1-6 upper wall, row 7 divider, rows 8-15 stone base) with no top surface or cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4029
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall segment with upper plaster/lattice panel and lower stone/wood base with emblem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a vertical wall surface drawn in flat 2D elevation with zero rows of foreshortened top surface or wall cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4831
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered entirely as a flat vertical elevation across all 16 rows with zero top surface or depth shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3706
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.349Z",
+ "cells": {
+  "16": [
+   "81c859334ee81d66"
+  ],
+  "24": [
+   "1bd999acce0bed45",
+   "2b26633557c1f8d8",
+   "49b09c4c801986c9",
+   "58d157df8e37d43a",
+   "841edafd28c39ec3",
+   "b1f3259eabec35de"
+  ],
+  "32": [
+   "0a6a0c2b1bf7911d",
+   "39235c0b18806cdb",
+   "4a7efe1157c01129",
+   "5c5b633562bc895e",
+   "734b6b2fd5627578",
+   "ef2d5966471f15e9"
+  ],
+  "48": [
+   "5ea7ea20e10ec5bf",
+   "5ecbef3f1679867a",
+   "767dc2d5820c17df",
+   "90269b0067cda10d",
+   "c172592bd05d5af6",
+   "fa28a66e78471859"
+  ]
+ }
+}

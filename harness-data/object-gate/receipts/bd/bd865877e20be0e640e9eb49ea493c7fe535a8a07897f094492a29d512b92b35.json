@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd865877e20be0e640e9eb49ea493c7fe535a8a07897f094492a29d512b92b35",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-6-R",
+ "label": "jp_city/street_hand/jp-sf-bento-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bento shop storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (door, display case with bento boxes, signage, and sidewalk base) is drawn in pure 2D flat front elevation like a side-scrolling platformer backdrop. The door frame, counter shelves, and lintels show no top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront building facade with bento shop sign, door, and display shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (roof strip, sign, awning, door frame, and display shelves with bento boxes) is drawn in completely flat front elevation with no visible top surfaces or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7690
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bento shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door, lintel, sign, awning, display shelves, and base, is drawn in pure 2D front elevation with no visible horizontal top surfaces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7589
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront with bento shop sign and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D side-scroller/elevation facade. Neither the roof overhang, awning, bento shelves, nor door frame show any foreshortened top surfaces (0 px depth); all horizontal elements are rendered as flat frontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8093
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.386Z",
+ "cells": {
+  "16": [
+   "1a0f372c9e5cc2ce",
+   "23f92e3b7442d9c8",
+   "25e70717220f5345",
+   "27fd405a4bab1640",
+   "3847a69f45423bef",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "6a8e4e3bb06cecad",
+   "6d8d6a2b2522f31c",
+   "78b1402fcc166b28",
+   "7cd5d94d5bf5fcf2",
+   "8a4785e3d2e58db1",
+   "98f19fd985171b7c",
+   "9d68c048efb88473",
+   "a7f068467fcceaf3",
+   "ad2dfddc2b9b99b1",
+   "b1a8b5449b59fe87",
+   "bd4f796e322f9959"
+  ],
+  "24": [
+   "24a1eb5e24a21a9f",
+   "7ab2f1b10e4870ed",
+   "912a1e91f388d7fd",
+   "b06f1a5cc0cdb450",
+   "cc5caf6cc2155c9d",
+   "ded9d24a6c27a065",
+   "e34fca3c937ae9d0",
+   "faf116c21b363896"
+  ],
+  "32": [
+   "0907f495c0b7aca1",
+   "26456c8a8d4aa6ad",
+   "3790ff44dae70373",
+   "3a8411644a4569b3",
+   "3f8dce7fbd37f577",
+   "43c6e81a676fa9b3",
+   "68d64441ff546850",
+   "68d66c513297f653",
+   "7e74be2546692a06",
+   "a1ffb6afc89cf719",
+   "a40707ea6f9ccf89",
+   "c9a85e7084a93e15"
+  ],
+  "48": [
+   "162a765b7e8ca44d",
+   "2e0e40f1aa016c92"
+  ]
+ }
+}

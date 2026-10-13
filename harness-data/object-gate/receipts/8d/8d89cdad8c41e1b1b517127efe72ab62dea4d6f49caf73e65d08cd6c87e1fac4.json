@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d89cdad8c41e1b1b517127efe72ab62dea4d6f49caf73e65d08cd6c87e1fac4",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "jp-jizo",
+ "label": "jp_city/street_hand/jp-jizo",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "jizo statue inside wayside shrine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shrine structure, statue, and base plinth are drawn in flat front elevation with 0 rows of visible top surfaces or floor plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6522
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo statue inside shrine alcove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The Jizo figure and its surrounding shrine/alcove are rendered entirely in flat front elevation with no foreshortened top surfaces visible on the figure's head, shoulders, base, or shrine frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6593
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing Jizo statue in a wooden shrine-like frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue and surrounding main body are rendered as a flat frontal elevation. No meaningful top surface is visible; the horizontal bands are edge lines or front faces, and the bottom plinth lacks a visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 158887
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "front-facing Jizo statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue is drawn as a flat frontal elevation with no visible top surface on the main body; only a small base/plinth edge is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 111571
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "1a2b6085d7e924a1",
+   "db35573124dc4cdf"
+  ],
+  "24": [
+   "44e4f63c24079121",
+   "582c8bbb23800c6a",
+   "754c26108575d03f",
+   "a47157b4a9a0e2fd",
+   "a633149d2f19db8d",
+   "afb80584a3d29031",
+   "b4adc2ca2bbd712b",
+   "d01558cc36590d5e",
+   "d0479008babd0a3f",
+   "d6addc472e68cefa",
+   "ec5805ee46504812",
+   "f5a294bdfcc352de"
+  ],
+  "32": [
+   "493d5cf66a0cae80",
+   "4c1e5699816f0578",
+   "835b07e051fc3dc2"
+  ],
+  "48": [
+   "50905060641c3bbf",
+   "58471c62567d7ed0",
+   "5afd764de7589b32",
+   "67e2df8cfbf9ae88",
+   "82d42626c6d111f5",
+   "8fcefb8c6cf7228f"
+  ]
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d441a9b07917f08f844c5e0b915fa52d8f33c0283a4be5bf18d73eca2f7baab4",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-school-gate",
+ "label": "jp_city/street_hand/jp-school-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school gate pillars and adjacent wall sections",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and connecting walls are drawn entirely in flat 2D front elevation (orthographic front view). Neither the pillar caps (rows 2-9) nor the wall caps (rows 12-15) show a receding top surface from the 3/4 camera angle; they are drawn as flat rectangular vertical faces with 0px top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6887
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "school gate pillars and fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars, pillar caps, and fence walls are drawn strictly as flat 2D rectangles in front elevation without any foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5725
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "school gate pillars and wall segments",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and adjoining walls are drawn in pure front elevation: the pillar caps and wall coping are flat 2D rectangles with no visible top surface or 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6264
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete gate pillars and fence walls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars, pillar caps, and wall copings are drawn entirely as flat 2D rectangles in pure front elevation with no visible horizontal top surfaces foreshortened in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7345
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.382Z",
+ "cells": {
+  "16": [
+   "0cf1ceb156d551aa",
+   "21e94f2b1884bb2b",
+   "24293614c1bf635e",
+   "2f5b1808715f2ec5",
+   "41ac80449c216c25",
+   "43076ed987e22836",
+   "4419b38ce58b3918",
+   "c500b8f48f1ada0e"
+  ],
+  "24": [
+   "06665761d5a73b75",
+   "2cad12685bc42b2a",
+   "2f73bf2de584373d",
+   "5d015ce196b2b232",
+   "5fb505edc5eff918",
+   "670713330828f612",
+   "7fadc81254170ca8",
+   "860cdff9bb79f7b3",
+   "8e41c3355bc72aad",
+   "b77d1a5b3ea294f2",
+   "b8059479320fb818",
+   "c3c1797b50cf8387",
+   "ed59778d00702e09",
+   "fa668c4879828230"
+  ],
+  "32": [
+   "a04e8b245742c79a",
+   "d5e607a7f70782ae"
+  ],
+  "48": [
+   "5ce3d316e988b4d6",
+   "8f14043521770c8e",
+   "a5737f9ecc49f9f8",
+   "efd9967465be909b"
+  ]
+ }
+}

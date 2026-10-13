@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3f7dd903b80d9d4a01deec8dcfcda87213b6d61581a3a81015d73db11b908f4",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "jp-water-tank",
+ "label": "jp/jp-water-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the water tank is drawn as a clear foreshortened ellipse spanning rows 1 to 8 with a central hatch, above a vertically shaded cylindrical front face (rows 10-23).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an 8-row foreshortened ellipse (rows 1-8) with a hatch detail, sitting atop the front vertical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4741
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an ellipse spanning rows 1-8, with a small rectangular hatch on top, while the front face of the tank extends downwards with shading and ribs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the water tank is drawn as an 8-row elliptical surface (rows 1-8) viewed from above in 3/4 perspective, with the cylindrical body extending downwards below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5006
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "0a139339415437fd",
+   "48cbdb1d6d2f5f95"
+  ],
+  "24": [
+   "24b0eb5abca9b876",
+   "24e31ddc60bc3123",
+   "3bcbccfac235d83c",
+   "564b25d313a14795",
+   "7201be6eefb03b50",
+   "722d4b1ef695fdc5",
+   "79def39513c262ec",
+   "821cb6c2be0d2b2b",
+   "8774d52f2f1693a2",
+   "c58ac39c71690db7",
+   "ec1985fb78e3b038",
+   "fd017f389ecfba2f"
+  ],
+  "32": [
+   "ab8129601f2d0e47",
+   "b1a3e142ec9cc8fe",
+   "d386d054ed0f2257"
+  ],
+  "48": [
+   "271fbe60d536ac9f",
+   "39462a95daf68cf2",
+   "7e4e3f5708223aac",
+   "80710343e4e9a72d",
+   "9f45cd8ef2be2a4b",
+   "c61ae1c8063d0761"
+  ]
+ }
+}

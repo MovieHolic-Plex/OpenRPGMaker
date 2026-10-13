@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2641f28ebfe80ef0f555721ffa091d9e399be833cefb87cdabf059f7f3b770ab",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-4-L",
+ "label": "jp_city/street_hand/jp-sf-shop-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop facade with central door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shop front and central door frame are rendered completely flat in front elevation. The door frame has only a 2px dark band at rows 11-12, and neither the frame, fascia, nor door exhibit any foreshortened top horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6218
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shopfront structure with central door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront and projecting central door frame are drawn in pure front elevation. The projecting doorway cap at rows 11-12 is only a 2px outline with no visible top surface, and the upper facade/signboard has no top roof or cap surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6432
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront with central door and side windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shop front, including the door frame lintel, signage beam, and window displays, is drawn straight-on as an architectural front elevation. The door frame lintel is only a 2px dark bar (rows 11-12) with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5119
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with central door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shop facade and central doorway are drawn in pure front elevation. The main lintel/sign across the top has no visible top surface (only a 1px border), and the protruding doorframe has only a 2px top cap (rows 11-12), lacking the foreshortened top plane required for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6824
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.386Z",
+ "cells": {
+  "16": [
+   "210b1e2ab89aacda",
+   "23f92e3b7442d9c8",
+   "3347463e09fca617",
+   "35f25202d2734ec2",
+   "591233ec525de138",
+   "6593d1038c923076",
+   "6d8d6a2b2522f31c",
+   "8499befb68dd5755",
+   "9e610507fb6b0a80",
+   "aac3881d70f4ce44",
+   "b1a8b5449b59fe87",
+   "d18a5a09a52bc271"
+  ],
+  "24": [
+   "18a52cb208d160ce",
+   "27e403b1b2577fef",
+   "28bf7b0234502cf5",
+   "2a52ff0f30d43d8a",
+   "30d220f70bf695f1",
+   "3eec3568c993597d",
+   "4ba8847ba67e74bd",
+   "4f684a8c3dc02e53",
+   "4f997059d81d5311",
+   "68a9f8dfcc65cd8a",
+   "7ab2f1b10e4870ed",
+   "92cb12b9b6a40a4b",
+   "a2db694a426da173",
+   "bdb84a6594498969",
+   "ca18a2586128a839",
+   "d3b583b2e0a794d4",
+   "d8da52ec9a9736b2",
+   "f70c752f005ced3e"
+  ],
+  "32": [
+   "142b1a4ee93e2224",
+   "32e7bac06b0dbbc0",
+   "593479014227289e",
+   "5b967b9b655b3e46",
+   "75a2f64c853e2eaa",
+   "cc1ad08a5169b93f",
+   "ccc5c7e13f87dbf7",
+   "cef84801eb827edf"
+  ],
+  "48": [
+   "946c7f785fcdbed7",
+   "b2c04ea2a9f136de",
+   "b9918dbbd8ce2c94",
+   "be5c5ec9b8148530",
+   "bfdb405c84b7beb7",
+   "c2e4108992ca1117"
+  ]
+ }
+}

@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de386a92b082701efe10644780b10d138bbca455261e7be2ef79ce2dbff5114c",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-5-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn in pure front elevation. The top frieze/railing (rows 0-6) shows no foreshortened top surface, and the protruding door frame has only a 2px cap/lintel (rows 11-12) without a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12817
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade is drawn as a flat architectural elevation. The door frame has only a 2px dark line for a top (rows 12-13), the windowsill is a 1px line (row 41), the doorstep is 2px (rows 46-47), and the parapet/roof trim at the top shows no horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6536
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large cafe building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation; its dark horizontal roof/lintel is only a thin edge with no visible top slope or surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 39120
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large café/building facade with a sealed central window or service opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is presented as a flat frontal elevation. Its roof is only a 1–2 source-pixel dark cap/line with no substantial visible top slope or surface, and no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 98590
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.478Z",
+ "cells": {
+  "16": [
+   "20deea33e76e182a",
+   "2bf77ce1e31cf465",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6b266d07e2ce839b",
+   "6d8d6a2b2522f31c",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87",
+   "c31643472bacf380",
+   "c360c9a61b0bf099",
+   "cb4d3144af0c654e",
+   "cedfb409033e8f8d",
+   "e50051474251392e",
+   "e7d278ce807b11c1"
+  ],
+  "24": [
+   "036d9058b0d43f2b",
+   "0b1eb6237b43eece",
+   "1e886f0cdc72b1c6",
+   "2a52ff0f30d43d8a",
+   "3d538b674220a762",
+   "4e876acaef64081f",
+   "4f0a310558838512",
+   "622c4b477f0c7be2",
+   "66e37c6e59a96eed",
+   "7ab2f1b10e4870ed",
+   "8bd30e88479ec091",
+   "9d1396ef7b372a91",
+   "a044a50fde317965",
+   "a87c5c0a1937700f",
+   "af1e8252aeb09c31",
+   "b3cbfcbeb84a89c7",
+   "bb49a12b270fb733",
+   "c156d034001e967b",
+   "c26b848b0da8be33",
+   "c372da323a5bc39a",
+   "c9b98f9e96f14de7",
+   "d15cd755e0ceb099",
+   "d9eb4a7dc8feb4ed",
+   "edf03987a9b02894"
+  ],
+  "32": [
+   "0035d78453ea3388",
+   "0599b17577ca757a",
+   "06658456686457aa",
+   "0a573f0ab2e5f777",
+   "23acd99d82452008",
+   "24ec396df6d53905",
+   "2d8330b164906cd4",
+   "32cc7cc68254d43b",
+   "3b0588ff8dff5d70",
+   "44e73f97d2c6e4b9",
+   "53a2ca1cf98b8434",
+   "556089fda0cbe34f",
+   "596a467f4036a9b6",
+   "5a850f6f7b70677e",
+   "64f9bc71a534b803",
+   "66f99d8323c8382c",
+   "795a0ea755f966d4",
+   "7ab072b198a717db",
+   "819d2326d78bc6af",
+   "9ad5eef55007012f",
+   "9ef61e6b1540925a",
+   "b8b356bc19858eb6",
+   "beae6814e831e938",
+   "bff11c9f91389351",
+   "c077cb764fc68f9d",
+   "c996ad2f7c50a981",
+   "d729384fdf0f18f8",
+   "db27c4ba0a4c0e11",
+   "db3b01e04dc49fda",
+   "e09e84726ed62813",
+   "e22debf97386fcf1",
+   "ed51d49201d94b18",
+   "f07454d18594c477",
+   "f78e7bdaee2241f0",
+   "f9238df2abf1f6d5",
+   "fed4497cd3f7af43"
+  ],
+  "48": [
+   "4e4f8d1b36ff3304",
+   "83c707734ea66cbf",
+   "ad9ce66560a12dde",
+   "ada91d2fb1a528f6",
+   "cac720364a7a5426",
+   "e53ed5da32085011"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1430a325e95e0e520ebd5a909d5565fef7bb5a613f10775e85337966a6efaf1",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-l",
+ "label": "jp_city/street_hand/jp-bwall-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall section",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1 to 5 show the top surface of the wall (5 rows tall), while rows 6 to 14 show the south-facing brick wall face with a left-end boundary.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5506
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment with left end cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1 to 5 form a 5-row tall horizontal top surface of the wall, while rows 6 to 14 depict the south vertical brick face in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4312
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular masonry wall end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is presented as a flat rectangular front with masonry bands. Its upper boundary is only a thin dark edge; no visible top surface or roof slope has measurable depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 60153
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large brick wall end",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is presented as a flat frontal elevation with horizontal brick courses; only a thin dark top edge is visible rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 59840
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.010Z",
+ "cells": {
+  "16": [
+   "247d3dfd1084640e"
+  ],
+  "24": [
+   "54aa66cfbde87427",
+   "979573f94a648a30",
+   "e0aaa16c43da97e5",
+   "e2f44c2f9358e4b4",
+   "e80bafed16328685",
+   "f65c76f9b52451eb"
+  ],
+  "32": [
+   "18df9aafbdce13ab",
+   "5c17c2b5ef05bed8",
+   "8894d0a413dac8f8",
+   "b6a68e3da2a04fd5",
+   "d48d7ca106f89bf2",
+   "ffc0dae3c54ddf4b"
+  ],
+  "48": [
+   "02a2fb0018843faf",
+   "0816a4939e9de218",
+   "08e41b208f208c33",
+   "8cabace97a1aed54",
+   "8e555aa0f2cff458",
+   "a094a70256d9d64a"
+  ]
+ }
+}

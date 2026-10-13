@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "290240025e705ea0ed90310311d97092858de02f0fbe2e51fb2f58272172fd0c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-s",
+ "label": "jp_city/street_hand/jp-mark-edge-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground markings / curb edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile / floor edge markings seen entirely from above across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3791
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "platform floor marking with safety line and edge border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts flat platform ground seen from above, featuring a horizontal white safety line (rows 2-3) and a bordered edge zone (rows 10-14). Fully viewed from above with no vertical elevation failure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16027
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "platform edge with south-facing concrete wall and floor marking",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The asset depicts a raised platform edge or curb with a 5-6px tall vertical front face (rows 10-15) complete with a vertical panel seam, rather than a flat ground decal. It has no visible top depth for the curb edge itself, functioning as a vertical elevation drop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor marking edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor edge decal / marking tile seen directly from above, consistent with the flat ground kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2857
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.359Z",
+ "cells": {
+  "16": [
+   "22c2f84a2401faac"
+  ],
+  "24": [
+   "0a7cd5de2cb5a70c",
+   "227943b627053286",
+   "31f513683252dbb8",
+   "6e7c52c62233a017",
+   "6fd6cf8f92141bdb",
+   "c243fcc030a7db79"
+  ],
+  "32": [
+   "32660cb8d89f7c83",
+   "4f2d3832bc861d06",
+   "5c22af0ee0763a62",
+   "8fdb3713e4750539",
+   "b0b188c96239e54b",
+   "fe03e86b6971caf2"
+  ],
+  "48": [
+   "0a8aee437796563b",
+   "44420b4778b29e4a",
+   "8ac2146b1784d0cf",
+   "a825e675cb781b3b",
+   "b9995dde2981f2d2",
+   "febea46e023f1d67"
+  ]
+ }
+}

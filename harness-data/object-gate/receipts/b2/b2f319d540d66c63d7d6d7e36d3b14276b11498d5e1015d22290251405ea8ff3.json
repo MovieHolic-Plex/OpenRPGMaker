@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2f319d540d66c63d7d6d7e36d3b14276b11498d5e1015d22290251405ea8ff3",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-4-L",
+ "label": "jp_city/street_hand/jp-sf-house-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with tiled roof and sliding shoji doors",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the structure features a foreshortened tiled roof slope (rows 2-13, ~12 source pixels tall) visible from above in standard 3/4 top-down perspective over the vertical south wall and doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade / gate with shoji doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure flat front elevation. The doors, shoji windows, lintels, and foundation stone show no foreshortened top surfaces (lintel and door step are only 1px lines), with zero top-down 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13708
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Building with a broad blue-gray tiled roof above a wooden windowed facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof shows a broad tiled slope across source rows 2–17, above the dark eave at rows 18–19. This is a substantial visible roof surface, not merely a thin cap or highlight. The wooden south-facing facade is visible below, without a receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 39444
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Building with a broad tiled roof and wooden sliding-door facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gray tiled roof slope spans source rows 2–17 above the dark eave at rows 18–19, providing a substantial visible upper surface. The wooden doors and windows form the south-facing facade; no receding side face is shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 36518
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.081Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "71eda351f607a952",
+   "78807d07062ba12b",
+   "78c41a968f38f85d",
+   "7b40454df5b11f46",
+   "b4224f076633e09e",
+   "dced0e85dd5401fe"
+  ],
+  "24": [
+   "00dbfb0dbed51a3f",
+   "13bfb5b62eae7d55",
+   "14589a122591dde4",
+   "201fa010714cce8b",
+   "322f440793925946",
+   "41cf78a067c1f3f1",
+   "71e3e4d06717cddf",
+   "9ea66f44c2974d4c",
+   "b386a884f7ba736f",
+   "b58836d9fe0da8b0",
+   "b8a81e84180568c2",
+   "c21a22e51a2bd29a",
+   "cf9d842153ece800",
+   "dccf625a4e62e172",
+   "e01158733cbb9b84",
+   "e3b0cb5107e9247b",
+   "f4e8a3471de92577",
+   "f914772b9ef2e7c2"
+  ],
+  "32": [
+   "08a13a2520839412",
+   "0ebf653c506f6997",
+   "2ecec4e37cc201e0",
+   "3db691fcd4c3f25e",
+   "7b173d25ac61e8b8",
+   "e73d7e1ff70b07ec",
+   "e802b23945b9b511",
+   "eecb567cc8afac4b"
+  ],
+  "48": [
+   "18f385c1e8f3cf8d",
+   "4bfc5608c6a7a194",
+   "7d3f8b2055e7f86b",
+   "80e2a3e6514f6c28",
+   "ce9379a830ba822d",
+   "eec5b865f58d81c3"
+  ]
+ }
+}

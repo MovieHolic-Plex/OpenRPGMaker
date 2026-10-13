@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2516d6cf324170350a4ffc641e874974c617f4e5c1fe5bb8ad359d9823d388eb",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-roof-charcoal",
+ "label": "jp/jp-roof-charcoal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sloped tiled roof section",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a standard 3/4 view sloped roof surface. The foreshortened top slope of the tiled roof spans rows 1 to 25, terminating at the south eave edge and fascia/underside shadow on rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6421
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body (rows 1-25) is the south-sloping top surface of the tiled roof shown foreshortened in 3/4 top-down perspective, ending in a lower eave trim and shadow (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4986
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body (rows 1-25) consists of the south-facing sloped top surface of the tiled roof with vertical ridges and tile overlaps, terminating in a bottom eave line at row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5735
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire upper section (rows 1-25) depicts the foreshortened top slope of the charcoal tile roof with ribbed tile channels and horizontal banding, ending in eaves at row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5315
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "11760fffbf2f5902",
+   "5c4fe23c05c2b416",
+   "7a4ace0f96e87b35"
+  ],
+  "24": [
+   "0f6e232aba76c70b",
+   "2caef9d76bb6f989",
+   "3219cf07e7a172ea",
+   "4f766904d25fc3a8",
+   "55b66df9d816fa2c",
+   "579249608a71cafc",
+   "5a537fd2e8f0b790",
+   "79da77a55952ab72",
+   "84772f682a887b6a",
+   "87cff1b1cbcbdfcf",
+   "a379aaff0fb4bf10",
+   "a379d802a822c95a",
+   "a5a65a8ad7789982",
+   "ac3152e6dda8c2c6",
+   "ae35de60c219d8d5",
+   "b44c9049eee42cbc",
+   "bc736497a416ff5a",
+   "cdcf479bd7697b9f",
+   "e14c90608f1ab842",
+   "f64a0cefe6cc0640",
+   "f93e8ef71eac861b",
+   "fc86f37efd39ec36",
+   "fca688c842e3ba53"
+  ],
+  "32": [
+   "a8ec586d36d7d47f"
+  ],
+  "48": [
+   "186580255b30da38",
+   "1a49669619a43bfd",
+   "5d0d261516b4d2f7",
+   "692d24590d7a6e67",
+   "b137ccf279ec4ed3",
+   "f2daf8eccc6eadd0"
+  ]
+ }
+}

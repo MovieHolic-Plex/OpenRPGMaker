@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 52605
+   "chars": 52611
   },
   {
    "id": "jp-autotile",
@@ -44,10 +44,10 @@
   },
   {
    "id": "jp-street-hand",
-   "name": "일본 도시 · 손 도트 거리 시설 62종",
-   "documents": 3,
-   "images": 9,
-   "chars": 34800
+   "name": "일본 도시 · 손 도트 거리 시설 239종",
+   "documents": 5,
+   "images": 19,
+   "chars": 100196
   },
   {
    "id": "jp-school",
@@ -96,7 +96,7 @@
    "name": "일본 도시 · 오락·숙박·상업 실내 (9곳, 맵 12장)",
    "documents": 13,
    "images": 12,
-   "chars": 102932
+   "chars": 104244
   },
   {
    "id": "jp-errors",
@@ -108,15 +108,15 @@
  ],
  "totals": {
   "categories": 15,
-  "documents": 143,
-  "images": 257,
-  "chars": 1642765,
+  "documents": 145,
+  "images": 267,
+  "chars": 1709479,
   "maxDocChars": 52857,
   "maxImagePx": 820
  },
- "tilesEmitted": 13834,
- "kitsEmitted": 1160,
- "kitArrayItemsRoundtrip": 1160,
+ "tilesEmitted": 14671,
+ "kitsEmitted": 1337,
+ "kitArrayItemsRoundtrip": 1337,
  "unknownTokens": [
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f",
   "jp-interior-dungeon-index:jp-city-abandoned-hospital-1f-24x16",
@@ -261,7 +261,7 @@
   "jp-transit-rules:jp-truck-kei"
  ],
  "sha256": {
-  "json": "aa94cb94a3cc3cfa6a2cf55cb7481b3f34d2de59e08bd199867537e49f7c3426",
-  "images": "88b7a59e9f967c48a47b18c3b18cf3d771534944f9f3a029765b133879427940"
+  "json": "30271faed217994b498ee9fd5b51425b6ae908dc8d02280fb86b65f05e634399",
+  "images": "cf22f3cfe04ac109b9ccd766b41b30435db8fc3b562f20d8a7133abbb802774a"
  }
 }

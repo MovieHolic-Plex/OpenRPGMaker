@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bd5f2b92296d2b768081077d3014f1f04d932049a0c4711d60aa8ccdaf55e729",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-roof-orange",
+ "label": "jp/jp-roof-orange",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese tiled roof slope with fascia eave",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a downward-sloping roof surface (rows 1-25) viewed from above with vertical tile ridges and specular highlights, ending at the lower eave fascia (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7780
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a section of sloped Japanese roof tiles viewed from above in 3/4 perspective, displaying rows 1-25 of the downward-sloping roof plane with decorative vertical tiles and eaves lip before the shadow underneath (rows 27-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5904
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "roof slope",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset depicts a Japanese-style roof slope seen from above in 3/4 top-down perspective, with vertical tile ridges across rows 3-25 and an eave overhang/front edge at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sloped tiled roof surface with eave",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a sloped roof section (jp-roof-orange). The foreshortened roof slope extends across rows 1-25 with vertical tile ridges and texture details, terminating at the lower eave highlight and fascia shadow at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9550
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.017Z",
+ "cells": {
+  "16": [
+   "084d22bc00ab3fb4",
+   "748c4287a52260e6",
+   "f6758bceb997006c"
+  ],
+  "24": [
+   "0cd6b45c670c3bab",
+   "15799124fc4cc362",
+   "29b31fbf184d4ac7",
+   "37f9e9c6ca65c2ee",
+   "471a8df118e3427d",
+   "4e9b2bfed0c05163",
+   "5265ae09a5efbca8",
+   "5f986a6be87820ac",
+   "69c4978d21a84e70",
+   "69c4a171d3639799",
+   "736950276672192c",
+   "7dca80643dfded76",
+   "a6fc8464f4f463ee",
+   "a7b629bc47f817d0",
+   "aceb83cf9a2484d4",
+   "bddba5e56dff9e53",
+   "c0e25fbe2ae4fd2a",
+   "cf12a5e338b5474a",
+   "d24fdb4ca171dc92",
+   "ed38ca5d4d1e0527",
+   "fc4d2c828bf924d8",
+   "fe5240f59295bf4c",
+   "ff5948f197d1aa01"
+  ],
+  "32": [
+   "9573430af5b0272f"
+  ],
+  "48": [
+   "1cb2f3fdc2861a85",
+   "3f1171a8c984ca97",
+   "57efdd71468df5ce",
+   "942a60544430b598",
+   "9769df8fa400a94c",
+   "ad8a545ea764c4aa"
+  ]
+ }
+}

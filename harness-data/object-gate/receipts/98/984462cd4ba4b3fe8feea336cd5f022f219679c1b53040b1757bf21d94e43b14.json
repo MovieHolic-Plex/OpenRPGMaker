@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "984462cd4ba4b3fe8feea336cd5f022f219679c1b53040b1757bf21d94e43b14",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-6-L",
+ "label": "jp_city/street_hand/jp-sf-bento-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with door and bento display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top fascia, sign, door frame, awning, and display shelves, is drawn in pure front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5891
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shop front facade / building exterior with door and bento display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn in pure 2D front elevation (side-scroller style). The door lintel, display counters, shelves, and bento items show zero top surface from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5508
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront facade with door, sign, and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (door lintel, awning, fascia, counter display) is drawn straight-on as a flat 2D side-scroller/platformer elevation with no top-down foreshortened surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5296
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with door and bento display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shop facade (roof fascia, awning, door frame, and display shelves) is drawn in pure architectural front elevation with no visible horizontal top surfaces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4273
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.386Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "27fd405a4bab1640",
+   "2c5c6473761e2756",
+   "39487a2d4b2c904b",
+   "3e88245faa86d328",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "653a62bea64155d2",
+   "6d8d6a2b2522f31c",
+   "7cd5d94d5bf5fcf2",
+   "8d22867e0581c8f9",
+   "9d68c048efb88473",
+   "9e6f71bd295281e4",
+   "b1a8b5449b59fe87",
+   "d7938580ef0b8cba",
+   "e25421db987f8670",
+   "e3f622f3e4dffe3e",
+   "ff9fdd2be227534c"
+  ],
+  "24": [
+   "1686d279ddd75904",
+   "2a52ff0f30d43d8a",
+   "492fdd3e4ef4cf20",
+   "4a26c90a1b00f464",
+   "4fe59f264c1c0dce",
+   "b00282df45322cd5",
+   "e7f6c482f73789b0",
+   "ede87031498e3869"
+  ],
+  "32": [
+   "3a8411644a4569b3",
+   "3ecd2bf4fb4e0988",
+   "609c3cd5952a6319",
+   "7fe7001793028977",
+   "89628f61d3b6546a",
+   "8ad53eec898df229",
+   "ae43d9341aeabb89",
+   "b11eb6a4a516a023",
+   "caef979992cd949a",
+   "e7e35f09ff66f891",
+   "f7a0a22b5fe36afc",
+   "fce2292a5a593b48"
+  ],
+  "48": [
+   "82ac655d43b4400b",
+   "a23205ceae6dbf19"
+  ]
+ }
+}

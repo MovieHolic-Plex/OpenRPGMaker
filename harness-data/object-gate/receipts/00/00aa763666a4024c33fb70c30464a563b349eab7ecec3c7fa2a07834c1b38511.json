@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00aa763666a4024c33fb70c30464a563b349eab7ecec3c7fa2a07834c1b38511",
+ "width": 48,
+ "height": 144,
+ "kind": "column",
+ "name": "jp-pole-wood",
+ "label": "jp_city/street_hand/jp-pole-wood",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden utility pole with crossbeam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole terminates flat at row 5 with no elliptical top face or foreshortened cut surface visible; the horizontal crossbeam and attachments are also rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5195
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cut face of the pole is completely flat with a 1px horizontal outline at row 4 and zero visible top surface rows. The horizontal crossarm is also drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5082
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Tall wooden pole with a horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is a flat vertical shaft with only a 1-pixel cap at its upper end, not a visible cut-face surface. The crossbeam likewise has only a thin upper edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 12467
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Tall wooden pole with a horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole ends in a flat horizontal cap line approximately one source pixel tall; no cut face is visibly exposed from above. The shaft and crossbeam are drawn as flat front elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 13116
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.282Z",
+ "cells": {
+  "16": [
+   "18572fcb780a6aaf",
+   "20912679a42ae162",
+   "39c5e964caf30f5e",
+   "3b4130fa3e85d5cc",
+   "569b973350333f3d",
+   "8d35ab14799540eb",
+   "99325b083445e757",
+   "aa1bbbb4f9e075ce",
+   "c2928aa185c57f5a",
+   "d73ce57d2acbe827",
+   "d77ed823fe73fd3d",
+   "e5c787550b501f7c",
+   "fbd68fc04c651279"
+  ],
+  "24": [
+   "04a879145449a1c3",
+   "134026db19b277b3",
+   "220151695e60f279",
+   "2c4b06fec9718212",
+   "3dbc88b39016b46a",
+   "42a196756647944b",
+   "58503473af8e4c20",
+   "67dc63c1da767708",
+   "6b513d9c4fc72cb1",
+   "71b96accad753e19",
+   "8c4922bb9e564536",
+   "bc447cb9905bd231"
+  ],
+  "32": [
+   "06f23ca8e7e4fbb2",
+   "0fa6de138e5f0d9a",
+   "11c132d89a8dda26",
+   "17e5068b10889463",
+   "1c7f92530bdcb99d",
+   "2c2c33265734cd53",
+   "2f6dfe0a0597b406",
+   "311935ecebe44c63",
+   "33530b6438a018e0",
+   "3a098ec92c93b2cb",
+   "3b41abdeb5d95f2d",
+   "3fa6773d2e425f72",
+   "4227d17f37c5e6c0",
+   "4375b6d20719ceb1",
+   "4727cc58d7a8c4da",
+   "4998d5a8958d5e9f",
+   "4f2d6255c396d41f",
+   "54e6af5250449caf",
+   "5dd1220fa6b37d5a",
+   "655161660510d089",
+   "68663963b34d9e73",
+   "6e46e9ecc1645043",
+   "7216ea8806257962",
+   "7905a3a5ca24f8f1",
+   "81b87d60ce5acd66",
+   "9286f8725330c04b",
+   "961fc05d58bf0928",
+   "9ca79e397609cbd0",
+   "a0aa48a6597ed03c",
+   "a39d5b0925c89247",
+   "a4ed95739c4f2956",
+   "a7f656ec31cf3651",
+   "ab85405e674b299e",
+   "b41f29af0010672e",
+   "babb81172eba9405",
+   "bf145f70829947f5",
+   "c7b517e3bd0d27f1",
+   "ced5aa260fedb692",
+   "d19cdad7b6c72f94",
+   "d451794b3997a982",
+   "d5444a31c654e4f8",
+   "dd8f5fe9c6949870",
+   "e73ba931d7abc2c5",
+   "f1247c4b594ded76",
+   "f8c0d086e2eeee4b",
+   "fbf1ac743c5e0b85"
+  ],
+  "48": [
+   "16f31c3a70b5a6de",
+   "3f6cc60c4a22a6b4",
+   "dcfe07542c9b9726"
+  ]
+ }
+}

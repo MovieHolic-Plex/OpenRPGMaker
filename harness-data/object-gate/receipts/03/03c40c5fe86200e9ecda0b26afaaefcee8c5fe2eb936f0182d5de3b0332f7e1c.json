@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03c40c5fe86200e9ecda0b26afaaefcee8c5fe2eb936f0182d5de3b0332f7e1c",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal",
+ "label": "jp/jp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail signal post with equipment cabinet and signal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (equipment cabinet at the bottom, ballast pile, pole, and upper signal housing) is drawn in pure front elevation with no visible horizontal top surfaces (only a 2px highlight along the top of the cabinet and flat front views of the signal housing).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8511
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal post with base box and stone mounting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal head at the top and the utility cabinet at the bottom are drawn entirely in flat 2D front elevation, showing no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway signal pole with equipment cabinet and signal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire assembly—including the base utility cabinet (rows 35-45), pole, and upper signal housing—is drawn in pure flat front elevation. The utility cabinet has only a 2px highlight strip along its upper edge with no foreshortened top surface, and the pole and signal head lack any 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail signal post with signal head, pole, ballast mound, and base cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal apparatus—the yellow signal head at the top, the vertical pole, the rock ballast mound, and the electrical cabinet at the bottom—is rendered in pure front elevation without foreshortened top surfaces appropriate for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8731
+  }
+ ],
+ "decidedAt": "2026-10-13T13:08:13.190Z",
+ "cells": {
+  "16": [
+   "2e02c12752c89155",
+   "3f078b7a6ca1d03a",
+   "b58996f7fd2b127d"
+  ],
+  "24": [
+   "0253fa8516ade0f7",
+   "633dd3e7d66da7d8",
+   "7815e1f3e1009e14",
+   "bf422715756b97a5",
+   "d1c29e8c04cbcadb",
+   "ea53a25318f891c6"
+  ],
+  "32": [
+   "1e8a14622b77f71a",
+   "28bf7b2cdd001956",
+   "3100eb9d70998cd2",
+   "43c0145bd4b9a1bb",
+   "650a3290f6d86735",
+   "696eb74b596c2b59",
+   "7a68b3fb4d1189ab",
+   "a9e9ab73a55fad09",
+   "b4bd934f87c18d41",
+   "b994bd8292336512",
+   "cb9f14398f6da0a7",
+   "cefaae47e34340c5"
+  ],
+  "48": [
+   "137d95205d163221",
+   "2d5b05bcbd86a015",
+   "9f80cfcf0635de1d"
+  ]
+ }
+}

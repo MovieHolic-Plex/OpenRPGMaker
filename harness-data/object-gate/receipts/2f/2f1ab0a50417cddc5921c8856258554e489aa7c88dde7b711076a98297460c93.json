@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f1ab0a50417cddc5921c8856258554e489aa7c88dde7b711076a98297460c93",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-r",
+ "label": "jp_city/street_hand/jp-bwall-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall occupies rows 1 through 5 (5 source pixels tall), while the front brick face spans rows 6 through 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall segment with top surface",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall spans rows 1 to 5 (5 pixels tall), and the south-facing vertical brick facade spans rows 6 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4014
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular masonry wall end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is presented as a flat frontal rectangle with horizontal masonry bands; the upper edge is only a narrow line and no multi-row top surface or slope is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 94206
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large wall/building end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat rectangular front elevation; the top is only a thin horizontal edge/band with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 81723
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.010Z",
+ "cells": {
+  "16": [
+   "788291586a5918b4"
+  ],
+  "24": [
+   "134c9839d744f303",
+   "1759f37be0f61afd",
+   "6e034b2752fb6185",
+   "751b654de58065e4",
+   "a25d34c7b0941fb5",
+   "ad33e7b7b6eb990e"
+  ],
+  "32": [
+   "133068db440f40d6",
+   "2f6db8db81b4a6d0",
+   "3c36fcc5a9d350c6",
+   "4ac68f0f0d25a7a7",
+   "57d39a5b2c44a0f5",
+   "96d5b8016352f52e"
+  ],
+  "48": [
+   "21e701e198222dbb",
+   "2a3933a594b81da6",
+   "353d1c9a59013142",
+   "654108079e1ba668",
+   "6c9964af9e180067",
+   "7ba8cce34a1d1f72"
+  ]
+ }
+}

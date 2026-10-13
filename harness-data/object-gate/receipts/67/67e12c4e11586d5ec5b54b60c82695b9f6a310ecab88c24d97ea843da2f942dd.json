@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67e12c4e11586d5ec5b54b60c82695b9f6a310ecab88c24d97ea843da2f942dd",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp_city/street_hand/jp-bwallf-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall with wood paneling and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show the 4-pixel-tall top surface of the wall cap in a checkered stone pattern, followed by the south-facing front wall with wood slats (rows 5-15) and stone base (rows 17-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall section with roofed coping and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 clearly depict the 4-pixel deep top surface/roof coping of the wall in 3/4 perspective above the vertical wooden and stone south wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4177
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 165129,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "flat brown wall facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is shown as a flat front elevation; the top is only a thin horizontal cap/edge with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 46802
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "27ebc213a8d4af51",
+   "8a9bb5881e9daab1"
+  ],
+  "24": [
+   "2349a04e4cdd40b5",
+   "2d5184a741d71562",
+   "42b409b0f9674d6f",
+   "484109dab7a7e960",
+   "67dd3dc0bddda722",
+   "7a1f4a4bd6c52b28",
+   "8373656e2b8148aa",
+   "8f33411aebc07d62",
+   "b30a066503a91f3b",
+   "c9feb1c663cc3332",
+   "dafc22d97e1cbf29",
+   "eac053b6aec59568"
+  ],
+  "32": [
+   "09e17efdcb41a58d",
+   "57345b4bac3be519",
+   "7ae0180270f053c1"
+  ],
+  "48": [
+   "0432702c09ea2e2e",
+   "091692a8af684125",
+   "1effaa0ec57edbbb",
+   "9c4733f1e70eb646",
+   "c6191480139a549c",
+   "d60a8657ddcf8a30"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "def6fb4ae367b41f9506c40b7bd3ea3cad3bd8941e990333945df0e08f683ea3",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-w-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-w-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground road edge with drainage grate and painted line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/road tile with grate and road marking viewed directly from top-down perspective across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road edge with drainage grate and painted line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground tile depicting a roadside drainage grate and white pavement marking seen directly from the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4545
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat ground surface with floor grate and painted road line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts flat floor textures, including a drainage grate and painted line marking seen from directly above in standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground edge with drainage grate and white road stripe",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ground features (a drain grate and painted lines) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4282
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.379Z",
+ "cells": {
+  "16": [
+   "011f8b7742dc9c78"
+  ],
+  "24": [
+   "3504622355da8516",
+   "4c787106c6dbd043",
+   "5d42c8433cfacc55",
+   "727a21c61515dd9d",
+   "7509fa5b3c6912fb",
+   "d024a78835ea7e1c"
+  ],
+  "32": [
+   "334e207a0e858f44",
+   "35a8a92d73da1993",
+   "6c263e2f380ee715",
+   "9ab1806acc214c12",
+   "b7b8c24ec1fbc8d1",
+   "cadfe233e82592b6"
+  ],
+  "48": [
+   "1f51499c5023861f",
+   "7d20dd6d2ba2de5b",
+   "92af8ef74d292961",
+   "a38b8b2fdf12ee2b",
+   "bc423056fc7a8a91",
+   "de35325cc4ef33cc"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e838fc29884926025b69e50c83c41952370edc76f06538f6dd7a6d2424726524",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "jp-rail-pylon",
+ "label": "jp/jp-rail-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail pylon column / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column is depicted in pure front elevation with striped vertical faces and horizontal structural elements, showing no visible top cut or foreshortened horizontal surface at the top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11721
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway pylon / support column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column and its blocks/collars are drawn in straight front elevation with zero foreshortened horizontal top surfaces visible; the hazard stripes on the upper block continue directly to the top outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5502
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway pylon / support column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn as a flat front elevation. Both striped blocks (top and bottom) and the central housing show only their vertical front faces, with 0 rows of foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6819
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "column / pylon",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon is drawn as a flat front architectural elevation with straight horizontal bands and no visible top surface or cut face anywhere on the column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6868
+  }
+ ],
+ "decidedAt": "2026-10-13T14:22:22.864Z",
+ "cells": {
+  "16": [
+   "083f968a545c01c7",
+   "cde6525aabb134cb"
+  ],
+  "24": [
+   "04fe100fbc65f641",
+   "08d9cff44b0f4953",
+   "097d48a9c2470801",
+   "0aefed16ec6afe93",
+   "374b51239d0d26a6",
+   "3b2f336d41f46c5e",
+   "766bdd2b5d4a27fd",
+   "8c11259d4d03ccdd",
+   "a09cb925714d89cb",
+   "a560a96dec516d73",
+   "ddb3b36db10c6207",
+   "e13622b3c39ac8ed"
+  ],
+  "32": [
+   "2e484b493f7ad927",
+   "60089aa5b40fc4c3",
+   "e364d51bff6818ac"
+  ],
+  "48": [
+   "137f4488f6955c7d",
+   "a3ae28006bcc9dd9",
+   "b91d5665d3a497e6",
+   "bd8a23ed72a83de8",
+   "c9032c4d0c83e79e",
+   "e46f54169284c56b"
+  ]
+ }
+}

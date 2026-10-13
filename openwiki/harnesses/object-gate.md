@@ -75,3 +75,10 @@ import sys; sys.path.insert(0, "src/harnesses/_core")
 from object_gate import require_all, ObjectGateRefused
 require_all([(img, "tall_furniture", "murim/prop_scroll_shelf"), ...], context="bundle")  # 하나라도 막히면 아무것도 쓰지 않는다
 ```
+
+## 부품은 조립 건물로 (2026-10-13)
+
+윗면을 혼자 보일 수 없는 건물 부품(jp_city 1층 상가 띠 `jp-sf-*`, 143개)은 띠 + 위층 + 지붕을 조립기가 짓는 대로 합친 조립 건물 그림을 kind `structure` 로 같은 판정자·같은 기준에 낸다.
+띠가 조립 그림 안에 화소 그대로(정수 오프셋, `_gate_assembled/manifest.json`) 들어 있고 그 그림 영수증이 통과일 때만 「covered by assembled <표본>」으로 센다.
+코드: `scripts/content/jp-city/gate_assembled.py`(build·covering), `gate_kinds.check_all`. 표본 44장(역할 × 좌우 × 폭 3~6/7~9, 한 장에 건물 여러 채) 전부 PASS.
+평지붕(`roof.plain.*`·`ac`·`stair`)을 얹은 조립 건물은 7장 중 1장만 통과(윗면 0행) — 표본은 윗면이 보이는 `roof.hip` 으로 지었다. 거리 구성기가 쓰는 평지붕 건물 자체는 이 관문을 못 넘는다.

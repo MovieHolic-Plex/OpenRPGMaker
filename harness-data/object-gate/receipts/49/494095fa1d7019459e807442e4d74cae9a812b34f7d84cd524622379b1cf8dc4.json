@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "494095fa1d7019459e807442e4d74cae9a812b34f7d84cd524622379b1cf8dc4",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-3-R",
+ "label": "jp_city/street_hand/jp-sf-izakaya-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with entrance door and noren curtain",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (walls, doorway, awning strip at rows 6-8, lantern, and base plinth) is drawn in a flat 2D front elevation with no visible top surfaces, roof slopes, or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5491
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, entrance awning/lintel, and hanging lantern are all drawn in a flat 2D front elevation with no visible top surfaces (awning at rows 6-8 is just 1-2px thick bands, lantern shows no top cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4700
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 460771,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large izakaya storefront/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; its roof and upper bands are horizontal edge strips without a clearly visible above-facing roof plane or slope. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 96051
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.085Z",
+ "cells": {
+  "16": [
+   "005ca26935fc29df",
+   "29e85aece0d5b893",
+   "31503ef37ea162cf",
+   "5b56ab9854f9e31c",
+   "78ae855731ecd33d",
+   "8e6f6144b4deb5f6",
+   "97fd92c3e9fb6f97",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690"
+  ],
+  "24": [
+   "305cd268d8e94430",
+   "41d484633b39caaf",
+   "628939347fcba765",
+   "e30ec03adca7f534"
+  ],
+  "32": [
+   "1382ae47f39c7b1b",
+   "20f8c195b1fd35eb",
+   "316be1c765caf660",
+   "3ad510d67fcd7663",
+   "3cf3c60bed8b01d4",
+   "4cf78e0927bf6041",
+   "4f0da5cbb31c6685",
+   "53e36837ff2020de",
+   "5bbb65054e5994b0",
+   "64dc7c4b8d2f0596",
+   "66f816638c7791bb",
+   "6d18bf56dfad3adc",
+   "7eef200eb4f66560",
+   "890948005dae8e13",
+   "891cbadaea6fcc7e",
+   "8faddfce1d5acf50",
+   "a485dc1c81436032",
+   "b022dd53553d8c9c",
+   "d18035107e5ab84a",
+   "d99bed0710bc1f6e",
+   "dd48f77f9b062709",
+   "e03d0466a5a340e5",
+   "f0b32e5988ba6b20",
+   "f2408a31b2447958"
+  ],
+  "48": [
+   "213aad967c4e5572"
+  ]
+ }
+}

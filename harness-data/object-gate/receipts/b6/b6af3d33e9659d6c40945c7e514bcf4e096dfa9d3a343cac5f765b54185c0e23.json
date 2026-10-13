@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6af3d33e9659d6c40945c7e514bcf4e096dfa9d3a343cac5f765b54185c0e23",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-5-L",
+ "label": "jp_city/street_hand/jp-sf-machiya-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya entrance and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade and protruding central doorway are drawn in pure front elevation (side-scroller style). The projecting door frame has only a flat 2px lintel bar (rows 12-13) with no top surface, and the roof eaves at the top (rows 0-4) show flat front-facing fascia/tile ends rather than a top-down foreshortened roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with projecting entrance door and shoji windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade and projecting doorway are drawn in pure front elevation. The doorway lintel at rows 12-13 is a flat 2px horizontal strip with no top surface, and the roof structure at rows 0-5 shows only front-facing brackets/beams without any foreshortened roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5868
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central machiya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation. Its roof/eave is only a thin dark cap band with no substantial visible top slope or horizontal roof surface; the lower strip is a base/plinth, not the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 185723
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large machiya-style building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation. The roof/lintel is only a thin horizontal front band with no visible top slope or surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 133425
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.249Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "051f00e005015abd",
+   "0bd62221d7991d96",
+   "11b851a8d82e25ab",
+   "2a750be2acb717cc",
+   "3023f9adf213a07e",
+   "3fae5867f8e17aba",
+   "50f4bd5c686331ea",
+   "a3043c90ab422321",
+   "b5440097d041acb9",
+   "beca379386c61121",
+   "d8f15d83079b7e71",
+   "dab9cf1bdd779038",
+   "f53aa0a80fda7bf4"
+  ],
+  "24": [
+   "034eceff102d3831",
+   "12ce485d36a390e0",
+   "15f3c4077d2cb536",
+   "27dfac652a6a956c",
+   "2a1e1777e54b94d7",
+   "35333e8310b6598b",
+   "35cf220f03aa7a2c",
+   "36af71a4c1632066",
+   "4102a46376d83746",
+   "44e78ca2eb64c58d",
+   "491eae275622ba34",
+   "4aa345bc3a6738d6",
+   "59bd520172877005",
+   "686efec5638aeb86",
+   "70c432e445272d57",
+   "8b4d546887dd9381",
+   "8c2d00682371adbf",
+   "98ceb43d33c29bb0",
+   "a9bced7863d0c4ea",
+   "b81a808777e81b01",
+   "c03d285524fd0ad6",
+   "c1f196374f74c70d",
+   "ee45bb8bd3900ef6",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "0279c0d2e42e6cb1",
+   "0cec906ec0778db4",
+   "0ed84482b4c9d001",
+   "1ca74b4af4441d6a",
+   "34c9b78b0130f987",
+   "389ff231fa90c1e9",
+   "39b9e2db662fd9c7",
+   "4459901c9f34346f",
+   "4a542d2af89d1ff6",
+   "4a6f785b33efcd8f",
+   "5a22dcf626eecaf4",
+   "5b3faf001f85c8c8",
+   "600294f81217692e",
+   "6d8dc031252f1ef4",
+   "718788179cc41e56",
+   "77a77ab6a8bbd5b8",
+   "7a7f86c6ba45fd12",
+   "7e945a4e400c2f75",
+   "82554b6304a86872",
+   "a25a4856765c8b02",
+   "a262f6aaeba5a1a7",
+   "a39365f4dc7998f2",
+   "aef03714d6702977",
+   "bbb7916bd29a2c03",
+   "bd2d3185980697a4",
+   "be03eadfdb11a079",
+   "c8bdeb39a836f1e5",
+   "cc15cea23ae117c6",
+   "d62bc07a5fadcaad",
+   "d6a24db3fbc0ee37",
+   "da2228f720b2b232",
+   "e294dfc36a673bcf",
+   "eab1c77913320a5c",
+   "f0fc7c5a29c08f41",
+   "f769a2f920c2f7cd",
+   "f964ad0edee63f73"
+  ],
+  "48": [
+   "0a3f06c4728f2a66",
+   "2e976888a0a11a4b",
+   "32cb6e373b0ee2e1",
+   "4f8b917aa15d8cee",
+   "502bdd2f7854d89e",
+   "e87eb80e23668c89"
+  ]
+ }
+}

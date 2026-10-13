@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2078dc886bc92b310c6c044a89bf72ab53338860f5b2d6753f077beba9b01de6",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-gate",
+ "label": "jp_city/street_hand/jp-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden gate structure with vertical slats and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate frame and top lintel have no visible top surface (only a 1px dark outline at row 2), depicted entirely in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate / slatted barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn strictly in front elevation; the top horizontal beam is capped by a single 1px outline with no visible top surface or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3326
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 338975,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large gate facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is shown as a flat frontal elevation with vertical panels and only a thin upper edge; no visible top surface or roof/lintel slope is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 98605
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.483Z",
+ "cells": {
+  "16": [
+   "34cdbbf9d6d7b0d0",
+   "ccd46859549b9053"
+  ],
+  "24": [
+   "0b9baf00724a3ce0",
+   "12ed0d10d9f515e0",
+   "203cfa736ad2e207",
+   "386eec7a3a568504",
+   "3ba3792c58ea9fa0",
+   "4c352b8bd43bdd54",
+   "5841092935d9dfbe",
+   "8fbd6e8e59a89e5f",
+   "98834769ad0f578e",
+   "cc84aa80eaaaae64",
+   "e258c51ba8ba33c6",
+   "eb133d553fbabf43"
+  ],
+  "32": [
+   "84830d46d058bf0b",
+   "f0c9c11ee57381a0"
+  ],
+  "48": [
+   "3f57f64d52441bc5",
+   "ba19bdc958195f40",
+   "c6bb05ab518b0842",
+   "cda620b35bb0867d",
+   "da3fd111e883a3fd",
+   "fc46847806734154"
+  ]
+ }
+}

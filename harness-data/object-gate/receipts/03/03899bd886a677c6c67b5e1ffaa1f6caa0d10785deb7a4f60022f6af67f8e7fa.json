@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03899bd886a677c6c67b5e1ffaa1f6caa0d10785deb7a4f60022f6af67f8e7fa",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-lockplate",
+ "label": "jp_city/street_hand/jp-mark-lockplate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor lockplate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a floor lockplate viewed from above with a 9-row top face (rows 3-11) and a 2-row south thickness edge (rows 12-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3306
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square lock plate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate shows a large top surface spanning rows 3-10 (8 rows tall) with a yellow core, plus a front edge thickness on rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square lock plate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate lies flat on the ground, displaying its top surface clearly across rows 4 to 11 (8 rows) with a slight front lip/shadow below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square lock plate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate surface is seen from above spanning rows 3-11 (9 rows tall) with a yellow central inlay, and has a 2px front edge/drop at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5555
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.380Z",
+ "cells": {
+  "16": [
+   "180ebd89da18a349"
+  ],
+  "24": [
+   "45c12f36df01b705",
+   "9d4894d81a7b4cb6",
+   "b1f57583e1bc64ab",
+   "c6e6bfd72b14b51c",
+   "e5666576a97747fe",
+   "e8dcedc2e5cc0c32"
+  ],
+  "32": [
+   "09f31fa5e34d5949",
+   "2971347384743506",
+   "2f8104fddf6b2df8",
+   "494167f2d428d8a2",
+   "51dec20797a3c604",
+   "862448a64103f7d5"
+  ],
+  "48": [
+   "3683c781ec9b943c",
+   "9f5badd6f0db2db0",
+   "bf2c3f576cfb7a6f",
+   "e2411a68591b4dff",
+   "e97c0e752f408b79",
+   "f6831c3c6082ed56"
+  ]
+ }
+}

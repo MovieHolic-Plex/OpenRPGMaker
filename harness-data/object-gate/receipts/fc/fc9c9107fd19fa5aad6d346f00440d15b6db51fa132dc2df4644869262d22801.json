@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc9c9107fd19fa5aad6d346f00440d15b6db51fa132dc2df4644869262d22801",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "jp-rail-wire",
+ "label": "jp/jp-rail-wire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal wires and mounting brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted utility cables/rail wires running horizontally with vertical wall fasteners; legitimately flat against the wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8800
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wire railing",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "This is a freestanding wire guardrail/fence, not a wall-mounted object. It is drawn as a pure 2D front elevation with horizontal wires and vertical posts showing no top depth or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7694
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wire railing / fence",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a freestanding wire rope railing or fence with two horizontal cables and vertical spacers, not a wall-mounted fixture. It is drawn as a completely flat 2D elevation with no top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8085
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wire railing / cable barrier",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists of two horizontal 2px-thick cable lines connected by vertical struts, forming a wire railing/guardrail. A railing is a standing barrier rather than a wall-mounted fixture. Furthermore, it is drawn in pure 2D front elevation with 0px top surface or depth on the posts or rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10089
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.014Z",
+ "cells": {
+  "16": [
+   "09e2b7563825304a"
+  ],
+  "24": [
+   "265dc4bbeef63163",
+   "7c07b8943015c553",
+   "9991d96b0871a0bd",
+   "c6e1bae451e05b5d",
+   "e49f1c3221ff046d",
+   "f999223d6031a0bb"
+  ],
+  "32": [
+   "105d93e88ec63d51",
+   "3c8a7452b926a7ce",
+   "46c75bb300c868b5",
+   "99488b61a7fbd70e",
+   "bc2ba2e67e1292f2",
+   "db74186f7f1552e0"
+  ],
+  "48": [
+   "05f4df6e7bb5cdbf",
+   "23ce3a1251f0bdf1",
+   "677bf5c9e94f9715",
+   "773067843c35b194",
+   "d32084a759368751",
+   "da446a67f3a5f21c"
+  ]
+ }
+}

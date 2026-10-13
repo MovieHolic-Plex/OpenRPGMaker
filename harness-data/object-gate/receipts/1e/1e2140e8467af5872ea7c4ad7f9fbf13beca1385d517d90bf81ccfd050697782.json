@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e2140e8467af5872ea7c4ad7f9fbf13beca1385d517d90bf81ccfd050697782",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-gomi-box",
+ "label": "jp_city/street_hand/jp-gomi-box",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese street garbage cage/box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the mesh box is clearly shown foreshortened under top lighting across rows 2–7 (6 rows tall), while the front face is shaded darker across rows 8–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular mesh garbage station box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is clearly rendered in a lighter green shade across rows 2–7 (6 rows tall) with wire mesh texture, while the front face extends from row 8–14 with a white placard/handle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4458
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular green box with a broad patterned top and front face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible horizontal top surface about 6 source pixels deep above the south-facing front face. The central dark horizontal mark is not an elliptical interior opening, and no receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 74512
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular green box with a broad patterned top and darker front face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible green top surface about 6 source pixels deep above the south/front face. No receding isometric side face is present, and the pale inset on the front does not form a visible elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 128482
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "74b7f77a42bb8989",
+   "b461bf111f965d45"
+  ],
+  "24": [
+   "22feb0a08e59e444",
+   "47da5471a0bdb05d",
+   "7a4d23575e322308",
+   "81e2c325086f88fa",
+   "88e8d59a5f4f4b89",
+   "890464238f6e578e",
+   "8c28deb3d796e59c",
+   "98180047ed2ef6ea",
+   "9e0b9cb71fa5ffd7",
+   "a8486a9b9e3c7d86",
+   "d0a4cdc8d74140c6",
+   "e0f3ad01778ce212"
+  ],
+  "32": [
+   "45bc88fe7d1133ea",
+   "70b466d3f4e54e1e"
+  ],
+  "48": [
+   "4226795648912f39",
+   "a880fe44486de5e2",
+   "b40741cad6da41c5",
+   "c43f807207e42279",
+   "c46a996f80ed7c5f",
+   "c7d7dfdd30f4332c"
+  ]
+ }
+}

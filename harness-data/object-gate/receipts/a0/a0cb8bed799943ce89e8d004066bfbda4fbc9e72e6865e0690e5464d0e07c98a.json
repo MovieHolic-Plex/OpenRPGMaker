@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0cb8bed799943ce89e8d004066bfbda4fbc9e72e6865e0690e5464d0e07c98a",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / guardrail panel",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/guardrail is drawn in pure 2D front elevation with horizontal bands and diagonal markings; the top edge has only a 1px outline/strip rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5941
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / barrier wall",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence panel is drawn in pure front elevation with horizontal stripes; row 1 is merely a 1px cap line with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5421
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail fence / barrier panel",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rail fence is drawn completely flat in pure front elevation; row 1 is merely a 1px dark edge line with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6779
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail fence panel",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure flat front elevation with horizontal bands across the canvas and only a 1px outline/highlight on top; no foreshortened top surface of the rail is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 4597
+  }
+ ],
+ "decidedAt": "2026-10-13T13:01:15.258Z",
+ "cells": {
+  "16": [
+   "d36a7a2b4f504512"
+  ],
+  "24": [
+   "140fd0b4e85d7e22",
+   "3f6c4f72cd14dc90",
+   "6abc506ee9c7fc5f",
+   "8fb3b99c22825938",
+   "bc81138828abf923",
+   "f57b977871b9f795"
+  ],
+  "32": [
+   "0235f125e45d098f",
+   "17c72b4807cc277c",
+   "1b7888eca7268a98",
+   "393fa55e54700a57",
+   "6b43be656338af2c",
+   "ec0862244fb4c091"
+  ],
+  "48": [
+   "0b912d7c3be03c20",
+   "1d011ef9669f28cc",
+   "25493a4cdf85ba44",
+   "665c2654e6561b9c",
+   "8ecf7883727b94fa",
+   "8f4cd8ebc2229bea"
+  ]
+ }
+}

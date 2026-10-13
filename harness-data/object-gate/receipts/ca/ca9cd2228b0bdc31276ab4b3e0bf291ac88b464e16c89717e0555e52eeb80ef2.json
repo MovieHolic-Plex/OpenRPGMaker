@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca9cd2228b0bdc31276ab4b3e0bf291ac88b464e16c89717e0555e52eeb80ef2",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-6-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade with entrance and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade (roofline/cornice, awning, entrance frame with noren, sliding doors, windows, and base) is drawn in pure 2D front elevation (side-scroller style). No top surfaces, roof slopes, or sill depths are visible anywhere from the top-down 3/4 viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10209
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with red awning, entrance, and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn in a pure front elevation (side-scroller style). The forward-projecting entrance portico and awning show zero top surface (only a 1px top outline at row 11), window sills have no depth, and the roof/sign bands are flat vertical planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6981
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront building facade with entrance door and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (roof/signboard, red awning, entrance frame, windows, and base) is drawn in pure flat front elevation with 0px of top-down perspective or visible horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ramen shop storefront / building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, entrance awning, doorway, and window sills are drawn entirely as a flat 2D architectural elevation with zero visible top surfaces or roof slope foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5340
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.382Z",
+ "cells": {
+  "16": [
+   "04374aba6e043395",
+   "1a5dd6e379ef2ad5",
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "2cc4bc2716f9d246",
+   "31836a5a65ac806a",
+   "408c41d74bcd1ab0",
+   "87343fd141dcf5a6",
+   "8911424ae2284c26",
+   "a82473e0c094cf36",
+   "b133644178093c6e",
+   "b5befeb782189d12",
+   "bbf792126b343f24",
+   "d387225d45ed8a74",
+   "d461d27d881dbc20",
+   "e1183389a35ab90d"
+  ],
+  "24": [
+   "1893cb389ebd1f1f",
+   "38bd476235c8adc7",
+   "41f10ff995297bc7",
+   "5a966b77a704fb14",
+   "72584de70fad835e",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123",
+   "b7026bf38ca35b3b"
+  ],
+  "32": [
+   "1932a35dbdcd2862",
+   "270381b914b17e6a",
+   "2caa003ddea9d546",
+   "2fcb207e01013c79",
+   "3620f9235385df2a",
+   "5e8e6eb56d533539",
+   "7f66cfde2f869d38",
+   "adf37e7240e63270",
+   "d26958d7d5bd06fa",
+   "d47f83788621acc0",
+   "d66c92268b09beb4",
+   "d7d7dbd94a1e4897"
+  ],
+  "48": [
+   "c0e0973d8a2e1a2d",
+   "de1eb7236cbcf2e0"
+  ]
+ }
+}

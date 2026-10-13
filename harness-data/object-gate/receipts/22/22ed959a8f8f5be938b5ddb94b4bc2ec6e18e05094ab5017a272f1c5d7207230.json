@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22ed959a8f8f5be938b5ddb94b4bc2ec6e18e05094ab5017a272f1c5d7207230",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-3-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "apartment entrance with sliding doors and mailboxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance facade, canopy overhang, and door frame are rendered as a purely flat 2D front elevation with no visible top surfaces or 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6413
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "apartment entrance facade with doors and intercom panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the door frame, entrance doors, intercom, and mailboxes, is drawn in pure front elevation with no visible top surface or horizontal plane depth anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5800
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Apartment entrance facade with double sliding doors and an adjacent panel bank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat frontal facade. Its upper horizontal bands read as wall trim and lintel edges, not a roof or lintel surface viewed from above; no measurable top plane is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23427
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Apartment entrance facade with double doors and mailbox panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat facade. The upper horizontal bands read as wall trim, not a roof or lintel surface viewed from above; no substantial top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18219
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.283Z",
+ "cells": {
+  "16": [
+   "13513fa858f3ca41",
+   "20c644f07a08bbab",
+   "4a7ffe9b5b8b50f1",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "e9dcfdc5a23bb509",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "7868839616969d13",
+   "cc784fa1349b4126"
+  ],
+  "32": [
+   "09ef9bbf0d24d221",
+   "10651e393f3170d2",
+   "138558a498c66ee4",
+   "3246050c3a2eb488",
+   "3a4078e142e5df0c",
+   "3b3cf28ad892ac2e",
+   "3e8246be2b6d5f64",
+   "55aef5c91bb2912a",
+   "5b5c11681ba9ab52",
+   "6f02a3301fa28b7e",
+   "7bae81fdd3856be6",
+   "820e08abbad5635e",
+   "903748dc21688906",
+   "99d57f3fadb33391",
+   "ac1559a1be143c2a",
+   "b104d74a7187e35f",
+   "b2908eab065b81fb",
+   "b81924b36e0802df",
+   "bf890e6ac3d754eb",
+   "c13696979ef153d2",
+   "cf9d782002beb582",
+   "ddcb51a954b64c1b",
+   "e000ddeb2e703bce",
+   "fff5855b29054be0"
+  ],
+  "48": [
+   "556f1ca90685c4ca"
+  ]
+ }
+}

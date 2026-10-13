@@ -1,0 +1,174 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6463b5e32a098430166fdf93fa2e6ccf1727d869a24454deedce16c0e4976f80",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-5-R",
+ "label": "jp_city/street_hand/jp-sf-cafe-5-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with door, windows, and green awning",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (facade, awning, door frame, windows, and window sill/planters) is drawn as a flat 2D architectural front elevation with no visible top surfaces showing any top-down 3/4 tilt.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5018
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The storefront is drawn in flat architectural front elevation with no visible top surfaces on the lintels, window sills (only a 1px line), door frame, or building roof. Even the interior potted plants are drawn as flat 2D rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9860
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 610982,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 541490,
+   "error": "Error: ChatGPT rate limit exceeded. retry-after-ms=60000"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.078Z",
+ "cells": {
+  "16": [
+   "1a569172063c4ba6",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "5ff0521eb46b5637",
+   "6d8d6a2b2522f31c",
+   "7018b79bf4940922",
+   "75a61006df7207f9",
+   "8ef8bcb1d076a376",
+   "912bdb1002e40169",
+   "9b217cbabf01af71",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87",
+   "cb4d3144af0c654e"
+  ],
+  "24": [
+   "02684f97accd5f78",
+   "04b2c339ac2a2109",
+   "225070d98cf0c441",
+   "240570715d363c0d",
+   "2a52ff0f30d43d8a",
+   "2c98727ed47a432a",
+   "3812789191f8876f",
+   "398cee21605a26a6",
+   "5f57b09269005d9b",
+   "60405605de81ea1b",
+   "641fcdb9e0b6cc18",
+   "6dcfa285b99912d5",
+   "7ab2f1b10e4870ed",
+   "826b07c2d3faf84c",
+   "82fcf7c747a051a1",
+   "84fbc0f63449e226",
+   "aa3786d1dbfd6855",
+   "b0cec8cd32733923",
+   "b82260eb800680e0",
+   "bd8abb8a0403336f",
+   "caceaf9de2d40156",
+   "cfadd1f55b20fc30",
+   "e8950698db0cb2d4",
+   "ecf37e5ec9355999"
+  ],
+  "32": [
+   "043326e695c1588d",
+   "0599b17577ca757a",
+   "06658456686457aa",
+   "1123d81d578d0ee9",
+   "1ab47289d9e50424",
+   "1ae953c805fba576",
+   "1d82d7712fbc9db2",
+   "1fb8513277b219d3",
+   "2296af827ed42a27",
+   "26483a5712411f3e",
+   "298218f767270b10",
+   "35a95770f965c9a8",
+   "4a25e2158517b132",
+   "51dd0ea8d2546c8b",
+   "53a2ca1cf98b8434",
+   "6936b33315f22bea",
+   "6d7c172a95078ab7",
+   "6f6d8e81443ecdf3",
+   "8027960bbc574093",
+   "8e67df0d1fd09cc4",
+   "9aaad574a9d8d575",
+   "9bbc9cbbb88a1184",
+   "9bbd22d75144fe17",
+   "a09ec377c40ff1c7",
+   "a19ade354aee60be",
+   "a2f5309757e65e8a",
+   "a3b2595e6b2964e0",
+   "a7a6c71a1c0d1a33",
+   "b1f2fdd481cb8cab",
+   "b8b356bc19858eb6",
+   "df9e6d1dae17f821",
+   "e6f66d68fe5de57a",
+   "eb11e8c6aa3ccab0",
+   "efa197fe7b16a785",
+   "f06440474650de4f",
+   "f07454d18594c477"
+  ],
+  "48": [
+   "068b72ee0daab8af",
+   "600829fc329c0015",
+   "78a557d34fe38f28",
+   "a287c1c7aa55fbd4",
+   "bb1bce38caaef674",
+   "e29ca58cdcbd5db6"
+  ]
+ }
+}

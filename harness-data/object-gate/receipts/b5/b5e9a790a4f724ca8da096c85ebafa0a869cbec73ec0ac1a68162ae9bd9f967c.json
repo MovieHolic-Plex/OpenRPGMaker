@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5e9a790a4f724ca8da096c85ebafa0a869cbec73ec0ac1a68162ae9bd9f967c",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-monohoshi",
+ "label": "jp_city/street_hand/jp-monohoshi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drying rack frame with hanging laundry",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire drying rack is drawn as a flat 2D front elevation. The top beam (rows 4-8) has no visible top surface receding away (only a 1px outline at row 3 with no foreshortened top plane), the vertical posts are flat vertical rectangles, and the base beam lacks a visible top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7385
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drying rack frame with hanging laundry",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and its upper beam/roof structure (rows 3-8) are drawn in pure front elevation with only a 1px border at row 3 and no foreshortened top surface visible for the horizontal beams or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5715
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "clothes-drying rack frame with horizontal top and base beams",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper beam has a broad light top surface about 5 source pixels deep, with its south/front face shown below; the lower beam also has a visible upper strip. No receding isometric side face is present, and the rack is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 56033
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "open laundry rack frame with horizontal top beam, vertical supports, and lower beam",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper beam has a broad visible horizontal top plane about 4 source pixels deep, plus a south-facing front edge; the frame is not a pure elevation. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 88114
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.014Z",
+ "cells": {
+  "16": [
+   "02f9964358217950",
+   "2de53544fef0f91c",
+   "55067b380dc47194",
+   "758f75e1a2372af4",
+   "8fd98fdb56624098",
+   "d35ca39a79ce9bde"
+  ],
+  "24": [
+   "04f652fd39ddc803",
+   "0da717c223d86aa3",
+   "37b69978381f3a13",
+   "4ff9f4d13aba60d2",
+   "94d9155f6caf63fb",
+   "b232a92918cbc82e",
+   "d1708e3707606fae",
+   "e1ce786e4fd48dac"
+  ],
+  "32": [
+   "155fa3b7118e3209",
+   "36839400ff0a4a17",
+   "4fae868e6035ba93",
+   "99ad21e1cc1ac090",
+   "f22107fba5634c37",
+   "fa3c132db7376488"
+  ],
+  "48": [
+   "5d3f9c2a0517e4ae",
+   "c55eda0265780159"
+  ]
+ }
+}

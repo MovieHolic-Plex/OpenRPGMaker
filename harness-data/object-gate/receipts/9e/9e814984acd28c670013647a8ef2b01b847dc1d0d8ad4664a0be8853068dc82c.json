@@ -1,0 +1,187 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e814984acd28c670013647a8ef2b01b847dc1d0d8ad4664a0be8853068dc82c",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-5-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with tiled roof eave",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a tiled roof eave across the top spanning rows 0-5 (6 source pixels tall) showing the top surface of the roof sloping downwards towards the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11973
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront building with tiled roof awning",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof awning at the top (rows 1-5) clearly displays a 5-pixel-tall foreshortened top slope of roof tiles above the front wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8802
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing izakaya storefront/building facade with a blue upper awning/sign and yellow lower panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main facade is drawn as a flat straight-on elevation; the blue upper structure has only a thin edge/trim at its top, with no visible horizontal roof or lintel surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 38904
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large gate/building facade with a blue upper panel and illuminated lower gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat frontal elevation; the roof/lintel has only thin edge bands and no visible horizontal top surface or foreshortened slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 48136
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.479Z",
+ "cells": {
+  "16": [
+   "0c3641d22b8536a6",
+   "22cc732c22a0bfe4",
+   "2d79c688b90a8446",
+   "31503ef37ea162cf",
+   "4c91bcd3a071f0bd",
+   "5b56ab9854f9e31c",
+   "65cc7a37f34af49d",
+   "7d812dd2a36948ab",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "a7c0b11fee373b2b",
+   "ac5ecd96b93ab690",
+   "c2e916923863dce2",
+   "ffb95ef70f0924ae"
+  ],
+  "24": [
+   "011a4f17d1073748",
+   "06ae1cf0b800762b",
+   "41d484633b39caaf",
+   "42e93505671937c9",
+   "4d6e27c5b022e0f6",
+   "4e4763330e55bb7a",
+   "627fdd4835a0f0a7",
+   "6c13b58e667e6eaf",
+   "7704d7e814b3094e",
+   "7a57610f067e0c7f",
+   "7e96f9abc193ae8f",
+   "9bda59c99a020523",
+   "a066c8d4062f9602",
+   "a42c1d41d711ac29",
+   "a7bfe65611e353d5",
+   "a870bcfba8ad3286",
+   "a9636989a75961a7",
+   "b75b771426a901fa",
+   "c0ea2a6c35fc43b6",
+   "dcd61bf4eee526b5",
+   "e1369a1f39a56669",
+   "e6d62ba263de21e0",
+   "f50cc034d3499188",
+   "fd8688f293bf3e1d"
+  ],
+  "32": [
+   "018228e89ecea3aa",
+   "062c87a9ec960aa5",
+   "0fd7ec142dd0c9f8",
+   "1243acdb3fcc982a",
+   "1a545bbdfa11fa60",
+   "1c109f8b8d1e143f",
+   "20f8c195b1fd35eb",
+   "3402323e1d34310c",
+   "3cf3c60bed8b01d4",
+   "4e2b2eff9b738e57",
+   "5bbb65054e5994b0",
+   "5e11e24432f96741",
+   "5fbd6dec86238e92",
+   "6683177eef1bfc6b",
+   "6ba069350f837806",
+   "6c72ea836905d9ac",
+   "6d18bf56dfad3adc",
+   "719cc96468193659",
+   "7da21c5c7fe652bd",
+   "8487313521771d6b",
+   "905d962c857e10eb",
+   "9a90386c5ccf95ba",
+   "9ead8afd67a1fb92",
+   "9fc0df145f754ee3",
+   "bb216c0ea4efdfbe",
+   "be272a0fd74abcaa",
+   "bf82f77df597b8c8",
+   "c27d9bafd9813bb8",
+   "cdd163e92fd0ae7a",
+   "d18035107e5ab84a",
+   "dbf58b3f2b4df1be",
+   "e43ffc507370eda7",
+   "eda460cb9ed0577d",
+   "f6b4985019ed5bc5",
+   "fb3cde35b9aa8e7d",
+   "ffbfa78c0445ab71"
+  ],
+  "48": [
+   "068bf518d5b240f1",
+   "3b5dd7932f5e3bdc",
+   "a159b4b8a6aaceb8",
+   "a7e880cfdd0083f8",
+   "acac22acf2fafdc8",
+   "cb5a423f3d715b55"
+  ]
+ }
+}

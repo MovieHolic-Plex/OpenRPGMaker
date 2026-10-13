@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00b4387fdb4397620aff4251c38afda20a2fe144f3a27351291d414f2bd12b99",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp_city/street_hand/jp-bwallf-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese castle or compound wall segment with roof, wooden upper register, and stone-plaster lower base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/eaves section shows 4 rows (rows 0-3) of grey tiled roof surface foreshortened from above before transitioning to the vertical south-facing wall sections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7589
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall section with tiled eave/cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of a tiled roof/cap surface seen from above over the vertical wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6395
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall timber-and-plaster wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is presented as a flat rectangular front elevation; the dark upper strip is only a thin edge/lintel with no visible foreshortened top surface, and no receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 111559
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 228626,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.011Z",
+ "cells": {
+  "16": [
+   "247d3dfd1084640e",
+   "f57430d080d4eb3a"
+  ],
+  "24": [
+   "02323ca8ff51e37b",
+   "1556fbe2b02ee54c",
+   "2573c6f4b24c4303",
+   "27d5671dc965d42c",
+   "45da8b593c9140a8",
+   "63a932ee7e36981e",
+   "7a827c02c6412979",
+   "a093ae9004b921a2",
+   "a8ad6a4663b49215",
+   "b135325477961d93",
+   "cff013e09547d998",
+   "d40f54b30c9fc115"
+  ],
+  "32": [
+   "3f12506c90228c57",
+   "ae8fa77db69296ec",
+   "be4d661d42cfd3c5"
+  ],
+  "48": [
+   "10e3bbdac4c11cdc",
+   "3a31185b34dac72b",
+   "47bebfcc29b938fd",
+   "743c7349f3f6fc06",
+   "9b0446ddf9eeb86b",
+   "d7f25efb3a8bbbb6"
+  ]
+ }
+}

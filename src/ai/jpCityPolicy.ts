@@ -29,6 +29,13 @@ const CITY_STREET_RE = /번화가|(?:현대|모던)(?:식|적|풍)?\s*(?:도시|
 /** 미국풍·다른 도시 칩셋(modern_city)을 부른 문장 — 위 낱말이 있어도 jp_city 로 끌지 않는다. */
 const OTHER_CITY_RE = /미국|아메리칸|뉴욕|할리우드|modern[_\s-]?city|oprn-modern|american|new\s*york/iu;
 
+/** 현대 도시를 분명히 말하는 낱말 — jp_city 맵이 아직 없는 프로젝트에서도 이것만으로 jp_city 로 보낸다(골목·거리 같은 약한 낱말은 이미 jp_city 를 쓰는 프로젝트에서만). */
+const STRONG_MODERN_CITY_RE = /번화가|현대(?:식|적)?\s*(?:도시|거리|상점가|상가|동네)|모던\s*(?:도시|거리)|도심|시가지|상점가|상가\s*거리|쇼핑\s*(?:거리|가)|편의점|이자카야|\b(?:downtown|shopping\s+(?:street|arcade|district)|modern\s+(?:city|street|town)|urban\s+street)\b/iu;
+
+export function describesStrongModernCity(text: string | undefined): boolean {
+  return !!text && STRONG_MODERN_CITY_RE.test(text) && !OTHER_CITY_RE.test(text);
+}
+
 export function describesCityStreet(text: string | undefined): boolean {
   return !!text && CITY_STREET_RE.test(text) && !OTHER_CITY_RE.test(text);
 }
@@ -72,7 +79,9 @@ export function jpCityTargetFor(
   const viewedTileset = map ? project.tilesets[map.tilesetId] : undefined;
   if (viewedTileset && (viewedTileset.id === "modern_city" || (viewedTileset.image.type === "bundled" && viewedTileset.image.id === "tex_modern_city"))) return null;
   const projectUsesJpCity = scopeUsesJpCity(project, Object.keys(project.maps));
-  return projectUsesJpCity && describesCityStreet(text) ? {} : null;
+  if (projectUsesJpCity && describesCityStreet(text)) return {};
+  // 2026-10-13 실시험: 빈 프로젝트(버들항 기본)에서 「현대 도시 상점가 거리를 하천이 흐르게」가 jp_city 로 안 가고 칩셋 변경 질문에서 멈췄다(0/10). 분명한 현대 도시 낱말은 프로젝트가 jp_city 를 아직 안 써도 보낸다.
+  return describesStrongModernCity(text) ? {} : null;
 }
 
 /** 범위 맵 중 하나라도 jp_city 인가(시스템 프롬프트 상세 줄 조건). */

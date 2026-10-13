@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0c072e9da41c11da64e7ae0bdc2975fc26fcc4f442bba395c4da6431c218b72",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-platform-edge",
+ "label": "jp/jp-platform-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "train platform edge and drop",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform's horizontal walking surface (including floor tiles and yellow tactile warning strip) spans rows 1-20, while the vertical drop wall facing south is visible below it on rows 21-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5819
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "train station platform edge with top walking surface and vertical drop wall",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-20 depict the horizontal platform surface seen from above (including concrete pavers and yellow tactile warning blocks), while rows 21-30 depict the south-facing vertical platform wall dropping to track level.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "train station platform edge",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-20 depict the horizontal top surface of the platform (including tactile paving and floor tiles), while rows 21-30 depict the vertical south-facing platform wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "train station platform edge showing horizontal walking surface and vertical drop face",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-20 represent the horizontal platform floor (including tactile paving strip and edge marking, 21 rows tall) viewed from above, while rows 21-30 depict the vertical south drop face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6276
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.017Z",
+ "cells": {
+  "16": [
+   "a9bc249fc70f7890",
+   "d9c15ed2d4ad3a6b"
+  ],
+  "24": [
+   "224927c09711531c",
+   "3c5bdfc71f741c76",
+   "57edd53e68874d52",
+   "5c1b7af61733166f",
+   "6701993f1bf5a11e",
+   "6ec0ec74aa119820",
+   "6f6ac80864327aab",
+   "88e249085c02d2ca",
+   "8dfab0f3f548e3db",
+   "a25049ad29acdd0f",
+   "a2ba1a0715bd568e",
+   "a38c1da140551132"
+  ],
+  "32": [
+   "49932d503d02955f",
+   "8de9f44f6d3bdd64",
+   "96d4d13b220981eb"
+  ],
+  "48": [
+   "0336e089f944f5c7",
+   "9e239357a51d6dc7",
+   "ce5e80ec101faadf",
+   "d572dcb8c728f79e",
+   "d5b9a3627f98ac4e",
+   "f2473bae889f4e9b"
+  ]
+ }
+}

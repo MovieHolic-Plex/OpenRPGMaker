@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "298486014a340751b593fe20979784299bb35f1031580742c4184853059d12ad",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-6-L",
+ "label": "jp_city/street_hand/jp-sf-machiya-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya building facade and prominent entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The foreground entrance door frame cuts upward through the eaves and terminates at row 12 with a flat 2px lintel cap with no visible top surface. The windows, foundation curb, and door are all drawn in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7415
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with sliding doors, windows, and upper wall/eaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The door frame cap at row 12 is only 1-2px thick, the eave line at row 22 is a 1-2px strip, the door sill and base foundation show no top surfaces, and the upper railing/lattice band is viewed completely straight-on with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machiya building facade with ground floor eave roof and sliding doors",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled eave roof over the ground floor windows is visible from rows 8 to 21 (about 14 source pixel rows of sloped top surface), correctly showing the downward-sloping roof plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building facade with sliding lattice door and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machiya facade (doorframe, lintels, roof/eaves, and foundation) is drawn as a flat 2D architectural front elevation with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5051
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.648Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "1a7906d26789323b",
+   "2a750be2acb717cc",
+   "3fae5867f8e17aba",
+   "4be4555fe59b8d08",
+   "5aa3acd9ba7bad05",
+   "5d72f8aaa41b46fe",
+   "7f1775d8f542293a",
+   "91adf9299a32a824",
+   "a3043c90ab422321",
+   "da11a44f9f585624",
+   "eee9fa9d2b244e73",
+   "f0ab51b7cd028cde",
+   "f53aa0a80fda7bf4",
+   "f91f2729557b16f2"
+  ],
+  "24": [
+   "27dfac652a6a956c",
+   "36af71a4c1632066",
+   "7ccc6b11a95a9d2c",
+   "8b4d546887dd9381",
+   "98ceb43d33c29bb0",
+   "b6c78705da917fe2",
+   "bfef250a17935f08",
+   "c89ce8502c222c59"
+  ],
+  "32": [
+   "1eef36505fc7fb1f",
+   "2348c7f23091cd5b",
+   "338abf36cb128117",
+   "5a22dcf626eecaf4",
+   "5ba849cf65a4cedc",
+   "7eb37d220b2c1588",
+   "81744382c1d067ac",
+   "9d206951e9b9aded",
+   "a0a8c5d0faf5f300",
+   "cc15cea23ae117c6",
+   "d7dc3fae36dc280f",
+   "df0db11e813e36c3"
+  ],
+  "48": [
+   "8feb8b04b56ff422",
+   "a8cc55b5d979d13a"
+  ]
+ }
+}

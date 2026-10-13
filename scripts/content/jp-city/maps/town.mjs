@@ -138,8 +138,8 @@ for (const [id, x, wall] of HOUSES) {
     if (doorCols.has(wx)) continue;                                     // 대문 자리(문 앞 접근칸)
     const left = wx === x0 || doorCols.has(wx - 1), right = wx === x1 || doorCols.has(wx + 1);
     if (doorCols.has(wx + 1) && wall === "wall") { put("jp-gatepost", wx, WALL_Y, { tag: "gatepost-" + id }); continue; }
-    if (wall === "wall") put(left ? "jp-bwall-end-l" : right ? "jp-bwall-end-r" : ((wx - x0) % 4 === 2 ? "jp-bwall-sukashi" : "jp-bwall-plain"), wx, WALL_Y, { tag: "wall-" + id });
-    else put(left ? "jp-bwallf-end-l" : right ? "jp-bwallf-end-r" : "jp-bwallf-plain", wx, WALL_Y, { tag: "fence-" + id });
+    // 블록 담·가림 펜스(jp-bwall*, jp-bwallf*)는 3/4 관문 불합격으로 키트에서 뺐다 — 대문 기둥(jp-gatepost)만 남긴다.
+    void left; void right;
   }
 }
 put("jp-prop-car-white-r", 18, 54, { tag: "carport-car" });

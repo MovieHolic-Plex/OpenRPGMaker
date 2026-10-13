@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2366b6a907e0a9c730d06db2708211877ecdba8b0c061e026b23f8ba9eee9a0",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp/jp-bwallf-end-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese building wall segment with tiled roof trim, wooden upper section, and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of a foreshortened grey tiled roof slope above the south-facing wall body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8344
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style building wall segment with upper timber section and lower paneled section on a stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/wall-cap surface is visible from rows 0 to 3 (4 source pixels tall) showing foreshortened slate tiles viewed from above, with an overhang shadow casting onto the vertical wooden facade below at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9390
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese building wall section with eave/roof",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top 4 rows (rows 0-3) show the tiled top slope of the roof/eave above the wall face and stone foundation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building wall section with roof edge and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of the tiled roof/wall-top surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5744
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.897Z",
+ "cells": {
+  "16": [
+   "5baf56d775c3d098",
+   "80e16b21118ab518"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "51b7c74eea70b62e",
+   "7620605131dd3546",
+   "7cbb22571f41b2fe",
+   "803ce46681b97e71",
+   "92d5aaebc7e94f55",
+   "a78e37dfec8f53f0",
+   "c22d7f7ef44708a1",
+   "db30c371a13d904d",
+   "dd8fcf9353ecce31",
+   "e27b39412c3f8350",
+   "ed23de4f710412b1"
+  ],
+  "32": [
+   "016c6d5cd151ed86",
+   "1a59963dec73a5b8",
+   "f8f2601e4e05dcab"
+  ],
+  "48": [
+   "5c83fea587fc3864",
+   "80f454ee7579cbb6",
+   "961cf02be2237c11",
+   "ab1f5837a61fe659",
+   "b03dc9ed102079d2",
+   "b37480e9cc4a5823"
+  ]
+ }
+}

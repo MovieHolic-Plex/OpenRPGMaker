@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4bb9e7e0f37e6da37f866c390b8408c63b38cc5f7e3ec602dc5dc7c0ea4d4629",
+ "width": 16,
+ "height": 64,
+ "kind": "column",
+ "name": "jp-rail-pylon",
+ "label": "jp/jp-rail-pylon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete and truss pylon",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation. Both the top concrete cap and the lower concrete base show only vertical front faces with horizontal shading bands, and no foreshortened top horizontal surface is rendered (top edge has at most a 2px outline/bevel band).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4599
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete and truss rail pylon",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pylon (top cap, steel truss shaft, and lower base) is drawn in flat front elevation with no visible horizontal top surfaces (only a 1px edge highlight at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6072
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical railway pylon / truss pillar with top and base blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top block of the pylon (rows 1-11) is drawn in pure front elevation with no visible foreshortened top surface (only a 1px outline/shading row at row 1-2). Likewise, the lower base block (rows 49-61) shows no top surface where the pillar inserts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4353
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete and truss pylon",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the top cap block and the base footing are drawn in pure front elevation with horizontal texture bands and no visible top surface (0 rows of top view).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14012
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.014Z",
+ "cells": {
+  "16": [
+   "14f6dd56d3fed67c",
+   "643ff3e4dadd511b",
+   "bc3f4e989fa8e169"
+  ],
+  "24": [
+   "04943cb6710b577e",
+   "349c3c9d1d134409",
+   "5974cbc5b5c6bd29",
+   "5c41315a534f8f97",
+   "5d37bd34c4c220bf",
+   "789695a6cf773973",
+   "8c21b203fc0c35dc",
+   "99f73c24f1decede",
+   "9d1259c46684a634",
+   "adf0880ce8802034",
+   "b0e4b1c45606ce8c",
+   "c16c880759e50e5b",
+   "cb7321532817e586",
+   "dde261cb6024f39f",
+   "fe84eb9dc24cb3ca"
+  ],
+  "32": [
+   "3618774330a16371",
+   "64e755ca72afa565",
+   "827363824de34e69",
+   "ce84d6f5b6178254",
+   "cfb090b679778f39",
+   "d00a59da0d5dbf4b"
+  ],
+  "48": [
+   "593be277b4626627",
+   "5ca0a59f0d21032c",
+   "5ccc84ce4fdb849c",
+   "6182a1bc32f64408",
+   "64a14eaa3011158e",
+   "678ea830d2281995",
+   "766183f25975c119",
+   "7af1908ad66f1312",
+   "83853cbde5803017",
+   "851e79b77306a6c9",
+   "9833d163f9f550d9",
+   "ab2e2fd67ad03a69"
+  ]
+ }
+}

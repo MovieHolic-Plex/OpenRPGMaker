@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "258c1f01c2e397d233cafe751e5f120262ef0931fd0d8e11cd286b657e424468",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-3-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with noren curtain and glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, upper horizontal sign/beam, door frame, and curb are drawn in flat architectural front elevation with no visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5503
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper sign/beam, entrance lintel, noren curtain, and door frame, is drawn straight-on in pure front elevation with 0px of visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ramen shop storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (signboard, lintel, sliding door, noren curtains, and window/poster display) is drawn in a pure 2D architectural front elevation with no visible top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4795
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (doorframe, noren curtains, glass sliding doors, window, and overhead concrete beam/sign) is drawn in a completely flat architectural front elevation with no visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4600
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.381Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "2825801b9ce19172",
+   "31836a5a65ac806a",
+   "4f5624c2557ef79d",
+   "57ff3681ada7d3ff",
+   "89a6168eefda7935",
+   "b133644178093c6e",
+   "bbf792126b343f24"
+  ],
+  "24": [
+   "1e84a71d1ab42e8e",
+   "39266895c84cecc9",
+   "55292c9d428bdbda",
+   "9a5e638f5d99ff3f"
+  ],
+  "32": [
+   "0c23c51b3c9069b9",
+   "1e1d154b5fa48ca3",
+   "231454b25f87c5f2",
+   "2735e7fc6bc409e8",
+   "2cd6a070af17913b",
+   "325bad2622d40b38",
+   "442551f2341b0a08",
+   "59316b911dee1c41",
+   "64a831f978acdaac",
+   "74d0f65f9db83ae0",
+   "7d98524676ab7e8e",
+   "8292de1c312f5c51",
+   "896475cdd3a4a42c",
+   "9746acede22c6f01",
+   "9c392d79c92552b1",
+   "aace8828eafba85b",
+   "b4171f50ec42fb6d",
+   "c1b5c990f91c6591",
+   "c6b1817fa2b3129b",
+   "d66c92268b09beb4",
+   "de10cebca3d8c0c7",
+   "e85213e22a53d4bc",
+   "f3153b76fd996414",
+   "f324c2f6c8f780f8"
+  ],
+  "48": [
+   "560b290e1a920eb6"
+  ]
+ }
+}

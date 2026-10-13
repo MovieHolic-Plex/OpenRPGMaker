@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4cdb944a5fbe6e2528035bb4b947f4ada71c192581c44b4733b4cf1f104082a7",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "jp-propane",
+ "label": "jp_city/street_hand/jp-propane",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "propane tanks in a protective cage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders and their cage are drawn in pure front elevation. All horizontal bars and division lines are completely flat 1-pixel horizontal rows with no elliptical curvature, and the tank tops are drawn as flat front-view dome silhouettes with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6887
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin propane tanks in a cage/frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders and their framing bars are drawn with completely flat horizontal lines and no elliptical top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4672
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Pair of tall propane cylinders",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are shown as flat vertical bodies with dark upper bands. Their narrow upper edges do not establish elliptical cap surfaces visible from above; the bands read as front-facing shoulders rather than tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 17447
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Two tall closed propane cylinders standing side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large bodies read as flat vertical fronts. Their upper gray shoulder bands do not define elliptical top surfaces with distinct back and front edges; no main-body cap is visibly viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 21500
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.282Z",
+ "cells": {
+  "16": [
+   "0c548f466119f4e5",
+   "c79c68a922af4eb1"
+  ],
+  "24": [
+   "12a98b5baafc1675",
+   "257dcf19d24576d8",
+   "52468d85b812f012",
+   "58a0d24bff3f0886",
+   "650a2f870f67a919",
+   "6555cc16026d00ad",
+   "7d5811e7fa770c7f",
+   "9702687b926e953b",
+   "ac59e8b1377a540a",
+   "b08d793e304d35f7",
+   "d523e8bde8a2ee46",
+   "df44b143b068f75e"
+  ],
+  "32": [
+   "090bc8d189b6bfec",
+   "14ac38c019235039",
+   "49dd754e715082ef"
+  ],
+  "48": [
+   "108ba756598b09a7",
+   "169a65752bf90b58",
+   "1882eede3ff6cf1f",
+   "18f66c7785d7bca3",
+   "5110d4af67ff1366",
+   "deda98573a31e906"
+  ]
+ }
+}

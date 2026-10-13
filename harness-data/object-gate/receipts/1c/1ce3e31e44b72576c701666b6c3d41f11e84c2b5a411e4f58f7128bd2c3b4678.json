@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1ce3e31e44b72576c701666b6c3d41f11e84c2b5a411e4f58f7128bd2c3b4678",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-3-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store storefront with automatic sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, facade, signage bands, automatic doors, and window shelves are rendered entirely in flat front elevation with no visible top surface or roof slope anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6735
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store entrance and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the sliding glass doors, entrance frame, shelves, and upper signage canopy, is drawn as a flat orthographic front elevation with no visible top surface or roof depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5950
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large flat storefront/building facade with glass doors and shelving",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building facade is presented as a flat front elevation; the roof/lintel and other horizontal surfaces have no visible above-facing depth beyond thin edge bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 112694
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large glass storefront/door façade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal façade. Its upper horizontal band is only a front lintel/edge, with no visible top slope or surface from above, and there is no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 150775
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.819Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "a85f374984f82a6d",
+   "c420ed7e86803c46",
+   "e09dad0b84f07f9a",
+   "e27b77b4bed816b5",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "47e48fdc07c2392f",
+   "bd214eb45dc1f533",
+   "e5527967dfe2cf7d",
+   "fecde020d5f4323e"
+  ],
+  "32": [
+   "03d18344a296e12b",
+   "0dadb894f07f2053",
+   "0de6a39a1f79857f",
+   "100f9d3cfdb684b6",
+   "213f7aaaa9e998c1",
+   "358f2e9f49089b7e",
+   "584fdebbb5f66f50",
+   "62e2ddd3d8192316",
+   "630bdeb4bd8ae491",
+   "75d341cfb3a7e381",
+   "80fac6fc043a9d7f",
+   "934041bbe4fb7778",
+   "938d4542240e5561",
+   "a647aee1034a7b07",
+   "aafdc431ffdbfde7",
+   "abab224c1d864fb5",
+   "b9ec0fbbfab13f79",
+   "bd1574bb35a26f67",
+   "c3cc2359f677f7a7",
+   "d48357051175353a",
+   "edb610ddb184c2ff",
+   "eeb0f959de1a7b6b",
+   "f918703731c35d27",
+   "f944dbe32ccecfd0"
+  ],
+  "48": [
+   "244a228b3c11e3bc"
+  ]
+ }
+}

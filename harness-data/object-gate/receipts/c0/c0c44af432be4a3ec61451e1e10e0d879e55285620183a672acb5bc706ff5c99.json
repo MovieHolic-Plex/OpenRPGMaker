@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0c44af432be4a3ec61451e1e10e0d879e55285620183a672acb5bc706ff5c99",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-6-R",
+ "label": "jp_city/street_hand/jp-sf-office-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, windows, door frame, and door overhang are drawn as a flat architectural front elevation with no visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation with straight vertical columns, flat rectangular windows, and a doorway. The awning/lintel above the door (rows 7-8) and the upper trim (rows 0-3) show no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4139
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large front-facing building entrance with framed glass doors and lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat frontal facade. Its roof/lintel elements are only horizontal edge bands with no visible top surface or foreshortened slope; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 259499
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large glass-fronted building entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade. Its roof/lintel is only a thin horizontal edge with no visible foreshortened top surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 72365
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.825Z",
+ "cells": {
+  "16": [
+   "1f9df1d889f05700",
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "537c23bb38f18dfb",
+   "659da1797ea32993",
+   "6e9835e08f0f35f0",
+   "8df1ae22bb17822d",
+   "b7dd29a8143779e8",
+   "bc3ea4328f130ebc",
+   "c125afcc4180df26",
+   "c28ae83d17a2a399",
+   "c7bc0e7332cbf039",
+   "d15647df49101aa3",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "4478e3e906ee1b8e",
+   "45f16f905f9fe5ae",
+   "6991bf4ca7eace6a",
+   "74ae45831eddf79c",
+   "a01ed8912c3bf42b",
+   "af9f4473e026afa1",
+   "e26438b4c9cd868e",
+   "e3747639deea0908"
+  ],
+  "32": [
+   "33bb3e3274852cec",
+   "4f89e6ba66a34c7b",
+   "557f782cc4846b87",
+   "98112393f4ce28d9",
+   "a59b8f0143882e7d",
+   "aaf15582ce1ccb5b",
+   "ab813e42450a47f6",
+   "c93a9110a6993ca6",
+   "de47c3fec33b84f0",
+   "e79868dc70bbd10e",
+   "ec4e150941e743db",
+   "f7d6b682221e3ae4"
+  ],
+  "48": [
+   "64722075e43036e2",
+   "aa2910279dea9e8b"
+  ]
+ }
+}

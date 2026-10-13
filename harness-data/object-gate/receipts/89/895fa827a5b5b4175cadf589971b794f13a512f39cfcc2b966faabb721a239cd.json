@@ -4,24 +4,28 @@
  "width": 16,
  "height": 16,
  "kind": "column",
- "name": "bridge railing post",
- "label": "jp/bridge-post",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "name": "jp-bridge-post",
+ "label": "jp_city/street_hand/jp-bridge-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "bridge railing post",
+    "main_body": "bridge post",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The post body is drawn as a flat rectangular box bounded by perfectly vertical side outlines (cols 4 and 14) and flat horizontal boundaries (rows 1 and 14). No foreshortened top surface or cap is visible.",
+    "evidence": "The bridge post is drawn entirely in flat front elevation with horizontal division lines and no visible top surface or oblique depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -30,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5297
+   "ms": 9224
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "bridge railing post",
+    "main_body": "bridge post / lantern block",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The post is rendered as a flat front elevation with a 1px top border at row 1; rows 2-7 and 8-13 form vertically shaded front panels rather than a foreshortened horizontal top cap.",
+    "evidence": "The central post/lantern body (rows 2-13) is drawn as a flat rectangle with no foreshortened top plane visible, capped only by flat horizontal edge lines at row 1.",
     "verdict": "fail"
    },
    "pass": false,
@@ -52,46 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 10958
+   "ms": 3877
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "rectangular bridge railing post with a broad light top plane and south-facing front face",
+    "main_body": "rectangular post body / lantern block",
     "kind_matches": true,
-    "top_rows": 8,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a clearly visible multi-row top surface above the front face; no receding isometric side face or container opening is present.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat 2D rectangle bounded by straight horizontal and vertical lines. The horizontal color division at row 8 separates two vertical front panels (sharing the same vertical column shading), with no foreshortened top surface visible.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 101856
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7048
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "rectangular bridge railing post",
+    "main_body": "bridge post / lantern block",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main post has a clearly visible broad top plane approximately 6 source pixels deep above its south/front face; it is more than a mere rim or edge line. No receding isometric side face is present, and the body is not a pure front elevation.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The main body and connecting vertical post are drawn entirely with straight horizontal lines (rows 1, 7, and 14) with no foreshortened top surface or elliptical curves visible.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 101554
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7361
   }
  ],
- "decidedAt": "2026-10-13T07:46:20.156Z",
+ "decidedAt": "2026-10-13T11:34:33.355Z",
  "cells": {
   "16": [
    "e984afad7fffb82c"

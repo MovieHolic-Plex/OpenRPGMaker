@@ -4,9 +4,9 @@
  "width": 16,
  "height": 64,
  "kind": "flat",
- "name": "railway crossing deck",
- "label": "jp/rail-xing",
- "profileHash": "c69574d8ced1cdf8",
+ "name": "jp-rail-xing",
+ "label": "jp_city/street_hand/jp-rail-xing",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "railway crossing deck surface",
+    "main_body": "railway crossing ground/road texture",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The entire sprite represents flat crossing deck panels viewed directly from above in 3/4 perspective, with visible surface seams and bolt markings.",
+    "evidence": "The sprite depicts a flat ground surface with railroad crossing elements viewed entirely from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5149
+   "ms": 3692
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "ground decking panel",
+    "main_body": "railway crossing ground panels and rails",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The entire object is a floor-level railway crossing surface/plank deck seen flat from above with panel seams and bolt details.",
+    "evidence": "The sprite depicts flat concrete level crossing road slabs with two embedded horizontal rails and panel fastener holes viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4371
+   "ms": 6395
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "broad rectangular railway crossing deck",
+    "main_body": "railroad crossing surface / pad",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The deck is shown as a broad continuous overhead plane across the full 64-pixel height; the dark transverse bands read as surface rail details rather than a front face.",
+    "evidence": "The object is a flat pavement/rubber panel for a railway crossing seen directly from above, showing modular panels with bolt details and horizontal seam lines across its entire 64-row height.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 93858
+   "ms": 5975
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "broad flat railway crossing deck surface with dark horizontal rail/board details",
+    "main_body": "rail crossing surface / ground panels",
     "kind_matches": true,
     "top_rows": 64,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a broad planar surface visible across the full 64-pixel source height; the dark horizontal bands are surface details, not a front elevation or receding side face.",
+    "evidence": "The object is a flat ground-level crossing texture with panels and bolt markers lying entirely flat on the ground surface across all 64 pixel rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 118421
+   "ms": 6105
   }
  ],
- "decidedAt": "2026-10-13T07:17:27.966Z",
+ "decidedAt": "2026-10-13T11:34:35.382Z",
  "cells": {
   "16": [
    "399ea114a02574c4",

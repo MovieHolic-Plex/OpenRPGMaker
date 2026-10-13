@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ce4ad85a3b7ad28d9e091bfe1e0958d41d944b5726b026b8dc393d1194951bb1",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "jp-glory",
+ "label": "jp/jp-glory",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "climbing morning glory vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vine is drawn completely flat in 2D front view without any horizontal depth, top surface, or top-down foreshortening on its leaves or flowers (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8948
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "morning glory vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Climbing morning glory vine with leaves and blossoms. As organic wall/trellis foliage, it has no horizontal top surface, seat, cap, or opening to foreshorten, and correctly depicts vertical climbing growth for a 3/4 perspective wall tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18720
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "morning glory vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The climbing plant is drawn purely as a flat front elevation with no top-down perspective or horizontal surface depth shown on the leaves or canopy (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "morning glory vine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vine is drawn as a flat 2D front elevation (side-scroller style) with no horizontal surfaces or top-down perspective shown on the leaves, stems, or flowers (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10782
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.018Z",
+ "cells": {
+  "16": [
+   "6d6ca1ef59ab14d3",
+   "fa79621a83f7cfcd"
+  ],
+  "24": [
+   "0eff5d92910f98de",
+   "385d8847706102c1",
+   "3b38d8ae9c5e13e6",
+   "3bdbf84d13ce1ebc",
+   "4953ae301dd600ae",
+   "6dd171450cf8226d",
+   "8b2e897b72e6e121",
+   "b191f1fc990efa32",
+   "d90d15e954428790",
+   "e8bd5529b3cd006b",
+   "f0756c49c56c1ee4",
+   "fed1b696ba7fb5a9"
+  ],
+  "32": [
+   "339e2255c7dd3f32",
+   "451a599def24c95a",
+   "91d500727fe07d42"
+  ],
+  "48": [
+   "30ca10fad8373dc4",
+   "5755d18b74852d73",
+   "67399deace203d5d",
+   "989a1eeb97e45842",
+   "a38494b3074fb396",
+   "bdf9dcb6cf825374"
+  ]
+ }
+}

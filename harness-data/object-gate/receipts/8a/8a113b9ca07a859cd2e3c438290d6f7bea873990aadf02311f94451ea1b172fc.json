@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a113b9ca07a859cd2e3c438290d6f7bea873990aadf02311f94451ea1b172fc",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "jp-sat-dish",
+ "label": "jp/jp-sat-dish",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "satellite dish mounted on balcony railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object, including the balcony railing/mount below the dish, is drawn in pure front elevation with no visible horizontal top surface (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17582
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "satellite dish and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The satellite dish is angled upward with its interior face visible as a foreshortened ellipse spanning rows 1 to 5, clearly showing the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7973
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "satellite dish",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The parabolic dish is angled toward the top-down 3/4 camera as an ellipse (rows 0-6) clearly revealing its concave interior surface across about 5 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8648
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "satellite dish and mount",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The satellite dish is drawn as a foreshortened ellipse spanning rows 1-6 with clearly visible interior depth and angle appropriate for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5092
+  }
+ ],
+ "decidedAt": "2026-10-13T14:18:29.295Z",
+ "cells": {
+  "16": [
+   "3ad9209a96edc8f6"
+  ],
+  "24": [
+   "0ae9b232bfb07791",
+   "2511dde41878f0b5",
+   "59b5fd6af09d35f4",
+   "9202dcc5bdf39990",
+   "96adfdd540d8e9bd",
+   "bdefb09d4eb9477d"
+  ],
+  "32": [
+   "001e44e1e8493336",
+   "2a4f459d6ca47d3b",
+   "a2e934b5ffe8c186",
+   "ac1e0be5a791c20b",
+   "c0448a7dafa45748",
+   "dd0e289ad651047c"
+  ],
+  "48": [
+   "44a4976db55fde79",
+   "9d7cabc9a010070f",
+   "ba11a3019416cd2e",
+   "c300d9e4cbaa9b13",
+   "cc53f675679459e5",
+   "fdfadbcf56046ab7"
+  ]
+ }
+}

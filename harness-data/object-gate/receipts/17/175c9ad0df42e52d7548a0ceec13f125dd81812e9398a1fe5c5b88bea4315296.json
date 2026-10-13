@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "175c9ad0df42e52d7548a0ceec13f125dd81812e9398a1fe5c5b88bea4315296",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-4-L",
+ "label": "jp_city/street_hand/jp-sf-office-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building entrance facade and sliding doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, entrance frame, lintel/awning, and windows are drawn completely flat in pure front elevation with 0 visible top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6533
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office glass entrance facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire entrance structure, including the lintel/awning, doorway frame, and walls, is drawn in pure 2D front elevation with zero pixel rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5474
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Office facade with sealed glass double doors and flanking windows",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The facade and doors are drawn in flat front elevation. The lintel and overhead trim show only single-row horizontal bands, with no substantial roof or lintel top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8899
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Sealed glass double-door entrance and surrounding facade",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entrance and facade are drawn straight-on. The horizontal lintel and door-frame header have only single-row edge bands, with no substantial top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 9313
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.824Z",
+ "cells": {
+  "16": [
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "537c23bb38f18dfb",
+   "659da1797ea32993",
+   "8df1ae22bb17822d",
+   "b7dd29a8143779e8",
+   "bc3ea4328f130ebc",
+   "c125afcc4180df26",
+   "c28ae83d17a2a399",
+   "c7bc0e7332cbf039",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "07090bfe218045f6",
+   "1bc5fc29dbeb95f0",
+   "2a63c4156a77b556",
+   "457cd0d85f37988a",
+   "45f16f905f9fe5ae",
+   "50bca066cce875cf",
+   "5c906ee1097d0f44",
+   "74ae45831eddf79c",
+   "8ebed162287371d3",
+   "9fd4ae75b7f072f0",
+   "a01ed8912c3bf42b",
+   "a1b95270ec3dd065",
+   "b5283ddbfee8eaef",
+   "d5265930fe1bbdbc",
+   "e3747639deea0908",
+   "e406e0d842dce791",
+   "e7bf14953444d830",
+   "edc876a2ab6f9f78"
+  ],
+  "32": [
+   "33bb3e3274852cec",
+   "432ef8a0196c4e0a",
+   "4f89e6ba66a34c7b",
+   "ab813e42450a47f6",
+   "d42d9e1fa5cb9c49",
+   "d587c7ef1c1be975",
+   "ec4e150941e743db",
+   "f7d6b682221e3ae4"
+  ],
+  "48": [
+   "2add758ef0892ac6",
+   "64722075e43036e2",
+   "703d56da70459582",
+   "786b47cf4d0c4a70",
+   "7e55e9a93afca524",
+   "fb275ae27fd7ae92"
+  ]
+ }
+}

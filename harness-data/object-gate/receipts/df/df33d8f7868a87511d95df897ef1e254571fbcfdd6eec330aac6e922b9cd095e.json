@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df33d8f7868a87511d95df897ef1e254571fbcfdd6eec330aac6e922b9cd095e",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-roof-navy",
+ "label": "jp/jp-roof-navy",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese tiled roof slope with eave edge",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire upper section from row 1 to 25 depicts the top sloped surface of the roof with vertical tile ridges, terminating in a horizontal eave trim and shadow at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4888
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese tiled roof slope with ridge/fascia details",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is viewed from above across rows 1-25, showing vertical tile ribs with perspective foreshortening down to the eave trim at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping roof surface spans rows 1-25 with vertical tile ribs, terminating in front eaves/fascia at rows 26-29, correctly depicting a south-facing roof slope in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5839
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled roof slope",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire main body from row 1 to row 25 is a downward-sloping tiled roof surface seen from above, terminating in front eaves at rows 26-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6087
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.017Z",
+ "cells": {
+  "16": [
+   "73ca544c15e7322b",
+   "f121a2fefea52dfc",
+   "fa4fd7b6aaad4f45"
+  ],
+  "24": [
+   "00d4332d5d642fe0",
+   "0caafa52f1e9b73b",
+   "10b6fb4be207d53a",
+   "1894ac3ab8520f60",
+   "1d39b0e2121fde46",
+   "29b980179b6a1a2c",
+   "2bf050d0891201b8",
+   "484258cb9ad12104",
+   "5cd83d3ea73fb455",
+   "5e745bb34247c74b",
+   "6e0aecd99350def5",
+   "b07b6927795a84b2",
+   "b7bf41b004a7c4f8",
+   "b9097a0289ac036b",
+   "c1e2df28f876e7bc",
+   "cc85879b9b97b8a0",
+   "d5ab56dfc50a3cee",
+   "de94f59196c796a5",
+   "e0832cdcd1ab6574",
+   "e7bf967fa3a05590",
+   "ee35517d09ad4592",
+   "ee77e3be715a2cb4",
+   "f442cac8952e7dd1"
+  ],
+  "32": [
+   "460daacf4917af48"
+  ],
+  "48": [
+   "175bdf61ef73b92f",
+   "6ee0b133687382ca",
+   "79952adc120adaeb",
+   "a64402f029a631b4",
+   "aceab2519a76df3e",
+   "bb5420f89c57e032"
+  ]
+ }
+}

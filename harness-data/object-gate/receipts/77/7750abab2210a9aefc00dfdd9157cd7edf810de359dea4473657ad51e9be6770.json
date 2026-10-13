@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7750abab2210a9aefc00dfdd9157cd7edf810de359dea4473657ad51e9be6770",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-w",
+ "label": "jp_city/street_hand/jp-mark-edge-w",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking / line decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is a floor surface marking viewed from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3362
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor marking / pavement edge decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground marking/pavement pattern spanning the full 16x16 tile, lying flat on the floor plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4574
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor marking edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor marking spanning all 16 rows, viewed entirely from above as flat ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7066
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground marking/floor decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor marking/pavement edge pattern viewed directly from above lying on the ground across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3833
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.379Z",
+ "cells": {
+  "16": [
+   "13c902b668a5b2d9"
+  ],
+  "24": [
+   "055305217406b679",
+   "1de73c07a3f721bd",
+   "41554c578b8af0b2",
+   "53fc251eb1cd32c0",
+   "54b2959cf09b69a2",
+   "6aed7b30bd30719b"
+  ],
+  "32": [
+   "055dfb627f368008",
+   "208fa1d165485154",
+   "354dd5ac7fb7f753",
+   "5754984920877fb3",
+   "94834c43095d97bb",
+   "9c892602acbfc6b6"
+  ],
+  "48": [
+   "21c0027e9f279272",
+   "316d980d84b4bf78",
+   "4eb4de600de89444",
+   "529b5897d43db5ec",
+   "8640c7f625db45c3",
+   "c24a13018fc97f34"
+  ]
+ }
+}

@@ -1,0 +1,186 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f02acda8aadb89675430063080bad200b212f19c2e998eefc8b207b93b17e940",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-5-L",
+ "label": "jp_city/street_hand/jp-sf-office-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office building entrance with sliding glass doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance frame, door canopy lintel, and wall are rendered as a pure flat front elevation with no visible top surfaces showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 37054
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office building entrance with glass doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront/entrance facade is drawn in flat front elevation. The doorframe lintel (rows 11-12) is only a 2px horizontal bar with no visible top surface, and the windows, wall, and upper railing have no 3/4 top perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6679
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing office building facade with central glass entrance and side wings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roof/lintel is a flat frontal bar with only a 1-2px edge, and no visible top slope or horizontal roof surface. The main building is presented as a straight front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 105344
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 120944,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.480Z",
+ "cells": {
+  "16": [
+   "0fdfd35b29a86cdc",
+   "1f9df1d889f05700",
+   "253ec576d516793a",
+   "30400c27e409cde9",
+   "37210adf83f964ab",
+   "3e9195ffcd8492e1",
+   "4bd0a988dc8d2dd9",
+   "59f120d11949a4d9",
+   "659da1797ea32993",
+   "7b380da525e8659a",
+   "814aa2d0a9220b1a",
+   "c125afcc4180df26",
+   "cac3c8cc144db1f0",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "0f4e22f1189c0083",
+   "4478e3e906ee1b8e",
+   "457cd0d85f37988a",
+   "45f16f905f9fe5ae",
+   "46950b83a656ca51",
+   "485cf09bbca75ae9",
+   "49fda7eba18a0e8e",
+   "51afbeb0aa461e3f",
+   "5a73a32469043fee",
+   "6397d0316dd9dcc7",
+   "7bf0c6cbffe5e25f",
+   "7eddb1c3480e52b0",
+   "85b91de13bd7fd88",
+   "85de2fbed51b1790",
+   "8ebed162287371d3",
+   "98e80e5eb6cb38f4",
+   "9e46299fdaddfaad",
+   "af9f4473e026afa1",
+   "b81c2ea3bac3791c",
+   "b9b988a3f01960a1",
+   "c5d4adbe51b3e4cc",
+   "e3747639deea0908",
+   "e406e0d842dce791",
+   "f089d22f3510268d"
+  ],
+  "32": [
+   "03cd6aaa8502595f",
+   "0e57e8df8a4f7426",
+   "10cd9e653e420a7d",
+   "121623a657d0951c",
+   "18b9418671fd169c",
+   "1e44b2f85d9da0e0",
+   "21faec1a86cedb90",
+   "2acb7fd9f4199a33",
+   "3128260284e9e808",
+   "33eed12d841e0789",
+   "3b105bdc43a7964b",
+   "4b346a9f9e58c84a",
+   "4f89e6ba66a34c7b",
+   "553bdbd94c805bb8",
+   "5b4b223664017c55",
+   "6e0a31dea3339452",
+   "7310ca002606ef1f",
+   "74f6597b554356c2",
+   "8310780a2cf198ca",
+   "889735e5b136b934",
+   "945eb43f71d0979b",
+   "967af82e9f00db49",
+   "98112393f4ce28d9",
+   "a3f9510e596d8f8b",
+   "abade59a20b7478d",
+   "b0c1281ffc6eceda",
+   "b9709e1664b6ab27",
+   "c9c0bf4f97ea6384",
+   "cf9873e7258f7367",
+   "d3a5999c24605433",
+   "d42d9e1fa5cb9c49",
+   "e0fefeea92e62b08",
+   "e2835111a9da9195",
+   "ead462e8a85422cd",
+   "ee1bfeb571995d23",
+   "efe0753a527baebd"
+  ],
+  "48": [
+   "7e7a98235df10fe1",
+   "9a03453f1d027d58",
+   "b6df1ae30c7a45f4",
+   "db3ffff94ebc4730",
+   "ec07139e1fffeb57",
+   "f9428ac1e0023503"
+  ]
+ }
+}

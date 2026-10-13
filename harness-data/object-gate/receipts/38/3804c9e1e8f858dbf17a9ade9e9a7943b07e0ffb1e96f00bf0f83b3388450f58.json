@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3804c9e1e8f858dbf17a9ade9e9a7943b07e0ffb1e96f00bf0f83b3388450f58",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-6-R",
+ "label": "jp_city/street_hand/jp-sf-sento-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento bathhouse storefront facade with entrance noren, signage, and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat side-scroller/architectural front elevation. There is no visible top surface or slope on the roof, lintels, door frame, or interior shelving (0-2px horizontal divider lines only).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese sento (bathhouse) storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper signage wall, horizontal lintel (rows 20-21), doorframe, noren curtain, and display shelves, is drawn in pure front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5188
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Bathhouse storefront facade with a central curtained entrance and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is shown as a flat facade. The upper roofline and entrance lintel are narrow horizontal strips, with no visible roof slope or horizontal top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7052
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Bathhouse building facade with a central curtained entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat facade: wall bands, windows, and entrance are shown straight-on. The upper trim and entrance lintel are narrow horizontal strips, not visible roof slopes or top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11245
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.008Z",
+ "cells": {
+  "16": [
+   "268694519f0564a3",
+   "30c40de893614fb0",
+   "492309af242ec3ef",
+   "52b83970a827fa15",
+   "57a10021e71aa44f",
+   "5e232eff7bd84c85",
+   "6634fac239164b40",
+   "6ec4d5455ed1f334",
+   "8a0024a5ea16da93",
+   "9150848b991b4217",
+   "9721588eed3352ee",
+   "a396b0f817f11824",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "e28db1323582e953",
+   "e5212857d2a2c98e",
+   "e9f9c8d434a16bfe",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "2d423c7142dc0dcc",
+   "32511535ead6ea22",
+   "4a41448fa486da75",
+   "4b96ff2dd370ce3f",
+   "64a2ef445f615dd2",
+   "782c79bff4c9f600",
+   "a790123a800014e2",
+   "def608c7dae2ccb2"
+  ],
+  "32": [
+   "0159c16a21b7f71d",
+   "03de5ec47a6253c8",
+   "06c3243d5cb9811c",
+   "0aded0827011ead4",
+   "5155ff0513991b09",
+   "56705deb169a8d98",
+   "6c0aaf0f399be5c5",
+   "7667ad8efb8e8a6e",
+   "95d2bfac57006570",
+   "a835f3d21fb9fdb8",
+   "b7c317fdc0d1f2ba",
+   "f8bc5204ce1cbd77"
+  ],
+  "48": [
+   "0dbfc5fc7f9f56dc",
+   "c6c1adfa182cecd4"
+  ]
+ }
+}

@@ -1,0 +1,208 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c1de03a5243b78cc35fb6c1912cc4dd87eb2c29760fdc695b3c7ad5bb4cd43f",
+ "width": 144,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-9-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-9-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ramen shop facade with awning and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade and red signboard awning are drawn in a flat side-scroller/architectural elevation style with no visible top surface or roof slope (0 px top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7335
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with ramen awning and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, awning with 'ラーメン', door lintel, and window frames are drawn as a flat architectural front elevation with no visible top surface or roof slope (only a 1-2px outline at row 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6872
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Ramen shop building facade with a large red sign fascia, entrance, and illuminated windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is shown as a flat front facade. The upper fascia has only narrow horizontal border/highlight lines, with no visible roof slope or substantial top surface; the entrance and windows also remain frontal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10009
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Ramen shop facade with a red signboard, entrance, and illuminated windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat storefront elevation. The narrow horizontal bands above the sign and doorway are edge trim, not visible roof or lintel top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8706
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.006Z",
+ "cells": {
+  "16": [
+   "1e53aa894244611f",
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "23ddaa772e24f34a",
+   "31836a5a65ac806a",
+   "32abe5f9a68c7935",
+   "570a96337889ce0d",
+   "684513a625e43e86",
+   "8030e46b36c8d743",
+   "8cf9e5b7bb765399",
+   "97135f52a42d9eb7",
+   "b133644178093c6e",
+   "b30488b7baf6aa41",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "cb66d29e67efcb93",
+   "d461d27d881dbc20",
+   "ea731aa5a3fbe23d",
+   "f03fc2d3d802566a",
+   "f6f17248e487b700",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "0b015249f57ab24b",
+   "1893cb389ebd1f1f",
+   "350a696a5e64207c",
+   "41f10ff995297bc7",
+   "6ace021d19967e77",
+   "73eafaebf1983980",
+   "909a554003691cc6",
+   "91192f64bdbd503d",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123",
+   "d3d649d862f75140"
+  ],
+  "32": [
+   "02a5ed51b6d4b81d",
+   "0386340919be630c",
+   "0a7e8730549d6bec",
+   "0bbd88c43b4fe78a",
+   "0c15f8db4de8e434",
+   "0c23c51b3c9069b9",
+   "1420077bfc0312b0",
+   "1b0b8a26b0d9a342",
+   "23f4cad0e724708c",
+   "24642d2952fbe009",
+   "25765ec08ddffc01",
+   "2a09928efaace140",
+   "2bbe7672457a37ad",
+   "2bed35b6c1e3ff11",
+   "2caa003ddea9d546",
+   "2ce7be351f558e0c",
+   "36453a2d6a1f7028",
+   "3845ab4e9662dcc6",
+   "3a7e8f93f29fbd5c",
+   "3cd48ab579846fe8",
+   "4a9b5b58d4b9fc0f",
+   "4e84b9c9cd528c2a",
+   "4f192a5b6befad49",
+   "5172bad021804230",
+   "55d6458e3960125a",
+   "5757a18530404394",
+   "5d3be644dda04209",
+   "64a831f978acdaac",
+   "66d7da0159ec8cee",
+   "6ccadada538bf2b5",
+   "6d28a8dce6633c42",
+   "6d891caef1a2ec7d",
+   "77ebcb5c2ec0b87f",
+   "7cdec9ef50fbc340",
+   "8138feb98c2e75d6",
+   "86919ba70efa735b",
+   "884c6ae962cb13bf",
+   "8a5e4e8f51c60af2",
+   "8d619fc5f870e9fb",
+   "8fc4f14635d86ead",
+   "969c03c571f4b9ab",
+   "9c5b9f49c77e1623",
+   "9c748553c7dd0983",
+   "a1673a84617773e6",
+   "adf37e7240e63270",
+   "b2dfeba3f2f959a0",
+   "c71aae69ffdff586",
+   "c72c3e5abfddee28",
+   "ca273335244424b7",
+   "cf24d4a9cd6d155d",
+   "d66c92268b09beb4",
+   "dfd5235b1000dc2b",
+   "e4bb1ea073bdf8ed",
+   "eaf2d9a1c0dcb847",
+   "eef4d6a32326f85f",
+   "f00a3e738f8f9ec6"
+  ],
+  "48": [
+   "270d6e206437feb6",
+   "451ab446f7a4f702",
+   "ea4db888dcb3584b"
+  ]
+ }
+}

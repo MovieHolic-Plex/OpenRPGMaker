@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0188836ee474deb25b6c598f8c780fbdc22b04a0c77f582bfa34be993ec04946",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-6-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront (building facade with door, sign, awning, and windows)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation. The roof/lintels, door frame, base, and awning show no visible top surfaces foreshortened from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe building storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building storefront (concrete cornice, door frame, awnings, and base) is drawn in completely flat architectural front elevation with no visible horizontal top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6135
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront facade with door, sign, awnings, and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cafe facade is drawn as a flat 2D architectural front elevation (side-scroller style). There are no foreshortened top surfaces visible on the roof, door lintel, window sills, or awnings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4791
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade / cafe exterior with door, awning, and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (roof/fascia, projecting doorway lintel, awnings, and window sills) is drawn as a flat 2D architectural front elevation with no visible top surfaces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5308
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.386Z",
+ "cells": {
+  "16": [
+   "244fd2bb1b18d80f",
+   "306ac3f6ed990d3c",
+   "46dc30baa616adf1",
+   "548efa160c6b1d6a",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6d8d6a2b2522f31c",
+   "73a6c93d6a37ebb7",
+   "8439298b8a4c0da7",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87",
+   "b6239da1c9aad322",
+   "ba3203033f4cbec9",
+   "c13f217a69b76324",
+   "cb4d3144af0c654e",
+   "d2c66e8600eb8804"
+  ],
+  "24": [
+   "2a52ff0f30d43d8a",
+   "488e9f739293836d",
+   "5d6e42fe9c7e1d20",
+   "5ebc52e927acfb2e",
+   "622c4b477f0c7be2",
+   "a87c5c0a1937700f",
+   "b3cbfcbeb84a89c7",
+   "fb6e3c600e73dea9"
+  ],
+  "32": [
+   "0d8c0e7a3d6a3367",
+   "45b48b220a5137fb",
+   "6ce0e86a692081d2",
+   "963a5f79f02e6f9a",
+   "9fc5b516d2a3e612",
+   "be150c4924705d2a",
+   "c6bbc2b281d66be7",
+   "de76dc4bf089eb8c",
+   "e22debf97386fcf1",
+   "f07454d18594c477",
+   "fda04eed84007675",
+   "ff4eb5e2564617eb"
+  ],
+  "48": [
+   "440b8e68bc593d07",
+   "e40f9e4232183bc2"
+  ]
+ }
+}

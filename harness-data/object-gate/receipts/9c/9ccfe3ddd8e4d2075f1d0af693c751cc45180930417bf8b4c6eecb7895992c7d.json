@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ccfe3ddd8e4d2075f1d0af693c751cc45180930417bf8b4c6eecb7895992c7d",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-gate",
+ "label": "jp_city/street_hand/jp-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gate with upper panel and lower vertical bars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is rendered completely flat in front elevation: upper panels (rows 1-5) and lower wooden bars (rows 6-14) show no visible top surfaces, roof slope, or foreshortened horizontal beams.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5419
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gate / barred wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the upper panel/wall (rows 1-5), the horizontal lintel beam (row 6), and the vertical grille bars (rows 7-14) are viewed straight-on with no visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7084
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese gate with broad roof/lintel and vertical gate panels",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad tan upper slab is visible as a substantial horizontal top surface above the dark front beam; the lower gate face is shown beneath it. No receding isometric side face is present, and the structure is not a flat pure elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 208955
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large gate structure with a tiled roof/lintel and barred lower frontage",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad tiled upper plane is visibly several pixels deep above the darker front fascia, while the lower gate has a clear south-facing barred face. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 65361
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.363Z",
+ "cells": {
+  "16": [
+   "32c17016f4a22a88",
+   "f856681afd0be1bc"
+  ],
+  "24": [
+   "25d6f14d9639f3a0",
+   "26bd29310a156c48",
+   "31fec2390854512a",
+   "6e3df0ffd7444f36",
+   "88f05e132fe65d46",
+   "a363a025b0c74a66",
+   "cc5c0df0ff6e0a7f",
+   "e09aa9f17f99a845",
+   "ee94dd8844cd953d",
+   "f0e34dfc9e36b8a3",
+   "f61a51f2098a3a95",
+   "fb97257d9b2690c6"
+  ],
+  "32": [
+   "028ae5d11b95dffa",
+   "4718071ae8f85528"
+  ],
+  "48": [
+   "0ef69e7c71686726",
+   "12cc97270143a98e",
+   "15fb32388566257b",
+   "160cb78e3cff1057",
+   "4c4ec68263ef7f15",
+   "68cad5e4d936a323"
+  ]
+ }
+}

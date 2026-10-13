@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "717bf55870519e9817b6cbf4af7b53ce5f9eacac0d96a38625b845ff487f826e",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-pave-b",
+ "label": "jp/jp-pave-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "paving stones / floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a set of four square pavement tiles viewed flat from above, properly fitting the flat ground tile category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11191
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "four stone paving tiles laid flat on the ground",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object depicts a 2x2 arrangement of paving tiles seen from above as a flat floor surface with top-left edge bevels/highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4961
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pavement tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor paving tile drawn as a flat ground surface viewed from above with bevels/grout lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4592
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "four stone paving tiles separated by mortar joints",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite depicts floor paving tiles viewed from above with top surfaces and subtle south-edge/east-edge bevels/shadows in the mortar lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5247
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:07.013Z",
+ "cells": {
+  "16": [
+   "56d08dae808d79a5"
+  ],
+  "24": [
+   "3bd96c9e77772bbf",
+   "7df84666cfa98528",
+   "b405c5c7a0782ee5",
+   "c43d23a49d5858be",
+   "d9de45746fe4d5d2",
+   "ffb57579388d801b"
+  ],
+  "32": [
+   "16edd166f9128dfd",
+   "1900e2497ec2e557",
+   "521489621fe9a6d1",
+   "88a4219c5aded624",
+   "be2976d890115043",
+   "ca94819db2b21aa0"
+  ],
+  "48": [
+   "0cc124d7c7228349",
+   "0ff5264b61699d60",
+   "2c5b67c07866eae5",
+   "5103ecca164ca29b",
+   "570391fb3a362c00",
+   "8676d7b64c8e8158"
+  ]
+ }
+}

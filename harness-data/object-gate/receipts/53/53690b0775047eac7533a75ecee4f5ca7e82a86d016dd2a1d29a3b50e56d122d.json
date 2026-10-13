@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53690b0775047eac7533a75ecee4f5ca7e82a86d016dd2a1d29a3b50e56d122d",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-6-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade / cafe exterior",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation with no visible roof or horizontal top surface for the building structure (0 rows). The door lintel, windows, and wall are all rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7473
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront / building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation. The wall, roofline, doorframe, window sills, and even the potted plants/interior furniture behind the glass are drawn straight-on with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7876
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large flat-fronted building or gate facade with a central blue opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is presented as a straight-on facade; its upper edge is only a thin horizontal band with no visible horizontal roof or lintel surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 523721
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat rectangular front elevation with vertical facade edges; its dark top band is only an edge/line, not a visible roof or horizontal top surface. No receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 463684
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.079Z",
+ "cells": {
+  "16": [
+   "1a569172063c4ba6",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6d8d6a2b2522f31c",
+   "75a61006df7207f9",
+   "8ef8bcb1d076a376",
+   "90fff0685e22dbed",
+   "912bdb1002e40169",
+   "9b217cbabf01af71",
+   "9f3943f7b4d60f4d",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87",
+   "bd3d1c4a16c3af8b",
+   "cb4d3144af0c654e"
+  ],
+  "24": [
+   "04b2c339ac2a2109",
+   "0d3e79c77541ef04",
+   "2a52ff0f30d43d8a",
+   "82fcf7c747a051a1",
+   "84fbc0f63449e226",
+   "9715c5b1d031af79",
+   "b4b752074fe9bdee",
+   "bd8abb8a0403336f"
+  ],
+  "32": [
+   "1538536bd2a13d5c",
+   "1d82d7712fbc9db2",
+   "8027960bbc574093",
+   "83508e824869cb1a",
+   "a6f8715eb8171306",
+   "c1fe3bc897e98caf",
+   "c69f0aadc8514f41",
+   "dfeffb313c5874da",
+   "e22debf97386fcf1",
+   "f07454d18594c477",
+   "f6bba139691bac03",
+   "ff4eb5e2564617eb"
+  ],
+  "48": [
+   "9ec4db498c28ca1c",
+   "df4ea66a1b180740"
+  ]
+ }
+}

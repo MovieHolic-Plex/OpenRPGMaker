@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70127ab4e84f977fdfb5cac01ded9c8da6075363e8186bcf2f75fbb9db86ac78",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp_city/street_hand/jp-torii",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gate, including the top lintel (kasagi), lower tie-beam (nuki), and column bases, is drawn in pure 2D front elevation with no visible top surfaces (only 1px highlight lines on the beams).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5220
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate lintels, top roof beam, and pillar bases are drawn in pure front elevation with straight horizontal bands and 1px edge highlights rather than visible top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3539
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 389350,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 478712,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.231Z",
+ "cells": {
+  "16": [
+   "10f805326e9160b6",
+   "240923fb7885a208",
+   "34dccf02dc7a4294",
+   "4b8114f225b60233",
+   "4e2bc7e44fae7e06",
+   "6e13fb9d6947e840",
+   "7c086a4e02a3969e",
+   "ad267f81604ec83d",
+   "d21685a3efd2e5bc",
+   "df025b14c90abf2d"
+  ],
+  "24": [
+   "10127a2fdb284dbb",
+   "2aa1056e48fe8641",
+   "30d86d89ea5b4522",
+   "3766fd3d31693253",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "5cc2c70c9458424d",
+   "7d130311678af49b",
+   "86e15b8b7a094f01",
+   "9495f56b554fdcdb",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "c97d1c2c766bf112",
+   "ce1a37b16a69e32f",
+   "fcb7131de2e23f0b"
+  ],
+  "32": [
+   "1b915181f104ae8d",
+   "1c889dae98581406",
+   "1d0214ad5e53f815",
+   "7fe3f8c524bdea7a",
+   "c50e931f77d21839",
+   "da9bfd023f2c8970",
+   "dce7427a018e2fb1",
+   "dcebed6b2761c8ca"
+  ],
+  "48": [
+   "6e46ed1a2432c130",
+   "720fac30f16bd1eb",
+   "7ff8557d2048c6c9",
+   "c22975856cfcdada",
+   "dc9e30c33ea8c551",
+   "e5baa04bee37cfe1"
+  ]
+ }
+}

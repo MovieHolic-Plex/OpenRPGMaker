@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b3a9b96700a21c33b27c42b992135e32ddc4f661d55dc02f4764700e4e35866",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-e-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-e-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground road marking with drainage grate edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor surface containing road markings and a drainage grate texture viewed directly from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3197
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground road marking with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground-level road markings and an embedded drainage grate lying completely flat on the floor surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3462
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground road marking with drainage grate lying flat on pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite depicts a flat ground surface with pavement markings and an inset metal drainage grate viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3028
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground road marking with edge grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground-level decal depicting road markings and a drainage grate lying flat on the floor across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3279
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.359Z",
+ "cells": {
+  "16": [
+   "f223212ff4e03b57"
+  ],
+  "24": [
+   "1f2c94f6cf3cd4e3",
+   "29b594d48ab776e8",
+   "590cb07727d7703d",
+   "764c9204bda9d2fd",
+   "7f5f94edc700cf20",
+   "a7f4693ce732a121"
+  ],
+  "32": [
+   "01d2d5c3347cbdcf",
+   "15223cc049d80d81",
+   "19e05b29d37032b2",
+   "369e7b381adb9775",
+   "3e740ef5157f6beb",
+   "90103ca667c57fbd"
+  ],
+  "48": [
+   "4ed99374652708cd",
+   "84bccb170fda961c",
+   "8b0b030855b2006e",
+   "bc8a798919804761",
+   "caac0ec365bd3c23",
+   "e2d06d04b3da9e30"
+  ]
+ }
+}
