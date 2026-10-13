@@ -1,6 +1,6 @@
 {
  "tiles": {
-  "count": 15405,
+  "count": 15411,
   "tilesPerRow": 96,
   "rows": 161,
   "sheetPx": [
@@ -11,29 +11,29 @@
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 11759,
-  "legacy": 509,
+  "block_cells": 11737,
+  "legacy": 537,
   "legacy_ids": [
    5137,
    5275,
    5649,
    5650,
    5922,
+   6544,
+   6545,
+   6546,
+   6547,
+   6548,
+   6549,
+   6550,
+   6551,
+   6552,
+   6553,
+   6554,
+   6555,
    6585,
    6587,
-   6590,
-   6592,
-   6608,
-   6645,
-   6653,
-   6686,
-   6688,
-   6707,
-   6728,
-   6749,
-   6929,
-   6930,
-   6931
+   6590
   ],
   "unused_source": 110,
   "people_reserved": 155,
@@ -45,31 +45,31 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 11759
+   "block": 11737
   }
  },
  "pc_counts": {
-  "star": 6232,
-  "solid": 3180,
+  "star": 6219,
+  "solid": 3171,
   "floor": 3671,
   "solidfloor": 1006,
   "flat": 652,
   "blank": 155
  },
  "kits": {
-  "total": 1329,
+  "total": 1318,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
    "prop": 142,
-   "block-kit": 1153
+   "block-kit": 1142
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 1153
+  "block_kit": 1142
  },
  "groups": {
   "total": 341,
@@ -217,11 +217,11 @@
    },
    {
     "name": "street_hand",
-    "cells": 1250,
+    "cells": 1228,
     "autotiles": 0,
     "groups": 1,
-    "kits": 231,
-    "notes": "손 도트 거리 소품 231종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
+    "kits": 220,
+    "notes": "손 도트 거리 소품 220종(전봇대·전선·커브미러·소화전·버스 정류장·노면 표시·블록 담·대문·카포트·월정 주차 간판·가스통·실외기·화분·빨래 장대·게시판·쓰레기 상자·지장·도리이·주유소 캐노피·학교 정문). 근거 tiledata/jp-city/research/. 전선 키트(jp-wire-*)는 4층 전용 — 3층에 찍으면 지붕을 덮는다. 한계: 전선은 가로·세로 직선 구간만(대각 없음), 밤 조명 없음."
    },
    {
     "name": "school",
@@ -466,7 +466,7 @@
   ]
  },
  "reassembly": {
-  "kits_checked": 1329,
+  "kits_checked": 1318,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -476,18 +476,15 @@
    "underpass": 1,
    "footbridge": 1,
    "bldg": 77,
-   "pole": 3,
+   "pole": 2,
    "wire": 19,
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
    "mark": 19,
-   "bwall": 4,
-   "bwallf": 3,
    "gatepost": 1,
    "gate": 1,
    "carport": 1,
-   "tsukigime": 1,
    "propane": 1,
    "ac": 1,
    "pots": 1,
@@ -505,7 +502,7 @@
    "crosswalk": 1,
    "foot": 1,
    "wall": 1,
-   "rail": 4,
+   "rail": 2,
    "sf": 143,
    "tetsubo": 1,
    "noboribou": 1,
@@ -542,8 +539,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 15405,
-  "kits_checked": 1329,
+  "tiles_checked": 15411,
+  "kits_checked": 1318,
   "groups_checked": 341,
   "autotiles_checked": 17
  },
@@ -559,10 +556,10 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "717e9ad522aca49ee94544fdf005043eb72ce05a",
+ "sheet_hash": "b516a2b1df1fb5e9a825be5c6d01f56b4e62a0b0",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 1329,
+  "kits_checked": 1318,
   "by_kind": {
    "recipe": 25,
    "door": 9,
@@ -572,18 +569,15 @@
    "underpass": 1,
    "footbridge": 1,
    "bldg": 77,
-   "pole": 3,
+   "pole": 2,
    "wire": 19,
    "mirror2": 1,
    "hydrant": 1,
    "bus": 1,
    "mark": 19,
-   "bwall": 4,
-   "bwallf": 3,
    "gatepost": 1,
    "gate": 1,
    "carport": 1,
-   "tsukigime": 1,
    "propane": 1,
    "ac": 1,
    "pots": 1,
@@ -601,7 +595,7 @@
    "crosswalk": 1,
    "foot": 1,
    "wall": 1,
-   "rail": 4,
+   "rail": 2,
    "sf": 143,
    "tetsubo": 1,
    "noboribou": 1,
@@ -638,8 +632,8 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 15405,
-  "kits_checked": 1329,
+  "tiles_checked": 15411,
+  "kits_checked": 1318,
   "groups_checked": 341,
   "autotiles_checked": 17
  },

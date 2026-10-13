@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a521e73a22aab0f063122f8bdabf790845f3614f8bde99d92f63cbdb6816a73d",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall with roof/coping and sukashi openwork window",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top half of the tile (rows 1-8, 8 source pixels tall) shows the sloping top surface/roof of the boundary wall, while rows 9-14 show the vertical south face with an openwork window.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall with decorative sukashi block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall consists of horizontal striped panels and a concrete block base with a sukashi cutout, all rendered in purely flat horizontal bands with no top surface, roof slope, or coping visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese earthen wall (tsukijibei) with sukashi opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall shows horizontal rammed-earth layers (rows 1-8) and a base with a sukashi vent cutout (rows 9-14) in pure front elevation, with zero visible top surface or coping/roof tiles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9630
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese boundary wall with sukashi (openwork cutout)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (rows 1-14) is drawn as a flat front elevation of a wall, consisting of an upper striped earthen/plaster wall and a lower grey stone base with a decorative cutout window. There is no visible top surface or roof slope showing depth in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9407
+  }
+ ],
+ "decidedAt": "2026-10-13T13:20:39.999Z",
+ "cells": {
+  "16": [
+   "2e5d99af04e75a1e"
+  ],
+  "24": [
+   "489cc268605434c7",
+   "5d84a28d16fbc395",
+   "721955fef620cf39",
+   "76beee28510d614f",
+   "d7f1887c88d98e3d",
+   "f7ca4be540bbd47e"
+  ],
+  "32": [
+   "0a4b568fad5919c7",
+   "7fa4ac7cd7e913f7",
+   "a901730500ea07f5",
+   "d9d8adc2f3ec92f6",
+   "ea02e7cb67fbde35",
+   "fcc02772806a27ef"
+  ],
+  "48": [
+   "371596b03d5eb671",
+   "76c4287b203d0620",
+   "7a9087ca0aa743c7",
+   "9b0a096cf63b5969",
+   "be6e2ee0aa12c6fc",
+   "c0ac731d2be376c0"
+  ]
+ }
+}
