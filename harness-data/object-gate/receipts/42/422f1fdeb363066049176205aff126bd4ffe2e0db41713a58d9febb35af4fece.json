@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "422f1fdeb363066049176205aff126bd4ffe2e0db41713a58d9febb35af4fece",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "전력 도관 상자(윗면 굵은 케이블 둘 + 번개 경고 램프)",
+ "label": "sf-station/sf-power-conduit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly depicted across rows 2-7 (~6 rows), featuring two horizontal cables and a yellow warning box, with the south/front face visible below at rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4391
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 1 to 8 and displays two horizontal cables and a yellow warning box. The south face spans rows 9 to 14 with status indicator LEDs and ventilation slots, showing a clear 3/4 perspective split.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4090
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface occupies rows 2-8 showing two thick horizontal cables and a yellow junction box, while the south vertical face occupies rows 9-14 with indicator lights and panel vents.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3806
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "power conduit box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface is clearly visible across rows 2–7 with two conduits and a warning marker, while the front face extends from rows 9–14 with indicator lights and panels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4058
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "82901fd77e377c60",
+   "901dfdedfdc674f0"
+  ],
+  "24": [
+   "228a179d3df92907",
+   "4bae93eedb91b8c6",
+   "6a291b10cad9ce3b",
+   "6d7e2404bdc24d0b",
+   "82ea596364008880",
+   "89704cbb5bced5d9",
+   "94fd39c42e3cbdc5",
+   "a98092b5e832c8e7",
+   "acdcaf5819ca7794",
+   "c3a9d2dd03cdf04d",
+   "e8b787721ed5d4b5",
+   "fe010583c39d0050"
+  ],
+  "32": [
+   "800443795091a7d4",
+   "9184863bc0505c11"
+  ],
+  "48": [
+   "18bc097b6ac021ae",
+   "4821c970e04182d2",
+   "9d04334409ce0612",
+   "db802fdaee02f73a",
+   "de777843796e9611",
+   "f0b78ffb2ce0cb9d"
+  ]
+ }
+}

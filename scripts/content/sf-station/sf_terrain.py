@@ -58,7 +58,7 @@ def lab_floor(c, ox, v):
             c.P(ox + x, y, K('white', 2 if blk else 3))
     c.HL(ox, 0, 16, K('white', -1)); c.HL(ox, 8, 16, K('white', -1)); c.VL(ox, 0, 16, K('white', -1)); c.VL(ox + 8, 0, 16, K('white', -1))
     c.HL(ox + 1, 1, 7, K('white', 5)); c.HL(ox + 9, 9, 7, K('white', 5))
-    if v: c.P(ox + 12, 4, K('cyan', 1)); c.P(ox + 3, 12, K('cyan', 0))
+    if v: c.P(ox + 12, 4, K('white', 0))
 
 
 def crew_floor(c, ox, v):
@@ -96,10 +96,11 @@ def void_star(c, ox, v):
 
 
 def regolith(c, ox, v):
-    noise_fill(c, 'regolith', (-1, 0, 1), v + 61, ox, 0)
-    for k in range(6):
-        x, y = hsh(k, v, 62) % 13 + 1, hsh(k, v, 63) % 13 + 1
-        c.P(ox + x, y, K('regolith', 2)); c.P(ox + x + 1, y + 1, K('regolith', -2))
+    """달 레골리스: 옅은 결 + 변형마다 다른 자리의 자갈 2~4개(밝은 윗점 + 어두운 아랫점) — 칸마다 같은 자리 반복 무늬를 줄인다."""
+    noise_fill(c, 'regolith', (-1, 0, 0), v + 61, ox, 0)
+    for k in range(2 + v % 3):
+        x, y = hsh(k, v, 62 + v) % 12 + 2, hsh(k, v, 63 + v) % 12 + 2
+        c.P(ox + x, y, K('regolith', 2)); c.P(ox + x + 1, y, K('regolith', 1)); c.P(ox + x, y + 1, K('regolith', -2)); c.P(ox + x + 1, y + 1, K('regolith', -2))
     if v >= 2:                                           # 작은 크레이터(어두운 안쪽 + 밝은 둘레)
         cx, cy = 5 + (v - 2) * 5, 6 + (v - 2) * 2
         c.ell(ox + cx, cy, 3, 2, K('regolith', -2)); c.ell(ox + cx + 1, cy + 1, 2, 1, K('regolith', -3)); c.HL(ox + cx - 3, cy - 2, 6, K('regolith', 3))
@@ -113,11 +114,15 @@ def landing_plate(c, ox, v):
 
 
 def asphalt(c, ox, v):
-    noise_fill(c, 'navy', (-1, 0, 1), v + 81, ox, 0)
-    if v in (0, 2): c.P(ox + 4 + v * 3, 5, K('cyan', 0)); c.P(ox + 11, 11 - v, K('magenta', 0))
-    if v == 1: c.line(ox + 3, 4, ox + 9, 9, K('navy', -2)); c.line(ox + 9, 9, ox + 12, 8, K('navy', -2))
+    """밤 아스팔트: 어두운 회남색 바탕 + 드문 골재 점(밝음·어두움) — 색 점(별처럼 보임)은 넣지 않는다. 변형: 0 기본, 1 균열, 2 기름 얼룩, 3 젖은 반사."""
+    for y in range(16):
+        for x in range(16):
+            n = hsh(x, y, v + 81) % 40
+            c.P(ox + x, y, K('conc', -3) if n < 9 else K('conc', -1) if n == 39 else K('cable', 2) if n in (37, 38) else K('conc', -2))
+    if v == 1: c.line(ox + 3, 4, ox + 8, 9, K('cable', 0)); c.line(ox + 8, 9, ox + 12, 8, K('cable', 0)); c.P(ox + 9, 8, K('conc', 0))
+    if v == 2: c.ell(ox + 8, 9, 4, 2, K('cable', 1)); c.ell(ox + 7, 9, 2, 1, K('violet', -3)); c.P(ox + 9, 8, K('violet', -2))
     if v == 3:
-        c.R(ox + 4, 9, 7, 2, K('navy', 2)); c.HL(ox + 5, 9, 3, K('magenta', 1)); c.HL(ox + 8, 10, 2, K('cyan', 1))      # 젖은 반사
+        c.R(ox + 4, 9, 7, 2, K('navy', 0)); c.HL(ox + 5, 9, 3, K('magenta', -1)); c.HL(ox + 8, 10, 2, K('cyan', -1))      # 젖은 반사
 
 
 def lane_dash(c, ox, v):
@@ -134,11 +139,17 @@ def crosswalk(c, ox, v):
 
 
 def sidewalk(c, ox, v):
+    """보도: 8px 판석(같은 단 + 옅은 결), 판석마다 위·왼 이음(어두움) 아래 밝은 턱 — 4px 체커(번잡함) 없음. 변형 1: 배수 격자."""
     for y in range(16):
-        for x in range(16): c.P(ox + x, y, K('conc', 1 + (1 if ((x // 8) + (y // 8) + v) % 2 else 0) + (1 if hsh(x, y, v + 91) % 13 == 0 else 0)))
-    c.HL(ox, 0, 16, K('conc', -2)); c.HL(ox, 8, 16, K('conc', -2)); c.VL(ox, 0, 16, K('conc', -2)); c.VL(ox + 8, 0, 16, K('conc', -2))
-    c.HL(ox + 1, 1, 7, K('conc', 4)); c.HL(ox + 9, 9, 7, K('conc', 4))
-    if v: c.P(ox + 12, 4, K('violet', 1)); c.P(ox + 3, 12, K('cyan', 0))
+        for x in range(16):
+            n = hsh(x, y, v + 91) % 23
+            c.P(ox + x, y, K('conc', 0 if n < 3 else 2 if n == 22 else 1))
+    for k in (0, 8):
+        c.HL(ox, k, 16, K('conc', -1)); c.HL(ox, k + 1, 16, K('conc', 2))
+    for k in ((0, 0), (8, 8)): c.VL(ox + k[0], k[1], 8, K('conc', -1))
+    c.VL(ox + 8, 0, 8, K('conc', -1)); c.VL(ox, 8, 8, K('conc', -1))
+    if v:
+        c.R(ox + 10, 10, 4, 4, K('cable', 1)); c.HL(ox + 10, 11, 4, K('conc', -1)); c.HL(ox + 10, 13, 4, K('conc', -1)); c.HL(ox + 10, 10, 4, K('conc', 3))
 
 
 def puddle(c, ox, v):
@@ -218,7 +229,7 @@ def at_wall(c, m, ox, oy, mat='hull'):
     """격벽: 남쪽 이웃이 벽이 아니면 위 6행 윗면 + 아래 10행 앞면(판넬·줄), 남쪽이 벽이면 윗면만. 서·동·북은 모서리 띠."""
     base, acc = wall_mat(mat)
     P = lambda x, y, col: c.P(ox + x, oy + y, col)
-    caph = 16 if m & S else 6
+    caph = 16 if m & S else 13
     for y in range(caph):
         for x in range(16):
             tone = 3 - (1 if (y < 2 and not m & N) else 0)
@@ -227,22 +238,8 @@ def at_wall(c, m, ox, oy, mat='hull'):
         if y % 5 == 4 and y != caph - 1: c.HL(ox + 1, oy + y, 14, K(base, 2))
     if not m & N:
         for x in range(16): P(x, 0, K(base, -1)); P(x, 1, K(base, 4))
-    if not m & S:
-        for y in range(6, 16):
-            for x in range(16):
-                f = -2 if y > 12 else -1
-                P(x, y, K(base, f))
-        for x in range(16): P(x, 6, K(base, 4)); P(x, 7, K(base, 1))
-        for x in range(0, 16, 8): c.VL(ox + x, oy + 8, 7, K(base, -3)); c.VL(ox + x + 1, oy + 8, 7, K(base, 0))
-        if mat == 'viewport':
-            for x in range(2, 14): P(x, 9, K('hull', 4)); P(x, 13, K('hull', -3))
-            for y in range(10, 13):
-                for x in range(2, 14): P(x, y, K('star', -1 + (1 if hsh(x, y, ox + 5) % 11 == 0 else 0)))
-            P(5, 11, K('star', 3)); P(10, 10, K('star', 2)); P(8, 12, K('glass', 3)); c.HL(ox + 3, oy + 10, 4, K('glass', 2))
-        else:
-            c.HL(ox, oy + 12, 16, K(acc, 1 if mat == 'hull' else 2)); c.HL(ox, oy + 13, 16, K(acc, -1))
-            c.P(ox + 3, oy + 9, K('cyan', 3) if mat == 'white' else K('orange', 3))
-        for x in range(16): P(x, 15, K('shadow', 1))
+    if not m & S:                                      # 천장 가장자리: 아래 앞면 띠(wall-face-*)가 이어 붙는다
+        for x in range(16): P(x, 13, K(base, 4)); P(x, 14, K(base, 0)); P(x, 15, K(base, -3))
     if not m & W:
         for y in range(16): P(0, y, K(base, 4 if y < caph else 2)); P(1, y, K(base, 1)) if y < caph else None
     if not m & E:
@@ -344,3 +341,42 @@ auto('at-road', 'night city asphalt road autotile with concrete curb on open sid
 auto('at-regolith-path', 'compacted moon regolith road autotile with wheel tracks and ragged edges, 16 variants', at_regolith_path, desc='달 기지 길.', tags=['달', '길'])
 auto('at-rail', 'maglev rail track autotile connecting to neighbors with cyan guide line, 16 variants', at_rail, desc='자기부상 궤도(연결된 방향으로 뻗음).', tags=['궤도'])
 auto('at-lightline', 'floor guide light line decal autotile, cyan dashes connecting to neighbors, transparent, 16 variants', at_lightline, kind=FLAT, desc='갑판 위 투명 안내선 덧그림.', tags=['안내선'])
+
+
+# ------------------------------------------------------------------ 벽 앞면 띠(2026-10-14 QA 보강): 천장 오토타일(at-wall-*) 아래 두 줄로 붙는 앞면.
+# 4×2 조각: 열 = 변형(0 판, 1 이음+리벳, 2 배관, 3 환기/전망창 가운데), 행 0 = 위 앞면(윗턱·띠), 행 1 = 아래 앞면(판·걸레받이·바닥 그림자).
+def wall_face(c, mat):
+    base, acc = wall_mat(mat)
+    for v in range(4):
+        ox = v * 16
+        for y in range(32):
+            for x in range(16):
+                t = -1 if y < 22 else -2
+                if y >= 29: t = -3
+                c.P(ox + x, y, K(base, t))
+        c.HL(ox, 0, 16, K(base, 1)); c.HL(ox, 1, 16, K(base, -3))                 # 천장 밑 그늘
+        c.HL(ox, 5, 16, K(acc, 1 if mat == 'hull' else 2)); c.HL(ox, 6, 16, K(acc, -1))   # 띠
+        c.HL(ox, 21, 16, K(base, 1)); c.HL(ox, 22, 16, K(base, -3))               # 아래 판 이음
+        c.HL(ox, 28, 16, K(base, 0)); c.HL(ox, 31, 16, K('shadow', 1))           # 걸레받이 + 바닥 접지
+        c.VL(ox, 7, 14, K(base, 0)); c.VL(ox + 15, 7, 14, K(base, -2))            # 판 가장자리(왼 밝음·오 어두움)
+        for y in (9, 19): c.P(ox + 2, y, K(base, 2)); c.P(ox + 13, y, K(base, 2))
+        if v == 1:
+            c.VL(ox + 8, 7, 22, K(base, -3)); c.VL(ox + 9, 7, 22, K(base, 0))
+        if v == 2:
+            for k, yy in enumerate((11, 15)): c.HL(ox, yy, 16, K('rust', 1)); c.HL(ox, yy + 1, 16, K('rust', -2)); c.P(ox + 5 + k * 5, yy, K('rust', 3))
+        if v == 3 and mat != 'viewport':
+            c.R(ox + 4, 10, 8, 7, K('cable', 0)); [c.HL(ox + 5, 11 + k, 6, K(base, 1)) for k in (0, 2, 4)]; c.HL(ox + 4, 17, 8, K(base, 1))
+        if mat == 'viewport' and v != 1:
+            c.R(ox + 1, 8, 14, 18, K('hull', -3)); c.HL(ox + 1, 8, 14, K('hull', 4)); c.HL(ox + 1, 25, 14, K('hull', 2))
+            for y in range(9, 25):
+                for x in range(2, 14): c.P(ox + x, y, K('star', -1 + (1 if hsh(x + v * 16, y, 5) % 13 == 0 else 0) + (1 if hsh(x + v, y, 6) % 61 == 0 else 0)))
+            c.P(ox + 5, 12 + v, K('star', 3)); c.P(ox + 10, 18 - v, K('star', 2)); c.line(ox + 3, 22, ox + 7, 18, K('glass', 1)); c.P(ox + 4, 10, K('glass', 3))
+        if mat == 'white': c.P(ox + 3, 3, K('cyan', 3))
+        else: c.P(ox + 3, 3, K('orange', 3))
+
+
+for _m, _nm in (('hull', 'hull bulkhead wall front face strip under the ceiling autotile: upper and lower face rows, four variants'),
+                ('white', 'white lab wall front face strip under the ceiling autotile: upper and lower face rows, four variants'),
+                ('viewport', 'hull wall front face with star viewport windows: upper and lower face rows, four variants')):
+    piece('wall-face-' + _m, _nm, 4, 2, TERRAIN, group='terrain', tags=['벽', '앞면'],
+          desc='천장 오토타일(at-wall-%s) 남쪽 가장자리 바로 아래 두 줄에 깐다(위 줄=행0, 아래 줄=행1, 열=변형). 막힘.' % _m)(lambda c, _m=_m: wall_face(c, _m))

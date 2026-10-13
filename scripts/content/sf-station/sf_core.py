@@ -407,3 +407,11 @@ def window(c, wx, wy, ww, wh, col=None, seed=0, frame=None, sill=None, blinds=Fa
         if ww >= 4: c.VL(wx, wy + 1, wh - 1, K(col, 0))
     if ww >= 7: c.VL(wx + ww // 2, wy, wh, frame)
     if sill is not None: c.HL(wx - 1, wy + wh + 1, ww + 2, sill)
+
+
+def drop_shadow(c, cx, cy, rx, ry, t=1):
+    """접지·부양 그림자: 투명 화소에만 타원 그림자(shadow 램프) — 윤곽(outline) 뒤에 부른다(그림자에 윤곽이 붙지 않게)."""
+    for y in range(cy - ry, cy + ry + 1):
+        for x in range(cx - rx, cx + rx + 1):
+            if ((x - cx) / (rx + .5)) ** 2 + ((y - cy) / (ry + .5)) ** 2 <= 1 and 0 <= x < c.w and 0 <= y < c.h and c.a[y, x, 3] == 0:
+                c.P(x, y, K('shadow', t))

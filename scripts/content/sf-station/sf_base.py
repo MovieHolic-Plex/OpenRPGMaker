@@ -73,7 +73,7 @@ def _dish(c):
 def _pod(c):
     tcube(c, 2, 4, 44, 14, 9, 'magenta', ins=6, tt=3, ft=-2, ol=False)
     c.R(14, 7, 20, 6, K('glass', 0)); c.HL(14, 7, 20, K('cyan', 3)); c.R(23, 7, 2, 6, K('hull', -1))
-    c.R(4, 21, 8, 1, K('cyan', 3)); c.R(36, 21, 8, 1, K('cyan', 3)); c.HL(6, 24, 36, K('shadow', 1)); c.outline()
+    c.R(4, 21, 8, 1, K('cyan', 3)); c.R(36, 21, 8, 1, K('cyan', 3)); c.HL(6, 24, 36, K('shadow', 1)); c.outline(); drop_shadow(c, 24, 29, 18, 2)
 
 @piece('server-rack', '서버 랙(윗면 + 램프 줄)', 1, 2, 'tall_furniture', group='interior', solid=[(0, 1), (0, 0)], tags=['서버'], desc='서버 랙.')
 def _rack(c):

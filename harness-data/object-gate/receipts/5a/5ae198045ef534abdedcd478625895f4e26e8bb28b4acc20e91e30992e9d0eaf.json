@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ae198045ef534abdedcd478625895f4e26e8bb28b4acc20e91e30992e9d0eaf",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "바닥 해치(정사각 판 + 가운데 손잡이 + 위험 모서리)",
+ "label": "sf-station/sf-hatch-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Square floor hatch correctly depicted flat on the ground from top-down 3/4 perspective, occupying rows 1-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4682
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square floor hatch plate with corner hazard markings and a center handle",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor hatch viewed directly from above in standard top-down RPG projection, occupying the 14x14 area with flat surface details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4343
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Square floor hatch plate viewed flat from above with hazard corners and a recessed handle in the center across rows 1 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3949
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor hatch plate",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hatch is drawn flat on the floor filling rows 1-15 with hazard-patterned corners and a recessed center handle, consistent with a flat top-down ground object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5528
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.955Z",
+ "cells": {
+  "16": [
+   "ff17d51dc5ee4a1b"
+  ],
+  "24": [
+   "169d17c3a03d9fd3",
+   "5096f5040110933e",
+   "aebc166a51d211e0",
+   "cda81f39193489ba",
+   "e22b85e295fd3fa9",
+   "fa30d65091c53381"
+  ],
+  "32": [
+   "25337d220e64e54e",
+   "2b12066f3b570a56",
+   "474613d84adff984",
+   "77cbf381e408e7d4",
+   "bf5f00996e181b28",
+   "cb31403b1a4d0d30"
+  ],
+  "48": [
+   "29316df9c814f711",
+   "2f934e7b1980b4af",
+   "8f04a60145eaf624",
+   "b608f03cf22ec55d",
+   "bd8e6a5b0dd0bc17",
+   "f85a5e97773878e1"
+  ]
+ }
+}

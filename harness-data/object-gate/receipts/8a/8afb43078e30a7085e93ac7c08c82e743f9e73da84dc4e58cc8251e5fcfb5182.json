@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8afb43078e30a7085e93ac7c08c82e743f9e73da84dc4e58cc8251e5fcfb5182",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "안테나 마스트(세 단 굵은 탑 + 위험 띠 + 꼭대기 경고등)",
+ "label": "sf-station/sf-antenna-mast",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three-tiered antenna mast tower",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly displays its horizontal top platform foreshortened in 3/4 view: the bottom tier has an 8-row top deck (rows 44-51), and the middle tier has a 6-row top surface (rows 28-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5147
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stepped antenna mast / tiered tower",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier of the structure displays a clear, foreshortened top surface (the bottom tier top surface spans rows 45-51, approx 7 rows; the middle tier top spans rows 29-33, approx 5 rows), correctly matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5541
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiered antenna mast base and tiers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly exhibits a substantial top horizontal surface rendered from a 3/4 perspective (e.g. bottom tier top surface spans rows 44-51, middle tier spans rows 29-33).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4619
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "three-tiered tower mast with hazard stripe base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly displays its horizontal top plane foreshortened in 3/4 view: the bottom tier has an 8-row top deck (rows 44-51), the middle tier has a 5-row top surface (rows 29-33), and the top tier has a 4-row top surface (rows 15-18).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4045
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.620Z",
+ "cells": {
+  "16": [
+   "1a32cde11470b0b4",
+   "4c479f64acc06ee6",
+   "56d689a8c30f35b5",
+   "6e991eb178b2813a",
+   "95d841c52957b752",
+   "a08cda78c51f857a",
+   "ccef1cd2bf8e5c46",
+   "fb47826f4390546a"
+  ],
+  "24": [
+   "02d177789e876125",
+   "11b0e6bcdc4dff4d",
+   "25b8a7607d59a194",
+   "27280c0d49219d3d",
+   "318159ed9152ba8a",
+   "319b6abc7397c54d",
+   "3a64a5c4a17f783f",
+   "3b768c1dd89dfd1c",
+   "4035198407c68a0c",
+   "41d709dd8f6645dc",
+   "42a17ae999008bfe",
+   "47680c40e71ef322",
+   "5482047430688aef",
+   "5820a72ae70a1bf3",
+   "5da26fa6352484f5",
+   "64637164d96d5cc2",
+   "65b031a1c2d9e4ab",
+   "66d1f51d47222581",
+   "83fe68f91193a50a",
+   "84dd0fd56fceebb4",
+   "93a0b4c3dffb0455",
+   "ac3cd335b8d608f0",
+   "ad15e757764a0b9d",
+   "ba4063e35b191ea4",
+   "d1a62948eea3658b",
+   "d6989aeae5ca217f",
+   "dae47f866d7b4c47",
+   "df348911549470be",
+   "e2104825d88896d1",
+   "e2bb6496efe7e501",
+   "ede28b7c5d5292b1",
+   "f82edf1d3dd65a66"
+  ],
+  "32": [
+   "9583072d25e045c8",
+   "b5ddca68a88c576c"
+  ],
+  "48": [
+   "0828463ee89673fe",
+   "120c0f0562c7ee4c",
+   "190e914abbf5c404",
+   "32fd10b5bcc5e5a0",
+   "370714aa28b8cca6",
+   "4f041d50605bc1c2",
+   "7acfb3eabdc7b9e1",
+   "7dc2702576c60e45",
+   "8b83337e0eee3eda",
+   "b951cfa870486cf0",
+   "d0d46a5f0b559afc",
+   "dabe373689972bf0"
+  ]
+ }
+}

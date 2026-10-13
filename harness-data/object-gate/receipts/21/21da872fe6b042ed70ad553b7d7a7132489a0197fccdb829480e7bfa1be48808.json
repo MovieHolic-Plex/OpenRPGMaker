@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21da872fe6b042ed70ad553b7d7a7132489a0197fccdb829480e7bfa1be48808",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "소형 거주 돔(유리 돔 + 원통 기단 + 문)",
+ "label": "sf-station/sf-hab-dome-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base displays a visible top collar/ledge surface (rows 27-33, ~6 rows tall) surrounding the dome, and the bottom curved contour (rows 38 to 45) correctly reflects the downward 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7760
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base features a broad, foreshortened top collar/deck surface visible between rows 27 and 34 (about 7 rows tall) wrapping around the base of the dome, and the curved bottom rim correctly reflects the 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7931
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome roof",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome roof spans rows 8 to 27, and the cylindrical base features a clearly visible horizontal top shoulder/deck (rows 27–33, roughly 6 rows deep in the center) wrapping around the dome. The front base edge and bottom perimeter follow the foreshortened downward curve of a cylinder in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6472
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical habitat base with glass dome roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical base has a foreshortened elliptical top deck (rows 27-33, ~6 rows tall) surrounding the hemispherical dome, and the bottom contour is appropriately curved for 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5796
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:09.616Z",
+ "cells": {
+  "16": [
+   "1f12e8fdc93999a6",
+   "27e9b3ff82cf8298",
+   "63f23ab694ce8865",
+   "7a44cab7e50390ce",
+   "9b738a35996f5cdb",
+   "cfa65aeb11f3f553",
+   "d964c782196fb19d",
+   "eb25af64f4ff540b",
+   "f0652ab0d6132d8e"
+  ],
+  "24": [
+   "08a0a924726eac6c",
+   "a0d88d45a732272e",
+   "e999035e8c6b1c33",
+   "f0b63f6454c9617f"
+  ],
+  "32": [
+   "05956222f67ad9b3",
+   "0dda4e56e66bf5b7",
+   "1d9c4c50813e66b9",
+   "233e1d8d1aeb5f5e",
+   "28a96dc9ab4461f4",
+   "2991b899293b3500",
+   "2cae59dd485da4b8",
+   "46a6b92a78866b97",
+   "5d6cdf6264071f45",
+   "6034b7712c8cd797",
+   "6627aa553532078c",
+   "826b3d32a84217e3",
+   "a6a0c75a1d9ca143",
+   "a81ef756bb49d48a",
+   "b9de708ef0a4f043",
+   "bf37c932279c473a",
+   "c8a9016adf59f6d9",
+   "cc50bcd43f05e8a3",
+   "d1aa0859a3cedcd1",
+   "d7225311fb39155b",
+   "e35ffb9396e099a0",
+   "f1898aecc24b15f2",
+   "f624b2b8d046bdea",
+   "f70e766636bfc33b"
+  ],
+  "48": [
+   "68a4c30a5cfe8379"
+  ]
+ }
+}

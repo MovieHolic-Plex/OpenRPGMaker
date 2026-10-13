@@ -338,12 +338,12 @@ def pod(c, body, glass_top='cyan', trim='cyan'):
 
 
 @piece('street-pod-car-cyan', '시안 호버 포드(사다리꼴 캐노피 윗면 + 측면 패널)', 3, 2, 'structure', group='street', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '포드'], desc='시안 호버 포드.', line='B')
-def _pcc(c): pod(c, 'cyan', 'glow', 'magenta'); c.outline()
+def _pcc(c): pod(c, 'cyan', 'glow', 'magenta'); c.outline(); drop_shadow(c, 24, 28, 18, 2)
 
 
 @piece('street-pod-taxi', '호버 택시(주황 사다리꼴 캐노피 윗면 + 지붕 표지판 슬랩)', 3, 2, 'structure', group='street', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '택시'], desc='주황 호버 택시.', line='B')
 def _ptx(c):
-    pod(c, 'orange', 'cyan', 'yellow'); cube(c, 19, 5, 10, 3, 2, 'yellow', tt=3, ft=0, topmat='yellow'); hazard(c, 6, 19, 8, 2, 'yellow', 'cable'); hazard(c, 34, 19, 8, 2, 'yellow', 'cable'); c.outline()
+    pod(c, 'orange', 'cyan', 'yellow'); cube(c, 19, 5, 10, 3, 2, 'yellow', tt=3, ft=0, topmat='yellow'); hazard(c, 6, 19, 8, 2, 'yellow', 'cable'); hazard(c, 34, 19, 8, 2, 'yellow', 'cable'); c.outline(); drop_shadow(c, 24, 28, 18, 2)
 
 
 @piece('street-pod-truck', '화물 호버 트럭(넓은 화물칸 윗면 + 앞쪽 낮은 캐빈 윗면)', 4, 2, 'structure', group='street', solid=[(x, 1) for x in range(4)], tags=['탈것', '트럭'], desc='화물 트럭.', line='B')
@@ -353,14 +353,14 @@ def _ptk(c):
     hazard(c, 3, 16, 40, 2)
     tcube(c, 38, 11, 25, 8, 8, 'orange', ins=3, tt=3, ft=-2, ol=False, topmat='orange')
     c.R(42, 20, 17, 4, K('glass', 1)); c.HL(42, 20, 17, K('cyan', 3)); c.R(50, 20, 1, 4, K('hull', -1)); c.R(44, 14, 9, 3, K('glass', 0)); c.HL(44, 14, 9, K('cyan', 3))
-    c.R(40, 26, 21, 1, K('magenta', 3)); c.HL(4, 28, 56, K('shadow', 1)); c.outline()
+    c.R(40, 26, 21, 1, K('magenta', 3)); c.HL(4, 28, 56, K('shadow', 1)); c.outline(); drop_shadow(c, 32, 30, 26, 1)
 
 
 @piece('street-hover-bike', '호버 바이크(굵은 차체 윗면 + 시트 + 밑 네온 빛)', 2, 1, 'structure', group='street', solid=[(0, 0), (1, 0)], tags=['탈것', '바이크'], desc='1인 호버 바이크.', line='B')
 def _hb(c):
     tcube(c, 2, 1, 28, 7, 6, 'violet', ins=3, tt=3, ft=-2, ol=False)
     c.R(9, 3, 10, 3, K('cable', 0)); c.HL(9, 3, 10, K('cable', 3)); c.R(25, 3, 3, 3, K('glow', 0))
-    c.HL(4, 14, 24, K('magenta', 3)); c.HL(6, 15, 20, K('magenta', 1)); c.outline()
+    c.HL(4, 14, 24, K('magenta', 3)); c.HL(6, 15, 20, K('magenta', 1)); c.outline(); drop_shadow(c, 16, 15, 10, 0)
 
 
 @piece('street-drone-pad', '드론 이륙 패드(낮은 단 윗면 + 노란 원 + 모서리 램프)', 2, 2, 'box', group='street', solid=[(0, 1), (1, 1)], tags=['드론', '패드'], desc='드론 착륙 패드.', line='B')
@@ -419,7 +419,9 @@ def _pl(c):
 def _lp(c):
     cube(c, 2, 22, 12, 5, 6, 'conc', tt=3, ft=-1, ol=False)
     cube(c, 3, 2, 10, 8, 20, 'hull', tt=3, ft=-1, ol=False, topmat='white')
-    c.R(5, 12, 6, 8, K('cyan', 1)); c.HL(5, 12, 6, K('glow', 0)); c.VL(5, 12, 8, K('cyan', 3)); c.HL(4, 22, 8, K('cable', 0)); c.outline()
+    c.R(5, 12, 6, 8, K('cyan', 1)); c.HL(5, 12, 6, K('glow', 0)); c.VL(5, 12, 8, K('cyan', 3)); c.HL(4, 22, 8, K('cable', 0))
+    c.R(5, 4, 6, 3, K('glow', 0)); c.HL(5, 4, 6, K('glow', 2)); c.HL(4, 7, 8, K('cyan', 1))      # 윗면 위 램프 머리(빛)
+    c.outline()
 
 
 @piece('street-bollard', '발광 볼라드(원통 + 윗면 램프)', 1, 1, 'round_body', group='street', solid=[(0, 0)], tags=['볼라드'], desc='차단 말뚝.', line='B')

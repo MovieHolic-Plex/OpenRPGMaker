@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8b4e9f3d456efe84f06a4473a65a4f066c8f9934bc41c54c26b3de5f37754541",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 컨테이너(주름 판 앞면 + 윗면 이음 + 잠금 손잡이)",
+ "label": "sf-station/sf-cargo-container-int",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the container is clearly visible from rows 1 to 10 (about 10 pixel rows tall) with longitudinal roof seams, meeting the front corrugated face at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shipping cargo container",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 2 to 10 depict the top surface of the container with roof ribs/seams seen from above, meeting the corrugated front face at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4525
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1–10 clearly represent the top surface (roof) of the shipping container with longitudinal seam ribs, while rows 11–30 depict the corrugated front face with lock bars and a label.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6381
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shipping container",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the shipping container is clearly foreshortened and visible from row 1 to row 10 (10 pixel rows tall) with top rib seams, above the corrugated front face and door handles (rows 11-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5328
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.954Z",
+ "cells": {
+  "16": [
+   "56383781d348f9a9",
+   "98e0c320d46500f1",
+   "cefe20198fe2c142",
+   "ef703682e3aeb1a1"
+  ],
+  "24": [
+   "00ff941e955f9ee0",
+   "03a2d7631c8124e7",
+   "19a4d6caca5d8a72",
+   "1c1e44b0defa5516",
+   "35be81d3ef16e09e",
+   "38aac4281ef553d7",
+   "577db91385313563",
+   "71b8973e289a0359",
+   "76a10cdd3698b1d3",
+   "799a407ca2a2c047",
+   "816239e75d6a5622",
+   "9a65d3b529daf97a",
+   "a0486a27454d2957",
+   "a2d184cab1a1651f",
+   "a7f553da98b0cb82",
+   "b048efb545f1433f",
+   "beafd0f6e601ff19",
+   "c1e220a5a4435398",
+   "d8a02e72f8003bdc",
+   "ddd1869320822476",
+   "e0bc9860f61fc1c9",
+   "e379fdc883229a42",
+   "e5d082524e9f2a00",
+   "f9fb2f4f2d0b8e3f"
+  ],
+  "32": [
+   "91f36a6edc650e65"
+  ],
+  "48": [
+   "51e8a8a0292aa9fd",
+   "7338e7dc68229f5f",
+   "80517d9669c653c9",
+   "8f219f25d628979e",
+   "cef58cf9fa3b1d30",
+   "dddb6802bc950f1b"
+  ]
+ }
+}

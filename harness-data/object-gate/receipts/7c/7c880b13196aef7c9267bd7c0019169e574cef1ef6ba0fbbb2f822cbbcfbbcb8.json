@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c880b13196aef7c9267bd7c0019169e574cef1ef6ba0fbbb2f822cbbcfbbcb8",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "분석 콘솔(윗면 화면 둘 + 시료병 받침 + 앞 램프 패널)",
+ "label": "sf-station/sf-analysis-console",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "analysis console with top-mounted screens/keypad and front lamp panel",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-9 form the foreshortened top console desk displaying screens and control buttons, while rows 10-14 form the vertical front face with status lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5364
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-9 form the top surface housing two screen displays and a button pad, while rows 10-14 form the front south-facing panel with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "analysis console with top-mounted screens/controls and front lamp panel",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console top surface spans rows 1-9 (approx. 9 pixel rows) displaying two monitors and a button array viewed from above, above a 5-pixel-tall vertical south face (rows 10-14) with indicator lamps.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5139
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "analysis console desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console surface spans rows 1 to 9 (9 pixel rows) with displays and buttons viewed from above, while the south vertical front face spans rows 10 to 15 with indicator lights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3239
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.952Z",
+ "cells": {
+  "16": [
+   "47f6b9fd97d545eb",
+   "cbe511aa171836f4"
+  ],
+  "24": [
+   "1d075c6104c01995",
+   "27a3ddd9ef9699eb",
+   "5e4201bf5425de47",
+   "63ef50534ec044ad",
+   "7281f2806c9a0af5",
+   "8f2eaea9433aaf50",
+   "9a825c0588bc0f79",
+   "a91c6d94d59fe854",
+   "d5c5ad1070848eda",
+   "dcef7d6c29a5e4e1",
+   "f1f05b8b2a129ad1",
+   "fec1c0a953d4153c"
+  ],
+  "32": [
+   "055d52cfc27b1569",
+   "5b672f70baf4312a"
+  ],
+  "48": [
+   "37d44ff4e8bb5936",
+   "57a2d0c04ebcff3e",
+   "6c3fd6e67373319d",
+   "889ba431c95ccb9e",
+   "c1867a205686c553",
+   "ee4cdaa009259b3c"
+  ]
+ }
+}

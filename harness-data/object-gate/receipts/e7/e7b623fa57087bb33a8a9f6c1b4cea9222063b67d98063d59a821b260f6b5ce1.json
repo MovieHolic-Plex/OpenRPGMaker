@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e7b623fa57087bb33a8a9f6c1b4cea9222063b67d98063d59a821b260f6b5ce1",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "냉동 수면 포드(둥근 윗 뚜껑 윗면 + 서리 유리 앞문 + 받침 상태 램프)",
+ "label": "sf-station/sf-cryo-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pod is drawn in pure 2D front elevation (orthographic front view). Every horizontal boundary (base, glass window top and bottom, upper trim) is a completely flat horizontal line, and the upper section (rows 1-6) is drawn as a vertical front panel/forehead with straight vertical sides rather than a foreshortened horizontal top surface seen from a 45-degree overhead angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cryo sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo pod is rendered in a pure front elevation: the arched top dome (rows 1-6) displays a vertically oriented front-facing cyan display, rather than an elliptical foreshortened top surface. The dividing line at row 7 is completely horizontal instead of curving downward as an ellipse would in 3/4 perspective, and the base (rows 27-31) is viewed completely flat from the front with indicator LEDs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9545
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the pod is foreshortened over rows 1-6 (6 pixel rows tall) with a perspective-flattened hexagonal light panel visible on its top surface above the front seam at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7230
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cryo-sleep pod",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cryo pod is rendered in pure front elevation. The arched cap with cyan display, the rectangular glass chamber, and the base with status LEDs all face straight forward toward the viewer with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7940
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:53.702Z",
+ "cells": {
+  "16": [
+   "63b526d4dcab6c3a",
+   "66f749d52066fe38"
+  ],
+  "24": [
+   "1a59d59925cba77c",
+   "217ae76ff8327208",
+   "2499d7bfcc49e76e",
+   "3756e94f4a66ee66",
+   "598a01f074cd9fdb",
+   "7e4ca67864e764c1",
+   "90bf7b2f5e86938b",
+   "bca5aff83517d18b",
+   "c9c74cb45b1cc8a5",
+   "d1756ac629fa2141",
+   "f6c56a144b06d7cf",
+   "fb1b777d26fffa68"
+  ],
+  "32": [
+   "19aa20223d1b273d",
+   "74d3e9e367144273",
+   "75cfd7f1d0e0e6aa"
+  ],
+  "48": [
+   "58a9b581f24f6f45",
+   "9038d59d20adac33",
+   "948f314c591b9094",
+   "9d04ccb4b27b2430",
+   "bd3170122670478f",
+   "bda46260ede2340d"
+  ]
+ }
+}

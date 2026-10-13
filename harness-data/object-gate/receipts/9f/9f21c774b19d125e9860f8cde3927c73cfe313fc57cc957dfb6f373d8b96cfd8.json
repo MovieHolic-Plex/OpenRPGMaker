@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9f21c774b19d125e9860f8cde3927c73cfe313fc57cc957dfb6f373d8b96cfd8",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "화물 호버 트럭(높은 화물칸 윗면·옆 골판 + 앞 낮은 캐빈 + 창 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-truck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container shows a distinct light-grey top surface (rows 2-8, 7 rows tall) seen from above at a 3/4 top-down angle, sitting atop the darker corrugated south-facing side body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6173
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container (main body) clearly displays a foreshortened top surface across rows 3-8 (6 rows tall) above the south-facing corrugated side wall (rows 10-24), correctly adhering to top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6853
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo hover truck",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof surface of the cargo container is clearly visible from rows 2 to 8 (7 pixels tall), foreshortened above the south-facing side wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo hover truck (cargo container and cabin)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo container (the main body) clearly renders its horizontal roof surface from row 2 to row 8 (7 pixels tall) above the south-facing side wall (rows 10-24), matching the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6643
+  }
+ ],
+ "decidedAt": "2026-10-13T16:03:31.922Z",
+ "cells": {
+  "16": [
+   "66ca33a7bc24b781",
+   "832048b881624e7e",
+   "9354ad83554a335d",
+   "a111b9e39643464e",
+   "b89e848f93a79d76",
+   "dc9323e11b06c639",
+   "f3c6fd9831d04cce",
+   "faac61a771ca9d79"
+  ],
+  "24": [
+   "063dba9f476b1f2c",
+   "185ac9b7019a6428",
+   "1af328ae8b4bfa21",
+   "1c1450edea6d9b7a",
+   "224d6ce169185cbc",
+   "22fe0c49e9d98b74",
+   "2ea36f725333314b",
+   "3451c5b469f5f77d",
+   "3c1fdea1d3255706",
+   "4b92165f8b1e5e08",
+   "5ff75248a69fa3bf",
+   "616c0ed9d671ceba",
+   "633175d75d7d8826",
+   "688afc18d56f3db2",
+   "899c82803d69f02d",
+   "939e0284cb979dde",
+   "97002b402f15de31",
+   "978a032768ee3eb1",
+   "9960fbaa3755f932",
+   "9fff31acb1fcc124",
+   "a368027efbe9b954",
+   "a4a8b7b6f153dcdd",
+   "a8e24558ebb22264",
+   "af4c9381a240b628",
+   "b28045d19e5c156d",
+   "b7091cd80ad9d532",
+   "b8847eef3d74ae01",
+   "b89ec25cb267c3e6",
+   "bd8ee1a07a611703",
+   "c91af3ad2a1a1ba3",
+   "cf90f39d61ae2a6b",
+   "d307ddc073c5f7ee",
+   "d3f5d8a123bbbd84",
+   "e0043c2a0fc21493",
+   "e272178d45f654f5"
+  ],
+  "32": [
+   "a0cc1bdb00cc5d3e",
+   "cfb52f906f9fbba4"
+  ],
+  "48": [
+   "4db7f40fbe81e44a",
+   "7c0c02c56f9f4a4d",
+   "8c20fd8b17dbdb5a",
+   "8c445d63ddfadf04",
+   "ac5c188e506c7b13",
+   "b29ba1f1f75e6f80",
+   "b89b9fdd64c8f728",
+   "c8e48f871be0e50e",
+   "caa6669828d8b55b",
+   "d8180c17b17eb3eb",
+   "daa4639c85977d7c",
+   "f91835049c1e56d9"
+  ]
+ }
+}

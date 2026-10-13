@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2e73f0ca1eb09f6b7b1e9778c1b38518878747cb8cded61f666f829c9f423034",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 소화기 상자(흰 케이스 + 주황 통 + 노즐)",
+ "label": "sf-station/sf-fire-extinguisher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted box/cabinet depicted flat against or recessed into a south-facing wall; legitimately flat with 0 top rows as permitted for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted cabinet shown from front view; wall_mounted objects are permitted to be flat on the vertical wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fire extinguisher box mounted flat on the wall; correctly rendered flat against the vertical wall surface per the wall_mounted category rules.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13223
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted fire extinguisher box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture drawn flat against the wall facing south; per wall_mounted rules, flat front presentation on a vertical surface is valid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3689
+  }
+ ],
+ "decidedAt": "2026-10-13T15:54:23.956Z",
+ "cells": {
+  "16": [
+   "a7f77b44cf7c56b5"
+  ],
+  "24": [
+   "158bf9c7cb4914e8",
+   "3b364a835ac34a7f",
+   "4af9d65443b30efe",
+   "8da380de40186e84",
+   "b29e1d88e07d1238",
+   "c84b6be2926b1550"
+  ],
+  "32": [
+   "64fd7557b2774337",
+   "7cc3bbedfdc94b75",
+   "7f57685c344c2fb8",
+   "a10e2dc8481b6f2a",
+   "cd39f19c758c501d",
+   "f9bfe5792482fd61"
+  ],
+  "48": [
+   "25e90db7068be64d",
+   "574c21f8cc5d8f94",
+   "7bbb2345bce67e8e",
+   "89b56b3dcf498cfc",
+   "aecca37944953bca",
+   "c7b1c731db8935c2"
+  ]
+ }
+}
