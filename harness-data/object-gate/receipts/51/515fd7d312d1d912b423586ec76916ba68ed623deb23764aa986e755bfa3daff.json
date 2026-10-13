@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "515fd7d312d1d912b423586ec76916ba68ed623deb23764aa986e755bfa3daff",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wall panel / screen partition",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn strictly in front elevation with no visible top surface or depth (only a 1-2px horizontal border row at the top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "openwork wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn as a flat front elevation with a 1px line at row 1 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5769
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall panel with decorative screen and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn entirely in pure front elevation with only a 1px top edge at row 1 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "decorated wall section with screen panel and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is drawn as a flat front elevation of a wall panel with no visible top surface or horizontal depth (only a 1px boundary line at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7279
+  }
+ ],
+ "decidedAt": "2026-10-13T13:01:15.257Z",
+ "cells": {
+  "16": [
+   "173b4eb94c9f8c9e"
+  ],
+  "24": [
+   "3c9bdadcec6bc4d2",
+   "46f70fad2dd922a9",
+   "71ef99f6386a4a41",
+   "8dc0fe85bbe3ffcf",
+   "c2b6f19a8c2f1398",
+   "d977165dad4fc480"
+  ],
+  "32": [
+   "210c8c22ba2eb2f0",
+   "3f87456eb4f50692",
+   "522a4086e2a41437",
+   "98b496509e900787",
+   "a615c1fe5e2b1211",
+   "ca132d10367baee4"
+  ],
+  "48": [
+   "0643d14d1b707860",
+   "197860dcf52f0a4c",
+   "24e490fe53989362",
+   "4ee091a2a7ff8a18",
+   "9e634e131326da5b",
+   "f676925b768e6cf0"
+  ]
+ }
+}

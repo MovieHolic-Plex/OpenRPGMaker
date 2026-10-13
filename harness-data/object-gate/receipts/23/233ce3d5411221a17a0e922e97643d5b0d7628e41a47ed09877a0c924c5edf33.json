@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "233ce3d5411221a17a0e922e97643d5b0d7628e41a47ed09877a0c924c5edf33",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-shade",
+ "label": "jp_city/street_hand/jp-water-shade",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water shadow/shade tile overlay",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water shade decal/overlay tile viewed completely top-down flat across the tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water shadow decal overlay",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat water shadow/depth overlay decal covering rows 0-11, drawn completely flat on the surface as expected for a floor/water decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4372
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water shadow / shade floor decal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor shade overlay extending from row 0 to roughly row 8-11 with transparency dither at the lower edge, correctly representing a surface decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3391
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water/ground shadow overlay decal",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a flat shade overlay / decal tile that covers rows 0-11 over a transparent checkerboard background, lying flat on the surface as expected for a flat kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3732
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.703Z",
+ "cells": {
+  "16": [
+   "751ef5b1d988596b"
+  ],
+  "24": [
+   "1ddfd4cefee53319",
+   "6134ba71980489a7",
+   "8e4417d8d8f27e8c",
+   "a0b841774ff96937",
+   "b33682f43d503412",
+   "b8c2e8f4e14ab703"
+  ],
+  "32": [
+   "24983aebfc415555",
+   "54bc8d2b607e07e5",
+   "a4a9338148dd7c58",
+   "aa2b92b4624b8242",
+   "bffc6d8c8ec4184d",
+   "f50ddf615e04a584"
+  ],
+  "48": [
+   "02dff13d28c6073d",
+   "275ed3cb74956c51",
+   "2d9a8310cf238084",
+   "7f245959cdb4bb01",
+   "ce2b9e3b903105d4",
+   "e530e3746a1ebb9d"
+  ]
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "502ddf823d06ad8e91d181839c3e5e2e17015e52eafc30feb781de92319c0ab4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-hydrant-sign",
+ "label": "jp_city/street_hand/jp-hydrant-sign",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydrant sign post with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base plinth, post, and signs) is drawn in pure front elevation with no visible horizontal top surfaces anywhere. The base plinth at rows 37-42 is a flat rectangle with only a 1px outline along the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hydrant sign post with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the base block (rows 37-42) shows only its flat vertical front face with a 1px top outline and no foreshortened top surface, and the sign elements above are drawn flat facing the camera with 0px of top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15472
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "red hydrant-sign head and supporting pole",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main head has a broad, clearly visible salmon-colored top plane spanning about source rows 5-10, with a distinct darker front face below; the pole is also shown in front view without a receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 125030
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "the red hydrant-sign head and supporting post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper body has a broad visible horizontal top plane approximately 6 source pixels deep, with a darker south/front edge below it. The post and head are not a pure front elevation; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 113855
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.363Z",
+ "cells": {
+  "16": [
+   "38d8ab75f9358ed8",
+   "766da08089bdb22c",
+   "919aeb242fa37f00"
+  ],
+  "24": [
+   "23f53ca224207500",
+   "70b600643d19e733",
+   "70dc764a67520576",
+   "8c5c06107418900e",
+   "a2bc36e3cc7593f8",
+   "a990e7e22213b566"
+  ],
+  "32": [
+   "0fb78f62c6095b67",
+   "47b913d46ebb644a",
+   "485b4b289756305c",
+   "56e92bd1905bf881",
+   "6ae408e586fd71df",
+   "76e722ac50b6b101",
+   "bd4409fac55d43db",
+   "cc596ecabc233f72",
+   "cedfafd1ea826c24",
+   "e70ddb8ea6982277",
+   "f58b274bac5b8bfd",
+   "fd5e05983d1647cb"
+  ],
+  "48": [
+   "4b7fa2216740c12f",
+   "676b2ab5ae0bb781",
+   "ddbf32fa5d52838d"
+  ]
+ }
+}

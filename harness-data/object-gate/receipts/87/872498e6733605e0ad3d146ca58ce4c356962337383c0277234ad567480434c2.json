@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "872498e6733605e0ad3d146ca58ce4c356962337383c0277234ad567480434c2",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-3-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya building storefront with eave roof and sliding doors",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/eaves top surface spans rows 1 through 7 (7 px tall) viewed from above before reaching the fascia board at row 8 and facade below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4583
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building storefront facade with roof eaves",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure features a 7-8 pixel tall forward-sloping roof/eaves surface (rows 1-8) visible from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9057
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "izakaya storefront with eave roof and sliding doors",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building eave/roof at rows 1-7 displays a 7-pixel tall top slope, typical of RPG Maker top-down building facades.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4300
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "izakaya storefront building facade with roof overhang",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure features a foreshortened grey roof slope across rows 1-7 (7 px tall) before dropping into the front facade, doorway, and windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5278
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.389Z",
+ "cells": {
+  "16": [
+   "0230bcfdc9149e91",
+   "31503ef37ea162cf",
+   "43d8ceb8a5ff25a7",
+   "5b56ab9854f9e31c",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "c426e86c96d5a0da",
+   "f488c48fcf235fd4"
+  ],
+  "24": [
+   "96d0cfc3625a279e",
+   "e1369a1f39a56669",
+   "e6d62ba263de21e0",
+   "e6e69ea2f349c06c"
+  ],
+  "32": [
+   "20f8c195b1fd35eb",
+   "2c32a7cd0484594a",
+   "2d7fdeb2da124306",
+   "3402323e1d34310c",
+   "3cf3c60bed8b01d4",
+   "48971090a3c52041",
+   "4ab14529c1dc308b",
+   "636ed1785123f74b",
+   "6536bbd95258c993",
+   "693918091e469b64",
+   "69a9bb077858da3d",
+   "6ccd28a13cd84ce9",
+   "7b6283c3eda486aa",
+   "7cd2fc26aa8d8e2b",
+   "a6bb5b92353c3a1c",
+   "be4513df08574758",
+   "c4a9e8174c1164a9",
+   "dd842b97754797d6",
+   "e60ba6f41838fe35",
+   "f561744ad87ac36f",
+   "f7289f3e7441217f",
+   "f8ba57bac21e0d63",
+   "f970969249d01cf9",
+   "f9eedba958879cb5"
+  ],
+  "48": [
+   "0f98f39d9a5d7166"
+  ]
+ }
+}

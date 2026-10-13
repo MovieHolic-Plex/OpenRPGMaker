@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f90d3761000f3b2e268b8b551990adb40fc32bc8ba7cd92ef77223f58edfa7a7",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-6-L",
+ "label": "jp_city/street_hand/jp-sf-bento-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, awning, doorway, and sign are rendered strictly in pure front elevation with no visible roof slope, lintel top, or horizontal surfaces viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6036
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with door and display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame, awnings, and display cases are drawn in a flat 2D side-scroller/architectural elevation with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront facade with door and bento display counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade, door frame, and counter are drawn in flat front elevation with no visible top surface or roof slope anywhere (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4717
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront building facade with door and bento display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, doorframe, awning, and roofline are drawn in straight flat side-scroller front elevation with 0px of visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3874
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.051Z",
+ "cells": {
+  "16": [
+   "0fa152abdd0046d2",
+   "20e48e4d2dd2df46",
+   "23f92e3b7442d9c8",
+   "27fd405a4bab1640",
+   "2c5c6473761e2756",
+   "39487a2d4b2c904b",
+   "591233ec525de138",
+   "5d0dbbf69f9765ad",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "7cd5d94d5bf5fcf2",
+   "8d22867e0581c8f9",
+   "9be12190cf554769",
+   "9d68c048efb88473",
+   "b1a8b5449b59fe87",
+   "b4b22f22b95e891f",
+   "d7938580ef0b8cba",
+   "e5a60efed5159079"
+  ],
+  "24": [
+   "12ded2ef9bdb9e44",
+   "1ac36871d773374a",
+   "2a52ff0f30d43d8a",
+   "492fdd3e4ef4cf20",
+   "4fe59f264c1c0dce",
+   "5af7369147340ba1",
+   "8261b8144c91249a",
+   "b00282df45322cd5"
+  ],
+  "32": [
+   "33b55f1fa35aac28",
+   "35c4faaa1064b46f",
+   "3a8178f8ca4bf288",
+   "3a8411644a4569b3",
+   "3ecd2bf4fb4e0988",
+   "66874819e48ef020",
+   "8ad53eec898df229",
+   "ae43d9341aeabb89",
+   "caef979992cd949a",
+   "eb682f8ced66e040",
+   "eff260fe9bbcb6b5",
+   "f7a0a22b5fe36afc"
+  ],
+  "48": [
+   "4215311fc07590ef",
+   "a5e3db7c41ee3906"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3140e1b37619e625d8d127de3f5d29a72e37e78edb986a10182f6b42d9f2814",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-gate",
+ "label": "jp/jp-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese gate roof and slatted barrier",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gate features a prominent forward-facing roof slope across rows 0-5 (6 px tall) foreshortened from above, with eaves at row 6 and the front vertical slats extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6142
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "roofed gate/wall structure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a well-defined sloped roof section covering rows 0 through 5 (6 pixel rows) sloping down to eaves, above the south-facing wooden posts spanning rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3681
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "roofed gate/wall structure",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof of the gate features a visible 6-row foreshortened top slope (rows 0-5) above the eave beam and vertical gate palisade (rows 7-14), providing the required 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10072
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "thatched/tiled gate roof and vertical barred fence",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows 6 rows (rows 0-5) of foreshortened forward-facing roof slope above the eave line and vertical gate posts/bars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.349Z",
+ "cells": {
+  "16": [
+   "0a39dbeb3136bb13",
+   "15303e1ae41db212"
+  ],
+  "24": [
+   "18d5b8262266f5fd",
+   "3c9d455df23b2e5b",
+   "68a66659a8971c54",
+   "6b2bac2fa9815f4a",
+   "720fa024e0629bf1",
+   "72bc87cc220468eb",
+   "74f818178c833e28",
+   "8aa313d92390a273",
+   "8ae27e4f7e6eb771",
+   "9a29bc9270b2a487",
+   "9f5257fc33833be5",
+   "e1726d55f52de721"
+  ],
+  "32": [
+   "13b7ad62050c5411",
+   "3f45ddb27756e534"
+  ],
+  "48": [
+   "18a7b4d42ba8b2f8",
+   "22c3036c8269484d",
+   "2f2927537336445c",
+   "365a10b6a8c72a99",
+   "59bb154993822a20",
+   "ecaad4631fa58c9d"
+  ]
+ }
+}

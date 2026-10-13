@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17b85a601ba14260019c9f9f69a1933ec13a139e8ce2946dfe7ab4d4f029e907",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-4-L",
+ "label": "jp_city/street_hand/jp-sf-machiya-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade / gate entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The lintel/canopy above the central door is only 2px tall without any visible top surface, the door sill and base plinth are 1-2px front-facing strips, and the vertical facade faces the camera directly with no foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9681
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "traditional Japanese building facade / gatehouse",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn as a flat front architectural elevation: rafter ends are seen from underneath at row 3, the roof/eave shows no top slope (only 1-2px at rows 0-1), and all lintels, sills, and base plinths are 1-2px flat front bands with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9913
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is presented as a flat frontal elevation. The roof/header is only a thin horizontal band with no visible top slope or surface on the main building body; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 71083
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat, straight-on facade. Its roof/lintel areas are only thin horizontal bands with no substantial top surface visible from above, and there is no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 71653
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.822Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "2a750be2acb717cc",
+   "3355644826b31b91",
+   "3fae5867f8e17aba",
+   "43ca3ab691c339a9",
+   "9fc52111c819a47b",
+   "a1a696a945fcac22",
+   "a3043c90ab422321",
+   "b028a4a8f04550fa",
+   "c688632e1f5f1fbe"
+  ],
+  "24": [
+   "00b74a4421e096c1",
+   "060ede7ce48fb483",
+   "0c673c271503da93",
+   "27dfac652a6a956c",
+   "4102a46376d83746",
+   "4beb85bd20114e4c",
+   "5bf93ea1b3f845b9",
+   "6aeaef5d81ca31c6",
+   "714dd229e781a375",
+   "83b6b95fdf91b27a",
+   "8b4d546887dd9381",
+   "8c2d00682371adbf",
+   "bfab0037e1a241c5",
+   "de9826c1f985881a",
+   "ed30b702256bd822",
+   "f4ab1979808b6c06",
+   "f9a068c546ea97f0",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "147aad499b29e227",
+   "27225c48026817d6",
+   "5a22dcf626eecaf4",
+   "6dc40313941c859a",
+   "cc15cea23ae117c6",
+   "edcd7c0d5d1b69d1",
+   "ef92a51282a8dc03",
+   "f819fe7e098d7614"
+  ],
+  "48": [
+   "306bf64aeccf50c7",
+   "58e1ccb5e360f534",
+   "84fb36fb935d48e2",
+   "8605332b4f9e6e59",
+   "cec38f7caa5aa734",
+   "e20080017fcae4e1"
+  ]
+ }
+}

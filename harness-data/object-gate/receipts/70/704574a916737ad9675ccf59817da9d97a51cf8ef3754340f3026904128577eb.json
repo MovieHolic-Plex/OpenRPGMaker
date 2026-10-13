@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "704574a916737ad9675ccf59817da9d97a51cf8ef3754340f3026904128577eb",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-4-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store storefront with automatic sliding doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame lintel, and window displays are drawn completely flat in 2D architectural front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5371
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store entrance and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame, and shelves are drawn straight-on in pure front elevation with no visible top surfaces (the door lintel cap is only a 1-2px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6756
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "convenience store storefront with sliding doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door frame, lintel, wall fascia, and display shelves, is rendered in a direct flat front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4862
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store storefront with sliding doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The storefront, door frame lintel, and interior shelves are drawn entirely as a flat architectural front elevation with no visible top surface or roof slope anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4515
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.645Z",
+ "cells": {
+  "16": [
+   "0be9092ce4ccf078",
+   "4f3a7dd9ec722387",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "9584da2e409f93c6",
+   "9971a23202ad070e",
+   "9bf32416c558e404",
+   "a6fc34552180ddaa",
+   "e09dad0b84f07f9a",
+   "f57dd59d8e0ee44e",
+   "f77f37bb52b582e0",
+   "fff3e6c537c91c02"
+  ],
+  "24": [
+   "14da4c6c0ebcae54",
+   "1e0ec1475281757c",
+   "276b66c77773f7bf",
+   "43317024fda850fd",
+   "4c42271b20c2e9af",
+   "57d1fb31a932349d",
+   "5bef23f4929c03eb",
+   "6f241d67e67b8cc7",
+   "7edcefab6312d5a0",
+   "8cd2ce94965c1b1d",
+   "9668c652d8c17a1a",
+   "a1d96bd3a8fb599a",
+   "aa6a6ccc7ad33e0d",
+   "bd214eb45dc1f533",
+   "c9da70e8e487bdcd",
+   "e7bf14953444d830",
+   "eccf8f861dd3be56",
+   "efb56e8e4db39a20"
+  ],
+  "32": [
+   "02126b3442f4afc1",
+   "3f20eab15ac400cd",
+   "7ffe84add1071258",
+   "9303084dc7442de1",
+   "9ead0aea5ec9904a",
+   "a0b8bdb7cd210cea",
+   "c5b38acf295e2d2b",
+   "fb2cccf2e629c332"
+  ],
+  "48": [
+   "5cb0499c90ac194b",
+   "6e79ffab5d6f5315",
+   "73fa7c6ec4baa547",
+   "bcf7bd7882c07567",
+   "e5543cabc342b841",
+   "ed33b750562f60a5"
+  ]
+ }
+}

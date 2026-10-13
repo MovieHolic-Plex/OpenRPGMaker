@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "465692c787d5e03acd73c728b24361198c1b4d0e5f8ec3db5788e06d30e63af8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn as a flat front elevation with no visible top surface or coping (wall face starts immediately at row 2 without any foreshortened top edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5313
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese decorative wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn flat in pure front elevation without any visible top surface or depth showing the top thickness of the wall/coping.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4846
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "openwork wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile depicts a vertical screen or wall panel in flat 2D elevation with no top surface, roof, or cap foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "openwork wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn strictly in pure front elevation with no visible top surface or depth, spanning vertically from row 2 to 14 without any foreshortened top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4723
+  }
+ ],
+ "decidedAt": "2026-10-13T13:05:45.747Z",
+ "cells": {
+  "16": [
+   "4213616c70fe3c16"
+  ],
+  "24": [
+   "829c43e06e9ea337",
+   "86e92316ebc3cb72",
+   "8a074492e19621be",
+   "b6b68af093cae418",
+   "f6004d5000de89f3",
+   "f9b0ff8f0de4fd9b"
+  ],
+  "32": [
+   "4e9b9dafb9df1e60",
+   "685e5b24ed7b6e0a",
+   "a5fb4e8b3746ffb2",
+   "a92e0a85d1bbf925",
+   "ca7e8f865425f411",
+   "ce99820fb6fbbc33"
+  ],
+  "48": [
+   "128fc05827da7b01",
+   "6238e226e0dc38f8",
+   "7eca27924d8be705",
+   "902a50d498b041fc",
+   "b6a021e062f097aa",
+   "f53129c390834011"
+  ]
+ }
+}

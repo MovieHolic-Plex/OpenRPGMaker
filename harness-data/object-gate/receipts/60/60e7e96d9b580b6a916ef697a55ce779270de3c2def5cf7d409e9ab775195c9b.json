@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60e7e96d9b580b6a916ef697a55ce779270de3c2def5cf7d409e9ab775195c9b",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-mirror2",
+ "label": "jp_city/street_hand/jp-mirror2",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "traffic mirrors on a pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The round mirrors, crossbar, pole, and base are all drawn in pure flat front elevation with no visible top surfaces or downward angle foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6754
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "traffic mirror pole with double circular mirrors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mirrors, horizontal connecting arm, pole, and base are drawn in flat front elevation with circular mirror faces pointed straight forward and no foreshortened top surfaces visible on the pole, arm, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5228
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Two upright circular mirror heads mounted on a tall post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large circular mirror heads are shown face-on, with narrow outline rims but no visible horizontal top surfaces. The supporting post also lacks a visible top-end surface. This is a mirror fixture rather than a column-like object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11045
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Two circular mirror heads mounted on a tall vertical support",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mirror heads are flat circular front faces with outline rims, not foreshortened top surfaces. The support is a vertical strip with no visible top or cut face. This reads as a mirror assembly rather than a column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11493
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.280Z",
+ "cells": {
+  "16": [
+   "372776a004ea6230",
+   "3fb87dab955646a4",
+   "553d70bea45ff071",
+   "ea569bbecb2c6bc0",
+   "f49fed7b14d71b17"
+  ],
+  "24": [
+   "1a3b8b0b8c093dc8",
+   "4c83d7df55ede117",
+   "5dcb34af590b025a",
+   "60124f7cf6e98065",
+   "67658db62cbfaae9",
+   "a3d1823d23d8af7f",
+   "c8610a24790851e4",
+   "d2fa047fff02afd8",
+   "d9286feb2dfd337b",
+   "ead239b5a2790182"
+  ],
+  "32": [
+   "35708671cd1e6219",
+   "5acbc1edcf4a51be",
+   "5e2eadc34ace27e4",
+   "5fc2f2c56b05e9b2"
+  ],
+  "48": [
+   "35c58604b7f0914c",
+   "419be64e233aba25",
+   "f40a37c9d54747f6"
+  ]
+ }
+}

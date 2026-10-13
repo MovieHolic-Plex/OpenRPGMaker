@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f73cb517ad0f414d2cafd3f2bc270e81ab12e4b03154f4b2ef7219340939e39d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-dark-r",
+ "label": "jp_city/street_hand/jp-water-dark-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water edge / dark water surface boundary",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite depicts a flat water edge/surface strip rendered completely flat on the ground plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water edge strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite is a flat water transition/edge overlay lying on the ground plane, spanning 16 rows from top to bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water edge / ground decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water edge strip lying directly on the floor plane with dithered edge for water transition.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4552
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water edge transition strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water edge/transition overlay drawn for top-down ground placement across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5711
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.703Z",
+ "cells": {
+  "16": [
+   "2864799013fb77ea"
+  ],
+  "24": [
+   "406a30c706b4da97",
+   "a0485cce0377bec9",
+   "e024887104cacbe9",
+   "e21b14734c41d312",
+   "ed02afced9635fd4",
+   "f143222376d7abf4"
+  ],
+  "32": [
+   "1bad92a4fe551caa",
+   "45d33fcac08853c6",
+   "4934b3157a8635bf",
+   "729a105f33f71576",
+   "91c77c5f09bf64dd",
+   "ecf6cfdde6e2a615"
+  ],
+  "48": [
+   "0eee326f01935b30",
+   "70f08fcdbc452c58",
+   "7fdbd3cefe902366",
+   "912517c8bfe458cb",
+   "a55136fda42f9c29",
+   "fcc230aee58ada02"
+  ]
+ }
+}

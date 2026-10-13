@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6a4f0b55535f466849dd03f73438ff5260333e77b49ed61ccc235b2e762c79d",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "jp-gatepost",
+ "label": "jp_city/street_hand/jp-gatepost",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese gatepost (monchuu) with intercom and mail slot, topped by a light fixture or cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gatepost and its top cap/lamp are drawn entirely in flat front elevation with a straight 1px horizontal outline across row 1 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese gatepost (monchu) with cap/lamp, mail slot, and intercom",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gatepost and its top cap/lantern are drawn in a flat front elevation. The cap (rows 2-5) has vertical side edges and a flat horizontal top line (row 1) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8187
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "gatepost column with a broad cap/top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible broad horizontal top surface spanning about source rows 2–6, with the south/front face continuing below it. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 113619
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 292469,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.012Z",
+ "cells": {
+  "16": [
+   "765e278231e36ce8"
+  ],
+  "24": [
+   "19e5615c2cc6f01f",
+   "3dc78bc1f64e19b8",
+   "4dcf719adfbf954b",
+   "51d6f405f7b559b8",
+   "c767ee4c6e8990e1",
+   "e793da2ffccb106f"
+  ],
+  "32": [
+   "871124250c62d410",
+   "98b37959c4cce35e",
+   "995a510b20ea3e04",
+   "c55be114a7272a91",
+   "d1a9f3dd504f3e8c",
+   "ecacb390bed85864"
+  ],
+  "48": [
+   "080a83d264256271",
+   "422056b4f905f510",
+   "47ebcf0ab1ba7f19",
+   "c5f6e36891db2519",
+   "caf2a017d9cde6aa",
+   "d0d213fddd0097ae"
+  ]
+ }
+}

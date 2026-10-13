@@ -1,0 +1,193 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78036d6b76bb4b9057b374303802569c4063059842a4ef219f512781a5af78b5",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-5-L",
+ "label": "jp_city/street_hand/jp-sf-house-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese building facade with projecting entrance gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade and projecting central entrance are drawn in pure front architectural elevation. The projecting entryway has only a 2px dark cap line at rows 11-12 with no visible top surface or roof slope, and the upper railing (rows 0-6) is also drawn flat front-on without showing top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7651
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with projecting doorway and shoji screens",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn in flat 2D front elevation. Although the central doorway structure projects forward in front of the wall and eave, it shows only a 2px lintel cap (rows 12-13) rather than a foreshortened top surface, and the entire structure (screens, door frame, base curb, and upper wall/roof) lacks 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6078
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular house/building façade with a flat roof band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat, straight-on façade. The dark roof element is only a horizontal front band with no discernible top plane or foreshortened roof surface; the windows and walls remain front-facing.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 55943
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large central house structure with a broad roof/cap over the facade",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof has a clearly visible horizontal top surface about 10 source pixels deep above its front fascia; the facade also shows its south-facing front face. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 129302
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.479Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "1e878019c9d3edb4",
+   "20cd01004168c324",
+   "23fc116f784ec49c",
+   "3ec1d52afc1db08a",
+   "4001b576cf7a0aed",
+   "46002ced684ed322",
+   "4affd58ae2059d85",
+   "5858809b753ca6ea",
+   "674798f1e31774fc",
+   "aebb1ae0eb68cd62",
+   "c8270065076e290d",
+   "efc8b7fe31bf1908"
+  ],
+  "24": [
+   "201fa010714cce8b",
+   "2788ac1cc6fc959a",
+   "2a3ceff556a8601f",
+   "2f1906a10d509f83",
+   "3afd8c60b94dbc81",
+   "41cf78a067c1f3f1",
+   "4d1fad219bbcaae2",
+   "503e617f5d230d34",
+   "5135b02947a58db7",
+   "52a3dce9c444ad60",
+   "58ce681bc5a5544d",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "7c727c57d93ae736",
+   "7cb1ccc9940da0d5",
+   "8538740320c4693c",
+   "985e8100cffdba62",
+   "9ea66f44c2974d4c",
+   "afaccb327b183d4a",
+   "b386a884f7ba736f",
+   "cc74fe64d88440b8",
+   "cea75a9d03bbdc49",
+   "cf9d842153ece800",
+   "e9de74cc6c86d007"
+  ],
+  "32": [
+   "0d7bf7287052c069",
+   "0ebf653c506f6997",
+   "0ef347b801dbd239",
+   "1b71f125322f8624",
+   "1e7c8103b531f9e7",
+   "21e621d1815fb451",
+   "34cc56b291e50cd9",
+   "389d5217bf9642e1",
+   "3fff5ecb896089cf",
+   "4dd793bbcd0dcb22",
+   "55d43b1e7353dda5",
+   "5ada7613c6b78c57",
+   "5c0a01a863b7fd23",
+   "681b5900482ce637",
+   "6c737403e7f7468e",
+   "71e911c4c015df88",
+   "752d694cead49da7",
+   "7ef0b6ff44b01d44",
+   "8fdc9ae433d09a39",
+   "9479d48b690be6a4",
+   "9b41a89946d10144",
+   "b23a667f54aaa7e3",
+   "bf1a41120d2ea75c",
+   "c332cb8ae6543ec3",
+   "c623cb4802285074",
+   "c6930fcddb3920d6",
+   "c8e81ec0878e9043",
+   "c908bc6e09a7c559",
+   "c94f2351c7ce56c3",
+   "d07218f532e651ec",
+   "db3278a2abfdebe6",
+   "e1213c3b2d80eee6",
+   "e802b23945b9b511",
+   "ed83341839f6ada9",
+   "f86266903c61f221",
+   "ff38cc1b134f25b4"
+  ],
+  "48": [
+   "15e5504183c8acc9",
+   "2219d1649353e7d4",
+   "66c618be95455c2d",
+   "76bd3d923e7817b1",
+   "7925186c14164774",
+   "892ae9645a9f0b58"
+  ]
+ }
+}

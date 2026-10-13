@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6510ae312e47627d601434fb58fe6cd7ec70c36fe32c80ca81d9ded69e7d665",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-3-L",
+ "label": "jp_city/street_hand/jp-sf-bento-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with door and vending display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door, frame, upper fascia/awning, and vending display, is drawn strictly as a flat architectural elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront building facade with door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, awning, door frame, and display shelves are drawn in a completely flat front elevation with no visible top surfaces or depth for the lintel, shelves, or roof overhang.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5185
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 332589,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building with a broad roof and front facade",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building has a clearly visible roof plane about 5 source pixels deep before its darker front fascia; the facade is shown from the front without a receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 303645
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.286Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "28f9992a8dae3b88",
+   "2e03490992061d76",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "9d45f10aea250db0",
+   "b1a8b5449b59fe87",
+   "f2c39713705c836c"
+  ],
+  "24": [
+   "0138c0cb09ebba09",
+   "1ba951b1c18181b9",
+   "7ab2f1b10e4870ed",
+   "7e1ccb1b3bb82e53"
+  ],
+  "32": [
+   "06107036cd903e4b",
+   "0b7612f0c7fa52b3",
+   "0ffd89702944a010",
+   "16dd8dd719d48621",
+   "2568624335d31bf0",
+   "31c6562c91ddebfd",
+   "3a8411644a4569b3",
+   "49cf7100f38847b8",
+   "53aa5f1af98c4008",
+   "58deeebbb6cc2714",
+   "5c3ccc4a2df9358b",
+   "5f82b0882d8c6cd9",
+   "728c32c1320b22e7",
+   "7378d4c1bd6569c4",
+   "8545bc111e1405ab",
+   "9f51f33916fe0b57",
+   "a63f09dc590d3dbd",
+   "b8b356bc19858eb6",
+   "beedc235782ab33b",
+   "c9a69974cde2df83",
+   "d23acbd6c484629e",
+   "e6a9fe4273314f1b",
+   "f3f843aa5846e56b",
+   "fe1422aa3875befc"
+  ],
+  "48": [
+   "078ee35eb9a3ecdd"
+  ]
+ }
+}

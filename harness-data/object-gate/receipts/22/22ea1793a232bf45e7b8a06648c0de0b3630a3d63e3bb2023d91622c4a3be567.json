@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "22ea1793a232bf45e7b8a06648c0de0b3630a3d63e3bb2023d91622c4a3be567",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bridge-pier",
+ "label": "jp/jp-bridge-pier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge deck and south fascia/pier",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-7 display the top surface (wooden deck) foreshortened from above, followed by a 4px south-facing vertical edge/pier (rows 8-11) descending into water (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11678
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge pier / stone foundation wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bridge pier is drawn as flat horizontal bands of stone texture over water with no visible horizontal top surface (0 rows). It is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4331
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge pier / bridge edge over water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tile depicts horizontal fascia beams and pier/shadow structure above water (rows 13-15) drawn purely in front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7058
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge/pier deck and southern edge over water",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge/pier deck shows 7 source rows of walkable horizontal surface (rows 1-7) above a 4-row south-facing vertical edge/beam (rows 8-11) over water (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 47407
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.742Z",
+ "cells": {
+  "16": [
+   "2453ecf574618428"
+  ],
+  "24": [
+   "28125c5f6938152f",
+   "51dde871b8b5cf3a",
+   "54cee9bc1b4af6d0",
+   "8deb850355940667",
+   "ad2e12b80f2f4ef0",
+   "e1aa1527fed9a389"
+  ],
+  "32": [
+   "024b73a682056ee6",
+   "160751bc1a9ca8e1",
+   "39ddcdebb1dda1f3",
+   "76b8ccd3cfa9ca36",
+   "8ff7097f29833fb5",
+   "ca023a7a2b369c08"
+  ],
+  "48": [
+   "93639366fcc329cd",
+   "99c3b76bbe136f23",
+   "c518401267fa696e",
+   "d650459b6c661b28",
+   "e880d25c8fe7dce7",
+   "f6c14048710f35c8"
+  ]
+ }
+}

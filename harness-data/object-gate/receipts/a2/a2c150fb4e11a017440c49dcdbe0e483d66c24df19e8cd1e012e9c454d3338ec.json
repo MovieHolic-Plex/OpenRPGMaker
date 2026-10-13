@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a2c150fb4e11a017440c49dcdbe0e483d66c24df19e8cd1e012e9c454d3338ec",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / guardrail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The guardrail consists entirely of flat horizontal bands with no visible top surface foreshortened from above; row 0 is an outline and row 1 is a 1px border.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5289
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / guardrail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/rail is drawn completely flat in pure front elevation with horizontal stripes and no foreshortened top surface visible (row 1 is merely a 1px dark edge line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4773
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal rail fence",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence consists entirely of horizontal bands showing only the front face of the beams/panels, with only a 1-pixel dark line and 1-pixel shade at row 0-1 instead of a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5124
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guardrail panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The guardrail/fence is drawn in pure front elevation with horizontal bands across the entire width; row 1 is merely a 1px edge strip above the front face (rows 2-8), showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4823
+  }
+ ],
+ "decidedAt": "2026-10-13T13:07:14.374Z",
+ "cells": {
+  "16": [
+   "338a7ddbc98da6bd"
+  ],
+  "24": [
+   "1b0cf15a75e14e51",
+   "4d3228f49d94515e",
+   "510470eca3c1a7af",
+   "5af7a784dbbe339c",
+   "69b2928f0cbc6df8",
+   "9b2c036f3f413fd3"
+  ],
+  "32": [
+   "4c193e921afdf2a4",
+   "743aa534cb71267e",
+   "97672f05c7e0845c",
+   "a33b777208c133e3",
+   "e190397f13c5c245",
+   "f16d5d3620fc74d7"
+  ],
+  "48": [
+   "0bac880f5879a302",
+   "1358aa5dc38b495c",
+   "2bee98beea3b811a",
+   "c594f3e0664a50c6",
+   "df68c2224493db15",
+   "f395c38d48676027"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb132b294433659781642e630256c04304f70298f1e24e0d4163b46a3aebb32b",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-jizo",
+ "label": "jp/jp-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone hokora shrine housing a Jizo statue",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone roof of the shrine slopes forward from row 0 to 8 (9 rows tall), clearly presenting a top/sloped surface in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4748
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo stone shrine with statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shrine, statue, and stone base are drawn in flat front elevation. The two-tier stone plinth at the bottom has zero visible top surface, the alcove interior has no floor depth, the Jizo statue's cap and bib are flat horizontal bands with no top visible, and the roof is drawn as a flat architectural facade.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8308
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Jizo shrine with roof and alcove housing statue",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine has a prominent sloped roof spanning rows 0-8 (9 source pixel rows) showing its foreshortened top surface, and the base plinth shows a visible upper step surface at rows 27-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4859
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone jizo shrine",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The shrine roof shows a 9-pixel-tall forward-facing slope (rows 0-8) viewed properly from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4800
+  }
+ ],
+ "decidedAt": "2026-10-13T12:59:17.705Z",
+ "cells": {
+  "16": [
+   "4512ca931c93e21a",
+   "521f66d6e8dc56b8"
+  ],
+  "24": [
+   "0d539c0184ff572d",
+   "0fff33eb5708cb6f",
+   "1b71e622b254230c",
+   "61b13b300a2c5ecc",
+   "6e94a665fd94f719",
+   "7144dee4d13d978c",
+   "8ce05083693d9c57",
+   "92c59685965f99c1",
+   "959ef090bef5cfa5",
+   "ae7e9007c1f78443",
+   "c0090e42b0744b1f",
+   "d46a440c40c32d80"
+  ],
+  "32": [
+   "7119c4fda27d2fee",
+   "8fb9ed542423eb47",
+   "e08b5eb8d0b040f2"
+  ],
+  "48": [
+   "3e25301cbe08152f",
+   "501f1543c07f2a8b",
+   "7009e35341a10de5",
+   "7ee82020442eb882",
+   "bf31bbcb53005561",
+   "e50206e1a610e1f1"
+  ]
+ }
+}

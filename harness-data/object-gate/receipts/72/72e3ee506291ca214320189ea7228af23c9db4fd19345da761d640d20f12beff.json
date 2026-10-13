@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72e3ee506291ca214320189ea7228af23c9db4fd19345da761d640d20f12beff",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "jp-wall-drain",
+ "label": "jp_city/street_hand/jp-wall-drain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall drain opening with runoff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat wall-mounted drain opening set into the wall with slime and water running down beneath it, appropriately flat for a wall-mounted fixture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6645
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drain opening in wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall drain opening and runoff stream embedded flat in vertical wall tiles; correctly displayed flush against the wall surface for a wall-mounted/wall-embedded feature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4352
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall drain opening with runoff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A square drain opening set flush into the vertical wall with moss and water trickling down below it. As a wall-mounted/flush architectural feature, it correctly sits flat against the south-facing wall plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5243
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drain opening set into a wall with draining fluid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted/embedded drain opening with moss and dripping liquid flush against a vertical wall face; wall_mounted objects are permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3577
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.703Z",
+ "cells": {
+  "16": [
+   "12bb4f13469dc311"
+  ],
+  "24": [
+   "09bb7eccac0e891f",
+   "222a48b636aed676",
+   "58643fab5b91c645",
+   "7cca03d1129e8088",
+   "b411bab89390fcfe",
+   "fabf25a6de1caebb"
+  ],
+  "32": [
+   "028ec5a2e2693391",
+   "19d733c5af8f695f",
+   "9019ec0a9f8a57ea",
+   "ae911f3f066b8d52",
+   "da4183bc4a33b248",
+   "fb683a0f3fddd80b"
+  ],
+  "48": [
+   "0448a83941b7f611",
+   "3eaa53e9aa591cc1",
+   "6f751aa0676eafc0",
+   "91381f646b5661c4",
+   "c04bfca5f8db4ef8",
+   "c60f0ff3aa69c5b0"
+  ]
+ }
+}

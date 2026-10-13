@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9267b54778f557512f2aba432c07964cbe540b2971e269839376290d38a0daad",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-6-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator entrance and wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (elevator frame, doors, and side panels) is drawn in a flat side-scrolling front elevation with no visible top surface foreshortening; the elevator lintel at rows 11-12 is only a 2px cap outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4985
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator doorway and wall units",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and flanking wall panels are drawn as a flat 2D front elevation (side-scroller style). The elevator lintel at row 11-12 is only a 2px horizontal strip with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6569
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator entrance and locker wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (elevator frame, doors, control panel, and adjacent locker banks) is drawn in a pure side-scrolling front elevation with no visible top surfaces on the lintel (rows 11-12 are a 2px outline band) or the wall/counters.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator entrance and corridor wall panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator door frame, lintel (rows 11-13), wall panels, and base are drawn entirely in flat 2D side-scroller front elevation with 0px of visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5346
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.047Z",
+ "cells": {
+  "16": [
+   "146c33490fba78be",
+   "1b87e3af4ed40949",
+   "2634288f94ba584f",
+   "2765fa619518beb4",
+   "34e8d29140136e3f",
+   "3df11349858089b4",
+   "3eb26e7df878c649",
+   "7727236b97e114cf",
+   "90d676193775ad84",
+   "91981ea6408a53ff",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "d093264fece2ad31",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "0e77f89e54513e55",
+   "126b26cfd6570e32",
+   "2b1114dd335d2a7e",
+   "34c30ebf083ef679",
+   "6cbbe934858095bf",
+   "af98f6ce88300766",
+   "c2567cdec3df62ee",
+   "cb490db3a4d5c9d0"
+  ],
+  "32": [
+   "266a99c11db645bd",
+   "2b39fbae5ec1c08e",
+   "35d2a82a82b49aa5",
+   "3b0cd846a29c0458",
+   "56f0e0e45356d7bb",
+   "98e568878563ff74",
+   "b104d74a7187e35f",
+   "baf1fc2eaad93232",
+   "bd853372eb0d8b76",
+   "e0a155fa6bc7f957",
+   "ea4915df5f61de22",
+   "ec8643ef918cd414"
+  ],
+  "48": [
+   "46455fb9f8a3e1d5",
+   "6f1cb47eb5d2b9e4"
+  ]
+ }
+}

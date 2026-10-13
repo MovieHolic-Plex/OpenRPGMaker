@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1b3e5f60a1e43b38e562e9d67d9fffc32d160d842571fabd05f5fa9df210fce",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-lip",
+ "label": "jp_city/street_hand/jp-bridge-lip",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge wooden planks surface",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bridge floor section showing wooden planks viewed from above, spanning rows 4 through 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3432
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge lip / wooden planks",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bridge deck/lip tile showing horizontal wooden planks viewed from above across rows 4-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3403
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bridge planks",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden bridge surface showing horizontal planks viewed from above across rows 4-15 with plank seams and highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3588
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge planks / lip",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bridge deck/lip tile showing horizontal planks seen from above across rows 4-15 (12 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5613
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.354Z",
+ "cells": {
+  "16": [
+   "84acec5f80596e0d"
+  ],
+  "24": [
+   "047c788fb19a7a01",
+   "18e99e6b298bd8e7",
+   "62b3d8f7b3f8e7a3",
+   "6783a41b44cdca97",
+   "c374c378734458fa",
+   "d2a86d6c27a536fb"
+  ],
+  "32": [
+   "22bb38a02db22504",
+   "637e47c7c6fbaf55",
+   "8196a1ce0d4e1513",
+   "9040c862f0c44792",
+   "c582634188442c9f",
+   "e416ddc146ca5359"
+  ],
+  "48": [
+   "0d6da4704d48f319",
+   "639434d8350483ea",
+   "7c030436f7adfb81",
+   "7fbd5774afa22d77",
+   "89c5bd9d714f4fc9",
+   "d11574ad894616b8"
+  ]
+ }
+}

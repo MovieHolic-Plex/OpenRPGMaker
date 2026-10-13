@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dedb38cace70c46131148cb5cc4d68673f572018459f1491987c0ab1912ec0e8",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-e",
+ "label": "jp_city/street_hand/jp-mark-edge-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking / road decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat vertical ground markings/stripes viewed directly from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4346
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road or platform floor marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Lies completely flat on the ground as painted lines/markings spanning all 16 rows from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3792
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat ground marking / road edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat pavement/road edge marking lying entirely in the top-down floor plane across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3161
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground road marking edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor/road marking decal lying completely flat on the ground plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2646
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.359Z",
+ "cells": {
+  "16": [
+   "ae9c9986e17c6200"
+  ],
+  "24": [
+   "0b332f0b5ae64822",
+   "174174a33add9c65",
+   "27d4a9340287f7b9",
+   "292ff53a85b26865",
+   "987321c340b237de",
+   "e2a699c1a120a431"
+  ],
+  "32": [
+   "76b974d52f093855",
+   "89394483ccba3bf3",
+   "ac8ef0949faabef4",
+   "dbd247bc8f6c8d4a",
+   "f1ac2762b05c3f44",
+   "ff81f92f4128806c"
+  ],
+  "48": [
+   "315a86f717669aea",
+   "3acbedf58c784d8d",
+   "4947564737596639",
+   "6377cef53fcb3141",
+   "8c12da0e664b0795",
+   "9da70010627ba083"
+  ]
+ }
+}

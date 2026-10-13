@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "595905eb5a5a36f82ffa2c749d3f5a5587d476c47297ae763420b5c80b6d15c1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-n-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-n-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground tile with road marking and drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Lies entirely flat on the ground across all 16 rows, depicting asphalt, road line, and a drainage grate seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4596
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road surface with drainage grate and painted line marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite is a flat floor/ground tile featuring asphalt texture, a painted road stripe, and a flush drainage grate viewed entirely from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2954
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "road surface with northern drainage grate and painted white marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts flat ground/pavement with an embedded drainage grate along rows 0-4 and a road marking line at rows 12-13, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drainage grate and road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire tile depicts a flat road surface seen from above with a painted line and a flush drainage grate spanning rows 0 to 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3781
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.359Z",
+ "cells": {
+  "16": [
+   "e47b20fa9fea71f6"
+  ],
+  "24": [
+   "174eb155ee10e618",
+   "1860cbe47e40d487",
+   "895fdf11b823c2f7",
+   "9fadc640e3e939fd",
+   "c2c6001b9e07295a",
+   "f7797c412363bffb"
+  ],
+  "32": [
+   "03976bd36ee4eb27",
+   "8b7d903cbe2b355f",
+   "aebba98f2b514b2c",
+   "b0c085e0bbf791e0",
+   "daa3de01529fbd72",
+   "e436c0b5cc9f8a14"
+  ],
+  "48": [
+   "0a19fab95d770edf",
+   "60b5b7653fbd0141",
+   "ab98b0d572c8e8c9",
+   "c323ab11291751c2",
+   "c60c2923c8e8589e",
+   "dfc002ac968e7499"
+  ]
+ }
+}

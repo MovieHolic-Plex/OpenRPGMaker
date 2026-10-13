@@ -1,0 +1,179 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "36ed0869d88facaa1da161924cc3d88b09824fa6f07ba407851dd023a1deafd0",
+ "width": 48,
+ "height": 144,
+ "kind": "column",
+ "name": "jp-pole-wood",
+ "label": "jp_city/street_hand/jp-pole-wood",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden utility pole with crossarm",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut end of the cylindrical pole (rows 1-6) is clearly depicted as a foreshortened ellipse 6 pixels tall, correctly showing the top surface from a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5833
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden utility pole with crossarm",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cut face of the main pole is clearly rendered as an ellipse from row 1 to 6 (6 rows tall), demonstrating proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4446
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden pole with a broad top cap/cut end and crossarm",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The pole terminates in a visibly foreshortened tan top/cut surface several source pixels deep, with a darker south edge below it. The shaft also has a distinct dark receding side strip; it is not a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "옆면(아이소)"
+   ],
+   "ms": 217778
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden pole shaft with attached horizontal signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole shaft is a flat vertical elevation with no visible top/cut surface; the horizontal signboard has a top plane, but that does not count as the pole's main-body top. No receding isometric side face or container opening is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 92789
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.477Z",
+ "cells": {
+  "16": [
+   "0f00d4c63f5ed6a3",
+   "3cd0038ac96c500e",
+   "5019337683401e19",
+   "7f0e8f4ae3cda6a8",
+   "8551656e210ce0e3",
+   "8ccae907ba3b721e",
+   "b26f736d4494edd0",
+   "b4b7fba738660091",
+   "b5173bb9137e0e59",
+   "c3e7bcb95f36fdeb",
+   "c5edcf269711f963",
+   "d3ad3caf727f82b4",
+   "f40bac3381b06675",
+   "fbd68fc04c651279"
+  ],
+  "24": [
+   "00a99aca1dfad5de",
+   "01150aa3f9256966",
+   "0db80b4b5b36ba7c",
+   "11530d7328cea122",
+   "7839f3768896c669",
+   "7ddb58028373e32c",
+   "7f455a7d77ce10f2",
+   "8cd29b083662d1ca",
+   "9f8b8fb613aec82b",
+   "a24ee118655ccac3",
+   "b9990026f39e8522",
+   "db23b690253845ef"
+  ],
+  "32": [
+   "007fc70ac394dfd6",
+   "04685870bf19c9fd",
+   "048aa359f3638618",
+   "1898a0b987d65127",
+   "1de41cdf4274c89c",
+   "22bee2f645adeeac",
+   "2b8e0c45c3feb40c",
+   "3089de162566e2dd",
+   "337cdcecffa95c1a",
+   "3a925f1a9acbb9fa",
+   "3e32f294d1495838",
+   "43da6ad14b41a593",
+   "444d91a3780e9607",
+   "45b004327696b300",
+   "46c0aa2d22912cbb",
+   "4f2d6255c396d41f",
+   "557272bf88c11826",
+   "5780beb08153bcb1",
+   "596bacf057a4a33f",
+   "618acecf55240fca",
+   "62e6b1d7dcbf730d",
+   "630d10ccc4224bf6",
+   "748c2bacc81c9f43",
+   "78541b8aedea841f",
+   "7c4b7274a10ecf90",
+   "86829b1f7a2643e8",
+   "896e6e20d9b38cd7",
+   "8fe1f358dffd830c",
+   "917697f05725931f",
+   "93bf1d21450e3a71",
+   "98e23d863ada6d44",
+   "9937ef07bc6717fb",
+   "9a51bc7aad1f3bbe",
+   "a3b0cbaa2713b864",
+   "a7776c39ae3df20d",
+   "ac035dd50764d8cd",
+   "b21f7b1b81fcb673",
+   "b32a863740c18e65",
+   "b61aec956c749d9d",
+   "bd6e6fc194fa744f",
+   "be37a80ff863859d",
+   "c44442d1152a141d",
+   "c63333066d6b7504",
+   "c8309229ff4b8846",
+   "cc68570ebf8a22a0",
+   "cd5dd49493729a8c",
+   "d72bdb27ceb58b09"
+  ],
+  "48": [
+   "1af2f3a4d4a60940",
+   "237ca246d3f74543",
+   "271dad09aa47cdfe"
+  ]
+ }
+}

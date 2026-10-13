@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee7088effd6d04cba2ee5b48ba3a2d119060aaffb28fe4ed97bd57a1fda0c3e7",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-r",
+ "label": "jp_city/street_hand/jp-bwall-end-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall is clearly visible spanning rows 1-5 (5 pixels deep), above the south front face (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3274
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall cap/top surface is clearly visible from above across rows 1 to 5 (5 source pixel rows), above a south-facing brick wall face from row 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4239
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall cap is visible across rows 1 to 5 (5 pixels tall), with the south brick wall face occupying rows 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3322
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall section with top surface and brick face",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall cap is clearly visible spanning rows 1 to 5 (5 source pixel rows), above the vertical brick face on rows 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3962
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.355Z",
+ "cells": {
+  "16": [
+   "2d9509a180f01d37"
+  ],
+  "24": [
+   "1759d31053ebfa5f",
+   "1d77e815d856295a",
+   "2634946f78fb0a29",
+   "7253353897ee7c2b",
+   "e4ea20894def00c1",
+   "fce6517571c3c324"
+  ],
+  "32": [
+   "16bede24b20d0836",
+   "36041bb04370f3df",
+   "41183ff2ef0f3c58",
+   "755f26d9408f3164",
+   "bf46a608fd1e2fc1",
+   "f14d430a611ec29b"
+  ],
+  "48": [
+   "19f1e85ed2c443a7",
+   "34a6da51434d505c",
+   "455b000441906bc9",
+   "a58b5ccc80ad8eda",
+   "cd4d6d98ae70b9dc",
+   "dbed4a1c5a0538f8"
+  ]
+ }
+}

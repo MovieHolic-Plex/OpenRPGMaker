@@ -1,0 +1,172 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e24e6c3ba869e15998f52419cb0f0b7e5147652cc7c5ddcb3068c431c119e089",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-8-L",
+ "label": "jp_city/street_hand/jp-sf-machiya-8-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese machiya building facade with tiled roof and lattice windows",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, prominent roof slope spanning rows 2 to 19 (approx 18 rows) visible from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6233
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from rows 2 to 19 (approx. 18 pixel rows of foreshortened roof surface), meeting the 3/4 view requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4024
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Machiya building with a broad tiled roof and windowed front facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof presents a broad visible slope approximately across source rows 2–19, above the south-facing windowed facade. This is a substantial roof surface, not merely a thin cap or edge highlight. No receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22320
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Building facade with a tall central double door and flanking lattice windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is drawn as a flat front elevation. The narrow bands along the upper edge and above the doorway are cornice or lintel lines, not visible roof slopes or horizontal top surfaces with appreciable depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13827
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.823Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "153f67d3b458cee4",
+   "2a750be2acb717cc",
+   "3355644826b31b91",
+   "3fae5867f8e17aba",
+   "43ca3ab691c339a9",
+   "5dfd346e1a9d4ebc",
+   "75074ea195edf8eb",
+   "a1a696a945fcac22",
+   "a3043c90ab422321",
+   "b028a4a8f04550fa",
+   "bcda896f94ebad2a",
+   "bfed17c4ac8b23a4",
+   "c688632e1f5f1fbe",
+   "d6bd95c63d3b2408",
+   "f53aa0a80fda7bf4"
+  ],
+  "24": [
+   "0c673c271503da93",
+   "0d9db261d86bf139",
+   "27dfac652a6a956c",
+   "2ef740f764fca8ca",
+   "36af71a4c1632066",
+   "408f0631a86bdf5a",
+   "4102a46376d83746",
+   "491eae275622ba34",
+   "4aa345bc3a6738d6",
+   "4beb85bd20114e4c",
+   "52aeedbaaaf6b4d8",
+   "5bc0f274b15f2d5d",
+   "62dcccdd3582fe28",
+   "6aeaef5d81ca31c6",
+   "6d6a753f894eb29d",
+   "70c432e445272d57",
+   "7dcb1c440ff4f659",
+   "862ff064c14ae0a2",
+   "86dd8c347c202812",
+   "8b4d546887dd9381",
+   "8c2d00682371adbf",
+   "98ceb43d33c29bb0",
+   "b8e9dd3dd23bf868",
+   "c03d285524fd0ad6",
+   "de9826c1f985881a",
+   "e845618f4758d2cc",
+   "e9b5ce61e2859e63",
+   "ee45bb8bd3900ef6",
+   "ef6e42857772ac12",
+   "f36b70bfa0766f9e",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "139c3caa75d20e54",
+   "2348c7f23091cd5b",
+   "25b1fcb0a1e533c4",
+   "27225c48026817d6",
+   "3e5404149fecb9a9",
+   "5a22dcf626eecaf4",
+   "6dc40313941c859a",
+   "91300e8da8574bd0",
+   "cc15cea23ae117c6",
+   "cf33ea1a6d03dbbb",
+   "d1b2fff8f2082580",
+   "e124cc088ae4c7a1",
+   "ef92a51282a8dc03",
+   "f819fe7e098d7614"
+  ],
+  "48": [
+   "1ab25dc4e0712f59",
+   "2aeb5c6405f5ad06",
+   "58e1ccb5e360f534",
+   "6029c01e1b4b13e4",
+   "6206dac585b0bc3a",
+   "7802253632dccdd6",
+   "b66d7641c1726a39",
+   "b6958d78e405fab9",
+   "cec38f7caa5aa734"
+  ]
+ }
+}

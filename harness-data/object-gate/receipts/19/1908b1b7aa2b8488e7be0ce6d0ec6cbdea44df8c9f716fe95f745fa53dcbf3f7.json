@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1908b1b7aa2b8488e7be0ce6d0ec6cbdea44df8c9f716fe95f745fa53dcbf3f7",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-5-R",
+ "label": "jp_city/street_hand/jp-sf-machiya-5-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya building facade with sliding door and lattice windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade is rendered as a flat 2D architectural front elevation; eaves, lintels, steps, and walls show no visible top surfaces or downward 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4520
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade, central sliding door, side windows, eaves, and ground threshold/sidewalk are rendered in a pure front elevation with no visible top surfaces (lintels and eaves are only 1-2px lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4511
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machiya building facade with sliding door and latticed windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade is drawn as a flat architectural front elevation (side-scroller view). There are no foreshortened top surfaces on the roof eaves, door lintels, or ground base, showing only a pure 2D frontal view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4087
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building facade with sliding lattice doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machiya facade is rendered as a flat architectural front elevation. The central door frame has only a 2px cap line at rows 11-12 with no visible top surface, the lattice windows and sliding doors are seen purely straight-on, and there are no foreshortened top surfaces on the lintels, sills, or roof eaves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6511
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.648Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "23fc438d93e09ca5",
+   "2a750be2acb717cc",
+   "3fae5867f8e17aba",
+   "4638888cde09fee6",
+   "91adf9299a32a824",
+   "a3043c90ab422321",
+   "b10dc0c55605f645",
+   "c8ba2cfaceb7db6d",
+   "c9935c1aceeb5b56",
+   "d1e40293097e0f22",
+   "f53aa0a80fda7bf4",
+   "f91f2729557b16f2"
+  ],
+  "24": [
+   "060ede7ce48fb483",
+   "123a084f263d816e",
+   "22813f2aae277dda",
+   "27dfac652a6a956c",
+   "31b74531796fd299",
+   "31b82257c688d188",
+   "36af71a4c1632066",
+   "4102a46376d83746",
+   "491eae275622ba34",
+   "4aa345bc3a6738d6",
+   "66448c0346e12fc1",
+   "6d960b416b79ca66",
+   "6e38646f84ed6c6d",
+   "70c432e445272d57",
+   "7fefffb110a1dea1",
+   "8c2d00682371adbf",
+   "98ceb43d33c29bb0",
+   "ba91603aa55d1ac7",
+   "bda5d2bdc74b46a7",
+   "d6e8527deae3145f",
+   "ee45bb8bd3900ef6",
+   "ef5a2d5c6bf4115e",
+   "fb9ef8007e8ca87e",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "02b6c07f40f31e2d",
+   "110d5ca9cd3b62fd",
+   "135bfd87854bfbbb",
+   "2203f0db8fe1feff",
+   "24e0ca250bc2c84f",
+   "29520750f4f1d410",
+   "2cf93ee33de89ffb",
+   "33bb95ae39ba5151",
+   "389ff231fa90c1e9",
+   "398c42feb4d3b772",
+   "41ebc3443160cc78",
+   "4ecea7d905848466",
+   "55ebc3ce9859cdb7",
+   "560b37c99ca5f5c1",
+   "59aa3c7e5e5b54a7",
+   "6d34b7d85a07492f",
+   "706f6d14ea6e57a1",
+   "76e03df06a25d178",
+   "817dbcb5f4916360",
+   "82554b6304a86872",
+   "8d39014e66e37062",
+   "9ce0944159395a74",
+   "a25a4856765c8b02",
+   "a86dab8cbebcbec6",
+   "aef03714d6702977",
+   "bb0df715a4500032",
+   "be61dd1fe0a1fe25",
+   "c1553798c37bf340",
+   "c5d618cb4d2c943a",
+   "cc15cea23ae117c6",
+   "ccaae80202700362",
+   "cd05fbe8474431c7",
+   "db9d84e0a5d82d62",
+   "edac23e3c663eb9a",
+   "f440d1f794d68187",
+   "f745e2f9aab00533"
+  ],
+  "48": [
+   "30f978a83182e806",
+   "394c0722a3ca03e2",
+   "7abb130a2f218959",
+   "a05d4b7986f0988c",
+   "a2b26f40a5576d6e",
+   "ba85b6bd234eeab7"
+  ]
+ }
+}

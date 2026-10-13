@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4234df99ca28264a121026f2d52229982bb717bfbaa77624f93db4baa74dd4a7",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-3-R",
+ "label": "jp_city/street_hand/jp-sf-bento-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade with door and display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, sliding door, display shelves, and lintels are drawn in pure 2D architectural front elevation with no visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14389
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with door and vending display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, door, awning, and side display case are drawn in a completely flat front elevation with horizontal 1px stripes and no visible foreshortened top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6507
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large building facade with a broad roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main structure has a clearly visible broad horizontal roof surface above its front facade, spanning approximately source rows 1-6. The facade is front-facing but is not a pure elevation because the roof surface is shown; no separate receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 378098
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 381834,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.286Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "28f9992a8dae3b88",
+   "2e03490992061d76",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "b1a8b5449b59fe87",
+   "b5f2cd3064a7294f",
+   "f2c39713705c836c"
+  ],
+  "24": [
+   "2a52ff0f30d43d8a",
+   "52cb9119e2ca20e1",
+   "f42abb1ee4b877a5",
+   "f87331d74aaa1fdf"
+  ],
+  "32": [
+   "0caa51e5fdeadf2e",
+   "24fdab3d9098fccd",
+   "31c6562c91ddebfd",
+   "3e4d86f1e3309c39",
+   "4d0710532596bd0d",
+   "5f82b0882d8c6cd9",
+   "61ccf89c742cd63c",
+   "71ec02bb8a37b10a",
+   "85ced2051a6c3e6b",
+   "860bc69d0c7ea1a3",
+   "8700f23d67e8f729",
+   "9914dd6fc88c5cd4",
+   "9f51f33916fe0b57",
+   "a06fc9c9da62e70b",
+   "a80983ff39529eff",
+   "aa22717f414d81fd",
+   "b3cb6ea51e837667",
+   "b4265e4ece7cab9d",
+   "b8b356bc19858eb6",
+   "deed63353916e668",
+   "e04f7654839286a3",
+   "e153b4a892ee898b",
+   "e3121d9f4ce1d643",
+   "e4536aa02b1bb021"
+  ],
+  "48": [
+   "1f136c124b07b920"
+  ]
+ }
+}

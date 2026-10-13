@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b763b93888662052edfdebe8993631eb40a1ee5a1074e046322ef9acd1f9d420",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-4-L",
+ "label": "jp_city/street_hand/jp-sf-bento-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront with central glass door and flanking display cases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel (rows 11-12, only 2px thick), display shelves, and upper facade band, is drawn as a flat architectural front elevation without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4525
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with central door and display cases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top beam/fascia, door frame, awnings, and display cases, is drawn in pure flat front elevation with no visible top surface or downward slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4706
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront with central sliding door and side display counters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, side counters, shelves, and upper facade/signboard, is drawn in pure front elevation with no visible top surfaces (lintels and counter tops are only 1-2px outline strips).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5252
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront / building entrance with door and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top sign, door frame, lintel, and display cases, is drawn in pure front elevation with no visible horizontal top surfaces or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4476
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.050Z",
+ "cells": {
+  "16": [
+   "20e48e4d2dd2df46",
+   "23f92e3b7442d9c8",
+   "591233ec525de138",
+   "5d0dbbf69f9765ad",
+   "6d8d6a2b2522f31c",
+   "72bb74ca491164c8",
+   "85efcf18ccc5edd5",
+   "9a6f504a5ffd1c7a",
+   "b1a8b5449b59fe87",
+   "bfc8bf616bb04b4a",
+   "dff0087a3023fbdb",
+   "e5a60efed5159079"
+  ],
+  "24": [
+   "05c9f5ab2211a859",
+   "06cdf227f7a510b8",
+   "12ded2ef9bdb9e44",
+   "2a52ff0f30d43d8a",
+   "2ae53f080ac1eae8",
+   "4499b3ec9af7fffe",
+   "50640fb10a4e5bf2",
+   "5c859c538e34d9e3",
+   "73d51e7158bde5cf",
+   "7ab2f1b10e4870ed",
+   "8261b8144c91249a",
+   "9a3b6c0eeb7d4675",
+   "bef6c75b891857a4",
+   "bfbddd83fa2c31e4",
+   "dbb8c5c43b1795be",
+   "de9f30da69e1c0b5",
+   "f70c752f005ced3e",
+   "f9986b7bbb0b0f03"
+  ],
+  "32": [
+   "215349f156275d32",
+   "7130ca3a440ffc7f",
+   "7716a187ebd2f055",
+   "85415cb675a2ad10",
+   "aa00b1236f33fb90",
+   "d17fa0fabe89929e",
+   "dd06d3b888e14209",
+   "eb682f8ced66e040"
+  ],
+  "48": [
+   "73390adbdb536115",
+   "97363e52f892788a",
+   "9b4c7987572ef3cb",
+   "a9c3aef1ac376525",
+   "aa9ad8b384db2e0b",
+   "d9cefab44b74570e"
+  ]
+ }
+}

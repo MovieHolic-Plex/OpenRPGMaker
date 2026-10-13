@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "934a9c14aafafb91b9f0287933b6d334c3fdf4c5d76db1e25843716a9d9d6939",
+ "width": 32,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "jp-wire-5",
+ "label": "jp_city/street_hand/jp-wire-5",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Three drooping wires/cables spanning horizontally, appropriate for a flat wall-mounted or overhead wire overlay in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5318
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wires/cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin hanging wires/cables drawn flat as permitted for wall-mounted/hanging elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging electrical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Hanging wires/cables strung horizontally in catenary curves; thin wall-mounted or overhead strung elements have no measurable top surface and are permitted to be flat under the wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6629
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Suspended cables/wires spanning horizontally, appropriately categorized as wall_mounted/overhead flat fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6212
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.705Z",
+ "cells": {
+  "16": [
+   "a351da358f182886",
+   "b7379aee1ac92998",
+   "bfdd026b5a0f1248",
+   "eaabe5de7bd5c830",
+   "eac0da15b6b70996",
+   "eba8958d269492ab"
+  ],
+  "24": [
+   "007c2a6b51b8cffc",
+   "1a45608055bb6791",
+   "3a64999f56f709e2",
+   "4bca8e8083bb7fb2",
+   "549b7b3f9b1835da",
+   "63c4aa95e63d88a9",
+   "67909ff991a424ae",
+   "9726e8890f9b4e98",
+   "9b4912cb492acb70",
+   "a193d1d4d042ca25",
+   "a63f34f015063e7e",
+   "e6e71ca85d0cb3e2"
+  ],
+  "32": [
+   "072c2da00a2b4820",
+   "08c11e1a69dd5335",
+   "97a0409ebec243ed",
+   "b3d952e9467323ed"
+  ],
+  "48": [
+   "280a562d271e4282",
+   "3367df4d4a92f50a",
+   "736fcd6b6e1e06a8"
+  ]
+ }
+}

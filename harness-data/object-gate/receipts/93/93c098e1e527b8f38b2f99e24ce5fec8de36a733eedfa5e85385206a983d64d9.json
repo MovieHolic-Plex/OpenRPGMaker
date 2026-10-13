@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93c098e1e527b8f38b2f99e24ce5fec8de36a733eedfa5e85385206a983d64d9",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-3-L",
+ "label": "jp_city/street_hand/jp-sf-sento-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento entrance facade with noren curtain and window display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront entrance, including the doorframe, lintel, noren curtain, and adjacent display shelves, is rendered in flat 2D architectural elevation without any foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6552
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathhouse entrance facade with noren curtain and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (curtained doorway, window display, and top railing) is rendered completely flat as a 2D front architectural elevation, with no top-down visible depth or foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6548
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Bathhouse entrance facade with double blue curtains and a right-hand window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entrance, curtains, upper trim, and window are drawn as flat frontal rectangles. No roof slope or foreshortened top surface of the main structure is visible; the horizontal upper bands read as facade trim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8765
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Bathhouse building facade with a blue entrance curtain and upper architectural lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat frontal facade. Its upper horizontal bands read as wall or lintel faces, without a visible roof slope or a top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12335
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.006Z",
+ "cells": {
+  "16": [
+   "1c55c7cd2db48977",
+   "30c40de893614fb0",
+   "492309af242ec3ef",
+   "5e232eff7bd84c85",
+   "8a0024a5ea16da93",
+   "aaca9d2628aa7a68",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "4a41448fa486da75",
+   "64a2ef445f615dd2",
+   "782c79bff4c9f600",
+   "9c1827b7431e9358"
+  ],
+  "32": [
+   "15c95fbe89c46d18",
+   "1a13dc05df0da1e3",
+   "1f36f99eef96caaf",
+   "21c869f06c2b1431",
+   "227207ebe6042ed2",
+   "3b916cc055de7cbe",
+   "3ebf3ade6233e88e",
+   "5a410a7116d83362",
+   "5b57f85887a445e5",
+   "5e1b4de84829c3f2",
+   "6c0aaf0f399be5c5",
+   "779b20eed57d5c5b",
+   "7a6fea86f7d26c2b",
+   "8ea05c627e83c95b",
+   "9f21704b9e822afe",
+   "aab543655a84be34",
+   "aced106d6c96e10b",
+   "af5706e6b53388dc",
+   "b1edbf55d84d064d",
+   "be0d42cb1f742b5f",
+   "bea8c332c8d7bccb",
+   "c0914752ddc5f167",
+   "ca55bd4d7af05bfe",
+   "ceb1eff5d4c55207"
+  ],
+  "48": [
+   "c5c2069615cead06"
+  ]
+ }
+}

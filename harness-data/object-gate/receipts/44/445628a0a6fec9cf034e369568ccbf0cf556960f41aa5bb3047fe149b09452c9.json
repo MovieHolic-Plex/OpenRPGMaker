@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "445628a0a6fec9cf034e369568ccbf0cf556960f41aa5bb3047fe149b09452c9",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-3-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store entrance and window facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (doors, lintel/door frame, magazine rack, and upper fascia) is drawn as a flat orthogonal front elevation with no visible top surface or roof slope (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4603
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront entrance with automatic sliding doors and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the top fascia/lintel, door frame, and display shelves, is drawn as a flat 2D front elevation with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7350
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront with sliding glass doors and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, upper fascia/awning, and interior magazine shelves, is drawn in pure flat front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4468
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store entrance and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (sliding automatic doors, lintel, sensor, side shelves, and upper facade band) is drawn in pure 2D front elevation with no visible top surface or 3/4 angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4719
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.644Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "3544c3153d9d76e2",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "acf3a136f6336970",
+   "ade61c26162d5fba",
+   "c000ff4a99d50ac7",
+   "e09dad0b84f07f9a",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "3eb55e2a3683421a",
+   "47e48fdc07c2392f",
+   "916fda0efd0bd700",
+   "bd214eb45dc1f533"
+  ],
+  "32": [
+   "03d18344a296e12b",
+   "0de6a39a1f79857f",
+   "201688a990c38947",
+   "2294747d6649a85d",
+   "29943211b1fe3c98",
+   "35c57e24cee8cbae",
+   "3a9ebd962eb29e17",
+   "630bdeb4bd8ae491",
+   "73106e92b6ca529b",
+   "857763d9ff278f93",
+   "938d4542240e5561",
+   "a54108976ebcfc2e",
+   "a647aee1034a7b07",
+   "b59e918be48882a4",
+   "b7f3191ab0ba7ace",
+   "b9ec0fbbfab13f79",
+   "c3cc2359f677f7a7",
+   "c80db2868f5a8f20",
+   "d48357051175353a",
+   "db050a2ca0b47202",
+   "f63b634e1b377cee",
+   "f944dbe32ccecfd0",
+   "fbd05837c343a212",
+   "ff5ff39082120571"
+  ],
+  "48": [
+   "95ee86a43b076c00"
+  ]
+ }
+}

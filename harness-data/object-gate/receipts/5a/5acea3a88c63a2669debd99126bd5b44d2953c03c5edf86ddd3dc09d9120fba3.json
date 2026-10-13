@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5acea3a88c63a2669debd99126bd5b44d2953c03c5edf86ddd3dc09d9120fba3",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp_city/street_hand/jp-bwallf-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese style wall/fence with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall is topped with a 4-pixel-tall tiled roof cap (rows 0-3) showing the sloped/top surface above the beam, grille, plaster, and stone base sections.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7495
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese castle or fortified wall with upper railing and walkway",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall structure features a 4-pixel tall tiled walkway/floor surface (rows 0-3) seen from above, with the vertical front wall facade and railing extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6510
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large wall/building facade with a broad roof or lintel surface",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a clearly visible horizontal top surface approximately 4 source pixels deep above the south-facing facade; the dark upper edge is only a rim. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 123352
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building wall with a shallow roof/eave top",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a visible tan horizontal top plane spanning its width for about 3 source-pixel rows above the front wall face; no receding side face or opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 54109
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.012Z",
+ "cells": {
+  "16": [
+   "1d3924e0fe0c8a65",
+   "e77be5fca10a16b0"
+  ],
+  "24": [
+   "2e9fc0e3205d2b08",
+   "36453a20e0b21b54",
+   "6a74fb140c7ba5ca",
+   "7385d89f3cc636b0",
+   "8f0fdc9dd22b7a5c",
+   "91de2f01fa31ccc5",
+   "98708f6bd16c10c2",
+   "a49d0d81d111d1c3",
+   "b339a57496e0a8ac",
+   "d21f3d249ab01306",
+   "d45297047d867ce8",
+   "d80acc7a030bef9a"
+  ],
+  "32": [
+   "807a0309df2a59ab",
+   "a2ecefcc6efe0bf6",
+   "ba4d17bceaf62527"
+  ],
+  "48": [
+   "1be7f6501e9c834d",
+   "4c2f59e9b3bc3a6c",
+   "8c21e9164e886b67",
+   "9d62e909ea0ac564",
+   "a4fe08a5cfb42750",
+   "ce7b45e2381d66ec"
+  ]
+ }
+}

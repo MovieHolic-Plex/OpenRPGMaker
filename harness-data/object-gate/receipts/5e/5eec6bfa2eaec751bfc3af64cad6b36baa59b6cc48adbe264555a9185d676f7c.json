@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5eec6bfa2eaec751bfc3af64cad6b36baa59b6cc48adbe264555a9185d676f7c",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp_city/street_hand/jp-pole",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, and attached transformer are rendered in pure flat front elevation. The top cut surface of the cylindrical pole at row 2 is completely flat with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4635
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole terminates at row 2 with a flat horizontal outline with no top surface or elliptical cut face shown; crossarms and the main shaft are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4181
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Tall utility pole with horizontal crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is a long, flat vertical face. Its upper end terminates in a thin edge without a visible horizontal top or cut surface; the crossarms likewise do not establish a top surface for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13159
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Tall utility pole with horizontal crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is a long flat vertical shaft with a straight upper edge; no top surface or cut face is visibly projected from above. Crossarm edge bands and attached equipment do not provide a top surface for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13556
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.280Z",
+ "cells": {
+  "16": [
+   "003c57b09a597b28",
+   "02adac3e2418804a",
+   "4c5f4fb32776c9de",
+   "608c297e88e135e3",
+   "66b7fcf860ffd794",
+   "69c188f04a34663d",
+   "823f82f7694e7b5b",
+   "88ba50d2a2a7bf44",
+   "a16d5e8217bdae84",
+   "a298788664ae9549",
+   "acc8fb72f1f52a9c",
+   "afe76f147800e26f",
+   "c428519a212f5d6c",
+   "d4a42f69e5c4fe40",
+   "e6633b60dbf9ea07"
+  ],
+  "24": [
+   "0e28a62496477408",
+   "2495681a3250f58b",
+   "2816c8fa0cbc245c",
+   "320d56a3939d27f1",
+   "35a137bb8f119aad",
+   "3a054700728d2f49",
+   "3a9a0e38aeea11cc",
+   "3fdc996b86042ddf",
+   "474e67d6fd970b12",
+   "477eb4b719683c44",
+   "4b3553ecc61be246",
+   "5a189cc1fa268257",
+   "6c29b5e8fd14fc96",
+   "7c9bd24707eca643",
+   "8212ef38f4454ee0",
+   "84017846fcd532fd",
+   "84762965931cc13c",
+   "9143bafc6e872222",
+   "94b65e69cbc3a63b",
+   "98cd90c8d8defad7",
+   "9c8f456c8f699e05",
+   "b3eb05fc0151e593",
+   "bbca726580be65fe",
+   "d6cd4892f945235f",
+   "d8ce43cc2f5bfd11",
+   "db76d781a5f84ce9",
+   "f141ff5ec809cb2b",
+   "fc7889d7be6a91a1"
+  ],
+  "32": [
+   "04bac5632326a3af",
+   "0653d24bee48f65c",
+   "196c3120e70f1088",
+   "3f618a66791b72af",
+   "404fc5ac2e2a5994",
+   "49ce4c4d2effcd4d",
+   "4ee8727b4becbe71",
+   "813088701a5ee532",
+   "8dfb3bd93da185ca",
+   "930e9d156f19f5a6",
+   "94b94e145ce0154a",
+   "97b26722796334e9",
+   "9b6f1f30283fa3f1",
+   "a269d4eba04c4208",
+   "a7b9fe2881418aa2",
+   "af187496c01e6f5d",
+   "b37ffe9f02bd3bc9",
+   "b626ea4869ced476",
+   "c023fc0073875a1f",
+   "c0d13572fb5cc8ff",
+   "db1467c5a72496aa",
+   "ea53688813b2479f",
+   "eea5655c81d72b58"
+  ],
+  "48": [
+   "0435dd197727384d",
+   "3a2d71c36430c7e9",
+   "579ca9675c634744",
+   "811780da69b91e7f",
+   "89cdacf50428ef2f",
+   "e278210ae6db6e19",
+   "f4a38ac36ab8c426",
+   "fa3da544ecf53814"
+  ]
+ }
+}

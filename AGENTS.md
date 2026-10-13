@@ -61,7 +61,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 - **던전·동굴 공용 칩셋 beodeul_dungeon(버들항과 같은 oprn-atlas 계열)의 불규칙 벽·바닥 오토타일·물/용암/얼음 가장자리·계단·문·함정·상자·횃불 조각을 그릴 때**
   → `dungeon-chipset` · 시드 `harness-data/dungeon-chipset/seed.json` · `npm run harness -- dungeon-chipset palette|validate|list|draw|gate|sheet|pick|reject|status` · 문서 `openwiki/harnesses/dungeon-chipset.md`
   → 코드 손 도트(행 문자열), 버들항 실제 색 잠금 팔레트. 후보는 사람이 시트(`~/claude-viz/dungeon-<판>.html`)에서 고르고 pick 은 그림 해시에 묶인다. 관문 통과는 합격이 아니며 번들 굽기는 별도.
-- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 둘×두 번(중앙값·과반), 영수증은 그림 화소 해시에 묶인다. 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 출구 미배선). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
+- **새 기물(오브젝트) 그림을 번들·공용 DB·스토어·공방 칩셋에 굽거나 올리기 전 / 굽기·게시 스크립트에 3/4 시점 관문을 붙일 때** → `object-gate` · 시드 `harness-data/object-gate/seed.json` · `npm run harness -- object-gate review|calibrate|check|status|audit|preview` · 문서 `openwiki/harnesses/object-gate.md`. 판정자 gemini-3.8-flash 하나×네 번(과반; gpt 서버 불안정으로 2026-10-13 에 판정자 둘→하나), 영수증은 그림 화소 해시에 묶인다. 위반 표본을 다 잡는 보정 프로필만 효력이 있다(현재 미보정 — 프로필이 2026-10-13 에 바뀌어 옛 영수증은 무효). 번들·공용·스토어는 예외 없이 막고 공방 로컬만 사람이 「그래도 넣기」.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
   → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
@@ -193,13 +193,14 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
 
 - 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
-  판정자 둘×두 번(중앙값·과반)이고 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
+  판정자 gemini-3.8-flash 하나×네 번(과반; gpt 서버 불안정으로 2026-10-13 에 판정자 둘→하나)이고 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
 - **지금 상태(2026-10-13 실측): 영수증 0장, 보정 프로필 미보정(`status`), 출구 미배선** — 어느 굽기 스크립트(`bake_jp.py` 등)도 이 관문을 호출하지 않는다.
   그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
 - 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
+- **부품 예외:** 건물의 일부라 윗면을 혼자 보일 수 없는 부품(예: 1층 상가 띠 `jp-sf-*`)은 윗면 면제가 아니라, 그 부품을 화소 그대로 품은 **조립 건물** 그림의 영수증(kind `structure`, 같은 판정자·기준)으로 관문을 거친다. 부품을 한 화소라도 다시 그리면 덮임이 풀린다(`scripts/content/jp-city/gate_assembled.py`).
 
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 

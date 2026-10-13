@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a29928e04db04e779aab9469bd72dcf5b1843871908b5cd9e33c6f0d8f06e8c",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wall panel with openwork (sukashi) base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and base are drawn in flat front elevation with no visible top surface or coping (0 top rows visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4656
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone wall segment with loophole aperture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 sprite is a flat front-elevation cross-section of a wall with a lower window/loophole; no top surface, coping, or horizontal ledge seen from above is depicted (0 pixel rows of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4669
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese interior wall with sukashi cutout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn completely flat in pure front elevation with no visible top surface, lintel, or horizontal depth (row 0 is just a 1px boundary line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall section with lower aperture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 sprite is a flat front-facing wall surface with no visible top surface or depth perspective shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4138
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.744Z",
+ "cells": {
+  "16": [
+   "30553410bd53ab7b"
+  ],
+  "24": [
+   "3f285f10ad11c6a8",
+   "43487bf8ee245076",
+   "819aa0a63a7a30cc",
+   "c0fc0b5bf742fa6a",
+   "caed4dc8c17219c1",
+   "cb0a74324e048503"
+  ],
+  "32": [
+   "27703adf32907e4c",
+   "7b77c2c76e47d8e1",
+   "b3db6a43622d180d",
+   "bab7c553b45044c9",
+   "bc2388b9eb342e83",
+   "e62eb1b2b533955e"
+  ],
+  "48": [
+   "04f5e2bead7e79a6",
+   "3c6841eaf7ad3bcb",
+   "4458e6f99c327051",
+   "aea616b5aa968001",
+   "b3c812f8f088b59e",
+   "baee791f60c6a3a7"
+  ]
+ }
+}

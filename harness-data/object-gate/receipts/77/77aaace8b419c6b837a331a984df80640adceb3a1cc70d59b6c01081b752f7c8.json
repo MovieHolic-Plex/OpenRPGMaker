@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77aaace8b419c6b837a331a984df80640adceb3a1cc70d59b6c01081b752f7c8",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-6-R",
+ "label": "jp_city/street_hand/jp-sf-ramen-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade with awning and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (awning, entrance canopy, windows, and base) is rendered in a pure front elevation with no visible horizontal top surfaces or roof slope (only 1-2px edge highlight lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6420
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with canopy, door, and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building storefront is drawn as a flat 2D architectural front elevation (side-scroller style). The red upper awning/fascia, door lintel, windows, and ground curb have no foreshortened top surfaces visible from a 3/4 overhead perspective, showing only 1-2px horizontal edge lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4949
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central red-and-blue gate/building facade with a shallow roof cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large central structure is presented as a symmetric flat facade. Its roof is only a thin horizontal cap/edge of about 1-2 pixels, with no substantial visible top slope or surface on the main body; no receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 75145
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "front-facing ramen-shop gate/facade with roof and pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade; the roof is only a thin stepped cap/edge with no substantial visible top slope or surface. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 178330
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.004Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "570a96337889ce0d",
+   "8cf9e5b7bb765399",
+   "b133644178093c6e",
+   "b30488b7baf6aa41",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "cb66d29e67efcb93",
+   "d461d27d881dbc20",
+   "ea731aa5a3fbe23d",
+   "f6f17248e487b700",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "1893cb389ebd1f1f",
+   "1e84a71d1ab42e8e",
+   "39266895c84cecc9",
+   "41f10ff995297bc7",
+   "709c74886f974d73",
+   "8e7c230e09ac9550",
+   "9fc441f5b3dab677",
+   "a32ba3bdc01eb874"
+  ],
+  "32": [
+   "31d779738ab3143e",
+   "55d6458e3960125a",
+   "6726e45c2d25615d",
+   "9564bd582d99381e",
+   "965563cb23444a8d",
+   "9c5b9f49c77e1623",
+   "b2dfeba3f2f959a0",
+   "b537bd411dc362ab",
+   "c72c3e5abfddee28",
+   "c84ca8d50f7415fa",
+   "d66c92268b09beb4",
+   "eaf2d9a1c0dcb847"
+  ],
+  "48": [
+   "0b7d181a9b975b26",
+   "50f7935e28a6fd04"
+  ]
+ }
+}

@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65df138cd997ac53ab3e39ad4405558b32c45594d9e94a52896e202402635677",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-4-L",
+ "label": "jp_city/street_hand/jp-sf-apartment-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "elevator / apartment entrance doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway, lintel, and flanking control/mailbox panels are drawn strictly in a flat 2D front elevation (orthographic projection) with no foreshortened top surfaces visible on the doorframe, lintel, or panels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5522
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator structure and wall are drawn in a flat 2D side-scroller/architectural front elevation. The top lintel/protrusion has only a 1-2px outline/highlight line (rows 7-8) with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3639
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Apartment entrance facade with double doors and a rectangular surround",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat facade. The doorway surround has only a one-row horizontal cap, and the upper lintel is a thin strip rather than a visible roof slope or horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 15335
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Apartment building facade with central double entrance doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is drawn as a flat frontal facade. The upper border and door lintel are narrow horizontal bands, not visible roof or lintel top surfaces with back-to-front depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10332
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.284Z",
+ "cells": {
+  "16": [
+   "13513fa858f3ca41",
+   "20c644f07a08bbab",
+   "4a7ffe9b5b8b50f1",
+   "b7aa83aa5f66191e",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "e2099af672879c9c",
+   "e9dcfdc5a23bb509",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2",
+   "f6667b8422880b8b"
+  ],
+  "24": [
+   "02d5b91bddce21a7",
+   "0dbf7ece30f0c6c9",
+   "169f48ec3321b481",
+   "3ee00633e8db6aa5",
+   "5642f9e359e518ac",
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "6cbbe934858095bf",
+   "707f954784956f51",
+   "7868839616969d13",
+   "884b4bbbf7f6c9b7",
+   "8d81dc9d76e6f7b4",
+   "a33bcccb9f0bbbc0",
+   "bf67a65d59b4e671",
+   "cb490db3a4d5c9d0",
+   "cc784fa1349b4126",
+   "d8bb15d55081544b",
+   "dfd9c2306bed6d7e"
+  ],
+  "32": [
+   "594ff6563f171669",
+   "7bae81fdd3856be6",
+   "a2624c2c1e80724e",
+   "a9e7e58d66924942",
+   "ac1559a1be143c2a",
+   "b104d74a7187e35f",
+   "cf9d782002beb582",
+   "e0a155fa6bc7f957"
+  ],
+  "48": [
+   "0cdbe29657e27648",
+   "556f1ca90685c4ca",
+   "564e459f09d35634",
+   "8ca073d5e4c2e21f",
+   "94be98bbdfdaad58",
+   "de38a27b3f440cba"
+  ]
+ }
+}

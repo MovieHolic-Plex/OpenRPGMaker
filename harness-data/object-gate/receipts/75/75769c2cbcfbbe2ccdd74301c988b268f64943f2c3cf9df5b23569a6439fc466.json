@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75769c2cbcfbbe2ccdd74301c988b268f64943f2c3cf9df5b23569a6439fc466",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp_city/street_hand/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wall section with sukashi openwork",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a vertical front elevation of a wall/screen panel with no visible top surface or coping seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4619
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment with sukashi (openwork) cutout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall and upper window/opening are depicted in pure front elevation with no visible top surface or thickness foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6091
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese wall panel with transom/sukashi cutout",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure 2D front elevation: the framed upper section (rows 1-5) and the lower decorative wall face (rows 6-15) show no horizontal top surface or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4415
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "openwork wall (sukashi-bei)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation with no visible horizontal top surface (top_rows=0). The upper light panel (rows 1-5) is a framed vertical surface/aperture rather than a receding top plane or roof cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10437
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.356Z",
+ "cells": {
+  "16": [
+   "f61ad05d0bb05fe3"
+  ],
+  "24": [
+   "21d193d44157ea1d",
+   "326a163277c97224",
+   "468f234c1d10342d",
+   "8db6c6a86f13b739",
+   "9c96ee7460e2d3e4",
+   "fe21c6ae6efdb3a1"
+  ],
+  "32": [
+   "4158a1f5a8079612",
+   "791c72cbdcc9937a",
+   "83c99c7c558f34cd",
+   "a34dc436e4e65270",
+   "ba51b4ac12c7269f",
+   "f57a3509d3c36b9f"
+  ],
+  "48": [
+   "27db46cc5193da8e",
+   "3f7af75b50276c2e",
+   "4285eec0412eb9c9",
+   "6965909a24cdeaaf",
+   "80fb68fb30f099de",
+   "db22aa00f5c85259"
+  ]
+ }
+}

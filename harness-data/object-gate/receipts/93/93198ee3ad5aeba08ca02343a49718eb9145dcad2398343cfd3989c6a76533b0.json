@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93198ee3ad5aeba08ca02343a49718eb9145dcad2398343cfd3989c6a76533b0",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp_city/street_hand/jp-bwallf-end-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building wall section with tiled roof",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel-tall tiled roof surface viewed from above over the vertical wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5444
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese building wall/facade section",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 feature a 4-pixel-tall foreshortened tiled roof/top surface above the dark eave shadow at row 4, topping the multi-tiered wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese building wall segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4px tall foreshortened tiled roof/wall-top surface above the vertical wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese building wall segment with tiled roof coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 rows of tiled roof surface viewed from above before the dark overhang and vertical front wall structure below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6042
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.356Z",
+ "cells": {
+  "16": [
+   "08e4c67381e2f030",
+   "5baf56d775c3d098"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "3518b1708dce5791",
+   "46768cf14308fad1",
+   "51b7c74eea70b62e",
+   "78ca3a713702666d",
+   "7ce8c76023650097",
+   "90ee87e823fe32cb",
+   "92d5aaebc7e94f55",
+   "b4d36293beb323ed",
+   "b9e7d0c110b2e826",
+   "e2cc9bb522274bfd",
+   "fdeabb43e97b78f3"
+  ],
+  "32": [
+   "40b05f08a74c2697",
+   "c7b39ab6b3b79861",
+   "d8d19210d5bf3c25"
+  ],
+  "48": [
+   "05f1682cb8549923",
+   "3f855c7b6639338f",
+   "8a993e70caea9f98",
+   "9dce13750b279bab",
+   "bdfedb6d9559c46b",
+   "f04ab97afb420067"
+  ]
+ }
+}

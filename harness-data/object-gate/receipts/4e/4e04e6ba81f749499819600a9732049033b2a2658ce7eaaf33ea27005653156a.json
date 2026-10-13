@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e04e6ba81f749499819600a9732049033b2a2658ce7eaaf33ea27005653156a",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-6-R",
+ "label": "jp_city/street_hand/jp-sf-izakaya-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn in pure flat front elevation (architectural/side-scroller style). The protruding entrance frame and its lintel at row 12 show no top surface (only a 1-2px line), the lantern is a flat 2D rectangle, and the top band (rows 1-7) functions as a flat vertical fascia/awning band rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11181
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront is drawn as a flat 2D architectural front elevation (side-scroller style). The door lintel (rows 12-13) is a flat 2px bar with no visible top surface, the lantern and windows are flat front-facing, the ground curb shows no top step plane, and the gray band at the top lacks any foreshortened top slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10012
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation: the protruding entrance frame and lintel show no top surface (1px line at row 12), the windows have no sill depth, the lantern is a flat 2D rectangle without a top cap, the base/ground step shows only a vertical face, and the upper band lacks any top-down slant or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8855
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn in pure 2D side-scroller front elevation. The forward-projecting entrance portal, the curb/plinth at the bottom, the window frames, and the lantern show no foreshortened top surfaces (only 1-2px outline/highlight lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12736
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.390Z",
+ "cells": {
+  "16": [
+   "04688e96ca81ca64",
+   "2ca9cbd31e6d5acb",
+   "31503ef37ea162cf",
+   "53b9bde1ca762c1b",
+   "5b56ab9854f9e31c",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "a6ad96c0f249878b",
+   "ac5ecd96b93ab690",
+   "d57a02a9ad2235d3",
+   "e0c06bfed9a603a1",
+   "f20a6706f1c2857e",
+   "f488c48fcf235fd4",
+   "ffb95ef70f0924ae",
+   "ffff6582e5e63569"
+  ],
+  "24": [
+   "03e9ec747b4789ec",
+   "11206304d6b72265",
+   "3661c66b34c64e58",
+   "538cab57f4d09866",
+   "94d207cb2793acaf",
+   "ca29e2ff1bb72a78",
+   "e1369a1f39a56669",
+   "e6d62ba263de21e0"
+  ],
+  "32": [
+   "0f9eb85752a377cd",
+   "161f014d81f9aec6",
+   "16d11149d94b20bf",
+   "26268a1d7d44c104",
+   "30a856585145cd56",
+   "3402323e1d34310c",
+   "48971090a3c52041",
+   "568076a29890726e",
+   "792d4fddfc7f761c",
+   "9e2c427119550592",
+   "e1fefb16c07b1fa7",
+   "e43ffc507370eda7"
+  ],
+  "48": [
+   "1a0f96f88ee65319",
+   "858fe6f361200380"
+  ]
+ }
+}

@@ -1,0 +1,189 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "393d3b18e4f5343d25bee903fc1c174318967cfc62749c74d8d8530f55ffde4f",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-8-L",
+ "label": "jp_city/street_hand/jp-sf-sento-8-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse (sento) storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The storefront is drawn in a pure 2D front architectural elevation with zero visible top surfaces: the window awning/lintel (rows 20-22) is only 2-3px thick with no top slope, the interior shelves and bottles are seen completely flat from the front, and the entrance frame has only a 1-2px outline top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9179
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento (bathhouse) storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance doorway, windows/shelves, and lintels are drawn as a flat front architectural elevation with zero visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7333
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large bathhouse building facade with central entrance and storefront bays",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; the upper edges and lintels are only thin horizontal trim lines, with no visible top surface or slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 327561
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 459105,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.008Z",
+ "cells": {
+  "16": [
+   "0724d388c1e0a7b1",
+   "28de9f3ff551ee23",
+   "30c40de893614fb0",
+   "492309af242ec3ef",
+   "5507cf34602eb1e4",
+   "5e232eff7bd84c85",
+   "6ec4d5455ed1f334",
+   "8a0024a5ea16da93",
+   "9721588eed3352ee",
+   "a36454dce61a956c",
+   "adb06001424176a1",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "c0c7bfe9b80983b0",
+   "d124d4f5fcead829",
+   "dc1eacea141785cf",
+   "e28db1323582e953",
+   "e9f9c8d434a16bfe",
+   "ef8f2c9fe3a1658c",
+   "f9c4129ef3b7e3ac",
+   "fbc11aa2d9687ca4",
+   "ff20c61997320264"
+  ],
+  "24": [
+   "060ae7bf759fe878",
+   "0c13c1d035ae17db",
+   "15f3eb09efae94aa",
+   "2d6a3a0047c4e17b",
+   "33634449ef4f0112",
+   "3954808f9db70504",
+   "3ee833c28432f292",
+   "4a41448fa486da75",
+   "5772c6c88063897d",
+   "57937e049af93c1f",
+   "5e7559d989ea1c9e",
+   "6ab9366976b91bce",
+   "74030c8b2945cb5b",
+   "782c79bff4c9f600",
+   "7c63e9419325f943",
+   "7cf8446804851dee",
+   "7d492e07d4c2c299",
+   "8111140cfaa9fa12",
+   "984d6d66bba72e22",
+   "98c0e354170e408a",
+   "ac3ce100335f6596",
+   "ac648b3862382735",
+   "aeb6147b7692a180",
+   "b4b5c1b907fcb980",
+   "b4f60e7ccdbe9cec",
+   "b5dbcaee08f9f319",
+   "bc836f782144f432",
+   "bee27b6f1afc7795",
+   "c8c6fd18428d1f46",
+   "c9cb8a06b5b1bfe6",
+   "cc46cea026e5515a",
+   "e627cacddeb7056e",
+   "e8a5ef73babde9a1",
+   "e8d477f93662ab7d",
+   "eb19c2559f5a3779",
+   "edaf94b85542864d"
+  ],
+  "32": [
+   "0aded0827011ead4",
+   "0afdca873ab9da60",
+   "15ecbe13c4b50432",
+   "22cebd9dab6797e0",
+   "24b2d4fad2cc51e7",
+   "2705f0f4d02718a5",
+   "433cc706e98a4f54",
+   "5d868250c5ca6954",
+   "6c0aaf0f399be5c5",
+   "856a2941920a3ef7",
+   "9c191716e4fe37df",
+   "a3ce13bdb2ba6073",
+   "b7c317fdc0d1f2ba",
+   "dc6a90da1ea05706",
+   "de71c751ff8ded35",
+   "fafb7c857213f1a8"
+  ],
+  "48": [
+   "0fa799a9b6784c83",
+   "2f7c524e5a452029",
+   "4cd23c912ab4a128",
+   "64c09ebcd2a16093",
+   "7b9c6d442eb028a6",
+   "7c1acfa32fe9c8ab",
+   "9aced68fbea26078",
+   "bfb85f88f873698d",
+   "dfdfeb9a257ea659"
+  ]
+ }
+}

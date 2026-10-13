@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ce2de5a08341b78b370bbebf3c7cdcaa06f394bcc30425cd43e15966fcccac2",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-6-L",
+ "label": "jp_city/street_hand/jp-sf-bento-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bento shopfront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation with no visible roof slope, overhang top, or lintel top surface (only a 2px horizontal edge at row 1-2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5198
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bento shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, signboard ('弁当'), awning bands, door, and display windows are drawn in pure flat front elevation with 0px of visible top roof or lintel surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4934
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large front-facing storefront/building facade with a central framed doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation; its roof/lintel and central frame show only horizontal edge lines, with no visible top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 337779
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "front-facing building façade with central entrance and side storefronts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building mass is presented as a flat frontal façade; the broad light bands are thin roof/awning edges rather than a clearly modeled top plane, and no substantial top surface of the main body is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 123160
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.287Z",
+ "cells": {
+  "16": [
+   "042f1f6955bf74d8",
+   "1706cba463eb46f7",
+   "23f92e3b7442d9c8",
+   "27fd405a4bab1640",
+   "28f9992a8dae3b88",
+   "2e03490992061d76",
+   "591233ec525de138",
+   "5d7bc664dc95c55d",
+   "5ed7790500596e1b",
+   "5ee6e0f3d04660eb",
+   "67df79e10cb4478e",
+   "6d8d6a2b2522f31c",
+   "7cd5d94d5bf5fcf2",
+   "9d68c048efb88473",
+   "b1a8b5449b59fe87",
+   "b5f2cd3064a7294f",
+   "bfb716c82a9b9dd6",
+   "f2c39713705c836c"
+  ],
+  "24": [
+   "2a52ff0f30d43d8a",
+   "327f5d9715f63357",
+   "52cb9119e2ca20e1",
+   "65a7950f94c6e9d6",
+   "8cefe81d98858ce0",
+   "9afb1833ce5cf303",
+   "9d80980fbd1492d1",
+   "f87331d74aaa1fdf"
+  ],
+  "32": [
+   "0c5386307c03fa01",
+   "24fdab3d9098fccd",
+   "251ac7ef8f6d95c2",
+   "36e4856d6faf777e",
+   "3a8411644a4569b3",
+   "4436045e22f01897",
+   "53aa5f1af98c4008",
+   "70794300d84726c0",
+   "81de3826ef59099b",
+   "ae43d9341aeabb89",
+   "ae79bccdc25b9a96",
+   "caef979992cd949a"
+  ],
+  "48": [
+   "31e4b5754042ec9a",
+   "cdad79abf062f8a8"
+  ]
+ }
+}

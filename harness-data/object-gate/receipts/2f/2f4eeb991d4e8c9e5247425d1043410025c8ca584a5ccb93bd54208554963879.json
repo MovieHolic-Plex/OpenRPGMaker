@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f4eeb991d4e8c9e5247425d1043410025c8ca584a5ccb93bd54208554963879",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp/jp-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "utility pole shaft and crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossarms and transformer are drawn in pure front elevation with dark undersides and 0px visible top surfaces, rather than showing their top faces from the 45-degree overhead angle. The pole shaft itself is a flat vertical cylinder with a rounded cap rather than a foreshortened top cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9783
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole with crossarms and equipment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossarms (horizontal beams), transformer, and equipment boxes are drawn in flat front elevation with 0px top surface visible. The pole's top feature is drawn as a flat silhouette/dome without a foreshortened top plane, failing the 3/4 top-down perspective requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13487
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "utility pole with crossarms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossarm beams are drawn in pure front elevation with only a 1px outline along their top edges and no visible top/horizontal beam surface. While the base plinth has an elliptical top, the main horizontal structures (the crossarms and pole top) lack top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossarms (horizontal beams) are drawn in pure front elevation with flat top outline edges (0px of top surface visible) and dark undersides facing downward, directly violating the requirement that horizontal surfaces like beam tops must be visible from above in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9587
+  }
+ ],
+ "decidedAt": "2026-10-13T13:20:39.999Z",
+ "cells": {
+  "16": [
+   "0517230c8a6c67d4",
+   "0e7ec7c661f209b8",
+   "13244bd964b34516",
+   "1e63e6b6ad44f95e",
+   "22e568db10da44a8",
+   "2b691b6148ff91e1",
+   "4dd1622b7fcbad70",
+   "854668f5aab678ef",
+   "bdf177300bab65ef",
+   "d4a42f69e5c4fe40",
+   "d724c347d7f012bb",
+   "de65c437d10103a5",
+   "e271d7a05952ffa9",
+   "e9cbe2afef36b772",
+   "f46104698f4e4ee4"
+  ],
+  "24": [
+   "03a8d5b9e8cf003a",
+   "13b6dbf3d701fc92",
+   "2048930db266953e",
+   "28bddc426f7d10c1",
+   "291fd5a9443f0a61",
+   "2fe7b7dc39820e84",
+   "30d52f728ef173f8",
+   "3a054700728d2f49",
+   "54ee1cbb36a342e8",
+   "5b7c18b5f38d62ff",
+   "708dea15822b3cde",
+   "7220ca47c1460a5d",
+   "7b70fbfe1c557990",
+   "7cce48e33375a12e",
+   "871672a20bd5ae38",
+   "8ce4bc2fbab9f636",
+   "8f472c928be6b550",
+   "95c2a6e076b9f563",
+   "96f6c9b929f9a63d",
+   "9f8e7ccb4fcc9380",
+   "ac66401035ec656f",
+   "b3eb05fc0151e593",
+   "b5ddf46a5b693442",
+   "bf153764acc00a95",
+   "cc57cda01fce67af",
+   "cdf314306d51ce02",
+   "f8bad12629057292",
+   "ff2c054df247e515"
+  ],
+  "32": [
+   "196c3120e70f1088",
+   "1eb857c633ae70e7",
+   "20edf0f2818a3a22",
+   "21b74d0099b583bf",
+   "386d99a1225f0f77",
+   "45d6f8a0f6bc44fe",
+   "52350f1fb1c54be5",
+   "5569b09c9fcfc675",
+   "68ea42b173b38a96",
+   "80a92ea7e7443cde",
+   "8eeeec38f7ee905e",
+   "9407ecf8f9e65c9d",
+   "97b26722796334e9",
+   "9f9e0ec873d67cbd",
+   "aca95f461ebc3f76",
+   "b8cefc27e643f265",
+   "c799e26508db13f7",
+   "d811805772a124e1",
+   "da83ea637f3d9b09",
+   "dae5a5437795b090",
+   "f26ca446a4587ed0",
+   "f402739030dead58",
+   "f9554e27a507d473"
+  ],
+  "48": [
+   "1d919331af8831ff",
+   "8cc76eb9903ece2b",
+   "b1b8dade554412a2",
+   "c0d0f16f0b0b15b8",
+   "c964ebe5fb88476a",
+   "d047216c184639c7",
+   "d3bf933ff348dc66",
+   "f162592acf4bbd67"
+  ]
+ }
+}

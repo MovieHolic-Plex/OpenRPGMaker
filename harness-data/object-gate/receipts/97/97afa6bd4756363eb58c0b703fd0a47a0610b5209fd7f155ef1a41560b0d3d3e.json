@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97afa6bd4756363eb58c0b703fd0a47a0610b5209fd7f155ef1a41560b0d3d3e",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-3-R",
+ "label": "jp_city/street_hand/jp-sf-ramen-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with entrance and display board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (wall, door lintel, noren curtain, and adjacent display frame) is rendered as a flat architectural front elevation. The lintel/overhang at row 7-8 has only 1px edge lines with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5434
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with doorway, noren curtains, and menu board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, lintel, door frame, and menu sign are drawn in pure front elevation with no visible top surfaces (awning/lintel has only a 1px edge line at row 8).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4776
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large red-and-blue building facade with a broad roof/cornice",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building has a broad roof surface above the facade, spanning roughly 8 source-pixel rows before the front roof trim; the facade also shows a south-facing front face. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 196054
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 421764,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.002Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "8cf9e5b7bb765399",
+   "b133644178093c6e",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "f6f17248e487b700",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "0b015249f57ab24b",
+   "350a696a5e64207c",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123"
+  ],
+  "32": [
+   "02a5ed51b6d4b81d",
+   "0386340919be630c",
+   "0450d9e7f15f4bf7",
+   "0a754b8c7bcceb8a",
+   "0c23c51b3c9069b9",
+   "1471d5fd658db518",
+   "25765ec08ddffc01",
+   "2ce7be351f558e0c",
+   "42492ec5825a95d4",
+   "4d20e1fb00feb105",
+   "4e84b9c9cd528c2a",
+   "5d3be644dda04209",
+   "64a831f978acdaac",
+   "7cdec9ef50fbc340",
+   "86919ba70efa735b",
+   "8a5e4e8f51c60af2",
+   "8d619fc5f870e9fb",
+   "ac253ad7e7572179",
+   "adf37e7240e63270",
+   "c934105e11393b28",
+   "ca273335244424b7",
+   "cf7474d7ed2f0fcb",
+   "eaf2d9a1c0dcb847",
+   "eef4d6a32326f85f"
+  ],
+  "48": [
+   "270d6e206437feb6"
+  ]
+ }
+}

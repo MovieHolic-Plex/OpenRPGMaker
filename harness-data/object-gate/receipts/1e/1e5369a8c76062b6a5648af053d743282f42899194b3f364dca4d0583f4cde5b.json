@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e5369a8c76062b6a5648af053d743282f42899194b3f364dca4d0583f4cde5b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-3-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront with door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame, awnings, and lintels are drawn in flat front elevation with purely horizontal color bands and no foreshortened top surfaces visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront with door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D side-scroller elevation. The upper roof/fascia, door frame, awnings, and base show no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6935
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular cafe/building facade with framed windows and door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat, straight-on facade. Its upper brown band is only a narrow edge/lintel rather than a visible foreshortened roof or top surface; no substantial top plane is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 82898
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large cafe/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main brown building volume is presented as a flat front elevation; its roof/top is only a thin dark edge with no visible horizontal top surface. The colored awning and small trim do not provide a top for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 92711
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.077Z",
+ "cells": {
+  "16": [
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "5ff0521eb46b5637",
+   "6d8d6a2b2522f31c",
+   "75a61006df7207f9",
+   "8ef8bcb1d076a376",
+   "912bdb1002e40169",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87"
+  ],
+  "24": [
+   "02684f97accd5f78",
+   "240570715d363c0d",
+   "5f57b09269005d9b",
+   "7ab2f1b10e4870ed"
+  ],
+  "32": [
+   "0599b17577ca757a",
+   "1ae953c805fba576",
+   "1d82d7712fbc9db2",
+   "2296af827ed42a27",
+   "6f6d8e81443ecdf3",
+   "7378d4c1bd6569c4",
+   "7ae6e7758bb343ec",
+   "83dd85fb2d2e8ceb",
+   "9aaad574a9d8d575",
+   "9bbc9cbbb88a1184",
+   "9bbd22d75144fe17",
+   "a19ade354aee60be",
+   "a2f5309757e65e8a",
+   "a5759a83976b8e69",
+   "a7a6c71a1c0d1a33",
+   "b8b356bc19858eb6",
+   "c9a69974cde2df83",
+   "ca3913731ede065c",
+   "df9e6d1dae17f821",
+   "e6a9fe4273314f1b",
+   "e6f66d68fe5de57a",
+   "eb11e8c6aa3ccab0",
+   "ef88adc71b4965b9",
+   "f07454d18594c477"
+  ],
+  "48": [
+   "78a557d34fe38f28"
+  ]
+ }
+}

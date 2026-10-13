@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dbdfe87fd08586de26a5611673e74ec37e4cf6402633872f4f26e81e1df1521",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-carport",
+ "label": "jp_city/street_hand/jp-carport",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carport / covered walkway roof and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure architectural front elevation: the top roof edge is a 2px dark outline (rows 6-7), the panels/translucent roof section is rendered purely vertically, and horizontal beams and posts show no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3774
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carport roof and beam structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn in a pure front elevation view. The top edge (rows 6-7) is only a 2px dark outline with no foreshortened top roof surface or slope visible, and the horizontal beam and support posts are rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4911
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carport roof and frame structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn in pure 2D front/side elevation with pillars and vertical panels; the upper roof/lintel edge has only a 1-2px rim at rows 6-7 with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4570
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carport roof and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn entirely in flat front elevation with horizontal beams (rows 6-7 and 20-22) and vertical posts, showing no foreshortened top surfaces or roof slope depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6012
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.356Z",
+ "cells": {
+  "16": [
+   "11c4b7c7dcb61d4a",
+   "1a018a11748569ce",
+   "369010b5ceaac1c3",
+   "5204cb35740a4346",
+   "6b0cb0bf4e68523a",
+   "7d7886e4fbcb7adf",
+   "c1ae44aa723fce77",
+   "d051d13b1199b109",
+   "e30c2c6471fc6792",
+   "f4c6d38e87c157cf"
+  ],
+  "24": [
+   "14e17820dde4d3c4",
+   "1afa994f9eb0bab0",
+   "22854b0fd5f6a6ad",
+   "2f6dd08943bb353c",
+   "4de7ced7c9c65f2c",
+   "6bd35c66f569473f",
+   "85bfc3f05d0c8de8",
+   "86ef0dab4b20ce4b",
+   "8efa4d7749ae2788",
+   "b3245e3da31ab295",
+   "b79d804686c53a5f",
+   "d49a7848bf72582d",
+   "dbecabea84ac8d90",
+   "e3d6fe56c1a88370",
+   "e83f9c64d2b4e204",
+   "f86b07db42f439a9"
+  ],
+  "32": [
+   "34b25d216e9e35b7",
+   "3c4b33277641ef0f",
+   "53eb41c7d684f4b9",
+   "829409fdaf316ee5",
+   "9d7f81c731eb8b0f",
+   "bc27e0ee59cefbaf",
+   "d1c889074f21534c",
+   "eb4c6e575556010b"
+  ],
+  "48": [
+   "384ec0a07f456de5",
+   "65093cde4cc99f93",
+   "87989a8e5c5ea1f2",
+   "a357b15f36ad322c",
+   "b7ab2e103368a4c5",
+   "ce6284e51507a132"
+  ]
+ }
+}

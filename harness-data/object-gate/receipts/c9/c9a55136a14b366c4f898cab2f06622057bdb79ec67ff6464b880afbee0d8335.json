@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9a55136a14b366c4f898cab2f06622057bdb79ec67ff6464b880afbee0d8335",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-l",
+ "label": "jp_city/street_hand/jp-bwall-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick wall is depicted entirely in flat front elevation with horizontal brick courses. The top edge features only a 2px cap/rim, which lacks the depth required for a top-down 3/4 perspective horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall section with end post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick wall is depicted in pure flat front elevation. The top edge is only a 2px horizontal cap strip (rows 1-2), which does not constitute a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5598
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall end segment",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is a flat rectangular brick elevation. Its upper edge has only a 2-source-pixel light strip, insufficient to establish a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 11101
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Brick wall section",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat, front-facing brick pattern. Only a 2-pixel-high light band appears along the upper edge; it reads as a cap or rim rather than a substantial top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 9115
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.481Z",
+ "cells": {
+  "16": [
+   "a10ef6ec1098d1f5"
+  ],
+  "24": [
+   "430515293070ee9e",
+   "6ac24918250fcbe3",
+   "96b542e115a1c6db",
+   "b1cc1a4a41f6075b",
+   "b8ef583e66e87148",
+   "f99fa5c434cbe0cb"
+  ],
+  "32": [
+   "2cba9f62dbbea285",
+   "8dfd33e51d8c3e35",
+   "a42fb7745cd78c2a",
+   "a4a8c8050e78c65f",
+   "c592a25bd832e02e",
+   "edb18faccab24516"
+  ],
+  "48": [
+   "3b4f615ce28ccca1",
+   "49bfffca69c432fa",
+   "5a5fbbf1e4d8b3a2",
+   "6644427e7e318a88",
+   "c3fd6f8d8f758917",
+   "d3a07aed20e32923"
+  ]
+ }
+}

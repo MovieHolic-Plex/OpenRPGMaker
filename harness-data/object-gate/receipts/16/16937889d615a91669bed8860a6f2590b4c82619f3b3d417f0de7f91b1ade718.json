@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16937889d615a91669bed8860a6f2590b4c82619f3b3d417f0de7f91b1ade718",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-6-R",
+ "label": "jp_city/street_hand/jp-sf-house-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "traditional Japanese building facade with tiled roof and sliding doors",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows a foreshortened forward-facing slope spanning rows 2 to 18 (approx. 16-17 rows tall), correctly conveying the 3/4 top-down perspective above the vertical wall and sliding door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9785
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style house/building facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide tiled roof whose foreshortened south slope spans approximately 18 pixel rows (rows 2 to 19) visible from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6757
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Building with a broad blue-gray tiled roof and a windowed front facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof presents a broad visible sloping surface across source rows 2–17, above the dark front eave at rows 18–19. The windowed south facade is visible below; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11031
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Building with a broad tiled roof above its south-facing windowed facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad blue-gray roof surface spans approximately rows 2–17, terminating at the dark front eave around rows 18–19. The windowed front wall is visible below it; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13210
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.082Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "393864fc9a4cd1c6",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "71eda351f607a952",
+   "78807d07062ba12b",
+   "78c41a968f38f85d",
+   "9e6feb426850bd3c",
+   "b4224f076633e09e",
+   "c8270065076e290d",
+   "dced0e85dd5401fe",
+   "f2e68ef66ba416a9",
+   "f6d28324c84dd236"
+  ],
+  "24": [
+   "322f440793925946",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "9ea66f44c2974d4c",
+   "a5022d6811e382b3",
+   "b2cf43008993f73e",
+   "b386a884f7ba736f",
+   "c3b2477aca691165"
+  ],
+  "32": [
+   "0ef347b801dbd239",
+   "10a37d55d6224724",
+   "2ecec4e37cc201e0",
+   "35b9d72a89dec47e",
+   "6a8bf02c6b6997d8",
+   "7b173d25ac61e8b8",
+   "9e7ed3c250970503",
+   "a11ecc557587bbc6",
+   "d91baceb21aafaeb",
+   "e802b23945b9b511",
+   "ec07613bf4dbb087",
+   "f6a51cfff2a11e08"
+  ],
+  "48": [
+   "75538b867923d89e",
+   "c6a5209f54f9d51a"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c6415cba5e95d5e24664607a4860dd851a32f62ad04d22426f4fe24908bd3c0",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "jp-jizo",
+ "label": "jp_city/street_hand/jp-jizo",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60288,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo statue in a shrine niche",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine and the Jizo figure inside are drawn entirely from a flat front view. There is no visible top surface on the shrine roof, the niche floor, the statue head/shoulders, or the stone base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7585
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing jizo statue with a rectangular robe/body on a stepped base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The statue's head, shoulders, face, and robe are drawn as flat front-facing blocks with no visible top surface. The base has a horizontal band, but the main statue body remains a pure front elevation and does not show a qualifying top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 44922
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 67233,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.364Z",
+ "cells": {
+  "16": [
+   "1a2b6085d7e924a1",
+   "7b4b5462dc8c0a11"
+  ],
+  "24": [
+   "04db206e1cc3f3cf",
+   "0906ddb2c34cc9bd",
+   "2ea007a39fbb8308",
+   "582c8bbb23800c6a",
+   "747e8c6fa6f6e15e",
+   "a11e855ab8282376",
+   "a47157b4a9a0e2fd",
+   "b4adc2ca2bbd712b",
+   "d01558cc36590d5e",
+   "d0479008babd0a3f",
+   "f5a294bdfcc352de",
+   "fde64b914bdb709d"
+  ],
+  "32": [
+   "370f4dab4b6d71f2",
+   "bafabff6d85b6cf7",
+   "d1163e600bfa209a"
+  ],
+  "48": [
+   "14a12f30db1bb7ed",
+   "195762abd6585f65",
+   "6028f936803a7bbf",
+   "8face3a5eaf9a524",
+   "d2a0778c42639003",
+   "e86cbec6b63e2dd2"
+  ]
+ }
+}

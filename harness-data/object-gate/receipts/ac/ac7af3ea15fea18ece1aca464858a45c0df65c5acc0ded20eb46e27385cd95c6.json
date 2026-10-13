@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac7af3ea15fea18ece1aca464858a45c0df65c5acc0ded20eb46e27385cd95c6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-lockplate",
+ "label": "jp_city/street_hand/jp-mark-lockplate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lockplate",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation as horizontal stripes with a center latch (rows 6-10), showing no top surface or floor foreshortening. It does not lie flat on the ground as labelled.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lockplate hardware",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation as horizontal stripes representing a brass and iron latch/lock fitting, with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7706
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Rectangular ground plate with a yellow rear band and dark central lock marking",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate presents a rectangular upper footprint spanning rows 6–9, with a narrow dark front edge at row 10. No receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14890
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Rectangular lock plate with a gold upper strip and a dark lower face",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangle reads as a flat front face. The gold strip is only 2 source-pixel rows tall and reads as an upper edge or cap, not a visible horizontal plate surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 13641
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.279Z",
+ "cells": {
+  "16": [
+   "d3290078e37c90b3"
+  ],
+  "24": [
+   "1e362778d84b5e3d",
+   "30c01dbb355ce33b",
+   "593fb616e8c8bea2",
+   "614c344bffe5e246",
+   "68869ecf5a37690f",
+   "eb89d088a0a80529"
+  ],
+  "32": [
+   "2c6079a4446d1083",
+   "78f614dce2bd27fa",
+   "b4162d7a479262c2",
+   "be7ac6f53d40b398",
+   "ee6e1d2871124010",
+   "f087a8bacf90c46e"
+  ],
+  "48": [
+   "055dd71356dc80d8",
+   "0b8a9a639f2a97f1",
+   "1947be983c73d2da",
+   "6f35fcbee2cccd79",
+   "76cd6c43d1377c54",
+   "fc3f5fb1671c0f01"
+  ]
+ }
+}

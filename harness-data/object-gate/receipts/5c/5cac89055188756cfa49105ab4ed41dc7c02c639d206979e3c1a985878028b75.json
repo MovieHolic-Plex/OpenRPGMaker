@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5cac89055188756cfa49105ab4ed41dc7c02c639d206979e3c1a985878028b75",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists entirely of flat horizontal stripes spanning the full 16px width with no foreshortened top plane, top railing surface, or depth cues visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier consists entirely of horizontal colored bands stacked vertically from row 0 to 14, drawn in pure front elevation with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5635
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "guard rail fence / road barrier",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rail fence beam (rows 10-12 with yellow reflectors) is drawn as a flat horizontal strip with only a 1px edge line at row 10 rather than a foreshortened top surface showing thickness/depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8267
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal rail fence / barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object consists of flat horizontal bands stacked vertically with a 1px top outline, showing only the south vertical face with zero foreshortened top surface visible on any beam, cap, or rail.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7809
+  }
+ ],
+ "decidedAt": "2026-10-13T13:22:58.364Z",
+ "cells": {
+  "16": [
+   "92c893b818d5ecf3"
+  ],
+  "24": [
+   "2fec09f90808508f",
+   "4297fc3db1ae27cc",
+   "4b028c0616ce20ac",
+   "505208e5f3d97307",
+   "ebe7533381173d42",
+   "fca2ca7742d0c9d8"
+  ],
+  "32": [
+   "16d2e114643512d3",
+   "292285ea2f28de42",
+   "64e3cbbd49321c46",
+   "a0a7476ec860f395",
+   "a1a041fab1bff5ff",
+   "bf94d2fbd3897dea"
+  ],
+  "48": [
+   "3cfcd5d838d6ab57",
+   "83274410b069970b",
+   "b52387eab753b06f",
+   "c33afdd7e7b86860",
+   "f4eced4ef67319db",
+   "fb680f2171ed4ef4"
+  ]
+ }
+}

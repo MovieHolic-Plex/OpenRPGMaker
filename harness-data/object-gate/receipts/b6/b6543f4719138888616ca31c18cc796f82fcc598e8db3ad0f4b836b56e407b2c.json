@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6543f4719138888616ca31c18cc796f82fcc598e8db3ad0f4b836b56e407b2c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-s-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-s-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor grate and edge marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor tile featuring horizontal painted markings and a drain grate, appropriately depicted flat on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3937
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road pavement with painted white marking and drainage grate lying flat on ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile containing a road stripe and embedded drainage grate seen flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4058
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor grate edge marking",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor element featuring a drain grate embedded in the ground plane, viewed appropriately from above as a ground surface feature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4104
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor with safety marking and drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat floor surface with a painted white line and a ground-level slotted drain grate seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9463
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.359Z",
+ "cells": {
+  "16": [
+   "79c31bbad959c1cd"
+  ],
+  "24": [
+   "0e565b763b7f7a9c",
+   "42bd340715fa5fcb",
+   "531a08fe34ebda9d",
+   "73640d35886966a8",
+   "bd75e56ecbb29f31",
+   "ee2435de237b888a"
+  ],
+  "32": [
+   "28b847e14f872c81",
+   "57a205a1dae5877c",
+   "89714bff999d7963",
+   "d758faeacebccfea",
+   "ed89c4b1b1fa4045",
+   "f67ce5c42022caf8"
+  ],
+  "48": [
+   "122de3da0f21df48",
+   "23c8cf921a1ce2de",
+   "72333a4ef1bcb776",
+   "9dcd981ff93902e4",
+   "dcb9f8b0a2601aa9",
+   "f054c83b77c28913"
+  ]
+ }
+}

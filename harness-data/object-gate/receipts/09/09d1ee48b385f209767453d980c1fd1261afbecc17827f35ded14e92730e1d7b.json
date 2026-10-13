@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09d1ee48b385f209767453d980c1fd1261afbecc17827f35ded14e92730e1d7b",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-3-R",
+ "label": "jp_city/street_hand/jp-sf-house-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style house facade with sliding gate and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, door, window, lintels, and roof eaves are drawn in a completely flat front elevation without any visible foreshortened top surfaces or roof slopes (eaves and ledges are at most 1-2px lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10595
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with sliding gate and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire house facade is drawn as a flat architectural front elevation. There is no visible top roof slope, lintel top, or depth on any horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5854
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat rectangular facade; its dark upper edge is only a thin line and no roof or lintel top surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 78976
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; the dark strip along its top is only a thin edge, with no visible roof or substantial top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 68009
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.081Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "71eda351f607a952",
+   "78807d07062ba12b",
+   "78c41a968f38f85d",
+   "dced0e85dd5401fe"
+  ],
+  "24": [
+   "00dbfb0dbed51a3f",
+   "201fa010714cce8b",
+   "41cf78a067c1f3f1",
+   "b8a81e84180568c2"
+  ],
+  "32": [
+   "08a13a2520839412",
+   "0944a5164f1e3374",
+   "0ebf653c506f6997",
+   "161d024a9d5b8db0",
+   "1e02b860316e5a42",
+   "3bac15836b52b5ee",
+   "3db691fcd4c3f25e",
+   "3e2e012493176e0b",
+   "4dd793bbcd0dcb22",
+   "55d43b1e7353dda5",
+   "7b173d25ac61e8b8",
+   "8023b2a472df4ac7",
+   "8ab4d8219e72091f",
+   "944e70392ece6fe6",
+   "aabd0702584ad6af",
+   "ae269374ef6017b1",
+   "c623cb4802285074",
+   "ca2a2c4109e33401",
+   "ccab3c8f92359134",
+   "d311bbf324b158b0",
+   "d8aac49545067d9f",
+   "e1213c3b2d80eee6",
+   "f07642e74314a2a3",
+   "fee04c41bed4e303"
+  ],
+  "48": [
+   "18f385c1e8f3cf8d"
+  ]
+ }
+}

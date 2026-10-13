@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b38fced513ee9a7e79949e8afd313580bd0e08bc1446997b89c8889670be7bbc",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-monohoshi",
+ "label": "jp_city/street_hand/jp-monohoshi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clothes drying rack with hanging laundry",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drying rack consists of a 2px horizontal pole, flat vertical posts, hanging cloth rectangles, and a 2px flat base bar at the bottom. None of the horizontal elements (pole, base) show a foreshortened top surface; the entire object is drawn in straight-on front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7201
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clothes drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clothes rack and hanging laundry are drawn entirely in flat 2D side/front elevation. The crossbar (rows 7-9) and bottom base (rows 30-31) have no top surfaces shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5521
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Clothes-drying rack with two upright posts, a horizontal rail, and hanging cloths",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal rail is a 1px light strip with a thin dark underside, not a substantial top plane. The posts and bottom support are shown as flat frontal strips without visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 9780
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Clothes-drying rack with two upright posts and a horizontal crossbeam",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main crossbeam has only a one-pixel bright upper strip above its front face, not a substantial horizontal surface viewed from above. The posts and hanging cloths are presented in flat front elevation, with no visible top faces on the supports.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 11839
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.280Z",
+ "cells": {
+  "16": [
+   "2de53544fef0f91c",
+   "4a275a5fd4d5fea3",
+   "4bee89cabe094301",
+   "bcc2eda88c912ad9",
+   "be89b3746f6002f7",
+   "f15c381052f7c663"
+  ],
+  "24": [
+   "0351d3e9bdba404f",
+   "05d01205508a5da9",
+   "15528a7559495d3b",
+   "1e4dc82d5cb9f285",
+   "4c73ab48a8e98eb8",
+   "966d2e71b6f4a479",
+   "bf6bb2a5a36b429c",
+   "f5bbc6f47e163880"
+  ],
+  "32": [
+   "1e0ec76f0f0294d5",
+   "4f81ba6a7880b680",
+   "55a08370e37e82bf",
+   "75bcdbdc1fa443a8",
+   "7d479894e03f5c47",
+   "fa2cb314ac991f47"
+  ],
+  "48": [
+   "133fb5989c557284",
+   "e8498f40ef4c3dc9"
+  ]
+ }
+}

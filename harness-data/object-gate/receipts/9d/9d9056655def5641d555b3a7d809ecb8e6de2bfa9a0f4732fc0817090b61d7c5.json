@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d9056655def5641d555b3a7d809ecb8e6de2bfa9a0f4732fc0817090b61d7c5",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp_city/street_hand/jp-bwallf-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style wall with tiled cap and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the wall shows 4 rows (rows 0-3) of tiled roof/coping seen from above in top-down 3/4 perspective before the front vertical face begins at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5776
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 depict the top tiled roof slope (4 rows tall) capping the vertical wall face below, correctly representing a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5801
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Wooden wall section above a masonry lower wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden panels and masonry are drawn as flat frontal rectangles. The narrow horizontal strip along the upper edge is only a cap/highlight, not a visible top surface with depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14836
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 104432,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "092de3ebeb1ba935",
+   "9705d63e50fb3596"
+  ],
+  "24": [
+   "0a025013c65e86af",
+   "477f4ee85f569f78",
+   "4971d8fac6c8ef06",
+   "4fe3a93b2149fc6f",
+   "701e597fd1b0cb56",
+   "9b6eaf038929fca8",
+   "c703a372b99db2f3",
+   "d16bad5f3ecb3412",
+   "da9f9c9837e03ea1",
+   "dc9d1dc97f96baf3",
+   "e26f751b6213a514",
+   "ee3654d3bba1783f"
+  ],
+  "32": [
+   "065030332c320efe",
+   "0fb8dcecac2d4335",
+   "64c79a5b1eea16f4"
+  ],
+  "48": [
+   "6f7fe8a6c0fb166d",
+   "75cf81810d26a041",
+   "87a879ad3212d71f",
+   "8d3fb010d84ef03e",
+   "e93728504b062a20",
+   "f3acd85775cc7db6"
+  ]
+ }
+}

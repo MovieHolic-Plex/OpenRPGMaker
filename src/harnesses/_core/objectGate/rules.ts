@@ -9,7 +9,7 @@
  * 계약 원문: tiledata/atlas-pick/modern-style-bible.md §10·§11, 문서 openwiki/harnesses/object-gate.md.
  */
 
-export const OBJECT_GATE_RULES_VERSION = 2;
+export const OBJECT_GATE_RULES_VERSION = 3;
 
 export type ObjectGateKind =
   | "tall_furniture" | "low_furniture" | "seat" | "frame" | "container" | "round_body" | "column" | "box"
@@ -108,11 +108,11 @@ export const OBJECT_GATE_PROFILE = {
   rulesVersion: OBJECT_GATE_RULES_VERSION,
   rubric: OBJECT_GATE_RUBRIC,
   kinds: OBJECT_GATE_KINDS,
+  // 2026-10-13: gpt-6.1-sol 서버가 불안정해(답을 못 읽은 판정이 불합격 표로 샌다) 판정자는 gemini 하나만 쓴다 — 표 수는 같게 4번 반복.
   judges: [
-    { id: "gpt", provider: "openai-codex", model: "gpt-6.1-sol", effort: "medium" },
     { id: "gemini", provider: "google-antigravity", model: "gemini-3.8-flash", effort: "medium" },
   ],
-  runsPerJudge: 2,
+  runsPerJudge: 4,
   magnify: 10,
   combine: "median-majority" as const,
 };

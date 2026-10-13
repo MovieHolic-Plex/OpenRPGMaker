@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18615b72cb6cbdf71f76694bfed91dcef319abc309010901ef9af86ab01bcd57",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-5-L",
+ "label": "jp_city/street_hand/jp-sf-sento-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse storefront and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn in pure flat front elevation (side-scroller style). The doorway frame, lintel, window ledges, shelves, and upper eaves show 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5608
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento storefront entrance and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, doorway frame, noren, and display windows are drawn in a flat 2D front elevation (side-scroller style). The door lintel is only a 1-2px horizontal line with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6180
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large central sento gate with double doors, lintel, and lower facade",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main gate is presented almost entirely as a flat south-facing elevation. Its lintel has only about a 1px source-row top strip, which is an edge/cap rather than a visible top slope or surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 55603
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "central sento entrance structure with blue double doors, columns, and lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat frontal facade. Its horizontal lintel has only a thin edge/highlight and no visible top surface or roof slope; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 56141
+  }
+ ],
+ "decidedAt": "2026-10-13T10:44:47.462Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "2d686257416d5f12",
+   "492309af242ec3ef",
+   "593b78ae3363da29",
+   "59b1f4b022754b96",
+   "5d489ef7d2bc4990",
+   "674ab036bd8a0362",
+   "7bb14710fb4f02eb",
+   "8a0024a5ea16da93",
+   "a36454dce61a956c",
+   "b3b565d36a0a6399",
+   "c03732f0dc187032",
+   "cb906e58d9bd81c2",
+   "e367e00ac4b8e21b",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "0f931e07ee3f31cf",
+   "1878ee474bc13103",
+   "398cdbecfe125cfc",
+   "463f66462d2663ac",
+   "4ee8f5ea54c92cac",
+   "4f242a3b769205ea",
+   "5abbb0b13d6dc452",
+   "5ea2ed18cc3cfa6b",
+   "6b27d290f9a131f7",
+   "76b142b1117540b3",
+   "782c79bff4c9f600",
+   "82679e7f78c7c829",
+   "a69a1bf2288e6a61",
+   "ac648b3862382735",
+   "afe2d5519070fdd1",
+   "b13eccd40641b585",
+   "d18875ccc2e15d3d",
+   "d906bc0c56cdadcb",
+   "dd71c1b840d8da81",
+   "e4c4709bbd64496c",
+   "e6fa52ecc0345f6d",
+   "f11309da7ce1dd13",
+   "f5428e925560a3a5",
+   "f7091aa99e4e7280"
+  ],
+  "32": [
+   "027a932d521d5db4",
+   "19d5c3daaebf4407",
+   "23451866397bb8c4",
+   "2b78e90da00dbf3d",
+   "30734e4bfd624e5d",
+   "36a74cd7a4f61d68",
+   "3928663797f1d78e",
+   "3af8c78ade74ac54",
+   "3ebf3ade6233e88e",
+   "404f2760881e0d43",
+   "4527a2625482b1cd",
+   "47801884238e1231",
+   "48b3aebc7ffe9f20",
+   "51acf8b40ce34174",
+   "53a05e6b7c6bc204",
+   "567bd4656a4713e1",
+   "573f1c8c0df3294e",
+   "57437fad1077649d",
+   "579dbeee2d3ea13b",
+   "5ec836864c18bb37",
+   "645012d4e25a163c",
+   "69e11d1cae8805d9",
+   "7277cad17389396b",
+   "734c74ab958b6d96",
+   "7ffb41601b141b3e",
+   "88d61d52da1f1aa5",
+   "8c9942f51e487312",
+   "9152e9f81ee057c9",
+   "918dc4980390fec1",
+   "9589ebd0c62b9038",
+   "9bd2b6ec0e8bc6e3",
+   "aab543655a84be34",
+   "c2f013111c9b7e28",
+   "c37a476c2ffe9f7d",
+   "da3a72146c357e0f",
+   "e7a91e77d3a01a7b"
+  ],
+  "48": [
+   "0c13071248f0dadf",
+   "29e6ec066fe256d1",
+   "2b1323b17955e332",
+   "47341f8a5b45e9bd",
+   "4d5cc6f1fb5c7307",
+   "9c48409f7ddca334"
+  ]
+ }
+}
