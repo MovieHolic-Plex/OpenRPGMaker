@@ -102,6 +102,7 @@ export const JP_CITY_POINTER_LINE =
   + "거리·마을·동네 한 장은 **compose_jp_city_street 가 기본**이다 — 손으로 fill_region→도로→건물을 하나씩 쌓지 않는다. 인자 style:\"shopping\"(상가·번화가·도심·역 앞)|\"residential\"(주택가), shops:[기획의 가게(konbini·izakaya·ramen·cafe·shop·office·apartment·house·machiya·garage·sento·bento)], seed(다르면 다른 거리). "
   + "맵 크기가 구성을 정한다: 40×28 이상(권장 50×36), 높이 46↑ 이면 큰길 둘+하천·다리 후보, 높이 52↑ 상가면 고층 스카이라인 — 강·고층은 인자가 아니라 크기+seed 로 나오니 원하면 create_map/resize_map 으로 키우고 seed 를 바꿔 replace:true 로 다시 짠다. "
   + "compose 는 끝에 남은 빈 대지를 쓰임(보도에 닿는 코인 주차·골목 자판기/자전거·생울타리 놀이터·텃밭·공사장·광장 분수/시계탑·화단·매점)으로 스스로 채운다 — 건물을 손으로 더하거나 옮긴 뒤에는 compose_jp_city_street({lotsOnly:true, style}) 를 한 번 더 불러 새로 생긴 빈터만 채운다(빈 땅에 소품을 하나씩 흩뿌리지 않는다). "
+  + "결과 요약의 「빈터 쓰임 N곳」과 show_map_region 으로 확인한다: 쓰임이 0~1곳인데 맨 자갈이 넓게 남았으면 seed 를 바꿔 replace:true 로 다시 짠다. 사용자가 놀이터·코인 주차·텃밭·광장 분수를 콕 집어 원했는데 안 나왔으면 맵을 키우거나(50×36 이상) seed 를 바꾼다 — 빈터 쓰임은 남은 땅의 크기·위치로 고르므로 손으로 한 칸씩 찍어 맞추지 않는다. 건물 지붕 너머 1~2칸 틈에 남은 자갈은 숨 쉴 자리로 둔다. "
   + "짠 뒤: 건물 하나만 고칠 때만 build_jp_city_building(id 는 list_jp_city_building_parts), 땅·소품 보정은 fill_region·stamp_object(kit:jp_city/…), 탈것은 set_map_transit. author_beodeul_town 은 쓰지 않는다. "
   + "집·가게 실내(현관·LDK·편의점·음식점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
   + "건물 문과 잇기는 link_jp_city_interior({door:{x,y}, place:<실내 장소 id> 또는 interiorMapId}) 하나로 한다(문 좌표·이름표는 list_map_locations).";

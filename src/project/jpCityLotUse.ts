@@ -31,6 +31,8 @@ function mulberry(seed: number): () => number {
 const INFRA_AUTOTILES = ["jp-sidewalk-curb", "jp-lane-road", "jp-water-canal", "jp-water-pond", "jp-rail-track", "jp-lane-center", "jp-lane-dash", "jp-crosswalk-ew", "jp-crosswalk-ns", "jp-tactile"];
 const INFRA_GROUPS = ["jp:street:sidewalk", "jp:street:road", "jp:street:crosswalk", "jp:street:lane", "jp:street:rail", "jp:street:water"];
 const EDGE_AUTOTILES = ["jp-wall-block", "jp-hedge", "jp-fence-mesh", "jp-guardrail"];
+/** 길·물의 일부인 키트(하천 석축·둑·다리·노면 표시·발 그림자…) — 소품이 아니다. 측정기(scripts/qa/jpLotEmptiness.mts)와 같은 목록: 이걸 소품으로 세면 강가 대지가 「채워졌다」고 보고 일찍 멈춘다(2026-10-14 실측 내부 7% · 측정 16%). */
+const INFRA_KIT = /^jp-(river|water|bank|bridge|mark|crosswalk|road-lane|foot-shadow|wall-drain|rail|via|tram|subway-track|platform)/;
 
 interface Rect { x: number; y: number; w: number; h: number }
 
@@ -38,7 +40,7 @@ export function fillLotUses(opts: {
   readonly mapId: string;
   readonly seed: number;
   readonly style: "shopping" | "residential";
-  /** 건물 칸(지어진 건물 rect + 완성 큰 건물) — 소품 덮개로 세지 않는다. 없으면 타일(건물 띠·부착물 그룹, 건물 키트 칸)로 찾는다(손댄 지도에 다시 부를 때). */
+  /** 건물 칸(지어진 건물 rect + 완성 큰 건물) — 소품 덮개로 세지 않는다. 없으면 타일(건물 띠·부착물 그룹, 건물·집·가게 키트 칸 — 측정기 jpLotEmptiness 와 같은 목록)로 찾는다(손댄 지도에 다시 부를 때). 집 키트를 빼먹으면 집을 「소품」으로 세어 빈터가 남았는데도 목표에 닿았다고 멈춘다(2026-10-14 실측: 7% 로 보고, 실제 16%). */
   readonly buildings?: readonly Rect[];
   readonly view: () => LotUseView;
   readonly call: Call;
@@ -57,6 +59,8 @@ export function fillLotUses(opts: {
     if (a.id === "jp-plaza-pave") ids.forEach((t) => paver.add(t));
   }
   for (const g of tileset.tileGroups ?? []) if (INFRA_GROUPS.includes(g.id)) (g.tileIds ?? []).forEach((t) => infra.add(t));
+  const infraKit = new Set<number>();
+  for (const k of tileset.structureKits ?? []) if (INFRA_KIT.test(k.id)) for (const r of k.rows) for (const t of [...r.tiles, ...(r.upperTiles ?? [])]) if (t >= 0) infraKit.add(t);
   const kits = new Map<string, { w: number; h: number; upper: number[][] }>();
   for (const k of tileset.structureKits ?? []) kits.set(k.id, { w: k.width, h: k.height, upper: k.rows.map((r) => [...(r.upperTiles ?? new Array(k.width).fill(-1))]) });
 
@@ -64,7 +68,7 @@ export function fillLotUses(opts: {
   if (!opts.buildings) {
     const built = new Set<number>();
     for (const g of tileset.tileGroups ?? []) if (g.id.startsWith("jp:band:") || g.id.startsWith("jp:deco:")) (g.tileIds ?? []).forEach((t) => built.add(t));
-    for (const k of tileset.structureKits ?? []) if (/^jp-(bldg|sf|recipe)-/.test(k.id)) for (const r of k.rows) for (const t of [...r.tiles, ...(r.upperTiles ?? [])]) if (t >= 0) built.add(t);
+    for (const k of tileset.structureKits ?? []) if (/^jp-(bldg|sf|recipe|house|shop|apt|mansion|office|tower|school|station|temple|shrine-hall|gas-office)/.test(k.id)) for (const r of k.rows) for (const t of [...r.tiles, ...(r.upperTiles ?? [])]) if (t >= 0) built.add(t);
     for (let i = 0; i < N; i++) if (built.has(map.upperTiles[i] ?? -1) || built.has(map.upperOverlayTiles?.[i] ?? -1)) building[i] = 1;
   }
   for (const b of opts.buildings ?? []) for (let y = Math.max(0, b.y); y < Math.min(H, b.y + b.h); y++) for (let x = Math.max(0, b.x); x < Math.min(W, b.x + b.w); x++) building[y * W + x] = 1;
@@ -76,7 +80,9 @@ export function fillLotUses(opts: {
     if (infra.has(low)) infraCell[i] = 1;
     if (paver.has(low)) isPaver[i] = 1;
     if (building[i]) continue;
-    if (ups.length) { if (!ups.every((t) => edge.has(t))) cover[i] = 1; continue; }
+    if (ups.some((t) => edge.has(t))) continue;                          // 담·생울타리 칸: 경계일 뿐
+    if (ups.some((t) => !infraKit.has(t))) { cover[i] = 1; continue; }
+    if (ups.length || infraKit.has(low)) continue;                       // 하천 석축·다리·노면 표시: 길·물의 일부
     if (!infra.has(low)) free[i] = 1;
   }
   const emptyRatio = (): number => {
