@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35b352a443c49381114765468e1a55aaa1712e065617ed9f66ecf8d0bf0cf663",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 시계 기둥(무쇠 기둥 + 둥근 시계 북 — 넓은 녹청 뚜껑이 위에서 보인다)",
+ "label": "steampunk-city/sp-clock-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street clock on post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The verdigris cap atop the clock drum shows a sloped top surface from row 2 to row 7 (approx 6 rows tall) complete with a central finial. In addition, the base shows a clear foreshortened top surface across rows 38–42 before dropping to the front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7056
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock pillar with copper cap, clock drum, post, and round base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The green copper cap atop the clock drum clearly displays its foreshortened top surface across rows 3 to 8 (~6 rows tall), complete with a finial, curved downward rim, and a base plinth that also displays an elliptical top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6937
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street clock drum and verdigris cap on a post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The verdigris roof/cap of the clock is foreshortened and viewed from above (rows 3 to 8), with its circular rim curving downwards towards the viewer at rows 7-11. The drum bottom and pole base also clearly curve downwards in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7267
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street clock pillar with domed verdigris cap and drum housing",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The verdigris cap atop the clock drum clearly presents its upper surface viewed from above across rows 3-8 (approx. 6 rows) with a central finial, while the circular base plinth also curves in perspective across rows 38-42.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5948
+  }
+ ],
+ "decidedAt": "2026-10-13T18:54:36.461Z",
+ "cells": {
+  "16": [
+   "0497c6d725d37f9a",
+   "34c767b8f8f9e728",
+   "eabab1b121d9880c"
+  ],
+  "24": [
+   "0450303f7694964d",
+   "2a0c35dc374c8ae5",
+   "714b9c7033b4e87e",
+   "7ff8a08a86499a17",
+   "ac97b50e3253bd51",
+   "b05fddaf7b7c7ddc"
+  ],
+  "32": [
+   "0934c39c9b5b2a2f",
+   "170e14cd1b34e532",
+   "2d530fbcca5947ac",
+   "2d54c14b0da42951",
+   "3ffe9d9814b06fe2",
+   "448c6dcf9883aef1",
+   "5b7a10e8db87a525",
+   "6f0cc356394be75a",
+   "8e34d895d61aa685",
+   "c411c995b07adf0a",
+   "cde8122fcc7b5828",
+   "dd60d10699024474"
+  ],
+  "48": [
+   "285830e5177c9d2f",
+   "31b4056903d0680e",
+   "71bf9211da1cc644"
+  ]
+ }
+}

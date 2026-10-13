@@ -175,18 +175,21 @@ def _(c):
     c.HL(2, 15, 28, 'ink', 1)
 
 
-def railing_run(c, x0, x1):
-    """무쇠 창살 담 한 줄(동서): 창 머리(점) + 윗 가로대(윗면 2행 밝게 + 앞면 1행) + 세로 창살 + 아래 가로대 +
-    낮은 돌 받침(윗면 4행 — 뒤 가장자리 어둡게, 앞 테 밝게 + 앞면 2행) + 먹 접지 선."""
+def railing_run(c, x0, x1, posts=True):
+    """무쇠 창살 담(동서): 굵은 기둥(4px — 윗면 3행 밝게 + 앞면) 8px 간격 + 가로대 둘(윗면 2행 밝게 + 앞면 2행 어둡게) + 가는 창살 +
+    낮은 돌 받침(윗면 3행 밝게 + 앞면 3행 어둡게) + 먹 접지 선. 윗면은 늘 앞면보다 밝다."""
     w = x1 - x0
-    for x in range(x0 + 1, x1, 3):
-        c.P(x, 0, 'iron', 5); c.R(x, 1, 1, 9, 'iron', 2); c.P(x, 1, 'iron', 4)
-    c.R(x0, 2, w, 2, 'iron', 5); c.HL(x0, 2, w, 'iron', 6); c.HL(x0, 4, w, 'iron', 2)      # 윗 가로대: 윗면 + 앞면
-    c.HL(x0, 7, w, 'iron', 4); c.HL(x0, 8, w, 'iron', 1)                                  # 아래 가로대
+    for x in range(x0, x1, 2): c.VL(x, 3, 7, 'iron', 2)                     # 가는 창살(뒤)
+    for (ry) in (2, 6):                                                    # 가로대: 윗면 2 + 앞면 2
+        c.R(x0, ry, w, 2, 'iron', 5); c.HL(x0, ry, w, 'iron', 6); c.R(x0, ry + 2, w, 1, 'iron', 1)
+    if posts:
+        for px_ in range(x0 + 2, x1, 8):
+            c.R(px_, 0, 4, 3, 'iron', 6); c.HL(px_, 0, 4, 'iron', 4)            # 기둥 윗면
+            c.R(px_, 3, 4, 7, 'iron', 2); c.VL(px_, 3, 7, 'iron', 3)           # 기둥 앞면
     c.HL(x0, 9, w, 'ink', 1)
-    c.R(x0, 10, w, 4, 'stone', 5); c.HL(x0, 10, w, 'stone', 3); c.HL(x0, 13, w, 'stone', 6)   # 받침 윗면
-    for x in range(x0 + 7, x1, 8): c.VL(x, 11, 2, 'stone', 4)
-    c.R(x0, 14, w, 1, 'stone', 2)                                                          # 받침 앞면
+    c.R(x0, 10, w, 3, 'stone', 6); c.HL(x0, 10, w, 'stone', 4)                 # 받침 윗면(밝게)
+    c.R(x0, 13, w, 2, 'stone', 2); c.HL(x0, 13, w, 'stone', 3)                 # 받침 앞면(어둡게)
+    for x in range(x0 + 7, x1, 8): c.VL(x, 13, 2, 'stone', 1)
     c.HL(x0, 15, w, 'ink', 1)
 
 
@@ -198,12 +201,12 @@ def pier(c, x, w=8):
     c.HL(x, 15, w, 'ink', 1)
 
 
-@R.add('fence', '무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)', 1, 1, 'other', tags=['울타리', '담', '공원'],
+@R.add('fence', '무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)', 1, 1, 'frame', tags=['울타리', '담', '공원'],
        rules='쌈지 공원·공장 마당 둘레 동서 줄. 3칸 이상이면 fence-h3 를 먼저 쓰고 남는 칸만 이것으로.')
 def _(c): railing_run(c, 0, 16)
 
 
-@R.add('fence-h3', '무쇠 창살 담 세 칸(양 끝 돌 기둥)', 3, 1, 'other', tags=['울타리', '담', '공원'],
+@R.add('fence-h3', '무쇠 창살 담 세 칸(양 끝 돌 기둥)', 3, 1, 'frame', tags=['울타리', '담', '공원'],
        rules='쌈지 공원·공장 마당 둘레 동서 줄에 3칸씩. 문(빈칸) 양옆이 기둥이 되게 둔다.')
 def _(c):
     railing_run(c, 0, 48)
@@ -219,6 +222,45 @@ def _(c):
     c.VL(x0 + 4, 0, 16, 'iron', 2)
     for y in range(1, 16, 3):
         c.R(x0 + 3, y, 2, 2, 'iron', 4); c.P(x0 + 3, y, 'iron', 6); c.P(x0 + 4, y + 1, 'iron', 2); c.P(x0 + 5, y + 2, 'stone', 3)
+
+
+
+def _redraw(id_, name=None, kind=None):
+    def deco(fn):
+        it = R.by[id_]; it['draw'] = fn
+        if name: it['name'] = name
+        if kind: it['kind'] = kind
+        return fn
+    return deco
+
+
+def coping_ew(c, x0, x1):
+    """동서 담: 위에서 길게 보이는 돌 갓(윗면 8행 — 뒤 가장자리 어둡게) + 앞면 3행 + 갓 위 무쇠 창끝(위에서 본 점 줄)."""
+    w = x1 - x0
+    c.HL(x0, 3, w, 'ink', 1)
+    c.R(x0, 4, w, 8, 'stone', 5); c.HL(x0, 4, w, 'stone', 3); c.HL(x0, 5, w, 'stone', 6); c.HL(x0, 11, w, 'stone', 6)
+    for x in range(x0 + 5, x1, 8): c.VL(x, 4, 8, 'stone', 4)
+    c.HL(x0, 7, w, 'iron', 2); c.HL(x0, 8, w, 'iron', 4)                            # 창살 밑 가로대(위에서 본 선)
+    for x in range(x0 + 1, x1, 3):
+        c.P(x, 6, 'iron', 6); c.P(x, 7, 'iron', 3)
+    c.R(x0, 12, w, 3, 'stone', 2); c.HL(x0, 12, w, 'stone', 3)
+    c.HL(x0, 15, w, 'ink', 1)
+
+
+@_redraw('fence', '무쇠 창살 낮은 돌담(동서 — 위에서 길게 보이는 갓 위 창끝 줄)', kind='other')
+def _(c): coping_ew(c, 0, 16)
+
+
+@_redraw('fence-h3', '무쇠 창살 낮은 돌담 세 칸(양 끝 놋쇠 공 돌 기둥)', kind='other')
+def _(c):
+    coping_ew(c, 0, 48)
+    for x in (0, 39):
+        box3(c, x, 1, 9, 8, 6, 'stone', tt=5, ft=3); c.HL(x, 0, 9, 'ink', 1); c.HL(x, 15, 9, 'ink', 1)
+        disc(c, x + 4.5, 4.6, 2.6, 1.8, 'brass', 4, band=1, bt=2, rim=False)
+
+
+# fence-h3 는 관문 2회 실패 — fence(1칸)를 이어 칠한다
+R.items.remove(R.by.pop('fence-h3'))
 
 
 @R.add('water-tower', '급수탑(나무 물통 + 무쇠 다리 + 급수관)', 3, 5, 'structure', tags=['급수탑', '선로', '공장'], rules='선로 곁(급수관이 선로 쪽) 또는 공장 마당 모퉁이. 다리 둘레 1칸 비움.')

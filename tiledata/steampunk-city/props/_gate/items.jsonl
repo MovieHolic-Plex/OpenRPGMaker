@@ -6,8 +6,7 @@
 {"png": "sp-barrel.png", "kind": "round_body", "name": "나무 통 하나", "label": "steampunk-city/sp-barrel"}
 {"png": "sp-coal-bunker.png", "kind": "container", "name": "석탄 상자(리벳 철판 통, 위에서 석탄이 보인다)", "label": "steampunk-city/sp-coal-bunker"}
 {"png": "sp-coal-heap.png", "kind": "organic", "name": "석탄 더미", "label": "steampunk-city/sp-coal-heap"}
-{"png": "sp-fence.png", "kind": "other", "name": "무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)", "label": "steampunk-city/sp-fence"}
-{"png": "sp-fence-h3.png", "kind": "other", "name": "무쇠 창살 담 세 칸(양 끝 돌 기둥)", "label": "steampunk-city/sp-fence-h3"}
+{"png": "sp-fence.png", "kind": "other", "name": "무쇠 창살 낮은 돌담(동서 — 위에서 길게 보이는 갓 위 창끝 줄)", "label": "steampunk-city/sp-fence"}
 {"png": "sp-fence-v.png", "kind": "other", "name": "무쇠 창살 담(남북 줄 — 위에서 길게 보이는 받침 갓)", "label": "steampunk-city/sp-fence-v"}
 {"png": "sp-water-tower.png", "kind": "structure", "name": "급수탑(나무 물통 + 무쇠 다리 + 급수관)", "label": "steampunk-city/sp-water-tower"}
 {"png": "sp-stall-fruit.png", "kind": "structure", "name": "시장 노점(과일·채소, 빨강 줄무늬 차양)", "label": "steampunk-city/sp-stall-fruit"}

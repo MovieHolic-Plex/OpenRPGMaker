@@ -783,6 +783,186 @@ def _(c):
     c.VL(0, 1, 15, 'ink', 1); c.VL(47, 1, 15, 'ink', 1)
     c.HL(2, 31, 44, 'ink', 1)
 
+
+# ── 3차 다시 그리기(관문 2차 실패분): 머리 = 위에서 보이는 큰 원통·상자 ──
+@redraw('clock-post', name='거리 시계 기둥(무쇠 기둥 + 둥근 시계 북 — 넓은 녹청 뚜껑이 위에서 보인다)')
+def _(c):
+    post(c, 7, 22, 42)
+    vcyl(c, 8, 9, 19, 6.5, 3.2, 'iron', 3, top=5)                                # 시계 북(세운 원통)
+    disc(c, 8, 7, 7.6, 4.4, 'verd', 3, band=2, bt=1)                             # 넓은 갓(윗면 9행)
+    c.ell(8, 6.2, 3.6, 2.0, lambda X, Y, dx, dy, d: ('verd', 4 if dx < 0 else 2))
+    disc(c, 8, 5, 1.4, 1, 'brass', 4, band=1, bt=2, rim=False)
+    c.ell(7.5, 15, 3.6, 3.4, lambda X, Y, dx, dy, d: ('brass', 4 if dx + dy < 0 else 2) if d > 0.62 else ('canvas', 3 if dx < 0.3 else 2))
+    c.line(7, 15, 7, 13, 'ink', 1); c.line(7, 15, 9, 16, 'ink', 1)
+    arc(c, 8, 20, 6.5, 3.2, 'ink', 1)
+    disc(c, 8, 41, 6.5, 3.2, 'iron', 5, band=3, bt=2)
+
+
+@redraw('poster-column', name='둥근 광고탑(빛바랜 포스터 — 글자 없음, 넓은 녹청 돔 뚜껑)')
+def _(c):
+    vcyl(c, 8, 12, 26, 6, 2.8, 'stone', 3, top=4)
+    for (y, x0, x1, m) in ((15, 3, 8, 'cloth'), (15, 8, 13, 'canvas'), (21, 3, 8, 'navy'), (21, 8, 13, 'brass')):
+        for x in range(x0, x1):
+            dx = (x + 0.5 - 8) / 6
+            if abs(dx) >= 0.9: continue
+            off = 2.8 * math.sqrt(1 - dx * dx)
+            for j in range(4):
+                c.P(x, round(y + off) + j, m, 2 if dx > 0.4 else 3)
+    disc(c, 8, 10, 7.8, 4.6, 'verd', 3, band=2, bt=1)                            # 넓은 갓(윗면)
+    disc(c, 8, 7, 4.4, 2.6, 'verd', 4, band=2, bt=2)                             # 돔(작은 원반 위 원반)
+    c.ell(7, 5.6, 1.6, 1, lambda X, Y, dx, dy, d: ('verd', 4))
+    disc(c, 8, 3.4, 1.2, 0.9, 'brass', 4, band=1, bt=2, rim=False)
+    disc(c, 8, 29, 7.4, 2.4, 'stone', 4, band=1, bt=2)
+
+
+@redraw('planter', name='무쇠 화분(둥근 통 — 흙이 위에서 넓게 보인다, 뒤쪽에 작은 관목)')
+def _(c):
+    vcyl(c, 8, 6, 11, 7.2, 4.6, 'iron', 3, top=5)
+    c.ell(8, 6, 5.8, 3.4, lambda X, Y, dx, dy, d: ('soot', 1 if dy < -0.3 else 2 if dy < 0.3 else 3))       # 흙(아가리 안)
+    c.ell(8, 6, 5.8, 3.4, lambda X, Y, dx, dy, d: ('iron', 1) if dy < -0.6 else None)                       # 안벽 그늘(뒤)
+    def leaf(X, Y, dx, dy, d):
+        k = rnd(X, Y, 5)
+        return ('moss', (3 if dx + dy < -0.4 else 2) + (1 if k > 0.85 else 0))
+    c.ell(6, 3.6, 2.6, 2.2, leaf); c.ell(10, 4, 2, 1.8, leaf)
+    for (x, y) in ((6, 7), (9, 8), (11, 6)): c.P(x, y, 'moss', 2)
+    arc(c, 8, 10, 7.2, 4.6, 'brass', lambda dx: 4 if dx < 0 else 2)
+
+
+@redraw('rail-signal', name='철도 신호등(무쇠 기둥 + 등 상자 — 넓은 윗면 갓, 빨강·초록 등)')
+def _(c):
+    post(c, 7, 18, 42)
+    box3(c, 2, 3, 12, 6, 10, 'iron', tt=5, ft=2)                                 # 등 상자: 윗면 6행 + 앞면 10행
+    c.HL(2, 2, 12, 'ink', 1); c.VL(1, 3, 16, 'ink', 1); c.VL(14, 3, 16, 'ink', 1)
+    c.R(4, 4, 8, 3, 'iron', 4); disc(c, 8, 5, 1.6, 1, 'iron', 6, band=1, bt=3, rim=False)   # 갓 위 환기통
+    c.ell(5.5, 13, 2, 2, lambda X, Y, dx, dy, d: ('cloth', 4 if dx + dy < 0 else 3) if d < 0.75 else ('iron', 1))
+    c.ell(10.5, 13, 2, 2, lambda X, Y, dx, dy, d: ('verd', 3 if dx + dy < 0 else 2) if d < 0.75 else ('iron', 1))
+    c.HL(2, 18, 12, 'ink', 1)
+    for y in range(24, 40, 3): c.HL(5, y, 2, 'iron', 4)
+    disc(c, 8, 41, 6.5, 3.2, 'iron', 5, band=3, bt=2)
+
+
+@redraw('gantry-crane', name='문형 기중기(위에서 보이는 넓은 들보 통로 + 앞뒤 다리 넷 + 수레·매단 상자)')
+def _(c):
+    def leg(x, y0, y1, w=8):
+        c.R(x, y0, w, y1 - y0, 'iron', 3); c.VL(x, y0, y1 - y0, 'iron', 5); c.VL(x + 1, y0, y1 - y0, 'iron', 4)
+        c.VL(x + w - 1, y0, y1 - y0, 'iron', 1); c.VL(x - 1, y0, y1 - y0, 'ink', 1); c.VL(x + w, y0, y1 - y0, 'ink', 1)
+        for y in range(y0 + 3, y1 - 3, 8): c.line(x + 1, y, x + w - 2, y + 6, 'iron', 2)
+    def foot(x, y, w=12):
+        box3(c, x, y, w, 4, 3, 'stone', tt=5); c.HL(x, y + 7, w, 'ink', 1)
+    # 뒤 다리(북쪽, 짧다 — 들보 뒤 가장자리에서 내려와 위쪽에서 끝난다)
+    for x in (14, 58): leg(x, 14, 58, w=6); foot(x - 3, 56)
+    # 들보 윗면: 깊은 통로(뒤 거더 · 판자 깔판 · 앞 거더 — 18행) + 앞 거더 옆면(6행)
+    c.HL(0, 1, 80, 'ink', 1)
+    c.R(0, 2, 80, 4, 'iron', 4); c.HL(0, 2, 80, 'iron', 2); rivets(c, 2, 4, 76, 1, 6, 'iron', 6, 0)  # 뒤 거더 윗면
+    c.R(0, 6, 80, 10, 'wood', 4)
+    for x in range(1, 80, 5): c.VL(x, 6, 10, 'wood', 3)
+    c.HL(0, 6, 80, 'wood', 1); c.HL(0, 7, 80, 'wood', 2)                                              # 뒤 거더 그늘
+    c.R(0, 16, 80, 4, 'iron', 5); c.HL(0, 16, 80, 'iron', 6); rivets(c, 2, 18, 76, 1, 6, 'iron', 6, 0)   # 앞 거더 윗면
+    c.R(0, 20, 80, 6, 'iron', 2); c.HL(0, 20, 80, 'iron', 1); rivets(c, 3, 22, 74, 1, 6, 'iron', 4, 0)   # 앞 거더 옆면
+    c.HL(0, 26, 80, 'ink', 1); c.VL(0, 1, 26, 'ink', 1); c.VL(79, 1, 26, 'ink', 1)
+    # 앞 다리(남쪽, 길다)
+    for x in (2, 70): leg(x, 27, 72); foot(x - 2, 70)
+    # 수레(깔판 위 — 윗면 6행 보이는 놋쇠 상자) + 사슬 + 갈고리 + 매단 상자(윗면 보인다)
+    box3(c, 30, 5, 18, 6, 6, 'brass', tt=4, ft=2); c.HL(30, 4, 18, 'ink', 1)
+    disc(c, 39, 8, 3.4, 1.8, 'iron', 4, band=1, bt=2, rim=False)
+    for x in (37, 41):
+        for y in range(26, 44): c.P(x, y, 'iron', 4 if y % 2 else 2)
+    c.ell(39, 45, 3, 2, lambda X, Y, dx, dy, d: ('iron', 4) if d > 0.4 else None)
+    box3(c, 30, 47, 18, 7, 6, 'wood', tt=5, ft=2); c.HL(30, 60, 18, 'ink', 1); c.HL(30, 46, 18, 'ink', 1)
+    for x in range(33, 46, 4): c.VL(x, 48, 5, 'wood', 4)
+
+
+@redraw('airship-docked', name='계류 비행선(위에서 비스듬히 본 기낭 — 등줄기 빛, 십자 꼬리 날개, 아래 곤돌라)')
+def _(c):
+    # 곤돌라(기낭 밑 — 지붕 윗면 7행 + 옆 창 줄 7행) + 나무 받침대
+    for x in (40, 84):
+        box3(c, x, 66, 8, 4, 8, 'wood', tt=5, ft=2); c.HL(x, 78, 8, 'ink', 1)
+    c.HL(34, 49, 62, 'ink', 1)
+    c.R(34, 50, 62, 7, 'wood', 4); c.HL(34, 50, 62, 'wood', 2); c.HL(34, 56, 62, 'wood', 5)
+    for x in range(36, 94, 5): c.VL(x, 51, 5, 'wood', 3)
+    c.R(34, 57, 62, 8, 'navy', 2); c.HL(34, 57, 62, 'navy', 3)
+    for x in range(38, 92, 7): c.R(x, 59, 4, 3, 'lit' if (x // 7) % 3 else 'glass', 3)
+    c.VL(33, 49, 17, 'ink', 1); c.VL(96, 49, 17, 'ink', 1); c.HL(34, 65, 62, 'ink', 1)
+    # 기낭: 위에서 본 긴 몸. 등줄기(위 1/3)가 가장 밝고, 세로 이음은 코·꼬리로 모이는 경도선, 놋쇠 늑골은 웃는 호
+    cx, cy, rx, ry = 60, 26, 56, 22
+    def bag(X, Y, dx, dy, d):
+        k = dy
+        t = 2 if k < -0.75 else 3 if k < -0.15 else 4 if k < 0.05 else 3 if k < 0.4 else 2 if k < 0.7 else 1
+        if k < 0.05 and dx < -0.3: t = min(4, t + 1)
+        return ('canvas', t)
+    c.ell(cx, cy, rx, ry, bag)
+    for k in (-0.6, -0.25, 0.3, 0.65):                                     # 경도선(코·꼬리로 모인다)
+        for x in range(int(cx - rx) + 2, int(cx + rx) - 1):
+            dx = (x + 0.5 - cx) / rx
+            if abs(dx) >= 0.98: continue
+            y = cy + ry * k * math.sqrt(max(0.0, 1 - dx * dx))
+            c.P(x, round(y), 'canvas', 1 if k > 0.2 else 2)
+    for kx in range(-3, 4):                                                # 놋쇠 늑골(남북 — 웃는 호)
+        bx = cx + kx * 14
+        dxn = (bx + 0.5 - cx) / rx
+        hh = ry * math.sqrt(1 - dxn * dxn)
+        for y in range(int(cy - hh) + 1, int(cy + hh)):
+            dy = (y + 0.5 - cy) / hh
+            sx = bx + round(3 * (1 - dy * dy))
+            c.P(sx, y, 'brass', 4 if dy < -0.2 else 3 if dy < 0.4 else 1)
+    c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 else None)
+    # 십자 꼬리: 수평 날개 둘(북·남으로 펼친 판 — 위에서 넓게 보인다) + 등 지느러미(등줄기 위 짧은 판)
+    c.poly([(104, 22), (124, 6), (127, 9), (114, 24)], lambda x, y: ('cloth', 3))
+    c.poly([(104, 30), (124, 46), (127, 43), (114, 28)], lambda x, y: ('cloth', 2))
+    c.line(104, 22, 124, 6, 'ink', 1); c.line(104, 30, 124, 46, 'ink', 1)
+    c.R(106, 15, 18, 3, 'cloth', 4); c.HL(106, 18, 18, 'cloth', 1); c.HL(106, 14, 18, 'ink', 1)
+    # 코 고리(계류 마스트에 걸린다)
+    c.ell(5, 26, 3, 4, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2)); c.line(0, 26, 3, 26, 'iron', 3)
+
+
+@redraw('airship-docked', name='계류 비행선(위에서 본 기낭 윗면이 넓고 남쪽 옆구리는 좁게 — 십자 꼬리, 곤돌라 창이 밑으로 살짝)')
+def _(c):
+    # 곤돌라: 기낭 밑에 가려 남쪽 옆면 창 줄만 보인다 + 나무 받침대
+    for x in (40, 84):
+        box3(c, x, 64, 8, 4, 8, 'wood', tt=5, ft=2); c.HL(x, 76, 8, 'ink', 1)
+    c.R(38, 50, 54, 12, 'navy', 2); c.HL(38, 50, 54, 'navy', 3); c.HL(38, 61, 54, 'ink', 1)
+    for x in range(42, 88, 7): c.R(x, 53, 4, 4, 'lit' if (x // 7) % 3 else 'glass', 3)
+    c.VL(37, 50, 12, 'ink', 1); c.VL(92, 50, 12, 'ink', 1)
+    # 기낭 = 윗면(평면 타원 — 넓고 밝다) + 남쪽 옆구리 띠(12행, 어둡다). 코·꼬리는 윗면 타원의 가운데 줄(y=19)에 있다 — 몸 가운데보다 위.
+    cx, cy, rx, ry, side = 60, 19, 56, 15, 12
+    def body(X, Y, dx, dy, d):
+        return ('canvas', 1 if dy > 0.55 else 2)
+    c.ell(cx, cy + side, rx, ry, body)                                       # 옆구리(아래로 내린 같은 타원)
+    for x in range(int(cx - rx), int(cx + rx) + 1):                          # 윗면 타원과 옆 타원 사이를 메운다
+        dx = (x + 0.5 - cx) / rx
+        if abs(dx) > 1: continue
+        h = ry * math.sqrt(max(0.0, 1 - dx * dx))
+        for y in range(round(cy), round(cy + side + h * 0.2)): c.P(x, y, 'canvas', 2)
+    def top(X, Y, dx, dy, d):
+        t = 4 if (dx + dy * 0.6) < -0.35 else 3 if dy < 0.5 else 2
+        return ('canvas', t)
+    c.ell(cx, cy, rx, ry, top)
+    for k in (-0.5, 0.5):                                                    # 윗면 경도선(코·꼬리로 모인다)
+        for x in range(int(cx - rx) + 3, int(cx + rx) - 2):
+            dx = (x + 0.5 - cx) / rx
+            y = cy + ry * k * math.sqrt(max(0.0, 1 - dx * dx))
+            c.P(x, round(y), 'canvas', 2)
+    for kx in range(-3, 4):                                                  # 놋쇠 늑골: 윗면을 가로지르는 남북 선 + 옆구리의 웃는 호
+        bx = cx + kx * 14
+        dxn = (bx + 0.5 - cx) / rx
+        hh = ry * math.sqrt(1 - dxn * dxn)
+        for y in range(int(cy - hh) + 1, int(cy + hh) + 1): c.P(bx, y, 'brass', 4 if y < cy else 3)
+        for y in range(int(cy + hh), int(cy + hh + side)): c.P(bx, y, 'brass', 1)
+    c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 and dy < 0 else None)
+    c.ell(cx, cy + side, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 and dy > -0.2 else None)
+    # 등 지느러미(꼬리 위 — 위에서 보면 등줄기 위 짧고 밝은 판) + 수평 꼬리 날개 둘(북·남으로 펼친 판, 남쪽 것은 아래로 더 길게 보인다)
+    c.poly([(100, 15), (126, 4), (127, 8), (110, 18)], lambda x, y: ('cloth', 3))
+    c.poly([(100, 24), (126, 40), (124, 43), (108, 30)], lambda x, y: ('cloth', 2))
+    c.line(100, 15, 126, 4, 'ink', 1); c.line(100, 24, 126, 40, 'ink', 1)
+    c.R(104, 17, 20, 3, 'cloth', 4); c.HL(104, 16, 20, 'ink', 1); c.HL(104, 20, 20, 'cloth', 1)
+    c.ell(5, 19, 3, 3, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2)); c.line(0, 19, 3, 19, 'iron', 3)
+
+
+# 관문 2회 실패 — 다른 조각으로 대신한다(sacks→crate·barrel, boiler-tank→gasometer, standpipe→hydrant)
+for _id in ('sacks', 'boiler-tank', 'standpipe'):
+    R.items.remove(R.by.pop(_id))
+
+
 def sheet(path=None, z=3):
     items = [(it['id'], R.render(it).img()) for it in R.items]
     return contact(items, path or os.path.join(OUT, 'street', 'preview.png'), z=z, W=2000)

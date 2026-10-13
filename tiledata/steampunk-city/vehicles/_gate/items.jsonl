@@ -1,4 +1,4 @@
-{"png": "sp-locomotive.png", "kind": "structure", "name": "증기 기관차(검은 보일러·놋쇠 띠·빨강 바퀴, 동쪽이 앞)", "label": "steampunk-city/sp-locomotive"}
+{"png": "sp-locomotive.png", "kind": "structure", "name": "증기 기관차(위에서 본 발판·보일러·돔 — 동쪽이 앞, 남쪽 옆 치마판)", "label": "steampunk-city/sp-locomotive"}
 {"png": "sp-tender.png", "kind": "container", "name": "탄수차(위가 트인 석탄 칸 + 물탱크 뚜껑)", "label": "steampunk-city/sp-tender"}
 {"png": "sp-coach.png", "kind": "structure", "name": "객차(초록 칠·불 켜진 창·채광 지붕)", "label": "steampunk-city/sp-coach"}
 {"png": "sp-wagon-coal.png", "kind": "container", "name": "석탄 화물칸(위가 트여 석탄이 보인다)", "label": "steampunk-city/sp-wagon-coal"}
@@ -7,4 +7,4 @@
 {"png": "sp-barge.png", "kind": "container", "name": "운하 바지선(석탄 실은 나무 짐배, 동서로 긴)", "label": "steampunk-city/sp-barge"}
 {"png": "sp-rowboat.png", "kind": "container", "name": "나룻배(작은 나무배)", "label": "steampunk-city/sp-rowboat"}
 {"png": "sp-minecart.png", "kind": "container", "name": "광차(석탄 실은 무쇠 통, 작은 바퀴)", "label": "steampunk-city/sp-minecart"}
-{"png": "sp-handcart.png", "kind": "container", "name": "손수레(위가 트인 나무 짐칸 + 큰 바퀴 둘 + 손잡이)", "label": "steampunk-city/sp-handcart"}
+{"png": "sp-handcart.png", "kind": "container", "name": "손수레(위에서 본 넓은 나무 짐칸 — 바닥 판자가 보인다, 손잡이 동쪽)", "label": "steampunk-city/sp-handcart"}
