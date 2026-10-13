@@ -899,13 +899,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
     let previousOpeningIssues = '';
-    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 5 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
+    for (let attempt = 0; !fatal && !rejected && attempt < (openingProduction.inGame ? 3 : 2) && turns < maxTurns && !options.signal?.aborted; attempt++) {
       await reviewInGameCutscene();
       const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project),...monsterGameProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || (signature === previousOpeningIssues && !openingProduction.inGame)) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });
       await promptResuming('오프닝/게임 시스템/전체 몬스터 캠페인 저작 완료 검사에서 다음 문제가 남았습니다. 가능한 단계를 실제로 수행하고, 생성/이미지 전달이 막혔으면 실패와 미검증 범위를 명시하세요. 불가능한 단계는 같은 인자로 반복하지 마세요.' + (openingProduction.inGame ? ' 계획이나 설명을 글로 쓰지 말고 지금 바로 도구를 호출해 맵을 칠하고 컷신 이벤트를 넣으세요.' : '') + '\n' + signature);
+    }
+    // 인게임 컷신은 고치기를 3번까지만 한다 — 판정자 지적을 따라 값을 이리저리 돌리는 루프가 턴 상한까지 이어졌다(gen-28: 97턴, 끝내 불합격).
+    // 남은 문제는 더 고치게 하지 않고 사용자에게 있는 그대로 보고하게 한다.
+    if (openingProduction.inGame && !fatal && !rejected && turns < maxTurns && !options.signal?.aborted) {
+      await reviewInGameCutscene();
+      const left = openingProduction.inspect(ctx.project, base);
+      if (left.length) {
+        emit({ type: 'execution_status', name: 'opening.unresolved', ok: false, summary: left.join(' '), data: { issues: left, playbackVerified: false } });
+        await promptResuming(`컷신 고치기를 여러 번 했지만 다음 문제가 남았습니다: ${left.join(' / ')}\n더 고치지 마세요. 지금 상태가 무엇이고(무엇이 되고 무엇이 안 되는지), 남은 문제가 무엇인지 사용자에게 있는 그대로 보고하고 끝내세요. 통과했다고 쓰지 마세요.`);
+      }
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
     // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
