@@ -87,19 +87,31 @@ for (const a of missing) failures.push(`필수 축 파일이 없다: ${a.path} (
 const present = AXES.filter((a) => existsSync(resolve(ROOT, a.path)));
 const skipped = AXES.filter((a) => !a.required && !existsSync(resolve(ROOT, a.path)));
 
-// 3) 스냅샷 축 실행. 캐시 디렉터리를 분리해 병렬 워크트리와 경합하지 않는다.
+// 3) 스냅샷 축 실행. 축마다 프로세스를 새로 연다.
+// GitHub 16GB / 1워커 × 12GB 힙에 열 축을 한 프로세스에 쌓으면 JSON 리포트 없이 죽는다.
 let snapshot = { code: 0, out: "" };
 let axisExecution = [];
 if (!failures.length) {
   const resultDir = mkdtempSync(resolve(tmpdir(), "db-surface-"));
-  const resultFile = resolve(resultDir, "vitest.json");
-  snapshot = run(
-    "node",
-    ["scripts/run-vitest.mjs", "run", "--configLoader", "bundle", ...present.map((a) => a.path), "--reporter=default", "--reporter=json", `--outputFile.json=${resultFile}`],
-    { VITE_CACHE_DIR: process.env.VITE_CACHE_DIR ?? ".vite-cache/surface-gates" }
-  );
+  const merged = { testResults: [] };
+  const outs = [];
+  for (const [index, axis] of present.entries()) {
+    const resultFile = resolve(resultDir, `axis-${index}.json`);
+    const one = run(
+      "node",
+      ["scripts/run-vitest.mjs", "run", "--configLoader", "bundle", axis.path, "--reporter=default", "--reporter=json", `--outputFile.json=${resultFile}`],
+      { VITE_CACHE_DIR: process.env.VITE_CACHE_DIR ?? ".vite-cache/surface-gates" }
+    );
+    outs.push(one.out);
+    if (one.code !== 0) snapshot.code = one.code || 1;
+    if (existsSync(resultFile)) {
+      const parsed = JSON.parse(readFileSync(resultFile, "utf8"));
+      merged.testResults.push(...(parsed.testResults ?? []));
+    }
+  }
+  snapshot.out = outs.join("\n");
   if (snapshot.code !== 0) failures.push(`표면 스냅샷 축 실패 (vitest exit=${snapshot.code})`);
-  const results = existsSync(resultFile) ? JSON.parse(readFileSync(resultFile, "utf8")) : {};
+  const results = merged;
   failures.push(...requiredAxisFailures(AXES.filter(axis => axis.required), results, ROOT));
   axisExecution = (results.testResults ?? []).map(file => ({
     path: relative(ROOT, file.name), status: file.status,

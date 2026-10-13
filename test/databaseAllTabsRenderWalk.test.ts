@@ -1,3 +1,5 @@
+// @vitest-environment happy-dom
+// Phaser 4 는 모듈을 평가할 때 window 를 읽는다. installFakeDom 은 beforeEach 라 그 전에 못 닿는다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderDatabasePanel, setDatabaseActiveTab, TAB_GROUPS, type DatabaseTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
