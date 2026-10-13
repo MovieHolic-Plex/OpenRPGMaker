@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f406915fea57d10d1f1b31f64dc73c0606d7bcebfa3dedb75fe3a33b8f5881fe",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wall / partition segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn strictly in pure front elevation with a 1px border at row 0 and no visible top surface or horizontal depth anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5016
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a flat vertical wall elevation (screen/wall panel with posts and baseboard) with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4992
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese-style wall section with translucent upper panels and decorated lower baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a vertical wall surface with a 1px border at row 0 and no visible top surface or thickness foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5103
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese sukashi screen wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile depicts a vertical wall surface in flat front elevation with no visible top horizontal surface or beam slope (row 0 is only a 1px boundary line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4994
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.483Z",
+ "cells": {
+  "16": [
+   "7afa58d8c816e972"
+  ],
+  "24": [
+   "0136d9de2bb00c29",
+   "6353ba23e35a95f6",
+   "837d2332ba66f926",
+   "aadd8a6c16bfe578",
+   "b8274f3ff41bf9cc",
+   "eb614d0c053f006a"
+  ],
+  "32": [
+   "051328e3fa983988",
+   "17e58b6eb8c1b6b2",
+   "24305134eeb47602",
+   "a417cb8b8e5f3b29",
+   "c31145c623816523",
+   "ec33f29b96151823"
+  ],
+  "48": [
+   "1e6faa3075d96c92",
+   "38ccd4296888e5c4",
+   "94debe5e7bf42e6e",
+   "a1cdf5a9e38350cd",
+   "aff51fb9917610ad",
+   "db91b485032cf697"
+  ]
+ }
+}

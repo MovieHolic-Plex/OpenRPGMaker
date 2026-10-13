@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a0095e18f706e381b99108b2d04197305431dfaf5736f527ec1f4c5a1839b108",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-school-gate",
+ "label": "jp/jp-school-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gate pillars and flanking wall sections",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars, wall copings, and fence sections are drawn in pure 2D front elevation with perfectly horizontal bottom/overhang lines and flat trapezoidal caps, showing no horizontal top surfaces or 3/4-view depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gate pillars and wall copings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars and attached wall sections are drawn in pure 2D front elevation. The pillar caps are flat 2D trapezoids with no visible top surface or 3/4 perspective, and the wall copings similarly show no depth or horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "school gate posts and side walls",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gate pillars and flanking wall sections show sloped roof/cap surfaces (pillar caps spanning rows 0-9, wall caps spanning rows 8-16) correctly representing foreshortened horizontal/sloped top planes in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "school gate pillars and flanking roofed walls",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flanking walls feature a visible 7-row forward-sloping tiled roof (rows 9–16), and the gate pillars are capped with 9-row tall caps/lanterns (rows 0–8), properly foreshortening the upper surfaces in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9443
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.484Z",
+ "cells": {
+  "16": [
+   "0cf1ceb156d551aa",
+   "21e94f2b1884bb2b",
+   "2f5b1808715f2ec5",
+   "4419b38ce58b3918",
+   "474dae327747e972",
+   "865569b2353155ec",
+   "b59e98b985c57644",
+   "cf44036a21dd28c8"
+  ],
+  "24": [
+   "0a743fd39bb6360c",
+   "2f73bf2de584373d",
+   "37a6fbb8e21041da",
+   "66bf478b8d1707de",
+   "7fa5bf9636bdfc48",
+   "7fadc81254170ca8",
+   "84b7fb420f60fc6c",
+   "860cdff9bb79f7b3",
+   "8e41c3355bc72aad",
+   "c2a9e24d4d66678c",
+   "d58cdc1f2cfcc836",
+   "ec53f34c048dc496",
+   "ed541f262458575c",
+   "fed44920ddf7b118"
+  ],
+  "32": [
+   "94c7a3444dbfda99",
+   "bc9701281581c0a0"
+  ],
+  "48": [
+   "19b7a0c6c4ff715d",
+   "3917eb48e091e320",
+   "5ff6b8917d1fbbe8",
+   "d133ca52a3e538eb"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9473bd2d16e0278393957abb37d72ea16641cb439dcb3499de5298bf0809bc23",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp/jp-bwall-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese style wall section with plaster panels and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall segment is drawn as a flat front architectural elevation. The top lintel/beam consists only of 1-2px horizontal lines (rows 1-2) with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical elevation from rows 1 to 14 without any visible top surface (rows 1-2 form only a 2px horizontal border/lintel line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6606
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese plaster and stone wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation; the top cap at rows 1-2 is only a 2px horizontal edge line with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5216
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment with plaster panel and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation with no visible top surface (rows 1-2 form only a 2px horizontal cap beam/trim line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5805
+  }
+ ],
+ "decidedAt": "2026-10-13T12:59:17.704Z",
+ "cells": {
+  "16": [
+   "e6b653efc1487cf4"
+  ],
+  "24": [
+   "08c4abc76d77cfb9",
+   "21a6551851aa34ba",
+   "22dd9df5e9d7be8b",
+   "6cb107cea0c5c493",
+   "9a03071c3f090f6e",
+   "f011a851dd83c4b9"
+  ],
+  "32": [
+   "0c23d05f18c3bf76",
+   "4125b5b4d74f54cc",
+   "5890ce28c59f1489",
+   "5a82e1f2981e7d24",
+   "668c2f60c64f940d",
+   "b63bbc3bff85533b"
+  ],
+  "48": [
+   "01e1b13feed7cd61",
+   "214137e2a6dd565c",
+   "33f767e6026255a6",
+   "3dff21953eda0d1a",
+   "480cad662c93ff29",
+   "d62763f2e6adbf57"
+  ]
+ }
+}

@@ -17,18 +17,18 @@ sys.path.insert(0, HERE)
 EXACT = {
     # 기둥형(윗면 = 기둥머리)
     'pole': 'column', 'pole-guy': 'column', 'pole-wood': 'column', 'mirror2': 'column', 'hydrant-sign': 'column',
-    'bus-stop': 'column', 'rail-signal': 'box', 'gatepost': 'column', 'bridge-post': 'column',
+    'bus-stop': 'column', 'rail-signal': 'structure', 'gatepost': 'column', 'bridge-post': 'column',
     # 구조물
     'gate': 'structure', 'carport': 'structure', 'torii': 'structure', 'gas-canopy': 'structure', 'school-gate': 'structure',
     'rail-fence': 'structure', 'bridge-rail-v': 'structure',
     # 가구·소품류
-    'tsukigime': 'frame', 'monohoshi': 'frame', 'keijiban': 'frame',
-    'propane': 'round_body', 'ac-unit': 'box', 'gomi-box': 'box', 'pots': 'container', 'jizo': 'figure',
+    'tsukigime': 'structure', 'monohoshi': 'frame', 'keijiban': 'frame',
+    'propane': 'round_body', 'ac-unit': 'box', 'gomi-box': 'box', 'pots': 'container', 'jizo': 'structure',
     # 벽 부착
     'wall-drain': 'wall_mounted',
     # 지면 판(노면·바닥 표시·그림자·물 무늬)
     'mark-lockplate': 'flat', 'crosswalk-v': 'flat', 'foot-shadow': 'flat', 'rail-xing': 'flat',
-    'bridge-abut': 'flat', 'bridge-pier': 'flat', 'bridge-lip': 'flat', 'bridge-plank': 'flat', 'bridge-joint': 'flat',
+    'bridge-abut': 'flat', 'bridge-pier': 'structure', 'bridge-lip': 'flat', 'bridge-plank': 'flat', 'bridge-joint': 'flat',
     'water-glint': 'flat', 'water-streak': 'flat', 'water-shade': 'flat', 'water-dark': 'flat', 'water-dark-r': 'flat', 'water-rim-s': 'flat',
     # 지형 면(둑·석축·선로 도상)
     'river-wall': 'terrain', 'bank-lip': 'terrain', 'bank-mid': 'terrain', 'bank-slope': 'terrain', 'rail-h': 'terrain',

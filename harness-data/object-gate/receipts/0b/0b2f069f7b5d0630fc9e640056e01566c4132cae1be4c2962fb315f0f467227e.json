@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b2f069f7b5d0630fc9e640056e01566c4132cae1be4c2962fb315f0f467227e",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp/jp-bwall-sukashi",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese sukashi wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall section is drawn strictly in pure front elevation with no visible top surface or coping seen from above across rows 1-14.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5488
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese lattice wall panel (sukashi wall segment)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn completely flat in pure front elevation with no visible top surface, coping, or depth along the top edge (rows 0-1 are empty, vertical bars begin directly at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6602
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lattice wall panel (sukashi wall)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall panel is drawn in pure front elevation with no visible top surface or thickness on the upper horizontal beam/lintel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5489
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese-style wall section with sukashi grille",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical elevation from row 2 to 14 with no visible top surface or horizontal depth on any beam, sill, or wall cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6193
+  }
+ ],
+ "decidedAt": "2026-10-13T13:08:13.190Z",
+ "cells": {
+  "16": [
+   "6fe1ef86c3a27b75"
+  ],
+  "24": [
+   "140e00bcde2e13f9",
+   "3487e5851b4d3c50",
+   "3c8ee364030dc315",
+   "5900831eb03752aa",
+   "cdf9277e096aec74",
+   "fd70398a3d289397"
+  ],
+  "32": [
+   "1fadf766d4b67d48",
+   "4609ac3782036a64",
+   "534797e55d699319",
+   "6b432db5e9c295d1",
+   "b2c04056e6942bd5",
+   "ebcfbc03d38a6c94"
+  ],
+  "48": [
+   "3879bf5c8852c108",
+   "4c873940aea542a0",
+   "51540b8b558b5b88",
+   "6ebf55fdcd438566",
+   "acd6b9e0fb55adb6",
+   "cda811b3f5827044"
+  ]
+ }
+}

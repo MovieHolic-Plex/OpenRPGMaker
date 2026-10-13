@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2dde3639f42894cb67dd052fc8477c126b69219d0b037daba64bcbcb878f26fa",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-bus-stop",
+ "label": "jp/jp-bus-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop post and timetable board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire upper assembly (sign, canopy, and timetable board) is drawn in pure 2D front elevation with zero visible top surfaces. Only the base plinth at the bottom has a top surface, which does not qualify for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15642
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop post and timetable housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The timetable box, canopy, and signage are drawn in a flat front elevation with no visible top surfaces (0 px). While the base plinth at the bottom displays a 3px top surface, plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13330
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop timetable box and signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the bus stop (the signboard, round disc, timetable box, and hood) is rendered in a flat front elevation. Horizontal features and caps show no top-down foreshortened surfaces; only the base plinth has an indicated top, which does not represent the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6692
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop post and sign assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The timetable board, hood, round sign, and top cap are all drawn in pure flat front elevation with no visible horizontal top surfaces. Only the base plinth shows a top surface, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12624
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.484Z",
+ "cells": {
+  "16": [
+   "5654766ebb81ec2f",
+   "8249c0e733edae38",
+   "f482b997d9f8726d"
+  ],
+  "24": [
+   "1672d58450e16a10",
+   "4fedca1fda00e710",
+   "a1f787e5589e2c06",
+   "a7b682e58549e8bb",
+   "c1ca0f327fec7b9b",
+   "f303727078ef07a2"
+  ],
+  "32": [
+   "16e246f6e22f6709",
+   "7b60e1d566813451",
+   "a270dbea4a1e4a2b",
+   "a6a4b4e6b735323d",
+   "ba4eb415cb72fc51",
+   "befdf72685edb4df",
+   "c049e4651b736450",
+   "c67fbd8d8ccd2f26",
+   "c6c20ecba3f633fd",
+   "d17f9eb816ce4b21",
+   "f0294cd39ac07542",
+   "fde98bc59361dcef"
+  ],
+  "48": [
+   "88432bf42cc79da6",
+   "9071af8bbf3b2ef6",
+   "adea394048e3f192"
+  ]
+ }
+}
