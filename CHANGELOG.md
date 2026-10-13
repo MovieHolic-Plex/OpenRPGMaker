@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.205.0 — 2026-10-14
+
+### 기능
+
+- **gothic** — interior reference docs bundle, assistant policy (gothic_manor), concept hint (`ebf0b93`)
+- **gothic** — interior props wave 1 - 34 hand-pixel pieces + 3 anim strips, all object-gate PASS (`0663dba`)
+- **gothic-manor** — outdoor kit pass 1 — 68 gate-passing pieces (buildings, graveyard, terrain) + registry (`d15467e`)
+
+### 수정
+
+- **opening** — critic must not recommend map-event routes; judge looks, fixes name staging values (`a39e78e`)
+- **cutscene** — charset actors honor scale (was ignored, so walkers rendered at 13% height) (`d27702b`)
+
 ## 0.204.0 — 2026-10-13
 
 ### 기능
