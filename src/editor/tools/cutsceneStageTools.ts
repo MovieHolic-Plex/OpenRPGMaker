@@ -176,7 +176,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       const cached = preparedActors.get(key);
       if (cached && !("error" in cached)) continue;
       try {
-        preparedActors.set(key, await cropCharsetFrames(undefined, character.resourceId, character.characterIndex, WALK_ROLES));
+        preparedActors.set(key, await cropCharsetFrames(project, character.resourceId, character.characterIndex, WALK_ROLES));
       } catch (error) {
         preparedActors.set(key, { error: error instanceof Error ? error.message : String(error) });
       }

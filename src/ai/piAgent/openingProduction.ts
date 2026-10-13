@@ -111,6 +111,11 @@ export class PiOpeningProduction {
         const example = JSON.stringify({ mapId: start.id, trigger: 'auto', actors: names.map((id, k) => ({ name: `주체${k + 1}`, resourceId: id, scale: 30 })), steps: [{ do: 'letterbox', show: true }, { do: 'tint', tintColor: '20,30,90,0.45', ms: 600 }, { do: 'weather', weather: 'snow', intensity: 0.7 }, ...names.map((_, k) => ({ do: 'enter', actor: `주체${k + 1}`, from: 'left', to: { fx: 0.7 - k * 0.2, fy: 0.72 }, ms: 7000, anim: 'bob', ...(k ? { withPrevious: true } : {}) })), { do: 'wait', ms: 800 }, ...names.map((_, k) => ({ do: 'exit', actor: `주체${k + 1}`, exitTo: 'right', ms: 5000, anim: 'bob', ...(k ? { withPrevious: true } : {}) })), { do: 'fade', direction: 'out', ms: 900 }, { do: 'fade', direction: 'in', ms: 600 }] });
         issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 지금 바로 script_cutscene_staged 를 호출하세요(안 불려 있으면 find_tools 로 먼저 불러온 뒤). 호출 형태 예(값은 이야기에 맞게 바꾸되 배우마다 enter 단계가 반드시 필요하고 배우는 resourceId 로 넘깁니다): ${example}`);
       }
+      // 업로드한 캐릭터셋(걷는 칩)이 있는데 컷신이 안 쓰면 — 그림 슬라이드 대신 맵 위를 진짜로 걷는 칩이 시점·크기·걷기까지 맞다.
+      const madeCharsets = Object.values(project.assets.uploaded).filter(a => a.kind === 'charset');
+      if (madeCharsets.length && start && /"kind":"auto"/u.test(events) && !madeCharsets.some(a => events.includes(a.id))) {
+        issues.push(`프로젝트에 업로드한 캐릭터셋 ${madeCharsets.map(a => `${a.id}(${a.name})`).join(', ')} 이(가) 있는데 시작 맵 컷신이 쓰지 않았습니다. 이야기에 맞는 인물·기계가 있으면 그림 대신 캐릭터셋을 배우로 쓰세요: script_cutscene_staged actors:[{name, character:{resourceId:"<캐릭터셋 id>", characterIndex:0~7}, scale}] (characterIndex 는 4열×2행 칸, 걷기 프레임은 자동). 크기는 scale 로 키웁니다.`);
+      }
       if (/타이틀|title|켜자마자|첫\s*화면/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('게임을 켜자마자 보이는 타이틀 화면이 기본 그림입니다. generate_title_art로 작품 전용 그림을 만드세요.');
       return issues;
     }
