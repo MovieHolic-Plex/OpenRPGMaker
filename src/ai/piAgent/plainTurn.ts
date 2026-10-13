@@ -24,6 +24,7 @@ import type { PiTeamSpec } from "./teamSpec";
 export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
+import { CAMPUS_EXPOSED_TOOLS, campusTargetFor } from '../campusPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { KIT_AREA_EXPOSED_TOOLS, kitAreaNote } from "@/editor/tools/kitAreaTools";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
@@ -133,13 +134,16 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
     // PAW 전용 게이트·팩 도시 타일셋(Rasak·REFMAP) 마을 노트는 2026-10-07 저작권 정리로 지웠다.
     const jpCity = jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 캠퍼스(modern_campus) — jp_city 가 잡지 않았고 프로젝트에 칩셋이 있을 때만(campusPolicy). 일본풍 학교는 jp_city, 마법 학교는 wizarding_world 가 이긴다.
+    const campus = jpCity ? null : campusTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     // jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town(beodeulTownRoute).
-    const beodeulTown = jpCity ? null
+    const beodeulTown = jpCity || campus ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
       beodeulTown,
       jpCity,
+      campus,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -154,7 +158,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && declared.intent.clarify === null };
     // 숲마을 author_village 의 「마을 계약」은 2026-10-07 저작권 정리로 시공기와 함께 지웠다 — 마을은 author_beodeul_town 이 짓는다.
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
-      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : "");
+      + (beodeulTown ? " → 버들항 마을" : jpCity ? " → 일본 도시 맵" : campus ? " → 캠퍼스 맵" : "");
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -165,6 +169,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
         ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
         // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
         ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
+        ...(campus ? CAMPUS_EXPOSED_TOOLS : []),
       ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];

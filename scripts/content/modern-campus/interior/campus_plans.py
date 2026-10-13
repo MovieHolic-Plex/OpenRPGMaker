@@ -126,7 +126,7 @@ def build_plans():
         doors=[dict(x=3, y=9, to='dorm-room', access=[3, 8, 3, 12]), dict(x=9, y=9, to='dorm-room', access=[9, 8, 9, 12]),
                dict(x=15, y=9, to='bath', access=[15, 8, 15, 12]), dict(x=20, y=9, to='dorm-room', access=[20, 8, 20, 12])],
         exits=[], stairs=[dict(x=21, y=12, w=2, dir='down', to='dorm-1f')],
-        links=[dict(x=21, y=12, toMapId='dorm-1f', toX=21, toY=11, direction='down'), dict(x=22, y=12, toMapId='dorm-1f', toX=21, toY=11, direction='down')])
+        links=[dict(x=21, y=13, toMapId='dorm-1f', toX=21, toY=13, direction='down'), dict(x=22, y=13, toMapId='dorm-1f', toX=21, toY=13, direction='down')])
     return P
 
 
