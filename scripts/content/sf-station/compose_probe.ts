@@ -9,7 +9,7 @@ for (const spec of (process.env.SPECS ?? "station:1,lab:1,street:1,moonbase:1").
   const sz = SF_DEFAULT_SIZE[kind as SfMapKind];
   const map: any = { id: "m", name: "m", width: sz.w, height: sz.h, tilesetId: "sf_station", tileSize: 16, lowerTiles: new Array(sz.w * sz.h).fill(60), upperTiles: new Array(sz.w * sz.h).fill(-1), events: [] };
   const r = composeSfStationMap(map, ts, kind as SfMapKind, seed);
-  out[spec] = { w: map.width, h: map.height, lower: map.lowerTiles, l2: map.lowerOverlayTiles ?? null, upper: map.upperTiles, summary: r.summary, areas: r.areas, spawn: r.spawn, skipped: r.skipped };
+  out[spec] = { w: map.width, h: map.height, lower: map.lowerTiles, l2: map.lowerOverlayTiles ?? null, upper: map.upperTiles, summary: r.summary, placed: r.placed, areas: r.areas, spawn: r.spawn, skipped: r.skipped };
   console.log(spec, r.summary, "skipped", r.skipped);
 }
 writeFileSync(process.env.OUT ?? "/tmp/sfc/out.json", JSON.stringify(out));
