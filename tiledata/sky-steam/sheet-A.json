@@ -1,0 +1,2032 @@
+{
+ "schema": "sky-steam/sheet/1",
+ "line": "A",
+ "image": "sheet-A.png",
+ "tileSize": 16,
+ "tilesPerRow": 24,
+ "rows": 26,
+ "pieces": {
+  "sky-a-island-s": {
+   "name": "하늘섬 작은 덩이",
+   "w": 4,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     0,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ],
+   "tags": [
+    "island"
+   ],
+   "cellIds": [
+    [
+     0,
+     1,
+     2,
+     3
+    ],
+    [
+     24,
+     25,
+     26,
+     27
+    ],
+    [
+     48,
+     49,
+     50,
+     51
+    ],
+    [
+     72,
+     73,
+     74,
+     75
+    ]
+   ]
+  },
+  "sky-a-island-m": {
+   "name": "하늘섬 큰 덩이",
+   "w": 6,
+   "h": 5,
+   "kind": "structure",
+   "origins": [
+    [
+     4,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "tags": [
+    "island"
+   ],
+   "cellIds": [
+    [
+     4,
+     5,
+     6,
+     7,
+     8,
+     9
+    ],
+    [
+     28,
+     29,
+     30,
+     31,
+     32,
+     33
+    ],
+    [
+     52,
+     53,
+     54,
+     55,
+     56,
+     57
+    ],
+    [
+     76,
+     77,
+     78,
+     79,
+     80,
+     81
+    ],
+    [
+     100,
+     101,
+     102,
+     103,
+     104,
+     105
+    ]
+   ]
+  },
+  "sky-a-house": {
+   "name": "부유 마을 집",
+   "w": 3,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     10,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "house"
+   ],
+   "cellIds": [
+    [
+     10,
+     11,
+     12
+    ],
+    [
+     34,
+     35,
+     36
+    ],
+    [
+     58,
+     59,
+     60
+    ]
+   ]
+  },
+  "sky-a-windmill": {
+   "name": "풍차 탑",
+   "w": 2,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     13,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "tower"
+   ],
+   "cellIds": [
+    [
+     13,
+     14
+    ],
+    [
+     37,
+     38
+    ],
+    [
+     61,
+     62
+    ],
+    [
+     85,
+     86
+    ]
+   ]
+  },
+  "sky-a-mooring": {
+   "name": "정박탑",
+   "w": 2,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     15,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "tower"
+   ],
+   "cellIds": [
+    [
+     15,
+     16
+    ],
+    [
+     39,
+     40
+    ],
+    [
+     63,
+     64
+    ],
+    [
+     87,
+     88
+    ]
+   ]
+  },
+  "sky-a-airship": {
+   "name": "비공정",
+   "w": 6,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     17,
+     0
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "vehicle"
+   ],
+   "cellIds": [
+    [
+     17,
+     18,
+     19,
+     20,
+     21,
+     22
+    ],
+    [
+     41,
+     42,
+     43,
+     44,
+     45,
+     46
+    ],
+    [
+     65,
+     66,
+     67,
+     68,
+     69,
+     70
+    ],
+    [
+     89,
+     90,
+     91,
+     92,
+     93,
+     94
+    ]
+   ],
+   "deckCells": [
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ]
+   ]
+  },
+  "sky-a-harbor": {
+   "name": "하늘 항구",
+   "w": 6,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     0,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ],
+    [
+     4,
+     3
+    ],
+    [
+     5,
+     3
+    ]
+   ],
+   "walk": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ]
+   ],
+   "tags": [
+    "harbor"
+   ],
+   "cellIds": [
+    [
+     120,
+     121,
+     122,
+     123,
+     124,
+     125
+    ],
+    [
+     144,
+     145,
+     146,
+     147,
+     148,
+     149
+    ],
+    [
+     168,
+     169,
+     170,
+     171,
+     172,
+     173
+    ],
+    [
+     192,
+     193,
+     194,
+     195,
+     196,
+     197
+    ]
+   ]
+  },
+  "sky-a-shrine": {
+   "name": "부유 신전",
+   "w": 4,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     6,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "temple"
+   ],
+   "cellIds": [
+    [
+     126,
+     127,
+     128,
+     129
+    ],
+    [
+     150,
+     151,
+     152,
+     153
+    ],
+    [
+     174,
+     175,
+     176,
+     177
+    ],
+    [
+     198,
+     199,
+     200,
+     201
+    ]
+   ]
+  },
+  "sky-a-whale-pier": {
+   "name": "고래 선착장",
+   "w": 5,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     10,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ]
+   ],
+   "walk": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     4,
+     0
+    ]
+   ],
+   "tags": [
+    "harbor"
+   ],
+   "cellIds": [
+    [
+     130,
+     131,
+     132,
+     133,
+     134
+    ],
+    [
+     154,
+     155,
+     156,
+     157,
+     158
+    ],
+    [
+     178,
+     179,
+     180,
+     181,
+     182
+    ]
+   ]
+  },
+  "sky-a-rock-root": {
+   "name": "바위 뿌리",
+   "w": 3,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     15,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "island"
+   ],
+   "cellIds": [
+    [
+     135,
+     136,
+     137
+    ],
+    [
+     159,
+     160,
+     161
+    ],
+    [
+     183,
+     184,
+     185
+    ]
+   ]
+  },
+  "sky-a-gondola": {
+   "name": "곤돌라",
+   "w": 3,
+   "h": 2,
+   "kind": "structure",
+   "origins": [
+    [
+     18,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "vehicle"
+   ],
+   "cellIds": [
+    [
+     138,
+     139,
+     140
+    ],
+    [
+     162,
+     163,
+     164
+    ]
+   ]
+  },
+  "sky-a-rope-crate": {
+   "name": "밧줄 상자",
+   "w": 1,
+   "h": 1,
+   "kind": "box",
+   "origins": [
+    [
+     21,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     141
+    ]
+   ]
+  },
+  "sky-a-crate-stack": {
+   "name": "화물 상자 더미",
+   "w": 2,
+   "h": 2,
+   "kind": "box",
+   "origins": [
+    [
+     22,
+     5
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     142,
+     143
+    ],
+    [
+     166,
+     167
+    ]
+   ]
+  },
+  "sky-a-gas-tank": {
+   "name": "증기 가스 탱크",
+   "w": 2,
+   "h": 2,
+   "kind": "round_body",
+   "origins": [
+    [
+     0,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     216,
+     217
+    ],
+    [
+     240,
+     241
+    ]
+   ]
+  },
+  "sky-a-anchor-box": {
+   "name": "닻 보관함",
+   "w": 1,
+   "h": 1,
+   "kind": "box",
+   "origins": [
+    [
+     2,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     218
+    ]
+   ]
+  },
+  "sky-a-water-tank": {
+   "name": "지붕 물탱크",
+   "w": 2,
+   "h": 2,
+   "kind": "round_body",
+   "origins": [
+    [
+     3,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     219,
+     220
+    ],
+    [
+     243,
+     244
+    ]
+   ]
+  },
+  "sky-a-cargo-net": {
+   "name": "화물 그물 더미",
+   "w": 1,
+   "h": 1,
+   "kind": "box",
+   "origins": [
+    [
+     5,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     221
+    ]
+   ]
+  },
+  "sky-a-tree-sky": {
+   "name": "섬 나무",
+   "w": 2,
+   "h": 3,
+   "kind": "organic",
+   "origins": [
+    [
+     6,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     222,
+     223
+    ],
+    [
+     246,
+     247
+    ],
+    [
+     270,
+     271
+    ]
+   ]
+  },
+  "sky-a-bush": {
+   "name": "덤불",
+   "w": 1,
+   "h": 1,
+   "kind": "organic",
+   "origins": [
+    [
+     8,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     224
+    ]
+   ]
+  },
+  "sky-a-flowers": {
+   "name": "들꽃",
+   "w": 1,
+   "h": 1,
+   "kind": "organic",
+   "origins": [
+    [
+     9,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     225
+    ]
+   ]
+  },
+  "sky-a-cloud-puff": {
+   "name": "구름 덩이",
+   "w": 2,
+   "h": 1,
+   "kind": "organic",
+   "origins": [
+    [
+     10,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "prop",
+    "overlay"
+   ],
+   "cellIds": [
+    [
+     226,
+     227
+    ]
+   ]
+  },
+  "sky-a-cloud-mist": {
+   "name": "구름 안개",
+   "w": 2,
+   "h": 1,
+   "kind": "organic",
+   "origins": [
+    [
+     12,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "prop",
+    "overlay"
+   ],
+   "cellIds": [
+    [
+     228,
+     229
+    ]
+   ]
+  },
+  "sky-a-pulley-crane": {
+   "name": "도르래 기중기",
+   "w": 2,
+   "h": 2,
+   "kind": "frame",
+   "origins": [
+    [
+     14,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     230,
+     231
+    ],
+    [
+     254,
+     255
+    ]
+   ]
+  },
+  "sky-a-watch-hut": {
+   "name": "감시 오두막",
+   "w": 2,
+   "h": 2,
+   "kind": "structure",
+   "origins": [
+    [
+     16,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "house"
+   ],
+   "cellIds": [
+    [
+     232,
+     233
+    ],
+    [
+     256,
+     257
+    ]
+   ]
+  },
+  "sky-a-cloud-sea": {
+   "name": "구름 바다 바닥",
+   "w": 4,
+   "h": 1,
+   "kind": "terrain",
+   "origins": [
+    [
+     18,
+     9
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "autotile",
+    "cloud"
+   ],
+   "cellIds": [
+    [
+     234,
+     235,
+     236,
+     237
+    ]
+   ]
+  },
+  "sky-a-grass-top": {
+   "name": "섬 풀 윗면",
+   "w": 4,
+   "h": 1,
+   "kind": "terrain",
+   "origins": [
+    [
+     0,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "autotile",
+    "grass"
+   ],
+   "cellIds": [
+    [
+     288,
+     289,
+     290,
+     291
+    ]
+   ]
+  },
+  "sky-a-island-edge": {
+   "name": "섬 가장자리 절벽 앞면",
+   "w": 3,
+   "h": 1,
+   "kind": "terrain",
+   "origins": [
+    [
+     4,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "autotile",
+    "cliff"
+   ],
+   "cellIds": [
+    [
+     292,
+     293,
+     294
+    ]
+   ]
+  },
+  "sky-a-cloud-edge": {
+   "name": "구름 바다 가장자리",
+   "w": 3,
+   "h": 1,
+   "kind": "terrain",
+   "origins": [
+    [
+     7,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "autotile",
+    "cloud"
+   ],
+   "cellIds": [
+    [
+     295,
+     296,
+     297
+    ]
+   ]
+  },
+  "sky-a-bollard": {
+   "name": "계류 기둥",
+   "w": 1,
+   "h": 1,
+   "kind": "column",
+   "origins": [
+    [
+     10,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     298
+    ]
+   ]
+  },
+  "sky-a-signpost": {
+   "name": "표지판",
+   "w": 1,
+   "h": 2,
+   "kind": "column",
+   "origins": [
+    [
+     11,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     299
+    ],
+    [
+     323
+    ]
+   ]
+  },
+  "sky-a-chimney-stack": {
+   "name": "굴뚝",
+   "w": 1,
+   "h": 2,
+   "kind": "column",
+   "origins": [
+    [
+     12,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     300
+    ],
+    [
+     324
+    ]
+   ]
+  },
+  "sky-a-barrel": {
+   "name": "통",
+   "w": 1,
+   "h": 1,
+   "kind": "round_body",
+   "origins": [
+    [
+     13,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     301
+    ]
+   ]
+  },
+  "sky-a-telescope": {
+   "name": "관측 망원경",
+   "w": 1,
+   "h": 1,
+   "kind": "other",
+   "origins": [
+    [
+     14,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     302
+    ]
+   ]
+  },
+  "sky-a-propeller-pod": {
+   "name": "프로펠러 엔진 포드",
+   "w": 2,
+   "h": 2,
+   "kind": "box",
+   "origins": [
+    [
+     15,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "vehicle"
+   ],
+   "cellIds": [
+    [
+     303,
+     304
+    ],
+    [
+     327,
+     328
+    ]
+   ]
+  },
+  "sky-a-bridge": {
+   "name": "구름 다리",
+   "w": 5,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     17,
+     12
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     4,
+     1
+    ]
+   ],
+   "tags": [
+    "bridge"
+   ],
+   "cellIds": [
+    [
+     305,
+     306,
+     307,
+     308,
+     309
+    ],
+    [
+     329,
+     330,
+     331,
+     332,
+     333
+    ],
+    [
+     353,
+     354,
+     355,
+     356,
+     357
+    ]
+   ]
+  },
+  "sky-a-airship-anim": {
+   "name": "비공정(프로펠러 회전)",
+   "w": 6,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     0,
+     15
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     12,
+     15
+    ],
+    [
+     18,
+     15
+    ]
+   ],
+   "frames": 4,
+   "solid": [
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "anim",
+    "vehicle"
+   ],
+   "cellIds": [
+    [
+     360,
+     361,
+     362,
+     363,
+     364,
+     365
+    ],
+    [
+     384,
+     385,
+     386,
+     387,
+     388,
+     389
+    ],
+    [
+     408,
+     409,
+     410,
+     411,
+     412,
+     413
+    ],
+    [
+     432,
+     433,
+     434,
+     435,
+     436,
+     437
+    ]
+   ]
+  },
+  "sky-a-windvane": {
+   "name": "바람개비 석주",
+   "w": 1,
+   "h": 2,
+   "kind": "column",
+   "origins": [
+    [
+     0,
+     19
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     456
+    ],
+    [
+     480
+    ]
+   ]
+  },
+  "sky-a-hot-air-balloon": {
+   "name": "소형 기구",
+   "w": 2,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     1,
+     19
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "vehicle"
+   ],
+   "cellIds": [
+    [
+     457,
+     458
+    ],
+    [
+     481,
+     482
+    ],
+    [
+     505,
+     506
+    ]
+   ]
+  },
+  "sky-a-windmill-anim": {
+   "name": "풍차 탑(날개 회전)",
+   "w": 4,
+   "h": 4,
+   "kind": "structure",
+   "origins": [
+    [
+     3,
+     19
+    ],
+    [
+     7,
+     19
+    ],
+    [
+     11,
+     19
+    ],
+    [
+     15,
+     19
+    ]
+   ],
+   "frames": 4,
+   "solid": [
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "anim",
+    "tower"
+   ],
+   "cellIds": [
+    [
+     459,
+     460,
+     461,
+     462
+    ],
+    [
+     483,
+     484,
+     485,
+     486
+    ],
+    [
+     507,
+     508,
+     509,
+     510
+    ],
+    [
+     531,
+     532,
+     533,
+     534
+    ]
+   ]
+  },
+  "sky-a-lighthouse": {
+   "name": "하늘 등대 오두막",
+   "w": 3,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     19,
+     19
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "tower"
+   ],
+   "cellIds": [
+    [
+     475,
+     476,
+     477
+    ],
+    [
+     499,
+     500,
+     501
+    ],
+    [
+     523,
+     524,
+     525
+    ]
+   ]
+  },
+  "sky-a-boiler": {
+   "name": "증기 보일러",
+   "w": 2,
+   "h": 2,
+   "kind": "round_body",
+   "origins": [
+    [
+     22,
+     19
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     478,
+     479
+    ],
+    [
+     502,
+     503
+    ]
+   ]
+  },
+  "sky-a-market-stall": {
+   "name": "장터 가판",
+   "w": 2,
+   "h": 2,
+   "kind": "structure",
+   "origins": [
+    [
+     0,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     552,
+     553
+    ],
+    [
+     576,
+     577
+    ]
+   ]
+  },
+  "sky-a-well": {
+   "name": "빗물 우물",
+   "w": 1,
+   "h": 1,
+   "kind": "container",
+   "origins": [
+    [
+     2,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     554
+    ]
+   ]
+  },
+  "sky-a-bench": {
+   "name": "벤치",
+   "w": 1,
+   "h": 1,
+   "kind": "low_furniture",
+   "origins": [
+    [
+     3,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     555
+    ]
+   ]
+  },
+  "sky-a-planter": {
+   "name": "화단 상자",
+   "w": 1,
+   "h": 1,
+   "kind": "container",
+   "origins": [
+    [
+     4,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     556
+    ]
+   ]
+  },
+  "sky-a-hut-flag-anim": {
+   "name": "감시 오두막 + 지붕 깃발(펄럭)",
+   "w": 2,
+   "h": 3,
+   "kind": "structure",
+   "origins": [
+    [
+     5,
+     23
+    ],
+    [
+     7,
+     23
+    ],
+    [
+     9,
+     23
+    ],
+    [
+     11,
+     23
+    ]
+   ],
+   "frames": 4,
+   "solid": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "anim"
+   ],
+   "cellIds": [
+    [
+     557,
+     558
+    ],
+    [
+     581,
+     582
+    ],
+    [
+     605,
+     606
+    ]
+   ]
+  },
+  "sky-a-sack-stack": {
+   "name": "곡물 자루 더미",
+   "w": 2,
+   "h": 2,
+   "kind": "box",
+   "origins": [
+    [
+     13,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     565,
+     566
+    ],
+    [
+     589,
+     590
+    ]
+   ]
+  },
+  "sky-a-cannon-box": {
+   "name": "신호 대포 상자",
+   "w": 1,
+   "h": 1,
+   "kind": "box",
+   "origins": [
+    [
+     15,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     567
+    ]
+   ]
+  },
+  "sky-a-stone-wall": {
+   "name": "섬 돌담",
+   "w": 2,
+   "h": 1,
+   "kind": "box",
+   "origins": [
+    [
+     16,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "walk": [],
+   "tags": [
+    "prop"
+   ],
+   "cellIds": [
+    [
+     568,
+     569
+    ]
+   ]
+  },
+  "sky-a-steam-cloud": {
+   "name": "증기 구름",
+   "w": 2,
+   "h": 1,
+   "kind": "organic",
+   "origins": [
+    [
+     18,
+     23
+    ]
+   ],
+   "frames": 1,
+   "solid": [],
+   "walk": [],
+   "tags": [
+    "prop",
+    "overlay"
+   ],
+   "cellIds": [
+    [
+     570,
+     571
+    ]
+   ]
+  }
+ }
+}

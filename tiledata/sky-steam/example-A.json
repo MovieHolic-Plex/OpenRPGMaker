@@ -1,0 +1,157 @@
+{
+ "ok": {
+  "w": 28,
+  "h": 10,
+  "objs": [
+   [
+    "sky-a-island-m",
+    0,
+    4
+   ],
+   [
+    "sky-a-bridge",
+    5,
+    3
+   ],
+   [
+    "sky-a-island-s",
+    9,
+    4
+   ],
+   [
+    "sky-a-bridge",
+    12,
+    3
+   ],
+   [
+    "sky-a-whale-pier",
+    16,
+    4
+   ],
+   [
+    "sky-a-airship",
+    20,
+    2
+   ]
+  ],
+  "airship": [
+   "sky-a-airship",
+   20,
+   2
+  ],
+  "boardEvent": {
+   "at": [
+    20,
+    4
+   ],
+   "face": "right",
+   "action": "transfer:airship-map",
+   "note": "고래 선착장 오른쪽 끝 칸에서 오른쪽(비공정 갑판 칸)을 보고 탑승"
+  },
+  "links": [
+   [
+    [
+     1,
+     4
+    ],
+    [
+     11,
+     4
+    ]
+   ],
+   [
+    [
+     11,
+     4
+    ],
+    [
+     20,
+     4
+    ]
+   ]
+  ],
+  "errors": []
+ },
+ "bad": {
+  "w": 28,
+  "h": 10,
+  "objs": [
+   [
+    "sky-a-island-m",
+    0,
+    4
+   ],
+   [
+    "sky-a-bridge",
+    5,
+    7
+   ],
+   [
+    "sky-a-island-s",
+    9,
+    4
+   ],
+   [
+    "sky-a-bridge",
+    12,
+    3
+   ],
+   [
+    "sky-a-whale-pier",
+    16,
+    4
+   ],
+   [
+    "sky-a-airship",
+    20,
+    2
+   ],
+   [
+    "sky-a-island-s",
+    26,
+    8
+   ]
+  ],
+  "airship": [
+   "sky-a-airship",
+   20,
+   2
+  ],
+  "boardEvent": {
+   "at": [
+    18,
+    4
+   ],
+   "face": "right",
+   "action": "transfer:airship-map",
+   "note": "고래 선착장 오른쪽 끝 칸에서 오른쪽(비공정 갑판 칸)을 보고 탑승"
+  },
+  "links": [
+   [
+    [
+     1,
+     4
+    ],
+    [
+     11,
+     4
+    ]
+   ],
+   [
+    [
+     11,
+     4
+    ],
+    [
+     20,
+     4
+    ]
+   ]
+  ],
+  "errors": [
+   "NOT_CONNECTED [1, 4]->[11, 4]",
+   "EVENT_NOT_ADJACENT_DECK (18, 4)",
+   "OUT_OF_MAP sky-a-island-s"
+  ]
+ }
+}
