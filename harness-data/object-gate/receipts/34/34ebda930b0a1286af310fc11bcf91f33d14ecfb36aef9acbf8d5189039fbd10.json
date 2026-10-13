@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "34ebda930b0a1286af310fc11bcf91f33d14ecfb36aef9acbf8d5189039fbd10",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "tavern wooden floorboards tiles, 2 variants",
+ "label": "pirate-isles/pi-floor-tavern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wood floorboard terrain tiles viewed from above with plank seams and nail head details across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4897
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden floorboard terrain tiles viewed flat from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4687
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of two 16x16 terrain tiles depicting horizontal wooden floor planks viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4946
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden floorboards",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting horizontal wooden floor planks with nails and grain; correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3302
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.696Z",
+ "cells": {
+  "16": [
+   "0d9adb5b424c1d06",
+   "faaa33ceca3bfe5a"
+  ],
+  "24": [
+   "02606df9e4c20564",
+   "02c422c0194da0e3",
+   "0aa1aa755a629c29",
+   "166771b7c7007a32",
+   "204fca82276a0e42",
+   "52abb334f2a23132",
+   "999ee23622531eb8",
+   "a9fd7c7ad153941e",
+   "b61a638ef0bd03b2",
+   "c2cacb932a6818a2",
+   "c593281190532419",
+   "ef40105f542bf1bd"
+  ],
+  "32": [
+   "94d8a6f71f47c39f",
+   "de07764c4efe5d08"
+  ],
+  "48": [
+   "4f2e3fb3ae5e5b9c",
+   "7b286daa738201d4",
+   "892479195f8fbffb",
+   "9a19fa1b73790585",
+   "b7ecf47e57a68876",
+   "c87bbf22ffc2d153"
+  ]
+ }
+}

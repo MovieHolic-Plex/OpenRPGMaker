@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e52daab1fc99ba084082c5459808f318a51cd58d8560065d44c205b80384f63c",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "large mossy coastal boulder cluster",
+ "label": "pirate-isles/pi-rock-large",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main rear boulder shows a rounded top surface spanning roughly rows 5 to 13 (~9 rows) with moss patches and highlights, correctly foreshortened in 3/4 perspective, with foreground boulders overlapping in front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boulder cluster",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main large boulder and foreground boulders exhibit clear top-down 3/4 perspective lighting, with upward-facing top planes visible from row 5 down to the shadow crease around row 13 (approx 8 rows), decorated with moss.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3156
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large boulder clearly shows an expansive top surface (rows 5 to 13) populated with moss patches and highlights, sloping down toward the front face and overlapping foreground rocks, properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boulder cluster",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boulder cluster shows top-down foreshortening with foreground rocks overlapping the rear rock, and the main boulder shows an extensive top surface (rows 5-13) with moss patches visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4182
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "36b493f425216d55",
+   "4c842a0d388148a1",
+   "eccd8572ad8d22bc",
+   "f9da7dfa060c3a20"
+  ],
+  "24": [
+   "0cb39829e9fb83d5",
+   "37feb6ed22e5192b",
+   "3ad8b1c52994d93a",
+   "40e0a816af65ca39",
+   "4b9c315c553f9810",
+   "4bda677cdfe0beb9",
+   "6462a3ac9de07357",
+   "65f51df1bfce594c",
+   "7b92b36be25e22d9",
+   "7d275f7ca4b92108",
+   "87c2d486c6ef647e",
+   "8e644618396df1d0",
+   "a409a104b4a385e6",
+   "a971a6bde053cb41",
+   "b886434182311079",
+   "be98430c7eff4fa7",
+   "ca685a30996a083b",
+   "d9de50dc17b0080e",
+   "da14b5d5ac991c28",
+   "dfdb224316ba848e",
+   "e04fbdceaed5189c",
+   "f17f15307ac79f18",
+   "fd144d5b688e508c"
+  ],
+  "32": [
+   "2714f3b76cfc4499"
+  ],
+  "48": [
+   "054c5b565ed3190c",
+   "333950e0793d9bd8",
+   "4525f959e804d198",
+   "5f9f18710902bfd1",
+   "7fe29b4a88d3b6b5",
+   "8523aa925110b7e7"
+  ]
+ }
+}

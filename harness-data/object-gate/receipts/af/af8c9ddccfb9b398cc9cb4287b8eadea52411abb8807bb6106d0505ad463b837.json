@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af8c9ddccfb9b398cc9cb4287b8eadea52411abb8807bb6106d0505ad463b837",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "banana plant with large paddle leaves",
+ "label": "pirate-isles/pi-banana",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "banana plant stem and leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn in pure 2D side/front elevation with no perspective depth: the leaves spread only left, right, and up in the image plane without any leaves projecting forward/foreshortened towards the camera, and the trunk base ends in a completely flat horizontal edge.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7276
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "banana plant canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn in flat 2D front elevation like a side-scroller sprite; the canopy forms a flat upward arrow with drooping leaves to the sides, with no depth, foreshortening, or top-down view visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4275
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "banana plant stem and canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is drawn as a flat 2D front/side elevation with leaves spreading strictly in the screen plane (left, right, and up) and a straight vertical trunk, lacking any 3/4 top-down foreshortening or leaves extending toward/away from the viewer.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4028
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "banana plant stalk and leaf canopy",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper foliage of the banana plant extends downward from row 8 to row 16 with visible upper leaf surfaces angled toward the 3/4 perspective before arching down into the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5016
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.698Z",
+ "cells": {
+  "16": [
+   "9b17f73ea62e221d",
+   "bc0ce4653ee10e19"
+  ],
+  "24": [
+   "0501ea5d84caa54e",
+   "1a001f3472716229",
+   "62e2ebfd9532ffa0",
+   "6e21e68deec42033",
+   "c21b12ef1db6a771",
+   "c784af31a21c107e",
+   "ddc1bbf9ebfee469",
+   "e6a0a370aa6df1d5",
+   "f1c2709200d78059"
+  ],
+  "32": [
+   "2d05e16fb94e5864",
+   "b22584a4e5028b04",
+   "fd6d963d2487d310"
+  ],
+  "48": [
+   "204330053122601e",
+   "da8c04861b3c764c",
+   "e14f35ee7e1fdacd",
+   "ead1001179097468",
+   "ede830ffcf878049",
+   "ef81993caa2c9b04"
+  ]
+ }
+}

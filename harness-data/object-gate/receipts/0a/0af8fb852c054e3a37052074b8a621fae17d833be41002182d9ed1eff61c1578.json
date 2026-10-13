@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0af8fb852c054e3a37052074b8a621fae17d833be41002182d9ed1eff61c1578",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rough cave rock floor and treasure-strewn floor tiles",
+ "label": "pirate-isles/pi-floor-cave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain stone floor tiles with embedded gold nuggets along the seams; valid ground/floor terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone floor tiles with gold nuggets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain pattern depicting stone floor pavers with embedded or scattered gold pieces. As ground terrain, it correctly represents the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7173
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone floor tiles with gold nuggets",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a stone floor surface viewed from above with scattered gold chunks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3246
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone floor tiles with gold nuggets",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting stone paving blocks with scattered gold pieces; flat ground surface spanning the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4813
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.696Z",
+ "cells": {
+  "16": [
+   "41d8435edb99df71",
+   "f1e25a7b296cae91"
+  ],
+  "24": [
+   "215d7e44a8f201ea",
+   "6118a17b4eeddb70",
+   "6cd3c6c67bf3c37d",
+   "7d5767482752be71",
+   "8cbf9d40ba3f6052",
+   "a5b319c34c11873e",
+   "a613932a70f443a7",
+   "b34899092f6a64ed",
+   "c05989c56ccfd54f",
+   "c49426de63a1891c",
+   "dd718c86067cf94b",
+   "eda694e2d0dcf670"
+  ],
+  "32": [
+   "5b424773cf0f2e6b",
+   "d0a5c31d910c2e66"
+  ],
+  "48": [
+   "044720f87ee390b1",
+   "06017eb418f943cb",
+   "6df6690e16399538",
+   "70c74ba3c890aa0f",
+   "cc016289a8160181",
+   "cf73be00e055d1f3"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a1d390312083b8af7c243604a581ef002066eefb1ab119948f74735914952b9",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "pile of fallen coconuts",
+ "label": "pirate-isles/pi-coconuts",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of three coconuts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts are spherical objects arranged in depth on the ground plane (one behind, two in front) with top-down spherical shading. As round objects, they have no flat horizontal planar surface, but their staggered depth and overhead lighting fit the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5608
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cluster of three coconuts",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts form a 3-point cluster on the ground plane in 3/4 perspective, with the two southern coconuts in the foreground clearly occluding the northern coconut in the background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15854
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cluster of three coconuts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coconuts are arranged in top-down depth, with the two southern coconuts visibly overlapping the northern coconut behind them, and spherical top-down shading throughout.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7858
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of coconuts",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pile consists of three spherical coconuts arranged with one atop/behind the other two. Each sphere features top-down spherical shading with highlights across the upper 3 pixel rows and shading beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6438
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.699Z",
+ "cells": {
+  "16": [
+   "06b41b5f5d0bd1c1"
+  ],
+  "24": [
+   "039813822bd86d15",
+   "12b91bd9f91762ff",
+   "812e0caf41d62dc2",
+   "852dc3eb66272c38",
+   "ce55b6e51686c5a5",
+   "ebfb223ba28a0f01"
+  ],
+  "32": [
+   "108374cbcfd29cff",
+   "1e0c768b560e333d",
+   "3689a7a037ed95c7",
+   "6b3be30bedced7e0",
+   "a7287a3403f9fc63",
+   "c4b80240d83c00f6"
+  ],
+  "48": [
+   "060ba82f19d74b39",
+   "35514e152d8ae240",
+   "444365f02a5ee620",
+   "6ef809c93456283d",
+   "b88c74a8908c2a23",
+   "fe6776a4b0c25d29"
+  ]
+ }
+}

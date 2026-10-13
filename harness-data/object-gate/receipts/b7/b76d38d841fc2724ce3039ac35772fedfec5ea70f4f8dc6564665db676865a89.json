@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b76d38d841fc2724ce3039ac35772fedfec5ea70f4f8dc6564665db676865a89",
+ "width": 64,
+ "height": 32,
+ "kind": "terrain",
+ "name": "bamboo hut wall front face strip, 4 variants x 2 rows",
+ "label": "pirate-isles/pi-wall-face-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bamboo hut wall tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face strip / terrain autotile segments for a bamboo hut structure, correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4574
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bamboo hut wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset consists of vertical wall face terrain tiles for a bamboo hut structure, correctly classified as terrain rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bamboo hut wall face tiles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall front face terrain tiles representing vertical bamboo hut walls with trims and a window; correctly formatted as vertical wall face terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4778
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bamboo hut wall face strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tiles representing bamboo hut vertical wall front faces (including plain, moss/vine, windowed, and decorative panel variants). In 3/4 RPG Maker perspective, wall front face terrain tiles depict only the vertical surface, with wall tops/ceilings mapped separately.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9334
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.697Z",
+ "cells": {
+  "16": [
+   "0a8cab92c42718cb",
+   "0bff18d8a32f925e",
+   "3ca1895be561ca29",
+   "6c5ee162a79c7911",
+   "83fd2b58bfc00287",
+   "908219d5e7c68603",
+   "d44c17736691a523",
+   "ebd84cb4a772ba98"
+  ],
+  "24": [
+   "0551ea661ac5b63f",
+   "10ba458546d89c1a",
+   "155dc39e7bb221ee",
+   "161716be833d7491",
+   "2e127c602058edeb",
+   "356b380469b89495",
+   "36144c1d81373ab4",
+   "3ac0ef225373be47",
+   "3dd61aa222be32d4",
+   "43a8ef83cdd14ec9",
+   "4e95fc13f18f062a",
+   "534c23a1936042de",
+   "56f68eb3fbbd1496",
+   "5d2a2f5d66a3383d",
+   "6a94d8f481f7cf9f",
+   "6bc33663692153e1",
+   "6fc4933392fb96bf",
+   "865896dcaa82769f",
+   "875d74088d4c1089",
+   "8943b502f80f15c7",
+   "8e757501bd2b338b",
+   "92740565c7891305",
+   "9e10a605eff1cc59",
+   "a9434a574bbd3767",
+   "b6225d21948e7350",
+   "cb404195d4c9bc3d",
+   "d20e1359185910e8",
+   "d7213863a4a574da",
+   "d8af59faef6a1939",
+   "e4420346aba736d7",
+   "e4b16fb6c660920c",
+   "e7a28d4f42ad4dbf",
+   "ef8d566553a31654",
+   "f004accfab6d3f56",
+   "f068ad117405c3c7",
+   "f558bc71dfab9a73"
+  ],
+  "32": [
+   "584a09247fa1aed3",
+   "c3aff10cb35ebb52"
+  ],
+  "48": [
+   "002a612032419604",
+   "1ce29380fad5f1d7",
+   "2295a96223c9060b",
+   "2b75e0910430b574",
+   "387d912acba5709b",
+   "66fbb96782b6a318",
+   "7a6ddb7a73f5addb",
+   "928c2e6fd64b8751",
+   "a4bdb03e1f888c33",
+   "aeb0314607b53823",
+   "d75e8997e0078064",
+   "f629c461da9dc19f"
+  ]
+ }
+}

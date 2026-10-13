@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c3693bc0c0c569a4b9d5fb64f678f71c795df658d1621d90e32dc6bc48ac69d",
+ "width": 32,
+ "height": 16,
+ "kind": "terrain",
+ "name": "shallow turquoise sea water tiles, 2 variants",
+ "label": "pirate-isles/pi-water",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shallow sea water tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset consists of flat terrain tiles depicting shallow turquoise sea water with small wave foam highlights viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3736
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water surface tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles with horizontal wave/foam highlights viewed from above, covering the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4575
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down water surface tiles with horizontal wave highlights, filling the full 16x16 tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2998
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shallow turquoise water surface tiles with wave foam highlights",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain water tiles viewed from overhead / top-down perspective, filling the full 16-row tile height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2907
+  }
+ ],
+ "decidedAt": "2026-10-13T19:10:49.694Z",
+ "cells": {
+  "16": [
+   "5577747e3788051c",
+   "9565d4df3724186a"
+  ],
+  "24": [
+   "041884cb7de9b1b5",
+   "04838af05c1e0022",
+   "32a6c103fff828d4",
+   "59de3bfa9c49ce56",
+   "5e7fde6e7384446b",
+   "93e39aeceba57c19",
+   "ac76cf8fc2e50b88",
+   "b18659b1dff91e10",
+   "d49f1dc4f9b24752",
+   "ef1412aadbe4a94b",
+   "f75168f1a8bcf1aa",
+   "fe3813c88fe6fdc6"
+  ],
+  "32": [
+   "163b356e9ccc7798",
+   "b6fefdf6f6704c9c"
+  ],
+  "48": [
+   "02aecf5ff3e84266",
+   "453a23d940ae2ce5",
+   "8bbd39352a7e063e",
+   "a31a9078f41203a0",
+   "a3aa71044b51b911",
+   "b9695092a453f573"
+  ]
+ }
+}
