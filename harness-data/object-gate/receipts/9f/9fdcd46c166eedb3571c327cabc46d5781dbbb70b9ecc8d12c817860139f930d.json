@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "교문(벽돌 기둥 둘 + 철제 양개 문)",
  "label": "modern-campus/mc-gate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,23 +14,41 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "brick pillars with stone caps and iron double gate",
+    "main_body": "brick gate pillars with concrete caps and double iron gate",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Both pillar caps show a clear 6-row foreshortened top surface (rows 2-7) above the front edge/overhang of the cap (rows 8-10) and the south-facing brick shaft.",
+    "evidence": "The prominent stone/concrete pillar caps clearly show their top horizontal surfaces across rows 2–6 (5 source pixel rows tall, rendered in a lighter tone) above their front-facing bevel/edge (rows 7–9), giving the structure proper 3/4 top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8931
+   "ms": 7833
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "school gate (brick pillars and iron double gate)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brick pillars feature large stone caps with clearly visible top surfaces spanning rows 2 to 6 (5 source pixel rows), angled down toward their south-facing front bevels and brick faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8999
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "brick pillars and double iron gate",
     "kind_matches": true,
@@ -39,37 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The brick pillars feature large stone caps with clearly visible horizontal top surfaces spanning 5 pixel rows (rows 2–6) viewed from above, with darker front faces below them.",
+    "evidence": "The brick pillars feature top caps with clearly visible top surfaces spanning rows 2 to 6 (5 source pixel rows), lit brightly from above with a shaded south-facing front rim on rows 8-9.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7617
+   "ms": 6523
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 492487,
-   "error": "Error: ChatGPT rate limit exceeded. retry-after-ms=60000"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 553510,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillars with iron double gate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brick pillars feature large square caps viewed from above with a 6-pixel-tall top surface (rows 2–7) rendered in bright overhead lighting, resting above the 2-pixel front-facing overhang (rows 8–9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18725
   }
  ],
- "decidedAt": "2026-10-13T10:02:59.949Z",
+ "decidedAt": "2026-10-13T13:44:32.947Z",
  "cells": {
   "16": [
    "0350355e52a89618",

@@ -76,16 +76,13 @@ def _gate(c):
 @prop('fence', '학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)', 2, 2, 'structure', solid=[(0, 1), (1, 1)], tags=['담', '학교', '울타리'],
       rules='학교 둘레를 가로로 잇는다(2칸 단위: 왼쪽 벽돌 기둥 + 담). 교문 gatepost 가 양쪽 끝.')
 def _fence(c):
-    cube(c, 8, 14, 24, 7, 2, 'conc', tt=3, ft=-1, sides=False)                # 갓돌 윗면 7행
-    bricks(c, 8, 24, 24, 7); c.HL(8, 31, 24, OL)
-    for sx in (11, 15, 19, 23, 27):                                           # 갓돌 위에 선 창살(발 그림자)
-        c.VL(sx, 9, 9, K('tekko', 1)); c.VL(sx + 1, 9, 9, K('tekko', -2)); c.P(sx + 1, 18, K('conc', -1))
-    for jx in (15, 23, 31): c.VL(jx, 15, 5, K('conc', 1))                      # 갓돌 윗면 이음
-    c.HL(8, 20, 24, K('conc', 2))
-    cube(c, 8, 4, 24, 4, 2, 'tekko', tt=2, ft=0, sides=False)                # 위 가로대 윗면 4행
-    cube(c, 1, 2, 8, 5, 3, 'conc', tt=3, ft=-1)                               # 기둥 갓돌
-    bricks(c, 2, 11, 6, 20); c.VL(2, 11, 20, K('renga', 2)); c.VL(7, 11, 20, K('renga', -2)); c.VL(1, 10, 21, OL); c.VL(8, 10, 21, OL)
-    c.HL(2, 11, 6, K('renga', -2)); c.HL(1, 31, 8, OL)
+    post(c, 0)                                                                # 왼쪽 칸: 기둥
+    x0 = 16
+    for sx in range(x0 + 1, x0 + 15, 3):                                      # 철 창살(교문과 같은 처리)
+        c.VL(sx, 17, 8, K('tekko', 1)); c.P(sx, 8, K('tekko', 4)); c.VL(sx, 9, 8, K('tekko', 0))
+    cube(c, x0, 11, 16, 4, 2, 'tekko', tt=2, ft=0, sides=False)
+    cube(c, x0, 23, 16, 3, 3, 'tekko', tt=2, ft=0, sides=False)
+    c.R(x0, 28, 16, 1, K('conc', 0)); c.HL(x0, 29, 16, K('conc', -1)); c.HL(x0, 30, 16, OL)
 
 
 @prop('bench', '교정 벤치(나무 판 + 철제 다리)', 2, 1, 'seat', solid=[(0, 0), (1, 0)], tags=['벤치', '교정', '의자'],
@@ -104,29 +101,28 @@ def _bench(c):
 @prop('bike-rack', '자전거 거치대(콘크리트 받침 + 철 고리 4)', 2, 1, 'frame', solid=[(0, 0), (1, 0)], tags=['자전거', '거치대', '학교'],
       rules='학교 본관 옆. 고리 사이로 자전거가 들어간다(자전거 소품은 거치대 위에).')
 def _bike(c):
-    cube(c, 1, 5, 30, 8, 2, 'conc', tt=3, ft=-1)
-    for bx in (4, 11, 18, 25):
-        cube(c, bx, 1, 4, 3, 2, 'tekko', tt=3, ft=0)
-        c.VL(bx, 6, 4, K('tekko', 1)); c.VL(bx + 3, 6, 4, K('tekko', -1)); c.VL(bx - 1, 6, 4, OL); c.VL(bx + 4, 6, 4, OL)
-        c.HL(bx, 10, 4, K('conc', -1))
+    cube(c, 1, 1, 30, 11, 3, 'conc', tt=3, ft=-1)                             # 콘크리트 받침 윗면 11행
+    c.HL(2, 4, 28, K('conc', 4)); c.HL(2, 9, 28, K('conc', 4))
+    for bx in (4, 11, 18, 25):                                                # 윗면에 눕힌 철 고리(위에서 본 U)
+        c.R(bx, 3, 4, 7, K('tekko', 1)); c.R(bx + 1, 4, 2, 5, K('conc', 2))
+        c.HL(bx, 3, 4, K('tekko', 4)); c.VL(bx, 3, 7, K('tekko', 3)); c.VL(bx + 3, 3, 7, K('tekko', -1)); c.HL(bx, 9, 4, K('tekko', -2))
     c.HL(2, 15, 28, K('yoru', -2))
 
 
 @prop('vending', '자판기(글자 없음)', 1, 2, 'tall_furniture', solid=[(0, 1)], tags=['자판기', '교정', '소품'],
       rules='학교 현관·체육관 옆 벽 가까이. 앞 칸은 서서 쓰는 칸으로 비운다.')
 def _vend(c):
-    cube(c, 1, 1, 14, 8, 2, 'tekko', tt=2, ft=0)                              # 윗덮개(철, 윗면 8행 + 앞 두께 2)
-    c.HL(3, 4, 10, K('tekko', 1)); c.HL(3, 6, 10, K('tekko', 1))
-    c.R(2, 11, 12, 19, K('sora', 0)); c.VL(2, 11, 19, K('sora', 1)); c.VL(13, 11, 19, K('sora', -1)); c.HL(2, 11, 12, K('sora', -2))
-    c.VL(1, 11, 20, OL); c.VL(14, 11, 20, OL); c.HL(1, 31, 14, OL)
-    c.R(3, 12, 7, 9, K('garasu', -2)); c.HL(3, 12, 7, K('garasu', 1)); c.VL(3, 12, 9, OL); c.VL(9, 12, 9, K('sumi', 1)); c.HL(3, 21, 7, OL)
+    cube(c, 0, 1, 16, 9, 3, 'conc', tt=3, ft=-2)                              # 튀어나온 윗덮개: 몸통보다 넓은 윗면 9행 + 어두운 앞 테
+    c.HL(2, 3, 12, K('conc', 4)); c.HL(2, 6, 12, K('conc', 4)); c.HL(1, 1, 14, K('conc', 1))
+    c.HL(1, 13, 14, K('sumi', 1)); c.HL(1, 14, 14, K('sumi', 2))              # 덮개 밑 그림자
+    c.R(2, 15, 12, 15, K('sora', 0)); c.VL(2, 15, 15, K('sora', 1)); c.VL(13, 15, 15, K('sora', -1))
+    c.VL(1, 15, 16, OL); c.VL(14, 15, 16, OL); c.HL(1, 31, 14, OL)
+    c.R(3, 16, 7, 7, K('garasu', -2)); c.HL(3, 16, 7, K('garasu', 1)); c.VL(3, 16, 7, OL); c.VL(9, 16, 7, K('sumi', 1)); c.HL(3, 23, 7, OL)
     cols = ('aka', 'kii', 'midori', 'daidai', 'sora', 'pinku')
-    for r in range(3):
-        for i in range(3): c.R(4 + i * 2, 13 + r * 3, 2, 2, K(cols[(r * 3 + i) % 6], 1))
-        c.HL(3, 15 + r * 3, 7, K('conc', 0))
-    c.R(11, 12, 2, 5, K('conc', 1)); c.P(11, 13, K('aka', 1)); c.P(12, 13, K('midori', 1)); c.P(11, 15, K('kii', 1)); c.P(12, 15, K('sora', 3))
-    c.R(11, 18, 2, 2, K('sumi', 1))
-    c.R(3, 24, 8, 3, K('sumi', 2)); c.HL(3, 24, 8, K('sumi', 0)); c.HL(2, 29, 12, K('sora', -2))
+    for r in range(2):
+        for i in range(3): c.R(4 + i * 2, 17 + r * 3, 2, 2, K(cols[(r * 3 + i) % 6], 1))
+    c.R(11, 16, 2, 4, K('conc', 1)); c.P(11, 17, K('aka', 1)); c.P(12, 17, K('midori', 1))
+    c.R(3, 26, 8, 3, K('sumi', 2)); c.HL(3, 26, 8, K('sumi', 0)); c.HL(2, 29, 12, K('sora', -2))
 
 
 @prop('flowerbed', '화단(벽돌 둘레 + 흙 + 꽃)', 2, 1, 'container', solid=[(0, 0), (1, 0)], tags=['화단', '교정', '꽃'],
@@ -147,15 +143,16 @@ def _bed(c):
 @prop('shoe-locker', '신발장 줄(철제 4×3 칸)', 2, 2, 'tall_furniture', solid=[(0, 1), (1, 1)], tags=['신발장', '현관', '학교'],
       rules='교사 현관 안쪽 벽 앞. 이어 붙여 줄을 만든다.')
 def _shoe(c):
-    cube(c, 1, 2, 30, 5, 24, 'tekko', tt=2, ft=1, lip=False)
+    cube(c, 1, 2, 30, 8, 21, 'tekko', tt=3, ft=1, lip=False)
+    c.HL(3, 5, 26, K('tekko', 4)); c.HL(3, 7, 26, K('tekko', 4))
     for r in range(3):
         for i in range(4):
-            x0 = 3 + i * 7; y0 = 8 + r * 7
-            c.R(x0, y0, 6, 6, K('yoru', -3)); c.HL(x0, y0, 6, K('sumi', 1))
+            x0 = 3 + i * 7; y0 = 11 + r * 6
+            c.R(x0, y0, 6, 5, K('yoru', -3)); c.HL(x0, y0, 6, K('sumi', 1))
             if (r + i * 2) % 3 != 1:
-                c.R(x0 + 1, y0 + 4, 4, 2, K('shiro', 1) if (r + i) % 2 else K('sora', 1)); c.HL(x0 + 1, y0 + 4, 4, K('shiro', 3) if (r + i) % 2 else K('sora', 3))
-    for i in range(5): c.VL(2 + i * 7 - (1 if i == 4 else 0), 7, 21, K('tekko', 3) if i == 0 else K('tekko', 0))
-    c.HL(2, 27, 28, K('tekko', -2)); c.HL(1, 29, 30, K('yoru', -2))
+                c.R(x0 + 1, y0 + 3, 4, 2, K('shiro', 1) if (r + i) % 2 else K('sora', 1)); c.HL(x0 + 1, y0 + 3, 4, K('shiro', 3) if (r + i) % 2 else K('sora', 3))
+    for i in range(5): c.VL(2 + i * 7 - (1 if i == 4 else 0), 10, 18, K('tekko', 3) if i == 0 else K('tekko', 0))
+    c.HL(2, 28, 28, K('tekko', -2)); c.HL(1, 29, 30, K('yoru', -2))
 
 
 @prop('field-line-h', '운동장 흰 선(가로)', 1, 1, 'flat', tags=['운동장', '선', '바닥'], rules='흙 운동장 위에 가로로 잇는다(1층 위 투명 덧그림).')

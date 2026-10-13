@@ -6,7 +6,7 @@
  "kind": "tall_furniture",
  "name": "자판기(글자 없음)",
  "label": "modern-campus/mc-vending",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "vending machine",
+    "main_body": "vending machine with top header sign",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire object is drawn in flat 2D front elevation. Neither the main body nor the upper header box shows any visible top surface seen from above; all shelves, buttons, slots, and panels are drawn straight-on.",
+    "evidence": "The entire vending machine, including the upper sign/header panel (rows 0-10) and lower display body (rows 11-30), is drawn completely flat from the front with a 1px top outline (row 0) and 0px of visible top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,7 +34,7 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8898
+   "ms": 11034
   },
   {
    "judge": "gemini",
@@ -47,7 +47,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire object is drawn as a flat front elevation. The upper section (rows 1-9) is the header panel of the machine with placeholder text bars rather than a top surface seen from above, showing no horizontal top plane.",
+    "evidence": "The entire object is drawn in pure front elevation: rows 0-9 depict the front-facing top header/lightbox banner (with two grey horizontal bars acting as placeholder text boxes), followed directly by the south-facing front display window, coin panel, and bottom dispenser flap. There is no visible top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,51 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 11196
+   "ms": 9962
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "vending machine",
-    "kind_matches": false,
+    "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main body is presented as a flat rectangular front with only edge bands; no horizontal top surface of the body is visible from above. The gray upper panel is a front/header section, not a foreshortened top plane. No receding side face or container opening is present.",
+    "evidence": "The entire vending machine (both the lower body and the upper grey housing/sign) is rendered in pure front elevation with only a 1px black outline along the top edge and zero rows of visible horizontal top surface.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
-    "종류 불일치",
     "판정자 과반 fail",
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 181405
+   "ms": 8569
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "tall vending machine body with a gray upper panel/top and blue lower display section",
+    "main_body": "vending machine with overhead sign panel",
     "kind_matches": true,
-    "top_rows": 9,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a broad gray horizontal surface visible from above for roughly 9 source-pixel rows before the dark front edge and blue south-facing face. No receding isometric side face is present, and the body is not a pure front elevation.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "Both the overhead signboard (rows 1-9) and the vending machine body below it (rows 10-30) are drawn in pure front elevation without any visible top surface (0 rows of top depth).",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 228984
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5315
   }
  ],
- "decidedAt": "2026-10-13T10:33:12.043Z",
+ "decidedAt": "2026-10-13T13:44:32.948Z",
  "cells": {
   "16": [
    "b2b98f94eee8da05",

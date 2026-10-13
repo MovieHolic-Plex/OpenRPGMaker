@@ -6,78 +6,26 @@
  "kind": "frame",
  "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
  "label": "modern-campus/mc-bike-rack",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "concrete base with metal bicycle rack loops",
-    "kind_matches": true,
-    "top_rows": 7,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The concrete base shows a clear, wide top surface foreshortened from rows 5 to 11 into which the four loops are anchored, with its vertical front face shown below on rows 13-14.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 8115
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "concrete base with 4 metal bike rack loops",
-    "kind_matches": true,
-    "top_rows": 8,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The concrete base shows a clear top surface spanning rows 5–12 (8 source pixels deep), viewed from above at 3/4 angle with the metal loops anchored into it and the base's top surface visible through the loop openings. The front vertical face of the base is shaded darker on rows 13–14.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 12761
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "long concrete base with four iron loop supports",
-    "kind_matches": true,
-    "top_rows": 2,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The concrete base has a visible horizontal top plane approximately 2 source pixels deep, with a distinct south/front face below it. The iron loops are front-facing supports; no receding isometric side face is drawn.",
-    "verdict": "pass"
-   },
-   "pass": false,
-   "reasons": [
-    "윗면 2행 < 3"
-   ],
-   "ms": 217825
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "concrete base with four iron loop supports",
+    "main_body": "bicycle rack (concrete base and metal loops)",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The repeated iron loops and concrete base are drawn as a flat frontal elevation. Their horizontal bars and the base show only thin edge bands, with no substantial top surface visible from above.",
+    "evidence": "The rack and concrete base are drawn entirely in flat front elevation. Neither the metal hoops nor the concrete block/dividers show foreshortened horizontal top surfaces; the horizontal bands at the bottom are simple front-facing elevation stripes (1-2px) without top-down depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -86,10 +34,76 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 151497
+   "ms": 11514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete bicycle rack with 4 metal loops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete base teeth and metal loops are drawn entirely in a flat front elevation. Neither the tops of the concrete dividers (row 5, 1px flat edge) nor the tops of the metal loops show any horizontal depth visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete base and metal bike rack loops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bicycle rack is drawn from a flat head-on front elevation. The metal loops are flat rectangular arches with no visible top depth, and the concrete base below shows only flat vertical front faces (rows 5-14) with 0 pixel rows of foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete bicycle rack with 4 metal loops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete base teeth and metal loops are drawn in flat front elevation. The tops of the concrete uprights at row 5 end abruptly with 0 pixels of horizontal top depth visible, and the loops show no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10074
   }
  ],
- "decidedAt": "2026-10-13T10:33:12.043Z",
+ "decidedAt": "2026-10-13T13:44:32.947Z",
  "cells": {
   "16": [
    "89fe0a34a1f204c8",

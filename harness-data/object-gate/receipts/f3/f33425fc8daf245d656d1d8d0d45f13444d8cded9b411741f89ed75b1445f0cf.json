@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f33425fc8daf245d656d1d8d0d45f13444d8cded9b411741f89ed75b1445f0cf",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar and fence wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the pillar and fence, is drawn in pure front elevation with flat horizontal bounding lines and no visible top surfaces for either the pillar cap, wall coping, or fence rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar and wall with iron fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (pillar, brick wall, and upper fence/post) is drawn in pure front elevation with completely flat horizontal outlines along the top edges and no visible top depth on the pillar or wall coping.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6506
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "school fence with brick pillar, brick wall base, and fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar cap, fence railing, and brick wall are drawn completely flat in 2D front/side elevation. No top surfaces of the pillar cap, rail, or wall coping are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7027
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "school wall with brick pillar and fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and fence/wall are drawn in a completely flat front elevation with horizontal outlines at the top (rows 1-2) and no visible horizontal top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7095
+  }
+ ],
+ "decidedAt": "2026-10-13T13:47:30.336Z",
+ "cells": {
+  "16": [
+   "0d27b30809006019",
+   "448c8abf81aa3850",
+   "a8547c6203f51d16",
+   "d8c759a1bb6e39fc"
+  ],
+  "24": [
+   "16077c22d1b643a6",
+   "16b8a5d7144e897e",
+   "16f44958eebf1076",
+   "1b36dc2497413401",
+   "1e09fd51184ac697",
+   "2161b98eea7ecdcd",
+   "380f2a5380aefd5b",
+   "3bd2725b8c76ab8a",
+   "616b469084749b42",
+   "68006c45931b44d1",
+   "77dd3fe678b9f965",
+   "7c28863129d69ee6",
+   "84cdaa530d2c8eba",
+   "87bce89a0e8b458a",
+   "8efb6bae492392b7",
+   "96be8a135e227cbb",
+   "98fdbb7aa436a599",
+   "a5172d5ab0899c80",
+   "c5cb907c6b577e97",
+   "cdadc60a0c63c1a9",
+   "dd3aea7dd3fac07a",
+   "e92b341a52606f3d",
+   "eb10e614b033ad04",
+   "ef3bf5beaa6d8835"
+  ],
+  "32": [
+   "2a2ecee152cefe67"
+  ],
+  "48": [
+   "0f552402cf345988",
+   "1405ee26b0b60b15",
+   "15d63374f5fa3649",
+   "b24e19fff95f2162",
+   "b81a12a0572128e0",
+   "c5785f40096f711c"
+  ]
+ }
+}

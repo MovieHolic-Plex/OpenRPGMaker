@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec6d9ca3778bf81d730b0f910b98d31bf9c57adde1d7ede9e64f491c288ac037",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete bicycle rack base with slots/loops",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows a large horizontal top surface from row 1 to row 10 (10 pixel rows deep) with four embedded tire slots/loops, and a 4-pixel tall south-facing front edge along rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9817
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with metal bike loops",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base clearly displays a 10-row top surface (rows 1-10) and a foreshortened south front face (rows 11-14) with four metal loops mounted on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12722
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete base of the bicycle rack",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows a large horizontal top surface spanning rows 1 to 11 with four loop fixtures/slots mounted on it, and its south/front face visible along rows 12 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9529
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete base with bicycle rack loops",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows an extensive top horizontal surface spanning rows 1 to 10 with the bicycle loops mounted on it, while rows 11-14 represent its south front-facing vertical edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7395
+  }
+ ],
+ "decidedAt": "2026-10-13T13:45:58.870Z",
+ "cells": {
+  "16": [
+   "793b53cbcbe38d85",
+   "db671d6c51f52883"
+  ],
+  "24": [
+   "230c7e809691cd0a",
+   "35e5e7a30f320681",
+   "37664326991f626f",
+   "3e077be9db769134",
+   "4e4b00a812b93b4d",
+   "5e0f35f198d14d23",
+   "6ee2df99f36d4877",
+   "774e33cff0d43e3b",
+   "9c443523afac1145",
+   "c3646d31797d12d1",
+   "c8457f80f61ecb9e",
+   "d79c5242f5ffef4b"
+  ],
+  "32": [
+   "706857a96a2c3782",
+   "d5fcd50900d640c2"
+  ],
+  "48": [
+   "79c2148e228ec876",
+   "9ac6946485fd77f2",
+   "aaec90804953162e",
+   "bcc1055490737870",
+   "bfd463cae9a0f6a5",
+   "e8bde3078cdd73ae"
+  ]
+ }
+}

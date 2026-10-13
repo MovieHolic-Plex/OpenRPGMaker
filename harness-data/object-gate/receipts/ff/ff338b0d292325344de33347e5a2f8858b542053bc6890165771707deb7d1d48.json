@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "운동장 흰 선(ㄱ 모서리 동→남)",
  "label": "modern-campus/mc-field-line-corner",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,62 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "ground line marking (corner)",
-    "kind_matches": true,
-    "top_rows": 9,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "White line painted flat on the ground forming a 90-degree corner; correctly rendered flat on the floor plane.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 4769
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "painted white corner line on ground",
+    "main_body": "white corner line on the ground",
     "kind_matches": true,
     "top_rows": 10,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Floor decal correctly drawn flat on the ground plane forming a corner extending south and east.",
+    "evidence": "The object is a flat field line decal drawn on the ground plane, matching the flat category appropriately.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3225
+   "ms": 3078
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 232409,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 290879,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "answer": {
+    "main_body": "white field line corner",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat field line painted on the ground, forming a 90-degree corner decal viewed from directly above in perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3939
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "white sports field line corner",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground line marking (floor decal) forming a 90-degree corner, drawn entirely flat on the ground plane as appropriate for the category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground line marking corner",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "White line painted on the ground plane forming a corner, correctly rendered flat on the floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3758
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.135Z",
+ "decidedAt": "2026-10-13T13:44:32.948Z",
  "cells": {
   "16": [
    "3a3027ab1b93d856"

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7a982fc6b6c46541c9cb8bbe1f9e9eae4150b21048c1756d02868fc43ab23bc",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat front elevation. Rows 1-11 form the front-facing blank illuminated marquee/header panel, rows 14-21 show the drink display, and rows 25-28 show the dispenser flap. There is no visible top surface (0px) showing the roof of the machine.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11986
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine (including the blank upper lightbox/ad panel from rows 1-11 and the south drink display from rows 14-30) is drawn in pure front elevation with completely vertical borders and a flat 1px top outline (row 0), showing no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10020
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn in pure front elevation with no visible top surface (top_rows = 0). The large upper light-gray rectangle (rows 1–11) is the machine's front-facing lightbox/signboard panel (as denoted by '글자 없음' / 'no text'), positioned directly above the drink display and delivery slot rather than being a horizontal surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20663
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine (including the large blank header billboard at rows 1-11 and the lower drink cabinet) is drawn in pure 2D front elevation with only a 1px outline along the top edge and no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7782
+  }
+ ],
+ "decidedAt": "2026-10-13T13:45:58.870Z",
+ "cells": {
+  "16": [
+   "72fc19defd23c5c3",
+   "e5155ed5c5732d74"
+  ],
+  "24": [
+   "0223b0645cd30348",
+   "11f853bdbd513319",
+   "1df13ac7bfbad203",
+   "21e2c20b34a59225",
+   "3227819f6a1370d1",
+   "55ff86445c2fc014",
+   "59edfdbe0915b406",
+   "75b14fafe2f4cbad",
+   "79868a2329501e8b",
+   "7eb52ed86f27446d",
+   "7f6a0629b7d103d0",
+   "a965971ec873684b"
+  ],
+  "32": [
+   "2fa73c5fbbc6bf35",
+   "ee85d10868c2c5a9",
+   "f249002dd571e9a0"
+  ],
+  "48": [
+   "06e363d71d6edf61",
+   "085be67b404f3dc7",
+   "1e5a46e9bc740c20",
+   "8088e4250e6f48f3",
+   "8b3010f20375bfaf",
+   "ce2f35ce92a86c7a"
+  ]
+ }
+}

@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46644ff1bc4a9e4f8ab8e2ca4641f9c646020d3ae7f5428b71c9929d08b79995",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school fence with brick pillar and iron railings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation, typical of a 2D side-scroller. The fence rails, vertical bars, and pillar base show zero top surfaces from a 3/4 perspective; the pillar's protruding base at rows 26-31 is rendered strictly flat without a horizontal ledge where it meets the narrower brick body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8863
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar and iron fence wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar cap, pillar body, base plinth, and fence rails are all drawn strictly as flat 2D front elevations (like a side-scroller asset). There is no visible top surface foreshortened from above on the pillar, wall, or rails (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10632
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pillar and fence wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation (side-scroller style). The fence rails, pickets, and pillar base show no top surfaces (the base steps outward with 0px top surface), and the pillar cap/light fixture is drawn entirely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13533
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillar and iron fence wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar and fence assembly is drawn in pure 2D front elevation (side-scroller style). Both the pillar cap/base and the horizontal fence rails are rendered as flat rectangular horizontal bands with no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7057
+  }
+ ],
+ "decidedAt": "2026-10-13T13:49:09.500Z",
+ "cells": {
+  "16": [
+   "0350355e52a89618",
+   "7f055bc68fdbcf83",
+   "d0ec0a224143dc8b",
+   "ff0f1a6ef35f5334"
+  ],
+  "24": [
+   "0451c7a7af7fcd02",
+   "0ce76f84288c69fa",
+   "11649bf2f4698c6e",
+   "2cf21e104b3c2ef0",
+   "3b1c953d415738ab",
+   "3c66853c79aaf4a3",
+   "4b9e0e06a5d45932",
+   "5a99f536563ad298",
+   "5c2d01a3c9956089",
+   "5e65f7d73c7799f7",
+   "79b0171896432502",
+   "80d5c93113fa4a76",
+   "83141e8a4aae4463",
+   "a4b6693ab6d463b5",
+   "a849d1d41d8068d4",
+   "aae76223515ed00b",
+   "c8deadc6763ff4c5",
+   "d1f1014a332a60d8",
+   "db9f296189158d20",
+   "e1148cf50e9f3cd9",
+   "e3593e96a138c2ab",
+   "ea7691c462fe1198"
+  ],
+  "32": [
+   "eef56c25f56931ff"
+  ],
+  "48": [
+   "371024a47f90373e",
+   "52358b4d2a8926c4",
+   "a04fab033c0c88a3",
+   "ae276036d659825a",
+   "bd5fb6724900bd8e",
+   "d549e5c4f7cbe3c7"
+  ]
+ }
+}

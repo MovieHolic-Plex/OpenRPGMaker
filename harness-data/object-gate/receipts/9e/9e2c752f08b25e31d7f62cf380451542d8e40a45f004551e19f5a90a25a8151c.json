@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
  "label": "modern-campus/mc-fence",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "school fence with brick pillar, brick wall, and iron railings",
+    "main_body": "brick wall with pillar and iron fence",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire structure (pillar cap, horizontal fence beam, and brick wall) is drawn in straight architectural front elevation with no visible horizontal top surfaces or 3/4-view foreshortening.",
+    "evidence": "The pillar cap, top railing, and brick wall are all rendered as completely flat front-elevation bands with no visible top surface foreshortened in 3/4 perspective.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 6488
+   "ms": 5295
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "brick wall with iron fence and pillar",
+    "main_body": "brick pillar and fence wall",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The fence horizontal beam, brick wall, and iron railings are drawn in a flat front elevation with no visible top surfaces (the top rail only has a 1px edge highlight on row 3, and the lower brick wall has no top surface visible).",
+    "evidence": "The fence, pillar, cap, and brick wall are drawn strictly in pure front elevation (side-scroller style). The horizontal rails, cap, and brick wall show no foreshortened top surfaces seen from above, using only 1px edge highlights and horizontal cylindrical shading.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8448
+   "ms": 8303
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "brick wall and iron fence assembly",
+    "main_body": "brick pillar and fence wall",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main brick wall is presented as a flat south-facing elevation; its upper dark band is only a cap/edge, not a visible top surface. The upper horizontal strip belongs to the fence rail/cap rather than the main wall body, and no receding side face is shown.",
+    "evidence": "The pillar cap, horizontal railing, and brick wall are all rendered as flat vertical rectangles with zero foreshortened top surfaces visible, representing a pure 2D front elevation (side-scroller view).",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,28 +78,32 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 214370
+   "ms": 5480
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "brick wall with iron fence and brick pillar",
+    "main_body": "brick pillar and fence wall",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The wall/upper beam has a clearly visible horizontal top surface approximately 6 source pixels deep, with its front edge below; the remaining faces are normal south-facing fronts, not receding side faces.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The pillar, fence rail, and brick wall are all rendered strictly in 2D front elevation with no visible top surface foreshortening on the pillar cap, horizontal beams, or wall top.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 240276
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5183
   }
  ],
- "decidedAt": "2026-10-13T10:33:12.043Z",
+ "decidedAt": "2026-10-13T13:44:32.947Z",
  "cells": {
   "16": [
    "0798bef485453797",

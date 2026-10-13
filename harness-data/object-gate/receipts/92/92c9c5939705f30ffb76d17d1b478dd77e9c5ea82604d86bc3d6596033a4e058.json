@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92c9c5939705f30ffb76d17d1b478dd77e9c5ea82604d86bc3d6596033a4e058",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar and fence wall with iron railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and wall are drawn in a completely flat 2D front elevation (side-scroller style). Both the pillar cap, base, and the wall sections are flat vertical rectangles with zero visible top surfaces, and the iron railing posts are drawn as flat vertical spikes with no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "school brick wall and pillar with iron railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (brick pillar, wall, and iron fence spikes) is drawn in pure front elevation as if for a side-scroller. Neither the top of the pillar cap nor the top horizontal surface of the wall has any foreshortened depth visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9456
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pillar and brick wall with fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, wall, and cap/beam elements are drawn in pure 2D front architectural elevation with zero foreshortened top surfaces visible (horizontal surfaces are represented merely by 1px outlines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7569
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "school brick wall and pillar with fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a flat architectural front elevation. The wall has no visible top thickness/surface where the iron fence posts meet the wall at row 7, and the pillar cap and base are drawn entirely from the front with 0 pixel rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9562
+  }
+ ],
+ "decidedAt": "2026-10-13T13:48:16.085Z",
+ "cells": {
+  "16": [
+   "0350355e52a89618",
+   "46d20e1ad2fb0380",
+   "5555fdf32f94204e",
+   "d0ec0a224143dc8b"
+  ],
+  "24": [
+   "0ce76f84288c69fa",
+   "2790e286b45809ef",
+   "34a43a97a94f456f",
+   "366ba5b783606d89",
+   "3c66853c79aaf4a3",
+   "5a99f536563ad298",
+   "6e6b5c839e0fa32f",
+   "6fc8a0c83d670e17",
+   "7593aa070a67bb91",
+   "80d5c93113fa4a76",
+   "83141e8a4aae4463",
+   "89041127f42ba4ef",
+   "942c0f2e02ef5fe0",
+   "9544b1cb16f2c5fc",
+   "9baf26336a90e747",
+   "9d8d2e709a5341ee",
+   "b28e71d05fc8aa8d",
+   "b94c0bab371e91b9",
+   "d1f1014a332a60d8",
+   "db9f296189158d20",
+   "e4586b5c21c4d1ad",
+   "e6eef57125cd4263",
+   "ea7691c462fe1198",
+   "f999e1007e0dbd3b"
+  ],
+  "32": [
+   "3c69e8f683ab317d"
+  ],
+  "48": [
+   "2fc9a13629fe19e8",
+   "395d6479bf1af0e7",
+   "6778e6ff1b0bdfd2",
+   "94eb418a6fb64ab9",
+   "ee72ff00332a4bb3",
+   "f3aeb2d92227d5be"
+  ]
+ }
+}

@@ -6,40 +6,24 @@
  "kind": "tall_furniture",
  "name": "신발장 줄(철제 4×3 칸)",
  "label": "modern-campus/mc-shoe-locker",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "metal shoe rack / cubby locker",
+    "main_body": "shoe rack / cubby unit",
     "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The top surface of the locker unit is clearly drawn from row 2 to row 5 (4 source pixels deep) with an edge highlight and front drop shadow. No isometric receding sides are drawn.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 20087
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "steel shoe cubby unit (4x3 compartments)",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": false,
-    "opening_rows": 0,
-    "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire shoe rack is drawn straight-on in pure front elevation. The top area (rows 2-5) is a flat front fascia/header panel rather than a receding horizontal top surface, and the individual cubby interiors show no visible shelf floor or depth—only flat dark backings viewed directly from the front.",
+    "evidence": "The entire shoe locker is drawn in pure 2D front elevation. Rows 2-5 form a vertical front header panel (shaded with a top-to-bottom vertical gradient and cast shadow onto the grid below), leaving 0px of visible top surface. The cubbies and shoes are also drawn completely flat with ceiling shadows rather than visible shelf floors.",
     "verdict": "fail"
    },
    "pass": false,
@@ -48,46 +32,68 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8135
+   "ms": 11124
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "steel 4×3 shoe cabinet rack",
-    "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main cabinet has a broad gray horizontal top plane visible above the front shelving, spanning about 6 source-pixel rows; the visible side strips are part of the front structure, not receding isometric side faces.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 55392
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "tall steel shoe cabinet/rack with 4×3 compartments",
+    "main_body": "steel shoe rack / cubby cabinet",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main cabinet has a broad, clearly visible horizontal top surface about 6 source pixels deep above the compartment front; the remaining structure is its south-facing front, with no receding isometric side face.",
+    "evidence": "The top surface of the shoe rack cabinet is clearly rendered across rows 2-5 (4 source pixels tall) with appropriate top highlight and front edge shading before the cubby openings begin.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 134069
+   "ms": 12244
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steel shoe cubby rack",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main unit is drawn across rows 2–5 (4 pixels tall) with top-to-bottom shading and a shadow cast beneath the front lip at row 6, properly representing a 3/4 perspective view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11859
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steel shoe rack (4x3 cubbies)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat 2D front elevation. Rows 2-5 form the top frame of the front face (mirroring the 4px bottom frame at rows 27-30). There is no top surface visible, and none of the shelf floors inside the cubbies show any depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15804
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.134Z",
+ "decidedAt": "2026-10-13T13:44:32.948Z",
  "cells": {
   "16": [
    "373d2f36e04ad0a4",

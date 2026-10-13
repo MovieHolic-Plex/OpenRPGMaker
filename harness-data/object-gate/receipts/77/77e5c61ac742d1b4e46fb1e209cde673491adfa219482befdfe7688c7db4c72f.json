@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "77e5c61ac742d1b4e46fb1e209cde673491adfa219482befdfe7688c7db4c72f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "신발장 줄(철제 4×3 칸)",
+ "label": "modern-campus/mc-shoe-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shoe rack (steel 4x3 cubbies)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the unit is prominently visible across rows 2 to 8 (7 pixels tall) in a lighter tone above the front-facing cubbies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steel 4x3 shoe rack cubby unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shoe rack unit is clearly visible from row 2 to row 8 (7 pixel rows tall) before transitioning to the front cubby openings starting at row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6129
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal shoe rack cubbies unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the unit is prominently visible across rows 2 through 8 (7 pixel rows tall), leading down to the front-facing grid of cubbies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5166
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steel shoe rack / cubby unit (4x3 compartments)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cubby unit is clearly visible from row 2 to row 8 (7 pixels tall), foreshortened above the front-facing grid of cubbies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6114
+  }
+ ],
+ "decidedAt": "2026-10-13T13:45:58.871Z",
+ "cells": {
+  "16": [
+   "5647ab2e3f4220f0",
+   "91abc7413c71adf2",
+   "b19515b3d8836f40",
+   "fee57851df2377ba"
+  ],
+  "24": [
+   "005b29d9cef2c789",
+   "144c185c7a2881f8",
+   "19756937176f1052",
+   "21c8554cfc2dc088",
+   "279bd7416bc6900d",
+   "2b96ed7a4c3d5dd8",
+   "2d3a1498ca72083c",
+   "31c2981bad498266",
+   "497bc4cd9cf8de0d",
+   "4b4ae290b80ff76f",
+   "547e4b0be3102aa6",
+   "54cdc3cb7d47b088",
+   "5eb6920796f98a52",
+   "6eabd00ef5e7307c",
+   "766367e2902c0eda",
+   "a5bb52aef12f2631",
+   "ae18201a142fa581",
+   "bf634bdf35277150",
+   "d179cc79b6de727b",
+   "d70325ec5ef53d7c",
+   "e5392ae7014479fc",
+   "f90e60d79ddb6bcc",
+   "fa57e092a4e874bb",
+   "fd05a52d8d3d2cba"
+  ],
+  "32": [
+   "d9db77a6171a880e"
+  ],
+  "48": [
+   "36bd52b9f3d8140b",
+   "3f2cf61455a7e72e",
+   "a2196076dc23f8e3",
+   "b0a56b34a9a871ec",
+   "e1fa778220ed85ea",
+   "f3ed9ae17309eb5e"
+  ]
+ }
+}

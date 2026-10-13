@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "교문 기둥(벽돌·콘크리트 갓돌)",
  "label": "modern-campus/mc-gatepost",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "brick pillar with concrete coping stone and base",
+    "main_body": "brick pillar with concrete capstone and base",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The concrete coping stone at the top displays a clearly visible horizontal top surface from row 2 through row 7 (6 rows tall) above its front face (rows 8-10).",
+    "evidence": "The concrete capstone atop the pillar clearly displays its top surface across rows 2-7 (6 rows tall) above its south-facing rim and front face (rows 8-10).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4595
+   "ms": 4524
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "brick gate pillar with concrete capstone and base",
+    "main_body": "brick pillar with concrete capstone and base",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The concrete capstone shows a clearly visible horizontal top surface spanning rows 2 to 7 (6 rows tall), with its front face on rows 8 to 10 above the brick shaft.",
+    "evidence": "The concrete capstone clearly shows its top surface foreshortened from row 2 to row 7 (6 source pixels tall), with its front face drawn below at rows 8-10.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4849
+   "ms": 4828
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "brick column with a broad concrete capstone",
+    "main_body": "brick school gate pillar with concrete capstone and base",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The substantial light capstone has a clearly visible horizontal top surface about 6 source pixels deep, with its south/front face below; the brick shaft is shown as the front face. No receding isometric side face or opening is present.",
+    "evidence": "The concrete capstone displays a prominent 6-row top surface (rows 2-7) above its front edge (rows 8-10) and the brick shaft.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 246691
+   "ms": 4438
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "brick pillar with a concrete cap",
+    "main_body": "brick pillar with concrete capstone and base",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The substantial light concrete cap at the top shows a 6-pixel-deep horizontal top surface above its front face; the brick shaft is otherwise shown frontally, with no receding isometric side face.",
+    "evidence": "The top capstone clearly shows a large top surface spanning rows 2 to 6 (5 source pixel rows tall) above its grey front face (rows 7 to 9).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 267686
+   "ms": 5090
   }
  ],
- "decidedAt": "2026-10-13T10:02:59.949Z",
+ "decidedAt": "2026-10-13T13:44:32.946Z",
  "cells": {
   "16": [
    "0350355e52a89618",
