@@ -73,9 +73,12 @@ export const COMPOSE_PIRATE_ISLES_MAP_TOOL: ToolDefinition = {
       if (best) { moved.push(`${ev.name ?? ev.id} (${ev.x},${ev.y})→(${best.x},${best.y})`); ev.x = best.x; ev.y = best.y; }
     }
     draft.maps[mapId] = next;
+    const rec = PIRATE_DEFAULT_SIZE[kind];
+    const oversize = map.width > Math.round(rec.w * 1.12) || map.height > Math.round(rec.h * 1.12)
+      ? ` 맵(${map.width}×${map.height})이 권장 ${rec.w}×${rec.h} 보다 커서 빈 땅이 늘었다 — 더 촘촘하게 하려면 resize_map 으로 ${rec.w}×${rec.h} 로 줄이고 replace:true 로 다시 짠다.` : "";
     return {
       summary: `${result.summary}. 건물·구역: ${labels.join(" · ")}. 출발 칸 (${result.spawn.x},${result.spawn.y}).`
-        + (moved.length ? ` 막힌 칸의 이벤트를 옮겼다: ${moved.join(", ")}.` : "")
+        + (moved.length ? ` 막힌 칸의 이벤트를 옮겼다: ${moved.join(", ")}.` : "") + oversize
         + " 이 배치는 완성이다 — 기물을 흩뿌려 채우지 말고, 길·부두·방파제 가장자리·문 앞에는 찍지 않는다. 다음: show_map_region 으로 보고, 문 앞 접근칸에 기획의 이동 이벤트·NPC·단서를 둔다.",
       data: { mapId, kind, seed, areas: result.areas, spawn: result.spawn, placed: result.placed.length, skipped: result.skipped, unreachable: result.unreachable },
     };

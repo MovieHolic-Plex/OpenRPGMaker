@@ -63,6 +63,9 @@ export const PIRATE_ISLES_EXPOSED_TOOLS: readonly string[] = [
   "stamp_object", "check_reachability", "create_transfer_pair", "link_maps",
 ];
 
+/** 종류별 권장 크기 — 구성기 기본값과 같다. 더 크게 만들면 빈 풀밭·모래만 늘어난다(실조수 시험 2026-10-14: 64×40 항구·해변이 비었다). */
+const SIZE_GUIDE = "맵 크기는 kind 옆 괄호의 권장 크기 그대로 만든다 — 버들항 마을의 「64×40·집 12채」 기준을 이 칩셋에 쓰지 않는다(구성기는 권장 크기에 맞춰 짜므로 더 크게 만들면 빈 풀밭·모래만 늘어난다).";
+
 const KIND_GUIDE =
   "kind 고르기: 해적 항구·부두·선착장 마을 → harbor(56×40) / 열대 섬 해변 마을·야자 마을·수상 가옥 → beach(52×40) / 해안 요새·포대 → fort(48×40) / 난파선·보물 동굴·무인도 → wreck(46×36) / "
   + "배 안(선장실·선실·주방·선창) → ship(36×26) / 해적 술집 안 → tavern(32×24) / 오두막 안 → hut(16×14) / 보물 동굴 안 → cave(36×28). "
@@ -71,7 +74,7 @@ const KIND_GUIDE =
 export const PIRATE_ISLES_POINTER_LINE =
   "해적 항구·열대 섬 마을·해안 요새·난파선·보물 동굴·배 안 같은 해적/열대 장소는 번들 칩셋 pirate_isles(계열 oprn-pirate)로 짓는다: 새 맵 create_map({name, width, height, tilesetId:\"pirate_isles\"}) → "
   + "**compose_pirate_isles_map({kind, seed}) 가 기본**이다 — 손으로 바다·해안·건물·소품을 하나씩 깔지 않는다(해안선 오토타일·건물 문 앞 길·부두·통행 검사를 구성기가 한다). " + KIND_GUIDE
-  + " 다시 짜려면 seed 를 바꿔 replace:true. 로마풍 항구(버들항)는 이 칩셋이 아니다 — 해적·열대 낱말이 없으면 버들항으로 짓는다.";
+  + " " + SIZE_GUIDE + " 다시 짜려면 seed 를 바꿔 replace:true. 로마풍 항구(버들항)는 이 칩셋이 아니다 — 해적·열대 낱말이 없으면 버들항으로 짓는다.";
 
 export const PIRATE_ISLES_DETAIL_LINE =
   "이 작업의 맵은 해적 군도 칩셋(pirate_isles)이다. ① 맵이 비어 있으면 compose_pirate_isles_map({kind, seed}) 를 먼저 부른다(손댄 맵은 replace:true). 작다고 거절되면 resize_map 으로 권장 크기로 키운다. "
@@ -96,6 +99,7 @@ export function formatPirateIslesNote(target: PirateIslesTarget, targetMap: { id
     "[해적·열대 장소 시공 — pirate_isles] 이 요청의 칩셋은 번들 열대 군도·해적 항구(pirate_isles, 계열 oprn-pirate)다. 버들항·일본 도시·고딕 도구(author_beodeul_town 등)는 쓰지 않는다. 맵 한 장은 compose_pirate_isles_map({kind, seed}) 한 번이 기본이다.",
     where,
     KIND_GUIDE,
+    SIZE_GUIDE,
     "순서: create_map(권장 크기) → compose_pirate_isles_map → show_map_region·list_map_locations 로 확인 → 문 앞 접근칸에 이벤트 → check_reachability. 기획과 안 맞으면 seed 만 바꿔 replace:true 로 다시 짠다.",
     "구성기 결과에 기물을 흩뿌려 채우지 않는다 — 길·부두·방파제 가장자리·문 앞에는 찍지 않고, 배는 물 위에만 둔다. 더할 것은 기획의 인물·단서·이동 이벤트다.",
   ].join("\n");

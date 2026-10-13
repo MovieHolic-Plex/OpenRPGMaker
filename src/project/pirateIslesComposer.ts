@@ -675,7 +675,7 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
   if (tv) cluster(b, ["barrel", "table-stools", "barrels"], tv.x + tv.w + 1, northFoot - 1, 2, "g", spawn, must, 1);
   // 북쪽 땅: 맨 위는 숲 띠(맵 끝 숲 — 나무 덩이 몇 개, 사이사이 빈틈), 집마다 뒤뜰(과일나무·바나나·꽃밭 텃밭) — 남은 풀밭을 고르게 흩뿌리지 않는다
   const northPlots = plots.filter((p) => p.y < street);
-  for (let gx = b.int(1, 4); gx < Wd - 3; gx += b.int(7, 10)) grove(b, ["palm", "tree-broad", "palm-pair", "tree-broad", "palm"], gx, 1, b.int(2, 3), "g", spawn, must);
+  for (let gx = b.int(1, 3); gx < Wd - 3; gx += b.int(5, 7)) grove(b, ["palm", "tree-broad", "palm-pair", "tree-broad", "palm"], gx, 1, b.int(3, 4), "g", spawn, must);
   for (const p of northPlots) {
     if (p.y - 3 < 1 || !b.chance(0.75)) continue;
     cluster(b, b.shuffle(["tree-fruit", "banana", "flowerbed", "bush-hibiscus"]), p.x + Math.floor(p.w / 2) - 1, p.y - 2, 2, "g", spawn, must, 2);
@@ -813,10 +813,20 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   // 숲: 섬 안쪽 풀(마을 둘레) 야자·활엽수·바나나·덤불
   const all = { x: 0, y: 0, w: Wd, h: Hd };
   // 숲: 마을 밖 풀밭에 나무 덩이(고르게 흩뿌리지 않는다) + 덩이 곁 덤불
-  for (let t = 0, made = 0; t < 40 && made < Math.floor((Wd * Hd) / 260); t++) {
+  for (let t = 0, made = 0; t < 60 && made < Math.floor((Wd * Hd) / 170); t++) {
     const gx = b.int(2, Wd - 4), gy = b.int(1, Hd - 4);
     if (b.g(gx, gy) !== "g" || b.near[b.idx(gx, gy)] || b.clear[b.idx(gx, gy)]) continue;
     if (grove(b, ["palm", "tree-broad", "palm-pair", "banana", "tree-fruit", "palm"], gx, gy, b.int(2, 4), "g", spawn, must) > 0) { made++; cluster(b, ["bush", "fern", "bush-hibiscus", "palm-stump"], gx + b.pick([-3, 3]), gy + 2, 1, "g", spawn, must, 1); }
+  }
+  // 넓은 모래 자락 = 어구 마당(그물 시렁·생선 시렁·통발·그물 더미 한 무더기) — 섬 동·서 끝에서 모래가 가장 넓은 곳
+  for (const side of [-1, 1]) {
+    let best: Pt | null = null, bw = 0;
+    for (let y = 3; y < Hd - 3; y++) {
+      let run = 0;
+      for (let k = 0; k < Wd / 2; k++) { const x = side < 0 ? k : Wd - 1 - k; if (b.g(x, y) === "s") run++; else if (run > 0 && b.g(x, y) !== "s") break; }
+      if (run > bw) { bw = run; let x0 = side < 0 ? 0 : Wd - 1; while (b.inb(x0, y) && b.g(x0, y) !== "s") x0 -= side; best = { x: x0 - side * Math.floor(run / 2), y }; }
+    }
+    if (best && bw >= 5) cluster(b, ["net-rack", "fish-rack", "lobster-traps", "nets", "rope-coil"], best.x - 1, best.y - 1, 3, "s", spawn, must, 2);
   }
   // 해변 둘레: 기운 야자(물가 쪽)·쪽배 끌어 올린 자리·조개·게
   sprinkle(b, ["palm-lean", "palm-lean", "palm"], Math.floor(Wd / 5), "s", all, spawn, must, 2);
@@ -975,11 +985,28 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   }
   // 동굴 둘레 바위
   sprinkle(b, ["rock-large", "rock-small", "fern"], 5, "g", { x: rx - 7, y: ry - 4, w: 15, h: 8 }, spawn, must, 1);
+  // 섬 가운데 풀밭 = 표류자 야영지(모닥불·통나무 의자·그루터기·통·짚 오두막 하나) — 길에서 3~6칸 옆
+  for (let t = 0; t < 30; t++) {
+    const x = Math.round(cx) + b.pick([-1, 1]) * b.int(4, 8), y = Math.round(cy) + b.int(-2, 3);
+    if (!b.propFits("campfire", x, y, "g", 2)) continue;
+    if (!b.stampSafe("campfire", x, y, spawn, must)) continue;
+    areas.push({ name: "표류자 야영지", x: x - 3, y: y - 3, w: 7, h: 6, tag: "camp" });
+    clusterPad(b, ["log-bench"], x - 1, y + 2, 1, "g", spawn, must, 1);
+    for (const hx of b.shuffle([x - 5, x + 3, x - 4, x + 2])) {                 // 오두막 하나: 문 앞 접근칸이 닿을 때만
+      const hp = plotOf(b, b.pick(["hut-palm", "hut-thatch"]), hx, y - 5);
+      if (!hp || !hp.access || !b.propFits(hp.id, hp.x, hp.y, "g", 1)) continue;
+      must.push(hp.access);
+      if (b.stampSafe(hp.id, hp.x, hp.y, spawn, must)) { b.markNear(hp.x, hp.y, hp.w, hp.h); b.markClear(hp.access.x - 1, hp.access.y, 3, 2); areas.push({ name: "표류자 오두막", x: hp.x, y: hp.y, w: hp.w, h: hp.h, tag: hp.id, ...(hp.door ? { door: hp.door } : {}), access: hp.access }); break; }
+      must.pop();
+    }
+    clusterPad(b, ["palm-stump", "barrel", "sacks"], x + 2, y, 2, "g", spawn, must, 2);
+    break;
+  }
   // 숲 덩이
-  for (let t = 0, made = 0; t < 40 && made < Math.floor((Wd * Hd) / 300); t++) {
+  for (let t = 0, made = 0; t < 60 && made < Math.floor((Wd * Hd) / 200); t++) {
     const gx = b.int(2, Wd - 4), gy = b.int(1, Hd - 4);
     if (b.g(gx, gy) !== "g" || b.near[b.idx(gx, gy)] || b.clear[b.idx(gx, gy)]) continue;
-    if (grove(b, ["palm", "tree-broad", "palm-pair", "banana", "palm"], gx, gy, b.int(2, 3), "g", spawn, must) > 0) { made++; clusterPad(b, ["bush", "fern", "palm-stump", "bush-hibiscus"], gx + b.pick([-3, 3]), gy + 2, 1, "g", spawn, must, 1); }
+    if (grove(b, ["palm", "tree-broad", "palm-pair", "banana", "palm"], gx, gy, b.int(2, 4), "g", spawn, must) > 0) { made++; clusterPad(b, ["bush", "fern", "palm-stump", "bush-hibiscus"], gx + b.pick([-3, 3]), gy + 2, 1, "g", spawn, must, 1); }
   }
   const all = { x: 0, y: 0, w: Wd, h: Hd };
   sprinkle(b, ["palm-lean", "palm"], Math.floor(Wd / 7), "s", all, spawn, must, 2);
