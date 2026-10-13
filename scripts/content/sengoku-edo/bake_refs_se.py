@@ -148,9 +148,9 @@ def howto_md():
 {HEAD}
 
 ## 가장 빠른 길 — 구성 도구 (먼저 이것)
-- `compose_sengoku_edo_map({{mapId, style, seed?, replace?}})` 가 아래 순서·규칙대로 야외 한 장을 **매번 다르게** 짠다. style:
-  - `castle_town` 성하마을(56×48 기본, 48×48 이상) · `inn_street` 여관 거리(56×40) · `samurai` 무가 저택(52×36) · `castle` 성(44×38) · `temple` 신사·절(54×38) · `village` 농촌(54×42).
-  - 빈 맵이 작으면 도구가 기본 크기로 키운다. 시작 칸에서 모든 건물 문 접근칸에 닿는지 엔진 통행으로 확인하고, 안 되면 다음 씨앗(최대 4번)을 보고 그래도 안 되면 맵을 바꾸지 않는다.
+- `compose_sengoku_edo_map({{mapId, style, seed?, replace?}})` 가 아래 순서·규칙대로 야외 한 장을 **매번 다르게** 짠다.
+- style: `castle_town` 성하마을(56×48 기본, 48×48 이상) · `inn_street` 여관 거리(56×40) · `samurai` 무가 저택(52×36) · `castle` 성(44×38) · `temple` 신사·절(54×38) · `village` 농촌(54×42).
+- 빈 맵이 작으면 도구가 기본 크기로 키운다. 시작 칸에서 모든 건물 문 접근칸에 닿는지 엔진 통행으로 확인하고, 안 되면 다음 씨앗(최대 4번)을 보고 그래도 안 되면 맵을 바꾸지 않는다.
 - 건물 문 ↔ 실내: `build_hand_interior_room({{tileset:"sengoku_edo", layout:{{program:"samurai-house"}}}})` 로 실내를 짓고 `link_sengoku_edo_interior({{mapId, door:{{x,y}}, interiorMapId}})` 로 잇는다. 문 좌표는 compose 결과 `data.buildings[].doors`.
 
 ## 구성기의 순서 (직접 깔 때도 같은 순서)
