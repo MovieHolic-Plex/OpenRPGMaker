@@ -13,6 +13,7 @@ import { formatWorldmapChoiceNote } from '../worldmapChoiceNote';
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
 import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import { formatGothicNote, type GothicTarget } from "@/ai/gothicPolicy";
+import { formatSkyIslandNote, type SkyIslandTarget } from "@/ai/skyIslandPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import {
   formatIntentNote,
@@ -87,6 +88,8 @@ export interface PiIntentNoteInput {
   readonly jpCity?: JpCityTarget | null;
   /** 요청·대상 맵이 고딕 저택(gothic_manor) 칩셋이면 그 대상(gothicPolicy). jp_city 대상이 잡히면 쓰지 않는다. */
   readonly gothic?: GothicTarget | null;
+  /** 요청·대상 맵이 하늘섬(sky_island) 칩셋이고 프로젝트에 칩셋이 있으면 그 대상(skyIslandPolicy). */
+  readonly skyIsland?: SkyIslandTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -114,6 +117,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const villageNote = input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : input.gothic ? formatGothicNote(input.gothic, input.targetMap)
+    : input.skyIsland ? formatSkyIslandNote(input.skyIsland, input.targetMap)
     : null;
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)

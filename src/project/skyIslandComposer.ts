@@ -60,7 +60,7 @@ export interface SkyResult {
 /** 최소 크기. */
 export const SKY_MIN_SIZE: Readonly<Record<SkyComposeStyle, { w: number; h: number }>> = {
   village: { w: 44, h: 32 }, shrine: { w: 44, h: 40 }, dock: { w: 48, h: 30 }, archipelago: { w: 48, h: 40 },
-  "room-cottage": { w: 13, h: 11 }, "room-shrine": { w: 13, h: 12 }, "room-cabin": { w: 12, h: 10 }, "room-observatory": { w: 13, h: 12 },
+  "room-cottage": { w: 13, h: 13 }, "room-shrine": { w: 13, h: 14 }, "room-cabin": { w: 12, h: 11 }, "room-observatory": { w: 13, h: 13 },
 };
 
 const BUILDING_NAME: Readonly<Record<string, string>> = {

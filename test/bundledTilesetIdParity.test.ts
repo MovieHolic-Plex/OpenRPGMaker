@@ -14,12 +14,14 @@ describe("bundled tileset id parity", () => {
     const { createModernCityTileset } = await import("@/project/defaults/modernCity");
     const { createJpCityTileset } = await import("@/project/defaults/jpCity");
     const { createWizardingWorldTileset } = await import("@/project/defaults/wizardingWorld");
+    const { createSkyIslandTileset } = await import("@/project/defaults/skyIsland");
 
     const creators: Record<string, () => { id: string }> = {
       tex_joseon_baram: createJoseonBaramTileset,
       tex_modern_city: createModernCityTileset,
       tex_jp_city: createJpCityTileset,
       tex_wizarding_world: createWizardingWorldTileset,
+      tex_sky_island: createSkyIslandTileset,
     };
     const byKey = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a]));
     for (const [textureKey, creator] of Object.entries(creators)) {
