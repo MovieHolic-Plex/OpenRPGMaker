@@ -119,6 +119,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 하늘섬 번들 sky_island(계열 oprn-sky) · 떠 있는 섬·밑면·밧줄/돌 다리·잔교·비공정·신전 섬·실내 넷을 코드 손 도트로 그려 object-gate 통과분만 굽고, 순수 구성기 `compose_sky_island_map`(마을·신전·부두·섬 사슬·방 넷, 엔진 BFS 재검사)로 깐다: `openwiki/sky-island.md`
    - 스팀펑크 공업 도시 번들 steampunk_city · 벽돌·철·구리 거리·공장·기차역·운하·비행선 정박장 + 실내 6종 코드 손 도트 163조각(object-gate 영수증, 프로필 미보정), 구성기 `compose_steampunk_city_map`(계획→건물→소품, BFS·여백), 하늘섬은 다른 칩셋: `openwiki/steampunk-city.md`
    - SF 정거장·네온 거리 번들 sf_station · 우주 정거장 실내·연구 기지·달 기지·사이버펑크 거리 손 도트 172조각(object-gate 전량 영수증)과 맵 구성기 `compose_sf_station_map`(station·lab·street·moonbase), SF 낱말 라우팅 `src/ai/sfStationPolicy.ts`, 참고문서 `sf_refs.py`: `openwiki/sf-station.md`
+   - 선사 시대 원시 세계 번들 prehistoric · 원시 부족 마을·늪·화산·공룡 화석 계곡 + 동굴·움집 실내 4 코드 손 도트(꼭짓점 Wang 바닥 9쌍, object-gate 영수증·조립 표본, 프로필 미보정), 구성기 `compose_prehistoric_map`(꼭짓점 땅 계획→빈터→집→길→소품, BFS), 그냥 동굴·던전은 던전 칩셋: `openwiki/prehistoric.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
