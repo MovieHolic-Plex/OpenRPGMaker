@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bddc2aa54e180dcaae315261cc0558faa3828db0df6922595b0e530e4c79e0ac",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 1칸(벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school wall section (brick wall with concrete coping and iron fence)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails, vertical bars, support post, concrete band, and brick wall are all rendered in a flat 2D architectural front elevation with no visible horizontal top surface foreshortened under 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12569
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall with concrete coping and iron fence",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brick wall features a clearly visible horizontal coping top surface measuring 6 pixel rows (rows 15-20) on which the iron fence is mounted, before dropping down to the coping front edge (rows 21-22) and the south brick face (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15162
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 367872,
+   "error": "Error: ChatGPT rate limit exceeded. retry-after-ms=60000"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 549655,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:02:59.949Z",
+ "cells": {
+  "16": [
+   "7b5bb58a47b45ecc",
+   "b601b3409c7cd246"
+  ],
+  "24": [
+   "07ca99ad1db259e1",
+   "30833efc20928833",
+   "51f895ff5f58efe2",
+   "708087b009c9d29c",
+   "7097dc7898e72d78",
+   "77adcad1b3fd6362",
+   "7c6775a4207e97da",
+   "8fa9cfa4b202db24",
+   "af7b653821181486",
+   "cda22bf775abf949",
+   "d5616d5c34fb88a9",
+   "f347d2386f006921"
+  ],
+  "32": [
+   "06d6f599304e1cc9",
+   "8c4aceb08e3d2157",
+   "aedf09402bdf0f55"
+  ],
+  "48": [
+   "0dbf05110bd8e7e5",
+   "326e3f1d4952a743",
+   "4756541716671a19",
+   "617dbad8d0f10b2c",
+   "9745d5d5c6b4c0b9",
+   "ead1a74a9f6c7315"
+  ]
+ }
+}

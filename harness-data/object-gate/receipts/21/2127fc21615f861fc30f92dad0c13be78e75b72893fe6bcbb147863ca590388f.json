@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2127fc21615f861fc30f92dad0c13be78e75b72893fe6bcbb147863ca590388f",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bicycle rack (concrete base with metal loops)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bicycle rack is drawn in a flat 2D front elevation (side-scroller style). The metal loops are flat front-facing arches with no top surface visible from above, and the concrete base only has a 1-2px highlight along rows 11-12 before the vertical front face at rows 13-14.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bicycle rack (concrete base and metal loops)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The metal loops are drawn completely flat in pure front elevation with 2px-thick horizontal bars and no foreshortened top surfaces. The concrete base below only has a 1-2px band before its front face, lacking proper top-down depth for the frame structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7984
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "long concrete base with four iron loop supports",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and concrete base are presented as a flat front elevation; the horizontal bands are only thin edges/rims, with no substantial top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 95364
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with four iron bicycle hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is presented as a flat frontal elevation: the concrete base has only a thin horizontal edge rather than a visible top plane, and the hoops/supports likewise lack substantial top surfaces. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 178503
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:53.744Z",
+ "cells": {
+  "16": [
+   "168803583a18449c",
+   "2ddcaf2ab74fec15"
+  ],
+  "24": [
+   "0351b73c50ead347",
+   "08f1a5c6dd02fe8f",
+   "2253ddaf7c1c38cc",
+   "279aa6102e8dacc4",
+   "30aef6bfbb04c44f",
+   "5e5bd823f3019956",
+   "7d9799866f87e513",
+   "7fa90f808894cdf3",
+   "ad83cb78c9ef9c6d",
+   "bd8ea8aeef0e56a4",
+   "d63edc8f8aaadecd",
+   "ec881af8129c2423"
+  ],
+  "32": [
+   "2c96aafd5fd48599",
+   "98b8a666563fcad3"
+  ],
+  "48": [
+   "090a35fc5f97bab8",
+   "330eb67141b9938d",
+   "493a9728b0733265",
+   "5eb876d87d715987",
+   "83178364d48f2e52",
+   "d3863e465e159f21"
+  ]
+ }
+}

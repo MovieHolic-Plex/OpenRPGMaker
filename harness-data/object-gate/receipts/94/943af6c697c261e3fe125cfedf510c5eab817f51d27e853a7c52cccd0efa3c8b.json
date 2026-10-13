@@ -1,0 +1,105 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "943af6c697c261e3fe125cfedf510c5eab817f51d27e853a7c52cccd0efa3c8b",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "화단(벽돌 둘레 + 흙 + 꽃)",
+ "label": "modern-campus/mc-flowerbed",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60238,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick flower bed / planter box",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the planter bed with soil and flowers is clearly seen from above across rows 3-10 (8 rows deep), with the front brick face visible below on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3565
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 172120,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular brick flowerbed with visible soil and flowers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main brick bed has a broad visible soil surface above the south-facing brick wall, spanning about 8 source-pixel rows; the recessed soil interior is visible between the rear and front rims. No receding isometric side face is drawn, and this is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 105682
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.134Z",
+ "cells": {
+  "16": [
+   "85a47b8f41712202",
+   "95dd78689a86b0ba"
+  ],
+  "24": [
+   "05e23ad3958423db",
+   "263bfff4002099a2",
+   "4235c931a560a883",
+   "55e6cd9f55b11bb9",
+   "57560a384967a47c",
+   "5a56233a7ecf911d",
+   "7ff54e777aedf432",
+   "aa872b914eaaa5ea",
+   "ac4a5b78c0a1a7df",
+   "d8bad51dcc6c3f42",
+   "dabe1fbffd6a7087",
+   "e2ecb89d589effe0"
+  ],
+  "32": [
+   "7c0dd381082436aa",
+   "bd48655bf872caa7"
+  ],
+  "48": [
+   "314f1e122d6a8127",
+   "36d5fe00549992d8",
+   "5cb801c029d6f6cb",
+   "d26a8879aa64ea2a",
+   "e526d6ee606495b2",
+   "f06f280fcfe5eba2"
+  ]
+ }
+}

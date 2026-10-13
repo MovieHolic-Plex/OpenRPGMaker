@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de9ebfc3f236e28390d385f120562a549421e28672baf8f5c51b345c434bf16a",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete base with metal bicycle loops",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows a clear 3-row top surface (rows 9-11) and a 3-row front face (rows 12-14), correctly depicting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4869
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with metal bike rack loops",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base clearly displays a 3-row foreshortened top surface (rows 9-11) distinct from its south front face (rows 12-14) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4808
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete bicycle rack support with four iron hoops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and concrete support are shown as straight front-facing bands and vertical bars; the horizontal members have only edge lines, with no clearly visible foreshortened top surface on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 131987
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "four-loop iron bicycle rack on a concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and concrete base are drawn as flat front-facing rectangles; the horizontal beams and base have only edge-thin lines rather than visible top planes, with no receding side faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 139210
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.133Z",
+ "cells": {
+  "16": [
+   "4c359293474ef518",
+   "503dd99e109aa2eb"
+  ],
+  "24": [
+   "29747915eb1e3d35",
+   "30cf80228f718dcb",
+   "3df4a529d368538e",
+   "40a1a43cdde15eb7",
+   "4db67cb5701810b1",
+   "58469d498de17eee",
+   "73ce5e2849041811",
+   "9b5c83e364e45135",
+   "a728c96c20cf49c3",
+   "b8964a3462a7e43f",
+   "cbb45815d9bda089",
+   "d43ef6fc098f2a83"
+  ],
+  "32": [
+   "61c08b12449ebdb8",
+   "659bcfddb52ffd87"
+  ],
+  "48": [
+   "39a3970724aa7713",
+   "7497b0e7474e828f",
+   "802d2b4cf7cb8632",
+   "a9730c3c6b228ed1",
+   "b3cde6bd61fe97ad",
+   "fcd7fe1694820d3c"
+  ]
+ }
+}

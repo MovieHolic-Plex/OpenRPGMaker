@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a397f122becddbfdbc97ab06005f246552a72290f5fe0c7205cd9f8a61dd23a",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 1칸(벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall with iron fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and brick wall are drawn as a flat architectural front elevation with no visible horizontal top surfaces (coping, rail tops, or wall depth) in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8577
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "school fence (brick base, concrete middle, and iron railing)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fence and wall assembly is drawn in pure 2D front elevation: the brick base, concrete band, and iron railing have no visible foreshortened top surface showing the thickness/depth of the wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15475
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "school wall with brick base and iron fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a clearly visible horizontal top surface several source pixels deep above its front face; the fence and brickwork are shown in a 3/4-style layered view without a distinct receding side plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 123610
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall with iron fence",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main brick wall has a visible horizontal top surface above its dark front edge, approximately rows 18–20; the fence bars rise from it. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 100806
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:53.743Z",
+ "cells": {
+  "16": [
+   "1b0133c5e7a74079",
+   "b4dfe6e66bb73b29"
+  ],
+  "24": [
+   "05183e744c1e17e9",
+   "0cc8adf0f1f7b20a",
+   "48298e0176428c67",
+   "4de2484758854aa9",
+   "51f895ff5f58efe2",
+   "52baccb4dba43922",
+   "7097dc7898e72d78",
+   "ba8a5cf48b039e1b",
+   "c8ecda44184c0b8e",
+   "d5616d5c34fb88a9",
+   "d86db5795ee2b826",
+   "fe4f4cade91e8201"
+  ],
+  "32": [
+   "0abba7b9fae88d3b",
+   "4ff293395620576d",
+   "b7507c727ca27bc9"
+  ],
+  "48": [
+   "19ab0b64c582cde9",
+   "322ae59d4175744a",
+   "6338be0d4d2fb2ee",
+   "b886ca7c81f87aba",
+   "c3f860c4a8dd954e",
+   "cb3ee3a256c95ab7"
+  ]
+ }
+}

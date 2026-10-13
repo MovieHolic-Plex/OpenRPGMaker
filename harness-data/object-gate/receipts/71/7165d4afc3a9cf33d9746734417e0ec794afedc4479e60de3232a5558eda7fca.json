@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7165d4afc3a9cf33d9746734417e0ec794afedc4479e60de3232a5558eda7fca",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "교문 기둥(벽돌·콘크리트 갓돌)",
+ "label": "modern-campus/mc-gatepost",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar with concrete capstone and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, capstone, and plinth are drawn in pure front elevation. The capstone is a flat rectangle with vertical gradient shading rather than distinct top and front faces, and the plinth shows no top step/shoulder where it widens from the shaft.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14355
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick gate pillar with concrete capstone and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar capstone, shaft, and base are drawn entirely as a flat architectural front elevation with straight horizontal boundaries and standard vertical lighting gradient, showing no top surface from the 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7412
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "brick-and-concrete gate column with a concrete cap",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main column is a brick-faced vertical pillar, with a broad light-gray cap top visible from approximately source rows 3-9; the dark horizontal edge below is only the cap/body boundary. No opening or receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 97165
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "brick-and-concrete-capped gate pillar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pillar has a broad gray cap top visible for about 6 source-pixel rows above the front edge; the brick shaft is shown with its south face. No separate receding isometric side face or opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 459748
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.132Z",
+ "cells": {
+  "16": [
+   "3b580d7d8ed8aef4",
+   "9224fa58212b8465"
+  ],
+  "24": [
+   "157440dc3855302f",
+   "2f3a79b5db0bf156",
+   "38f404d83a3d7832",
+   "412e50981d4a108c",
+   "44562a44cae0f5ef",
+   "483849b05575f1cb",
+   "6673889fb4bab985",
+   "6fa8fd4415865337",
+   "9da3b7b0ac31cf18",
+   "ba4715d65f1e4e12",
+   "de396246167264e6",
+   "e2345d71e8278202"
+  ],
+  "32": [
+   "1ebfce3cff7b7b78",
+   "2aced6ce2c4dd4e0",
+   "2f5f3ddf9f43ece5"
+  ],
+  "48": [
+   "0613ffa1480eebd4",
+   "279cc1ac3c227387",
+   "5d52c8dee2996bf3",
+   "e58b34ad34f6ae56",
+   "e70fcec3c53f0694",
+   "ed543883ef208499"
+  ]
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "987de816d90004d0c6e7cb045765090b4a834c05d4df9a5379e0766d33a232f8",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine with top cap and front display",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the machine/cap is prominently foreshortened and visible from row 2 through row 6 (5 source pixel rows tall), above the front overhang and main blue front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5141
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn across rows 2–6 (5 pixel rows deep) with a front lip on rows 7–8, correctly showing the top plane in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5870
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is presented as a flat rectangular front with only thin edge bands; no substantial top surface is visible from above. The dark vertical strips are framing/shadow, not a receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 107522
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vending machine",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat, straight-on rectangular vending-machine face with no visible horizontal top plane; the upper panel is a front panel, not a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 85916
+  }
+ ],
+ "decidedAt": "2026-10-13T10:22:41.717Z",
+ "cells": {
+  "16": [
+   "0c60b89be70c8895",
+   "de4676b2428e8c8f"
+  ],
+  "24": [
+   "4724650ce33ab503",
+   "47a320a131188e70",
+   "5a3f307520bbb47b",
+   "899b9fb727069890",
+   "9442ddd5cdd6ca01",
+   "ad400b80eba91576",
+   "c42107b48bcf5680",
+   "cbdeed9c2ef4ad14",
+   "d1eabf05ee512057",
+   "d467d07227aa0321",
+   "e463cdea9524c987",
+   "ec3e6414e7342f0f"
+  ],
+  "32": [
+   "9ba1abb5ffde0fcc",
+   "a7cc05fab4a3e5d2",
+   "beb692d1603b362e"
+  ],
+  "48": [
+   "17211d6ecb6e3d48",
+   "7a3df808080d77e0",
+   "8e334548084c1b23",
+   "905fc5253c72b6b3",
+   "b762721749c04cc1",
+   "d67af3b8f876b5cf"
+  ]
+ }
+}

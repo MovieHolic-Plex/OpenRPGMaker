@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea82a9e668acdbcfee48db8d3d98c6b68c357b65bece286ac5d63cd8651e7c2c",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn completely as a flat front elevation. Rows 2-6 represent the upper backlit front display panel, and row 0-1 is merely the outer 1-2px dark border outline, with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn completely straight-on as a flat front elevation. There is only a 1-2px outline frame at the top (rows 0-1) above the illuminated front signage panel, with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3594
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular front-facing panel with no visible top plane; the upper blue area is part of the front face rather than a foreshortened horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 365914
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 304470,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:02:59.950Z",
+ "cells": {
+  "16": [
+   "9aead457c6bceb0c",
+   "b345d7311e55ec98"
+  ],
+  "24": [
+   "272f1279b41a1e5a",
+   "3ede592d0b9c74c9",
+   "4676c450e46dd702",
+   "624b60d672c5115c",
+   "76ba1eda34abcebe",
+   "812c373941241545",
+   "861684ab3fa85d9c",
+   "8df06f0f2f9cb4cd",
+   "ccb10965c51897ce",
+   "e19256c033c88f1a",
+   "f98bcfdb2b1f4fa5",
+   "fc1532160c1e5e3d"
+  ],
+  "32": [
+   "9197536ab8716908",
+   "fd47765b4cd38743",
+   "feff8e676ca18e24"
+  ],
+  "48": [
+   "26b9efcf3c19632d",
+   "4e7899621757c038",
+   "6136cfe3f28d1306",
+   "a2e05f8f69d1a533",
+   "be18a4d4c2e882f6",
+   "fc59eb62dcb34dd9"
+  ]
+ }
+}

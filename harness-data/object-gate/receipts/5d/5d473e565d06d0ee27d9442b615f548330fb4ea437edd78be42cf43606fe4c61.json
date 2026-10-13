@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d473e565d06d0ee27d9442b615f548330fb4ea437edd78be42cf43606fe4c61",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bicycle rack (concrete base and metal loops)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack is drawn entirely in front elevation like a 2D comb/side-scroller prop. The concrete teeth terminate flatly at row 5 with no top surfaces visible, the metal loops are flat 2D rectangular outlines with 1px caps, and the base consists of flat horizontal bands without top foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with metal loops",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bike rack and its concrete base are drawn as a flat front elevation. Neither the metal loops nor the concrete base show foreshortened horizontal top surfaces in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6317
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "long concrete base with four iron bicycle hoops",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete base has a narrow horizontal top strip, but the four iron hoops and the base are presented essentially as a straight front elevation with no meaningful depth projection; only the south-facing front faces are shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 100243
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "콘크리트 받침 위의 철제 고리 4개",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "철제 고리와 콘크리트 받침이 거의 정면 elevation으로 그려졌고, 상단의 1~2px 띠와 받침 상단의 1px 띠는 유효한 위쪽 면으로 보기 어렵다. 재ceding side face도 없다.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 143246
+  }
+ ],
+ "decidedAt": "2026-10-13T10:22:41.716Z",
+ "cells": {
+  "16": [
+   "d765aa8502ff94ba",
+   "f524f7949a0bbe51"
+  ],
+  "24": [
+   "03a6ef8d4198bc75",
+   "30dbd240b54e330e",
+   "3516e44fd56995b3",
+   "420c9379b9492b99",
+   "475c0bc564bd0791",
+   "4ed0593cc4675653",
+   "4f06e2d01091b489",
+   "5630e9e1e0823e7c",
+   "668cd8bc9bb665b6",
+   "918a90611a63af94",
+   "bb17c3360d0642b9",
+   "c0b4c7dedf7e0659"
+  ],
+  "32": [
+   "8fb26159d3d435fd",
+   "af0d845e123ab5b6"
+  ],
+  "48": [
+   "18bffbe39137e575",
+   "1bf3f56531dad1a4",
+   "2f3ae075772692ce",
+   "857b209fdafefc4e",
+   "bbfc17de569316f2",
+   "f62b74aa51fd479f"
+  ]
+ }
+}

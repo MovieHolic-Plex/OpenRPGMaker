@@ -1,0 +1,133 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fdcd46c166eedb3571c327cabc46d5781dbbb70b9ecc8d12c817860139f930d",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "교문(벽돌 기둥 둘 + 철제 양개 문)",
+ "label": "modern-campus/mc-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillars with stone caps and iron double gate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both pillar caps show a clear 6-row foreshortened top surface (rows 2-7) above the front edge/overhang of the cap (rows 8-10) and the south-facing brick shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillars and double iron gate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brick pillars feature large stone caps with clearly visible horizontal top surfaces spanning 5 pixel rows (rows 2–6) viewed from above, with darker front faces below them.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7617
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 492487,
+   "error": "Error: ChatGPT rate limit exceeded. retry-after-ms=60000"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 553510,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:02:59.949Z",
+ "cells": {
+  "16": [
+   "0350355e52a89618",
+   "47c32f11dd89d5b1",
+   "666e933b9b8db089",
+   "a70ad2808b160844",
+   "bff13072949d83dc",
+   "d0ec0a224143dc8b"
+  ],
+  "24": [
+   "018dd868c152c49a",
+   "06a007786b8e012c",
+   "0754856541e3120c",
+   "13a803c48211c827",
+   "15c092c42dff00ed",
+   "21e82f59fc89a157",
+   "29674f81b1a3ae35",
+   "2cf21e104b3c2ef0",
+   "2e6b2e17246b6d08",
+   "367a604a70ecf2fb",
+   "5a99f536563ad298",
+   "5b03bc3425587e0f",
+   "5bfe29967ef6bfb2",
+   "7acc85d27298981a",
+   "7e03fcbd2efe7ae8",
+   "80d5c93113fa4a76",
+   "83141e8a4aae4463",
+   "8549a4e8c5c43b5c",
+   "8ba474bf56a83897",
+   "9d2dbb150a1a5770",
+   "a6b69cb0ab0b4869",
+   "ab784db28cdcdd4c",
+   "b8a79a748327dd55",
+   "c312d724a2cf5d1a",
+   "ce29dc6e3bfa1c45",
+   "d31dc932e5f408bd",
+   "ea7691c462fe1198",
+   "ebbcbe934fd990e0",
+   "ef2b00b711bfd468",
+   "f359086a299c2cde"
+  ],
+  "32": [
+   "c51d9e625a98b61a",
+   "d549110879c0e87c"
+  ],
+  "48": [
+   "0a9b22b077c83383",
+   "197f23f9ed8c3366",
+   "3eb695f7becab06b",
+   "516003c866ea35af",
+   "61fb51c078324c66",
+   "93772b4e073f227a",
+   "97b4ee24678473b8",
+   "b64a3f19180030cb",
+   "b9e9bd58a8825bda",
+   "c0cd698798052b7e",
+   "c50a48121a5d9f83",
+   "e289937502b46183"
+  ]
+ }
+}

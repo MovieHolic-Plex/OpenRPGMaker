@@ -1,0 +1,163 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7247786735502d2689d251df5430e7b8757ed2795e11ea1fbe525c3b8d0035f",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "교문(벽돌 기둥 둘 + 철제 양개 문)",
+ "label": "modern-campus/mc-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillars and double iron gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and brick pillars are drawn in pure front elevation. The pillar caps, bases, and horizontal gate beams show no top horizontal surfaces viewed from a 3/4 top-down angle, relying only on vertical gradients on flat frontal rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5397
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillars and metal double gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar caps, brick columns, and gate panels are drawn as flat rectangular shapes directly from the front with no visible top surfaces (0 top rows) foreshortened from a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4230
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "two brick gate pillars with a central iron double gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main gate and pillars are presented as flat south-facing elevations. The light areas atop the pillars are cap/facade bands rather than a clearly foreshortened top surface of the main gate body, and the central lintel has no substantial visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 318217
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "brick gate pillars with a central iron double gate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both brick pillars have broad, clearly visible horizontal cap tops about 7 source pixels deep, with their south-facing brick fronts below. The central gate is front-facing, but the pillar tops prevent the overall object from being a pure front elevation. No receding isometric side faces or container opening are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 376625
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.133Z",
+ "cells": {
+  "16": [
+   "18dc401ea174cc1a",
+   "3b580d7d8ed8aef4",
+   "51e08a104d7b4cb2",
+   "5e11f020a11a86ed",
+   "8a6425289f08136d",
+   "9224fa58212b8465"
+  ],
+  "24": [
+   "08956c05a3c81ad0",
+   "0ae9873353bc41c5",
+   "1316270a9b954d09",
+   "157440dc3855302f",
+   "2f3a79b5db0bf156",
+   "430168ba327ccc1a",
+   "44562a44cae0f5ef",
+   "47ce2a09110771a5",
+   "483849b05575f1cb",
+   "5081cf2f9009e615",
+   "60653690c27c4556",
+   "6673889fb4bab985",
+   "6fa8fd4415865337",
+   "71d0c65e5dd4b212",
+   "731db7cbe091e7c5",
+   "7647c891510ab174",
+   "7e9bde5f94879783",
+   "8a485540727c383d",
+   "9ba2ce5ec33a298f",
+   "9da3b7b0ac31cf18",
+   "af703ec6e95ad3df",
+   "b5ed0a7aba22345e",
+   "bb4a85f50c8f9626",
+   "bf71ed9ee35525b6",
+   "c37d93f78483a45c",
+   "cff214665c866107",
+   "de396246167264e6",
+   "e2345d71e8278202",
+   "ee92d2caff7b84ad",
+   "ef966a871212a40f"
+  ],
+  "32": [
+   "3a9ff06309ccf54c",
+   "96ab21584e19a8a4"
+  ],
+  "48": [
+   "0613ffa1480eebd4",
+   "15d433e89e500838",
+   "296e7b37a6c91ab2",
+   "33791235324b8e1d",
+   "5d52c8dee2996bf3",
+   "96619564136d871a",
+   "cb9ffd1608ea2ebc",
+   "d5a6ce14a8c74bb4",
+   "db95cda8c52da32f",
+   "e58b34ad34f6ae56",
+   "e70fcec3c53f0694",
+   "f6f44f4c3f5bd192"
+  ]
+ }
+}

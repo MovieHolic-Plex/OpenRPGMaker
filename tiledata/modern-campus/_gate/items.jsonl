@@ -1,0 +1,10 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-gatepost.png", "kind": "column", "name": "교문 기둥(벽돌·콘크리트 갓돌)", "label": "modern-campus/mc-gatepost"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-gate.png", "kind": "structure", "name": "교문(벽돌 기둥 둘 + 철제 양개 문)", "label": "modern-campus/mc-gate"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-fence.png", "kind": "structure", "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)", "label": "modern-campus/mc-fence"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-bench.png", "kind": "seat", "name": "교정 벤치(나무 판 + 철제 다리)", "label": "modern-campus/mc-bench"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-bike-rack.png", "kind": "frame", "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)", "label": "modern-campus/mc-bike-rack"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-vending.png", "kind": "tall_furniture", "name": "자판기(글자 없음)", "label": "modern-campus/mc-vending"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-flowerbed.png", "kind": "container", "name": "화단(벽돌 둘레 + 흙 + 꽃)", "label": "modern-campus/mc-flowerbed"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-shoe-locker.png", "kind": "tall_furniture", "name": "신발장 줄(철제 4×3 칸)", "label": "modern-campus/mc-shoe-locker"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-field-line-h.png", "kind": "flat", "name": "운동장 흰 선(가로)", "label": "modern-campus/mc-field-line-h"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/_gate/mc-field-line-corner.png", "kind": "flat", "name": "운동장 흰 선(ㄱ 모서리 동→남)", "label": "modern-campus/mc-field-line-corner"}

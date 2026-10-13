@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbb5dc68f6200e29d0dddc6599319f4996bb800fdb4db8838ae7022de5e71d8b",
+ "width": 32,
+ "height": 16,
+ "kind": "frame",
+ "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+ "label": "modern-campus/mc-bike-rack",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete base with metal bicycle rack loops",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows a clear, wide top surface foreshortened from rows 5 to 11 into which the four loops are anchored, with its vertical front face shown below on rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with 4 metal bike rack loops",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base shows a clear top surface spanning rows 5–12 (8 source pixels deep), viewed from above at 3/4 angle with the metal loops anchored into it and the base's top surface visible through the loop openings. The front vertical face of the base is shaded darker on rows 13–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12761
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "long concrete base with four iron loop supports",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete base has a visible horizontal top plane approximately 2 source pixels deep, with a distinct south/front face below it. The iron loops are front-facing supports; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 217825
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete base with four iron loop supports",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The repeated iron loops and concrete base are drawn as a flat frontal elevation. Their horizontal bars and the base show only thin edge bands, with no substantial top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 151497
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:12.043Z",
+ "cells": {
+  "16": [
+   "89fe0a34a1f204c8",
+   "c1bd874350b51038"
+  ],
+  "24": [
+   "16fd789089fd0d46",
+   "298474c5a24c813d",
+   "37e076fab8871e6a",
+   "4b0674bb12297f61",
+   "67e59f0a6865357e",
+   "69452acd8367b0cb",
+   "8509b5a6c543f887",
+   "86115ffec3ee0b42",
+   "abbaee85fbc6b28b",
+   "b3907a401b0def3c",
+   "c93b687ebbc30bb7",
+   "ca37f0e1df0a996e"
+  ],
+  "32": [
+   "d3293d52bb81a107",
+   "f3ddf7483eae35e2"
+  ],
+  "48": [
+   "0083927c298df2c8",
+   "42c616600bc78a1c",
+   "5a03d1d7f4cdfdee",
+   "712245dcd246a798",
+   "76c8f4d9c4a6f515",
+   "827b600d3328a2ea"
+  ]
+ }
+}

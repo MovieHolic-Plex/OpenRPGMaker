@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e2c752f08b25e31d7f62cf380451542d8e40a45f004551e19f5a90a25a8151c",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
+ "label": "modern-campus/mc-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "school fence with brick pillar, brick wall, and iron railings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (pillar cap, horizontal fence beam, and brick wall) is drawn in straight architectural front elevation with no visible horizontal top surfaces or 3/4-view foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6488
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall with iron fence and pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence horizontal beam, brick wall, and iron railings are drawn in a flat front elevation with no visible top surfaces (the top rail only has a 1px edge highlight on row 3, and the lower brick wall has no top surface visible).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8448
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall and iron fence assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main brick wall is presented as a flat south-facing elevation; its upper dark band is only a cap/edge, not a visible top surface. The upper horizontal strip belongs to the fence rail/cap rather than the main wall body, and no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 214370
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall with iron fence and brick pillar",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall/upper beam has a clearly visible horizontal top surface approximately 6 source pixels deep, with its front edge below; the remaining faces are normal south-facing fronts, not receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 240276
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:12.043Z",
+ "cells": {
+  "16": [
+   "0798bef485453797",
+   "0944f12af4c179d6",
+   "4c23f5b1e7f3ebac",
+   "67358ec4a07a4f90"
+  ],
+  "24": [
+   "0c2a3760a25272e9",
+   "12d94b052dab475d",
+   "208964c4c87c1e84",
+   "3200e6a3e502eee1",
+   "32fd401156bd0e9d",
+   "4eb7fddc7f36a0aa",
+   "51ff7f19b6c3b291",
+   "60b35fcbb5289aaf",
+   "6258ac7fb5df1e3d",
+   "7ca7fe95dd7559b3",
+   "86c62139f98dae57",
+   "8d134d337f91d504",
+   "96eb3267fb6e9c63",
+   "a316b07545180e40",
+   "b25d1571a5f5a4dc",
+   "b2990cdd4e700ba0",
+   "ba6d4bdd892552d5",
+   "bb0903c0965ce7d4",
+   "bb5670b6856c9f65",
+   "bfac7cc5564fabd6",
+   "d5616d5c34fb88a9",
+   "dba1035ce53e4edc",
+   "def43dc1dd7f2517",
+   "eeeff497b07083c7"
+  ],
+  "32": [
+   "0df30927a41bf5d8"
+  ],
+  "48": [
+   "463bda2bf880591b",
+   "550ceb125e0a0856",
+   "81012da5a94ea9c4",
+   "d1bac905d9557c04",
+   "d832356b96a98ffd",
+   "e5df7cd85adbde4c"
+  ]
+ }
+}

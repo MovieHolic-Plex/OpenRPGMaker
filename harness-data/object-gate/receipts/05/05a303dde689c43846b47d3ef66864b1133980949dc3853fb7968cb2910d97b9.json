@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "05a303dde689c43846b47d3ef66864b1133980949dc3853fb7968cb2910d97b9",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation. Rows 2-6 represent the blank front-facing illuminated signboard (advertisement panel), not a top surface. Above it, there is only a 1px top border line at row 1, with zero top-down horizontal surface visible for the cabinet.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7481
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn straight-on in pure front elevation with only a 1px dark border at row 1 and no foreshortened top surface visible above the front illuminated sign.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3703
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular front elevation; the 1-pixel blue strip at the top is only an edge/cap, not a visible top surface. No receding side face or container opening is shown. A vending machine is not plausibly tall furniture.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 84753
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vending machine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabinet is a flat rectangular front elevation with no visible top plane; the narrow dark/gray strip at the top is only an edge or cap line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 367626
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:53.744Z",
+ "cells": {
+  "16": [
+   "9aead457c6bceb0c",
+   "e9730f910248aa37"
+  ],
+  "24": [
+   "26dc00a686998e00",
+   "272f1279b41a1e5a",
+   "28f31f78bb88b419",
+   "3ba5a7ab9e53f873",
+   "4676c450e46dd702",
+   "624b60d672c5115c",
+   "77f6c61437b13f61",
+   "812c373941241545",
+   "917a6974258cde49",
+   "bf17ebb1d7c1a4c5",
+   "e19256c033c88f1a",
+   "fc1532160c1e5e3d"
+  ],
+  "32": [
+   "643b3b414cc17929",
+   "6557fd7acb5add79",
+   "8a747d0a8400ed0e"
+  ],
+  "48": [
+   "568a65e04fbcdaaf",
+   "5d0f01cffe5ec2d8",
+   "90f9f88552ca753f",
+   "96eec68ff146860d",
+   "d853640d1a440163",
+   "db2470316ea6fb74"
+  ]
+ }
+}

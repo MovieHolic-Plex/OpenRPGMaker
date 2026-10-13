@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f65940b441dc4bc0dba0e6a765c088ae83d898a3742b1a1bba84250672adc7a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "신발장 줄(철제 4×3 칸)",
+ "label": "modern-campus/mc-shoe-locker",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal shoe rack / cubby locker",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly drawn from row 2 to row 5 (4 source pixels deep) with an edge highlight and front drop shadow. No isometric receding sides are drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20087
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steel shoe cubby unit (4x3 compartments)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shoe rack is drawn straight-on in pure front elevation. The top area (rows 2-5) is a flat front fascia/header panel rather than a receding horizontal top surface, and the individual cubby interiors show no visible shelf floor or depth—only flat dark backings viewed directly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8135
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "steel 4×3 shoe cabinet rack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cabinet has a broad gray horizontal top plane visible above the front shelving, spanning about 6 source-pixel rows; the visible side strips are part of the front structure, not receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 55392
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall steel shoe cabinet/rack with 4×3 compartments",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cabinet has a broad, clearly visible horizontal top surface about 6 source pixels deep above the compartment front; the remaining structure is its south-facing front, with no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 134069
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.134Z",
+ "cells": {
+  "16": [
+   "373d2f36e04ad0a4",
+   "4718700019386b8d",
+   "7f16961de1e3ec0a",
+   "cdb2ea497e19c253"
+  ],
+  "24": [
+   "09c7cb1003096eda",
+   "212f3e5ef234e91f",
+   "271d019427ccbffc",
+   "450282adea583576",
+   "522c218f49d929da",
+   "6acb6d562ea97fb6",
+   "74dc36f276eaea06",
+   "79e69162da26bc53",
+   "819836cdc55814d6",
+   "8b11b4e40e9ec334",
+   "93741d630bd7b97a",
+   "93d2c60f5e231a15",
+   "9b6ed191f18e0ade",
+   "b70b651ad6de8ecd",
+   "bec8925823e50a06",
+   "c7875689c35db32a",
+   "dc1c905d142faec4",
+   "e18f145cbd58533b",
+   "e713184cae3cc772",
+   "eb65bb0d1863427e",
+   "f53ea4a260d1c416",
+   "f5693fa43e1917e6",
+   "f92d8493d0d17e4f",
+   "ff9bd191aba4e163"
+  ],
+  "32": [
+   "4e214f58ae6bfc00"
+  ],
+  "48": [
+   "031ea1d9b25ae52a",
+   "17360ea73cd16ba7",
+   "2f6b397ed8c926b4",
+   "778383d22816e82f",
+   "bc1c690770b5393a",
+   "d68542d8d9fc87e2"
+  ]
+ }
+}

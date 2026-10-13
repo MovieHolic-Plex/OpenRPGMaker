@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "운동장 흰 선(가로)",
+ "label": "modern-campus/mc-field-line-h",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal ground line marking",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel-tall horizontal white field line (rows 7-8) painted flat on the ground surface, correctly depicted as a floor decal in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3830
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal painted white ground line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a horizontal line painted flat on the ground spanning rows 7-8; correctly depicted as a flat ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal white ground line/decal",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat white stripe is visible as a 2-pixel-tall horizontal top surface on the ground; no vertical body, receding side face, or front elevation is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 44419
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal white ground line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat white stripe is shown as a 2px-wide ground-plane surface from above, with no receding side face or front-elevation body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 220235
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.134Z",
+ "cells": {
+  "16": [
+   "2f875b672256f61b"
+  ],
+  "24": [
+   "20dad16d74b8a437",
+   "2dfc71504f2cdcd3",
+   "6d3caf9d5ef3b40f",
+   "6d3fb6e99756a947",
+   "9feee3be51b69bde",
+   "e5d50c536ae9b288"
+  ],
+  "32": [
+   "09a4a30826593763",
+   "15a018481c026f0c",
+   "7651486721a9446b",
+   "9956a0a521e64e2e",
+   "f22c204bfdffa84b",
+   "f2506c6286db7879"
+  ],
+  "48": [
+   "097240fb95d2c2fe",
+   "3ea690a4a116b90e",
+   "786f9ff5c6f08cd1",
+   "b6b01c9c370c3727",
+   "c632378eeb86e035",
+   "f211bdabc4c2e8d3"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6c882966670c872403c5720df0ae8594b10008e3d3f2290690b21690aee3873",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vending machine is drawn entirely in flat front elevation. The light blue band at the top (rows 2-4) is the illuminated header panel of the front face, not a top surface. The shelves, cans, button panel, and dispensing flap are all rendered with zero top-down tilt or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8871
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine is drawn in flat front elevation. The light blue area on rows 2-4 is the front marquee/lightbox panel (left blank as indicated by the name 'no text'), sharing the same highlight tone as the vertical highlight along column 2. The shelves, can display, buttons, and drop slot are all drawn flat with zero horizontal top surface visible (only a 1px dark outline at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8418
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall vending machine with a flat front panel",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular frontal elevation with only thin horizontal edge/highlight bands at the top; no substantial top surface is visible. There is no receding side face. A vending machine does not plausibly match tall furniture such as a bookshelf, cabinet, wardrobe, or cupboard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 160457
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tall rectangular machine has a broad blue top plane visible above its front display, approximately 4 source pixels deep. No receding isometric side face or container opening is present. Although it is tall furniture-like, a vending machine is an appliance rather than a bookshelf, cabinet, wardrobe, drawer chest, cupboard, or fireplace.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 130912
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.134Z",
+ "cells": {
+  "16": [
+   "55b163528cf71e74",
+   "89f9ccdbe9658efb"
+  ],
+  "24": [
+   "02fe02a0fab3ea02",
+   "08cd868c7c49e684",
+   "1dada9384dcd0731",
+   "38dbf171f8f701f6",
+   "4f446d5ea780cd28",
+   "4f494d30d252786d",
+   "70088bcdb436bce7",
+   "ba3b031ee11b4fdc",
+   "cde5c8adc84d0823",
+   "ce0bdeda979aaa31",
+   "f0a03b2a200c6556",
+   "fe750aec11215d74"
+  ],
+  "32": [
+   "7951746a0a9b6cc8",
+   "8fde9aa1df6f2bcd",
+   "aeded2d5c2815d7a"
+  ],
+  "48": [
+   "242fab4641266b87",
+   "2707e423cf3d1bb3",
+   "3d6cbc689303a617",
+   "4d00e5ae4f302e15",
+   "6749369172e8b26b",
+   "b9ac9ceca3db7753"
+  ]
+ }
+}

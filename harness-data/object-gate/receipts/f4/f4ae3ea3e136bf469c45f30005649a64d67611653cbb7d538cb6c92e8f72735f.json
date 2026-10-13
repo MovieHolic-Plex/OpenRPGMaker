@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4ae3ea3e136bf469c45f30005649a64d67611653cbb7d538cb6c92e8f72735f",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "교정 벤치(나무 판 + 철제 다리)",
+ "label": "modern-campus/mc-bench",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench with backrest and seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly seen from above across rows 6 to 11 (6 source pixels tall) with horizontal plank slats, followed by a front edge in rows 12-13 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5072
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plank seat is clearly viewed from above spanning rows 6 to 11 (6 rows deep), with the front south-facing edge visible at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3806
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat plank",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wooden plank has a clearly visible tan horizontal top surface about 6 source pixels deep, with a darker south/front face beneath it. The end silhouette is not a receding isometric side face, and the object is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 113168
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat plank with metal legs",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main seat plank has a broad tan top surface visible from above for about 6 source-pixel rows, with its south/front face beneath it. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 580145
+  }
+ ],
+ "decidedAt": "2026-10-13T10:02:59.950Z",
+ "cells": {
+  "16": [
+   "1559dc3a20d73807",
+   "4687252400ca9aaf"
+  ],
+  "24": [
+   "0226576c14544b02",
+   "1cb0c6cdddcebaea",
+   "5fafcea66d0d9d6b",
+   "8b40e1c8c2808638",
+   "9ad44d488d90db49",
+   "a98e76ec140453fa",
+   "be3982fbbf0ede1c",
+   "c5a1d78f5bcb1c76",
+   "c925ced409289800",
+   "cf3dc132e76d8c53",
+   "f552f13907139fac",
+   "fe95f3d5259a38f1"
+  ],
+  "32": [
+   "024e6793ddf8fa9b",
+   "8fb51df741b7dc97"
+  ],
+  "48": [
+   "02ae03334516e4d1",
+   "0b18d8f8dad804ba",
+   "977fce635f4fa833",
+   "97d3c1168e6d163f",
+   "e17e502852a5ba69",
+   "f577ac2f3884efce"
+  ]
+ }
+}

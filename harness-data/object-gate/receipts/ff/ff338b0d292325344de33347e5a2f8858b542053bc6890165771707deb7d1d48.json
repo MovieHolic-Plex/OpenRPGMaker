@@ -1,0 +1,102 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff338b0d292325344de33347e5a2f8858b542053bc6890165771707deb7d1d48",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "운동장 흰 선(ㄱ 모서리 동→남)",
+ "label": "modern-campus/mc-field-line-corner",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground line marking (corner)",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "White line painted flat on the ground forming a 90-degree corner; correctly rendered flat on the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4769
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "painted white corner line on ground",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor decal correctly drawn flat on the ground plane forming a corner extending south and east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3225
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 232409,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 290879,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.135Z",
+ "cells": {
+  "16": [
+   "3a3027ab1b93d856"
+  ],
+  "24": [
+   "2f2335c8bf10a40e",
+   "6e4789c1cd1338aa",
+   "a1334bf3bb4b9c06",
+   "d48ad632ae3af2d3",
+   "e0cb96d32c19a90b",
+   "e5bad5bf3af6d72e"
+  ],
+  "32": [
+   "088e8ed65b74cebc",
+   "820e536967adc69d",
+   "86df50fd9fe78ef9",
+   "c4a896d27cc1ccc6",
+   "cfcd8599e7d35b3f",
+   "ed18a6a3aff9d96c"
+  ],
+  "48": [
+   "4154ea6a9e2ff817",
+   "4c7f25dfc62e07c4",
+   "5d093046e6771b13",
+   "7bd64582519fbdf4",
+   "7df4f1f59e53471f",
+   "ab7e384e4dd765fc"
+  ]
+ }
+}

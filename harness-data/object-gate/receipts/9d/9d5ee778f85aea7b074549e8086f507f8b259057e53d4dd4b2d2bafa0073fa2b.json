@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d5ee778f85aea7b074549e8086f507f8b259057e53d4dd4b2d2bafa0073fa2b",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "교정 벤치(나무 판 + 철제 다리)",
+ "label": "modern-campus/mc-bench",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "campus bench with wooden planks and metal legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The south-facing bench shows the upright backrest at rows 1-4 and the horizontal seat surface seen from above at rows 6-10 (5 pixel rows deep), followed by the 2px front edge of the seat at rows 11-12 and short metal legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12018
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bench (backrest and seat)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bench is drawn in pure front elevation consisting of two vertical plank faces (backrest rows 1-4 and seat rows 6-12) with identical front-facing inset shading. The horizontal seat surface is not visible from above, showing only a 1-2px edge highlight at rows 6-7.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12550
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 316413,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 311441,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.133Z",
+ "cells": {
+  "16": [
+   "6989c68e1752755a",
+   "80cdec0fe368a506"
+  ],
+  "24": [
+   "0224445f84fd0ce9",
+   "12764023a2a6ae60",
+   "206d3d08f584017c",
+   "29710575a35e3cc7",
+   "7850ad6c28737e64",
+   "795dd0722c65fdf1",
+   "7fd464a6ca53b99c",
+   "8e3fab78f7eccdde",
+   "bc757f025a7c7a27",
+   "ddb1b4ab5bf1dfff",
+   "ecd0e7fce06567ec",
+   "f8ffea8db8466ea9"
+  ],
+  "32": [
+   "121e573135578894",
+   "3a957bd09818a1d0"
+  ],
+  "48": [
+   "13143de8ebcc36c0",
+   "17996334e92e978b",
+   "387c5a21d9cff797",
+   "668a73397af35b4f",
+   "698d596a27232c3e",
+   "b6cc0808d936361e"
+  ]
+ }
+}

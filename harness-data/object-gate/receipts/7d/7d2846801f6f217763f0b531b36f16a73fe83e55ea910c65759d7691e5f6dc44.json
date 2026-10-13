@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d2846801f6f217763f0b531b36f16a73fe83e55ea910c65759d7691e5f6dc44",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(글자 없음)",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat 2D front elevation. Neither the main body nor the upper header box shows any visible top surface seen from above; all shelves, buttons, slots, and panels are drawn straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat front elevation. The upper section (rows 1-9) is the header panel of the machine with placeholder text bars rather than a top surface seen from above, showing no horizontal top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11196
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is presented as a flat rectangular front with only edge bands; no horizontal top surface of the body is visible from above. The gray upper panel is a front/header section, not a foreshortened top plane. No receding side face or container opening is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 181405
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall vending machine body with a gray upper panel/top and blue lower display section",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad gray horizontal surface visible from above for roughly 9 source-pixel rows before the dark front edge and blue south-facing face. No receding isometric side face is present, and the body is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 228984
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:12.043Z",
+ "cells": {
+  "16": [
+   "b2b98f94eee8da05",
+   "fe21dc22e9fe6e76"
+  ],
+  "24": [
+   "2956454fdfca4c60",
+   "7f4a06d6674ce25d",
+   "8bacea2b8c338821",
+   "9442ddd5cdd6ca01",
+   "ad400b80eba91576",
+   "b058b7c5b58d4eb9",
+   "c64cd80e8adc804e",
+   "c8224af7c2b81ea2",
+   "e463cdea9524c987",
+   "e76f6643b4b0cd47",
+   "edfd87be3e5116c5",
+   "f3cd62fe0fa21d52"
+  ],
+  "32": [
+   "50ee3d44f6d413fe",
+   "5ccdb4865cfd179e",
+   "6912b1f0bf6df08a"
+  ],
+  "48": [
+   "15bd33ff7ab95059",
+   "3af1a6d3241d8a21",
+   "51ece556833f4752",
+   "6bbb58f2da9bcb0e",
+   "aab3a38f6650d75f",
+   "f12b1a4da6c818fc"
+  ]
+ }
+}
