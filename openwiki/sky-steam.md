@@ -1,6 +1,48 @@
 # sky_steam 칩셋 (하늘섬 A + 증기 산업도시 B)
 
-> 상태: 설계 중, 번들 배선 없음. 근거 계약: AGENTS.md 3/4 관문(object-gate), tiledata/AI-REFERENCE-CONTRACT.md.
+> 상태(2026-10-14): **번들 배선 완료.** 줄 A 50조각 + 줄 B 98조각(전부 object-gate PASS 영수증, 그림 해시 일치)을 한 칩셋 `sky_steam`(계열 `oprn-sky-steam`)에 구웠다.
+> 줄 B 는 옛 agent/sky-b 그림을 하나도 쓰지 않고 처음부터 다시 그렸다. 근거 계약: AGENTS.md 3/4 관문(object-gate), tiledata/AI-REFERENCE-CONTRACT.md.
+
+## 한눈에 — 파일 지도
+
+| 하는 일 | 파일 |
+|---|---|
+| 줄 B 조각(코드 손 도트) | `scripts/content/sky-steam/steam_b_{build,props,vehicles,dock,anim,tiles,interior}.py` · 공용 `steam_b_lib.py` · 묶음 `steam_b_all.py export|status` |
+| 굽기(A+B → 시트·정의·핀) | `bake_sky.py` → `public/assets/sky-steam/sky-steam-chipset.png`, `src/assets/skySteamTileset.json`, `src/assets/skySteamSheet.json`, `tiledata/sky-steam/{pins,bake-report}.json` |
+| 참고문서(7용도) | `bake_refs_sky.py` → `src/assets/skySteamReferences.json`(그림은 `public/assets/sky-steam-references/` 경로만) |
+| 장면·구조 검사(파이썬) | `steam_b_scenes.py`(QA 장면 5장) · `sky_check.py`(SKY-KIT-CUT·LAYER·NO-GROUND·DOOR-BLOCKED·UNREACHABLE) · `qa_defects.json` |
+| 번들 타일셋 | `src/project/defaults/skySteam.ts`(create·ensure·references, 소유 id = `sky-a-*`·`steam-*`·`sky-*`) → `defaultAssets.ts` `ensureBundledTilesets` |
+| 맵 구성기 | `src/project/skySteamComposer.ts`(순수) — `sky_check.py` 와 같은 검사를 TS 로 |
+| 조수 도구 | `src/editor/tools/skySteamTools.ts` `compose_sky_steam({kind, seed, mapId?, newMap?, replace?})` |
+| 조수 라우팅 | `src/ai/skySteamPolicy.ts` → `plainTurn.ts`(노출 도구)·`executionRoute.ts`(의도 노트)·`systemPrompt.ts`(포인터·상세 줄) |
+| 시각화·증거 | `steam_b_viz.py final` → `~/claude-viz/steam-redo.html`(자체완결, 증거 그림 전부 포함) · 원본 그림은 `verify-shots/sky-steam/`(로컬 — 저장소에서 gitignore) |
+
+## 굽기 규칙 (`bake_sky.py`)
+- 칸 종류(jp-city `bake_lib.PC` 와 같다): floor(아래·걷기) · solidfloor(아래·막힘) · solid(위·막힘) · star(위·걷기, 캐릭터 위 덧그림) · flat(priority lower 이나 잠금 defaultLayer upper, 걷기).
+  엔진 홈 층 = 잠긴 칸은 meta.defaultLayer, 아니면 priority — 검사도 이 규칙으로 본다.
+- 오토타일 8: 8방 blob(N1 E2 S4 W8 NE16 SE32 SW64 NW128 → 47장, variantMap 256키) `steam-at-{cobble,yard,brickpave,deck,ceiling}`, 4방(16키) `steam-at-{rail,tramrail,pipe}`.
+  갑판(deck)은 불투명 아래층이고 바깥 둥근 모서리 화소는 줄 A 구름 바다 변형 0 과 같은 화소라 구름 위에 떠 보인다. 남쪽 이웃이 없는 갑판 칸은 막힘(거더 앞면).
+- 칸 번호는 덧붙이기 전용(`tiledata/sky-steam/pins.json`, 48열). 굽기는 정의 위반 0·재조립 불일치 0·팔레트 밖 0 이어야 끝난다.
+- 영수증이 없거나 해시가 다른 조각은 굽지 않는다(`registry.status_of`). 관문을 못 넘은 조각은 버렸다: 철문·가스통·망원경·모루·약품 선반·괘종시계·가스등 애니(프레임마다 판정이 뒤집힘 → 켠/끈 정적 2조각).
+
+## 적대적 시각 QA 1회 (2026-10-14)
+장면 5장(street·yard·boiler·inn·dock)을 원본 해상도로 렌더하고 3배로 잘라 보아 결함 20건을 상자와 함께 `qa_defects.json` 에 남겼다(art 7 · comp 12 · open 1).
+개선 1회: 그림 결함 7건은 다시 그려 관문 재통과(판석 엇갈림·벽돌 포장 톤·격자 바닥·선로 침목·가스등 1×3·천장 테 8방 오토타일·판자 갑판), 배치 결함 12건은 장면·구성기 규칙으로 고쳤다.
+**미해결 D1**: 줄 A 집(문 8px)과 줄 B 건물(문 22~26px)의 축척이 다르다 — 구성기는 A 건물을 따로 섬에만 둬 나란히 서지 않게 한다. 줄 A 집을 사람 크기 문으로 다시 그리는 것이 남은 일.
+QA 뒤에 본 것(고치지 않음): 줄 A 에 풀↔구름 가장자리 칸이 없어 구성한 섬의 모서리가 네모로 끊긴다.
+
+## 구성기·도구 (`compose_sky_steam`)
+- 종류 7: street(뒷줄 건물을 북쪽 끝에 붙임 → 문 앞 보도 → 차도 5~6줄(전차 선로) → 보도 → 앞줄 건물, 가스등은 건물 틈) · yard(공장 줄·굴뚝+연기·발 밑을 잇는 관·벽 앞 소품 무리·선로+지선·화차·기관차·기중기 밑 상자) ·
+  dock(구름 바다 · 판자 갑판 오토타일 · 격납고 · 계류탑 + 바로 옆 비공정 · 다리로 이은 줄 A 섬) · island(섬 2~3개, 맨 아래 풀 줄이 같고 다리가 그 줄로 잇는다) · workshop/boiler/inn(천장 테 오토타일 · 북벽 키트 · 남쪽 문 한 칸 · 통로 열 비움).
+- 규칙(QA 에서 나옴): 땅은 한 재질(기본 변형 + 7칸에 하나 꼴 짝 변형, 재질이 다른 변형은 섞지 않음) · 띠 전체를 같은 바닥으로 덮어 비워 두지 않는다 · 건물 사이 1~2칸 · 문 앞 줄에 소품 금지 · 마차는 동서 차도에 세우지 않음 · 줄 A 건물은 섬 풀 위에만 · 톱니 벽판·계기는 강판 벽 방에만.
+- 끝에 구조 검사(`checkSkySteam`, `sky_check.py` 와 같은 코드)를 돌려 오류 0 인 배치만 돌려준다. 오류가 나면 씨앗을 바꿔 6번까지 다시 짠다. 7종류 × 기본·최소 크기 × 씨앗 3 = 42장 모두 TS·파이썬 두 검사 0건(2026-10-14).
+- 도구는 복제본에서 짜고 검사 통과 뒤 반영한다. 대상 맵이 sky_steam 이면 그 맵(손댄 맵은 replace:true), 손대지 않은 빈 맵(새 프로젝트 시작 맵)이면 그 자리에서 sky_steam 으로 바꾸고, 아니면 새 맵을 만든다(newMap:true 는 늘 새 맵).
+  건물마다 `sky-building` 이름표(문 앞 접근칸 좌표)를 남기고, 막힌 칸 위 이벤트는 옆 걷는 칸으로 옮기며, 시작 맵이면 시작점을 걷는 칸으로 잡는다. 계열이 다른 칠한 맵을 보고 있으면 실행기(rejectTilesetFamilyChange)가 거부한다.
+
+## 조수 라우팅 (`skySteamPolicy.ts`)
+- 칩셋이 프로젝트에 있을 때만. 낱말: 스팀펑크 · 증기 기관/도시/공장/열차 · 하늘섬 · 공중/부유 섬·도시 · 비공정·비행선 · 톱니 도시 · steampunk·airship·sky island.
+- 순서: 보는 맵이 jp_city 면 jp_city → 아니면 sky_steam(스팀펑크 낱말은 jp_city 의 약한 「도시 거리」 낱말보다 앞선다: 「증기기관 도시 거리」) → gothic → 버들항.
+- 종류는 문장에서 고른다(부두→dock, 공장→yard, 보일러→boiler, 공방→workshop, 여관→inn, 거리·도시→street, 섬·마을→island). 노트가 compose_sky_steam 한 호출 → show_map_region 확인 순서를 지시한다.
 
 ## 공용 모듈 (`scripts/content/sky-steam/`)
 - `palette.py` — `K(name, t)` 9단 램프. 월드맵 steampunk 재질(brass soot magi copper iron) + 새색 sky cloud + 섬(grass rock earth wood canvas red). 이름은 추가만.
@@ -8,7 +50,21 @@
 - 파일 소유: A = `sky_a_*.py`, B = `steam_b_*.py`.
 - 관문: `npm run harness -- object-gate review --batch /tmp/sky-A-batch.jsonl 2>&1 | grep -E "^(PASS|FAIL)"` (판정자 gemini-3.8-flash x4, rail-kits 의 rules.ts 변경과 같다).
 
-## 줄 A — 하늘섬 (`sky_a_*.py`, 상태: 번들 배선 없음)
+## 조수 실시험 (gemini-3.8-flash high, 실제 입력창 경로, 새 기본 프로젝트 — 2026-10-14)
+재현: `/tmp/ai-steam/rerun.sh`(= `/tmp/ai-gemini/rerun.sh` 를 이 워크트리로 돌린 사본: 빌드 → `oprn-serve` 호스트 + firefox + 하네스 ai-config → 저장본 렌더). 호스트는 `dist-electron/browser-bridge.js` 가 있어야 뜬다(`npm run build:electron`).
+그림·점수·도구 순서: `verify-shots/sky-steam/assistant.json` 과 `assistant/*.png`(로컬, gitignore — 같은 내용이 `~/claude-viz/steam-redo.html` 에 들어 있다). 점수는 사람이 그림을 보고 매긴 0–10(조수 보고는 근거가 아니다).
+
+| 문장 | r1(개선 전) | r2(개선 1회 뒤) | 남은 약점 |
+|---|---|---|---|
+| 하늘섬 마을 만들어줘 | 4 — 위쪽 절반 빈 구름, 섬 위 빈 풀밭 | 6 — 섬 위 소품 무리·하늘 비공정 | 섬 모서리 네모(풀↔구름 가장자리 칸 없음), 줄 B 건물 없음, 줄 A 집 작음 |
+| 증기기관 도시 거리 | 6 — 구성기 거리는 좋으나 밀도 수리 권고에 조수가 키트 칸을 낱칸 번호로 차도 연석에 칠함 | 7 — 낱칸 칠하기·수리 권고 없음 | 앞줄 가판대가 작게 떠 보임, 거리 소품 적음 |
+| 비공정 부두 | 6 — 갑판 아래·맵 오른쪽 빔 | 7 — 화물 마당, 폭 맞춤 | 섬이 작고 줄 A/B 축척 차(D1) |
+
+개선 1회(커밋 「one improvement pass after real gemini runs」): 섬·부두 구성 보강 + 도구 결과·의도 노트에 「비운 동선은 의도, 더할 소품은 stamp_object 키트만, paint_tiles 금지」 +
+`compose_sky_steam` 이 맵 전체 이름표(`sky-composed`, 종류·씨앗)를 남기고 `inspectPiLayoutQuality` 가 그 맵을 건너뛴다(밀도 지표가 차도·갑판 통로를 빈 바닥으로 셌다).
+r1 「증기기관 도시 거리」 첫 시도는 모델 응답이 한 번 뒤 멈춰 600초 시간 초과 — 같은 빌드로 재실행한 것을 점수로 썼다.
+
+## 줄 A — 하늘섬 (`sky_a_*.py`, 상태: 번들에 구움 — 아래 시트 좌표는 줄 A 단독 시트 기준, 번들 칸 번호는 `pins.json`)
 
 **계약.** 서 있는 조각은 3/4 탑뷰: 깊은(5줄+) 밝고 결 있는 윗면 판 + 뒤 모서리 윤곽 + 어두운 앞면. 섬 = 윗면(풀) + 앞 절벽면 + 매달린 뿌리/바위. 구름 바다·풀 윗면·절벽 앞면은 평면 오토타일(kind `terrain`), 구름·증기는 `organic` 면제(판정자 과반이 「종류가 맞다」 해야 함). 사람·글자·생성 이미지 없음, 코드 손 도트만. 얇은 기둥은 관문이 「정면 입면도」로 떨어뜨린다 → 몸통을 윗면 있는 상자(`box`)로 만든다(판단 근거: 라운드 기록 아래).
 
