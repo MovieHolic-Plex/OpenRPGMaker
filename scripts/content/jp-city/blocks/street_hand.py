@@ -47,6 +47,28 @@ def top_face(c, x, y, w, rows, ramp, t=1, edge=True, grain=True):
     c.HL(x, y - 1, w, OL); c.VL(x - 1, y - 1, rows + 1, OL); c.VL(x + w, y - 1, rows + 1, OL)
 
 
+def slab(c, x, y, w, rows, ramp, t=2, taper=0.5, ribs=0, lip=True, rc=None):
+    """3/4 윗면 판(원근 사다리꼴): 뒤쪽 줄이 앞쪽보다 좁다(taper 줄당 안쪽으로), 앞 모서리에 어두운 입술 1줄 + 밑 그림자. 밝은 결."""
+    for j in range(rows):
+        ins = int((rows - 1 - j) * taper)
+        x0, ww = x + ins, w - 2 * ins
+        c.HL(x0, y + j, ww, K(ramp, t + 1 if j < rows // 2 else t))
+        if ww >= 4:
+            c.P(x0 + 1, y + j, K(ramp, t + 3)) if j < rows - 1 else None
+            for i in range(x0 + 2 + (j * 3) % 4, x0 + ww - 1, 6): c.P(i, y + j, K(ramp, t - 1))
+        c.P(x0 - 1, y + j, OL); c.P(x0 + ww, y + j, OL)
+    if ribs:
+        for k in range(1, ribs):
+            fx = k / ribs
+            for j in range(rows):
+                ins = int((rows - 1 - j) * taper)
+                ww = w - 2 * ins
+                c.P(x + ins + int(ww * fx), y + j, K(ramp, t - 2 if rc is None else rc))
+    c.HL(x + int((rows - 1) * taper), y - 1, w - 2 * int((rows - 1) * taper), OL)
+    if lip:
+        c.HL(x, y + rows - 1, w, K(ramp, t - 2)); c.HL(x, y + rows, w, OL)
+
+
 def disc_top(c, cx, cy, rx, ry, ramp, t=2):
     """원판·원통 위의 타원 윗면(밝은 면 + OL 테두리)."""
     for j in range(-ry - 1, ry + 2):
@@ -72,13 +94,14 @@ def pole_body(c, x, top, bot, mat='conc'):
     for y in range(bot - 14, bot - 2):                                                                             # 호랑이 무늬 표지
         for i in range(-3, 3):
             c.P(x + i, y, K('kii', 1) if ((y + i) // 2) % 2 else K('sumi', 1))
-    c.P(x - 4, bot - 1, OL); c.HL(x - 4, bot - 1, 9, K(mat if mat != 'conc' else 'conc', -2))
-    disc_top(c, x, top - 4, 6, 4, mat, 2)                                                                              # 기둥 머리 윗면(타원 7줄)
+    c.R(x - 6, bot - 4, 12, 4, K('conc', -2)); c.HL(x - 6, bot - 1, 12, K('conc', -3)); c.VL(x - 7, bot - 6, 6, OL); c.VL(x + 6, bot - 6, 6, OL)   # 밑동 콘크리트 기초
+    disc_top(c, x, bot - 6, 6, 3, 'conc', 3); c.HL(x - 6, bot, 12, OL)
+    disc_top(c, x, top - 4, 8, 5, mat, 3)                                                                              # 기둥 머리 윗면(타원 7줄)
 
 
 def crossarm(c, x0, x1, y, mat='tekko'):
     """완목: 윗면 3줄(밝은 결) + 앞면 2줄 + 애자(흰 2×3) 4개. 애자는 윗면 뒤쪽에 선다(전선 높이는 y-4~y-2 그대로)."""
-    top_face(c, x0, y, x1 - x0, 4, mat, 2)
+    slab(c, x0, y, x1 - x0, 5, mat, 2, taper=0.5, ribs=(x1 - x0) // 5, lip=False, rc=5)
     c.R(x0, y + 4, x1 - x0, 3, K(mat, -3)); c.HL(x0, y + 4, x1 - x0, K(mat, -1)); c.HL(x0, y + 7, x1 - x0, OL)
     c.VL(x0 - 1, y + 4, 3, OL); c.VL(x1, y + 4, 3, OL)
     for ix in (x0 + 2, x0 + (x1 - x0) // 3, x0 + 2 * (x1 - x0) // 3, x1 - 4):
@@ -214,8 +237,8 @@ def _bus(c):
             d = i * i + j * j
             if d <= 36: c.P(8 + i, 11 + j, OL if d > 25 else K('kon', -1) if d > 12 else K('shiro', 1))
     disc_top(c, 8, 4, 6, 3, 'kon', 2)                                              # 표지 윗면
-    top_face(c, 3, 22, 10, 4, 'shiro', 2)                                          # 시간표 상자 윗면
-    c.R(3, 26, 10, 9, K('shiro', -1)); c.HL(3, 26, 10, K('kon', 0))
+    slab(c, 1, 17, 14, 9, 'tairu', 1, taper=0.4, ribs=4, lip=False, rc=5)                                  # 시간표 상자 윗면(큰 덮개)
+    c.R(2, 26, 12, 9, K('shiro', -1)); c.HL(2, 26, 12, K('kon', 0))
     for j in (28, 30, 32): c.HL(4, j, 7, K('sumi', 2))
     c.VL(2, 26, 9, OL); c.VL(13, 26, 9, OL); c.HL(2, 35, 12, OL)
     c.R(3, 43, 10, 4, K('conc', -1)); top_face(c, 3, 39, 10, 4, 'conc', 2); c.HL(2, 47, 12, OL); shadow(c, 2, 47, 12)
@@ -333,19 +356,29 @@ def _lock(c):
 
 
 # ─────────────────────────── 블록 담·대문·카포트 (조사 02·03: 블록 한 단 20cm, 보통 1.2m 이하 + 위 펜스) ───────────────────────────
+def coping(c, x, y, w, rows, ramp='tairu', t=1):
+    """타일 이음에서 끊기지 않는 윗면: 기와 갓돌(kawara) — 4px마다 골이 지는 어두운 기와 상판(앞면의 연한 줄눈 돌과 확연히 갈림) + 앞 모서리 밝은 선."""
+    for j in range(rows):
+        c.HL(x, y + j, w, K(ramp, t + (j * 2) // rows))
+    for i in range(x + 3, x + w, 4):
+        c.VL(i, y + 1, rows - 2, K(ramp, 5)); c.VL(i + 1, y + 1, rows - 2, K(ramp, t - 1))
+    c.HL(x, y, w, OL); c.HL(x, y + rows - 1, w, K(ramp, 5))
+
+
 def block_wall(c, x, y, w, sukashi=(), cap=True, end_l=False, end_r=False):
-    """블록 담 높이 14px: 갓돌 윗면 6줄(밝은 결) + 앞 모서리 + 어두운 앞면 단 7줄(가로 줄눈·엇갈린 세로 줄눈·투각 블록)."""
-    c.R(x, y + 6, w, 8, K('conc', -1))
-    for j in range(y + 8, y + 14, 2): c.HL(x, j, w, K('conc', -3))
-    for k, j in enumerate(range(y + 7, y + 14, 2)):
+    """블록 담 높이 14px: 두꺼운 갓돌 윗면 9줄(밝은 돌판 + 판 이음 세로선, 뒤 모서리 어두운 선) + 앞 모서리 + 어두운 앞면 단 5줄(가로 줄눈·엇갈린 세로 줄눈·투각 블록)."""
+    fy = y + 9
+    c.R(x, fy, w, 5, K('conc', -2))
+    for j in range(fy + 2, fy + 5, 2): c.HL(x, j, w, K('conc', -3))
+    for k, j in enumerate(range(fy, fy + 5, 2)):
         for i in range(x + (0 if k % 2 else 4), x + w, 8): c.VL(i, j, 2, K('conc', -3))
     for sx in sukashi:
-        c.R(sx, y + 8, 7, 4, K('conc', -3)); c.P(sx + 3, y + 8, K('conc', 0)); c.HL(sx + 2, y + 9, 3, K('conc', 0)); c.P(sx + 3, y + 10, K('conc', 0))
-    top_face(c, x, y, w, 6, 'conc', 2)
-    c.HL(x, y + 6, w, K('conc', -2))
-    c.HL(x, y + 13, w, K('conc', -3))
-    if end_l: c.VL(x, y + 6, 8, K('conc', 1)); c.VL(x - 1, y + 6, 8, OL)
-    if end_r: c.VL(x + w - 1, y + 6, 8, K('conc', -3)); c.VL(x + w, y + 6, 8, OL)
+        c.R(sx, fy + 1, 7, 4, K('conc', -3)); c.P(sx + 3, fy + 1, K('conc', 0)); c.HL(sx + 2, fy + 2, 3, K('conc', 0)); c.P(sx + 3, fy + 3, K('conc', 0))
+    coping(c, x, y, w, 9)                                        # 윗면(어두운 상판 + 수렴 이음)
+    c.HL(x, fy, w, K('conc', -3))                                            # 앞면 첫 줄 어둠
+    c.HL(x, y - 1, w, OL)
+    if end_l: c.VL(x, y, 14, K('conc', 1)); c.VL(x - 1, y - 1, 15, OL)
+    if end_r: c.VL(x + w - 1, y, 14, K('conc', -3)); c.VL(x + w, y - 1, 15, OL)
     c.HL(x, y + 14, w, OL)
 
 
@@ -391,21 +424,19 @@ def _gatepost(c):
       rules='gatepost 옆 2칸. 닫힌 대문이라 막힘 — 들어가는 길이 필요하면 대신 비워 둔다.')
 def _gate(c):
     for x0 in (1, 16):
-        top_face(c, x0, 1, 15, 5, 'ita', 2)                                          # 위 가로대 윗면
-        c.R(x0, 6, 15, 9, K('ita', -3)); c.HL(x0, 6, 15, K('ita', -1)); c.HL(x0, 14, 15, K('sumi', 1))
-        for i in range(x0 + 2, x0 + 14, 3): c.VL(i, 7, 7, K('ita', 0))
-        c.VL(x0, 6, 9, OL); c.VL(x0 + 15, 6, 9, OL)
+        slab(c, x0, 0, 15, 7, 'ita', 2, taper=0.5)                                   # 위 가로대 윗면
+        c.R(x0, 7, 15, 8, K('ita', -3)); c.HL(x0, 7, 15, K('ita', -1)); c.HL(x0, 14, 15, K('sumi', 1))
+        for i in range(x0 + 2, x0 + 14, 3): c.VL(i, 8, 6, K('ita', 0))
+        c.VL(x0, 7, 8, OL); c.VL(x0 + 15, 7, 8, OL)
 
 
 @prop('carport', 'カーポート 알루미늄 카포트', 4, 3, solid=[(0, 2), (3, 2)], tags=['카포트', '주차', '주택가'],
       rules='교외 집 앞마당(길과 집 사이 4×3칸). 지붕 밑은 지나갈 수 있다 — 차 소품(jp-prop-car-*)은 지붕 밑 줄에 둔다. 앞 기둥 둘만 막힘.')
 def _carport(c):
     W = 64
-    c.R(0, 8, W, 12, K('garasu', 3))                                                     # 폴리카보 지붕 윗면(밝은 유리 단)
-    for i in range(0, W, 12): c.VL(i, 8, 12, K('tekko', 1))
-    for k in range(8): c.P(6 + k * 7, 18 - (k % 3) * 3, K('shiro', 2))
-    c.HL(0, 8, W, K('ita', 1)); c.R(0, 20, W, 3, K('ita', 0)); c.HL(0, 20, W, K('ita', 1)); c.HL(0, 22, W, K('ita', -2))   # 앞 보(브론즈)
-    c.HL(0, 7, W, OL); c.HL(0, 23, W, OL); c.VL(-1, 7, 17, OL); c.VL(W, 7, 17, OL)
+    slab(c, 0, 4, W, 14, 'garasu', 2, taper=0.4, ribs=6, lip=False)                   # 폴리카보 지붕 윗면(원근 사다리꼴, 갈라지는 골)
+    c.R(0, 18, W, 5, K('ita', 0)); c.HL(0, 18, W, K('ita', 2)); c.HL(0, 19, W, K('ita', 1)); c.HL(0, 22, W, K('ita', -2)); c.HL(0, 23, W, OL)   # 앞 보(브론즈)
+    c.VL(-1, 18, 5, OL); c.VL(W, 18, 5, OL)
     for px in (4, W - 8):
         c.R(px, 23, 4, 24, K('ita', 0)); c.VL(px, 23, 24, K('ita', 2)); c.VL(px + 3, 23, 24, K('ita', -2)); c.VL(px - 1, 23, 24, OL); c.VL(px + 4, 23, 24, OL)
     for i in range(0, W): c.P(i, 23 + 1, K('yoru', -2)) if i % 2 else None
@@ -414,12 +445,12 @@ def _carport(c):
 @prop('tsukigime', '月極駐車場 간판(空あり)', 2, 2, solid=[(0, 1), (1, 1)], tags=['주차', '月極', '간판'],
       rules='월정 주차장 길 쪽 모퉁이. 주차 칸 선은 기존 주차 바닥 칸을 쓴다.')
 def _tsuki(c):
-    top_face(c, 2, 0, 28, 5, 'kinari', 2)                                                   # 간판 상자 윗면
-    c.R(2, 5, 28, 17, K('shiro', 0)); c.HL(2, 5, 28, K('kon', 0)); c.HL(2, 6, 28, K('kon', 0))
-    c.R(4, 8, 10, 10, K('kon', 0)); c.R(6, 9, 3, 8, K('shiro', 2)); c.R(8, 9, 4, 4, K('shiro', 2)); c.R(9, 10, 2, 2, K('kon', 0))   # P
-    for j in (9, 12, 15): c.HL(16, j, 12, K('sumi', 2))
+    slab(c, 2, 0, 28, 7, 'tairu', 1, taper=0.5, ribs=8, lip=False, rc=5)                                 # 간판 상자 윗면(두꺼운 판)
+    c.R(2, 7, 28, 15, K('shiro', 0)); c.HL(2, 7, 28, K('kon', 0)); c.HL(2, 8, 28, K('kon', 0))
+    c.R(4, 10, 10, 8, K('kon', 0)); c.R(6, 11, 3, 6, K('shiro', 2)); c.R(8, 11, 4, 3, K('shiro', 2)); c.R(9, 12, 2, 1, K('kon', 0))   # P
+    for j in (11, 13, 15): c.HL(16, j, 12, K('sumi', 2))
     c.R(4, 19, 24, 2, K('aka', 0))                                                    # 空あり 띠
-    c.VL(1, 3, 20, OL); c.VL(30, 3, 20, OL); c.HL(1, 3, 30, OL); c.HL(1, 22, 30, OL)
+    c.VL(1, 7, 15, OL); c.VL(30, 7, 15, OL); c.HL(1, 22, 30, OL)
     for px in (6, 24): c.R(px, 23, 2, 22, K('tekko', 1)); c.VL(px - 1, 23, 22, OL); c.VL(px + 2, 23, 22, OL)
     shadow(c, 3, 45, 26)
 
@@ -455,10 +486,10 @@ def _pots(c):
         c.R(x0 + 1, 11, 12, 5, K('renga', -1))
         for j in range(5): c.HL(x0 + 1 + (j == 4), 11 + j, 12 - 2 * (j == 4), K('renga', -1 if j else 0))
         c.VL(x0 + 1, 11, 5, K('renga', 1)); c.VL(x0 + 12, 11, 5, K('renga', -3)); c.HL(x0 + 2, 15, 10, OL)
-        disc_top(c, x0 + 7, 9, 7, 3, 'renga', 2)                                   # 아가리 림(밝은 테)
-        for j in range(-2, 3):
+        disc_top(c, x0 + 7, 9, 7, 5, 'renga', 2)                                   # 아가리 림(밝은 테)
+        for j in range(-3, 4):
             for i in range(-5, 6):
-                if (i * i) / 30.0 + (j * j) / 5.0 <= 1.0: c.P(x0 + 7 + i, 9 + j, K('ita', -4) if (i + j) % 3 else K('ita', -3))
+                if (i * i) / 30.0 + (j * j) / 10.0 <= 1.0: c.P(x0 + 7 + i, 9 + j, K('ita', -4) if (i + j) % 3 else K('ita', -3))
         for k in range(5): c.VL(x0 + 5 + k, 2 + (k % 2) * 2, 7 - (k % 2) * 2, K('midori', 1 if k % 2 else 2))
         c.P(x0 + 7, 1, K('aka', 2)); c.P(x0 + 5, 3, K('kii', 2))
 
@@ -470,7 +501,7 @@ def _monohoshi(c):
         c.R(px - 1, 9, 4, 21, K('tekko', 2)); c.VL(px - 1, 9, 21, K('tekko', 3)); c.VL(px - 2, 9, 21, OL); c.VL(px + 3, 9, 21, OL)
         c.R(px - 3, 28, 8, 2, K('tekko', 0))
         top_face(c, px - 2, 5, 6, 4, 'tekko', 2)                                       # 기둥 머리 윗면
-    top_face(c, 2, 3, 44, 6, 'shiro', 2)                                              # 장대 윗면
+    slab(c, 2, 2, 44, 7, 'shiro', 2, taper=0.5, lip=False)                           # 장대 윗면
     c.HL(2, 9, 44, K('tekko', 0)); c.HL(2, 10, 44, OL)
     clothes = (('sora', 1, 8, 9), ('shiro', 2, 7, 11), ('pinku', 2, 6, 8), ('kii', 2, 8, 10), ('midori', 1, 6, 7))
     x = 7
@@ -508,14 +539,13 @@ def _gomi(c):
 @prop('jizo', 'お地蔵さん 길가 祠', 1, 2, solid=[(0, 1)], tags=['지장', '祠', '골목'],
       rules='골목 모퉁이·담 곁. 빨간 턱받이와 모자를 쓴 돌 지장 + 작은 나무 사당.')
 def _jizo(c):
-    top_face(c, 0, 1, 16, 7, 'tairu', 2)                                             # 사당 지붕 윗면(기와 줄)
-    for i in range(2, 16, 4): c.VL(i, 2, 5, K('tairu', -1))
-    c.R(1, 8, 14, 2, K('ita', -1)); c.HL(1, 8, 14, K('ita', 1)); c.HL(0, 10, 16, OL)  # 처마 앞
-    c.R(2, 10, 12, 19, K('ita', -2)); c.VL(2, 10, 19, K('ita', 0)); c.VL(13, 10, 19, K('ita', 0))
+    slab(c, 0, 0, 16, 9, 'tairu', 2, taper=0.6, ribs=4, lip=False)                   # 사당 지붕 윗면(기와, 원근)
+    c.R(1, 9, 14, 2, K('ita', -1)); c.HL(1, 9, 14, K('ita', 1)); c.HL(0, 11, 16, OL)  # 처마 앞
+    c.R(2, 11, 12, 18, K('ita', -2)); c.VL(2, 11, 18, K('ita', 0)); c.VL(13, 11, 18, K('ita', 0))
     c.R(5, 13, 6, 5, K('conc', 1)); c.R(5, 13, 6, 2, K('aka', 0))                    # 머리 + 모자
-    c.R(4, 18, 8, 3, K('aka', 1)); c.R(5, 21, 6, 6, K('conc', 0)); c.VL(5, 18, 9, K('conc', 2))
+    c.R(4, 18, 8, 3, K('aka', 1)); c.R(5, 21, 6, 6, K('conc', 0)); c.VL(5, 18, 8, K('conc', 2))
     c.P(6, 16, K('sumi', 1)); c.P(9, 16, K('sumi', 1))
-    c.R(1, 28, 14, 3, K('conc', 1)); c.HL(1, 28, 14, K('conc', 2))
+    slab(c, 0, 27, 16, 4, 'conc', 2, taper=0.5, lip=False)                         # 받침돌 윗면(앞에 보이는 바닥)
     c.VL(1, 10, 19, OL); c.VL(14, 10, 19, OL); c.HL(0, 31, 16, OL)
 
 
@@ -523,12 +553,12 @@ def _jizo(c):
       rules='신사 참배길 입구. 가운데 두 칸이 걸어 지나가는 길이다(기둥 두 칸만 막힘). 뒤쪽(북쪽)에 참배길·拝殿.')
 def _torii(c):
     v = 'aka'
-    top_face(c, 0, 0, 64, 6, 'sumi', 3)                                                      # 笠木 윗면(기와처럼 결 있는 검은 면)
-    c.R(0, 6, 64, 2, K('sumi', -2)); c.HL(0, 6, 64, K('sumi', 0)); c.VL(-1, 6, 2, OL); c.VL(64, 6, 2, OL)   # 笠木 앞
-    c.R(2, 8, 60, 4, K(v, 0)); c.HL(2, 8, 60, K(v, 2)); c.HL(2, 11, 60, K(v, -2))          # 島木
-    c.HL(0, 8, 64, OL); c.HL(1, 12, 62, OL)
+    slab(c, 0, 0, 64, 7, 'tairu', 1, taper=0.6, ribs=12, lip=False, rc=5)                                    # 笠木 윗면(두꺼운 면, 양 끝이 들린 사다리꼴)
+    c.R(0, 7, 64, 2, K('sumi', -2)); c.HL(0, 7, 64, K('sumi', 0)); c.VL(-1, 7, 2, OL); c.VL(64, 7, 2, OL)   # 笠木 앞
+    c.R(2, 9, 60, 3, K(v, 0)); c.HL(2, 9, 60, K(v, 2)); c.HL(2, 11, 60, K(v, -2))          # 島木
+    c.HL(0, 9, 64, OL); c.HL(1, 12, 62, OL)
     c.R(29, 12, 6, 6, K(v, 0)); c.VL(29, 12, 6, OL); c.VL(34, 12, 6, OL)                    # 額束
-    top_face(c, 4, 15, 56, 3, 'aka', 2)
+    slab(c, 4, 13, 56, 5, 'aka', 3, taper=0.4, lip=False)
     c.R(4, 18, 56, 3, K(v, -2)); c.HL(4, 18, 56, K(v, 0)); c.HL(4, 20, 56, K(v, -3)); c.HL(4, 21, 56, OL)   # 貫
     for px in (6, 52):
         c.R(px, 12, 6, 34, K(v, 0)); c.VL(px, 12, 34, K(v, 2)); c.VL(px + 5, 12, 34, K(v, -2)); c.VL(px - 1, 12, 34, OL); c.VL(px + 6, 12, 34, OL)
@@ -540,9 +570,9 @@ def _torii(c):
       rules='간선 길가. 캐노피 밑(위 세 줄)은 차가 들어가는 바닥이다. 주유기 섬 두 개와 기둥이 맨 아래 줄을 막는다. 뒤(북쪽)에 給油所 사무소(jp-bldg-gas-office).')
 def _gas(c):
     W = 112
-    c.R(0, 2, W, 10, K('shiro', 1)); c.HL(0, 2, W, K('shiro', 2))                             # 캐노피 윗면
-    c.R(0, 12, W, 6, K('aka', 0)); c.HL(0, 12, W, K('aka', 1)); c.HL(0, 17, W, K('aka', -2)); c.HL(0, 15, W, K('shiro', 2))   # 앞 띠
-    c.HL(0, 1, W, OL); c.HL(0, 18, W, OL); c.VL(-1, 1, 18, OL); c.VL(W, 1, 18, OL)
+    slab(c, 0, 1, W, 11, 'shiro', 2, taper=0.45, ribs=8, lip=False)                           # 캐노피 윗면(원근 사다리꼴)
+    c.R(0, 12, W, 6, K('aka', 0)); c.HL(0, 12, W, K('aka', 2)); c.HL(0, 17, W, K('aka', -2)); c.HL(0, 15, W, K('shiro', 2))   # 앞 띠
+    c.HL(0, 18, W, OL); c.VL(-1, 12, 6, OL); c.VL(W, 12, 6, OL)
     for px in (22, 86):
         c.R(px, 18, 4, 46, K('shiro', 1)); c.VL(px, 18, 46, K('shiro', 2)); c.VL(px + 3, 18, 46, K('tekko', 0)); c.VL(px - 1, 18, 46, OL); c.VL(px + 4, 18, 46, OL)
     for gx in (36, 68):
@@ -559,10 +589,10 @@ def _sgate(c):
     for px in (2, 82):
         c.R(px, 10, 12, 22, K('conc', -1)); c.VL(px, 10, 22, K('conc', 1)); c.VL(px + 11, 10, 22, K('conc', -3))
         c.VL(px - 1, 10, 22, OL); c.VL(px + 12, 10, 22, OL)
-        top_face(c, px - 1, 3, 14, 7, 'shiro', 2)                                           # 기둥 머리 윗면
+        slab(c, px - 2, 1, 16, 9, 'shiro', 2, taper=0.5, lip=True)                          # 기둥 머리 윗면(넓은 덮개)
     c.R(4, 13, 8, 16, K('ita', 1)); c.VL(5, 14, 14, K('sumi', 2)); c.VL(9, 16, 10, K('sumi', 2))    # 교명판(세로 글 줄)
     for x0 in (14, 66):                                                                       # 접힌 미닫이 문
-        top_face(c, x0, 12, 16, 4, 'tekko', 2)                                               # 문 윗 가로대 윗면
+        slab(c, x0, 9, 16, 7, 'tekko', 2, taper=0.5, lip=False)                               # 문 윗 가로대 윗면
         c.R(x0, 16, 16, 14, K('tekko', -2))
         for i in range(x0 + 1, x0 + 16, 3): c.VL(i, 17, 12, K('tekko', -3))
         c.HL(x0, 16, 16, K('tekko', 0)); c.VL(x0 + 15, 16, 14, OL)
@@ -670,12 +700,13 @@ def bridge_rail_v(c):
 
 
 def bridge_post(c):
-    """난간 기둥: 위에서 본 머리 윗면 6줄(밝음) + 앞면 7줄(어두움). 이음 가로대는 위·아래 2줄만 남긴다."""
+    """난간 기둥: 원통 몸통(앞면 6줄) 위에 위에서 본 타원 머리판(7줄). 이음 가로대는 위·아래 2줄만 남긴다."""
     for y in (0, 1, 14, 15):
         c.R(4, y, 8, 1, K('conc', 1)); c.P(4, y, OL); c.P(11, y, OL)
-    c.R(2, 2, 12, 6, K('conc', 3)); c.HL(2, 2, 12, K('shiro', 1)); c.HL(3, 3, 10, K('shiro', 0)); c.HL(3, 7, 10, K('conc', 2))   # 윗면
-    c.R(2, 8, 12, 6, K('conc', 0)); c.R(2, 8, 5, 6, K('conc', 1)); c.HL(2, 13, 12, K('conc', -2)); c.VL(7, 8, 6, K('conc', -1))   # 앞면
-    c.HL(3, 1, 10, OL); c.HL(2, 14, 12, OL); c.VL(1, 2, 12, OL); c.VL(14, 2, 12, OL)
+    c.R(3, 8, 10, 6, K('conc', -1)); c.R(3, 8, 4, 6, K('conc', 1)); c.VL(11, 8, 6, K('conc', -3)); c.VL(12, 8, 6, K('conc', -3)); c.HL(3, 8, 10, K('conc', -3)); c.HL(3, 13, 10, K('conc', -3))
+    c.VL(2, 8, 6, OL); c.VL(13, 8, 6, OL); c.HL(2, 14, 12, OL)
+    disc_top(c, 8, 5, 7, 4, 'kinari', 2)                                              # 타원 머리판
+    for i in range(-5, 6, 3): c.P(8 + i, 4 + (i % 2), K('kinari', 4))
     c.R(6, 10, 4, 2, K('sumi', 1))
 
 prop('bridge-post', '다리 난간 기둥', 1, 1, solid=[(0, 0)], tags=['다리', '난간', '하천'], rules='다리 양 끝과 3칸마다 난간 위에 찍는다.')(bridge_post)
@@ -930,9 +961,9 @@ prop('rail-xing', '건널목 노면 판(1×4)', 1, 4, other='flat', tags=['철�
 
 
 def rail_fence(c):
-    """선로 옆 콘크리트 방호벽 1칸: 윗면 8줄(밝고 결 있음) + 앞 모서리 + 어두운 앞면 5줄 + 밑 풀."""
-    top_face(c, 0, 1, 16, 8, 'shiro', 2, grain=True)
-    c.HL(0, 9, 16, OL); c.R(0, 10, 16, 5, K('conc', -3)); c.HL(0, 10, 16, K('conc', -2)); c.HL(0, 14, 16, K('sumi', 1))
+    """선로 옆 콘크리트 방호벽 1칸: 윗면 9줄(원근 돌판) + 어두운 앞면 5줄 + 밑 풀."""
+    coping(c, 0, 1, 16, 9)
+    c.HL(0, 0, 16, OL); c.HL(0, 10, 16, OL); c.R(0, 11, 16, 4, K('conc', -3)); c.HL(0, 11, 16, K('conc', -2)); c.HL(0, 14, 16, K('sumi', 1))
     for x in (3, 11): c.R(x, 12, 2, 1, K('kii', 1))
     c.HL(0, 15, 16, K('midori', -1))
 
@@ -943,20 +974,21 @@ prop('rail-fence', '선로 콘크리트 방호벽', 1, 1, solid=[(0, 0)], tags=[
 def rail_signal(c):
     """건널목 경보기 1×3: 계전기 상자(윗면 8줄 결 있는 콘크리트 덮개 + 앞면 문) 위에 줄무늬 기둥과 붉은 등 둘 달린 가로 등보가 선 모양."""
     # 등보(앞면, 위쪽): 붉은 등 둘 + 흰 십자 표지
-    c.HL(1, 0, 14, OL); c.R(0, 1, 16, 8, K('kii', 0)); c.HL(1, 1, 14, K('kii', 2)); c.HL(1, 8, 14, K('kii', -2))
-    c.VL(0, 1, 8, OL); c.VL(15, 1, 8, OL); c.HL(1, 9, 14, OL)
+    slab(c, 0, 0, 16, 5, 'kii', 2, taper=0.5, lip=False)                                                    # 등보 윗면
+    c.R(0, 5, 16, 5, K('kii', 0)); c.HL(0, 5, 16, K('kii', 2)); c.HL(1, 9, 14, K('kii', -2))
+    c.VL(0, 5, 5, OL); c.VL(15, 5, 5, OL); c.HL(0, 10, 16, OL)
     for x in (2, 10):
-        c.R(x, 2, 4, 5, K('sumi', 1)); c.R(x + 1, 3, 2, 3, K('aka', 1)); c.P(x + 1, 3, K('aka', 3))
-    c.R(7, 2, 2, 6, K('shiro', 1)); c.P(7, 2, K('shiro', 3))
+        c.R(x, 6, 4, 3, K('sumi', 1)); c.R(x + 1, 6, 2, 2, K('aka', 1)); c.P(x + 1, 6, K('aka', 3))
+    c.R(7, 6, 2, 3, K('shiro', 1))
     # 기둥
-    for y in range(10, 25):
+    for y in range(11, 25):
         c.R(6, y, 4, 1, K('kii', 1) if (y // 3) % 2 else K('tekko', 0)); c.P(5, y, OL); c.P(10, y, OL); c.P(6, y, K('tekko', 2)); c.P(9, y, K('tekko', -2))
     # 상자 윗면: 뒤 모서리 짙은 선 + 결 있는 8줄 + 앞 모서리 밝은 줄
     c.HL(1, 24, 14, OL); c.HL(0, 25, 16, OL)
-    c.R(1, 26, 14, 8, K('conc', 2)); c.HL(1, 26, 14, K('conc', -1)); c.HL(1, 27, 14, K('conc', 1)); c.HL(1, 33, 14, K('shiro', 3))
+    slab(c, 0, 25, 16, 9, 'tairu', 1, taper=0.4, ribs=4, lip=False, rc=5); c.HL(0, 33, 16, OL)
     c.VL(0, 26, 8, OL); c.VL(15, 26, 8, OL)
     for x, y in ((2, 29), (5, 31), (9, 28), (12, 30), (3, 32), (10, 32), (13, 28)): c.P(x, y, K('conc', 0)); c.P(x + 1, y, K('conc', 0))
-    c.R(5, 22, 6, 3, K('conc', 1)); c.HL(5, 24, 6, K('conc', -2)); c.HL(6, 22, 4, K('conc', 3))                       # 기둥 받침판
+    c.R(5, 24, 6, 2, K('conc', -1)); c.HL(5, 25, 6, OL)                                                              # 기둥 받침
     # 상자 앞면
     c.HL(0, 34, 16, OL); c.R(0, 35, 16, 11, K('conc', -1)); c.HL(1, 35, 14, K('conc', 1)); c.HL(1, 45, 14, K('conc', -3))
     c.VL(0, 35, 11, OL); c.VL(15, 35, 11, OL); c.HL(0, 46, 16, OL)

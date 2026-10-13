@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "265a628b165f1cc5696b60529caec10b0051b6fa6a214a704f48666ed314fb74",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp/jp-bwallf-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese building/compound wall with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of the tiled roof/wall cap surface seen from above before the south-facing beams and wall panels below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7248
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese building wall with roof eave",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of foreshortened grey roof tile surface at the top of the wall structure before dropping down to the eave shadow and vertical wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese boundary wall / building wall front",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall is drawn in flat front elevation. Neither the lintels/beams (rows 5-7, 16-17) nor the stone base (rows 26-31) show any top surfaces seen from above. Rows 0-3 show a flat 4px textured band with no receding slope or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11707
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese building wall with tiled roof overhang, wooden upper section, and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/eaves surface is depicted at rows 0-3 (4 source pixel rows) with checkered roof tiling seen from above, atop the vertical wall facade below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5872
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.897Z",
+ "cells": {
+  "16": [
+   "4225ea479b125a11",
+   "ca6a604055a2d65e"
+  ],
+  "24": [
+   "02d1d86588a44167",
+   "02eb9ebdf2132fb2",
+   "2300860406ec14c0",
+   "35fc8ac60f56d3cb",
+   "3747e9b5df0cc6f7",
+   "51b7c74eea70b62e",
+   "92d5aaebc7e94f55",
+   "a0c4b9b5f1048062",
+   "abc27c5707efd9b5",
+   "ad05a186068a2560",
+   "e89b06a7f12c9828",
+   "ef4cd1b790eaa496"
+  ],
+  "32": [
+   "6adb0e3e06b59877",
+   "74ef684b7efc525b",
+   "8d6d83bc8a82cf79"
+  ],
+  "48": [
+   "49cf4c39c537f3ec",
+   "9ee7cd22c555e997",
+   "a15f563724067e70",
+   "b2595baa699c0cd1",
+   "d8db5c0851ead24a",
+   "f0b9c7c9f571cd54"
+  ]
+ }
+}

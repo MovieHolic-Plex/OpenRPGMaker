@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1c168b87b05cb64341883166c0ddfcecfc55905a203a7a4d766ad7413c43add",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp/jp-bwall-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical elevation across rows 1-14 with only a 1px dark line at row 1 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6296
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered entirely in front elevation with no visible top surface or wall cap (only a 1px border at row 0-1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5921
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boundary wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation with plaster wall (rows 2-8) and stone foundation (rows 10-14). There is no visible top surface or coping (row 1 is merely a 1px border line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5494
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile depicts a vertical wall in flat front elevation, with no visible top surface or coping (only a 1px boundary line at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5269
+  }
+ ],
+ "decidedAt": "2026-10-13T13:07:14.373Z",
+ "cells": {
+  "16": [
+   "4364f874524f1cdf"
+  ],
+  "24": [
+   "10c61ec3166c4628",
+   "5bb77866e9ca6b36",
+   "762c68f94ac879f8",
+   "b23241266e7cd944",
+   "d5b932679c1f7c24",
+   "fa224b9c4e6c15b4"
+  ],
+  "32": [
+   "49b9de560275ba19",
+   "4c40efd34146176a",
+   "50d210a881f50dfb",
+   "5c3814a38c1fa940",
+   "e6a93af3e76860b0",
+   "ff2596850312fe2d"
+  ],
+  "48": [
+   "1015019938f1916a",
+   "970635d5c1a16a78",
+   "b365b14e8dc5a2fe",
+   "dd4ad07e368ffbea",
+   "ebb2ae8100fe34b0",
+   "f6d1da007d3f36f8"
+  ]
+ }
+}

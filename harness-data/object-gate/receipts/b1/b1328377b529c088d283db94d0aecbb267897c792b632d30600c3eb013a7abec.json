@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1328377b529c088d283db94d0aecbb267897c792b632d30600c3eb013a7abec",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-tsukigime",
+ "label": "jp/jp-tsukigime",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking sign board with arched top and support posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board, support posts, and arched top canopy/panel are all drawn entirely flat in front elevation with no visible top surface or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5640
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard on posts with arched corrugated top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard panel, supporting posts, and arched sheet-metal top are drawn entirely in flat front elevation with no visible top surface or 3/4-view depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8467
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign and its arched header/canopy are drawn in pure front elevation with zero top depth visible. The top of the board is a 1px outline with no foreshortened horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9108
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign, its arched top panel/canopy, and supporting posts are drawn in a completely flat front elevation with zero top surface or depth visible from the top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13368
+  }
+ ],
+ "decidedAt": "2026-10-13T13:08:13.190Z",
+ "cells": {
+  "16": [
+   "51d5e736432069cd",
+   "ba875370987c7e60",
+   "d14a2b8dc0516522",
+   "f9963506b575a035"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "0582437a1fbfcfc6",
+   "05aae0ea7b7f1969",
+   "135e80afbb12895c",
+   "1cd456fbfa83c7bb",
+   "1dda52457558fb2e",
+   "2ee9e01d296c5f38",
+   "50fa0c9fc51ef147",
+   "518349a3dd0cad59",
+   "5e5475aab682d5b9",
+   "669fab931783ad7c",
+   "73f0b766c1716bf9",
+   "79aff99a9b0a6292",
+   "8a60c8a51bb67d4a",
+   "8d872c904f3c9f4a",
+   "9afcde3f62e00106",
+   "a0068f6cc6a9d304",
+   "a8a33f603bee47c3",
+   "b543545a9ea3a6d0",
+   "dfda9e951b75356b",
+   "e6d94c2e3109f65a",
+   "e8cda72d20410189",
+   "f2deca320cc623fa",
+   "f957c241e9058482"
+  ],
+  "32": [
+   "d5af573a11e4b209"
+  ],
+  "48": [
+   "3b80f7aad318ed27",
+   "458495e33335f5cf",
+   "45f8915893d6a5cc",
+   "6900a38322791f19",
+   "cee25233e4e8484b",
+   "ff02f3b06a686f06"
+  ]
+ }
+}

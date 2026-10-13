@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b52176062e500176428db2882556f52fa07feb112e882fe1ab02155446fa89e2",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "jp-pots",
+ "label": "jp/jp-pots",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ceramic pot / planter with green shoots inside",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot opening is clearly drawn as a large ellipse viewed from above (rim from row 4 to 13, dark interior visible across roughly 5 rows from row 7 to 11), with plants emerging from the center.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8068
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plant pot / kadomatsu base",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot displays a clear foreshortened elliptical opening (rows 6-11) filled with soil and planted bamboo, surrounded by a fully visible rim viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "plant pot / planter with stalks",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot is viewed from a 3/4 top-down angle, showing a broad elliptical opening with visible dark soil interior (rows 6-11, 6px tall) and foreshortened front and back rims.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8707
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plant pot / planter with shoots",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a wide, clearly visible elliptical opening and rim viewed from above (rows 3 to 14), with the dark interior/soil visible across rows 6 to 11 around the plant shoots.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6435
+  }
+ ],
+ "decidedAt": "2026-10-13T13:01:15.258Z",
+ "cells": {
+  "16": [
+   "93e712022fd60ee2"
+  ],
+  "24": [
+   "007bbf193601a731",
+   "2c2643f65f101c5d",
+   "4a0bb67af3953798",
+   "4c15c78404da22e8",
+   "836272b5a69a9823",
+   "96596a0c86aafc22",
+   "af2efdaee9d1e538",
+   "bcb148718b6bb308",
+   "cf33669cd8d26eea",
+   "d5ad8222c3fc84a3",
+   "e4151a955f00b223",
+   "e98ebca1134e0b9e"
+  ],
+  "32": [
+   "1350eae4f0fe264d",
+   "893588e1a9b6976c"
+  ],
+  "48": [
+   "1ac52fda407cf3cb",
+   "30ffec208c11eb79",
+   "c00716929753470d",
+   "c0d772d2927ba927",
+   "ceadcafae5b7513d",
+   "fdc213d39d8e8809"
+  ]
+ }
+}

@@ -3,13 +3,12 @@
  "pixelSha256": "f4c02eaa3a42f6b94b070b2381efd7caef292b2ce818061eca8181827351396e",
  "width": 32,
  "height": 32,
- "kind": "frame",
+ "kind": "structure",
  "name": "jp-tsukigime",
- "label": "jp_city/street_hand/jp-tsukigime",
+ "label": "jp/jp-tsukigime",
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "종류 불일치",
   "판정자 과반 fail",
   "정면 입면도",
   "윗면 0행 < 3"
@@ -20,27 +19,70 @@
    "run": 1,
    "answer": {
     "main_body": "parking signboard",
-    "kind_matches": false,
+    "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The signboard and its support posts are drawn in a completely flat front elevation with no visible top surface or depth, showing only the vertical front face.",
+    "evidence": "The signboard and posts are drawn completely flat in 2D front elevation with 0 rows of visible top surface indicating depth or frame thickness.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
-    "종류 불일치",
     "판정자 과반 fail",
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 6404
+   "ms": 5665
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "parking sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parking sign board is drawn in straight front elevation with no visible top surface or depth on the frame, posts, or panel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and its frame are drawn completely flat in pure front elevation with 0px of top surface visible on the frame, roof, or signboard edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5215
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
    "answer": {
     "main_body": "parking signboard",
     "kind_matches": false,
@@ -49,7 +91,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The signboard and posts are drawn as a completely flat front elevation with no visible top surface or 3/4 perspective depth.",
+    "evidence": "The signboard is drawn completely flat from the front with no visible top edge/depth along its frame or posts, making it a pure front elevation.",
     "verdict": "fail"
    },
    "pass": false,
@@ -59,56 +101,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 2999
-  },
-  {
-   "judge": "gemini",
-   "run": 3,
-   "answer": {
-    "main_body": "signboard",
-    "kind_matches": false,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The parking signboard and its support posts are drawn in pure front elevation with no visible top surface or depth on the board or posts.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치",
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 3944
-  },
-  {
-   "judge": "gemini",
-   "run": 4,
-   "answer": {
-    "main_body": "parking sign board on posts",
-    "kind_matches": false,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The parking signboard and its supporting posts are drawn in a completely flat front elevation with no visible top surface or 3/4 perspective depth.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치",
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 5241
+   "ms": 6661
   }
  ],
- "decidedAt": "2026-10-13T11:39:50.703Z",
+ "decidedAt": "2026-10-13T13:01:15.258Z",
  "cells": {
   "16": [
    "51d5e736432069cd",

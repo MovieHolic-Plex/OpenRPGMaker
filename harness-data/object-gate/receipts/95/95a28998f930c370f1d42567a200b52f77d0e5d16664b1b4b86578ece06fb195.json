@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95a28998f930c370f1d42567a200b52f77d0e5d16664b1b4b86578ece06fb195",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-bus-stop",
+ "label": "jp/jp-bus-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop timetable box and sign assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (timetable box and upper circular sign) is drawn in pure front elevation: the round sign is an unforeshortened vertical circle (height 9px, width 8px), the timetable box roof and face are drawn flat from the front with no top surface, and only the base plinth shows top-down perspective, which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20591
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "timetable display box and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop is drawn as a flat front elevation: the circular sign is a direct front-facing circle (9x9 px), the timetable box is a flat front rectangle, and neither the top end, cap, or base show foreshortened horizontal surfaces seen from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8180
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop timetable box and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The timetable shelter features a 5-6 row slanted/foreshortened roof cap (rows 19-24), the top oval cap shows 3/4 curvature, and the concrete base displays a clear 3-row horizontal top surface (rows 39-41) above its vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8456
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop timetable box and pole assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bus stop is drawn entirely in flat front elevation: the round sign, timetable box, roof hood, and base blocks all have horizontal edge lines with zero top surfaces visible in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7771
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.348Z",
+ "cells": {
+  "16": [
+   "5654766ebb81ec2f",
+   "8249c0e733edae38",
+   "999da6c20b0a8bce"
+  ],
+  "24": [
+   "052ba584f516bb3c",
+   "18b148f176ffbe8f",
+   "57b1dbb709a25c59",
+   "a741ad892afe15a5",
+   "abae62f3b89bf6d2",
+   "abbf8f4de6a8e98f"
+  ],
+  "32": [
+   "3384709c7e67b8c7",
+   "65426e988a54ac39",
+   "733ba3aa5b6c84be",
+   "7b60e1d566813451",
+   "b64c07cee7cce15e",
+   "ba4eb415cb72fc51",
+   "befdf72685edb4df",
+   "c6c20ecba3f633fd",
+   "d17f9eb816ce4b21",
+   "d95c2218e7fd8f8d",
+   "ec8e59ce7048204a",
+   "fde98bc59361dcef"
+  ],
+  "48": [
+   "4faf8aaea0687083",
+   "a14ca1bd15159dd3",
+   "f913e7c94b3e5b07"
+  ]
+ }
+}

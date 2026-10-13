@@ -3,13 +3,15 @@
  "pixelSha256": "b2ea9b1b5a0cf196e38b2c5d0e556b626470ecbc6bb8f0e6a31537c00c331710",
  "width": 16,
  "height": 16,
- "kind": "flat",
+ "kind": "structure",
  "name": "jp-bridge-pier",
- "label": "jp_city/street_hand/jp-bridge-pier",
+ "label": "jp/jp-bridge-pier",
  "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "종류 불일치"
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
@@ -17,83 +19,87 @@
    "run": 1,
    "answer": {
     "main_body": "bridge pier / beam",
-    "kind_matches": false,
+    "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "A bridge pier is a vertical architectural support, not a flat floor decal or rug (kind mismatch). Furthermore, it consists entirely of horizontal bands in a pure front elevation with 0 rows of visible top surface.",
+    "evidence": "The entire object consists of uniform horizontal bands spanning all 16 columns with no top surface, depth, or 3/4 perspective indicated.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
-    "종류 불일치"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 5116
+   "ms": 7232
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "bridge edge with pier/fascia",
-    "kind_matches": false,
-    "top_rows": 8,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The object is an elevated bridge section with a visible deck top (rows 0-7) and a vertical front edge/beam (rows 8-10); it is not a flat floor decal or rug, so kind does not match.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치"
-   ],
-   "ms": 6538
-  },
-  {
-   "judge": "gemini",
-   "run": 3,
-   "answer": {
-    "main_body": "bridge edge and pier over water",
-    "kind_matches": false,
-    "top_rows": 8,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The object depicts an elevated bridge deck (rows 0-7) with a south-facing edge/pier drop (rows 8-10) above water (rows 11-15); it is an elevated structure rather than a flat ground decal, rug, or mat.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치"
-   ],
-   "ms": 7133
-  },
-  {
-   "judge": "gemini",
-   "run": 4,
-   "answer": {
-    "main_body": "bridge pier / beam",
-    "kind_matches": false,
+    "main_body": "bridge pier structure",
+    "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "A bridge pier is a structural vertical support or beam, not a flat floor decal. Furthermore, the sprite consists purely of horizontal color bands (rows 0-10) with no visible top surface or 3/4 perspective.",
+    "evidence": "The sprite consists entirely of flat, horizontal colored stripes from row 0 to row 10 with no foreshortened top surfaces or depth cues.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
-    "종류 불일치"
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
    ],
-   "ms": 4184
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge pier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists entirely of flat horizontal bands spanning the full width (rows 0-10) with no foreshortened top surface or 3/4 perspective depth cues.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4663
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pier / dock deck and south edge",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pier (planked deck) is clearly foreshortened and visible across rows 0–7 (8 source pixel rows), above a 2–3px south-facing fascia/shadow lip on rows 8–10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7487
   }
  ],
- "decidedAt": "2026-10-13T11:34:33.354Z",
+ "decidedAt": "2026-10-13T13:09:25.896Z",
  "cells": {
   "16": [
    "0ec56ae09366708b"

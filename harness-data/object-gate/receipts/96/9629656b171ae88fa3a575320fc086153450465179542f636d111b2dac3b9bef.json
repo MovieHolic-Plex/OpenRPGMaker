@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9629656b171ae88fa3a575320fc086153450465179542f636d111b2dac3b9bef",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp/jp-bwall-plain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall surface and stone base are drawn as a completely flat front elevation with no visible top surface or roof cap (0 rows of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4998
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall with timber framing and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered entirely as a flat vertical front elevation from rows 1 to 15 with no visible top surface or roof cap (0px top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall segment with plaster panel and stone/plank base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a vertical wall face drawn in pure front elevation with no visible top surface or roof slope (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall segment with plaster panel and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile depicts a flat vertical wall face (plaster panel above stone masonry) with no visible top surface or horizontal depth (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5585
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.482Z",
+ "cells": {
+  "16": [
+   "99daa0fd502d2d83"
+  ],
+  "24": [
+   "1dac50482b517e2a",
+   "6d2cacc65c4da5bf",
+   "70b5333933f8f06a",
+   "8ab7434f61e06bbb",
+   "d4db59e05a9e6fc5",
+   "e1249b4b71ad5538"
+  ],
+  "32": [
+   "59f2c92ba0a4ad06",
+   "ad011bbef3d38cf8",
+   "b0308f89e3b8d474",
+   "cf6a63a960fa6084",
+   "e492ec0167e01125",
+   "eafdd6fd00dc4f9d"
+  ],
+  "48": [
+   "120827b91f330a82",
+   "547161799c533e8c",
+   "93418fa4a83bbd8e",
+   "a994e1bd244e4cb5",
+   "ae99e272f3ec128c",
+   "e60f4be1dccffe49"
+  ]
+ }
+}
