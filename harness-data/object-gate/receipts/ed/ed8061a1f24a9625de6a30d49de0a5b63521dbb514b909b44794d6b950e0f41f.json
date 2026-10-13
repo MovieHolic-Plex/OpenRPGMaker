@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-sf-house-5-L",
  "label": "jp_city/street_hand/jp-sf-house-5-L",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese-style building facade with sliding doors and windows",
+    "main_body": "house/building facade with sliding door and windows",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire structure is drawn in pure 2D side-scroller/architectural front elevation. Door lintels, lower roof/eave overhangs, windows, and upper balcony/railing show 0 px of top foreshortened surface, with only flat horizontal 1-2px outline bands.",
+    "evidence": "The building facade, door frame, lintels, and upper frieze are drawn strictly as a flat orthographic 2D architectural elevation with 0px of visible top surfaces.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 10213
+   "ms": 3925
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese-style building facade with sliding entrance door and flanking window wings",
+    "main_body": "Japanese-style house facade with sliding shoji doors and windows",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The building facade is drawn in a pure front architectural elevation. The door lintel (rows 11-12) and lower window eaves (rows 22-23) are only 1-2px thick lines with no visible top surface. The base/step at the bottom (rows 44-47) is also drawn completely flat with no horizontal surface visible.",
+    "evidence": "The entire building facade is drawn in a flat side-scroller front elevation. The upper roof/railing (rows 0-8), wall (rows 9-21), door lintel (rows 12-13), lower eaves (rows 22-23), and stone foundation (rows 42-47) show zero foreshortened top surfaces (0 px).",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7389
+   "ms": 5030
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large house façade with central entrance and windowed wings",
+    "main_body": "Japanese house facade with central sliding door and shoji windows",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main building is presented as a flat frontal elevation. Its upper dark lintel/roof edge is only a thin front-facing band, with no visible top slope or horizontal roof surface; no receding side face is shown.",
+    "evidence": "The entire house facade is drawn as a flat front architectural elevation. The door lintels and window eaves are only 1-2px thick front-facing bands with no visible top slopes, and there is no receding top surface on the walls, roof, or floor.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,20 +78,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 29586
+   "ms": 4771
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large building facade with a central entrance and side wings",
+    "main_body": "Japanese building facade and entrance",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The building is presented as a flat frontal elevation; the dark roof/lintel is only a thin 1–2px edge band with no visible foreshortened top surface. No receding side face is shown.",
+    "evidence": "The entire building facade is drawn in pure 2D front elevation. The door frame, lintels, and eaves have no visible top surfaces (only 1-2px flat horizontal trim), showing zero 3/4 top-down foreshortening.",
     "verdict": "fail"
    },
    "pass": false,
@@ -100,10 +100,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 25360
+   "ms": 6060
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.437Z",
+ "decidedAt": "2026-10-13T11:37:26.387Z",
  "cells": {
   "16": [
    "052c28e81fcc1563",

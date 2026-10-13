@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56ed87fe1bc2cde21c4d73a2aeb73cd7a3d5c28590edec567eca101cbc8eefff",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-3-R",
+ "label": "jp_city/street_hand/jp-sf-bento-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop front with door and counter",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure facade, including lintel, counter, and upper sign band, is drawn as a flat architectural front elevation with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6415
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront door and window facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, upper concrete beam/fascia, and adjacent display cooler, is drawn in pure flat front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7473
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront facade with door and display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, door frame, and recessed display unit are drawn entirely in flat 2D architectural front elevation, with 0 pixel rows of top surfaces visible for lintels, frames, or ledges.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5516
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with sliding door and display case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door lintel, door frame, and side display case, is drawn in pure flat front elevation with no visible top surfaces (0 px top surface depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7442
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.050Z",
+ "cells": {
+  "16": [
+   "20e48e4d2dd2df46",
+   "23f92e3b7442d9c8",
+   "591233ec525de138",
+   "59bf2b1efa9909df",
+   "5d0dbbf69f9765ad",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "b1a8b5449b59fe87",
+   "e5a60efed5159079"
+  ],
+  "24": [
+   "075758ba984653ff",
+   "12ded2ef9bdb9e44",
+   "2a52ff0f30d43d8a",
+   "8261b8144c91249a"
+  ],
+  "32": [
+   "01db679d1e43f448",
+   "035fee66077e0e08",
+   "4d0710532596bd0d",
+   "5d6459e637ca08d6",
+   "5f82b0882d8c6cd9",
+   "62980ab987312375",
+   "62d8e6bba6664c92",
+   "6398c902f056e8f9",
+   "67ed8236127eb977",
+   "71ec02bb8a37b10a",
+   "7f34a85b8c939183",
+   "80e40f6f6b062d01",
+   "860bc69d0c7ea1a3",
+   "89a1cb23dce9da10",
+   "9a9a6483345a6a6b",
+   "a10c730d1fd53ce9",
+   "a9cdb2f9c93eb5a3",
+   "b72d0fb9fa8b0650",
+   "b8b356bc19858eb6",
+   "deed63353916e668",
+   "e04f7654839286a3",
+   "e153b4a892ee898b",
+   "e4536aa02b1bb021",
+   "eb682f8ced66e040"
+  ],
+  "48": [
+   "2d98be1403e58e95"
+  ]
+ }
+}

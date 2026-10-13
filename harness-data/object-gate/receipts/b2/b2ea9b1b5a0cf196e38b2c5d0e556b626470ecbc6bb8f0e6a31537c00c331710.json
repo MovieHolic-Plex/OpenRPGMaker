@@ -6,88 +6,94 @@
  "kind": "flat",
  "name": "jp-bridge-pier",
  "label": "jp_city/street_hand/jp-bridge-pier",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "bridge pier / deck edge",
-    "kind_matches": false,
-    "top_rows": 7,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The object is a bridge deck edge with vertical support/beam (deck on rows 0-6, front face on rows 7-10), not a flat ground decal or rug.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치"
-   ],
-   "ms": 6818
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "bridge pier",
+    "main_body": "bridge pier / beam",
     "kind_matches": false,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "Object is labelled 'flat' despite being a bridge pier/support structure. It is drawn as flat horizontal bands over water with no visible 3/4 top surface (top_rows = 0), representing a pure front elevation.",
+    "evidence": "A bridge pier is a vertical architectural support, not a flat floor decal or rug (kind mismatch). Furthermore, it consists entirely of horizontal bands in a pure front elevation with 0 rows of visible top surface.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
     "종류 불일치"
    ],
-   "ms": 5432
+   "ms": 5116
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "rectangular wooden pier deck with horizontal plank bands",
-    "kind_matches": true,
-    "top_rows": 10,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The broad wooden deck occupies rows 0–9 as a ground-plane surface, with a dark south edge at row 10. No receding side face or container opening is shown.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 21826
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "rectangular wooden pier deck",
-    "kind_matches": true,
-    "top_rows": 7,
+    "main_body": "bridge edge with pier/fascia",
+    "kind_matches": false,
+    "top_rows": 8,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The broad tan deck surface spans source rows 0–6, with a dark transverse board seam. Rows 7–10 form the darker south-facing edge; no receding side face is visible.",
-    "verdict": "pass"
+    "evidence": "The object is an elevated bridge section with a visible deck top (rows 0-7) and a vertical front edge/beam (rows 8-10); it is not a flat floor decal or rug, so kind does not match.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 17834
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge edge and pier over water",
+    "kind_matches": false,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object depicts an elevated bridge deck (rows 0-7) with a south-facing edge/pier drop (rows 8-10) above water (rows 11-15); it is an elevated structure rather than a flat ground decal, rug, or mat.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7133
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge pier / beam",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A bridge pier is a structural vertical support or beam, not a flat floor decal. Furthermore, the sprite consists purely of horizontal color bands (rows 0-10) with no visible top surface or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4184
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.480Z",
+ "decidedAt": "2026-10-13T11:34:33.354Z",
  "cells": {
   "16": [
    "0ec56ae09366708b"

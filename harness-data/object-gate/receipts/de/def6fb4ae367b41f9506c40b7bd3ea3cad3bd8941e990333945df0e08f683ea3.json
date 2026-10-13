@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-w-grate",
  "label": "jp_city/street_hand/jp-mark-edge-w-grate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "flat ground grate and road/edge marking",
+    "main_body": "ground road edge with drainage grate and painted line",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The entire 16x16 tile represents a flat floor surface with a drain grate and painted edge lines viewed from above.",
+    "evidence": "Flat floor/road tile with grate and road marking viewed directly from top-down perspective across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4360
+   "ms": 3993
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "drain grate and road marking tile",
+    "main_body": "road edge with drainage grate and painted line",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Tile represents flat ground elements including a drainage grate, curb, and painted road line, viewed entirely from above across all 16 rows.",
+    "evidence": "The object is a flat ground tile depicting a roadside drainage grate and white pavement marking seen directly from the 3/4 top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4103
+   "ms": 4545
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Flat ground-level grate with parallel horizontal slats and bordering strips",
+    "main_body": "flat ground surface with floor grate and painted road line",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The grate is shown from above across all 16 source-pixel rows. Its repeated slats form a flat ground surface, with no upright front elevation or receding side face.",
+    "evidence": "The entire tile depicts flat floor textures, including a drainage grate and painted line marking seen from directly above in standard top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9879
+   "ms": 3420
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Ground-level edge strip with a slatted grate and adjacent paving",
+    "main_body": "ground edge with drainage grate and white road stripe",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The grate and adjacent paving are shown as ground-facing surfaces spanning all 16 source rows, with no upright front elevation or receding side face.",
+    "evidence": "The entire 16x16 tile depicts flat ground features (a drain grate and painted lines) viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 10267
+   "ms": 4282
   }
  ],
- "decidedAt": "2026-10-13T09:40:33.278Z",
+ "decidedAt": "2026-10-13T11:34:35.379Z",
  "cells": {
   "16": [
    "011f8b7742dc9c78"

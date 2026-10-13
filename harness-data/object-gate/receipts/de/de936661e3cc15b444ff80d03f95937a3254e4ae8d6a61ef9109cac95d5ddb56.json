@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-6",
  "label": "jp_city/street_hand/jp-wire-6",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,69 +21,69 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin suspended wires/cables with catenary sag, valid for wall_mounted / hanging category without top surface.",
+    "evidence": "Wall-mounted/overhead catenary wires depicted as thin sagging lines, appropriately flat for wall_mounted elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5107
+   "ms": 3280
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "sagging wires",
+    "main_body": "hanging wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Three hanging/wall-mounted wire lines across the tile; wires/chains mounted against a wall or overhead may be flat.",
+    "evidence": "Three sagging cable or wire strands designed to hang overhead or flat against a wall, appropriately represented as thin lines.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3303
+   "ms": 3019
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "three thin curved wall-mounted wire strands",
+    "main_body": "hanging wires/cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is thin wall-mounted linework with no substantial horizontal body, so no top plane is expected; it has no receding side face or container opening.",
+    "evidence": "Wall-mounted or suspended hanging wires/cables consisting of thin sagging lines, naturally flat/thin overhead or wall elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 296847
+   "ms": 8029
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "wall-mounted wire ornament",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a thin, flat wall-mounted wire/line form with no substantial volumetric body requiring a visible top surface; no receding side face is present.",
+    "evidence": "Three horizontal sagging cables/wires mounted across a wall or overhead; appropriate as a flat wall-mounted/overhead element.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 420805
+   "ms": 3868
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.235Z",
+ "decidedAt": "2026-10-13T11:39:50.705Z",
  "cells": {
   "16": [
    "15553fe53040ed32",

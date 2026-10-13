@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-water-dark-r",
  "label": "jp_city/street_hand/jp-water-dark-r",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "water edge tile",
+    "main_body": "water edge / dark water surface boundary",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat terrain/water edge autotile lying flat on the ground surface across all 16 rows without 3D vertical elevation.",
+    "evidence": "The sprite depicts a flat water edge/surface strip rendered completely flat on the ground plane across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9850
+   "ms": 5292
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "water edge tile",
+    "main_body": "water edge strip",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat water edge autotile piece drawn directly on the ground plane spanning all 16 rows.",
+    "evidence": "The sprite is a flat water transition/edge overlay lying on the ground plane, spanning 16 rows from top to bottom.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5242
+   "ms": 6201
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "dark water flat ground patch",
+    "main_body": "water edge / ground decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a flat dark-water strip extending through the full 16-pixel height, with its horizontal surface visible from above; no receding side face or front-elevation treatment is present.",
+    "evidence": "Flat water edge strip lying directly on the floor plane with dithered edge for water transition.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 395324
+   "ms": 4552
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "A narrow dark water/ground decal strip occupying a vertical band.",
+    "main_body": "water edge transition strip",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat ground-like strip with its surface visible across the full source-pixel height; there is no distinct upright front elevation, receding side face, or container opening.",
+    "evidence": "Flat water edge/transition overlay drawn for top-down ground placement across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 372690
+   "ms": 5711
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.232Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "2864799013fb77ea"

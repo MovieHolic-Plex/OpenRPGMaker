@@ -6,7 +6,7 @@
  "kind": "frame",
  "name": "jp-tsukigime",
  "label": "jp_city/street_hand/jp-tsukigime",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "종류 불일치",
@@ -19,6 +19,75 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
+    "main_body": "parking signboard",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and its support posts are drawn in a completely flat front elevation with no visible top surface or depth, showing only the vertical front face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and posts are drawn as a completely flat front elevation with no visible top surface or 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2999
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signboard",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parking signboard and its support posts are drawn in pure front elevation with no visible top surface or depth on the board or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3944
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
     "main_body": "parking sign board on posts",
     "kind_matches": false,
     "top_rows": 0,
@@ -26,7 +95,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The sign board and legs are drawn in flat orthogonal front elevation with no visible top surface, depth, or foreshortened top edge.",
+    "evidence": "The parking signboard and its supporting posts are drawn in a completely flat front elevation with no visible top surface or 3/4 perspective depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -36,78 +105,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5942
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "parking signboard on posts",
-    "kind_matches": false,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The sign board and its mounting posts are drawn in a completely flat front elevation with no visible top surface depth.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치",
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 5640
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "flat rectangular signboard on two supports",
-    "kind_matches": false,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The dominant sign panel is drawn as a flat front elevation; the narrow horizontal bands at its top are only trim/edge lines, not a visible top surface. It has no receding side face and is a closed signboard rather than an open frame or rack.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치",
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 180117
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "large rectangular frame/rack with horizontal beams and an inset panel",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main frame is drawn as a flat front-facing rectangle with horizontal color bands and no foreshortened top surfaces on its beams or body; the broad upper cream band reads as a front panel, not a visible top plane.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 58686
+   "ms": 5241
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.439Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "51d5e736432069cd",

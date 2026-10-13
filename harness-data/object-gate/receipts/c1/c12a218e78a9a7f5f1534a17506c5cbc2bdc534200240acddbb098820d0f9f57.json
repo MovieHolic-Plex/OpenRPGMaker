@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-bridge-abut",
  "label": "jp_city/street_hand/jp-bridge-abut",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,78 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "bridge abutment / decking",
+    "main_body": "bridge decking segment",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat bridge deck/abutment surface viewed directly from above, showing horizontal wooden planks spanning between side rails across all 16 rows.",
+    "evidence": "The bridge deck is seen from above as a flat horizontal surface with planks and side railings spanning the full 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4613
+   "ms": 5238
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "bridge abutment deck",
+    "main_body": "bridge abutment / deck surface",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The tile depicts a flat wooden bridge deck/abutment surface seen directly from above, occupying the entire vertical extent.",
+    "evidence": "Walkable horizontal bridge deck segment viewed entirely from above spanning rows 0-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5012
+   "ms": 3749
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Rectangular masonry abutment with upright posts and horizontal crossbeams",
-    "kind_matches": false,
-    "top_rows": 1,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main structure reads as a flat frontal wall or framework. Its upper edge has only a one-pixel light strip, not a visibly foreshortened top surface; the large rectangular panels are presented in elevation rather than as a ground plate.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치"
-   ],
-   "ms": 16869
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "Rectangular framed, slatted ground panel",
+    "main_body": "bridge abutment / walkway deck",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The broad rectangular surface occupies all 16 source rows, with inset panels and crossbars viewed from above. No upright front elevation or receding side face is depicted.",
+    "evidence": "The bridge deck lies flat on the ground plane, viewed from above as floor decking spanning the full 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 17676
+   "ms": 4751
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge abutment / walkway floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat bridge walkway / abutment surface viewed entirely from above with horizontal planks and side borders spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5397
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.480Z",
+ "decidedAt": "2026-10-13T11:34:33.354Z",
  "cells": {
   "16": [
    "c81b098fc4ae6290"

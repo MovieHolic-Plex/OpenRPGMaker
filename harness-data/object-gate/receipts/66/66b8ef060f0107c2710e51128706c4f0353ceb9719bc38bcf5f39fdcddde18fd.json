@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66b8ef060f0107c2710e51128706c4f0353ceb9719bc38bcf5f39fdcddde18fd",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-6-R",
+ "label": "jp_city/street_hand/jp-sf-konbini-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store storefront / building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D front elevation (side-scroller style). The projecting entrance frame, window lintels, shelving, and facade lack any top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11130
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including the protruding door frame, striped fascia, windows, and shelving, is drawn in pure front elevation with no visible top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5818
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "convenience store storefront with automatic sliding doors and window shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, awning/fascia stripes, door frame, and interior shelves are drawn in pure front elevation with no visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5496
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with automatic sliding doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire konbini facade, including the upper fascia, colored stripes, door frame, and display shelves, is drawn as a flat front elevation with 0px of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4551
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.645Z",
+ "cells": {
+  "16": [
+   "0191b59f8c61c8e1",
+   "111f96b51c7e191f",
+   "1a3a3d8cf402820f",
+   "3f1cb23eeee868b1",
+   "531eb45c8263bb5e",
+   "6e97d7906472b915",
+   "7290a9714c3b181b",
+   "84615d43c894a1b6",
+   "8d89cb2a840e7e2c",
+   "96f131cc674d1d0a",
+   "acf3a136f6336970",
+   "ceacd06b55c39795",
+   "df2a5dc56a26c9c3",
+   "e09dad0b84f07f9a",
+   "ed308cd86f7435b5",
+   "f55540ca3fe07e9c",
+   "f6cd9eedcd64f8be",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "47e48fdc07c2392f",
+   "4e618c1aaa06ecbb",
+   "656363ce95cefca8",
+   "748dc2800337b69e",
+   "bd214eb45dc1f533",
+   "be9d868a55da810e",
+   "c416a01eff7a6926",
+   "ee1cd3aa7eee6c3f"
+  ],
+  "32": [
+   "1f2f08c973d2f36c",
+   "29943211b1fe3c98",
+   "3203727622bcb895",
+   "47af9a5478f10ec2",
+   "4e577449647e5263",
+   "524ddd07247148f8",
+   "7d52f4f7ed8261cc",
+   "a28b389c0003ffb1",
+   "b9ec0fbbfab13f79",
+   "cfdf50fb82ac6cbc",
+   "d0834f92dcc887bf",
+   "e6aff632740ff06e"
+  ],
+  "48": [
+   "89a05987a5f5db50",
+   "df2be51168ef830e"
+  ]
+ }
+}

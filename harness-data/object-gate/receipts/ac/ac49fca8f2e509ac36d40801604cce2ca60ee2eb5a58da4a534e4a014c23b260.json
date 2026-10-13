@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-rail-fence",
  "label": "jp_city/street_hand/jp-rail-fence",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "rail fence / barrier",
+    "main_body": "rail fence panel",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The fence/rail consists entirely of flat horizontal bands with 1px outlines/highlights (row 8 and 10), showing no foreshortened horizontal top surface for the railing beams.",
+    "evidence": "The entire object consists of flat horizontal bands from row 0 to row 14 with a 1px top outline at row 0, showing no foreshortened top surface or depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,7 +34,7 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 6263
+   "ms": 3861
   },
   {
    "judge": "gemini",
@@ -47,7 +47,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The fence/barrier is depicted completely flat from the front with horizontal bands and no visible top surface or thickness foreshortened from above.",
+    "evidence": "The fence/barrier consists of purely horizontal stripes with 1px border lines and no visible foreshortened top surface (top_rows=0), drawn as a flat front elevation.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 4662
+   "ms": 6863
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "horizontal rail-fence body",
+    "main_body": "rail fence / barrier panel",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The fence is presented as flat horizontal bands in a straight front elevation. Its upper edge is only a thin line with no visible foreshortened top surface, and no receding side face is drawn.",
+    "evidence": "The fence/barrier is depicted entirely as flat horizontal stripes from row 0 to 14 without any visible top-down thickness or foreshortened top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,20 +78,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 114240
+   "ms": 3622
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "horizontal rail fence body",
+    "main_body": "rail fence panel",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The fence is shown as a flat front-facing horizontal rail with no visible top surface; only its south face is depicted.",
+    "evidence": "The fence/barrier is rendered entirely as horizontal parallel bands and flat vertical panels without any visible top surface (row 0 is only a 1px outline). It is drawn in pure front elevation.",
     "verdict": "fail"
    },
    "pass": false,
@@ -100,10 +100,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 53687
+   "ms": 3691
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.436Z",
+ "decidedAt": "2026-10-13T11:34:35.381Z",
  "cells": {
   "16": [
    "b0458c48f1fcaeaf"

@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-water-glint",
  "label": "jp_city/street_hand/jp-water-glint",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "water surface glints / sparkles",
+    "main_body": "water glints / sparkles scattered on horizontal water surface",
     "kind_matches": true,
     "top_rows": 11,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Scattered highlight pixels across rows 2-12 forming a flat water glint / ripple pattern on the ground plane.",
+    "evidence": "Sparse glint pixels scattered across the ground plane from row 2 to row 12, naturally representing surface highlights seen from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6563
+   "ms": 3901
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "scattered water glint sparkle pixels",
+    "main_body": "scattered water surface glints",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Subtle 1-row glint pixels and highlights designed to overlay flat water surfaces, fitting the flat decal category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15965
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water glint sparkles",
     "kind_matches": true,
     "top_rows": 11,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Surface sparkle/glint pixels overlaying a flat water plane spanning rows 2 to 12.",
+    "evidence": "Flat water surface sparkle effect consisting of scattered 1px glints across the horizontal plane from row 2 to row 12.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4246
+   "ms": 3811
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Scattered blue and white glint pixels with no coherent main body or flat surface",
+    "main_body": "scattered water glint / sparkle pixels",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 11,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Only isolated glint marks are present; no contiguous water patch or visible top surface can be measured.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 197079
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "scattered blue water-glint pixels with no substantial main body",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "Only isolated flat glint pixels are present; there is no volumetric body, receding side face, or front elevation.",
+    "evidence": "Water surface glints/sparkles distributed across the tile plane as a flat decal overlay.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 144404
+   "ms": 3922
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.232Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "814f3abcb1a9b627"

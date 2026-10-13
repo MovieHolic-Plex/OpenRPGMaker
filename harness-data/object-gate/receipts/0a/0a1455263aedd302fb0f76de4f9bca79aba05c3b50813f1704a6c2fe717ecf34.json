@@ -6,24 +6,26 @@
  "kind": "structure",
  "name": "jp-gate",
  "label": "jp_city/street_hand/jp-gate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "윗면 2행 < 3"
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese wooden lattice gate / wall",
+    "main_body": "Japanese gate/fence with vertical slats and upper panel",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The gate is drawn entirely as a flat architectural front elevation: the upper panels (rows 1-4) and lower vertical lattice bars (rows 7-13) show no foreshortened top surfaces, lintel tops, or roof slopes seen from a 3/4 overhead perspective.",
+    "evidence": "The gate is drawn in pure front elevation: the horizontal beams, posts/slats, and upper panels show zero top foreshortening or roof slope, terminating directly against the background at row 1.",
     "verdict": "fail"
    },
    "pass": false,
@@ -32,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8709
+   "ms": 10772
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese gate / fence with upper panels and lower wooden lattice",
+    "main_body": "lattice gate / sliding doors",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The gate/wall structure is drawn entirely in front elevation with no visible top surface on the posts, beams, or upper section. The upper section consists of flat framed rectangular panels rather than a foreshortened roof or lintel cap.",
+    "evidence": "The gate is drawn in pure front elevation with vertical bars and framed panels; there is no visible top surface on the lintel, posts, or upper frame (only a 1px border at row 1).",
     "verdict": "fail"
    },
    "pass": false,
@@ -54,46 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7597
+   "ms": 12686
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large gate structure with a broad roof/lintel and vertical front supports",
+    "main_body": "Japanese gate/fence with vertical bars and top structure",
     "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main roof/lintel has a clearly visible horizontal top surface about 4 source pixels deep above its darker south-facing edge; the lower gate supports are shown in front view, with no receding isometric side face.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn entirely in front elevation: vertical bars, upright posts, horizontal bottom beam, and framed lintel/transom panels (rows 1-4) with no foreshortened top surfaces or roof slopes visible.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 103951
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8659
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "twin-roofed gate structure",
+    "main_body": "wooden gate / fence structure",
     "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main gate structure has broad, clearly visible horizontal roof surfaces several pixels deep above the front lintels; the lower gate faces are frontal, with no receding isometric side face.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The gate/wall structure is drawn entirely in flat front elevation. The upper panels/lintels (rows 1-5) and lower barred fence sections (rows 6-14) show no top-down foreshortened surfaces or roof slopes, giving 0 top rows.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 148879
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5619
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.916Z",
+ "decidedAt": "2026-10-13T11:34:33.357Z",
  "cells": {
   "16": [
    "436589dd5521f85d",

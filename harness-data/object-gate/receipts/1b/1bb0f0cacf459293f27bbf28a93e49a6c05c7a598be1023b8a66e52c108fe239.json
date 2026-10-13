@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-mirror2",
  "label": "jp_city/street_hand/jp-mirror2",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,32 +14,32 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "dual traffic mirror housings on a post",
+    "main_body": "dual traffic mirror pole",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top surfaces of the orange mirror housings are clearly visible from above, spanning rows 1 to 5 (5 rows tall), and the concrete base also shows a 2px top surface.",
+    "evidence": "The top of the mirror hoods/housings are rendered from above as foreshortened dome caps measuring 6 pixel rows (rows 1-6) above the mirror faces, and the base block also reveals its top surface (rows 40-41).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 11292
+   "ms": 6611
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "dual traffic mirror assembly (mirrors, crossbeam, pole, and concrete base)",
+    "main_body": "dual traffic mirrors on a pole with crossbeam",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The horizontal crossbeam (rows 17-19) supporting the mirrors is drawn in pure front elevation with 0px of visible top surface. The concrete base shows only a 2px highlight (rows 40-41), and the mirror hoods and crossbeam lack the required 3/4 top-down foreshortening.",
+    "evidence": "The mirrors and horizontal mounting crossbeam are drawn in pure front elevation with no visible top surface. The only top surface is on the small base plinth (rows 40-41), which cannot be credited per instructions.",
     "verdict": "fail"
    },
    "pass": false,
@@ -48,49 +48,46 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 10978
+   "ms": 7818
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "tall central pedestal/column with a broad double-lobed upper block",
+    "main_body": "twin street mirror housings on a pole",
     "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": true,
-    "pure_front_elevation": false,
-    "evidence": "The upper block has substantial orange top surfaces, but the light-blue triangular planes are visible receding side faces on the main upper body. The central shaft is shown in front view rather than as a pure elevation.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "옆면(아이소)"
-   ],
-   "ms": 117348
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "tall ornamental column with a broad two-lobed capital and narrow shaft",
-    "kind_matches": true,
-    "top_rows": 8,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The upper capital has substantial horizontal orange top surfaces visible over roughly 8 source-pixel rows, with a south-facing body beneath; the shaft is also shown with shaded front volume rather than as a flat elevation. No receding isometric side face or container opening is present.",
+    "evidence": "The orange hoods/tops of the mirror housings show substantial top surfaces foreshortened from above (approx 5-6 pixel rows tall, rows 1-6), preventing this from being a flat front elevation.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 114762
+   "ms": 8576
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dual traffic mirrors on a pole with concrete base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hoods/housings of the traffic mirrors show foreshortened 5-6px top surfaces viewed from above (rows 0-5 and 1-6). The concrete base also shows a 2px top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8497
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.917Z",
+ "decidedAt": "2026-10-13T11:34:35.380Z",
  "cells": {
   "16": [
    "1d28dca90359a469",

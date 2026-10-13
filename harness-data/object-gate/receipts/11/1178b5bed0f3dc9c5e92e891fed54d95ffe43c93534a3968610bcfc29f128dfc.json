@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1178b5bed0f3dc9c5e92e891fed54d95ffe43c93534a3968610bcfc29f128dfc",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "cafe shopfront strip",
+ "label": "jp/jp-sf-cafe-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe shopfront building facade",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features an 8-row corrugated roof/canopy top surface at rows 1-8 casting a shadow on the wall below, as well as 6-row top slopes on the window awnings (rows 21-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7843
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe shopfront facade and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural elevation. The door frame lintel is only a 2px flat bar (rows 11-12), the window sills are 1px lines (row 41), the upper lattice/cornice is viewed directly from the front (rows 1-8), and no horizontal top surfaces of the structure or its overhangs/lintels are foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11783
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Cafe shopfront facade with central glazed door and flanking display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main facade is drawn as a flat elevation. The door lintel is only a thin horizontal band, with no discernible roof or lintel top surface viewed from above. The green strips likewise show no clear foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12064
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Cafe shopfront facade with central glazed door and flanking display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat facade. The door lintel is only a thin horizontal edge, and the gray tiled upper strip does not clearly establish a roof slope or horizontal surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19081
+  }
+ ],
+ "decidedAt": "2026-10-13T11:26:09.868Z",
+ "cells": {
+  "16": [
+   "5757810fc59a2053",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "672dcde075d99279",
+   "6d8d6a2b2522f31c",
+   "73a6c93d6a37ebb7",
+   "76dd19da8f926111",
+   "853478aec7258086",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87",
+   "d63fa47b6470b57a"
+  ],
+  "24": [
+   "1f9ad4dc2b10e78b",
+   "20532ce2df4d549b",
+   "2a52ff0f30d43d8a",
+   "310666056108ea20",
+   "4abfe5e18ab4c7c7",
+   "5c13586f354ce154",
+   "7ab2f1b10e4870ed",
+   "7cc5e87996afb4e3",
+   "994cc0eec87c206e",
+   "aca46ec4ac0aae97",
+   "af1e8252aeb09c31",
+   "b3cbfcbeb84a89c7",
+   "b460dc60612ed481",
+   "bac9c0fb38d4626b",
+   "c9b98f9e96f14de7",
+   "f0b802a4986f92c1",
+   "f70c752f005ced3e",
+   "fc55f95d003e95af"
+  ],
+  "32": [
+   "51506018434de4d8",
+   "54fcac4622488ce5",
+   "5e3848cb0a83e1ba",
+   "6fc00dcd48f4d4b0",
+   "91ba6953ad47c7b1",
+   "e22debf97386fcf1",
+   "f07454d18594c477",
+   "fda04eed84007675"
+  ],
+  "48": [
+   "32f7e2527b2e7790",
+   "723b134533f2750a",
+   "8352c31e7258d479",
+   "8b00899a7233f883",
+   "b230a6e3c1420719",
+   "f54b466422448413"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7251589c4fbcb02fb9e507f3af527802acbeed0f1f496c91ba55e45fe625f12",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-3-L",
+ "label": "jp_city/street_hand/jp-sf-office-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office sliding doors and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire door frame, doors, handles, lintel, and adjacent window are drawn in flat front elevation with 0px of top surface visible on the door canopy/lintel or window sill.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6859
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glass entrance door with frame and wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The door frame, lintel, and surrounding wall/window structure are rendered as a pure flat front elevation with 0px of top surface visible on any horizontal element.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "office glass entrance doors and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The door frame, glass panels, handles, and lintel are drawn completely flat in pure front elevation with no visible top surface (the dark overhang at rows 12-13 is only a 2px line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8798
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "office glass door and entrance frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The door, frame, and lintel are drawn completely flat as a 2D side-scroller elevation with no foreshortened top surfaces visible on the doorframe lintel or structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6344
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.649Z",
+ "cells": {
+  "16": [
+   "253ec576d516793a",
+   "30c6a859d7be06de",
+   "37210adf83f964ab",
+   "659da1797ea32993",
+   "85aae9051af9a12d",
+   "c125afcc4180df26",
+   "d50320c32e94db5a",
+   "e2b89e4bb03bb14e",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "255c40db70378453",
+   "45f16f905f9fe5ae",
+   "e3747639deea0908",
+   "e7dbc71364b7dc10"
+  ],
+  "32": [
+   "1ab0f43322eef612",
+   "25a03916526d431c",
+   "34c2c5d2aad14c33",
+   "352be5b4efdc7875",
+   "4b09e6542de8a006",
+   "4f89e6ba66a34c7b",
+   "5241e3558d8a1479",
+   "56c1534af338a674",
+   "6c3ddc651a44772e",
+   "7721334df8b3bf4c",
+   "775be786dc569cd7",
+   "78767444eb47f002",
+   "7a922046fc4b0145",
+   "967af82e9f00db49",
+   "98b83243858c11f1",
+   "a19a441a6c53a58c",
+   "b25363c2c3adc8da",
+   "c9c0bf4f97ea6384",
+   "d0b9fff2d3e018fe",
+   "d1a08b633db4e0d7",
+   "e458a6fab64292da",
+   "ea2ce4a396614954",
+   "f394e26456630c62",
+   "fc7fd53a04c4afe0"
+  ],
+  "48": [
+   "f6c2a6af60998905"
+  ]
+ }
+}

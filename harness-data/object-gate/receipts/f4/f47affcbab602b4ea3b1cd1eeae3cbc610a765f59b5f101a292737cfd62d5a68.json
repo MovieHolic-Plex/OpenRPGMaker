@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-gatepost",
  "label": "jp_city/street_hand/jp-gatepost",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,82 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese residential gatepost with intercom, nameplate, and mail slot",
+    "main_body": "Japanese gatepost with intercom and nameplate",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top cap of the gatepost is clearly drawn from above across rows 1-5 (5 source pixel rows tall), correctly foreshortened above the south-facing front wall (rows 6-15).",
+    "evidence": "The top surface of the gatepost/coping is clearly visible across rows 1-5 (5 pixels tall) above the front face (rows 6-15), showing proper 3/4 top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8237
+   "ms": 7012
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese entrance gatepost (monchuu) with mail slot and intercom",
+    "main_body": "Japanese residential gatepost (monchuu) with intercom and nameplate",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top cap/surface of the gatepost is clearly visible from above across rows 1-5 (5 source pixel rows tall, bounded by a dark back outline at row 0), with the south vertical face containing the mail slot and intercom occupying rows 6-15.",
+    "evidence": "The top cap of the gatepost is rendered as a foreshortened top surface spanning rows 1-5 with a smooth lighting gradient, and the south face with nameplate and intercom extends from row 6 to row 15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 11193
+   "ms": 9707
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "gatepost with a tall rectangular post and horizontal top beam",
+    "main_body": "modern Japanese gatepost with intercom, nameplate, and mailbox",
     "kind_matches": true,
-    "top_rows": 1,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main upright post is presented essentially as a flat south-facing rectangular elevation; its top is only a thin 1-pixel edge/cap rather than a visible foreshortened top surface. The horizontal brown element reads as a beam, not the post's top surface.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 1행 < 3"
-   ],
-   "ms": 91977
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "gatepost column with attached horizontal gate beam",
-    "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main upright has a visible horizontal top plane extending about 2 source-pixel rows before its south-facing body; it is not a pure flat elevation. No separate receding isometric side face or container opening is present.",
+    "evidence": "The top cap of the gatepost/wall is clearly foreshortened and visible across rows 1-5 (5 rows tall) above the front face containing the intercom and mail slot.",
     "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "윗면 2행 < 3"
-   ],
-   "ms": 134760
+   "pass": true,
+   "reasons": [],
+   "ms": 7635
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese gatepost / entrance pillar with embedded nameplate, intercom, and mail slot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the gatepost is clearly visible across rows 1–5 (5 source pixel rows tall) with a dark back outline at row 0, above the front face displaying the intercom and mailbox.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8592
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.916Z",
+ "decidedAt": "2026-10-13T11:34:33.357Z",
  "cells": {
   "16": [
    "fab1286eb2de30e3"

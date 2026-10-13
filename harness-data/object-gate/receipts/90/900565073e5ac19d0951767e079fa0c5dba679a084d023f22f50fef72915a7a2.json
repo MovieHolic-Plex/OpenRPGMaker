@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-10",
  "label": "jp_city/street_hand/jp-wire-10",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,69 +21,69 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin drooping cables/wires mounted or suspended, naturally flat 1-2px line features with no horizontal top surface.",
+    "evidence": "Overhead/wall-mounted sagging wires or cables, naturally thin lines suitable for flat wall or aerial placement.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4637
+   "ms": 4329
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "hanging wires / cables",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin suspended wire/cable strands spanning horizontally; legitimately flat wall/overhead feature with no volume.",
+    "evidence": "Thin catenary hanging wires or cables mounted across the wall/space; exempt from 3D top surface requirements as a flat/wall-mounted feature.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6040
+   "ms": 3798
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Three sagging wall-mounted wires",
+    "main_body": "utility wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The wires are flat, stepped curves with no volumetric top surfaces or receding side faces. This is appropriate for wall-mounted wires, which may be flat.",
+    "pure_front_elevation": false,
+    "evidence": "Three sagging horizontal wires/cables drawn as catenary curves. Wall-mounted/suspended wire elements are naturally thin lines and exempt from requiring visible top faces.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7182
+   "ms": 4373
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Three sagging horizontal wires or cables",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "Three narrow, stepped cable silhouettes are shown flat, without a visible top surface or receding side face. This flat depiction is appropriate for the supplied wall_mounted kind.",
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted/suspended electrical wires or cables drawn as curved catenary lines; as flat 1-2px wall/overhead details, no 3D top surface is expected.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8957
+   "ms": 5445
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.233Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "0a13f6e59e68b757",

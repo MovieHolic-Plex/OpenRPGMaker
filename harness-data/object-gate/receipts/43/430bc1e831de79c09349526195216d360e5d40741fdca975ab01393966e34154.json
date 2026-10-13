@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-water-rim-s",
  "label": "jp_city/street_hand/jp-water-rim-s",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "water rim / edge decal",
+    "main_body": "water rim edge strip",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat water edge / rim spanning rows 12-15 lying horizontally on the ground plane.",
+    "evidence": "Flat water edge / rim decal on rows 12-15 lying horizontally on the ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5131
+   "ms": 3131
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "water rim edge",
+    "main_body": "water rim / shoreline edge",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat water edge strip occupies rows 12-15 representing horizontal surface / floor transition.",
+    "evidence": "The tile consists of a 4-pixel-tall flat horizontal gradient strip representing a south water edge/rim viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4109
+   "ms": 3489
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "A thin horizontal blue water-rim strip occupying the bottom four source rows",
+    "main_body": "water rim edge strip",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body reads as a flat front-facing horizontal band; the lighter upper line is only a 1px edge/rim, with no substantive top plane visible from above.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "A 4-row horizontal strip representing a south water edge/rim transition lying flat on the floor plane.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 137871
+   "ms": 4234
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "a narrow horizontal blue water-rim strip",
+    "main_body": "water edge / rim overlay",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "Only a thin horizontal band with front-edge shading is visible; there is no substantive top surface shown from above.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/water rim decal occupying rows 12-15 (4 rows tall) seen flat on the ground surface.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 149940
+   "ms": 3402
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.232Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "781f781bff8030c6"

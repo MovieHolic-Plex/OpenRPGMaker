@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29e3cd5e8a057b86f3828ceb7b877ea3ed637229a794ac5b273c9fb083169145",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-6-R",
+ "label": "jp_city/street_hand/jp-sf-ramen-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront building facade (ramen shop)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building storefront (awning, sliding doors, windows, and base) is drawn in pure 2D front elevation (side-scroller style). No top surfaces are visible on the awning, lintels, window sills, or door frames.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9933
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with awning and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn in pure 2D front elevation. The entrance lintel, red canopy/fascia, window frames, and base show no visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront building",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a foreshortened flat roof surface (rows 2–7, ~6px tall) with a textured gravel/concrete top visible from above before terminating at the front coping edge (row 8).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13107
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade (ramen shop)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn dead-on as an architectural/side-scroller front elevation. The awning/facade, door frame, noren curtain rod and tabs, glass doors, and window mullions show zero top surfaces or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9773
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.382Z",
+ "cells": {
+  "16": [
+   "003e5ee85312d360",
+   "046fb27f6e0e9769",
+   "1a5dd6e379ef2ad5",
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "408c41d74bcd1ab0",
+   "4293d5d017302bc9",
+   "4f5624c2557ef79d",
+   "5761f19f48687473",
+   "7380952ed8bd2e6c",
+   "7390ecd293dc3b21",
+   "b133644178093c6e",
+   "bbf792126b343f24",
+   "d461d27d881dbc20"
+  ],
+  "24": [
+   "1893cb389ebd1f1f",
+   "1e84a71d1ab42e8e",
+   "2f52f8ef01ecef05",
+   "39266895c84cecc9",
+   "41f10ff995297bc7",
+   "afa34fa659a5c4ac",
+   "e7539e33222231f2",
+   "ebb7d094bbba5f71"
+  ],
+  "32": [
+   "029b4eadc27c0613",
+   "083ee3880ba0bcd0",
+   "14dae8b0a6fadcba",
+   "2315887c3754512a",
+   "2cd6a070af17913b",
+   "31817d17f437196b",
+   "6726e45c2d25615d",
+   "a614552d5ab4cc1c",
+   "a9aa5113df83baeb",
+   "ac8bcf246a786801",
+   "c72c3e5abfddee28",
+   "d66c92268b09beb4"
+  ],
+  "48": [
+   "93b6d9bc518d2446",
+   "b9ca69a71e49b800"
+  ]
+ }
+}

@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2128a8bf4f8e22bc9940f38fd29bf3b82e68fb7a8dbfadd71972ced8990cb996",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-3-L",
+ "label": "jp_city/street_hand/jp-sf-house-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "house facade with tiled roof and entrance gate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper section (rows 0-7) shows an 8-row foreshortened sloped tiled roof surface above the facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8647
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sliding door entrance frame and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projecting door frame and lintel (rows 11-12) are drawn in pure front elevation as a flat 2px bar with no top surface visible from above. The secondary lintel/awning on the right (rows 21-23) also lacks a top slope/surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "house facade with sealed sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The upper railing/lattice (rows 0-7), wall, door lintel (rows 11-12, only 2px tall), sliding doors, and ground plinth show zero foreshortened top surfaces visible from the top-down 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12864
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "house facade with tiled roof eave and sliding door",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof eave at the top (rows 0-7) shows 8 source pixel rows of sloping roof surface foreshortened from above, with the south wall and shoji doors below it in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10248
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.387Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "1043a2b01ac0d9c4",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "318deea844bef57f",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "7219a3eeb3a1f274",
+   "b451e9ed06dba979"
+  ],
+  "24": [
+   "4b1a8c84d75de168",
+   "6a63b5a2d2a7718c",
+   "9ea66f44c2974d4c",
+   "b386a884f7ba736f"
+  ],
+  "32": [
+   "00f273373b36e05c",
+   "0c15f90ede6928c0",
+   "0c9c61d9b1c85c69",
+   "154a27c10d65b9a2",
+   "3bc4f536f7ef017e",
+   "42426af337730465",
+   "4dd793bbcd0dcb22",
+   "50552c1d2cbef502",
+   "5af03ca40fa656e4",
+   "5bd3362d1cabefd8",
+   "8f75509bcd503dbc",
+   "a5f646577aafdb1b",
+   "a6493c3cd2f1a5db",
+   "abe5e45220a216d0",
+   "afffdae768e4984e",
+   "bcf91473206ffad6",
+   "c623cb4802285074",
+   "cb393c879fa1358f",
+   "d5856f3b8228428e",
+   "e802b23945b9b511",
+   "eae71055f41b80fd",
+   "eecd6637c6b68fe4",
+   "f06c7541d140f9ba",
+   "fee21618d86416ab"
+  ],
+  "48": [
+   "704d996d0bc973af"
+  ]
+ }
+}

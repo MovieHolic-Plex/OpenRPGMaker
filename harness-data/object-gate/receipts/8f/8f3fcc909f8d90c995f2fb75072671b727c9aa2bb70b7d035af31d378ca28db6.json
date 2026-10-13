@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-30",
  "label": "jp_city/street_hand/jp-mark-30",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese road surface speed limit marking '30'",
+    "main_body": "Japanese road marking '30' decal",
     "kind_matches": true,
     "top_rows": 55,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "This is a vertically elongated Japanese road surface marking ('30' km/h) painted flat on the ground. As a flat floor decal, its entire surface lies on the ground plane seen from above.",
+    "evidence": "This is a vertically stretched Japanese road speed-limit marking painted flat on the pavement. As a floor decal lying flat on the ground, its entire 55-row vertical extent is viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9377
+   "ms": 7127
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "road marking '30'",
+    "main_body": "Japanese road marking '30' decal painted flat on the pavement",
     "kind_matches": true,
     "top_rows": 54,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Elongated road surface marking ('30') painted flat on the asphalt, fully visible from above as a ground decal.",
+    "evidence": "The object is a vertically stretched Japanese road speed-limit marking ('30') intended to lie flat on the road surface. As a flat floor decal, its entire surface is viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6809
+   "ms": 7946
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "flat orange ground mark composed of narrow connected bands",
+    "main_body": "road marking '30'",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 55,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The mark is presented as a flat ground-level shape with its colored upper surfaces visible across the bands; there is no receding isometric side face or architectural front elevation.",
+    "evidence": "Japanese road speed-limit marking painted flat on the asphalt surface, viewed from above stretching along the ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 278153
+   "ms": 11180
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "orange flat ground marking / glyph",
+    "main_body": "Japanese road speed limit marking (30)",
     "kind_matches": true,
-    "top_rows": 3,
+    "top_rows": 55,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat, filled orange marking composed of broad 3-4px strokes lying on the ground; its visible face is the top surface, with no receding side face or architectural front elevation.",
+    "evidence": "Elongated flat road surface decal representing '30', viewed from above lying directly on the ground plane with standard south-edge shading.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 109849
+   "ms": 11229
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.484Z",
+ "decidedAt": "2026-10-13T11:34:33.358Z",
  "cells": {
   "16": [
    "2df178cc744a358b",

@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e5052203262298b239ae935a0c2b598a9187235ccad53e69c858ce254f2929c",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-6-R",
+ "label": "jp_city/street_hand/jp-sf-bento-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shop front (awning, signboard, display counters, and entrance door) is drawn in pure 2D side-scroller/front elevation view with zero foreshortened horizontal or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4786
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront with bento shop sign, door, and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shop facade (roof fascia, signboard, doorframe, awning, display shelves, and base) is drawn in completely flat 2D side-scroller front elevation with 0 visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4644
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bento shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door frame, sign board, awning, and bento display cases, is drawn in pure 2D side-scroller front elevation with no visible top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with bento shelves and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (door, door lintel, bento display shelves, and signage) is rendered strictly as a flat 2D architectural front elevation, with no top foreshortened surfaces visible on the lintel, shelves, or awnings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5551
+  }
+ ],
+ "decidedAt": "2026-10-13T11:42:36.051Z",
+ "cells": {
+  "16": [
+   "0b32ff7c73312a05",
+   "23f92e3b7442d9c8",
+   "25e70717220f5345",
+   "27fd405a4bab1640",
+   "3847a69f45423bef",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "7cd5d94d5bf5fcf2",
+   "8ea0e35df3a60d2c",
+   "98f19fd985171b7c",
+   "9c2750aaac53ecc4",
+   "9d68c048efb88473",
+   "a7f068467fcceaf3",
+   "b1a8b5449b59fe87",
+   "bf08ab7c3d77def5",
+   "d6bf7ad35d0b16bf",
+   "ff7bce3c116240b9"
+  ],
+  "24": [
+   "24a1eb5e24a21a9f",
+   "3801a2e2d046aed2",
+   "7ab2f1b10e4870ed",
+   "97793d57b86efc06",
+   "ded9d24a6c27a065",
+   "e34fca3c937ae9d0",
+   "e6218288b0c99b3e",
+   "ff83bb446f67acce"
+  ],
+  "32": [
+   "22a586de30e170c9",
+   "300c65632d386551",
+   "3a8411644a4569b3",
+   "3f8dce7fbd37f577",
+   "59c40705949e7ff4",
+   "68d64441ff546850",
+   "68d66c513297f653",
+   "857f1c2a52ac6493",
+   "a40707ea6f9ccf89",
+   "b495c4186ec9370f",
+   "c9a85e7084a93e15",
+   "e250e8cdcf977380"
+  ],
+  "48": [
+   "5e96a8f12ef15cb0",
+   "c8e9b9dd8d24d560"
+  ]
+ }
+}

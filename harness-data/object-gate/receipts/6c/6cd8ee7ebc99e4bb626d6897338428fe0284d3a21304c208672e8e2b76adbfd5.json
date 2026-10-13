@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-pole-guy",
  "label": "jp_city/street_hand/jp-pole-guy",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "utility pole with crossarms and guy wire",
+    "main_body": "utility pole with crossarms, transformer, and guy wire",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The pole, crossarms, electrical boxes, and pole base are drawn in pure front elevation. The crossarms show no horizontal top surface (insulators simply stick out from the top outline), the electrical boxes are flat rectangles with 0px top visibility, and the pole base at row 157 is a completely flat horizontal line.",
+    "evidence": "The pole, crossarms, electrical box, and transformer are drawn entirely in flat 2D front elevation. Horizontal beams show no top surfaces (insulators stick directly out of a 1px top outline), the box at row 48 has no visible top, and the base at row 158 is a flat horizontal line.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,12 +34,34 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7296
+   "ms": 9415
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
+    "main_body": "utility pole shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole shaft has no visible top surface, the attachments (transformer, electrical box) are drawn in flat front elevation, and the base of the pole terminates in a completely flat horizontal line with no downward curvature for 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11357
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
     "main_body": "utility pole with crossarms and guy wire",
     "kind_matches": true,
     "top_rows": 0,
@@ -47,7 +69,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The pole, horizontal crossarms, transformer box, and base are drawn entirely in flat side-scroller/front elevation. The crossarms show no horizontal top surface, the top of the pole is a 2D silhouette dome rather than a top-down cut face or surface, and the base terminates in a flat horizontal line.",
+    "evidence": "The pole, crossarms, mounted boxes, and transformer are drawn entirely in straight front elevation with horizontal lines and no foreshortened top surfaces visible, and the base terminates in a flat straight cut.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +78,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8334
+   "ms": 5457
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "tall vertical pole",
+    "main_body": "utility pole",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main pole is rendered as a narrow flat vertical elevation with front shading but no visible horizontal top or cut face at its upper end; the upper horizontal structure obscures or replaces the pole top. No receding isometric side face is present.",
+    "evidence": "The pole, horizontal crossarms, transformer box, and base are drawn entirely in pure front elevation. The crossarm beams show no top surface (only a 1px contour line), the transformer box has no visible top, and the base at row 157 is a flat horizontal line with no top-down perspective.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,32 +100,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 107243
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "tall vertical pole with an attached horizontal top fixture",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main vertical pole is presented as a flat front-facing strip and its top end is hidden beneath the horizontal fixture; no visible cut/top surface belongs to the pole itself. The fixture has a shallow upper highlight, but this does not provide a top surface for the main body.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 89927
+   "ms": 8217
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.435Z",
+ "decidedAt": "2026-10-13T11:34:35.380Z",
  "cells": {
   "16": [
    "054bf47f02ed8536",

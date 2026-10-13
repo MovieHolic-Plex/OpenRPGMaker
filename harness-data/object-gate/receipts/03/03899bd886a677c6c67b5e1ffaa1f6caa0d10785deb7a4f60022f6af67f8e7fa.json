@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-lockplate",
  "label": "jp_city/street_hand/jp-mark-lockplate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "square lock plate / floor switch",
-    "kind_matches": true,
-    "top_rows": 8,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The plate shows a large top face (rows 3-10, 8 rows tall) viewed from above, with a 2-3 row south thickness/face below it (rows 11-13), fitting the top-down 3/4 perspective for a floor plate.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 4643
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "square lockplate / floor plate",
+    "main_body": "floor lockplate / pressure plate",
     "kind_matches": true,
     "top_rows": 9,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The lockplate is viewed from above in 3/4 perspective, showing a prominent top surface across rows 3-11 and a south-facing front thickness edge on rows 12-14.",
+    "evidence": "The object is a floor lockplate viewed from above with a 9-row top face (rows 3-11) and a 2-row south thickness edge (rows 12-13).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4051
+   "ms": 3306
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "rectangular floor lock plate",
-    "kind_matches": true,
-    "top_rows": 8,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main plate has a broad, clearly visible horizontal top surface about 8 source pixels deep, with a darker south front edge. It is not a pure front elevation and has no receding isometric side face or container opening.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 48643
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "A square lockplate with a light inset top surface, central yellow marking, and a dark south-facing thickness",
+    "main_body": "square lock plate / pressure plate",
     "kind_matches": true,
     "top_rows": 8,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main plate has a clearly visible horizontal top surface approximately 8 source pixels deep, plus a darker south/front face. No receding isometric side face or container opening is present.",
+    "evidence": "The plate shows a large top surface spanning rows 3-10 (8 rows tall) with a yellow core, plus a front edge thickness on rows 11-13.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 213136
+   "ms": 4366
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square lock plate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate lies flat on the ground, displaying its top surface clearly across rows 4 to 11 (8 rows) with a slight front lip/shadow below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4455
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square lock plate / pressure plate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate surface is seen from above spanning rows 3-11 (9 rows tall) with a yellow central inlay, and has a 2px front edge/drop at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5555
   }
  ],
- "decidedAt": "2026-10-13T10:32:48.013Z",
+ "decidedAt": "2026-10-13T11:34:35.380Z",
  "cells": {
   "16": [
    "180ebd89da18a349"

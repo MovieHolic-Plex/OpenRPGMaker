@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-30-e",
  "label": "jp_city/street_hand/jp-mark-30-e",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,24 +14,42 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "painted road marking",
+    "main_body": "painted road markings on asphalt",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat painted traffic marking on an asphalt road surface next to a white lane line, lying completely flat on the ground plane.",
+    "evidence": "The object is a flat Japanese road speed limit marking (orange painted decal on asphalt) viewed top-down on the street surface.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5782
+   "ms": 4833
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
+    "main_body": "painted road markings",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Orange road markings painted flat on the asphalt surface, correctly depicted lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3770
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
     "main_body": "painted road marking",
     "kind_matches": true,
     "top_rows": 16,
@@ -39,51 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat Japanese road marking painted directly onto the asphalt surface, viewed from above as a floor decal.",
+    "evidence": "The object is a flat Japanese road marking painted on asphalt, lying completely flat on the ground surface.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3868
+   "ms": 4972
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "orange ground marking/decal",
+    "main_body": "road marking painted flat on the asphalt",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat, irregular orange marking with broad horizontal plan-view strokes and no receding side face or upright front elevation.",
+    "evidence": "Orange road marking decal painted directly on the ground surface, correctly shown flat in top-down view.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 376968
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "orange outlined ground mark/plate",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The object is a flat ground graphic, but its main form is only thin orange outline/linework; the enclosed area shows the background rather than a visible filled top surface. No receding side face or upright front elevation is present.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 357607
+   "ms": 4063
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.484Z",
+ "decidedAt": "2026-10-13T11:34:33.358Z",
  "cells": {
   "16": [
    "2625ac2c85f5d76f",

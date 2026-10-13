@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-w",
  "label": "jp_city/street_hand/jp-mark-edge-w",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "floor or road edge marking",
+    "main_body": "floor marking / line decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat ground tile / marking viewed directly from above spanning all 16 rows.",
+    "evidence": "The entire tile is a floor surface marking viewed from above spanning all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4980
+   "ms": 3362
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "ground marking / floor edge",
+    "main_body": "floor marking / pavement edge decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat floor line/marking occupying the ground plane across the full 16 rows.",
+    "evidence": "The object is a flat ground marking/pavement pattern spanning the full 16x16 tile, lying flat on the floor plane viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3612
+   "ms": 4574
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Flat pale floor-edge marking",
+    "main_body": "floor marking edge",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The marking is shown as a ground-plane surface spanning all 16 source-pixel rows, with no standing front face or receding side face.",
+    "evidence": "Flat floor marking spanning all 16 rows, viewed entirely from above as flat ground.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 13384
+   "ms": 7066
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Flat pale vertical ground-edge marking with a short dark horizontal notch",
+    "main_body": "ground marking/floor decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The broad pale strip is shown as a ground-plane surface spanning all 16 source rows. There is no standing front face or receding side face; the dark notch reads as a flat marking.",
+    "evidence": "The object is a flat floor marking/pavement edge pattern viewed directly from above lying on the ground across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 14821
+   "ms": 3833
   }
  ],
- "decidedAt": "2026-10-13T09:40:33.277Z",
+ "decidedAt": "2026-10-13T11:34:35.379Z",
  "cells": {
   "16": [
    "13c902b668a5b2d9"

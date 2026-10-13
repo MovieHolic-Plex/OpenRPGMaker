@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-water-shade",
  "label": "jp_city/street_hand/jp-water-shade",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "water shadow/shade overlay",
+    "main_body": "water shadow/shade tile overlay",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water shade decal/overlay tile viewed completely top-down flat across the tile surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water shadow decal overlay",
     "kind_matches": true,
     "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat floor/water shade overlay fading downwards onto transparency; viewed entirely from above as a flat decal.",
+    "evidence": "The object is a flat water shadow/depth overlay decal covering rows 0-11, drawn completely flat on the surface as expected for a floor/water decal.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5317
+   "ms": 4372
   },
   {
    "judge": "gemini",
-   "run": 2,
+   "run": 3,
    "answer": {
-    "main_body": "water shade / shadow overlay",
+    "main_body": "water shadow / shade floor decal",
     "kind_matches": true,
-    "top_rows": 16,
+    "top_rows": 8,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat shadow/shade gradient overlay tile designed to sit directly on the ground or water surface, correctly matching the 'flat' classification.",
+    "evidence": "Flat floor shade overlay extending from row 0 to roughly row 8-11 with transparency dither at the lower edge, correctly representing a surface decal.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3278
+   "ms": 3391
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Flat water-shading tile with a dark-to-transparent, irregular transition",
+    "main_body": "water/ground shadow overlay decal",
     "kind_matches": true,
-    "top_rows": 16,
+    "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The shading occupies a flat 16-row surface viewed from above; there is no standing body, vertical front face, or receding side face. The checkerboard indicates transparency rather than object depth.",
+    "evidence": "Object is a flat shade overlay / decal tile that covers rows 0-11 over a transparent checkerboard background, lying flat on the surface as expected for a flat kind.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 10550
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "Flat water-shadow ground tile with a dithered blue-to-gray transition",
-    "kind_matches": true,
-    "top_rows": 16,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The entire 16-row tile depicts a horizontal ground/water surface. The checkerboard transition is surface shading, not a vertical face; no raised edges or receding side faces are drawn.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 8961
+   "ms": 3732
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.232Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "751ef5b1d988596b"

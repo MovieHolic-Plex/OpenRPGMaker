@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-17",
  "label": "jp_city/street_hand/jp-wire-17",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,12 +21,12 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Overhead/wall-strung wires or cables are 1-2px thin line elements and permitted to be flat under the wall_mounted/chains category.",
+    "evidence": "Hanging wires/cables suspended across the frame. As a thin linear wire/wall-mounted element, it is correctly represented as 1-2px lines without a foreshortened top surface.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5370
+   "ms": 4625
   },
   {
    "judge": "gemini",
@@ -39,51 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Overhead/wall-strung wires drawn as 1-2px catenary curves; as a thin line/flat wall-mounted decoration, no top surface is expected.",
+    "evidence": "Thin electrical/utility wires hanging across the frame, correctly classified as wall_mounted / flat lines with no substantial 3D volume.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5426
+   "ms": 4166
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "thin wall-mounted wire strands",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin, flat wire-like strands attached to a wall, with no substantial volumetric main body or horizontal top surface to show. No receding side face or container opening is present.",
+    "evidence": "Suspended cables/wires hanging in slight catenary curves. Thin line elements mounted along walls or poles have no horizontal depth or top surface, appropriate for the wall_mounted category.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 53610
+   "ms": 4198
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "thin wall-mounted wire strands",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The object consists of thin, flat horizontal/curved strands presented directly against the wall, with no substantial top surface or receding side face. A flat wall-mounted presentation is appropriate for this kind.",
+    "pure_front_elevation": false,
+    "evidence": "Thin hanging wires/cables (1-2px thick) with natural catenary sag; as linear wall/overhead elements they have no volumetric top surface.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 32377
+   "ms": 3709
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.234Z",
+ "decidedAt": "2026-10-13T11:39:50.704Z",
  "cells": {
   "16": [
    "0aaa77f8f76a5b9a",

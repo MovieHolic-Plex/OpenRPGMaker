@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-n",
  "label": "jp_city/street_hand/jp-mark-edge-n",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "floor marking / pavement edge tile",
+    "main_body": "ground edge and floor marking tile",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Ground surface / floor marking shown entirely in top-down perspective flat on the floor.",
+    "evidence": "The entire tile depicts a flat floor/ground marking with border and pavement textures viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6063
+   "ms": 5120
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "floor edge marking / mat border",
+    "main_body": "floor tile / border marking",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat ground tile/edge marking lying completely in the floor plane across rows 0-15.",
+    "evidence": "The tile depicts a flat floor surface with border lines/markings viewed from overhead, taking up all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5539
+   "ms": 5604
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "a thin horizontal ground marking/edge strip",
+    "main_body": "ground marking/floor edge tile",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Only a 2-pixel horizontal stripe is visible; it reads as an edge line rather than a substantive top surface of the main body.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 140648
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "dark horizontal flat ground plate with a light front edge",
-    "kind_matches": true,
-    "top_rows": 7,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main dark patterned plate occupies roughly source rows 5-11 as a broad visible horizontal surface; the lighter strip is an edge, not the only top indication. No receding side face or front-elevation-only body is present.",
+    "evidence": "The tile depicts ground surface and markings viewed from above, lying entirely flat across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 129995
+   "ms": 4027
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor marking edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor tile / edge marking lying flat on the ground, fully rendered on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5352
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.485Z",
+ "decidedAt": "2026-10-13T11:34:33.359Z",
  "cells": {
   "16": [
    "b84aa5af9e94a63c"

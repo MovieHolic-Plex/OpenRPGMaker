@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-v6",
  "label": "jp_city/street_hand/jp-wire-v6",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,69 +21,69 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin vertical wires/cables hanging against a wall, correctly classified as wall_mounted which may be flat.",
+    "evidence": "Vertical wires/cables hanging flat against a wall or background; appropriately flat for wall-mounted/hanging wire elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4702
+   "ms": 3231
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "vertical wires",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Wall-mounted or hanging vertical wire lines; flat by nature as permitted for wall-mounted objects.",
+    "evidence": "Vertical hanging wires/cables depicted flat against the wall, matching the wall_mounted category.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3968
+   "ms": 7666
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "several thin vertical wire strands",
+    "main_body": "hanging vertical wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is composed of thin wall-mounted vertical strands with no substantial volumetric body or horizontal top surface to show; this is appropriate for a wire-like wall object rather than a flat elevation of a solid object.",
+    "evidence": "Thin vertical wires hanging against a wall; as flat wall-mounted/hanging elements, no top foreshortening is required.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 191985
+   "ms": 3995
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "thin vertical wire strands",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of flat, one-pixel-wide wall-mounted vertical strands with no volumetric main body or receding side face; a visible top surface is not applicable.",
+    "evidence": "Vertical wires/cables hanging flat against the wall plane; appropriate for flat wall-mounted fixtures.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 124501
+   "ms": 4723
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.236Z",
+ "decidedAt": "2026-10-13T11:39:50.706Z",
  "cells": {
   "16": [
    "024f12b6ac105723",

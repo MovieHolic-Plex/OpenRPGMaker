@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-5",
  "label": "jp_city/street_hand/jp-wire-5",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "overhead/wall-mounted sagging wires",
+    "main_body": "hanging wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Wires/cables spanning horizontally across the tile, naturally flat/wall-mounted elements with no required 3D top surface.",
+    "evidence": "Three drooping wires/cables spanning horizontally, appropriate for a flat wall-mounted or overhead wire overlay in 3/4 perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9180
+   "ms": 5318
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "hanging wires",
+    "main_body": "hanging wires/cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Curved hanging wires or cables mounted across a wall or overhead; appropriate as a wall-mounted/hanging flat element.",
+    "evidence": "Thin hanging wires/cables drawn flat as permitted for wall-mounted/hanging elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5977
+   "ms": 5050
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "thin wall-mounted wire strands",
+    "main_body": "hanging electrical wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is represented as thin, planar wall-mounted wire lines with no substantial main volume or horizontal top surface; no receding side face or container opening is present.",
+    "evidence": "Hanging wires/cables strung horizontally in catenary curves; thin wall-mounted or overhead strung elements have no measurable top surface and are permitted to be flat under the wall_mounted kind.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 151382
+   "ms": 6629
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "thin wall-mounted wire-like linework",
+    "main_body": "hanging wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The object consists of thin dark horizontal/curved line bands with no visible top surface or receding side face; it is a flat wall-mounted graphic rather than a volumetric body.",
+    "pure_front_elevation": false,
+    "evidence": "Suspended cables/wires spanning horizontally, appropriately categorized as wall_mounted/overhead flat fixtures.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 171950
+   "ms": 6212
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.235Z",
+ "decidedAt": "2026-10-13T11:39:50.705Z",
  "cells": {
   "16": [
    "a351da358f182886",

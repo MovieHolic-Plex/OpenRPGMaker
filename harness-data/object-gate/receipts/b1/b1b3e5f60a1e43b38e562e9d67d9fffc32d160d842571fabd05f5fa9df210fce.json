@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-bridge-lip",
  "label": "jp_city/street_hand/jp-bridge-lip",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wooden bridge lip / plank decking",
+    "main_body": "bridge wooden planks surface",
     "kind_matches": true,
     "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Horizontal bridge decking seen flat from above from rows 4 to 15, consisting of wooden planks abutting dark water/space above.",
+    "evidence": "The object is a flat bridge floor section showing wooden planks viewed from above, spanning rows 4 through 15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4676
+   "ms": 3432
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "bridge edge planking",
+    "main_body": "bridge lip / wooden planks",
     "kind_matches": true,
     "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Horizontal wooden planks forming the edge/lip of a bridge lying flat on the ground plane, occupying rows 4-15 (12px visible top surface).",
+    "evidence": "The object is a flat bridge deck/lip tile showing horizontal wooden planks viewed from above across rows 4-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5092
+   "ms": 3403
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Flat wooden bridge decking with horizontal plank bands",
+    "main_body": "wooden bridge planks",
     "kind_matches": true,
     "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main wooden surface spans source rows 4–15, with horizontal dark seams separating plank bands. It reads as a broad ground-level surface viewed from above, not a standing front face.",
+    "evidence": "Flat wooden bridge surface showing horizontal planks viewed from above across rows 4-15 with plank seams and highlights.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9994
+   "ms": 3588
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Flat wooden bridge decking with horizontal plank bands",
+    "main_body": "bridge planks / lip",
     "kind_matches": true,
     "top_rows": 12,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The broad decking surface occupies source rows 4–15, with horizontal dark seams separating the plank bands. No upright main body or receding side face is shown.",
+    "evidence": "The object is a flat bridge deck/lip tile showing horizontal planks seen from above across rows 4-15 (12 rows tall).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 13088
+   "ms": 5613
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.480Z",
+ "decidedAt": "2026-10-13T11:34:33.354Z",
  "cells": {
   "16": [
    "84acec5f80596e0d"

@@ -6,24 +6,26 @@
  "kind": "structure",
  "name": "jp-bwall-sukashi",
  "label": "jp_city/street_hand/jp-bwall-sukashi",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
-  "윗면 2행 < 3"
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
  ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese boundary wall with openwork/panel and lower wall",
+    "main_body": "Japanese wall section with sukashi openwork",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire sprite is drawn as a flat architectural elevation with no visible top surface or depth. The upper framed panel (rows 1-5) and lower patterned wall (rows 6-15) are both depicted straight-on.",
+    "evidence": "The entire 16x16 tile is a vertical front elevation of a wall/screen panel with no visible top surface or coping seen from above.",
     "verdict": "fail"
    },
    "pass": false,
@@ -32,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5660
+   "ms": 4619
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese wall with openwork/transom upper section and dark lower panel",
+    "main_body": "wall segment with sukashi (openwork) cutout",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The wall panel is drawn completely flat in pure front elevation with no foreshortened top surface or wall cap visible (top_rows = 0).",
+    "evidence": "The entire wall and upper window/opening are depicted in pure front elevation with no visible top surface or thickness foreshortening.",
     "verdict": "fail"
    },
    "pass": false,
@@ -54,46 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5200
+   "ms": 6091
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large Japanese wall/gate structure with a broad visible roof or top plane over a dark wall body",
+    "main_body": "Japanese wall panel with transom/sukashi cutout",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a broad multi-row horizontal top plane visible from above above the front wall; the lower dark wall is shown in front elevation without a receding side face.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure 2D front elevation: the framed upper section (rows 1-5) and the lower decorative wall face (rows 6-15) show no horizontal top surface or depth foreshortening.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 114181
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4415
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large stone wall structure with a light upper surface and dark front face",
+    "main_body": "openwork wall (sukashi-bei)",
     "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a clearly visible four-pixel-high horizontal upper plane above the dark south-facing facade; it is not a flat front elevation and no receding isometric side face is drawn.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation with no visible horizontal top surface (top_rows=0). The upper light panel (rows 1-5) is a framed vertical surface/aperture rather than a receding top plane or roof cap.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 91431
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10437
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.915Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "f61ad05d0bb05fe3"

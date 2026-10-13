@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-foot-shadow",
  "label": "jp_city/street_hand/jp-foot-shadow",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wall foot shadow decal",
+    "main_body": "ground shadow strip",
     "kind_matches": true,
     "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat shadow decal cast on the floor at the base of a wall, occupying rows 0-2 with dithering.",
+    "evidence": "The asset is a 2-3 pixel tall shadow strip cast onto the floor along rows 0-2, serving as an ambient floor shadow overlay lying flat on the ground.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6130
+   "ms": 12343
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "drop shadow strip",
+    "main_body": "foot shadow strip",
     "kind_matches": true,
     "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "A 3-row dithering shadow decal cast horizontally on the floor along the top edge.",
+    "evidence": "A 2-3 pixel high floor contact shadow strip lying flat on the ground along the top edge.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4669
+   "ms": 8047
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "flat foot shadow/decal",
+    "main_body": "cast shadow strip on the ground",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a thin, ground-level shadow/decal with a visible horizontal footprint from above; no receding side face or container opening is present.",
+    "evidence": "Dark shadow strip occupying rows 0-2 with dithered edge, designed to lie flat on the floor at the base of a wall or structure.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 353420
+   "ms": 3634
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "flat ground shadow/decal",
+    "main_body": "floor shadow overlay strip",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat ground shadow with no raised main body, visible top plane, or front face.",
-    "verdict": "fail"
+    "evidence": "A 1-3 row dithered shadow band designed to lie flat on the floor along the base of a wall or object.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 251461
+   "ms": 5698
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.482Z",
+ "decidedAt": "2026-10-13T11:34:33.357Z",
  "cells": {
   "16": [
    "7ffe5670e341e870"

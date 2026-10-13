@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-20",
  "label": "jp_city/street_hand/jp-wire-20",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "hanging wires/cables",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin sagging wires/cables mounted along a wall or overhead; appropriate flat/line representation for kind wall_mounted.",
+    "evidence": "Wires/cables drooping horizontally across the tile, drawn as thin lines as appropriate for wall-mounted or overhead wire elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6043
+   "ms": 3945
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "sagging electrical wires / cables",
+    "main_body": "sagging wires/cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Set of three hanging/sagging wires. As thin lines mounted flat on a wall or strung overhead, they naturally have no 3D volume or foreshortened top surface.",
+    "evidence": "Wires or hanging cables strung across the scene, properly represented as flat linework conforming to wall_mounted/hanging category.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4983
+   "ms": 3130
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "several thin horizontal wall wires",
+    "main_body": "sagging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is represented by thin wall-mounted horizontal lines with no substantial volumetric main body or receding side face; a top surface is not applicable.",
+    "evidence": "Three sagging wires/cables suitable for hanging overhead or on walls; thin line structures have no horizontal top surface.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 81414
+   "ms": 3437
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "thin wall-mounted wire/cable strands",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is represented by thin, flat horizontal/stepped wire lines with no substantial volumetric body; as a wall-mounted wire, the absence of a visible top surface is appropriate rather than a failed standing-object elevation.",
+    "evidence": "Three sagging utility cables/wires drawn as thin lines across the frame; as a wall-mounted or suspended linear object (similar to chains), flat 2D representation is standard and expected.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 431291
+   "ms": 8012
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.235Z",
+ "decidedAt": "2026-10-13T11:39:50.705Z",
  "cells": {
   "16": [
    "01b972dbd110ed61",

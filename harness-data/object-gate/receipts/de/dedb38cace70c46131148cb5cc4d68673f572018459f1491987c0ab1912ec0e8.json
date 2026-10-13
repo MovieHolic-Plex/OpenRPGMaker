@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-e",
  "label": "jp_city/street_hand/jp-mark-edge-e",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "road marking painted on pavement",
+    "main_body": "floor marking / road decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Vertical road marking lines and asphalt textures lying completely flat on the ground plane across the full 16x16 tile.",
+    "evidence": "The tile depicts flat vertical ground markings/stripes viewed directly from above spanning all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4470
+   "ms": 4346
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "road surface marking",
+    "main_body": "road or platform floor marking",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Floor decal/pavement marking pattern lying flat across the ground plane occupying all 16 rows.",
+    "evidence": "Lies completely flat on the ground as painted lines/markings spanning all 16 rows from top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3246
+   "ms": 3792
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "narrow vertical rectangular strip",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body reads as a flat vertical band with no visible foreshortened top surface; only edge/face pixels are shown.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 198374
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "a narrow vertical ground-mark edge/strip",
+    "main_body": "flat ground marking / road edge",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a flat, vertically elongated ground marking with its surface visible across the full source height; it has no receding side face or front-elevation volume.",
+    "evidence": "The object is a flat pavement/road edge marking lying entirely in the top-down floor plane across the full 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 336587
+   "ms": 3161
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "ground road marking edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor/road marking decal lying completely flat on the ground plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2646
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.484Z",
+ "decidedAt": "2026-10-13T11:34:33.359Z",
  "cells": {
   "16": [
    "ae9c9986e17c6200"

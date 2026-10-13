@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-s",
  "label": "jp_city/street_hand/jp-mark-edge-s",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,78 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "floor border marking / mat edge",
+    "main_body": "ground markings / curb edge",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Object is a flat floor marking/mat edge viewed from above, covering the ground tile.",
+    "evidence": "Flat ground tile / floor edge markings seen entirely from above across the full 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4075
+   "ms": 3791
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "flat ground marking / edge lines",
+    "main_body": "platform floor marking with safety line and edge border",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of horizontal ground striping/markings lying flat on the floor plane viewed from above.",
+    "evidence": "The entire tile depicts flat platform ground seen from above, featuring a horizontal white safety line (rows 2-3) and a bordered edge zone (rows 10-14). Fully viewed from above with no vertical elevation failure.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3827
+   "ms": 16027
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "flat ground marking/plate",
+    "main_body": "platform edge with south-facing concrete wall and floor marking",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The asset depicts a raised platform edge or curb with a 5-6px tall vertical front face (rows 10-15) complete with a vertical panel seam, rather than a flat ground decal. It has no visible top depth for the curb edge itself, functioning as a vertical elevation drop.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10511
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor marking edge",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a broad horizontal surface visible from above across roughly source rows 10-15; there is no receding side face or architectural front elevation.",
+    "evidence": "Flat floor edge decal / marking tile seen directly from above, consistent with the flat ground kind.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 266026
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 271553,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "ms": 2857
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.485Z",
+ "decidedAt": "2026-10-13T11:34:33.359Z",
  "cells": {
   "16": [
    "22c2f84a2401faac"

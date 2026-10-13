@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-hydrant-sign",
  "label": "jp_city/street_hand/jp-hydrant-sign",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,80 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "hydrant sign head and pole assembly",
+    "main_body": "sign head and pole",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The sign head features an elliptical top surface measuring 6 rows (rows 5-10), and the pedestal base also clearly displays a 4-row top surface (rows 38-41).",
+    "evidence": "The sign head clearly shows a foreshortened top surface across rows 5-10 (6 rows tall), and the base plinth also shows a foreshortened top face across rows 38-41, matching 3/4 top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8030
+   "ms": 5885
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "sign head and base",
+    "main_body": "hydrant sign head and post assembly",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The sign head shows a clear 6-pixel-tall top surface (rows 5-10) above its front face (rows 11-20), and the base also depicts a foreshortened top surface (rows 38-41, 4 rows tall).",
+    "evidence": "The sign head features a prominent 6-row foreshortened top cap/surface (rows 5-10) above its dark red front face (rows 11-20), and the base plinth also clearly depicts a 4-row horizontal top surface (rows 38-41).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6237
+   "ms": 6195
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "upright hydrant-sign column with a broad cap and lower block",
+    "main_body": "hydrant sign post with base",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main upright assembly shows a substantial foreshortened top surface on the broad upper cap, about 5 source-pixel rows deep; the lower block also has a visible top plane. The south-facing body faces are shown without receding isometric side faces, so this is not a pure front elevation.",
+    "evidence": "The top cap/surface of the sign head is drawn as a distinct 6-row foreshortened surface (rows 5-10), and the base plinth also clearly shows a 4-row top surface (rows 38-41).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 169382
+   "ms": 6409
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "front-facing signpost column with a red hydrant/sign head and rectangular lower placard",
+    "main_body": "hydrant sign head on pole with concrete base",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main vertical column and attached sign elements are drawn symmetrically as flat front faces. No horizontal top surface or cut face is visible; the thin dark edges at transitions are only outlines, not foreshortened tops.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The sign head shows a clear 6-row elliptical top surface (rows 5-10) above its front face (rows 11-20), and the base block also clearly displays a 4-row top surface (rows 38-41).",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 56969
+   "pass": true,
+   "reasons": [],
+   "ms": 8155
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.917Z",
+ "decidedAt": "2026-10-13T11:34:33.358Z",
  "cells": {
   "16": [
    "766da08089bdb22c",

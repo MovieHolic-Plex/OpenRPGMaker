@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-bwallf-end-r",
  "label": "jp_city/street_hand/jp-bwallf-end-r",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese-style building wall segment with stone foundation, plaster panel, wooden lattice, and tiled wall top",
+    "main_body": "wall segment",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top of the wall section displays 4 pixel rows (rows 0-3) of a tiled horizontal cap/roof surface viewed from above, providing the requisite 3/4 top-down perspective for the structure.",
+    "evidence": "Rows 0-3 form a 4-row deep top/roof surface above the south-facing wall front (rows 4-31).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 11128
+   "ms": 4886
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "building wall section with stone foundation and barred window/panel",
+    "main_body": "Japanese building wall segment with tiled roof trim and stone base",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Rows 0-3 show 4 pixel rows of a foreshortened tiled top surface/cap of the wall structure.",
+    "evidence": "Rows 0-3 show 4 pixel rows of sloping grey roof tiles capping the wall above the vertical front wall facade.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6892
+   "ms": 4773
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "wooden building wall with a visible roof surface and stone foundation",
+    "main_body": "Japanese-style wall section with wooden grill, plaster panel, and stone foundation",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main wooden structure has a substantial brown roof plane visible above its south-facing wall, spanning about source rows 5-8; the lower stone foundation is a secondary base. No receding side face is drawn.",
+    "evidence": "The top surface of the wall is shown at rows 0-3 (4 source pixels deep) with a patterned stone/tile texture, viewed from above, before descending into the vertical front wall face.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 58298
+   "ms": 6240
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Japanese wooden wall/building end with a roof cap",
+    "main_body": "Japanese building wall segment with stone foundation, plaster section, wooden lattice, and tiled roof coping",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main structure has a clearly visible four-pixel-deep horizontal roof/top surface above the timber wall; the narrow dark edge at the right is only a boundary, not a receding side face.",
+    "evidence": "Rows 0-3 depict a 4-pixel tall foreshortened top surface of the tiled roof/wall coping with a shadow line below on row 4.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 56583
+   "ms": 9859
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.916Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "2d9509a180f01d37",

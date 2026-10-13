@@ -6,7 +6,7 @@
  "kind": "round_body",
  "name": "jp-propane",
  "label": "jp_city/street_hand/jp-propane",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "pair of propane tanks",
+    "main_body": "dual propane cylinders",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 7,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top surfaces/domes of the propane tanks are rendered as foreshortened ellipses roughly 6 rows tall (rows 6-11/12) above the vertical cylindrical bodies.",
+    "evidence": "Both propane tanks feature clearly foreshortened elliptical top caps spanning rows 5 to 11 (approx 7 rows tall) viewed from an overhead 3/4 angle.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5020
+   "ms": 5727
   },
   {
    "judge": "gemini",
@@ -34,49 +34,56 @@
    "answer": {
     "main_body": "twin propane tanks",
     "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 7,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top domes/collars of the propane tanks are drawn as distinct ellipses spanning rows 6 to 11 (approx 6 rows tall), clearly visible from above in 3/4 perspective.",
+    "evidence": "Both propane cylinders feature clearly rendered elliptical top caps spanning rows 5 to 12 (approx. 7 rows tall), topped with valves, properly showing the 3/4 top-down view.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3884
+   "ms": 5246
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 175806,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "paired round propane-cylinder body with visible elliptical caps and front faces",
+    "main_body": "twin propane tanks",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 8,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body has substantial light elliptical top-cap surfaces above the vertical cylinder faces, approximately 5 source-pixel rows tall. No receding isometric side face is present; the central dark strip is a seam between the cylinders.",
+    "evidence": "The top surfaces of the cylindrical tanks are drawn with prominent elliptical tops extending from row 5 to row 12 (~8 rows tall), showing the top surface foreshortened from above with the valves mounted behind/above them.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 169609
+   "ms": 16761
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "twin propane tanks (cylinders)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of each cylinder is explicitly drawn as a large visible surface seen from above (rows 5 to 12, ~7 rows tall), showing both the top cap and the south face of the cylinders without isometric receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28269
   }
  ],
- "decidedAt": "2026-10-13T10:33:07.246Z",
+ "decidedAt": "2026-10-13T11:34:35.381Z",
  "cells": {
   "16": [
    "443b5607ca845e93",

@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-bwall-plain",
  "label": "jp_city/street_hand/jp-bwall-plain",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wall segment with plaster panel and stone base",
+    "main_body": "wall section with upper plaster panel and lower stone brick pattern",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire 16x16 tile is a completely flat front elevation of a wall (plaster upper section and brick lower section) with 0 rows of visible top surface.",
+    "evidence": "The wall is depicted as a flat vertical architectural elevation spanning rows 1-14 with zero visible top surface or depth perspective.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5020
+   "ms": 5903
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese-style wall",
+    "main_body": "wall segment",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The tile consists of an upper framed plaster panel (rows 1-5) and a lower stone wall section (rows 6-14), both drawn entirely in pure front elevation with no visible top surface or wall cap.",
+    "evidence": "The entire tile is drawn as a flat vertical wall face (a plaster panel framed above a stone block foundation) with 0 rows of visible top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7256
+   "ms": 4669
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large rectangular wall/building body with a pale plaster face over a dark foundation",
+    "main_body": "wall segment",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main wall is presented as a flat rectangular front elevation; the horizontal color bands are facade/foundation rows, not a foreshortened top surface. No top slope or visible horizontal surface is shown.",
+    "evidence": "The entire 16px tile depicts a vertical wall face in pure front elevation (white plaster/timber upper panel from row 1-5 and stone/brick base from row 6-14) with zero visible top surface or roof cap.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,28 +78,32 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 53948
+   "ms": 5654
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large rectangular building wall with a broad roof/top surface",
+    "main_body": "Japanese-style boundary wall (plaster panel over stone masonry base)",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main structure has a broad, multi-row horizontal top plane above its darker south-facing wall; it is not just a thin rim or edge highlight. No receding isometric side face or container opening is present.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The entire tile is drawn as a flat front elevation of a wall (framed plaster upper section above a stone block base) with no horizontal top surface or coping visible from above (0 rows of top surface).",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 140335
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6820
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.915Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "8ec91c5c4c486484"

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1e15f58c411706e9efe6ca5ae86a896da37bb0ad02fe5f14661430b8b2660d3",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-bento-3-L",
+ "label": "jp_city/street_hand/jp-sf-bento-3-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront with sliding glass door and vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door frame, door overhang (rows 11-12), and adjacent vending unit/counter (rows 22-45), is drawn in completely flat 2D front elevation with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5734
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with door and machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door frame, upper beam, and vending unit, is drawn in pure flat front elevation with no visible horizontal top surfaces (door overhang is only a 2px strip at rows 11-12).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6055
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront with door and vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame, lintel, and vending machine are drawn in pure front elevation with 0px of top surface visible on any horizontal element.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4372
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with door and vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, door frame lintel, and inset vending machine are drawn in flat front elevation with no visible top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5703
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.385Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "3847a69f45423bef",
+   "591233ec525de138",
+   "5ed7790500596e1b",
+   "6d8d6a2b2522f31c",
+   "7bf0b5b1f2324f51",
+   "b1a8b5449b59fe87",
+   "bda0b595f9a593b3",
+   "d6ba1d3244cb0ef8"
+  ],
+  "24": [
+   "2c80045feece2f2a",
+   "7ab2f1b10e4870ed",
+   "cf007cba375b9a18",
+   "e34fca3c937ae9d0"
+  ],
+  "32": [
+   "06107036cd903e4b",
+   "16dd8dd719d48621",
+   "2858785eea528432",
+   "2f56187674e22208",
+   "2fb93c4fed6d2046",
+   "33b565584d063339",
+   "3a8411644a4569b3",
+   "5f82b0882d8c6cd9",
+   "5ff35fe92b0dd0d6",
+   "72516d11f7270dfc",
+   "7378d4c1bd6569c4",
+   "8545bc111e1405ab",
+   "9b0d8a6cd41f1262",
+   "a04df5757b672174",
+   "b6708878c383db6c",
+   "b8b356bc19858eb6",
+   "be28d402aa7f9257",
+   "c9a69974cde2df83",
+   "c9a85e7084a93e15",
+   "ce47a4b0708155ae",
+   "dbc68d2cb8db4977",
+   "e6a9fe4273314f1b",
+   "f8ce10522630dc9e",
+   "fa9500a49bd0c203"
+  ],
+  "48": [
+   "98ac8939680a3dbd"
+  ]
+ }
+}

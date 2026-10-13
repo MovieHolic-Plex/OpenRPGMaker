@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0a562083fe32c134094f25e700bae9123497761c9e2adac4303fc33d78b4940",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-3-R",
+ "label": "jp_city/street_hand/jp-sf-konbini-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store entrance and storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (upper parapet/sign area, striped awning/fascia, door lintel, and window frame) is drawn in pure architectural front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store entrance and window facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the door frame lintel (rows 11-12), the window shelves, and the upper facade/eaves, is drawn as a flat front architectural elevation with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6028
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront wall and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (fascia, awning strips, door frame, and windows) is drawn as a flat architectural front elevation with no visible top surface on any horizontal edges or lintels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "convenience store entrance and storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront—including the upper fascia/signboard (rows 0-10), door lintel (rows 11-12), sliding doors, window, and interior display shelves—is rendered as a completely flat architectural front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5888
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.644Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "368005c35bb837d9",
+   "4f3a7dd9ec722387",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "9584da2e409f93c6",
+   "e09dad0b84f07f9a",
+   "f57dd59d8e0ee44e",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "5bef23f4929c03eb",
+   "60cc4c8e12b98566",
+   "9668c652d8c17a1a",
+   "a1d96bd3a8fb599a"
+  ],
+  "32": [
+   "08d85dddeef53405",
+   "0de6a39a1f79857f",
+   "219c51c5375e1c72",
+   "235b5ad7fb6ca501",
+   "27010703ecbb0a39",
+   "30549b5023a7c1f5",
+   "374cc9861d77fac4",
+   "3be31e01b4e31f0a",
+   "4d865431aa8e8428",
+   "531c5ba95ed385b8",
+   "549b13dc968ec0d7",
+   "698f209bf0f74cb7",
+   "81ec2266a4776ffa",
+   "9ce3938f6e539608",
+   "c1c541442a05a3a6",
+   "c5b38acf295e2d2b",
+   "c73630b505caa750",
+   "c842b6eb17b66eda",
+   "c9e85c04c7296f36",
+   "d48357051175353a",
+   "d5a681bfe8d19aa6",
+   "dbde8a4174bcee15",
+   "e22a0e8e95c07920",
+   "ed2a15fde5e686a3"
+  ],
+  "48": [
+   "b63dadeabe2bcee2"
+  ]
+ }
+}
