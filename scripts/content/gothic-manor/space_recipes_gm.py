@@ -67,7 +67,7 @@ HORROR_DECALS = [D('gm-ov-cobweb', 1, 2), D('gm-ov-dust', 1, 3), D('gm-ov-stain'
 SPACES = {
     'hall': dict(
         ko='저택 현관 홀', indoor=True, layout='room', wall='manor',
-        size=dict(min=[14, 11], default=[18, 14], max=[40, 30]), floor=FL('gm-fl-marble'), runner=RUNNER,
+        size=dict(min=[14, 11], default=[16, 12], max=[40, 30]), floor=FL('gm-fl-marble'), runner=RUNNER,
         defaultDoors=[dict(side='s', kind='double'), dict(side='n', kind='double')],
         furniture=[F('gm-clock', 'north-wall', 1, 1, 0, wallTop=2, wallMatch='plain'),
                    *PAINTINGS,
@@ -82,7 +82,7 @@ SPACES = {
                           floor=FL('gm-fl-parquet'), defaultDoors=[dict(side='s'), dict(side='n')],
                           furniture=[*PAINTINGS, F('gm-armor', 'side-wall', 1, 3, 1), F('gm-candelabra', 'side-wall', 1, 2, 1, access=False),
                                      F('gm-clock', 'north-wall', 0, 1, 0, wallTop=2, wallMatch='plain')]),
-            dining=dict(ko='저택 식당', size=dict(min=[14, 11], default=[18, 13], max=[32, 24]),
+            dining=dict(ko='저택 식당', size=dict(min=[14, 11], default=[16, 12], max=[32, 24]),
                         floor=FL('gm-fl-parquet'), runner=None, defaultDoors=[dict(side='s')],
                         furniture=[F('gm-dining-table', 'center', 1, 1, 1, with_=[['gm-chair', 0, -1], ['gm-chair', 1, -1], ['gm-chair', 2, -1], ['gm-chair', 3, -1],
                                                                                   ['gm-chair', 0, 2], ['gm-chair', 1, 2], ['gm-chair', 2, 2], ['gm-chair', 3, 2]]),
@@ -93,7 +93,7 @@ SPACES = {
         )),
     'library': dict(
         ko='저택 서재', indoor=True, layout='room', wall='manor',
-        size=dict(min=[14, 11], default=[20, 15], max=[36, 28]), floor=FL('gm-fl-parquet'), runner=None,
+        size=dict(min=[14, 11], default=[18, 13], max=[36, 28]), floor=FL('gm-fl-parquet'), runner=None,
         defaultDoors=[dict(side='s')],
         furniture=[F('gm-wm-n-fireplace', 'north-wall', 1, 1, 1, wallTop=0, wallMatch='plain'),
                    F('gm-bookshelf', 'north-wall', 2, 5, 0, wallTop=2, wallMatch='plain'),
@@ -125,10 +125,10 @@ SPACES = {
                    F('gm-kitchen-table', 'center', 1, 2, 1, with_=[['gm-chair', 0, 2]]),
                    F('gm-barrel', 'corner', 1, 2, 0),
                    F('gm-barrel', 'beside', 1, 3, 0, near=['gm-barrel'])],
-        decals=[D('gm-ov-stain', 1, 2, near=['gm-kitchen-table']), D('gm-ov-dust', 1, 2)]),
+        decals=[D('gm-ov-stain', 1, 2, near=['gm-kitchen-table']), D('gm-ov-dust', 2, 3)]),
     'cellar': dict(
         ko='지하실·포도주 창고', indoor=True, layout='room', wall='stone',
-        size=dict(min=[12, 10], default=[18, 13], max=[36, 28]), floor=FL('gm-fl-flag'), runner=None,
+        size=dict(min=[12, 10], default=[16, 12], max=[36, 28]), floor=FL('gm-fl-flag'), runner=None,
         defaultDoors=[dict(side='n')],
         furniture=[F('gm-wine-rack', 'north-wall', 2, 4, 0, wallTop=3, wallMatch='plain'),
                    F('gm-wine-rack', 'grid', 2, 4, 0, gapX=1, gapY=1),
@@ -158,7 +158,7 @@ SPACES = {
         decals=[D('gm-bones', 1, 3), D('gm-ov-cobweb', 1, 2), D('gm-ov-puddle', 0, 2)]),
     'gallery': dict(
         ko='미술관 전시실', indoor=True, layout='room', wall='gallery',
-        size=dict(min=[14, 11], default=[22, 15], max=[44, 30]), floor=FL('gm-fl-marble'), runner=None,
+        size=dict(min=[14, 11], default=[20, 13], max=[44, 30]), floor=FL('gm-fl-marble'), runner=None,
         defaultDoors=[dict(side='s', kind='double'), dict(side='e')],
         furniture=[F('gm-paint-portrait', 'north-wall', 2, 5, 0, wallTop=1, wallMatch='plain'),
                    F('gm-paint-landscape', 'north-wall', 1, 3, 0, wallTop=2, wallMatch='plain'),
@@ -169,7 +169,7 @@ SPACES = {
                    F('gm-armor', 'side-wall', 0, 2, 1),
                    F('gm-stanchion', 'edge', 1, 2, 0),
                    F('gm-vase-plinth', 'corner', 1, 2, 0, access=False)],
-        decals=[D('gm-ov-dust', 0, 2)]),
+        decals=[D('gm-ov-dust', 1, 3), D('gm-ov-cracks', 0, 1)]),
 }
 
 

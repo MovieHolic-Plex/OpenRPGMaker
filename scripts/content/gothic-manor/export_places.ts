@@ -5,6 +5,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { GOTHIC_PLACE_TOOLS, GOTHIC_SPACE_SPEC } from "@/editor/tools/gothicPlaceTools";
 import { GOTHIC_PLACE_KINDS } from "@/editor/gothic/composer";
+import { layoutQualityLimits, measureLayoutQuality } from "@/ai/piAgent/layoutQuality";
 
 const seedsArg = process.argv.indexOf("--seeds");
 const seeds = seedsArg > 0 ? process.argv[seedsArg + 1]!.split(",").map(Number) : [1, 2, 3];
@@ -28,6 +29,13 @@ for (const job of jobs) {
       const d = res.data; const map = draft.maps[d.mapId]!;
       line += `${d.width}x${d.height} walk ${d.walkableCount} doors ${(d.entrances ?? d.doorCells ?? []).length} placed ${(d.placed ?? []).length} warn ${d.warnings.length} ${Date.now() - t0}ms`;
       if (d.warnings.length) line += ` [${d.warnings.slice(0, 3).join(" / ")}]`;
+      // 조수 실행기의 배치 품질 권고(layoutQuality.ts)와 같은 잣대 — 도구가 지은 그대로 기준 안이어야 조수가 「채우기 수리」로 다시 짓지 않는다.
+      const q = measureLayoutQuality(draft, map);
+      if (q && map.width * map.height >= 150 && q.floorCells >= 40) {
+        const lim = layoutQualityLimits(q);
+        line += ` · 빈바닥 ${q.empty}% 빈정사각 ${q.square} 대칭 ${q.mirror}`;
+        if (q.empty > lim.empty || q.square > lim.square || q.mirror > lim.mirror) { bad++; line += ` ✗배치품질(${q.squareAt ? `${q.squareAt.x},${q.squareAt.y}` : "-"})`; }
+      }
       if (seed === seeds[0]) {
         writeFileSync(`${outDir}/${id}.json`, JSON.stringify({
           id, place: job.place, variant: job.variant ?? null, name: map.name, w: map.width, h: map.height,

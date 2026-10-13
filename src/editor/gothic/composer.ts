@@ -530,6 +530,45 @@ export function composeGothicPlace(input: GothicPlaceInput, tileset: TilesetDef)
   if (input.place === "graveyard") decal("gm-ov-blood", 1, onPath);
   if (fog) decal("gm-ov-fog", input.place === "graveyard" ? 7 : 4, (x, y, i) => lawnBand(x, y) && (b.use[i] === FREE || b.use[i] === PATH) && !b.keep[i]);
 
+  // ── 빈터 메우기: 소품·덧그림 없는 바닥 정사각형이 5칸을 넘으면 그 한가운데에 덩이 하나(고사목+덤불, 길이면 바닥 덧그림)를 둔다.
+  //   조수 실행기의 배치 품질 권고(src/ai/piAgent/layoutQuality.ts, 빈 정사각형 ≤5)와 같은 잣대 — 도구 결과가 이미 기준 안이어야
+  //   조수가 「채우기 수리」로 맵을 다시 짓다 들어오는 문을 어긋내지 않는다(2026-10-14 실제 입력창 r1·r2).
+  const emptySquare = () => {
+    const dp = new Uint16Array((W + 1) * (H + 1)); let best = 0, bx = 0, by = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const i = y * W + x;
+      const p0 = tileset.passability[b.L[0][i]!];
+      if (!p0 || !(p0.up || p0.down || p0.left || p0.right) || b.L[1][i]! >= 0 || b.L[2][i]! >= 0 || b.L[3][i]! >= 0) continue;
+      const k = (y + 1) * (W + 1) + x + 1;
+      dp[k] = Math.min(dp[k - (W + 1)]!, dp[k - 1]!, dp[k - (W + 1) - 1]!) + 1;
+      if (dp[k]! > best) { best = dp[k]!; bx = x - best + 1; by = y - best + 1; }
+    }
+    return { s: best, x: bx, y: by };
+  };
+  const clump = ["gm-dead-tree-s", "gm-bush-dead", "gm-bramble", "gm-thornbush", "gm-stump", "gm-rock-moss", "gm-mushrooms"];
+  const groundMarks = ["gm-ov-leaves", "gm-ov-moss", "gm-ov-cracks", "gm-ov-puddle"];
+  for (let round = 0; round < 24; round++) {
+    const sq = emptySquare();
+    if (sq.s <= 4) break;
+    const cells: [number, number][] = [];
+    for (let y = sq.y; y < sq.y + sq.s; y++) for (let x = sq.x; x < sq.x + sq.s; x++) cells.push([x, y]);
+    const mx = sq.x + (sq.s - 1) / 2, my = sq.y + (sq.s - 1) / 2;
+    cells.sort((a, c) => Math.hypot(a[0] - mx, a[1] - my) - Math.hypot(c[0] - mx, c[1] - my));
+    let done = false;
+    for (const [x, y] of cells) {
+      const i = y * W + x;
+      if (b.use[i] === FREE && !b.keep[i]) {
+        for (const id of [pick(clump), pick(clump), "gm-rocks-small"]) { const k = kits.get(id); if (k && offPath(x, y, k) && tryProp(k, x, y, { margin: 0 })) { done = true; break; } }
+      }
+      if (!done) {
+        const k = kits.get(b.use[i] === PATH ? pick(groundMarks.slice(2)) : pick(groundMarks.slice(0, 2)));
+        if (k && k.cells.every((c) => { const j = (y + c.dy) * W + x + c.dx; return b.inb(x + c.dx, y + c.dy) && (b.use[j] === FREE || (b.use[j] === PATH && !b.keep[j])) && b.L[1][j]! < 0 && b.L[2][j]! < 0; })) { stamp(k, x, y, "decal"); done = true; }
+      }
+      if (done) break;
+    }
+    if (!done) break;
+  }
+
   const final = problem();
   if (final) err("LAYOUT_SPLIT", `소품을 놓은 뒤 통행이 끊겼다 — ${final}`);
   return {

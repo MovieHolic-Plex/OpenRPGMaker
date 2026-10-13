@@ -7,6 +7,7 @@ import gothicSpaceSpec from "@/assets/gothicSpaceSpec.json";
 import { composeGothicPlace, GOTHIC_PLACE_INFO, GOTHIC_PLACE_KINDS, type GothicPlaceKind } from "@/editor/gothic/composer";
 import { buildWizardingSpace, type WizardingDoorInput, type WizardingFurnitureInput, type WizardingSpaceInput, type WizardingSpaceSpec } from "@/editor/wizarding/builder";
 import { createGothicManorTileset, ensureGothicManorTileset, GOTHIC_MANOR_ID, isGothicManorTileset } from "@/project/defaults/gothicManor";
+import { layoutQualityLimits, measureLayoutQuality } from "@/ai/piAgent/layoutQuality";
 import { isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { MAP_TOOLS } from "./mapTools";
@@ -185,7 +186,23 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
         ...(density ? { density } : {}),
         ...(seed !== undefined ? { seed } : {}),
       };
-      const r = buildWizardingSpace(input, tileset, GOTHIC_SPACE_SPEC);
+      // 같은 입력이면 같은 방 — 다만 소품 자리 시드가 빈 바닥 6×6 을 남기면 조수 실행기의 배치 품질 권고(빈 바닥 ≤30%, 빈 정사각형 ≤5)가
+      // 「채우기 수리」를 시켜 방을 다시 짓게 된다(2026-10-14 실제 입력창). 그래서 정해진 순서의 시드 몇 개를 재서 처음 기준 안인 배치를 쓴다.
+      const baseSeed = seed ?? 1;
+      let r = buildWizardingSpace({ ...input, seed: baseSeed }, tileset, GOTHIC_SPACE_SPEC);
+      const fitsLimits = (x: typeof r) => {
+        if (x.issues.some((i) => i.severity === "error") || x.width * x.height < 150) return true;
+        const probe = { id: "_probe", name: "_probe", width: x.width, height: x.height, tilesetId: GOTHIC_MANOR_ID, events: [],
+          lowerTiles: x.lowerTiles, upperTiles: x.upperTiles, lowerOverlayTiles: x.lowerOverlayTiles, upperOverlayTiles: x.upperOverlayTiles } as unknown as GameMap;
+        const q = measureLayoutQuality(draft, probe);
+        if (!q || q.floorCells < 40) return true;
+        const lim = layoutQualityLimits(q);
+        return q.empty <= lim.empty && q.square <= lim.square && q.mirror <= lim.mirror;
+      };
+      for (let k = 1; k <= 8 && !fitsLimits(r); k++) {
+        const alt = buildWizardingSpace({ ...input, seed: baseSeed + k * 1009 }, tileset, GOTHIC_SPACE_SPEC);
+        if (!alt.issues.some((i) => i.severity === "error")) r = alt;
+      }
       built = r;
       const step = { n: [0, 1], s: [0, -1], w: [1, 0], e: [-1, 0] } as const;
       const keepClear = r.doorCells.flatMap((d) => [1, 2].map((k) => ({ x: d.x + step[d.side][0] * k, y: d.y + step[d.side][1] * k }))).filter((c) => c.x >= 0 && c.y >= 0 && c.x < r.width && c.y < r.height);
