@@ -51,7 +51,7 @@ export function measureLotEmptiness(project: Project, map: GameMap, radius = 2):
     if (ups.some((t) => c.edge.has(t))) { kind[i] = 0; continue; }
     const props = ups.filter((t) => !c.infraKit.has(t));
     if (props.length || c.feature.has(low)) { kind[i] = 3; continue; }
-    if (c.infra.has(low) || ups.length) { kind[i] = 0; continue; }
+    if (c.infra.has(low) || c.infraKit.has(low) || ups.length) { kind[i] = 0; continue; }
     kind[i] = 1;
   }
   const mask = new Uint8Array(N);

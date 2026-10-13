@@ -62,7 +62,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
       if (!tool) throw new ToolError(`도구 ${name} 이 없다`, { code: "unknown-tool" });
       const res = tool.run(next, a);
       return (res.data ?? undefined) as { rect?: { x0: number; y0: number; w: number; h: number }; doors?: { x: number; y: number }[] } | undefined;
-    });
+    }, () => ({ map: next.maps[mapId]!, tileset: next.tilesets[map.tilesetId]! }));
     if (outcome.built < 4) throw new ToolError(`거리를 짜지 못했다 — 건물 ${outcome.built}채만 지어졌다. 맵을 더 크게 하거나 다른 seed 를 준다`, { code: "compose-failed", mapId });
     const built = next.maps[mapId]!;
     built.locations = (built.locations ?? []).filter((l) => !(l.tags ?? []).includes("jp-building"));    // 다시 짜면 옛 건물 위치 이름표는 지운다
@@ -70,7 +70,7 @@ export const COMPOSE_JP_CITY_STREET_TOOL: ToolDefinition = {
     draft.maps[mapId] = built;
     for (const [id, ts] of Object.entries(next.tilesets)) draft.tilesets[id] = ts;
     return {
-      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개. 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).`,
+      summary: `${plan.summary} — 건물 ${outcome.built}채(못 지은 자리 ${outcome.skipped}) · 소품 ${outcome.props}개, 빈터 쓰임 ${outcome.lotUses.length}곳(${[...new Set(outcome.lotUses.map((u) => u.use))].join("·") || "없음"}). 건물 문: ${labels.join(" · ")}. 문마다 가게에 맞는 실내를 link_jp_city_interior 로 잇는다(건물 이름표는 list_map_locations).`,
       data: { mapId, seed, style, shopsBuilt: labels, built: outcome.built, skipped: outcome.skipped, props: outcome.props, walkRows: plan.walkRows },
     };
   },
