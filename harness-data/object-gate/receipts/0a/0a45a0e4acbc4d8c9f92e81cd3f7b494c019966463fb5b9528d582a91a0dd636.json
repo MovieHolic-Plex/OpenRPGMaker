@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a45a0e4acbc4d8c9f92e81cd3f7b494c019966463fb5b9528d582a91a0dd636",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 톱니바퀴(회전 4프레임)",
+ "label": "sky-steam/steam-gear-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gears mounted on a wall panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gears mounted flat against the vertical wall surface, appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall cogwheels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gears drawn flat against the vertical wall surface as expected for wall-mounted decorations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6774
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gears drawn flat against the vertical wall surface, which is appropriate for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4918
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gears positioned flat against a vertical panel background; flat perspective is correct for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5191
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.094Z",
+ "cells": {
+  "16": [
+   "439b7767d76e6fa6",
+   "5fea0e803d768a96",
+   "7c9e90e9c2ad19f7",
+   "c43077263521da77"
+  ],
+  "24": [
+   "08a71f0a08dc41c3",
+   "0a75e4586ce0b718",
+   "0e862c683088fd68",
+   "0f299a88e6939f9a",
+   "108edec58a2ed800",
+   "31d551ce64d5a985",
+   "48fc981d95428f17",
+   "53a98216d66f4336",
+   "53b7441d6f254ed9",
+   "5486aa5b1b531195",
+   "56bb29f99cfdb615",
+   "5ca1567cbf6591a8",
+   "654b556eecd7a480",
+   "8b51439d86881add",
+   "8c2fc65d0da5979a",
+   "9d637586af08488f",
+   "a578c51b126126ac",
+   "af06721bade27e70",
+   "b372d63876818018",
+   "b6969fcb284104ce",
+   "c5d748f2dcf91298",
+   "d0bbc9c5a5c2a4b0",
+   "df45cc0ca031241e",
+   "ea94df62fb1cb5eb"
+  ],
+  "32": [
+   "2f519fb6cf66e2bf"
+  ],
+  "48": [
+   "00e610330a67b109",
+   "02fc6fe9ce906add",
+   "0d988e0ed8707683",
+   "64d56580082b9c90",
+   "86833ff37fb0b87b",
+   "f4c9c0ad761e8bb7"
+  ]
+ }
+}

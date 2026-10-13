@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cbca3a8f4e2a27b1dcd6b847f0b05b129cff3d565c1c487dd05722593b20b93c",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "부두 캡스턴(세운 밧줄 감개·막대 넷)",
+ "label": "sky-steam/steam-winch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock capstan (rope winch)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The capstan head's top surface is visible from rows 1 to 6 as a foreshortened circular face with 4 radial spokes meeting at a central hub, sitting atop a cylindrical front face (rows 7-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dock capstan drum and head",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The capstan head has a clearly foreshortened elliptical top surface spanning rows 1-6 showing the cap and radial bars, while rows 7-13 form the vertical south face of the drum body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dock capstan (cylindrical spool with bars)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/head of the capstan is drawn as an ellipse from row 1 to row 6 (about 6px tall) with cross bars and a central hub seen from above. Below row 6 is the south-facing cylindrical body wrapped with rope down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4563
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wharf capstan cylinder with rope-wound drum and capstan head with wooden bars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-6 depict the foreshortened elliptical top cap of the capstan with wooden spokes and a central gold hub (~6 rows tall). Rows 7-13 show the rounded front face of the drum wrapped in rope.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6601
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.981Z",
+ "cells": {
+  "16": [
+   "1708ebf18ef319c7"
+  ],
+  "24": [
+   "0c7c62e5ed2d1579",
+   "2a247a842dc3ff4a",
+   "6971ac1803c5bab2",
+   "76abe2a0c66e56ec",
+   "92b5cb6056f88faa",
+   "c525b0d95be40064"
+  ],
+  "32": [
+   "07bd7002998ee627",
+   "14bff7db914af5ef",
+   "16d3a9fb008145a0",
+   "6405eef1cfbae2d5",
+   "8953b1beacfa7459",
+   "c3165b4c8eb4caa9"
+  ],
+  "48": [
+   "1bb2df8d66337d64",
+   "3e8d06f43191b885",
+   "46745a3f2c2be36e",
+   "6644d96b38d33938",
+   "af39183c4945298d",
+   "c30b87e663ff3f82"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1cdd133d78f2ea747937a76f3c355409225e302a1c547eb955e82a13027e0715",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "벽돌 받침 가스등(꺼짐·낮)",
+ "label": "sky-steam/steam-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pedestal and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The stone capital above the brick shaft shows only front-facing horizontal molding bands with no top surface, the brick shaft and base are flat, and the lantern dome and frame are depicted straight-on with no top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8939
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pedestal gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the lamp dome is seen directly from the side/front with no foreshortened top or round rim curvature, the stone cap is rendered as flat horizontal bands without an elliptical top surface, and the base plinth at row 30 is a completely flat horizontal line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7699
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick base gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (dome cap, lantern base, stone trim, and brick pedestal) is drawn in pure 2D front elevation with perfectly horizontal bands and straight outlines; no top surface or depth is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5663
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pedestal gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure architectural front elevation: the dome cap, glass lantern, stone cornice (rows 14-19), brick shaft, and base plinth all lack any foreshortened top surfaces or elliptical curves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8183
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.175Z",
+ "cells": {
+  "16": [
+   "1aa429546b54c1f3",
+   "bd6565bbe6f0abb0"
+  ],
+  "24": [
+   "053c095118ffcba8",
+   "0d4abf78e6884499",
+   "40783ead2aacffbf",
+   "7436813762626eb0",
+   "79dc7c7d18fd5d1f",
+   "8db2cddac5f60442",
+   "9be027136dfe959e",
+   "c18468e3c2d23e9f",
+   "c7f6bcaf407f72be",
+   "d76b0d84dbd64a93",
+   "dc718ec776a4031e",
+   "eac0ca4ad9e30c4b"
+  ],
+  "32": [
+   "5e6a032bb044f846",
+   "8e6c93a152cfc0b4",
+   "f9205b7b2a2699fe"
+  ],
+  "48": [
+   "20b2f8feb9793119",
+   "3661e1ae54cde8c5",
+   "4bddbdc049ed35f2",
+   "859c282f53078b99",
+   "a12410b623e28e8e",
+   "cd08f9fb771c81cb"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93be55d4b0c4927089ff10b5c6abffd315acefefe852fbcb6553e1c75a5edfd7",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "압력계(바늘 떨림 4프레임)",
+ "label": "sky-steam/steam-gauge-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Circular pressure gauge mounted flat on a stone wall background. As a wall-mounted object, it is correctly viewed flat from the front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7195
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular pressure gauge mounted on wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular pressure gauge mounted flat against a wall, correctly depicted facing forward as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5537
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted pressure gauge dial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Circular pressure gauge mounted flat on a wall surface; properly categorized as wall_mounted so a top surface is not required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round wall-mounted pressure gauge dial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted circular pressure gauge viewed flat against the wall, consistent with wall_mounted kind specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.098Z",
+ "cells": {
+  "16": [
+   "eee6a92775b32b36"
+  ],
+  "24": [
+   "26a91b07fc87a1e0",
+   "3d8d0b70a29daa9d",
+   "4e55fc41a3710cbd",
+   "779a92c9243a1b4a",
+   "d974263eadeea933",
+   "f10239982629227b"
+  ],
+  "32": [
+   "053e81420014c2bf",
+   "8ff51554c7798705",
+   "a0f36921e90d7a59",
+   "d93025c704d04ceb",
+   "de046f00ea7e4481",
+   "f993df348ae2423e"
+  ],
+  "48": [
+   "31adec4a75c5205a",
+   "3fe34f6084b74ff4",
+   "a0fdf79b41e60799",
+   "a201ed55a74a7ab6",
+   "ec0f0cd67a07f27a",
+   "f8f3b696af72ecfd"
+  ]
+ }
+}

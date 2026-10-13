@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db0cb3e3eb6d9cbeefc55a6e277583cd1ec4d897a183508c9132c5caff7e6627",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "괘종시계(톱니 진자)",
+ "label": "sky-steam/steam-i-grandclock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grandfather clock (tall furniture)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn in pure front elevation: the clock face is taller than it is wide rather than an ellipse foreshortened from above, and the top (rows 0-4) forms a frontal stepped pediment/cornice with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grandfather clock case",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn in pure front elevation: the tiered top pediment/cornice (rows 0-4) is drawn flat with an under-cornice shadow line at row 5, the clock face is circular/vertically elongated rather than foreshortened, and no horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6304
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grandfather clock body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn entirely in pure front elevation. The stepped crown/pediment at rows 1-4 depicts front-facing decorative moldings rather than a top surface seen from above, leaving 0 rows of visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5589
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grandfather clock cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn in flat front elevation with a circular clock face and a stepped pediment/molding at rows 0-4 shown straight-on rather than as a top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4339
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "686d8b642ae80d5c",
+   "bbcc3d16b9cad625"
+  ],
+  "24": [
+   "0c793d06a2281129",
+   "1551f06da3ec22d3",
+   "2dbf46406c678fdb",
+   "4a4dc60d371766f8",
+   "79c17e1ef7249b20",
+   "962ca1b7f5b4cf69",
+   "9dc9e86ed1068ae0",
+   "a865d0d03e6718ee",
+   "af475ef6de3f930e",
+   "b2c538d210af288a",
+   "b45d4c7554431a3f",
+   "c70d909274342166"
+  ],
+  "32": [
+   "0d45fce8ceb62642",
+   "83b5200f6f4fba8c",
+   "8949067f3f766e35"
+  ],
+  "48": [
+   "1cc524cff8cb7165",
+   "6f1f6c32f7c4e1d1",
+   "92b55297807dec29",
+   "b977cded5266dfef",
+   "be963bbc392c99c9",
+   "d5dc6da87833c8f7"
+  ]
+ }
+}

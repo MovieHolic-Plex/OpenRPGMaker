@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2622e534a1470a356a57febe0291042da0631b03cd1c8c414f0bdb65f3bdf165",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "케이블 감는 북(세움)",
+ "label": "sky-steam/steam-cable-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "standing cable spool / drum",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange shows its circular surface foreshortened into an ellipse from row 0 to row 5 (6 pixel rows) complete with a center arbor hole, followed by the flange edge (rows 6-8), the wound cable body (rows 9-12), and the bottom flange visible underneath (rows 13-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 38418
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cable drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cable drum lacks a foreshortened top cap viewed from above. The upper flange has straight vertical sides and a flat horizontal bottom rim at row 8, with an unforeshortened center hole, representing a front elevation rather than a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17510
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "standing cable reel / spool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top flange of the cable spool is drawn as a foreshortened ellipse viewed from above across rows 0-5 (approx 6 rows tall) complete with central arbor hole, followed by the flange edge, the wound cable drum below it (rows 9-12), and the bottom flange peeking out at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21709
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cable reel / spool standing upright",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top circular flange of the reel is clearly shown foreshortened from row 0 to row 8 (9 source pixel rows tall) complete with center arbor hole, while the front south face of the drum body extends below from row 9 to row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14978
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.386Z",
+ "cells": {
+  "16": [
+   "79efd4234e01a05d"
+  ],
+  "24": [
+   "158a88742dda267a",
+   "2e4df74c390484c5",
+   "708fc9cd367f5ac0",
+   "e5348dd8cd5dc7ea",
+   "f5b6205e9d617a23",
+   "fb9e469a180ba64b"
+  ],
+  "32": [
+   "37cbc63273d200d7",
+   "3ec52822f63482d9",
+   "742e3684f8d850ee",
+   "b7335033f3290cce",
+   "bf348c3d6d5bfdbb",
+   "d6e6ce70084e7b20"
+  ],
+  "48": [
+   "067294063ae6ef54",
+   "3d1911a54ebd9e05",
+   "3e0dbbb67d919e98",
+   "4f4ea4b375fa4225",
+   "f49788d6309b03a1",
+   "f8648353db9d4d9d"
+  ]
+ }
+}

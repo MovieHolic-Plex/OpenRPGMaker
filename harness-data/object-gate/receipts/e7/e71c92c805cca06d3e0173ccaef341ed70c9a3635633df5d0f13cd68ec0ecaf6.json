@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e71c92c805cca06d3e0173ccaef341ed70c9a3635633df5d0f13cd68ec0ecaf6",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "쇠 격자 바닥(채움 2) + 증기 새는 격자",
+ "label": "sky-steam/steam-t-grate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron grate floor tiles with steam",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain grating tiles with steam particles, completely appropriate for top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron grating floor tiles with steam puffs",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image consists of flat horizontal terrain floor tiles depicting an iron grate with small steam leaks on the right side. The entire surface represents the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3775
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron grate floor tiles with steam",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor grating terrain tile with steam particle effects viewed directly from above, fully consistent with top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7044
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron grate floor tiles with steam",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a horizontal terrain surface (iron floor grating across 16 rows) with steam particles leaking through, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3747
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.388Z",
+ "cells": {
+  "16": [
+   "0a168b9e19c06f1a",
+   "1bcb8afe3ff6b5fd",
+   "661f2a03c884d8de"
+  ],
+  "24": [
+   "49567a7dabd4022e",
+   "58195f7fa5421b36",
+   "5c2e69f2367df4e1",
+   "6f053d90ec7582b8"
+  ],
+  "32": [
+   "16d34b9bb546edd2",
+   "1a25242125b70637",
+   "29144cadb12f5d84",
+   "50810fc3ecb48ad4",
+   "582d06ec64592428",
+   "64fbb784acb116e7",
+   "849b9761b2c8826e",
+   "8925f4ec51927caa",
+   "9f36f47f386f77d3",
+   "b91c07611e169e9b",
+   "b9a26dc3d271b067",
+   "fd569bedc22245ed"
+  ],
+  "48": [
+   "5fbca8d2d1dc6405",
+   "6be120a2b698bcc5"
+  ]
+ }
+}

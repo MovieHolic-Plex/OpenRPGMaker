@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ddea91651f8539c637222528d1e8377990639c5346c501bebfb180a18efb24d4",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "서랍 공구함(붉은 철)",
+ "label": "sky-steam/steam-i-toolchest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red metal tool chest with drawers",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is clearly visible from rows 1 to 4 with a recessed/mounted metal handle on row 2-3, above the front drawer stack (rows 6-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5604
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red steel drawer toolbox / tool chest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal top surface of the toolbox spans rows 1 to 4 (about 4 pixel rows tall) and clearly shows a top handle/tray insert from above, while the south vertical face below (rows 6 to 15) displays the three drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red metal drawer toolbox",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid with its central handle is viewed from above across rows 1-4 (4 px deep) above the front drawer face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8447
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red steel drawer toolbox",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the toolbox spans rows 1-4 (4 pixel rows tall), distinctly highlighted and featuring a top handle seen from above, resting atop the front drawers (rows 6-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8002
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.724Z",
+ "cells": {
+  "16": [
+   "000ad47fe54eec88"
+  ],
+  "24": [
+   "1053bac1a74a67aa",
+   "1a91f8099e0695f3",
+   "34f284e5a2a54613",
+   "5a3653cb06f55a52",
+   "aa3e5bcfb008ba69",
+   "fd50c24e98cc6f35"
+  ],
+  "32": [
+   "2e456335aa315109",
+   "7d8b03b6c77acffc",
+   "9418c0e7e73eb19a",
+   "a5c1d8f7a900adcf",
+   "b0e31495236eacd4",
+   "fdf3e33f17ea8cc6"
+  ],
+  "48": [
+   "4c8f020b43cca599",
+   "8841ab29643bd685",
+   "8e64f79f195e4dbb",
+   "d11b8e06c2d90404",
+   "d748d5bc60b342ec",
+   "e2ca593e4b66fe0d"
+  ]
+ }
+}

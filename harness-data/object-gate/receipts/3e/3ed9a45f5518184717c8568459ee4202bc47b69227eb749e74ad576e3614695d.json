@@ -1,0 +1,178 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ed9a45f5518184717c8568459ee4202bc47b69227eb749e74ad576e3614695d",
+ "width": 64,
+ "height": 96,
+ "kind": "structure",
+ "name": "부두 회전 기중기(운전실·격자 팔)",
+ "label": "sky-steam/steam-dock-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "crane cabin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main yellow cabin is drawn as a flat rectangular front facade (rows 40–67) with no visible roof or horizontal top surface shown from above. Only the stone base plinth below shows a top surface, while the crane cabin itself is a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11283
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crane cabin (yellow housing)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabin (rows 40–68) is drawn as a flat square in pure front elevation with vertical wall panels, windows, and a door, terminating at a flat horizontal outline with 0 rows of visible top/roof surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8879
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crane cabin (yellow housing)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cabin body is drawn as a flat vertical rectangle from rows 40 to 68 without any visible top roof plane. While the stone pier plinth below shows a foreshortened top surface (rows 77–80), the main crane structure lacks any top-down perspective on its cabin roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6946
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crane cabin and pier base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin shows a 6px tall top roof surface (rows 41–46) on which the chimney and arm mount rest, and the stone pier base below clearly displays a 5px deep top surface (rows 76–80) in consistent 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10556
+  }
+ ],
+ "decidedAt": "2026-10-13T15:57:50.722Z",
+ "cells": {
+  "16": [
+   "05b1ecd4433f8bf4",
+   "0af769db1e88d0c7",
+   "118a8353c78a3ef9",
+   "273dc4514d1540c1",
+   "45452223edec1737",
+   "536974f4738a2914",
+   "8fa7b8a8e106c607",
+   "9927bede0c367846",
+   "bbde1a648f60d9de",
+   "bde960373009de48",
+   "cc0d351d11496471",
+   "d6614029e4780a3b",
+   "d923e7d215f247cb",
+   "e02550d0eb568840",
+   "eb5b20d4e126e64d",
+   "ebdc7b81e3b63be2",
+   "ef8718837caf344d",
+   "ff5bf6206ed952f3"
+  ],
+  "24": [
+   "034be9cf6fc6d1fd",
+   "076020692fd89aad",
+   "122a52ad5878b568",
+   "241648bc23a6d533",
+   "28fff390884e81a2",
+   "29c48d21e9fe2dfe",
+   "37d16ab82200f6ab",
+   "43480bebc4a6ddb3",
+   "43578e5fff65003e",
+   "4822cb16fc97e1db",
+   "4c77a328714721c8",
+   "60aa4c2f99d8b6cd",
+   "6d0796d2aba94dca",
+   "73f41f5f3b4018f2",
+   "8df805c566fbffb1",
+   "94eb1a451b8a0451",
+   "986617d56967c1de",
+   "a290c338cf5b7c5f",
+   "ae69a5c2853e91f5",
+   "b206eaa3ae11ef49",
+   "b62114ffa72915fe",
+   "c06dd26dd46a0875",
+   "cbc003ffb74100eb",
+   "cda8566459f3aa15",
+   "d3304906aa4b4466",
+   "d5fb7b2a8686e8b9",
+   "e6f9714100ebafc8",
+   "e99a499d7f20718d",
+   "eabc7f223a6a3022",
+   "ff6ae17b305f6770"
+  ],
+  "32": [
+   "023af336baed7ea8",
+   "17a9f562c317dc97",
+   "29be37c0ad4dfc25",
+   "38df4871d03df9d0",
+   "55969c3bb223e5b6",
+   "ade992ed292622a2"
+  ],
+  "48": [
+   "09fc82513ac18184",
+   "139bf96ec088a64f",
+   "41ee903e0b19126a",
+   "4b8c9c147ef790d0",
+   "5539c223f19c00ca",
+   "59355b1635698f22",
+   "905289e65f9db86b",
+   "b457db70009f90f2",
+   "bd64105c3d45b582",
+   "c14b6c9eed1f3694",
+   "ea42c8a44ee46081"
+  ]
+ }
+}

@@ -1,0 +1,229 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a74ed24cad6d28b4987b5dc373eff78deb926988250ef4648414e62c80f16ac7",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "가스 가로등(불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas street lamp post and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat front elevation. The lantern cap, horizontal collars/rings on the post, and the pedestal base show no visible top surfaces (all horizontal boundaries are straight horizontal lines or flat silhouettes).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5766
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street lamp with lantern head, pole, and plinth base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, rings, and plinth base are drawn straight from the front with horizontal horizontal banding and no foreshortened top surfaces visible (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5383
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas streetlamp pole and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamppost is drawn in flat front elevation with straight horizontal bands and rings; neither the dome/cap, the lantern ledges, nor the base plinth show any visible top surface from the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4958
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp post and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat front elevation. The base, decorative pole collars, lantern shelf, and lantern cap all feature straight horizontal lines with no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamppost",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamppost is drawn in pure front elevation: the rings, lantern frame, and base all consist of flat horizontal horizontal bands without elliptical curvature or foreshortened top surfaces (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4063
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas street lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp—from the domed cap and lantern housing to the rings, pole, and plinth base—is drawn straight-on in pure front elevation without any foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas street lamp (lantern cap, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat front architectural elevation. The domed cap is drawn in 2D profile with no top surface, the horizontal collar rings (rows 14, 20, 30) are flat 1-pixel horizontal bands with no elliptical top face, and the plinth base (rows 37-47) has horizontal banding with zero top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6002
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp / lantern post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal features (the lantern ledges, rings around the post, and the pedestal base) are rendered with flat horizontal straight lines without any top surface foreshortening. The entire lamp post is drawn in a pure front elevation view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3906
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.096Z",
+ "cells": {
+  "16": [
+   "039c59b47378d059",
+   "15a89cfa7ff952ef",
+   "1646885386b5c36c"
+  ],
+  "24": [
+   "001500284a27688d",
+   "0588b126a93e1f35",
+   "41749a65dab9c61b",
+   "8ca28b5d21594c45",
+   "c5be48053fedc179",
+   "d21b6c5c128cd31c"
+  ],
+  "32": [
+   "01754d84d4b9f837",
+   "1914f53f4448fbc4",
+   "19e168826ac9c384",
+   "27d77bf0084641cb",
+   "50023995dcd0d5e7",
+   "7ecdba0a4433db27",
+   "b1d567131fccb193",
+   "c383775e158682be",
+   "c9c6ded9c38cc1c2",
+   "df5cfd67e1d2a7ac",
+   "e7015a5ef6a28f03",
+   "ec608b7c60a40208"
+  ],
+  "48": [
+   "44459ac3363da6d0",
+   "c592063bde955e2c",
+   "cc5dd1d826aaff88"
+  ]
+ }
+}

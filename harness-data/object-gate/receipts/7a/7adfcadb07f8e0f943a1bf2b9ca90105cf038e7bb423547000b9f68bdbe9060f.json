@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7adfcadb07f8e0f943a1bf2b9ca90105cf038e7bb423547000b9f68bdbe9060f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head and pole are drawn in pure front elevation with completely flat horizontal division lines (rows 5-6 and 14). The cap at rows 1-5 is rendered as a front-profile silhouette rather than showing a foreshortened top surface, and the base plinth cannot substitute for the main body's top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9234
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas street lamp (lantern head and pole)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the base plinth (rows 23-27) is drawn with an elliptical top surface, the main body of the lamp (the cap, glass lantern head, and pole) is rendered entirely in flat front elevation with straight horizontal rims and no top-down visible surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13628
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp (lantern head and post)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head and post are drawn in pure front elevation with straight horizontal edges at rows 6 and 14 and a flat dome silhouette (rows 1-5) showing no top surface. While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9568
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp (cap, glass lantern housing, and shaft)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern housing and its metal cap are drawn in pure front elevation with straight horizontal bands and a profile dome silhouette, showing no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6334
+  }
+ ],
+ "decidedAt": "2026-10-13T16:28:45.487Z",
+ "cells": {
+  "16": [
+   "07bb248ec298ea2b",
+   "5997b57e10f0b673"
+  ],
+  "24": [
+   "1936dc56fc1b38f8",
+   "2e38a6fea45bf8b9",
+   "4c38e077ad93d2fd",
+   "5a19c37885e8c042",
+   "88b38ee07ad202d9",
+   "9fd594cb61687544",
+   "b08904abd63ea6b7",
+   "c6e560c792647da3",
+   "ce99a8fdc0d8efdb",
+   "d2d1476b20093bb1",
+   "f0896a54cdeb6ae1",
+   "f696d72133f2515b"
+  ],
+  "32": [
+   "27f7dc86801447b8",
+   "a7e63e884806d711",
+   "d74f243a57ad7f93"
+  ],
+  "48": [
+   "3246a7672b144735",
+   "5d7a5fd17ef63d76",
+   "a2ca3b064eadb96d",
+   "be3916413be508b7",
+   "d408222576c0fa2a",
+   "db5bb7213bc69841"
+  ]
+ }
+}

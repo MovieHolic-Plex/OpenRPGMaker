@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a78f98caaa111a207b8c0704d9d443b18a52c6c0662e2f4bd9d9baa8384753b8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 기둥 시계(둥근 돌 받침·북 머리)",
+ "label": "sky-steam/steam-street-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drum-shaped clock head on pillar with stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the drum-shaped clock head clearly shows its foreshortened circular top surface across rows 1 to 5, and the stone base similarly shows a foreshortened top surface around rows 31-36.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock pillar with drum-shaped clock head, central post, and cylindrical stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drum-shaped clock head is clearly depicted with foreshortening across rows 1-5 (5 rows tall), and the stone base also shows a distinct elliptical top plane (rows 31-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7323
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drum-shaped street clock head on a pillar with a stone base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top drum head clearly shows a foreshortened top surface across rows 1-5, and the stone base similarly shows a visible top surface across rows 32-36.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7884
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street pillar clock (drum-shaped clock head and round stone base)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The drum-shaped clock head has a clearly visible elliptical top surface spanning rows 1-5, with the front face (and clock dial) below it (rows 6-15). The round base also displays an elliptical top surface (rows 31-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5765
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.981Z",
+ "cells": {
+  "16": [
+   "253b3b28004cf4d4",
+   "56768750a4a674e2",
+   "6c88e8390b31775f"
+  ],
+  "24": [
+   "00e35bf5e00fb008",
+   "5f38b1c67ac473d8",
+   "818cdc45ca5a20d2",
+   "88a3490b0b5a467b",
+   "ccbb6c45821a9240",
+   "cd42eaf0f00c2bad"
+  ],
+  "32": [
+   "0d4adbea2957d13c",
+   "1b12c4d7d184cd31",
+   "33d1b6729a1eaf2a",
+   "45586ee2ada3e9dc",
+   "7ab67a8570694b05",
+   "7d85ec6686536214",
+   "97a5d120e233a09f",
+   "b9a2a9e3abd741ab",
+   "bb5f9e1f7fa27758",
+   "c7b90b5225fc6a1d",
+   "d826375518394d47",
+   "ff0be84a45501d0d"
+  ],
+  "48": [
+   "04f1bacf859401f4",
+   "5ae557842ecd2d36",
+   "eac4c3de88573517"
+  ]
+ }
+}

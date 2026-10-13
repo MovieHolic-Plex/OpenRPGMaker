@@ -1,0 +1,216 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5058a5db55c04672147b2ec337b7f369e9b1f87768e68cfb9d0bb3ddcadbe28",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick and metal furnace/boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a brick lower chamber and a trapezoidal metal hood, both drawn entirely in pure front elevation with no visible top surface. Although the small chimney pipe on top has a 2-row elliptical opening, the main body itself lacks any 3/4 view top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9136
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick firebox base with sloped metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a receding sloped metal hood spanning rows 3-13 above the brick firebox, and the cylindrical chimney on top clearly shows an elliptical opening seen from above (rows 2-3).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5942
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "furnace with brick firebox and metal hood",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a foreshortened sloped metal top/hood (rows 3-12, 10px tall) and an elliptical chimney opening viewed from above, correctly matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "furnace / boiler with brick base and metal hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (brick furnace and tapered metal hood) is drawn in pure front elevation with 0px of top surface. While the chimney on top shows a foreshortened rim opening, the main body itself has no visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8572
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick boiler furnace with sloped metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace features a sloped metal top/hood spanning rows 3 to 13 seen from above in 3/4 perspective, and the chimney at the top clearly shows an elliptical opening (rows 1-2) viewing into the flue.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6240
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick boiler furnace with metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body features a substantial foreshortened metal top hood (rows 3 to 13, ~11 rows) seen from above, plus an elliptical opening in the chimney at the top, clearly indicating standard 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4780
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick firebox with metal hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (brick firebox and trapezoidal metal hood) is drawn in pure front elevation with no visible top surface or depth. Only the small chimney at the top shows an elliptical opening, but credit is not given for tops visible only on small details.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick furnace base with sloped metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a clear 3/4 top-down perspective: the metal hood slopes backwards covering rows 3-14, and the chimney pipe at the top shows a clear elliptical interior opening viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10857
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.383Z",
+ "cells": {
+  "16": [
+   "1d7af2df1e535383",
+   "7a4ff4c3f4883ddb",
+   "b80d12b320f1587f",
+   "d367d3127f94d6f2"
+  ],
+  "24": [
+   "190448a72768b2c4",
+   "1d509c165b14f8ef",
+   "2a7f3c47d9e4a44a",
+   "2b139ca4027393ea",
+   "2c925c61dbf83799",
+   "3334e54c5e84b976",
+   "377b75dfae3155bd",
+   "42b9b0b2b1444014",
+   "508c993cab56a3e2",
+   "6bb2883036d72ede",
+   "72469301771c83ed",
+   "72e0995cd2785b08",
+   "847c24df04b82bc4",
+   "85f5093e8db4f86e",
+   "86854499118234ac",
+   "a14f589d39ecac7b",
+   "a499168776d6ea28",
+   "b38d4b35429ae52b",
+   "baf03c267ac32697",
+   "c5f529edb3e3447c",
+   "cc87d8d7077076a7",
+   "d0544efe9ff2e63c",
+   "d5aec7a8426eff81",
+   "fc3e2454d51245c7"
+  ],
+  "32": [
+   "6c855777e9c69cb1"
+  ],
+  "48": [
+   "4814ca47b3007e5d",
+   "584d12a00b7b82ab",
+   "5a54c2147945e758",
+   "5fb1f8fb628f1aa8",
+   "869dea3db9c05c87",
+   "e98569708bdb33d9"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e2195c479fc23c90296bc312ab31ddbdc0dcf8786b729d389a66d12a8ed150b",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "벽 가스등(놋쇠 팔)",
+ "label": "sky-steam/steam-i-wall-lamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall gas lamp fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gas lamp flat against the wall; wall-mounted fixtures are permitted to be flat front representations in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20666
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern and brass mount",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp body and brass mount are drawn as a flat front elevation with 0 visible top surface rows (top_rows: 0). In 3/4 top-down view, a protruding wall fixture must show its top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17699
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern and wall bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gas lamp shown flat against the wall, permissible for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6257
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall gas lamp lantern and brass mount",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted gas lamp fixture mounted flat against the wall; as a wall-mounted decoration viewed straight on against the north wall, it is correctly rendered flat without requiring a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19395
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.728Z",
+ "cells": {
+  "16": [
+   "9edd869c8b140196"
+  ],
+  "24": [
+   "36829bacd2d64987",
+   "69c64173c1b43b6c",
+   "6a3226c47e816fd8",
+   "971143a0014dd10e",
+   "9774daa73d77d205",
+   "d66b1f0c86065e08"
+  ],
+  "32": [
+   "0b80e0d2e0198f99",
+   "1ba83fdd01e07a77",
+   "5554c9d717f6b718",
+   "719fcf3e6253079f",
+   "8743519049795e22",
+   "f04356eb1a937721"
+  ],
+  "48": [
+   "2e0f7eda06401e38",
+   "33b16106d3386776",
+   "3600658977d96aa3",
+   "4c9ecc5816edb515",
+   "5e494df80cede909",
+   "654b179b6a15e521"
+  ]
+ }
+}

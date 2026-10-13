@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac02f88623134a7b1dc6637a200779d504e53e298a3360f6f0610a21848e5f08",
+ "width": 32,
+ "height": 16,
+ "kind": "round_body",
+ "name": "가스통 묶음(세운 원통 3)",
+ "label": "sky-steam/steam-gas-cylinders",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three standing gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in pure front elevation with vertical cylindrical column shading running straight to the top edge and bottom edge. There is no elliptical top cap or surface visible from above; the dome tops and bottom tapers are drawn symmetrically as a 2D side silhouette.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9664
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The standing cylinders are drawn in pure front elevation with pill-shaped rounded caps at both the top (rows 0-1) and bottom (rows 13-14). There is no elliptical top surface visible from above; vertical shading bands run straight down the entire height.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6778
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three vertical gas cylinders strapped together with a bar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Each cylinder is drawn in pure front elevation with rounded dome top and bottom silhouettes. No foreshortened elliptical top cap is visible from above, and the valve/nozzle and horizontal seam lines are rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9137
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bundle of three standing gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in flat front elevation with domed tops and flat/straight horizontal lines (e.g. at row 5 and the horizontal mounting rail at rows 9-10). There is no elliptical top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9179
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.386Z",
+ "cells": {
+  "16": [
+   "882d6ec965935956",
+   "ee91594733b3387a"
+  ],
+  "24": [
+   "015eb3a503e94e9d",
+   "15af74ba10beaac4",
+   "544e191f868874ad",
+   "641451a15ecf817b",
+   "64330e424fa4a7e3",
+   "793754002b9ec40b",
+   "7c3a15db6190a011",
+   "8bdbbfbe18b260c6",
+   "a6eda1112094214f",
+   "a79402144fc2753c",
+   "ae191a773cd6b419",
+   "fd8dd5b4e5b34070"
+  ],
+  "32": [
+   "4b16e16ebec7063e",
+   "8bc9649c2e964e26"
+  ],
+  "48": [
+   "11c8c827fa07176a",
+   "1d79cb7f932bdcfd",
+   "3275253dc6d4e98d",
+   "3562e9157bfbadbc",
+   "e943600e3e1e1bb1",
+   "fd414662b952d9d4"
+  ]
+ }
+}

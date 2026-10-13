@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7129c85dd9196cafc236b90aa6a7f7242db4a0ab1c402cf202911ae2cd2adc0d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "비공정 연료 펌프(놋쇠 원통·호스)",
+ "label": "sky-steam/steam-fuel-pump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass cylinder fuel tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass cylinder has a flat horizontal bottom edge (row 24) and a front-facing dome top (rows 3-5) with vertical highlight columns running straight down, showing no foreshortened top surface or elliptical cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6124
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass cylinder fuel tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass cylinder is rendered in pure front elevation with a flat horizontal bottom edge at row 24 and a domed capsule top at rows 3-5, lacking any foreshortened top surface or elliptical perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6858
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass cylinder has a flat horizontal bottom edge at row 24, flat horizontal plinth bands at rows 26-30, and the top is drawn with rounded dome corners and vertical shading in pure front elevation without any elliptical foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4923
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass cylinder fuel tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass cylinder is drawn in pure front elevation: its bottom edge (row 24) is a completely straight horizontal line with no elliptical curvature, and the top has no foreshortened top surface, instead tapering as a flat 2D dome into a vertical pipe.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5229
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.179Z",
+ "cells": {
+  "16": [
+   "18ac43370f3fc1e6",
+   "37a2b41600934d50"
+  ],
+  "24": [
+   "05b4aa3d4ad6b9d1",
+   "0eda75b0faa7b408",
+   "1956507b2f8e7b49",
+   "1c9e854330d0b3ec",
+   "1ebc3cb5995fe2b2",
+   "30167c0e40e519ac",
+   "815cd06b051fcde9",
+   "860d350faa40bb37",
+   "8a7d311fa46aa190",
+   "8e77c8560a51f221",
+   "ab90bd38c1036e99",
+   "cc755b9393c0a645"
+  ],
+  "32": [
+   "4aa9307be8cec010",
+   "6256092b2fcc439d",
+   "7c301b666702b230"
+  ],
+  "48": [
+   "289fe8bc504cf734",
+   "3a62e24e93373ec2",
+   "57d16d700d84e1ea",
+   "966610d44f9f78f7",
+   "cece722728b477d3",
+   "e8d5f67fd5bc0854"
+  ]
+ }
+}

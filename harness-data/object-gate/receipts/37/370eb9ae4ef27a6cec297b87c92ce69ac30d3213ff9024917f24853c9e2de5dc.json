@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "370eb9ae4ef27a6cec297b87c92ce69ac30d3213ff9024917f24853c9e2de5dc",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "증기 자동차(남쪽을 봄 — 캔버스 덮개·놋쇠 보일러)",
+ "label": "sky-steam/steam-carriage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam car canvas roof and body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slope of the canvas roof is clearly visible from rows 2 to 7 (6 source pixel rows tall) before dropping down to the front overhang and cabin, correctly showing top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam car with canvas roof and brass boiler",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canvas roof clearly displays its receding top surface from row 2 to row 7 (approx. 6 rows) before dropping into the front valence (rows 13-16). The cylindrical boiler also exhibits a rounded dome top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam car with canvas canopy and front brass boiler",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slope of the canvas canopy is clearly foreshortened and visible from row 2 to row 8 (approx 7 rows), and the cylindrical brass boiler also shows its curved top cap around the smokestack.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6400
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam car with canvas canopy and front brass boiler",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slope of the canvas canopy is prominently visible across rows 2-7 (approx. 6 rows) looking down from 3/4 view, with the forward slope and front body facing south below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7219
+  }
+ ],
+ "decidedAt": "2026-10-13T16:02:11.851Z",
+ "cells": {
+  "16": [
+   "3258fb57f0341977",
+   "ca3122ac780e60bc",
+   "e12ed0b3c9e03ada",
+   "ea4981dfe3e6551a",
+   "f92555a35d2a466d",
+   "fd9a784f6b043482"
+  ],
+  "24": [
+   "202ca139c4e7c98e",
+   "268c6a87bcb51e16",
+   "28ca320be9e2a992",
+   "3e075ea2f4b5e04f",
+   "651b9cd62f9290bb",
+   "96fe7ff3ad8f6fdf",
+   "9bf4d8f07ace92a4",
+   "a8a18e04ed553213",
+   "caf2676028ef09f0",
+   "d7d048ac2288e505",
+   "de0b3ab42ff8bfdf",
+   "ed47f4bff14179e1"
+  ],
+  "32": [
+   "28557c0f83277a55",
+   "52e11c26a39e9e17",
+   "aa7a21b9bbdfa115",
+   "f69596f418c96cb3"
+  ],
+  "48": [
+   "60d64d13ca11f0b9",
+   "9a3ea8bbf0275b4d",
+   "f0a1c1546b21aab0"
+  ]
+ }
+}

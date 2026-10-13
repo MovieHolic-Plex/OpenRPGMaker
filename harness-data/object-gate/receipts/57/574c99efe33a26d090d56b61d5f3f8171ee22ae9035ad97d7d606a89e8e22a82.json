@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "574c99efe33a26d090d56b61d5f3f8171ee22ae9035ad97d7d606a89e8e22a82",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "대장간 화덕(달군 숯이 위에서 보임)",
+ "label": "sky-steam/steam-i-forge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "forge basin with glowing coals",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The forge basin opening is clearly rendered as a wide ellipse from rows 12 to 21 (10 source pixel rows) showing the glowing coals inside, properly foreshortened for a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5395
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "forge hearth bowl with glowing coals",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hearth basin features a prominent elliptical opening from row 13 to 20 (8 rows tall) displaying the glowing coals inside from a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "blacksmith forge basin with glowing coals",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brazier basin opening is clearly depicted as an ellipse viewed from above, showing hot coals spanning rows 13 to 20 (8 rows tall) surrounded by a visible rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4026
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blacksmith forge with glowing coal basin on brick base and metal hood above",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The forge basin opening (rows 13-21) is drawn as a wide ellipse showing glowing coals inside from a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4224
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "a82d673bc1947790",
+   "b79c3267ca9ae31f",
+   "d8a504b1381e9164",
+   "fa497761bc84f9a4"
+  ],
+  "24": [
+   "06eb5b040caf8f81",
+   "09f6680d35617263",
+   "3cf6f5fdba17497f",
+   "403fcb003202632e",
+   "491c3ad62f8476c9",
+   "5ab74677d912e5f3",
+   "61a4db26f7e1c2fb",
+   "70cd05594cc1e3c4",
+   "7bf666c5b1d21fc3",
+   "8cbbc2cb7adc2887",
+   "8d7150df1c9e2c9b",
+   "95d0ddc93387a356",
+   "b465dbc00e261b16",
+   "b5ea206073dfa8ad",
+   "c86a60bafcead48a",
+   "c96dbf881061215d",
+   "ca05e3d93c149bd4",
+   "ca8ec9c6103c8cde",
+   "cd81890c9efd2efa",
+   "d207edf68447d121",
+   "ddaa954a872355ef",
+   "df451c7ad811a73b",
+   "ee3ab0722af01825",
+   "fcf4d4fcaa40e9f8"
+  ],
+  "32": [
+   "84fae32bc6bea4f9"
+  ],
+  "48": [
+   "0d7c43860aa53f75",
+   "628feb5299776ecc",
+   "9a48eb704281637e",
+   "a18a2b4f1f373007",
+   "a7c0e0f6a4869713",
+   "ec06aab09d14b057"
+  ]
+ }
+}

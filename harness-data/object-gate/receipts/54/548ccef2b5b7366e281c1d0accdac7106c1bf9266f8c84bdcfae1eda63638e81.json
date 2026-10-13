@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "548ccef2b5b7366e281c1d0accdac7106c1bf9266f8c84bdcfae1eda63638e81",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steam pipe with collar and tapered cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pipe is drawn in pure front elevation: the base plinth (rows 26-30), lower metal band (rows 23-25), and yellow collar (rows 17-18) are completely straight horizontal rectangles with zero perspective curvature or visible top surfaces. The upper section (rows 14-16) is drawn as a flat tapered cap with a horizontal slit rather than a round opening seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8291
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam exhaust pipe / vent column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every horizontal element—the stepped base (rows 26–30), the lower metal band (rows 23–25), the upper rim (rows 17–18), and the tapered cap (rows 14–16)—is drawn with straight horizontal lines in pure front elevation. No top surface or elliptical rim/opening is visible anywhere on the column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe is drawn entirely in pure front elevation: the rim (rows 17-18), the metal base band (rows 23-25), and the plinth (rows 27-31) are all perfectly straight horizontal rectangles with zero perspective curvature, showing no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical steam vent / pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every horizontal feature (the base plinth, the lower metal band, the upper yellow rim, and the top cap) consists of perfectly straight horizontal lines with no foreshortened elliptical curvature or visible top surface. The sprite is drawn in a pure 2D side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5983
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.173Z",
+ "cells": {
+  "16": [
+   "89c874f81dffe6f5",
+   "fa6db53538a265a9"
+  ],
+  "24": [
+   "0c943293c1ba4bb9",
+   "25ed30c73be860aa",
+   "307860c9d8dbdc2e",
+   "3f1b155fddb47d00",
+   "52dcbe4c9335ec82",
+   "5817de492cb39921",
+   "a1fc276c1a969c63",
+   "a62c55ad981c7c51",
+   "a7a6828271276681",
+   "c4842442a26b87a9",
+   "d16be61ee4afba2e",
+   "da47183fb0f067d9"
+  ],
+  "32": [
+   "3e6936b012b06b78",
+   "a555f269ff7b2d32",
+   "b441eebb03eaa6f0"
+  ],
+  "48": [
+   "1fb3ed8590d6b2e4",
+   "3e7a25a3ce669532",
+   "46763ac27dffe64e",
+   "51322105d8629f90",
+   "9f9c4ebd60a410ee",
+   "b0a6f5d8049d6742"
+  ]
+ }
+}

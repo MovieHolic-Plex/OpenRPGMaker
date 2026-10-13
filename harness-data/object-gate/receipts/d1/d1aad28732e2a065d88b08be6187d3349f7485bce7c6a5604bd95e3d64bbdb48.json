@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1aad28732e2a065d88b08be6187d3349f7485bce7c6a5604bd95e3d64bbdb48",
+ "width": 48,
+ "height": 32,
+ "kind": "box",
+ "name": "가로 증기 기관(큰 플라이휠)",
+ "label": "sky-steam/steam-i-engine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal steam engine base and boiler",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The engine rests on a large rectangular machine base whose horizontal top deck is clearly visible from row 17 to row 22 (approx 6 rows) beneath the boiler and drive mechanism, above the riveted vertical front face (rows 24-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9218
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine machine bed and assembly",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The machine bed/base has a clearly drawn top horizontal surface spanning rows 18-23 (6 pixels tall) leading down to a front vertical face on rows 24-31 (7 pixels tall), fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11539
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machine base platform",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine bed platform shows a clearly foreshortened top surface from row 17 to row 23 (7 rows tall) above its front vertical panel (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9525
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine platform base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The engine sits on a wide rectangular machine base whose horizontal top surface is clearly visible from rows 18 to 23 (6 pixels tall) before dropping into the front face from row 24 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10168
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "00dd6d04bdc9201b",
+   "3808378424c7176d",
+   "3dfc105980cf13f2",
+   "6a5de8234781192e",
+   "6a85aa071bb2f096",
+   "8317c16e772390aa"
+  ],
+  "24": [
+   "33f5f696444c3478",
+   "80b7523c8adad0a8",
+   "91ab76adede34f2e",
+   "bb42c0623e3e618f",
+   "c5d5155ea1f28af4",
+   "edccdb7c7f69b93a",
+   "ef0e0de2896130aa",
+   "f13a41ddcf7a74c4"
+  ],
+  "32": [
+   "1ed6a3a7d4d0fbd1",
+   "2556bc7b2b130a35",
+   "abf1779cbf5f264f",
+   "ad1a013ce2d13664",
+   "adbc18be3623c648",
+   "c941c81d596bdaf8"
+  ],
+  "48": [
+   "8a45d1accf306357",
+   "c132a7f287ba5897"
+  ]
+ }
+}

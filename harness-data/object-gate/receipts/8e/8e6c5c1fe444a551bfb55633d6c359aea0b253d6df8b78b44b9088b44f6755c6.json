@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e6c5c1fe444a551bfb55633d6c359aea0b253d6df8b78b44b9088b44f6755c6",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine machine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform has a prominent foreshortened top surface spanning rows 14 to 21 (about 8 pixel rows deep), and the upright cylinders also display foreshortened top surfaces (rows 12 to 15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5284
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "engine base platform with mounted cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine base shows a generous top deck measuring 8 pixel rows (rows 14-21) upon which the two cylinders are mounted, with the south vertical face extending from row 22 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8724
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "industrial steam engine machine base with cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base unit has a substantial top surface visible from rows 14 to 21 (about 8 rows) above its front face (rows 22-31). The cylinders mounted on top also show clear foreshortened elliptical tops (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5110
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "engine base platform with steam cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The engine base features an extensive top deck visible between rows 14 and 22 (~8 rows). In addition, both upright cylinders show foreshortened elliptical top caps (rows 11-14 and 12-15), correctly displaying horizontal surfaces seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4953
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "3e85772240834542",
+   "6aa5473bc9860dd6",
+   "bd77deead54ddcfe",
+   "fa046bd9298c7ff2"
+  ],
+  "24": [
+   "066f88daaa45bd65",
+   "0a0744481db59b79",
+   "21e490be73160fc2",
+   "32173a9c4c59afac",
+   "32a5e61f7c0419e9",
+   "35a7b0938c5ff6ed",
+   "49427f035a0aaf9f",
+   "544426de41e54e19",
+   "62c0d4688316fdf2",
+   "68647a77957dd1e5",
+   "7e21e51f2fdef703",
+   "7fc421d95d47ea84",
+   "7ff1c357dd7728a8",
+   "861eebcd02cc8e0d",
+   "b3f7d6affdc22692",
+   "b6ab31775ccd93b6",
+   "bca9f77e94baeb5f",
+   "c0de6b85ac6166b1",
+   "d3d07ac714357048",
+   "d5a93ed7dfbabf52",
+   "d5b36ab44d24bd51",
+   "d8152f208cee1238",
+   "dbce3e4c193ca8ca",
+   "f66c1140d4470980"
+  ],
+  "32": [
+   "395d86fc58f99ec7"
+  ],
+  "48": [
+   "015303f400cac07d",
+   "040b8ee814f783dc",
+   "432989baba40dc1d",
+   "55b400f643cbdd3c",
+   "d68feaef3e1bf773",
+   "dbc6d96c0cc9fdbd"
+  ]
+ }
+}

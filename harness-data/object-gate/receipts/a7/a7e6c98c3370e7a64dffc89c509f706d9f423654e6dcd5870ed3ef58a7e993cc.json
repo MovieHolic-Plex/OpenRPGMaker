@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a7e6c98c3370e7a64dffc89c509f706d9f423654e6dcd5870ed3ef58a7e993cc",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "industrial cylinder steam engine machine and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine base, stepped panels, cylinders, and piston T-bars are drawn in pure front elevation as if for a side-scrolling platformer. The horizontal surface of the base is represented only by a 1px highlight line at row 21, with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8796
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine base (rows 22-30) and the back wall/step (rows 14-21) are drawn in pure front elevation with no visible horizontal top surface (only a 1px boundary line at row 21). The piston tops and base show no foreshortened top depth for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam engine machine base and upright cylinders",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine base and cylinders are drawn in flat front elevation. The horizontal platform between the lower riveted front panel (rows 23-31) and the back panel is only 1-2 pixels tall (row 21), with no visible depth or top surface for the main base. The cylinder tops and piston caps are also drawn flat without elliptical/top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 4"
+   ],
+   "ms": 7248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "engine base and vertical cylinder machinery",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large metal machine base is drawn in pure front elevation: both the lower section (rows 22-30) and upper section (rows 14-21) are vertical front-facing panels with rivets, separated only by a 1-pixel horizontal line at row 21 with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 4"
+   ],
+   "ms": 7035
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.175Z",
+ "cells": {
+  "16": [
+   "1f8f55828d694f90",
+   "c9d8d4b0fa2e26f1",
+   "edeb0d88e635c345",
+   "f6050a9633bb9ed7"
+  ],
+  "24": [
+   "06b91b7aad97dfda",
+   "14d42dd00a417886",
+   "253c4d50b8d9e50e",
+   "2619fef30304e95b",
+   "2f4dace5e3e43563",
+   "40bd0f87f73f6c50",
+   "42c2f728a0437354",
+   "437ca439ccc3568d",
+   "4a9e3d7f04cbd11b",
+   "62c6af4946bd0ee8",
+   "6a3b7abfa51273d4",
+   "9f3a84dd40142f6e",
+   "a358ebec9519a2d1",
+   "abc7c24491b2c458",
+   "af720c5b1a10265b",
+   "b71e0a9c21509002",
+   "c6f1a603e9faa598",
+   "ca26e9bf715b7e68",
+   "d866055df4e0137d",
+   "e0632375085f89f4",
+   "ed7aaeb5efe4c774",
+   "f63a737a2e20551d",
+   "f65245494d44eba5",
+   "fbd60b30f69686ec"
+  ],
+  "32": [
+   "e5bc2140eb69f1af"
+  ],
+  "48": [
+   "03ed512a3353e3c6",
+   "058fdde4ea130986",
+   "360f0cfc6db71a12",
+   "b0fa6ba3c1ea126a",
+   "dc75f9f4b5ef78cd",
+   "ec7e9d8a993deb99"
+  ]
+ }
+}

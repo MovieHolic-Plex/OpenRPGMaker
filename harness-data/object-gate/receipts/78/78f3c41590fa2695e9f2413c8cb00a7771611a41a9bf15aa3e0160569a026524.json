@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78f3c41590fa2695e9f2413c8cb00a7771611a41a9bf15aa3e0160569a026524",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "석탄 칸(나무 테 안에 석탄)",
+ "label": "sky-steam/steam-i-coal-bunker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden coal bin with shovel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The interior of the coal bin is clearly visible from above across rows 3-9 (7 rows tall), showing a top-down view of the coal heap with a shovel embedded, above a 5-row south-facing front wooden wall (rows 11-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4962
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal bin with wooden walls filled with coal and a shovel",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden coal bin clearly shows its interior opening filled with coal from rows 3 to 9 (7 rows tall) between the back rim and the front wall (rows 10-15), correctly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal bin with wooden frame and shovel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden coal bin shows a 7-pixel-tall interior opening (rows 3-9) filled with coal and a shovel viewed from above, with the south wooden front wall visible across rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3571
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden coal bin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coal bin shows its interior opening filled with coal across rows 3-9 (7 rows deep) with a shovel embedded, above a 6-row front wooden panel (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5010
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "4153b4f763025e62",
+   "9108e4f3bacc4afb"
+  ],
+  "24": [
+   "3047fcad90471362",
+   "3b8529ca5e90f059",
+   "56afeb3c5bb93419",
+   "6df127d68600bf61",
+   "7b01e5ed3bc68d2b",
+   "7ec453e3787ef577",
+   "7f41b85cb989899c",
+   "93827617b0363c02",
+   "a4b75f2bc5af1f2d",
+   "bd58bfabaa6bad5f",
+   "dd9caa4467e3a142",
+   "e726087c367773c8"
+  ],
+  "32": [
+   "043c709652005635",
+   "af52d5ccbab2657d"
+  ],
+  "48": [
+   "2c6465a524556e8e",
+   "6e83daf0690dc249",
+   "7f1bc670f7680c91",
+   "80eaff4d2fa19e59",
+   "c285461255b86cd8",
+   "d585bfc2dd0fe8f1"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a74eb393fa1f2bfd5b83ff591159a0ce118cd0377ba38341a7ab34ce60777765",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steam pipe / boiler on a stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the stone base (rows 27-31), lower metal band (rows 23-25), gold rim (rows 17-18), and body are all straight horizontal rectangles with zero curvature or elliptical foreshortening. The orange upper cap (rows 14-16) is drawn as a flat front-facing trapezoid with a flat rectangular slot rather than an ellipse viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9277
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body, golden collar, and tapered top nozzle are drawn as a straight front elevation with completely flat horizontal lines. No elliptical top face or 3/4-view opening is visible (the steam emerges from a flat 1px-tall slit).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam pipe / boiler tank on base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical boiler, brass rim, and stone plinth are drawn entirely in front elevation with flat horizontal bands. The rim (rows 17-18) is a straight horizontal rectangle with no top surface or elliptical curve, and the bottom edges and plinth are also completely horizontal.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9080
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam vent pipe / boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The yellow rim (rows 17-18) is a straight horizontal bar without elliptical curvature, the stone plinth (rows 27-30) consists of flat horizontal stripes showing no top surface, and the upper section (rows 14-16) is drawn as a flat trapezoidal front face with a rectangular vent slit rather than a foreshortened top surface or elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7624
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.173Z",
+ "cells": {
+  "16": [
+   "70ee9fb7cfd00ac1",
+   "89c874f81dffe6f5"
+  ],
+  "24": [
+   "0c943293c1ba4bb9",
+   "3272514c8afb7d3d",
+   "3f1b155fddb47d00",
+   "533e9712437efcfc",
+   "5c77824d8e5d601a",
+   "5cfa5a281c0c556c",
+   "79548c68d0b4f414",
+   "abc4fb4847fcb68f",
+   "bce00903b2d65041",
+   "ca3b7595b539fe37",
+   "d16be61ee4afba2e",
+   "d75d722db8abe5dd"
+  ],
+  "32": [
+   "0984f4d806c8b118",
+   "2940d30f0d550582",
+   "42511509750d0d0c"
+  ],
+  "48": [
+   "3daa91b846ec6279",
+   "80b8219d4dc127bc",
+   "a218716f14cf4124",
+   "a98c5e5cf995cd75",
+   "c13ca463b336e8a9",
+   "e5995412b7c8bb49"
+  ]
+ }
+}

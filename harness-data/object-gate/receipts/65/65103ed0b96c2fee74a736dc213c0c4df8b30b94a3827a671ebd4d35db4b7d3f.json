@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65103ed0b96c2fee74a736dc213c0c4df8b30b94a3827a671ebd4d35db4b7d3f",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "설계 탁자(청사진)",
+ "label": "sky-steam/steam-i-blueprint-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drafting table with blueprint",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans from row 2 to row 8 (7 pixel rows), showing a large blue blueprint and workspace visible from above, with the south legs and frame beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4929
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drafting table with blueprint",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 2 to 8 (7 rows tall) showing a blue blueprint laid out on it in 3/4 top-down perspective, with the front edge at row 9 and legs extending down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drafting table with blueprint",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 2-8 (7 rows tall) showing a blue blueprint laid out on it, with the front edge at row 9 and legs extending downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4838
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drafting table with blueprint",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface spans rows 2 to 8 (7 source pixel rows) displaying the blueprint paper and drafting tools from a 3/4 top-down angle, supported by front-facing table legs below row 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5593
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "8575c8a90a7336ff",
+   "f39972d64da91274"
+  ],
+  "24": [
+   "0af741985252f104",
+   "11b7930d5cfc5271",
+   "155b118007d17530",
+   "1c8b1c3d3e406c03",
+   "21b4e614be9f5b57",
+   "596fcb66aab7eeae",
+   "8892336b7a92e1b6",
+   "b0447e3852a4f12a",
+   "d2f7d7c3b1dd1afc",
+   "ebc1cd3fe7390703",
+   "f277621f3baddb2b",
+   "fae6780e5ea0e6b5"
+  ],
+  "32": [
+   "a59977650efab1f1",
+   "d9c6268bc16a3704"
+  ],
+  "48": [
+   "1b4973b86aa512e6",
+   "3acdd8eaf1422559",
+   "672f389ab3be870a",
+   "9733b5281756ceee",
+   "9a4536e847cd711a",
+   "f489238c91428ccb"
+  ]
+ }
+}

@@ -1,0 +1,228 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1bb957f6f669b00e795127632dd35e10160bb5102c2d428a18c01c24d5d66dad",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern roof is drawn with vertical cylindrical shading and a flat bottom edge, the shelf under the glass (rows 13-14) is a flat 2px front-facing bar with no top surface, and the pole ring at row 18 is a flat 1px horizontal strip. The main body is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7883
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern shelf (rows 13-14) and the post ring (row 18) are drawn as flat horizontal rectangles with no visible top surface or ellipse curvature, and the lantern dome and glass enclosure are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8373
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp post with lantern head and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern post is drawn in pure front elevation: the green dome cap, the lantern housing base plate (rows 13-14), and the mid-pole ring (row 18) are straight horizontal lines with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6070
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp lantern and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, glass housing, supporting ledge (rows 13-14), and pole ring (row 18) are all drawn with perfectly flat horizontal lines without any elliptical curvature or visible top foreshortening, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head, horizontal collar (row 13), ring (row 18), and green cap are all drawn in pure front elevation with straight horizontal 1px lines rather than showing elliptical foreshortened top surfaces appropriate for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6338
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern post / gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 1-5), bottom ledge (row 13), and shaft ring (row 18) are drawn in straight horizontal lines as a pure front elevation, showing no foreshortened top surfaces or elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5270
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gas lamp is drawn in pure front elevation: the lantern dome (rows 1-5), the horizontal base beneath the glass (row 13), and the ring on the post (row 18) are straight horizontal lines with no visible top surface or 3/4 downward perspective curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7208
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp (lantern head, pole, and pedestal base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is drawn in pure front elevation: the lantern cap (rows 1-5) has no visible top surface, the shelf beneath the glass (row 13) is a flat horizontal line, the mid-pole ring (row 18) is completely flat across, and the glass housing is viewed straight-on without 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7611
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.723Z",
+ "cells": {
+  "16": [
+   "eedff97881d976ab",
+   "fc5829fa5ae576c3"
+  ],
+  "24": [
+   "296ce96837a932b3",
+   "34f75f3d8348a2e0",
+   "378092ef2f6d8a2a",
+   "3884519404e43625",
+   "3c184e237499071c",
+   "42f177e73d7afed0",
+   "52f5a84fa19af6ec",
+   "7cd124b196f63cbc",
+   "83a11a2087d6ad02",
+   "89a9940e6921e91a",
+   "ce3bbb74aa834372",
+   "d67880ca5e5caa49"
+  ],
+  "32": [
+   "24f5ae81bb8a1ded",
+   "515c15defe4f0672",
+   "8a9b8d4f3140b38b"
+  ],
+  "48": [
+   "0326a41abc7a4f80",
+   "24ea4463a5881ed9",
+   "40f340f23344eb25",
+   "569df84b90b24abd",
+   "9302a99b5fcdb00c",
+   "f738ec6ff049630a"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f72124754e45e28e1c391a18bc7a72b89e24a6c961c836483a72d650e2ba84a7",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "기름 드럼통(철)",
+ "label": "sky-steam/steam-oil-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "oil drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn in pure front elevation: all rolling ribs/bands (rows 7-8 and 11-12) and the bottom edge (row 14) are completely straight horizontal lines with no curvature, and no top cap/ellipse is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oil drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn in pure front elevation: the metal ribs/hoops (rows 7-8 and 11-12) are completely straight horizontal lines with no perspective curvature, and there is no visible elliptical top surface or rim separating the top from the south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7818
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "oil drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn as a flat 2D front silhouette with straight horizontal metal bands (rows 7-8, 11-12) and a flat bottom. There is no visible top ellipse; the top edge merely has rounded corners like an architectural elevation, with 0 rows of foreshortened top cap surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10554
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The drum is drawn in pure front elevation with straight horizontal rolling hoops across rows 7-8 and 11-12, purely vertical cylinder shading, and no visible elliptical top cap or front rim separating the top from the body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11212
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "ff686f4c8680b60d"
+  ],
+  "24": [
+   "26a137966fc913b4",
+   "3bde88d0cb95496d",
+   "b172377df2faa6b0",
+   "c12f302cfc6a7042",
+   "cf6a26be63388a5a",
+   "f991fc33cc3e4ca7"
+  ],
+  "32": [
+   "05e0424cd194db28",
+   "2d0a25bf5c964c0b",
+   "873e1f9b79596d38",
+   "8876dc1a4323ac86",
+   "ab618cdfa3a98796",
+   "d440ee6ba5886eae"
+  ],
+  "48": [
+   "03abad403123dbac",
+   "10136616daed1b9d",
+   "21cd5ad6bae6ab53",
+   "6a63c08856ac8059",
+   "7b63ffc3d9aa436c",
+   "93012a6df6f6be19"
+  ]
+ }
+}

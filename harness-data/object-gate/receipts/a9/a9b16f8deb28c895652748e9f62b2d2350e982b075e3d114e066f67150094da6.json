@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9b16f8deb28c895652748e9f62b2d2350e982b075e3d114e066f67150094da6",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 공장 마당 흙(보도 경계)",
+ "label": "sky-steam/steam-at-yard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "factory yard dirt terrain autotile with pavement curb",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain autotile showing flat ground surface (dirt surrounded by paved border) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4329
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory yard dirt terrain autotile with pavement border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground autotile consisting of dirt bordered by stone curb/sidewalk; viewed from above as top-down terrain surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3772
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground autotile (dirt with stone curb border)",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain autotile representing factory yard dirt framed by pavement curbs, correctly viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3904
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground autotile with pavement curb border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard 2x3 autotile block representing top-down flat ground (factory yard dirt framed by pavement/curb). As terrain/ground surface, it is viewed flat from above across all 48 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4499
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.386Z",
+ "cells": {
+  "16": [
+   "0a7eb65025552af9",
+   "49dd7bd336ece2f5",
+   "8c147cbbfd49262a",
+   "98394fae07f03ff5",
+   "abae79015bdefb51",
+   "c9f4746ed3966dfe",
+   "d194f104e5bcffef",
+   "d76970288a9629d2",
+   "dc596dfbc30f5904",
+   "e9a589ef8a06bbab"
+  ],
+  "24": [
+   "123331b1946034e7",
+   "1344531a7ec29502",
+   "1fb322487219c108",
+   "224c2542abfe4abb",
+   "282cdda486c7edd0",
+   "54952cdde8cccb75",
+   "55004e504fc7c225",
+   "5f0a625a9e0fdbf0",
+   "724457acf94dfd96",
+   "8dde96a75d3db93f",
+   "99eb316089c2ca0f",
+   "9f157d1b7c18a07e",
+   "b30981cf569d4a29",
+   "b3cad13a22da39d5",
+   "bd9f8717a4a79908",
+   "d41a2855e0b8af7a",
+   "fa3e0fda910d2dc3"
+  ],
+  "32": [
+   "2f32d2436e928f5e",
+   "342b9d2f78e2470f",
+   "57bbe5957951c002",
+   "60af44bdff0c2e86",
+   "6479149ddf279552",
+   "6a0b4e2182dca718",
+   "7da9f43344977b39",
+   "cd64b30993fd9793"
+  ],
+  "48": [
+   "0c3adb46370509ee",
+   "48aa0ea3baf8915c",
+   "4b0b07ece9f754eb",
+   "52da47a576fb5d88",
+   "66bf2a954a3aa61c",
+   "f57b83a1c2c53061"
+  ]
+ }
+}

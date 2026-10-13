@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b57549230c0ff9c0c4034bbaa679115839e69c90d77cd7df069a88099b9bf8d1",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "둥근 의자",
+ "label": "sky-steam/steam-i-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat surface is clearly foreshortened and visible from above across rows 2 to 5 (about 4 rows tall), with the front rim, apron, and legs extending downward to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5478
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round wooden stool",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat top is clearly visible from above, foreshortened as an oval spanning rows 2 through 5, while the front legs and stretcher face south below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5298
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat surface is clearly rendered from above across rows 2–5 as a foreshortened ellipse, resting on the south-facing apron, legs, and stretcher.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6068
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular seat surface is foreshortened and clearly visible from above across rows 2 to 5 (approx. 4 rows tall), with the front rim and legs extending downwards below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6324
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "bf46ebbc8cdb7fea"
+  ],
+  "24": [
+   "2bccf5c57a7b0bfd",
+   "4f0cc4cd16ba612c",
+   "cb1d1d7995e6095e",
+   "ced22e3798049141",
+   "dc62bac0a2b2ec9a",
+   "f0376c08b8c1b9de"
+  ],
+  "32": [
+   "053fec7f92a56297",
+   "18533250c999492e",
+   "6e0f46381d09adfd",
+   "7a345c1993360945",
+   "a92f295509c3fcfb",
+   "dd9d9aa09e274a16"
+  ],
+  "48": [
+   "0b3f7ae82bad27df",
+   "3f613298ab3495f0",
+   "73e43fbf790864da",
+   "7da57b22c9adc632",
+   "b2222228cd195d84",
+   "d137a2a647d33603"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e6bc592b0e173abd31c870ab07c8d9f5a3e5c23efeab1c4f19137abc03160e2",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "밸브 기둥(위에 손바퀴)",
+ "label": "sky-steam/steam-valve-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "valve pillar with handwheel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top-mounted valve handwheel is drawn as an elliptical foreshortened disk viewed from above (approx 10px wide by 6px tall, rows 1-6), clearly revealing its top-down angle with spokes and center hub atop the vertical pipe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9399
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "valve pillar with horizontal handwheel on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The handwheel on top of the vertical pipe is foreshortened into a 6-row ellipse showing its horizontal top face, spokes, and central hub from the standard ~45-degree angle rather than being flattened into a 1-2px front-elevation bar.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10002
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "valve post with top-mounted handwheel",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal handwheel mounted on top of the post is properly foreshortened into a 10x6 pixel ellipse (rows 1-6), showing its spokes and center hub from above rather than as an edge-on line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7808
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "valve pillar with handwheel on top",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a vertical pipe pillar capped with a horizontal handwheel. The wheel on top is rendered in 3/4 top-down perspective as a foreshortened ellipse spanning rows 1 to 6 (10px wide by 6px deep) showing its top layout and spokes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15055
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "5886284db113a40f"
+  ],
+  "24": [
+   "10b699c9a32c302a",
+   "3bbf2ba4b9883595",
+   "5323e407dc25d083",
+   "a8fe82dea65fdbc8",
+   "bbb0caed3e270fcd",
+   "f07ccc1f506ec7d7"
+  ],
+  "32": [
+   "3c2a9f5240df17e0",
+   "6d79516c2d5944e9",
+   "737a8e99a96143ae",
+   "d6916883cd0a2bdf",
+   "ec5151fa12a8dfec",
+   "ff86031ddc4344d1"
+  ],
+  "48": [
+   "0d82ce5d1838b143",
+   "379242ab93636aee",
+   "68ad19350fbdcf4e",
+   "aa7f47feb465f068",
+   "aadb096be34f2185",
+   "d8cbf716a536a234"
+  ]
+ }
+}

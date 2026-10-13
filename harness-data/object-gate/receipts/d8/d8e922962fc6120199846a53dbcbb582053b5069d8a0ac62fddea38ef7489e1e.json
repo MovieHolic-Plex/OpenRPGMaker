@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8e922962fc6120199846a53dbcbb582053b5069d8a0ac62fddea38ef7489e1e",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "증기 분출(바닥 격자에서, 4프레임)",
+ "label": "sky-steam/steam-steam-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rising steam puff column",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite consists of three flat circular steam puffs stacked vertically in a flat front/side view with no floor grate, ground contact, or 3/4 perspective depth cues. In addition, steam/vapor does not match the 'organic' category (plants, rocks, mushrooms, crystals, etc.).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7226
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam plume consists of flat circular puffs stacked vertically in a pure 2D side-view elevation with no floor grate, no top-down foreshortening, and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8048
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam plume consists of flat circular puffs stacked vertically in a pure 2D front view with no 3/4 top-down foreshortening or visible top surface (top_rows: 0). Additionally, steam/smoke effects do not match the organic category (plants, rocks, trees, mushrooms).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9694
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam puffs are rendered as flat 2D circular shapes stacked vertically with no floor grate or 3/4 top-down ground perspective, and steam/smoke does not match the 'organic' category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5398
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.093Z",
+ "cells": {
+  "16": [
+   "5185ee52e9b925b2",
+   "7f3d2c414d3350c4"
+  ],
+  "24": [
+   "08b88cbe26ec837a",
+   "099325081caeb403",
+   "19e74d522d34b8ff",
+   "2b912cab7433a56b",
+   "31c536d7218b7133",
+   "6c0ceb563db0179b",
+   "6d7ffbe98b453d99",
+   "71190041b23a387d",
+   "bce3ae38ec8662b4",
+   "d82412a5ad380be0",
+   "df6ec21161f64d96",
+   "ee96c552b18d2eaf"
+  ],
+  "32": [
+   "46e6640434075a48",
+   "a3db29cb07d93b7c",
+   "cdf576c3b4251640"
+  ],
+  "48": [
+   "4fb873ec13ba3069",
+   "545ac742c4100c70",
+   "6b56a29f6edb2191",
+   "7ef4025ad8756edf",
+   "e81d2bf20455e0ab",
+   "fe9d34ead6fe4c32"
+  ]
+ }
+}

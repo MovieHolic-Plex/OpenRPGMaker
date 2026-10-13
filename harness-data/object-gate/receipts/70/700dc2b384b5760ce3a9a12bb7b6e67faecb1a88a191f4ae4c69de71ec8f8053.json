@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "700dc2b384b5760ce3a9a12bb7b6e67faecb1a88a191f4ae4c69de71ec8f8053",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "여관 술 계산대(놋쇠 꼭지)",
+ "label": "sky-steam/steam-i-bar-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "inn bar counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter's horizontal top surface is prominently visible across rows 3-8 (6 rows deep) holding taps, mugs, and a book, with the front wooden facade extending from row 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3739
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tavern bar counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 3 to 8 (about 6 rows tall) displaying beer mugs, a ledger, and beer taps, above a 6-row front wooden panel with brass rail (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3707
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "inn bar counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface is clearly visible from rows 3 through 8 (6 pixel rows tall) supporting beer mugs, a ledger, and taps, with the vertical front face visible below from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "inn bar counter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 3 to 8 (6 pixels tall) displaying mugs and a book, resting above the front panel face (rows 9 to 14) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4196
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "1f57a66b69bf9d25",
+   "2458f3a978a55e99",
+   "adfe29ecdbaae01f"
+  ],
+  "24": [
+   "48d9f5f82aeabcf3",
+   "947bdc5662a8dd29",
+   "976ca7e8d9bc11e2",
+   "d90436e4207c6213"
+  ],
+  "32": [
+   "0de42f9756922467",
+   "137f4531742ce3af",
+   "2bc3e538898909b1",
+   "47bc13ca27bcc146",
+   "5229642db53f266f",
+   "8baeaa70c74c8a19",
+   "997b52709b21aaec",
+   "a5de861eba052e04",
+   "ab79b07756a1bea7",
+   "bbcaa23c5e0d955a",
+   "c89e71c2c528002c",
+   "d4859c756c536958"
+  ],
+  "48": [
+   "3f15474902f9e068",
+   "ed5ee803721fb11c"
+  ]
+ }
+}

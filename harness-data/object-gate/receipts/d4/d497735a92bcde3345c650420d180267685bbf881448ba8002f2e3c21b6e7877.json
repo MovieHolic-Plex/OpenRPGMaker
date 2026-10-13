@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d497735a92bcde3345c650420d180267685bbf881448ba8002f2e3c21b6e7877",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+ "label": "sky-steam/steam-smoke-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke puff trail",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Volumetric spherical smoke puffs rising diagonally; the top bulbous puff displays a rounded top surface with lighting consistent with 3/4 top-down illumination (rows 1-6).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5883
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 60260,
+   "error": "Error: Request was aborted"
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Volumetric column of rising smoke composed of overlapping spherical puffs. The top surface of the uppermost puff spans rows 1 to 6 with spherical top-lit shading appropriate for 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7031
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The smoke plume consists of rounded, volumetric puffs. The largest top puff (rows 0–12) displays top-lit spherical volume with approximately 5 rows of upper foreshortened dome surface visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7614
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.091Z",
+ "cells": {
+  "16": [
+   "4a2fbd3b61bb683b",
+   "6b15ecb5042d5dc5",
+   "791a64dc95460880",
+   "f8e99529f879cf9d"
+  ],
+  "24": [
+   "0f4bacfdcde8ddff",
+   "1803483aed4e017b",
+   "46bb16b8c5fec40a",
+   "66c925f57b3c9e52",
+   "768b9edc1a3afed2",
+   "7aa635fedc84921c",
+   "7c5a028347ce4aa0",
+   "82122986ae770c3b",
+   "824b34377d51c5d5",
+   "85e190ea83f818cd",
+   "9de1c04dc03ff42a",
+   "a343e73dd9652b92",
+   "b1c599085680d17a",
+   "b484a66277d92f19",
+   "c0d641463a77314d",
+   "cf1321272387c46a",
+   "d1188ff4b09ffa34",
+   "d1def85e776fa87d",
+   "d2da1614ee9b3153",
+   "f11737bb8d602921",
+   "faf1c8428c00e770"
+  ],
+  "32": [
+   "4191220605f1e795"
+  ],
+  "48": [
+   "068236662173dfc4",
+   "134947672cef0a10",
+   "5da9c38fab55bc5c",
+   "b772c988129e3794",
+   "ba063d97de6cc5dc",
+   "d32b30cbb5e92c2f"
+  ]
+ }
+}

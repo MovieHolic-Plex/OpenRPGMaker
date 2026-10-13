@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c4b10ba719b26c08e25e1de6b628affcef48ff169b1760a3a36c77948e26f46c",
+ "width": 48,
+ "height": 48,
+ "kind": "round_body",
+ "name": "기관실 큰 보일러(세운 원통·화구·계기)",
+ "label": "sky-steam/steam-i-boiler",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large cylindrical boiler body",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the upright cylindrical boiler is clearly visible as an elliptical horizontal surface spanning roughly rows 5 to 14 (about 10 pixel rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5403
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "upright cylindrical boiler",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the boiler forms a clear ellipse spanning rows 5 to 14 (approx. 10 source pixel rows) showing the top surface from above in 3/4 perspective, with a vertical cylindrical body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8364
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large vertical cylindrical boiler",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylinder is clearly visible as an elliptical surface spanning roughly rows 5 to 14 (10 rows tall), properly foreshortened in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6010
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical boiler drum / cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical boiler is clearly visible as an ellipse spanning approximately rows 5 to 13 (around 9 source pixel rows) with attachments on top, while the front face extends downward from row 14 to row 43.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4356
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "0ed67e84dd09b840",
+   "14ac38e07641beae",
+   "47b2ac2c20085a85",
+   "7c8549b1155d6f3c",
+   "92671a2ae125d0ec",
+   "a9a840d161e16667",
+   "c4f37e9d05a42ecc",
+   "d9cb4e11205628af",
+   "fd20feed0fec14f7"
+  ],
+  "24": [
+   "36ea0d969f77a77d",
+   "3bf21862dff20c67",
+   "61c8b1b317c4d549",
+   "79f6f76f48c574af"
+  ],
+  "32": [
+   "11deb9320a19f6ca",
+   "1949113ebba83bba",
+   "39585e0240fe63cc",
+   "3b06d9cc523364bc",
+   "4f6d36502465cecc",
+   "66b423d066bbbef2",
+   "695430830c71c594",
+   "6d0275e59196ed37",
+   "756c20b1e71b4171",
+   "7e9af07d0ae30a6c",
+   "82f629dfe10319ef",
+   "971a44d9115e91cd",
+   "978aa6acbc3bacdd",
+   "9defc67a89efc26b",
+   "b5934f7e64b59d08",
+   "c14682bdb26607ef",
+   "c9768a4f367aeef1",
+   "c9f37a3c2e653d91",
+   "cc4295f16e3e3ba1",
+   "cd33493871861de0",
+   "ec9050141d17d7f1",
+   "eef46edce875194c",
+   "f8afb79fdfe94c79",
+   "fb526173cbf10efa"
+  ],
+  "48": [
+   "c951dde3403ef98f"
+  ]
+ }
+}

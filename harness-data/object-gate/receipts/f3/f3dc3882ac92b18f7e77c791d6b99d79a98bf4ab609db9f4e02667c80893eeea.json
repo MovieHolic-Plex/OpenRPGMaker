@@ -1,0 +1,164 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3dc3882ac92b18f7e77c791d6b99d79a98bf4ab609db9f4e02667c80893eeea",
+ "width": 96,
+ "height": 96,
+ "kind": "frame",
+ "name": "갠트리 기중기(레일 위 문형 기중기)",
+ "label": "sky-steam/steam-gantry-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gantry crane horizontal girder",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal girder shows a distinct 6-row top surface (rows 8-13) rendered in lighter tone above its front face (rows 14-22). The trolley (rows 3-5), suspended crate (rows 64-67), and wheeled bogie bases (rows 80-83) also consistently show 3-4 row top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gantry crane girder and frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal girder clearly displays a foreshortened top surface (rows 7–13, ~7 rows tall) above its darker front vertical face (rows 14–22). Additionally, the top trolley (rows 3–6), wheel bases (rows 80–84), and suspended crate (rows 64–67) all consistently display top surfaces consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7866
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gantry crane crossbeam and frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crossbeam clearly displays a top surface (rows 8-13, 6 rows tall) distinct from its south front face (rows 14-22). In addition, the top trolley (rows 4-6), the suspended crate (rows 64-67), and the rail bases (rows 80-84) all consistently feature foreshortened top surfaces appropriate for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8188
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gantry crane frame (horizontal girder and truss legs)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal girder (rows 7–22) is drawn in pure front elevation with vertical stiffeners and lightening cutouts, but no visible top surface (row 7 is a flat 1px black outline). The leg trusses are also drawn entirely flat with 2px front-facing rungs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16488
+  }
+ ],
+ "decidedAt": "2026-10-13T15:57:50.722Z",
+ "cells": {
+  "16": [
+   "10261152a5af390a",
+   "11476a5acefddb49",
+   "2568321d9fad5d27",
+   "32e6ed3d82c593dd",
+   "33380a8bbc7bf47a",
+   "3a6719c7a2cc6afd",
+   "4291b51a986d1603",
+   "57338233b6914d47",
+   "59c6572032c08e74",
+   "5d02ef1460bcbf0b",
+   "6aeee79af7c9b2d3",
+   "75b99a89d31cf22a",
+   "770dbb6888b51ea5",
+   "78d5eb555bc13d1b",
+   "7a30820120c7da3b",
+   "7a927bf370f801ce",
+   "8b46b177fa1778e3",
+   "94b1c42a096dba34",
+   "9834a75a115cc000",
+   "9baef562ec5f5966",
+   "a00e50f17c4679b4",
+   "b0b05052f1f3177c",
+   "b49b4780e6ca7519",
+   "b508d30010ee355c",
+   "b6c6ce2cc5cd353c",
+   "bf92ce962b9518d5",
+   "c03b9d729b0b33e2",
+   "c55010a93967dc58",
+   "d06c2683eeb6a41a",
+   "d98f7fbad9fb95ce",
+   "da0ed353d2cc6e27",
+   "eee85e6cb19c6bf0",
+   "f01d7f49db80a4aa",
+   "fb39418e7fa5d97e"
+  ],
+  "24": [
+   "0210f3239b8b2c50",
+   "084593efbe1abd93",
+   "28b51651d41501cf",
+   "2ea3097787e1646e",
+   "4e4e76c145c24bbd",
+   "4f90fc43e869c016",
+   "5ac131b75031e70c",
+   "62714f6aa63523e4",
+   "6ec9ec8e261e3068",
+   "7cba32c308bbb41d",
+   "8a00e7a47869034a",
+   "9daf9969370f8847",
+   "a2b4ffe720589481",
+   "df8db40fc29425e5",
+   "e05830cc55af5832",
+   "f012ba788d5dd9b8"
+  ],
+  "32": [
+   "0701d193f29653be",
+   "0dbd3296e20cbbd9",
+   "28b49fd368842293",
+   "4f09d3ee257aaff3",
+   "ad1892da961dce80",
+   "d3f7646812845e67",
+   "d91d0245800e2866",
+   "dcf79b0a6529a59f",
+   "e70521b8a2fb3b25"
+  ],
+  "48": [
+   "069b48ff4524949d",
+   "9a20b07610fa88a6",
+   "b27822d94f2d218b",
+   "e2f0dbc2e8854cbc"
+  ]
+ }
+}

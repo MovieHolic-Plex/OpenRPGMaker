@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "137f8fef7b0db3db46242088dd0945772dbd02362bce5fcd0e034967c3fee3fb",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 벽돌 포장 광장(보도 경계)",
+ "label": "sky-steam/steam-at-brickpave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick-paved plaza autotile with stone border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid autotile format showing top-down horizontal brick pavement and stone curbing; qualifies as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5484
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick paved plaza autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain autotile showing red brick pavement with stone curb edging, viewed flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4386
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick paved ground autotile with curb border",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard flat terrain autotile showing brick pavement with a stone border, viewed from above as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4034
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick paved plaza ground with sidewalk border autotile",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain autotile depicting flat brick pavement bordered by curb stones, properly rendered as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3557
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.387Z",
+ "cells": {
+  "16": [
+   "33ee87bc1e0def2f",
+   "3d3a923627026ac7",
+   "45a325f8bd1f1b85",
+   "4caa51eb3dab0492",
+   "6385e24e33c8268e",
+   "76d2657afd399323",
+   "a28e4913a14e834d",
+   "c6ca32c06e659f59",
+   "de1ffb16d56affde",
+   "f1dfac3c3aed3ce3"
+  ],
+  "24": [
+   "2c92242342ac7a5d",
+   "315d6e5c9379d314",
+   "37162f04f035c5ba",
+   "459ee85699992431",
+   "5d070f938df5ed84",
+   "62fc45bab58448f8",
+   "6349b1ddb64672e6",
+   "68eb2c54d0f82fa7",
+   "7dc848f98e829faf",
+   "8fd98399b34c4d50",
+   "98e3e602599ef9c7",
+   "9a396bf3118262fe",
+   "a03f381e16aba2e4",
+   "a34767798f845e9a",
+   "b59835589de16ac7",
+   "e4aab4f05e4e69b9",
+   "ece4be5a0eef85c8"
+  ],
+  "32": [
+   "15251453e3c53915",
+   "2063f64ef2c82b43",
+   "2c53c711722bc38f",
+   "39738f832532bffa",
+   "b16d0812d47946f5",
+   "bdec6cd636e5ae83",
+   "bfcd8be6c2569457",
+   "f8c622643485aed5"
+  ],
+  "48": [
+   "0fbc68e8e2f97c71",
+   "4dcae39b9056eba6",
+   "72b0ff9b0f388232",
+   "7e8340baf467bab3",
+   "89bf2d5ba1db6a5b",
+   "fc3969dcaece752b"
+  ]
+ }
+}

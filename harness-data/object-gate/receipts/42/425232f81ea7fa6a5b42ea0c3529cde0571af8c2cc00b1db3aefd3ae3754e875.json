@@ -1,0 +1,240 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "425232f81ea7fa6a5b42ea0c3529cde0571af8c2cc00b1db3aefd3ae3754e875",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick and metal boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body (brick firebox and metal upper section) is drawn as a flat front elevation with vertical front-facing planes and no visible top surface. The small chimney flue on top shows an opening, but the main body shows 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12283
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "furnace / boiler with brick lower section and metal upper hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a brick base (rows 16-31) and a metal upper section (rows 3-15), both drawn entirely in pure front elevation with a flat horizontal top edge at row 3 and no visible top surface (0 rows). The small chimney pipe on top has an elliptical opening, but details on top do not give credit for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6946
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick and metal boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body (brick furnace base from row 16-31 and upper metal boiler section from row 3-15) is rendered as a flat front elevation. Neither the brick base nor the metal upper body has a visible top surface; only the small chimney pipe on top has an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6710
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick and metal boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (brick furnace and upper metal casing) is drawn in pure front elevation with no visible horizontal top surface. Only the small chimney pipe on top shows an opening, but the main body itself has 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8623
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boiler furnace (brick firebox with upper metal casing)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body (lower brick furnace and upper metal casing) is drawn in pure front elevation with no visible horizontal top surface foreshortened from above. Although the small chimney pipe on top has an oval opening, the main body terminates flatly at row 3 without showing its top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9917
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick and metal boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main furnace body consists of a lower brick firebox and upper sheet-metal section, both drawn in pure flat front elevation. The top horizontal surface of the boiler at row 3 has 0 rows of depth (flat 1px edge with no visible top surface), with only the small chimney showing 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick furnace with upper metal boiler/hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire main body is drawn in a flat front elevation: the lower brick furnace (rows 16-31) shows only its vertical front face with the grate, and the upper metal boiler/hood (rows 3-15) is also drawn flat facing the camera with front-facing rivets and vertical seams. Neither the brick base nor the boiler body has a visible foreshortened top surface; only the small chimney pipe on top has an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10332
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "industrial brick furnace with upper metal boiler section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the lower brick firebox (rows 16-31) and the upper metal boiler section (rows 3-15) are drawn strictly in front elevation. The main body has no visible horizontal top surface; only the small chimney pipe on top has an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7859
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.174Z",
+ "cells": {
+  "16": [
+   "001972cd77de5a5c",
+   "7a4ff4c3f4883ddb",
+   "bab3e75cd9c5f2e8",
+   "d367d3127f94d6f2"
+  ],
+  "24": [
+   "0045040b3e1069da",
+   "0593a768a72f1d2a",
+   "25127a05ecd64d66",
+   "2a7f3c47d9e4a44a",
+   "2c7659f6d1e8c44e",
+   "2da78d162d51f1a7",
+   "3334e54c5e84b976",
+   "461473ae7bd0a289",
+   "46c75a5f5502c1cc",
+   "4c70395819d8e130",
+   "6185bfd9807550da",
+   "665e8d02b16e578e",
+   "6c50a51c7fd57b6b",
+   "70a8477d06e20fc5",
+   "72e0995cd2785b08",
+   "76555ccc96593214",
+   "7e2ef727304a1e17",
+   "8113e8df4c922e54",
+   "b798f0d9d3aee40e",
+   "b920b298d74e1c31",
+   "baf03c267ac32697",
+   "bb7586dae1587e3f",
+   "cc87d8d7077076a7",
+   "d0544efe9ff2e63c"
+  ],
+  "32": [
+   "5728a923617544d4"
+  ],
+  "48": [
+   "1ed520bb431e9e27",
+   "251d1b3fcb62d7e7",
+   "547a38b4b4f348fe",
+   "8620de033df07d06",
+   "dd69bdcc70e10ea1",
+   "eda091c7ddb5790e"
+  ]
+ }
+}

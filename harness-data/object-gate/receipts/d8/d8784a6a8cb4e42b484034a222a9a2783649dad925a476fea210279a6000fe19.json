@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8784a6a8cb4e42b484034a222a9a2783649dad925a476fea210279a6000fe19",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 배관(관·밸브·압력계)",
+ "label": "sky-steam/steam-i-pipewall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall pipes with valve and gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipes, valve wheel, and pressure gauge mounted flush against a vertical wall surface as specified by the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5058
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted pipe network with valve and gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted pipes, valve wheel, and pressure gauge mounted flush against a north wall. Permissible flat wall-mounted presentation in JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7008
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall pipes with valve and gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pipes, valve wheel, and pressure gauge attached directly to the wall face; appropriate flat presentation for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3776
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall pipes with valve and gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is classified as wall_mounted; pipes, circular valve wheel, and pressure gauge are mounted flat against the wall surface as permitted for wall decorations.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3832
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "36df1e74160dc390",
+   "39d430f1af82019b",
+   "c7deb7aafb386c17",
+   "cd535e6a8c9160e9"
+  ],
+  "24": [
+   "02bc0c2f1f137430",
+   "04cfd0e0676dc4a3",
+   "0df165cea4d92d29",
+   "174be8fa4aa44e86",
+   "1e58ee05cef42510",
+   "2450aaafd763f38e",
+   "26bdc9d04911be94",
+   "28a9d73e049e6ab5",
+   "33b0710a5a1e6319",
+   "40de025564626e9e",
+   "4261b4044a9d0778",
+   "4326eb20db3c4efd",
+   "48e7cf1447462ad9",
+   "5484134983107a76",
+   "6b9a587311f2934c",
+   "722c9d2e83ee7fbf",
+   "87d15d3d0ce61bec",
+   "8d6c74509de6245c",
+   "bd5cf7d993f7f256",
+   "c937ee244e6a90fc",
+   "d7ed23010231814d",
+   "dd1dbbed792aa27c",
+   "ddb42e96165c660e",
+   "f5467361f95c88c1"
+  ],
+  "32": [
+   "129f322784e6ef53"
+  ],
+  "48": [
+   "352d09a38326a508",
+   "8e934db050d18a6f",
+   "9f00b64e55fa913c",
+   "c28ae32cc99ddfb0",
+   "e84849f965a2d455",
+   "f32b34b0a86e6967"
+  ]
+ }
+}

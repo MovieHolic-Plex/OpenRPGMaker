@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14dbcaf9ceb12e56e71e5d85f7987b33b423bbd00d7866d5ae46de134950ce2f",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "공장 철문(벽돌 문기둥)",
+ "label": "sky-steam/steam-iron-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Horizontal beams and pillars are rendered in flat front elevation with only 1px edge highlights rather than visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 14634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron gate and brick pillars",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate bars and horizontal crossbeams are drawn entirely flat from the front, lacking foreshortened top surfaces across the frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 17637
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate bars and horizontal crossbeams lack top surfaces, rendered in pure front elevation with only 1px edge highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14461
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron gate and brick pillars",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate rails and brick posts are drawn in flat front elevation with only 1px edge highlights rather than visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 24201
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "30e17bf7ac7b8633",
+   "c0c5b29225e205ed",
+   "d04383ab45024bf5",
+   "d326cccb6bc3f743",
+   "deeb7e835eab1b76",
+   "e1053d2733a1a394"
+  ],
+  "24": [
+   "03c2978e54f596aa",
+   "0ee27084fa809c27",
+   "200d857c838de038",
+   "408bd12f8a8c9392",
+   "481778f598e75d85",
+   "72a1f61b12fd189c",
+   "7a5a8be4728fef4f",
+   "8feae323fbc697aa"
+  ],
+  "32": [
+   "028d362f975c9e62",
+   "55f3956a45a4be59",
+   "57040bbf5107a51b",
+   "649df5c069043e94",
+   "895fcce0ddd7a0ba",
+   "b6e9c45e48b4e56f"
+  ],
+  "48": [
+   "b3544f5e8485817c",
+   "d22b6a18fd307f07"
+  ]
+ }
+}

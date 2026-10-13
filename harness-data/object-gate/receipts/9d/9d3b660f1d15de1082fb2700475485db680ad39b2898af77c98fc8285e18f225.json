@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d3b660f1d15de1082fb2700475485db680ad39b2898af77c98fc8285e18f225",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "신문·차표 가판대(우진각 지붕)",
+ "label": "sky-steam/steam-kiosk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "kiosk with hipped roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hipped roof clearly shows its sloped top surface facing the camera across rows 2 to 10 (approx. 9 source pixel rows), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6188
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "kiosk with hipped roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a well-defined hipped roof showing its top slope across rows 2–10 (9 source pixel rows) before overhanging the front facade at rows 11–12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6563
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "kiosk with hipped roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hipped roof displays its sloped top surface across rows 2-10 (approx 9 rows of green roof tiles facing south and foreshortened), with a counter ledge also visible at row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4326
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "kiosk with hipped roof",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hipped roof displays a substantial foreshortened sloping surface across rows 2-10 (around 9 source pixel rows) above the front wall and counter, typical for JRPG 3/4 view buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5047
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "10b5bbbe8a9303b4",
+   "69d03b6a24dc7d7c",
+   "db853407f42ceaa0",
+   "de5552f519f2821c"
+  ],
+  "24": [
+   "010689dead3b7671",
+   "029dc7148fa5eb9e",
+   "22c036b81d3a397a",
+   "2765592f222b745c",
+   "2aa583d325ce0b07",
+   "38cb793e0e11bc1d",
+   "4cefdb7238734cbc",
+   "4e07d604e5419722",
+   "70c593196c2f5ec3",
+   "7e92d4a1655f9a1e",
+   "81b612025a618ea6",
+   "82616e25d73d17d8",
+   "96548cbec615becd",
+   "96fc29f477945f55",
+   "98c9110341cf5fde",
+   "a31cfa37244e19c1",
+   "a5a19f1d861124b7",
+   "c04557584097dc8d",
+   "d253658798728c34",
+   "d46fa09616e07461",
+   "db999509b5cd2f0e",
+   "efb2a97e1466fd36",
+   "f6129a3cc00b5484",
+   "fffd092c3749780c"
+  ],
+  "32": [
+   "74bb0564ecc7a970"
+  ],
+  "48": [
+   "6fa75456059dbbe7",
+   "706efdd5364a40e7",
+   "a0dc5cd28113210d",
+   "bf1ec77168294fca",
+   "dabd09665722f86c",
+   "eff72c2980e7ac06"
+  ]
+ }
+}

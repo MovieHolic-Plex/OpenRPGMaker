@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ca7f53196b1b8f4281455bb1198f2d842ec5fb0c71b340b49808cf820ea3c4e",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "여관 탁자(맥주잔·접시)",
+ "label": "sky-steam/steam-i-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "inn table with beer mugs and a plate",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly shows top-down foreshortening across rows 4 to 17 (14 pixel rows tall), with south-facing apron and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4471
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "inn wooden table",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly shows foreshortened depth spanning rows 4 to 17 (14 pixel rows) with items placed on top, above a south-facing apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "inn table with beer mugs and plate",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a prominent top surface visible from row 4 to row 17 (14 pixel rows tall) supporting items, followed by a south-facing front apron and legs from row 18 down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5634
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden table with mugs and a plate",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from row 4 to row 17 (14 pixel rows) in 3/4 top-down perspective, with the front apron and legs facing south below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3336
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "63d5b59abc5c98eb",
+   "a6b62f331cdb479b",
+   "b8089710af2e224f",
+   "f57be703a7a16dd1"
+  ],
+  "24": [
+   "08777996f3823078",
+   "0a25da4e046df7d8",
+   "2a972f1e0a500b23",
+   "35216656d2206ae8",
+   "481c3b9454100c45",
+   "603b674616480d7e",
+   "62056961d15b6826",
+   "65126ec6e6804c9a",
+   "672d5b1b1b900d4c",
+   "690cfbbd96119897",
+   "700bc770bc65d715",
+   "7bf6b9e966adec6a",
+   "83e72f952121b097",
+   "8c2991efb13e4f35",
+   "8cd73bbb12e1c2f5",
+   "8ff31148d9b1df1f",
+   "9ce9309112e663e7",
+   "a97500e8cca5860e",
+   "b3bdc8b34e48cc23",
+   "b471443570265a9f",
+   "b5daf0020a6aebd6",
+   "c2fc53bdacf01bdd",
+   "df577eb4e6c19155",
+   "ef580d139968515a"
+  ],
+  "32": [
+   "fb2e9b893c546ed7"
+  ],
+  "48": [
+   "464102bf6e91f530",
+   "7f002f69e6955918",
+   "ab6b53cbd46c2e14",
+   "b7d3f6fbc97167e3",
+   "bf385b4e72710cf9",
+   "ec24d6d0cbe7d397"
+  ]
+ }
+}

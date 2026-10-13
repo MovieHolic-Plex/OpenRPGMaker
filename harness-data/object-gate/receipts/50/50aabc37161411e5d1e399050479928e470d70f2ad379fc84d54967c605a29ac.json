@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50aabc37161411e5d1e399050479928e470d70f2ad379fc84d54967c605a29ac",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "공방 작업대(바이스·공구)",
+ "label": "sky-steam/steam-i-workbench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "workshop workbench with tools and drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is clearly visible from rows 2 to 7 (6 rows deep) with tools resting on it, above a front face with drawers extending from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3776
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "workshop workbench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface is clearly visible from rows 2 to 7 (approx. 6 rows tall) holding tools/vise, with the drawer front face occupying rows 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4060
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "workshop workbench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench top surface clearly spans rows 2 to 8 (7 rows deep) with tools resting on it, above a front-facing drawer cabinet (rows 9-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3903
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "workshop workbench with drawers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The workbench tabletop surface spans rows 2 through 7 (6 rows of top surface) holding tools, followed by an edge highlight on row 8 and a front face with drawers on rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4118
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.724Z",
+ "cells": {
+  "16": [
+   "16b7246e6694a9a7",
+   "885e75ec46f3aa47"
+  ],
+  "24": [
+   "10a2e5e1bc1179e9",
+   "24d7f4e136b2aee6",
+   "2d967d7a0db52dd6",
+   "3865e58be78ac934",
+   "3a7b10678c6b09c4",
+   "63d86a0a5f785cee",
+   "8edec498f80720e9",
+   "9e34b99b3d09a32b",
+   "9f02fe7a19c702b6",
+   "d80ebd5c379aacdc",
+   "d83c3b38df3c2929",
+   "f9296ea5268e5a38"
+  ],
+  "32": [
+   "4a701108ce3b638c",
+   "dcbcfda66a0896a7"
+  ],
+  "48": [
+   "0f709d9f2a7a4e27",
+   "1a6ac7e2904fce37",
+   "372267e4eba6b169",
+   "6c6fba3d2e9b2bdc",
+   "be109f8e786f7be6",
+   "d77585fe18ea5479"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86e7a5bcedacd82b6783029d82cf3f3e36cfa05cba00f08224f12583e3af5dfe",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "부두 캡스턴(세운 밧줄 감개·막대 넷)",
+ "label": "sky-steam/steam-winch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "capstan cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The capstan is drawn symmetrically in front elevation: the ropes and turning bars run horizontally across the body with zero elliptical curvature, and the central vertical axis extends all the way to the top edge without any visible horizontal top cap surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10434
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dock capstan drum",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical capstan drum is shown foreshortened as an ellipse from row 2 to row 5 (4 rows tall, 11px wide), featuring the cross of four capstan bars viewed in 3/4 perspective, above the south vertical drum face wrapped with ropes (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13527
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dock capstan (upright rope winch cylinder with four turning bars on top)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the capstan drum is shown as an ellipse spanning rows 1–5 (about 5 pixel rows tall), displaying the cross of four turning bars foreshortened in 3/4 perspective above the rope-coiled vertical front cylinder.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10739
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "capstan drum",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The capstan is drawn in front elevation with horizontal straight rope bands (rows 8, 10, 12) and a vertical/horizontal bar cross across the front face. There is no foreshortened elliptical top surface visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8921
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.728Z",
+ "cells": {
+  "16": [
+   "de2a8859d2694577"
+  ],
+  "24": [
+   "08c958e20b065725",
+   "0da4e922839c74ee",
+   "41320b87b1cd4095",
+   "c271e116f0edc949",
+   "ec305d2b4ed433c3",
+   "ffe5d606124e22ec"
+  ],
+  "32": [
+   "1b689ee9f97b8c10",
+   "3338b999aa755cfe",
+   "397bb7d9be60ffd0",
+   "4f05337cfa8800a3",
+   "75d91f469ebac79b",
+   "c7022af5af00572e"
+  ],
+  "48": [
+   "428160e6a2d3881d",
+   "5f12365eb18c187d",
+   "72e936fa5b798c4b",
+   "79df9ae40972039b",
+   "924087eaedb32fc3",
+   "f2ad1192645a03be"
+  ]
+ }
+}

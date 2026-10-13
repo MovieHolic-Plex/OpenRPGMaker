@@ -1,0 +1,222 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "30275b5f0529f77357fe96240e083a7d65d52347b60c3f465c5aaa7237199aaa",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The furnace consists of a brick lower firebox and a metal upper section, both drawn entirely in pure front elevation with vertical panel seams and rivets. No horizontal top surface of the main furnace body is visible (0 top rows); only the small attached chimney pipe at the top right has an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8270
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick and metal furnace boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the furnace is drawn entirely in pure front elevation with vertical brickwork and a vertical sheet metal upper tier. Neither the brick section nor the main boiler body displays a horizontal top surface seen from above (0 top rows); only the small secondary chimney pipe on top has an elliptical opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7074
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick and metal furnace body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main furnace body consists of a flat brick front face (rows 14-30) and an upper grey metal front panel (rows 4-11). There is no visible horizontal top surface for the main body (0px top surface above row 4). Only the small pipe chimney at the top right has a top opening, which is a minor accessory.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10015
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick boiler / furnace with metal top and exhaust pipe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 1,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The boiler has an 8-row foreshortened top metal surface (rows 4–11) leading down to a highlighted front rim at row 11 with a cast shadow on the vertical brick face. The exhaust pipe on top also shows an elliptical top opening (rows 2–3) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11748
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a clearly visible horizontal metal top plate spanning rows 4 to 10 (7 rows tall) with front-to-back panel seams, back-edge rivets, and an exhaust flue pipe mounted on it, terminating at a beveled front edge (rows 11-13) above the vertical brick face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick boiler furnace with metal top surface and chimney",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible 9-row metal top surface (rows 4-12) shown foreshortened in 3/4 view, with a chimney mounted on it, above the south-facing brick front wall (rows 13-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5745
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick furnace and metal upper section are drawn in flat front elevation with horizontal bands, front-facing rivets/seams, and no foreshortened top surface visible on the main brick body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7393
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a 9-pixel-tall metal top plate (rows 4–12) with a front edge highlight at row 12 and a stovepipe mounted toward the rear, resting on a brick front face (rows 13–30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14225
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.095Z",
+ "cells": {
+  "16": [
+   "3c37f269d4d0d3ae",
+   "805719830e7cd38a",
+   "eaf6edc72df7ca4f",
+   "f1bd198968cb0f85"
+  ],
+  "24": [
+   "1621fa8cd73eb343",
+   "403f6ffdab30ec44",
+   "45ea0fe22d2962c9",
+   "4ebdc04b32f86b86",
+   "544f89ac1c9ef16c",
+   "59255f17d451d930",
+   "5b4216019a107080",
+   "5ffb5e2db361752a",
+   "69e6b136bf41f6cf",
+   "87f946b126c06ba9",
+   "8c5739184d4a2ff0",
+   "947909acacd6906a",
+   "9babaaa5cbd217c1",
+   "a301a44c8ea485c3",
+   "a55dbd1d923fdaa1",
+   "a66cbb43b51fbdc0",
+   "aa5f09ede388c830",
+   "ab7ee90f4fb0ab6b",
+   "be3b54eab27f5dd0",
+   "c0d3891f6ce93529",
+   "c806e5567f2c7f32",
+   "cef66de64781cac1",
+   "d1c2661efa1a4f2e",
+   "fc5fea76f201edc0"
+  ],
+  "32": [
+   "3366938449b8340b"
+  ],
+  "48": [
+   "4658fb97e7ba97bb",
+   "632c64abfbf31e89",
+   "6ab49af83be37039",
+   "95da55349906df34",
+   "ea0723a051df81ec",
+   "eb4960051f986835"
+  ]
+ }
+}

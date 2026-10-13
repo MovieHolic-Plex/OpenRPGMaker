@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64eb3d7bc983c37968e04281f68e6fb839caf68d4bff9115a8a5ae62eedfeef7",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steam pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the pipe is clearly drawn as a wide ellipse from row 13 to 18, with a 4-row deep black interior opening (rows 14-17) and properly curved front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5417
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam exhaust pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe has a clear elliptical opening with a dark interior spanning rows 14-17 (4 rows tall) and visible top rim from row 13 to row 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4708
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clearly foreshortened top opening (rows 14-17) showing the interior void and rim in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5736
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical steam pipe vent",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clearly foreshortened elliptical top opening spanning rows 13 to 18, with a 4-row deep dark interior opening (rows 14-17), correctly displaying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5636
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.382Z",
+ "cells": {
+  "16": [
+   "2c42b554848c953a",
+   "c14d8f40e3e2c36b"
+  ],
+  "24": [
+   "1450aac32570d9c5",
+   "18c37a63eee9f2e8",
+   "21047b309b8126ea",
+   "41f594e2318ef8dc",
+   "5b7b5ac1c2d36d58",
+   "603af487a1a98dfe",
+   "69c2f66b08184b96",
+   "81cb6aea207716e5",
+   "8bfa116a15144794",
+   "8f104ce1225cd584",
+   "d53c6ce5265fba82",
+   "fd87912d9b8afc37"
+  ],
+  "32": [
+   "09d0e158beb68ac8",
+   "bc4b3875c58e47cc",
+   "f9b2a089d803a4da"
+  ],
+  "48": [
+   "073d2ffd1c79f334",
+   "40006abf77a98403",
+   "6247f1738e9f1684",
+   "78e163ccdab291a9",
+   "908fac815853113b",
+   "de09bf0faef904d8"
+  ]
+ }
+}

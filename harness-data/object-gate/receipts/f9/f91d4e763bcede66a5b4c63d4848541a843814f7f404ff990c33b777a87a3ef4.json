@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f91d4e763bcede66a5b4c63d4848541a843814f7f404ff990c33b777a87a3ef4",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "원통 우체통(붉은·둥근 뚜껑)",
+ "label": "sky-steam/steam-pillarbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical red postbox with domed cap and plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap on top shows a foreshortened elliptical top surface spanning rows 1-6 (approx. 6 rows tall), and the base plinth also clearly shows its top-down step surfaces, fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded top cap clearly shows its foreshortened upper surface across rows 1 to 6 (about 6 rows tall) before curving down to the rim and cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5828
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded domed lid and base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rounded cap/lid at rows 1-6 forms a clearly foreshortened elliptical top surface (approx. 6 rows tall) viewed from above, and the base plinth also shows a 2-row top step.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4950
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded top cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome cap shows a foreshortened elliptical top surface spanning rows 1 to 6 (about 6 rows tall by 13px wide), consistent with a 3/4 top-down perspective. The base plinth also shows a distinct top surface at rows 26-27 above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7258
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.385Z",
+ "cells": {
+  "16": [
+   "1827af473e3ee0f8",
+   "cd4e1e5f436fd339"
+  ],
+  "24": [
+   "0b500f7ffb92e1df",
+   "4682c196970347d2",
+   "51c0963a3501c993",
+   "5d198d7c38ce1751",
+   "5e48ce9b99a6830c",
+   "5eec8b2514c6ddac",
+   "7509befad652f5de",
+   "90382861fac98392",
+   "b2a02f9d773bc8ab",
+   "bdcdaf9f013525ee",
+   "c9ce7c0b35c22264",
+   "ef6680455e14aaec"
+  ],
+  "32": [
+   "8b8b8e5aec74bfb3",
+   "b846485744960b9f",
+   "ca8e57a434761f1e"
+  ],
+  "48": [
+   "09f57dc69c1bad63",
+   "4b4d5e4094e3c5f8",
+   "72b4b9f5b3b579e7",
+   "7709851228968519",
+   "a596dc2b16c12481",
+   "e7d7e877a23e4cab"
+  ]
+ }
+}

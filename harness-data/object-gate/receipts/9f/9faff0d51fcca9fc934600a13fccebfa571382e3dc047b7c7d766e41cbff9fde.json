@@ -1,0 +1,188 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9faff0d51fcca9fc934600a13fccebfa571382e3dc047b7c7d766e41cbff9fde",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "압력계(바늘 떨림 4프레임)",
+ "label": "sky-steam/steam-gauge-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "circular pressure gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pressure gauge is mounted flat against the wall background with its dial face visible head-on, which is appropriate and permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13726
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round pressure gauge dial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat circular pressure gauge mounted directly on the wall; as a wall-mounted fixture viewed flat against a vertical surface, no visible top depth is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5612
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular pressure gauge dial and brass frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular pressure gauge viewed flat on the wall face as permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular gauge dial and bezel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A round pressure gauge dial mounted flat on a wall surface. Wall-mounted flat fixtures are permitted to be drawn in pure front view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7054
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular pressure gauge dial with brass bezel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular pressure gauge viewed directly against a vertical wall; flat front-facing presentation is standard and permissible for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular dial pressure gauge with brass rim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular pressure gauge mounted flat against the wall surface, correctly depicted front-facing as allowed for wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4766
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular pressure gauge dial with brass rim and needle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is a round wall-mounted pressure gauge/manometer viewed directly from the front, which is permissible for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4228
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular pressure gauge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pressure gauge is drawn flat against the wall facing the camera; as a wall_mounted object, it is permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12981
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.098Z",
+ "cells": {
+  "16": [
+   "37237c96e14a7486"
+  ],
+  "24": [
+   "38e8d31e875e96ba",
+   "3fa52f0f0ada0384",
+   "524ac745c1fe9c8d",
+   "94841539163f42ed",
+   "ba1fb9e6cad91014",
+   "f8b19de99a34f388"
+  ],
+  "32": [
+   "0d706c89986885ab",
+   "2c926b88e2284f51",
+   "456ec207f5d0a7fc",
+   "6d651d3339eabc69",
+   "6fce1b0b8852735c",
+   "7d47395a844b7c30"
+  ],
+  "48": [
+   "14eccd31aafd5e2d",
+   "1d0f247ce30e200e",
+   "5d2ed0d7523e5165",
+   "c9d0172936c84c52",
+   "d45e37431511a20d",
+   "e346460f447a6480"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "56fe79b931beee3d095a5c932d64011be56806631a124b08cd19802777b03053",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe is clearly drawn as a foreshortened ellipse showing both the rim and a 4-row deep dark interior opening with steam rising from it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5275
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe with metal band and base plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe features a clear, foreshortened elliptical opening (rows 14-18, roughly 4-5 rows tall inside) from which steam emerges, properly rendered in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5078
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical steam vent / pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clear elliptical opening visible from above spanning rows 13-18 (interior dark opening is ~5 rows tall), correctly conveying the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3579
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe with metal band on a base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe has a clear elliptical opening spanning rows 13-19 with an interior cavity visible across rows 14-18, correctly showing the top-down 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3747
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.382Z",
+ "cells": {
+  "16": [
+   "71539a029c4ddbb3",
+   "c14d8f40e3e2c36b"
+  ],
+  "24": [
+   "18c37a63eee9f2e8",
+   "29c1bcecbfec49d1",
+   "3ef885b10f785987",
+   "804b38d7dfacee93",
+   "8a454287d3a0d59e",
+   "bd246c871433b692",
+   "c1f6505ca7c52675",
+   "d09be885ed56d57c",
+   "d53c6ce5265fba82",
+   "eb29a2136ae00013",
+   "fada48ab21a378ca",
+   "fd87912d9b8afc37"
+  ],
+  "32": [
+   "384f19b39a9c1531",
+   "416adb9c6b4eb656",
+   "bf6ccf82e85e74d9"
+  ],
+  "48": [
+   "0968d50fe956677e",
+   "4b4b482e9a7c8e17",
+   "590aed6836193da4",
+   "95b5101d0d5786c4",
+   "b61ff0bc07781985",
+   "e76a8523976d1b4a"
+  ]
+ }
+}

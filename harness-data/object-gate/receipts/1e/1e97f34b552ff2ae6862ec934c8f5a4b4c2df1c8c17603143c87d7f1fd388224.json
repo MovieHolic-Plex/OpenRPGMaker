@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e97f34b552ff2ae6862ec934c8f5a4b4c2df1c8c17603143c87d7f1fd388224",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steam pipe / vent",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe opening is drawn as an open ellipse from row 13 to 19, showing 5 rows of dark interior, properly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4405
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clearly foreshortened elliptical opening at the top spanning rows 13 to 19 with a dark interior opening of ~5 rows (rows 14-18), properly revealing the top interior in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4308
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical steam vent pipe on a stone base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe rim and dark interior opening form an ellipse spanning rows 13-18 (opening itself is 4 rows deep, rows 14-17), clearly showing the top view into the exhaust vent as steam emerges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5620
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical steam pipe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pipe features a clear elliptical rim and opening (rows 13-18) showing its dark interior in 3/4 perspective, from which steam emerges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4035
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.382Z",
+ "cells": {
+  "16": [
+   "6c91b57e80515993",
+   "c14d8f40e3e2c36b"
+  ],
+  "24": [
+   "18c37a63eee9f2e8",
+   "2ed9554031a4b989",
+   "3173e3b38b66ceff",
+   "337fdd87d5d1db36",
+   "38c901b76b6a0dd6",
+   "73da23c72dbcfc36",
+   "761d50bcdd0a7456",
+   "8e0a4779455e424c",
+   "b0596a66b06ce268",
+   "b7f4ea29740e27bd",
+   "d53c6ce5265fba82",
+   "fd87912d9b8afc37"
+  ],
+  "32": [
+   "27c34cec8d7e14b6",
+   "b746b9fdd3fc0a58",
+   "f52eca22b1aa161b"
+  ],
+  "48": [
+   "5a5f806d09979abd",
+   "5bb4a6791c7a2a15",
+   "86c0a93cfc17f501",
+   "c1f495e934ead087",
+   "f5ebda60fca613c6",
+   "f9fbbd2a6091d24c"
+  ]
+ }
+}

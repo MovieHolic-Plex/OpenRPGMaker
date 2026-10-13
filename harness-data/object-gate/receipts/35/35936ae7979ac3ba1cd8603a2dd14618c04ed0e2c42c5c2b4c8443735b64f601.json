@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35936ae7979ac3ba1cd8603a2dd14618c04ed0e2c42c5c2b4c8443735b64f601",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 상자 더미(쇠띠 상자 포함)",
+ "label": "sky-steam/steam-crate-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked cargo crates (wooden and metal-banded)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stacked wooden crates and adjacent metal crate clearly show 4-5 source pixel rows of foreshortened horizontal top surfaces above their vertical front faces, adhering properly to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11333
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo crate pile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stacked wooden crates each show a distinct foreshortened top surface (rows 3-7 and 16-20, ~5px tall), and the adjacent metal crate also displays a clear top surface (rows 8-13, ~6px tall) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3601
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stack of cargo crates and metal-banded box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate clearly displays a foreshortened top surface (5-6 pixel rows tall) and a vertical front face in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4396
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stacked cargo crates and metal-banded chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden crates and the adjacent metal chest feature clearly drawn horizontal top surfaces roughly 5 pixel rows tall (rows 3-7, 16-20, and 9-13) above their vertical south-facing fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3388
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "4636b9bf60b761f6",
+   "8e540d3760b6d9bf",
+   "944ee8c855685235",
+   "efcb1ca6c589d68c"
+  ],
+  "24": [
+   "0abe568311f9beb1",
+   "0c260301ca6de101",
+   "13855bb6843faafe",
+   "21258cb2e7357670",
+   "214adf4b4fe24540",
+   "2a471a8d229c85f7",
+   "2dfa0d635a1ac9cc",
+   "30c24663476727f1",
+   "38a8553cf5d7612a",
+   "3e39990ddd73203e",
+   "67683a13f84f972a",
+   "70b6996021f7245a",
+   "779d8ceb9dd5eba2",
+   "7e2f0001a9600610",
+   "86e0c19e8bb0ceae",
+   "97c4c688e35a9cd0",
+   "ae15a88c447c6660",
+   "aeb11fc64d4c56d9",
+   "af7b92c96ea29b1f",
+   "c1b92526f12dbe90",
+   "c21e813fd9991736",
+   "ca1abe748627fbad",
+   "d515cb1cf272165a",
+   "e90d648f1490f689"
+  ],
+  "32": [
+   "add3ac67596f957a"
+  ],
+  "48": [
+   "536772aeb2af9ed4",
+   "860cbd6f5c2ff194",
+   "9fb7ef94bc83d809",
+   "d31c820b475a3d9b",
+   "edd52aef0b0d8763",
+   "fa20606cdd17c0bb"
+  ]
+ }
+}

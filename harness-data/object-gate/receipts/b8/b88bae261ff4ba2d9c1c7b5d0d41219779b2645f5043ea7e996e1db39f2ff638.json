@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b88bae261ff4ba2d9c1c7b5d0d41219779b2645f5043ea7e996e1db39f2ff638",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "증기 자동차(캔버스 덮개·놋쇠 보일러)",
+ "label": "sky-steam/steam-carriage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam car wagon body and boiler",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in a pure 2D side elevation (side-scroller style). The red wagon body has only a 1px top highlight line (row 15) instead of a visible horizontal deck/surface, the wheels are flat facing circles with zero top thickness/tread, and the boiler and seat show no top surfaces from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam car chassis and boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in a pure 2D side-view platformer profile (side elevation). The red chassis, wheels, seat, and brass boiler show no horizontal top surfaces from a 45-degree top-down angle, only 1px edge highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6117
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam car (canvas-covered wagon body with brass boiler)",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam vehicle is drawn in a pure 2D side elevation (side-scroller profile). The wheels are drawn as perfect front-facing circles, the red chassis body has only a 1px highlight line on top (row 15) with no foreshortened top surface, and the entire assembly lacks the top-down 3/4 viewing angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5644
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam car (chassis, boiler, and canopy)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in pure 2D side elevation (side-scroller view). The red chassis, wheels, boiler, passenger seat, and canvas canopy show only their side profiles without any foreshortened top surfaces (the red chassis has only a 1px edge line at row 15, the seat has no top visible, and the boiler top lacks an elliptical 3/4 cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9627
+  }
+ ],
+ "decidedAt": "2026-10-13T16:00:31.957Z",
+ "cells": {
+  "16": [
+   "16eda676c4b7779e",
+   "24fbb57dbf9b6f20",
+   "4b774983b6bdaab9",
+   "884d2da455d5aeaa",
+   "b1e9cf97303a0376",
+   "f477924121e3cf63"
+  ],
+  "24": [
+   "193dc2d831af3bdf",
+   "34a78a5b70f6d70c",
+   "5e91a4b066efdf9e",
+   "ad483f66d30dc5c9",
+   "c572debf8197fee5",
+   "d4bf4f62be46e583",
+   "d8f8a535cfa6f574",
+   "da8ca99bb8c74c00"
+  ],
+  "32": [
+   "261ba3795a4d17f2",
+   "2e9f54809877bca7",
+   "93fa357a81acd72b",
+   "c1a28f0ae33fb562",
+   "c4799d6d22a425c7",
+   "ee5c4fc8289bcbc6"
+  ],
+  "48": [
+   "d966202ef2b597a5",
+   "e60c5603e55b76f5"
+  ]
+ }
+}

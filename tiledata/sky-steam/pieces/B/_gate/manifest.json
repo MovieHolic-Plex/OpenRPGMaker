@@ -1,0 +1,3804 @@
+[
+ {
+  "id": "steam-smoke-anim",
+  "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+  "w": 2,
+  "h": 2,
+  "kind": "organic",
+  "solid": [],
+  "frames": 4,
+  "files": [
+   "steam-smoke-anim.f0",
+   "steam-smoke-anim.f1",
+   "steam-smoke-anim.f2",
+   "steam-smoke-anim.f3"
+  ],
+  "tags": [
+   "연기",
+   "애니메이션",
+   "덧그림"
+  ]
+ },
+ {
+  "id": "steam-vent-anim",
+  "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "steam-vent-anim.f0",
+   "steam-vent-anim.f1",
+   "steam-vent-anim.f2",
+   "steam-vent-anim.f3"
+  ],
+  "tags": [
+   "증기",
+   "배관",
+   "애니메이션"
+  ]
+ },
+ {
+  "id": "steam-gear-anim",
+  "name": "벽 톱니바퀴(회전 4프레임)",
+  "w": 2,
+  "h": 2,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 4,
+  "files": [
+   "steam-gear-anim.f0",
+   "steam-gear-anim.f1",
+   "steam-gear-anim.f2",
+   "steam-gear-anim.f3"
+  ],
+  "tags": [
+   "톱니",
+   "애니메이션",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-furnace-anim",
+  "name": "보일러 화로(불빛 깜빡임 4프레임)",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "steam-furnace-anim.f0",
+   "steam-furnace-anim.f1",
+   "steam-furnace-anim.f2",
+   "steam-furnace-anim.f3"
+  ],
+  "tags": [
+   "화로",
+   "보일러",
+   "애니메이션"
+  ]
+ },
+ {
+  "id": "steam-gaslamp-lit",
+  "name": "가스등(켜짐·밤)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gaslamp-lit"
+  ],
+  "tags": [
+   "가로등",
+   "거리",
+   "밤"
+  ]
+ },
+ {
+  "id": "steam-gaslamp",
+  "name": "가스등(꺼짐·낮)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gaslamp"
+  ],
+  "tags": [
+   "가로등",
+   "거리"
+  ]
+ },
+ {
+  "id": "steam-piston-anim",
+  "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "steam-piston-anim.f0",
+   "steam-piston-anim.f1",
+   "steam-piston-anim.f2",
+   "steam-piston-anim.f3"
+  ],
+  "tags": [
+   "피스톤",
+   "기관",
+   "애니메이션"
+  ]
+ },
+ {
+  "id": "steam-gauge-anim",
+  "name": "압력계(바늘 떨림 4프레임)",
+  "w": 1,
+  "h": 1,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 4,
+  "files": [
+   "steam-gauge-anim.f0",
+   "steam-gauge-anim.f1",
+   "steam-gauge-anim.f2",
+   "steam-gauge-anim.f3"
+  ],
+  "tags": [
+   "압력계",
+   "애니메이션",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-factory-hall",
+  "name": "벽돌 공장 본관(우진각 지붕·채광 지붕창)",
+  "w": 8,
+  "h": 7,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    5,
+    6
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    6,
+    5
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    7,
+    5
+   ],
+   [
+    7,
+    6
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-factory-hall"
+  ],
+  "tags": [
+   "공장",
+   "벽돌",
+   "지붕창"
+  ]
+ },
+ {
+  "id": "steam-boilerhouse",
+  "name": "보일러실(벽돌·짧은 굴뚝)",
+  "w": 5,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-boilerhouse"
+  ],
+  "tags": [
+   "보일러",
+   "벽돌"
+  ]
+ },
+ {
+  "id": "steam-clocktower",
+  "name": "시계탑(놋쇠 톱니 시계판)",
+  "w": 4,
+  "h": 9,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    0,
+    7
+   ],
+   [
+    0,
+    8
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    2,
+    7
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    3,
+    7
+   ],
+   [
+    3,
+    8
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-clocktower"
+  ],
+  "tags": [
+   "시계탑",
+   "랜드마크",
+   "톱니"
+  ]
+ },
+ {
+  "id": "steam-chimney-tall",
+  "name": "공장 큰 굴뚝(벽돌 기둥)",
+  "w": 2,
+  "h": 8,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    7
+   ],
+   [
+    1,
+    7
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-chimney-tall"
+  ],
+  "tags": [
+   "굴뚝",
+   "공장"
+  ]
+ },
+ {
+  "id": "steam-tenement",
+  "name": "벽돌 공동주택(맨사드 지붕·지붕창)",
+  "w": 5,
+  "h": 8,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    0,
+    7
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    1,
+    7
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    3,
+    7
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    4,
+    7
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-tenement"
+  ],
+  "tags": [
+   "주택",
+   "벽돌",
+   "3층"
+  ]
+ },
+ {
+  "id": "steam-workshop",
+  "name": "발명가 공방(박공 앞면·톱니 간판)",
+  "w": 5,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-workshop"
+  ],
+  "tags": [
+   "공방",
+   "가게",
+   "박공"
+  ]
+ },
+ {
+  "id": "steam-inn",
+  "name": "증기 여관(반목조·우진각 지붕·간판)",
+  "w": 6,
+  "h": 7,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    5,
+    6
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-inn"
+  ],
+  "tags": [
+   "여관",
+   "주점",
+   "반목조"
+  ]
+ },
+ {
+  "id": "steam-warehouse",
+  "name": "골함석 창고(하역 도르래 보)",
+  "w": 6,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    5,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-warehouse"
+  ],
+  "tags": [
+   "창고",
+   "골함석",
+   "항구"
+  ]
+ },
+ {
+  "id": "steam-gasholder",
+  "name": "가스 저장탑(원통 + 쇠 기둥 틀)",
+  "w": 5,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gasholder"
+  ],
+  "tags": [
+   "가스",
+   "탱크",
+   "공장"
+  ]
+ },
+ {
+  "id": "steam-pumphouse",
+  "name": "양수 펌프 오두막(벽돌·관)",
+  "w": 3,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-pumphouse"
+  ],
+  "tags": [
+   "펌프",
+   "벽돌",
+   "소형"
+  ]
+ },
+ {
+  "id": "steam-watertower",
+  "name": "급수탑(리벳 물탱크 + 벽돌 탑)",
+  "w": 3,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-watertower"
+  ],
+  "tags": [
+   "급수탑",
+   "철도",
+   "탱크"
+  ]
+ },
+ {
+  "id": "steam-lab",
+  "name": "발명가 연구소(구리 돔 천문대)",
+  "w": 5,
+  "h": 7,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    6
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-lab"
+  ],
+  "tags": [
+   "연구소",
+   "돔",
+   "천문대"
+  ]
+ },
+ {
+  "id": "steam-engineshed",
+  "name": "기관고(아치 선로 문 2·용마루 환기창)",
+  "w": 8,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    7,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-engineshed"
+  ],
+  "tags": [
+   "철도",
+   "기관고",
+   "전차"
+  ]
+ },
+ {
+  "id": "steam-station",
+  "name": "증기 철도역(유리 차양 승강장)",
+  "w": 8,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    7,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-station"
+  ],
+  "tags": [
+   "철도",
+   "역",
+   "차양"
+  ]
+ },
+ {
+  "id": "steam-foundry",
+  "name": "주물 공장(열린 화로 아치·큰 연통)",
+  "w": 6,
+  "h": 7,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    4,
+    5
+   ],
+   [
+    4,
+    6
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    5,
+    5
+   ],
+   [
+    5,
+    6
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-foundry"
+  ],
+  "tags": [
+   "주물",
+   "용광로",
+   "공장"
+  ]
+ },
+ {
+  "id": "steam-geartower",
+  "name": "톱니 탑(드러난 큰 톱니·구리 돔)",
+  "w": 4,
+  "h": 8,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    0,
+    7
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    2,
+    5
+   ],
+   [
+    2,
+    6
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    3,
+    5
+   ],
+   [
+    3,
+    6
+   ],
+   [
+    3,
+    7
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-geartower"
+  ],
+  "tags": [
+   "톱니",
+   "탑",
+   "랜드마크"
+  ]
+ },
+ {
+  "id": "steam-hangar",
+  "name": "비공정 격납고(동서 반원 지붕·큰 미닫이 입구)",
+  "w": 8,
+  "h": 7,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    0,
+    5
+   ],
+   [
+    0,
+    6
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    1,
+    5
+   ],
+   [
+    1,
+    6
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ],
+   [
+    3,
+    1
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    3,
+    4
+   ],
+   [
+    4,
+    1
+   ],
+   [
+    4,
+    2
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    4,
+    4
+   ],
+   [
+    5,
+    1
+   ],
+   [
+    5,
+    2
+   ],
+   [
+    5,
+    3
+   ],
+   [
+    5,
+    4
+   ],
+   [
+    6,
+    1
+   ],
+   [
+    6,
+    2
+   ],
+   [
+    6,
+    3
+   ],
+   [
+    6,
+    4
+   ],
+   [
+    6,
+    5
+   ],
+   [
+    6,
+    6
+   ],
+   [
+    7,
+    1
+   ],
+   [
+    7,
+    2
+   ],
+   [
+    7,
+    3
+   ],
+   [
+    7,
+    4
+   ],
+   [
+    7,
+    5
+   ],
+   [
+    7,
+    6
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-hangar"
+  ],
+  "tags": [
+   "비공정",
+   "격납고",
+   "부두"
+  ]
+ },
+ {
+  "id": "steam-mooring-mast",
+  "name": "비공정 계류탑(격자 탑·꼭대기 승강판)",
+  "w": 3,
+  "h": 9,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    8
+   ],
+   [
+    1,
+    8
+   ],
+   [
+    2,
+    8
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-mooring-mast"
+  ],
+  "tags": [
+   "비공정",
+   "부두",
+   "계류"
+  ]
+ },
+ {
+  "id": "steam-dock-deck",
+  "name": "비공정 부두 철판 승강장(난간·계류주)",
+  "w": 6,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    5,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-dock-deck"
+  ],
+  "tags": [
+   "비공정",
+   "부두",
+   "갑판"
+  ]
+ },
+ {
+  "id": "steam-gantry-crane",
+  "name": "갠트리 기중기(레일 위 문형 기중기)",
+  "w": 6,
+  "h": 6,
+  "kind": "frame",
+  "solid": [
+   [
+    0,
+    5
+   ],
+   [
+    5,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-gantry-crane"
+  ],
+  "tags": [
+   "기중기",
+   "공장 마당",
+   "부두"
+  ]
+ },
+ {
+  "id": "steam-dock-crane",
+  "name": "부두 회전 기중기(운전실·격자 팔)",
+  "w": 4,
+  "h": 6,
+  "kind": "structure",
+  "solid": [
+   [
+    1,
+    5
+   ],
+   [
+    2,
+    5
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-dock-crane"
+  ],
+  "tags": [
+   "기중기",
+   "부두"
+  ]
+ },
+ {
+  "id": "steam-i-workbench",
+  "name": "공방 작업대(바이스·공구)",
+  "w": 2,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-workbench"
+  ],
+  "tags": [
+   "공방",
+   "작업대"
+  ]
+ },
+ {
+  "id": "steam-i-lathe",
+  "name": "선반 기계(주철 받침·놋쇠 척)",
+  "w": 2,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-lathe"
+  ],
+  "tags": [
+   "공방",
+   "기계"
+  ]
+ },
+ {
+  "id": "steam-i-drillpress",
+  "name": "탁상 드릴 프레스",
+  "w": 1,
+  "h": 2,
+  "kind": "other",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-drillpress"
+  ],
+  "tags": [
+   "공방",
+   "기계"
+  ]
+ },
+ {
+  "id": "steam-i-toolboard",
+  "name": "공구 걸이판(벽)",
+  "w": 2,
+  "h": 2,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-toolboard"
+  ],
+  "tags": [
+   "공방",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-i-toolchest",
+  "name": "서랍 공구함(붉은 철)",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-toolchest"
+  ],
+  "tags": [
+   "공방",
+   "보관"
+  ]
+ },
+ {
+  "id": "steam-i-forge",
+  "name": "대장간 화덕(달군 숯이 위에서 보임)",
+  "w": 2,
+  "h": 2,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-forge"
+  ],
+  "tags": [
+   "대장간",
+   "화덕",
+   "불"
+  ]
+ },
+ {
+  "id": "steam-i-boiler",
+  "name": "기관실 큰 보일러(세운 원통·화구·계기)",
+  "w": 3,
+  "h": 3,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-boiler"
+  ],
+  "tags": [
+   "보일러실",
+   "보일러",
+   "기관실"
+  ]
+ },
+ {
+  "id": "steam-i-engine",
+  "name": "가로 증기 기관(큰 플라이휠)",
+  "w": 3,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-engine"
+  ],
+  "tags": [
+   "기관실",
+   "기관"
+  ]
+ },
+ {
+  "id": "steam-i-pipewall",
+  "name": "벽 배관(관·밸브·압력계)",
+  "w": 2,
+  "h": 2,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-pipewall"
+  ],
+  "tags": [
+   "보일러실",
+   "배관",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-i-gauge-panel",
+  "name": "계기판(압력계 3·레버)",
+  "w": 2,
+  "h": 1,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-gauge-panel"
+  ],
+  "tags": [
+   "기관실",
+   "계기",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-i-coal-bunker",
+  "name": "석탄 칸(나무 테 안에 석탄)",
+  "w": 2,
+  "h": 1,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-coal-bunker"
+  ],
+  "tags": [
+   "보일러실",
+   "석탄"
+  ]
+ },
+ {
+  "id": "steam-i-control-desk",
+  "name": "조종 책상(놋쇠 레버·다이얼)",
+  "w": 2,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-control-desk"
+  ],
+  "tags": [
+   "기관실",
+   "조종실"
+  ]
+ },
+ {
+  "id": "steam-i-lab-table",
+  "name": "연구 탁자(플라스크·버너)",
+  "w": 2,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-lab-table"
+  ],
+  "tags": [
+   "연구소",
+   "실험"
+  ]
+ },
+ {
+  "id": "steam-i-tesla-coil",
+  "name": "테슬라 코일(구리 감김·위 고리)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-tesla-coil"
+  ],
+  "tags": [
+   "연구소",
+   "전기"
+  ]
+ },
+ {
+  "id": "steam-i-bar-counter",
+  "name": "여관 술 계산대(놋쇠 꼭지)",
+  "w": 3,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    2,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-bar-counter"
+  ],
+  "tags": [
+   "여관",
+   "주점"
+  ]
+ },
+ {
+  "id": "steam-i-keg-rack",
+  "name": "술통 거치대(통 마구리가 보임)",
+  "w": 2,
+  "h": 2,
+  "kind": "frame",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-keg-rack"
+  ],
+  "tags": [
+   "여관",
+   "주점",
+   "보관"
+  ]
+ },
+ {
+  "id": "steam-i-table",
+  "name": "여관 탁자(맥주잔·접시)",
+  "w": 2,
+  "h": 2,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ],
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-table"
+  ],
+  "tags": [
+   "여관",
+   "탁자"
+  ]
+ },
+ {
+  "id": "steam-i-stool",
+  "name": "둥근 의자",
+  "w": 1,
+  "h": 1,
+  "kind": "seat",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-stool"
+  ],
+  "tags": [
+   "여관",
+   "의자"
+  ]
+ },
+ {
+  "id": "steam-i-chair",
+  "name": "등받이 의자(붉은 방석)",
+  "w": 1,
+  "h": 1,
+  "kind": "seat",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-chair"
+  ],
+  "tags": [
+   "여관",
+   "의자"
+  ]
+ },
+ {
+  "id": "steam-i-bed",
+  "name": "여관 침대(퀼트 이불)",
+  "w": 1,
+  "h": 2,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-bed"
+  ],
+  "tags": [
+   "여관",
+   "침대"
+  ]
+ },
+ {
+  "id": "steam-i-stove",
+  "name": "주철 난로(연통)",
+  "w": 1,
+  "h": 2,
+  "kind": "tall_furniture",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-stove"
+  ],
+  "tags": [
+   "여관",
+   "공방",
+   "난로"
+  ]
+ },
+ {
+  "id": "steam-i-bookshelf",
+  "name": "책장(가죽 장정)",
+  "w": 2,
+  "h": 2,
+  "kind": "tall_furniture",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-bookshelf"
+  ],
+  "tags": [
+   "연구소",
+   "여관",
+   "책"
+  ]
+ },
+ {
+  "id": "steam-i-blueprint-table",
+  "name": "설계 탁자(청사진)",
+  "w": 2,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-blueprint-table"
+  ],
+  "tags": [
+   "공방",
+   "연구소"
+  ]
+ },
+ {
+  "id": "steam-i-rug",
+  "name": "깔개(톱니 무늬 테두리)",
+  "w": 2,
+  "h": 2,
+  "kind": "flat",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-rug"
+  ],
+  "tags": [
+   "여관",
+   "연구소",
+   "깔개"
+  ]
+ },
+ {
+  "id": "steam-i-crate-parts",
+  "name": "부품 상자(톱니·관이 위로 보임)",
+  "w": 1,
+  "h": 1,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-i-crate-parts"
+  ],
+  "tags": [
+   "공방",
+   "보관"
+  ]
+ },
+ {
+  "id": "steam-i-wall-lamp",
+  "name": "벽 가스등(놋쇠 팔)",
+  "w": 1,
+  "h": 1,
+  "kind": "wall_mounted",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-i-wall-lamp"
+  ],
+  "tags": [
+   "실내",
+   "조명",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-bollard",
+  "name": "주철 계류주(버섯 머리)",
+  "w": 1,
+  "h": 1,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-bollard"
+  ],
+  "tags": [
+   "계류",
+   "부두",
+   "거리"
+  ]
+ },
+ {
+  "id": "steam-standpipe",
+  "name": "소화 급수전(붉은 주철·밸브 바퀴)",
+  "w": 1,
+  "h": 1,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-standpipe"
+  ],
+  "tags": [
+   "급수전",
+   "거리"
+  ]
+ },
+ {
+  "id": "steam-pillarbox",
+  "name": "원통 우체통(붉은·둥근 뚜껑)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-pillarbox"
+  ],
+  "tags": [
+   "우체통",
+   "거리"
+  ]
+ },
+ {
+  "id": "steam-bench",
+  "name": "주철 다리 나무 벤치",
+  "w": 2,
+  "h": 1,
+  "kind": "seat",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-bench"
+  ],
+  "tags": [
+   "벤치",
+   "거리",
+   "광장"
+  ]
+ },
+ {
+  "id": "steam-crate",
+  "name": "나무 화물 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-crate"
+  ],
+  "tags": [
+   "상자",
+   "화물"
+  ]
+ },
+ {
+  "id": "steam-crate-stack",
+  "name": "화물 상자 더미(쇠띠 상자 포함)",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-crate-stack"
+  ],
+  "tags": [
+   "상자",
+   "화물",
+   "부두"
+  ]
+ },
+ {
+  "id": "steam-barrel",
+  "name": "나무 통(쇠테·마개 뚜껑)",
+  "w": 1,
+  "h": 1,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-barrel"
+  ],
+  "tags": [
+   "통",
+   "화물"
+  ]
+ },
+ {
+  "id": "steam-oil-drum",
+  "name": "기름 드럼통(철)",
+  "w": 1,
+  "h": 1,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-oil-drum"
+  ],
+  "tags": [
+   "드럼통",
+   "공장"
+  ]
+ },
+ {
+  "id": "steam-coal-pile",
+  "name": "석탄 더미",
+  "w": 2,
+  "h": 1,
+  "kind": "organic",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-coal-pile"
+  ],
+  "tags": [
+   "석탄",
+   "공장 마당",
+   "보일러"
+  ]
+ },
+ {
+  "id": "steam-ore-cart",
+  "name": "광차(석탄 실음)",
+  "w": 1,
+  "h": 1,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-ore-cart"
+  ],
+  "tags": [
+   "광차",
+   "석탄",
+   "선로"
+  ]
+ },
+ {
+  "id": "steam-gear-pile",
+  "name": "버려진 톱니 더미",
+  "w": 1,
+  "h": 1,
+  "kind": "debris",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-gear-pile"
+  ],
+  "tags": [
+   "톱니",
+   "고철"
+  ]
+ },
+ {
+  "id": "steam-valve-post",
+  "name": "밸브 기둥(위에 손바퀴)",
+  "w": 1,
+  "h": 1,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-valve-post"
+  ],
+  "tags": [
+   "밸브",
+   "배관"
+  ]
+ },
+ {
+  "id": "steam-pressure-tank",
+  "name": "압력 탱크(구리·압력계)",
+  "w": 2,
+  "h": 2,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-pressure-tank"
+  ],
+  "tags": [
+   "탱크",
+   "공장",
+   "보일러"
+  ]
+ },
+ {
+  "id": "steam-boiler-small",
+  "name": "소형 증기 보일러(연통·화구)",
+  "w": 2,
+  "h": 2,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-boiler-small"
+  ],
+  "tags": [
+   "보일러",
+   "증기"
+  ]
+ },
+ {
+  "id": "steam-buffer-stop",
+  "name": "선로 끝 완충 멈춤목",
+  "w": 2,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-buffer-stop"
+  ],
+  "tags": [
+   "선로",
+   "철도"
+  ]
+ },
+ {
+  "id": "steam-brick-wall",
+  "name": "벽돌 담(돌 갓돌)",
+  "w": 2,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-brick-wall"
+  ],
+  "tags": [
+   "담",
+   "벽돌",
+   "공장"
+  ]
+ },
+ {
+  "id": "steam-iron-railing",
+  "name": "돌 받침 주철 울타리",
+  "w": 2,
+  "h": 1,
+  "kind": "frame",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-iron-railing"
+  ],
+  "tags": [
+   "울타리",
+   "거리",
+   "공원"
+  ]
+ },
+ {
+  "id": "steam-street-clock",
+  "name": "거리 기둥 시계(둥근 돌 받침·북 머리)",
+  "w": 1,
+  "h": 3,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-street-clock"
+  ],
+  "tags": [
+   "시계",
+   "거리",
+   "광장"
+  ]
+ },
+ {
+  "id": "steam-kiosk",
+  "name": "신문·차표 가판대(우진각 지붕)",
+  "w": 2,
+  "h": 2,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-kiosk"
+  ],
+  "tags": [
+   "가판대",
+   "거리",
+   "역"
+  ]
+ },
+ {
+  "id": "steam-winch",
+  "name": "부두 캡스턴(세운 밧줄 감개·막대 넷)",
+  "w": 1,
+  "h": 1,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-winch"
+  ],
+  "tags": [
+   "권양기",
+   "캡스턴",
+   "부두",
+   "기중기"
+  ]
+ },
+ {
+  "id": "steam-fuel-pump",
+  "name": "비공정 연료 펌프(놋쇠 원통·호스)",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-fuel-pump"
+  ],
+  "tags": [
+   "비공정",
+   "부두",
+   "연료"
+  ]
+ },
+ {
+  "id": "steam-cable-drum",
+  "name": "케이블 감는 북(세움)",
+  "w": 1,
+  "h": 1,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-cable-drum"
+  ],
+  "tags": [
+   "케이블",
+   "공장",
+   "부두"
+  ]
+ },
+ {
+  "id": "steam-soot-tree",
+  "name": "그을린 거리 나무(쇠 보호 격자)",
+  "w": 2,
+  "h": 3,
+  "kind": "organic",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-soot-tree"
+  ],
+  "tags": [
+   "나무",
+   "거리",
+   "공원"
+  ]
+ },
+ {
+  "id": "steam-at-cobble",
+  "name": "오토타일: 자갈 차도(보도 연석)",
+  "w": 4,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-cobble"
+  ],
+  "tags": [
+   "오토타일",
+   "차도",
+   "자갈"
+  ]
+ },
+ {
+  "id": "steam-at-yard",
+  "name": "오토타일: 공장 마당 흙(보도 경계)",
+  "w": 4,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-yard"
+  ],
+  "tags": [
+   "오토타일",
+   "공장 마당"
+  ]
+ },
+ {
+  "id": "steam-at-brickpave",
+  "name": "오토타일: 벽돌 포장 광장(보도 경계)",
+  "w": 4,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-brickpave"
+  ],
+  "tags": [
+   "오토타일",
+   "광장",
+   "벽돌"
+  ]
+ },
+ {
+  "id": "steam-at-deck",
+  "name": "오토타일: 비공정 부두 강판 갑판(밖=하늘)",
+  "w": 4,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-deck"
+  ],
+  "tags": [
+   "오토타일",
+   "부두",
+   "갑판"
+  ]
+ },
+ {
+  "id": "steam-at-rail",
+  "name": "오토타일(4방): 자갈 바닥 선로(침목·레일)",
+  "w": 4,
+  "h": 4,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-rail"
+  ],
+  "tags": [
+   "오토타일",
+   "선로",
+   "철도"
+  ]
+ },
+ {
+  "id": "steam-at-tramrail",
+  "name": "오토타일(4방): 자갈 차도에 묻힌 전차 선로",
+  "w": 4,
+  "h": 4,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-tramrail"
+  ],
+  "tags": [
+   "오토타일",
+   "전차",
+   "차도"
+  ]
+ },
+ {
+  "id": "steam-at-pipe",
+  "name": "오토타일(4방): 바닥 배관 통로(구리관 + 쇠관, 분기 밸브)",
+  "w": 4,
+  "h": 4,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-at-pipe"
+  ],
+  "tags": [
+   "오토타일",
+   "배관",
+   "관"
+  ]
+ },
+ {
+  "id": "steam-t-flag",
+  "name": "보도 판석(채움 4변형)",
+  "w": 4,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-flag"
+  ],
+  "tags": [
+   "바닥",
+   "보도"
+  ]
+ },
+ {
+  "id": "steam-t-cobble",
+  "name": "자갈 차도(채움 4변형)",
+  "w": 4,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-cobble"
+  ],
+  "tags": [
+   "바닥",
+   "차도"
+  ]
+ },
+ {
+  "id": "steam-t-yard",
+  "name": "공장 마당 흙(채움 4변형)",
+  "w": 4,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-yard"
+  ],
+  "tags": [
+   "바닥",
+   "공장 마당"
+  ]
+ },
+ {
+  "id": "steam-t-grate",
+  "name": "쇠 격자 바닥(채움 2) + 증기 새는 격자",
+  "w": 3,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-grate"
+  ],
+  "tags": [
+   "바닥",
+   "격자",
+   "보일러실"
+  ]
+ },
+ {
+  "id": "steam-t-floor",
+  "name": "실내 바닥(판자 2·강판 2·바둑 타일 2)",
+  "w": 6,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-floor"
+  ],
+  "tags": [
+   "실내",
+   "바닥"
+  ]
+ },
+ {
+  "id": "steam-t-wall",
+  "name": "실내 벽: 천장(테) + 벽 앞면 2칸(벽돌·강판·벽지 × 민·관·창·계기)",
+  "w": 9,
+  "h": 3,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "steam-t-wall"
+  ],
+  "tags": [
+   "실내",
+   "벽"
+  ]
+ },
+ {
+  "id": "steam-tram",
+  "name": "증기 전차(적갈·크림, 지붕 윗면)",
+  "w": 5,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-tram"
+  ],
+  "tags": [
+   "전차",
+   "탈것",
+   "거리"
+  ]
+ },
+ {
+  "id": "steam-locomotive",
+  "name": "증기 기관차(남쪽을 봄 — 보일러 윗면·연통·운전실)",
+  "w": 3,
+  "h": 5,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    0,
+    3
+   ],
+   [
+    0,
+    4
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    1,
+    4
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    2,
+    4
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-locomotive"
+  ],
+  "tags": [
+   "기차",
+   "탈것",
+   "철도",
+   "세로 선로"
+  ]
+ },
+ {
+  "id": "steam-coal-wagon",
+  "name": "석탄 화차(위에서 석탄이 보임)",
+  "w": 4,
+  "h": 2,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    2,
+    1
+   ],
+   [
+    3,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-coal-wagon"
+  ],
+  "tags": [
+   "화차",
+   "석탄",
+   "철도"
+  ]
+ },
+ {
+  "id": "steam-carriage",
+  "name": "증기 자동차(남쪽을 봄 — 캔버스 덮개·놋쇠 보일러)",
+  "w": 2,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ],
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "steam-carriage"
+  ],
+  "tags": [
+   "자동차",
+   "탈것",
+   "거리"
+  ]
+ }
+]

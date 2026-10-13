@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6bb61d6956156ff45c2e94f5b4a81c5cf4c9fb3b9bac931ac71a14602d88d742",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "증기 기관차(보일러·연통·운전실)",
+ "label": "sky-steam/steam-locomotive",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn as a 2D side-scroller platformer sprite (pure side elevation). The boiler, running board, cab, and wheels are viewed directly from the side with zero foreshortened top surfaces visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6546
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "locomotive boiler, cab, and chassis",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure side-scrolling profile (side elevation) rather than a 3/4 top-down perspective. The horizontal chassis platform, boiler cylinder, and cab roof show no foreshortened top surfaces viewed from above (0 top rows), and the wheels and connecting rods are drawn flat to the screen.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8603
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam locomotive (boiler, cab, and chassis)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire locomotive is drawn as a flat 2D side-scroller platformer sprite rather than in top-down 3/4 view. The chassis running board, boiler, and wheel assembly show no top horizontal surfaces seen from above (top_rows = 0), and the wheels and boiler bands are depicted purely from a flat side elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7224
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire train is drawn as a flat 2D side-scroller elevation profile. The horizontal running board and boiler show 0px of top surface seen from above, with vertical boiler bands drawn completely straight up-and-down and wheels drawn in pure side-profile circles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6841
+  }
+ ],
+ "decidedAt": "2026-10-13T16:01:13.609Z",
+ "cells": {
+  "16": [
+   "0959005d00a48a88",
+   "0ff670497cc3ea06",
+   "187145c58d705239",
+   "21204f9448aeb284",
+   "33613ca9d0adc621",
+   "3404c666e44fb218",
+   "40857eedad365f52",
+   "5efb6b71f559fa90",
+   "754431073f0f45cf",
+   "857ea65ddadb0f97",
+   "9ef32f0b4ad29290",
+   "b01158c59e68b6c5",
+   "b5bc61eb9b6e50b9",
+   "ca780b00eb3b2d7d",
+   "dd45d49644a7b664",
+   "e4199c0dde9d1c14",
+   "e840da2a6364d6c2",
+   "ea9a31fb7b62ff55"
+  ],
+  "24": [
+   "248b1854d7541de5",
+   "469d04992d7cd9c8",
+   "4a7cadbc2c105fb4",
+   "531d568dc995aa6d",
+   "76747e02fd634522",
+   "b582b5c9e1d30b31",
+   "b704a2887924c1d7",
+   "bf996b3afcf027ba"
+  ],
+  "32": [
+   "340ee173eeda8924",
+   "4ed8adc68089e517",
+   "68bb0f4d3d7a66f7",
+   "79f7a1a7bda82731",
+   "a8dac67cc0f0ab95",
+   "b8b7f50e4d1dc760",
+   "ba5bd8ab1b1a125f",
+   "bda0838e41565c39",
+   "dc5d6e5566811edd",
+   "e1ada21dc2363747",
+   "e79a2993fb7e6e04",
+   "eb77b6377f7f05a2"
+  ],
+  "48": [
+   "a23a4b2e680feb6a",
+   "a83dfe7c99e3ef32"
+  ]
+ }
+}

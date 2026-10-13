@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65fa8562c03b066bd3bee666dcced86d7c56bfeab545215ed73d4506415cdd0f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp lantern and cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lamp shows a 5-row visible upper surface (rows 0-4) foreshortened from above, and the circular base plinth clearly exposes a 4-row top surface (rows 23-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7861
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head and post are drawn in a flat front elevation with straight horizontal eaves, collar, and housing lines without the downward elliptical curvature required for 3/4 perspective. Although the base plinth shows a top surface, base plinths do not qualify for main body credit.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14618
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp lantern head and cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the gas lantern is clearly visible from above across rows 0-4 (about 5 pixel rows of domed top surface), and the stepped circular plinth below also displays a clear top surface ellipse across rows 23-26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5229
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap and cage are drawn in flat front elevation with straight horizontal lower rims (rows 5 and 14) and no visible top surface. Although the base plinth shows an elliptical top surface, base plinths do not count per the instructions.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9388
+  }
+ ],
+ "decidedAt": "2026-10-13T16:30:14.290Z",
+ "cells": {
+  "16": [
+   "5997b57e10f0b673",
+   "ab7b74e3e462e240"
+  ],
+  "24": [
+   "0696f0f401a1f650",
+   "3403e4a435667c95",
+   "4c38e077ad93d2fd",
+   "4ea48ae89ecb37a7",
+   "6aeb49a245ca512c",
+   "71e0144495847dde",
+   "84b4b1df9567068e",
+   "8ed4da810a893f08",
+   "9fd594cb61687544",
+   "be520cfd68061709",
+   "dcb4707746a7f8f9",
+   "f696d72133f2515b"
+  ],
+  "32": [
+   "402b99fb461f74a0",
+   "4fe77818e6846db2",
+   "70bd30c3e3eb5068"
+  ],
+  "48": [
+   "0b7f61376f3a662f",
+   "13166596b7144419",
+   "23065ca231a0c262",
+   "40db925157318ff2",
+   "64cb39c411b0aca6",
+   "7e302720426e62cc"
+  ]
+ }
+}

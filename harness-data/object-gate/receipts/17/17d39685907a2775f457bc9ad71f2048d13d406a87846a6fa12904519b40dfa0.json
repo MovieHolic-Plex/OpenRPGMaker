@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "17d39685907a2775f457bc9ad71f2048d13d406a87846a6fa12904519b40dfa0",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "깔개(톱니 무늬 테두리)",
+ "label": "sky-steam/steam-i-rug",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular floor rug with central gear insignia",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor rug/mat lying flat on the floor, correctly viewed from above across rows 2-29 with foreshortened proportions appropriate for top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3611
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red and gold floor rug with central gear emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a rug lying flat on the floor, correctly displayed from a top-down foreshortened perspective occupying rows 2-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular rug with gold border and central cog emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor mat viewed flat from above spanning rows 2 to 29, fitting the flat ground-decal category perfectly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3973
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular rug with central emblem",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a rug lying flat on the ground, correctly presented from the top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3256
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.728Z",
+ "cells": {
+  "16": [
+   "2a9661d70b115ef4",
+   "580fd67288c5bdd9",
+   "aaf154cc6d8ec9a1",
+   "b2d0aec802f48b2e"
+  ],
+  "24": [
+   "0150ec99ca20d270",
+   "2213e45b094d50ba",
+   "3a805b12f893e43e",
+   "3daa1d33950ec387",
+   "474226c255ca9271",
+   "4a6e15b9423ef4d5",
+   "4dfb048f7b3b7040",
+   "50e10e8796aa8f4f",
+   "6c28c5d80a934ae9",
+   "784daadd1be0edef",
+   "7a4af31555ff1b67",
+   "8b69c285bc0e3def",
+   "8cd777d90c3e6474",
+   "9329f63398689227",
+   "98a8ce1f14ff6812",
+   "a89d958a070a3d87",
+   "c34091faf5c1a0d9",
+   "c7b1e692c724483e",
+   "ccd73978ade1a212",
+   "d71ae1203380f97d",
+   "d86ec9758ea096f5",
+   "e622790c153c642e",
+   "e8805ffe01452629",
+   "fe538ac08517fd9d"
+  ],
+  "32": [
+   "14ac114320c4cf94"
+  ],
+  "48": [
+   "44fc4a78d4d50a5a",
+   "45c194ff32bb12e7",
+   "ab43ab0431609bef",
+   "bad6baae7a18a3aa",
+   "eaa623383c625b1d",
+   "ef912bf385b6457e"
+  ]
+ }
+}

@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8738f43ab4a21064e28d467cf5a6cec12913cca1852f31c7a9e31226ca1b3e3",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "증기 분출(바닥 격자에서, 4프레임)",
+ "label": "sky-steam/steam-steam-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam puffs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Volumetric puff of steam consisting of two overlapping spherical cloud masses. As an amorphous gaseous effect, it has no flat horizontal surfaces; shading indicates lighting from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6606
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Steam is an atmospheric effect, not an organic object (plants, rocks, trees, mushrooms). Furthermore, the sprite consists solely of vertically stacked flat circular puffs with simple bottom shading and lacks any top-down foreshortening or the floor grate referenced in the title.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7484
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam puff",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite consists of two simple circular puffs of steam drawn as a flat front-facing silhouette with no 3/4 top-down perspective or visible horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 11143
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam puffs are drawn as flat circular silhouettes with simple bottom-edge shading, lacking any 3/4 top-down perspective or floor grate base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5457
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.093Z",
+ "cells": {
+  "16": [
+   "82b8fd5ef5d48aee",
+   "a9dc4200670ec0dc"
+  ],
+  "24": [
+   "15e4c741a0b89cad",
+   "31e02caae61a611a",
+   "4c2378e6d45e92f6",
+   "6dd0f507875dc3cf",
+   "76f6d7a1ae83ef26",
+   "ac5f524fe00e075f",
+   "af12e233621c9f46",
+   "bf7e2b2163106739",
+   "c7ab69fae777bc27",
+   "cb72e4d706f1daac",
+   "dea71bfcbeea562f",
+   "e2880269ad05b1a2"
+  ],
+  "32": [
+   "2002482fab3e33ec",
+   "6c94f9c4c2c56303",
+   "89ddf59e27aabe29"
+  ],
+  "48": [
+   "1f4ba8ba2ca0f209",
+   "3b3262a3b76e951e",
+   "46d4442cf350411c",
+   "7e62dd577af04c93",
+   "91ac0fb0b3e819b5",
+   "f93ed0e09753f43c"
+  ]
+ }
+}

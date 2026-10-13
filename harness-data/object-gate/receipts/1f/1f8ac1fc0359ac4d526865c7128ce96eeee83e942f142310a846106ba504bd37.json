@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f8ac1fc0359ac4d526865c7128ce96eeee83e942f142310a846106ba504bd37",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(꺼짐·낮)",
+ "label": "sky-steam/steam-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, collar rims, and pole ring (row 18) are drawn in pure front elevation with straight 1-pixel horizontal bars and no visible top surfaces foreshortened from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6865
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp lantern and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 1-5), underside rim (row 5), horizontal shelf (rows 13-14), and mid-post ring (row 18) are all drawn with perfectly flat horizontal lines in pure front elevation, showing no top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6027
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp lantern head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp cap (rows 1-5), the head base platform (rows 13-14), the pole ring (row 18), and the pedestal are all drawn with perfectly flat horizontal lines and front-elevation silhouettes without any foreshortened top surfaces or elliptical curves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6412
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head, glass chamber, and mounting bracket (rows 6-14) as well as the pole ring (row 18) are drawn in pure front elevation with straight horizontal bands and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10511
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.723Z",
+ "cells": {
+  "16": [
+   "468704b07c9aa09d",
+   "fc5829fa5ae576c3"
+  ],
+  "24": [
+   "296ce96837a932b3",
+   "29dfed642008d2ed",
+   "2da2ac64ca25807f",
+   "42f177e73d7afed0",
+   "504b3aaeb1a2b6f7",
+   "567ea302091122de",
+   "5b257355ed054f87",
+   "6f0a61edb90e7d1f",
+   "773de2c4c77df9a8",
+   "792317f8c9ac74a9",
+   "7b4b22b7539d5109",
+   "7cd124b196f63cbc"
+  ],
+  "32": [
+   "b59a48105d46645b",
+   "bf20901fc57402ff",
+   "e779b3d4d466f26f"
+  ],
+  "48": [
+   "067c076fe02655e9",
+   "22135bc679b5ddd6",
+   "37fc6ff6017decef",
+   "42b2b3bc54ba9679",
+   "b32ea634b8bb863f",
+   "d2509b304445254c"
+  ]
+ }
+}

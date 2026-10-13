@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "622cb7916c93ca296ec0b9c160630daf95cdb9a143786aebaaae9fa28226729a",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화 급수전(붉은 주철·밸브 바퀴)",
+ "label": "sky-steam/steam-standpipe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast-iron fire hydrant / water standpipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dome/cap of the hydrant is viewed from above across rows 1-5, with the brass operating nut/valve positioned within the foreshortened top surface rather than protruding straight up in front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8645
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red cast-iron fire hydrant / water standpipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/valve surface forms a foreshortened ellipse spanning rows 1-5 (approx. 5 pixel rows) complete with top-facing highlights/nut details, sitting atop the cylindrical front body (rows 6-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8593
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red cast iron fire hydrant cylinder with valve top",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/valve surface of the cylindrical body forms a distinct foreshortened ellipse spanning rows 1 to 5 with central valve wheel highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9135
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red cast-iron fire hydrant body and cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the hydrant shows an elliptical rounded cap/top face spanning rows 1-5 (approx. 4-5 rows tall) with foreshortened circular geometry and surface highlighting, sitting above the vertical cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8959
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "e1be56be3bff5167"
+  ],
+  "24": [
+   "1e1081242e54076c",
+   "2683d0a9539c6105",
+   "2ea655ebf1eb2d53",
+   "5cf71ba576ab9cc1",
+   "a06d36391a801991",
+   "f7ffdf359a1cab2c"
+  ],
+  "32": [
+   "0d7be872a597cc11",
+   "540dbfbe6d552de7",
+   "595ac34927387240",
+   "8abe2ddd8d417284",
+   "91cb7dcf49ae420d",
+   "b39bffe375983b27"
+  ],
+  "48": [
+   "433dcad121d91a67",
+   "6182a8986ae5863a",
+   "b07fa67976edbf95",
+   "b1452b8ab67139fa",
+   "d268c7f39a0733c0",
+   "dc25943eb86deb14"
+  ]
+ }
+}

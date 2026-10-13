@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e738b23624cca8bfd6a4b9abedd09d9a50be0effb15bcbe588a9c0f5130d7eba",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "industrial steam engine machine base with cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine base is drawn in pure front elevation with vertical front panels (rows 14-21 and 22-31) and flat horizontal ledge lines (1px) rather than foreshortened top surfaces. The piston heads at the top are also drawn as flat 2px rectangles without elliptical top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8622
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large metal base block (rows 14-31) is drawn in pure front elevation with flat riveted vertical plates and has no visible top surface (top_rows = 0). Additionally, the cylinders terminate in flat straight horizontal lines at row 21 resting on a 1px edge rather than showing the horizontal depth of the platform.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11431
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machine base block and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine base (rows 14-31) and the cylinders/pistons are drawn in flat front elevation as if for a 2D side-scroller. The base block ends with a flat 1px edge at row 14 with 0 rows of visible top surface, and the piston caps at the top are flat rectangular bars.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7875
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "industrial steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation: the base panels are vertical walls with horizontal rivet rows, the cylinder bottoms and metal bands are completely straight horizontal lines rather than ellipses, and the piston caps at the top are flat 2px rectangles with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6421
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.175Z",
+ "cells": {
+  "16": [
+   "1f8f55828d694f90",
+   "ced15cb65a332729",
+   "edeb0d88e635c345",
+   "f8cc04848362e97c"
+  ],
+  "24": [
+   "0093126cd5d4ee5d",
+   "0383bf9f51d30f4d",
+   "0a0744481db59b79",
+   "21e490be73160fc2",
+   "22a102835ac248e4",
+   "253c4d50b8d9e50e",
+   "393edcc0f458f9df",
+   "42c2f728a0437354",
+   "52fa27e11d53339e",
+   "5565b5235f079777",
+   "7e21e51f2fdef703",
+   "90aa9366e79fefe1",
+   "9f3a84dd40142f6e",
+   "abc7c24491b2c458",
+   "af720c5b1a10265b",
+   "b3f7d6affdc22692",
+   "bf78601c37d58f5c",
+   "d8152f208cee1238",
+   "dbce3e4c193ca8ca",
+   "e0632375085f89f4",
+   "ed7aaeb5efe4c774",
+   "f56fc3928904f76d",
+   "f65245494d44eba5",
+   "ffa9582e07e9a39b"
+  ],
+  "32": [
+   "22fc781cd5a488ec"
+  ],
+  "48": [
+   "0c346c442c04b714",
+   "2790679ca8696c90",
+   "300dde19b7e13144",
+   "d5a66a36d89709aa",
+   "f081fc58fc3f8271",
+   "f0f67b0a648dea92"
+  ]
+ }
+}

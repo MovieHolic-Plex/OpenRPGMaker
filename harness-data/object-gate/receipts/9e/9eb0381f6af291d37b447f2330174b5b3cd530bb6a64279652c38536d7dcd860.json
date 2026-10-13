@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9eb0381f6af291d37b447f2330174b5b3cd530bb6a64279652c38536d7dcd860",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "압력 탱크(구리·압력계)",
+ "label": "sky-steam/steam-pressure-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper pressure tank cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank lacks an elliptical top cap seen from above; instead, its top is drawn as an arched dome profile with vertical cylindrical shading running straight down, showing 0 rows of visible top surface. Additionally, the stone/metal plinth at the base is drawn in pure front elevation with straight horizontal bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11620
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper pressure tank body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pressure tank is drawn in front elevation with an arched/domed top profile rather than an elliptical top surface viewed from above. The vertical shading bands run continuously to the top arc with no distinct, foreshortened top cap visible (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10968
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper pressure tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank lacks an elliptical top cap seen from above (top_rows: 0); vertical cylinder wall shading extends directly to the top domed silhouette, and the base below is drawn as flat horizontal stripes in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11151
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical pressure tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank body is drawn with an arched dome silhouette at the top (rows 2-5) with no elliptical top cap or visible horizontal top surface. Vertical shading stripes run straight from the dome down through the body, meaning no top surface is rendered from the top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12918
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "78c3bbcea4519059",
+   "b60ae115b8924dfc",
+   "c94924218a8363bf",
+   "d1d2f05908599c34"
+  ],
+  "24": [
+   "02f03bb2ffefd4c5",
+   "05da13f85123ca00",
+   "0b45226e38263f04",
+   "0cf189b8f2a52440",
+   "1ed6b9c514a668b8",
+   "49a46b9f6a47752f",
+   "6583d24b419f5ff8",
+   "69aede93d85c1fed",
+   "70f2bbef5a1a8f3c",
+   "7649e62326d08498",
+   "7b0156a507b3f3b8",
+   "87a433a9a0feb1f6",
+   "9bc33b4666aa3fdf",
+   "a5cbd84f75703ca9",
+   "b7ffa00629983015",
+   "c802c969be73a200",
+   "ceefd4d561087b08",
+   "d117ade79d4d0c90",
+   "e0e602417d7c8f3a",
+   "eb62e8d62c252538",
+   "edf55e803f390efe",
+   "ee48e6a90c1c024f",
+   "f9f7c4de8b1bceaf",
+   "feee30444919e552"
+  ],
+  "32": [
+   "2cf6878663d4aece"
+  ],
+  "48": [
+   "063bea5fd067599e",
+   "28d157a48308b0e8",
+   "49d08b47e3f825a4",
+   "4ee794237e88d1f9",
+   "6d13fd91105b110e",
+   "e53613e824670dca"
+  ]
+ }
+}

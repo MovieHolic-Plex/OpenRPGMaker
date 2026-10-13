@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f415e27fbed983c2771a46f853d2a01e5cb9e46bf78bce8d42944eb3ffe9381",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "증기 피스톤 기관(4프레임)",
+ "label": "sky-steam/steam-piston-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "industrial machine base with cylinder and flywheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine (base, copper boiler, and flywheel) is drawn in pure 2D side-scroller / front elevation with zero visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6297
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "industrial metal engine base with boiler cylinder and flywheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in pure front elevation: the large circular flywheel faces straight forward with no 3/4 tilt, the boiler has no visible circular top cap/ellipse, and the base structure consists entirely of vertical front panels with rivets and panel seams without any foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6589
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "industrial steam engine base with cylinder and flywheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine (riveted base, copper tank, and flywheel) is drawn from a flat side/front architectural view with 0 rows of visible top surface; the circular wheel and rectangular base panels face directly toward the camera without any 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7001
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "industrial machine base with boiler and wheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine, including the metal base, boiler, and circular wheel, is drawn in pure front elevation (side-scroller style). The base has no visible top surface foreshortened from above, and the circular wheel is drawn completely unforeshortened facing directly at the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6570
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.097Z",
+ "cells": {
+  "16": [
+   "0cf57a72e9de5f93",
+   "41b0a49d4764d596",
+   "5918c97986942249",
+   "8544a20b074933a6"
+  ],
+  "24": [
+   "10cb9a08482c6e27",
+   "1ba45950ac37148a",
+   "2978d1993296f69c",
+   "31e64bee87d4630e",
+   "336a74a257b4cfc2",
+   "3481894c419c7c8c",
+   "3dc1e855221523da",
+   "3e6952057347ebd4",
+   "42461873b4fa68f6",
+   "470c23e8a4f16394",
+   "518f9f5c1695cd1e",
+   "54672965599f77ec",
+   "66a3eb7fae4da24a",
+   "77c25acd8f7894e1",
+   "82b48cf38939604b",
+   "b6661203c3e158bd",
+   "c0055630d1289d15",
+   "cab4618fdf1743ef",
+   "d2096f67700fdbd2",
+   "d5dfd2d397d134ee",
+   "de550b9b5863fab8",
+   "e60b7c6c6ac07475",
+   "f38475b83688879d",
+   "fdb8001db39787ef"
+  ],
+  "32": [
+   "59f9265fe2bbcd6d"
+  ],
+  "48": [
+   "1dafae301420fe8c",
+   "2d5016f00135ddbe",
+   "7c8b9eee71740da0",
+   "d03ad5340ac091b7",
+   "e7165bf7848615b2",
+   "fc18755057cbf950"
+  ]
+ }
+}

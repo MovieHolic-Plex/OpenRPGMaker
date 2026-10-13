@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cdeef145e3b9146dc9c837ee4a97daff83db9e66dd0e8f9b239a5557b6eb7328",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "약품 선반(병·두루마리)",
+ "label": "sky-steam/steam-i-chem-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "약품 선반 (medicine/potion shelf)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shelf is drawn in pure front elevation: the top section (rows 1-5) is a flat decorative crown molding/fascia rather than a foreshortened top surface, the interior shelves are 1px-tall horizontal dividers with no surface visible from above, and all potion bottles/scrolls are flat front-facing rectangles with no visible top ellipses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17878
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medicine/scroll shelf",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn straight on in pure front elevation. The top band is styled like front molding/cornice with only a 2px lighter strip at row 0-1 (a 1-2px cap line, not an adequate foreshortened top surface). The shelf planks and all bottles/scrolls are completely flat front-facing rectangles with no top depth visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "medicine shelf / bookcase with potion jars",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in a flat architectural front elevation. The top molding has only a 2px cap strip (rows 0-1), shelf planks are flat 2px bars without top depth, and the potion jars/scrolls are pure flat rectangles with no visible tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 6875
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine shelf / cabinet",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is visible across rows 0-4 (5 rows tall) above the front ledge at row 5, clearly showing the top plane in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 23164
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "098c0ace89ba9965",
+   "4000df5e1e88eff1",
+   "42718d043b0d1a62",
+   "ebd7d7b188c78752"
+  ],
+  "24": [
+   "0debb2eabf492b3a",
+   "136ea667c8534fcf",
+   "16b043c7c2703fcf",
+   "191842f9f95fc03d",
+   "1991ff13b7543151",
+   "1e260af2dcae1f94",
+   "220249c8d4aa9e48",
+   "41f4d77ba021db8d",
+   "4dbe9c0c8d73bb2c",
+   "6b078adec0438348",
+   "6bcba0c8a7be3ca9",
+   "6d20d944a9bd065d",
+   "708d0dd61d254c55",
+   "80f3852f683dc063",
+   "94cfa741eef9bc2a",
+   "9516b398155a7582",
+   "96edae6e72a83b42",
+   "9b2ba3d64a0dcc30",
+   "9d1fd539aad2079d",
+   "ac7c608105048993",
+   "b09aafaf3ab002b8",
+   "f2f79aa1e3decbf7",
+   "f8d2ea31bcbc96f1",
+   "fda2bf01462726f0"
+  ],
+  "32": [
+   "0c32f5e5e5a3a97b"
+  ],
+  "48": [
+   "4f81b48a25df3443",
+   "6df236dabbbff92b",
+   "7901b6f9cb4dfbb3",
+   "7fa6b1e4df1d01e9",
+   "92a3d11a751b28bc",
+   "d5d6af7c903121e6"
+  ]
+ }
+}

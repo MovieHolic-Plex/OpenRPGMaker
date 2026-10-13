@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0faf86184d1ea4e02227b6abc78502f65f47a6d83f0d67dc73b1a8c2e8ef16aa",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "광차(석탄 실음)",
+ "label": "sky-steam/steam-ore-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "minecart body filled with coal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the minecart loaded with coal is seen from above spanning rows 2 to 6 (5 pixel rows), with the south front face and wheels shown below across rows 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5081
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "minecart body filled with coal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart shows a prominent top opening filled with coal from rows 2 to 6 (5 source pixel rows deep) framed by the cart rim, resting atop a front vertical cart face from rows 8 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "minecart loaded with coal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart has a clearly visible top opening spanning rows 1-7 (interior filled with coal across rows 2-6, 5 rows tall) and a south front face spanning rows 8-13 with wheels below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5672
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "minecart body filled with coal",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The minecart shows a clear top opening (rows 2-6, 5 rows high) filled with coal viewed from above, enclosed by rims, above a 6-row front face (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4259
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "c5939e6526bf7442"
+  ],
+  "24": [
+   "15127d180cd9eed2",
+   "4f9ca07316d9bb45",
+   "6aaa06297a5d83a2",
+   "83cc410a4eab7f38",
+   "ac3e9da809bce3cd",
+   "faf823515dd13d53"
+  ],
+  "32": [
+   "3fc6ebfd990603ed",
+   "4388512ef24bb76e",
+   "594fed4274ca92c3",
+   "6ada6046b5fee44f",
+   "e730020cc76f5290",
+   "f576adb37484aade"
+  ],
+  "48": [
+   "63698ee546d0a4c8",
+   "677ed1d980ae00d1",
+   "971936964518f4a0",
+   "c6630415cb54c463",
+   "db2f0e838328733b",
+   "fe481b335127f6a7"
+  ]
+ }
+}

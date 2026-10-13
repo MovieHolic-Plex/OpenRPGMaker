@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d6e3900807220529369409f67a6642c2b1dc00e896078d2fc2e844536d87511",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 거치대(통 마구리가 보임)",
+ "label": "sky-steam/steam-i-keg-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel rack",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire barrel rack is drawn in flat front elevation. The top beam has at most a 2px strip (rows 2-3) representing the top surface, which qualifies as a mere edge/cap line. The interior shelves are only 1-2px lines, and the four barrels are drawn as flat frontal circles with no 3/4-view top curvature or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5855
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel rack / frame holding four barrels",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire barrel rack is drawn in pure front elevation: the circular barrel ends, the middle beam, and the bottom shelf show 0px of top surface. The top beam has only 2 rows of lighter shading (rows 2-3) with no true depth or foreshortening for the shelves, uprights, or barrel supports.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 6058
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel rack frame",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire rack and barrels are drawn in a flat 2D front elevation. The top beam has at most a 2px highlighted line (rows 2-3) rather than a true foreshortened top surface, the middle shelf is only 2px tall total with no visible top depth, and the barrels are drawn as flat frontal circles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel rack with four horizontally stored barrels",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rack and barrels are drawn in flat 2D front elevation. The top beam has only 2 rows of light pixels, the middle shelf shows no top surface (just a 2px horizontal bar), and the horizontally racked barrels are rendered as flat circles with no foreshortening and no visible top surface of the barrel cylinders receding backwards.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8267
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "1911a31ee24836be",
+   "207af6be7c192b8a",
+   "269db39704aab36a",
+   "fb48a096596cdb3c"
+  ],
+  "24": [
+   "0635eac05558b4ea",
+   "0aeda563332a2bec",
+   "2b7f66f8e381b9cc",
+   "304e127f625ce329",
+   "428eea40ec472276",
+   "493224090b22da01",
+   "51884f7907b0dcb2",
+   "5550ed84c2fff6e8",
+   "5faa2cd4c1cd4cf4",
+   "675de09e93c19806",
+   "7903972432198e07",
+   "8f1e721cd77ec3cc",
+   "9ad882b2c598c8fb",
+   "9d66a03e19e39e83",
+   "a27089d0d58420dc",
+   "af3dd965d6783f8a",
+   "b9356a8fce5654c9",
+   "bdeec4508ab60e77",
+   "d0da141b23b9d4aa",
+   "d55203cf4356c3a6",
+   "ea913268d19fd676",
+   "f6f08193dc824a96",
+   "f71de1b4f6c6bc06",
+   "ffb96ce9769d0a1f"
+  ],
+  "32": [
+   "d4693777ac738753"
+  ],
+  "48": [
+   "111dbf3af31e1ad1",
+   "33d3524c675e2c2e",
+   "a541d1336b264da0",
+   "c7bf5915d22ed2fc",
+   "cc43296f099dfed3",
+   "d580f858e0b16e9d"
+  ]
+ }
+}

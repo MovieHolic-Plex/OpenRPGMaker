@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "59acbefb87f8bdc156ab36407b55d887ef88b2e5d88c017f0f75f14c77624513",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "원통 우체통(붉은·둥근 뚜껑)",
+ "label": "sky-steam/steam-pillarbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cylindrical postbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire postbox is drawn in pure front elevation: the domed cap is an arch profile without top perspective, the mail slot at row 14 is a completely straight horizontal line, the bottom edge at row 24 is flat, and the base consists of straight horizontal bands without elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5967
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical postbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The postbox is drawn entirely in pure front elevation: the mail slot, cap band, body bottom, and plinth are all flat horizontal lines with no elliptical curvature, and the domed top is drawn as a flat 2D silhouette arch without any top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6521
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded dome top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire postbox is drawn in pure front elevation: the bottom of the cylinder, the mail slot, the white label, and the base plinth are all flat horizontal lines with no elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5709
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical postbox with rounded dome top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rounded dome, mail slot, cap rim, and base plinth are drawn entirely with dead-flat horizontal lines and a 2D arch silhouette without any elliptical curvature or top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5919
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.176Z",
+ "cells": {
+  "16": [
+   "881193367e16c607",
+   "af384bff7f2336e3"
+  ],
+  "24": [
+   "0c8e99a08b7edd74",
+   "19944cd16d26acf3",
+   "1c1c04e6ae777b08",
+   "20a90eb42fdcbac6",
+   "29e9557f1633c509",
+   "44fabbd53374934c",
+   "54b2ce59904e3080",
+   "5f6cd69d29d066aa",
+   "80c7d9b24df10284",
+   "9b91f8932e66a34c",
+   "db42975974c7b1ce",
+   "fdba9c56fd4f7ca6"
+  ],
+  "32": [
+   "55e588762398bee1",
+   "8a23ccb1a46be2a0",
+   "ed51a4866a40b9d2"
+  ],
+  "48": [
+   "14e5576ec625cfa0",
+   "31626f627b889ce8",
+   "3c2a662e181aea02",
+   "5cdde35df0ec634f",
+   "ca58ace8b2a0720c",
+   "e8e356dc966c4f97"
+  ]
+ }
+}

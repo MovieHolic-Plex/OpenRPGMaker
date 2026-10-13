@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2c7c361bbd885f40092d6885427abca43f7f6ec6d6b0d30a690aa4e84544abe",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "증기 기관차(보일러·연통·운전실)",
+ "label": "sky-steam/steam-locomotive",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam locomotive (boiler and cab)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure side-scrolling/architectural elevation rather than a 3/4 top-down JRPG perspective. The boiler bands are perfectly straight vertical lines, the running board shows no horizontal top surface (0px), and the drive wheels are drawn as flat circular side elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8849
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam locomotive (boiler, cab, and running board)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure 2D side-scroller / architectural elevation profile. While the smokestack has a small elliptical rim (rows 2-4), the main body (boiler, cab roof, and horizontal running board at rows 30-32) shows 0 rows of visible top surface, and the wheels are flat side-elevation circles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12868
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam locomotive (boiler, cab, and running board)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn in a pure 2D side-scroller elevation profile. The wheels are flat orthographic circles facing the viewer, the running board shows only its side edge (0px top surface visible), and the vertical brass bands on the boiler are perfectly vertical straight lines with no top-down foreshortening or curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam locomotive (boiler, cab, wheels)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The locomotive is drawn as a flat 2D side-scroller profile (pure side elevation). The running board has 0px of visible top surface, the boiler and cab roof show no downward 3/4 foreshortening, and the drive wheels are drawn as flat frontal circles with no overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12587
+  }
+ ],
+ "decidedAt": "2026-10-13T16:00:31.957Z",
+ "cells": {
+  "16": [
+   "1f4dfacc1589a369",
+   "24d6b9432ba574c8",
+   "53244a08a19a3727",
+   "54e0303b40813bcd",
+   "62a51a05e781063e",
+   "68b31f087ac26b6d",
+   "80e1c9f1c4d00d1f",
+   "87a10ddfe16e048c",
+   "8f6a45d8d0d485e7",
+   "910744b475783695",
+   "9bb124242945b789",
+   "a1485852c73955f7",
+   "cd55450f692ead58",
+   "d026abf24278b2d3",
+   "d04ed9865155fbb1",
+   "e423b82328fcc0a2",
+   "f026d4fb1ed07ce9",
+   "f26f854c8f622967"
+  ],
+  "24": [
+   "0fb452667c4af01c",
+   "1f6f170f6a5d63d9",
+   "39184e55f5ec3149",
+   "510a477cca13afba",
+   "5535a0efb634858a",
+   "896a974e533c5b8d",
+   "ca5ca3107101605a",
+   "f88743fb40a56502"
+  ],
+  "32": [
+   "07aca2fbf0117ca6",
+   "1cd0fb1ec691e345",
+   "336c6884b05031d9",
+   "372c8d3ab13f5ff7",
+   "5b9c172210e61aee",
+   "5e5c49f48c5f0847",
+   "7bbe1480a3c98ec9",
+   "88e41cb4963cdcfc",
+   "911d697315c47211",
+   "d2c6600c587a01ba",
+   "ea8ae5dc4917cdcd",
+   "f522534e5126e86f"
+  ],
+  "48": [
+   "91138e1e0a5002a4",
+   "f3a02e6053f795b9"
+  ]
+ }
+}

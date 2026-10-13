@@ -1,0 +1,204 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b0f5860e2629139cd17288e76fd2b3b1ebc1dc3897cd30b17ac0aa09c280be2",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machine base with twin vertical cylinders and pistons",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block has a clear horizontal top surface (deck) visible from row 14 to row 22 (~8 rows) upon which the two cylinders are mounted. Additionally, each cylinder's top cap is rendered with foreshortened circular depth (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7662
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform clearly exposes a foreshortened top surface from rows 14 to 22 (approx. 8 rows) on which the cylinders rest, and the cylinders themselves show foreshortened top caps (rows 12 to 15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4973
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine base platform and upright cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The engine base platform shows a large horizontal top surface spanning rows 15-22 (approx 8 rows) on which the cylinders sit, with the vertical front face visible below (rows 23-30). The cylinders also show 3/4 rounded top faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6219
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine machine base platform",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The metallic machine base has a clearly visible top deck extending from row 14 to row 21 (approx 8 source pixel rows) upon which two upright cylinders rest, meeting the front vertical face at rows 22-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5831
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine base has a clearly rendered top deck (rows 14-21, ~8 source pixel rows) and a south front wall (rows 23-30, ~8 rows). The upright cylinders also show foreshortened circular/oval top caps (rows 12-15), providing proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5912
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal engine base platform with twin cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main metal base features a clear top deck extending from row 14 to row 21 (approx. 8 source pixel rows) upon which the twin cylinders sit, and the front vertical face extends from row 22 to row 31. The cylinders also display rounded top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4780
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "industrial machine base with cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The machine base has a clearly visible top platform spanning rows 15-22 above the front riveted wall (rows 24-30), and the mounted cylinders also exhibit elliptical 3/4-view tops (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4648
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base block has a visible top deck surface spanning rows 16-22 (approx. 6 rows) upon which the two cylinders rest, and the cylinders themselves show foreshortened 3D top surfaces (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5628
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "18ffd523480514e2",
+   "1a5f57fbc7bec24d",
+   "3e85772240834542",
+   "fa046bd9298c7ff2"
+  ],
+  "24": [
+   "066f88daaa45bd65",
+   "2265751acda11bd7",
+   "2c244920d16d0458",
+   "32173a9c4c59afac",
+   "39cd49e784393fa8",
+   "544426de41e54e19",
+   "593c3f70fc7a25e3",
+   "5d901e4816b71cdb",
+   "733ab929818adb20",
+   "7fc421d95d47ea84",
+   "7ff1c357dd7728a8",
+   "861eebcd02cc8e0d",
+   "8f8809cee3a3c294",
+   "ab9da05f3702b22b",
+   "b406f0ddbb80ee78",
+   "c7ee42771b640a2c",
+   "d26a86beec2a819f",
+   "d5a93ed7dfbabf52",
+   "d5b36ab44d24bd51",
+   "da7c60fc22bcd9ae",
+   "e2fd64d04f33279f",
+   "e97ac8ef534a8b95",
+   "eda5f564970d671b",
+   "f31843f96b6ed493"
+  ],
+  "32": [
+   "35cf30f9e0b08378"
+  ],
+  "48": [
+   "59fefc5cc040ad95",
+   "66326fc37c000c06",
+   "7ffd81e484da3de3",
+   "823428b05ece2306",
+   "8ce4425be0d6f1cb",
+   "8d9945596e456fda"
+  ]
+ }
+}

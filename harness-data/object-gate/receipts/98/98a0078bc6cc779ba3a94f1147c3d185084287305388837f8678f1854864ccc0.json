@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "98a0078bc6cc779ba3a94f1147c3d185084287305388837f8678f1854864ccc0",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick and metal boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the brick firebox (rows 15-31) and the metal upper section (rows 3-14) are drawn in pure front elevation with 0 rows of visible top surface. The only foreshortened element is the chimney pipe opening (rows 2-3) on top, but the main body lacks any top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11236
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a 16px front face (rows 15-30) showing the brick hearth and firebox grate, and a 12px deep metal top surface (rows 3-14) seen from above. A chimney stands mounted on this top surface (base at row 7) with its elliptical top opening visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19977
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick and metal furnace/boiler",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the furnace is rendered in foreshortened perspective from row 3 to row 14 (with an overhanging front rim at rows 13-14 casting a shadow on the brick face at row 15). A vertical flue pipe with an elliptical opening is mounted on this horizontal surface at row 7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14868
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick and metal furnace/boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a lower brick firebox (rows 16-31) and an upper metal panelled section (rows 3-15), both drawn as flat vertical front elevations without any visible top surface. Only the small chimney pipe on top shows an elliptical opening/foreshortening, which cannot be credited for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7125
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.174Z",
+ "cells": {
+  "16": [
+   "001972cd77de5a5c",
+   "36dd7f4cdce73cbe",
+   "4d78379aec0f745f",
+   "bab3e75cd9c5f2e8"
+  ],
+  "24": [
+   "0045040b3e1069da",
+   "1555cb031ff13a3a",
+   "22946b9f51493274",
+   "23bfda85a6afe02c",
+   "2c7659f6d1e8c44e",
+   "2da78d162d51f1a7",
+   "3334e54c5e84b976",
+   "461473ae7bd0a289",
+   "46c75a5f5502c1cc",
+   "4e4f2da2ac8d4795",
+   "665e8d02b16e578e",
+   "6c50a51c7fd57b6b",
+   "72b6c949c4263201",
+   "72e0995cd2785b08",
+   "76555ccc96593214",
+   "82a6b23bc4af337e",
+   "875ad33803119852",
+   "b920b298d74e1c31",
+   "bb182153f4918797",
+   "bb7586dae1587e3f",
+   "cb6b92602149aa4d",
+   "e0986152a22417f2",
+   "e9662ff8ff708ccb",
+   "f0a3a5510de121ac"
+  ],
+  "32": [
+   "c979db09a5fd3dd0"
+  ],
+  "48": [
+   "44a553fc90465070",
+   "5e1fc04f4466723e",
+   "5ec13ada17fcd696",
+   "623303968f8bfa28",
+   "99edaa4a250cf308",
+   "f5b59b644f663bd8"
+  ]
+ }
+}

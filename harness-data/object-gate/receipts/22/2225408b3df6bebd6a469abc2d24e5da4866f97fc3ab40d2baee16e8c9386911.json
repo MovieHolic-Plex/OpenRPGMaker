@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2225408b3df6bebd6a469abc2d24e5da4866f97fc3ab40d2baee16e8c9386911",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+ "label": "sky-steam/steam-smoke-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Smoke is an atmospheric effect rather than an organic ground/prop object (plants, rocks, trees, etc.). Furthermore, the smoke plume is drawn purely as a flat 2D side elevation drifting upward without any 3/4 top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 10863
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The smoke plume is rendered as a flat vertical chain of circular puffs viewed directly from the side (front elevation) with no top-down perspective foreshortening or visible top surface (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9628
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke puffs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney smoke is rendered as a volumetric column of billowing rounded puffs lit from the top/top-left, with the upper hemispheres of the puffs clearly visible and rounded rather than flat front silhouettes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Chimney smoke is an organic/atmospheric volumetric effect consisting of overlapping spherical puffs shaded with top-down illumination. It has no planar horizontal surfaces (such as lids, seats, or table tops) to foreshorten.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7333
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.171Z",
+ "cells": {
+  "16": [
+   "3d6d01228f14e75c",
+   "479fc2fd1f0b95ff",
+   "580e417105f21623",
+   "9bedde9f7019812a"
+  ],
+  "24": [
+   "19c2c31a87699ed8",
+   "29343316bf451e8b",
+   "2b57009d9a08eed7",
+   "32fa6922e301fb3a",
+   "502a8630bbc6d143",
+   "5f34658527dffdab",
+   "8560f50b99ab7614",
+   "892dff16afd582bb",
+   "8be8177c166df59f",
+   "8c58483dd7c7d869",
+   "911585b02b369996",
+   "b58bc16b693189ca",
+   "b9bd5a5abc3c84b7",
+   "c79d3f9a35c27f93",
+   "d53b1058a1eed2b6",
+   "e14b835ef9d20570",
+   "e22a59621301d869",
+   "e96a21c41f5dc108",
+   "ee8f733e9c22b1a4",
+   "f7c649c9d8e1e105",
+   "ff7e70110a259d2f"
+  ],
+  "32": [
+   "fa059440718b5d18"
+  ],
+  "48": [
+   "08d8ad77cce1384e",
+   "0e1e2ff2a028e8c4",
+   "34ce54e16a2fcbc2",
+   "84db6be0919a2758",
+   "8fd4890cd57a122d",
+   "c6868b5b829155eb"
+  ]
+ }
+}

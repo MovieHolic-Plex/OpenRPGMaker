@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2528bfac9fab2639d4ca606ba4d106cf01fdb1dd6fd593ddc731ef19823e8c00",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "기름 드럼통(철)",
+ "label": "sky-steam/steam-oil-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical steel drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the drum is rendered as a foreshortened ellipse spanning rows 0 to 5, featuring a dark bung/plug detail on the top surface before transitioning to the front cylindrical wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "oil drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the drum is rendered as a foreshortened ellipse spanning rows 0 to 4 (5 pixel rows tall) including a drum bung/plug detail at rows 2-3, showing a clear top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8082
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal oil drum",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the drum is rendered as a foreshortened ellipse spanning rows 0-4 (5 rows tall), complete with a dark bung/filler cap visible on the top surface. The cylindrical front body extends below it with standard 3/4 view curved bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "oil drum (steel cylinder)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the closed drum is drawn as a visible foreshortened elliptical cap spanning roughly rows 0 to 4 (about 5 rows tall), complete with a filler bung detail on the upper surface. The lower ribs and bands also curve downward correctly in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9102
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.385Z",
+ "cells": {
+  "16": [
+   "db0c210088f8874c"
+  ],
+  "24": [
+   "3eb4107fbeaf21ce",
+   "478df23a240d0e22",
+   "996d7a14afe06bb3",
+   "d2c1681c0dc5656c",
+   "e3155145e56f5df0",
+   "f59289f63a19b19e"
+  ],
+  "32": [
+   "0328a9803ab2c9bb",
+   "1aac9a6bd1154277",
+   "1c006729f03e835f",
+   "903e41c5fea40874",
+   "a04d68b8eaab06ac",
+   "ac728e3a44e43df1"
+  ],
+  "48": [
+   "5cd1f9b758b6e310",
+   "73ba7ae73103ee4f",
+   "8265423252bac3d5",
+   "afd8030673728e89",
+   "ccade06beb901c68",
+   "ff6a9e6fc7681994"
+  ]
+ }
+}

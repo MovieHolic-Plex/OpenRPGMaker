@@ -1,0 +1,172 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e871a0e43276471205b2aad729c45b236d8747689788bda1beb3775a0fed02c",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "비공정 부두 철판 승강장(난간·계류주)",
+ "label": "sky-steam/steam-dock-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock platform wall and support framework",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire platform, railing, paneling, and underlying girder structure are drawn in pure side-scroller front elevation with 0 rows of foreshortened horizontal deck or platform surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship dock platform deck and support structure",
+    "kind_matches": true,
+    "top_rows": 27,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is an elevated dock platform: the horizontal deck surface (iron plating with mooring posts) spans rows 8-34 (~27 rows visible from above), bounded by a north railing and a south edge with hazard markings, above an 18-row front-facing truss support structure (rows 40-57).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship dock platform structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat 2D side-scroller / front elevation perspective rather than top-down 3/4 view. The upper railing (rows 1-7), hazard-striped platform edge (rows 35-37), and lower support trusses with X-bracing (rows 41-56) are all rendered straight-on with zero foreshortened horizontal top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17585
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship dock platform structure (steel wall, railing, and lower truss framework)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation (side-scroller style). Horizontal surfaces such as the platform deck, beams, and railings show only 1-2px edge lines rather than foreshortened top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7847
+  }
+ ],
+ "decidedAt": "2026-10-13T15:57:50.721Z",
+ "cells": {
+  "16": [
+   "038e3a9a320e35e8",
+   "1ad74d64d4ee27cb",
+   "25d1577b09d27a59",
+   "2ac92b61b68376d1",
+   "34f635b8c4eb53bb",
+   "398fbbb5398ef4f9",
+   "4ac99c6fd2924bb4",
+   "56324089e8527bb3",
+   "64ca3f90c40cbecb",
+   "65a6049085e00625",
+   "6bfe67496017be0c",
+   "765ad9d163688068",
+   "7d6900d670957736",
+   "86f8eed28f2cfa66",
+   "9dcb68f58e0100b3",
+   "a464dcb06a036495",
+   "c4e494bc227a708b",
+   "c54e9934179f6e81",
+   "d4de4e809f0b1f8e",
+   "d9c83f40709310f6",
+   "e61d851fc3ed1873",
+   "f07fd182429de50a",
+   "fd25b3ade867dbf8"
+  ],
+  "24": [
+   "08ab90c0ec377057",
+   "1470c39d97d304b8",
+   "1d79f99a256e4dd4",
+   "2de621ae7e2ed2d6",
+   "3bba93474593f2b3",
+   "4a31e721c1f5d7a0",
+   "53768cef83f809a6",
+   "5b528a8984b406a2",
+   "5e7eeb394afe4fc5",
+   "67270ebc66140d9a",
+   "6a272ee6c6f623d3",
+   "76db2ac75c007763",
+   "802a24f2fb5b8289",
+   "886d862010c25e8a",
+   "88ec4f19a3507c7b",
+   "a473bbc2e3d89c63",
+   "c273beb680301a97",
+   "c9b56c105d465150",
+   "cfad69e44fb1c053",
+   "dcad55e73f111019",
+   "e178aac141c68354",
+   "fafc7ef6ee30b29d"
+  ],
+  "32": [
+   "02ff4b47089bfa51",
+   "0e41a79ecbc1bce3",
+   "1646e8b51e7dafda",
+   "9ea6e63bd224b46b",
+   "bc439d03f28dee7f",
+   "df655ac149b2a9a6"
+  ],
+  "48": [
+   "1a4d96c66848352e",
+   "1b131b4fef4a505e",
+   "22a3bfc049a5087e",
+   "56786d4e69e5f05e",
+   "915e81d2c1861967",
+   "a3016765f3488065",
+   "e41fc6217fdb468a",
+   "f17c82c45ec6a9b3"
+  ]
+ }
+}

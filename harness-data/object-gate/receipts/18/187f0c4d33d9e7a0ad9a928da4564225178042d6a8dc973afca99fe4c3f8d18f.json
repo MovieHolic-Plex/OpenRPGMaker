@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "187f0c4d33d9e7a0ad9a928da4564225178042d6a8dc973afca99fe4c3f8d18f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "가스 가로등(불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas street lamp (lantern, pole, and pedestal base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat 2D side/front elevation. All rings, collar ledges, lantern base, and pedestal base are strictly horizontal lines with no visible foreshortened top surfaces or elliptical curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5952
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas streetlamp with lantern head, pole, and pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamppost, lantern cap, rings, and base pedestal are all drawn in pure flat front elevation with straight horizontal bands and no top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5655
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas street lamp (pole, lantern housing, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat architectural front elevation. Every horizontal feature—including the cap rim (row 6), lantern base (row 14), shaft collar rings (rows 20 and 30), and pedestal base (rows 37-43)—is rendered as straight horizontal bands with no elliptical curvature or visible top surfaces from the 45-degree camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7927
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamppost (lantern, post, and base pedestal)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lamppost is drawn in pure front elevation: all rims, rings, cap lines, and the pedestal base are flat horizontal lines with no visible top surfaces (0 px of top surface visible on the base, collar rings, or lantern cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6070
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.096Z",
+ "cells": {
+  "16": [
+   "039c59b47378d059",
+   "08db57399897410b",
+   "15a89cfa7ff952ef"
+  ],
+  "24": [
+   "001500284a27688d",
+   "2adf7a2e16c51443",
+   "41749a65dab9c61b",
+   "51bfb2135f3ddf7c",
+   "677fc866a6e8bfa4",
+   "c5be48053fedc179"
+  ],
+  "32": [
+   "1420bd7c834fd14a",
+   "19e168826ac9c384",
+   "226dddfff091cc86",
+   "27d77bf0084641cb",
+   "280f205d1821a09e",
+   "48d8a0da7768739f",
+   "50023995dcd0d5e7",
+   "568b95c84d9deadd",
+   "b1d567131fccb193",
+   "c9c6ded9c38cc1c2",
+   "ca56b2a12b10c5d9",
+   "df5cfd67e1d2a7ac"
+  ],
+  "48": [
+   "4985a8598f154cdc",
+   "705fa3edb5e11c78",
+   "c1b2be07ab872c68"
+  ]
+ }
+}

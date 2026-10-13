@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1ee07fa84b514d38113c95db1b22423546b0d9bc51f72be116d453aa97cf66a",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 기둥 시계",
+ "label": "sky-steam/steam-street-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street post clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation: the top cap has a flat horizontal top and bottom rim with no visible top surface (0 rows), the mid-post ring is purely horizontal without foreshortening, and the base plinth shows no top horizontal plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street clock is rendered in pure front elevation: the top cap is completely flat across the top with no visible 3/4 top surface (top_rows=0), the clock face is directly frontal, the pole collar is a flat rectangle, and the base lacks any top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3891
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street post clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock face, top cap, post, and plinth base are all drawn in pure front elevation with straight horizontal bands and no visible top surfaces foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5114
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street clock post with clock face and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street clock is rendered in flat front elevation: the top cap has a flat horizontal top line with 0px of top surface visible, the clock face is a flat upright circle, the rings and shaft are straight horizontal segments, and the base block shows no top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4229
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "15a89cfa7ff952ef",
+   "6319384547c09066",
+   "9b5e86595281f99a"
+  ],
+  "24": [
+   "2659e7f6c9af5a29",
+   "3a14339543851639",
+   "7d8f47b6f8f7be93",
+   "a7be71a68fee75cd",
+   "db11434309a7a3fb",
+   "e5fcc13039210006"
+  ],
+  "32": [
+   "06fe55c7fe038b9a",
+   "156482a87d6e00ac",
+   "32403d222398acf5",
+   "38377b82ef35859c",
+   "50023995dcd0d5e7",
+   "626ca9c8082dbcb5",
+   "7e25a6a8527a19f1",
+   "83a2f2d497f4f3e1",
+   "9c1be4fa14314f09",
+   "b1d567131fccb193",
+   "df5cfd67e1d2a7ac",
+   "ee31ae454f6aeb62"
+  ],
+  "48": [
+   "68a1e381fd4e691f",
+   "b03e5c153d1d72b6",
+   "ed3b3cac9ac60aeb"
+  ]
+ }
+}

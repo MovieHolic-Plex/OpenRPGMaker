@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "67f160825b98db6a509c18f17f48ff1eb60af5bc3313c70c5b6a3bae2ffb261e",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "압력 탱크(구리·압력계)",
+ "label": "sky-steam/steam-pressure-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper pressure tank cylinder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is drawn as a clear foreshortened ellipse spanning rows 1 to 9 (approx. 9 pixel rows tall) complete with an embossed concentric ring detail and fitting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7420
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper pressure tank cylinder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylindrical tank clearly shows an elliptical top surface spanning from row 1 to row 9 with a central hatch, meeting the front curved wall extending down to row 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7022
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper cylindrical pressure tank with top cap and gauge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is rendered as an ellipse visible from row 1 to row 11, with concentric detailing and a valve. The vertical front face with gauge and piping extends below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6650
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper pressure tank cylinder",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the round copper tank is clearly rendered as a broad ellipse spanning rows 1 to 9 (approx. 9 pixel rows tall) above the front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6008
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.385Z",
+ "cells": {
+  "16": [
+   "3e7a25cbf14d5934",
+   "5422644fbbaad960",
+   "7307c81d929fd11e",
+   "bd26eac57290832e"
+  ],
+  "24": [
+   "171dfe2a892eaf8f",
+   "191a9166f18e1845",
+   "332580984a287ae7",
+   "3f858d53704e63e9",
+   "450a1993e9a28716",
+   "51acd7e7eb952ef1",
+   "5ca3fb5ec4e591e3",
+   "618bff23fd60bacd",
+   "7a40e845718d5458",
+   "8ca7604cfa2b5997",
+   "8f2c32232ca46c8b",
+   "8fab23bc0b54578e",
+   "96009dde533a9a8c",
+   "9a582e7aab5b0334",
+   "9d341749dec7134c",
+   "a14646ebe80010ae",
+   "a83f1de4a066d403",
+   "b06d8a9e4054f9c7",
+   "b308e968eb9b47df",
+   "b48ae4170a103f09",
+   "c432e06468c042fb",
+   "dc3d35dd34af5ab3",
+   "dca5849df28685ec",
+   "e59fbc4033c21c2d"
+  ],
+  "32": [
+   "47e534e748a73a8b"
+  ],
+  "48": [
+   "17bdbee5fa170fcb",
+   "1b096b0df3bf4681",
+   "88ba9c6c5866342f",
+   "aa3f943a559bc6be",
+   "efea838f8465fef9",
+   "f0275d585d0292c3"
+  ]
+ }
+}

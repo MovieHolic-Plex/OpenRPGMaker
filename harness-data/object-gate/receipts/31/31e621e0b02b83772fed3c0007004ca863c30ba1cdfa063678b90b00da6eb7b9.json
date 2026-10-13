@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "31e621e0b02b83772fed3c0007004ca863c30ba1cdfa063678b90b00da6eb7b9",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "공장 철문(벽돌 문기둥)",
+ "label": "sky-steam/steam-iron-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and flanking brick pillars are drawn in pure front elevation as if viewed straight-on. The horizontal rails (rows 17-19, 29-30) and the top rounded header are flat 2D profiles without visible top foreshortened planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6029
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, pillars, crossbeams, and center wheel are all drawn in pure flat front elevation. Neither the brick pillars, the horizontal gate rails, nor the bottom frame show any visible top surface receding in depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7111
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and brick pillars are depicted in flat front elevation. The horizontal crossbars at row 18-19 and row 30 show no foreshortened top surfaces, and the arched plate and pillar caps are drawn directly from the front without top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5250
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gate structure, including the brick pillars, horizontal crossbeams (rows 18-19, 30), and top arch plate, is drawn in pure flat front architectural elevation with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5446
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.386Z",
+ "cells": {
+  "16": [
+   "56d585482a840a66",
+   "a005efff143f9c7a",
+   "c0c5b29225e205ed",
+   "d659893e7f2c68be",
+   "deeb7e835eab1b76",
+   "e1053d2733a1a394"
+  ],
+  "24": [
+   "0ee27084fa809c27",
+   "72a1f61b12fd189c",
+   "7a5a8be4728fef4f",
+   "8a8629906b87cf69",
+   "8feae323fbc697aa",
+   "afea2fef8a663395",
+   "b6be9f1cff30109e",
+   "bfd619f70ddfd6c8"
+  ],
+  "32": [
+   "709d423a5e7929dd",
+   "ab304c9c83986611",
+   "db446506c98339c6",
+   "e67c5a14c2502811",
+   "e8b6d23265586e86",
+   "f6d78698895f4c63"
+  ],
+  "48": [
+   "a51f0f5d7b22cd21",
+   "f2fc5af3d278e61c"
+  ]
+ }
+}

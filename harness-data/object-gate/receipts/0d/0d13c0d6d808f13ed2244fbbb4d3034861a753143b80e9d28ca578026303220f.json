@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d13c0d6d808f13ed2244fbbb4d3034861a753143b80e9d28ca578026303220f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "책장(가죽 장정)",
+ "label": "sky-steam/steam-i-bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf spans rows 0-4 (5 pixel rows tall) before the front molding at row 5, providing standard 3/4 top-down foreshortened depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6138
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf with leather-bound books across three shelves",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is visible at rows 0-4 (5 pixel rows tall) with a front rim highlight at row 5 before the recessed shelves begin at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8599
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf with leather-bound books",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 0-4 (5 pixel rows tall) with chamfered back corners and top-down foreshortening above the front molding lip at row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9530
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 0 to 3 (about 4 rows deep) with a front overhang at rows 4-5 casting a shadow onto the upper shelf.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4058
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "0c93ab2ffd805c88",
+   "740139d7e664521f",
+   "81f58e2b9c49c367",
+   "e42862f29a459d96"
+  ],
+  "24": [
+   "0978181462b53b1d",
+   "1089b5a0c5110542",
+   "16f5db628a3b3778",
+   "26a125072946963f",
+   "275ac35b0b98d0dc",
+   "28d9b021c970c2c3",
+   "5294bc94c9de01a1",
+   "5700e72b58209f3e",
+   "677c96fc121f51f0",
+   "6d161a85c88eae8e",
+   "70922f72060c6a62",
+   "7a9f1cc20c054e2f",
+   "85b48f3ff07d013d",
+   "94cfa741eef9bc2a",
+   "981be4f4351edd53",
+   "9f4be263b1d39098",
+   "a93b17c65cc22a21",
+   "ad88784257c92256",
+   "db074d552c7317ee",
+   "e45dd646b0667a98",
+   "e64f5b9b0263578f",
+   "e6d55dce48d4b6f2",
+   "e7f0342fed643d50",
+   "ee08dbaf3bcf11b4"
+  ],
+  "32": [
+   "d3d42b2038b01a4a"
+  ],
+  "48": [
+   "1ff1c41165a218ce",
+   "2a3016b028af9cda",
+   "5d076603c1daf70e",
+   "9743c8c4a5b4917b",
+   "af6619e758e9f4a2",
+   "c93d97158abaea56"
+  ]
+ }
+}

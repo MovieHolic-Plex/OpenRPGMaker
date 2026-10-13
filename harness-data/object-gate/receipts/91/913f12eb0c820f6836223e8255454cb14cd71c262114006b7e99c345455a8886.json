@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "913f12eb0c820f6836223e8255454cb14cd71c262114006b7e99c345455a8886",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "벽 톱니바퀴(회전 4프레임)",
+ "label": "sky-steam/steam-gear-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted interlocking gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Gears mounted flat against the background wall surface; permitted flat presentation for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5505
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Gears mounted flat on a vertical metal wall panel, viewed straight-on as typical for wall_mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6151
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gears are mounted flat on a vertical wall surface, which correctly displays as a front elevation in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5535
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted gears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Mechanical gears mounted flat against a vertical wall plate; as a flat wall-mounted feature, flat front elevation is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5326
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.094Z",
+ "cells": {
+  "16": [
+   "11a3162bf89224b3",
+   "3c03aff5db7fee1b",
+   "428d6b806b445a15",
+   "cee36908fff314ec"
+  ],
+  "24": [
+   "06b27e641d1c39f5",
+   "07e87f46a0b84fab",
+   "181a29349893aaf0",
+   "220a9d38b39a8b79",
+   "2fdec94ec5e40ec3",
+   "4412073cb8315725",
+   "4516f5564907703d",
+   "4bc1fa90a0747cb5",
+   "5548ec7883ef0948",
+   "74b310f581a7e107",
+   "78d3b9c8239787dc",
+   "826be31e4c3edae9",
+   "8831f5549e0a8f63",
+   "8952ddcd06b06b6d",
+   "8b51439d86881add",
+   "8cc1d87ca88e58ba",
+   "a84711ed74303226",
+   "aa6f3ebf5f96cc2c",
+   "af06721bade27e70",
+   "b6969fcb284104ce",
+   "b754ba439e7a10a9",
+   "d8feb34bf5715fb2",
+   "e6f3879c3bb1723c",
+   "e71fc5f3a2a02e1c"
+  ],
+  "32": [
+   "7aa4da9b42e7daf2"
+  ],
+  "48": [
+   "27eb99eb7978e4bc",
+   "563cf5c5530475a9",
+   "871bfd0cd03a7811",
+   "9baf7f51e8d44f82",
+   "9e88c14c3393762f",
+   "ee71aaf2e3dde88f"
+  ]
+ }
+}

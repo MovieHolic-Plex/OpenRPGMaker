@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21fd4cf52cc18e7589d8ed5d3b6343391ba92a369bc9d279dccb3bf6bbf7275f",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine base platform with vertical cylinders",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine base shows a clear horizontal top deck spanning rows 15 to 21 (7 pixel rows tall) upon which the two vertical cylinders are mounted, above a front vertical face extending down to row 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6551
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "industrial machine base with cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform clearly exposes its top deck across rows 14 to 22 (approx 8 rows), on which two cylinders stand. Each cylinder also features a visible top surface (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5867
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "engine base platform with cylinders",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main machine base shows a deep top deck spanning rows 14 to 21 (8 rows) upon which two upright cylinders stand, above a 9-row front face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base platform shows a foreshortened top surface spanning rows 16 to 22 (approx 6-7 rows), and the upright cylinders sitting on it also show foreshortened 3-row top faces around rows 12 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4983
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "3e85772240834542",
+   "768c28ba05fe90c1",
+   "87f9222639402375",
+   "fa046bd9298c7ff2"
+  ],
+  "24": [
+   "01d7f53e723011a0",
+   "066f88daaa45bd65",
+   "08066c665df4179b",
+   "0fe6e29ddcded9f8",
+   "2619fef30304e95b",
+   "28883e97e9ff5478",
+   "32173a9c4c59afac",
+   "437ca439ccc3568d",
+   "4d04337e905fa597",
+   "544426de41e54e19",
+   "5e6fbc9ed994e6bf",
+   "5e80a8999cc31a6d",
+   "7fc421d95d47ea84",
+   "7ff1c357dd7728a8",
+   "861eebcd02cc8e0d",
+   "884f2c59fb2e31fd",
+   "ca26e9bf715b7e68",
+   "cd12812ce5c08140",
+   "d5a93ed7dfbabf52",
+   "d5b36ab44d24bd51",
+   "d866055df4e0137d",
+   "dafd986bab098f0f",
+   "f63a737a2e20551d",
+   "fbd60b30f69686ec"
+  ],
+  "32": [
+   "0830b2327d4fcfda"
+  ],
+  "48": [
+   "0756cf87c38ce012",
+   "2f1b804bda7543c8",
+   "72f4dced0c60e3e4",
+   "76feda54a56aa721",
+   "82144632aa0aa92d",
+   "a79c928bf9d3c870"
+  ]
+ }
+}

@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "53ad172da8f475d678eea62d1cf99a721ce6ff048952ce2fcd983bed15811587",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "연구 탁자(플라스크·버너)",
+ "label": "sky-steam/steam-i-lab-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "research table with flasks",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop shows a 4-row deep top surface (rows 5–8) upon which several flasks and bottles are arranged at varying depth positions, followed by a 2-row front face (rows 9–10) and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8353
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "table slab with legs and flasks",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is drawn with an isometric slant (sheared horizontally between back and front) and displays an east-facing receding side edge on rows 5-7 at the right side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 12017
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lab table / research desk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a visible top surface roughly 4-5 rows deep (rows 5-9) on which several flasks/bottles are placed at staggered vertical depths. Shading on the right edge reflects directional lighting rather than an isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8996
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tabletop",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop top surface spans rows 5-7 (with flasks placed at staggered depths), but it features a receding isometric right side face (dark pixels at rows 5-7, x=20) and completely lacks shading differentiation between the top surface and front face across rows 5-9.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 9300
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "278a6a7a4283585b",
+   "d4cb15afa9e49d6d"
+  ],
+  "24": [
+   "03dfe29bc0da933b",
+   "169c11e131be40b8",
+   "223b85233dc4d96f",
+   "57febb98264e383d",
+   "659163fc1399f179",
+   "6abafc052a8992b3",
+   "811fa69a39c5e32a",
+   "9cd4c2b419a325a5",
+   "b40154bbd6ce4076",
+   "d74fe1841914d470",
+   "e1f94009aa6d007b",
+   "e24790830492dd17"
+  ],
+  "32": [
+   "9b1168defd0ef368",
+   "ba43922095e6562e"
+  ],
+  "48": [
+   "001809b9de1151f1",
+   "734028d4ecd8af1d",
+   "a063362e1d439a32",
+   "f1e6bc48ff03075e",
+   "f36ed657ed4be91f",
+   "f6f853f689b09767"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9b7bdff4a03515592793a0f15eea6b35f3d2c6e68ec03c7fd32a8f988b62d65",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "비공정 연료 펌프(놋쇠 원통·호스)",
+ "label": "sky-steam/steam-fuel-pump",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass fuel cylinder with gauge and hose",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the brass cylinder is clearly rendered with an elliptical top face/cap spanning rows 1-5 (~5 source pixel rows), correctly showing the top surface in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4136
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass cylindrical fuel pump tank",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the brass cylinder clearly displays a foreshortened elliptical top cap and surface across rows 1-5 (around 4-5 pixel rows tall) with a valve/fitting on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4310
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the brass cylinder is clearly foreshortened into an elliptical top surface spanning rows 1-5 with an attached cap fitting, curving properly into the front face at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4122
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass cylindrical fuel tank/pump",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the brass cylinder is clearly rendered with an elliptical top surface spanning rows 1-5, properly foreshortened in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3803
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.386Z",
+ "cells": {
+  "16": [
+   "0a038d6fc769bf3a",
+   "f34827ae688cf3b1"
+  ],
+  "24": [
+   "099d4d03f9815cf1",
+   "1e8b00389fb739af",
+   "403b14a5a9f0b011",
+   "76622ee32acba217",
+   "84ddf61f58850626",
+   "8ddadfc8c5e77267",
+   "9323d70ce237ef46",
+   "972b8a6cbd088bc8",
+   "a379521209e82cf3",
+   "d1c9ab4d65fe0036",
+   "e01529bdcea92c41",
+   "ec9d8bcc8702e4f1"
+  ],
+  "32": [
+   "643e8388b7fc06b7",
+   "821aee967e75aea3",
+   "e5bd5cccb7186a1d"
+  ],
+  "48": [
+   "1e45d71848a0729b",
+   "65ad10b8f567cf4c",
+   "7c360f89a9553678",
+   "7f8bc52284206e0c",
+   "ab84933ac5c39635",
+   "c7093c925e6f69da"
+  ]
+ }
+}

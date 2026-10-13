@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc22f7dba6ff0154df13e568bed283ddeca2aa388c8cbd350b2718b0bcc4b67c",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a brick lower section and a metal upper section, both drawn entirely flat in front elevation without any foreshortened horizontal top surface. Only the small chimney pipe on top shows an ellipse, but the main body has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8672
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick boiler / furnace with metal top and pipe",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the furnace is clearly visible as an 8-pixel tall horizontal metal surface (rows 4–11) with a front edge rim at row 11–12 above the vertical brick face. A vertical exhaust pipe/chimney protrudes from this top surface, showing its top elliptical opening (rows 2–3).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11734
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 2,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the furnace is rendered in grey metal plate spanning rows 4 to 11 (8 rows tall), upon which a vertical chimney pipe stands with a clearly visible top opening ellipse (rows 1-3). The brick firebox forms the front face below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10167
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick boiler furnace with metal top surface",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a 17-row vertical front face (brick wall with iron grate, rows 13-30) and a clearly visible 9-row metal top surface (rows 4-12) with paneling lines, rivets, and a chimney pipe emerging from it that displays a foreshortened elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7632
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.095Z",
+ "cells": {
+  "16": [
+   "3c37f269d4d0d3ae",
+   "805719830e7cd38a",
+   "bf746073e2c5cac2",
+   "fc349f1c6047bf5f"
+  ],
+  "24": [
+   "1621fa8cd73eb343",
+   "162ff8174a8b4b02",
+   "26f572f6cac8bb8b",
+   "303b43a54ff6d3a2",
+   "36eb7fff1b1e9dac",
+   "403f6ffdab30ec44",
+   "45ea0fe22d2962c9",
+   "544f89ac1c9ef16c",
+   "59255f17d451d930",
+   "6369dd6ae3310e3c",
+   "69e6b136bf41f6cf",
+   "72e595260b8813c2",
+   "7f3d43b5a9ba7f72",
+   "80e18cd09f8e718f",
+   "87f946b126c06ba9",
+   "9babaaa5cbd217c1",
+   "a301a44c8ea485c3",
+   "a55dbd1d923fdaa1",
+   "b2c83d1c6aba60f0",
+   "b322d70e463f4f55",
+   "c0d3891f6ce93529",
+   "c23d87f153c6b96e",
+   "d1c2661efa1a4f2e",
+   "e12c2a9420f21143"
+  ],
+  "32": [
+   "438f98ccc2cbcb65"
+  ],
+  "48": [
+   "464e9854de23f415",
+   "54df7ddc7e9f73d8",
+   "686953cca8d7a56b",
+   "74e3116b8d5b791a",
+   "9734bb61ebe60666",
+   "c5692a8dca214ab0"
+  ]
+ }
+}

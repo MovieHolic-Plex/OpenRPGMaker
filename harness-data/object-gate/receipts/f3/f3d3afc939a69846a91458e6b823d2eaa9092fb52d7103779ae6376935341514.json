@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3d3afc939a69846a91458e6b823d2eaa9092fb52d7103779ae6376935341514",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(꺼짐·낮)",
+ "label": "sky-steam/steam-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the gas lamp is drawn in pure front elevation: all horizontal boundaries (the cap rim at rows 4-6, the glass cylinder top and bottom at rows 7 and 13-14) are straight horizontal lines rather than elliptical curves viewed from above. While the base plinth at rows 23-26 shows a top surface, base plinths do not qualify the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12582
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern head and column are drawn in pure front elevation with straight horizontal bands at rows 5, 6, 7, and 14 without any foreshortened top surface or downward curve. While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp (hood, glass cage, pole, and pedestal)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/hood of the lamp shows 5 rows (rows 0-4) of foreshortened top surface, and the pedestal base also clearly displays a 4-row deep top surface (rows 24-27) before dropping into the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5454
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp lantern and post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern spans rows 0 to 4 with a finial placed on the visible foreshortened top surface, and the pedestal base at rows 23-26 clearly shows its horizontal top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4972
+  }
+ ],
+ "decidedAt": "2026-10-13T16:30:14.290Z",
+ "cells": {
+  "16": [
+   "5997b57e10f0b673",
+   "cd7d99277433136c"
+  ],
+  "24": [
+   "0696f0f401a1f650",
+   "405b2c46e7435a21",
+   "4c38e077ad93d2fd",
+   "51a6c36f51381af0",
+   "58f7293b424513da",
+   "5d22804bbde71cca",
+   "6aeb49a245ca512c",
+   "84b4b1df9567068e",
+   "84b59bb07303de7d",
+   "999dcee8b6726076",
+   "9fd594cb61687544",
+   "f696d72133f2515b"
+  ],
+  "32": [
+   "3559c97e10c4f32a",
+   "5a8766d3a5272292",
+   "a45ec83b8b3f1b73"
+  ],
+  "48": [
+   "2bd7a7faae4304bb",
+   "572f116d361968be",
+   "624c300056d5752e",
+   "b49c5065809c6202",
+   "dbf7c35cb7bd81cc",
+   "e5fc9b63a5df5c2e"
+  ]
+ }
+}

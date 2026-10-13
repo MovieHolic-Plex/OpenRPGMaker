@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f37bc3b31f7167c5e48bd9e18158e698f8dd202c9264ef0b967f61b52e3aa97",
+ "width": 48,
+ "height": 64,
+ "kind": "structure",
+ "name": "양수 펌프 오두막(벽돌·관)",
+ "label": "sky-steam/steam-pumphouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pump hut building with pitched roof and brick facade",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a pitched roof visible at the top (rows 1-13) showing its tiled roof slopes foreshortened from above, before descending to the front gable and southern brick facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9846
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pump hut with gabled slate roof",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slate roof of the structure is clearly visible from above across rows 0–24, displaying its sloping roof planes around the central ridge, standard for top-down JRPG buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7278
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pump hut / shed with pipes and gable roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building is drawn in pure front elevation (architectural side-scroller view). The gable roof peaks at row 0 and slopes down to row 12 in a flat triangular silhouette, the lower gable, door, pipes, and base plinth show no horizontal/top surfaces foreshortened toward the camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16085
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pump shed / building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn in pure architectural front elevation. Both the upper blue roofline (rows 0-12) and lower gable trim (rows 13-26) are drawn as 2D triangular gables seen directly from the front, with zero foreshortened south-facing top roof slopes. The brick walls, door, window, pipes, and valve wheel are all depicted completely flat with no top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13727
+  }
+ ],
+ "decidedAt": "2026-10-13T15:48:38.531Z",
+ "cells": {
+  "16": [
+   "046e2461ba47eee4",
+   "182f0712c554c021",
+   "1a692c321a1d606a",
+   "1daff1c950ac3431",
+   "3603c43bc90ed860",
+   "6f32c3840fb32fcd",
+   "7751c6de34f41c1d",
+   "8047cc1e1428b50d",
+   "c933fbec5a3c19bc",
+   "cb1659abe98303db",
+   "d0788d7a082d080e",
+   "eedc1a70cb6bdffd"
+  ],
+  "24": [
+   "1d9fa99a69a07dbf",
+   "205c2248fe4b93cf",
+   "22937ce61aa9ee50",
+   "36e5f7796345843a",
+   "71637ce09a6f08e4",
+   "7d802e143cb36d15",
+   "b2be944986edce2e",
+   "b49bb7082a07767e",
+   "d8802938e061cf9b",
+   "ea929a8e13472151",
+   "ed55513e10fd7a46",
+   "fc68a83d0dbb5003"
+  ],
+  "32": [
+   "31457a8b720d8d0b",
+   "316e835a0dbdfe52",
+   "33642a42bbb667fd",
+   "45ab92f4ce272618",
+   "5738e00fa38f128e",
+   "7054c80ca9b7172b",
+   "90e853f7c7efdc12",
+   "96a2dc2129000827",
+   "9899ec310870858c",
+   "a89e2390d7e48e0c",
+   "d7d5539b524c66a0",
+   "ea5536c76e6d7c00"
+  ],
+  "48": [
+   "435629a089e4bc7f",
+   "7faa93c485fb784b",
+   "800977a690325422",
+   "f9185138dcec5072"
+  ]
+ }
+}

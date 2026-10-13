@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29e1b85a6ccb5d7246fde9b3124adbd044846cebe4f9a09de99fc96981da6b16",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "급수탑(리벳 물탱크 + 벽돌 탑)",
+ "label": "sky-steam/steam-watertower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tower with tank and brick base",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof of the water tank slopes downward toward the viewer over rows 1-11, and the metal hoops and bottom edge of the tank curve downwards, showing the top-down 3/4 perspective correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6174
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water tower (riveted tank on brick base)",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical metal roof of the tank is prominently visible from rows 1 to 13 (~12 rows of sloped top surface), and the cylindrical tank hoops have downward curvature consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5227
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water tank and brick tower",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The water tank features a conical roof visible from above spanning rows 0-12 (12 rows of slope/surface) and cylindrical bands curved downward in foreshortened 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5947
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water tank on brick tower",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The conical roof cap on the water tank shows a clear top slope across rows 1-12, and the tank's metal hoops curve downwards across the front to maintain 3/4 top-down curvature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5017
+  }
+ ],
+ "decidedAt": "2026-10-13T15:48:38.531Z",
+ "cells": {
+  "16": [
+   "03d90c753dd69c97",
+   "15d244f25e2b0641",
+   "178bdee49992ecb3",
+   "20e3c946f31db1d7",
+   "239312267cbc0aef",
+   "408394a10038bd6b",
+   "4f0bfeb627f0b4a1",
+   "5e7be29154e7146b",
+   "72ea5d493cf4baa4",
+   "776f76d0097a9458",
+   "991a2a070c6ec0aa",
+   "9a0337a2246c341d",
+   "9c4d37731176b359",
+   "a5968a823f0b6cc2",
+   "cc6518bf7ab6e4e6",
+   "d629b0d2202ec787",
+   "ea7446edc1d8cfee",
+   "edd693f16957f073"
+  ],
+  "24": [
+   "092a10606116577c",
+   "3f77851d370578f5",
+   "7096f096f0495a0b",
+   "82d988cb8be8d07c",
+   "9bfcd917df0cf74b",
+   "bca98c022454f031",
+   "c56e913b642a90d3",
+   "eb56eed5319aa1c2"
+  ],
+  "32": [
+   "0ea2dbb74d140f95",
+   "0f2d2726ca4e6c9f",
+   "13d22d098f807453",
+   "36a9d51616e9ef24",
+   "406846eeed70f1a4",
+   "4c9ee90248c08666",
+   "5fe380a748aa0f3a",
+   "68d8de0fffca0932",
+   "7724b0b61bcdecac",
+   "8a265b4f5aa994a6",
+   "8b05e961fd3859d7",
+   "9b9feca24f3f4177",
+   "b1e34cc8b8e0390b",
+   "c77036d4544787cc",
+   "cd9e410adde15d46",
+   "d293c4684e221a58",
+   "d619226bb2e3393e",
+   "f362ea17d7bcdbd5"
+  ],
+  "48": [
+   "57ce9ca237deebea",
+   "73c7687be538da6c"
+  ]
+ }
+}

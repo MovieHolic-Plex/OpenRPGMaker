@@ -1,0 +1,192 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "75f2a7cd6d45099395c63b5b387d4c21cf0405eb88c80c7f4949f6488fa38c0b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern cap and body on a pole with round base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern clearly shows its rounded top surface foreshortened across rows 1-4, and the pedestal base also displays a prominent rounded top surface across rows 23-26, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5351
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern cap and lamp head",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern is foreshortened from rows 1 to 4 (4 rows tall), and the circular pedestal base shows a clear foreshortened top surface spanning rows 22-25, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5147
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern cap and lamp post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap (rows 1-4) is foreshortened from above across roughly 4 pixel rows, and the pedestal base (rows 23-26) also displays a 4-row deep elliptical horizontal top surface in proper 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5732
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and column with base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap shows foreshortened top surface spanning rows 1-4 (4 rows), and the lower pedestal base also clearly displays a 3/4 foreshortened circular top surface from rows 23-26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5933
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern is foreshortened and visible from above across rows 1-4, and the circular base pedestal prominently displays its top surface in perspective across rows 24-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5711
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern has a rounded top cap visible from above spanning rows 1-5 (~4 rows), and the circular base pedestal also clearly displays its top surface in 3/4 perspective (rows 23-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4367
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp (lantern head, pole, and round base)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern is drawn with a foreshortened top surface spanning rows 1-4 (4 rows tall) topped with a finial, and the circular base plinth also clearly displays its foreshortened top plane across rows 23-26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11881
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lantern cap and post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The dome cap at the top spans rows 1-4 showing foreshortening from above, and the round base at rows 23-26 clearly displays an elliptical top surface around the pole (approx. 4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4672
+  }
+ ],
+ "decidedAt": "2026-10-13T16:28:45.488Z",
+ "cells": {
+  "16": [
+   "04eb692f5add22ab",
+   "5997b57e10f0b673"
+  ],
+  "24": [
+   "27d74666d95ae3f4",
+   "2e38a6fea45bf8b9",
+   "4c38e077ad93d2fd",
+   "5a19c37885e8c042",
+   "7235cfadb0825136",
+   "8231bd88ce2b8dc8",
+   "9b770a934048d68e",
+   "9fd594cb61687544",
+   "b896165d253a7ba5",
+   "c6e560c792647da3",
+   "f696d72133f2515b",
+   "f7fa9c65072f0820"
+  ],
+  "32": [
+   "19de4d0b7437dfe4",
+   "5d17fc807fea9816",
+   "6cc5991f492c71de"
+  ],
+  "48": [
+   "0b8b4906363d9f46",
+   "12b515885269de2c",
+   "8235e337cb181dae",
+   "91e90c4b4e4457be",
+   "a4dee0abb94f90bf",
+   "f382d368eef73d4b"
+  ]
+ }
+}

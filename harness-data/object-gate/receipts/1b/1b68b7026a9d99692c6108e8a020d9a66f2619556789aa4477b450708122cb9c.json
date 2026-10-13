@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b68b7026a9d99692c6108e8a020d9a66f2619556789aa4477b450708122cb9c",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "주철 난로(연통)",
+ "label": "sky-steam/steam-i-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron stove with flue pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stove is rendered in pure front elevation: the firebox (rows 19-29), tapered hood (rows 12-17), and chimney pipe (rows 0-10) all use vertical column shading with no visible foreshortened top surfaces or horizontal plane depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stove and pipe are rendered as a pure front elevation. The chimney bands, hood edges, firebox door, and base are all strictly horizontal with no visible top surface or 3/4-view curvature. The trapezoidal tapering is the front profile of a conical/hooded stove rather than a receding top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6980
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron stove with tapered hood and flue",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove has a visible tapered top/hood section spanning rows 12 to 18 (7 rows tall) leading back to the flue pipe, sitting above the lower vertical front face (rows 19-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron stove body and hood",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stove has a visible top surface/sloped upper deck spanning rows 12-18 (7 rows tall) rendered in lighter grey tones leading to the flue pipe, contrasting with the dark vertical front face on rows 19-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4937
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.980Z",
+ "cells": {
+  "16": [
+   "09dab9b96048d302",
+   "aa1290426af9c1bd"
+  ],
+  "24": [
+   "035cea9c4ad32d91",
+   "2b6b40ddca2c0319",
+   "6587a34fa3e87825",
+   "7ad4dc6c94d771da",
+   "82f5cbe611767470",
+   "83be9db57889ecf8",
+   "91f8b746b5ccd744",
+   "9f948737047a2f4a",
+   "bcf9131e755d8321",
+   "cef50deb5ce161b4",
+   "e4dcace3938327cd",
+   "f6a51161e6aa0a12"
+  ],
+  "32": [
+   "729d9dd9c154d727",
+   "7d26218199e99c35",
+   "bab529a050f15221"
+  ],
+  "48": [
+   "2117b4546d02824e",
+   "89c5f6268031f444",
+   "933508e932df2753",
+   "e4a614c80570c706",
+   "ec3a66e15d6c127b",
+   "f27aaa37cdf8d6d3"
+  ]
+ }
+}

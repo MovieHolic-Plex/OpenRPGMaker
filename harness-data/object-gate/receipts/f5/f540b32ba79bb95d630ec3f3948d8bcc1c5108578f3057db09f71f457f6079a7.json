@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f540b32ba79bb95d630ec3f3948d8bcc1c5108578f3057db09f71f457f6079a7",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+ "label": "sky-steam/steam-smoke-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rising smoke plume is composed of rounded volumetric puffs with spherical top-lit shading, clearly presenting foreshortened upper surfaces (top puff displays ~4 rows of upper curve/highlight) rather than a flat front silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6472
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rising chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The billowy smoke plume consists of rounded spherical segments with top-down shading, showing the rounded upper dome of the top puff across rows 1-5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5425
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke column",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Chimney smoke is an atmospheric effect rather than an organic object. The smoke column consists of stacked spherical puffs drawn in pure front elevation rising diagonally without 3/4 top-down foreshortening or a distinct top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5989
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rising column of smoke puffs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney smoke consists of rounded volumetric puffs stacked vertically; the topmost rounded puff shows its upper rounded hemisphere across rows 1-5 (approx 4-5 source rows) with spherical shading consistent with top-down lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5706
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.092Z",
+ "cells": {
+  "16": [
+   "32163fda7864d018",
+   "6a208da1a7c9a58b",
+   "92ab2c400ded53a2",
+   "b9385ccdd0d38a94"
+  ],
+  "24": [
+   "01c85d4612ef1f76",
+   "0256c9cb1de178e9",
+   "0d75d011e4ffb92c",
+   "1539e4a28c990c41",
+   "16004a010fbee7cb",
+   "22a0c5775a8fa3d3",
+   "2606972f73303086",
+   "3de8a35f4e6dbda8",
+   "53b1889bb2507547",
+   "561f02567f1791dd",
+   "5f8c767800319684",
+   "7231c4b2741ba782",
+   "84c0f5ad0752840d",
+   "8f80d4417075ba53",
+   "9e79f56e14569f22",
+   "a094f535ef52b73d",
+   "b14e6446b9268597",
+   "b7b97bf2e2e5d5f7",
+   "e9dc32bce2e023a2",
+   "f8aa4e564bec6289"
+  ],
+  "32": [
+   "dff824eee6373bf4"
+  ],
+  "48": [
+   "1ed7ddbed47bef3c",
+   "26d239352ea5686a",
+   "87e7bd9c9812fd72",
+   "c1e9ddba21d8bbda",
+   "d3e83f57d9be2135",
+   "e6c4ec7ff959d862"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "daae9f21520a01d23934c65d5a9ff217d33b80539f475ccca7c2aab24ea8e950",
+ "width": 32,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "계기판(압력계 3·레버)",
+ "label": "sky-steam/steam-i-gauge-panel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall-mounted instrument panel with three round pressure gauges",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted gauge panel drawn flat against the wall plane, appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6228
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted gauge panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted instrument board with three pressure gauges, viewed flat against the wall as appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall-mounted gauge board with three dials",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted rectangular control board with three circular pressure gauges mounted flat against a wall, permitted to be drawn flat per wall_mounted classification.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6098
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted gauge board with three round pressure meters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gauge panel is mounted flat against a vertical wall as permitted for the wall_mounted kind. Meters and mounting plate face directly south toward the camera without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7582
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "50b68e09055f331c",
+   "50d4fe8c3f0d754f"
+  ],
+  "24": [
+   "2b7f06529488b5ad",
+   "2c8886fdf79e56b2",
+   "3b4f97ac431452a7",
+   "456cddc68ef00c32",
+   "52b669c1eb3a8845",
+   "5c31ad68a02466ee",
+   "943a9b1c10f4c609",
+   "aa66ce2eb43f1b4e",
+   "c8a03e21b468cb9c",
+   "d615c49a3f6b2010",
+   "d93e6308b05f6ea4",
+   "e810ed41bc4f045a"
+  ],
+  "32": [
+   "3cd106a761871cbf",
+   "5d2924528514ab10"
+  ],
+  "48": [
+   "2e35c2307dfd318a",
+   "8729f0442118515f",
+   "9a6261afc232cfa0",
+   "cc048d578aa6f491",
+   "f9eee6b9319fe550",
+   "fc4d714d8c26bd85"
+  ]
+ }
+}

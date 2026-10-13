@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1d43b75d0275098a822d9c2779b42336fae97c04995598a8a709d8f43fac9c6d",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "공장 철문(벽돌 문기둥·돌 문턱)",
+ "label": "sky-steam/steam-iron-gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate beams, vertical bars, brick pillars, stone capitals, and lanterns are all drawn strictly in flat front elevation with 0px top surface. Only horizontal edge highlights are present, with no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6742
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars and threshold",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate's horizontal beams, vertical bars, and stone caps on the brick pillars are drawn in pure front elevation without any visible foreshortened top surfaces. The upper beam starts flat at row 3 with no top face, and the middle beam (rows 14-18) is rendered flatly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate's horizontal beams, vertical bars, and flanking brick pillars are drawn in pure front elevation without foreshortened top surfaces. The lanterns atop the pillars are also depicted straight-on as flat elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6652
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "factory iron gate with brick pillars and stone threshold",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gate, horizontal beams, and brick pillars are drawn in pure front elevation with no foreshortened top surfaces. The crossbeams (rows 14-18) use symmetric horizontal shading typical of 2D side-scrollers rather than showing a distinct top face seen from a 45-degree angle, and the pillar caps and lamps are also drawn as flat 2D shapes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13013
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.981Z",
+ "cells": {
+  "16": [
+   "2690ad6bc0650567",
+   "46924f2b135d18e9",
+   "46dacbe2355c10f4",
+   "676ad57d0af33e1f",
+   "b0c812fd55ca0e70",
+   "bc73dd308bcac8e1"
+  ],
+  "24": [
+   "2e62948ea630723c",
+   "7c0dc934648a32f0",
+   "98a93632c2533851",
+   "9ab78b53e5764d29",
+   "a40ead4e6b599520",
+   "a4820e8906b0ea2d",
+   "db63e57c344afe8b",
+   "e146cfae4cbcb7e6"
+  ],
+  "32": [
+   "01c3106e830e3522",
+   "15e5633a8165d74b",
+   "5d0ce72be9c5660f",
+   "9b0534ce2c6ea587",
+   "b0630bd0ad66829c",
+   "b280937538c8fb86"
+  ],
+  "48": [
+   "7b56ee50bb1e24f8",
+   "e929ce37b76faf0f"
+  ]
+ }
+}

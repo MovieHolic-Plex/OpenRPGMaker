@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5191d5c511815115d99fd79e71308a2a6fdcf14a371f24276da9dfd3d956786b",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "그을린 거리 나무(쇠 보호 격자)",
+ "label": "sky-steam/steam-soot-tree",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree canopy and vertical trunk are drawn in pure front elevation with no visible top surface, standing flatly above an elliptical ground grate.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7300
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (tree canopy and trunk) is drawn as a flat 2D side/front elevation typical of a platformer, with no top-down foreshortening or visible top surface on the canopy. Only the ground grate at the bottom has a 3/4 perspective, which is just a base plinth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6837
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the tree (canopy and trunk) is drawn in pure front elevation with flat circular lobes and a vertical cylindrical trunk. While the ground grate plinth shows a 3/4 perspective ellipse, the main body itself lacks any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6856
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (canopy and trunk) is drawn in a flat front elevation with no visible top surface. Although the base grate at the bottom is foreshortened as an ellipse, the main body of the tree lacks 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6489
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.179Z",
+ "cells": {
+  "16": [
+   "0702e95c1ca7c169",
+   "9ef47bed9f187050",
+   "a9665e42203959ed",
+   "c149b4ae430bd573",
+   "fe3116d5a816a286",
+   "ff71d146318bf507"
+  ],
+  "24": [
+   "06943050631c9dc1",
+   "0c6cd261df31e82b",
+   "37f422b15f61d2c6",
+   "648ccb39c99075cc",
+   "70c1cdaca8353e3f",
+   "815c477775fc8c66",
+   "82a2e4f6958b6144",
+   "e8d6eda271eafbb2",
+   "ebac2e49c8e94cb2",
+   "ee7d745cefb82dcf",
+   "ef800b3d9d85f187",
+   "f3571eed2eba04bd"
+  ],
+  "32": [
+   "1fe46f1a7ee21ec8",
+   "333efd75dc744c1e",
+   "e1d127d0c8fb3656",
+   "e81e8057c2aceec3"
+  ],
+  "48": [
+   "168f8beb11a37b8e",
+   "cac222b61b4fce0a",
+   "f168dd526432450d"
+  ]
+ }
+}

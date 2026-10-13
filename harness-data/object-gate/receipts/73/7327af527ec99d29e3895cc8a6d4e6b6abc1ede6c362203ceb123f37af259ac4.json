@@ -1,0 +1,240 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7327af527ec99d29e3895cc8a6d4e6b6abc1ede6c362203ceb123f37af259ac4",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "세운 실린더 증기 기관(피스톤 오르내림 4프레임)",
+ "label": "sky-steam/steam-piston-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machine base block and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine base (rows 22-31 and 14-21) is drawn in pure front elevation with only a 1px line separating the levels and no visible horizontal top surface foreshortened from above. The piston heads and base panels are completely flat front-facing.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7376
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine machine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine base and tiers (rows 14-21 and 23-30) are drawn in pure front elevation with only a 1px edge highlight at row 22 and no foreshortened top surfaces visible. The cylinder tops and piston rods are also depicted in flat front projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6317
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machine base and vertical cylinder engine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine base (rows 14-31) is drawn in pure front elevation with vertical plate faces and rivets, showing only 1px edge lines instead of foreshortened horizontal top surfaces. The pistons and cylinder caps also lack top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5392
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire engine machine is drawn in pure front elevation: the lower and upper base panels (rows 14-21 and 22-30) are drawn as flat vertical surfaces with rivets and only a 1px edge line at row 21; the copper cylinders and piston caps are also rendered straight-on without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6500
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machine base and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large metal machine base and rear frame (rows 14-30) form the main volume of the object and are drawn completely in front elevation. The top edge at row 14 terminates in a flat 1px edge with no visible horizontal top surface, and the lower step at row 21 is only a 1px dividing line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6942
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "engine base block and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large metal machine base is drawn strictly in front elevation across rows 14-30 without a visible top surface (only a 1px horizontal division line at row 21). The piston T-caps at rows 3-4 are also flat 2px bars viewed from the side/front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6880
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine machine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine platform and tiered base are drawn in flat front elevation. The horizontal ledges at rows 14 and 21 are only 1-pixel edge highlights rather than foreshortened top surfaces, resembling a 2D side-scroller asset.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 4"
+   ],
+   "ms": 6117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam engine machine base and cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large grey machine housing is drawn purely in front elevation from row 14 to row 30 with no visible horizontal top surface (row 14 is a flat 1px edge against the black background, and row 21 is a 1px ledge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5856
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.175Z",
+ "cells": {
+  "16": [
+   "1f8f55828d694f90",
+   "538468d0f45cb64c",
+   "b69653ded467f9c3",
+   "edeb0d88e635c345"
+  ],
+  "24": [
+   "253c4d50b8d9e50e",
+   "2a41753680520452",
+   "2c244920d16d0458",
+   "34b49ef593a26bb9",
+   "42c2f728a0437354",
+   "55162e0adbb5b421",
+   "6bd050f6873d5298",
+   "72ae95975065817f",
+   "998364c4c0cb607d",
+   "9f3a84dd40142f6e",
+   "a9b7ccb618865471",
+   "abc7c24491b2c458",
+   "af720c5b1a10265b",
+   "b406f0ddbb80ee78",
+   "c4bf1241dc0c7e2f",
+   "c7ee42771b640a2c",
+   "dabee8a113dd7af7",
+   "e0632375085f89f4",
+   "e2fd64d04f33279f",
+   "e76d5f5719c209a4",
+   "ed7aaeb5efe4c774",
+   "eda5f564970d671b",
+   "f31843f96b6ed493",
+   "f65245494d44eba5"
+  ],
+  "32": [
+   "17f5964eb2cd55bb"
+  ],
+  "48": [
+   "278ec83741529286",
+   "36a53c1023cd3bc1",
+   "496690812a45012d",
+   "6b4fd0fd27f4a59a",
+   "7d1118be954690c3",
+   "cc5056a8c47132a1"
+  ]
+ }
+}

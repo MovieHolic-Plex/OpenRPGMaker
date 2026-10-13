@@ -1,0 +1,228 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ceac2ef160230eb3b648c203c03fd872365d77bcd2fa553335dfbc2f3c025529",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "벽돌 받침 가스등(불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar with stone cap supporting a gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—the brick pillar, the stone cap, the lantern base, and the lantern dome—is drawn in pure front elevation with straight horizontal bands and no visible top surface or elliptical foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6092
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar with gas lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the brick pillar, the stone cap (rows 15-19), and the lantern hood (rows 1-5), is drawn in flat front elevation with straight horizontal bands and outlines. No top horizontal surface is visible foreshortened anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar with gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal boundaries (lantern cap rim, lantern base, stone slab, and brick base) are completely flat horizontal lines with no foreshortened top surfaces or elliptical curvature visible. The entire structure is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5873
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar with stone cornice and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (brick column, stone cornice, lantern, and lamp cap) is drawn in pure front elevation with completely flat horizontal lines and zero visible top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5433
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pedestal lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation with straight horizontal bands and no visible top surface on either the brick pedestal cap, the lantern base, or the lantern roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8028
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pillar with gas lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick pedestal, stone slab capital (rows 15-19), and lantern dome are all drawn with flat horizontal lines from a direct side/front elevation view with zero foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4867
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillar with stone cap supporting a gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every section of the object (lamp dome, lamp base, stone slab, brick pillar, and bottom plinth) is drawn in pure front elevation with straight horizontal bands and flat silhouettes, showing 0 pixel rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillar base with stone cap and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—the brick pillar, the stone cap (rows 14-19), the lamp base, and the lamp housing—is drawn with perfectly horizontal straight bands and a front-facing silhouette without any foreshortened top surface visible from the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4443
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.174Z",
+ "cells": {
+  "16": [
+   "5f6eaf12c950f081",
+   "bd6565bbe6f0abb0"
+  ],
+  "24": [
+   "1373a1f8886b174c",
+   "40783ead2aacffbf",
+   "519d4e5f3c3c6502",
+   "53d40e474c69de78",
+   "5e122fb9d01fdec5",
+   "8179d4e4aec3604e",
+   "8f45522bdef9ff7a",
+   "9be027136dfe959e",
+   "c7f6bcaf407f72be",
+   "db293359d8d5137d",
+   "f8b69381a9ccad15",
+   "ff55fbba79313a5f"
+  ],
+  "32": [
+   "4a279aae6fd53093",
+   "54cc57890bd66b6d",
+   "6b0eeff07e3e4809"
+  ],
+  "48": [
+   "0ff82758aaf7277d",
+   "55ee7c0b8c88281a",
+   "844d6ce5db4ffe79",
+   "8d6b26be7721ed4f",
+   "a86114a501108e9a",
+   "c031f27d713aa558"
+  ]
+ }
+}

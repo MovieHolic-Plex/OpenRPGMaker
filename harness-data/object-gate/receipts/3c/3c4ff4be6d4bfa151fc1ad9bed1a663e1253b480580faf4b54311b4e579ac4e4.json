@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c4ff4be6d4bfa151fc1ad9bed1a663e1253b480580faf4b54311b4e579ac4e4",
+ "width": 64,
+ "height": 32,
+ "kind": "container",
+ "name": "석탄 화차(위에서 석탄이 보임)",
+ "label": "sky-steam/steam-coal-wagon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coal cart clearly displays an open rectangular top revealing the coal inside (rows 3-10, 8px tall) along with a front wooden vertical face (rows 14-23) and wheels in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6965
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal freight cart",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart displays a clear 3/4 top-down view with an open top cavity showing coal inside (rows 3-11, 9 source pixel rows tall) between the top rims, followed by the south-facing planked front wall and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open wooden coal wagon with wheels",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wagon interior is viewed from above across rows 3-11 filled with coal, enclosed by rim borders, sitting atop a clearly defined south-facing planked wall (rows 14-23) and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6068
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden coal cart",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coal cart clearly shows its interior opening from above across rows 3-10 filled with coal, bounded by wooden rims (top rim at row 2, front rim at rows 11-12), followed by a south-facing wooden plank wall and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8016
+  }
+ ],
+ "decidedAt": "2026-10-13T16:00:31.957Z",
+ "cells": {
+  "16": [
+   "332ed57445ec5faf",
+   "36449588ff048e0c",
+   "378ced0c3b18ed3f",
+   "53802bb7c7745b54",
+   "c77f060ff5a50fb3",
+   "c8e1a62471c7d327",
+   "dd20ad1e5075c5a1",
+   "fdb2b51a744dc173"
+  ],
+  "24": [
+   "08319e6f9e2bc835",
+   "0866e431ebe95708",
+   "088897b4e7d4c08d",
+   "0b55a3d83a930284",
+   "0cdc1126f0fac35e",
+   "165c2207c2041ad9",
+   "201d218afceb2f6d",
+   "27ee679bda35be75",
+   "33255c50be85fb52",
+   "3c6c83d2a4e940da",
+   "48f332d68cb97df1",
+   "49a116de137a2408",
+   "4c9f3ec8542464f6",
+   "596a92eda8249f15",
+   "680526b28612fcbc",
+   "73bc4d5760df9015",
+   "75dac052ba413777",
+   "82f2fa28296ebb9b",
+   "8e255113160c6f4a",
+   "93dcaf5f73f7e122",
+   "99862df208ee9970",
+   "9b5f6d87d9899d91",
+   "9dbeab8d0ff82ab0",
+   "a33ae07d99764af8",
+   "a7d5a14c2e7324f9",
+   "b2e916e1d1e5539c",
+   "ba8b1e64dae2b54c",
+   "c36951ece0cf658b",
+   "c46b33efa36962c0",
+   "c7699c017aed4ecc",
+   "caebe053b546d950",
+   "dd5ffc712a83d573",
+   "ec01e9c1672b8b13",
+   "ec84f72b4a6fe30d",
+   "f0d84a64f412b9d3",
+   "fb90e4aa38fe79ca"
+  ],
+  "32": [
+   "446b486392a1b225",
+   "e80c5fccb1514dcb"
+  ],
+  "48": [
+   "2abb2e1f732fa972",
+   "4cf28b39c7cf7615",
+   "67efd4cb6654dfdc",
+   "68bbd768002de1f8",
+   "746e04e630b65342",
+   "7663c4755367c7fe",
+   "9b6d49801da616c2",
+   "c0d5f39626a3b001",
+   "d7ab90e0763ddbae",
+   "dee7f3a5acef516c",
+   "df59832dcf29dac8",
+   "fb9f33039abb1ff0"
+  ]
+ }
+}

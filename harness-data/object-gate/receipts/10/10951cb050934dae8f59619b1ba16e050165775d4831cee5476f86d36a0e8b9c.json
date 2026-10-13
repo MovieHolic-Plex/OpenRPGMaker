@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "10951cb050934dae8f59619b1ba16e050165775d4831cee5476f86d36a0e8b9c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "벽돌 받침 가스등(꺼짐·낮)",
+ "label": "sky-steam/steam-gaslamp",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pillar with gas lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal junctions and edges (the base at row 30, the plinth overhang at row 20, the lantern base at row 13, and the upper lantern rim at row 5) are drawn as flat horizontal lines with no visible top surface or elliptical foreshortening, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10299
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pedestal gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (brick base, stone cap, glass lantern enclosure, and top dome) is drawn in pure front elevation with straight horizontal boundary lines and vertical profile silhouettes, showing no foreshortened top surfaces anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13524
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pedestal gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal features (pedestal rim, lantern base, cap eaves, and base plinth) are drawn as completely flat horizontal lines with no curvature or visible top surface from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5463
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillar base and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal boundaries (rows 5, 13, 19, 30) are completely flat horizontal lines with no foreshortened top surfaces, cut faces, or circular/elliptical planes visible from the 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6575
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "7799b823677c4d90",
+   "a68a92e80b2081a9"
+  ],
+  "24": [
+   "053c095118ffcba8",
+   "13445019c5830993",
+   "301975fb542eb664",
+   "38da5d480afd7159",
+   "598536e4a5b97780",
+   "948fa9db8d356544",
+   "9c7fb64e188a811c",
+   "9f49f3d907a739e5",
+   "b98377c0c62f9318",
+   "bdf625490e9d3793",
+   "c18468e3c2d23e9f",
+   "d76b0d84dbd64a93"
+  ],
+  "32": [
+   "580b6993f81b5331",
+   "919c535b016fd59c",
+   "f93c01ee48260ff7"
+  ],
+  "48": [
+   "06aa8bfa416b9064",
+   "305e93643c385d68",
+   "9cdec64ae717e3c6",
+   "bb69bdb5fc1bb5af",
+   "c2c7a898650aec8a",
+   "d219346f16c72d88"
+  ]
+ }
+}

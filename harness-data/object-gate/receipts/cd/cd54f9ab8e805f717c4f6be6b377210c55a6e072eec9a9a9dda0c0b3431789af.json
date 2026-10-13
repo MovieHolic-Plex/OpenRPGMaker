@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd54f9ab8e805f717c4f6be6b377210c55a6e072eec9a9a9dda0c0b3431789af",
+ "width": 96,
+ "height": 96,
+ "kind": "structure",
+ "name": "골함석 창고(하역 도르래 보)",
+ "label": "sky-steam/steam-warehouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corrugated metal warehouse building",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The warehouse shows a 22-row roof surface (rows 0-21) sloping away from the front gable, correctly foreshortened in top-down 3/4 view above the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 25542
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corrugated metal warehouse with pitched roof",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gable roof is properly rendered in 3/4 top-down perspective with 22 rows of visible pitched roof slopes meeting at a vertical central ridge (rows 0-22) above the south-facing gable facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14704
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corrugated metal warehouse building",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gable roof is drawn in 3/4 top-down projection with its ridge and eave lines receding 21 pixels north (rows 0-21), clearly showing both the left and right sloped top roof surfaces above the south-facing gable wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15777
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corrugated metal warehouse",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly displays the top slope of its corrugated roof from row 0 to row 22 (and up to row 42 along the outer eaves), visible from above in the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8699
+  }
+ ],
+ "decidedAt": "2026-10-13T15:48:38.531Z",
+ "cells": {
+  "16": [
+   "1492087dcd21dfa4",
+   "19d98a6f12ad39ab",
+   "2a79d4945e6f7c9c",
+   "2ae3418c2d908059",
+   "310b4c6b47ae00a8",
+   "320cf19ec72e8f03",
+   "3f3977a2b165b7cb",
+   "45a671ec3148cffc",
+   "4e9e23bdcf9e7e6f",
+   "6bf3e8feda0397df",
+   "741b64d47feac4d8",
+   "74ed0bad4d28f707",
+   "87380e8764dd190b",
+   "8d250ea1b01a3989",
+   "8d480874c62ec922",
+   "a8f213581aceb3c9",
+   "a9588a2c35ed321f",
+   "a95dc0a990fed681",
+   "a9a6fca29e163032",
+   "b1b008c6d1a8b70c",
+   "ba078e6ba7a9ed75",
+   "c0bb8a507812cc02",
+   "c19a9c3c8c19c2e3",
+   "c489cfeb32284405",
+   "cb1a576469380de4",
+   "cd3331753ac0f293",
+   "da17b563b871cd03",
+   "da4b258500c9f425",
+   "dd849f82287709a6",
+   "ee9fc5e6fe41e91b",
+   "f1c611707df7184b",
+   "f39c84ceea1264a9",
+   "fe1f67d2678a00b3",
+   "ff969729c94d2512"
+  ],
+  "24": [
+   "0fbe1cfc547cdbd1",
+   "10397bc426b64769",
+   "12a2d354f58bfc9e",
+   "142457fb9d2e8b01",
+   "1d8c1946a9cf9aa0",
+   "1e1d5bb031af229d",
+   "34966c123b2f11f2",
+   "3861d886961e05a8",
+   "3a7f1d3e378227fe",
+   "4998ea6be04e134f",
+   "92a143869948a671",
+   "980339287508a080",
+   "c51a2d09c2603ee4",
+   "d414196223912f00",
+   "e3471d57e7e824d5",
+   "ea1ae1a1e821277f"
+  ],
+  "32": [
+   "200114d0fa518f76",
+   "3df12e5aef603429",
+   "40ded9dd56069d5c",
+   "497f235d9d7b12a5",
+   "5f4c1dc0ffb9f3a9",
+   "648c6648219c5fac",
+   "86f6eca08c137de4",
+   "d38c5f53bfbc4f66",
+   "f8d9b71d583c9bec"
+  ],
+  "48": [
+   "62bb792cdcaed7ec",
+   "72028fb81d146bba",
+   "c32ecf229efe830e",
+   "f1fa768e6a93b6e0"
+  ]
+ }
+}

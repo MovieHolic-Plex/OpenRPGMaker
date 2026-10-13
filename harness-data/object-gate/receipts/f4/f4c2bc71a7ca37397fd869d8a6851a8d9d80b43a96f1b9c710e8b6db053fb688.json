@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f4c2bc71a7ca37397fd869d8a6851a8d9d80b43a96f1b9c710e8b6db053fb688",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "여관 침대(퀼트 이불)",
+ "label": "sky-steam/steam-i-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "inn bed with quilt",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed shows an extensive foreshortened top surface (pillow and quilt covering rows 3-25) and a south front face at the footboard (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "inn bed with quilt",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow and quilt) extends across rows 4 to 25 (22 rows tall), terminating at the front footboard in rows 26-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4023
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed with pillow, quilt, and wooden footboard",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed top surface spans from row 4 to 25 (pillow and quilt seen from above, foreshortened), resting above a 4px tall south-facing footboard (rows 26-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10452
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "inn bed with quilt",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed top surface (pillow and checkered quilt) is clearly displayed from above spanning rows 4 through 25, with the footboard south face shown at rows 26-30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4147
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "059c54ab2fb938bb",
+   "e8ba6121d0882f48"
+  ],
+  "24": [
+   "045e1e2f2a887759",
+   "0f90220fc88303de",
+   "394ef7936933721c",
+   "4dd0b136408164ab",
+   "66ddcc727419ecb2",
+   "70c4c7c443e38e19",
+   "9b6630dc77ddb305",
+   "9ccb5f12bd4cd4ec",
+   "b0369742b64c2dc7",
+   "bdcec54d2088be86",
+   "d5e72b36d1ef83dc",
+   "f1fcedbc31dc6b73"
+  ],
+  "32": [
+   "a14d98c9ecab2d27",
+   "d832004fbfb78d9b",
+   "ea579c7f225fe90d"
+  ],
+  "48": [
+   "300d6b56c29ff991",
+   "517d0c52d2fe0283",
+   "5ec271f0c372e308",
+   "745103f7ef16e3ea",
+   "a7e30b3d54a2a7f7",
+   "d962448272c763c0"
+  ]
+ }
+}

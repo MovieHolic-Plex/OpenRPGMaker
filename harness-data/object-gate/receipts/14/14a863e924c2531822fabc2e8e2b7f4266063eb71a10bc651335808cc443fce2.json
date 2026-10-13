@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14a863e924c2531822fabc2e8e2b7f4266063eb71a10bc651335808cc443fce2",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "버려진 톱니 더미",
+ "label": "sky-steam/steam-gear-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of discarded gears lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gears are shown lying flat on the floor, foreshortened into ellipses viewed from a ~45 degree angle (the main brass gear's top face spans rows 6-10, ~5px tall by 8px wide, with lower thickness/underlying gear visible at rows 11-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5777
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow gear",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gears are drawn as flat 2D silhouettes facing directly forward (the yellow gear's center axle hole is 2px wide by 3px tall, vertically elongated, and the orange gear is a symmetrical 5x5 cross) with 0px of visible top thickness/rim for any of the gears.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13644
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of gears / mechanical debris lying on the ground",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gears are shown foreshortened lying on the floor; the main brass gear shows its broad top face across rows 6-10 (5 rows) with a central hub, stacked on top of a gray gear/base at rows 11-12, correctly matching 3/4 top-down perspective for debris.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5876
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of gears lying on the floor",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pile of gears shows the horizontal top face of the large upper gear (rows 5–10, 6px tall) and the south front edge of the lower gear (rows 11–12), correctly representing debris lying flat on the floor in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9685
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "31d35a0633a2b7d3"
+  ],
+  "24": [
+   "15fefdaeca79dc55",
+   "179ed084eaa96fa4",
+   "57d6f8c2c7d6dc32",
+   "b6bb9040165afe46",
+   "e97740312f25a670",
+   "f19eb0412b44fe4d"
+  ],
+  "32": [
+   "333f301ecdab4e07",
+   "4f4a62cae17d6022",
+   "749257154929b1c6",
+   "853d2c30705569b4",
+   "9fc7a16b09166ad3",
+   "dcfcc00e13c75488"
+  ],
+  "48": [
+   "5a1fc1436703da7c",
+   "9bb9cc0f05611922",
+   "a9648f7b762b6e3a",
+   "e2aae14e9c760fad",
+   "efb3092a6008c771",
+   "f1283232b0152f22"
+  ]
+ }
+}

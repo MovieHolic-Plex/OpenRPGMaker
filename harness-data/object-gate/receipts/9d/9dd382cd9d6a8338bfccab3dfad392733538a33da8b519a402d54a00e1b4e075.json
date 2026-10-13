@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9dd382cd9d6a8338bfccab3dfad392733538a33da8b519a402d54a00e1b4e075",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "거리 기둥 시계(둥근 돌 받침·북 머리)",
+ "label": "sky-steam/steam-street-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "street post clock (clock head and column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top cap (rows 1-4) and clock drum (rows 5-18) are drawn in pure front elevation with no visible top surface foreshortened from above (0 top rows). Although the bottom stone base plinth shows a top surface, base plinths do not count for the main body/top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6718
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street clock head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the bottom stone base shows a foreshortened top surface, the main body (the clock head and post) is drawn in pure front elevation with a circular clock face seen straight-on and no top surface visible on the clock drum or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the base plinth is drawn with a foreshortened top surface, the main body (the clock housing, dome cap, and post) is drawn in pure front elevation with 0 rows of visible top surface on the clock housing or roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8993
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock head and pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base plinth has a top ellipse, but the main body (the drum clock head and green dome) is drawn in pure front elevation without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5667
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.728Z",
+ "cells": {
+  "16": [
+   "809b78a09a43ee42",
+   "8601326c10d69f5d",
+   "86867b028d23438a"
+  ],
+  "24": [
+   "0837c74571b6828e",
+   "15b11bb67ab2e516",
+   "2262fc36f4aa31fc",
+   "25adc9fb44d26cc2",
+   "7f80ded92f3faa6c",
+   "db11b544f94925e1"
+  ],
+  "32": [
+   "06129e118d3bcfb0",
+   "2165188dee36bab9",
+   "2b0fb9e54c7ceeaa",
+   "575a316c6e0f15f4",
+   "9297db5c7a47cc5e",
+   "9cd8a6625902c1bf",
+   "9fdd1f7c11db5588",
+   "e6406261ea4cb153",
+   "e6d2814b1c4838fc",
+   "f6e240683e3f7629",
+   "fbb9bd1cac0ddd1d",
+   "fd557a3af8b64350"
+  ],
+  "48": [
+   "26e6c599f6a8cb74",
+   "2ce8d49eade009e2",
+   "d868394da28e1ddf"
+  ]
+ }
+}

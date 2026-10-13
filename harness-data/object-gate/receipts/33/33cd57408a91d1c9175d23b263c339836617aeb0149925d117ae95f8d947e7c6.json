@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33cd57408a91d1c9175d23b263c339836617aeb0149925d117ae95f8d947e7c6",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick boiler furnace with metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a 16px high front brick face (rows 15-31) and a wide 12px deep sloped metal top hood (rows 3-14) seen from above, crowned by a chimney whose elliptical opening (rows 1-3) confirms the top-down 3/4 camera angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick boiler furnace with metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a 16-row vertical front face (rows 16-31) and a wide sloping top hood (rows 3-14, ~12 source pixel rows) leading to a chimney with an elliptical opening visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5196
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick boiler furnace with metal hood and chimney",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace has a brick lower front face (rows 16-31) and a large top hood/sloped surface spanning rows 3-15 (~12 rows tall), along with a chimney at the top showing an open top ellipse seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4722
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boiler furnace with brick base and metal hood with chimney",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The metal hood slopes backward over rows 3-13 (11 pixel rows) providing a substantial visible top surface, and the chimney cap features a clearly foreshortened top opening ellipse.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3527
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.383Z",
+ "cells": {
+  "16": [
+   "1d7af2df1e535383",
+   "36dd7f4cdce73cbe",
+   "4d78379aec0f745f",
+   "b80d12b320f1587f"
+  ],
+  "24": [
+   "16c3e10a4a0f9934",
+   "190448a72768b2c4",
+   "22946b9f51493274",
+   "2c925c61dbf83799",
+   "3334e54c5e84b976",
+   "377b75dfae3155bd",
+   "3788c9435141dbad",
+   "47a1f8eae439817b",
+   "508c993cab56a3e2",
+   "57325ad9efab33a9",
+   "70023d53eeb2f81b",
+   "72469301771c83ed",
+   "72e0995cd2785b08",
+   "85f5093e8db4f86e",
+   "875ad33803119852",
+   "a29a8377a4abadc1",
+   "a6ba4808e6e46c30",
+   "b38d4b35429ae52b",
+   "bb182153f4918797",
+   "c5f529edb3e3447c",
+   "d5aec7a8426eff81",
+   "e9662ff8ff708ccb",
+   "fc3e2454d51245c7",
+   "fd7289b0da211a8a"
+  ],
+  "32": [
+   "7e66d9f750eea495"
+  ],
+  "48": [
+   "027d0f045099604f",
+   "17ef5974cb8c312f",
+   "32c25890a9fe59d0",
+   "5f2f3349d9a2973d",
+   "b897ac71d6e5edaa",
+   "ef8135e74b5c7f83"
+  ]
+ }
+}

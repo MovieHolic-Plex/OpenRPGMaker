@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c4a771cf48b5121b940e5530c7526465cbc10ea163c3e1d72216996caf218b5f",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "등받이 의자(붉은 방석)",
+ "label": "sky-steam/steam-i-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair with red cushion seat and wooden backrest",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion has a clearly foreshortened top surface visible from rows 6 to 8 (about 3 rows tall), tapering slightly toward the back, followed by a south-facing front rim/skirt on rows 9-12. The wooden backrest also shows a 2px top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6803
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chair with red cushion",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion shows its top surface foreshortened from above across rows 6-8 (about 3 pixel rows), with the south-facing thickness/front edge below on rows 9-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair with red cushion seat and wooden backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion seat shows a clear top surface foreshortened from above across rows 6 to 10 (approx 5 rows tall), widening towards the front in 3/4 perspective, with a 2-row front face on rows 11-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7626
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with red cushion seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion's top horizontal seating surface is clearly visible from above across rows 6–10 (5 source pixel rows), with the vertical front edge of the cushion shown on rows 11–12 above the front legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8199
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.980Z",
+ "cells": {
+  "16": [
+   "a058209510ace9b7"
+  ],
+  "24": [
+   "387e7a3c45410336",
+   "86faef3f3af946ae",
+   "88367bfbac966c24",
+   "8fa6e973fda1f80f",
+   "dd6213a0acd2acb2",
+   "fe69c706d1399864"
+  ],
+  "32": [
+   "0a3115d632928af1",
+   "11f472f79e450f43",
+   "5bbce43ea85d2446",
+   "9b13c5deb6a30569",
+   "b87b449609953967",
+   "d3c682bde58cebc1"
+  ],
+  "48": [
+   "247bd04890efc58b",
+   "4025b1ab2e45160c",
+   "4bb26c4ae2ac7f66",
+   "889446afd4f2e89e",
+   "b760ff161064652a",
+   "eb6d32725483e990"
+  ]
+ }
+}

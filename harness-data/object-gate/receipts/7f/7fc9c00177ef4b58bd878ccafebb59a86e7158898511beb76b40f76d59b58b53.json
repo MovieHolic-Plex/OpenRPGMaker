@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fc9c00177ef4b58bd878ccafebb59a86e7158898511beb76b40f76d59b58b53",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "선로 끝 완충 멈춤목",
+ "label": "sky-steam/steam-buffer-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "track buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the buffer stop block spans rows 1–5 (5 pixel rows of wood planks), while the south front face with red and white warning markings spans rows 6–11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7284
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "buffer stop beam and structure",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the buffer structure spans rows 1 to 5 (5 pixels tall), clearly visible from above, followed by the red-and-white south face and bumpers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6032
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "railway buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main beam displays a clear 5-row deep top horizontal surface (rows 1-5) above the vertical red-and-white front face (rows 6-11) with buffer pads, correctly following the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail buffer stop beam",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wooden buffer block spans rows 1-5 (5 rows tall), resting above the red-and-white striped front face (rows 6-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6512
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "04edfdcbef358568",
+   "a5b6b8ec1224a9ca"
+  ],
+  "24": [
+   "1bbcf2185a934f2c",
+   "1d822e6dbf047b6c",
+   "2395d21c439dc518",
+   "3b2a460912e0c80f",
+   "4a1566a4ba772bb6",
+   "4a9a26d3520c2819",
+   "6db0dc53f5bdbd56",
+   "7dd6e02ed1b1eefc",
+   "907d02a58dac3173",
+   "be3f6a86d0026518",
+   "ea168d778a1ecd13",
+   "ede6335a3b040232"
+  ],
+  "32": [
+   "3cfbd13d3e59d02c",
+   "434fe684090ecc50"
+  ],
+  "48": [
+   "090c845dd3536d8c",
+   "1d628e4ff4ca5219",
+   "274a065fd8a779ec",
+   "27a369ff804e4971",
+   "6497e49ee9867331",
+   "aeb7cc8db16aad3c"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "743b81cdc0c4aa19e27a9ec071644ad66128c9cad0cfd1e184ddcfa170cf465e",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "탁상 드릴 프레스",
+ "label": "sky-steam/steam-i-drillpress",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press head and motor housing",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top motor housing clearly shows a 4-pixel deep horizontal top surface (rows 2-5) above its front face (rows 6-11), and the base likewise displays a 4-pixel deep top surface (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4174
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press head and column assembly",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The head of the drill press clearly displays a 4-row top surface (rows 2-5) above its front face (rows 6-11), and the base also shows top foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4076
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "head unit and base of drill press",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper motor/head enclosure is 4 rows tall (rows 2-5), resting above a 6-row front face (rows 6-11). The base also shows a 4-row top surface (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4972
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press head and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper motor housing (rows 2-5) and the wide lower base (rows 22-25) show clearly defined horizontal top surfaces measuring ~4 pixel rows in depth above their south-facing vertical planes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5629
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.724Z",
+ "cells": {
+  "16": [
+   "31cc7800dc02f86f",
+   "781cd0ea8f7515db"
+  ],
+  "24": [
+   "311f97b0a5cd8322",
+   "313d885cca8b0080",
+   "41d6cd7cac5edbe1",
+   "4e3427068b3c0240",
+   "7b3ba4fcc02992a5",
+   "acb4fd4eeb1d76c2",
+   "b33fb675ebc32d46",
+   "cd9578dfddcde7b4",
+   "cf224b5e6183d0c5",
+   "d432c0c56b8e3a6c",
+   "ecbe961f51b421e8",
+   "f755a3358bfe80fa"
+  ],
+  "32": [
+   "0e5d1f54658b4895",
+   "3af5f30eac520cca",
+   "69e75b1afb9b031b"
+  ],
+  "48": [
+   "217c51b056ebb04a",
+   "46620cceaaa00e58",
+   "5d70edc612db240f",
+   "9b3341254886fe86",
+   "ccf0fc73b9fc648b",
+   "ce529c78d7fc1e36"
+  ]
+ }
+}

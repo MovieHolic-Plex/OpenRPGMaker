@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea5d942f95a4dbef9232c552a46ddb1ed8ca0f461eb217ea4844419c24b092e5",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "보일러 화로(불빛 깜빡임 4프레임)",
+ "label": "sky-steam/steam-furnace-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boiler furnace (brick firebox with metal tank upper section)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a flat vertical brick furnace base (rows 15-31) and a flat vertical metal upper tank (rows 2-14), both drawn in pure front elevation with no visible top surface foreshortening. Although the chimney pipe at the very top has an opening visible, the main body itself has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick firebox and metal boiler body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of a brick furnace base and an upper metal boiler tank, both drawn in flat front elevation with no visible top surface (ends flat at row 3). Only the small chimney flue pipe shows top-down perspective, but credit cannot be given for small details.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13133
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal boiler furnace on brick base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the metal boiler body is visible from rows 3 to 7 (5 source pixel rows tall, rendered in a lighter tone consistent with 3/4 top-down lighting), with a chimney pipe mounted on it showing an elliptical opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9960
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "boiler furnace",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The furnace correctly displays a 3/4 view: the south front face (rows 15-30) shows the brick structure and fire grate, while the metal top surface (rows 3-14, 12px tall) is visible from above, complete with a chimney pipe mounted on it whose opening is also foreshortened.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19959
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.173Z",
+ "cells": {
+  "16": [
+   "001972cd77de5a5c",
+   "bab3e75cd9c5f2e8",
+   "cf0f959b8c7f6117",
+   "e2d678e6611706a6"
+  ],
+  "24": [
+   "0045040b3e1069da",
+   "274b77b151b59540",
+   "29c66303bbdc8974",
+   "2c7659f6d1e8c44e",
+   "2da78d162d51f1a7",
+   "3334e54c5e84b976",
+   "461473ae7bd0a289",
+   "46c75a5f5502c1cc",
+   "4a6a19e69354c4ec",
+   "56c55e1a6d26bf5f",
+   "665e8d02b16e578e",
+   "6c50a51c7fd57b6b",
+   "72e0995cd2785b08",
+   "76555ccc96593214",
+   "8908eaf3431e4317",
+   "a17f76f7bea89f97",
+   "a32961d9e3d0ae78",
+   "b094650a2a778a93",
+   "b920b298d74e1c31",
+   "bb7586dae1587e3f",
+   "c630678fbc1b5a77",
+   "cbf18fac26c2d540",
+   "d9ff473a17abe40f",
+   "da8acf107701464b"
+  ],
+  "32": [
+   "8dc4d767f76e28ee"
+  ],
+  "48": [
+   "2ff7a93deb0924e9",
+   "433295524d7b00f0",
+   "4915b4ec4dd02edd",
+   "80bc6d24f7c2cfb1",
+   "98eee6ae64661854",
+   "c51e47c1d92b54e2"
+  ]
+ }
+}

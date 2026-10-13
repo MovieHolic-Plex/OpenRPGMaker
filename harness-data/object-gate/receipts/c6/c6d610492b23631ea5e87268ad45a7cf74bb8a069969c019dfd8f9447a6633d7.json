@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6d610492b23631ea5e87268ad45a7cf74bb8a069969c019dfd8f9447a6633d7",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "벽돌 받침 가스등(불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pedestal and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal boundaries (the base at row 30, the pedestal rim at rows 19-20, the lamp frame at rows 6 and 12) are drawn as flat straight horizontal lines with no foreshortened top surfaces or curved ellipses visible, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5832
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pedestal and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal dividing lines (brick mortar, stone caps, lamp base and roofs) are completely flat horizontal lines with no foreshortened top surfaces or elliptical curves visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5938
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pillar with gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal boundaries (lamp base, cap rims, brick mortar lines, bottom plinth) are perfectly flat horizontal lines with no foreshortened top surfaces or elliptical curvature, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4255
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick pillar with gas lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire brick pedestal, stone collar, and lantern assembly are drawn in straight architectural front elevation with purely horizontal dividing lines (rows 4, 6, 20, 30) and no visible top surfaces or elliptical curves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4359
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.383Z",
+ "cells": {
+  "16": [
+   "1d8e63bba731525d",
+   "a68a92e80b2081a9"
+  ],
+  "24": [
+   "0256514a8b67d8c9",
+   "16b6e7f281f134bf",
+   "38da5d480afd7159",
+   "5700bba41f008ef8",
+   "598536e4a5b97780",
+   "6bbd7d9fc5eecbdc",
+   "70d2837bc0f95488",
+   "922e9e08a9c7aea6",
+   "b3fb6671cc25233e",
+   "b98377c0c62f9318",
+   "c270826a77d8a710",
+   "fc4682c2d353105d"
+  ],
+  "32": [
+   "06b42728590261b8",
+   "893e4aaebb3acb70",
+   "a965e0c37575f10c"
+  ],
+  "48": [
+   "028f210b5b8c1f15",
+   "1c41f3a2dc300125",
+   "460a17e15d5dc8da",
+   "52d1a445b8e72e56",
+   "6eee288e7f74697d",
+   "dbf1fadd8e69fa66"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e08e45ded8bcc6f633c201a39271404505ed23f6b07ee81423767a90fa7c97ef",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "나무 통(쇠테·마개 뚜껑)",
+ "label": "sky-steam/steam-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel/tub with iron bands and top lid/plug",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap is drawn as an 8-row foreshortened ellipse (rows 1-8) featuring wooden planks and a bunghole plug, while rows 9-13 show the cylindrical front face banded with iron hoops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8116
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel with lid",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is rendered as a foreshortened circular/elliptical surface spanning rows 1-7 (approx. 7 rows tall), with the south cylindrical face showing wooden staves and metal hoops below down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6932
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel standing upright with iron hoops and a wooden top lid/head",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the barrel is drawn as an ellipse foreshortened from above spanning rows 1 to 8 (about 8 rows tall), while the south cylindrical face with iron hoops occupies rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14143
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/head of the barrel is drawn as a wide ellipse spanning rows 1 to 7 with wooden plank lines and a bung hole, while the south curved cylinder face with metal hoops extends down to row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6525
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.728Z",
+ "cells": {
+  "16": [
+   "6e272792c5a4517f"
+  ],
+  "24": [
+   "08c6e0739423753f",
+   "0b9ebc41aaf04f4e",
+   "4d41f3347787c4f0",
+   "69e3841b9430f6ab",
+   "8c77c890fbc7865f",
+   "bb8bebfdc087170c"
+  ],
+  "32": [
+   "744fe8ff7dc69ead",
+   "8cbb9e1759aa41e4",
+   "9725f49403cc2131",
+   "989199d3fcc79db5",
+   "9d989aad55b17d28",
+   "dce812afea4b1ffc"
+  ],
+  "48": [
+   "0c5915ba4744a2fa",
+   "374ed87ef33a7e1f",
+   "7b6de0527ea3162d",
+   "94d58b69fc530730",
+   "987c5848a357db78",
+   "a2243bcc870aa9fd"
+  ]
+ }
+}

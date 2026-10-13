@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "58d33c292038337689b5e788b56b1578750a405ebcdfc45287fb40dc2c38d314",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "증기 자동차(캔버스 덮개·놋쇠 보일러)",
+ "label": "sky-steam/steam-carriage",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam car body and boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam vehicle is drawn in a completely flat 2D side-scroller profile (elevation view). The horizontal surfaces such as the hood, seat, boiler top, and roof show 0 source pixel rows of top-down perspective, and the wheels are drawn as flat circular side elevations.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7107
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam car body and canvas canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam car is drawn in a pure 2D side-scrolling profile elevation. The wheels are flat circular faces, the canopy and boiler have no foreshortened top surfaces visible from above, and the vehicle lacks any top-down depth along the north-south axis.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam car (chassis, canopy, boiler)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vehicle is drawn in a pure 2D side elevation view (side-scroller style). The canopy, carriage body, boiler cylinder, and wheels are drawn strictly from the side with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6978
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam car with canvas canopy and boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam car is drawn as a flat 2D side-scroller/elevation view. The canopy, vehicle body, boiler, and wheels show zero foreshortened top surfaces or depth visible from a 45-degree top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6393
+  }
+ ],
+ "decidedAt": "2026-10-13T16:01:13.609Z",
+ "cells": {
+  "16": [
+   "351b9463efcb7406",
+   "4b774983b6bdaab9",
+   "7a1df86f5df640a9",
+   "8c95bf5daed0d782",
+   "dbf8d1321dbbfe73",
+   "f477924121e3cf63"
+  ],
+  "24": [
+   "32552fb988dab611",
+   "4bd63d1ae64e6854",
+   "52edcc6acd476fee",
+   "5e91a4b066efdf9e",
+   "71b587953de431af",
+   "b1b1f961a1c43044",
+   "babd3c089b1618c7",
+   "d8f8a535cfa6f574"
+  ],
+  "32": [
+   "0ba25be07970912b",
+   "2dfbe15ffc08079b",
+   "6b46ff87962f5d18",
+   "6c98f1be7a1123f2",
+   "86519a6ef852cd86",
+   "fbb0ca43faac3430"
+  ],
+  "48": [
+   "22594a4b75278db2",
+   "cff34569660e9ff5"
+  ]
+ }
+}

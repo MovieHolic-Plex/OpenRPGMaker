@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b80097591fd254fbc69b313cf44f49e4b66335a8d2e198ef394183ad4fdedb91",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "오토타일: 비공정 부두 강판 갑판(밖=하늘)",
+ "label": "sky-steam/steam-at-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship dock steel deck platform autotile",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform deck autotile correctly viewed from above with hazard-striped borders, flat steel plate top surface (rows 2-43), and a southern vertical drop edge (rows 44-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4584
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steel deck autotile platform",
+    "kind_matches": true,
+    "top_rows": 43,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain autotile representing an elevated steel deck platform with hazard border edges and a south-facing drop edge at the bottom (rows 44-47). Top surface is fully visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3643
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship dock steel plate deck autotile",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Platform deck autotile seen from above with top surface spanning rows 2 to 43 and a vertical south drop edge at rows 44-47.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3657
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steel plate dock platform autotile",
+    "kind_matches": true,
+    "top_rows": 42,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain autotile representing a floating steel deck/dock viewed from above, with top-down horizontal plate flooring bordered by yellow hazard stripes and a south vertical drop-off face along the bottom edge (rows 44-47).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4686
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.387Z",
+ "cells": {
+  "16": [
+   "23f8ff076bf4465e",
+   "80488035ebc10982",
+   "92f7b5dbf33515a5",
+   "a335563e324b2f97",
+   "a5778f758e3f894c",
+   "a7fe9211534059f9",
+   "b5b9a7141e97fcfb",
+   "bcba8a4c161504e9",
+   "d7bfe8bf8ff1bd7e",
+   "e3833d47f901d90c"
+  ],
+  "24": [
+   "065afff675946a2e",
+   "1f3b9ad77860362b",
+   "2d301f257a80ebb6",
+   "36dbefb11ccc9946",
+   "7d3798c35d995410",
+   "81d16b52233b96e5",
+   "9be8049211c04c25",
+   "a559e649b3491b7d",
+   "a9dec0b652298578",
+   "aa79f2a6a3a5e830",
+   "b86f05d6281bea72",
+   "d80f266956171746",
+   "d9a00c786b8c6251",
+   "de8bfaa6112ed353",
+   "f342c857cd14e885",
+   "f610abe332d1b302",
+   "f8bc7453b69a044a"
+  ],
+  "32": [
+   "0fc4367786ba16cf",
+   "261d07d34ff90ef1",
+   "446c9971e828371f",
+   "46903ca2d9fe9ef3",
+   "ad354ea1bec4a01b",
+   "ba5e3c547383985f",
+   "cb1700aade6010ca",
+   "f1af1a0bcb0baab9"
+  ],
+  "48": [
+   "20ce127d4ccbe476",
+   "3d14c85b01a934dc",
+   "788dbf3be35f7fe9",
+   "8d4ad50f42cd0261",
+   "9372b3437e4ee1cb",
+   "ffffe34a7f64a3fd"
+  ]
+ }
+}

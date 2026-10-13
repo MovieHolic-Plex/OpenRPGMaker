@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6d9de16fb1878d7907e644debbe227af11555c3b4b88fcb31ff3ecfea86db63f",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "벽돌 받침 가스등(불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick pedestal and gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (brick base, stone cap, lantern glass, and lamp hood) is rendered in pure front elevation with straight horizontal edges and zero visible top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4707
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar with gas lamp on top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the brick pedestal and the gas lamp are drawn in pure front elevation with straight horizontal bands and no top surfaces or elliptical foreshortening visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick pedestal gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (brick base, stone cap, lantern glass, and metal roof) is rendered in pure front elevation with straight horizontal boundaries and 2D silhouettes, showing no foreshortened top surfaces or elliptical rims.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4143
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp on brick pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brick pedestal, glass lantern housing, and metal caps are all drawn in pure flat front elevation with strictly horizontal divider lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4180
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.384Z",
+ "cells": {
+  "16": [
+   "a68a92e80b2081a9",
+   "fe60377612ec6884"
+  ],
+  "24": [
+   "10e874a6f33a8749",
+   "26360ea87d6d1ceb",
+   "38da5d480afd7159",
+   "521c69fc8e9b0954",
+   "598536e4a5b97780",
+   "61e3e274065becb0",
+   "6644733558814bf2",
+   "7f73a80e202d51b0",
+   "8b24ad71cf6bf8d4",
+   "b98377c0c62f9318",
+   "b9cafe3bce0a5c0a",
+   "cad5da03c20f2f6d"
+  ],
+  "32": [
+   "25c35bc5fef0356a",
+   "542d4d65951bf3f6",
+   "abd6a69ef8b7c237"
+  ],
+  "48": [
+   "17d77aa0702db79e",
+   "2eef6a64deba5517",
+   "5b148d2ae645c1d5",
+   "a90743fb6269ed91",
+   "c0e22566934558ef",
+   "f6cc08460b0c8dac"
+  ]
+ }
+}

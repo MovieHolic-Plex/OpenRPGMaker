@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ad62c2a6e1de9fda4dec671095b9c6bda012280ea6b77d9c06ddbc5ec8f6a98e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "증기 배출관(김이 뿜어 나옴, 4프레임)",
+ "label": "sky-steam/steam-vent-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam vent pipe on a stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pipe rim (rows 17-18) and the base plinth (rows 27-30) are drawn with perfectly straight horizontal lines in pure front elevation without any elliptical foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6638
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam exhaust pipe / boiler body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body, upper flange (rows 17-18), pipe collar (rows 15-16), and base plinth (rows 27-30) are drawn with purely straight horizontal lines in side-scroller / front elevation perspective, showing no elliptical top surface, opening, or foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam vent / boiler pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main cylinder body, its yellow rim (rows 17-18), and the base plinth (rows 27-30) are all drawn with perfectly flat, straight horizontal edges and no visible top surface (0 rows). The object is depicted in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5077
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper steam pipe / vat with brass rim and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical body, metal band, brass collar (rows 17-18), and base plinth are all rendered with perfectly straight horizontal lines without any elliptical curvature or visible top surface. The object is drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6125
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.172Z",
+ "cells": {
+  "16": [
+   "2cc86ac69255efa0",
+   "89c874f81dffe6f5"
+  ],
+  "24": [
+   "0c943293c1ba4bb9",
+   "29c82bb367edb04f",
+   "2cb6a0098de13501",
+   "3f1b155fddb47d00",
+   "4a46956540ea8e2b",
+   "6d698d90d6cd4e25",
+   "9bc9d4d43a9b0ccb",
+   "a2794972624eb9cc",
+   "b494e483d7e82e85",
+   "d16be61ee4afba2e",
+   "dd37ff4992f29f24",
+   "f07765c34c71e459"
+  ],
+  "32": [
+   "25d4566a3d71098d",
+   "73c3ccf38b6da898",
+   "97d17e3a67c1868f"
+  ],
+  "48": [
+   "191c5560978f89c2",
+   "7d63ccaa443c0adf",
+   "7e94a97c454ea259",
+   "8f2b1f3700a4be28",
+   "a98143134bebd28e",
+   "dbdb75bc54479ff3"
+  ]
+ }
+}

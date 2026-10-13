@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e8257c1c37dcc2ce00b7ae780654d4cfe2d6b0e84c752ee54bdae98244610ab",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "주철 다리 나무 벤치",
+ "label": "sky-steam/steam-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly viewed from above across rows 6 to 10 (5 rows deep) with distinct wooden slats, followed by a south front edge on row 11 and legs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bench seat top surface is clearly visible from above across rows 6 to 10 (5 rows tall) with plank shading, resting above the front edge at row 11 and legs at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4197
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat surface is seen foreshortened from above across rows 6 to 10 (5 rows deep) with horizontal wooden slats, followed by a 1-row front edge at row 11 and short cast iron legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench seat and backrest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden seat surface is prominently displayed from above spanning rows 6 to 10 (5 rows deep) before dropping to the front edge at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3181
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.176Z",
+ "cells": {
+  "16": [
+   "a6dc321501bc782f",
+   "c9d71ec7bdc0fb38"
+  ],
+  "24": [
+   "07aa5036ae78d262",
+   "42ca1b5ec05debba",
+   "6925f1f596c31dfa",
+   "8472cc82ad95bb80",
+   "a941f2d6a67ec71e",
+   "a9b0bf7a3315fa84",
+   "b23559bb36b4a2ca",
+   "c7b757a333dc9885",
+   "d8ef39bde9dce05c",
+   "ee47af7d04417702",
+   "f0adc352460a6604",
+   "f0f915a27b2bb90d"
+  ],
+  "32": [
+   "995836653995059c",
+   "e65d311db651fddf"
+  ],
+  "48": [
+   "443804253c33b6f9",
+   "6d60265c355a2085",
+   "8a2d8c9f21a67db8",
+   "8dca8ed29411828d",
+   "d90241b306d5b31c",
+   "e62a8afe8cdf929a"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b63aa8088bd8fef870043ef55a18ae19e217351992a74d5fae72d9932a08a19f",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "모루(나무 그루터기 위)",
+ "label": "sky-steam/steam-i-anvil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anvil on wooden stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in pure side elevation: the profile shows the horn stepped down from the face, the narrow waist, and the stump without any visible horizontal top working surface shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11804
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "anvil on wooden stump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in pure 2D side elevation: the top block (rows 2-5) with the horn extending to the left (rows 3-4) shows no visible horizontal top working surface foreshortened from above. The stump below is also drawn essentially flat from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8291
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "anvil on tree stump",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil and stump are drawn in a flat side/front elevation profile with at most 2 pixel rows of edge highlight/top strip (rows 1-2 on the anvil, rows 9-10 on the stump), lacking the foreshortened top surfaces required for 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 9329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "anvil",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The anvil is drawn in a flat side elevation with the horn pointing left and no visible horizontal top face (row 2 is at best a 1px edge highlight on a vertically symmetrical block).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8902
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.725Z",
+ "cells": {
+  "16": [
+   "8361522ff9c66fb9"
+  ],
+  "24": [
+   "4063aaa33914a28a",
+   "4d742e0476df3d92",
+   "7caa39b0445c8faa",
+   "93e2bd141485aa8b",
+   "c0b9dd84393a6918",
+   "f6ff0b50aae89f21"
+  ],
+  "32": [
+   "2b756130f579a0df",
+   "3e32840ec61485e1",
+   "5249ed2b388b1478",
+   "d3ea0073c4cfd0ab",
+   "da3802e6f81ae4fa",
+   "f3effee62ba5e492"
+  ],
+  "48": [
+   "4e56d9dfa4aaae07",
+   "5eb2ca6fd9771c0a",
+   "a53ecc9f85aaf226",
+   "ad590e0eee53c57a",
+   "c741f8aea6d16fa4",
+   "e9c302deb656b738"
+  ]
+ }
+}

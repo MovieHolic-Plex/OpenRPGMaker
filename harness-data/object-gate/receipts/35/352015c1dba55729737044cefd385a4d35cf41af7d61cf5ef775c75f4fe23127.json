@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "352015c1dba55729737044cefd385a4d35cf41af7d61cf5ef775c75f4fe23127",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "케이블 감는 북(세움)",
+ "label": "sky-steam/steam-cable-drum",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cable spool (standing upright)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical cable spool is drawn as a flat front view without a visible foreshortened elliptical top surface. The top edge curves for only 1-2 pixels before dropping vertically, and the front face features flat horizontal bands and a flat rectangular hole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19207
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cable reel standing upright",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in front elevation. The top flange has straight vertical sides from row 3 to 7 and a completely flat horizontal dividing line at row 8 where the cable begins, with no foreshortened elliptical top surface (only a 2px rounded top contour at rows 1-2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18792
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upright cable spool",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top wooden flange is drawn as a wide ellipse seen from above (rows 1-7, ~7 rows tall) with a central arbor hole. Below it, the front face shows the wound cable (rows 8-11) and the bottom flange rim (row 12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16546
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cable reel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object silhouette is circular (facing front like a wheel), and internal dividing lines at rows 8 and 12 are flat horizontal lines with no foreshortened top ellipse visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12521
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.179Z",
+ "cells": {
+  "16": [
+   "d05041d1ff007885"
+  ],
+  "24": [
+   "20a77f1e540779c8",
+   "2ca148c3541bfed2",
+   "bb5605dc3f29cf65",
+   "d5e05f015997755f",
+   "ecdab6f7836142fd",
+   "f524acdfcd28b8f8"
+  ],
+  "32": [
+   "14da4f7cdb8a277a",
+   "626a6bb943280c19",
+   "82d6e252d2ff9092",
+   "951072cbacffe764",
+   "d560d3ce72b7491b",
+   "f4e169545112b989"
+  ],
+  "48": [
+   "1ffd9d6ff6993b53",
+   "927e3d50a1f56266",
+   "9b6c8899783d2be3",
+   "b5516af945afdac4",
+   "de455471c05ad250",
+   "f7d1550e437b5dc5"
+  ]
+ }
+}

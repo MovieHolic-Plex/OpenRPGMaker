@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0df9ec03ae133ea4096ea41047cf9af4e9808919d41636fabb170355ddaa9dcb",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "소화 급수전(붉은 주철·밸브 바퀴)",
+ "label": "sky-steam/steam-standpipe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red cast iron hydrant pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red hydrant body is drawn straight-on in pure front elevation with vertical shading, flat horizontal side nozzles, and no foreshortened top surface visible on the main cylinder. The yellow cap/wheel at the top is drawn flat into the dome profile rather than as a clearly tilted top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13189
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire hydrant column with top cap and side nozzles",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the hydrant column is visible from above as a foreshortened ellipse spanning rows 3 to 5 (3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7837
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire hydrant barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fire hydrant is drawn in flat front elevation: the side nozzles/handles (rows 8-10) project horizontally sideways, the bands and flange at rows 11-14 are strictly horizontal straight lines with zero foreshortened depth, and the yellow top nut/cap is drawn vertically as a front-facing block rather than an elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red cast iron fire hydrant body with side nozzles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hydrant is drawn in pure front elevation: the side nozzles stick out straight to the left and right along flat horizontal pixel rows, the middle band and lower flange are completely straight horizontal lines without elliptical curvature, and the top yellow area is drawn as a front-facing dome/cap rather than a top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12405
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.176Z",
+ "cells": {
+  "16": [
+   "a852c990e9b421f7"
+  ],
+  "24": [
+   "3b10308bd61e99f8",
+   "5297f67cb073ba2d",
+   "788a7c5de83c08e7",
+   "a92b310e71ba95a3",
+   "b087a4ea0100bc85",
+   "f553754780aa83de"
+  ],
+  "32": [
+   "0d8b21ab10a39231",
+   "186f5fc54465884d",
+   "2fb28e22bb2b934b",
+   "3199095099b2123f",
+   "b7dcf46085fc3528",
+   "d059ac5af04ff00b"
+  ],
+  "48": [
+   "2507b21741976ea4",
+   "61bca08d4d8892b3",
+   "642df5468c572127",
+   "bcc15ee0b37a2de1",
+   "ca2e521d72e31d24",
+   "f26f9506aac729fa"
+  ]
+ }
+}

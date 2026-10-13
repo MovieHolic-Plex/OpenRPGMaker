@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9cf353f7d29881a8718e9796f6729278f6653527c0b9b985f2f4a653726d6edd",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "증기 분출(바닥 격자에서, 4프레임)",
+ "label": "sky-steam/steam-steam-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam puffs",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam column consists of three circular puffs stacked vertically in a flat front elevation. There is no floor grate, ground contact, or foreshortened top-down perspective visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists of three flat circular puffs stacked purely vertically with front-facing spherical shading. There is no visible floor grate, base anchor, or top-down foreshortening, resulting in a pure front elevation view. Furthermore, steam does not match the 'organic' kind definition.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6851
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam plume consists of flat circular puffs stacked purely vertically with no 3/4 perspective depth or base grate; kind is also misclassified as organic.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Steam/vapor does not match the organic category (plants, rocks, etc.). Furthermore, the steam plume is drawn as a flat vertical stack of 2D circular puffs in pure front elevation with no 3/4 top-down foreshortening or floor grate base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6552
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.093Z",
+ "cells": {
+  "16": [
+   "09de62c43571e5cb",
+   "5b5a77bb2015b76a"
+  ],
+  "24": [
+   "038186295c59d3e5",
+   "0527e8114ad43960",
+   "276ad309e7362137",
+   "43f52fafca0add70",
+   "5ef3686acb84deb1",
+   "61f191b91670fcbe",
+   "6f921a5c6c494596",
+   "719812c68c327dd6",
+   "9c63fc78a7a264d0",
+   "b203cb14ab35e083",
+   "b2fc1f94a51a42c4",
+   "c884c55d64f86ebe"
+  ],
+  "32": [
+   "50700855d05def8a",
+   "67e477295082366b",
+   "c8ba5786e8322266"
+  ],
+  "48": [
+   "04306606a528a756",
+   "0c0250d99d764eac",
+   "6ea6a5416e428c76",
+   "a2a988c7eb321fcb",
+   "d1313b7d0649f65b",
+   "dc8515380d5818a9"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b1d51a60ffc57b14652f489450575527ebebae2308dafb06121fd5d9f24a4a1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "테슬라 코일(구리 감김·위 고리)",
+ "label": "sky-steam/steam-i-tesla-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tesla coil column with copper winding, top toroid ring, and pedestal base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid ring is foreshortened in 3/4 view with its central opening clearly visible (rows 2-4), and the base pedestal displays a 4-row sloping top surface (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7249
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil column with copper coil, top toroid ring, and pedestal base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid ring terminal is foreshortened in 3/4 view showing its upper surface and central hole (3 rows tall, rows 2-4). The base pedestal also shows a foreshortened top bevel (rows 22-25, 4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9719
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Tesla coil column with copper winding, top toroid, and stepped base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid is drawn in proper 3/4 top-down perspective from rows 0 to 5, featuring a foreshortened elliptical center hole (rows 2-4) and visible upper ring surface. The base also displays a foreshortened top surface across rows 21-24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8309
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tesla coil apparatus with top toroid ring and copper coil shaft",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid ring clearly shows its top surface and central hole viewed from above at ~45 degrees (central dark hole spans rows 2-4, surrounded by the ring surface), and the base plinth also shows a receding top cap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5222
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.726Z",
+ "cells": {
+  "16": [
+   "6edf1624762b8d9e",
+   "75cc292e6a45b104"
+  ],
+  "24": [
+   "00b5ab503e73ad4b",
+   "0d88b9a41ba6ce15",
+   "2d1fbce3caca1d14",
+   "487ca7f4ca073e4e",
+   "549b7c609acda1c4",
+   "69fd2ea6e4cc568f",
+   "8a4f1733755ce3e8",
+   "a05b62224e9e65e3",
+   "aa28749411656f0c",
+   "ad7e2f23ecccf674",
+   "cdf9453ece0dfa44",
+   "cf1010364c2b84d1"
+  ],
+  "32": [
+   "7057deef318c109f",
+   "96c09b90f5d007d3",
+   "d1922b98a3e9f792"
+  ],
+  "48": [
+   "2c621ff3b944a40d",
+   "56bbe627d39f27cc",
+   "58b2ebc14e2b29fe",
+   "7b05394a0a7c257a",
+   "986994b36bba9e2f",
+   "ef15df21450ce356"
+  ]
+ }
+}

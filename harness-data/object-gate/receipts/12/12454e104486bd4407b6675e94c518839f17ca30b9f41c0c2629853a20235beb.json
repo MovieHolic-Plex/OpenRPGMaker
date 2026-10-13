@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "12454e104486bd4407b6675e94c518839f17ca30b9f41c0c2629853a20235beb",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp cap and lantern housing on post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cap of the lantern spans rows 0-5 showing a foreshortened rounded top surface in 3/4 view, and the round base (rows 23-26) also clearly reveals its horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5907
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp with round cap, lantern housing, pole, and round base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lamp shows 5 rows (rows 0-4) of foreshortened dome surface viewed from above, and the round base at the bottom also shows 4 rows (rows 23-26) of top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7504
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "street lamp with round base, central pole, and lantern housing with cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the lantern spans rows 0-5 showing a sloped top surface seen from above, and the rounded base at rows 23-26 displays a clear 4-row foreshortened top surface around the pole socket.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6465
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp with lantern head, pole, and round pedestal base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap shows a 4-row foreshortened sloped top surface (rows 0-4), and the round pedestal base clearly displays its top surface (rows 23-26), fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8166
+  }
+ ],
+ "decidedAt": "2026-10-13T16:30:14.290Z",
+ "cells": {
+  "16": [
+   "5997b57e10f0b673",
+   "71a7aa6a595d5abb"
+  ],
+  "24": [
+   "0696f0f401a1f650",
+   "2101a1db76bba84e",
+   "37d0a5fb134e4ae2",
+   "40dfdf4af045faad",
+   "4c38e077ad93d2fd",
+   "4d8ab685b8115db9",
+   "6aeb49a245ca512c",
+   "84b4b1df9567068e",
+   "9fd594cb61687544",
+   "b503babdb622a94c",
+   "b7cf854ab976d107",
+   "f696d72133f2515b"
+  ],
+  "32": [
+   "7fe1dbd260403680",
+   "9de16efab7f32001",
+   "d0fcd8373b970a60"
+  ],
+  "48": [
+   "0b5942074c9ccf0d",
+   "2fbdd13527b4efcb",
+   "8be000fe7f3f2351",
+   "b77bbd5211c2761c",
+   "de223cf8acc9fc9d",
+   "e6d06f71fed5f1ec"
+  ]
+ }
+}

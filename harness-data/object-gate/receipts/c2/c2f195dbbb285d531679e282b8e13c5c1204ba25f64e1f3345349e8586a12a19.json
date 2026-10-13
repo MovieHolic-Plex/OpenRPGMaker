@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c2f195dbbb285d531679e282b8e13c5c1204ba25f64e1f3345349e8586a12a19",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "증기 피스톤 기관(4프레임)",
+ "label": "sky-steam/steam-piston-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal engine base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large metallic base (rows 14-30) shows only vertical front panels with rivets and seams, without any top surface visible. The cylinder and wheel mounted on top are also drawn in straight-on front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base cabinet / engine block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine (base, boiler, piston rod, and flywheel) is drawn in pure 2D side/front elevation like a side-scroller asset. The base shows only vertical front panels with rivets and no top surface visible from above; the flywheel is a flat circle facing the viewer with a horizontal piston rod.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7750
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "industrial machine base with boiler and flywheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine base, boiler, and flywheel are drawn in flat side-scroller/platformer elevation. The base has no visible top surface (0 pixel rows) where the components sit, terminating directly at row 14 into empty background space.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6933
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "industrial machine base with boiler and flywheel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire steam piston engine is drawn in flat 2D side/front elevation: the metal base shows only vertical front panels with rivets and no horizontal top surface, the boiler sits flat on the edge, and the flywheel is a flat circular elevation rather than foreshortened for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11274
+  }
+ ],
+ "decidedAt": "2026-10-13T16:05:16.096Z",
+ "cells": {
+  "16": [
+   "0cf57a72e9de5f93",
+   "40b16974e4791734",
+   "41b0a49d4764d596",
+   "8544a20b074933a6"
+  ],
+  "24": [
+   "00b4178c07f596a4",
+   "09891d31fab4272e",
+   "10cb9a08482c6e27",
+   "129db47310515127",
+   "1ba45950ac37148a",
+   "2978d1993296f69c",
+   "31e64bee87d4630e",
+   "3dc1e855221523da",
+   "470c23e8a4f16394",
+   "518f9f5c1695cd1e",
+   "54afa7ac6647be31",
+   "82b48cf38939604b",
+   "8af843e1e1a47d4c",
+   "be7829fc01b9801f",
+   "bf8be83c8a7f5fb8",
+   "c5fff9a531e84d50",
+   "cab4618fdf1743ef",
+   "d2096f67700fdbd2",
+   "d5dfd2d397d134ee",
+   "de550b9b5863fab8",
+   "e76a511cea68d90f",
+   "f6c6b3fd2b6bee32",
+   "f7ff50f0c44a6f24",
+   "f849d728acdb4d42"
+  ],
+  "32": [
+   "455a32e4e077d2e0"
+  ],
+  "48": [
+   "33aff482df29afbc",
+   "3d3770735de07bc8",
+   "4943bd1a50c1c0d3",
+   "9595be1f1dbe92e0",
+   "b3ed5985e09237ff",
+   "cd3b05e0e510b817"
+  ]
+ }
+}

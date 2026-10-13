@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8f9a4ad1dabcdd1d0fa5e9902f4699794d9ef271d3697e7ce280078432c0095",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "공장 마당 흙(채움 4변형)",
+ "label": "sky-steam/steam-t-yard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dirt terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Factory yard dirt ground fill terrain tiles viewed from above, occupying the full 16-row surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "factory yard dirt ground tile strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal dirt ground terrain texture viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3886
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dirt ground terrain tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal dirt/ground texture variants viewed from the standard top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3732
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "factory yard dirt terrain tile strip (4 variations)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four 16x16 variants of factory yard ground dirt texture displayed side-by-side. As top-down ground terrain, it fully represents the surface plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6923
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.387Z",
+ "cells": {
+  "16": [
+   "245da193fa7c3591",
+   "648d4dea9201fd1e",
+   "98394fae07f03ff5",
+   "b61d47d85e2fb669"
+  ],
+  "24": [
+   "03bed1452cc6e164",
+   "1418c1eed6887612",
+   "1f6bddd97fdb1652",
+   "1fd6d148479126c6",
+   "244274cdaf12d68b",
+   "2e0fcd66e8232836",
+   "3a506f3e47d41d6b",
+   "4933514397ccf71b",
+   "4b77f67c6b0186e7",
+   "84e981daff8b2e4a",
+   "89cb39381ae4536a",
+   "91c472595b703b2d",
+   "b3e7b5040805384d",
+   "cc477ba911c7036d",
+   "d28000a22375a73c",
+   "e5e8e3eb32f1088f",
+   "ef1a78ecc21135b4",
+   "fb05381105e80d6a"
+  ],
+  "32": [
+   "47588137abaf52df",
+   "7a642a146f691c87",
+   "9f86d1f5dae5538a",
+   "bd4381e02ad79444"
+  ],
+  "48": [
+   "02e327da1fe3fda9",
+   "031b0fdc9ae55fa9",
+   "0e1d043340f7255a",
+   "2a30c190220c7943",
+   "3298341997b60da7",
+   "449e9ee7f8b28f6b",
+   "4a702e82a706149a",
+   "72c0215db82f6f00",
+   "8bc60189abb0717a",
+   "c95751411a6342e8",
+   "e6435c58f7cb35d7",
+   "eb3f59137d828c18"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f996f06de55090b4baba5f1dedfeaf924c9ce8d1bccba64f3194d109076686d",
+ "width": 32,
+ "height": 16,
+ "kind": "round_body",
+ "name": "가스통 묶음(세운 원통 3)",
+ "label": "sky-steam/steam-gas-cylinders",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "three standing gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All three cylinders are drawn in pure front elevation with vertical column shading bands running continuously from top to bottom and chamfered top/bottom corners. There is no foreshortened elliptical top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5380
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "three standing gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in pure front elevation with symmetrical top and bottom chamfers (rows 1-2 and 13-14). There is no elliptical top cap surface visible from above; the yellow mark at row 2 is merely a front-facing label or 1px stripe.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5705
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "three upright gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in pure front elevation with vertical column shading and symmetrical chamfered corners at both top and bottom; there is no elliptical top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4953
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing gas cylinders",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinders are drawn in pure front elevation with symmetrical rounded shoulders and base, vertical column shading, and no elliptical top cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5677
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.179Z",
+ "cells": {
+  "16": [
+   "9bbbd99b542e18db",
+   "cbdac4c7e02b9d77"
+  ],
+  "24": [
+   "05ac3a157a841fab",
+   "346e2f046f739a6a",
+   "630669d666abc26b",
+   "6a152ab0969f9377",
+   "75db8d679d35d2d9",
+   "7ed15085251fda51",
+   "809ac8556401e342",
+   "bc89ee9f71c724f8",
+   "c4e34978bb342491",
+   "d0b42e8b4cea9fc5",
+   "d38b7be0f6bc5757",
+   "da6487deb8059993"
+  ],
+  "32": [
+   "2317b31dc258c155",
+   "d71a3b8e7468bb03"
+  ],
+  "48": [
+   "05780178640c2ec0",
+   "21566199e63ff811",
+   "87e9c1be6ff55f0b",
+   "9966c59f9ff86087",
+   "9d1f5d6713723bef",
+   "baf5713e2f78d33d"
+  ]
+ }
+}

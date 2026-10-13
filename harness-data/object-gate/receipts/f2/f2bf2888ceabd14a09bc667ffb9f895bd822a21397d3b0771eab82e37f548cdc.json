@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2bf2888ceabd14a09bc667ffb9f895bd822a21397d3b0771eab82e37f548cdc",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "부두 권양기(밧줄 감는 북)",
+ "label": "sky-steam/steam-winch",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock winch drum and base frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The winch base platform shows a distinct 4-row horizontal top deck (rows 7-10) above a 4-row south-facing front edge (rows 11-14). The cylindrical drum is also rendered with standard 3/4 top-down lighting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6048
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dock winch drum and frame",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The winch is drawn in pure front elevation: the wheel/gear is flat facing the camera, the drum is drawn from the side/front without foreshortened top depth, and the base ledge is only 1-2px tall before dropping into a 4px vertical south face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12776
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "winch drum and frame mount",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire winch (rope drum, support uprights, spoke wheel, and base) is drawn in pure front elevation with zero top-down tilt. The drum, frame with facing rivets, and wheel are seen dead-on from the side/front with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8176
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "winch drum and base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a mechanical winch/drum, not a box. The drum is rendered as a flat frontal rectangle without top-down 3/4 perspective, and the crank wheel on the right is drawn facing directly toward the screen rather than foreshortened in the side plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13544
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.179Z",
+ "cells": {
+  "16": [
+   "351abfed055b9c08",
+   "67cac0c7e042d2ed"
+  ],
+  "24": [
+   "0ac0e81eaa771f49",
+   "0b9e0bb846c259a3",
+   "7618a0b6919cf896",
+   "851c8ee4132dc9b8",
+   "87dc03cff10f07db",
+   "8e5383d7e02e2a13",
+   "a3efe4462123bfef",
+   "aab6842cf8e6aab4",
+   "ba8a54f9c6479399",
+   "f431b5250f31a07d",
+   "fb7c1d5e2b979092",
+   "fc39be1ab3830eec"
+  ],
+  "32": [
+   "869ef8809cbb921c",
+   "d02c715225b73096"
+  ],
+  "48": [
+   "16a01038bd3a18d6",
+   "4ed6d83f61bed44c",
+   "72e0b32bc165b88f",
+   "7d9cfbc533ff9f35",
+   "87e501e433d02fd4",
+   "e1cfd1a803fcd3b2"
+  ]
+ }
+}

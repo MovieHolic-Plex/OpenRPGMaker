@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ffa1859317398770207e3c5a75497671b57ffbc6b70943df0269f641063ff07d",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "주철 계류주(버섯 머리)",
+ "label": "sky-steam/steam-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mushroom-head mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap of the bollard displays a clear foreshortened elliptical top surface spanning roughly 5 pixel rows (rows 2-6), correctly depicted in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6707
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom-head cast-iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap head shows a clearly foreshortened elliptical top surface spanning rows 2 to 5 (~4 source pixel rows) before curving into the south edge shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5789
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom head bollard (cap and stem)",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap of the mooring bollard is rendered as a foreshortened ellipse 10px wide and about 5-6px tall (rows 2–6), showing a clear horizontal top surface before shading down to the overhang and vertical stem below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron mushroom bollard (cap and shaft)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap clearly displays a rounded top surface spanning roughly 4 pixel rows (rows 2-5), and the lower post/shoulder also shows a foreshortened top plane (rows 9-12). Both conform to the 3/4 top-down angle without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8605
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.176Z",
+ "cells": {
+  "16": [
+   "147725ea5c1717f8"
+  ],
+  "24": [
+   "4c7524104dd44522",
+   "56200771ec32414f",
+   "804504b16efd20a4",
+   "d976f2091812e067",
+   "e1dc48f3a861fda9",
+   "f0b26150f8b689af"
+  ],
+  "32": [
+   "597bd2d3e8516e7f",
+   "63c84736e5925723",
+   "8d6f824a5a62df27",
+   "a2e0733a77907663",
+   "e86702ea2aa877bc",
+   "feeb9d77d1d9e428"
+  ],
+  "48": [
+   "45c75440b5b9308d",
+   "69837678d9effdc1",
+   "71e4c8771d74c0f2",
+   "97adaffd7ac71cc3",
+   "ad0cd8fb20671d41",
+   "c5469a837d76e671"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85772166d152d972a9d2e9e89b2c416d8b8094b4c7640cbd4e8d5bb1135b002d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등(둥근 받침·불꽃 4프레임)",
+ "label": "sky-steam/steam-gaslamp-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gas lamp (lantern head, pole, and round base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn in pure front elevation: the green roof cap has no visible top surface, the shelf beneath the glass (rows 13-14) is a completely flat horizontal rectangle with no depth, and the collar ring around the pole (row 18) is a straight 1-pixel horizontal stripe rather than an ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6833
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and post of gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap (rows 1-5), lantern frame, base plate (rows 13-14), and pole ring (row 18) are drawn in straight horizontal front elevation with 0 rows of visible top surface from the 3/4 perspective angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6924
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gas lamp lantern and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern cap, the shelf under the glass chamber (rows 13-14), the pole ring (row 18), and the base are drawn with completely flat horizontal lines with no foreshortened top surfaces or elliptical curvature, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6314
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp lantern and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern hood, glass chamber, and intermediate shelf (rows 13-14) are drawn with completely flat horizontal lines in pure front elevation, showing 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6353
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.723Z",
+ "cells": {
+  "16": [
+   "2b6b7d338bd3fe5b",
+   "fc5829fa5ae576c3"
+  ],
+  "24": [
+   "0920362e201b003c",
+   "296ce96837a932b3",
+   "42f177e73d7afed0",
+   "43227d3d1be96cec",
+   "4e2f432d718815b7",
+   "6686b52540961514",
+   "6de16d0122bf2a73",
+   "6f4b020297cced83",
+   "7cd124b196f63cbc",
+   "8058d694eb099be8",
+   "9bea8e6c7d7be560",
+   "d4e80379b8dbaec8"
+  ],
+  "32": [
+   "920dfcfd8042b226",
+   "9398541ac71cd3d4",
+   "b61be1afcd33ac3b"
+  ],
+  "48": [
+   "03e38a7e5b40d750",
+   "0e113532405c86a9",
+   "1ad9096a47550486",
+   "4822b77d121cb000",
+   "5b0c0670ffdbb02f",
+   "ed2c43470b307575"
+  ]
+ }
+}

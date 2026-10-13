@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9daf5dffb06b4132c44e09bd644eb7a38e85ac3029dd3c3a2b244fef8bc15cda",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "주철 난로(연통)",
+ "label": "sky-steam/steam-i-stove",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cast iron stove",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stove and stovepipe are drawn in flat 2D front elevation: the pipe and its brass collar are completely straight horizontal bands, and the stove body consists of a flat rectangular front box with a firebox door topped by a 2D arched hood (rows 13-17) rather than a foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10578
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cast iron stove with stovepipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stove is drawn entirely in flat front elevation: the firebox, window, and legs are flat facing the viewer, the hood/roof (rows 13-17) is rendered as a front-facing arched silhouette rather than a horizontal surface seen from above, and the stovepipe collar at rows 6-7 has completely straight horizontal edges with no 3/4 perspective curve.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8831
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cast iron stove with flue pipe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stove body is clearly rendered between rows 13 and 17 (about 5 rows deep), where the flue pipe inserts into the top plate. Row 17 features a prominent front-edge highlight separating the top surface from the vertical front door face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7771
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cast iron stove with chimney pipe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stove body features a 4-row visible top surface/sloping shoulder (rows 13-16) connecting the highlighted front rim (row 17) to the chimney connection at the rear (row 12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7544
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "0937d1dfc36900e6",
+   "9f55f2de8fb50751"
+  ],
+  "24": [
+   "2800c3c544b73f68",
+   "292b215fb7604581",
+   "4169dd57737ed09a",
+   "4bd71cf385a45467",
+   "7ad4dc6c94d771da",
+   "82f5cbe611767470",
+   "83be9db57889ecf8",
+   "9f948737047a2f4a",
+   "bcf9131e755d8321",
+   "c39b8fe222a3cd5a",
+   "d29dd82bbefa7558",
+   "e4dcace3938327cd"
+  ],
+  "32": [
+   "434b16a4b3680dc7",
+   "6d7a6ce3953762ce",
+   "7925ce202697762e"
+  ],
+  "48": [
+   "0f1f1219d6f1cc05",
+   "8d21a58f0dd06bec",
+   "9a6881873d8911a7",
+   "9d75ccee7e671f09",
+   "bed242a0fca14c11",
+   "c5c27f2c53bb08b0"
+  ]
+ }
+}

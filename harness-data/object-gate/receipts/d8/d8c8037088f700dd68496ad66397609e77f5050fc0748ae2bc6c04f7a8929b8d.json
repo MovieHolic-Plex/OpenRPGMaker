@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8c8037088f700dd68496ad66397609e77f5050fc0748ae2bc6c04f7a8929b8d",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "소형 증기 보일러(연통·화구)",
+ "label": "sky-steam/steam-boiler-small",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical boiler tank",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical boiler is clearly visible as an elliptical surface spanning rows 6 to 11 (6 rows tall), complete with an attached brass plate and chimney base, transitioning down to the south-facing cylindrical body with curved riveted bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam boiler drum",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the boiler is clearly visible as an elliptical surface spanning rows 6 to 11 (~6 pixel rows), showing the chimney base and a brass hatch viewed from above. The horizontal bands and bottom rim also exhibit downward curvature consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical boiler drum",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical boiler is clearly visible as an ellipse from row 6 to row 11 (~6 rows tall), complete with an inspection hatch detail and chimney mounting before transitioning into the front curved wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8190
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical boiler tank",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical boiler body is clearly visible as an ellipse spanning rows 6 to 11 (approx. 6 rows tall), with proper 3/4 perspective shading and a small chimney attached.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4995
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.178Z",
+ "cells": {
+  "16": [
+   "478f5814819207d0",
+   "4f901657d697dea5",
+   "64b6c7c75755f883",
+   "67d4aaa982602005"
+  ],
+  "24": [
+   "0ef6542c70321de6",
+   "20149f829fb0d2be",
+   "4e8120aaac25dfd6",
+   "61bb6605b99c3599",
+   "65f52c656bb97f71",
+   "6e15e1d2c1220c23",
+   "7bd838436f94a605",
+   "826aa2d3a56077bb",
+   "866376845ada9418",
+   "9168e623e1bae611",
+   "93381e67e6a79ac8",
+   "968161a1e50b1631",
+   "a0e6e46ff12e58c3",
+   "a41c8281d36d9acd",
+   "aae5facda6dd0187",
+   "ade66d44c5a25034",
+   "b17ddcf2a4b8a6ea",
+   "b9de3b47408829b8",
+   "c320a9290d07e36f",
+   "d8a208ef2dcf3b33",
+   "dd490098cf017d96",
+   "e603df467f65e744",
+   "eda21ce722aaeef5",
+   "f55e6847cbe0cc66"
+  ],
+  "32": [
+   "7e8aefa3fdb802e5"
+  ],
+  "48": [
+   "0e54870812b6dea2",
+   "4e8caecfe56a4cc0",
+   "539e5415331c0838",
+   "6226c7c9b0428ceb",
+   "86e2e5197da0c685",
+   "df9a0915d0b31edc"
+  ]
+ }
+}

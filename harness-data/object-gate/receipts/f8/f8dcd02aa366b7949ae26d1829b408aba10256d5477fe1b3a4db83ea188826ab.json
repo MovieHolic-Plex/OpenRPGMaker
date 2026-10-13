@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8dcd02aa366b7949ae26d1829b408aba10256d5477fe1b3a4db83ea188826ab",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "자갈 차도(채움 4변형)",
+ "label": "sky-steam/steam-t-cobble",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gravel road paving texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground surface composed of repeating square paving stones seen from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3523
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobblestone driveway ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobblestone/paver ground texture for a road surface viewed from above as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6152
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gravel cobblestone road terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile pattern depicting cobblestone pavers viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4050
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobblestone roadway pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless repeating cobblestone/gravel road texture representing flat ground terrain seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4165
+  }
+ ],
+ "decidedAt": "2026-10-13T16:16:48.387Z",
+ "cells": {
+  "16": [
+   "12a361f8bfcc0dee",
+   "31832e37b7870f24",
+   "51190dbcd8d4d072",
+   "5a4aa91c8fe2342f"
+  ],
+  "24": [
+   "09eeb2122ae02d2b",
+   "0d0e93ca47f64472",
+   "0dd1288d649bfe48",
+   "1682f4123fa200fe",
+   "70778f51b90f3e8f",
+   "72c79045ab235aba",
+   "75dafcae58e1bfbd",
+   "7afb1c6993dc9811",
+   "9a9ac30da9dc85b7",
+   "a058ef4d3effe15c",
+   "af1c796913d8e376",
+   "af314e8faaa011d7",
+   "b7b49ef3ebef6648",
+   "b92faceeb4ebba01",
+   "c59a890e131ff9cd",
+   "c9731feeb07477aa",
+   "cf73ef7dded6dd84",
+   "e3d03c6bcbcce042"
+  ],
+  "32": [
+   "5280654b5e1ce715",
+   "66b532fba33b3a12",
+   "e867bebe8321bd2f",
+   "f47ff4634e1da2eb"
+  ],
+  "48": [
+   "28f60d79b6cc8be9",
+   "349514b1de160413",
+   "3f05a3a8c2d9d694",
+   "60ea23c820a32a7e",
+   "67b5a6aa507178f7",
+   "6cac00a63331084d",
+   "8ff0c4618b02284d",
+   "9de973da97cc9b5d",
+   "a140c3cec60496e2",
+   "ac9cfd717cb5d99b",
+   "b6fb7d17bfbe720f",
+   "ba58c3e9c47eba14"
+  ]
+ }
+}

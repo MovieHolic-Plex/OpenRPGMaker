@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d71fa941cbfd3ef1083a6e979bdee74540b9f81709a821b0cc9aa47abe666c50",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "등받이 의자(놋쇠 못)",
+ "label": "sky-steam/steam-i-chair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chair cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is depicted almost entirely in front elevation. The backrest shows no visible top plane (only a 1px top outline/highlight), and the seat cushion has only 1-2 rows of lighter shading at rows 5-6 rather than a proper foreshortened horizontal seat surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 8429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chair seat cushion and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn in front elevation: the cushion spans rows 5-9 with only a 1px beveled edge highlight at row 5 and no visible top seat surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8462
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chair with padded seat and backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn as a flat front elevation: the backrest, cushion, and legs have no foreshortened top surface. The lighter rows on the cushion (rows 5-6) represent a rounded bevel/highlight rather than a receding seat surface, and the backrest connects directly to the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6440
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chair with padded seat and wooden backrest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chair is drawn entirely in front elevation. The backrest shows no visible top rail surface, and the cushion is drawn from the front with a 3-row vertical drop (rows 7-9) showing brass studs, leaving only a 1-2px curved highlight on rows 5-6 rather than a foreshortened top seat surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6864
+  }
+ ],
+ "decidedAt": "2026-10-13T16:23:01.727Z",
+ "cells": {
+  "16": [
+   "e28ed52a00981509"
+  ],
+  "24": [
+   "21164df85aa44a8f",
+   "2f028c65fdd62d33",
+   "39c75fe9299726db",
+   "da682d609b0f2fdd",
+   "f03212fd5ebfdcba",
+   "f628dd3d068bb065"
+  ],
+  "32": [
+   "576a753656e31a18",
+   "6ad43cfa1fc51070",
+   "6e62d9607eaa0530",
+   "7b39aef9defb3615",
+   "896ac13eddf63637",
+   "d619181359bacd68"
+  ],
+  "48": [
+   "2973c82b7f54fc90",
+   "6384e23c02a2baf2",
+   "7e6d2641e1162c4b",
+   "81a2c06b4c17dd43",
+   "a2925dc345cc387f",
+   "be7fa90b0f22cd43"
+  ]
+ }
+}

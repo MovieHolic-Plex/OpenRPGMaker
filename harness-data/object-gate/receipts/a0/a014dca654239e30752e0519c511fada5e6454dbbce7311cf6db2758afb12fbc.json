@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a014dca654239e30752e0519c511fada5e6454dbbce7311cf6db2758afb12fbc",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+ "label": "sky-steam/steam-smoke-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney smoke plume is drawn purely as a flat 2D side-elevation sprite with no top-down perspective or foreshortening to indicate the 3/4 top-down angle, and smoke does not match the 'organic' kind definition.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7951
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke puff",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The smoke puff is rendered with volumetric 3/4 top-down shading, showing a lighter highlighted upper hemisphere (rows 2-8) tapering down to darker shadowed puffs underneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7902
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an amorphous, volumetric smoke plume rising from a chimney. As a volumetric cloud effect, it has no flat horizontal plane, but is rendered with top-down shading (lighter at the upper rounded lobes, darker toward the base) and natural billowing volume consistent with top-down RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6955
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chimney smoke puff",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The smoke puff is rendered as rounded volumetric lobes with top-down lighting; the upper curved surface of the main cloud head is well highlighted across rows 2-7.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4980
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.172Z",
+ "cells": {
+  "16": [
+   "2116e3c882aa5e28",
+   "5ce8e9aecadd887b",
+   "bf987a393fafc518",
+   "fdf3db02054b2827"
+  ],
+  "24": [
+   "07e20567b79b990b",
+   "0d8817101fb5dab1",
+   "28edd81a5a70ae9c",
+   "2b0641841164041e",
+   "33d70d5cb6ef99f7",
+   "53bc6d757bb7136b",
+   "610504bc644929cd",
+   "71bcece1e79b85b3",
+   "7228ce063afe9893",
+   "84da213efa73dcb0",
+   "8b7fc5fe882e915b",
+   "a18dfcedafaf1194",
+   "aeb282b2bb48935f",
+   "aed51210502eb9af",
+   "d02d930106772798",
+   "d4a9d747d8217a11",
+   "ddb6bf59a041270d",
+   "e362128da85be9ff",
+   "e58de15766a93c77",
+   "f7e6115bb06888eb",
+   "f92bcd1a7e537561"
+  ],
+  "32": [
+   "2d52e0cb73b5c6d4"
+  ],
+  "48": [
+   "008e608a25d8f63b",
+   "1d0d603f9da396b5",
+   "7a025c8f9479eeb5",
+   "9320f2ca8f1d26e7",
+   "a7901f3db37f25cb",
+   "f20f874dd54a626e"
+  ]
+ }
+}

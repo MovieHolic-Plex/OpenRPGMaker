@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "47ab6ba6d7351dbdcf120bcb0378d2579dc01f90457841ddc2c2a222f3cfdc83",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "비공정 부두 철판 승강장(난간·계류주)",
+ "label": "sky-steam/steam-dock-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship dock steel platform",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform shows a wide horizontal steel plate deck from row 8 to row 39 (32 rows tall) seen from above with crates and bollards resting on it, followed by a front-facing truss understructure from row 40 to 57.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron plate platform dock",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform displays an expansive horizontal deck surface from row 8 to row 36 (~29 pixel rows tall) viewed from above, paired with a vertical south-facing truss support structure below row 40. The crates and bollards placed on it also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5294
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship dock steel platform",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform's top steel deck spans from row 8 to row 38 (~30 pixel rows), with its south-facing vertical girder support structure rendered underneath from row 39 to row 58. The crates and fixtures placed on the deck also properly display top and front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4964
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship dock steel platform",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The platform shows a wide walkable deck surface (top surface, rows 8-39) complete with top-down placed crates and mooring bollards, leading down to a front south-facing truss support structure (rows 40-57).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6460
+  }
+ ],
+ "decidedAt": "2026-10-13T15:58:57.386Z",
+ "cells": {
+  "16": [
+   "13c713ab77951a83",
+   "1ad74d64d4ee27cb",
+   "25d1577b09d27a59",
+   "2ac92b61b68376d1",
+   "398fbbb5398ef4f9",
+   "474d66da2c31dd93",
+   "4ac99c6fd2924bb4",
+   "56324089e8527bb3",
+   "64ca3f90c40cbecb",
+   "65a6049085e00625",
+   "765ad9d163688068",
+   "9dcb68f58e0100b3",
+   "c54e9934179f6e81",
+   "c985111bf55968a1",
+   "cde14236eaaa8a9b",
+   "d9c83f40709310f6",
+   "df7922147a6be817",
+   "e61d851fc3ed1873",
+   "e7bc287d06dcf96b",
+   "f07fd182429de50a",
+   "f6c66a8e13601434",
+   "f7c19bc6c9237c31",
+   "fce55773f52656a6"
+  ],
+  "24": [
+   "0162c8869122f571",
+   "15ffc021fac2ca4c",
+   "1d79f99a256e4dd4",
+   "206fdafa771ba676",
+   "2454394c33a5cd45",
+   "53768cef83f809a6",
+   "5b528a8984b406a2",
+   "5bc15b21ca0d7677",
+   "6a272ee6c6f623d3",
+   "6de48dc80916e7af",
+   "76db2ac75c007763",
+   "79b68af14f4e45e6",
+   "7e8d1e5438df074e",
+   "929a672a8f9f90d1",
+   "941d573b8908005c",
+   "9fa611cd0f175636",
+   "b895b22d490464fc",
+   "c273beb680301a97",
+   "da624d2c220c5c6d",
+   "e6666565fa6aef4d",
+   "e857e4cb0d7a9e52",
+   "fafc7ef6ee30b29d"
+  ],
+  "32": [
+   "1646e8b51e7dafda",
+   "1f7bff4ff874cf83",
+   "9ea6e63bd224b46b",
+   "df655ac149b2a9a6",
+   "edfbeaf7eeb94975",
+   "f3a61250c517141c"
+  ],
+  "48": [
+   "2a9756c988aca685",
+   "4737693c659c58bb",
+   "75e6f10806061bae",
+   "915e81d2c1861967",
+   "e337027023c4f59c",
+   "e41fc6217fdb468a",
+   "ef9896f5bfa4f85e",
+   "ff7acae00a62dc08"
+  ]
+ }
+}

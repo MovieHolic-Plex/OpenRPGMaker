@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "44e9f5a244706bfef867c614e407d6f41aea94070c183c0c6d9d4f19eb3681fb",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "석탄 더미",
+ "label": "sky-steam/steam-coal-pile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal heap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coal heap is drawn as a flat 2D silhouette with no foreshortened top surface or depth, resembling a side-view or front elevation rather than a 3/4 top-down mound.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18286
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mound is drawn in a flat side/front silhouette elevation with a pointed/flat peak outline at rows 1-2 and no visible foreshortened top surface or distinct top-down slope plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12764
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coal mound is rendered as a flat side-view / front elevation profile with no visible foreshortened top surface or top-down slope. It also contains unintended transparent gaps showing the background grid at rows 10-11.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6429
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal pile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mound is drawn in a pure 2D side/front elevation profile with no foreshortened top surface or depth, presenting a flat silhouette rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6229
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.177Z",
+ "cells": {
+  "16": [
+   "23e9969d9ae5cdc6",
+   "de12796b2154e652"
+  ],
+  "24": [
+   "247677afff4469ea",
+   "3d157f80273d4d08",
+   "3eeefb62b18284e1",
+   "413938c38a55e663",
+   "417850cbd2939844",
+   "4806ac0cbba1fdae",
+   "4b49780bd4883862",
+   "7263a23b3798cb59",
+   "738e9867acde533e",
+   "909e3c958a5e8b70",
+   "9fa793eba6fd594d",
+   "cea64cacc602e8c6"
+  ],
+  "32": [
+   "4a66a37c20f2aa13",
+   "529a70e9b3edc406"
+  ],
+  "48": [
+   "1179ce451cceaa44",
+   "2301e9d7bb2ef069",
+   "70a6941b4ae23179",
+   "71de47034e53beaf",
+   "a28ddbd08552c0b9",
+   "afa3518a3b42ed06"
+  ]
+ }
+}

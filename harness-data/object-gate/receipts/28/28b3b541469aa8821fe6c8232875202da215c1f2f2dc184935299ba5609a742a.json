@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "28b3b541469aa8821fe6c8232875202da215c1f2f2dc184935299ba5609a742a",
+ "width": 32,
+ "height": 32,
+ "kind": "organic",
+ "name": "굴뚝 연기(4프레임, 위로 피어오름)",
+ "label": "sky-steam/steam-smoke-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Chimney smoke is an atmospheric/VFX element rather than an organic object. It is drawn as a flat 2D billboard plume rising diagonally with no 3/4 top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 11120
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an amorphous smoke puff/plume with shaded volumetric rounding. It has no planar horizontal surfaces or openings to foreshorten, and is not drawn as a flat architectural front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6993
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "chimney smoke plume",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The smoke plume consists of volumetric rounded puffs with highlights on the upper surfaces (rows 0-4 on the top puff, rows 5-9 on the main center puff) and shading underneath, consistent with the 3/4 overhead lighting and perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11292
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "smoke plume",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney smoke is rendered as an organic, volumetric plume composed of spherical puffs. The uppermost puff (rows 0-5) and the top of the main body (rows 6-10) show rounded upper surfaces with top-down lighting (roughly 5 source pixel rows), consistent with 3/4 top-down perspective shading. No isometric receding side faces or missing horizontal surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12930
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:42.172Z",
+ "cells": {
+  "16": [
+   "1e8c5d4527c3f97f",
+   "8b00476bd44eaecb",
+   "9c97dab3c008f5c4",
+   "c19b4baa9b955c87"
+  ],
+  "24": [
+   "036a2489c0217d7f",
+   "23034bdeb1290897",
+   "266ca04b8be6adc7",
+   "2c2a7a08c4f196ca",
+   "366ab15f61a2d78a",
+   "37b2e115db2b3fd8",
+   "58f79e4752920f00",
+   "5fa3af8ff5eabda1",
+   "5fc49cf023189a76",
+   "63c86cc6744cf46e",
+   "8913c9562b68d033",
+   "a44257f2eafe466b",
+   "ab7effa44b511432",
+   "ac2c939e75ab509a",
+   "c466407317a46272",
+   "f3420dec80856498",
+   "f8c9a7568025e53b",
+   "ff84f6e6fe638d8d"
+  ],
+  "32": [
+   "2d6f3c03f1719d3a"
+  ],
+  "48": [
+   "19a8d11556f9b175",
+   "234ad296189cda1b",
+   "68fa4f2888dd7c78",
+   "8302f264e4971d9d",
+   "d77873e4e2fa6db0",
+   "e92bb76d4e1b7612"
+  ]
+ }
+}

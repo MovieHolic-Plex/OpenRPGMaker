@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2a1fae79a48d8709a0e6c48df8ad074f8e4a7e3b3fff47b8370531c8799481f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "약품 선반(병·두루마리)",
+ "label": "sky-steam/steam-i-chem-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall medicine shelf/cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn entirely in a flat front elevation. The top structure (rows 1-7) depicts a tiered front-facing cornice/pediment rather than a horizontal top plane seen from above. Additionally, the shelf boards and items (jars/scrolls) show flat rectangular front profiles with no top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8328
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "medicine shelf with scrolls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn entirely in a flat front elevation: the top section is a stepped 2D decorative cornice with no visible horizontal top surface (0 rows), the interior shelves are 2px flat front-facing bars with no depth, and all cylindrical scrolls are flat rectangles with no visible top ellipses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9477
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall medicine/scroll bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookcase is drawn in pure front elevation: the decorative stepped top molding is depicted strictly from the front with no visible top surface receding back, the shelf boards are 1px flat horizontal dividers with no visible tops, and the items inside are flat 2D silhouettes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10005
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall medicine/scroll shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bookcase and its contents are drawn in pure front elevation. The top crown/pediment is an architectural front-facing molding without a receding top surface, the shelf boards show no top planes, and the scrolls/bottles are flat rectangles without visible top ellipses.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7083
+  }
+ ],
+ "decidedAt": "2026-10-13T16:27:41.980Z",
+ "cells": {
+  "16": [
+   "52b43a5d1c03c4bd",
+   "7bea68f0c5d1ccb4",
+   "eeb90a9e944660e5",
+   "f9c9a82b6d005e21"
+  ],
+  "24": [
+   "16b043c7c2703fcf",
+   "191842f9f95fc03d",
+   "1e260af2dcae1f94",
+   "32668feaf35b05bf",
+   "39d08c9b8445a11e",
+   "3f658c777d1ef4cf",
+   "49db73d3505d10e7",
+   "5e3f8251f6b75e94",
+   "65d69b7961fdd3cc",
+   "80f3852f683dc063",
+   "81377973afdc447b",
+   "97c5d1304ad9e71d",
+   "9f9597b3a2121af1",
+   "a4a704f2b6e0e1c5",
+   "a5dad92c13824075",
+   "a9432c7fb76d5127",
+   "ac7c608105048993",
+   "b09aafaf3ab002b8",
+   "b50fc0338b3d4645",
+   "ba2a56be6eb69460",
+   "d47593df20fe0c33",
+   "d9176e5204348341",
+   "dcde7879dbb8c024",
+   "ebd1867d3d6ce5d7"
+  ],
+  "32": [
+   "386bc901e02306ab"
+  ],
+  "48": [
+   "0a61fae4328a83b1",
+   "3bd5b67a4265cd5f",
+   "a01daf2d3edd3bb1",
+   "c3522d1ef570d57f",
+   "c952db8e0e3cc483",
+   "d0004e58ceca677c"
+  ]
+ }
+}
