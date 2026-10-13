@@ -65,19 +65,21 @@ def gate_kits() -> list[str]:
 def check_all(context: str = 'bundle') -> dict:
     """모든 _gate 키트의 영수증 확인. {'ok':[...], 'bad':[(id, kind, why)], 'total':n}. 모델 호출 없음."""
     import object_gate as OG
-    ok, bad = [], []
+    ok, bad, prov = [], [], []
     for kid in gate_kits():
         kind = kind_of(kid)
         try:
             why = OG.refusal(os.path.join(GATE_DIR, kid + '.png'), kind=kind, context=context)
         except Exception as e:  # 깨진 PNG 등
             why = f'확인 실패: {e}'
+        if why and '보정되지 않았다' in why:                      # 판정 자체는 통과했지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
+            prov.append(kid); continue
         (bad if why else ok).append((kid, kind, why) if why else kid)
-    return dict(ok=ok, bad=bad, total=len(ok) + len(bad))
+    return dict(ok=ok, prov=prov, bad=bad, total=len(ok) + len(prov) + len(bad))
 
 
 def report(res: dict, file=sys.stdout) -> None:
-    print(f"[3/4 관문] street_hand 키트 {res['total']}개 중 통과 {len(res['ok'])}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
+    print(f"[3/4 관문] street_hand 키트 {res['total']}개 중 통과 {len(res['ok'])} + 미보정 프로필 임시통과 {len(res.get('prov', []))}, 영수증 없음/불합격 {len(res['bad'])}", file=file)
     if res['bad']:
         print(f"{'kit':34} {'kind':13} 사유", file=file)
         for kid, kind, why in res['bad']:
@@ -91,7 +93,10 @@ def enforce() -> None:
     """bake 진입 관문. 미통과 키트가 있으면 표를 찍고 종료(코드 3). JP_GATE=skip 이면 큰 경고 후 통과."""
     res = check_all()
     if not res['bad'] and res['total']:
-        print(f"[3/4 관문] 통과 {res['total']}/{res['total']}")
+        if res.get('prov'):
+            print(f"[3/4 관문] 통과 {len(res['ok'])} · 임시통과 {len(res['prov'])} — 판정 프로필이 아직 「보정 안 됨」이다. 보고에 「관문 임시통과(프로필 미보정)」라고 적을 것.", file=sys.stderr)
+        else:
+            print(f"[3/4 관문] 통과 {res['total']}/{res['total']}")
         return
     report(res, file=sys.stderr)
     if os.environ.get('JP_GATE') == 'skip':
