@@ -880,20 +880,27 @@ prop('rail-fence', '선로 콘크리트 방호벽', 1, 1, solid=[(0, 0)], tags=[
 
 
 def rail_signal(c):
-    """건널목 경보기 1×3: 둥근 기둥머리(위에서 본 타원 윗면 7줄, 안쪽 어두운 타원 = 등갓 위) + 줄 기둥 + 붉은 등·십자 + 받침."""
-    rows = [(5, 6), (3, 10), (1, 14), (0, 16), (0, 16), (0, 16), (1, 14), (3, 10)]                              # 타원 윗면(윗줄부터, (x0, 폭))
-    for i, (x0, w) in enumerate(rows):
-        c.HL(x0 - 1, i, w + 2, OL) if i in (0, 7) else None
-    for i, (x0, w) in enumerate(rows):
-        y = i + 1
-        c.HL(x0, y, w, K('shiro', 3 if i < 3 else 1)); c.P(x0, y, OL) if x0 == 0 else c.P(x0 - 1, y, OL); c.P(x0 + w - 1, y, OL) if x0 == 0 else c.P(x0 + w, y, OL)
-    c.R(4, 3, 8, 4, K('conc', 0)); c.HL(5, 4, 6, K('sumi', 1)); c.HL(5, 5, 6, K('sumi', 0)); c.HL(4, 6, 8, K('conc', 2))                                          # 등갓 위(어두운 타원)
-    c.HL(3, 9, 10, OL); c.HL(2, 10, 12, K('conc', 1)); c.HL(3, 11, 10, K('conc', -2))                     # 머리 앞 테
-    for y in range(12, 45):
-        c.R(4, y, 8, 1, K('kii', 1) if (y // 3) % 2 and y > 28 else K('tekko', 0)); c.P(3, y, OL); c.P(12, y, OL); c.P(4, y, K('tekko', 2)); c.P(11, y, K('tekko', -2))
-    c.R(5, 13, 2, 4, K('aka', 1)); c.R(9, 13, 2, 4, K('aka', 1)); c.P(5, 13, K('aka', 3)); c.P(9, 13, K('aka', 3))
-    for i in range(6): c.P(5 + i, 20 + i // 2, K('shiro', 2)); c.P(10 - i, 20 + i // 2, K('shiro', 2))
-    c.HL(2, 44, 12, OL); c.R(2, 45, 12, 3, K('conc', 1)); c.HL(2, 45, 12, K('conc', 3)); c.HL(2, 47, 12, K('conc', -2))
+    """건널목 경보기 1×3: 계전기 상자(윗면 8줄 결 있는 콘크리트 덮개 + 앞면 문) 위에 줄무늬 기둥과 붉은 등 둘 달린 가로 등보가 선 모양."""
+    # 등보(앞면, 위쪽): 붉은 등 둘 + 흰 십자 표지
+    c.HL(1, 0, 14, OL); c.R(0, 1, 16, 8, K('kii', 0)); c.HL(1, 1, 14, K('kii', 2)); c.HL(1, 8, 14, K('kii', -2))
+    c.VL(0, 1, 8, OL); c.VL(15, 1, 8, OL); c.HL(1, 9, 14, OL)
+    for x in (2, 10):
+        c.R(x, 2, 4, 5, K('sumi', 1)); c.R(x + 1, 3, 2, 3, K('aka', 1)); c.P(x + 1, 3, K('aka', 3))
+    c.R(7, 2, 2, 6, K('shiro', 1)); c.P(7, 2, K('shiro', 3))
+    # 기둥
+    for y in range(10, 25):
+        c.R(6, y, 4, 1, K('kii', 1) if (y // 3) % 2 else K('tekko', 0)); c.P(5, y, OL); c.P(10, y, OL); c.P(6, y, K('tekko', 2)); c.P(9, y, K('tekko', -2))
+    # 상자 윗면: 뒤 모서리 짙은 선 + 결 있는 8줄 + 앞 모서리 밝은 줄
+    c.HL(1, 24, 14, OL); c.HL(0, 25, 16, OL)
+    c.R(1, 26, 14, 8, K('conc', 2)); c.HL(1, 26, 14, K('conc', -1)); c.HL(1, 27, 14, K('conc', 1)); c.HL(1, 33, 14, K('shiro', 3))
+    c.VL(0, 26, 8, OL); c.VL(15, 26, 8, OL)
+    for x, y in ((2, 29), (5, 31), (9, 28), (12, 30), (3, 32), (10, 32), (13, 28)): c.P(x, y, K('conc', 0)); c.P(x + 1, y, K('conc', 0))
+    c.R(5, 22, 6, 3, K('conc', 1)); c.HL(5, 24, 6, K('conc', -2)); c.HL(6, 22, 4, K('conc', 3))                       # 기둥 받침판
+    # 상자 앞면
+    c.HL(0, 34, 16, OL); c.R(0, 35, 16, 11, K('conc', -1)); c.HL(1, 35, 14, K('conc', 1)); c.HL(1, 45, 14, K('conc', -3))
+    c.VL(0, 35, 11, OL); c.VL(15, 35, 11, OL); c.HL(0, 46, 16, OL)
+    c.R(3, 37, 10, 7, K('conc', -2)); c.VL(8, 37, 7, OL); c.P(7, 40, K('kii', 2)); c.P(9, 40, K('kii', 2)); c.HL(4, 38, 3, K('sumi', 1)); c.HL(10, 38, 3, K('sumi', 1))
+    c.HL(1, 47, 14, K('midori', -1))
 
 
 prop('rail-signal', '건널목 경보기', 1, 3, solid=[(0, 2)], tags=['철도', '건널목', '경보기'], rules='건널목 양쪽 보도 칸에 하나씩.')(rail_signal)

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f45988c7c6eede4199be49bacde0c5736a7b06ab359c31270ec65015f24e2271",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal box and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the signal box, pole, and base plinth all have completely flat horizontal lines with no foreshortened top surfaces or elliptical cross-sections visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box, pole, top cap, and base plinth are all drawn in pure flat front elevation with straight horizontal lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7392
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "railway signal head and supporting column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main signal head has a broad yellow top plane visible for about 5 source-pixel rows above its south-facing front housing. The supporting post is front-facing, with no receding isometric side face; the visible top plane is sufficient for the column-like object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 41071
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "railway crossing signal housing and supporting column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main housing has a broad, clearly visible yellow top plane above its south-facing front face; the vertical support is shown with a narrow top-facing highlight/plane rather than as a receding side face. The housing is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 49700
+  }
+ ],
+ "decidedAt": "2026-10-13T08:06:38.714Z",
+ "cells": {
+  "16": [
+   "db86c150bab66327",
+   "dc0f4d96367039bb",
+   "e7041727224f3d7d"
+  ],
+  "24": [
+   "33f2fd4ed8fae561",
+   "3a12a46619ab3b10",
+   "78448fed34c82e48",
+   "7ed7dfff7ad8d923",
+   "7fd3d50701562add",
+   "98d545f1832347c1"
+  ],
+  "32": [
+   "03c8be007b69493a",
+   "130ffae3fd1c9fbb",
+   "22f4cd2fd2fa5024",
+   "290637bdd1c69254",
+   "6070edf3a839d7cb",
+   "6d39d86daa678624",
+   "7887be26baf49ea1",
+   "7b8fe97088474468",
+   "7ba3b80f6975990e",
+   "ab2eba261c555d4e",
+   "b0d62457d7d80b3a",
+   "d1469a68c00647d7"
+  ],
+  "48": [
+   "0afddea420a7f40f",
+   "c4b204c98d19f735",
+   "df5e4da15143534b"
+  ]
+ }
+}

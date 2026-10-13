@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "69a4566edbb542b5569bcf0d89784058c0b99de76cb7310405a7fd74d4290cd4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal box and pole assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box (rows 9-19), yellow top hood (rows 0-8), pole (rows 20-43), and base plinth (rows 44-46) are all rendered in pure flat front elevation with no visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6554
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal light box and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal assembly (signal light box, top bell/hood, pole, and base) is drawn in pure front elevation with no foreshortened top surfaces visible on the box (row 10 is only a 1px edge highlight) or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7266
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "railway signal housing on a vertical post",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main signal housing has a broad, clearly visible yellow top plane about 8 source pixels deep above its south-facing brown signal face; this is more than a rim or edge line. No receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 186734
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 16043,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T08:10:20.311Z",
+ "cells": {
+  "16": [
+   "6de3a2949b682600",
+   "cf4d9b32cbb14e5f",
+   "dc0f4d96367039bb"
+  ],
+  "24": [
+   "2d434ed2cba78b12",
+   "33f2fd4ed8fae561",
+   "3a12a46619ab3b10",
+   "7782ece6b8eb8675",
+   "98d545f1832347c1",
+   "c211a3cf89f292cd"
+  ],
+  "32": [
+   "0a2c464afbccaf7d",
+   "1d934e8531db7d10",
+   "2387513d2670f6e0",
+   "283466bf3f8b73fd",
+   "2e6a2cd92cbdf94b",
+   "6b99d0fdbc21adf2",
+   "78c74c46d25d1e84",
+   "7b8fe97088474468",
+   "85aa8dc5b150bd40",
+   "b0d62457d7d80b3a",
+   "d1469a68c00647d7",
+   "e9a2a1a33a41eb69"
+  ],
+  "48": [
+   "30ec1c6d234c1c81",
+   "39c9bb11aeb7e91a",
+   "f656730d42b6756c"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2e5f7963c89be1a1acd25e83e8c4e010d9f7eb9c83406eb62d172b5d82dfbc1",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal box on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal box at the top is drawn entirely in flat front elevation with only a 1-2px outline at row 0-1 and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6155
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal head and striped post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire railway signal is drawn in pure flat front elevation. The signal box at the top terminates in a 1-2px outline border at row 0-1 with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6400
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing signal board and supporting post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main board and post are drawn as flat south-facing rectangles; the yellow line at the board's top is only a 1px edge, not a visible top surface or cut face. No receding side face is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 48048
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "railway signal housing and supporting column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main yellow signal housing and post are drawn as flat front-facing rectangles; the bright strip at the housing's top is only a thin cap/edge, with no substantive top surface visible. No receding side face or opening is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 54471
+  }
+ ],
+ "decidedAt": "2026-10-13T08:03:11.670Z",
+ "cells": {
+  "16": [
+   "7f6b953c3a30dd6c",
+   "a71e162981ed3a48",
+   "c8b9c86bd7609196"
+  ],
+  "24": [
+   "195bf5aa00ca9e77",
+   "2e23b60ba309e90e",
+   "30bb34c45cfa37cf",
+   "8f3b7d88565db807",
+   "a676cf8e623e4d89",
+   "dc2036f7efd381e6"
+  ],
+  "32": [
+   "49dabf465340ad14",
+   "54caf9727394cef9",
+   "6918677026f27c5b",
+   "8d2c9492ab0c7ee3",
+   "9996333c5650de5e",
+   "a4fc2a3a6ef54907",
+   "a58f166a0015aa1e",
+   "aaed22e3c99eb441",
+   "c34fa719a69dac50",
+   "cd167de0df3b012c",
+   "e2f7073d2f465add",
+   "ff5f201c023af2dc"
+  ],
+  "48": [
+   "519d708ee9b325f5",
+   "ad442adaf7204a8d",
+   "b7a25495ec067f72"
+  ]
+ }
+}

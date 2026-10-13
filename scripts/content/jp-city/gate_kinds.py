@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(REPO, 'src', 'harnesses', '_core'))
 EXACT = {
     # 기둥형(윗면 = 기둥머리)
     'pole': 'column', 'pole-guy': 'column', 'pole-wood': 'column', 'mirror2': 'column', 'hydrant-sign': 'column',
-    'bus-stop': 'column', 'rail-signal': 'column', 'gatepost': 'column', 'bridge-post': 'column',
+    'bus-stop': 'column', 'rail-signal': 'box', 'gatepost': 'column', 'bridge-post': 'column',
     # 구조물
     'gate': 'structure', 'carport': 'structure', 'torii': 'structure', 'gas-canopy': 'structure', 'school-gate': 'structure',
     'rail-fence': 'structure', 'bridge-rail-v': 'structure',
@@ -47,7 +47,6 @@ def kind_of(kit_id: str) -> str:
 # 지금 관문을 통과하지 못한다고 알려진 키트(이유 포함). 영수증이 통과로 나오기 전에는 계속 막는다 — 이 목록은 면제가 아니라 안내다.
 KNOWN_FAILING = {
     'sf-*': '상가 입면 띠(jp-sf-*): 정면 입면만 있고 윗면이 없다(elevation strip without top face) — 윗면 지붕/차양 행을 그려야 함',
-    'rail-signal': '건널목 경보기: 다른 작업자가 윗면이 보이도록 다시 그리는 중(pending)',
 }
 
 
