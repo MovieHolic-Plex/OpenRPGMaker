@@ -34,6 +34,7 @@
 {"png": "de-hookah.png", "kind": "other", "name": "물담배(시샤)", "label": "desert-east/de-hookah"}
 {"png": "de-lantern-wall.png", "kind": "wall_mounted", "name": "놋 투각 등(벽걸이)", "label": "desert-east/de-lantern-wall"}
 {"png": "de-rug-medallion.png", "kind": "flat", "name": "메달리온 양탄자", "label": "desert-east/de-rug-medallion"}
+{"png": "de-rug-runner.png", "kind": "flat", "name": "양탄자 길(세로)", "label": "desert-east/de-rug-runner"}
 {"png": "de-shelf-pottery.png", "kind": "tall_furniture", "name": "그릇 선반", "label": "desert-east/de-shelf-pottery"}
 {"png": "de-sacks-spice.png", "kind": "container", "name": "열린 향신료 자루", "label": "desert-east/de-sacks-spice"}
 {"png": "de-carpet-stack.png", "kind": "box", "name": "접어 쌓은 양탄자", "label": "desert-east/de-carpet-stack"}

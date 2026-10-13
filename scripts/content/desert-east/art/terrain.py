@@ -151,9 +151,9 @@ T('flag-b', '사암 포석(변주)', ['포석', '광장'], 'flag 와 섞는다.'
 
 def grass(x, y, s=5, base=3, dry=0.0):
     x, y = W(x, y)
-    n = vnoise(x, y, s + 3, 8)
+    n = vnoise(x, y, s + 3, 4)          # 잔 덩이(4화소) — 칸마다 2×2 큰 얼룩이 반복돼 보이지 않게
     if dry and n < dry: return sand_base(x, y, s)
-    t = base + 1 if n > 0.62 else base
+    t = base + 1 if n > 0.7 else base
     # 풀 포기: 밝은 끝 2화소 세로 + 밑동 어둡게(낱낱이, 주기 덩이 없음)
     if rnd(x, y, s + 11) < 0.06 or rnd(x, (y + 1) % 16, s + 11) < 0.06: t = min(5, t + 1)
     xb, yb = W(x, y - 1)
@@ -164,6 +164,7 @@ def grass(x, y, s=5, base=3, dry=0.0):
 
 T('grass', '오아시스 풀밭', ['풀', '오아시스'], '오아시스 못 둘레·야자 밑. 모래와는 grass 왕 타일로 잇는다.')(wrap(lambda x, y: grass(x, y, 5)))
 T('grass-b', '오아시스 풀밭(변주)', ['풀', '오아시스'], 'grass 와 섞는다.')(wrap(lambda x, y: grass(x, y, 17)))
+T('grass-c', '오아시스 풀밭(변주 2)', ['풀', '오아시스'], 'grass·grass-b 와 섞는다.')(wrap(lambda x, y: grass(x, y, 29)))
 
 
 def gravel(x, y, s=9):

@@ -713,6 +713,111 @@ def _(c):
         for x in range(4, 12, 3): c.P(x, y + 2, 'stone', 2)
     c.outline(bottom=('stone', 0))
 
+# ═════════════ 추가: 쉬는 낙타·두레박·가마·양탄자 걸이·향로·항아리 시렁·야자 그루터기 ═════════════
+@P_('camel-rest', '앉아 쉬는 낙타', 2, 2, 'other', ['낙타', '대상', '오아시스'], '야영지·대상 숙소 마당·물통 곁. 서 있는 낙타와 섞어 둔다. 막힘.')
+def _(c):
+    H = 'hide'
+    # 무릎 꿇고 앉은 낙타(옆모습): 낮고 긴 몸 + 혹 위 안장 깔개(윗면) + S자로 든 목·머리(왼쪽 위) + 접은 다리
+    c.ell(18, 21, 12, 6, lambda x, y, dx, dy, d: (H, 5 if dy < -0.4 else 4 if dy < 0.25 else 2))
+    c.ell(19, 15, 6.5, 4, lambda x, y, dx, dy, d: (H, 5 if dy < -0.1 and dx < 0.3 else 4))
+    c.R(12, 12, 14, 4, 'red', 4); c.HL(12, 12, 14, 'red', 5); c.R(14, 13, 10, 2, 'saffron', 4)
+    c.R(11, 16, 16, 4, 'red', 2); c.HL(11, 16, 16, 'red', 3)
+    for x in range(11, 27, 2): c.P(x, 20, 'saffron', 3)
+    # 목: 가슴에서 앞으로 나갔다 위로(S자)
+    pts = [(8, 21), (6, 19), (5, 17), (5, 15), (5, 13), (5, 11), (6, 9)]
+    for i, (x, y) in enumerate(pts):
+        c.R(x, y, 3, 2, H, 4 if i < 3 else 3)
+        c.P(x, y, H, 5 if i > 2 else 4)
+    c.R(1, 6, 7, 3, H, 4); c.HL(1, 6, 7, H, 5); c.P(1, 8, H, 2); c.P(3, 7, 'sumi', 0); c.P(6, 5, H, 3)
+    # 접은 다리(앞·뒤 무릎이 몸 밑으로)
+    c.HL(7, 27, 24, H, 1); c.R(8, 25, 4, 2, H, 3); c.R(25, 25, 5, 2, H, 3); c.HL(8, 25, 4, H, 4); c.HL(25, 25, 5, H, 4)
+    c.P(30, 18, H, 2); c.VL(31, 18, 5, H, 2)
+    c.outline(bottom=('hide', 0))
+
+
+@P_('shaduf', '두레박 장대(샤두프)', 2, 3, 'frame', ['우물', '오아시스', '밭'], '못가·우물 곁 흙 위. 장대 끝 두레박이 물 쪽을 향한다. 막힘.')
+def _(c):
+    # 흙벽돌 기둥 둘(윗면 보임) + 가로 받침 + 기운 장대(평형추 돌덩이·밧줄·두레박)
+    for x0 in (5, 20):
+        c.R(x0, 22, 7, 24, 'adobe', 3); c.R(x0, 22, 7, 3, 'adobe', 5); c.HL(x0, 22, 7, 'adobe', 6)
+        c.VL(x0, 25, 21, 'adobe', 4); c.VL(x0 + 6, 25, 21, 'adobe', 1)
+        for y in range(28, 46, 5): c.HL(x0, y, 7, 'adobe', 2)
+    c.R(4, 19, 24, 3, 'dwood', 3); c.HL(4, 19, 24, 'dwood', 4)
+    c.line(2, 28, 30, 4, 'wood', 3); c.line(2, 29, 30, 5, 'wood', 1)
+    rock_blob(c, 4, 30, 4, 3, 7)
+    c.VL(30, 5, 15, 'hide', 1)
+    c.R(27, 20, 7, 5, 'dwood', 2); c.HL(27, 20, 7, 'dwood', 4); c.R(28, 21, 5, 1, 'water', 3)
+    c.outline(bottom=('adobe', 0))
+
+
+@P_('kiln', '흙 가마(그릇 굽는)', 2, 2, 'container', ['가마', '그릇', '바자르', '공방'], '도공 노점 뒤·마을 가장자리 모래 위. 둘레 1칸 비움.')
+def _(c):
+    # 둥근 흙 가마: 윗면 아가리(타원, 안 불빛) + 몸 + 앞 아궁이(불) + 곁 장작
+    cx = 15
+    for y in range(4, 28):
+        for x in range(1, 30):
+            dx = (x + 0.5 - cx) / 13; u = (y - 4) / 24
+            r = math.sqrt(max(0.0, 1 - (1 - u) ** 2 * 0.55))
+            if abs(dx) > r: continue
+            t = 5 if dx < -0.35 else 4 if dx < 0.25 else 3 if dx < 0.7 else 2
+            if y > 22: t -= 1
+            c.P(x, y, 'adobe', t)
+    c.ell(cx, 7, 7, 3.2, lambda x, y, dx, dy, d: ('adobe', 6) if d > 0.75 else ('fire', 2 if d > 0.4 else 4))
+    c.R(11, 19, 8, 7, 'void', 1); c.R(12, 21, 6, 4, 'fire', 3); c.HL(12, 24, 6, 'fire', 4); c.R(13, 22, 2, 2, 'fire', 4)
+    c.HL(10, 18, 10, 'adobe', 6)
+    for y, x0 in ((26, 21), (28, 22)): c.HL(x0, y, 9, 'dwood', 3); c.HL(x0, y + 1, 9, 'dwood', 1)
+    c.outline(bottom=('adobe', 0))
+
+
+@P_('carpet-rack', '양탄자 걸이', 2, 2, 'frame', ['양탄자', '바자르', '시장'], '바자르 노점 줄 사이·가게 앞 포석 위. 앞 1칸 비움.')
+def _(c):
+    # 나무 틀(기둥 둘 + 가로대 윗면) + 걸린 양탄자 셋(무늬 띠·술)
+    for x in (2, 28): c.R(x, 4, 2, 26, 'dwood', 3); c.VL(x, 4, 26, 'dwood', 4)
+    c.R(1, 3, 31, 3, 'wood', 4); c.HL(1, 3, 31, 'wood', 5); c.HL(1, 5, 31, 'wood', 2)
+    for i, (x0, mat, acc) in enumerate(((5, 'red', 'saffron'), (13, 'lapis', 'gold'), (21, 'turq', 'red'))):
+        w = 7
+        c.R(x0, 6, w, 18, mat, 3); c.VL(x0, 6, 18, mat, 4); c.VL(x0 + w - 1, 6, 18, mat, 2)
+        c.R(x0 + 1, 8, w - 2, 14, mat, 2 if i != 1 else 3)
+        for y in range(9, 22, 4): c.HL(x0 + 1, y, w - 2, acc, 3)
+        c.P(x0 + 3, 11, acc, 4); c.P(x0 + 3, 15, acc, 4); c.P(x0 + 3, 19, acc, 4)
+        for x in range(x0, x0 + w, 2): c.P(x, 24, 'plaster', 4)
+    c.HL(1, 30, 31, 'dwood', 1)
+    c.outline(bottom=('dwood', 0))
+
+
+@P_('incense-burner', '놋 향로(연기)', 1, 1, 'container', ['향', '바자르', '궁전'], '가게 문 곁·궁전 앞단·노점 사이 포석 위.')
+def _(c):
+    # 세발 놋 그릇(아가리 타원 4줄 + 숯 빛) + 가는 연기 두 줄
+    c.ell(8, 9, 5.5, 2.4, lambda x, y, dx, dy, d: ('gold', 5) if d > 0.7 else ('fire', 2 if dy > 0 else 1))
+    c.R(3, 11, 11, 3, 'gold', 3); c.HL(3, 11, 11, 'gold', 4); c.VL(13, 11, 3, 'gold', 1)
+    for x in (4, 8, 12): c.VL(x, 14, 2, 'gold', 2)
+    for k in range(7):
+        c.P(7 + (1 if k % 3 == 1 else 0), 7 - k, 'marble', 3 if k < 3 else 2)
+        if k > 2: c.P(10 - (k % 2), 6 - k, 'marble', 2)
+    c.outline(bottom=('gold', 0), sides=True)
+
+
+@P_('jars-rack', '물항아리 시렁', 2, 1, 'container', ['항아리', '우물', '오아시스'], '우물·못가 곁 흙 위. 앞 1칸 비움.')
+def _(c):
+    # 낮은 나무 시렁(윗면) 위 아가리 보이는 물항아리 셋
+    c.R(1, 10, 30, 3, 'wood', 4); c.HL(1, 10, 30, 'wood', 5); c.R(1, 13, 30, 2, 'wood', 2)
+    for x in (2, 29): c.VL(x, 15, 1, 'dwood', 1)
+    for cx, mat in ((7, 'adobe'), (16, 'turq'), (25, 'adobe')):
+        jar(c, cx, 11, 4, 9, mat, neck=3)
+    c.outline(bottom=('wood', 0))
+
+
+@P_('palm-stump', '야자 그루터기', 1, 1, 'debris', ['야자', '오아시스', '폐허'], '과수원 가장자리·폐허 곁 모래 위. 걸어 지나간다.')
+def _(c):
+    # 잘린 줄기(윗면 나이테 타원) + 마른 잎 자락
+    c.R(5, 7, 6, 6, 'wood', 3); c.VL(5, 7, 6, 'wood', 4); c.VL(10, 7, 6, 'wood', 1)
+    for y in range(8, 13, 2): c.HL(5, y, 6, 'wood', 2)
+    c.ell(8, 6, 3.2, 1.7, lambda x, y, dx, dy, d: ('wood', 5 if d > 0.6 else 4))
+    c.P(8, 6, 'wood', 2)
+    for (x, y) in ((2, 13), (3, 12), (12, 13), (13, 12), (14, 13), (1, 14)): c.P(x, y, 'palm', 1)
+    c.HL(3, 13, 10, 'sand', 2)
+    c.outline(bottom=('wood', 0))
+
 
 if __name__ == '__main__':
     R.export()

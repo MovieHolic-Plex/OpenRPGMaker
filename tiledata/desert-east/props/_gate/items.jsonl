@@ -47,3 +47,10 @@
 {"png": "de-block-fallen.png", "kind": "box", "name": "쓰러진 돌덩이", "label": "desert-east/de-block-fallen"}
 {"png": "de-lion-statue.png", "kind": "figure", "name": "사자 석상(받침)", "label": "desert-east/de-lion-statue"}
 {"png": "de-stele.png", "kind": "column", "name": "비석(무늬 띠, 글자 없음)", "label": "desert-east/de-stele"}
+{"png": "de-camel-rest.png", "kind": "other", "name": "앉아 쉬는 낙타", "label": "desert-east/de-camel-rest"}
+{"png": "de-shaduf.png", "kind": "frame", "name": "두레박 장대(샤두프)", "label": "desert-east/de-shaduf"}
+{"png": "de-kiln.png", "kind": "container", "name": "흙 가마(그릇 굽는)", "label": "desert-east/de-kiln"}
+{"png": "de-carpet-rack.png", "kind": "frame", "name": "양탄자 걸이", "label": "desert-east/de-carpet-rack"}
+{"png": "de-incense-burner.png", "kind": "container", "name": "놋 향로(연기)", "label": "desert-east/de-incense-burner"}
+{"png": "de-jars-rack.png", "kind": "container", "name": "물항아리 시렁", "label": "desert-east/de-jars-rack"}
+{"png": "de-palm-stump.png", "kind": "debris", "name": "야자 그루터기", "label": "desert-east/de-palm-stump"}

@@ -166,7 +166,23 @@ class Board {
     if (!kit) return false;
     const r = { x, y, w: kit.width, h: kit.height };
     if (!this.free(r, margin, allow)) return false;
+    if (!this.feetOk(kitId, x, y + kit.height - 1, kit.width)) return false;
     this.stamp(kitId, x, y, "prop"); this.props.push({ kit: kitId, x, y });
+    return true;
+  }
+  /** 발 밑(키트 맨 아랫줄 칸)의 네 꼭짓점이 모두 한 재질인가 — 재질 경계(길 가장자리·풀 끝)에 걸쳐 떠 보이지 않게.
+   *  모래 소품(덤불·마른 풀·바위·낙타·천막류)은 모래(마른 풀은 사구도)에만, 야자·갈대·협죽도는 풀에만. 물에는 아무것도. */
+  feetOk(kitId: string, x: number, y: number, w: number): boolean {
+    const SAND_ONLY = /^de-(scrub|tuft|rock-small|aloe|boulder|outcrop|acacia|camel|camel-rest|tent-small)$/;
+    const GRASS_ONLY = /^de-(palm-date|palm-young|palm-pair|reeds|oleander)$/;
+    const want = GRASS_ONLY.test(kitId) ? "g" : SAND_ONLY.test(kitId) ? "s" : null;
+    for (let i = 0; i < w; i++) {
+      const c = [this.vget(x + i, y), this.vget(x + i + 1, y), this.vget(x + i, y + 1), this.vget(x + i + 1, y + 1)];
+      if (want === "g" && kitId !== "de-reeds" && c.some((m) => m !== "g")) return false;
+      if (kitId === "de-reeds" && !c.includes("g")) return false;
+      if (want === "s" && c.some((m) => !(m === "s" || (kitId === "de-tuft" && m === "d")))) return false;
+      if (!want && kitId !== "de-reeds" && c.every((m) => m === "w")) return false;
+    }
     return true;
   }
   /** 건물 하나: 찍고, 문 칸·접근칸(문 바로 아래)을 기록, 접근칸과 그 아래 한 칸은 예약. */
@@ -232,9 +248,10 @@ class Board {
         const cnt = new Map<Mat, number>(); for (const m of over) cnt.set(m, (cnt.get(m) ?? 0) + 1);
         set = [...cnt.entries()].sort((a, b) => b[1] - a[1])[0]![0] as Exclude<Mat, "s">;
       }
-      const idx = c.reduce((acc, m, i) => acc + ((m === set) ? 1 << i : 0), 0);
+      // 두 덧 재질이 만나는 칸(흙길↔포석, 풀↔포석)은 둘 다 많은 쪽으로 센다 — 사이에 모래 이(V자 틈)가 끼지 않게(적대 검수 2026-10-14).
+      const idx = c.reduce((acc, m, i) => acc + ((set === "w" ? m === "w" : m !== "s") ? 1 << i : 0), 0);
       if (idx === 15) {
-        const pure: Record<string, readonly string[]> = { r: ["de-road", "de-road-b"], f: ["de-flag", "de-flag-b"], g: ["de-grass", "de-grass-b"] };
+        const pure: Record<string, readonly string[]> = { r: ["de-road", "de-road-b"], f: ["de-flag", "de-flag-b"], g: ["de-grass", "de-grass-b", "de-grass-c"] };
         const vars = (pure[set] ?? []).map((t) => this.pal.tile(t)).filter((t) => t >= 0);
         if (vars.length) { this.lower[k] = vars[Math.floor(hash2(x, y, s + 7) * vars.length)]!; continue; }
       }
@@ -322,7 +339,7 @@ const PALMS = ["de-palm-date", "de-palm-young", "de-palm-pair"];
 const DESERT_BITS = ["de-scrub", "de-tuft", "de-tuft", "de-rock-small", "de-aloe"];
 
 /** 길(가로) 북쪽에 집 줄 — 집 아랫줄이 길 바로 위, 문 접근칸이 길. x0..x1 사이를 왼쪽부터 채운다. */
-function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: number, pool: readonly string[], gapMin = 1, allow: readonly Use[] = ["open", "field"]): DesertBuilding[] {
+function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: number, pool: readonly string[], gapMin = 1, allow: readonly Use[] = ["open", "field"], jitter = true): DesertBuilding[] {
   const out: DesertBuilding[] = [];
   let x = x0;
   while (x < x1) {
@@ -334,7 +351,7 @@ function houseRow(b: Board, rng: () => number, x0: number, x1: number, roadY: nu
     if (y >= 1 && b.free({ x, y, w, h }, 0, allow)) {
       const d = b.building(id, x, y);
       out.push(d);
-      x += w + gapMin + (rng() < 0.35 ? 1 : 0);
+      x += w + gapMin + (jitter && rng() < 0.35 ? 1 : 0);
     } else x += 1;
   }
   return out;
@@ -400,18 +417,36 @@ function oasisPlants(b: Board, rng: () => number, area: Rect, palms: number): vo
   }
 }
 
-/** 천막 야영지: 천막 2~3 + 모닥불 + 깔개 + 낙타. 모래 위. */
+/** 천막 야영지(12×7): 다진 흙 마당(8×4) 위 큰 천막·작은 천막·모닥불·깔개, 마당 곁 모래에 앉은 낙타·선 낙타. 적대 검수(2026-10-14): 천막·불·낙타가 한 무리로 묶여야 한다. */
 function camp(b: Board, rng: () => number, area: Rect): boolean {
-  for (let t = 0; t < 40; t++) {
-    const x = area.x + Math.floor(rng() * Math.max(1, area.w - 10)), y = area.y + Math.floor(rng() * Math.max(1, area.h - 7));
-    if (!b.free({ x, y, w: 10, h: 7 }, 0)) continue;
-    const t1 = b.building("de-tent-bedouin", x, y);
-    void t1;
-    if (b.free({ x: x + 5, y: y + 1, w: 3, h: 3 }, 0)) b.building("de-tent-small", x + 5, y + 1);
+  for (let t = 0; t < 60; t++) {
+    const x = area.x + Math.floor(rng() * Math.max(1, area.w - 12)), y = area.y + Math.floor(rng() * Math.max(1, area.h - 7));
+    if (!b.free({ x, y, w: 12, h: 7 }, 0)) continue;
+    b.ground({ x, y: y + 2, w: 8, h: 4 }, "r", "open");
+    b.building("de-tent-bedouin", x + 1, y + 1);
+    b.building("de-tent-small", x + 5, y + 1);
     b.prop("de-campfire", x + 4, y + 4, 0);
-    b.prop("de-rug-red", x + 2, y + 5, 0);
-    b.prop("de-camel", x + 7, y + 4, 0);
-    b.zone("천막 야영지", "유목민 천막·모닥불·낙타", { x, y, w: 10, h: 7 });
+    b.prop("de-rug-red", x + 1, y + 4, 0);
+    b.prop(rng() < 0.5 ? "de-sacks" : "de-jar-big", x + 7, y + 3, 0);
+    b.prop("de-camel-rest", x + 9, y + 3, 0);
+    b.prop("de-camel", x + 9, y, 0);
+    b.prop("de-hitch-post", x + 11, y + 1, 0);
+    b.zone("천막 야영지", "다진 흙 마당·천막 둘·모닥불·낙타", { x, y, w: 12, h: 7 });
+    return true;
+  }
+  return false;
+}
+
+/** 작은 풀 화단(모서리 야자·협죽도) — 성벽 안 빈 귀퉁이를 메운다. */
+function gardenBed(b: Board, rng: () => number, area: Rect, maxW = 8, maxH = 6, near?: DesertCell): boolean {
+  for (let w = Math.min(maxW, area.w); w >= 4; w--) for (let h = Math.min(maxH, area.h); h >= 3; h--) {
+    const r = findOpen(b, rng, w, h, 0, area, near);
+    if (!r) continue;
+    b.ground(r, "g", "grass");
+    b.zone("화단", "풀·야자", r);
+    b.prop(pick(rng, ["de-palm-young", "de-palm-date"]), r.x, r.y + r.h - 3 >= r.y ? r.y + Math.max(0, r.h - 3) : r.y, 0, ["grass"]);
+    if (w >= 6) b.prop("de-palm-young", r.x + w - 2, r.y + Math.max(0, h - 2), 0, ["grass"]);
+    for (let x = r.x + 2; x < r.x + w - 2; x += 2) b.prop("de-oleander", x, r.y + h - 1, 0, ["grass"]);
     return true;
   }
   return false;
@@ -435,47 +470,58 @@ function wildDesert(b: Board, rng: () => number, density: number): void {
 }
 
 /** 빈 사각 찾기: 크기 w×h(+여백 m)가 통째로 비어 있는 자리 — 왼위부터 성글게 훑어 무작위 하나. */
-function findOpen(b: Board, rng: () => number, w: number, h: number, m: number, area?: Rect): Rect | undefined {
+function findOpen(b: Board, rng: () => number, w: number, h: number, m: number, area?: Rect, near?: DesertCell): Rect | undefined {
   const A = area ?? { x: 1, y: 1, w: b.W - 2, h: b.H - 2 };
   const c: Rect[] = [];
   for (let y = A.y; y + h <= A.y + A.h; y += 2) for (let x = A.x; x + w <= A.x + A.w; x += 2) {
     const r = { x, y, w, h };
     if (b.free(r, m)) c.push(r);
   }
+  if (near && c.length) return c.reduce((best, r) => (Math.abs(r.x + r.w / 2 - near.x) + Math.abs(r.y + r.h / 2 - near.y) < Math.abs(best.x + best.w / 2 - near.x) + Math.abs(best.y + best.h / 2 - near.y) ? r : best));
   return c.length ? c[Math.floor(rng() * c.length)] : undefined;
 }
 
 /** 대추야자 과수원: 풀 사각 + 야자 격자(3칸 간격) + 가장자리 마른 풀. */
 function palmGrove(b: Board, rng: () => number, r: Rect): void {
-  b.ground({ x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 }, "g", "grass");
+  b.ground(r, "g", "grass");
+  // 네 귀퉁이 꼭짓점을 깎아 둥글게(사각 풀밭 방지)
+  for (const [x, y] of [[r.x, r.y], [r.x + r.w, r.y], [r.x, r.y + r.h], [r.x + r.w, r.y + r.h]] as const) b.vset(x, y, "s");
   b.zone("대추야자 과수원", "풀밭·야자 줄", r);
-  for (let y = r.y + 1; y + 2 < r.y + r.h - 1; y += 3) for (let x = r.x + 1 + ((y - r.y) % 2); x + 1 < r.x + r.w - 1; x += 3) {
-    b.prop(rng() < 0.7 ? "de-palm-date" : "de-palm-young", x, y, 0, ["grass"]);
+  let row = 0;
+  for (let y = r.y; y + 3 <= r.y + r.h; y += 3, row++) for (let x = r.x + 1 + (row % 2 ? 1 : 0); x + 3 <= r.x + r.w; x += 3) {
+    b.prop(rng() < 0.7 ? "de-palm-date" : "de-palm-young", x, y, 0, ["grass"]) || b.prop("de-palm-young", x, y + 1, 0, ["grass"]);
   }
-  for (let x = r.x + 1; x < r.x + r.w - 1; x += 2) if (rng() < 0.4) b.prop("de-tuft", x, r.y + r.h - 2, 0, ["grass"]);
+  for (let x = r.x + 1; x < r.x + r.w - 1; x++) if (rng() < 0.3) b.prop(rng() < 0.2 ? "de-palm-stump" : "de-oleander", x, r.y + r.h - 1, 0, ["grass"]);
 }
 
-/** 무너진 신전 터: 포석 바닥(9×6) + 뒷줄 폐허 벽 + 기둥 줄(성한 것·부러진 것 섞어) + 발치 부스러기 + 쓰러진 돌. 앞(남쪽)에 아치 문. */
+/** 무너진 신전 터(10×8): 포석 바닥(10×7) + 뒷줄 폐허 벽 + 기둥 줄(일부 빠짐·부러짐) + 판석 아랫단의 아치 + 쓰러진 돌.
+ *  적대 검수(2026-10-14): 두 신전이 거울처럼 같았고 아치가 판석 밖에 떠 있었다 → 배치 셋 중 하나, 아치는 판석 위. */
 function ruinedTemple(b: Board, rng: () => number, area: Rect): boolean {
-  const r = findOpen(b, rng, 10, 9, 1, area);
+  const r = findOpen(b, rng, 10, 8, 1, area);
   if (!r) return false;
-  const fl = { x: r.x, y: r.y + 1, w: 10, h: 6 };
+  const fl = { x: r.x, y: r.y + 1, w: 10, h: 7 };
   b.ground(fl, "f", "plaza");
   for (let y = fl.y; y < fl.y + fl.h; y++) for (let x = fl.x; x < fl.x + fl.w; x++) b.use[b.k(x, y)] = "open";
   b.zone("무너진 신전 터", "포석 바닥·기둥 줄·폐허 벽", r);
-  b.prop("de-ruin-wall", fl.x, r.y, 0, ["open", "plaza"]);
-  b.prop("de-ruin-wall", fl.x + 6, r.y, 0, ["open", "plaza"]);
-  b.prop("de-stele", fl.x + 4, r.y, 0, ["open", "plaza"]);
-  for (const x of [fl.x + 1, fl.x + 3, fl.x + 6, fl.x + 8]) {
-    const broken = rng() < 0.5;
+  const v = Math.floor(rng() * 3);
+  const A: readonly string[] = ["open", "plaza"];
+  const backs: readonly (readonly [string, number])[][] = [
+    [["de-ruin-wall", 0], ["de-stele", 4], ["de-ruin-wall", 6]],
+    [["de-ruin-wall", 1], ["de-column-broken", 5], ["de-stele", 8]],
+    [["de-stele", 0], ["de-ruin-wall", 3], ["de-column-broken", 8]],
+  ];
+  for (const [id, dx] of backs[v]!) { const h = b.kitSize(id).h; b.prop(id, fl.x + dx, fl.y + 1 - h, 0, A); }
+  const cols = [1, 3, 6, 8].filter(() => rng() > 0.2);
+  for (const dx of cols) {
+    const broken = rng() < 0.45;
     const id = broken ? "de-column-broken" : "de-column";
     const h = broken ? 2 : 3;
-    b.prop(id, x, fl.y + 4 - h, 0, ["open", "plaza"]);
-    if (broken) b.prop("de-rubble", x, fl.y + 4, 0, ["open", "plaza"]);
+    b.prop(id, fl.x + dx, fl.y + 4 - h, 0, A);
+    if (broken && rng() < 0.6) b.prop("de-rubble", fl.x + dx + (rng() < 0.5 ? 1 : 0), fl.y + 4, 0, A);
   }
-  b.prop("de-block-fallen", fl.x + 2, fl.y + 5, 0, ["open", "plaza"]);
-  b.prop("de-block-fallen", fl.x + 7, fl.y + 4, 0, ["open", "plaza"]);
-  b.prop("de-ruin-arch", fl.x + 4, fl.y + fl.h, 0, ["open"]);
+  const archX = [4, 1, 6][v]!;
+  b.prop("de-ruin-arch", fl.x + archX, fl.y + 4, 0, A);
+  for (const [dx, dy] of [[archX === 1 ? 7 : 1, 5], [archX === 6 ? 3 : 8, 6]] as const) b.prop("de-block-fallen", fl.x + dx, fl.y + dy, 0, A);
   return true;
 }
 
@@ -500,7 +546,10 @@ function composeOasis(b: Board, rng: () => number): DesertCell {
   if (plaza.h >= 3) {
     b.ground(plaza, "f", "plaza");
     b.zone("마을 광장", "우물·노점", plaza);
-    b.prop("de-well", plaza.x + 3, plaza.y + Math.max(0, Math.floor((plaza.h - 2) / 2)), 0, ["plaza"]);
+    const wx = plaza.x + Math.floor((plaza.w - 2) / 2), wy = plaza.y + Math.max(0, Math.floor((plaza.h - 2) / 2));
+    b.prop("de-well", wx, wy, 0, ["plaza"]);
+    b.prop("de-bench-stone", wx - 3, wy + 1, 0, ["plaza"]); b.prop("de-bench-stone", wx + 3, wy + 1, 0, ["plaza"]);
+    b.prop("de-jars-rack", wx + 3, wy - 1, 0, ["plaza"]) || b.prop("de-jars-rack", wx - 3, wy - 1, 0, ["plaza"]);
   }
   // 큰길 북쪽 집 줄(광장·못 풀 띠를 피한다)
   const north = [...houseRow(b, rng, 3, plaza.x - 1, mainY, [...HOUSES_4, ...HOUSES_3]), ...houseRow(b, rng, plaza.x + plaza.w + 1, W - 3, mainY, [...HOUSES_4, ...HOUSES_3])];
@@ -521,14 +570,17 @@ function composeOasis(b: Board, rng: () => number): DesertCell {
     b.ground({ x: sx, y: backY, w: 1, h: mainY - backY }, "r", "road");
   }
   oasisPlants(b, rng, pool.grass, 7 + Math.floor(rng() * 3));
-  // 입구: 낙타 쉼터(물통·말뚝·낙타) — 입구 길 옆 모래
-  // 낙타 쉼터: 큰길 남쪽·입구 길 곁 모래(물통·말뚝·낙타)
-  for (const rx of [entryX + 3, entryX - 6, entryX + 6, entryX - 9]) {
-    if (b.free({ x: rx, y: mainY + 2, w: 4, h: 3 }, 0)) {
-      b.prop("de-camel", rx, mainY + 2, 0); b.prop("de-trough", rx, mainY + 4, 0); b.prop("de-hitch-post", rx + 3, mainY + 3, 0);
-      b.zone("낙타 쉼터", "물통·말뚝·낙타", { x: rx, y: mainY + 2, w: 4, h: 3 });
-      break;
-    }
+  // 낙타 쉼터: 큰길 남쪽 모래(앉은 낙타·선 낙타·물통·말뚝) — 정해 둔 자리가 막히면 빈 땅에서 찾는다
+  const rest = [entryX + 3, entryX - 7, entryX + 7, entryX - 11].map((x) => ({ x, y: mainY + 2, w: 5, h: 3 })).find((r) => b.free(r, 0))
+    ?? findOpen(b, rng, 5, 3, 1, { x: 1, y: mainY + 2, w: W - 2, h: H - mainY - 3 });
+  if (rest) {
+    b.prop("de-camel-rest", rest.x, rest.y + 1, 0); b.prop("de-camel", rest.x + 2, rest.y, 0); b.prop("de-trough", rest.x + 2, rest.y + 2, 0); b.prop("de-hitch-post", rest.x + 4, rest.y + 1, 0);
+    b.zone("낙타 쉼터", "물통·말뚝·낙타", rest);
+  }
+  // 두레박(샤두프): 못가 풀 위 — 물과 맞닿은 자리 하나
+  shaduf: for (let y = pool.grass.y; y < pool.grass.y + pool.grass.h; y++) for (let x = pool.grass.x; x < pool.grass.x + pool.grass.w; x++) {
+    const wet = b.u(x - 1, y + 2) === "water" || b.u(x + 2, y + 2) === "water";
+    if (wet && b.prop("de-shaduf", x, y, 0, ["grass"])) break shaduf;
   }
   // 마을 밖 야영지: 네 귀퉁이 중 빈 곳
   for (const area of [{ x: 1, y: 1, w: Math.round(W * 0.4), h: Math.round(H * 0.35) }, { x: W - Math.round(W * 0.4) - 1, y: 1, w: Math.round(W * 0.4), h: Math.round(H * 0.35) }]) if (camp(b, rng, area)) break;
@@ -589,24 +641,38 @@ function composeBazaar(b: Board, rng: () => number): DesertCell {
   b.ground({ x: 1, y: my - 1, w: W - 2, h: mh + 1 }, "r", "road");
   b.ground({ x: 1, y: my - 1, w: W - 2, h: mh + 1 }, "r", "open");
   b.zone("바닥 장터", "깔개 좌판·그늘막·염색 건조대(두 줄 격자)", { x: 1, y: my, w: W - 2, h: mh });
-  const MODS: readonly (readonly [string, number, number][])[] = [
+  // 적대 검수(2026-10-14): 깔개 위 항아리처럼 떠 보이는 묶음을 뺐다. 앞줄 = 노점(통로 my+2 를 향해), 뒷줄 = 장인 묶음(같은 묶음이 이웃하지 않게).
+  const MODS_B: readonly (readonly [string, number, number][])[] = [
     [["de-parasol-reed", 0, 0], ["de-sacks", 2, 1]],
-    [["de-rug-blue", 0, 0], ["de-basket-spice", 2, 1]],
-    [["de-rug-red", 0, 1], ["de-carpet-rolls", 0, 0], ["de-jars-group", 1, 0]],
+    [["de-carpet-rack", 0, 0]],
     [["de-dye-rack", 0, 0]],
+    [["de-kiln", 0, 0], ["de-jar-big", 2, 1]],
+    [["de-jars-rack", 0, 1], ["de-sacks", 2, 1]],
     [["de-crates-stack", 0, 0], ["de-handcart", 2, 1]],
-    [["de-rug-red", 0, 1], ["de-jar-big", 0, 0], ["de-basket-spice", 1, 0]],
+    [["de-incense-burner", 0, 1], ["de-basket-spice", 1, 1]],
   ];
-  for (const row of [my, my + 3]) {
-    let x = 2;
+  const skipEntry = (x: number) => x <= entryX + 2 && x + 3 >= entryX;
+  {
+    let x = 2, prev = "";
+    while (x < W - 3) {
+      if (skipEntry(x)) { x = entryX + 3; continue; }
+      const id = pick(rng, STALLS.filter((s) => s !== prev && b.pal.kit(s)));
+      if (x + 2 > W - 2) break;
+      if (b.prop(id, x, my, 0)) prev = id;
+      x += 3;
+    }
+  }
+  {
+    let x = 2, prev = -1;
     while (x < W - 4) {
-      if (x <= entryX + 2 && x + 3 >= entryX) { x = entryX + 3; continue; }   // 입구 길은 비운다
-      const mod = pick(rng, MODS);
+      if (skipEntry(x)) { x = entryX + 3; continue; }
+      let mi = Math.floor(rng() * MODS_B.length); if (mi === prev) mi = (mi + 1) % MODS_B.length;
+      const mod = MODS_B[mi]!;
       const mw = Math.max(...mod.map(([id, dx]) => dx + (b.pal.kit(id)?.width ?? 1)));
       if (x + mw > W - 2) break;
       let ok = true;
-      for (const [id, dx, dy] of mod) { const k = b.pal.kit(id); if (!k || !b.free({ x: x + dx, y: row + dy, w: k.width, h: k.height }, 0)) ok = false; }
-      if (ok) for (const [id, dx, dy] of mod) b.prop(id, x + dx, row + dy, 0);
+      for (const [id, dx, dy] of mod) { const k = b.pal.kit(id); if (!k || !b.free({ x: x + dx, y: my + 3 + dy, w: k.width, h: k.height }, 0)) ok = false; }
+      if (ok) { for (const [id, dx, dy] of mod) b.prop(id, x + dx, my + 3 + dy, 0); prev = mi; }
       x += mw + 1;
     }
   }
@@ -663,7 +729,7 @@ function composePalace(b: Board, rng: () => number): DesertCell {
   const pxx = inner.x + Math.floor((inner.w - pk.w) / 2), pyy = inner.y;
   // 궁전 앞 단(포석, 궁전 폭 + 2) 3줄
   const ay = pyy + pk.h;
-  b.ground({ x: pxx - 2, y: ay, w: pk.w + 4, h: 3 }, "f", "plaza");
+  b.ground({ x: inner.x, y: ay, w: inner.w, h: 3 }, "f", "plaza");   // 앞 단은 마당 폭 끝까지(적대 검수: 단이 허공에 끊겼다)
   const pal = b.building("de-palace", pxx, pyy);
   const dx0 = pal.access[0]!.x;
   // 축선 길: 궁전 문 → 성문(폭 = 성문 통로 폭)
@@ -685,7 +751,7 @@ function composePalace(b: Board, rng: () => number): DesertCell {
       const { w, h } = b.kitSize(id);
       if (sd.x1 - sd.x0 < w) continue;
       const x = sd === sideL ? sd.x0 : sd.x1 - w;
-      const y = ay + 1 - h;
+      const y = ay - h + 1 + 0;
       if (y < inner.y || !b.free({ x, y, w, h }, 0)) continue;
       const bd = b.building(id, x, y);
       b.ground({ x: Math.min(bd.access[0]!.x, sd === sideL ? sd.x1 : sd.x0), y: ay + 1, w: Math.abs((sd === sideL ? pxx - 2 : sd.x0) - bd.access[0]!.x) + bd.access.length + 1, h: 1 }, "f", "plaza");
@@ -693,10 +759,14 @@ function composePalace(b: Board, rng: () => number): DesertCell {
       break;
     }
   }
-  // 좌우 정원: 축선 길 양옆(분수 마당과 1칸 띄움) — 풀 + 가운데 물길(물) + 모서리 야자, 남쪽 끝 협죽도
-  const qx = [inner.x + 1, fx + 6], qw = [fx - 3 - (inner.x + 1), inner.x + inner.w - 1 - (fx + 6)];
+  // 북쪽 귀퉁이(궁전 옆 처소 위·옆 빈 모래): 화단으로 메운다
+  gardenBed(b, rng, { x: inner.x, y: inner.y, w: pxx - 1 - inner.x, h: ay - inner.y - 1 }, 9, 6, { x: inner.x, y: inner.y });
+  gardenBed(b, rng, { x: pxx + pk.w + 1, y: inner.y, w: inner.x + inner.w - pxx - pk.w - 1, h: ay - inner.y - 1 }, 9, 6, { x: inner.x + inner.w, y: inner.y });
+  // 좌우 정원: 앞 단 바로 아래에서 성벽 안쪽 끝까지 — 풀 + 가운데 물길(물) + 모서리 야자, 남쪽 끝 협죽도
+  const axL = g0.x - 1, axR = g0.x + gate.length + 1;          // 축선 포석 길 양 끝(바깥 칸)
+  const qx = [inner.x, axR], qw = [axL - inner.x, inner.x + inner.w - axR];
   for (let i = 0; i < 2; i++) for (let j = 0; j < 1; j++) {
-    const r = { x: qx[i]!, y: ay + 4, w: qw[i]!, h: inner.y + inner.h - 2 - (ay + 4) };
+    const r = { x: qx[i]!, y: ay + 3, w: qw[i]!, h: inner.y + inner.h - (ay + 3) };
     if (r.w < 4 || r.h < 3) continue;
     b.ground(r, "g", "grass");
     b.zone(`${i ? "동" : "서"}쪽 정원`, "풀·물길·야자", r);
@@ -714,8 +784,10 @@ function composePalace(b: Board, rng: () => number): DesertCell {
     }
     for (let x = r.x + 1; x < r.x + r.w - 1; x += 3) b.prop("de-oleander", x, r.y + r.h - 1, 0, ["grass"]);
   }
+  // 분수 마당은 정원 위로 다시 깐다(정원이 축선까지 붙었다)
+  b.ground({ x: fx - 2, y: midY - 1, w: 7, h: 5 }, "f", "plaza");
   // 성문 안쪽 양옆 깃대
-  b.prop("de-banner-pole", g0.x - 3, inner.y + inner.h - 2, 0, ["open", "plaza"]); b.prop("de-banner-pole", g0.x + gate.length + 2, inner.y + inner.h - 2, 0, ["open", "plaza"]);
+  b.prop("de-banner-pole", g0.x - 3, inner.y + inner.h - 2, 0, ["open", "plaza", "grass"]); b.prop("de-banner-pole", g0.x + gate.length + 2, inner.y + inner.h - 2, 0, ["open", "plaza", "grass"]);
   // 성 밖: 진입로(포석) + 오벨리스크 짝 + 양옆 집 줄(가로 길)
   const ex = g0.x;
   const outY = ring.y + ring.h;
@@ -741,14 +813,16 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   // 북쪽 벽 안쪽 방 줄(마당으로 문) + 방 앞 회랑 길
   const roomY = inner.y + 4;
   b.ground({ x: inner.x, y: roomY, w: inner.w, h: 1 }, "r", "road");
-  houseRow(b, rng, inner.x + 1, inner.x + inner.w - 1, roomY, ["de-house-adobe-3", "de-house-adobe-4", "de-house-stone-4"], 0, ["road", "open"]);
+  // 방 줄은 같은 방을 틈 없이(대상 숙소 회랑은 한 건물이다 — 적대 검수: 집 모음처럼 보였다)
+  houseRow(b, rng, inner.x, inner.x + inner.w, roomY, ["de-house-adobe-3"], 0, ["road", "open"], false);
   const g0 = gate[0]!;
   const cx = g0.x + Math.floor(gate.length / 2);
   // 성문 → 가운데 단 → 방 회랑 길(다진 흙)
   b.ground({ x: g0.x, y: roomY, w: gate.length, h: inner.y + inner.h - roomY }, "r", "road");
-  // 가운데 우물 단(포석 7×5)
+  // 가운데 우물 단(포석 7×5) + 우물 단에서 성문까지 포석 길(적대 검수: 단이 마당 가운데 떠 있었다)
   const cy = roomY + 2 + Math.max(0, Math.floor((inner.y + inner.h - roomY - 2 - 5) / 2));
   b.ground({ x: cx - 3, y: cy, w: 7, h: 5 }, "f", "plaza");
+  b.ground({ x: g0.x, y: cy + 5, w: gate.length, h: inner.y + inner.h - cy - 5 }, "f", "plaza");
   b.prop("de-well", cx - 1, cy + 1, 0, ["plaza"]);
   b.prop("de-bench-stone", cx - 3, cy + 4, 0, ["plaza"]); b.prop("de-bench-stone", cx + 2, cy + 4, 0, ["plaza"]);
   b.prop("de-lantern-post", cx - 3, cy, 0, ["plaza"]); b.prop("de-lantern-post", cx + 3, cy, 0, ["plaza"]);
@@ -756,7 +830,8 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   const wx = inner.x + 1, wy = roomY + 2;
   b.zone("낙타 줄", "말뚝·물통·낙타", { x: wx, y: wy, w: 8, h: inner.y + inner.h - wy });
   for (let i = 0, y = wy; i < 3 && y + 2 < inner.y + inner.h; i++, y += 3) {
-    b.prop("de-hitch-post", wx, y + 1, 0); b.prop("de-camel", wx + 1, y, 0); if (i % 2 === 0) b.prop("de-trough", wx + 4, y + 1, 0);
+    b.prop("de-hitch-post", wx, y + 1, 0); b.prop(i === 1 ? "de-camel-rest" : "de-camel", wx + 1, y, 0);
+    if (i % 2 === 0) b.prop("de-trough", wx + 4, y + 1, 0); else b.prop("de-sacks", wx + 4, y + 1, 0);
   }
   // 동쪽: 짐 구석(수레·궤짝·자루·항아리) + 정자 천막
   const ex = inner.x + inner.w - 9, ey = roomY + 2;
@@ -766,6 +841,9 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
   b.prop("de-crates-stack", ex, ey + 4, 0); b.prop("de-sacks", ex + 2, ey + 5, 0); b.prop("de-jars-group", ex + 4, ey + 5, 0); b.prop("de-carpet-rolls", ex + 6, ey + 5, 0);
   b.prop("de-handcart", ex + 5, ey + 4, 0);
   // 마당 바닥: 모서리 길이 아닌 곳은 모래 + 드문 마른 풀(평평한 단색 마당 방지)
+  // 남쪽 귀퉁이(성문 양옆) 화단
+  gardenBed(b, rng, { x: inner.x, y: inner.y + inner.h - 5, w: g0.x - 2 - inner.x, h: 5 }, 6, 4, { x: inner.x, y: inner.y + inner.h });
+  gardenBed(b, rng, { x: g0.x + gate.length + 2, y: inner.y + inner.h - 5, w: inner.x + inner.w - g0.x - gate.length - 2, h: 5 }, 6, 4, { x: inner.x + inner.w, y: inner.y + inner.h });
   b.scatter(inner, 5, ["de-tuft", "de-rock-small"], rng, 3);
   // 성 밖: 성문 → 남쪽 끝 길 + 대상 행렬 대기(낙타·수레)
   b.ground({ x: g0.x, y: ring.y + ring.h, w: gate.length, h: H - ring.y - ring.h }, "r", "road");
@@ -777,41 +855,48 @@ function composeCaravanserai(b: Board, rng: () => number): DesertCell {
 // ───────────────────────── 피라미드 유적 ─────────────────────────
 function composePyramid(b: Board, rng: () => number): DesertCell {
   const { W, H } = b;
-  const pk = b.kitSize("de-pyramid");
+  // 대피라미드(14×9, 오른쪽 2칸은 땅 그림자 — 밑변 폭 12칸) — 적대 검수(2026-10-14): 8칸 피라미드는 장면 중심으로 작았다
+  const big = b.pal.kit("de-pyramid-great") ? "de-pyramid-great" : "de-pyramid";
+  const pk = b.kitSize(big);
+  const base = big === "de-pyramid-great" ? 12 : 7;
   const px = Math.round((W - pk.w) / 2) + Math.round((rng() - 0.5) * 6), py = 2;
-  b.stamp("de-pyramid", px, py, "bld");
-  b.zone("대피라미드", "유적 중심 · 남쪽 입구로 내부", { x: px, y: py, ...{ w: pk.w, h: pk.h } });
-  // 입구: 남쪽 면 가운데 아래
+  b.stamp(big, px, py, "bld");
+  b.zone("대피라미드", "유적 중심 · 남쪽 입구로 내부", { x: px, y: py, w: pk.w, h: pk.h });
   const dk = b.kitSize("de-pyramid-door");
-  const dx = px + Math.floor((pk.w - dk.w) / 2), dy = py + pk.h - dk.h + 1;
+  const dx = px + Math.floor((base - dk.w) / 2), dy = py + pk.h - dk.h + 1;
   const door = b.building("de-pyramid-door", dx, dy);
-  // 참배 길: 입구 → 남쪽 끝(포석 2줄), 양옆 기둥·오벨리스크·사자 석상 짝(3칸 간격)
+  // 참배 길: 입구 → 남쪽 끝(포석 2줄), 끝에 탑문(성문 키트), 양옆 석상 짝(4칸 간격)
   const ax = door.access[0]!.x;
   b.ground({ x: ax, y: dy + dk.h, w: 2, h: H - dy - dk.h }, "f", "plaza");
-  b.zone("참배 길", "포석 길 · 양옆 석상 줄", { x: ax - 3, y: dy + dk.h, w: 8, h: H - dy - dk.h });
+  b.zone("참배 길", "포석 길 · 양옆 석상 줄 · 남쪽 탑문", { x: ax - 3, y: dy + dk.h, w: 8, h: H - dy - dk.h });
+  const pyl = b.kitSize("de-wall-gate");
+  const pylY = H - 1 - pyl.h;
+  if (b.free({ x: ax - 1, y: pylY, w: pyl.w, h: pyl.h }, 0, ["open", "plaza"])) {
+    b.stamp("de-wall-gate", ax - 1, pylY, "wall");
+    b.zone("탑문", "참배 길 남쪽 끝 문", { x: ax - 1, y: pylY, w: pyl.w, h: pyl.h });
+  }
   const pairs = ["de-lion-statue", "de-obelisk", "de-column", "de-obelisk"];
   let k = 0;
-  for (let y = dy + dk.h + 1; y < H - 3; y += 4, k++) {
+  for (let y = dy + dk.h + 1; y < pylY - 1; y += 4, k++) {
     const id = pairs[k % pairs.length]!;
     const { w, h } = b.kitSize(id);
-    const yy = y + 1 - h + 1;
-    b.prop(id, ax - 1 - w, Math.max(dy + dk.h, yy), 0); b.prop(id, ax + 3, Math.max(dy + dk.h, yy), 0);
+    const yy = Math.max(dy + dk.h, y + 2 - h);
+    if (yy + h > pylY - 1) break;
+    b.prop(id, ax - 1 - w, yy, 0); b.prop(id, ax + 3, yy, 0);
   }
-  // 작은 피라미드 둘(좌·우 뒤)
-  const sk = b.kitSize("de-pyramid-small");
-  const lx = px - sk.w - 2, rx = px + pk.w + 2;
-  if (lx >= 1 && b.free({ x: lx, y: py + 3, w: sk.w, h: sk.h }, 1)) { b.stamp("de-pyramid-small", lx, py + 3, "bld"); b.zone("작은 피라미드", "왕비 무덤", { x: lx, y: py + 3, w: sk.w, h: sk.h }); }
-  if (rx + sk.w < W - 1 && b.free({ x: rx, y: py + 2, w: sk.w, h: sk.h }, 1)) b.stamp("de-pyramid-small", rx, py + 2, "bld");
-  // 무너진 신전 터 둘(참배 길 양옆 아래)
-  const half = Math.floor(W / 2) - 3;
-  ruinedTemple(b, rng, { x: 1, y: py + pk.h - 1, w: ax - 4, h: H - py - pk.h });
-  ruinedTemple(b, rng, { x: ax + 5, y: py + pk.h - 1, w: W - ax - 6, h: H - py - pk.h });
-  void half;
-  // 흩어진 석재(신전 터 둘레만이 아니라 사막 곳곳에 드문드문)
+  // 곁 피라미드: 서쪽 중간 크기, 동쪽 작은 것(어긋나게)
+  const mk = b.kitSize("de-pyramid"), sk = b.kitSize("de-pyramid-small");
+  if (big !== "de-pyramid" && px - mk.w - 1 >= 1 && b.free({ x: px - mk.w - 1, y: py + 2, w: mk.w, h: mk.h }, 0)) {
+    b.stamp("de-pyramid", px - mk.w - 1, py + 2, "bld"); b.zone("왕비 피라미드", "곁 무덤", { x: px - mk.w - 1, y: py + 2, w: mk.w, h: mk.h });
+  }
+  const rx = px + pk.w + 1;
+  if (rx + sk.w < W - 1 && b.free({ x: rx, y: py + 4, w: sk.w, h: sk.h }, 0)) { b.stamp("de-pyramid-small", rx, py + 4, "bld"); b.zone("작은 피라미드", "곁 무덤", { x: rx, y: py + 4, w: sk.w, h: sk.h }); }
+  // 무너진 신전 터 둘(참배 길 양옆 아래) — 배치는 신전마다 다르다
+  ruinedTemple(b, rng, { x: 1, y: py + pk.h, w: ax - 4, h: H - py - pk.h - 1 });
+  ruinedTemple(b, rng, { x: ax + 5, y: py + pk.h, w: W - ax - 6, h: H - py - pk.h - 1 });
   for (let i = 0; i < 4; i++) { const r = findOpen(b, rng, 2, 3, 1); if (r) b.prop(pick(rng, ["de-column-broken", "de-block-fallen", "de-stele"]), r.x, r.y, 0); }
-  // 발굴 야영지(남서): 천막·모닥불·낙타·궤짝
   camp(b, rng, { x: 1, y: Math.round(H * 0.4), w: b.W - 2, h: H - Math.round(H * 0.4) - 1 });
-  wildDesert(b, rng, 0.48);
+  wildDesert(b, rng, 0.32);
   return { x: ax, y: H - 1 };
 }
 
@@ -908,6 +993,8 @@ type RUse = "ceil" | "wall" | "floor" | "aisle" | "prop";
 class Room {
   readonly lower: number[]; readonly upper: number[]; readonly use: RUse[];
   readonly props: { kit: string; x: number; y: number }[] = [];
+  /** 강조 벽(창·벽감) 칸 x — 벽등을 그 위에 걸지 않는다. */
+  readonly accent = new Set<number>();
   constructor(readonly W: number, readonly H: number, readonly pal: DesertPalette, readonly seed: number) {
     this.lower = new Array(W * H).fill(-1); this.upper = new Array(W * H).fill(-1); this.use = new Array(W * H).fill("ceil");
   }
@@ -933,6 +1020,14 @@ class Room {
     }));
     this.props.push({ kit: id, x, y });
     return true;
+  }
+  /** put 하되, 그 때문에 문에서 닿지 않는 바닥이 생기면 되돌린다. */
+  putSafe(id: string, x: number, y: number, door: DesertCell): boolean {
+    const lo = this.lower.slice(), up = this.upper.slice(), us = this.use.slice(), n = this.props.length;
+    if (!this.put(id, x, y)) return false;
+    if (!roomCut(this, door).length) return true;
+    this.lower.splice(0, lo.length, ...lo); this.upper.splice(0, up.length, ...up); this.use.splice(0, us.length, ...us); this.props.length = n;
+    return false;
   }
   /** 벽걸이(등)는 벽 아랫줄 칸 위층에 겹친다. */
   hang(id: string, x: number, y: number): boolean {
@@ -986,15 +1081,13 @@ function roomShell(r: Room, style: RoomStyle, kind: DesertRoomKind, rng: () => n
     else if (fN) piece = `de-ceil-${c}-s`;
     else if (fE) piece = `de-ceil-${c}-w`;
     else if (fW) piece = `de-ceil-${c}-e`;
-    else if (y === H - 1 && x === 0) piece = `de-ceil-${c}-sw`;
-    else if (y === H - 1 && x === W - 1) piece = `de-ceil-${c}-se`;
     r.setLower(x, y, piece, "ceil");
   }
   // 벽면(1×2 키트): 가끔 강조 벽(창·벽감), 서로 붙지 않게
   let last = -9;
   for (let x = 1; x < W - 1; x++) {
     let id = style.walls[Math.floor(hash2(x, 1, r.seed) * style.walls.length)]!;
-    if (style.accentWall && style.accentEvery && x - last >= style.accentEvery && x > 1 && x < W - 2 && rng() < 0.55) { id = style.accentWall; last = x; }
+    if (style.accentWall && style.accentEvery && x - last >= style.accentEvery && x > 1 && x < W - 2 && rng() < 0.55) { id = style.accentWall; last = x; r.accent.add(x); }
     const kit = r.pal.kit(id) ?? r.pal.kit(style.walls[0]!);
     if (!kit) throw new Error(`사막 칩셋에 벽 ${id} 가 없다`);
     kit.rows.forEach((row, j) => { const k = r.k(x, 1 + j); r.lower[k] = row.tiles[0] ?? -1; if ((row.upperTiles?.[0] ?? -1) >= 0) r.upper[k] = row.upperTiles![0]!; r.use[k] = "wall"; });
@@ -1018,7 +1111,12 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
       x += w + gap;
     }
   };
-  const lanterns = (every: number, id = "de-lantern-wall") => { for (let x = x0 + 2; x <= x1 - 1; x += every) r.hang(id, x, 2); };
+  const lanterns = (every: number, id = "de-lantern-wall") => {
+    for (let x = x0 + 2; x <= x1 - 1; x += every) {
+      const xx = [x, x + 1, x - 1].find((c) => c > x0 && c < x1 && !r.accent.has(c));   // 창·벽감 위에는 걸지 않는다
+      if (xx !== undefined) r.hang(id, xx, 2);
+    }
+  };
   switch (kind) {
     case "teahouse": {
       wallRow(["de-divan", "de-divan"], x0, cx - 2);
@@ -1029,7 +1127,7 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
       const rx = x1 - 4, ry = y0 + 3;
       if (r.put("de-rug-medallion", rx, ry, 0)) {
         // 양탄자 칸은 prop 이 됐다 — 그 위 찻상·방석은 위층에 덧놓는다(바닥에 깐 것이라 겹쳐도 된다)
-        overlay(r, "de-tea-table", rx + 1, ry); overlay(r, "de-cushion", rx, ry + 1); overlay(r, "de-cushion", rx + 2, ry + 1);
+        overlay(r, "de-tea-table", rx, ry); overlay(r, "de-cushion", rx + 2, ry); overlay(r, "de-cushion", rx, ry + 1); overlay(r, "de-cushion", rx + 1, ry + 1);
       }
       r.put("de-cushion", x0, y0 + 2); r.put("de-cushion", x0 + 3, y0 + 2); r.put("de-hookah", x0 + 4, y0 + 1);
       r.put("de-jar-tall", x0, y1); r.put("de-jar-tall", x1, y1);
@@ -1064,7 +1162,13 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
       if (room.h >= 8) r.put("de-fountain-indoor", cx, y0 + 5 + Math.floor((room.h - 8) / 2), 1, true) || r.put("de-fountain-indoor", cx - 1, y0 + 5, 1, true);
       // 기둥 사이 꽃병, 문 안쪽 양옆 화로대
       r.put("de-brazier-stand", cx - 3, y1 - 1); r.put("de-brazier-stand", cx + 4, y1 - 1);
-      lanterns(4);
+      // 문 → 분수 → 옥좌 축 위 양탄자 길(걸을 수 있는 바닥 깔개)
+      // (한 칸 바닥 깔개 — 키트가 아니라 바닥 칸을 갈아 끼운다. 분수·가구를 만나면 멈춘다)
+      if (r.pal.tile("de-rug-runner") >= 0) for (let y = y1; y >= y0 + 2; y--) {
+        const u = r.u(cx, y);
+        if (u !== "aisle" && u !== "floor") break;
+        r.lower[r.k(cx, y)] = r.t("de-rug-runner");
+      }
       break;
     }
     case "tomb": {
@@ -1077,10 +1181,14 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
       for (const x of [x0 + 2, x0 + 3, x1 - 3, x1 - 2]) r.put(x === x0 + 2 || x === x1 - 2 ? "de-treasure-chest" : "de-jar-tall", x, y0);
       r.put("de-torch-stand", x0 + 1, y0 + 3); r.put("de-torch-stand", x1 - 1, y0 + 3);
       r.put("de-torch-stand", x0 + 1, y1 - 1); r.put("de-torch-stand", x1 - 1, y1 - 1);
-      for (const [x, y] of [[x0, y1], [x1, y1 - 2], [x0, y1 - 3], [x1, y1]] as const) r.put("de-sand-pile", x, y);
-      if (corridor) {
-        for (let y = corridor.y + 1; y < corridor.y + corridor.h - 1; y += 2) { r.put("de-sand-pile", corridor.x + (y % 4 === 1 ? 0 : 2), y); }
+      // 묘실 양옆 벽 앞: 부장품 줄(항아리·카노푸스 단지·보물 궤) — 통로는 비운다(적대 검수: 통로 모래 더미가 길을 막아 보였다)
+      const door = { x: Math.floor((x0 + x1) / 2), y: r.H - 2 };
+      for (let y = y0 + 2; y <= y1 - 2; y += 2) {
+        r.putSafe(pick(rng, ["de-jar-tall", "de-canopic-jars", "de-vase-tall"]), x0, y, door);
+        r.putSafe(pick(rng, ["de-jar-tall", "de-canopic-jars", "de-treasure-chest"]), x1, y, door);
       }
+      r.put("de-sand-pile", x0, y1); r.put("de-sand-pile", x1, y1);
+      void corridor;
       break;
     }
     case "hammam": {
@@ -1111,6 +1219,15 @@ function furnish(r: Room, kind: DesertRoomKind, room: Rect, rng: () => number, c
   }
 }
 
+/** 문 안쪽 칸에서 닿지 않는 빈 바닥 칸 목록. */
+function roomCut(r: Room, start: DesertCell): string[] {
+  const seen = new Set<number>([r.k(start.x, start.y)]); const q = [start];
+  while (q.length) { const c = q.pop()!; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const x = c.x + dx, y = c.y + dy; if (!r.walk(x, y) || seen.has(r.k(x, y))) continue; seen.add(r.k(x, y)); q.push({ x, y }); } }
+  const cut: string[] = [];
+  for (let y = 0; y < r.H; y++) for (let x = 0; x < r.W; x++) if ((r.u(x, y) === "floor" || r.u(x, y) === "aisle") && r.walk(x, y) && !seen.has(r.k(x, y))) cut.push(`(${x},${y})`);
+  return cut;
+}
+
 /** 바닥에 깐 양탄자(prop) 위에 다른 가구를 겹친다(아래층은 양탄자, 위층은 가구 그림). */
 function overlay(r: Room, id: string, x: number, y: number): void {
   const kit = r.pal.kit(id);
@@ -1137,10 +1254,7 @@ export function composeDesertRoom(spec: DesertRoomSpec, pal: DesertPalette): Des
     furnish(r, spec.kind, room, rng, corridor);
     // 모든 빈 바닥이 문에서 닿는가
     const start = { x: doors[0]!.x, y: doors[0]!.y - 1 };
-    const seen = new Set<number>([r.k(start.x, start.y)]); const q = [start];
-    while (q.length) { const c = q.pop()!; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) { const x = c.x + dx, y = c.y + dy; if (!r.walk(x, y) || seen.has(r.k(x, y))) continue; seen.add(r.k(x, y)); q.push({ x, y }); } }
-    const cut: string[] = [];
-    for (let y = 0; y < r.H; y++) for (let x = 0; x < r.W; x++) if ((r.u(x, y) === "floor" || r.u(x, y) === "aisle") && r.walk(x, y) && !seen.has(r.k(x, y))) cut.push(`(${x},${y})`);
+    const cut = roomCut(r, start);
     if (!cut.length) return { lower: r.lower, upper: r.upper, doors, start, props: r.props, notes: attempt ? [`씨앗 ${attempt}번 다시`] : [] };
     last = `문에서 닿지 않는 바닥 ${cut.slice(0, 4).join(" ")}`;
   }

@@ -57,6 +57,14 @@ def _(c): house(c, 4, 2, 'stone', [2], [0], s=9, kind='stone', jars=[(48, 7)], d
 def _(c): house(c, 4, 2, 'plaster', [1], [3], s=11, door_style='turq', win_style='shutter', rug=(32, 6, 22, 12, 'lapis'))
 
 
+@B('house-plaster-3', '회칠 흰 집(작은)', 3, 4, [1], ['집', '회칠', '평지붕'], HOUSE_RULE)
+def _(c): house(c, 3, 2, 'plaster', [1], [], s=19, door_style='wood', jars=[(6, 8)], hatch=(32, 9))
+
+
+@B('house-stone-5', '사암 집(넓은, 창 둘)', 5, 5, [2], ['집', '사암', '평지붕'], HOUSE_RULE)
+def _(c): house(c, 5, 3, 'stone', [2], [0, 4], s=23, kind='stone', door_style='turq', win_style='lattice', jars=[(10, 10), (62, 9)], rug=(30, 14, 20, 14, 'red'))
+
+
 @B('house-dome-4', '돔 지붕 사암 집', 4, 5, [1], ['집', '돔', '사암'], HOUSE_RULE + ' 돔은 지붕 위 장식이라 막힌다.')
 def _(c):
     # 지붕 3칸 중 위 1칸은 돔이 솟는 자리(투명 배경)
@@ -282,17 +290,25 @@ def _(c):
 
 @B('wall-v', '사암 성벽(세로, 위에서 본 성가퀴 길)', 2, 1, [], ['성벽', '대상 숙소', '도성'], WALL_RULE + ' 세로로 이어 붙는다(폭 2칸 = 모서리 탑과 같다).', kind='structure')
 def _(c):
-    # 가운데 걷는 길 + 서쪽 성가퀴(윗면 밝게) · 동쪽 성가퀴(윗면 + 바깥 면 그늘)
+    # 위에서 본 성벽 윗면: 가운데 성가퀴 길(돌판 이음) + 양쪽 성가퀴(솟은 돌 덩이 — 윗면 밝게, 아래 그늘) + 길 양쪽 낮은 턱 그늘
     for y in range(16):
         for x in range(32):
-            t = 4 if rnd(x, y, 55) > 0.1 else 3
-            if (y + (x // 4) * 3) % 8 == 7: t = 3
+            t = 4 if rnd(x, y, 55) > 0.12 else 3
+            if y % 8 == 7 or (x in (12, 20) and y % 8 < 7 and (y // 8) % 2 == 0): t = 3
             c.P(x, y, 'stone', t)
+        for x in (6, 25): c.P(x, y, 'stone', 2)            # 성가퀴 안쪽 턱 그늘
         merl = (y // 4) % 2 == 0
-        c.P(0, y, 'stone', 1); c.P(1, y, 'stone', 6 if merl else 3); c.P(2, y, 'stone', 5 if merl else 3); c.P(3, y, 'stone', 3)
-        c.P(28, y, 'stone', 3); c.P(29, y, 'stone', 4 if merl else 2); c.P(30, y, 'stone', 3 if merl else 2); c.P(31, y, 'stone', 0)
-        if merl and y % 4 == 3: c.P(1, y, 'stone', 3); c.P(2, y, 'stone', 3); c.P(29, y, 'stone', 2); c.P(30, y, 'stone', 2)
-        if y % 4 == 0 and not merl: c.P(1, y, 'stone', 2); c.P(2, y, 'stone', 2)
+        for x0 in (0, 26):
+            for x in range(x0, x0 + 6):
+                if merl:
+                    t = 6 if (y % 4 == 0) else 5
+                    if y % 4 == 3: t = 2
+                else:
+                    t = 3
+                if x == x0: t = min(t, 1) if x0 == 26 else max(t - 1, 1)
+                if x == x0 + 5: t = 1 if x0 == 26 else t
+                c.P(x, y, 'stone', t)
+    c.VL(0, 0, 16, 'stone', 0); c.VL(31, 0, 16, 'stone', 0)
 
 
 @B('wall-tower', '성벽 모서리 탑', 2, 4, [], ['성벽', '탑', '대상 숙소', '도성'], WALL_RULE + ' 모서리마다 하나. 벽보다 한 줄 높다.', kind='structure')
@@ -359,58 +375,82 @@ def _(c):
 
 
 # ═════════════ 고대 유적: 피라미드·지구라트·오벨리스크 ═════════════
-def pyramid(c, W, H, s=0, cap=True, worn=0.0):
-    """피라미드(3/4): 가운데 남쪽 면(큰 삼각형) + 좌우 옆면 띠(서쪽 밝음·동쪽 어둠). 돌 단 줄마다 디딤 윗면 1줄 밝게.
-    W,H 화소. 꼭짓점 (W/2, 0), 앞 밑변 y=H-1, 옆 면 뒤 모서리는 앞 모서리 위 depth 화소."""
-    cx = W / 2
-    depth = H * 0.28
+def pyramid(c, W, H, s=0, cap=True, worn=0.0, shadow=None):
+    """피라미드(3/4 탑뷰, 깊이는 화면 위로): 밑면 앞 모서리 FL·FR, 뒤 모서리 BL·BR(앞 모서리 바로 위 D 화소), 꼭짓점 A.
+    보이는 면 = 남쪽 면(FL·FR·A, 돌 단 줄) + 서쪽 면(FL·BL·A, 빛) + 동쪽 면(FR·BR·A, 그늘). 윤곽은 오각형 FL-BL-A-BR-FR.
+    shadow = 동쪽에 드리운 땅 그림자 폭(화소, 키트 오른쪽 여백 안)."""
+    sw = shadow if shadow is not None else W // 8
+    pw = W - sw
+    by = H - 1; D = int(H * 0.36); ay = 3
+    ax = (pw - 1) / 2
+    FL, FR, BL, BR, A = (0, by), (pw - 1, by), (0, by - D), (pw - 1, by - D), (ax, ay)
+
+    def side(p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    def inside(pt, a, b, c3):
+        d1, d2, d3 = side(a, b, pt), side(b, c3, pt), side(c3, a, pt)
+        return not ((d1 < 0 or d2 < 0 or d3 < 0) and (d1 > 0 or d2 > 0 or d3 > 0))
+    # 땅 그림자(동쪽): FR·BR 에서 동쪽으로 쐐기
+    top = by - int(D * 0.75)
+    for y in range(top, H):
+        u = (y - top) / max(1, by - top)
+        reach = sw * (0.15 + 0.85 * u ** 0.8)
+        for x in range(pw, pw + int(reach) + 1):
+            v = (x - pw) / max(1.0, reach)
+            if v > 1: continue
+            if v > 0.7 and (x + y) % 2: continue                  # 끝 성긴 점
+            c.P(x, y, 'sand', 2 if v < 0.55 else 3)
     for y in range(H):
-        for x in range(W):
-            # 남쪽 면: 꼭짓점-앞 두 모서리 삼각형
-            u = y / (H - 1)
-            half = cx * u
-            front = abs(x + 0.5 - cx) <= half
-            # 옆 면: 앞 모서리 선(꼭짓점→앞 밑 모서리)과 뒤 모서리 선(꼭짓점→뒤 모서리) 사이 — 남쪽 면 위에 얇게 보인다
-            d = abs(x + 0.5 - cx)
-            yb = (H - 1 - depth) * d / cx
-            side = (not front) and y >= yb
-            if not front and not side: continue
-            course = int(y / 4)
-            ly = y % 4
-            if front:
-                t = 4
-                if ly == 0: t += 1                   # 단 디딤 윗면(빛)
-                if ly == 3: t -= 1
-                # 돌 이음매
+        for x in range(pw):
+            pt = (x + 0.5, y + 0.5)
+            if inside(pt, FL, FR, A): face = 'S'
+            elif inside(pt, FL, BL, A): face = 'W'
+            elif inside(pt, FR, BR, A): face = 'E'
+            else: continue
+            ly = y % 4; course = y // 4
+            if face == 'S':
+                t = 4 if ly else 5
+                if ly == 3: t = 3
                 off = 3 if course % 2 else 0
                 if (x + off) % 7 == 0 and ly in (1, 2): t -= 1
-                if abs(x + 0.5 - cx) > half - 1.2: t = 6 if x < cx else 2      # 모서리 능선
-                m = 'stone'
+            elif face == 'W':
+                t = 6 if ly == 0 else 5
+                if ly == 3: t = 4
             else:
-                west = x < cx
-                t = 5 if west else 1
-                if ly == 0: t += 1
-                if ly == 3: t -= 1
-                m = 'stone'
+                t = 2 if ly == 0 else 1
+                if ly == 3: t = 0
             if worn and rnd(x // 3, y // 3, s) < worn and y > H * 0.3: t -= 1
-            c.P(x, y, m, max(0, min(6, t)))
+            c.P(x, y, 'stone', max(0, min(6, t)))
+    # 능선(남쪽 면의 두 모서리): 서쪽 능선 밝게, 동쪽 능선 어둡게
+    for k in range(200):
+        u = k / 199
+        for (q, t) in ((FL, 6), (FR, 2)):
+            x = A[0] + (q[0] - A[0]) * u; y = A[1] + (q[1] - A[1]) * u
+            if c.on(int(x), int(y)): c.P(int(x), int(y), 'stone', t)
     if cap:
-        cap_h = max(5, H // 9)
-        for y in range(cap_h):
-            u = y / (H - 1); half = cx * u
-            for x in range(int(cx - half - 0.5), int(cx + half + 0.5) + 1):
-                c.P(x, y, 'gold', 5 if x < cx - 0.5 else 3)
-        c.P(int(cx) - 1, cap_h // 2, 'gold', 5)
-    c.HL(0, H - 1, W, 'stone', 1)
+        cap_h = max(5, H // 8)
+        for y in range(ay, ay + cap_h):
+            for x in range(pw):
+                pt = (x + 0.5, y + 0.5)
+                if inside(pt, FL, FR, A): c.P(x, y, 'gold', 5 if x < ax - 1 else 4)
+                elif inside(pt, FL, BL, A): c.P(x, y, 'gold', 5)
+                elif inside(pt, FR, BR, A): c.P(x, y, 'gold', 2)
+    c.HL(0, by, pw, 'stone', 1)
 
 
-@B('pyramid', '대피라미드', 8, 6, [], ['피라미드', '유적', '랜드마크'],
-   '사막 유적의 가운데 표식물. 남쪽 면 가운데 아래에 «피라미드 입구»(pyramid-door) 키트를 따로 붙이면 내부로 잇는다. 둘레 2칸은 모래·포석으로 비운다.')
-def _(c): pyramid(c, 128, 96, s=61)
+@B('pyramid-great', '대피라미드(큰)', 14, 9, [], ['피라미드', '유적', '랜드마크'],
+   '사막 유적의 중심. 남쪽 면 가운데 아래(밑변 가운데, 그림자 여백 2칸을 뺀 폭 12칸의 가운데)에 «피라미드 입구»(pyramid-door)를 붙여 내부와 잇는다. 오른쪽 2칸은 땅 그림자. 둘레 2칸 비움.')
+def _(c): pyramid(c, 224, 144, s=67, shadow=32)
+
+
+@B('pyramid', '피라미드', 8, 6, [], ['피라미드', '유적', '랜드마크'],
+   '대피라미드 곁·작은 유적의 중심. 남쪽 면 가운데 아래에 «피라미드 입구»(pyramid-door)를 붙이면 내부로 잇는다. 오른쪽 1칸은 땅 그림자. 둘레 2칸 비움.')
+def _(c): pyramid(c, 128, 96, s=61, shadow=16)
 
 
 @B('pyramid-small', '작은 피라미드', 4, 3, [], ['피라미드', '유적'], '대피라미드 곁에 한두 개. 둘레 1칸 비움.')
-def _(c): pyramid(c, 64, 48, s=63, worn=0.12)
+def _(c): pyramid(c, 64, 48, s=63, worn=0.12, shadow=8)
 
 
 @B('pyramid-door', '피라미드 입구(돌 문틀)', 2, 2, [0, 1], ['피라미드', '입구', '유적'],
@@ -524,6 +564,35 @@ def tent_body(c, x0, y0, w, ridge_h, wall_h, cloth, stripe=None, open_=True, s=0
     # 기둥 끝·당김줄·말뚝
     for px_ in (x0 + 1, x0 + w - 2):
         c.VL(px_, y0 - 3, 4, 'wood', 3); c.P(px_, y0 - 4, 'wood', 5)
+
+
+@B('dovecote', '비둘기 탑(흙벽돌)', 2, 4, [], ['비둘기 탑', '오아시스', '밭', '탑'], '과수원·밭 가장자리 모래 위에 하나. 막힘. 집 줄에는 넣지 않는다.', kind='column')
+def _(c):
+    """이집트·페르시아 들판의 흙벽돌 비둘기 탑: 위로 좁아지는 둥근 탑(앞면 명암) + 층마다 둥지 구멍 줄 + 꽂은 횃대 + 둥근 지붕 윗면."""
+    W = 32
+    for y in range(8, 63):
+        u = (y - 8) / 55
+        half = 9 + u * 5.5
+        for x in range(W):
+            dx = (x + 0.5 - 16) / half
+            if abs(dx) > 1: continue
+            t = 5 if dx < -0.45 else 4 if dx < 0.2 else 3 if dx < 0.65 else 2
+            c.P(x, y, 'adobe', t)
+        if y % 11 == 6:                      # 층 띠(얕은 그림자)
+            for x in range(W):
+                if c.on(x, y): c.P(x, y, 'adobe', max(1, c.get(x, y)[1] - 2))
+    for row, y in enumerate((16, 30, 44)):
+        half = 9 + (y - 8) / 55 * 5.5
+        for k in (-2, -1, 0, 1, 2):
+            x = int(16 + k * half / 2.8) + (row % 2)
+            if c.on(x, y) and c.on(x, y + 2):
+                c.R(x, y, 1, 2, 'void', 1); c.P(x + 1, y, 'adobe', 2)
+        c.HL(int(16 - half) + 2, y + 3, int(half * 2) - 4, 'wood', 4)       # 횃대(밝은 막대)
+    c.ell(16, 8, 9.2, 4, lambda x, y, dx, dy, d: ('adobe', 6 if dy < -0.2 and dx < 0.3 else 5) if d < 0.85 else ('adobe', 3))
+    c.ell(16, 5, 4, 2.2, lambda x, y, dx, dy, d: ('plaster', 5 if dy < 0 else 4))
+    c.P(16, 2, 'plaster', 5); c.P(16, 3, 'plaster', 4)
+    c.HL(4, 63, 24, 'adobe', 0)
+    c.outline(bottom=('adobe', 0))
 
 
 @B('tent-bedouin', '유목 검은 천막', 3, 2, [1], ['천막', '유목', '오아시스'], '오아시스·대상 야영지. 입구 칸(entrance) 아래를 비운다. 천막끼리 1칸 띄운다.')

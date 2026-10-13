@@ -785,6 +785,26 @@ def _(c):
     c.HL(1, H - 1, W - 2, 'red', 0)
 
 
+
+@P_('rug-runner', '양탄자 길(세로)', 1, 1, 'flat', ['궁전', '복도'], '문에서 옥좌·제단으로 세로로 잇대어 깐다(위아래로 이어진다). 걸을 수 있다.', 'floor-marble')
+def _(c):
+    W, H = 16, 16
+    for y in range(H):
+        for x in range(1, W - 1):
+            b = min(x - 1, W - 2 - x)
+            if b == 0: m, t = 'red', 1
+            elif b == 1: m, t = ('saffron', 4) if (y // 2) % 2 == 0 else ('saffron', 3)
+            elif b == 2: m, t = 'lapis', 1
+            else:
+                dy = abs(((y + 8) % 16) - 7.5); dx = abs(x - 7.5)
+                d = dx + dy * 0.8
+                if d <= 1.2: m, t = 'saffron', 4
+                elif d <= 3.2: m, t = 'lapis', 2
+                elif d <= 4.0: m, t = 'saffron', 3
+                else: m, t = 'red', 2 if (x + y) % 5 else 3
+            c.P(x, y, *cl(m, t))
+
+
 # ── 가게 ──
 @P_('shelf-pottery', '그릇 선반', 2, 2, 'tall_furniture', ['가게', '여관'], '벽 앞에 붙인다(벽 바로 아래 줄).', 'floor-flag')
 def _(c):

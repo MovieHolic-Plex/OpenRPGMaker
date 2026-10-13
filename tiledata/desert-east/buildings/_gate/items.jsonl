@@ -3,6 +3,8 @@
 {"png": "de-house-adobe-5.png", "kind": "structure", "name": "흙벽돌 집(넓은, 마당 지붕)", "label": "desert-east/de-house-adobe-5"}
 {"png": "de-house-stone-4.png", "kind": "structure", "name": "사암 집", "label": "desert-east/de-house-stone-4"}
 {"png": "de-house-plaster-4.png", "kind": "structure", "name": "회칠 흰 집", "label": "desert-east/de-house-plaster-4"}
+{"png": "de-house-plaster-3.png", "kind": "structure", "name": "회칠 흰 집(작은)", "label": "desert-east/de-house-plaster-3"}
+{"png": "de-house-stone-5.png", "kind": "structure", "name": "사암 집(넓은, 창 둘)", "label": "desert-east/de-house-stone-5"}
 {"png": "de-house-dome-4.png", "kind": "structure", "name": "돔 지붕 사암 집", "label": "desert-east/de-house-dome-4"}
 {"png": "de-house-dome-white.png", "kind": "structure", "name": "흰 돔 회칠 집", "label": "desert-east/de-house-dome-white"}
 {"png": "de-house-2f.png", "kind": "structure", "name": "2층 사암 집(나무 격자 발코니)", "label": "desert-east/de-house-2f"}
@@ -16,11 +18,13 @@
 {"png": "de-wall-v.png", "kind": "structure", "name": "사암 성벽(세로, 위에서 본 성가퀴 길)", "label": "desert-east/de-wall-v"}
 {"png": "de-wall-tower.png", "kind": "structure", "name": "성벽 모서리 탑", "label": "desert-east/de-wall-tower"}
 {"png": "de-wall-gate.png", "kind": "structure", "name": "성문(아치 통로)", "label": "desert-east/de-wall-gate"}
-{"png": "de-pyramid.png", "kind": "structure", "name": "대피라미드", "label": "desert-east/de-pyramid"}
+{"png": "de-pyramid-great.png", "kind": "structure", "name": "대피라미드(큰)", "label": "desert-east/de-pyramid-great"}
+{"png": "de-pyramid.png", "kind": "structure", "name": "피라미드", "label": "desert-east/de-pyramid"}
 {"png": "de-pyramid-small.png", "kind": "structure", "name": "작은 피라미드", "label": "desert-east/de-pyramid-small"}
 {"png": "de-pyramid-door.png", "kind": "structure", "name": "피라미드 입구(돌 문틀)", "label": "desert-east/de-pyramid-door"}
 {"png": "de-ziggurat.png", "kind": "structure", "name": "지구라트(계단 신전)", "label": "desert-east/de-ziggurat"}
 {"png": "de-obelisk.png", "kind": "column", "name": "오벨리스크", "label": "desert-east/de-obelisk"}
+{"png": "de-dovecote.png", "kind": "column", "name": "비둘기 탑(흙벽돌)", "label": "desert-east/de-dovecote"}
 {"png": "de-tent-bedouin.png", "kind": "structure", "name": "유목 검은 천막", "label": "desert-east/de-tent-bedouin"}
 {"png": "de-tent-pavilion.png", "kind": "structure", "name": "줄무늬 정자 천막", "label": "desert-east/de-tent-pavilion"}
 {"png": "de-tent-small.png", "kind": "structure", "name": "작은 천 천막", "label": "desert-east/de-tent-small"}
