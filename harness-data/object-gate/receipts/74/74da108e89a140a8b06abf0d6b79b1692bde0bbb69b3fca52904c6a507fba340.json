@@ -1,0 +1,102 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "74da108e89a140a8b06abf0d6b79b1692bde0bbb69b3fca52904c6a507fba340",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop wheat sprout growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_wheat_sprout",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat vertical 2D stalks viewed straight from the front/side with 0 rows of visible top surface or 3/4 foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7312
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D vertical pixel strips aligned strictly across rows 14-15 with no 3/4 perspective, top surface, or ground depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5907
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 218282,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 216929,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.880Z",
+ "cells": {
+  "16": [
+   "30d63bcd22718c0b"
+  ],
+  "24": [
+   "16255e32766d8f29",
+   "281c3e51224c01c9",
+   "3fb2bfe54460b957",
+   "7b1ae4bc29be2c6d",
+   "a71e292e6e0c9d7e",
+   "d09f7a3a61f5e99a"
+  ],
+  "32": [
+   "76801d088037f23d",
+   "80397e2394731035",
+   "95abfbf67011f4ba",
+   "b6ffc4089ab5017d",
+   "cd46f3178c6e4647",
+   "e65b7fcb06224f69"
+  ],
+  "48": [
+   "0f45272023308b59",
+   "1dba4c34cac94c6f",
+   "296575172d7115f0",
+   "a0c10fa9c609a018",
+   "ce2c3c735c01cafc",
+   "f32b3cedebd71c6c"
+  ]
+ }
+}

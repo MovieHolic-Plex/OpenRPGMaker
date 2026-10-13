@@ -1,0 +1,102 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "207e6330867dacd7c0a73ce233551e219cf7969babcef7da03ac582ba39d8b26",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop wheat young growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_wheat_young",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "young wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crop consists of vertical 1px-wide blades rising from the bottom with no horizontal depth, ground footprint, or foreshortened top-down leaf spread, rendering it as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "growing wheat shoots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The young wheat stalks are drawn purely as 1-pixel-wide vertical lines from a side/front elevation view with 0 rows of visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7768
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 217534,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 274482,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.880Z",
+ "cells": {
+  "16": [
+   "6ae78139650aef94"
+  ],
+  "24": [
+   "4355be70b861dbd8",
+   "7f6edf39f975eab4",
+   "d48b1ba1ee3a7a17",
+   "df8bd2820f12fbdf",
+   "f52f227f7f399666",
+   "f95d3c765f8bcff2"
+  ],
+  "32": [
+   "0262c74485119a90",
+   "1c8f290c0c355925",
+   "7a7ac50a9f8c4263",
+   "b4a6630d8d3f2f72",
+   "dcfab56391947c6d",
+   "de18554e85754ebe"
+  ],
+  "48": [
+   "8677e4128799e427",
+   "a42326d3cb951a93",
+   "a96134ce0df1a9bd",
+   "b32f18a28b3638f8",
+   "c5d0a6ed383b028a",
+   "eb9a31ebd9aaad01"
+  ]
+ }
+}

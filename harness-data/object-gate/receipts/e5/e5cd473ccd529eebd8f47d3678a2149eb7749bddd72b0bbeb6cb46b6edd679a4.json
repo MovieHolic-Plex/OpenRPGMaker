@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5cd473ccd529eebd8f47d3678a2149eb7749bddd72b0bbeb6cb46b6edd679a4",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "farm crop tomato mature growing in tilled soil (plant only, soil is a separate tile)",
+ "label": "beodeul_farm/crop_tomato_mature",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato bush with central stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plant and central stake are drawn entirely as a flat front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5933
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tomato plant on stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tomato plant and central wooden stake are drawn as a flat 2D front elevation. The stake shows no foreshortened top end (0px top surface), and the foliage is rendered as a flat vertical silhouette with no visible top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6794
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tomato plant foliage and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant is presented as a flat frontal silhouette with clustered leaves and fruit; no distinct top-facing surface of the main foliage mass is visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 37651
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 94769,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "28862230fe8c9294"
+  ],
+  "24": [
+   "0cc2bf40966a6675",
+   "25ccb93725147266",
+   "2bd88b9a103ed58d",
+   "6eb9c4af3dafd974",
+   "ad8d0cdbdb6c99ea",
+   "f2ae46cf7a22cd5a"
+  ],
+  "32": [
+   "7b53e9a056291c9b",
+   "8af15600fa056229",
+   "9000897dc6834f80",
+   "c7a40eba70072650",
+   "c7fa5cdb1f2d76ec",
+   "dfff040267aea878"
+  ],
+  "48": [
+   "227653741e7f8cb6",
+   "3e38c77a4a26f9d4",
+   "6f16592478432215",
+   "ce4d6a7605e91e68",
+   "d879bb3639065998",
+   "da81c5d53cbce74c"
+  ]
+ }
+}

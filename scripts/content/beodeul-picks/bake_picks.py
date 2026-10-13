@@ -462,3 +462,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+    # 시트 꼬리(27,648~)의 농장 칸은 이 스크립트가 시트를 다시 자르면 사라진다 — 같은 실행에서 다시 굽는다(덧붙이기 전용, 멱등).
+    if not any(a == "--dry" for a in __import__("sys").argv[1:]):
+        import subprocess, sys
+        subprocess.run([sys.executable, str(pathlib.Path(__file__).resolve().parents[1] / "beodeul-farm" / "bake_farm.py")], check=True)
