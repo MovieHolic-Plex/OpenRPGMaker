@@ -1,6 +1,7 @@
 // 스팀펑크 도시(steampunk_city) 구성 도구 — compose_steampunk_city_map(거리·공장역·운하 부두·실내 여섯 가지 한 장), link_steampunk_interior(건물 문 ↔ 실내 맵).
 // 배치는 구성기 src/project/steampunkCityComposer.ts 가 짠다(계획 → 블록 → 소품, 씨앗마다 다른 배치, 소품마다 BFS 연결 검사). 이 도구는 그 결과를 맵에 쓰고,
 // 문 칸은 막힘·접근칸은 걸을 수 있음·시작 칸에서 모든 접근칸(실내는 출구)에 닿는지를 엔진 통행(isPassable)으로 다시 확인한다. 실패하면 맵을 바꾸지 않는다.
+import { COMPOSED_LAYOUT_TAG } from "@/ai/piAgent/layoutQuality";
 import { isSteampunkTilesetDef, STEAMPUNK_TILESET_ID } from "@/ai/steampunkCityPolicy";
 import { isPassable } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
@@ -128,7 +129,7 @@ export const COMPOSE_STEAMPUNK_CITY_MAP_TOOL: ToolDefinition = {
       const door = d.doors[0]!;
       addMapLocation(target, { name: `${d.name}`, x: d.rect.x, y: d.rect.y, w: d.rect.w, h: d.rect.h, note: `문 (${door.x},${door.y}) 외 ${d.doors.length - 1}칸 · 접근칸 (${d.access[0]!.x},${d.access[0]!.y}) — 실내는 compose_steampunk_city_map({style:"workshop"|"tavern"|…, newMap}) 으로 짓고 link_steampunk_interior 로 잇는다`, tags: ["steampunk-building", d.kit] });
     }
-    for (const z of r.zones) addMapLocation(target, { name: z.name, ...z.rect, note: z.use, tags: ["steampunk-zone"] });
+    for (const z of r.zones) addMapLocation(target, { name: z.name, ...z.rect, note: z.use, tags: ["steampunk-zone", COMPOSED_LAYOUT_TAG] });
     if (created) {
       const parent = parentId && next.maps[parentId] ? parentId : "";
       if (!insertTreeNode(next.mapTree, { mapId: mapId as MapId, children: [] }, parent as MapId)) insertTreeNode(next.mapTree, { mapId: mapId as MapId, children: [] }, "" as MapId);

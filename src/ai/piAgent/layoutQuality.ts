@@ -196,6 +196,17 @@ function paintedShare(map: GameMap, before: GameMap | undefined): number {
   return changed / n;
 }
 
+/**
+ * 구성기가 «구역마다 쓰임»을 정해 깐 맵(위치 태그 composed-layout)은 배치 품질 권고에서 뺀다.
+ * 이 지표는 차도·선로·승강장·광장 동선의 빈칸을 «빈 바닥»으로 세어, 조수가 권고를 받고 구성기 맵 한가운데에
+ * 석탄 통·발전기·노점을 더 찍었다(2026-10-14 steampunk_city 실조수 3건: 보일러실에 석탄 통·더미가 둘씩, 역 광장에 석탄 상자).
+ * 사용자는 옛 시안의 «흩뿌린 소품 배치»를 싫어했다. 개념 카드가 빈칸이 정상이라고 한 공간을 빼는 것과 같은 이유다.
+ */
+export const COMPOSED_LAYOUT_TAG = "composed-layout";
+export function composedLayoutMapIds(project: Pick<Project, "maps">): string[] {
+  return Object.values(project.maps).filter((m) => (m.locations ?? []).some((l) => (l.tags ?? []).includes(COMPOSED_LAYOUT_TAG))).map((m) => m.id);
+}
+
 export function inspectPiLayoutQuality(project: Project, baseline: Project, scopeMapIds: readonly string[] | undefined,
   skipMapIds: Iterable<string> = []): LayoutQualityIssue[] {
   const skip = new Set(skipMapIds);
