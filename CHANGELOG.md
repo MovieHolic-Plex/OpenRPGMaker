@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.207.3 — 2026-10-14
+
+### 수정
+
+- **ci** — install Playwright before the browser gate (`b6e0594`)
+
 ## 0.207.2 — 2026-10-14
 
 ### 수정
