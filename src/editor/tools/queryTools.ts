@@ -127,7 +127,7 @@ const getProjectSummary: ToolDefinition = {
 };
 
 // 타일을 시맨틱 문자로 변환.
-function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
+export function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
   if (hasEvent) return "E";
   const i = y * map.width + x;
   const layers = cellLayerTiles(map, i);

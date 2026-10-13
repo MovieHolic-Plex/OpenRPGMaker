@@ -4112,7 +4112,7 @@ const patchEventPage: ToolDefinition = {
       }
     }
     const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
-    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}${dropped.length ? ` ⚠ 원래 명령 ${dropped.length}개 빠짐(${dropped.join(", ")}) — 지우라는 요청이 아니면 되살릴 것` : ""}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };

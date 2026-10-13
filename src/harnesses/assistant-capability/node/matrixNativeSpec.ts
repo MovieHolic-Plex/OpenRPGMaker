@@ -224,10 +224,18 @@ function readOnly(input: JudgeInput, label: string, check: () => Verdict): Verdi
   return check();
 }
 
+/** An empty top-level `branch: []` the model adds to a `choices` command is an ignored field, not a behavior change. */
+function tidyEvent(event: any): any {
+  if (!event) return event;
+  const copy = clone(event);
+  for (const page of copy.pages ?? []) for (const command of page.commands ?? []) if (command.kind === 'choices' && Array.isArray(command.branch) && command.branch.length === 0) delete command.branch;
+  return copy;
+}
+
 function eventEdit(input: JudgeInput, id: string, check: (before: any, after: any) => Verdict, allowSystem = false): Verdict {
   const blank = (doc: any) => { withoutEvent(id)(doc); if (allowSystem) delete doc.system; };
   if (!sameExcept(input.before, input.after, blank)) return fail(`${id} 밖의 내용이 바뀌었다`);
-  const before = eventOf(input.before, id), after = eventOf(input.after, id);
+  const before = tidyEvent(eventOf(input.before, id)), after = tidyEvent(eventOf(input.after, id));
   if (!before || !after) return fail(`${id} 이벤트가 사라졌다`);
   return check(before, after);
 }
