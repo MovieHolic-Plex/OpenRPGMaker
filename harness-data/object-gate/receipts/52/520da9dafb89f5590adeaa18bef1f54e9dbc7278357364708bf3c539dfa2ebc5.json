@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "520da9dafb89f5590adeaa18bef1f54e9dbc7278357364708bf3c539dfa2ebc5",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-4-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the awnings, door frame, and upper facade wall, is rendered strictly as a flat 2D front elevation with 0 rows of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafe storefront with door, windows, and green facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation with no visible top surfaces on the roof, lintels, or window sills. The top edge is just a 2px horizontal stripe.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5194
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large central building/gate facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade; its roof/lintel top is only a thin dark edge with no visible horizontal top surface. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 123867
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat rectangular front elevation; its upper edge is only a dark line and front lintel, with no visible top plane or roof slope. No receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 64482
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.077Z",
+ "cells": {
+  "16": [
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "5ff0521eb46b5637",
+   "6d8d6a2b2522f31c",
+   "75a61006df7207f9",
+   "8ef8bcb1d076a376",
+   "912bdb1002e40169",
+   "9b217cbabf01af71",
+   "a18de3840de9dee2",
+   "b1a8b5449b59fe87"
+  ],
+  "24": [
+   "02684f97accd5f78",
+   "0d3e79c77541ef04",
+   "104231038ad5064e",
+   "240570715d363c0d",
+   "2a52ff0f30d43d8a",
+   "3812789191f8876f",
+   "5f57b09269005d9b",
+   "7ab2f1b10e4870ed",
+   "826b07c2d3faf84c",
+   "82fcf7c747a051a1",
+   "91d7b3eef49c656e",
+   "b63cfa841a88fd2b",
+   "bd8abb8a0403336f",
+   "caceaf9de2d40156",
+   "cee3f2ac76b2d47a",
+   "d0f737994867988c",
+   "eda8373dc3257449",
+   "f70c752f005ced3e"
+  ],
+  "32": [
+   "1d82d7712fbc9db2",
+   "6f6d8e81443ecdf3",
+   "8027960bbc574093",
+   "83508e824869cb1a",
+   "9aaad574a9d8d575",
+   "c69f0aadc8514f41",
+   "e22debf97386fcf1",
+   "f07454d18594c477"
+  ],
+  "48": [
+   "0886dfd111615ca7",
+   "11d94182d638632c",
+   "600829fc329c0015",
+   "78a557d34fe38f28",
+   "81d72584b321c2e6",
+   "9ec4db498c28ca1c"
+  ]
+ }
+}

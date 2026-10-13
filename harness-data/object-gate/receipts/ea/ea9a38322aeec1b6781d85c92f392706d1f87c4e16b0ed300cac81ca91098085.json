@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ea9a38322aeec1b6781d85c92f392706d1f87c4e16b0ed300cac81ca91098085",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-r",
+ "label": "jp_city/street_hand/jp-bwall-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat architectural front elevation with only a 2px cap line along rows 1-2 and no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11084
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is drawn in pure front elevation with running bond brickwork across rows 3-14. Rows 1-2 only form a 2px cap line, which does not constitute a visible top surface for a 3/4 perspective structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9264
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Rectangular brick wall end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular field of brick courses. The light band at the upper edge does not show a horizontal top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11928
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Rectangular masonry wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular wall face with horizontal masonry courses. Its upper boundary has no visible horizontal top surface or depth beyond an edge line.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8229
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.481Z",
+ "cells": {
+  "16": [
+   "9705d63e50fb3596"
+  ],
+  "24": [
+   "007e150cb7709ec2",
+   "072eec636ba18893",
+   "799e9ad3d134ede9",
+   "97e2d8312d6130d5",
+   "e7e6fe81f1cde49f",
+   "edcd657bbe8adf90"
+  ],
+  "32": [
+   "3f939c671ff29399",
+   "b5618537946f7194",
+   "c1b668f272c2edcb",
+   "c3f26ae2f0bbf343",
+   "c475d8cb1ca4dbcd",
+   "f39663c10b5fea34"
+  ],
+  "48": [
+   "2ea1825adda62bf2",
+   "31ef4168ad908f6d",
+   "943aebf109660746",
+   "c51b3369aeda78db",
+   "cfbd5cd9a4d18c12",
+   "ff75f3dee99585ca"
+  ]
+ }
+}

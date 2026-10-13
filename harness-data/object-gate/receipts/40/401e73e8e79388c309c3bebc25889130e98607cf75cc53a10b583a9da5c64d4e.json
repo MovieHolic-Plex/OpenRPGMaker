@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "401e73e8e79388c309c3bebc25889130e98607cf75cc53a10b583a9da5c64d4e",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-3-L",
+ "label": "jp_city/street_hand/jp-sf-house-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "traditional house facade with sliding door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, eave, rafters, lintels, and base are drawn entirely in flat front elevation with no visible roof slope, lintel top surface, or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8049
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "house facade with sliding gate and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The upper roof/eaves (rows 0-7), door lintel (row 12), lower roof trim (row 19), and ground stone plinth (rows 44-46) show only vertical front faces with no visible foreshortened top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7481
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large L-shaped house structure with a tiled roof and front facade",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof has a clearly visible horizontal top surface spanning approximately source rows 2-9; the front facade is also shown below it. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 213656
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large windowed building with a broad tiled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building has a broad, multi-row roof surface visible above the facade, approximately 12 source pixels deep, rather than only a thin roof edge. The facade is front-facing, with no distinct receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 227669
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.081Z",
+ "cells": {
+  "16": [
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "71eda351f607a952",
+   "78807d07062ba12b",
+   "b4224f076633e09e",
+   "f6d28324c84dd236"
+  ],
+  "24": [
+   "322f440793925946",
+   "9ea66f44c2974d4c",
+   "b2cf43008993f73e",
+   "b386a884f7ba736f"
+  ],
+  "32": [
+   "00f273373b36e05c",
+   "1020fa24988d84a5",
+   "10a37d55d6224724",
+   "161d024a9d5b8db0",
+   "2094b2ac552fb5dd",
+   "2b5a09c520b2d8c4",
+   "2ecec4e37cc201e0",
+   "306e403cecb250e6",
+   "35b9d72a89dec47e",
+   "392492b2f8f02e18",
+   "4aab39e494a73201",
+   "4dd793bbcd0dcb22",
+   "50552c1d2cbef502",
+   "63f346c83cd322e6",
+   "6f9712aaac6856d9",
+   "8f75509bcd503dbc",
+   "a5cbf6c2d4c2c184",
+   "ae269374ef6017b1",
+   "c623cb4802285074",
+   "cb393c879fa1358f",
+   "e802b23945b9b511",
+   "eae71055f41b80fd",
+   "eecd6637c6b68fe4",
+   "fbb50956d1afed09"
+  ],
+  "48": [
+   "c6a5209f54f9d51a"
+  ]
+ }
+}

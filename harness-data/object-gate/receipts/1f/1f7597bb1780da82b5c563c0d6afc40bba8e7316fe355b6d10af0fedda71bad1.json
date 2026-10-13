@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1f7597bb1780da82b5c563c0d6afc40bba8e7316fe355b6d10af0fedda71bad1",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-carport",
+ "label": "jp/jp-carport",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carport roof canopy and frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The translucent roof canopy is viewed from above, displaying 15 rows of sloping roof surface (rows 3-17) over the horizontal support beam and posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5235
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carport roof canopy and supporting frame",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The translucent roof canopy is clearly foreshortened and seen from above, spanning rows 3 to 17 (15 rows of visible top/sloped surface) resting on a horizontal lintel beam and support posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9404
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carport canopy roof",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The curved translucent canopy roof slopes forward facing the camera from row 3 to row 17 (15 pixel rows of visible top roof surface) above the support beam and posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5549
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "translucent canopy roof over beam and posts",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carport features a prominent sloped translucent canopy roof visible from rows 3 to 17 (~15 rows) seen from above at a 3/4 angle, resting on a front-facing horizontal beam and two support pillars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3674
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.349Z",
+ "cells": {
+  "16": [
+   "19e55db5442cb11b",
+   "1a018a11748569ce",
+   "23d31a1a56e44fa5",
+   "3c89938afcf16876",
+   "6b0cb0bf4e68523a",
+   "80f6d79795c3396f",
+   "906aa1d0bd9e11e7",
+   "b75b8f51a4f3e63d",
+   "c0d81c8619969aed",
+   "f8873e64d3e928ad"
+  ],
+  "24": [
+   "1afa994f9eb0bab0",
+   "22854b0fd5f6a6ad",
+   "248313c182030807",
+   "4de7ced7c9c65f2c",
+   "5a7747c8f01fc887",
+   "61ba031bfcbf27e6",
+   "7504a4d7d4863e5c",
+   "8efa4d7749ae2788",
+   "9b3444311d95766d",
+   "b79d804686c53a5f",
+   "c13c78119e5c4772",
+   "cba5db6e2b73c00e",
+   "e131a5639b54d86d",
+   "e3d6fe56c1a88370",
+   "f86b07db42f439a9",
+   "fe7fe3097443f3c1"
+  ],
+  "32": [
+   "0fd4086a8433746b",
+   "34b25d216e9e35b7",
+   "367bb1acb6810d14",
+   "3adeb7fd6899abfd",
+   "678803a097f91963",
+   "696bb938f6691f3b",
+   "9ad653172395e8c5",
+   "9d7f81c731eb8b0f"
+  ],
+  "48": [
+   "2590c4d78896367c",
+   "5053d10382fe7af7",
+   "b08ee370be54d5f7",
+   "d6a64bdbcbd90d09",
+   "eb29037f10057e4a",
+   "f77b7734942c55f1"
+  ]
+ }
+}

@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b007b2f02eaab3be6d75b2b327dfc59bd2cbea4b3b71966014301e3b579c1b02",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-5-R",
+ "label": "jp_city/street_hand/jp-sf-sento-5-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse storefront entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, doorway, noren curtains, and display windows are drawn straight-on in pure front elevation with no visible roof slope, lintel top surface, or depth on any horizontal ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5938
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathhouse storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, entryway, and display windows are drawn entirely in flat front elevation with no visible roof, lintel top surface, or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5430
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Bathhouse storefront facade with a central curtained entrance",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The walls, display windows, and curtained entrance are drawn as a flat frontal elevation. The entrance lintel has only a one-pixel horizontal edge; no substantial roof slope or top surface of the main structure is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 11908
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Bathhouse facade with a central entrance and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat front-facing facade. Its upper edge and entrance lintel are narrow horizontal bands, with no visible roof slope or horizontal top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11359
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.007Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "2861d1767a739476",
+   "30c40de893614fb0",
+   "41059fd5416be107",
+   "492309af242ec3ef",
+   "5da5379a5664893d",
+   "5e232eff7bd84c85",
+   "64914e27851ccceb",
+   "7af16967f3237e4e",
+   "85454d0876438aaa",
+   "8a0024a5ea16da93",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "e6114a91176ef67f",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "010fc95d6c378305",
+   "09ea51767997b4a5",
+   "1878ee474bc13103",
+   "2717de8772582ea2",
+   "33634449ef4f0112",
+   "33fe20370632b7f0",
+   "3ee833c28432f292",
+   "4a41448fa486da75",
+   "5a5183999a9f7363",
+   "5dbc44cf1450030e",
+   "64a2ef445f615dd2",
+   "6e9248e0b66589cb",
+   "76b142b1117540b3",
+   "782c79bff4c9f600",
+   "8111140cfaa9fa12",
+   "933af577534a4ac1",
+   "ac648b3862382735",
+   "b0c55a00cd79f2db",
+   "b4b5c1b907fcb980",
+   "b56a65b0046ee3c9",
+   "c0380ba9256640a1",
+   "cc46cea026e5515a",
+   "e8872653f3d098f8",
+   "f11309da7ce1dd13"
+  ],
+  "32": [
+   "0578d1838f3ab62f",
+   "0c7061e03195f2f6",
+   "0c9d1f79bea4bab1",
+   "1565a921596d29d8",
+   "19e16c805bca424d",
+   "227207ebe6042ed2",
+   "23cb5e6ea01e9146",
+   "2744a3c6738ec872",
+   "2af4024735c92590",
+   "3a8d4d137d36f242",
+   "3ebf3ade6233e88e",
+   "45dd3a9cc92677a0",
+   "4aceb20c8ea90673",
+   "5607c5d2c3f3882b",
+   "694848960be6a30f",
+   "6c0aaf0f399be5c5",
+   "7df6d8ba7b73979a",
+   "928562fcdf0bb319",
+   "94ec0c8f9d5f9ba0",
+   "aab543655a84be34",
+   "acdfeb5b50f95985",
+   "aced106d6c96e10b",
+   "b9970e1cdcfb8818",
+   "be0d42cb1f742b5f",
+   "c0914752ddc5f167",
+   "c1a129cba065ce4a",
+   "c40b8e462e312e5a",
+   "d755f61eab9c311b",
+   "d77a4bd06f900327",
+   "d8b7f9439a11edf7",
+   "daed4200e6f24877",
+   "e20597d74cd5393b",
+   "e7a91e77d3a01a7b",
+   "ed9c213f75451799",
+   "ef16b08229a276a1",
+   "f85bd8c6d874473f"
+  ],
+  "48": [
+   "2b5a837b2426af2a",
+   "685d7c6217967061",
+   "8fc76ee839c2b1e3",
+   "ccc7c5e5ce6c1e89",
+   "ea56bdf15d6faf5a",
+   "eb6d28c0cf095fe4"
+  ]
+ }
+}

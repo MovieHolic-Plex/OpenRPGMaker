@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45491c5231bc6aa52cffaed8b0e97558d3e0380fce87fa88ef8cda6a75b42917",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-tsukigime",
+ "label": "jp/jp-tsukigime",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking sign board on posts with small roof canopy",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and its mounting posts are drawn completely flat in pure front elevation with no visible top surface or depth; the object is also a parking sign rather than a large structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7560
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard on posts with an arched wooden top",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parking sign is drawn entirely as a flat 2D front elevation. Neither the signboard, its arched wooden top/pediment, nor the support posts show any top surface (0 pixel rows) foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "parking signboard on posts with small roof canopy",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard, posts, and top canopy are drawn entirely in flat 2D front elevation with no visible top depth or foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7033
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard with arched wooden top and support posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn in a pure front elevation with zero top surface visible. The arched top section (rows 0-6), rectangular sign face (rows 7-22), and support legs (rows 23-31) all face directly toward the camera without 3/4-view foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9456
+  }
+ ],
+ "decidedAt": "2026-10-13T13:05:45.748Z",
+ "cells": {
+  "16": [
+   "51d5e736432069cd",
+   "b2378fdc919ca06c",
+   "d14a2b8dc0516522",
+   "e2eddead8729b44c"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "0582437a1fbfcfc6",
+   "1037d03202c0f20d",
+   "135e80afbb12895c",
+   "1aa6e3285ab09c6a",
+   "2ee9e01d296c5f38",
+   "48e35db694500bd0",
+   "53877856737704b3",
+   "669fab931783ad7c",
+   "79aff99a9b0a6292",
+   "7f9738ee6ca31b73",
+   "866a48402de881de",
+   "8a60c8a51bb67d4a",
+   "8a6efefe2c2314bc",
+   "8d872c904f3c9f4a",
+   "9c6f16139261812c",
+   "b543545a9ea3a6d0",
+   "cb2adc8397e806f3",
+   "d99c7092ce8bda11",
+   "dfda9e951b75356b",
+   "e6d94c2e3109f65a",
+   "eb113d4b3017efb9",
+   "f4328915210b713f",
+   "f957c241e9058482"
+  ],
+  "32": [
+   "92465d11772ec5a7"
+  ],
+  "48": [
+   "63b93f0f69f53b26",
+   "7afdf5b2c688c867",
+   "7d87c09890ba9b7e",
+   "a9445834db9fbd7e",
+   "cacb53f4cb4e910e",
+   "e4750739df6ee2db"
+  ]
+ }
+}

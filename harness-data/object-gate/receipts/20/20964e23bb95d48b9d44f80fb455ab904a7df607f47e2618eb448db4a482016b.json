@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20964e23bb95d48b9d44f80fb455ab904a7df607f47e2618eb448db4a482016b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-streak",
+ "label": "jp_city/street_hand/jp-water-streak",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water streak decals",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two small water streaks/ripples lying flat on the surface, each 2 rows tall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3368
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water streaks / ripples lying flat",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two small flat water ripples/streaks lying horizontally on the surface, each 2 rows tall with no vertical thickness.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2680
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water streaks / ripples on surface",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two small water streaks/reflections lie flat on the ground surface, foreshortened at 2 rows tall each.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3311
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "water streaks on ground/water surface",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two flat horizontal water streaks/ripples lying flat on the surface, each 2px tall in foreshortened top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3616
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.703Z",
+ "cells": {
+  "16": [
+   "ae736823d1f46c09"
+  ],
+  "24": [
+   "65e522fa18ee91be",
+   "79f7c25bb8541f1b",
+   "89cd3ea2238c6f93",
+   "9caefabb67932031",
+   "c2909f2ef03ec6e3",
+   "d1371a6bf8c2cb52"
+  ],
+  "32": [
+   "2aa02e9b11a7a901",
+   "482951529f7ff543",
+   "4fd5c61be7520f1b",
+   "7b37929c32d4fa67",
+   "a2859e36a6e77316",
+   "c0bda496a9a15da5"
+  ],
+  "48": [
+   "62b1309b5f25f182",
+   "9dbe3312c3c37367",
+   "c827401d27e749a2",
+   "ea3ca49a373d7ceb",
+   "f870e263564a7263",
+   "f93b09717ddbbd14"
+  ]
+ }
+}

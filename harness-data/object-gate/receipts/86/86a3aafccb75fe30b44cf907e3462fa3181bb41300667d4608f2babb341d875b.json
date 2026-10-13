@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "86a3aafccb75fe30b44cf907e3462fa3181bb41300667d4608f2babb341d875b",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal",
+ "label": "jp/jp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway signal and equipment cabinet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower half of the structure (apparatus cabinet and base block, rows 25-45) forms the largest volume and is drawn in pure front elevation with flat-facing double cabinet doors and no visible top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13023
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal post with equipment cabinet base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest volume of the object is the lower equipment cabinet and block (rows 25-46), which is drawn in pure front elevation with completely flat horizontal borders and zero visible top surface. Additionally, a railway signal is an outdoor prop/fixture rather than a large structure (gate, pavilion, building).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13037
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal post with equipment cabinet and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower half of the structure (the equipment cabinet and stone block, rows 25-45) comprises the largest volume and is rendered as a flat front elevation. The cabinet shows flat front-facing doors with handles and no visible top surface (0px). Even at the top of the stone block (row 25), the surface meets the pole along a flat 1px horizontal line without top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13247
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail signal mast and equipment cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest volume of the structure is the lower base and equipment cabinet (rows 25-45), which is drawn entirely in pure front elevation with a 1px flat black line at the top (row 25) where the pole attaches and no visible horizontal top surface whatsoever.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12630
+  }
+ ],
+ "decidedAt": "2026-10-13T13:22:58.364Z",
+ "cells": {
+  "16": [
+   "649193916361cfe5",
+   "acbcb21c741ec975",
+   "ded21bfa0e2f6588"
+  ],
+  "24": [
+   "0d124e82b5f26c68",
+   "27be08492cd7b0bb",
+   "8af5fc3375a7e098",
+   "ee9178bdcff5ac91",
+   "f15918b7ee3f9a6f",
+   "fbb901607d0fbcc0"
+  ],
+  "32": [
+   "020481dbbe15e632",
+   "1792d649bd9751b0",
+   "26f5c12f55ff0a7a",
+   "290155c8e0c6b445",
+   "2ee8ca480189177b",
+   "389e6d9fc621e12f",
+   "3dec9632c7db2aed",
+   "4114d4b9850188af",
+   "9650771566ac8ba8",
+   "9ae8135775e46af1",
+   "9bb014bef0c2d1a3",
+   "f0f2d583cf95ce5d"
+  ],
+  "48": [
+   "31b6283c291845ae",
+   "3ab2c081bc6b46d1",
+   "56913a676ebd4cf4"
+  ]
+ }
+}

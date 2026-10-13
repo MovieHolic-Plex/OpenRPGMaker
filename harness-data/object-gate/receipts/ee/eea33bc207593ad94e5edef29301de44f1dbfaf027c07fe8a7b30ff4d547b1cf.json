@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "eea33bc207593ad94e5edef29301de44f1dbfaf027c07fe8a7b30ff4d547b1cf",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-3-R",
+ "label": "jp_city/street_hand/jp-sf-konbini-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store entrance and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (sliding doors, display window, shelves, and upper fascia) is drawn as a flat, straight-on front elevation with no visible top surface on any roof, lintel, or ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5675
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store building facade with sliding door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (sliding doors, window shelves, frame, and fascia) is drawn as a flat architectural front elevation with no visible top surface or 3/4 perspective depth anywhere on the structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6719
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 495073,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience-store building facade with double glass doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade. Its upper lintel/roof area is only a frontal horizontal band with no visible top slope or surface; the side strips are normal front-frame edges, not receding side faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 156628
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.819Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "4571655b0f2a45d4",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "b038b334f32a18f2",
+   "c420ed7e86803c46",
+   "e09dad0b84f07f9a",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "29940760d6a42a81",
+   "60cc4c8e12b98566",
+   "9668c652d8c17a1a",
+   "eab9043f5ba62a97"
+  ],
+  "32": [
+   "02832f5085525e48",
+   "03c20557e6c8b4bf",
+   "0812cdfa0b6dd057",
+   "0de6a39a1f79857f",
+   "0f0746ed7aa05faf",
+   "266a7a81174b37b6",
+   "31be7dc9b71462c0",
+   "3be31e01b4e31f0a",
+   "4d865431aa8e8428",
+   "52e636a92a67dd04",
+   "531c5ba95ed385b8",
+   "549b13dc968ec0d7",
+   "62c0cb595f7fbc76",
+   "66312c833e64b683",
+   "66c174333e70264c",
+   "6e02d9b9020102f7",
+   "75a0b57ef1aa6546",
+   "82559444777ae50b",
+   "934041bbe4fb7778",
+   "c842b6eb17b66eda",
+   "c9e85c04c7296f36",
+   "d48357051175353a",
+   "e22a0e8e95c07920",
+   "edb610ddb184c2ff"
+  ],
+  "48": [
+   "403ee71fd109e976"
+  ]
+ }
+}

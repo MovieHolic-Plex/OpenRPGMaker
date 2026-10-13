@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8075ef340093daa1be5dfb6072f10afaa494572b1c773bfdce848c50e7b0e2f1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-center-v-l",
+ "label": "jp_city/street_hand/jp-mark-center-v-l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow dashed line floor marking",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two segments of a 2px-wide yellow vertical dashed road/floor line lying entirely flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3535
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow dashed vertical road marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat yellow dashed lane marking/road decal painted directly onto the ground plane, entirely visible from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2943
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow floor/road dashed line marking",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat vertical dashed lane marking lying directly on the floor/ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3135
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "yellow dashed lane marking decal",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat dashed floor/road marking decal lying directly on the ground plane, consistent with top-down/3/4 view floor tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4375
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.358Z",
+ "cells": {
+  "16": [
+   "c06f06a686dd367a"
+  ],
+  "24": [
+   "60de44fda17b180d",
+   "79a60150cbc90ba4",
+   "8c1df2dc70a4a1d9",
+   "ad96a7b2aa4ac304",
+   "e0f2499ffb945db5",
+   "f999d318c97d5897"
+  ],
+  "32": [
+   "223534641271e8d6",
+   "30e36b640ab759fe",
+   "6e5557a2ba9a8492",
+   "c4e8862a354bed8a",
+   "e01c2d975f66b4c9",
+   "f8092a0a09c86a3d"
+  ],
+  "48": [
+   "172adee59f758b37",
+   "366879ecfba42b4c",
+   "3bd6f00a883957bf",
+   "6219958449b70b49",
+   "7bf8a58dc7190721",
+   "d50a3cba1d2d955a"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2796495504766537110c602f43c2bb984bde0d806d132dd55e730e8b8c76e0ec",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bridge-rail-v",
+ "label": "jp_city/street_hand/jp-bridge-rail-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical bridge railing segment running north-south",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous seamless north-south bridge railing segment showing the foreshortened top surface of the rail running vertically across all 16 rows over the bridge deck.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical bridge railing",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical bridge railing segment viewed from above; the top surface of the rail runs the full vertical length of the tile (16 rows) with standard cylindrical top-down shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9435
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical bridge rail segment running north-south across wooden bridge planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a seamlessly repeating vertical bridge railing tile running north-south; in 3/4 view, the rail is seen from above along its entire length (all 16 rows) with rounded horizontal shading across columns 4-12 over bridge decking planks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6717
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical bridge railing running north-south",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertically tiling north-south bridge rail segment seen from above; the top surface of the rail spans the entire 16-row tile over horizontal deck planks.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6130
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.355Z",
+ "cells": {
+  "16": [
+   "6da77db65df7b44b"
+  ],
+  "24": [
+   "231c31e1055fdc5e",
+   "23d74a4c2ac76242",
+   "318e90e0077d9d8d",
+   "5daa7c19d44b398b",
+   "8c804e46de0421ee",
+   "ef22494cd57763e9"
+  ],
+  "32": [
+   "3306ab06e31d017b",
+   "37a27f3124e48833",
+   "42462dfdd1215bed",
+   "4fedad88bbfc8bed",
+   "d6461dfb0d5e49a1",
+   "f06d5b261e41c629"
+  ],
+  "48": [
+   "14382a552b693d7a",
+   "3da32b7ae78f9411",
+   "60f4f90f94e98aea",
+   "adb40ef38c3996e8",
+   "c9690c0638d80d7e",
+   "d4a8a6ed41d3fdd1"
+  ]
+ }
+}

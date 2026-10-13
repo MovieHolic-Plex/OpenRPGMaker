@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7b88f379fbdd2ef161d64ec079ef42e88b7e034c6a35c9ba87039cd656eaa5d",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-3-R",
+ "label": "jp_city/street_hand/jp-sf-shop-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop entrance and storefront facade (doorway and side stand)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (sliding door, door frame, awning, shelf, and upper facade) is rendered straight-on as a flat architectural elevation with no visible top surfaces (0 top rows) on the awning, counter, or door lintel.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6494
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shopfront facade with sliding glass door and stall window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shopfront (sliding door, awning, and stall counter) is rendered in pure flat front elevation (side-scroller style). The door overhang has only a 1-2px outline band (rows 10-12) and the awning displays only its vertical face (rows 22-29) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7828
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront with wooden glass door and window/awning stall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront (door frame, door lintel, awning, and display window) is drawn as a flat 2D architectural front elevation with no visible foreshortened top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7216
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shop front with door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shop entrance door, frame, lintel, and display awning are drawn completely flat in 2D front architectural elevation with 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7001
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.386Z",
+ "cells": {
+  "16": [
+   "210b1e2ab89aacda",
+   "23f92e3b7442d9c8",
+   "35f25202d2734ec2",
+   "591233ec525de138",
+   "63661cb10dfd68f1",
+   "6593d1038c923076",
+   "6d8d6a2b2522f31c",
+   "aac3881d70f4ce44",
+   "b1a8b5449b59fe87"
+  ],
+  "24": [
+   "2a52ff0f30d43d8a",
+   "68a9f8dfcc65cd8a",
+   "a2db694a426da173",
+   "eb4ba81feb13c353"
+  ],
+  "32": [
+   "185cc0fe73a8f536",
+   "1f070fbe00b4a916",
+   "36c2b2bb24940226",
+   "381de3da621bf648",
+   "3e8c294d1002ac20",
+   "4d0710532596bd0d",
+   "5f82b0882d8c6cd9",
+   "67d07b5385069555",
+   "71ec02bb8a37b10a",
+   "75a2f64c853e2eaa",
+   "76b20c1cfee5917f",
+   "8786c522aebc59b6",
+   "8d9fe10bbc5c860c",
+   "9803f3be4d7b1d99",
+   "9ec93a7bffdcd3d6",
+   "aebdbfe8f880b705",
+   "b6e2c2b210f811fc",
+   "b8b356bc19858eb6",
+   "c27d2f8c4c0bcf24",
+   "d34b8fda573e9609",
+   "e04f7654839286a3",
+   "e153b4a892ee898b",
+   "eb5e0d700050ef90",
+   "ed5e4e75dea88f00"
+  ],
+  "48": [
+   "5e24203f2bb3707c"
+  ]
+ }
+}

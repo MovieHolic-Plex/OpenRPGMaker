@@ -40,14 +40,38 @@ def eave_dark(c, W, ramp, base):
     c.HL(0, 0, W * 16, K(ramp, base - 3)); c.HL(0, 1, W * 16, K(ramp, base - 2))
 
 
-def fascia(c, W, ramp, shade=0, stripe=None):
-    """간판띠 y 2~19: 윗면 하이라이트 → 앞면 → 아래 그림자. stripe=((ramp,t),...) 이면 가로 줄무늬(편의점)."""
-    c.R(0, 2, W * 16, 18, K(ramp, shade))
-    c.HL(0, 2, W * 16, K(ramp, shade + 2)); c.HL(0, 3, W * 16, K(ramp, shade + 1))
-    c.HL(0, 18, W * 16, K(ramp, shade - 2)); c.HL(0, 19, W * 16, K(ramp, shade - 3))
+def fascia(c, W, ramp, shade=0, stripe=None, tile=False):
+    """간판띠: 위층 벽 밑으로 튀어나온 庇(차양 지붕) 윗면(y 1~7: 기와/콘크리트 결 7줄, 뒷모서리 OL, 안쪽 홈, 앞 모서리 어두운 줄 y 8) → 간판 앞면 y 9~23.
+    3/4 관문(2026-10-13): 정면 입면만 있으면 윗면 0행으로 떨어진다. stripe=((ramp,t),...) 이면 앞면 가로 줄무늬(편의점)."""
+    w = W * 16
+    roof = 'tairu' if tile else 'conc'
+    c.HL(0, 0, w, OL)
+    if tile:
+        c.R(0, 1, w, 7, K(roof, 2))
+        for r in range(7):                               # 기와 줄(가로) + 엇갈린 세로 이음
+            if r % 2 == 1: c.HL(0, 1 + r, w, K(roof, 0))
+            for x in range((r % 2) * 3, w, 6): c.VL(x, 1 + r, 1, K(roof, -1))
+        c.HL(0, 2, w, K(roof, 3))
+        c.HL(0, 8, w, K(roof, -3))                        # 앞 모서리(어두운 줄)
+    else:                                                # 평지붕 윗면: 뒤 난간(밝은 턱+그늘) → 자갈/방수 바닥(아래로 갈수록 밝음) → 앞 난간 윗면
+        c.HL(0, 1, w, K(roof, 4)); c.HL(0, 2, w, K(roof, -2))
+        for r, t in enumerate((-1, -1, 0, 0, 1)):
+            c.HL(0, 3 + r, w, K(roof, t))
+        for x in range(w):
+            h = (x * 7 + 3) % 11
+            if h == 0: c.P(x, 3 + (x % 5), K(roof, 3))
+            elif h == 5: c.P(x, 3 + ((x * 3) % 5), K(roof, -3))
+        c.HL(0, 8, w, K(roof, 5))                         # 앞 난간 윗면 밝은 모서리
+    c.R(0, 9, w, 15, K(ramp, shade))
+    c.HL(0, 9, w, K(ramp, shade - 2)); c.HL(0, 22, w, K(ramp, shade - 2)); c.HL(0, 23, w, K(ramp, shade - 3))
     if stripe:
-        for k, col in enumerate(stripe): c.HL(0, 7 + k * 3, W * 16, K(*col)); c.HL(0, 8 + k * 3, W * 16, K(*col))
-    c.HL(0, 1, W * 16, OL)
+        for k, col in enumerate(stripe): c.HL(0, 12 + k * 3, w, K(*col)); c.HL(0, 13 + k * 3, w, K(*col))
+
+
+def fascia_ext(c, W, ramp, shade=0):
+    """창 윗틀(y 22~23)을 간판 앞면 아랫단이 덮는다(창 그리기 뒤에 호출)."""
+    w = W * 16
+    c.R(0, 22, w, 2, K(ramp, shade)); c.HL(0, 22, w, K(ramp, shade - 2)); c.HL(0, 23, w, K(ramp, shade - 3))
 
 
 def piers(c, W, ramp, base):
@@ -76,7 +100,7 @@ def sign_text(c, W, dc, s, col, side):
     for step in (17, 16, 15):
         tw = SP.text_w(s, step)
         if tw <= x1 - x0:
-            SP.text(c, x0 + (x1 - x0 - tw) // 2, 3, s, col, step); return
+            SP.text(c, x0 + (x1 - x0 - tw) // 2, 8, s, col, step); return
 
 
 # ───────────────────────── 창 ─────────────────────────
@@ -132,7 +156,7 @@ def win_lattice(c, x, glow=('kii', 1), wood=('ita', -2)):
 
 
 # ───────────────────────── 차양·노렌·등 ─────────────────────────
-def awning(c, W, col, y=17, scallop=True, skip=None):
+def awning(c, W, col, y=22, scallop=True, skip=None):
     """차양(3/4 윗면 + 앞 + 물결 끝). 줄무늬는 칸마다 같다(2칸 주기)."""
     x0 = 0
     for i in range(W * 16):
@@ -169,8 +193,8 @@ T = 12
 
 
 def door_head(c, x0, col):
-    """문 위 가로 보(간판띠 아랫단과 문틀을 잇는다)."""
-    c.R(x0, 8, 32, 5, K(*col)); c.HL(x0, 8, 32, K(col[0], col[1] + 2)); c.HL(x0, 12, 32, K(col[0], col[1] - 2))
+    """문 위 보: 간판띠 앞면이 문 위까지 내려오므로 문틀 윗선만 긋는다."""
+    c.HL(x0 - 1, 11, 34, K(col[0], col[1] - 3)); c.HL(x0 - 1, 12, 34, OL)
 
 
 def threshold(c, x0, frame='conc'):
@@ -259,11 +283,7 @@ def draw(c, role, W, side):
     dc = door_col(W, side)
     wr, wb = s['wall']
     wall(c, W, wr, wb, 'plank' if role in ('izakaya', 'house', 'machiya') else 'plaster' if role in ('konbini', 'shop', 'bento', 'sento') else None)
-    eave_dark(c, W, wr, wb)
-    fascia(c, W, *s['fascia'], stripe=s.get('stripe'))
-    if s.get('tile'):                                      # 기와 처마띠
-        for x in range(0, W * 16, 4): c.VL(x, 4, 4, K('tairu', -2)); c.P(x + 1, 3, K('tairu', 2))
-    if s.get('text'): sign_text(c, W, dc, s['text'], K(*s['textcol']), side)
+    fascia(c, W, *s['fascia'], stripe=s.get('stripe'), tile=bool(s.get('tile')))
     piers(c, W, wr, wb)
     for i in range(W):
         x = i * 16
@@ -273,6 +293,8 @@ def draw(c, role, W, side):
         else: win_glass(c, x, kind={'shelf': 'shelf', 'steam': 'steam', 'curtain': 'curtain', 'goods': 'goods', 'lobby': 'lobby', 'mailbox': 'mailbox'}[win], goods=s.get('goods', ('veg', 'fruit', 'bread', 'drug')[(i + W) % 4]), seed=i * 3 + W)
         if i > 0 and not (dc <= i - 1 < dc + 2): mullion(c, x)
         plinth(c, x, 16, *s['plinth'])
+    fascia_ext(c, W, *s['fascia'])
+    if s.get('text'): sign_text(c, W, dc, s['text'], K(*s['textcol']), side)
     x0 = dc * 16
     c.R(x0, 42, 32, 6, K(*s['plinth']))                      # 문 밑은 발판이 덮는다
     d = s['door']
@@ -283,7 +305,6 @@ def draw(c, role, W, side):
     elif d == 'entry': door_entry(c, x0)
     door_head(c, x0, s['fascia'])
     threshold(c, x0, frame='conc')
-    c.HL(x0 - 1, 7, 34, OL)
     if s.get('awning'): awning(c, W, s['awning'], skip=(x0, x0 + 32))
     if s.get('noren'): noren(c, x0 + 3, 26, col=s['noren'], crest=role != 'ramen', y=T + 1, h=13 if role != 'sento' else 20)
     if s.get('lantern'):

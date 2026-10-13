@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8ce575d4547f390da6008ab70268f24ca2841f36c2da767948aeee1fceaa02a0",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-3-L",
+ "label": "jp_city/street_hand/jp-sf-machiya-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese machiya building facade with shoji doors and tiled eaves/roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features foreshortened sloping tiled roof surfaces visible above the doorway and wall (8 pixel rows on the left eaves section, extending up to 17 rows on the right roof section), showing the structure from a top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7045
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade with tiled eaves and sliding shoji/lattice doors",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building eaves display foreshortened sloping tiled roof surfaces visible from above (rows 8-11 above the main door, and rows 4-21 over the side wing), matching the expected 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6789
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large machiya building facade with a broad dark roof above it",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building has a substantial dark roof surface visible above the facade, spanning several source-pixel rows rather than only a thin edge; the facade also shows its south-facing front directly. No receding isometric side face is visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 155487
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large machiya-style building facade with roof and windowed front",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat, straight-on facade. Its roof/lintel area is only a thin edge or dark horizontal band, with no clearly visible top surface of the main body; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 100635
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.821Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "2a750be2acb717cc",
+   "2c03638a780f1e8b",
+   "3fae5867f8e17aba",
+   "a1a696a945fcac22",
+   "a3043c90ab422321",
+   "b028a4a8f04550fa",
+   "c688632e1f5f1fbe"
+  ],
+  "24": [
+   "444f42372d5c4ed2",
+   "8c2d00682371adbf",
+   "de9826c1f985881a",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "022d0bf86ec41b98",
+   "02b6c07f40f31e2d",
+   "02d3baacdd750542",
+   "02d54b4c1a1f35f4",
+   "1af5e7b45e13b7f3",
+   "1ebc71ed807517ca",
+   "2cf93ee33de89ffb",
+   "35916b8e4e77247a",
+   "416b765f863f2d58",
+   "57abfe6d802a7769",
+   "731b9d8f7ca510b7",
+   "82554b6304a86872",
+   "84ba5c880abda444",
+   "8a78302d09974b53",
+   "95ec9ff50803229b",
+   "ad0e8d867322548a",
+   "aef03714d6702977",
+   "af857b271952780d",
+   "c4c2885c2a5e8a73",
+   "c7932f9f2527b9b1",
+   "cc15cea23ae117c6",
+   "cfb020b30f2ec4a4",
+   "d96cc15f07c1d4da",
+   "ef92a51282a8dc03"
+  ],
+  "48": [
+   "b20ffa0b50ad2d64"
+  ]
+ }
+}

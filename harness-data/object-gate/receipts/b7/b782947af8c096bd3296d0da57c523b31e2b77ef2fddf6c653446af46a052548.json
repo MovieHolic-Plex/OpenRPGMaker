@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b782947af8c096bd3296d0da57c523b31e2b77ef2fddf6c653446af46a052548",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp/jp-torii",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style gate (torii / roofed gate)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof displays a clearly visible southward-sloping top surface spanning rows 0 to 6 (7 pixel rows) above the horizontal beams and vertical posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12145
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese roofed gate / torii structure",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes down toward the camera, clearly displaying its top surface across rows 0–6 (7 pixel rows) before terminating at the eave line on rows 7–8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6240
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "torii gate structure",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roof shows a 7-row slope, but the gate itself is drawn as a flat architectural front elevation: the lintels, beams, beam ends, and pillar bases show 0px top surface. The crossbeam even shows a 3px underside (rows 18-20), contradicting the 45-degree downward camera.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도"
+   ],
+   "ms": 17426
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese torii gate roof and lintel frame",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof shows a 7-pixel-tall forward-sloping top surface (rows 0–6) in proper 3/4 top-down perspective above the lintel and pillars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5318
+  }
+ ],
+ "decidedAt": "2026-10-13T13:05:45.748Z",
+ "cells": {
+  "16": [
+   "04682c52e55936bb",
+   "240923fb7885a208",
+   "47e46ed8bbab3804",
+   "6d8ac9630e2f0e4c",
+   "7048d383a4fa31dd",
+   "75995ea819da2369",
+   "a97cbb97ac1409cc",
+   "d21685a3efd2e5bc",
+   "fc0744b54943825d"
+  ],
+  "24": [
+   "06f61850281714da",
+   "30d86d89ea5b4522",
+   "42590c1cb9da08ca",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "7d130311678af49b",
+   "99dc327b84da27b7",
+   "abcb274a79179d6d",
+   "b93e3c9ab25f0ba4",
+   "bdf330ad23328566",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "e507d504864ea52d",
+   "ebe0227d05ef226b",
+   "fef6f6be5b42dab0"
+  ],
+  "32": [
+   "1b915181f104ae8d",
+   "44dec2e8c0df082b",
+   "45a14866a8891d7f",
+   "989257c7b4dbc76e",
+   "b0adc874b6820552",
+   "c50e931f77d21839",
+   "eb4194501ebcf28a",
+   "f3befaa6035c9e2f"
+  ],
+  "48": [
+   "4cf0a6f027d57c2b",
+   "60e55242981bda90",
+   "d1b195347260a062",
+   "ead77a40d04181ed",
+   "eb60acf5d21c68a8",
+   "f91db379550a88de"
+  ]
+ }
+}

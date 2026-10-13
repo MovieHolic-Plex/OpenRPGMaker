@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9760507074a509d822ae2cfde2bb3101d5b315a2476bea81f64c82c1299e0f02",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-3-L",
+ "label": "jp_city/street_hand/jp-sf-shop-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop front facade with glass door, awning, and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shop facade is drawn in pure 2D architectural front elevation. The awning, door frame, lintel, and display shelves are completely flat with 0px top surfaces shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6357
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shop facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation: the door frame, lintels, window shelves, and display counter show no foreshortened top surfaces, only 1-pixel horizontal dividing lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7751
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "brown shop/building facade with a broad blue roof",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main building has a broad blue roof plane visible above the facade, spanning about 10 source-pixel rows between its upper trim and front edge. The facade also shows its south-facing front; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 105796
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large front-facing shop/building facade with a recessed window or doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat architectural front elevation. Its roof or upper lintel is only a thin horizontal edge with no visible foreshortened top surface; the large facade and window occupy vertical front-facing planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 302527
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.009Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "2f6120ea18405e3d",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "8c924a7d7c8314db",
+   "913b974aed01b324",
+   "aaca9d2628aa7a68",
+   "b1a8b5449b59fe87",
+   "f94135665b4292a5"
+  ],
+  "24": [
+   "60f3855a47c16c38",
+   "7ab2f1b10e4870ed",
+   "8708e4b450438da1",
+   "d0af8d90539b5ae5"
+  ],
+  "32": [
+   "37d5f749af60cf9b",
+   "489f0a590afabed4",
+   "55b0fc479f3b5d60",
+   "57db1c987de12650",
+   "5cf5e4b4190f2a6b",
+   "5f82b0882d8c6cd9",
+   "68f03eb404417c13",
+   "708aeec5c348b65f",
+   "7378d4c1bd6569c4",
+   "76c874c53e394d75",
+   "8545bc111e1405ab",
+   "867d91fc94f96840",
+   "8f8b918b609b62e7",
+   "9862e9ddfc7aa2a9",
+   "ac7e9b2e04bf7c2b",
+   "b8b356bc19858eb6",
+   "babf81f8ce3086a2",
+   "c9a69974cde2df83",
+   "ca55bd4d7af05bfe",
+   "d4af44c06e31536e",
+   "da899f3a9ac9ac75",
+   "db2d69470d3f856e",
+   "e6a9fe4273314f1b",
+   "ec32a9247e198b49"
+  ],
+  "48": [
+   "26c30ec24f88c558"
+  ]
+ }
+}

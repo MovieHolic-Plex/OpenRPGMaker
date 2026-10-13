@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72c2a5e8d057ccd5376a180ee16c26b0eeef8c973ed6ef5a664bb035bc14fab8",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp_city/street_hand/jp-bwall-sukashi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boundary wall with decorative openwork (sukashi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a completely flat front elevation with no visible horizontal top surface or wall cap seen from above (top_rows: 0). Both the upper light section and lower patterned section show vertical front-facing textures.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6896
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall section with openwork/emblem pattern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is rendered as a flat vertical front elevation across rows 1-15 with no visible top surface, ledge, or cap showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6766
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 206973,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "flat stone wall/gate panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is shown as a flat rectangular front elevation; the upper horizontal band is only a thin edge line, with no visible foreshortened top surface or slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 121583
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.362Z",
+ "cells": {
+  "16": [
+   "9780735456129a74"
+  ],
+  "24": [
+   "052cdb267f0d2b44",
+   "0730c107926a6bf0",
+   "2a3c703881530e92",
+   "34265dc6488038dc",
+   "4148bcad67f40265",
+   "d6bb2a4d800210c7"
+  ],
+  "32": [
+   "1c3bff8c31a1ffc5",
+   "266fa7a9525e48c5",
+   "3e435056129dc2a8",
+   "48e0997fa4a00420",
+   "7b3ddfa626c03c94",
+   "8b10a5a98c49a155"
+  ],
+  "48": [
+   "193dd8bc6a9f83e4",
+   "3b6818cc1ff393f2",
+   "74ff23a6ac1e8f65",
+   "85abba6168d2acb0",
+   "c452ca5b5102e089",
+   "fe49e2e1a373a3ef"
+  ]
+ }
+}

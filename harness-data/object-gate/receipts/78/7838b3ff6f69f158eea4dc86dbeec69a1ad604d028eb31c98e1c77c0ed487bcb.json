@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7838b3ff6f69f158eea4dc86dbeec69a1ad604d028eb31c98e1c77c0ed487bcb",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-6-L",
+ "label": "jp_city/street_hand/jp-sf-sento-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse storefront facade with entrance noren and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building storefront is drawn as a flat 2D architectural front elevation with no visible roof slope, lintel top surface, or awning depth (awning/beam at rows 20-21 is only 2px tall).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6705
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathhouse storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance frame, awning, and roofline are drawn in pure 2D front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5743
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Bathhouse building facade with a central entrance and flanking display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn as a flat frontal facade. Horizontal roofline and entrance-lintel bands are edge strips, not visible roof slopes or horizontal surfaces extending from back to front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10249
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Bathhouse storefront facade with central curtained entrance and flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is depicted as a flat facade. The entrance lintel and upper trim are narrow horizontal bands, with no visible roof slope or horizontal top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9745
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.007Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "30c40de893614fb0",
+   "492309af242ec3ef",
+   "4aa9f4f4e0e8ff5e",
+   "52b83970a827fa15",
+   "57a10021e71aa44f",
+   "5e232eff7bd84c85",
+   "6405e0be22064341",
+   "6ec4d5455ed1f334",
+   "8a0024a5ea16da93",
+   "9721588eed3352ee",
+   "a7c08fb9aa9555f9",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "d124d4f5fcead829",
+   "e28db1323582e953",
+   "fbc11aa2d9687ca4",
+   "fc1110faf9b1790b"
+  ],
+  "24": [
+   "48e293ff98770be2",
+   "7d492e07d4c2c299",
+   "805b50520671777b",
+   "ac648b3862382735",
+   "c92879875324c916",
+   "cc46cea026e5515a",
+   "fcbebd8dd57099dc",
+   "ff21ee3b9844aef7"
+  ],
+  "32": [
+   "0512dc815157c3b1",
+   "0aded0827011ead4",
+   "25c333dadd506c71",
+   "519c8a0c8e4dea26",
+   "6c0aaf0f399be5c5",
+   "87a0c47cdf21ddd2",
+   "9db28b95b852c410",
+   "bbcc0e846baef4fb",
+   "bf35fdb2817989ed",
+   "c90858e69a1e3add",
+   "d185b151a57fa31a",
+   "f487fc257a3d5726"
+  ],
+  "48": [
+   "41076d7e39fb013a",
+   "850423e90d41073c"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3f2c1703ea3b4d299fddf687d3b77fe7afe70c2fd73175a47eb5b5854b0ff1c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-joint",
+ "label": "jp_city/street_hand/jp-bridge-joint",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge expansion joint / seam strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor seam/joint strip spanning the width of the tile, drawn 2 pixels tall directly on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5507
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge joint / floor seam strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel tall horizontal line/seam across rows 7-8 representing a flat bridge joint on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge joint strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat joint/seam strip lying directly on the floor plane across rows 7-8, functioning as a floor decal/seam.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3385
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge joint seam strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat joint/seam strip lying on the ground plane spanning rows 7-8, functioning as a floor decal/transition line.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3435
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.354Z",
+ "cells": {
+  "16": [
+   "2f1b0174e4f04dc7"
+  ],
+  "24": [
+   "20dfda2cd0b0683a",
+   "5f659f385b7efa3a",
+   "908998102f4f6292",
+   "c9b508f81e7abf51",
+   "ec7b48a7161ff6c8",
+   "efbcc1092ad03831"
+  ],
+  "32": [
+   "51f014b96e6fe161",
+   "528030723ea81506",
+   "834f431611b863d5",
+   "84db8aee43e9ab91",
+   "d45be286dd83b854",
+   "fd7459a20d7bf5b0"
+  ],
+  "48": [
+   "2e2a2b7fa23339d7",
+   "2e5bed30a7d78722",
+   "56c6240b7071d859",
+   "cdb18c086c3fbeac",
+   "e879dd258fde9c37",
+   "f12d0f5bab33af5a"
+  ]
+ }
+}

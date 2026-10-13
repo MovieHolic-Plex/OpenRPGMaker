@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "944d495a9f7eee73034bb28e49143a782fd92e0c59323fe2f60eaf520afac79a",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-mirror2",
+ "label": "jp_city/street_hand/jp-mirror2",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dual road-safety mirror assembly on pole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The curved top hoods of both mirrors are seen from above (rows 0-5, ~5-6px deep), the horizontal mounting bar shows its top surface (rows 15-17), and the base plinth shows a visible top face (rows 40-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6721
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dual convex road mirrors on a pole mounting",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both mirror housings feature large top hoods/visors foreshortened from above (rows 0-5 and 1-6, about 5-6 rows tall), and the mounting bracket also shows a 2-3 row top surface (rows 15-17).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6333
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "ornate twin-lobed column or lantern head on a narrow shaft and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper lobes show broad, multi-row horizontal surfaces from their back edges to their front rims, with substantial south-facing body below; the shaft and base are front-facing but the main head is not a pure elevation. No distinct receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 225149
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "ornate twin-lobed column with a central shaft and base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The main body has broad orange top surfaces visible across roughly 8 source rows, followed by faceted blue surfaces that read as receding side faces rather than only a south-facing front. The object is clearly not a pure front elevation, and its upright shaft, capital, and base plausibly fit a column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)"
+   ],
+   "ms": 162283
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.364Z",
+ "cells": {
+  "16": [
+   "4332eed2845ed94c",
+   "60f97f6c5b568e34",
+   "69119ada2fe0ba31",
+   "b5b4330fc5380a2c",
+   "e67bb751f5e1dc3b"
+  ],
+  "24": [
+   "1b267b6cb76a6204",
+   "1cbd20dfa9245b90",
+   "306d66f09b7a59aa",
+   "4f1950b896ed4bd2",
+   "5a7b8dfb656a33a0",
+   "b175a1e0ebc43d52",
+   "b57d734007bd4325",
+   "bf8d0570f39babdc",
+   "e210d06cea45a6bc",
+   "ff0aae8244a7cbe9"
+  ],
+  "32": [
+   "050ee11d4cdc9d87",
+   "3f9502957cb8fc8b",
+   "6a849e4a800f3104",
+   "91e5e6097e027897"
+  ],
+  "48": [
+   "215a8783e5048afb",
+   "ad4ae700943c4124",
+   "e2e0e07604022a75"
+  ]
+ }
+}

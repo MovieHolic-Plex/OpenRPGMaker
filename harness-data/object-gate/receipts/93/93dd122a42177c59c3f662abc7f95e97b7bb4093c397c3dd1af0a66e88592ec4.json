@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93dd122a42177c59c3f662abc7f95e97b7bb4093c397c3dd1af0a66e88592ec4",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-6-R",
+ "label": "jp_city/street_hand/jp-sf-machiya-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with tiled roof and sliding entrance doors",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from rows 2 to 20 (19 pixel rows tall) in standard 3/4 top-down perspective above the facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide sloped roof plane visible from above spanning rows 2 to 19 (18 source pixels tall) over the front wall and entrance door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5698
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Machiya building with a broad tiled roof and wooden window-and-door facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof shows a substantial tiled slope approximately spanning source rows 2–19, above the south-facing facade. This is a broad roof surface, not merely a thin lintel or edge highlight. No receding side wall is shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14900
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Machiya building with a broad tiled roof and front-facing wooden facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad blue-gray roof surface spans approximately rows 2–19 above the wooden facade, showing substantial roof depth rather than a thin cap or edge. The facade faces south without an isometric receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15860
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.822Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "153f67d3b458cee4",
+   "2a750be2acb717cc",
+   "2c03638a780f1e8b",
+   "3355644826b31b91",
+   "3fae5867f8e17aba",
+   "43ca3ab691c339a9",
+   "5dfd346e1a9d4ebc",
+   "a1a696a945fcac22",
+   "a3043c90ab422321",
+   "b028a4a8f04550fa",
+   "bcda896f94ebad2a",
+   "c688632e1f5f1fbe",
+   "f53aa0a80fda7bf4"
+  ],
+  "24": [
+   "20d92a5d50b6b3ed",
+   "36af71a4c1632066",
+   "444f42372d5c4ed2",
+   "44d1774f93955f50",
+   "8c2d00682371adbf",
+   "98ceb43d33c29bb0",
+   "de9826c1f985881a",
+   "fba29f3f7d75c2b7"
+  ],
+  "32": [
+   "1ebc71ed807517ca",
+   "35916b8e4e77247a",
+   "817dbcb5f4916360",
+   "a19aa1f690289ecc",
+   "a1ff0d1cdedfc9ee",
+   "a25a4856765c8b02",
+   "b3873ad253a295e1",
+   "cc15cea23ae117c6",
+   "cecf1aad36e339f0",
+   "d1b2fff8f2082580",
+   "ef92a51282a8dc03",
+   "f819fe7e098d7614"
+  ],
+  "48": [
+   "595fa51613669a94",
+   "b20ffa0b50ad2d64"
+  ]
+ }
+}

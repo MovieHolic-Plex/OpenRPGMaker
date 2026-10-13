@@ -1,0 +1,161 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2d9c30f39e653d2456120221fc10bfc76d2539678786fbe4ab82295c90439a35",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-4-L",
+ "label": "jp_city/street_hand/jp-sf-sento-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse entrance facade with noren curtain and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront/entrance structure is drawn in pure architectural front elevation: the entrance frame, noren curtain, display shelves, and upper roof/awning detail have no foreshortened top surfaces visible (only 1px outline borders).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento storefront / entrance with noren doorway and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, doorway frame, and window shelves are drawn in direct 2D side-scroller/architectural front elevation with 0px of visible top surfaces on the lintel, door frame, or shelves.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5523
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Building facade with a central curtained doorway and flanking display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat front elevation. The roofline and doorway lintel are horizontal bands without visible top slopes or surfaces; the doorway, curtains, and windows show only their front faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8075
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Building facade with a central curtained doorway and flanking display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is drawn as a flat facade. Roof and doorway lintel appear only as narrow horizontal edge bands; neither shows a discernible top slope or horizontal surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10853
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.007Z",
+ "cells": {
+  "16": [
+   "16b4b86b5c545229",
+   "30c40de893614fb0",
+   "3347463e09fca617",
+   "35f25202d2734ec2",
+   "492309af242ec3ef",
+   "5e232eff7bd84c85",
+   "8275fda342916ecc",
+   "8a0024a5ea16da93",
+   "9721588eed3352ee",
+   "b6e98f1355235ce4",
+   "c03732f0dc187032",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "1c56c9c8b834c9fe",
+   "25dfefe358b9155f",
+   "2902b487c4f0ea9b",
+   "2c83813c8a03fcbd",
+   "2fe59592ac29dced",
+   "37931493f5a54552",
+   "3954808f9db70504",
+   "4a41448fa486da75",
+   "63244e2dac2f1af6",
+   "64a2ef445f615dd2",
+   "6e9248e0b66589cb",
+   "782c79bff4c9f600",
+   "7d492e07d4c2c299",
+   "a33c1900102fc5df",
+   "a95afeed761e4022",
+   "ac648b3862382735",
+   "cc46cea026e5515a",
+   "d970c65245e852e2"
+  ],
+  "32": [
+   "0aded0827011ead4",
+   "573429f8bc1c2e9e",
+   "6c0aaf0f399be5c5",
+   "a0831fe89b71524d",
+   "ab69200520c36e5f",
+   "abaae62d0520f581",
+   "cfbb90930ffc0c05",
+   "f337ae47ae06010c"
+  ],
+  "48": [
+   "1eda0c980eee8ecd",
+   "476c77509d2aec38",
+   "5d8fbca96d989835",
+   "6f0da64784ef6de9",
+   "a1dc357d0388c0a4",
+   "c9681bbaf64e68cd"
+  ]
+ }
+}

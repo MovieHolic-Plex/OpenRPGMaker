@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c91bd310f5339811883d6c962186fe01726a006174f43fa5823ee7d9736aedb",
+ "width": 32,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-mirror2",
+ "label": "jp_city/street_hand/jp-mirror2",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road safety mirror on a pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mirrors, caps, crossbar, pole, and concrete base are all drawn in flat architectural elevation with purely horizontal dividing lines and no visible top surface or elliptical foreshortening on the horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dual traffic mirror post with hood visors and mounting crossbar",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hoods atop both mirrors display top surfaces (rows 1-3 on the left mirror, rows 3-4 on the right mirror), and the horizontal mounting arm clearly shows a foreshortened top surface across rows 15-16 above its south face at rows 17-18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5207
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall decorative column with a broad twin-panel capital and pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad upper capital has clearly visible orange horizontal top surfaces about 5 source pixels deep, above its south-facing blue panels; the shaft and pedestal are shown with a front face and the object is plausibly column-like.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 161839
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "twin framed mirror assembly on a pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a front-facing twin mirror assembly rather than a column. Its broad main faces are flat vertical panels; the orange bands at the top read as frame/edge trim, not a visible horizontal top surface of the main body. No receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 84813
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "4332eed2845ed94c",
+   "69119ada2fe0ba31",
+   "8546a32a88df90ab",
+   "b5b4330fc5380a2c",
+   "d4ad88ca90e1d0d0"
+  ],
+  "24": [
+   "1b267b6cb76a6204",
+   "1c1b59133950f7e0",
+   "1cbd20dfa9245b90",
+   "59be7b640b7f93b6",
+   "6fc657fd956cd911",
+   "8790a1930009caee",
+   "ac2061b357f9f6a9",
+   "b175a1e0ebc43d52",
+   "bf8d0570f39babdc",
+   "dcfa854b5c0c0282"
+  ],
+  "32": [
+   "050ee11d4cdc9d87",
+   "118a87dab8da4998",
+   "3f9502957cb8fc8b",
+   "dd62d107a582aeb4"
+  ],
+  "48": [
+   "276c6b9cdc5c8dc5",
+   "31073aab6c2430fc",
+   "ec8b99c191c718dc"
+  ]
+ }
+}

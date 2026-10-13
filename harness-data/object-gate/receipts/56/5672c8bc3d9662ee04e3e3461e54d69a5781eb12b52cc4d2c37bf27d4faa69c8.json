@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5672c8bc3d9662ee04e3e3461e54d69a5781eb12b52cc4d2c37bf27d4faa69c8",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-3-R",
+ "label": "jp_city/street_hand/jp-sf-sento-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront/bathhouse facade with roof, entryway, and display window",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building roof is clearly visible across rows 1-7 (7 pixel rows of tiled roof slope seen from above) above the front facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8046
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathhouse (sento) entrance facade with tiled roof eave",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features a tiled roof/eave slope across rows 1-7 (7 rows tall) showing the top surface of the overhang in 3/4 perspective above the entrance wall and doorway.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8969
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building facade with tiled roof awning and doorway with noren",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper awning/roof shows a sloped surface of blue-grey roof tiles spanning rows 1-7 (7 pixel rows), properly foreshortened in standard JRPG 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building facade with tiled roof eave and entranceway",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion of the structure features a visible sloped tiled roof (kawara eave) spanning rows 1 to 7 (7 rows tall) seen from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10511
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.383Z",
+ "cells": {
+  "16": [
+   "35f25202d2734ec2",
+   "492309af242ec3ef",
+   "652aced7367b03fa",
+   "653dac2a530fdd8e",
+   "8a0024a5ea16da93",
+   "bd89a5f70a56eeee",
+   "c03732f0dc187032",
+   "d3b12880035db0e2",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "0029f195238f7aad",
+   "ac648b3862382735",
+   "ed95d3ee9c5c4aa7",
+   "f1a0567f002ef6d3"
+  ],
+  "32": [
+   "05e686aca6355ff8",
+   "091430a96baf7ce7",
+   "0fbb03490444e98f",
+   "15f9c5b2b34a9421",
+   "1927e007f0ff5083",
+   "1b296b66b9e0bd84",
+   "1dc1ff00f1be110a",
+   "2fa03a2cac16351e",
+   "3ebf3ade6233e88e",
+   "3ef5b5810b4df2ca",
+   "41a95798bd729e05",
+   "4acaac646e9fb348",
+   "4b7ab63d3b34a585",
+   "5005b35ac3804657",
+   "5399994f743b874d",
+   "59210352cfc39307",
+   "aab543655a84be34",
+   "cfb22075164a3fde",
+   "df2c25016d41656b",
+   "e8bdc91d639f3a5e",
+   "eb56ced909000efe",
+   "eb5e0d700050ef90",
+   "ef8d966be25b50d9",
+   "f91c4d2e8ef47fdf"
+  ],
+  "48": [
+   "8fc8213c939f204a"
+  ]
+ }
+}

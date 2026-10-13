@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2ea9b1b5a0cf196e38b2c5d0e556b626470ecbc6bb8f0e6a31537c00c331710",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bridge-pier",
+ "label": "jp/jp-bridge-pier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge pier / beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object consists of uniform horizontal bands spanning all 16 columns with no top surface, depth, or 3/4 perspective indicated.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7232
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge pier structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite consists entirely of flat, horizontal colored stripes from row 0 to row 10 with no foreshortened top surfaces or depth cues.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge pier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object consists entirely of flat horizontal bands spanning the full width (rows 0-10) with no foreshortened top surface or 3/4 perspective depth cues.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4663
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden pier / dock deck and south edge",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pier (planked deck) is clearly foreshortened and visible across rows 0–7 (8 source pixel rows), above a 2–3px south-facing fascia/shadow lip on rows 8–10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7487
+  }
+ ],
+ "decidedAt": "2026-10-13T13:09:25.896Z",
+ "cells": {
+  "16": [
+   "0ec56ae09366708b"
+  ],
+  "24": [
+   "0b5607e1d7460dad",
+   "400a2de801797755",
+   "6846f0a0c4108e67",
+   "d91d12d2d6fe3ba0",
+   "da4edccdd6e23ff2",
+   "fb4fbe18208f674e"
+  ],
+  "32": [
+   "32761cdce8372a4d",
+   "6c5cd4b4bffd1824",
+   "753d4458d1b01de8",
+   "86a0b1709f652224",
+   "a72b14f12747c60b",
+   "d1279d79f2b226e2"
+  ],
+  "48": [
+   "66af892c5de89bf0",
+   "868b4056c5a0bdb5",
+   "a305b30821cad037",
+   "b873c67007a4bacf",
+   "d5c7d1ce7e05c6d7",
+   "fabeae0feea79e20"
+  ]
+ }
+}

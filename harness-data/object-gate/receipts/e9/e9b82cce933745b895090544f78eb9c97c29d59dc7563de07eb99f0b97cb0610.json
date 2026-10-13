@@ -3,84 +3,107 @@
  "pixelSha256": "e9b82cce933745b895090544f78eb9c97c29d59dc7563de07eb99f0b97cb0610",
  "width": 16,
  "height": 48,
- "kind": "box",
- "name": "railway crossing signal",
- "label": "jp/rail-signal",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "kind": "structure",
+ "name": "jp-rail-signal",
+ "label": "jp/jp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "equipment cabinet base with signal mast",
-    "kind_matches": true,
-    "top_rows": 9,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body is the large equipment cabinet at the base (rows 24-46). Its horizontal top surface is rendered from rows 25 to 33 (9 pixel rows tall) with top-down lighting and a south-edge highlight at row 33, above the front cabinet doors (rows 35-45).",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 16745
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "equipment cabinet base of railway crossing signal",
-    "kind_matches": true,
-    "top_rows": 9,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The base cabinet constitutes the largest volume of the object; its top surface is clearly visible from above across rows 25-33 (9 rows deep) with a front highlight at row 33 and front doors below on rows 35-45.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 9143
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 20001,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "railway crossing signal housing",
+    "main_body": "signal head and equipment cabinet",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main signal housing is shown as a flat rectangular front with only a thin top edge; no horizontal top surface is visible from above.",
+    "evidence": "The signal head (rows 0-8) is drawn completely flat in front elevation with no visible top surface (0 rows, only a 1px outline). The lower cabinet and panels (rows 24-45) are likewise drawn as flat front-facing rectangles with zero foreshortened top surfaces visible.",
     "verdict": "fail"
    },
    "pass": false,
    "reasons": [
     "판정자 과반 fail",
     "정면 입면도",
-    "윗면 0행 < 4"
+    "윗면 0행 < 3"
    ],
-   "ms": 31348
+   "ms": 11723
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railroad crossing signal head and base cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper signal head (rows 0-9) and the lower equipment cabinet (rows 24-46) are drawn in pure front elevation with no visible top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3853
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail signal head and base cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the top signal housing (rows 0-8) and the lower cabinet/base structures (rows 24-46) are drawn in pure front elevation with 1px outlines and no visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railroad crossing signal and equipment cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the upper signal head and the lower equipment cabinet are drawn as flat rectangular front elevations with no top horizontal surface shown (only 1px outlines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6495
   }
  ],
- "decidedAt": "2026-10-13T08:11:32.188Z",
+ "decidedAt": "2026-10-13T13:01:15.258Z",
  "cells": {
   "16": [
    "1aaad2c8930e8c6c",

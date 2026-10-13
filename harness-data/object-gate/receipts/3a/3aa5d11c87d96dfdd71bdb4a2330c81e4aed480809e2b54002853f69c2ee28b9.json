@@ -1,0 +1,150 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3aa5d11c87d96dfdd71bdb4a2330c81e4aed480809e2b54002853f69c2ee28b9",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-4-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store facade with sliding glass doors and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade, entrance frame, door lintel, and interior display shelves are drawn strictly front-on with 0px of visible top surfaces or roofs, characteristic of a 2D side-scroller/platformer rather than a 3/4 top-down view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5260
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store facade with sliding entrance doors and flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the awning, door frame, window shelves, and entrance, is drawn in a pure 2D front elevation with zero top-down perspective or foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4667
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large convenience-store building facade with central glass entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat, symmetrical front elevation. The roof and horizontal bands are only thin frontal strips, with no visible above-view top plane or roof slope; the glass entrance and side walls likewise show no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 169293
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 402025,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.819Z",
+ "cells": {
+  "16": [
+   "4571655b0f2a45d4",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "9bf32416c558e404",
+   "a85f374984f82a6d",
+   "c30713158c64c56d",
+   "c420ed7e86803c46",
+   "e09dad0b84f07f9a",
+   "f0aa0692fcaceb6a",
+   "f77f37bb52b582e0",
+   "fff3e6c537c91c02"
+  ],
+  "24": [
+   "14da4c6c0ebcae54",
+   "29940760d6a42a81",
+   "43317024fda850fd",
+   "4cc1cb675d980f67",
+   "57d1fb31a932349d",
+   "6f241d67e67b8cc7",
+   "70685d25e9dfd24f",
+   "9668c652d8c17a1a",
+   "baff0ae41197fa38",
+   "bd214eb45dc1f533",
+   "c9da70e8e487bdcd",
+   "e5527967dfe2cf7d",
+   "e7bf14953444d830",
+   "eab9043f5ba62a97",
+   "eccf8f861dd3be56",
+   "f2f8fa6dfac2bf82",
+   "f617200d51b27cc7",
+   "fecde020d5f4323e"
+  ],
+  "32": [
+   "1e82c3028c9ab810",
+   "213f7aaaa9e998c1",
+   "2984151154dad659",
+   "75a0b57ef1aa6546",
+   "7ffe84add1071258",
+   "8b27c12222c22ff9",
+   "9ead0aea5ec9904a",
+   "b5aad7cab1c1d138"
+  ],
+  "48": [
+   "2146f1c901d2eaba",
+   "43e641c4b912eb1f",
+   "4480c083383cb803",
+   "a8725050ce5bd21a",
+   "cd285c70d90b7255",
+   "f1083f568af3de61"
+  ]
+ }
+}

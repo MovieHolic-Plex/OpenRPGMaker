@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e5ad98a3f166b619d9d6371a66e5944debe1881716ae2a62883659ed79c959c",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-6-R",
+ "label": "jp_city/street_hand/jp-sf-sento-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento (bathhouse) entrance facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat side-scroller/architectural front elevation. The door frame lintel (row 11), window sills, interior shelves, and vertical mullions show 0 pixels of top surface, lacking the 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10061
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento (bathhouse) entrance facade with tiled eave roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-7 show an 8-row foreshortened top slope of the tiled roof eave above the storefront facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sento (bathhouse) building facade with tiled roof awning",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building facade features a visible sloped tiled roof/awning across the top (rows 0-7, 8 pixel rows tall) foreshortened in 3/4 view above the vertical front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8429
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sento entrance facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D side-scroller front elevation. The doorway frame and lintel have no top surface visible (0px), the interior shelves are flat 2px front profiles with no top surface, and the ground/curb at the base is drawn vertically flat. Even the tiled eave at the top lacks 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11648
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.384Z",
+ "cells": {
+  "16": [
+   "1021a383568bcde2",
+   "1099492e862c1e21",
+   "1c57790a44b61fe7",
+   "268694519f0564a3",
+   "3ab6c1dadbee5dae",
+   "41c2e60848847d49",
+   "4229c9e2eaf330e5",
+   "4614ffdbff7ebee1",
+   "492309af242ec3ef",
+   "52b83970a827fa15",
+   "550d16709f761766",
+   "72dcc4a0f7182575",
+   "8a0024a5ea16da93",
+   "9150848b991b4217",
+   "c03732f0dc187032",
+   "e9f9c8d434a16bfe",
+   "fbc11aa2d9687ca4",
+   "ff81d500865b3715"
+  ],
+  "24": [
+   "06e9e5566bf75d36",
+   "32511535ead6ea22",
+   "409757a64748d497",
+   "4b96ff2dd370ce3f",
+   "782c79bff4c9f600",
+   "923400d68c460b72",
+   "a790123a800014e2",
+   "bbd22fae374c4258"
+  ],
+  "32": [
+   "230d02a49f461546",
+   "38e54d97e502ba81",
+   "4e8390ae29486cb2",
+   "56705deb169a8d98",
+   "63bdffec95634791",
+   "95d2bfac57006570",
+   "a835f3d21fb9fdb8",
+   "c7271e415b6e66f8",
+   "d7719807897bb030",
+   "df9bee4de69e96a7",
+   "eabeb77bef4f10c9",
+   "f133166c6cf0147d"
+  ],
+  "48": [
+   "7db794422ee63639",
+   "91ddd5ec79a63fe5"
+  ]
+ }
+}

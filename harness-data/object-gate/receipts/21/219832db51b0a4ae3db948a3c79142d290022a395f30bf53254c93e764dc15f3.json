@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "219832db51b0a4ae3db948a3c79142d290022a395f30bf53254c93e764dc15f3",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp_city/street_hand/jp-torii",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire torii gate is drawn in pure architectural front elevation. The top kasagi beam (rows 0-7) is drawn as a flat front-facing block, the lower lintel (nuki) has only a 1px highlight line, and the column base plinths at the bottom are flat horizontal lines with no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10474
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire torii gate is drawn as a flat 2D architectural elevation. The horizontal lintels/beams (rows 9-11 and 18-21) and stone bases (rows 42-47) show no top surfaces visible from above, only flat front faces with 1px edge highlight lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6299
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing red torii gate with two pillars and horizontal lintels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat frontal elevation. Its horizontal beams are rectangular front faces with only edge/highlight bands; no visible foreshortened top surfaces or slopes appear on the main lintels.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 112475
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate with two posts and horizontal lintels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat frontal elevation: the lintels and post tops have only thin edge bands, with no visible foreshortened horizontal top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 86234
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.249Z",
+ "cells": {
+  "16": [
+   "10f805326e9160b6",
+   "240923fb7885a208",
+   "2d942baaad3dcb91",
+   "4b8114f225b60233",
+   "6e13fb9d6947e840",
+   "92427e7405f8fec6",
+   "9a35be359c057cc4",
+   "c66d64c6bb1ca50f",
+   "d21685a3efd2e5bc",
+   "df025b14c90abf2d"
+  ],
+  "24": [
+   "045faf90c7e24ead",
+   "30d86d89ea5b4522",
+   "3b813bb4a8bf9204",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "63eed06095a36936",
+   "7d130311678af49b",
+   "be97f00e8f783351",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "c31ccec66bbbb5f6",
+   "cc1eade58718c344",
+   "cee1905a34b342e3",
+   "da1495d3ffc6dbcf",
+   "e7302de9dee04bb3"
+  ],
+  "32": [
+   "0888a68d1e81042c",
+   "1b915181f104ae8d",
+   "68832d5f53045703",
+   "a709b70550115bec",
+   "c50e931f77d21839",
+   "ced7534ac95b5ccc",
+   "da9bfd023f2c8970",
+   "dcebed6b2761c8ca"
+  ],
+  "48": [
+   "00c43e13f701eb8e",
+   "045fa5814f1e4229",
+   "6206a9d21e04aab2",
+   "b1abd895ec78e124",
+   "b28298bbe75d1aa7",
+   "dfc7a207b260a01b"
+  ]
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60e09c63d0a2b23dc0c195d7dcebd3acc7fc913c563aeeb661c1de4b0b96bc37",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-school-gate",
+ "label": "jp_city/street_hand/jp-school-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete gate pillars and walls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both gate posts and the flanking wall sections are drawn as flat 2D architectural front elevations. The post caps and wall caps show only their vertical front faces, with 0 px of visible horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7492
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gate pillars and gate leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillars and gate leaves are drawn in pure front elevation (2D side-scroller / elevation style). The pillar caps (rows 2-9) show only a flat front slab with top highlight and bottom drop shadow, lacking any foreshortened top surface distinct from the front face. The gate posts and plaque face the camera completely flat with no top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8443
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "school gate assembly with two gate wings and supporting pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, lintel, bars, and pillar bodies are presented as flat front-facing rectangles. The light horizontal bands and pillar caps are edge/front faces rather than a clearly foreshortened top surface for the main gate body; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 161838
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "school gate structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat frontal facade: the pillars, gate panels, and lintels show only front faces, with no visible top slopes or horizontal top surfaces on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 112205
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.478Z",
+ "cells": {
+  "16": [
+   "0cf1ceb156d551aa",
+   "21e94f2b1884bb2b",
+   "299db9d3d00dcecc",
+   "2f5b1808715f2ec5",
+   "3d989fe52517c0ea",
+   "4419b38ce58b3918",
+   "9f68eae80e419b5a",
+   "bad8b4b3184a201a"
+  ],
+  "24": [
+   "0474e2ebad91110c",
+   "06725afd322fa317",
+   "0cad8402d44727f8",
+   "0d1ec198ce153832",
+   "2f73bf2de584373d",
+   "7fadc81254170ca8",
+   "860cdff9bb79f7b3",
+   "889b577201b0dd2e",
+   "8e41c3355bc72aad",
+   "91447fa9b912187a",
+   "a0cdff3d80bec07d",
+   "b205e2ad117084a0",
+   "ca89811bebf56f5e",
+   "e2310c380590b6fc"
+  ],
+  "32": [
+   "22ac8cae9636c0a9",
+   "f8fae772542acd1e"
+  ],
+  "48": [
+   "56bcd1c836146db9",
+   "9c3d1e214234b6b3",
+   "dafa65cd97cd77e2",
+   "feda9fba4af09eea"
+  ]
+ }
+}

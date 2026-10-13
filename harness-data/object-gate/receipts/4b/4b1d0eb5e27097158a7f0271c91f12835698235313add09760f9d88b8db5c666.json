@@ -1,0 +1,144 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b1d0eb5e27097158a7f0271c91f12835698235313add09760f9d88b8db5c666",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-6-L",
+ "label": "jp_city/street_hand/jp-sf-sento-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento (bathhouse) building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof along the top spans rows 0 to 8 (9 source pixel rows), showing foreshortened horizontal roof tile courses in 3/4 perspective above the vertical facade and entrance.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento (bathhouse) building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D architectural front elevation. The projecting entryway lintel at row 11 has only a 1px cap with no top surface, the shelves and items in rows 25-33 are flat front-facing rectangles with zero depth visible on the shelf surfaces, and the roof/eave bands at rows 0-8 are rendered as flat horizontal elevation stripes rather than foreshortened top slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8376
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sento (bathhouse) building facade with tiled roof",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features an 8-pixel-tall sloping tiled roof (rows 0-7) visible from above across the full width of the structure before the wall face and eaves shadow at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12520
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sento building facade with entrance door",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "While the upper roof eave spans rows 0-8 (9 rows of tiles), the prominent protruding entrance door and its lintel (rows 11-12) are drawn in pure front elevation with only a 1-2px flat line and no visible top surface, violating the requirement that roofs and lintels must show their top slopes/surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도"
+   ],
+   "ms": 11586
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.384Z",
+ "cells": {
+  "16": [
+   "0f6759563c17f652",
+   "1099492e862c1e21",
+   "17ebf07748db2854",
+   "20fbc28a18cc0309",
+   "492309af242ec3ef",
+   "52b83970a827fa15",
+   "550d16709f761766",
+   "652aced7367b03fa",
+   "653dac2a530fdd8e",
+   "8a0024a5ea16da93",
+   "bd89a5f70a56eeee",
+   "c03732f0dc187032",
+   "ceef642ba24fd6ea",
+   "d124d4f5fcead829",
+   "e1460ba3e3156346",
+   "fa742157be643915",
+   "fbc11aa2d9687ca4",
+   "fc1110faf9b1790b"
+  ],
+  "24": [
+   "0029f195238f7aad",
+   "388b8ac71eb72376",
+   "48e293ff98770be2",
+   "6a3a6e40ea9258f0",
+   "805b50520671777b",
+   "ac648b3862382735",
+   "f1a0567f002ef6d3",
+   "fcbebd8dd57099dc"
+  ],
+  "32": [
+   "174863e2af88436c",
+   "3c2573a088222780",
+   "47dd54f28fa40084",
+   "4f0a01b4ca9199b4",
+   "bbcc0e846baef4fb",
+   "bd80d501e40044ce",
+   "c90858e69a1e3add",
+   "cade8946238c2210",
+   "d6ee7e3313a83edf",
+   "e2b9847256b7c77f",
+   "eb56ced909000efe",
+   "f487fc257a3d5726"
+  ],
+  "48": [
+   "288af7beab9470a8",
+   "dfdb5970c1ebc4ef"
+  ]
+ }
+}

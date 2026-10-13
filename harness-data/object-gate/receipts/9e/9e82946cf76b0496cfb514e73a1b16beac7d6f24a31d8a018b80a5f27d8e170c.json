@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e82946cf76b0496cfb514e73a1b16beac7d6f24a31d8a018b80a5f27d8e170c",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp_city/street_hand/jp-bwallf-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall with tiled roof cap, wooden frieze, plaster midsection, and stone base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof cap shows 4 rows (rows 0-3) of foreshortened tile pattern viewed from above before the southern wall face drops down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7072
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building wall with tiled roof eave",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 provide a 4-pixel-tall foreshortened roof tile surface facing the 3/4 camera above the wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12750
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat frontal building/wall facade with horizontal bands and a stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a straight-on rectangular facade. Its upper edge is only a thin dark line, with no visible foreshortened roof or horizontal top surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 111897
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large flat building wall/façade with horizontal roof and foundation bands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat, full-width elevation with horizontal bands and no visible top slope or horizontal surface; the dark and tan upper bands are only edge strips, not a foreshortened top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 38614
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.363Z",
+ "cells": {
+  "16": [
+   "1d3924e0fe0c8a65",
+   "fcb2f9eaeed9d785"
+  ],
+  "24": [
+   "1833b0cdaadc45b5",
+   "19d2055280a508a5",
+   "3262905895ac0327",
+   "336b27e0c2b8601b",
+   "3750006b88cbea67",
+   "6863b42bbd00eba7",
+   "7699855da129e42d",
+   "a49d0d81d111d1c3",
+   "a4f2990233bc49ad",
+   "d21f3d249ab01306",
+   "d80acc7a030bef9a",
+   "dbb42022bd48322d"
+  ],
+  "32": [
+   "0d54a772b78bb0bf",
+   "4ed936d55a216bfa",
+   "9d291dd94d0927e8"
+  ],
+  "48": [
+   "5e61e09d77649471",
+   "5ffc780cca188d62",
+   "998b83687748a879",
+   "af7e3a580f95c6d7",
+   "c0f7651a84da17e3",
+   "c7b9d589a9f545c9"
+  ]
+ }
+}

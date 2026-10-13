@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b21f9058194b17c0cf584f34339db6e0ead6c7fbf111ff1e9d9eb0fc0e7e06b5",
+ "width": 48,
+ "height": 96,
+ "kind": "wall_mounted",
+ "name": "jp-wire-v6",
+ "label": "jp_city/street_hand/jp-wire-v6",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wires/cables hanging flat against a wall or background; appropriately flat for wall-mounted/hanging wire elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3231
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical hanging wires/cables depicted flat against the wall, matching the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7666
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin vertical wires hanging against a wall; as flat wall-mounted/hanging elements, no top foreshortening is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wires/cables hanging flat against the wall plane; appropriate for flat wall-mounted fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4723
+  }
+ ],
+ "decidedAt": "2026-10-13T11:39:50.706Z",
+ "cells": {
+  "16": [
+   "024f12b6ac105723",
+   "34f61be2e8b1b5fc",
+   "5c0a112a8e063d80",
+   "813a72f36e08f93d",
+   "de8cf35792d6a69a",
+   "e91b5e1a78d7e494",
+   "f4923d86f9bc4576",
+   "fd7b17028773fd7b"
+  ],
+  "24": [
+   "65327c2df306a403",
+   "67fde94508c68d0e",
+   "acff4f0165f34ac3",
+   "c59945c10b890f4b",
+   "da4e4cae3306770c"
+  ],
+  "32": [
+   "271b7337d5a7e408",
+   "429d51b45a7a8926",
+   "4fe036cba594961f",
+   "64d6328fd96eb165",
+   "7470576553b35ef3",
+   "7b74a0c4889bae76",
+   "8650289299ccd2a4",
+   "9b7fd313eca1bab6",
+   "9cd54654a8494de9",
+   "b6b82fae7a0a1f7c",
+   "bd6ac665676bfa8c",
+   "bdd8d142569f7890",
+   "becd90689cc02253",
+   "e896bc6c251ee1d9",
+   "feca2f41b797a585"
+  ],
+  "48": [
+   "779b4cd2b24463bd",
+   "7a25d05cf8097e4e"
+  ]
+ }
+}

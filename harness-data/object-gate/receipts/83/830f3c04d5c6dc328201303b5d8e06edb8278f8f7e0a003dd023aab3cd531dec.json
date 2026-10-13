@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "830f3c04d5c6dc328201303b5d8e06edb8278f8f7e0a003dd023aab3cd531dec",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-ac-unit",
+ "label": "jp_city/street_hand/jp-ac-unit",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "air conditioning unit",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The AC unit is drawn as a flat front elevation from row 5 to 12 with only a single 1-pixel highlight row at row 5 instead of a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 4"
+   ],
+   "ms": 6074
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "AC unit body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The unit is rendered as a flat front elevation showing the fan grille directly facing the camera, with only a 1px top highlight row (row 5) and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 5372
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Rectangular air-conditioning unit with a square vent on its front face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular front face. Its upper edge is only a thin horizontal highlight, with no distinct top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14295
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Rectangular air-conditioning unit housing with a front fan grille",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The housing is shown as a flat rectangle with a front grille. Its upper edge has only a 1–2-pixel band, not a clearly visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 4"
+   ],
+   "ms": 14281
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.478Z",
+ "cells": {
+  "16": [
+   "e6d3d24d92935697"
+  ],
+  "24": [
+   "14ab5ce7380435be",
+   "23a1b1d86bf9ad36",
+   "3800f03af1e3fc29",
+   "7926905f7b62ee8f",
+   "8a63f1017cdd2963",
+   "caca0aeb897d8477"
+  ],
+  "32": [
+   "1204a060d0074aa6",
+   "19566df137c2f550",
+   "2d9531a28022c51c",
+   "93e21da56730aaf2",
+   "df914e2be4c14994",
+   "e4de9c7fdd2c329f"
+  ],
+  "48": [
+   "66a78a747aa66d89",
+   "7e9df3ef7b774dfb",
+   "7fe2e80b7887d346",
+   "8021a2d442156afa",
+   "962b177255b39c6b",
+   "c13ff97481df2578"
+  ]
+ }
+}

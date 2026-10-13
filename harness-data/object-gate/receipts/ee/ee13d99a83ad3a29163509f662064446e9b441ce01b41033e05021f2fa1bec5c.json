@@ -1,0 +1,201 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ee13d99a83ad3a29163509f662064446e9b441ce01b41033e05021f2fa1bec5c",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-8-L",
+ "label": "jp_city/street_hand/jp-sf-sento-8-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento entrance and shelf wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—including the doorway lintel, the roof/beam at the top, the shelves, and the items on them—is drawn in a pure 2D side-scroller / front elevation view with 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6425
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento entrance and shelving structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway lintel (rows 10-11), shelving rails (rows 22-23, 33-34), and partition pillars are drawn purely in flat front elevation with only 1-2px horizontal lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4644
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sento entrance doorway and shelf counter wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doorway frame, counter railing, shelves, and baskets are all drawn in a pure 2D front elevation (side-scroller view) with zero visible top surfaces (the lintel is only 2px thick with no top plane).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5333
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sento wall with entrance doorway and shelf cubbies",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a side-scrolling / pure front elevation perspective: the doorway lintel, shelves, items, and top beam show no visible horizontal top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6427
+  }
+ ],
+ "decidedAt": "2026-10-13T11:40:10.385Z",
+ "cells": {
+  "16": [
+   "03d7ce2a09e475a4",
+   "0724d388c1e0a7b1",
+   "0d6d2f18b2193cff",
+   "0f6759563c17f652",
+   "12ee84a085dbf42c",
+   "28de9f3ff551ee23",
+   "458e724c0029fcfb",
+   "492309af242ec3ef",
+   "5bf343fca86cd95f",
+   "652aced7367b03fa",
+   "653dac2a530fdd8e",
+   "72dcc4a0f7182575",
+   "8a0024a5ea16da93",
+   "9155887eda373324",
+   "a36454dce61a956c",
+   "bce4c2a57201ee3b",
+   "bd89a5f70a56eeee",
+   "c00d16cdf4cc9ea3",
+   "c03732f0dc187032",
+   "d124d4f5fcead829",
+   "e9f9c8d434a16bfe",
+   "fbc11aa2d9687ca4",
+   "ff20c61997320264"
+  ],
+  "24": [
+   "0029f195238f7aad",
+   "0575b4f042048977",
+   "077ba744b47c5346",
+   "0c13c1d035ae17db",
+   "1132bd8b18cfc52f",
+   "2852d0e4dfe0f788",
+   "2d6a3a0047c4e17b",
+   "3b0c21d14d45365c",
+   "4025da4ec9ebc726",
+   "4b6355874c56e627",
+   "5772c6c88063897d",
+   "5e7559d989ea1c9e",
+   "6247a2f9c96aa338",
+   "6ab9366976b91bce",
+   "74030c8b2945cb5b",
+   "782c79bff4c9f600",
+   "7cf8446804851dee",
+   "984d6d66bba72e22",
+   "98c0e354170e408a",
+   "ac648b3862382735",
+   "aeb6147b7692a180",
+   "aec74c0ff1cffa8a",
+   "b4f60e7ccdbe9cec",
+   "b5dbcaee08f9f319",
+   "c0874b361e9242ea",
+   "c45cb0c3a7200af0",
+   "c8c6fd18428d1f46",
+   "c9cb8a06b5b1bfe6",
+   "cabcca009966f279",
+   "d6d4e642eac19d79",
+   "de27151635e29516",
+   "e8a5ef73babde9a1",
+   "eb19c2559f5a3779",
+   "f1a0567f002ef6d3",
+   "f77786de04e8de08",
+   "ffb0c29ba23406f1"
+  ],
+  "32": [
+   "0afdca873ab9da60",
+   "2705f0f4d02718a5",
+   "36be3e6d97d1e3fc",
+   "380891bfd3856aec",
+   "433cc706e98a4f54",
+   "471446e1c41c3766",
+   "7d1428fea5facd5e",
+   "91909532ac4d3da5",
+   "bd80d501e40044ce",
+   "c81b8839ed68e5ef",
+   "cdd4a7343dfcea32",
+   "db4039acf93a8e99",
+   "dc6a90da1ea05706",
+   "ea530d6b4e287278",
+   "eb02d72330643ef4",
+   "eb56ced909000efe"
+  ],
+  "48": [
+   "1cf4cb5f6d4bd6e9",
+   "37ee0b466a03d7e3",
+   "a02b5ef186a2f52c",
+   "b7ec4173b3e156ca",
+   "be2e656e651de786",
+   "c1f638447a77559c",
+   "ceb2934d943f5d9a",
+   "d1fbb80404196bd4",
+   "eb812434e65388a0"
+  ]
+ }
+}

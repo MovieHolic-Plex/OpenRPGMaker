@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a719278fcfe86b2ce98ae79e70d89e1af3e2faf31261fecad93cd4bb7582f903",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-6-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ramen shop building facade with entrance door, windows, and large red upper sign/fascia",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation. The upper red fascia, the door overhang, window frames, and base sill only have 1-2px edge highlight lines with zero visible top surfaces or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6780
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade / building entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including the upper red fascia/roof, entrance overhang, window frames, and foundation, is rendered as a flat architectural front elevation with only 1-2px horizontal divider lines and no visible top surfaces or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7375
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large framed red-and-blue gate or building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat, straight-on facade with vertical posts and rectangular panels. Its upper roof/lintel is only a thin horizontal strip with no visible top plane or foreshortened surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 312593
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "central gate/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation; the roof/lintel is only a thin horizontal cap with no visible top surface or slope. No receding isometric side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 122108
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.004Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "570a96337889ce0d",
+   "8cf9e5b7bb765399",
+   "b133644178093c6e",
+   "b30488b7baf6aa41",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "cb66d29e67efcb93",
+   "d461d27d881dbc20",
+   "ea731aa5a3fbe23d",
+   "f6f17248e487b700",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "0b015249f57ab24b",
+   "0fa2e72c7c16bd3d",
+   "1893cb389ebd1f1f",
+   "350a696a5e64207c",
+   "41f10ff995297bc7",
+   "830420d82ed823e8",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123"
+  ],
+  "32": [
+   "02a5ed51b6d4b81d",
+   "1de9cc570d30ce0e",
+   "2caa003ddea9d546",
+   "37c47b1449ffb88e",
+   "55d6458e3960125a",
+   "8a5e4e8f51c60af2",
+   "9c5b9f49c77e1623",
+   "adf37e7240e63270",
+   "b2dfeba3f2f959a0",
+   "c84ca8d50f7415fa",
+   "d66c92268b09beb4",
+   "eaf2d9a1c0dcb847"
+  ],
+  "48": [
+   "270d6e206437feb6",
+   "c49b8bdad74b1806"
+  ]
+ }
+}

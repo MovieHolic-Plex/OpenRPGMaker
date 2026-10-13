@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ff4acfa836f0b01bae1005738ee9e5cc416c4f3a47ff0647fef51fedc92a8eb",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp_city/street_hand/jp-bwall-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is shown straight-on with only a 2px cap/rim along rows 1-2 above the vertical brick face (rows 3-14), lacking the required top surface foreshortened for 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5726
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick boundary wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is drawn in pure front elevation; the cap at rows 1-2 is only 2px tall with no visible top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6229
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Rectangular brick wall",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular brick face. Its upper edge has only a two-pixel light cap band, not a substantial top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 12381
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangle of horizontal brick courses. The thin upper edge does not show a top surface extending from a back edge to a front edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9908
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.481Z",
+ "cells": {
+  "16": [
+   "8a9bb5881e9daab1"
+  ],
+  "24": [
+   "07afe7ba4d8fc8ed",
+   "1617d23280c7adb4",
+   "2524f45b0ec11667",
+   "6bbb8ce233598bea",
+   "ac521051935844b8",
+   "b55228dceb2818d2"
+  ],
+  "32": [
+   "241ee28a803c1deb",
+   "3271e8964ab46715",
+   "505560f48f535913",
+   "a9ef1c833fbe0a2f",
+   "e32dd27c368538cf",
+   "e9c2302a8d6bd2fb"
+  ],
+  "48": [
+   "27eed7016f0ec33e",
+   "48d4fff5a2f9b568",
+   "5e87a7810ab052d2",
+   "88d48dc091571c4f",
+   "8972978402a23371",
+   "a1b36607216b3bba"
+  ]
+ }
+}

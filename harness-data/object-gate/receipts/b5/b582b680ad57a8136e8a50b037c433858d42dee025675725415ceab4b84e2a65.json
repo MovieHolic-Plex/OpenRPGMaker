@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b582b680ad57a8136e8a50b037c433858d42dee025675725415ceab4b84e2a65",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "jp-jizo",
+ "label": "jp/jp-jizo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shrine niche with Jizo statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine alcove, statue, and base plinth are drawn in pure front elevation with no visible horizontal surfaces seen from above. The floor of the niche where the statue stands is invisible, the base plinth shows no top surface, and the statue's head and bib are completely flat horizontal lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8935
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Jizo shrine with statue inside",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine, stone roof, internal Jizo statue, and bottom stone plinth are all rendered in pure front elevation with flat 1px horizontal lines and zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6211
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shrine niche with Jizo statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the stone shrine enclosure and the Jizo statue inside are drawn in pure front elevation. The statue's head/cap (rows 13-14), bib, and base have no foreshortened top surfaces, and the shrine housing lacks visible top surfaces on its lintel, interior floor, and base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5987
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hokora shrine with jizo statue",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine, the stone base, and the Jizo statue inside are all drawn in pure flat front elevation. There is no visible top surface on the floor of the shrine, the plinth, the statue head, or the frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6006
+  }
+ ],
+ "decidedAt": "2026-10-13T12:57:55.349Z",
+ "cells": {
+  "16": [
+   "1a2b6085d7e924a1",
+   "4512ca931c93e21a"
+  ],
+  "24": [
+   "0d539c0184ff572d",
+   "0fff33eb5708cb6f",
+   "3796947d3c39a60b",
+   "5cd1f7ab6349ada7",
+   "61b13b300a2c5ecc",
+   "6e94a665fd94f719",
+   "92c59685965f99c1",
+   "a47157b4a9a0e2fd",
+   "c0090e42b0744b1f",
+   "d01558cc36590d5e",
+   "d0479008babd0a3f",
+   "d7ebd1bd48420583"
+  ],
+  "32": [
+   "4557e7c5d03fb11b",
+   "67c490df10ef02f7",
+   "edd6be5a4f67c6de"
+  ],
+  "48": [
+   "1949a904c1b95f88",
+   "3d65c91fe04c5c4f",
+   "69ea54f9119ee5be",
+   "6d0f80bd92b5f415",
+   "7006e6f4346b3796",
+   "ed4d9dc5dc5a4f2b"
+  ]
+ }
+}

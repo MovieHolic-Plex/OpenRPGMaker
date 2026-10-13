@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7aacf35cc5b553d20f9cbcea358e62d610b266e2ebaccc065caaa1e75c0ec3a6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-center-v",
+ "label": "jp_city/street_hand/jp-mark-center-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow dashed road marking decal",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical dashed road/floor marking lying flat on the ground, painted on the floor plane as seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6167
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow dashed road marking line",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat vertical dashed road marking lying flat on the floor, correctly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow dashed road center line marking",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat road decal marking lying directly on the ground surface, correctly displayed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6396
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "yellow road center-line markings",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical dashed road marking decal lying completely flat on the road surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6612
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:33.358Z",
+ "cells": {
+  "16": [
+   "781183e3a20a2054"
+  ],
+  "24": [
+   "16734e44324a554a",
+   "17891b82b09877a9",
+   "19a4c4cf1d2fdf32",
+   "5dc7f5147e527281",
+   "768f64f0edf3ddd7",
+   "e81bfe1f0f2d6498"
+  ],
+  "32": [
+   "10569521e1403ab2",
+   "30825e87a7dc1337",
+   "43b2388c606baf0d",
+   "4e05fa77a1afcc86",
+   "9605ee8547ffdeb6",
+   "c6ccc3e7240b0805"
+  ],
+  "48": [
+   "15b51b7a8b7b4387",
+   "3f4ba28e489a0797",
+   "605d9002ddd05369",
+   "af59d3971dec937c",
+   "c50e9857a2d4243b",
+   "f13abf766426af37"
+  ]
+ }
+}

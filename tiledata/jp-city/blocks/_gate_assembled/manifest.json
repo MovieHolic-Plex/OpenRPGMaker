@@ -1,0 +1,1025 @@
+{
+ "apartment-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/apartment-L-w3to6.png",
+  "role": "apartment",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-apartment-3-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-4-L",
+    "x": 64,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-5-L",
+    "x": 144,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-6-L",
+    "x": 240,
+    "y": 128
+   }
+  ]
+ },
+ "apartment-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/apartment-L-w7to9.png",
+  "role": "apartment",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-apartment-7-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-8-L",
+    "x": 128,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-9-L",
+    "x": 272,
+    "y": 128
+   }
+  ]
+ },
+ "apartment-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/apartment-R-w3to6.png",
+  "role": "apartment",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-apartment-3-R",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-5-R",
+    "x": 64,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-6-R",
+    "x": 160,
+    "y": 128
+   }
+  ]
+ },
+ "apartment-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/apartment-R-w7to9.png",
+  "role": "apartment",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-apartment-7-R",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-8-R",
+    "x": 128,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-apartment-9-R",
+    "x": 272,
+    "y": 128
+   }
+  ]
+ },
+ "bento-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/bento-L-w3to6.png",
+  "role": "bento",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-bento-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "bento-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/bento-L-w7to9.png",
+  "role": "bento",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-bento-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "bento-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/bento-R-w3to6.png",
+  "role": "bento",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-bento-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "bento-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/bento-R-w7to9.png",
+  "role": "bento",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-bento-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-bento-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "cafe-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/cafe-L-w3to6.png",
+  "role": "cafe",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-cafe-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "cafe-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/cafe-L-w7to9.png",
+  "role": "cafe",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-cafe-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "cafe-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/cafe-R-w3to6.png",
+  "role": "cafe",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-cafe-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "cafe-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/cafe-R-w7to9.png",
+  "role": "cafe",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-cafe-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-cafe-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "house-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/house-L-w3to6.png",
+  "role": "house",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-house-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "house-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/house-L-w7to9.png",
+  "role": "house",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-house-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "house-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/house-R-w3to6.png",
+  "role": "house",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-house-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "house-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/house-R-w7to9.png",
+  "role": "house",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-house-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-house-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "izakaya-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/izakaya-L-w3to6.png",
+  "role": "izakaya",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-izakaya-3-L",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-4-L",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-5-L",
+    "x": 144,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-6-L",
+    "x": 240,
+    "y": 96
+   }
+  ]
+ },
+ "izakaya-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/izakaya-L-w7to9.png",
+  "role": "izakaya",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-izakaya-7-L",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-8-L",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-9-L",
+    "x": 272,
+    "y": 96
+   }
+  ]
+ },
+ "izakaya-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/izakaya-R-w3to6.png",
+  "role": "izakaya",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-izakaya-3-R",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-5-R",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-6-R",
+    "x": 160,
+    "y": 96
+   }
+  ]
+ },
+ "izakaya-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/izakaya-R-w7to9.png",
+  "role": "izakaya",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-izakaya-7-R",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-8-R",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-izakaya-9-R",
+    "x": 272,
+    "y": 96
+   }
+  ]
+ },
+ "konbini-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/konbini-L-w3to6.png",
+  "role": "konbini",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-konbini-3-L",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-4-L",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-5-L",
+    "x": 144,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-6-L",
+    "x": 240,
+    "y": 96
+   }
+  ]
+ },
+ "konbini-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/konbini-L-w7to9.png",
+  "role": "konbini",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-konbini-7-L",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-8-L",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-9-L",
+    "x": 272,
+    "y": 96
+   }
+  ]
+ },
+ "konbini-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/konbini-R-w3to6.png",
+  "role": "konbini",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-konbini-3-R",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-5-R",
+    "x": 64,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-6-R",
+    "x": 160,
+    "y": 96
+   }
+  ]
+ },
+ "konbini-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/konbini-R-w7to9.png",
+  "role": "konbini",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-konbini-7-R",
+    "x": 0,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-8-R",
+    "x": 128,
+    "y": 96
+   },
+   {
+    "id": "jp-sf-konbini-9-R",
+    "x": 272,
+    "y": 96
+   }
+  ]
+ },
+ "machiya-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/machiya-L-w3to6.png",
+  "role": "machiya",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-machiya-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "machiya-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/machiya-L-w7to9.png",
+  "role": "machiya",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-machiya-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "machiya-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/machiya-R-w3to6.png",
+  "role": "machiya",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-machiya-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "machiya-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/machiya-R-w7to9.png",
+  "role": "machiya",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-machiya-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-machiya-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "office-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/office-L-w3to6.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-3-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-4-L",
+    "x": 64,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-5-L",
+    "x": 144,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-L",
+    "x": 240,
+    "y": 128
+   }
+  ]
+ },
+ "office-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/office-L-w7to9.png",
+  "role": "office",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-office-7-L",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-L",
+    "x": 128,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-9-L",
+    "x": 272,
+    "y": 128
+   }
+  ]
+ },
+ "office-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/office-R-w3to6.png",
+  "role": "office",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-office-3-R",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-5-R",
+    "x": 64,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-6-R",
+    "x": 160,
+    "y": 128
+   }
+  ]
+ },
+ "office-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/office-R-w7to9.png",
+  "role": "office",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-office-7-R",
+    "x": 0,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-8-R",
+    "x": 128,
+    "y": 128
+   },
+   {
+    "id": "jp-sf-office-9-R",
+    "x": 272,
+    "y": 128
+   }
+  ]
+ },
+ "ramen-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/ramen-L-w3to6.png",
+  "role": "ramen",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-ramen-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "ramen-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/ramen-L-w7to9.png",
+  "role": "ramen",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-ramen-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "ramen-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/ramen-R-w3to6.png",
+  "role": "ramen",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-ramen-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "ramen-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/ramen-R-w7to9.png",
+  "role": "ramen",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-ramen-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-ramen-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "sento-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/sento-L-w3to6.png",
+  "role": "sento",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-sento-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "sento-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/sento-L-w7to9.png",
+  "role": "sento",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-sento-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "sento-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/sento-R-w3to6.png",
+  "role": "sento",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-sento-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "sento-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/sento-R-w7to9.png",
+  "role": "sento",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-sento-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-sento-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "shop-L-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/shop-L-w3to6.png",
+  "role": "shop",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-shop-3-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-4-L",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-5-L",
+    "x": 144,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-6-L",
+    "x": 240,
+    "y": 64
+   }
+  ]
+ },
+ "shop-L-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/shop-L-w7to9.png",
+  "role": "shop",
+  "side": "L",
+  "strips": [
+   {
+    "id": "jp-sf-shop-7-L",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-8-L",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-9-L",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ },
+ "shop-R-w3to6": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/shop-R-w3to6.png",
+  "role": "shop",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-shop-3-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-5-R",
+    "x": 64,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-6-R",
+    "x": 160,
+    "y": 64
+   }
+  ]
+ },
+ "shop-R-w7to9": {
+  "png": "/home/main/z-project/rpg-zzu/tiledata/jp-city/blocks/_gate_assembled/shop-R-w7to9.png",
+  "role": "shop",
+  "side": "R",
+  "strips": [
+   {
+    "id": "jp-sf-shop-7-R",
+    "x": 0,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-8-R",
+    "x": 128,
+    "y": 64
+   },
+   {
+    "id": "jp-sf-shop-9-R",
+    "x": 272,
+    "y": 64
+   }
+  ]
+ }
+}

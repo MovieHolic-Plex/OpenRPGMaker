@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ec50bff5b2cf46aebecf83feb841a26ebec6d1ee5fc820f2fd2d6d15b5d0298",
+ "width": 16,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-rail-signal",
+ "label": "jp/jp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "equipment cabinet base and signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large bottom equipment cabinet (rows 24-46) occupies half of the sprite's height and is drawn in pure front elevation with no visible top surface (row 24 is a flat 1-2px outline directly bordering the front face).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 57003
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment cabinet base and signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The large lower equipment cabinet (rows 24-46) is drawn in pure front elevation with only a 1px outline at row 24 where a top surface should be. The signal head and pole also lack top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5919
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "equipment cabinet and signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower equipment cabinet (rows 24-46), which forms the largest volume of the structure, is drawn in pure front elevation with a flat 2px horizontal outline across the top and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5471
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "equipment cabinet and signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower cabinet (rows 24-46), which forms the largest volume of the object, is drawn in pure front elevation with only a 1px outline along its top edge (row 24) and no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5249
+  }
+ ],
+ "decidedAt": "2026-10-13T13:04:02.484Z",
+ "cells": {
+  "16": [
+   "2e02c12752c89155",
+   "60da77dd4dbd384c",
+   "8ec3778362d84706"
+  ],
+  "24": [
+   "14186f8e004c4b96",
+   "2bb2c098e8764d4d",
+   "3a13e2540256b71a",
+   "7cfe7c78d626127a",
+   "86dc59b3fddff845",
+   "ea4353818821dbb4"
+  ],
+  "32": [
+   "1e8a14622b77f71a",
+   "28bf7b2cdd001956",
+   "2ff0855ebdb26fca",
+   "3ba8bc673f74e1c3",
+   "43c0145bd4b9a1bb",
+   "9d8a3a1974a18e4a",
+   "a2c8f9aa216e1789",
+   "af5c1b405f82d79c",
+   "ec0b57d314790f5e",
+   "f0ccfeb2e8237340",
+   "f6c4a28ef4a85b49",
+   "ff902936bf838b1d"
+  ],
+  "48": [
+   "139200562294d057",
+   "ebed75b31bfe5861",
+   "f27aaa3806b88649"
+  ]
+ }
+}

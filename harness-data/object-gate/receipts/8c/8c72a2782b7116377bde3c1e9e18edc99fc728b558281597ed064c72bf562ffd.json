@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8c72a2782b7116377bde3c1e9e18edc99fc728b558281597ed064c72bf562ffd",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp_city/street_hand/jp-bwall-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boundary wall with white plaster upper section and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite depicts the vertical south face of a wall (white plaster from rows 1-6, stone courses from rows 7-14) with no top surface or coping visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5471
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "plaster and stone wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is a flat front elevation of a wall face (white plaster top section, stone brick base) with no top surface or cap visible (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6347
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular brick wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat frontal wall with horizontal brick bands; there is no visible top surface or roof slope beyond thin edge lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 29415
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "plain rectangular building wall/facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular facade with a straight top edge and no visible horizontal roof or top surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 99555
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.362Z",
+ "cells": {
+  "16": [
+   "fcb2f9eaeed9d785"
+  ],
+  "24": [
+   "2440544705f37aca",
+   "24502c143566fb2a",
+   "2901807ae6c60dcd",
+   "4a9fc0f484b95d56",
+   "6cf6371ea0870d7a",
+   "cb1f802d5659b708"
+  ],
+  "32": [
+   "25764d6da0e3e714",
+   "293e83675c25b025",
+   "5d652a01b7b391de",
+   "b22b1fb73cbf50d0",
+   "c4ad8fa75dc18686",
+   "e659a4c74965372a"
+  ],
+  "48": [
+   "21e2b0aea09573fc",
+   "4d56ed077e195db3",
+   "6747f32dca5b579e",
+   "865c142e7511340d",
+   "be8607cb854db220",
+   "c811c839099bc516"
+  ]
+ }
+}
