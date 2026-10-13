@@ -846,15 +846,32 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
 // ─────────────────────────────── 실내
 interface Room { name: string; tag: string; x: number; y: number; w: number; h: number; floor: string }
 
-/** 실내 방 묶음: 벽(천장 문자) 바탕에 방을 판다. 방 맨 위 두 줄은 앞면(x). 방끼리 남북 문 통로 폭 2. */
-function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[]): void {
+/** 실내 방 묶음: 벽(천장 문자) 바탕에 방을 판다. 방 맨 위 두 줄은 앞면(x). 방끼리 남북 문 통로 폭 2. jitter = 동굴처럼 가장자리를 들쭉날쭉하게. */
+function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[], jitter = false, extraFloor: Pt[] = []): void {
   b.grid.fill(wall);
-  for (const r of rooms) b.rect(r.x, r.y, r.w, r.h, r.floor);
-  for (const d of doors) { b.set(d.x, d.y, rooms[0]!.floor); b.set(d.x + 1, d.y, rooms[0]!.floor); }
+  const nearDoor = (x: number, y: number) => doors.some((d) => x >= d.x - 2 && x <= d.x + 3 && Math.abs(y - d.y) <= 3) || extraFloor.some((d) => Math.abs(d.x - x) <= 2 && Math.abs(d.y - y) <= 2);
+  for (const r of rooms) for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
+    if (jitter && !nearDoor(x, y)) {
+      const d = Math.min(x - r.x, r.x + r.w - 1 - x, y - r.y, r.y + r.h - 1 - y);
+      const n = noise2(x, y, b.seed + 31, 3);
+      if ((d === 0 && n > -0.25) || (d === 1 && n > 0.3) || (d === 2 && n > 0.7)) continue;
+    }
+    b.set(x, y, r.floor);
+  }
+  for (const d of doors) for (let dy = -1; dy <= 1; dy++) for (const dx of [0, 1]) if (dy === 0 || b.g(d.x + dx, d.y + dy) === wall) b.set(d.x + dx, d.y + dy, rooms[0]!.floor);
+  for (const d of extraFloor) b.set(d.x, d.y, rooms[0]!.floor);
+  if (jitter) {                                                         // 외톨이 바닥·한 칸 홈 다듬기
+    for (let pass = 0; pass < 2; pass++) for (let y = 1; y < b.h - 1; y++) for (let x = 1; x < b.w - 1; x++) {
+      if (b.g(x, y) === wall || nearDoor(x, y)) continue;
+      const n4 = [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => b.g(x + dx!, y + dy!) !== wall).length;
+      if (n4 <= 1) b.set(x, y, wall);
+    }
+  }
   // 앞면: 위가 벽인 바닥 칸 → x 두 줄
   for (let y = 1; y < b.h; y++) for (let x = 0; x < b.w; x++) {
     if (b.g(x, y) === wall || b.g(x, y) === "x") continue;
     if (b.g(x, y - 1) !== wall) continue;
+    if (extraFloor.some((d) => d.x === x && d.y === y)) continue;
     b.set(x, y, "x"); if (y + 1 < b.h && b.g(x, y + 1) !== wall) b.set(x, y + 1, "x");
   }
 }
@@ -888,78 +905,137 @@ function scatterIn(b: Board, r: Room, ids: readonly string[], n: number, start: 
   }
 }
 
+interface RoomSpec { name: string; tag: string; w: [number, number]; floor?: string }
+const INTERIOR_LAYOUT: Readonly<Record<"ship" | "tavern" | "cave", { top: RoomSpec[]; bottom: RoomSpec[]; corridor: boolean; topShare: number }>> = {
+  ship: { top: [{ name: "선장실", tag: "captain", w: [12, 15] }, { name: "포 갑판", tag: "gundeck", w: [99, 99] }], corridor: true, topShare: 0.5,
+    bottom: [{ name: "선원 선실", tag: "crew", w: [9, 11] }, { name: "주방", tag: "galley", w: [7, 9] }, { name: "선창", tag: "hold", w: [99, 99] }] },
+  tavern: { top: [{ name: "부엌", tag: "kitchen", w: [8, 10] }, { name: "창고", tag: "cellar", w: [7, 9] }, { name: "뒷방", tag: "backroom", w: [99, 99] }], corridor: false, topShare: 0.4,
+    bottom: [{ name: "술집 홀", tag: "hall", w: [99, 99] }] },
+  cave: { top: [{ name: "굴 입구 방", tag: "cave-hall", w: [99, 99] }], corridor: false, topShare: 0.5,
+    bottom: [{ name: "보물 방", tag: "treasure", w: [12, 16], floor: "5" }, { name: "굴 안쪽", tag: "deep", w: [99, 99] }] },
+};
+
+/** 띠 하나를 방 여럿으로 나눈다(사이 벽 1칸, 마지막 방이 남은 폭). */
+function splitBand(b: Board, specs: readonly RoomSpec[], y: number, h: number, fl: string): Room[] {
+  const out: Room[] = [];
+  let x = 1;
+  specs.forEach((sp, i) => {
+    const last = i === specs.length - 1;
+    let rw = last ? b.w - 1 - x : b.int(sp.w[0], sp.w[1]);
+    if (!last && x + rw > b.w - 8) rw = Math.max(6, b.w - 8 - x);
+    if (rw < 5) return;
+    out.push({ name: sp.name, tag: sp.tag, x, y, w: rw, h, floor: sp.floor ?? fl });
+    x += rw + 1;
+  });
+  return out;
+}
+
 function composeInterior(b: Board, kind: "ship" | "tavern" | "hut" | "cave", plan: InteriorPlan): { areas: PirateArea[]; spawn: Pt } {
   const { w: Wd, h: Hd } = b;
   const areas: PirateArea[] = [];
   const wall = kind === "ship" ? "S" : kind === "tavern" ? "T" : kind === "hut" ? "H" : "C";
   const fl = kind === "ship" ? "1" : kind === "tavern" ? "2" : kind === "hut" ? "3" : "4";
-  const rooms: Room[] = [];
+  let rooms: Room[] = [];
   const doors: Pt[] = [];
+  const extra: Pt[] = [];
+  let exit: Pt;
+  let corr: Room | null = null;
   if (kind === "hut") {
     rooms.push({ name: "오두막 방", tag: "hut-room", x: 1, y: 1, w: Wd - 2, h: Hd - 2, floor: fl });
+    const cx = Math.floor(Wd / 2) - 1;
+    extra.push({ x: cx, y: Hd - 1 }, { x: cx + 1, y: Hd - 1 });
+    exit = { x: cx, y: Hd - 1 };
   } else {
-    const topH = Math.max(9, Math.min(13, Math.floor(Hd * 0.5) + b.int(-1, 1)));
-    const top: Room = { name: kind === "ship" ? "선장실·갑판 아래 복도" : kind === "tavern" ? "술집 홀" : "굴 입구 방", tag: kind === "ship" ? "captain" : kind === "tavern" ? "hall" : "cave-hall", x: 1, y: 1, w: Wd - 2, h: topH, floor: fl };
-    rooms.push(top);
-    const lowY = top.y + top.h + 1, lowH = Hd - 1 - lowY;
-    const specs = kind === "ship"
-      ? [{ name: "선원 선실", tag: "crew", w: [9, 11] }, { name: "주방", tag: "galley", w: [7, 9] }, { name: "선창", tag: "hold", w: [10, 14] }]
-      : kind === "tavern" ? [{ name: "부엌", tag: "kitchen", w: [8, 10] }, { name: "창고", tag: "cellar", w: [7, 9] }, { name: "뒷방", tag: "backroom", w: [7, 9] }]
-        : [{ name: "보물 방", tag: "treasure", w: [12, 16] }, { name: "굴 안쪽", tag: "deep", w: [8, 12] }];
-    let x = 1;
-    for (const sp of specs) {
-      let rw = b.int(sp.w[0]!, sp.w[1]!);
-      if (x + rw > Wd - 1) rw = Wd - 1 - x;
-      if (rw < 6 || lowH < 6) break;
-      const r: Room = { name: sp.name, tag: sp.tag, x, y: lowY, w: rw, h: lowH, floor: sp.tag === "treasure" ? "5" : fl };
-      rooms.push(r); x += rw + 1;
-    }
-    const last = rooms[rooms.length - 1]!;
-    if (rooms.length > 1 && x < Wd - 1) last.w = Wd - 1 - last.x;
-    for (const r of rooms.slice(1)) doors.push({ x: r.x + Math.max(1, Math.min(r.w - 3, Math.floor(r.w / 2) - 1 + b.int(-1, 1))), y: lowY - 1 });
+    const L = INTERIOR_LAYOUT[kind];
+    const inner = Hd - 2 - (L.corridor ? 6 : 0) - 1;
+    const topH = Math.max(8, Math.round(inner * L.topShare));
+    const top = splitBand(b, L.top, 1, topH, fl);
+    let y = 1 + topH + 1;
+    if (L.corridor) { corr = { name: "복도", tag: "corridor", x: 1, y, w: Wd - 2, h: 5, floor: fl }; y += 6; }
+    const bottom = splitBand(b, L.bottom, y, Hd - 1 - y, fl);
+    rooms = [...top, ...(corr ? [corr] : []), ...bottom];
+    const doorIn = (r: Room, wy: number) => doors.push({ x: r.x + Math.max(1, Math.min(r.w - 3, Math.floor(r.w / 2) - 1 + b.int(-2, 2))), y: wy });
+    if (corr) { for (const r of top) doorIn(r, corr.y - 1); for (const r of bottom) doorIn(r, corr.y + corr.h); }
+    else if (top.length === 1) for (const r of bottom) doorIn(r, r.y - 1);
+    else for (const r of top) doorIn(r, r.y + r.h);
+    if (kind === "tavern") { const h = bottom[0]!; const cx = h.x + Math.floor(h.w / 2) - 1; extra.push({ x: cx, y: Hd - 1 }, { x: cx + 1, y: Hd - 1 }); exit = { x: cx, y: Hd - 1 }; }
+    else if (kind === "cave") { const t = top[0]!; extra.push({ x: 0, y: t.y + 3 }, { x: 0, y: t.y + 4 }); exit = { x: 0, y: t.y + 3 }; }
+    else exit = { x: corr!.x + 2, y: corr!.y + 2 };
   }
-  interiorShell(b, wall, rooms, doors);
-  // 동굴: 벽 모서리 들쭉날쭉(방 둘레 칸을 잡음으로 벽으로)
-  if (kind === "cave") {
-    for (const r of rooms) for (let y = r.y + 2; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
-      const edge = Math.min(x - r.x, r.x + r.w - 1 - x, r.y + r.h - 1 - y);
-      if (edge === 0 && noise2(x, y, b.seed, 3) > 0.15 && !doors.some((d) => Math.abs(d.x - x) <= 2 && Math.abs(d.y - y) <= 2)) b.set(x, y, wall);
-    }
-  }
-  // 입구(맨 아래 가운데) — 바깥으로 나가는 문 자리: 아래 벽 가운데 두 칸을 바닥으로
-  const main = rooms[rooms.length > 1 ? 0 : 0]!;
-  void main;
+  interiorShell(b, wall, rooms, doors, kind === "cave", extra);
   b.paintGround();
-  const spawn = { x: rooms[0]!.x + Math.floor(rooms[0]!.w / 2), y: rooms[0]!.y + rooms[0]!.h - 2 };
-  const must: Pt[] = [];
+  const spawn = kind === "cave" ? { x: 1, y: exit.y } : kind === "ship" ? { x: exit.x, y: exit.y + 1 } : { x: exit.x, y: exit.y - 1 };
+  const must: Pt[] = [exit];
   for (const d of doors) must.push({ x: d.x, y: d.y }, { x: d.x, y: d.y + 1 }, { x: d.x, y: d.y - 1 });
   for (const r of rooms) must.push({ x: r.x + Math.floor(r.w / 2), y: r.y + 2 + Math.floor((r.h - 2) / 2) });
   b.prune(spawn, must);
   const doorCols = (r: Room) => doors.filter((d) => (d.y === r.y - 1 || d.y === r.y + r.h) && d.x + 1 >= r.x && d.x < r.x + r.w).flatMap((d) => [d.x - 1, d.x, d.x + 1, d.x + 2]);
-  const blockedIn = (r: Room) => (x: number, w: number) => doorCols(r).some((c) => c >= x && c < x + w);
-  for (const d of doors) b.markClear(d.x, d.y - 1, 2, 3);
-  // 바깥 문(아래 가운데) 앞 비우기 — 이동 이벤트 자리
-  const exit = kind === "hut" ? { x: spawn.x, y: Hd - 2 } : { x: spawn.x, y: rooms[0]!.y + rooms[0]!.h - 1 };
-  b.markClear(exit.x - 1, exit.y - 1, 3, 2);
+  const blockedIn = (r: Room) => (x: number, w: number) => doorCols(r).some((c) => c >= x && c < x + w) || (corr === r && x <= exit.x + 2 && x + w > exit.x - 1);
+  for (const d of doors) b.markClear(d.x - 1, d.y - 2, 4, 5);
+  b.markClear(exit.x - 1, exit.y - 2, 4, 4);
+  // 배: 복도 뒷벽에 위 갑판으로 오르는 계단(나가는 곳)
+  if (kind === "ship" && corr) b.stamp("stairs-up", exit.x, corr.y, "wall");
   for (const r of rooms) {
     const blk = blockedIn(r);
     const pl = plan[r.tag];
+    if (r.tag === "hall") furnishHall(b, r, spawn, must, blk);
+    if (r.tag === "gundeck") furnishGundeck(b, r, spawn, must, blk);
     if (!pl) continue;
     if (pl.face) onFace(b, r, pl.face, b.int(3, 5), spawn, must, blk);
     if (pl.back) alongBack(b, r, pl.back, spawn, must, 1, blk);
     if (pl.center) {
-      for (let k = 0, x = r.x + 2 + b.int(0, 1); k < pl.center.count && x < r.x + r.w - 3; k++) {
-        const id = b.pick(pl.center.ids); const s = b.kitSize(id); if (!s) continue;
+      const ids = pl.center.ids;
+      const w0 = ids.reduce((acc, id) => acc + (b.kitSize(id)?.w ?? 0) + 3, 0) - 3;
+      for (let k = 0, x = r.x + Math.max(2, Math.floor((r.w - Math.min(w0, r.w - 4)) / 2)); k < pl.center.count && x < r.x + r.w - 3; k++) {
+        const id = ids[k % ids.length]!; const s = b.kitSize(id); if (!s) continue;
         const y = r.y + 2 + Math.max(2, Math.floor((r.h - 2) / 2) - Math.floor(s.h / 2));
         if (!blk(x, s.w) && b.propFits(id, x, y, "12345")) b.stampSafe(id, x, y, spawn, must);
-        x += s.w + b.int(2, 3);
+        x += s.w + 3;
       }
     }
     if (pl.scatter) scatterIn(b, r, pl.scatter.ids, pl.scatter.count, spawn, must, 2);
   }
   for (const r of rooms) areas.push({ name: r.name, x: r.x, y: r.y, w: r.w, h: r.h, tag: r.tag });
-  areas.push({ name: "바깥 문 자리(이동 이벤트)", x: exit.x, y: exit.y, w: 1, h: 1, tag: "exit", access: exit });
+  areas.push({ name: kind === "ship" ? "위 갑판 계단(이동 이벤트)" : "바깥 문 자리(이동 이벤트)", x: exit.x, y: exit.y, w: 1, h: 1, tag: "exit", access: exit });
   return { areas, spawn };
+}
+
+/** 술집 홀: 왼쪽 바(선반 → 카운터 → 걸상 줄), 뒤 오른쪽 벽난로 + 깔개, 나머지는 둥근 탁자·의자 격자. */
+function furnishHall(b: Board, r: Room, start: Pt, must: Pt[], blk: (x: number, w: number) => boolean): void {
+  const fy = r.y + 2;
+  const barW = 8;
+  let x = r.x + 1;
+  for (const id of ["bar-shelf", "bar-shelf", "keg-stand"]) { const s = b.kitSize(id); if (s && !blk(x, s.w) && b.stampSafe(id, x, fy, start, must)) x += s.w; }
+  const cy = fy + 3;
+  if (b.stampSafe("bar-counter", r.x + 1, cy, start, must)) {
+    b.stampSafe("bar-counter", r.x + 4, cy, start, must);
+    for (let sx = r.x + 1; sx < r.x + barW - 1; sx += 2) b.stampSafe("stool-int", sx, cy + 3, start, must);
+  }
+  onFace(b, r, ["wall-trophy", "lantern-wall", "cutlass-rack", "dartboard", "lantern-wall", "wall-map"], b.int(3, 4), start, must, blk);
+  const fx = r.x + r.w - 4;
+  if (!blk(fx, 2) && b.stampSafe("fireplace", fx, fy, start, must)) b.stampSafe("rug-tavern", fx, fy + 3, start, must);
+  b.stampSafe("bar-shelf", fx - 3, fy, start, must);
+  for (let ty = fy + 3; ty + 2 <= r.y + r.h - 1; ty += 4) {
+    for (let tx = r.x + barW + 2 + (((ty - fy) / 4) % 2 ? 2 : 0); tx + 2 <= r.x + r.w - 2; tx += 5) {
+      const id = b.chance(0.3) ? "tavern-table" : "tavern-table-round"; const s = b.kitSize(id); if (!s) continue;
+      if (tx + s.w > r.x + r.w - 2 || blk(tx, s.w)) continue;
+      if (!b.propFits(id, tx, ty + 1, "12345") || !b.stampSafe(id, tx, ty + 1, start, must)) continue;
+      for (let k = 0; k < s.w; k += 1) if (k === 0 || k === s.w - 1) b.stampSafe("tavern-chair", tx + k, ty, start, must);
+    }
+  }
+}
+
+/** 포 갑판: 남쪽 줄에 대포(남쪽 겨눔) 간격 두고, 사이에 화약통·포탄, 가운데 돛대 밑동, 뒷벽 통. */
+function furnishGundeck(b: Board, r: Room, start: Pt, must: Pt[], blk: (x: number, w: number) => boolean): void {
+  const cy = r.y + r.h - 3;
+  for (let x = r.x + 2; x + 2 <= r.x + r.w - 1; x += 5) {
+    if (blk(x, 2)) continue;
+    if (b.stampSafe("cannon-int", x, cy, start, must)) b.stampSafe(b.pick(["keg-powder", "cannonballs", "barrel"]), x + 3, cy + 1, start, must);
+  }
+  b.stampSafe("mast-base", r.x + Math.floor(r.w / 2), r.y + 2 + Math.floor((r.h - 2) / 2) - 1, start, must);
+  onFace(b, r, ["porthole", "lantern-wall", "porthole", "cutlass-rack"], 4, start, must, blk);
+  let x = r.x + 1;
+  for (const id of ["cargo-barrels", "crates", "cargo-barrels"]) { const s = b.kitSize(id); if (s && !blk(x, s.w) && b.stampSafe(id, x, r.y + 2, start, must)) x += s.w + 2; else x++; }
 }
 
 /** 방 종류 → 가구 계획(실내 가구 id 는 interior 묶음). 없는 id 는 건너뛴다. */
@@ -974,7 +1050,7 @@ export const PIRATE_INTERIOR_PLANS: Readonly<Record<"ship" | "tavern" | "hut" | 
     hold: { back: ["cargo-barrels", "cargo-barrels", "crates", "cargo-barrels"], face: ["lantern-wall", "porthole"], scatter: { ids: ["crates", "barrel", "sacks", "keg-powder", "cannon-int", "rope-coil", "mast-base"], count: 7 } },
   },
   tavern: {
-    hall: { back: ["bar-shelf", "bar-shelf", "fireplace", "keg-stand", "bar-shelf"], face: ["wall-trophy", "lantern-wall", "cutlass-rack", "dartboard", "lantern-wall"], center: { ids: ["tavern-table-round", "tavern-table"], count: 4 }, scatter: { ids: ["tavern-chair", "barrel", "tavern-chair", "rug-tavern"], count: 5 } },
+    hall: {},                                                     // furnishHall 이 짓는다
     kitchen: { back: ["galley-stove", "galley-shelf", "water-barrel"], face: ["pot-rack", "hanging-herbs"], center: { ids: ["galley-table"], count: 1 }, scatter: { ids: ["sacks", "barrel"], count: 2 } },
     cellar: { back: ["cargo-barrels", "keg-stand", "cargo-barrels"], face: ["lantern-wall"], scatter: { ids: ["barrel", "sacks", "crates", "keg-powder"], count: 4 } },
     backroom: { back: ["captain-bed", "sea-chest", "wardrobe-ship"], face: ["lantern-wall", "wall-map"], scatter: { ids: ["tavern-table-round", "tavern-chair", "rug-tavern"], count: 2 } },
