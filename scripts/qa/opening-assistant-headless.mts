@@ -8,6 +8,7 @@ import { pngShrinkBase64 } from '../lib/jpegShrink.ts';
 import { spawn } from 'node:child_process';
 import { buildModel } from '@oh-my-pi/pi-catalog/build';
 import { runPiAgent } from '../lib/piAgentRuntime';
+import { resolveOhMyPiModel } from '../lib/ohMyPiModel.ts';
 import { resolveRequestApiKey } from '../lib/aiAuthRuntime';
 import { createOhMyPiAdapters } from '../lib/ohMyPiPiAi.mjs';
 import { generateCinematicStill } from '../../src/editor/openingImageGeneration';
@@ -19,12 +20,17 @@ const project = (arg('project-json') ? JSON.parse(fs.readFileSync(arg('project-j
 const task = arg('task')!;
 const [provider, modelId] = arg('model', 'opencodex/gpt-6-astra')!.split('/');
 const cfg = Bun.YAML.parse(fs.readFileSync(path.join(os.homedir(), '.omp/agent/models.yml'), 'utf8')) as any;
-const prov = (cfg.providers ?? cfg)[provider!];
+const antigravity = provider === 'google-antigravity';
+const prov = antigravity ? { apiKey: (await resolveRequestApiKey(provider!)) as string } : (cfg.providers ?? cfg)[provider!];
 const like = arg('model-like');
+let model: any;
+if (antigravity) model = resolveOhMyPiModel(provider!, modelId!);
+else {
 const listed = prov?.models?.find((m: any) => m.id === (prov.models.some((m: any) => m.id === modelId) ? modelId : like));
 if (!listed || !prov?.apiKey) throw Error('모델/키를 models.yml에서 찾지 못했습니다');
 const md = { ...listed, id: modelId, name: listed.id === modelId ? listed.name : modelId };
-const model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking, input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens, compat: { ...prov.compat, ...md.compat } } as never);
+model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking, input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens, compat: { ...prov.compat, ...md.compat } } as never);
+}
 const imageProvider = arg('image-provider', 'openai-codex')!, imageModel = arg('image-model', 'codex-image-default')!;
 const providerApiKeys: Record<string, string | undefined> = { [provider!]: prov.apiKey };
 for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { providerApiKeys[p] ??= (await resolveRequestApiKey(p)) as string | undefined; } catch { /* absent */ } }

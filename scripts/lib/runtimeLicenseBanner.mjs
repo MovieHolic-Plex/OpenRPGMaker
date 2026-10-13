@@ -6,6 +6,7 @@
 // generateBundle 은 압축(renderChunk) 뒤에 돌므로 압축기가 주석을 지우지 못한다.
 import { readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
 
 const require = createRequire(import.meta.url);
 
@@ -26,7 +27,7 @@ const PHASER_ASSET = /(^|\/)phaser(\.min)?-[^/]*\.js$/;
 
 export function runtimeLicenseBannerPlugin(licensePath) {
   const oprn = asComment("OPRN runtime — LICENSE-RUNTIME.md", readRuntimeLicenseNotice(licensePath));
-  const phaser = asComment("Phaser — https://phaser.io", readFileSync(require.resolve("phaser/LICENSE.md"), "utf8"));
+  const phaser = asComment("Phaser — https://phaser.io", readFileSync(join(dirname(require.resolve("phaser/package.json")), "LICENSE.md"), "utf8"));
   return {
     name: "oprn-runtime-license-banner",
     apply: "build",
