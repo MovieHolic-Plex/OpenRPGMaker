@@ -50,6 +50,7 @@ import { WORLDMAP_ICON_TOOLS } from "./worldmapIconTools";
 import { IMPACT_CUTSCENE_TOOLS } from "./impactCutsceneTools";
 import { CUTSCENE_PREVIEW_TOOLS } from "./cutscenePreviewTools";
 import { CUTSCENE_STAGE_TOOLS } from "./cutsceneStageTools";
+import { MECH_CHARSET_TOOLS } from "./mechCharsetTools";
 import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
@@ -261,6 +262,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 일반 도구를 외면했다). 실행·코드 호환은 getTool 로 유지 — 오프라인 사슬·옛 세션 재생.
   ...withDomain(IMPACT_CUTSCENE_TOOLS, "event").map((tool) => ({ ...tool, deprecated: true, supersededBy: "script_cutscene_staged" })),
   ...withDomain(CUTSCENE_STAGE_TOOLS, "event"),
+  ...withDomain(MECH_CHARSET_TOOLS, "event"),
   ...withDomain(CUTSCENE_PREVIEW_TOOLS, "event"),
   ...withDomain(DIRECTING_GUIDE_TOOLS, "event"),
   ...withDomain(LIFE_FLOWER_TOOLS, "event"),
