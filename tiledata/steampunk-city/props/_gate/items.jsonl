@@ -1,0 +1,23 @@
+{"png": "sp-gas-lamp.png", "kind": "column", "name": "가스 가로등(무쇠 기둥·켜진 등)", "label": "steampunk-city/sp-gas-lamp"}
+{"png": "sp-gas-lamp-double.png", "kind": "column", "name": "쌍 가스등(광장용, 등 둘)", "label": "steampunk-city/sp-gas-lamp-double"}
+{"png": "sp-bench.png", "kind": "seat", "name": "무쇠 다리 나무 벤치", "label": "steampunk-city/sp-bench"}
+{"png": "sp-crates.png", "kind": "box", "name": "쌓은 나무 상자", "label": "steampunk-city/sp-crates"}
+{"png": "sp-barrels.png", "kind": "round_body", "name": "나무 통 두 개", "label": "steampunk-city/sp-barrels"}
+{"png": "sp-barrel.png", "kind": "round_body", "name": "나무 통 하나", "label": "steampunk-city/sp-barrel"}
+{"png": "sp-coal-bunker.png", "kind": "container", "name": "석탄 칸(벽돌 세 벽 + 석탄 더미)", "label": "steampunk-city/sp-coal-bunker"}
+{"png": "sp-coal-heap.png", "kind": "organic", "name": "석탄 더미", "label": "steampunk-city/sp-coal-heap"}
+{"png": "sp-fence.png", "kind": "frame", "name": "무쇠 창살 담(한 칸, 잇는 조각)", "label": "steampunk-city/sp-fence"}
+{"png": "sp-fence-post-l.png", "kind": "frame", "name": "무쇠 창살 담 왼쪽 끝 기둥", "label": "steampunk-city/sp-fence-post-l"}
+{"png": "sp-fence-post-r.png", "kind": "frame", "name": "무쇠 창살 담 오른쪽 끝 기둥", "label": "steampunk-city/sp-fence-post-r"}
+{"png": "sp-water-tower.png", "kind": "structure", "name": "급수탑(나무 물통 + 무쇠 다리 + 급수관)", "label": "steampunk-city/sp-water-tower"}
+{"png": "sp-stall-fruit.png", "kind": "structure", "name": "시장 노점(과일·채소, 빨강 줄무늬 차양)", "label": "steampunk-city/sp-stall-fruit"}
+{"png": "sp-stall-parts.png", "kind": "structure", "name": "시장 노점(톱니·부품, 초록 차양)", "label": "steampunk-city/sp-stall-parts"}
+{"png": "sp-stall-fish.png", "kind": "structure", "name": "시장 노점(생선 얼음판, 남색 차양)", "label": "steampunk-city/sp-stall-fish"}
+{"png": "sp-steam-vent.png", "kind": "container", "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다)", "label": "steampunk-city/sp-steam-vent"}
+{"png": "sp-steam-vent-f1.png", "kind": "container", "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 2)", "label": "steampunk-city/sp-steam-vent-f1"}
+{"png": "sp-steam-vent-f2.png", "kind": "container", "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 3)", "label": "steampunk-city/sp-steam-vent-f2"}
+{"png": "sp-steam-vent-f3.png", "kind": "container", "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 4)", "label": "steampunk-city/sp-steam-vent-f3"}
+{"png": "sp-stack-smoke.png", "kind": "column", "name": "공장 굴뚝 꼭대기 + 검은 연기(굴뚝 위에 겹쳐 찍는다)", "label": "steampunk-city/sp-stack-smoke"}
+{"png": "sp-stack-smoke-f1.png", "kind": "column", "name": "공장 굴뚝 꼭대기 + 검은 연기(굴뚝 위에 겹쳐 찍는다) (프레임 2)", "label": "steampunk-city/sp-stack-smoke-f1"}
+{"png": "sp-stack-smoke-f2.png", "kind": "column", "name": "공장 굴뚝 꼭대기 + 검은 연기(굴뚝 위에 겹쳐 찍는다) (프레임 3)", "label": "steampunk-city/sp-stack-smoke-f2"}
+{"png": "sp-stack-smoke-f3.png", "kind": "column", "name": "공장 굴뚝 꼭대기 + 검은 연기(굴뚝 위에 겹쳐 찍는다) (프레임 4)", "label": "steampunk-city/sp-stack-smoke-f3"}
