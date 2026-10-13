@@ -2,6 +2,7 @@
 // 조수의 말(「완료했습니다」)이 아니라 이 숫자가 오프닝 완료 검사의 근거다. 브라우저·모델 없이 도는 순수 함수.
 import { pictureSize } from "@/editor/cutsceneArt/pictureSize";
 import { overlapRatio, pictureBox, simulateCutscene, type Box } from "./timeline";
+import { isPlayerMoveTarget } from "@/project/moveRouteTarget";
 import type { Command, Project } from "@/project/types";
 
 const STEP_MS = 200;
@@ -36,7 +37,8 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   let togetherSamples = 0, overlappedSamples = 0; let coverSamples = 0; let heroHitSamples = 0, heroSamples = 0;
   // 맵 위 주인공 자리(시작 위치) — 컷신이 주인공을 옮기지 않는다면 그 자리를 그림 배우가 가로지르면 안 된다.
   const heroBox = ((): Box | null => {
-    if (commands.some((c) => c.kind === "moveActor" && (c as { target?: unknown }).target === "player")) return null;
+    // moveActor 비트는 컴파일되면 moveEvent + @player 가 된다. Command 종류에는 moveActor 가 없다.
+    if (commands.some((c) => c.kind === "moveEvent" && isPlayerMoveTarget(c.eventId))) return null;
     const map = project.maps[project.startMapId as string];
     const pos = project.startPos as { x?: number; y?: number } | undefined;
     if (!map || typeof pos?.x !== "number" || typeof pos?.y !== "number") return null;
