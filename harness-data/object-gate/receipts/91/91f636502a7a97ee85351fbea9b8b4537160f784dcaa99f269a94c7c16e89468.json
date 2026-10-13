@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "91f636502a7a97ee85351fbea9b8b4537160f784dcaa99f269a94c7c16e89468",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing signal pole and light assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the red lights, the horizontal bar, the mounting bracket, the striped vertical pole, and the base block are all flat rectangles with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4763
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal pole with crossbar and red lights",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red lights, horizontal bar, pole, and base are all drawn in pure flat front elevation with straight horizontal bands and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4180
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central railway signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is a flat vertical front elevation with no visible top or cut face; the horizontal signal housing does not provide a top surface for the pole.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 92119
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 76187,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:39:43.638Z",
+ "cells": {
+  "16": [
+   "01e6cbd71eb95f8e",
+   "b8632a8759e75a9d",
+   "bd160769fdd01399"
+  ],
+  "24": [
+   "00b5905c7d582184",
+   "2de77c22a3edad44",
+   "67cbbcc398153e17",
+   "bfc33aeb1bee552b",
+   "c04c397ea50143ad",
+   "c87049696100bbbc"
+  ],
+  "32": [
+   "03ef400f653971f3",
+   "3e4ec833795d06c7",
+   "4861af4aa40b4b73",
+   "5234b33d93be06ec",
+   "52f89e1069870e2e",
+   "53ef7e15d9c02946",
+   "6b325b12a00d7854",
+   "794cdea69ce13c06",
+   "7b2498b96d900241",
+   "9cf3da517770d997",
+   "bce3bc71ee80a3d5",
+   "f99539e2c78a49cf"
+  ],
+  "48": [
+   "39030c67a15bd079",
+   "8a1a7fbba6d30a5f",
+   "eb3927fd754dc618"
+  ]
+ }
+}

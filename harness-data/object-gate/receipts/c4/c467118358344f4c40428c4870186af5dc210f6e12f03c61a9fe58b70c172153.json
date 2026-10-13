@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c467118358344f4c40428c4870186af5dc210f6e12f03c61a9fe58b70c172153",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal housing on pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal housing at rows 1-19 and the pole below are drawn straight-on in flat front elevation with a 1px top outline line (row 1) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4987
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal box housing and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire railway signal and its top box are drawn in pure front elevation with only a 1px outline at the top (row 1) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4872
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 15750,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "railway crossing signal head and supporting post",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main signal housing has a broad, clearly visible top plane about 8 source pixels deep above its south-facing yellow front face. The supporting post is front-facing but the object is not a pure elevation, and no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 45731
+  }
+ ],
+ "decidedAt": "2026-10-13T08:05:03.939Z",
+ "cells": {
+  "16": [
+   "1af9a07ddef5bcf7",
+   "dc0f4d96367039bb",
+   "e7041727224f3d7d"
+  ],
+  "24": [
+   "197ad42cc478aea1",
+   "33f2fd4ed8fae561",
+   "3a12a46619ab3b10",
+   "98d545f1832347c1",
+   "a43a8925b61b8acc",
+   "d5cfb0bafe4a1db9"
+  ],
+  "32": [
+   "03c8be007b69493a",
+   "130ffae3fd1c9fbb",
+   "3c046a2f0c2a9d2f",
+   "57f2ffcebbe176bb",
+   "5d6ca781625a805f",
+   "6070edf3a839d7cb",
+   "7b8fe97088474468",
+   "7bbfae1af0806a9e",
+   "89f2833e96a46d70",
+   "b0d62457d7d80b3a",
+   "d1469a68c00647d7",
+   "fdaf2a9d55dc9c69"
+  ],
+  "48": [
+   "1aabd8cdf3525831",
+   "269cea9e7a5df0e2",
+   "41715d200a01391c"
+  ]
+ }
+}

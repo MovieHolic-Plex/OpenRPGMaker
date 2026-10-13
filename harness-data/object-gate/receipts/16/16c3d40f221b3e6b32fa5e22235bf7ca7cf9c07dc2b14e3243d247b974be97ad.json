@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16c3d40f221b3e6b32fa5e22235bf7ca7cf9c07dc2b14e3243d247b974be97ad",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing signal post with cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the signal has a clearly visible foreshortened elliptical top surface spanning rows 1 to 5 (approx. 5 rows tall) with an inset detail, viewed from the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9034
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shaft with elliptical cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the signal/pillar shows an elliptical top surface foreshortened from row 1 to row 5 with concentric shading seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9301
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular railway signal column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main column is presented as a flat frontal rectangle. Its upper end has only a thin 1–2px cap/rim rather than a visible horizontal top surface; the broad upper signal housing is a separate detail and does not provide a top plane for the column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 58845
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall rectangular signal column with a rounded signal head and narrow dark side strips",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": true,
+    "pure_front_elevation": false,
+    "evidence": "The main column is overwhelmingly a flat vertical front face; its upper termination is only a thin horizontal cap/rim rather than a measurable top plane. Narrow dark receding panels are visible along both sides, while the rounded upper head is a separate detail rather than a top surface of the column.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "옆면(아이소)",
+    "윗면 0행 < 3"
+   ],
+   "ms": 57203
+  }
+ ],
+ "decidedAt": "2026-10-13T07:53:20.536Z",
+ "cells": {
+  "16": [
+   "3d5cde6ee6d17fd9",
+   "7613ccc61e5b4b88",
+   "c57bdbeba75cd4c7"
+  ],
+  "24": [
+   "1c53e26aa3aa33f9",
+   "3e14656d43fc6bf7",
+   "53607d31636de606",
+   "ad11f6f7ea826b4b",
+   "f99121406c539346",
+   "fa8ea24a75915d4e"
+  ],
+  "32": [
+   "2cb66b6f00a3b184",
+   "3cc6def6ee6fc1d3",
+   "3db87f9eae350218",
+   "65d15e1bb4fac4a6",
+   "81eb762ffe72a1a3",
+   "9a7590c3414bb794",
+   "a6aedf9615c0e2ce",
+   "c2a1b094b820ab26",
+   "c64799c092187efe",
+   "c8c9f46d3c2cd96b",
+   "dfc7cc14a2a52a6e",
+   "f7d621af6232072d"
+  ],
+  "48": [
+   "29b0cb1dda9dd952",
+   "dbf411dc90490897",
+   "dee09af7658e25a3"
+  ]
+ }
+}

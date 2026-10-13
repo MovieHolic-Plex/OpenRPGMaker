@@ -607,12 +607,13 @@ def bridge_rail_v(c):
 
 
 def bridge_post(c):
-    """난간 기둥(굵은 머리 + 받침): 다리 끝·중간에 찍는다."""
-    _rail_body(c)
-    c.R(2, 4, 12, 8, K('conc', 3)); c.R(3, 5, 10, 6, K('conc', 2)); c.HL(3, 5, 10, K('conc', 3)); c.R(3, 9, 10, 2, K('conc', 0))
-    c.HL(2, 3, 12, OL); c.HL(2, 12, 12, OL); c.VL(1, 4, 8, OL); c.VL(14, 4, 8, OL)
-    c.R(6, 6, 4, 2, K('sumi', 1))
-
+    """난간 기둥: 위에서 본 머리 윗면 6줄(밝음) + 앞면 7줄(어두움). 이음 가로대는 위·아래 2줄만 남긴다."""
+    for y in (0, 1, 14, 15):
+        c.R(4, y, 8, 1, K('conc', 1)); c.P(4, y, OL); c.P(11, y, OL)
+    c.R(2, 2, 12, 6, K('conc', 3)); c.HL(2, 2, 12, K('shiro', 1)); c.HL(3, 3, 10, K('shiro', 0)); c.HL(3, 7, 10, K('conc', 2))   # 윗면
+    c.R(2, 8, 12, 6, K('conc', 0)); c.R(2, 8, 5, 6, K('conc', 1)); c.HL(2, 13, 12, K('conc', -2)); c.VL(7, 8, 6, K('conc', -1))   # 앞면
+    c.HL(3, 1, 10, OL); c.HL(2, 14, 12, OL); c.VL(1, 2, 12, OL); c.VL(14, 2, 12, OL)
+    c.R(6, 10, 4, 2, K('sumi', 1))
 
 prop('bridge-post', '다리 난간 기둥', 1, 1, solid=[(0, 0)], tags=['다리', '난간', '하천'], rules='다리 양 끝과 3칸마다 난간 위에 찍는다.')(bridge_post)
 
@@ -833,6 +834,78 @@ prop('bank-slope', '풀 비탈 둘째 줄(어두운 풀+흙 가장자리)', 1, 1
      rules='bank-lip 바로 아랫줄에 가로로 이어 찍는다(불투명).')(bank_slope)
 
 
+# ─────────────────────────── 철도 구간 (2026-10-13: 일본 도시의 척추 — 지상 선로 + 건널목) ───────────────────────────
+def rail_h(c):
+    """지상 선로 한 줄 1×4칸(64px): 자갈 도상 + 침목(세로 2px, 8px 간격) + 레일 둘(윗면 밝음·몸·밑그림자). 칸 폭 16 로 이어 붙인다."""
+    c.R(0, 0, 16, 64, K('conc', -2))
+    for x in range(16):
+        for y in range(0, 64):
+            v = (x * 7 + y * 13) % 11
+            if v == 0: c.P(x, y, K('conc', 0))
+            elif v == 5: c.P(x, y, K('conc', -3))
+    for x0 in (2, 10):
+        c.R(x0, 12, 3, 40, K('ita', -2)); c.VL(x0, 12, 40, K('ita', -1))
+    for ry in (19, 42):
+        c.HL(0, ry, 16, K('tekko', 3)); c.HL(0, ry + 1, 16, K('tekko', 1)); c.HL(0, ry + 2, 16, K('tekko', -1)); c.HL(0, ry + 3, 16, K('sumi', 1))
+
+
+prop('rail-h', '지상 선로(자갈 도상+침목+레일, 1×4)', 1, 4, solid=[(0, 1), (0, 2)], tags=['철도', '선로'], rules='가로로 쭉 이어 찍는다. 철도 띠 4줄을 통째로 덮는다.')(rail_h)
+
+
+def rail_xing(c):
+    """건널목 판 1×4: 콘크리트 패널이 레일 사이를 메운 노면(길 아스팔트와 이어짐)."""
+    c.R(0, 0, 16, 64, K('conc', 0))
+    for y in range(64):
+        if y % 16 == 15: c.HL(0, y, 16, K('conc', -2))
+    for ry in (19, 42):
+        c.HL(0, ry, 16, K('tekko', 3)); c.HL(0, ry + 1, 16, K('tekko', 1)); c.HL(0, ry + 2, 16, K('tekko', -1)); c.HL(0, ry + 3, 16, K('sumi', 1))
+    c.VL(0, 0, 64, K('conc', 2)); c.VL(15, 0, 64, K('conc', -2))
+    for y in range(4, 64, 8): c.P(7, y, K('sumi', 1)); c.P(8, y, K('conc', 2))
+
+
+prop('rail-xing', '건널목 노면 판(1×4)', 1, 4, other='flat', tags=['철도', '건널목'], rules='선로 띠를 가로지르는 도로 폭 칸마다 선로 위에 덮어 찍는다.')(rail_xing)
+
+
+def rail_fence(c):
+    """선로 옆 콘크리트 방호벽 1칸(가로 이음): 윗면 7줄(밝고 결 있음, 뒷모서리 짙은 선) + 앞 모서리 밝은 줄 + 어두운 앞면 5줄 + 밑 풀."""
+    c.HL(0, 0, 16, K('conc', -2)); c.HL(0, 1, 16, OL)
+    c.R(0, 2, 16, 7, K('shiro', 0)); c.HL(0, 2, 16, K('conc', 3)); c.HL(0, 8, 16, K('shiro', 2))
+    for x in range(0, 16, 5): c.P(x + 2, 4, K('conc', 2)); c.P(x, 6, K('conc', 3))
+    c.HL(0, 9, 16, OL); c.R(0, 10, 16, 5, K('conc', -2)); c.HL(0, 10, 16, K('conc', -1)); c.HL(0, 14, 16, K('sumi', 1))
+    for x in (3, 11): c.R(x, 12, 2, 1, K('kii', 1))
+    c.HL(0, 15, 16, K('midori', -1))
+
+
+prop('rail-fence', '선로 콘크리트 방호벽', 1, 1, solid=[(0, 0)], tags=['철도', '울타리'], rules='선로 띠 위·아래 줄에 가로로 이어 찍는다(건널목 칸은 비운다).')(rail_fence)
+
+
+def rail_signal(c):
+    """건널목 경보기 1×3: 계전기 상자(윗면 8줄 결 있는 콘크리트 덮개 + 앞면 문) 위에 줄무늬 기둥과 붉은 등 둘 달린 가로 등보가 선 모양."""
+    # 등보(앞면, 위쪽): 붉은 등 둘 + 흰 십자 표지
+    c.HL(1, 0, 14, OL); c.R(0, 1, 16, 8, K('kii', 0)); c.HL(1, 1, 14, K('kii', 2)); c.HL(1, 8, 14, K('kii', -2))
+    c.VL(0, 1, 8, OL); c.VL(15, 1, 8, OL); c.HL(1, 9, 14, OL)
+    for x in (2, 10):
+        c.R(x, 2, 4, 5, K('sumi', 1)); c.R(x + 1, 3, 2, 3, K('aka', 1)); c.P(x + 1, 3, K('aka', 3))
+    c.R(7, 2, 2, 6, K('shiro', 1)); c.P(7, 2, K('shiro', 3))
+    # 기둥
+    for y in range(10, 25):
+        c.R(6, y, 4, 1, K('kii', 1) if (y // 3) % 2 else K('tekko', 0)); c.P(5, y, OL); c.P(10, y, OL); c.P(6, y, K('tekko', 2)); c.P(9, y, K('tekko', -2))
+    # 상자 윗면: 뒤 모서리 짙은 선 + 결 있는 8줄 + 앞 모서리 밝은 줄
+    c.HL(1, 24, 14, OL); c.HL(0, 25, 16, OL)
+    c.R(1, 26, 14, 8, K('conc', 2)); c.HL(1, 26, 14, K('conc', -1)); c.HL(1, 27, 14, K('conc', 1)); c.HL(1, 33, 14, K('shiro', 3))
+    c.VL(0, 26, 8, OL); c.VL(15, 26, 8, OL)
+    for x, y in ((2, 29), (5, 31), (9, 28), (12, 30), (3, 32), (10, 32), (13, 28)): c.P(x, y, K('conc', 0)); c.P(x + 1, y, K('conc', 0))
+    c.R(5, 22, 6, 3, K('conc', 1)); c.HL(5, 24, 6, K('conc', -2)); c.HL(6, 22, 4, K('conc', 3))                       # 기둥 받침판
+    # 상자 앞면
+    c.HL(0, 34, 16, OL); c.R(0, 35, 16, 11, K('conc', -1)); c.HL(1, 35, 14, K('conc', 1)); c.HL(1, 45, 14, K('conc', -3))
+    c.VL(0, 35, 11, OL); c.VL(15, 35, 11, OL); c.HL(0, 46, 16, OL)
+    c.R(3, 37, 10, 7, K('conc', -2)); c.VL(8, 37, 7, OL); c.P(7, 40, K('kii', 2)); c.P(9, 40, K('kii', 2)); c.HL(4, 38, 3, K('sumi', 1)); c.HL(10, 38, 3, K('sumi', 1))
+    c.HL(1, 47, 14, K('midori', -1))
+
+
+prop('rail-signal', '건널목 경보기', 1, 3, solid=[(0, 2)], tags=['철도', '건널목', '경보기'], rules='건널목 양쪽 보도 칸에 하나씩.')(rail_signal)
+
+
 import shopfront_art                                      # noqa: E402
 shopfront_art.register(prop)
 
@@ -857,6 +930,11 @@ def render_all():
             for x in range(C):
                 if g[y][x]: im.alpha_composite(cells[g[y][x]]['img'], (x * 16, y * 16))
         im.save(os.path.join(OUTDIR, kit['id'] + '.png')); ims.append(im)
+        tr = Image.new('RGBA', (C * 16, R * 16), (0, 0, 0, 0))          # 3/4 관문(object-gate)에 내는 투명 배경 사본 — 미리보기 배경색이 판정을 흐리지 않게
+        for y in range(R):
+            for x in range(C):
+                if g[y][x]: tr.alpha_composite(cells[g[y][x]]['img'], (x * 16, y * 16))
+        os.makedirs(os.path.join(OUTDIR, '_gate'), exist_ok=True); tr.save(os.path.join(OUTDIR, '_gate', kit['id'] + '.png'))
     W = 1100; x = y = 0; rowh = 0; pos = []
     for im in ims:
         if x + im.width > W: x = 0; y += rowh + 8; rowh = 0

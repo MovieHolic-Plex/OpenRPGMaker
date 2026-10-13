@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ba9c14e000cbb71da289c1c0a2b4ac3e887ae8bc4e685a6eff84f364466f1c85",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "bridge railing post",
+ "label": "jp/bridge-post",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "central post block / lantern housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main block (rows 3-11) and connecting post segments (rows 0-1 and 13-15) are drawn strictly in flat front elevation with no visible horizontal top surfaces or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge railing post / lantern block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire post and central block are rendered in flat front elevation with vertical cylindrical shading bands and no visible top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9330
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 66056,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular stone column/post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main rectangular post has a broad, clearly visible horizontal top surface several pixels deep above its south-facing front face. No receding isometric side face is present, and the top is not merely a rim or highlight.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 88937
+  }
+ ],
+ "decidedAt": "2026-10-13T07:39:43.639Z",
+ "cells": {
+  "16": [
+   "2b1807a72cdd13ec"
+  ],
+  "24": [
+   "161425279b655233",
+   "2aa14afbabc9d7b3",
+   "38535f32cfb80d64",
+   "62c76e38bf5b337a",
+   "a907d9bc8695e287",
+   "d60acd43b67b9cdb"
+  ],
+  "32": [
+   "0b3bf4865fb6e1bb",
+   "1fe673a2b3d39f3d",
+   "a1571643e7f8fc77",
+   "b9d0e2a7098c360a",
+   "cb09b5a88207538e",
+   "f4434ad05e01e71f"
+  ],
+  "48": [
+   "40bbe75444c7390e",
+   "4816c582ef15656a",
+   "5d3048aac4f3307b",
+   "615693f5682d319a",
+   "9216103321aebcba",
+   "c029e8987e206c5e"
+  ]
+ }
+}

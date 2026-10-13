@@ -766,7 +766,12 @@ def main():
     ap.add_argument('--dry', action='store_true', help='파일을 쓰지 않고 칸·키트·검증 숫자만 계산한다')
     ap.add_argument('--selftest', action='store_true', help='다시 굽기 동일·가짜 블록 추가 시 번호 불변을 임시 폴더에서 시험하고 bake-report.json 에 기록')
     ap.add_argument('--out-root', default=ROOT, help='산출물 루트(기본 저장소 루트)')
+    ap.add_argument('--gate-report', action='store_true', help='3/4 관문(object-gate) 영수증 현황만 출력하고 굽지 않는다')
     a = ap.parse_args()
+    sys.path.insert(0, HERE); import gate_kinds
+    if a.gate_report:
+        res = gate_kinds.check_all(); gate_kinds.report(res); sys.exit(0 if not res['bad'] else 1)
+    if not a.dry and not a.selftest and os.path.abspath(a.out_root) == os.path.abspath(ROOT): gate_kinds.enforce()   # 3/4 관문: 영수증 없는 키트가 있으면 굽기 거절(JP_GATE=skip 로만 우회)
     out = bake(a.out_root, dry=a.dry)
     rep = out['report']
     if a.selftest:

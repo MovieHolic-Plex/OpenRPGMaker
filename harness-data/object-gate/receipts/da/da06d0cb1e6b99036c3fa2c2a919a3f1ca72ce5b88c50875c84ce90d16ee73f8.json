@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da06d0cb1e6b99036c3fa2c2a919a3f1ca72ce5b88c50875c84ce90d16ee73f8",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signal post with light unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal post and top box/lights are rendered in pure front elevation with flat horizontal bands and 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signal post and head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure 2D front elevation with perfectly horizontal outlines at the red lights, signal housing, collars, and base, showing no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4509
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing signal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signal body is drawn as a flat frontal shaft and panels with no visible horizontal top or cut surface; the small bottom cap does not establish a top for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 51713
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical railway signal post with attached signal housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post and signal housing are presented as flat, front-facing rectangles. No horizontal top or cut face of the main column is visible; the light horizontal bands are front-face details rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 72838
+  }
+ ],
+ "decidedAt": "2026-10-13T07:48:38.594Z",
+ "cells": {
+  "16": [
+   "236e0ce0cc6e632a",
+   "d6311a5af0fd738c",
+   "f38760cb1a0a745f"
+  ],
+  "24": [
+   "0a394e26c1dfc1eb",
+   "2adbff016d96ed74",
+   "32b0ee8d8347b322",
+   "6a0187f1555741c3",
+   "a9227ac70567904d",
+   "d12fbac2ede81344"
+  ],
+  "32": [
+   "0c26b293670ca11f",
+   "12962c46c64ee4e2",
+   "30d4da7f71ff8af0",
+   "42b50e6175aa727d",
+   "525f0d829800fd8b",
+   "929eced93d7e6a2e",
+   "b6183ca0c35c67ee",
+   "b70bbdbeca4cca43",
+   "d287b66ca6754674",
+   "ebef1c58e16126f7",
+   "f0a73c9b88b89218",
+   "fefbdddde6dc3783"
+  ],
+  "48": [
+   "4aefb55726ac429b",
+   "8add5a61daab8c7a",
+   "8c1a7882efe95965"
+  ]
+ }
+}

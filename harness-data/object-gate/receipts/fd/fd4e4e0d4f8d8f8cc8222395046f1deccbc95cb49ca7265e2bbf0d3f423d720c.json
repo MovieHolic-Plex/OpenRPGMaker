@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd4e4e0d4f8d8f8cc8222395046f1deccbc95cb49ca7265e2bbf0d3f423d720c",
+ "width": 16,
+ "height": 64,
+ "kind": "terrain",
+ "name": "river embankment wall face",
+ "label": "jp/river-wall",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "river embankment wall face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a terrain tile strip representing a vertical river embankment wall face descending into water, topped with pavement and a 6-row parapet/curb surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone embankment wall face with coping and water line",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile slice representing a vertical river embankment wall face descending into water, correctly drawn flat-on facing south for JRPG 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5812
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "river embankment wall face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A broad 6-pixel light terrain band is visible above the dark front edge, forming the main body's top surface; the remaining wall is shown as a south-facing terrain face with no receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 77455
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 47718,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:46:20.156Z",
+ "cells": {
+  "16": [
+   "376ebf26cc02dd6b",
+   "76d2524673dea2aa",
+   "83fa4c6c1d1936c9",
+   "84dac6fd6d79eb89"
+  ],
+  "24": [
+   "03aa4dc92dc30ad3",
+   "1cf0168a2d72900a",
+   "2525140ca8d73406",
+   "432317f90a2b9f75",
+   "4b714ddee9c9b02f",
+   "7886aa3ccc488e0a",
+   "861580c33756f053",
+   "9eaaa5fdb70c780e",
+   "a093d4c250f12330",
+   "a150e540ec1c730d",
+   "a8385e7872eb44ac",
+   "b05af29e74c672f8",
+   "b8c72dac1812186b",
+   "cb7ebd0a35fa26a6",
+   "e81ba7f00249949a",
+   "ebfd544f7e0633c8",
+   "f2fb88fd97f7b083",
+   "fb28e0728c7d8412"
+  ],
+  "32": [
+   "3eb04d45bf786a04",
+   "b0f40abb500e7641",
+   "c3a2a109db274d19",
+   "d763efeaae8fc3bd",
+   "dbc0bf5865968c10",
+   "e463ca231c05ebf0"
+  ],
+  "48": [
+   "0ae0966c9964c543",
+   "288849027c9115f4",
+   "3071bb250cc36505",
+   "544844f3e147fac2",
+   "7859f5d3bad38ac1",
+   "9881ad748bb5d74e",
+   "9dfa24ccd7d78548",
+   "ac1204ab8d5f303c",
+   "b29e7b99f7cf10cb",
+   "cb75ef9bd0dab671",
+   "cf0561bf280dda98",
+   "e79c59eab4394800"
+  ]
+ }
+}

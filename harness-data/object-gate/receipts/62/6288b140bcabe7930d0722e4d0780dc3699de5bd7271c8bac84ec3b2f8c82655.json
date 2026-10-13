@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6288b140bcabe7930d0722e4d0780dc3699de5bd7271c8bac84ec3b2f8c82655",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "bridge post",
+ "label": "jp/bridge-post",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge post / rail segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central block and vertical post are drawn entirely in straight flat front elevation with horizontal outline bars and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "central rectangular block and vertical post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central block and post are drawn strictly as flat 2D rectangles in pure front elevation with no visible top surface or horizontal plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3911
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 41217,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular bridge post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main broad rectangular post is shown as a flat front face with only a 1px dark top edge; the lighter area above is not a convincingly foreshortened top surface of the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 124179
+  }
+ ],
+ "decidedAt": "2026-10-13T07:17:27.967Z",
+ "cells": {
+  "16": [
+   "6e9457bed8115867"
+  ],
+  "24": [
+   "33302db5a964ae89",
+   "6349a2b6e7ad675c",
+   "7abec8f2b34a9539",
+   "98dd022ef7c83d95",
+   "9e0b6b022957beb0",
+   "cccd391d74bb08e9"
+  ],
+  "32": [
+   "0ca4834be3d324a3",
+   "3a81e9f04f028b7f",
+   "6c89e21b2d860828",
+   "d39ce62d35298d25",
+   "e0bda947507add6f",
+   "e4b88369683612c5"
+  ],
+  "48": [
+   "0331689fc99f48ce",
+   "29a4cf6779ab414b",
+   "598486740e9e896e",
+   "a884b44450539255",
+   "b2e896b21467b7a2",
+   "bf6a057d49a1343f"
+  ]
+ }
+}

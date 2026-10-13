@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6693e7e639b88fcc502c1b9c0ef1e22758675c4c8bf3c174a70f9784e6f46b52",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "track mesh fence",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mesh fence frame and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure 2D front elevation: the vertical posts and horizontal crossbars/mesh divisions have no visible top surfaces or depth foreshortening, terminating flatly at the green base line on row 15.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7816
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mesh fence frame with posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn completely flat from the front as in a side-scroller. The horizontal beams and rails are 1-2px flat strips with no foreshortened top surfaces, the vertical posts have no visible top caps, and the bottom contacts the grass in a single flat horizontal line without base depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9261
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "track mesh fence frame with two vertical posts and a mesh panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is presented as a flat front elevation: the posts and mesh are straight-on, with no visible top surface on the main frame or horizontal beams.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 102871
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "mesh fence panel with vertical posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mesh and posts are presented as a flat elevation; the top rail has only a narrow edge rather than a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 99131
+  }
+ ],
+ "decidedAt": "2026-10-13T07:39:43.638Z",
+ "cells": {
+  "16": [
+   "1c219fe0fcee5c8d"
+  ],
+  "24": [
+   "05de8bd358b36355",
+   "53cb1c6d3eda129f",
+   "70aa8f05b6b2a11c",
+   "73ddaf3ccec8bf95",
+   "ccd532ec47f5b629",
+   "de8a84da30df73bd"
+  ],
+  "32": [
+   "4429b776fdd02609",
+   "74ae34f3572bec14",
+   "7620d7b6658943a9",
+   "a22dbcb69b367fbd",
+   "c7aec2ba9d95f614",
+   "da6dd50e080ac97c"
+  ],
+  "48": [
+   "18dd9ea946ab9b7d",
+   "2c592d8b826f689a",
+   "a4f72014e94c9cef",
+   "b1c5b3aafe5adb7e",
+   "e44d10e7537fc4bd",
+   "ebb3cb2a673b55ba"
+  ]
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "21a6badbc58bcb7961ebd33bc6629cef150444428aee7f78b735c2040950c99d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pole and base of the railway crossing signal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation. The base plinth at the bottom has no top surface visible (just a flat 2px horizontal bar), the collar at rows 9-10 is a flat horizontal line, the lights and crossbuck are drawn flat, and the speaker/bell at the top faces straight towards the camera with no foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical signal column / pole with base and top alarm",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the base is a flat 2px rectangle with no top surface, the pole's stripes are completely horizontal 1px lines without curvature, and the top bell/speaker is drawn facing directly forward (with side mounting brackets) rather than showing a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14168
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall railway crossing signal with a rectangular signal head and narrow vertical post",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal head has a visible light top plane about 2 source pixels deep, but the tall main post is presented almost entirely as a flat south-facing rectangle and its own top end is obscured by the head.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "윗면 2행 < 3"
+   ],
+   "ms": 68046
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 65794,
+   "error": "Error: The socket connection was closed unexpectedly. For more information, pass `verbose: true` in the second argument to fetch()"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:58:46.921Z",
+ "cells": {
+  "16": [
+   "3d5cde6ee6d17fd9",
+   "8ea38a0d1de5c7c1",
+   "eb7e5ea422bf876d"
+  ],
+  "24": [
+   "1c53e26aa3aa33f9",
+   "3e14656d43fc6bf7",
+   "86e19d727a8de7d6",
+   "ad11f6f7ea826b4b",
+   "edc97b20d478dba8",
+   "f1cb68a511b627ac"
+  ],
+  "32": [
+   "32da856cf19e0614",
+   "3421c284d86006f3",
+   "372f3f85ec2aac1b",
+   "3db87f9eae350218",
+   "7a3939cb1321772b",
+   "84cb3d14e6878b91",
+   "b42b3531e97edb6f",
+   "bb955a7933573839",
+   "c64799c092187efe",
+   "dfc7cc14a2a52a6e",
+   "eeab6a578305c59d",
+   "f34d810909690c53"
+  ],
+  "48": [
+   "947f292ed113b4c3",
+   "e32b58d104667f70",
+   "fc5ef8bdb983043e"
+  ]
+ }
+}

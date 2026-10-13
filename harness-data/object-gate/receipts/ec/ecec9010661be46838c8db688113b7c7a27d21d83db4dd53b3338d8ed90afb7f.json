@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecec9010661be46838c8db688113b7c7a27d21d83db4dd53b3338d8ed90afb7f",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "track mesh fence",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mesh fence",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A standing fence is not a wall-mounted object (it stands on the ground). Furthermore, it is drawn in pure front elevation with no visible top surface on the posts or rails (only a 1px highlight at the post tips).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5573
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mesh fence with vertical posts and horizontal rails",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a freestanding fence rooted in grass at row 15, not an object mounted flat on a wall. Furthermore, it is drawn in pure front elevation with no visible top depth on the rails or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4763
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "mesh fence panel with vertical posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is shown as a flat frontal mesh with no visible top surface or receding side face; a track mesh fence is not plausibly wall-mounted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 60995
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "flat mesh fence panel with vertical posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mesh fence is drawn as a flat frontal grid with no visible top surface; it is not plausibly wall-mounted as labeled.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 108478
+  }
+ ],
+ "decidedAt": "2026-10-13T07:17:27.967Z",
+ "cells": {
+  "16": [
+   "fd045ba4ae8a8f6f"
+  ],
+  "24": [
+   "070e41eea9a587a5",
+   "2bec82090284752f",
+   "41e313207869eba5",
+   "5b3f4ee61e193275",
+   "af80417e13b5b95c",
+   "e1920cde24e01ca1"
+  ],
+  "32": [
+   "1b36899fee061d47",
+   "48d93a2d43837f35",
+   "76ee6bd3878d7884",
+   "85a281af75c8c1ce",
+   "a6848093eedbfaf5",
+   "f73745f97123f943"
+  ],
+  "48": [
+   "135349d81124e111",
+   "2ecbcee251df81f2",
+   "6edec94d379fc999",
+   "886bdfdbc408c28d",
+   "cb657d63f84d0a65",
+   "f4777915c034f24f"
+  ]
+ }
+}

@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df5b859da506a886c7a57970dce9d8e6746558940e7319aeb8275c4b9056a29f",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "track mesh fence",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "track mesh fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and its horizontal rails/curbs are drawn entirely in flat front elevation with vertical posts and horizontal bands, showing no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7104
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence rail and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in pure front elevation (side-scroller style). Neither the top rail, the crossbars (rows 8-9), nor the bottom base rail (rows 13-14) show a foreshortened top surface; the base sits as a flat horizontal stripe directly on the grass.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8233
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Mesh fence panel with upright posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main fence is shown as a flat elevation. Its upper rail has only a one-pixel edge strip, not a visible horizontal top surface with depth; the posts and lower rail also lack substantial top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 16363
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 15224,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:43:21.378Z",
+ "cells": {
+  "16": [
+   "4e02564cc2599cca"
+  ],
+  "24": [
+   "3513360c014df73b",
+   "39bc47b5e24c4419",
+   "50639b2b941629ed",
+   "7d1dafc7806d33ea",
+   "d96b36e83d67fd1e",
+   "e9b989c4a5bb4591"
+  ],
+  "32": [
+   "22e4909d9d3f2ce1",
+   "688c44d6d1503e08",
+   "d1949bceaf4db4f0",
+   "dce73820804db79c",
+   "de896c1342b8d840",
+   "fe5f3f4355d81a26"
+  ],
+  "48": [
+   "5461073f25556f6e",
+   "59dd1bcee08ee178",
+   "7d5db25064d7ae54",
+   "89048f388eba9db2",
+   "a3e2dcb591daf205",
+   "dbbf3b32db27dca0"
+  ]
+ }
+}

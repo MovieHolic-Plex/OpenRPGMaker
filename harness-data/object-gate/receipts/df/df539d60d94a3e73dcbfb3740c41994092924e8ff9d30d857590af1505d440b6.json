@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df539d60d94a3e73dcbfb3740c41994092924e8ff9d30d857590af1505d440b6",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "track mesh fence",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "track mesh fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and its base curb are drawn as a flat front elevation. Neither the posts, horizontal rails, nor the bottom curb show a foreshortened top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7215
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "track mesh fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in flat 2D front elevation. The top rail/beam (rows 0-3), vertical posts, mesh panels, and bottom bar (rows 13-14) show only their front faces with no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13137
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 67911,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "track mesh fence panel and posts",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence has a broad visible horizontal top surface roughly four source pixels deep above the front-facing mesh and posts. No receding isometric side face is present; the remaining structure is a normal south-facing frame silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 46791
+  }
+ ],
+ "decidedAt": "2026-10-13T07:46:20.156Z",
+ "cells": {
+  "16": [
+   "63828c7abd9eb842"
+  ],
+  "24": [
+   "1883f842136db3e0",
+   "4719a4b8efaf2d93",
+   "4b97694b65a50dca",
+   "8486d27f0028b75d",
+   "e308532413c1945e",
+   "ea892dd034d95720"
+  ],
+  "32": [
+   "044bfd4fad31dcc6",
+   "04ebf512a6e48280",
+   "72eae9c5797b6e55",
+   "aff87909eaf397d5",
+   "c1f4a3799d3d10e8",
+   "cdc5eff987408433"
+  ],
+  "48": [
+   "037756c9562efc77",
+   "17de618d62856936",
+   "c5b5871c99d92de6",
+   "e34a0df9280c9abc",
+   "f5322256305c522b",
+   "ff47438e6bb0d5a5"
+  ]
+ }
+}

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "895fa827a5b5b4175cadf589971b794f13a512f39cfcc2b966faabb721a239cd",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "bridge railing post",
+ "label": "jp/bridge-post",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge railing post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post body is drawn as a flat rectangular box bounded by perfectly vertical side outlines (cols 4 and 14) and flat horizontal boundaries (rows 1 and 14). No foreshortened top surface or cap is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5297
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge railing post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post is rendered as a flat front elevation with a 1px top border at row 1; rows 2-7 and 8-13 form vertically shaded front panels rather than a foreshortened horizontal top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10958
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular bridge railing post with a broad light top plane and south-facing front face",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible multi-row top surface above the front face; no receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 101856
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular bridge railing post",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post has a clearly visible broad top plane approximately 6 source pixels deep above its south/front face; it is more than a mere rim or edge line. No receding isometric side face is present, and the body is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 101554
+  }
+ ],
+ "decidedAt": "2026-10-13T07:46:20.156Z",
+ "cells": {
+  "16": [
+   "e984afad7fffb82c"
+  ],
+  "24": [
+   "0298c48157948dbd",
+   "37f274232043ce4e",
+   "6e337f9cbfbaf3d5",
+   "8eecd01adfdc7685",
+   "c0008f7e07e1f935",
+   "e30d54889fca4253"
+  ],
+  "32": [
+   "6ce07c0c90901e91",
+   "77b2db2ea7b8949e",
+   "b2c9b179a9305008",
+   "c0643da84858b91b",
+   "ed9a6b0a8a9bc91c",
+   "f15b13e2f38d6fc8"
+  ],
+  "48": [
+   "09c9d9c408a398b6",
+   "26c1fa0afd4fbc74",
+   "64b28240b8f08335",
+   "82bf7f30c1157332",
+   "ebe2fe8b488ba2ed",
+   "f4a6dd5fb86c7b5e"
+  ]
+ }
+}

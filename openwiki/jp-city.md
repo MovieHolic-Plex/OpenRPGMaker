@@ -376,3 +376,7 @@ python3 scripts/content/jp-city/bake_refs.py                   # 문서·그림�
 - 역할 `tower`(7~13층, 폭 6~9, 일체형 정면은 office 키트 재사용). 키 큰 띠(발-윗줄 16줄 이상)의 상가 구획에서 셋 중 하나꼴로 섞고 절반은 윗부분이 들어간 계단식. 맵 높이 52 이상이면 뒷줄 띠를 높인다(`skyline`).
 - 네온 세로 간판·블레이드 간판·깃발·자전거 떼·고양이는 `nearWall` 로 건물 벽 바로 옆 빈 열에만 붙인다. 나무·건물·다른 소품과 겹치면 겹침 정리가 뺀다.
 - 한계: 고층 외형이 아직 단조(창 리듬만 다름), 옥상 간판·베이스 포디움 없음. 적대 QA 5.5/10.
+
+## 조수 지침: compose 우선 (2026-10-13)
+
+`jpCityPolicy.ts` 의 포인터·상세·노트를 «거리 한 장 = `compose_jp_city_street` 먼저, 이후 build_jp_city_building/fill_region 로 부분 보정, link_jp_city_interior 로 실내 잇기» 로 다시 썼다. 라우팅은 `describesCityStreet`(번화가·상점가·도심·시가지·주택가·downtown 등)를 jp_city 맵이 이미 있는 프로젝트에서만 허용하고 미국풍/modern_city 낱말은 제외한다. 세부는 `openwiki/editor-ai-tools.md` 「일본 도시 조수 연결」.
