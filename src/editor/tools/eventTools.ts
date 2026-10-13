@@ -4136,7 +4136,23 @@ function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
       const transfersOf = (event: GameEvent | undefined): Array<{ mapId?: string; direction?: string }> =>
         (event?.pages ?? []).flatMap((page) => (page.commands ?? []).filter((command) => command.kind === "transfer") as Array<{ mapId?: string; direction?: string }>);
       const before = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId)).map((entry) => ({ ...entry }));
+      const eventBefore = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const nameBefore = eventBefore?.name;
+      const fadeBalance = (event: GameEvent | undefined): number => (event?.pages ?? []).flatMap((page) => page.commands ?? []).reduce((sum, command) => {
+        const id = String((command as { commandId?: unknown }).commandId ?? "");
+        return sum + (command.kind === "m2Command" && /m2-044/u.test(id) ? 1 : command.kind === "m2Command" && /m2-045/u.test(id) ? -1 : 0);
+      }, 0);
+      const balanceBefore = fadeBalance(eventBefore);
       const result = base.run(draft, args);
+      const eventAfter = draft.maps[mapId]?.events.find((event) => event.id === eventId);
+      const editNotes: string[] = [];
+      // 이벤트 이름만 바꾸면 대화창에 뜨는 화자명은 옛 이름 그대로다(실측 2026-10-14: 이름 변경 후에도 대사 화자가 「마을 주민」).
+      if (nameBefore && eventAfter?.name && eventAfter.name !== nameBefore) {
+        const stale = (eventAfter.pages ?? []).flatMap((page) => page.commands ?? []).filter((command) => command.kind === "text" && (command as { speaker?: string }).speaker === nameBefore).length;
+        if (stale) editNotes.push(`대사 ${stale}개의 speaker 가 옛 이름 '${nameBefore}' 그대로입니다 — 이름 변경 요청이면 speaker 도 '${eventAfter.name}' 으로 바꾸세요.`);
+      }
+      // 화면 숨기기(m2-044)만 남고 보이기(m2-045)가 지워지면 장면이 끝나도 화면이 어두운 채 남는다.
+      if (fadeBalance(eventAfter) > balanceBefore) editNotes.push("화면 숨기기만 남고 화면 보이기가 없어 화면이 어두운 채 남습니다 — 페이드는 숨기기·보이기를 짝으로 다루세요.");
       const changed = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId))
         .filter((entry) => entry.mapId && entry.direction && !before.some((old) => old.mapId === entry.mapId && old.direction === entry.direction));
       const notes: string[] = [];
@@ -4149,7 +4165,8 @@ function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
         }
         }
       }
-      return notes.length ? { ...result, summary: `${result.summary} ⚠ ${notes.join(" ")}` } : result;
+      const all = [...editNotes, ...notes];
+      return all.length ? { ...result, summary: `${result.summary} ⚠ ${all.join(" ⚠ ")}` } : result;
     },
   };
 }
