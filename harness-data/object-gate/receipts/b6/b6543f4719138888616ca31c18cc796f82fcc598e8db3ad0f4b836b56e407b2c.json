@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-s-grate",
  "label": "jp_city/street_hand/jp-mark-edge-s-grate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "floor drain grate and pavement marking",
+    "main_body": "floor grate and edge marking",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat floor feature comprising a pavement strip and a floor drain grate set flush into the ground, viewed from above.",
+    "evidence": "The object is a flat floor tile featuring horizontal painted markings and a drain grate, appropriately depicted flat on the horizontal ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5654
+   "ms": 3937
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "floor edge grate",
+    "main_body": "road pavement with painted white marking and drainage grate lying flat on ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground surface tile containing a road stripe and embedded drainage grate seen flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4058
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor grate edge marking",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat floor element representing a drain grate along a pavement edge, viewed entirely from above on the ground plane.",
+    "evidence": "The object is a flat floor element featuring a drain grate embedded in the ground plane, viewed appropriately from above as a ground surface feature.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4093
+   "ms": 4104
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "rectangular grate panel with vertical openings",
+    "main_body": "floor with safety marking and drainage grate",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main grate is presented as a flat rectangular front panel; the light strip at its upper edge is only a 1px rim, with no visible top surface. The openings are shown as front-facing vertical bars rather than a surface viewed from above.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat floor surface with a painted white line and a ground-level slotted drain grate seen from above.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 204960
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 172863,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "ms": 9463
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.485Z",
+ "decidedAt": "2026-10-13T11:34:33.359Z",
  "cells": {
   "16": [
    "79c31bbad959c1cd"

@@ -6,13 +6,49 @@
  "kind": "structure",
  "name": "jp-bwallf-end-l",
  "label": "jp_city/street_hand/jp-bwallf-end-l",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
+   "answer": {
+    "main_body": "building wall section with tiled roof",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel-tall tiled roof surface viewed from above over the vertical wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5444
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese building wall/facade section",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 feature a 4-pixel-tall foreshortened tiled roof/top surface above the dark eave shadow at row 4, topping the multi-tiered wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7838
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "Japanese building wall segment",
     "kind_matches": true,
@@ -21,69 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top of the wall structure features 4 rows of foreshortened tiled roof surface (rows 0-3) above the vertical wall facade.",
+    "evidence": "Rows 0-3 show a 4px tall foreshortened tiled roof/wall-top surface above the vertical wall facade.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7096
+   "ms": 6828
   },
   {
    "judge": "gemini",
-   "run": 2,
+   "run": 4,
    "answer": {
-    "main_body": "Japanese wall section with tile roof cap",
+    "main_body": "Japanese building wall segment with tiled roof coping",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top of the wall structure features a 4-pixel-tall tiled roof cap/eave (rows 0–3) showing its angled top surface above the vertical wall face.",
+    "evidence": "Rows 0-3 show 4 rows of tiled roof surface viewed from above before the dark overhang and vertical front wall structure below.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 11387
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "large wall or gate facade with a flat roof cap",
-    "kind_matches": true,
-    "top_rows": 4,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main facade has a substantial horizontal top plane spanning source rows 5-8, bounded by a dark back edge at row 4 and front rim at row 9. The rows below form the south-facing wall/gate face; no receding side face is drawn.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 76349
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "large brown-and-stone wall/building section",
-    "kind_matches": true,
-    "top_rows": 3,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a visible brown horizontal top plane spanning about source rows 5-7, between dark rear and front edge bands; the remaining wall is a south-facing front face. No receding isometric side face or container opening is present.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 95805
+   "ms": 6042
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.915Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "08e4c67381e2f030",

@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-edge-n-grate",
  "label": "jp_city/street_hand/jp-mark-edge-n-grate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "road surface with north storm drain grate and painted line",
+    "main_body": "ground tile with road marking and drainage grate",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat ground tile depicting an asphalt road edge with an inset drain grate at rows 0-4 and a road stripe at rows 12-13, viewed from directly above as a flat horizontal plane.",
+    "evidence": "Lies entirely flat on the ground across all 16 rows, depicting asphalt, road line, and a drainage grate seen from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4585
+   "ms": 4596
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "road surface with drainage grate and white painted line",
+    "main_body": "road surface with drainage grate and painted line marking",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The entire tile is a top-down ground surface containing a metal grate at rows 0-4, asphalt pavement, and a white road stripe at rows 12-13.",
+    "evidence": "The entire 16x16 sprite is a flat floor/ground tile featuring asphalt texture, a painted road stripe, and a flush drainage grate viewed entirely from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3306
+   "ms": 2954
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "grate",
+    "main_body": "road surface with northern drainage grate and painted white marking",
     "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The grate is shown as a flat barred front strip with no meaningful horizontal top surface; the broad checker area reads as surrounding ground rather than the grate body.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 83411
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "rectangular grate panel with vertical bars",
-    "kind_matches": true,
-    "top_rows": 6,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main grate is a broad 6-pixel-tall rectangular surface with repeated bar pattern, giving substantial visible top area rather than only a front edge. No receding side face or separate south-facing body face is drawn.",
+    "evidence": "The entire tile depicts flat ground/pavement with an embedded drainage grate along rows 0-4 and a road marking line at rows 12-13, viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 244658
+   "ms": 3378
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drainage grate and road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire tile depicts a flat road surface seen from above with a painted line and a flush drainage grate spanning rows 0 to 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3781
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.485Z",
+ "decidedAt": "2026-10-13T11:34:33.359Z",
  "cells": {
   "16": [
    "e47b20fa9fea71f6"

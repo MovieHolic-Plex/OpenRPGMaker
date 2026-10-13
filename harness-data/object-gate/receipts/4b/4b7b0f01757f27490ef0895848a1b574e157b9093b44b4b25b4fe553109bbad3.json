@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b7b0f01757f27490ef0895848a1b574e157b9093b44b4b25b4fe553109bbad3",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-4-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront building facade with sloped roof eaves",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof eave slope is clearly visible across rows 1 to 7 (7 rows tall) leading down to the facade wall, characteristic of the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6007
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with roof eaves and entrance",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/eaves at the top of the structure spans rows 1 to 7 (7 pixel rows tall), providing a clear top-down foreshortened view above the facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5239
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building facade with roof and entrance",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof eave at the top shows a foreshortened forward slope measuring roughly 7 pixel rows (rows 1-7), properly giving top-down perspective to the building structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "izakaya storefront building with roof awning and entrance",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof/awning along the top spans rows 1 to 7 as a clear foreshortened slope visible from above before the eave edge at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4371
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.389Z",
+ "cells": {
+  "16": [
+   "31503ef37ea162cf",
+   "5b56ab9854f9e31c",
+   "61cac19962dc28f9",
+   "75751a77b26537ac",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "ad5f123bf1aee714",
+   "e374434bc8fe3f78",
+   "f488c48fcf235fd4",
+   "ffff6582e5e63569"
+  ],
+  "24": [
+   "0be616c24fd0c7c8",
+   "1a01485225dc24f9",
+   "22cdd948d1af2f4b",
+   "2b0f926dc5033e1a",
+   "41d484633b39caaf",
+   "4d743cd58ddf6a0f",
+   "5fc2adab7e93d111",
+   "67e4656e37cf92b6",
+   "769c427669bd7ab5",
+   "7e96f9abc193ae8f",
+   "91092d31746e8fbe",
+   "9421e08c3ead230c",
+   "9bda59c99a020523",
+   "9e31ca52ec7f2638",
+   "c45fd45f2c144cf7",
+   "e1369a1f39a56669",
+   "e6d62ba263de21e0",
+   "fee78a9fb49c83fe"
+  ],
+  "32": [
+   "038cd0b52418608c",
+   "1b18723b82dbd899",
+   "3402323e1d34310c",
+   "48971090a3c52041",
+   "6d18bf56dfad3adc",
+   "a2007b7938fec5f3",
+   "bf64c2853be6f61a",
+   "e1c488ae9938e456"
+  ],
+  "48": [
+   "45f529e99e803219",
+   "4dae6bc3fa652ab0",
+   "567ca7f50b683e0e",
+   "5f074c00f8f27d65",
+   "692f8832216940c3",
+   "89f14d023cda6ba0"
+  ]
+ }
+}

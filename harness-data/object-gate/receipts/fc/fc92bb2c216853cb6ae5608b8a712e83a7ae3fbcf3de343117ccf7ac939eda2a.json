@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-18",
  "label": "jp_city/street_hand/jp-wire-18",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "hanging wires / cables",
+    "main_body": "hanging overhead or wall wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Overhead or wall-strung wires drawn as thin sagging lines; as a flat decorative element like chains or cobwebs, no 3D top surface is required.",
+    "evidence": "Thin sagging wires/cables depicted as 1-2px lines; appropriate for wall-mounted/suspended decorative elements.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 10578
+   "ms": 5220
   },
   {
    "judge": "gemini",
@@ -39,51 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin suspended cables/wires spanning across the frame; as a thin wall_mounted/overhead hanging element, flat representation is expected and correct.",
+    "evidence": "Thin overhead/wall-strung wires or cables with catenary sag; legitimately 1-2px thin linear feature per wall_mounted/hanging category.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6092
+   "ms": 5198
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "three thin horizontal wires",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The object is composed of thin, front-facing horizontal wire strands with no substantial volumetric body or visible top surface; this is plausible for a wall-mounted wire/chains-like object.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 140467
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "thin wall-mounted wire strands",
+    "main_body": "overhead/wall-mounted electrical wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin flat wire-like strands attached to the wall, with no substantial volumetric body or applicable top surface; it is not a receding side-face or solid front elevation.",
+    "evidence": "Three drooping wire strands, each 1-2px thick; permitted flat geometry for suspended/wall-mounted wire cables.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 396656
+   "ms": 4469
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "overhead/wall-mounted electrical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin hanging wires/cables strung horizontally; as a wall-mounted/overhead wire object, it consists of 1-2px lines without a 3D top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5089
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.234Z",
+ "decidedAt": "2026-10-13T11:39:50.704Z",
  "cells": {
   "16": [
    "0fcb1a6608cb793e",

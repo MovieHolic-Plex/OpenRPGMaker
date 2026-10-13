@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-7",
  "label": "jp_city/street_hand/jp-wire-7",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,24 +14,42 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "hanging wires",
+    "main_body": "hanging electrical wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Cables/wires suspended across the view, drawn as thin sagging lines. Wall-mounted and suspended wire-like objects are flat by nature.",
+    "evidence": "Cables/wires hanging in catenary arcs, appropriately categorized as wall-mounted or suspended flat overhead decor.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5511
+   "ms": 4271
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Curved suspended wires or cables strung horizontally across the scene, properly classified as wall-mounted / hanging fixtures where no top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
     "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
@@ -39,44 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Curved hanging wires or cables mounted across a wall or overhead; appropriate as a flat wall/overhead decorative element.",
+    "evidence": "Curved suspension wires/cables, thin lines suitable as wall-mounted or overhead wire details which are naturally flat.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4594
+   "ms": 3315
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "three horizontal dark wall wires/strands",
+    "main_body": "hanging wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin stepped horizontal strands mounted against the wall, with no substantial volume or horizontal top surface to display.",
+    "evidence": "Three hanging catenary wires/cables, appropriately flat for wall-mounted/overhead wire props.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 108198
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 319738,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "ms": 3083
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.235Z",
+ "decidedAt": "2026-10-13T11:39:50.705Z",
  "cells": {
   "16": [
    "17d3a884da27a030",

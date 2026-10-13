@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-v8",
  "label": "jp_city/street_hand/jp-wire-v8",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "vertical wires",
+    "main_body": "hanging wires / cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Vertical hanging wires/cables mounted on a wall or surface, appropriately depicted as thin 1-2px lines without 3D depth requirement.",
+    "evidence": "Vertical wires or cables hanging flat along a wall. Wall-mounted flat objects and thin suspended elements do not require top-down foreshortening.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5066
+   "ms": 4388
   },
   {
    "judge": "gemini",
@@ -39,51 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Thin vertical hanging wires or cables mounted on a wall/pole; flat vertical nature is appropriate for wall-mounted wire details.",
+    "evidence": "Wall-mounted / hanging vertical wires of varying lengths; flat vertical elements permissible under the wall_mounted kind.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3669
+   "ms": 5590
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "four vertical wall-mounted wire strands",
+    "main_body": "vertical wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin, flat vertical strands mounted against the wall; no substantial 3D main body or horizontal top surface is expected for this wall-mounted wire object.",
+    "evidence": "Wall-mounted hanging vertical wires/cables; flat 1-2px vertical lines correctly representing wall-mounted cables.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 106034
+   "ms": 2801
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "four vertical wall-mounted wire strands",
+    "main_body": "vertical hanging wires/cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin vertical wall-mounted strands with no substantial horizontal top surface; its flat presentation is appropriate for a wire-like wall decoration rather than a volumetric body.",
+    "evidence": "Vertical hanging wires/cables mounted or hanging against a vertical surface, acceptable flat wall-mounted asset.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 152821
+   "ms": 4454
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.236Z",
+ "decidedAt": "2026-10-13T11:39:50.706Z",
  "cells": {
   "16": [
    "024f12b6ac105723",

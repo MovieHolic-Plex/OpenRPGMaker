@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-bridge-joint",
  "label": "jp_city/street_hand/jp-bridge-joint",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,23 +14,41 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "bridge joint seam strip",
+    "main_body": "bridge expansion joint / seam strip",
     "kind_matches": true,
     "top_rows": 2,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Object is a 2-pixel tall horizontal bridge expansion joint lying flat on the deck surface across rows 7-8.",
+    "evidence": "The object is a flat floor seam/joint strip spanning the width of the tile, drawn 2 pixels tall directly on the ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7072
+   "ms": 5507
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "bridge joint / floor seam strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel tall horizontal line/seam across rows 7-8 representing a flat bridge joint on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3040
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "bridge joint strip",
     "kind_matches": true,
@@ -39,51 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a 2-pixel-tall horizontal joint strip lying flat on the floor plane across rows 7-8.",
+    "evidence": "The object is a flat joint/seam strip lying directly on the floor plane across rows 7-8, functioning as a floor decal/seam.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6065
+   "ms": 3385
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "narrow horizontal bridge-joint strip",
+    "main_body": "bridge joint seam strip",
     "kind_matches": true,
     "top_rows": 2,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The flat strip occupies source rows 7–8 and is viewed from above. These rows constitute the entire ground-level body, not a cap on a standing front face.",
+    "evidence": "The object is a flat joint/seam strip lying on the ground plane spanning rows 7-8, functioning as a floor decal/transition line.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 16046
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "Thin horizontal bridge-joint strip",
-    "kind_matches": true,
-    "top_rows": 1,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The strip consists of a single dark row above a single light row. No substantial horizontal surface is visible from above; the light row reads as an edge highlight rather than a plate surface.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 10845
+   "ms": 3435
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.480Z",
+ "decidedAt": "2026-10-13T11:34:33.354Z",
  "cells": {
   "16": [
    "2f1b0174e4f04dc7"

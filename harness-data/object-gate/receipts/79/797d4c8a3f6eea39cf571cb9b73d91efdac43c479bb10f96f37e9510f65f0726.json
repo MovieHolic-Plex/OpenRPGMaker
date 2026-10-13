@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-bus-stop",
  "label": "jp_city/street_hand/jp-bus-stop",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "bus stop timetable board and sign post",
+    "main_body": "bus stop post and timetable board",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The timetable board (rows 21-35) and the circular sign (rows 7-16) are drawn in pure front elevation with no visible top surfaces or depth foreshortening. While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "evidence": "The timetable board and signs are drawn in pure front elevation with a flat 1px horizontal top outline and no top surface visible.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 9885
+   "ms": 6060
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "timetable board and signpost assembly",
+    "main_body": "timetable board / sign board",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The timetable board (rows 21-35) and circular sign (rows 7-16) comprise the main body and are drawn in pure front elevation with no visible top surface (0px top). Only the base plinth at the bottom has an exposed top surface, which does not satisfy the main body requirement.",
+    "evidence": "The timetable board (rows 21-35), which constitutes the main volume of the bus stop, is drawn in pure front elevation with a flat 1px horizontal outline across the top (row 21) and zero visible depth/top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,43 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 8411
+   "ms": 5320
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large rectangular bus-stop sign/timetable board",
-    "kind_matches": false,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main rectangular board is shown as a flat front elevation; its top is only a dark 1–2px edge with no visible horizontal surface, and no receding side face is present. The object reads as a sign/timetable assembly rather than a column or pillar.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "종류 불일치",
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 83202
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "rectangular bus-stop signboard on a vertical post",
+    "main_body": "bus stop timetable board and post",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main rectangular signboard is presented as a flat front elevation; its top is only a thin dark edge with no visible horizontal top plane. No receding side face is shown.",
+    "evidence": "The timetable board (the largest volume of the post, rows 21-35) is rendered as a flat 2D rectangle in pure front elevation with only a 1px outline on top. While the base plinth shows a top surface, the main body itself has 0 rows of visible top surface.",
     "verdict": "fail"
    },
    "pass": false,
@@ -101,10 +78,32 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 78893
+   "ms": 6051
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop timetable board and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular timetable board (rows 21-35) is drawn as a flat 2D front view with only a 1px outline at row 21 and no visible top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5543
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.914Z",
+ "decidedAt": "2026-10-13T11:34:33.355Z",
  "cells": {
   "16": [
    "5654766ebb81ec2f",

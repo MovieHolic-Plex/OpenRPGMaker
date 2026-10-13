@@ -6,7 +6,7 @@
  "kind": "box",
  "name": "jp-gomi-box",
  "label": "jp_city/street_hand/jp-gomi-box",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,80 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese street garbage collection box (wire mesh cage)",
+    "main_body": "green mesh garbage box (gomi box)",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top lid is visible from above across rows 2-5 (4 pixel rows), separated by a shadow edge at row 6 from the south front face (rows 7-14).",
+    "evidence": "Rows 2–5 form the top lid surface (4px deep) with visible mesh texture and frame, while rows 7–14 form the vertical front face featuring the wire cage pattern and a white label plate.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9041
+   "ms": 7908
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese green wire-mesh garbage collection box",
+    "main_body": "Japanese street trash collection box (gomi box)",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top lid of the wire-mesh box is visible from rows 2 to 5 (4 pixel rows deep) with its own framing and mesh pattern, separated by a horizontal dividing line from the front face (rows 7-14) which features the front mesh and sign.",
+    "evidence": "Rows 2-5 represent the top mesh lid of the box foreshortened from above (4px deep), separated by a dark hinge/seam line at row 6 from the 8px tall front mesh face (rows 7-14) which features a white label plate.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6427
+   "ms": 7347
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "rectangular green box with a visible patterned top and front face",
+    "main_body": "green mesh garbage box / cage",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body has a broad top surface visible from above for about 5 source-pixel rows, separated from the south-facing front face by a horizontal front edge. The front face includes a small light label/detail, but there is no receding isometric side face and the body is not a pure elevation.",
+    "evidence": "The top lid/surface of the mesh cage is visible across rows 2-5 (4 rows tall), separated by a dark horizontal crease line at row 6 from the front face (rows 7-14).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 79099
+   "ms": 5826
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "green rectangular garbage box with a flat front and patterned panels",
+    "main_body": "green mesh garbage box with lid",
     "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": false,
-    "opening_rows": 0,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body is a flat rectangular elevation with no distinct horizontal top plane; the upper green band is only a front panel/rim, not a surface visible from above. No receding side face or interior opening is shown.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the garbage cage is clearly foreshortened and visible from above across rows 2-5 (4 rows deep), separated by a distinct edge line from the south-facing front body (rows 7-14).",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 4"
-   ],
-   "ms": 102830
+   "pass": true,
+   "reasons": [],
+   "ms": 5452
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.916Z",
+ "decidedAt": "2026-10-13T11:34:33.357Z",
  "cells": {
   "16": [
    "8c66d165c6e0a90f",

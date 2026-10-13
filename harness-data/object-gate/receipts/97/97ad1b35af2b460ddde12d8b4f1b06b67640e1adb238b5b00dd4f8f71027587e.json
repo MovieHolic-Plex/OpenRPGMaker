@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-bwallf-plain",
  "label": "jp_city/street_hand/jp-bwallf-plain",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,80 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese building wall front",
+    "main_body": "Japanese-style wall with tiled roof cap, wooden lattice, plaster section, and stone foundation",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Rows 0-3 show 4 pixel rows of the top roof/wall surface with a tiled pattern, foreshortened from above, before the south-facing facade begins at row 4.",
+    "evidence": "The top roof tile surface is visible across rows 0–3 (4 pixel rows tall) with a tiled shingle texture seen from above before descending into the front wall facade.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8144
+   "ms": 5962
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese wall / building facade section with tiled roof cap",
+    "main_body": "Japanese boundary wall with tiled roof cap",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Rows 0-3 depict the foreshortened tiled top surface/eave cap (4 pixel rows tall) viewed from above, above the vertical wooden and plaster front wall facade.",
+    "evidence": "The tiled roof cap at the top of the wall is foreshortened and visible for 4 pixel rows (rows 0-3) showing the top surface above the wall's front face.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6776
+   "ms": 8118
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large wall/building facade with a visible top cap or roof surface",
+    "main_body": "Japanese building wall with roof eave",
     "kind_matches": true,
-    "top_rows": 3,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body has a broad tan horizontal top surface spanning rows 5-7, bounded by darker edge rows, above the south-facing vertical wall facade. No receding isometric side face or container opening is present.",
+    "evidence": "The top of the structure features a 4-row tiled roof slope/eave (rows 0-3) seen from above, capping the south-facing timber, plaster, and stone wall facade.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 41818
+   "ms": 5951
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large flat brown wall/building facade",
+    "main_body": "Japanese wall section with tiled coping",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body is presented as a straight-on facade with vertical brick/panel divisions. Its upper edge is only a thin dark line, with no visible horizontal top surface or slope; the lower pale/gray pixels appear to be ground or shadow rather than a receding face.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel tall top-down view of the tiled roof coping/wall cap above the wooden and stone wall face.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 52634
+   "pass": true,
+   "reasons": [],
+   "ms": 4819
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.916Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "4225ea479b125a11",

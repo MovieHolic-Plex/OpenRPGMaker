@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-sf-sento-5-L",
  "label": "jp_city/street_hand/jp-sf-sento-5-L",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,36 +18,32 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "sento bathhouse storefront with entryway and display windows",
+    "main_body": "sento (bathhouse) storefront building with tiled roof eaves",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 8,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The entire storefront is drawn as a flat 2D front elevation. The protruding entrance structure has only a 1px highlight line on row 11 instead of a foreshortened top surface, the window shelves and display items/bottles have zero visible top surfaces, and the structure shows no top-down 3/4 perspective depth.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The building features a tiled roof eave across the top (rows 0-7, ~8px tall) showing the foreshortened downward slope in 3/4 perspective above the vertical facade.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 8870
+   "pass": true,
+   "reasons": [],
+   "ms": 8773
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "sentō building facade and entrance",
+    "main_body": "bathhouse entrance facade with noren curtains and window displays",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire structure is drawn as a flat architectural front elevation (side-scroller style). The projecting doorway lintel has only a 1px edge highlight with no visible top surface, the window shelves and bottles are completely flat front-facing rectangles, and the upper roof/eaves band lacks top-down slope foreshortening.",
+    "evidence": "The entire storefront is drawn in pure 2D front elevation (side-scroller style): the roof/awning, doorway lintel, shelves, and displayed items are completely flat with 0px top depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +52,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 14497
+   "ms": 5469
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "central blue-doored building facade with roof/lintel and supporting posts",
+    "main_body": "sento (bathhouse) entrance and storefront",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main structure is presented as a flat frontal elevation. Its roof/lintel is only a thin horizontal band with no visible foreshortened top surface; the posts and doors likewise show no receding side face.",
+    "evidence": "The entire storefront is drawn as a flat 2D side-scroller/architectural elevation: the protruding door frame has only a 1px edge line at row 11 with no top surface, the window shelves (rows 32-33, 38-39) are drawn as flat horizontal bars with no visible shelf surface depth, and the base consists of vertical wall panels rather than a receding ground plane.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,20 +74,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 184138
+   "ms": 9796
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large front-facing gate structure with lintel and double doors",
+    "main_body": "sento (bathhouse) entrance storefront",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main structure is presented as a flat south-facing elevation. Its lintel has only a one-pixel horizontal top edge, not a visible top surface or slope; no receding side face is shown.",
+    "evidence": "The entire storefront is drawn as a flat 2D front elevation (side-scroller style). The door frame has only a 1px cap line at row 11 with no top surface, the window display shelves show no top depth, and the upper awning/grille (rows 0-7) is drawn entirely front-facing with 0 top slope rows.",
     "verdict": "fail"
    },
    "pass": false,
@@ -100,10 +96,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 81715
+   "ms": 8073
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.439Z",
+ "decidedAt": "2026-10-13T11:40:10.383Z",
  "cells": {
   "16": [
    "20fbc28a18cc0309",

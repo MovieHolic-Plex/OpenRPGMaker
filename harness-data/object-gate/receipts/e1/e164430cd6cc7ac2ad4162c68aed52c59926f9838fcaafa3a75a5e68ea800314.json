@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-11",
  "label": "jp_city/street_hand/jp-wire-11",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "hanging electrical wires / cables",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "Thin hanging wires strung across the tile, fitting the wall_mounted/hanging category where flat 2D projection is expected.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 8570
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "hanging wires / cables",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Curved cables/wires suitable for wall-mounting or stringing overhead; flat linework is standard and permitted for wall_mounted elements.",
+    "evidence": "Sagging horizontal wires/cables suitable for hanging across a wall or overhead; appropriate as flat wall_mounted decor.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3749
+   "ms": 3562
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "Three thin, sagging horizontal wires or cables",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The wires appear as flat, stepped curves with no visible top surface or receding side face. This flat depiction is appropriate for wall-mounted wires.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 8814
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Three thin, sagging wall-mounted wires",
+    "main_body": "hanging wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The wires are thin stepped curves with no visible top surfaces or volumetric faces. Their flat depiction is appropriate for the supplied wall_mounted kind, which permits flat objects.",
+    "pure_front_elevation": false,
+    "evidence": "Overhead/wall-mounted hanging wires spanning horizontally; as a flat wall-mounted or suspended element, it is correctly rendered as thin catenary lines without 3D depth.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8503
+   "ms": 4183
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hanging electrical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Curved 1-2px thick wires/cables suspended horizontally. As a wall-mounted/overhead flat element, no top 3D surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3805
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Sagging horizontal cables/wires spanning across the frame, correctly rendered as thin hanging lines suitable for overhead or wall-mounted wires.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5238
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.233Z",
+ "decidedAt": "2026-10-13T11:39:50.704Z",
  "cells": {
   "16": [
    "0a13f6e59e68b757",

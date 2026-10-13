@@ -6,13 +6,31 @@
  "kind": "structure",
  "name": "jp-bridge-rail-v",
  "label": "jp_city/street_hand/jp-bridge-rail-v",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
+   "answer": {
+    "main_body": "vertical bridge railing segment running north-south",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Continuous seamless north-south bridge railing segment showing the foreshortened top surface of the rail running vertically across all 16 rows over the bridge deck.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7265
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
    "answer": {
     "main_body": "vertical bridge railing",
     "kind_matches": true,
@@ -21,77 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "This is a continuous vertical (north-south) bridge rail segment. In top-down 3/4 perspective, the top surface of a rail running north-south is viewed from above continuously along its entire length (all 16 rows).",
+    "evidence": "Seamless vertical bridge railing segment viewed from above; the top surface of the rail runs the full vertical length of the tile (16 rows) with standard cylindrical top-down shading.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 8815
+   "ms": 9435
   },
   {
    "judge": "gemini",
-   "run": 2,
+   "run": 3,
    "answer": {
-    "main_body": "vertical bridge railing running north-south over wooden deck planks",
+    "main_body": "vertical bridge rail segment running north-south across wooden bridge planks",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Continuous north-south rail segment viewed from above; the rounded top surface of the handrail spans all 16 rows across the horizontal deck planks.",
+    "evidence": "This is a seamlessly repeating vertical bridge railing tile running north-south; in 3/4 view, the rail is seen from above along its entire length (all 16 rows) with rounded horizontal shading across columns 4-12 over bridge decking planks.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 20352
+   "ms": 6717
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Brown bridge railing strips flanking a gray central passage",
+    "main_body": "vertical bridge railing running north-south",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The brown railing bodies appear as flat vertical bands with horizontal dark divisions. No distinct back-to-front top surface is visible on the rails; the gray central passage does not establish a top surface on the railing itself.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "This is a vertically tiling north-south bridge rail segment seen from above; the top surface of the rail spans the entire 16-row tile over horizontal deck planks.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 11532
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "Parallel brown bridge-rail beams bordering a pale central strip",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main brown rails are flat vertical bands with repeating horizontal shading. No distinct horizontal top surface with separated back and front edges is visible; the pale central strip does not establish a top surface on the rails.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 14378
+   "pass": true,
+   "reasons": [],
+   "ms": 6130
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.481Z",
+ "decidedAt": "2026-10-13T11:34:33.355Z",
  "cells": {
   "16": [
    "6da77db65df7b44b"

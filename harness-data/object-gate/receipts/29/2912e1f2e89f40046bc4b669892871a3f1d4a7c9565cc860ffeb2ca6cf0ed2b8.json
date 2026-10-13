@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2912e1f2e89f40046bc4b669892871a3f1d4a7c9565cc860ffeb2ca6cf0ed2b8",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-6-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-6-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the structure features a 7-row grey tiled roof slope (rows 1-7) visible from above over the facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6195
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront building facade with roof eaves",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building eave/roof shows a clear top slope across rows 2-7 (approx 6 px tall) foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6979
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building facade features a sloped roof/eaves surface visible at the top across rows 1-7 (7 px tall) foreshortened in 3/4 view, leading down to the vertical wall, entryway with noren, and windows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5514
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building facade features a visible tiled roof slope along the top spanning rows 2 to 8 (7 source pixels tall) showing the top surface at a 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8593
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.390Z",
+ "cells": {
+  "16": [
+   "31503ef37ea162cf",
+   "4bc3e9cbbdfe81bb",
+   "5b56ab9854f9e31c",
+   "61cac19962dc28f9",
+   "75751a77b26537ac",
+   "8d9fe2eafec0cd17",
+   "8e6f6144b4deb5f6",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "ad5f123bf1aee714",
+   "af6994af4aa2703c",
+   "e0c06bfed9a603a1",
+   "e374434bc8fe3f78",
+   "f30121d2f897b50b",
+   "ffb95ef70f0924ae",
+   "ffff6582e5e63569"
+  ],
+  "24": [
+   "26876628693e9d42",
+   "41d484633b39caaf",
+   "538cab57f4d09866",
+   "5fc2adab7e93d111",
+   "91092d31746e8fbe",
+   "9bda59c99a020523",
+   "a7049002da2ff11c",
+   "dcd61bf4eee526b5"
+  ],
+  "32": [
+   "038cd0b52418608c",
+   "3402323e1d34310c",
+   "6d18bf56dfad3adc",
+   "850d8f87698a43b6",
+   "892385033889ad58",
+   "9143b3ffb6e0aeea",
+   "a2007b7938fec5f3",
+   "b1adab4708dc2017",
+   "bc4838c8e51830be",
+   "bf64c2853be6f61a",
+   "e1c488ae9938e456",
+   "fdbc42a9786e183c"
+  ],
+  "48": [
+   "02e4836a76c6bf12",
+   "89f14d023cda6ba0"
+  ]
+ }
+}

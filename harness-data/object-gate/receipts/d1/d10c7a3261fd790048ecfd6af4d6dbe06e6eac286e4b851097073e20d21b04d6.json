@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-water-dark",
  "label": "jp_city/street_hand/jp-water-dark",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "water edge / vertical seam",
+    "main_body": "water edge / vertical water seam",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The element is a vertical water edge or transition strip lying entirely flat on the ground plane across all 16 rows.",
+    "evidence": "The asset is a flat ground-level water seam spanning all 16 rows vertically, visible completely from above as a flat surface with no front elevation or isometric side faces.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6648
+   "ms": 5581
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "water strip / water edge",
+    "main_body": "dark water edge strip",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat water surface edge running vertically across all 16 rows, viewed entirely from above as flat ground.",
+    "evidence": "The object is a flat water seam/edge tile lying entirely on the ground plane, spanning 16 rows from top-down view.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5529
+   "ms": 6455
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "dark blue flat water/decal strip",
+    "main_body": "dark water edge / seam decal",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a narrow, vertically oriented flat surface with visible top shading across its full 16-pixel height; no raised front or receding side face is present.",
+    "evidence": "Vertical water strip/edge decal drawn flat on the ground plane across all 16 rows against a transparent background.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 322501
+   "ms": 4758
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "narrow dark-blue vertical strip",
+    "main_body": "dark water edge/seam lying flat on the ground",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body appears as a nearly uniform vertical strip with no discernible horizontal top surface or ground-plane footprint; only a thin front-facing silhouette is visible.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The asset is a flat ground-level water edge strip spanning rows 0 to 15, viewed top-down with no vertical front face or isometric side faces.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 466046
+   "ms": 5524
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.232Z",
+ "decidedAt": "2026-10-13T11:39:50.703Z",
  "cells": {
   "16": [
    "b52fae576b451b27"

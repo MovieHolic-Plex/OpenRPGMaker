@@ -6,7 +6,7 @@
  "kind": "box",
  "name": "jp-ac-unit",
  "label": "jp_city/street_hand/jp-ac-unit",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "air conditioning outdoor unit",
+    "main_body": "outdoor air conditioning unit",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top panel is clearly foreshortened and visible from above across rows 2 to 6 (5 rows tall), showing panel detail, while the front face with ventilation slats spans rows 7 to 14.",
+    "evidence": "The top surface of the AC unit is clearly visible from rows 2 to 6 (5 rows tall) with an inset detail, sitting above the dark front face (rows 7-14) featuring grille vents and an indicator.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6936
+   "ms": 5797
   },
   {
    "judge": "gemini",
@@ -39,51 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top surface of the AC unit is clearly rendered from rows 2 to 6 (5 pixel rows tall) with recessed detailing, while rows 7 to 14 form the front face with vents and a yellow label.",
+    "evidence": "The top surface of the AC unit spans rows 2-6 (5 pixel rows tall) with foreshortened panel detailing, while the front face spans rows 7-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 12836
+   "ms": 6957
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "rectangular box-like AC unit with a broad visible top panel and dark front grille",
-    "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main body has a clearly visible horizontal top surface several pixels deep above its south-facing front grille; no receding isometric side face is present.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 95956
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "rectangular box with a vented front panel",
+    "main_body": "air conditioner outdoor unit",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body has a broad, clearly visible top plane approximately 5 source pixels deep above the south/front face; the front contains vertical vents. No receding isometric side face is drawn.",
+    "evidence": "The top surface of the unit is prominently foreshortened and visible across rows 2-6 (5 pixel rows tall), with the front south face containing the vents and panel spanning rows 7-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 86609
+   "ms": 6684
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "air conditioning unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The AC unit displays a clearly foreshortened top surface spanning rows 2 to 6 (5 rows tall), situated above a south-facing front panel with grille bars and an indicator from rows 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6297
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.914Z",
+ "decidedAt": "2026-10-13T11:34:33.353Z",
  "cells": {
   "16": [
    "4542ddb82b624e49"

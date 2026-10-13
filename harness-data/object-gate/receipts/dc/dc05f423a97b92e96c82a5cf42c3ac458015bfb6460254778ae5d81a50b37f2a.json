@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dc05f423a97b92e96c82a5cf42c3ac458015bfb6460254778ae5d81a50b37f2a",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-apartment-6-R",
+ "label": "jp_city/street_hand/jp-sf-apartment-6-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sci-fi elevator and corridor wall structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator doorway frame and surrounding wall panels are rendered in flat front architectural elevation. The top lintel of the door frame (rows 12-13) is merely a 2px border with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "elevator door and frame structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator doorway frame and lintel (rows 11-13) and surrounding wall/lockers are drawn entirely in flat front elevation with no visible top horizontal surface or receding angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5557
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "elevator / sci-fi door frame with panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame projecting from the wall has only a 2px dark cap bar at rows 12-13 with no visible top horizontal surface, making the structure a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5436
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "elevator door and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The elevator frame, lintel, and surrounding panels are drawn in a flat 2D side-scroller front elevation; the top lintel is only a 2px flat strip with no top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5150
+  }
+ ],
+ "decidedAt": "2026-10-13T11:34:35.384Z",
+ "cells": {
+  "16": [
+   "2634288f94ba584f",
+   "3eb26e7df878c649",
+   "4abb2eae44c74dba",
+   "4bbf994f191a78e6",
+   "4d54222139cc643d",
+   "566f1c0a662bed26",
+   "70e0767cbb668e8a",
+   "91981ea6408a53ff",
+   "b7aa83aa5f66191e",
+   "b849b38e719e620c",
+   "c66f79c31ca57a41",
+   "c9de1492235fe7f2",
+   "efe77e5afe74288b",
+   "f43bc8b3faa45e14",
+   "f65459896a6823a2"
+  ],
+  "24": [
+   "34c30ebf083ef679",
+   "5a88da2f1c844a6e",
+   "5b39743700988c0d",
+   "68a831834f3bf2d7",
+   "782fb468f0e4fbd0",
+   "7ddd2f19a3cc903e",
+   "af98f6ce88300766",
+   "c20c5abf9c3795aa"
+  ],
+  "32": [
+   "106caffb7684d556",
+   "410ec1895fe0e48a",
+   "65bf5e500c52c248",
+   "67a6210ee9641d41",
+   "714c6de700cf7fb6",
+   "829c65cf00f2d615",
+   "82a4ac755eb640aa",
+   "b104d74a7187e35f",
+   "bead4822cd4abe95",
+   "cda3b5b2d0f8383f",
+   "e8f4428344ab68d2",
+   "fa7243e4dee8a5f6"
+  ],
+  "48": [
+   "086f370de8f0e431",
+   "7d0a90f71d27ebda"
+  ]
+ }
+}

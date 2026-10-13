@@ -6,79 +6,92 @@
  "kind": "container",
  "name": "jp-pots",
  "label": "jp_city/street_hand/jp-pots",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "plant pot with wide elliptical rim and green shoots inside",
-    "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": true,
-    "opening_rows": 4,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The pot rim is drawn as a foreshortened ellipse spanning rows 6 to 11 with a clearly visible 4-row dark opening/interior cavity (rows 7-10) from which the plants emerge.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 5131
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
     "main_body": "pot / planter",
     "kind_matches": true,
-    "top_rows": 7,
-    "opening_visible": true,
-    "opening_rows": 4,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The pot features a clearly foreshortened elliptical rim from rows 6 to 12 with a 4-row deep dark interior opening/soil area (rows 8-11) and front face visible below.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 4192
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 225108,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "brown ceramic pot with an open top and dark interior",
-    "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 6,
     "opening_visible": true,
     "opening_rows": 3,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The pot has a clearly visible foreshortened elliptical rim/top surface, with a dark interior opening spanning several source-pixel rows and a distinct south/front body below it. No receding isometric side face is present.",
+    "evidence": "The pot clearly shows an elliptical opening/interior (rows 8-10) and rim (rows 6-12) foreshortened in 3/4 perspective, with bamboo or plant shoots emerging from the visible opening.",
     "verdict": "pass"
    },
    "pass": false,
    "reasons": [
     "아가리 3행 < 4"
    ],
-   "ms": 260801
+   "ms": 3995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pot with wide rim and emerging green shoots/stalks",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a wide foreshortened elliptical rim spanning rows 6 to 12 (7 rows total) with an opening/interior visible across rows 8 to 10 (~3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4730
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "planter pot with bamboo shoots",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot rim forms a wide foreshortened ellipse spanning rows 6 to 11 (6 rows tall), with a clear 3-row-tall dark interior opening (rows 8-10) from which the plant emerges, above a south-facing lower body.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 4173
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "plant pot / planter with shoots",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rim and opening are rendered as an ellipse viewed from above across rows 6-12, with a 4-pixel-tall dark interior opening from which green shoots emerge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4855
   }
  ],
- "decidedAt": "2026-10-13T10:49:32.477Z",
+ "decidedAt": "2026-10-13T11:34:35.381Z",
  "cells": {
   "16": [
    "030e90f82afd1915"

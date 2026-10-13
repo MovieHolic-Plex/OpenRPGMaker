@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38062ca284b83c65a487ef31165336e3dbbd66bbd2e05cb1b682d8dd4f058b59",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-3-R",
+ "label": "jp_city/street_hand/jp-sf-machiya-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machiya storefront is rendered as a flat architectural front elevation. The door lintel (rows 12-13), window header, and sills are flat 1-2px horizontal lines with no visible top surfaces or depth in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15699
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building facade with sliding lattice door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D architectural front elevation. The door frame lintel at row 12 is only 2px thick, the window eave at row 22 is only 2px thick, and none of the horizontal structural surfaces show any top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12290
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building facade with sliding lattice door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, sliding door frame, lintels, and window are drawn in pure flat front elevation with no visible top surfaces showing 3/4 downward perspective (the door lintel at row 11 is only a 1-2px flat rim).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 48721
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "machiya building facade and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, sliding entrance door, window, and lintels are drawn in flat front elevation with no visible top surfaces (lintel is only a 2px flat front bar, step at bottom is a 1-2px edge line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9655
+  }
+ ],
+ "decidedAt": "2026-10-13T11:38:07.647Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "1a7906d26789323b",
+   "2a750be2acb717cc",
+   "3fae5867f8e17aba",
+   "5d72f8aaa41b46fe",
+   "a3043c90ab422321",
+   "f0ab51b7cd028cde",
+   "f91f2729557b16f2"
+  ],
+  "24": [
+   "27dfac652a6a956c",
+   "7ccc6b11a95a9d2c",
+   "8b4d546887dd9381",
+   "c89ce8502c222c59"
+  ],
+  "32": [
+   "1d2a4b71b65fdb22",
+   "1dfadc00d7649763",
+   "1eef36505fc7fb1f",
+   "22726d24e5b98c2e",
+   "365389d52008867d",
+   "389ff231fa90c1e9",
+   "47ed16ec9762a4db",
+   "49df803a2b93afaa",
+   "4cb146a0c3288b34",
+   "5a22dcf626eecaf4",
+   "5ba849cf65a4cedc",
+   "63c2718e04dbb22b",
+   "6d34b7d85a07492f",
+   "74652afcab14cd7b",
+   "81744382c1d067ac",
+   "82554b6304a86872",
+   "8472121460f3a7fc",
+   "92b497fa7d151f86",
+   "993e7241705ec562",
+   "a262f6aaeba5a1a7",
+   "aef03714d6702977",
+   "ca1f643493cd5449",
+   "e36b3b925674eab2",
+   "fb1a8ba37fffc7a7"
+  ],
+  "48": [
+   "a8cc55b5d979d13a"
+  ]
+ }
+}

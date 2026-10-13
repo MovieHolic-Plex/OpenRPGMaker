@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-mark-30-w",
  "label": "jp_city/street_hand/jp-mark-30-w",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "Japanese road surface marking",
+    "main_body": "road marking and curb",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "This is a flat road decal/marking painted onto the pavement (accompanied by road lines and curb), lying entirely on the ground plane in top-down view.",
+    "evidence": "Elongated road markings and lane markings lie flat on the ground surface, with a curb face below, consistent with 3/4 view top-down road decals.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7631
+   "ms": 5875
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "Japanese road marking '30' decal",
+    "main_body": "Japanese road speed limit marking ('30') and lane line",
     "kind_matches": true,
-    "top_rows": 16,
+    "top_rows": 31,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat road decal representing a Japanese '30' speed limit marking painted onto the road surface above a white line and curb. It lies entirely on the horizontal ground plane.",
+    "evidence": "The object is a flat road decal representing Japanese traffic markings ('30' and lane lines) painted directly on the ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 9481
+   "ms": 5355
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "orange flat floor marking",
+    "main_body": "Japanese road speed limit marking (30)",
     "kind_matches": true,
     "top_rows": 15,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body is a broad, planar orange marking spanning roughly source rows 1-15, with its surface directly visible from above; there is no receding side face or vertical front elevation.",
+    "evidence": "The object is a flat road decal representing a speed limit marking ('30') painted onto the asphalt alongside a road line and curb. It lies entirely on the horizontal ground plane as viewed from above.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 62162
+   "ms": 8706
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "flat rectangular ground mark with orange outline and pale lower band",
+    "main_body": "Japanese road speed limit marking (30) with road line and curb",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main mark is presented as a broad horizontal, ground-level surface rather than a standing object; its visible planar area spans roughly six source-pixel rows. No receding side face or front elevation is present.",
+    "evidence": "The object is a flat painted road decal ('30' speed limit marking and lane stripe) lying on the horizontal ground plane.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 320553
+   "ms": 5543
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.484Z",
+ "decidedAt": "2026-10-13T11:34:33.358Z",
  "cells": {
   "16": [
    "22c2f84a2401faac",

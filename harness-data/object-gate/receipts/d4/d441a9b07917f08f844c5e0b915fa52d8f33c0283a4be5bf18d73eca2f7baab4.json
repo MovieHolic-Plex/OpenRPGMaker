@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-school-gate",
  "label": "jp_city/street_hand/jp-school-gate",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,14 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "school gate pillars and adjoining walls",
+    "main_body": "school gate pillars and adjacent wall sections",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The gate pillars, caps, and adjacent wall sections are drawn entirely in flat front elevation (side-scroller style). The pillar caps and wall copings show only their front faces with 1px top outline rules and zero visible top surface.",
+    "evidence": "The gate pillars and connecting walls are drawn entirely in flat 2D front elevation (orthographic front view). Neither the pillar caps (rows 2-9) nor the wall caps (rows 12-15) show a receding top surface from the 3/4 camera angle; they are drawn as flat rectangular vertical faces with 0px top depth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7406
+   "ms": 6887
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "school gate pillars and fence/gate sections",
+    "main_body": "school gate pillars and fence",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "Both the pillar caps and the gate lintels/copings are drawn in pure front elevation as flat vertical rectangles with 0 source pixel rows showing their horizontal top surfaces.",
+    "evidence": "The pillars, pillar caps, and fence walls are drawn strictly as flat 2D rectangles in front elevation without any foreshortened top surfaces visible.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,38 +56,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 7903
+   "ms": 5725
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "paired school gate leaves with supporting pillars and lintels",
-    "kind_matches": true,
-    "top_rows": 4,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The gate lintels and pillar caps show broad above-facing horizontal surfaces several pixels deep rather than only thin top edge lines; the gate leaves have visible south-facing fronts. No receding isometric side face is drawn.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 130512
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "school gate assembly with two pillars and barred gate panels",
+    "main_body": "school gate pillars and wall segments",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The pillars, caps, lintels, and gate panels are presented as flat frontal rectangles; no substantial horizontal top surface or roof/lintel slope is visible from above.",
+    "evidence": "The gate pillars and adjoining walls are drawn in pure front elevation: the pillar caps and wall coping are flat 2D rectangles with no visible top surface or 3/4 tilt.",
     "verdict": "fail"
    },
    "pass": false,
@@ -96,10 +78,32 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 59448
+   "ms": 6264
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete gate pillars and fence walls",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars, pillar caps, and wall copings are drawn entirely as flat 2D rectangles in pure front elevation with no visible horizontal top surfaces foreshortened in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7345
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.436Z",
+ "decidedAt": "2026-10-13T11:34:35.382Z",
  "cells": {
   "16": [
    "0cf1ceb156d551aa",

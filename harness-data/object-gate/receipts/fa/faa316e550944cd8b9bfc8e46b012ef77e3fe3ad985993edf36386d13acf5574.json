@@ -6,33 +6,13 @@
  "kind": "column",
  "name": "jp-pole",
  "label": "jp_city/street_hand/jp-pole",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "fail",
- "reasons": [
-  "윗면 2행 < 3"
- ],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
-   "answer": {
-    "main_body": "concrete utility pole with crossarms",
-    "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The pole has a rounded top cap visible at rows 0-6 (6px tall), and both horizontal crossarms clearly display foreshortened top surfaces (4px tall each at rows 8-11 and 20-23) above their darker south-facing sides.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 6937
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
    "answer": {
     "main_body": "utility pole with crossarms",
     "kind_matches": true,
@@ -41,59 +21,69 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The crossarms show distinct foreshortened top surfaces (3-4 pixel rows tall) upon which the insulators sit, and the top of the pole features a visible rounded cap (rows 0-6).",
+    "evidence": "The pole has a rounded cap at the top (rows 0-6) and both crossarms clearly display 3-4 pixel rows of horizontal top surface (e.g. rows 19-22) above their front-facing shadows, correctly capturing 3/4 perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 16587
+   "ms": 6555
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "tall utility pole shaft with crossarm and attached fixture",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main pole shaft is rendered as a flat vertical elevation with shading strips but no visible top or cut surface; the crossarm does not provide a top surface for the shaft.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 58917
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "tall vertical pole shaft beneath a broad horizontal cap/crosspiece",
+    "main_body": "utility pole with crossarms and top cap",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main shaft is presented as a flat vertical front elevation with no visible top or cut face; the broad horizontal element above it does not expose the shaft's top surface. No receding side face is shown.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The pole has a rounded top cap (rows 0-5, ~5-6 rows tall) and both horizontal crossarms clearly show foreshortened top surfaces (rows 8-11 and rows 20-23, each ~4 rows tall) viewed from above.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 54380
+   "pass": true,
+   "reasons": [],
+   "ms": 5629
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "utility pole shaft with crossarms",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pole is capped with a 6-row elliptical dome (rows 0-5), and both horizontal crossarms clearly show 3-4 rows of top horizontal surface (rows 8-11 and 20-23) distinct from their south-facing front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10279
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese utility pole with crossarms and dome cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole's rounded top cap is visible across rows 0-5 (5 rows tall), and both horizontal crossarms clearly show foreshortened top surfaces (3 rows each, e.g. rows 9-11 and 21-23) distinct from their darker south-facing sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9068
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.918Z",
+ "decidedAt": "2026-10-13T11:34:35.380Z",
  "cells": {
   "16": [
    "137e92de5dd26bfa",

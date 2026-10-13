@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-bwall-end-l",
  "label": "jp_city/street_hand/jp-bwall-end-l",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "brick wall section with wall top",
+    "main_body": "concrete block wall with cap",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top surface of the wall cap is clearly visible across rows 1 to 5 (5 pixels tall), with the south brick face visible below on rows 7 to 14.",
+    "evidence": "The wall cap top surface is clearly visible from above across rows 1-5 (5 source pixels deep) with bevel/inset shading, sitting above the south-facing block wall face (rows 7-14).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5136
+   "ms": 23581
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "wall segment with top cap",
+    "main_body": "brick wall segment with left end cap",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top cap of the wall is drawn with a 5-row deep top surface (rows 1-5) seen from above, sitting atop the front brick face (rows 6-14).",
+    "evidence": "Rows 1-5 form the top surface of the wall, showing foreshortened depth in 3/4 top-down perspective above the brick front face (rows 6-15).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3114
+   "ms": 3341
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "large wall/building end with a broad upper roof or cap plane and dark front face",
+    "main_body": "brick wall section (left end)",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "A broad light horizontal surface is visible from above for about 5 source-pixel rows before the dark south-facing front face; it is more than a rim or edge line. No distinct receding isometric side face is present.",
+    "evidence": "Rows 0-5 depict the top surface of the wall (6 rows tall) above the south-facing brick wall face spanning rows 6-14.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 56854
+   "ms": 4114
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large masonry wall/gate end with a broad top surface and front face",
+    "main_body": "wall segment end",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main body has a clearly visible broad horizontal top plane about 5 source pixels deep above the darker south-facing masonry face; no receding isometric side face is drawn.",
+    "evidence": "The top surface of the wall is clearly visible spanning rows 1 to 5 (5 pixels tall), above the vertical brick front face from row 7 to 15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 41524
+   "ms": 4099
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.915Z",
+ "decidedAt": "2026-10-13T11:34:33.355Z",
  "cells": {
   "16": [
    "08e4c67381e2f030"

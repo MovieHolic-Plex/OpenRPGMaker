@@ -6,7 +6,7 @@
  "kind": "terrain",
  "name": "jp-bank-lip",
  "label": "jp_city/street_hand/jp-bank-lip",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "stone canal wall terrain tile",
+    "main_body": "stone bank wall face and water lip",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Terrain tile representing a canal or river bank wall with water at the top edge and stone masonry courses below.",
+    "evidence": "Canal or riverbank vertical wall face with water at rows 0-1; correctly categorized as terrain.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 14342
+   "ms": 4780
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "stone embankment wall face with water edge",
+    "main_body": "stone bank wall face",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Valid terrain tile representing a canal or embankment wall face with a water/shadow edge at the top.",
+    "evidence": "The tile depicts a stone masonry wall face of a canal/river bank with water at the top, correctly categorised as terrain.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6003
+   "ms": 4803
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "Flat brick wall face with a narrow dark-blue upper band",
+    "main_body": "stone embankment wall face",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body consists of flat, front-facing brick courses. The upper blue band is only 2 source-pixel rows tall and does not establish a visible horizontal top surface.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the vertical stone face of an embankment/canal bank.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 13397
+   "ms": 7260
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "Brick-patterned bank or wall face",
+    "main_body": "stone block wall face / bank lip",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body is a flat, rectangular masonry face. The blue band at its upper edge is only 2 source-pixel rows tall and reads as a cap or edge, not a visible horizontal top surface.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting a vertical stone block canal/bank wall face with mortar lines. As a terrain wall surface, standard front-facing perspective rules apply.",
+    "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 14000
+   "ms": 4436
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.479Z",
+ "decidedAt": "2026-10-13T11:34:33.354Z",
  "cells": {
   "16": [
    "bef3030e9f0c0a14"

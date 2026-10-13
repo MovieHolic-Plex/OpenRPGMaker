@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "954fdf9d9dab1c725ba330a93d1838c5b5644a6dda223102cffa2ef0121becac",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "office entrance strip",
+ "label": "jp/jp-sf-office-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office glass entrance and doorway frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entrance doorway, lintel overhang, and adjacent wall/window are drawn in a direct 2D front elevation with no visible top horizontal surfaces (the lintel at row 11 is only 1px thick).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4974
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office entrance door and wall frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entrance doorway, frame, and lintel are drawn completely flat in pure front elevation with no visible top surface foreshortened from above (the lintel at rows 11-12 is only a 2px thick edge).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4715
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Office entrance facade with double glass doors, adjacent window, and overhead lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The doors, window, and overhead bands are drawn as a flat frontal facade. The lintel has no distinct top surface or roof slope visible from above; its horizontal bands read as front-facing trim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9013
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Office entrance facade with double glass doors and an adjacent window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main entrance is a flat rectangular facade. Its lintel is only a narrow horizontal band, with no visible top surface or roof slope. The tiled band above reads as frontal wall cladding, not a surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9442
+  }
+ ],
+ "decidedAt": "2026-10-13T11:26:09.870Z",
+ "cells": {
+  "16": [
+   "136bea592bd8512a",
+   "253ec576d516793a",
+   "2933f755a18fa159",
+   "37210adf83f964ab",
+   "659da1797ea32993",
+   "99e730a64cca977c",
+   "c125afcc4180df26",
+   "d50320c32e94db5a",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "289f1c62cb72c249",
+   "45f16f905f9fe5ae",
+   "c59ea073cad3de34",
+   "e3747639deea0908"
+  ],
+  "32": [
+   "224485e57cc76e6d",
+   "25a03916526d431c",
+   "296646b499f4ca41",
+   "34c2c5d2aad14c33",
+   "45f4b050d4b3e405",
+   "4f89e6ba66a34c7b",
+   "5241e3558d8a1479",
+   "56c1534af338a674",
+   "5b375aaf750bef56",
+   "6d2a7deaba670e69",
+   "75e2924c3ec9586a",
+   "7a922046fc4b0145",
+   "7e420d2c932ec767",
+   "844699a031576ac9",
+   "967af82e9f00db49",
+   "98b83243858c11f1",
+   "9cfc643c750632ed",
+   "a19a441a6c53a58c",
+   "c9c0bf4f97ea6384",
+   "cc4fbf33aa07f78b",
+   "d0b9fff2d3e018fe",
+   "d1a08b633db4e0d7",
+   "f316b36850f7deb7",
+   "f721c9578e0cec96"
+  ],
+  "48": [
+   "4d4e601c0b229231"
+  ]
+ }
+}

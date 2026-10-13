@@ -6,7 +6,7 @@
  "kind": "wall_mounted",
  "name": "jp-wire-v10",
  "label": "jp_city/street_hand/jp-wire-v10",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "vertical wires",
+    "main_body": "vertical wires hanging down",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Vertical wires or cables hanging flat against a wall, appropriately classified as wall_mounted.",
+    "evidence": "Vertical hanging wires/cables designed to be mounted flat against a wall; as a wall-mounted flat overlay, no top foreshortening is expected.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4575
+   "ms": 3591
   },
   {
    "judge": "gemini",
@@ -39,51 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Vertical wires or cables hanging down; as a wall-mounted/hanging flat feature, it has no top surface and is viewed flat against the wall.",
+    "evidence": "Thin vertical wires hanging against a wall, permitted to be flat under the wall_mounted category.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3904
+   "ms": 3716
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "thin wall-mounted vertical wires",
+    "main_body": "vertical wires/cables",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of extremely thin wall-mounted wire strands with no substantial volumetric body or horizontal top surface to render; no receding side face is present.",
+    "evidence": "Vertical wires or cables mounted flat along a wall surface. As a wall-mounted flat element, no 3D top surface is required.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 148070
+   "ms": 4224
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "several thin vertical wall-mounted wire strands",
+    "main_body": "vertical wires",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object consists of thin vertical wire-like lines with no substantial horizontal top surface or receding side face; a flat wall-mounted treatment is appropriate for this kind.",
+    "evidence": "Thin vertical wires mounted against a wall or hanging vertically; permitted to be flat as a wall-mounted element.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 110957
+   "ms": 9360
   }
  ],
- "decidedAt": "2026-10-13T10:20:54.236Z",
+ "decidedAt": "2026-10-13T11:39:50.705Z",
  "cells": {
   "16": [
    "024f12b6ac105723",

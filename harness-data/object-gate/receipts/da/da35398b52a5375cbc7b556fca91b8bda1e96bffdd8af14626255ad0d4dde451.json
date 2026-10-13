@@ -6,7 +6,7 @@
  "kind": "structure",
  "name": "jp-sf-machiya-5-L",
  "label": "jp_city/street_hand/jp-sf-machiya-5-L",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -18,36 +18,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "machiya building facade with central lattice door and windows",
+    "main_body": "building facade with latticed sliding doors and windows",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The building facade, door lintel, eaves, and upper railing are drawn in pure front elevation with no visible top surface or roof slope seen from above (lintel and eaves are only 1-2px lines).",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 7352
-  },
-  {
-   "judge": "gemini",
-   "run": 2,
-   "answer": {
-    "main_body": "building facade with sliding doors and lattice windows",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The entire structure is drawn in pure front elevation with horizontal banding; the lintels, door frame, eaves, and beams show no visible top surfaces (top_rows = 0).",
+    "evidence": "The entire facade is drawn in pure 2D architectural front elevation. The upper railing, eaves/lintels above the door and windows, and ground base are all flat horizontal bands with 0 visible top rows or sloped roof surfaces.",
     "verdict": "fail"
    },
    "pass": false,
@@ -59,39 +37,17 @@
    "ms": 5362
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "large building facade with central entrance and side wings",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main building is presented as a flat frontal elevation; the roof/eave is only a thin horizontal band with no visible top slope or surface.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 49030
-  },
-  {
-   "judge": "gpt",
+   "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "large building facade with a projecting roof/lintel",
+    "main_body": "machiya building facade with central sliding door and lattice windows",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The main structure is presented as a flat frontal elevation; the dark roof/lintel is only a thin cap band with no clearly visible foreshortened top plane. No receding side face is drawn.",
+    "evidence": "The entire structure is drawn as a flat architectural front elevation (side-scroller style). The door lintel cap is only 1-2px tall, the window eaves are a 2px flat strip, and there is no visible top slope or foreshortened surface anywhere on the roof or beams.",
     "verdict": "fail"
    },
    "pass": false,
@@ -100,10 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 55474
+   "ms": 5056
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "machiya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade is drawn as a flat 2D architectural front elevation. The upper railing, eaves, door frame, and lower walls have no visible top surfaces or roof slope (only 1-2px outline/cap lines), showing no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3737
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "machiya building facade with central sliding door and lattice windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade, including the door lintel, eaves, wall sections, and foundation base, is drawn in a pure flat architectural front elevation with no visible top surfaces or roof slopes (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4558
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.438Z",
+ "decidedAt": "2026-10-13T11:38:07.647Z",
  "cells": {
   "16": [
    "005aaa52c3f5efe4",

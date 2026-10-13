@@ -6,7 +6,7 @@
  "kind": "figure",
  "name": "jp-jizo",
  "label": "jp_city/street_hand/jp-jizo",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "판정자 과반 fail",
@@ -25,7 +25,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The entire structure and the figure inside are drawn in pure front elevation: the statue has flat rectangular horizontal bounds with no top plane visible on the cap, shoulders, or base, and the shrine niche/frame also lacks any visible receding top surfaces.",
+    "evidence": "The statue, niche, roof, and base are all drawn in pure flat front elevation (side-scroller style). There is no visible top surface on the roof, statue head, niche floor, or base plinth.",
     "verdict": "fail"
    },
    "pass": false,
@@ -34,11 +34,33 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 6515
+   "ms": 5479
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "Jizo statue in a small wooden shrine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shrine roof, alcove, Jizo statue (cap, head, bib, body), and bottom stone plinth are all rendered in pure flat front elevation with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5935
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "Jizo statue inside shrine alcove",
     "kind_matches": true,
@@ -47,7 +69,7 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The Jizo figure and shrine are drawn in flat front elevation with no visible top surface on the head, shoulders, or interior base/plinth.",
+    "evidence": "The Jizo figure, shrine structure, and base plinth are all drawn in pure flat front elevation. The figure's head and cap show no top surface (top_rows=0), and the base/plinth at rows 28-31 is a flat horizontal band with no visible top surface receding into the shrine.",
     "verdict": "fail"
    },
    "pass": false,
@@ -56,20 +78,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5217
+   "ms": 5480
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "front-facing jizo statue/figure",
+    "main_body": "Jizo statue in a wooden niche",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The statue is drawn as a flat front elevation with no visible top plane on its head or body. The plinth has only a thin horizontal edge rather than a readable top surface.",
+    "evidence": "The Jizo figure is rendered in pure front elevation: flat rectangular red cap (rows 13-14), flat front-facing eyes and bib, and a flat body with zero visible top surface. The figure lacks any plinth with a visible top surface as required for figure kinds.",
     "verdict": "fail"
    },
    "pass": false,
@@ -78,32 +100,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 94586
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "front-facing jizo statue in a recessed wooden alcove, with a flat robe/body and base plinth",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The statue is drawn as a flat frontal elevation: the head, shoulders, robe, and plinth have essentially no visible top surface. The light base at the bottom is a front strip rather than a clearly foreshortened top plane.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 60362
+   "ms": 5282
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.917Z",
+ "decidedAt": "2026-10-13T11:34:33.358Z",
  "cells": {
   "16": [
    "1a2b6085d7e924a1",

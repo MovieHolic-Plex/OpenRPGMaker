@@ -6,7 +6,7 @@
  "kind": "flat",
  "name": "jp-crosswalk-v",
  "label": "jp_city/street_hand/jp-crosswalk-v",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "vertical crosswalk road marking stripes",
+    "main_body": "painted crosswalk stripes on road",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Flat road surface marking consisting of painted crosswalk stripes lying directly on the ground plane across all 16 rows.",
+    "evidence": "Vertical zebra crosswalk markings lying flat on asphalt, viewed from above across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4027
+   "ms": 6689
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "vertical crosswalk stripe decal",
+    "main_body": "vertical crosswalk road markings",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a flat road crosswalk marking texture spanning all 16 rows as a ground surface plate viewed from above.",
+    "evidence": "The object is a flat floor marking/crosswalk texture painted onto the ground plane, occupying all 16 rows seen from top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3517
+   "ms": 2635
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "two broad vertical crosswalk stripes on the ground",
+    "main_body": "vertical crosswalk stripes on asphalt road",
     "kind_matches": true,
     "top_rows": 16,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The main decal consists of broad, continuous light surfaces spanning the full 16-pixel height; these are visible top surfaces of a flat ground marking, with no receding side face or front-elevation body.",
+    "evidence": "The object is a flat ground decal representing painted crosswalk stripes lying flat on the asphalt surface across all 16 rows.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 68766
+   "ms": 3027
   },
   {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 209534,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vertical crosswalk road markings on asphalt",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground road decal consisting of painted vertical crosswalk stripes spanning all 16 rows seen from directly above in the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4500
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.482Z",
+ "decidedAt": "2026-10-13T11:34:33.356Z",
  "cells": {
   "16": [
    "2f34b2d67b220bc5"

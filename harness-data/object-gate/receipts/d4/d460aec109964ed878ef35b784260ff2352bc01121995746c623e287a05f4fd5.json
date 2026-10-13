@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d460aec109964ed878ef35b784260ff2352bc01121995746c623e287a05f4fd5",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-cafe-4-L",
+ "label": "jp_city/street_hand/jp-sf-cafe-4-L",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe storefront with central door, windows, and upper fascia",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront (fascia board, door frame lintel, awnings, and sills) is rendered as a flat architectural front elevation with no visible top surfaces or receding roof planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront cafe entrance facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cafe facade (upper fascia/signboard, door lintel, awnings, and lower wall) is drawn in pure 2D front elevation with horizontal and vertical lines and no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4370
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "storefront facade with door and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cafe facade is drawn as a flat architectural front elevation. The upper frieze/cornice, awnings, and door frame show only South-facing vertical surfaces with 1px edge lines and no foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "storefront facade with central door, side windows, and top signage panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cafe facade (door frame, lintel, side window awnings, and top signage marquee) is drawn in pure flat front elevation without any visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4103
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.385Z",
+ "cells": {
+  "16": [
+   "306ac3f6ed990d3c",
+   "548efa160c6b1d6a",
+   "5757810fc59a2053",
+   "591233ec525de138",
+   "5c5527239c29becf",
+   "6d8d6a2b2522f31c",
+   "73a6c93d6a37ebb7",
+   "a18de3840de9dee2",
+   "a4e1f329824ccb09",
+   "b1a8b5449b59fe87",
+   "ba3203033f4cbec9"
+  ],
+  "24": [
+   "114d194f3f80ef96",
+   "2a52ff0f30d43d8a",
+   "5c13586f354ce154",
+   "5d6e42fe9c7e1d20",
+   "5ebc52e927acfb2e",
+   "6027a8355d3df853",
+   "6fcf4be849a5fd96",
+   "79c92725c5058c24",
+   "7ab2f1b10e4870ed",
+   "994cc0eec87c206e",
+   "9ab304ecab6378c2",
+   "af1e8252aeb09c31",
+   "b3334e020cd5dc43",
+   "b3cbfcbeb84a89c7",
+   "b460dc60612ed481",
+   "c9b98f9e96f14de7",
+   "f279060ae5956b13",
+   "f70c752f005ced3e"
+  ],
+  "32": [
+   "05a1de1b2ab0a934",
+   "5e3848cb0a83e1ba",
+   "b897b65415aa7a2d",
+   "be150c4924705d2a",
+   "de76dc4bf089eb8c",
+   "e22debf97386fcf1",
+   "f07454d18594c477",
+   "fda04eed84007675"
+  ],
+  "48": [
+   "8700d1b60e78bb4b",
+   "a0f3f5d344785fa2",
+   "b9940b7252f7448f",
+   "e40f9e4232183bc2",
+   "ec659d8829722788",
+   "fc54f96263407df4"
+  ]
+ }
+}

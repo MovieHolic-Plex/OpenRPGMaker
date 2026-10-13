@@ -6,7 +6,7 @@
  "kind": "column",
  "name": "jp-pole-wood",
  "label": "jp_city/street_hand/jp-pole-wood",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "fail",
  "reasons": [
   "윗면 2.5행 < 3"
@@ -16,14 +16,14 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wooden utility pole with crossarm",
+    "main_body": "utility pole shaft and crossbeam",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The pole, crossarm, insulators, and attached equipment box are all drawn in pure flat front elevation. There is no visible top surface on the crossarm (insulators sit flatly on its top silhouette edge rather than on a receding horizontal plane) and no top surface shown for the pole or mounted box.",
+    "evidence": "The pole, crossbeam, electrical box, and poster are drawn in pure front elevation with straight horizontal edges and no receding top surfaces visible. The base at row 141 is a flat horizontal line with no cylindrical curvature.",
     "verdict": "fail"
    },
    "pass": false,
@@ -32,7 +32,7 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 13074
+   "ms": 10527
   },
   {
    "judge": "gemini",
@@ -40,12 +40,48 @@
    "answer": {
     "main_body": "wooden utility pole with crossarm",
     "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole shows an elliptical top face (rows 0-6, ~6-7 rows tall) extending above the crossarm, and the crossarm itself shows an illuminated top surface (rows 8-13, 6 rows tall) with darker south/front face beneath it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9153
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "utility pole with crossarm",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossarm has a clearly defined 5-row top surface (rows 8-12) seen from above, sitting above its 5-row south-facing shadow/front face (rows 13-17), topped by an elliptical cap at rows 0-6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7968
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden utility pole with crossarm",
+    "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The pole and horizontal crossarm are drawn in pure front elevation. The crossarm has a 1px top outline (row 8) with no visible horizontal top surface, and bolts facing directly forward on its front face. The base, utility box, poster, and insulators are all rendered flatly from the front, and the oval shape at the top (rows 0-6) is a front-facing dome/element rather than a horizontal top cut surface.",
+    "evidence": "The pole and crossarm are drawn in pure front elevation (side-scroller style). The crossarm, insulators, transformer box, poster, and base are all flat horizontal and vertical lines with standard top-to-bottom shading rather than a foreshortened top surface. The bottom cut of the pole is completely flat across row 142.",
     "verdict": "fail"
    },
    "pass": false,
@@ -54,46 +90,10 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 108076
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "wooden column/pole with a visible cut top and crossbar",
-    "kind_matches": true,
-    "top_rows": 6,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main vertical pole terminates in a clearly visible rounded cut-top surface several source pixels deep; the south-facing shaft face is also shown. No receding isometric side face or container opening is present.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 39854
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "tall wooden pole with a visible cut top",
-    "kind_matches": true,
-    "top_rows": 5,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The pole's top end has a clearly visible oval wooden cut surface several pixels deep; the long shaft also shows a front face. No receding isometric side face or container opening is present.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 78984
+   "ms": 12094
   }
  ],
- "decidedAt": "2026-10-13T11:06:38.436Z",
+ "decidedAt": "2026-10-13T11:34:35.381Z",
  "cells": {
   "16": [
    "138e00a87c7b2ab5",

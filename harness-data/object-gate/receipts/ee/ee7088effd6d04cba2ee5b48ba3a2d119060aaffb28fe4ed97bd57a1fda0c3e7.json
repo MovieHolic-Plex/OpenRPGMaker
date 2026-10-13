@@ -6,34 +6,50 @@
  "kind": "structure",
  "name": "jp-bwall-end-r",
  "label": "jp_city/street_hand/jp-bwall-end-r",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "fail",
- "reasons": [
-  "윗면 2.5행 < 3"
- ],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wall segment",
+    "main_body": "brick wall segment",
     "kind_matches": true,
     "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top cap of the wall is clearly visible from row 1 to row 5 (5 source pixel rows tall), showing a top-down surface above the brick south face (rows 6 to 14).",
+    "evidence": "The top surface of the wall is clearly visible spanning rows 1-5 (5 pixels deep), above the south front face (rows 6-14).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6041
+   "ms": 3274
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall cap/top surface is clearly visible from above across rows 1 to 5 (5 source pixel rows), above a south-facing brick wall face from row 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4239
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
     "main_body": "wall segment",
     "kind_matches": true,
     "top_rows": 5,
@@ -41,59 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The top surface of the wall is clearly visible spanning rows 1-5 (5 pixels tall), above the vertical brick/stone south face on rows 6-14.",
+    "evidence": "The top surface of the wall cap is visible across rows 1 to 5 (5 pixels tall), with the south brick wall face occupying rows 6 to 14.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6486
+   "ms": 3322
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "large wall/building section",
+    "main_body": "wall section with top surface and brick face",
     "kind_matches": true,
-    "top_rows": 0,
+    "top_rows": 5,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main body is a flat rectangular elevation with horizontal facade bands and no visible top plane; only a thin upper edge is present.",
-    "verdict": "fail"
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall cap is clearly visible spanning rows 1 to 5 (5 source pixel rows), above the vertical brick face on rows 6 to 14.",
+    "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 106735
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "masonry wall/building end",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The main wall is presented as a flat rectangular facade with brick courses; only a thin edge is visible at the top and no substantial horizontal roof or wall-cap surface is shown.",
-    "verdict": "fail"
-   },
-   "pass": false,
-   "reasons": [
-    "판정자 과반 fail",
-    "정면 입면도",
-    "윗면 0행 < 3"
-   ],
-   "ms": 81866
+   "pass": true,
+   "reasons": [],
+   "ms": 3962
   }
  ],
- "decidedAt": "2026-10-13T11:06:04.915Z",
+ "decidedAt": "2026-10-13T11:34:33.355Z",
  "cells": {
   "16": [
    "2d9509a180f01d37"

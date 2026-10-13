@@ -4,9 +4,9 @@
  "width": 16,
  "height": 64,
  "kind": "terrain",
- "name": "river embankment wall face",
- "label": "jp/river-wall",
- "profileHash": "c69574d8ced1cdf8",
+ "name": "jp-river-wall",
+ "label": "jp_city/street_hand/jp-river-wall",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "river embankment wall face",
+    "main_body": "stone canal embankment wall with top curb and water base",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The object is a terrain tile strip representing a vertical river embankment wall face descending into water, topped with pavement and a 6-row parapet/curb surface.",
+    "evidence": "The tile strip depicts a river/canal embankment wall terrain feature, complete with a top ground/coping ledge (rows 0-9), vertical stone block wall face (rows 11-53), and water at the base (rows 58-63).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7077
+   "ms": 4588
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "stone embankment wall face with coping and water line",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "Valid terrain tile slice representing a vertical river embankment wall face descending into water, correctly drawn flat-on facing south for JRPG 3/4 perspective.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 5812
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "river embankment wall face",
+    "main_body": "stone embankment wall with coping and water line",
     "kind_matches": true,
     "top_rows": 6,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "A broad 6-pixel light terrain band is visible above the dark front edge, forming the main body's top surface; the remaining wall is shown as a south-facing terrain face with no receding side face.",
+    "evidence": "The asset is a vertical terrain strip showing a river wall with ground and coping visible along the top edge (rows 0-9), vertical stone ashlar wall face descending to water, and water at the base.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 77455
+   "ms": 3967
   },
   {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 47718,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone river wall",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile strip showing ground/pavement and coping along the top (rows 0-9), stone block wall face descending vertically, and water at the base (rows 59-63).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4871
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone embankment wall with top coping and water base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x64 vertical slice of a river canal wall (terrain). The top surface/coping extends along rows 4-9 (6px) below the upper ground layer (rows 0-3), with the vertical masonry wall face running down to the water line at row 58.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12980
   }
  ],
- "decidedAt": "2026-10-13T07:46:20.156Z",
+ "decidedAt": "2026-10-13T11:34:35.382Z",
  "cells": {
   "16": [
    "376ebf26cc02dd6b",

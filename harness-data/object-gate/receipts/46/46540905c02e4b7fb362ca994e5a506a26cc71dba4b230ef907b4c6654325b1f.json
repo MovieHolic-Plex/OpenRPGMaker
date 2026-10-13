@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46540905c02e4b7fb362ca994e5a506a26cc71dba4b230ef907b4c6654325b1f",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-3-R",
+ "label": "jp_city/street_hand/jp-sf-house-3-R",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese sci-fi house facade with sliding door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire facade, including the sliding door, window, base, and projecting door lintel/frame (rows 11-12, only 2px outline), is drawn in flat front elevation with no visible horizontal top surfaces in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14693
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "house facade with projecting sliding door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projecting door frame and window lintels are drawn in pure front elevation with only 2px flat dark bands (rows 11-12 and 22-23) rather than showing top surfaces or depth in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9788
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "house facade with sliding door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The protruding door frame and window lintels (rows 11-13 and 22-23) are drawn in pure front elevation with only a 1-2px edge line and no visible top surfaces showing depth, despite protruding forward from the wall.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese house facade with sliding entrance doors and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the projecting doorframe and window, is drawn as a flat architectural front elevation. The projecting doorframe has only a 2px lintel line at rows 11-12 with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11662
+  }
+ ],
+ "decidedAt": "2026-10-13T11:37:26.387Z",
+ "cells": {
+  "16": [
+   "052c28e81fcc1563",
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "2ae9bd926f197337",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "d39ed79255c09e4e",
+   "e7f5a0cd92135a94"
+  ],
+  "24": [
+   "201fa010714cce8b",
+   "41cf78a067c1f3f1",
+   "897bbc469ee7a5a3",
+   "c59a3b37f4f5124d"
+  ],
+  "32": [
+   "015599c87d4cd45d",
+   "0ebf653c506f6997",
+   "1d2d5ecaf8af386b",
+   "20837c906ce0a693",
+   "2128d2b66e93cbeb",
+   "288eec8b67db51b0",
+   "2a0d9e4af227d919",
+   "3bac15836b52b5ee",
+   "49d54c61bf6fd0fb",
+   "4dd793bbcd0dcb22",
+   "54572eccf53d27e1",
+   "55d43b1e7353dda5",
+   "617d3bf3bf75ad5c",
+   "729b39e6ba1737bf",
+   "84c65a5fee19d164",
+   "944e70392ece6fe6",
+   "97969f0931db9060",
+   "9d7708b76df3a8bc",
+   "c623cb4802285074",
+   "c75c11ea5f3346a0",
+   "cdbf43522cab4ffc",
+   "d311bbf324b158b0",
+   "e1213c3b2d80eee6",
+   "fee04c41bed4e303"
+  ],
+  "48": [
+   "2b068aec0c099ebd"
+  ]
+ }
+}

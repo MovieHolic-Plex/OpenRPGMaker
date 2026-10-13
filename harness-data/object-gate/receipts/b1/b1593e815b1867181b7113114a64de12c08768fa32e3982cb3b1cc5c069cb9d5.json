@@ -6,22 +6,26 @@
  "kind": "structure",
  "name": "jp-gas-canopy",
  "label": "jp_city/street_hand/jp-gas-canopy",
- "profileHash": "c69574d8ced1cdf8",
- "verdict": "pass",
- "reasons": [],
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "gas station canopy with pillars and gas pumps",
+    "main_body": "gas station canopy and pumps",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The canopy roof is drawn entirely as a flat vertical fascia band with no top surface visible (row 0 is just a 1px dark border). The gas pumps below are also drawn in pure flat front elevation without any visible top surface.",
+    "evidence": "The canopy fascia spans rows 1-17 with only a 1px dark outline at row 1 and no visible roof/top surface. The canopy and pumps are rendered purely in flat front elevation.",
     "verdict": "fail"
    },
    "pass": false,
@@ -30,20 +34,20 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 5340
+   "ms": 6707
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "gas station canopy with support columns and fuel pumps",
+    "main_body": "gas station canopy roof and fascia",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The canopy roof at the top has no visible top surface (0 rows, bordered at row 1). The fuel pumps beneath are also drawn in pure flat front elevation with no visible top surfaces.",
+    "evidence": "The canopy fascia spans rows 0-17 as a purely vertical front elevation with 0 rows of visible roof top surface. The gas pumps below are also drawn in flat front elevation.",
     "verdict": "fail"
    },
    "pass": false,
@@ -52,46 +56,54 @@
     "정면 입면도",
     "윗면 0행 < 3"
    ],
-   "ms": 6513
+   "ms": 5050
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "canopy roof and supporting posts",
+    "main_body": "gas station canopy with support pillars",
     "kind_matches": true,
-    "top_rows": 8,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main canopy has a broad, clearly visible light roof surface above its red south-facing fascia; the posts and fuel fixtures do not alter the roof orientation. No receding isometric side face is shown.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The canopy roof fascia across rows 1-17 is drawn as a completely flat horizontal band with no top surface visible above row 1. Both the canopy and the gas pumps below are rendered in pure front elevation.",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 157893
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6000
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "long gas-station canopy roof with supporting columns and pumps",
+    "main_body": "gas station canopy with pillars and pumps",
     "kind_matches": true,
-    "top_rows": 7,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The main canopy roof has a broad horizontal top surface visible for about 7 source-pixel rows above its dark front edge, with the red fascia forming the south face.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The canopy fascia, pillars, and gas pumps are all drawn in pure flat front elevation with no visible top surface (top_rows=0).",
+    "verdict": "fail"
    },
-   "pass": true,
-   "reasons": [],
-   "ms": 188962
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5201
   }
  ],
- "decidedAt": "2026-10-13T09:44:56.483Z",
+ "decidedAt": "2026-10-13T11:34:33.357Z",
  "cells": {
   "16": [
    "35a7391618ba819e",
