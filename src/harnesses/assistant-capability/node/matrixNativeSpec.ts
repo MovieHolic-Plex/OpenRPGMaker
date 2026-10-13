@@ -392,8 +392,13 @@ export function judge(id: string, input: JudgeInput): Verdict {
     case 'touch-trigger': return eventEdit(input, NPC, (b, a) =>
       // 'touch' is the same trigger under its short name (transferReachability TOUCH_TRIGGERS, eventTools touch checks).
       ['playerTouch', 'touch'].includes(a.pages[0].trigger?.kind) && isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass('실행 조건을 플레이어 접촉으로') : fail(`트리거가 ${a.pages[0].trigger?.kind}`));
-    case 'rename-npc': return eventEdit(input, NPC, (b, a) =>
-      a.name === '하린' || a.pages?.[0]?.name === '하린' ? (isDeepStrictEqual(a.pages[0].commands.map(speakerless), b.pages[0].commands.map(speakerless)) ? pass('이름을 하린으로(화자 표시 포함)') : fail('화자 표시 밖의 대사 명령이 바뀌었다')) : fail(`이름이 ${a.name ?? a.pages?.[0]?.name}`));
+    case 'rename-npc': return eventEdit(input, NPC, (b, a) => {
+      if (!(a.name === '하린' || a.pages?.[0]?.name === '하린')) return fail(`이름이 ${a.name ?? a.pages?.[0]?.name}`);
+      if (!isDeepStrictEqual(a.pages[0].commands.map(speakerless), b.pages[0].commands.map(speakerless))) return fail('화자 표시 밖의 대사 명령이 바뀌었다');
+      // Visual review (2026-10-14): the name players see in the dialogue box is the speaker; renaming only the event leaves the old name on screen.
+      const stale = a.pages[0].commands.filter((command: any) => command.kind === 'text' && command.speaker === '마을 주민');
+      return stale.length ? fail('대사 화자명이 옛 이름(마을 주민)으로 남았다') : pass('이름을 하린으로(화자 표시 포함)');
+    });
     case 'face-right': return eventEdit(input, NPC, (b, a) =>
       a.pages[0].graphic?.direction === 'right' && isDeepStrictEqual(a.pages[0].graphic?.sprite, b.pages[0].graphic?.sprite) ? pass('오른쪽을 바라봄, 그림 유지') : fail(`방향 ${a.pages[0].graphic?.direction}`));
     case 'add-npc-line': return eventEdit(input, NPC, (b, a) => {
@@ -489,6 +494,10 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const removed = was.filter((command: any) => !now.some((kept: any) => isDeepStrictEqual(kept, command)));
       const block = was.slice(firstIndex, lastIndex + 1);
       const inBlock = removed.length >= 1 && removed.includes(was[lastIndex]) && removed.every((command: any) => block.includes(command) && (isFade(command) || command.kind === 'wait'));
+      // Visual review (2026-10-14): deleting only the closing show-screen leaves the screen black after the scene. A fade goes as a pair.
+      const hides = (list: any[]) => list.filter((command: any) => isFade(command) && /m2-044/.test(String(command.commandId))).length;
+      const shows = (list: any[]) => list.filter((command: any) => isFade(command) && /m2-045/.test(String(command.commandId))).length;
+      if (hides(now) !== shows(now) + (hides(was) - shows(was))) return fail('페이드의 화면 숨기기/보이기 짝이 깨져 화면이 어두운 채 남는다');
       return inBlock && isDeepStrictEqual(now, was.filter((command: any) => !removed.includes(command))) ? pass(`마지막 페이드 ${removed.length}명령만 제거`) : fail('마지막 페이드만 지워지지 않았다');
     });
     case 'walkability-check': return readOnly(input, id, () => called(tools, 'check_reachability', 'run_scene_test', 'get_map_region') && /가능|불가|도달|걸어/.test(answer) ? pass('도달 가능 여부 보고') : fail('도달성 검사 호출 또는 결론이 없다'));
@@ -514,6 +523,14 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const transfersTo = (mapId: string, target: string) => mapOf(after, mapId).events.filter((event: any) => (event.pages ?? []).some((page: any) => page.commands.some((command: any) => command.kind === 'transfer' && command.mapId === target)) || event.commands?.some((command: any) => command.kind === 'transfer' && command.mapId === target));
       const northGate = transfersTo('map_world', MAP).filter((event: any) => event.y <= 2);
       const way = transfersTo(MAP, 'map_world');
+      // Visual review (2026-10-14): the assistant erased a bush at (12,16) to unseal an old gate nobody asked about. Only the new gates may change.
+      const known = new Set(mapOf(before, 'map_world').events.map((event: any) => event.id)), knownHere = new Set(mapOf(before).events.map((event: any) => event.id));
+      const near = (cell: { x: number; y: number }) => [...northGate, ...way].some((gate: any) => Math.abs(gate.x - cell.x) <= 2 && Math.abs(gate.y - cell.y) <= 2);
+      const stray = changedCells(before, after).filter(cell => !near(cell));
+      if (stray.length) return fail(`출입구 밖 타일 ${stray.length}칸이 바뀌었다 (예: ${stray[0]!.x},${stray[0]!.y})`);
+      const changedEvents = [...mapOf(before).events.filter((event: any) => !isDeepStrictEqual(event, mapOf(after).events.find((x: any) => x.id === event.id))), ...mapOf(before, 'map_world').events.filter((event: any) => !isDeepStrictEqual(event, mapOf(after, 'map_world').events.find((x: any) => x.id === event.id)))];
+      if (changedEvents.length) return fail(`기존 이벤트 ${changedEvents.length}개가 바뀌었다`);
+      void known; void knownHere;
       return northGate.length >= 1 && way.length >= 1 ? pass(`월드맵 북쪽 (${northGate[0].x},${northGate[0].y}) ↔ 마을 (${way[0].x},${way[0].y})`) : fail(`월드맵 북쪽 출입구 ${northGate.length}개, 마을 쪽 출입구 ${way.length}개`);
     }
     case 'unreachable-links': return readOnly(input, id, () => called(tools, 'lint_world', 'run_lint', 'check_reachability') ? pass('연결 점검') : fail('연결 점검 도구 호출이 없다'));

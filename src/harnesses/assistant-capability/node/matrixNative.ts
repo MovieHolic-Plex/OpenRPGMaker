@@ -141,11 +141,27 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         await saveThroughUi(page);
         // Reviewers must see which command this screen answers: bring the user's bubble to the top of the chat, keep the end-of-chat view as well.
         await page.screenshot({ path: resolve(dir, 'after-chat-end.png') });
-        await page.evaluate((text: string) => {
-          const leaves = [...document.querySelectorAll('*')].filter(node => node.children.length === 0 && (node.textContent ?? '').trim() === text);
-          leaves[leaves.length - 1]?.scrollIntoView({ block: 'start' });
-        }, command.prompt);
-        await page.waitForTimeout(400);
+        // The panel re-sticks to the bottom while card images load, so bring the bubble up repeatedly until it stays in view.
+        for (let attempt = 0; attempt < 6; attempt++) {
+          const placed = await page.evaluate((text: string) => {
+            // Not an exact leaf match: the bubble may wrap the text with other nodes. Take the smallest element that contains it, outside the composer.
+            const hits = [...document.querySelectorAll('body *')].filter(node => !(node as HTMLElement).closest('[data-testid=ai-input], textarea') && (node.textContent ?? '').includes(text));
+            hits.sort((a, b) => (a.textContent ?? '').length - (b.textContent ?? '').length);
+            const bubble = hits[0];
+            if (!bubble) return false;
+            bubble.scrollIntoView({ block: 'start' });
+            const box = bubble.getBoundingClientRect();
+            return box.top >= 0 && box.bottom <= window.innerHeight;
+          }, command.prompt);
+          await page.waitForTimeout(600);
+          const still = await page.evaluate((text: string) => {
+            const hits = [...document.querySelectorAll('body *')].filter(node => !(node as HTMLElement).closest('[data-testid=ai-input], textarea') && (node.textContent ?? '').includes(text));
+            hits.sort((a, b) => (a.textContent ?? '').length - (b.textContent ?? '').length);
+            const box = hits[0]?.getBoundingClientRect();
+            return Boolean(box && box.top >= 0 && box.bottom <= window.innerHeight);
+          }, command.prompt);
+          if (placed && still) break;
+        }
         await page.screenshot({ path: resolve(dir, 'after.png') });
         const applied = stored(projectDir);
         writeFileSync(resolve(dir, 'after.json'), JSON.stringify(applied.project));

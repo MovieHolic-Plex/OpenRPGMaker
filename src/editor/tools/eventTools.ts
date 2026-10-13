@@ -2691,6 +2691,11 @@ const createTransferPair: ToolDefinition = {
         },
       ],
     });
+    // 새 문 때문이 아니라 원래부터 막혀 있던 문은 이 요청의 책임이 아니다 — 그걸 풀려고 무관한 타일을 지우게 하지 않는다(실측 2026-10-14: 덤불 칸이 지워졌다).
+    const sealedBefore = new Set<string>();
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      for (const entry of transferGatesStayApproachable(draft, map).sealed) sealedBefore.add(`${map.id}:${entry.replace(/\(.*$/u, "")}`);
+    }
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
     // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
@@ -2698,7 +2703,8 @@ const createTransferPair: ToolDefinition = {
     const sealedAfter: string[] = [];
     for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
       const check = transferGatesStayApproachable(draft, map);
-      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+      const fresh = check.sealed.filter((entry) => !sealedBefore.has(`${map.id}:${entry.replace(/\(.*$/u, "")}`));
+      if (fresh.length) sealedAfter.push(`${map.name}: ${fresh.join(", ")}`);
     }
     if (sealedAfter.length) throw new ToolError(`출입구 설치로 기존 문이 봉쇄됩니다: ${sealedAfter.join(' / ')}`, { code: 'transfer-sealed' });
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
