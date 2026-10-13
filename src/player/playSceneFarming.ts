@@ -5,12 +5,12 @@ import {
   autotileVariantForMask,
   type AutotileMapView,
 } from "@/project/defaults/autotileEngine";
-import { DEFAULT_FARMLAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { farmlandGroupForTileset } from "@/project/defaults/farmlandGroup";
 import { cropGraphicIndexForStage, cropGraphicStages } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { FarmPlotState } from "@/project/session";
 import { cropStageForPlot } from "@/player/farming";
-import type { CropRecord, TilesetDef } from "@/project/types";
+import type { AutotileGroup, CropRecord, TilesetDef } from "@/project/types";
 
 type OverlayGameObject = {
   setOrigin?(x: number, y: number): void;
@@ -37,22 +37,20 @@ const FARM_CROP_DEPTH = 140_000;
 const WATERED_TINT_COLOR = 0x2a1a0c;
 const WATERED_TINT_ALPHA = 0.18;
 
-const FARMLAND_GROUP = DEFAULT_FARMLAND_AUTOTILE_GROUP;
-const FARMLAND_MEMBER_TILES: ReadonlySet<number> = new Set(FARMLAND_GROUP.memberTileIds);
-// 합성 뷰에서 "경작됨"을 표현할 대표 타일. variantMap 조회는 마스크만 쓰므로 몸통 타일로 충분하다.
-const FARMLAND_SEED_TILE = FARMLAND_GROUP.variantMap[String(0xff)] ?? FARMLAND_GROUP.memberTileIds[0] ?? -1;
-
 export function renderFarmOverlays(scene: FarmOverlayScene, crops: readonly CropRecord[] = []): void {
   const plots = scene.session.farmPlots?.[scene.map.id];
   if (!plots) return;
   const cropById = new Map(crops.map((crop) => [crop.id, crop]));
   const cells = parsePlotCells(plots, scene.map);
   if (cells.length === 0) return;
-  const soil = createTilledSoilView(cells);
-  const textureKey = resolveFarmTextureKey(scene);
+  const tileset = resolveFarmTileset(scene);
+  // 타일셋이 경작지 그룹을 정의하지 않으면 undefined → 흙색 사각형 폴백(다른 시트의 번호를 그리지 않는다).
+  const group = farmlandGroupForTileset(tileset);
+  const soil = group ? createTilledSoilView(cells, group) : undefined;
+  const textureKey = group && tileset ? resolveFarmTextureKey(scene, tileset) : undefined;
   for (const cell of cells) {
     const { x, y, plot } = cell;
-    if (plot.tilled) renderTilledSoil(scene, soil, textureKey, x, y, plot.dead === true);
+    if (plot.tilled) renderTilledSoil(scene, soil, group, textureKey, x, y, plot.dead === true);
     if (plot.watered) addRect(scene, x, y, WATERED_TINT_COLOR, WATERED_TINT_ALPHA, FARM_BASE_DEPTH + 1);
     if (!plot.cropId) continue;
     const crop = cropById.get(plot.cropId);
@@ -90,7 +88,9 @@ function isOutsideMap(map: FarmOverlayScene["map"], x: number, y: number): boole
 // 경작된 칸들의 바운딩 박스(+1 여백) 위에 만든 합성 뷰로만 계산하고, map.lowerTiles 는 절대 건드리지 않는다.
 type TilledSoilView = { readonly view: AutotileMapView; readonly originX: number; readonly originY: number };
 
-function createTilledSoilView(cells: readonly FarmPlotCell[]): TilledSoilView {
+function createTilledSoilView(cells: readonly FarmPlotCell[], group: AutotileGroup): TilledSoilView {
+  // 합성 뷰에서 "경작됨"을 표현할 대표 타일. variantMap 조회는 마스크만 쓰므로 몸통 타일로 충분하다.
+  const seedTile = group.variantMap[String(0xff)] ?? group.memberTileIds[0] ?? -1;
   const tilled = cells.filter((cell) => cell.plot.tilled);
   const xs = tilled.map((cell) => cell.x);
   const ys = tilled.map((cell) => cell.y);
@@ -100,27 +100,30 @@ function createTilledSoilView(cells: readonly FarmPlotCell[]): TilledSoilView {
   const height = (ys.length > 0 ? Math.max(...ys) : 0) - originY + 2;
   const lowerTiles = new Array<number>(Math.max(0, width * height)).fill(-1);
   for (const cell of tilled) {
-    lowerTiles[(cell.y - originY) * width + (cell.x - originX)] = FARMLAND_SEED_TILE;
+    lowerTiles[(cell.y - originY) * width + (cell.x - originX)] = seedTile;
   }
   return { view: { width, height, lowerTiles }, originX, originY };
 }
 
-function tilledSoilTile(soil: TilledSoilView, x: number, y: number): number | undefined {
+function tilledSoilTile(soil: TilledSoilView, group: AutotileGroup, x: number, y: number): number | undefined {
+  const members: ReadonlySet<number> = new Set(group.memberTileIds);
   const mask = autotileNeighborMask(
     soil.view,
     x - soil.originX,
     y - soil.originY,
-    (tile) => FARMLAND_MEMBER_TILES.has(tile),
-    FARMLAND_GROUP.neighborhood ?? 4
+    (tile) => members.has(tile),
+    group.neighborhood ?? 4
   );
-  return autotileVariantForMask(FARMLAND_GROUP, mask);
+  return autotileVariantForMask(group, mask);
 }
 
-function resolveFarmTextureKey(scene: FarmOverlayScene): string | undefined {
+function resolveFarmTileset(scene: FarmOverlayScene): TilesetDef | undefined {
   const tilesetId = scene.map.tilesetId;
   if (!tilesetId) return undefined;
-  const tileset = store.getCurrent().tilesets[tilesetId] as TilesetDef | undefined;
-  if (!tileset) return undefined;
+  return store.getCurrent().tilesets[tilesetId] as TilesetDef | undefined;
+}
+
+function resolveFarmTextureKey(scene: FarmOverlayScene, tileset: TilesetDef): string | undefined {
   // 맵 렌더러(renderTile)와 동일한 해석 경로 — 픽셀 정합을 유지한다.
   return scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
 }
@@ -133,13 +136,14 @@ function farmTileFrameName(tile: number): string {
 
 function renderTilledSoil(
   scene: FarmOverlayScene,
-  soil: TilledSoilView,
+  soil: TilledSoilView | undefined,
+  group: AutotileGroup | undefined,
   textureKey: string | undefined,
   x: number,
   y: number,
   dead: boolean
 ): void {
-  const tile = tilledSoilTile(soil, x, y);
+  const tile = soil && group ? tilledSoilTile(soil, group, x, y) : undefined;
   if (textureKey === undefined || tile === undefined || typeof scene.add.image !== "function") {
     // 타일셋/이미지 팩토리를 못 구하는 헤드리스 경로 — 기존 흙색 사각형으로 폴백.
     addRect(scene, x, y, 0x7a4a25, dead ? 0.52 : 0.38, FARM_BASE_DEPTH);
