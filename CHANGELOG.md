@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.202.1 — 2026-10-13
+
+### 수정
+
+- **farming** — read farmland autotile group from the tileset instead of EasyRPG tile 187 (`b8abc23`)
+
 ## 0.202.0 — 2026-10-13
 
 ### 기능
