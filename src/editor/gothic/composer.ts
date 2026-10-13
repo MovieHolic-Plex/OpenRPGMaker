@@ -437,7 +437,7 @@ export function composeGothicPlace(input: GothicPlaceInput, tileset: TilesetDef)
   };
   const besidePath = (x: number, y: number, k: Kit) => !offPath(x, y, k);
   const nextToWater = (x: number, y: number) => near(x, y, (u) => u === WATER);
-  const below = (y0: number) => (x: number, y: number) => y >= y0;
+  const below = (y0: number) => (_x: number, y: number) => y >= y0;
 
   // 문 앞 등불 기둥·석상(앞마당 양쪽)
   const flank = (id: string, gap: number) => {

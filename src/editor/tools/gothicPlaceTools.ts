@@ -146,7 +146,8 @@ export const BUILD_GOTHIC_PLACE_TOOL: ToolDefinition = {
       const r = composeGothicPlace({ place, ...(typeof args.width === "number" ? { width: args.width } : {}), ...(typeof args.height === "number" ? { height: args.height } : {}),
         ...(seed !== undefined ? { seed } : {}), ...(density ? { density } : {}), ...(typeof args.fog === "boolean" ? { fog: args.fog } : {}) }, tileset);
       built = { ...r, indoor: false };
-      extra = { entrances: r.entrances.map((e) => ({ building: e.name, kit: e.kit, x: e.x, y: e.y, access: e.access })), exits: r.exits, placed: r.placed.filter((p) => p.role !== "decal").length };
+      extra = { entrances: r.entrances.map((e) => ({ building: e.name, kit: e.kit, x: e.x, y: e.y, access: e.access })), exits: r.exits,
+        placed: r.placed.filter((p) => p.role !== "decal").map((p) => ({ kit: p.kit, x: p.x, y: p.y, role: p.role })) };
       const doorText = r.entrances.map((e) => `${e.name.split("(")[0]}(${e.x},${e.y})`).join(" ");
       next = `건물 문 ${r.entrances.length}곳 ${doorText} — 문 칸에 실내 맵으로 가는 이동 이벤트(transfer)를 달고(그 아래 접근 칸은 비워 둔다), 정문 ${r.exits.map((c) => `(${c.x},${c.y})`).join(" ")} 에 바깥 맵 이동을 단다. 실내는 build_gothic_place({place:"hall"|"library"|"gallery"…}).`;
     } else {

@@ -26,13 +26,13 @@ for (const job of jobs) {
       const t0 = Date.now();
       const res = build.run!(draft, { place: job.place, ...(job.variant ? { variant: job.variant } : {}), seed, mapId: id }) as { data: any; summary: string };
       const d = res.data; const map = draft.maps[d.mapId]!;
-      line += `${d.width}x${d.height} walk ${d.walkableCount} doors ${(d.entrances ?? d.doorCells ?? []).length} placed ${Array.isArray(d.placed) ? d.placed.length : d.placed} warn ${d.warnings.length} ${Date.now() - t0}ms`;
+      line += `${d.width}x${d.height} walk ${d.walkableCount} doors ${(d.entrances ?? d.doorCells ?? []).length} placed ${(d.placed ?? []).length} warn ${d.warnings.length} ${Date.now() - t0}ms`;
       if (d.warnings.length) line += ` [${d.warnings.slice(0, 3).join(" / ")}]`;
       if (seed === seeds[0]) {
         writeFileSync(`${outDir}/${id}.json`, JSON.stringify({
           id, place: job.place, variant: job.variant ?? null, name: map.name, w: map.width, h: map.height,
           lowerTiles: map.lowerTiles, lowerOverlayTiles: map.lowerOverlayTiles, upperTiles: map.upperTiles, upperOverlayTiles: map.upperOverlayTiles,
-          spawn: d.spawn, entrances: d.entrances ?? null, exits: d.exits ?? null, doorCells: d.doorCells ?? null, seed,
+          spawn: d.spawn, entrances: d.entrances ?? null, exits: d.exits ?? null, doorCells: d.doorCells ?? null, placed: d.placed ?? [], seed,
         }));
       }
     } catch (e) { bad++; line += `ERROR ${(e as Error).message.slice(0, 300)}`; }
