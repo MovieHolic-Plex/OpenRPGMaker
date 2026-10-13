@@ -2,6 +2,7 @@ import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { FOUR_LAYER_GUIDANCE_SHORT, requireMap } from "./mapHelpers";
+import { semanticChar } from "./queryTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type SimilarTileScore = {
@@ -82,9 +83,16 @@ const showMapRegion: ToolDefinition = {
       ...(map.upperOverlayTiles ? { layer4: regionGrid((index) => layerTileAt(map, 4, index)) } : {}),
       ...(map.shadowBits ? { shadow: regionGrid((index) => shadowAt(map, index)) } : {}),
     };
+    // 타일 번호 배열만 주면 모델이 나무·바위를 「장식」으로 읽는다(실측 2026-10-13). 통행 불가 칸은 세어서 준다.
+    const blockedCells: Array<{ x: number; y: number }> = [];
+    for (let row = 0; row < region.h; row += 1) {
+      for (let column = 0; column < region.w; column += 1) {
+        if (semanticChar(project, map, region.x + column, region.y + row, false) === "#") blockedCells.push({ x: region.x + column, y: region.y + row });
+      }
+    }
     return {
-      summary: `맵 미리보기: (${region.x},${region.y}) ${region.w}×${region.h} (${map.name})`,
-      data: { h: region.h, lower, mapId: map.id, upper, w: region.w, x: region.x, y: region.y, ...extras },
+      summary: `맵 미리보기: (${region.x},${region.y}) ${region.w}×${region.h} (${map.name}) — 통행 불가(나무·바위·벽) ${blockedCells.length}칸${blockedCells.length ? ` ${blockedCells.slice(0, 12).map((cell) => `(${cell.x},${cell.y})`).join("")}` : ""}`,
+      data: { h: region.h, lower, mapId: map.id, upper, w: region.w, x: region.x, y: region.y, blockedCells, ...extras },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },

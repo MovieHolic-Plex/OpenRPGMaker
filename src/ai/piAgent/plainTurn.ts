@@ -35,6 +35,7 @@ import { isGoalCommand } from "./goalCommand";
  * 강제는 툴 목록이 한다(request.readOnly). 계획은 도구 결과가 아니라 말로 남으므로 항목 목록을 요구한다.
  */
 export const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 바꾸지 않는다. 쓰기 도구가 제공되지 않는다. "
+  + "「이 작업」처럼 대상이 말로 주어지지 않았으면 사용자가 고른 영역·이벤트나 직전 대화의 작업을 계획하고, 그런 것이 없으면 무엇을 계획할지 되물어라 — 요청에 없는 작업(실내 시공 등)을 지어내지 마라. "
   + "요청을 실행 순서가 있는 항목 목록으로만 보고하라. 각 항목은 «무엇을 · 어디에 · 왜» 를 담고, 마지막에 예상 위험을 한 줄로 적어라. "
   // 2026-10-12 jp_city 도그푸딩: 읽기를 한 번에 하나씩 30번 해서 계획을 쓰기도 전에 턴 상한에 걸려 첫 제작 전체가 죽었다.
   + "턴은 30번뿐이다 — 서로 의존하지 않는 읽기(프로젝트 요약·맵 영역·이벤트·참고문서)는 한 응답에서 여러 도구를 함께 호출하고, 20번째 턴 전에는 계획을 써라. ";
@@ -54,6 +55,8 @@ export interface PlainPiTurnInput {
   readonly text: string;
   readonly currentMapId: string | null;
   readonly selection: IntentSelectionFact | null;
+  /** 사용자가 편집기에서 골라 둔 이벤트 한 줄(`selectedEventFact`). 「이 NPC」「현재 이벤트」「이 문」이 가리키는 대상이다. */
+  readonly selectedEvent?: string | null;
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
   /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
@@ -77,6 +80,24 @@ export interface PlainPiTurnClassification {
    * 원인을 코드로 역추적해야 했다. 선언을 부르지 않은 턴(장르 프리셋·읽기 전용)은 그 사실을 적는다.
    */
   readonly routingAudit: string;
+}
+
+interface SelectedEventSource {
+  readonly maps: Readonly<Record<string, { readonly events?: ReadonlyArray<{ readonly id: string; readonly name?: string; readonly x: number; readonly y: number; readonly pages?: ReadonlyArray<{ readonly id: string; readonly name?: string }> }> } | undefined>>;
+}
+
+/**
+ * 편집기에서 고른 이벤트를 모델에 주는 한 줄 사실. 영역 선택(`formatScopeNote`)과 같은 종류의 지시어 대상이다 —
+ * 이 줄이 없으면 「이 이벤트를 접촉형으로」 같은 요청에서 모델이 맵의 이벤트를 훑어 비슷한 것 하나를 골라
+ * 엉뚱한 이벤트를 고친다(2026-10-13 실측: 선택한 주민 대신 집 문의 트리거를 바꿨다). 고른 이벤트가 그 맵에 없으면 null.
+ */
+export function selectedEventFact(project: SelectedEventSource, mapId: string | null, eventId: string | null, pageId: string | null): string | null {
+  if (!mapId || !eventId) return null;
+  const event = project.maps[mapId]?.events?.find((candidate) => candidate.id === eventId);
+  if (!event) return null;
+  const pageIndex = pageId ? (event.pages ?? []).findIndex((page) => page.id === pageId) : -1;
+  const page = pageIndex >= 0 ? ` · ${pageIndex + 1}번째 페이지` : "";
+  return `[선택한 이벤트] ${event.name ? `${event.name} ` : ""}(${event.id}) 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다. 다른 이벤트를 고르지 말고 get_event 로 이 id 를 읽어 고친다. 요청이 말하지 않은 다른 이벤트(반대쪽 맵의 문 포함)는 덮어쓰지 않는다 — 반대쪽 출입구가 필요하면 새 이벤트를 새 id 로 만든다.`;
 }
 
 /** 평문 한 줄 → 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
@@ -117,13 +138,19 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   if (!plan.planOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;
-    const declared = await declareIntentCached(input.declarer(), buildIntentFacts({
+    const declareFacts = buildIntentFacts({
       project,
       userText: text,
       currentMapId,
       selection,
       hasActivePlan: input.hasActivePlan,
-    }));
+    });
+    let declared = await declareIntentCached(input.declarer(), declareFacts);
+    // 공급자가 한 번 느렸다고 지시 전체를 버리지 않는다 — 시간 초과만 한 번 더 시도한다(분류 호출은 폴백을 캐시하지 않는다).
+    // 실측 2026-10-13: 동시 실행 5건 중 2건이 「시간 초과(30000ms)」로 턴이 시작도 못 하고 끝났다.
+    if (declared.intent.source === "fallback" && !plan.readOnly && /시간 초과/u.test(declared.error ?? "")) {
+      declared = await declareIntentCached(input.declarer(), declareFacts);
+    }
     if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
     plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
@@ -181,6 +208,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       }
     }
   }
+  if (input.selectedEvent) intentNote = intentNote ? `${intentNote}\n${input.selectedEvent}` : input.selectedEvent;
   const team = input.piTeam && !plan.readOnly;
   return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit };
 }
@@ -209,6 +237,7 @@ export function buildUltrabrainPlanRequest(input: {
   readonly mapIds: readonly string[];
   readonly currentMapId?: string;
   readonly approvedTilesetFamilies?: readonly string[];
+  readonly editHistory?: PiAgentRequest["editHistory"];
   readonly project: Project;
   readonly scopedByUser: boolean;
   readonly maxTurns?: number;
@@ -219,6 +248,7 @@ export function buildUltrabrainPlanRequest(input: {
     task: `${PLAN_ONLY_PREFIX}${input.modelTask}`, mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}), project: input.project,
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
+    ...(input.editHistory?.length ? { editHistory: input.editHistory } : {}),
     scopeStrict: input.scopedByUser,
     readOnly: true, maxTurns: Math.min(input.maxTurns ?? PLAN_MAX_TURNS, PLAN_MAX_TURNS),
     thinkingLevel: input.brain.reasoningEffort as PiAgentThinkingLevel,
@@ -259,6 +289,7 @@ export function buildPiRunRequest(input: {
   readonly mapIds: readonly string[];
   readonly currentMapId?: string;
   readonly approvedTilesetFamilies?: readonly string[];
+  readonly editHistory?: PiAgentRequest["editHistory"];
   readonly project: Project;
   readonly scopedByUser: boolean;
   readonly mapBundleMerge: boolean;
@@ -291,6 +322,7 @@ export function buildPiRunRequest(input: {
     mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}),
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
+    ...(input.editHistory?.length ? { editHistory: input.editHistory } : {}),
     project: input.project,
     // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
     scopeStrict: input.scopedByUser,

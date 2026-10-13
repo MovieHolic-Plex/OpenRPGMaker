@@ -1,6 +1,7 @@
-import { getMapEditHistoryEntries, peekPreviousProject } from "@/editor/mapEditHistory";
+import { getMapEditHistoryChanges, getMapEditHistoryEntries, peekPreviousProject } from "@/editor/mapEditHistory";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
+import type { PiAgentRequest } from "@/ai/piAgent/protocol";
 
 function optionalNumber(args: Record<string, unknown>, key: string): number | undefined {
   const value = args[key];
@@ -23,6 +24,15 @@ export function replaceProjectContents(target: Project, source: Project): void {
   Object.assign(target, structuredClone(source));
 }
 
+export type ClientEditHistoryEntry = NonNullable<PiAgentRequest["editHistory"]>[number];
+
+// Pi 워커는 편집기의 히스토리 스택이 없는 별도 프로세스다. 요청이 실어 보낸 목록을 여기 두면 두 도구가 편집기가 본 기록으로 답한다.
+// null = 편집기 안(스택을 직접 읽는다), 배열 = 워커(목록으로 답하고 되돌림은 편집기가 끝에 실행한다).
+let clientHistory: readonly ClientEditHistoryEntry[] | null = null;
+export function setClientEditHistory(entries: readonly ClientEditHistoryEntry[] | null): void {
+  clientHistory = entries;
+}
+
 const revertLastEdit: ToolDefinition = {
   name: "revert_last_edit",
   description:
@@ -38,6 +48,12 @@ const revertLastEdit: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const steps = positiveInteger(optionalNumber(args, "steps"), 1);
+    if (clientHistory) {
+      const target = clientHistory.find((entry) => entry.steps === steps);
+      if (!target) throw new ToolError("되돌릴 이전 상태가 없습니다", { code: "history-empty" });
+      // 초안은 그대로 둔다 — 편집기가 이 실행이 끝난 뒤 실제 되돌리기를 한다(data.clientUndo).
+      return { summary: `직전 변경을 되돌립니다 — ${target.label}`, data: { clientUndo: steps, label: target.label } };
+    }
     const previous = peekPreviousProject(steps);
     if (!previous) throw new ToolError("되돌릴 이전 상태가 없습니다", { code: "history-empty" });
     const label = getMapEditHistoryEntries()[steps - 1]?.label ?? "편집";
@@ -48,7 +64,7 @@ const revertLastEdit: ToolDefinition = {
 
 const listEditHistory: ToolDefinition = {
   name: "list_edit_history",
-  description: "편집 히스토리의 라벨, 맵, 순서를 조회한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다.",
+  description: "편집 히스토리의 라벨, 맵, 순서를 조회한다. 가까운 항목에는 changes(바뀐 타일 칸 좌표 tileCells·총수 tileCellCount, 추가·삭제·변경된 이벤트 id)가 실려 있어 「방금 뭘 바꿨나·어떤 타일을 고쳤나」에도 이 도구로 답한다. 되돌릴 수 있는 작업을 사용자에게 설명하거나 되돌릴 지점을 확인할 때 사용한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -60,7 +76,14 @@ const listEditHistory: ToolDefinition = {
   run(_project, args): ToolExecResult {
     const mapId = optionalString(args, "mapId");
     const limit = positiveInteger(optionalNumber(args, "limit"), 10);
-    const entries = getMapEditHistoryEntries()
+    const local = () => {
+      const changes = getMapEditHistoryChanges(5);
+      return getMapEditHistoryEntries().map((entry) => {
+        const mine = changes.filter((change) => change.steps === entry.steps).map(({ steps: _steps, ...rest }) => rest);
+        return mine.length ? { ...entry, changes: mine } : entry;
+      });
+    };
+    const entries = (clientHistory ?? local())
       .filter((entry) => mapId === undefined || entry.mapId === mapId)
       .slice(0, limit);
     return {
