@@ -89,7 +89,12 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const sayCount = timeline.marks.filter((m) => m.kind === "say").length;
   const overlapShare = togetherSamples ? Math.round((overlappedSamples / togetherSamples) * 100) / 100 : 0;
 
+  // 색조가 화면을 사실상 못 바꾸는 값(알파가 매우 낮음)인지 — 장르와 무관한 측정값이다.
+  const tintAlphas = timeline.marks.filter((m) => m.kind === "tint").map((m) => (m.value.split(",").map((n) => Number(n.trim()))[3] ?? 0.4)).filter((a) => Number.isFinite(a) && a > 0);
+  const maxTintAlpha = tintAlphas.length ? Math.max(...tintAlphas) : 0;
+
   const issues: string[] = [];
+  if (tintAlphas.length > 0 && maxTintAlpha < 0.2) issues.push(`장면 색조의 알파가 최대 ${maxTintAlpha}라 화면이 거의 안 바뀝니다(눈으로 구분 불가). 분위기를 바꾸려는 색조라면 알파를 0.3 이상으로 올리고 색도 목표 분위기에 맞게(어둡게 하려면 어두운 색) 다시 정하세요.`);
   if (subjects.length > 0) {
     if (timeline.durationMs < 6000) issues.push(`컷신이 ${(timeline.durationMs / 1000).toFixed(1)}초로 너무 짧습니다(6초 미만) — 도입은 분위기를 깔 시간이 필요합니다.`);
     for (const s of subjects) {
