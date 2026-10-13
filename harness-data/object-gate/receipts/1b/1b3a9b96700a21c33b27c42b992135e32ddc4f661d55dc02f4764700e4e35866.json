@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1b3a9b96700a21c33b27c42b992135e32ddc4f661d55dc02f4764700e4e35866",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-e-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-e-grate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road marking and drainage grate flat on the ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground tile depicting street pavement markings and a drainage grate lying entirely flat on the horizontal ground plane spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4132
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground road marking with drainage grate",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile depicts flat ground features (asphalt, painted line, curb/drain grate) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4621
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 176233,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "grate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main grate is shown as a flat frontal strip with horizontal slats and no appreciable surface receding toward the viewer; there is no above-visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 130616
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.485Z",
+ "cells": {
+  "16": [
+   "f223212ff4e03b57"
+  ],
+  "24": [
+   "1f2c94f6cf3cd4e3",
+   "29b594d48ab776e8",
+   "590cb07727d7703d",
+   "764c9204bda9d2fd",
+   "7f5f94edc700cf20",
+   "a7f4693ce732a121"
+  ],
+  "32": [
+   "01d2d5c3347cbdcf",
+   "15223cc049d80d81",
+   "19e05b29d37032b2",
+   "369e7b381adb9775",
+   "3e740ef5157f6beb",
+   "90103ca667c57fbd"
+  ],
+  "48": [
+   "4ed99374652708cd",
+   "84bccb170fda961c",
+   "8b0b030855b2006e",
+   "bc8a798919804761",
+   "caac0ec365bd3c23",
+   "e2d06d04b3da9e30"
+  ]
+ }
+}

@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dbdfe87fd08586de26a5611673e74ec37e4cf6402633872f4f26e81e1df1521",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-carport",
+ "label": "jp_city/street_hand/jp-carport",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carport / canopy frame with glass panels and support posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation: the glass panels (rows 8-20), horizontal beam (rows 20-22), and vertical pillars (rows 22-46) show zero top surface depth, with only a 1-2px outline along the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8243
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carport / covered walkway roof and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat side-scroller style front elevation: the upper panels and beams have no foreshortened top roof surface (only a 1-2px outline at rows 6-7), and the supporting pillars show no top/horizontal perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5600
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "carport roof and supporting posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof has a broad visible horizontal top plane about 11 source pixels deep, with a darker front fascia below it; the posts form the south-facing support face. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 109121
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "carport roof with supporting posts",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof has a broad visible horizontal top surface approximately 11 source pixels deep, above its south-facing fascia. The supporting posts show normal front faces; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 313707
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "11c4b7c7dcb61d4a",
+   "1a018a11748569ce",
+   "369010b5ceaac1c3",
+   "5204cb35740a4346",
+   "6b0cb0bf4e68523a",
+   "7d7886e4fbcb7adf",
+   "c1ae44aa723fce77",
+   "d051d13b1199b109",
+   "e30c2c6471fc6792",
+   "f4c6d38e87c157cf"
+  ],
+  "24": [
+   "14e17820dde4d3c4",
+   "1afa994f9eb0bab0",
+   "22854b0fd5f6a6ad",
+   "2f6dd08943bb353c",
+   "4de7ced7c9c65f2c",
+   "6bd35c66f569473f",
+   "85bfc3f05d0c8de8",
+   "86ef0dab4b20ce4b",
+   "8efa4d7749ae2788",
+   "b3245e3da31ab295",
+   "b79d804686c53a5f",
+   "d49a7848bf72582d",
+   "dbecabea84ac8d90",
+   "e3d6fe56c1a88370",
+   "e83f9c64d2b4e204",
+   "f86b07db42f439a9"
+  ],
+  "32": [
+   "34b25d216e9e35b7",
+   "3c4b33277641ef0f",
+   "53eb41c7d684f4b9",
+   "829409fdaf316ee5",
+   "9d7f81c731eb8b0f",
+   "bc27e0ee59cefbaf",
+   "d1c889074f21534c",
+   "eb4c6e575556010b"
+  ],
+  "48": [
+   "384ec0a07f456de5",
+   "65093cde4cc99f93",
+   "87989a8e5c5ea1f2",
+   "a357b15f36ad322c",
+   "b7ab2e103368a4c5",
+   "ce6284e51507a132"
+  ]
+ }
+}

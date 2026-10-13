@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e024b4bdcd72cb4367267c607dd629ceee9569d92b78a7aa1b3fb7dbd5d1fc6c",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp_city/street_hand/jp-bwall-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall shows two vertical front sections (a lighter patterned upper section from rows 1-5 and a darker brick pattern from rows 6-14) with no top surface or cap visible whatsoever; it is drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4960
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile depicts the vertical front face of a wall (white plaster upper section from rows 1-5 and stone masonry lower section from rows 6-14) with only a 1px boundary line at row 0. It lacks any visible top surface, roof cap, or top slope seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9489
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 145594,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large plain wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is shown as a flat rectangular front elevation with only a thin horizontal upper edge; no visible top surface or receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 53170
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.011Z",
+ "cells": {
+  "16": [
+   "e77be5fca10a16b0"
+  ],
+  "24": [
+   "125fe5f3ad1deb88",
+   "20a8e4f699469bbc",
+   "51c63ac81b6f5a86",
+   "7ccfe458d31c0254",
+   "88755863006b24a3",
+   "e83c7d4939f8e2bd"
+  ],
+  "32": [
+   "0bb09549bc6c2eb3",
+   "6c01aed088713a5c",
+   "8960f6c43ddd5645",
+   "c76ec672e3697190",
+   "f40ba060d3370b7c",
+   "f474d50f1f768073"
+  ],
+  "48": [
+   "329867478f2ee14c",
+   "4032d01bc9c73e9d",
+   "b3d42587cf2f79c0",
+   "de579173cf3bd196",
+   "e4a42ad80dad4030",
+   "f226b7fa9bfa8588"
+  ]
+ }
+}

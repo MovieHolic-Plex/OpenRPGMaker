@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e584f34c020c2dd6125731f29cb4ccb2f05addb524fc9753ac14df9240070f6c",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-torii",
+ "label": "jp_city/street_hand/jp-torii",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate (pillars and lintel beams)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure 2D front elevation. All lintels, crossbeams, and column bases are flat horizontal rectangular bands with no foreshortened top surfaces visible from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7945
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat architectural front elevation: the lintels, beam ends, posts, and base plinths are completely flat rectangles with no visible top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7471
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "torii gate with horizontal lintel and two pillars",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a symmetric flat front elevation: the lintel shows only its front face with no visible top surface or slope, and the pillars likewise have no receding faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 79917
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "torii gate with two vertical pillars and horizontal lintels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as flat front-facing rectangular posts and lintels; the lintels have no visible top slope or horizontal top surface beyond edge shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 119468
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:38.439Z",
+ "cells": {
+  "16": [
+   "04a55d4db834014e",
+   "240923fb7885a208",
+   "3b7a6c490e68de51",
+   "47a66d6b94f9dae3",
+   "89b5c212dbf70c59",
+   "c89cf072c05456ca",
+   "d21685a3efd2e5bc",
+   "d7049b219a904c19",
+   "e1dca3811a6e083d"
+  ],
+  "24": [
+   "30d86d89ea5b4522",
+   "3df52121aa8323bd",
+   "4282d3be9db45233",
+   "4342a5305309c1b7",
+   "4e53a379c4a19897",
+   "7d130311678af49b",
+   "919350ac95602a70",
+   "aa5d936b9958cb5e",
+   "b5dff4c0577d00d2",
+   "beb7f60a3dfe3f5c",
+   "bf59c844df1ff417",
+   "c54e1be513c8e5ae",
+   "c747f5e454a937ef",
+   "eda171a019a6de72",
+   "f1a7ed9a35e9a053"
+  ],
+  "32": [
+   "1b915181f104ae8d",
+   "35c4332d768a07ba",
+   "891692d90e4979ad",
+   "a7d71708b3b65359",
+   "b62d9890750f9797",
+   "c50e931f77d21839",
+   "e7d03715010eef94",
+   "eaf01017b8fa34d2"
+  ],
+  "48": [
+   "7c35f5038dbc66a7",
+   "853ebc8c0d52cdd6",
+   "aa738fdef9e7d8e7",
+   "ad46dc37bf1e3a80",
+   "e659174200ae49d8",
+   "f51c75e9ec0788af"
+  ]
+ }
+}

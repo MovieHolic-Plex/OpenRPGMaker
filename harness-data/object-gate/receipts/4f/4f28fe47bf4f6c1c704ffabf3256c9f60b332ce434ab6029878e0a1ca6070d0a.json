@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4f28fe47bf4f6c1c704ffabf3256c9f60b332ce434ab6029878e0a1ca6070d0a",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-6-R",
+ "label": "jp_city/street_hand/jp-sf-shop-6-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shopfront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shopfront facade, sign, door, and windows are drawn completely flat in pure front elevation with 0 rows of visible roof or lintel top surface at the building or door header.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9886
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shop facade with entrance door, display window, and awning",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural elevation (side-scroller style). The door frame, lintel, shelves, and sign board show no top horizontal surfaces from a 3/4 overhead perspective, and the window panes and interior displays are rendered completely flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9669
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "shop facade with central doorway and striped awning",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat, straight-on facade; the awning and lintels show only front-facing bands with no visible horizontal top surface or slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 113115
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large shop/building facade with central doorway and display frontage",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is drawn as a flat frontal facade with horizontal bands and a doorway; roofs, awnings, and lintels show only edge lines with no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 188401
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.010Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "268694519f0564a3",
+   "2f6120ea18405e3d",
+   "52b83970a827fa15",
+   "591233ec525de138",
+   "6b22c93e63374bdc",
+   "6d8d6a2b2522f31c",
+   "6db1ce030ae4a509",
+   "75c324d3852a2fb9",
+   "8c924a7d7c8314db",
+   "913b974aed01b324",
+   "9150848b991b4217",
+   "9e5253197be0ec60",
+   "b1a8b5449b59fe87",
+   "b2a8cd57bb6739f4",
+   "e5ba0a30b8a18a6b",
+   "e9f9c8d434a16bfe",
+   "fbb9125a96ba0baa"
+  ],
+  "24": [
+   "01231d7ee6476331",
+   "60f3855a47c16c38",
+   "6de1276a654e87c1",
+   "6e2c4170f3b5f4c9",
+   "7ab2f1b10e4870ed",
+   "8708e4b450438da1",
+   "a0044c3d54bc2c4c",
+   "f7da1318d367c562"
+  ],
+  "32": [
+   "01eb1a093315678e",
+   "0c61d4b42082953c",
+   "2532ee8b781dc7fd",
+   "51acd0a5f08e6611",
+   "5bcf3712b18c8e44",
+   "76c874c53e394d75",
+   "8f216e5b29479b9c",
+   "a835f3d21fb9fdb8",
+   "b82e922d3b164438",
+   "cb274ccd88722777",
+   "d715d2e90360bb9f",
+   "e833a22fff26cc3d"
+  ],
+  "48": [
+   "20fcb207e057034c",
+   "ebfb6fe0f23b9381"
+  ]
+ }
+}

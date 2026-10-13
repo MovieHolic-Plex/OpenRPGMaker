@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c1c3104b1779e0b57335f86bd6e835a859f368b67cbca7344410e47a1f33427d",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-monohoshi",
+ "label": "jp_city/street_hand/jp-monohoshi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clothes drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clothes rack, top structure/beam, and base bar are drawn in flat front elevation with 0px of visible horizontal top surface, showing only vertical south-facing surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7968
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clothes drying rack (monohoshi)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top canopy/beam (rows 2-8), the hanging crossbar (rows 9-10), and the base (rows 28-30) are all drawn in pure flat front elevation with 0 visible top surface rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7810
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "clothes-drying rack frame with hanging garments",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rack's upper horizontal beam has a clearly visible top surface about 4 source pixels deep, with a darker south/front face below it. The posts and lower beam are otherwise shown as front-facing structural members; no receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 74911
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "clothes-drying rack frame with upper beam, posts, and lower base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad upper horizontal beam has a clearly visible light top surface approximately 6 source pixels deep, with its south front edge below it. The posts are shown as front-facing silhouettes; no receding isometric side face is present. The lower horizontal base is mostly a narrow front band without a substantial visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 128757
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.917Z",
+ "cells": {
+  "16": [
+   "02f9964358217950",
+   "06919e680113522a",
+   "2de53544fef0f91c",
+   "550fe78938801eba",
+   "7b3b28c2ce215f12",
+   "d35ca39a79ce9bde"
+  ],
+  "24": [
+   "0cfac9b81b0b50ea",
+   "0da717c223d86aa3",
+   "37ec91ee1347924e",
+   "648eddd8acaa2a46",
+   "810930a5e10bde37",
+   "8f3e820ef727fb43",
+   "b232a92918cbc82e",
+   "eb6d662d1301a1c5"
+  ],
+  "32": [
+   "04be5024aba4d3b3",
+   "0560734dfd923f3e",
+   "1bc5748634dc1f8c",
+   "3689f20cbcbab37a",
+   "8f6ff017d6a372df",
+   "c06eb713dd4e6ad3"
+  ],
+  "48": [
+   "bb07c4958116a03b",
+   "d018881322469770"
+  ]
+ }
+}

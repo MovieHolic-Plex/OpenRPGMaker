@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4975bfecdc651bbc74023ea1b8fad6fffe0a666a9811bbb14831cfe9050f0e45",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-tsukigime",
+ "label": "jp_city/street_hand/jp-tsukigime",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn in pure front elevation with only a 1px outline border at the top (row 3) and no visible top surface showing depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5854
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn as a flat 2D rectangle (rows 2-22) with only a 1px outline along the top edge and no visible top surface or depth, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3723
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular framed panel with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main frame is drawn as a flat straight-on rectangle. Its top and bottom beams appear only as front-facing bands with no visible horizontal top surfaces; there is no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 531035
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 362434,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.231Z",
+ "cells": {
+  "16": [
+   "02ec6e617d210f86",
+   "258e2df20f335e3f",
+   "61194f51562030b2",
+   "eedabc5c681d6d65"
+  ],
+  "24": [
+   "012e01d3a87d2c62",
+   "028b29700f2d67fd",
+   "0d171528004e7d88",
+   "0e2e5216c353fed4",
+   "135e80afbb12895c",
+   "2ee9e01d296c5f38",
+   "44d6f8a9986c2664",
+   "4a272c32ac720dc4",
+   "6667a748f085298c",
+   "669fab931783ad7c",
+   "92ed4c5f4faa0e8a",
+   "93dae60486229403",
+   "9a92a7e84a7f8158",
+   "9b2c3c16e80ce473",
+   "ab80e5f50fe1acf2",
+   "be648063e4a18d67",
+   "c47eda54923a691e",
+   "dcc236f405016096",
+   "de8aa3e44f01f9c5",
+   "dfda9e951b75356b",
+   "e4a152091c58384a",
+   "e6d94c2e3109f65a",
+   "e72e935ee24f904b",
+   "f4c23ad3e86be3f4"
+  ],
+  "32": [
+   "8a081af2dc2814fb"
+  ],
+  "48": [
+   "0892bc037810ba7c",
+   "99c9ee28dfef3a3b",
+   "d3decb212eef8fca",
+   "e560cdb67cba8753",
+   "ece465141fdd1494",
+   "f39d5be2516cc347"
+  ]
+ }
+}

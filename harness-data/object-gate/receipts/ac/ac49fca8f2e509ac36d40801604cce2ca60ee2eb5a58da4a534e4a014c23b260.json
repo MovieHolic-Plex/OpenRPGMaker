@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac49fca8f2e509ac36d40801604cce2ca60ee2eb5a58da4a534e4a014c23b260",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp_city/street_hand/jp-rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/rail consists entirely of flat horizontal bands with 1px outlines/highlights (row 8 and 10), showing no foreshortened horizontal top surface for the railing beams.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / barrier panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier is depicted completely flat from the front with horizontal bands and no visible top surface or thickness foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4662
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal rail-fence body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is presented as flat horizontal bands in a straight front elevation. Its upper edge is only a thin line with no visible foreshortened top surface, and no receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 114240
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal rail fence body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is shown as a flat front-facing horizontal rail with no visible top surface; only its south face is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 53687
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:38.436Z",
+ "cells": {
+  "16": [
+   "b0458c48f1fcaeaf"
+  ],
+  "24": [
+   "33e5c1c390bfda63",
+   "3f8ed6a00f0081cf",
+   "40032bced8df0494",
+   "7e7f97a793b3eca0",
+   "b50d0f35a91ed74f",
+   "d9ff65b66caf95ae"
+  ],
+  "32": [
+   "12ff9fc6094b03bb",
+   "33416760744ebc93",
+   "3d3300bd9304a35d",
+   "55a5dd6c619ca7f2",
+   "9015e52b6e60ed52",
+   "a5f402e51b2798f4"
+  ],
+  "48": [
+   "3d39a5a127cb169c",
+   "3daef106e7fba70b",
+   "791e9b09aebfa4f1",
+   "8e0946cddeda226f",
+   "978907aa92ae62de",
+   "e0ee80c30aecf7a1"
+  ]
+ }
+}

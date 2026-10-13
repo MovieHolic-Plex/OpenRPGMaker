@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b5aa667506bb291e5e85962de626337ac739c690814fb108ca5df71a53f8648",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "jp-gatepost",
+ "label": "jp_city/street_hand/jp-gatepost",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete gatepost with intercom and mail slot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gatepost and flanking wall cut off flat at row 6 with no visible horizontal top surface or cap (only 1-2px of wall margin before the plaque), rendered purely in front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6657
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese modern gatepost (monchuu) with mail slot and intercom",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gatepost starts abruptly at row 6 against the empty background with no visible top surface (0 rows of top depth), and all front fixtures (mail slot, intercom, nameplate) are depicted in pure flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5816
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "The right-hand rectangular gatepost/column",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main post is a flat south-facing rectangle with only a thin one-pixel top strip; no substantial top/cut surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 80348
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese gatepost / column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main post is presented as a flat front-facing block with only a thin horizontal dark/cap strip above it; there is no substantial visible top surface on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 114082
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.363Z",
+ "cells": {
+  "16": [
+   "b6dc03867934d763"
+  ],
+  "24": [
+   "0de8053e083c4c69",
+   "57aec4badae2bd92",
+   "abcf4e19b8e58c09",
+   "be927c50d1b8198a",
+   "c1b855f3a83b4912",
+   "c258c2cfa4ff914a"
+  ],
+  "32": [
+   "0ddd50b2b22bd92b",
+   "13733bf31e4708bf",
+   "2180509ac40b3bf9",
+   "66902dd8cd7b402e",
+   "6b3e52692b42e513",
+   "d032ee0b6763b05d"
+  ],
+  "48": [
+   "23d7f52649f7e6e1",
+   "251205c9570a0ef9",
+   "2cbb10423c8cd178",
+   "69a2011125c41b6b",
+   "e17681e037f75818",
+   "f692a8fc76fa15dd"
+  ]
+ }
+}

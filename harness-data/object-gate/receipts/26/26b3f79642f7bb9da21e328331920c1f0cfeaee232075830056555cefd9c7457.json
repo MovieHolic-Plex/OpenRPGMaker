@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "26b3f79642f7bb9da21e328331920c1f0cfeaee232075830056555cefd9c7457",
+ "width": 64,
+ "height": 32,
+ "kind": "flat",
+ "name": "jp-mark-30-w",
+ "label": "jp_city/street_hand/jp-mark-30-w",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese road surface marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat road decal/marking painted onto the pavement (accompanied by road lines and curb), lying entirely on the ground plane in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7631
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese road marking '30' decal",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat road decal representing a Japanese '30' speed limit marking painted onto the road surface above a white line and curb. It lies entirely on the horizontal ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9481
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "orange flat floor marking",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a broad, planar orange marking spanning roughly source rows 1-15, with its surface directly visible from above; there is no receding side face or vertical front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 62162
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "flat rectangular ground mark with orange outline and pale lower band",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main mark is presented as a broad horizontal, ground-level surface rather than a standing object; its visible planar area spans roughly six source-pixel rows. No receding side face or front elevation is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 320553
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "22c2f84a2401faac",
+   "6376fc504d508b5a",
+   "95085561a7bbcc55",
+   "e0d62eab134fe661",
+   "f0687f6301054f22"
+  ],
+  "24": [
+   "19989a4147d0d978",
+   "2d6ede669023cbf3",
+   "3b65d57bb075a808",
+   "45f021deac4b9c8a",
+   "4643f909ab66837d",
+   "57fd55fca2f9700e",
+   "5b6477e162000550",
+   "5bf0950c23d364f2",
+   "64f09644cc9907e4",
+   "6c934bba2d5d612a",
+   "8297c1fd44a08dd0",
+   "88973c5e83c84c32",
+   "8ebdc656a77aaaa0",
+   "9d7e163e7d90d0c8",
+   "9ebe8ff5d10aa6f8",
+   "ac8f646b995195df",
+   "af3326e58e073f03",
+   "b4f7c6ac1c169181",
+   "b788f5dda7eeb6cb",
+   "b9cdfadad108b2c4",
+   "c5e5d83f7364d1af",
+   "cb6951147c193ad0",
+   "cd313b911dbc15c4",
+   "d131435ed5f01b11",
+   "da45b08b20f21896",
+   "e37e48e786eceeac",
+   "e5702aa83738d875",
+   "ea2610571cce1c65",
+   "efc01a7d4c402d04",
+   "efc0be26d7e93f2e",
+   "f237b0a271401932",
+   "f38cb9243203571b"
+  ],
+  "32": [
+   "0bc7f2a9263db5f0",
+   "34f6f6edcf5a10c2"
+  ],
+  "48": [
+   "02a0dc92dc79bc0b",
+   "0f5c7e976b7cdb10",
+   "4d4af203914f6315",
+   "5a9b9346c7507094",
+   "75969937ea9b88b5",
+   "789160e60e17b77f",
+   "807c2460635bba2f",
+   "a5b509c2ad261d5a",
+   "d9c5b99dc46e8f98",
+   "e5dee589ca7cda45",
+   "ec1dccafe35eba1c",
+   "f6155181e821623a"
+  ]
+ }
+}

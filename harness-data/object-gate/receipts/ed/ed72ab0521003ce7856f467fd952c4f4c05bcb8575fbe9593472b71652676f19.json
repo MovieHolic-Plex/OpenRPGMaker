@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed72ab0521003ce7856f467fd952c4f4c05bcb8575fbe9593472b71652676f19",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "jp-bank-lip",
+ "label": "jp_city/street_hand/jp-bank-lip",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone canal wall terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a canal or river bank wall with water at the top edge and stone masonry courses below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14342
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone embankment wall face with water edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a canal or embankment wall face with a water/shadow edge at the top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6003
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat brick wall face with a narrow dark-blue upper band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists of flat, front-facing brick courses. The upper blue band is only 2 source-pixel rows tall and does not establish a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13397
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Brick-patterned bank or wall face",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat, rectangular masonry face. The blue band at its upper edge is only 2 source-pixel rows tall and reads as a cap or edge, not a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14000
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.479Z",
+ "cells": {
+  "16": [
+   "bef3030e9f0c0a14"
+  ],
+  "24": [
+   "187d7710f8b1a68a",
+   "26318c3e69cf6fb5",
+   "2cee023440c65c5a",
+   "59715da58486de2e",
+   "a392f03de5e07473",
+   "f8ed3244f775e0a0"
+  ],
+  "32": [
+   "25edc46f7a2c55b4",
+   "3b58afbf402929d9",
+   "47310fb4e2b2df99",
+   "56ce7a96c354b58e",
+   "6804499865006daf",
+   "bae961d47c5dd00d"
+  ],
+  "48": [
+   "0d2a59a14b3dbba2",
+   "13421cd8d36091c6",
+   "3712e2d1ed3ec91a",
+   "4c63a3002e719291",
+   "64d1db5d248c575f",
+   "aeed1d1c0d1d1ae5"
+  ]
+ }
+}

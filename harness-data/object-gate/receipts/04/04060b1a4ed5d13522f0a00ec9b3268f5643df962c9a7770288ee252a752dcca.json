@@ -1,0 +1,181 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04060b1a4ed5d13522f0a00ec9b3268f5643df962c9a7770288ee252a752dcca",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp_city/street_hand/jp-pole",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese utility pole with crossarms and transformer",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, and transformer are drawn in flat front elevation with no visible top surface or 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole with crossarms and transformer",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, insulators, and transformer are drawn entirely in front elevation with no visible horizontal top surfaces (0 top rows); crossarms and cylinder tops have flat outlines without 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4632
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall utility pole shaft with crossarm",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole's upper cut end has a clearly visible multi-row top surface above the shaft; the shaft and crossarm do not show receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 110207
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pole has a broad visible top/cut surface at its upper end, approximately 3 source pixels deep, with a south-facing shaft/front below. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 89417
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.014Z",
+ "cells": {
+  "16": [
+   "02adac3e2418804a",
+   "3c548d229a927b49",
+   "608c297e88e135e3",
+   "61919f50e5dcca63",
+   "66b7fcf860ffd794",
+   "823f82f7694e7b5b",
+   "885a946c5aac8797",
+   "88ba50d2a2a7bf44",
+   "a298788664ae9549",
+   "b4003cae6d9fea0d",
+   "bd31410ca79cb7df",
+   "c428519a212f5d6c",
+   "d4a42f69e5c4fe40",
+   "e6633b60dbf9ea07",
+   "f430364748198e41"
+  ],
+  "24": [
+   "0df0047ef4fc8299",
+   "0e28a62496477408",
+   "2816c8fa0cbc245c",
+   "320d56a3939d27f1",
+   "339b397cb1fba028",
+   "3a054700728d2f49",
+   "3a9a0e38aeea11cc",
+   "3ce00d9cb6135f0d",
+   "3fdc996b86042ddf",
+   "477eb4b719683c44",
+   "5a189cc1fa268257",
+   "6c29b5e8fd14fc96",
+   "746adab87d9dc0bd",
+   "7c9bd24707eca643",
+   "82c8617a1c7c99fd",
+   "84017846fcd532fd",
+   "84762965931cc13c",
+   "9143bafc6e872222",
+   "94b65e69cbc3a63b",
+   "98cd90c8d8defad7",
+   "9c8f456c8f699e05",
+   "a19bdf5ccde5a042",
+   "b3eb05fc0151e593",
+   "bbca726580be65fe",
+   "c7d8f2a72362d22a",
+   "d6d41bf5143e6631",
+   "d8ce43cc2f5bfd11",
+   "db76d781a5f84ce9"
+  ],
+  "32": [
+   "03d06e26dd7e9fed",
+   "04bac5632326a3af",
+   "168c6413c1c3c1e1",
+   "196c3120e70f1088",
+   "2a8e997ca2cfd698",
+   "404fc5ac2e2a5994",
+   "49ce4c4d2effcd4d",
+   "6c549233a5d55e61",
+   "813088701a5ee532",
+   "8877721817167d0d",
+   "930e9d156f19f5a6",
+   "94b94e145ce0154a",
+   "97b26722796334e9",
+   "9b6f1f30283fa3f1",
+   "a269d4eba04c4208",
+   "a7b9fe2881418aa2",
+   "af187496c01e6f5d",
+   "b626ea4869ced476",
+   "c023fc0073875a1f",
+   "c0d13572fb5cc8ff",
+   "ea53688813b2479f",
+   "eea5655c81d72b58",
+   "fc733be68bfbe9bb"
+  ],
+  "48": [
+   "0435dd197727384d",
+   "436945aa7510f2a6",
+   "4ab88e4a365c0a66",
+   "579ca9675c634744",
+   "811780da69b91e7f",
+   "89cdacf50428ef2f",
+   "d9c0aa141fdfe0c6",
+   "e278210ae6db6e19"
+  ]
+ }
+}

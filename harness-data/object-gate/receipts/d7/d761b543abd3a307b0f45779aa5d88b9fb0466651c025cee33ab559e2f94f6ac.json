@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d761b543abd3a307b0f45779aa5d88b9fb0466651c025cee33ab559e2f94f6ac",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-ac-unit",
+ "label": "jp_city/street_hand/jp-ac-unit",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ac unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface spans rows 3 to 7 (5 source pixel rows, shaded lighter), meeting the darker south-facing front surface (rows 8 to 14) along row 8 with no separating outline, showing the standard 3/4 perspective box volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12486
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "air conditioner unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The AC unit is drawn in pure front elevation as a flat rectangle with an upper vented panel (rows 3-7) and a lower grille panel with an indicator light (rows 8-14). There is no visible top surface foreshortened from above (only the 1px top outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9196
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular air-conditioning unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular body is shown as a flat front elevation with vents; the top is only a thin edge and has no visible above-facing surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 42182
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular air-conditioning unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular elevation with only a thin top edge; no foreshortened horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 48841
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.009Z",
+ "cells": {
+  "16": [
+   "3953b1d136076714"
+  ],
+  "24": [
+   "1409a603fc035fd2",
+   "2e3954ad1fa789da",
+   "5de8e9acfa1653ca",
+   "94c4a639baf41298",
+   "a2fba850a03b93dd",
+   "eed7827c81968f04"
+  ],
+  "32": [
+   "046c293a80da4649",
+   "15fc3dcb7e78c111",
+   "260ce72b26cfc0d7",
+   "363d7f4ec3a4719e",
+   "3e6c444de2122e87",
+   "5ca32ea11055ea71"
+  ],
+  "48": [
+   "7b2b6969c4c11d56",
+   "9a327b0df45b6ce3",
+   "a7a35522fd6efe06",
+   "b44ad278abbb52fe",
+   "ba87b39731dd310f",
+   "d01561c7707a6bf2"
+  ]
+ }
+}

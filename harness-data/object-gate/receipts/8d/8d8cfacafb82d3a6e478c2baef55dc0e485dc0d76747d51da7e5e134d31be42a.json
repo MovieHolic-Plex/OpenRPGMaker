@@ -1,0 +1,188 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d8cfacafb82d3a6e478c2baef55dc0e485dc0d76747d51da7e5e134d31be42a",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-line-w",
+ "label": "jp_city/street_hand/jp-mark-line-w",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "painted ground line marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical 2px-wide painted stripe on the ground extending the full 16px tile height, perfectly suited as a flat floor marking decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3997
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical ground marking line running top-to-bottom across the tile, lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2px wide vertical white painted line decal lying completely flat on the floor plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2px-wide vertical road or court marking stripe that lies flat on the ground plane across the entire 16-row tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4471
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "White straight ground-marking strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white strip is a flat marking visible across all 16 source-pixel rows, with no upright front face or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9354
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat white ground-marking stripe",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The marking is a uniform 2-pixel-wide stripe spanning 16 source-pixel rows, shown entirely as a flat surface without vertical or receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9194
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "straight white ground-marking stripe",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stripe is a flat, filled ground decal spanning all 16 source-pixel rows, with no upright front face or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7792
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "white ground-marking stripe",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The white stripe is a flat floor marking seen from above, extending through all 16 source-pixel rows. No upright front face or receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7709
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.279Z",
+ "cells": {
+  "16": [
+   "62640b0583e28ca5"
+  ],
+  "24": [
+   "008a8e13e0c57023",
+   "28269433afd778ad",
+   "68793dbd7e6a765c",
+   "ac196fefafebcfa3",
+   "cf667876eb72c79f",
+   "d3cba45ad4d587e1"
+  ],
+  "32": [
+   "02ad2a8b4a8a6cd3",
+   "168ec1dbb595b5a8",
+   "2fd4cfb0736b2b32",
+   "78dc389ad4c7bf3b",
+   "919c22034f1ddd30",
+   "adf72ab5a3f902d2"
+  ],
+  "48": [
+   "1901fb2ddfb69c0d",
+   "375a6a7160296ba1",
+   "708ef94208bdf30e",
+   "b99a9a089c003934",
+   "cc6e0a889100caea",
+   "d99d9ac6eeb78df7"
+  ]
+ }
+}

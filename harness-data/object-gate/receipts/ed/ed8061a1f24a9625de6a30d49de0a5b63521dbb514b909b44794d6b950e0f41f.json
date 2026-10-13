@@ -1,0 +1,197 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed8061a1f24a9625de6a30d49de0a5b63521dbb514b909b44794d6b950e0f41f",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-5-L",
+ "label": "jp_city/street_hand/jp-sf-house-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style building facade with sliding doors and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D side-scroller/architectural front elevation. Door lintels, lower roof/eave overhangs, windows, and upper balcony/railing show 0 px of top foreshortened surface, with only flat horizontal 1-2px outline bands.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10213
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style building facade with sliding entrance door and flanking window wings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn in a pure front architectural elevation. The door lintel (rows 11-12) and lower window eaves (rows 22-23) are only 1-2px thick lines with no visible top surface. The base/step at the bottom (rows 44-47) is also drawn completely flat with no horizontal surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7389
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large house façade with central entrance and windowed wings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation. Its upper dark lintel/roof edge is only a thin front-facing band, with no visible top slope or horizontal roof surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 29586
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building facade with a central entrance and side wings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is presented as a flat frontal elevation; the dark roof/lintel is only a thin 1–2px edge band with no visible foreshortened top surface. No receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 25360
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:38.437Z",
+ "cells": {
+  "16": [
+   "052c28e81fcc1563",
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "20cd01004168c324",
+   "2ae9bd926f197337",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "6928f650711889f7",
+   "9088e36645219327",
+   "987780e0119584a9",
+   "ac9cff882fbbcb24",
+   "c8270065076e290d",
+   "d39ed79255c09e4e",
+   "e7f5a0cd92135a94"
+  ],
+  "24": [
+   "17fd1e4d97da7186",
+   "1f64f62818652f20",
+   "201fa010714cce8b",
+   "2769b1d01ab4f615",
+   "2f1906a10d509f83",
+   "3740b5c2ca56b4b7",
+   "41cf78a067c1f3f1",
+   "58ce681bc5a5544d",
+   "719a42e5af807fa2",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "7cb1ccc9940da0d5",
+   "897bbc469ee7a5a3",
+   "9d68691d0f68d53f",
+   "9ea66f44c2974d4c",
+   "afaccb327b183d4a",
+   "b386a884f7ba736f",
+   "b38ab22c25f2778a",
+   "be4515a3224e8db9",
+   "c59a3b37f4f5124d",
+   "ccd584d411a90b55",
+   "cea75a9d03bbdc49",
+   "cf9d842153ece800",
+   "d9ef2af06b346a31"
+  ],
+  "32": [
+   "015599c87d4cd45d",
+   "0ebf653c506f6997",
+   "0ef347b801dbd239",
+   "1caad0e6db6e8399",
+   "20837c906ce0a693",
+   "288eec8b67db51b0",
+   "2a0d9e4af227d919",
+   "384b7e9487d40861",
+   "389d5217bf9642e1",
+   "4478e59b1fcd0540",
+   "49d54c61bf6fd0fb",
+   "4dd793bbcd0dcb22",
+   "54572eccf53d27e1",
+   "55d43b1e7353dda5",
+   "5a0f74f3f3f14903",
+   "617d3bf3bf75ad5c",
+   "69ca48b285033710",
+   "6bae4f811adaa0f7",
+   "71e911c4c015df88",
+   "729b39e6ba1737bf",
+   "7b381f4d9daf2ea9",
+   "84c65a5fee19d164",
+   "97969f0931db9060",
+   "9c4c097697e70a0d",
+   "a3431ed6265a2969",
+   "bee536b4986c8eed",
+   "c623cb4802285074",
+   "c75c11ea5f3346a0",
+   "d0e0e52a0adaeccd",
+   "da80a3070b55afec",
+   "e1213c3b2d80eee6",
+   "e77243db59267ec7",
+   "e802b23945b9b511",
+   "ed83341839f6ada9",
+   "f372711a17b2ef7c",
+   "f467d4522cfbc75e"
+  ],
+  "48": [
+   "2b068aec0c099ebd",
+   "3e03be9240f70f2e",
+   "68ffec1bd3dd19b2",
+   "6b1be3a498636ae8",
+   "9fd5d927639ac7ac",
+   "b85c11e0ac9866ef"
+  ]
+ }
+}

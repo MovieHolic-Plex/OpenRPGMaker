@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "23b0edba753b46dbe20a700f7e542482e1bc606475b7a04aaec2e514c7d5959f",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-6-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including windows, entrance overhang/lintel, and wall surfaces, is depicted completely flat from the front with 0 rows of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5255
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn completely flat from the front like a 2D side-scroller elevation; there is no roof slope, visible lintel/awning top surface, or top plane of any kind (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5488
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large flat-front izakaya facade/building with sign, lintel, and window bays",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation; the horizontal roof/lintel bands are only edge strips with no visible top surface or foreshortened slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 169711
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large izakaya building facade with a central blue sign and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation. The horizontal roof/lintel strips are only thin edge bands with no visible above-facing surface; no substantial top surface is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 301630
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.086Z",
+ "cells": {
+  "16": [
+   "22bde9a997a67f7c",
+   "29e85aece0d5b893",
+   "31503ef37ea162cf",
+   "47bc0719befa22e0",
+   "5b56ab9854f9e31c",
+   "6da957a139bb750d",
+   "72c145bcac23eff2",
+   "78ae855731ecd33d",
+   "86184b2ba15ccb36",
+   "8e6f6144b4deb5f6",
+   "97fd92c3e9fb6f97",
+   "9e0d634da44c4fd1",
+   "ac5ecd96b93ab690",
+   "fc0c2ffad5b38e0a",
+   "ffb95ef70f0924ae"
+  ],
+  "24": [
+   "41d484633b39caaf",
+   "538cab57f4d09866",
+   "628939347fcba765",
+   "96f2279f50576c79",
+   "9bda59c99a020523",
+   "dca68d36283f6d7e",
+   "dcd61bf4eee526b5",
+   "e8dc836bd4c8c6be"
+  ],
+  "32": [
+   "132f1c366a5da1b5",
+   "20f9074273ca5c5a",
+   "30999a70fd2bd3a9",
+   "3402323e1d34310c",
+   "40851358aca88d19",
+   "6d18bf56dfad3adc",
+   "85aeafe38d6b9c43",
+   "9143b3ffb6e0aeea",
+   "92dffb7dea67d3b9",
+   "be1b7a16fe0c083b",
+   "c2325e37a69eafe6",
+   "f0b32e5988ba6b20"
+  ],
+  "48": [
+   "50f5950ece4f5d57",
+   "559810bae255bcca"
+  ]
+ }
+}

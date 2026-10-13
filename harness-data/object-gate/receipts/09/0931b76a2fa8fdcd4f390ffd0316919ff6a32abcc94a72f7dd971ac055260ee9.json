@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0931b76a2fa8fdcd4f390ffd0316919ff6a32abcc94a72f7dd971ac055260ee9",
+ "width": 48,
+ "height": 128,
+ "kind": "wall_mounted",
+ "name": "jp-wire-v8",
+ "label": "jp_city/street_hand/jp-wire-v8",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical hanging wires/cables mounted on a wall or surface, appropriately depicted as thin 1-2px lines without 3D depth requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin vertical hanging wires or cables mounted on a wall/pole; flat vertical nature is appropriate for wall-mounted wire details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3669
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "four vertical wall-mounted wire strands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of thin, flat vertical strands mounted against the wall; no substantial 3D main body or horizontal top surface is expected for this wall-mounted wire object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 106034
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "four vertical wall-mounted wire strands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of thin vertical wall-mounted strands with no substantial horizontal top surface; its flat presentation is appropriate for a wire-like wall decoration rather than a volumetric body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 152821
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.236Z",
+ "cells": {
+  "16": [
+   "024f12b6ac105723",
+   "34f61be2e8b1b5fc",
+   "5c0a112a8e063d80",
+   "813a72f36e08f93d",
+   "de8cf35792d6a69a",
+   "e91b5e1a78d7e494",
+   "f4923d86f9bc4576",
+   "fd7b17028773fd7b"
+  ],
+  "24": [
+   "4603c897b1720ea1",
+   "65327c2df306a403",
+   "673549408d710aec",
+   "67fde94508c68d0e",
+   "68fed900d7d7b006",
+   "912f96441d45c79f",
+   "acff4f0165f34ac3",
+   "c59945c10b890f4b",
+   "d2973518b38f3431",
+   "da4e4cae3306770c",
+   "dc0c9c28c12b4060",
+   "f3a51e12069d73db"
+  ],
+  "32": [
+   "271b7337d5a7e408",
+   "429d51b45a7a8926",
+   "4fe036cba594961f",
+   "64d6328fd96eb165",
+   "7470576553b35ef3",
+   "7b74a0c4889bae76",
+   "8650289299ccd2a4",
+   "9b7fd313eca1bab6",
+   "9cd54654a8494de9",
+   "b6b82fae7a0a1f7c",
+   "bd6ac665676bfa8c",
+   "bdd8d142569f7890",
+   "becd90689cc02253",
+   "e896bc6c251ee1d9",
+   "feca2f41b797a585"
+  ],
+  "48": [
+   "1b4bd0f09e5ae168",
+   "683282fe06ed0fe8",
+   "779b4cd2b24463bd",
+   "7a25d05cf8097e4e",
+   "ba877ecea8c920de"
+  ]
+ }
+}

@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "895c047bee22477359a23dadd34d5a0ac93493ab7cc14ad5dbc8c1a0ffa33daa",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-5-L",
+ "label": "jp_city/street_hand/jp-sf-shop-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront entrance portal and facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural front elevation (side-scroller style). The projecting central door portal terminates at rows 11-12 with only a 2px flat cap, showing no foreshortened top surface, and the display shelves, lintels, and wall elements are rendered straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8365
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shopfront facade with entrance door and display awnings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire shopfront is drawn as a flat front elevation. The projecting door lintel at row 11-12 is only 2px tall with no top surface, the awnings show only vertical/front slope bands with no top surface visible, and the upper wall and metal frieze are drawn completely flat without top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6678
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central shop/building facade with roof lintel and doorway",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation; the roof/lintel is only a thin front band with no visible top slope or horizontal surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 40070
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "shop facade/building",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade. The dark horizontal cap at the top is only a thin 1–2px edge/rim, not a visible top surface; no roof or lintel slope is shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 47559
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:38.439Z",
+ "cells": {
+  "16": [
+   "10b1416f2c2ace3c",
+   "20fbc28a18cc0309",
+   "23f92e3b7442d9c8",
+   "25396fe4af6ec219",
+   "28dbbc10094a1d11",
+   "2d4767d94c8a1974",
+   "2d4ac48c25668ab6",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "8708f9c785671598",
+   "90ad99373e3b4d97",
+   "a36454dce61a956c",
+   "b1a8b5449b59fe87",
+   "b3b565d36a0a6399",
+   "c3d1acfccf6638e9"
+  ],
+  "24": [
+   "0b04240b3e086954",
+   "12f9f78a0aa381f0",
+   "15293c5f6901b53e",
+   "2341a5339d27f694",
+   "24aec32f4d80678e",
+   "2a52ff0f30d43d8a",
+   "2b5e0b44079f37f6",
+   "4bb5ff4efe576777",
+   "7ab2f1b10e4870ed",
+   "85560e8b57ac1ae9",
+   "8601ee775e9fef58",
+   "8da678c71a33b9a2",
+   "9351700eecbc274a",
+   "9a60bc51732da992",
+   "9aed0b93d23293dc",
+   "9da4fa8054aeb5e6",
+   "b3b76b3daf3e453f",
+   "cad10df2c28392e9",
+   "ccbc3586bb756803",
+   "d9ba8b227d33426f",
+   "dcd201eb2e811a9a",
+   "e49f0c1efa04d34c",
+   "f2173c60c85e1120",
+   "f3a79e0f491dace6"
+  ],
+  "32": [
+   "07dd8bdc0cde06cb",
+   "09dbef0b303b989d",
+   "0f08e355a63846f3",
+   "19cfcaec841c4c80",
+   "2b78e90da00dbf3d",
+   "30734e4bfd624e5d",
+   "36a74cd7a4f61d68",
+   "4b3dd1f8c5598b1a",
+   "537b96399d0cf4b1",
+   "5b3035e7968ca98d",
+   "5f82b0882d8c6cd9",
+   "677e78b2ff5365ed",
+   "6ba608d1b64fe345",
+   "7436fb6d391a5d36",
+   "785d496ac4e51658",
+   "7c7df28d7f63c132",
+   "7f367e536f78d680",
+   "85b3e053c0e7cdd0",
+   "90ae6b271651c5fd",
+   "91fb45fd3fb66e76",
+   "95f3a3b5fdbf45d2",
+   "993ff8cf8428ed4d",
+   "a25b2df79bf2dbde",
+   "a948736d476e133a",
+   "aa3fb667f8c33645",
+   "aca08b8cf9c71f3f",
+   "b8b356bc19858eb6",
+   "c4b6c74d68dbb412",
+   "d33151b4f2f22c69",
+   "d68513633834790a",
+   "dcda2ed6e683189b",
+   "dff83690e540c109",
+   "e05f6faf9b5dd2e0",
+   "e7a91e77d3a01a7b",
+   "e8dd1ad32a1b4097",
+   "ec6733102db3cd22"
+  ],
+  "48": [
+   "1eb51851b39f01f8",
+   "243424b7858eedda",
+   "65f58f1d4ba25689",
+   "6f36af67713a82ca",
+   "b2b98f6c80b11b30",
+   "fe0f3e3bf26f4729"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c12a218e78a9a7f5f1534a17506c5cbc2bdc534200240acddbb098820d0f9f57",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-abut",
+ "label": "jp_city/street_hand/jp-bridge-abut",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge abutment / decking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat bridge deck/abutment surface viewed directly from above, showing horizontal wooden planks spanning between side rails across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge abutment deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat wooden bridge deck/abutment surface seen directly from above, occupying the entire vertical extent.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5012
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Rectangular masonry abutment with upright posts and horizontal crossbeams",
+    "kind_matches": false,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure reads as a flat frontal wall or framework. Its upper edge has only a one-pixel light strip, not a visibly foreshortened top surface; the large rectangular panels are presented in elevation rather than as a ground plate.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 16869
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Rectangular framed, slatted ground panel",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad rectangular surface occupies all 16 source rows, with inset panels and crossbars viewed from above. No upright front elevation or receding side face is depicted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17676
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.480Z",
+ "cells": {
+  "16": [
+   "c81b098fc4ae6290"
+  ],
+  "24": [
+   "1072c331b53b8b28",
+   "1dfa882e785682cc",
+   "589d595034c86f70",
+   "683f2c2eedaf3d0a",
+   "d3494ea4c1bf8eb3",
+   "de00ea6fdaa68e0e"
+  ],
+  "32": [
+   "049cac110543f250",
+   "181370badd2274df",
+   "2521a775a55d980a",
+   "60eee77d3376597c",
+   "a2dde96623c18704",
+   "b36296ad78ac7d8a"
+  ],
+  "48": [
+   "2ffea92479a753cf",
+   "64698aad4978737b",
+   "7efb5d106b8f7418",
+   "8a1621603c687f56",
+   "ca7383c4135eac0d",
+   "dc7d0f51c0585848"
+  ]
+ }
+}

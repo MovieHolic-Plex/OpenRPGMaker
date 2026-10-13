@@ -1,0 +1,134 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a518a12de6f723ac8b880c034799d14442a4fdf52b46a2faa898be85025fd652",
+ "width": 64,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "jp-wire-7",
+ "label": "jp_city/street_hand/jp-wire-7",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cables/wires suspended across the view, drawn as thin sagging lines. Wall-mounted and suspended wire-like objects are flat by nature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5511
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Curved hanging wires or cables mounted across a wall or overhead; appropriate as a flat wall/overhead decorative element.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4594
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "three horizontal dark wall wires/strands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of thin stepped horizontal strands mounted against the wall, with no substantial volume or horizontal top surface to display.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 108198
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 319738,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.235Z",
+ "cells": {
+  "16": [
+   "17d3a884da27a030",
+   "2410c399b1a0b829",
+   "2e034c21b43efc05",
+   "2f19ee3064b9fe24",
+   "4b18dadbaa7601e3",
+   "4f8baad675297836",
+   "7b8e0eddc28600b0",
+   "851831541375f0d0",
+   "f13cc7315ac1730e",
+   "f39f759fe095ecf9",
+   "f66e6184bac0a317",
+   "f7a46de3a42c972d"
+  ],
+  "24": [
+   "11be1b73995861b6",
+   "1806a3d7b1c2072a",
+   "212401192f879d00",
+   "222fbaefb6dbb778",
+   "2702a033c73928e3",
+   "27cc8b9ed74ad435",
+   "41347938702bf0cc",
+   "45421d1a10c73d7f",
+   "6490b6d4d799e879",
+   "84be259491087188",
+   "8d19974ac3d507ac",
+   "9cc7f7dee0786138",
+   "a567890a30c58bd3",
+   "a83fe75366bc2a62",
+   "cecd074d52978723",
+   "e1f5df9cf7af0a95",
+   "eff4e869959f5ba8",
+   "f515c7f0098eb1d1"
+  ],
+  "32": [
+   "4ce5862589dc2615",
+   "5546bcb64195cc83",
+   "64a1dfee9b21a844",
+   "66266b0f93e8ede2",
+   "a94ded2b977907d6",
+   "c8cfa0034362161e",
+   "cf8e322cdb2c7c33",
+   "d96d4f5988ca8fe4"
+  ],
+  "48": [
+   "0524c78599edc4cb",
+   "6efdab54dbfff932",
+   "9e3063bea21e1e49",
+   "e603efd93e54ce6d",
+   "f3619732dc2de871",
+   "ffadc765a23306e4"
+  ]
+ }
+}

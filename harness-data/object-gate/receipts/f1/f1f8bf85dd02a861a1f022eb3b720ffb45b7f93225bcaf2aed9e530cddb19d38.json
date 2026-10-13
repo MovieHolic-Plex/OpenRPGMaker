@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1f8bf85dd02a861a1f022eb3b720ffb45b7f93225bcaf2aed9e530cddb19d38",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-shop-3-R",
+ "label": "jp_city/street_hand/jp-sf-shop-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with sliding door and display window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat architectural elevation / side-scroller view. The upper facade, door lintel, door frame, interior shelf, and ground step lack visible top surfaces foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13813
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shopfront facade with sliding door and window display",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront facade (door frame, lintel, window, and display) is drawn in a flat architectural front elevation with no visible top surface on any horizontal beam, lintel, or ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7534
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal rectangle; its upper horizontal band is only a thin edge/lintel and does not show a visible top slope or surface. No receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 175304
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large storefront/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat rectangular front facade. Its upper edge is only a thin dark strip, with no visible roof or lintel top surface; the narrow dark edge at left is not a receding side plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 289932
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.009Z",
+ "cells": {
+  "16": [
+   "23f92e3b7442d9c8",
+   "2f6120ea18405e3d",
+   "35f25202d2734ec2",
+   "591233ec525de138",
+   "6d8d6a2b2522f31c",
+   "913b974aed01b324",
+   "b1a8b5449b59fe87",
+   "c5403c1250122fda",
+   "f14de05f4660efeb"
+  ],
+  "24": [
+   "2a52ff0f30d43d8a",
+   "3fe4f66e32daf5ca",
+   "7cb1239025d11ba0",
+   "abd7ec02f4fd429c"
+  ],
+  "32": [
+   "2d80ce82c263c390",
+   "3a9c531074cb15ee",
+   "4d0710532596bd0d",
+   "4f438ad2f925220c",
+   "5f82b0882d8c6cd9",
+   "66e0939bfe73c936",
+   "68f03eb404417c13",
+   "71ec02bb8a37b10a",
+   "7439f5d7903e93ae",
+   "76b20c1cfee5917f",
+   "7ec1cb93adab4fce",
+   "7f0e3b7c1d18f017",
+   "8786c522aebc59b6",
+   "8c4272f058cc2c2d",
+   "8d4c061c49bcb404",
+   "9621afbd7675c62f",
+   "9862e9ddfc7aa2a9",
+   "b59c78b7f2d5bf94",
+   "b8b356bc19858eb6",
+   "c25e6401b4102f4c",
+   "e04f7654839286a3",
+   "e153b4a892ee898b",
+   "e3e18c5f6f2eae03",
+   "eb5e0d700050ef90"
+  ],
+  "48": [
+   "34edff29d460ea29"
+  ]
+ }
+}

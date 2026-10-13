@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f47affcbab602b4ea3b1cd1eeae3cbc610a765f59b5f101a292737cfd62d5a68",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "jp-gatepost",
+ "label": "jp_city/street_hand/jp-gatepost",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese residential gatepost with intercom, nameplate, and mail slot",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the gatepost is clearly drawn from above across rows 1-5 (5 source pixel rows tall), correctly foreshortened above the south-facing front wall (rows 6-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese entrance gatepost (monchuu) with mail slot and intercom",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/surface of the gatepost is clearly visible from above across rows 1-5 (5 source pixel rows tall, bounded by a dark back outline at row 0), with the south vertical face containing the mail slot and intercom occupying rows 6-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11193
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "gatepost with a tall rectangular post and horizontal top beam",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main upright post is presented essentially as a flat south-facing rectangular elevation; its top is only a thin 1-pixel edge/cap rather than a visible foreshortened top surface. The horizontal brown element reads as a beam, not the post's top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 91977
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "gatepost column with attached horizontal gate beam",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upright has a visible horizontal top plane extending about 2 source-pixel rows before its south-facing body; it is not a pure flat elevation. No separate receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 134760
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.916Z",
+ "cells": {
+  "16": [
+   "fab1286eb2de30e3"
+  ],
+  "24": [
+   "6226fd965945ac44",
+   "8a9880cdc1123560",
+   "90b7f7f08730c6c8",
+   "c0b1d98c3a5f976e",
+   "eb658bb0a12540e2",
+   "fe5f882fb281e788"
+  ],
+  "32": [
+   "226c7e260eea8770",
+   "241ebae728d3229b",
+   "89141eee1e786aac",
+   "de40767bb64dff23",
+   "fc5ca5a9b5f0ed03",
+   "fca536032066bee6"
+  ],
+  "48": [
+   "07b2b1c336aa4833",
+   "0875ae75bfb31999",
+   "39ea539875d12bed",
+   "acfb14fd5b32ae9f",
+   "c53aeb7bafcdae17",
+   "f0381541cb418a03"
+  ]
+ }
+}

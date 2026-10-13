@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "728c171c29e65b743877cb31dae002b4a6f93b24d92beb184329fa185ff70b85",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-3-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade with entrance and sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, eaves, door frame, and adjoining panel are rendered as a completely flat front elevation with horizontal stripes and 1-2px border lines; no top slopes or horizontal surfaces are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ramen shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, awning/lintel, and side panel are drawn in a completely flat architectural front elevation with no visible top surfaces anywhere (all horizontal edges are 1-2px outline strips).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6705
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "red ramen-shop structure with a broad red roof, red facade, and blue lower panels",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad multi-row roof surface visible above the facade, spanning roughly source rows 1–8; the lower structure is primarily a south-facing facade. The narrow dark edge at the right is an outline/shadow rather than a substantial receding side face, and there is no container opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 576616
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "red-roofed building facade",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main red structure has a broad, patterned roof surface visible above the facade for about 12 source-pixel rows. Its front facade is shown below, with only narrow shadow/border strips and no distinct receding isometric side face. The attached yellow panel is a flat front-facing detail, not an opening or side plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 224533
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.002Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "b133644178093c6e",
+   "b30488b7baf6aa41",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "cb66d29e67efcb93",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "1e84a71d1ab42e8e",
+   "39266895c84cecc9",
+   "9fc441f5b3dab677",
+   "a32ba3bdc01eb874"
+  ],
+  "32": [
+   "0c23c51b3c9069b9",
+   "175a388516bcebcb",
+   "2735e7fc6bc409e8",
+   "2ae1b52e45ae62ee",
+   "442551f2341b0a08",
+   "55d6458e3960125a",
+   "59316b911dee1c41",
+   "64a831f978acdaac",
+   "706f29811e319cad",
+   "75f9c183a37381d7",
+   "7d98524676ab7e8e",
+   "8292de1c312f5c51",
+   "86919ba70efa735b",
+   "9c5b9f49c77e1623",
+   "9fd870b4744718f2",
+   "a570ff641a520540",
+   "aace8828eafba85b",
+   "b2dfeba3f2f959a0",
+   "c155c6e95d4b6dcd",
+   "ca273335244424b7",
+   "d66c92268b09beb4",
+   "e6104a3ecad9249b",
+   "e713d93a46079769",
+   "ea6c334b418ded18"
+  ],
+  "48": [
+   "0b7d181a9b975b26"
+  ]
+ }
+}

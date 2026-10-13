@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2ea9b1b5a0cf196e38b2c5d0e556b626470ecbc6bb8f0e6a31537c00c331710",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-pier",
+ "label": "jp_city/street_hand/jp-bridge-pier",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge pier / deck edge",
+    "kind_matches": false,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a bridge deck edge with vertical support/beam (deck on rows 0-6, front face on rows 7-10), not a flat ground decal or rug.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6818
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge pier",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is labelled 'flat' despite being a bridge pier/support structure. It is drawn as flat horizontal bands over water with no visible 3/4 top surface (top_rows = 0), representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 5432
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular wooden pier deck with horizontal plank bands",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad wooden deck occupies rows 0–9 as a ground-plane surface, with a dark south edge at row 10. No receding side face or container opening is shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21826
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular wooden pier deck",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad tan deck surface spans source rows 0–6, with a dark transverse board seam. Rows 7–10 form the darker south-facing edge; no receding side face is visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17834
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.480Z",
+ "cells": {
+  "16": [
+   "0ec56ae09366708b"
+  ],
+  "24": [
+   "0b5607e1d7460dad",
+   "400a2de801797755",
+   "6846f0a0c4108e67",
+   "d91d12d2d6fe3ba0",
+   "da4edccdd6e23ff2",
+   "fb4fbe18208f674e"
+  ],
+  "32": [
+   "32761cdce8372a4d",
+   "6c5cd4b4bffd1824",
+   "753d4458d1b01de8",
+   "86a0b1709f652224",
+   "a72b14f12747c60b",
+   "d1279d79f2b226e2"
+  ],
+  "48": [
+   "66af892c5de89bf0",
+   "868b4056c5a0bdb5",
+   "a305b30821cad037",
+   "b873c67007a4bacf",
+   "d5c7d1ce7e05c6d7",
+   "fabeae0feea79e20"
+  ]
+ }
+}

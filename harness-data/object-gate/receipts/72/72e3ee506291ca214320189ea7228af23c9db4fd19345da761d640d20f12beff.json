@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "72e3ee506291ca214320189ea7228af23c9db4fd19345da761d640d20f12beff",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "jp-wall-drain",
+ "label": "jp_city/street_hand/jp-wall-drain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall drain opening with water/algae runoff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Square drain opening inset directly into a vertical wall surface with moss/water dripping down; appropriately flat for a wall-mounted/wall-inset feature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5207
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall drain opening with drip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted drain hole set directly into the vertical wall with moss and liquid dripping downward; flat depiction is correct for wall-mounted features.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5997
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "dark rectangular wall drain plate/opening with a hanging drain pipe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular drain body is shown as a flat front-facing dark shape against the wall, with only edge lines and no visible top surface; the lower pipe details do not provide depth to the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 425947
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 428616,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.232Z",
+ "cells": {
+  "16": [
+   "12bb4f13469dc311"
+  ],
+  "24": [
+   "09bb7eccac0e891f",
+   "222a48b636aed676",
+   "58643fab5b91c645",
+   "7cca03d1129e8088",
+   "b411bab89390fcfe",
+   "fabf25a6de1caebb"
+  ],
+  "32": [
+   "028ec5a2e2693391",
+   "19d733c5af8f695f",
+   "9019ec0a9f8a57ea",
+   "ae911f3f066b8d52",
+   "da4183bc4a33b248",
+   "fb683a0f3fddd80b"
+  ],
+  "48": [
+   "0448a83941b7f611",
+   "3eaa53e9aa591cc1",
+   "6f751aa0676eafc0",
+   "91381f646b5661c4",
+   "c04bfca5f8db4ef8",
+   "c60f0ff3aa69c5b0"
+  ]
+ }
+}

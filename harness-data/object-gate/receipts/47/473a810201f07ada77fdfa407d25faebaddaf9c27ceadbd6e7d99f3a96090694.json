@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "473a810201f07ada77fdfa407d25faebaddaf9c27ceadbd6e7d99f3a96090694",
+ "width": 96,
+ "height": 48,
+ "kind": "wall_mounted",
+ "name": "jp-wire-9",
+ "label": "jp_city/street_hand/jp-wire-9",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Overhead/wall-strung wires or cables; as flat suspended thin lines (1-2px thick) matching the wall_mounted/chains category, no 3D top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7377
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wires / cables",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Catenary hanging wires/cables, appropriately flat for wall-mounted/overhead stringing without volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4619
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "A thin, irregular dark wall-mounted wire or cable motif",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat, line-like wall-mounted element with no substantial volumetric body or horizontal top surface expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 154976
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "three horizontal sagging wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is rendered as thin, flat horizontal wire lines with no visible top surface or volumetric depth; its presentation is effectively a front elevation.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 266155
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.236Z",
+ "cells": {
+  "16": [
+   "03f1ad31943553ea",
+   "291cb79cd21c389d",
+   "2e034c21b43efc05",
+   "2f19ee3064b9fe24",
+   "36e600bfa5b680df",
+   "4f8baad675297836",
+   "7b7fa22436347ab5",
+   "7b8e0eddc28600b0",
+   "81c446f9462b8d0c",
+   "9cc51376cc51d2d2",
+   "a00f57e0a3666a98",
+   "a3209795488bc409",
+   "b0ff5954dcbfd28f",
+   "bcaac372c7e4e475",
+   "df44daa059489ba8",
+   "e5dc8e2fb107e2fb",
+   "ef5a0db910afda96"
+  ],
+  "24": [
+   "3594edfa37f8e87a",
+   "40b648d328790184",
+   "4d9dcebe2d2a8fa8",
+   "74aa2f23926a96e1",
+   "838e9410a7c17a65",
+   "8d65ee97501f4803",
+   "c9aa500b33299c0e",
+   "d57eb1221c6fc08f"
+  ],
+  "32": [
+   "097377f01039823b",
+   "10ebf03b96db63f7",
+   "1459a78ef35f482b",
+   "417a7babe070b908",
+   "5d6dcb9305827129",
+   "607c3cc4878dd4b2",
+   "6f64f5c9e47ab0f9",
+   "7ab9735a19790ca5",
+   "7b6680062a5512e9",
+   "8254196ead27144d",
+   "9f22850dc70a43e6",
+   "acdccfbc7c6e71ab"
+  ],
+  "48": [
+   "a919fa7b9943f3c9",
+   "de09f163d3f55d28"
+  ]
+ }
+}

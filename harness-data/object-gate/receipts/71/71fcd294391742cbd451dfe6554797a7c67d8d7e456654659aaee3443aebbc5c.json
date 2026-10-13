@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71fcd294391742cbd451dfe6554797a7c67d8d7e456654659aaee3443aebbc5c",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-end-r",
+ "label": "jp_city/street_hand/jp-bwall-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tile depicts a flat front elevation of a two-tone wall (upper white/light section on rows 1-5, lower stone brick base on rows 7-14) with only a 1px border at row 0 and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8482
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "boundary wall section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile depicts a vertical wall face with stacked brick/stone courses (light upper section from rows 1-6 and darker stone foundation from rows 7-14). There is no top surface visible, only a 1px boundary line at row 0, making it a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9900
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 230919,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular wall/building end",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular elevation with brick-like bands and only a thin top edge/cap; no substantial horizontal top surface or roof slope is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 102273
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.361Z",
+ "cells": {
+  "16": [
+   "2338f38c748fae46"
+  ],
+  "24": [
+   "aafa5e1ab45ec27c",
+   "b33604791c449a71",
+   "d8de8650a71d201d",
+   "ddcef34d3bb1325a",
+   "f60dc197bee4e003",
+   "f750f5ee7bfa5ed1"
+  ],
+  "32": [
+   "062307cccf2a88be",
+   "32ca4458cf002176",
+   "7dba3d80b4b28e27",
+   "9e1dce7ecc6391ac",
+   "d9623856a785bf5f",
+   "fe2df0a770af7a33"
+  ],
+  "48": [
+   "7548fc069b3f8d12",
+   "914bda02dcf527a2",
+   "92ed638ea561c4a7",
+   "ca69e8a0f79e1184",
+   "e29caf454916a071",
+   "e906e5b381de8b1b"
+  ]
+ }
+}

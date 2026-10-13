@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7750abab2210a9aefc00dfdd9157cd7edf810de359dea4473657ad51e9be6770",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-w",
+ "label": "jp_city/street_hand/jp-mark-edge-w",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor or road edge marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile / marking viewed directly from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4980
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground marking / floor edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor line/marking occupying the ground plane across the full 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3612
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat pale floor-edge marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The marking is shown as a ground-plane surface spanning all 16 source-pixel rows, with no standing front face or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13384
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Flat pale vertical ground-edge marking with a short dark horizontal notch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad pale strip is shown as a ground-plane surface spanning all 16 source rows. There is no standing front face or receding side face; the dark notch reads as a flat marking.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14821
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.277Z",
+ "cells": {
+  "16": [
+   "13c902b668a5b2d9"
+  ],
+  "24": [
+   "055305217406b679",
+   "1de73c07a3f721bd",
+   "41554c578b8af0b2",
+   "53fc251eb1cd32c0",
+   "54b2959cf09b69a2",
+   "6aed7b30bd30719b"
+  ],
+  "32": [
+   "055dfb627f368008",
+   "208fa1d165485154",
+   "354dd5ac7fb7f753",
+   "5754984920877fb3",
+   "94834c43095d97bb",
+   "9c892602acbfc6b6"
+  ],
+  "48": [
+   "21c0027e9f279272",
+   "316d980d84b4bf78",
+   "4eb4de600de89444",
+   "529b5897d43db5ec",
+   "8640c7f625db45c3",
+   "c24a13018fc97f34"
+  ]
+ }
+}

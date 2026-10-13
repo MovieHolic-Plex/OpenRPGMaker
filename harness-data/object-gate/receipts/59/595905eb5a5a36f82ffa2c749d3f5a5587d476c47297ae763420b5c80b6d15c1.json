@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "595905eb5a5a36f82ffa2c749d3f5a5587d476c47297ae763420b5c80b6d15c1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-n-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-n-grate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road surface with north storm drain grate and painted line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting an asphalt road edge with an inset drain grate at rows 0-4 and a road stripe at rows 12-13, viewed from directly above as a flat horizontal plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4585
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road surface with drainage grate and white painted line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is a top-down ground surface containing a metal grate at rows 0-4, asphalt pavement, and a white road stripe at rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3306
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "grate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grate is shown as a flat barred front strip with no meaningful horizontal top surface; the broad checker area reads as surrounding ground rather than the grate body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 83411
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular grate panel with vertical bars",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main grate is a broad 6-pixel-tall rectangular surface with repeated bar pattern, giving substantial visible top area rather than only a front edge. No receding side face or separate south-facing body face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 244658
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.485Z",
+ "cells": {
+  "16": [
+   "e47b20fa9fea71f6"
+  ],
+  "24": [
+   "174eb155ee10e618",
+   "1860cbe47e40d487",
+   "895fdf11b823c2f7",
+   "9fadc640e3e939fd",
+   "c2c6001b9e07295a",
+   "f7797c412363bffb"
+  ],
+  "32": [
+   "03976bd36ee4eb27",
+   "8b7d903cbe2b355f",
+   "aebba98f2b514b2c",
+   "b0c085e0bbf791e0",
+   "daa3de01529fbd72",
+   "e436c0b5cc9f8a14"
+  ],
+  "48": [
+   "0a19fab95d770edf",
+   "60b5b7653fbd0141",
+   "ab98b0d572c8e8c9",
+   "c323ab11291751c2",
+   "c60c2923c8e8589e",
+   "dfc002ac968e7499"
+  ]
+ }
+}

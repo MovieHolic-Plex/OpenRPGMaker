@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8e382454e7f4e2b8614807c81064a3305bb5a9c5b9f757dbeb79d34588b3335d",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-5-L",
+ "label": "jp_city/street_hand/jp-sf-sento-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sento bathhouse storefront with entryway and display windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D front elevation. The protruding entrance structure has only a 1px highlight line on row 11 instead of a foreshortened top surface, the window shelves and display items/bottles have zero visible top surfaces, and the structure shows no top-down 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8870
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sentō building facade and entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation (side-scroller style). The projecting doorway lintel has only a 1px edge highlight with no visible top surface, the window shelves and bottles are completely flat front-facing rectangles, and the upper roof/eaves band lacks top-down slope foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14497
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "central blue-doored building facade with roof/lintel and supporting posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation. Its roof/lintel is only a thin horizontal band with no visible foreshortened top surface; the posts and doors likewise show no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 184138
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large front-facing gate structure with lintel and double doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat south-facing elevation. Its lintel has only a one-pixel horizontal top edge, not a visible top surface or slope; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 81715
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:38.439Z",
+ "cells": {
+  "16": [
+   "20fbc28a18cc0309",
+   "38cfbaac4093f359",
+   "492309af242ec3ef",
+   "652aced7367b03fa",
+   "653dac2a530fdd8e",
+   "69d87fdf88f8c605",
+   "6d255b45065a682a",
+   "8a0024a5ea16da93",
+   "a2f751bbe9b12482",
+   "a36454dce61a956c",
+   "b3b565d36a0a6399",
+   "bd89a5f70a56eeee",
+   "c03732f0dc187032",
+   "c2ead3e335ea00c4",
+   "fbc11aa2d9687ca4"
+  ],
+  "24": [
+   "0029f195238f7aad",
+   "077ba744b47c5346",
+   "1878ee474bc13103",
+   "2edc62359abf02c0",
+   "3b0c21d14d45365c",
+   "4ee8f5ea54c92cac",
+   "4f242a3b769205ea",
+   "76b142b1117540b3",
+   "782c79bff4c9f600",
+   "78552ae8d29c3891",
+   "ac648b3862382735",
+   "ad0aaf9b64fdcc9e",
+   "c0874b361e9242ea",
+   "cabcca009966f279",
+   "d6d4e642eac19d79",
+   "d906bc0c56cdadcb",
+   "de27151635e29516",
+   "e4c4709bbd64496c",
+   "e6fa52ecc0345f6d",
+   "f11309da7ce1dd13",
+   "f1a0567f002ef6d3",
+   "f5428e925560a3a5",
+   "f7091aa99e4e7280",
+   "f91a0cd4e5e02367"
+  ],
+  "32": [
+   "042c8d48cfea2654",
+   "05e686aca6355ff8",
+   "0f669e64fcb6a0c7",
+   "11a93f0236485fca",
+   "2a38056c2346fac6",
+   "2b78e90da00dbf3d",
+   "2cb4a8352624333f",
+   "2fa03a2cac16351e",
+   "30734e4bfd624e5d",
+   "36a74cd7a4f61d68",
+   "3ebf3ade6233e88e",
+   "404f2760881e0d43",
+   "41a95798bd729e05",
+   "46371ccf72d5f183",
+   "570a8fb72c7e9ac9",
+   "573f1c8c0df3294e",
+   "58004128acf93437",
+   "68158d607d4e153d",
+   "7277cad17389396b",
+   "8271e0d61a0f2318",
+   "839ed9abfabc913c",
+   "8c0be8bb4ba67b43",
+   "8d98cd129598f2f7",
+   "8fd9fa6891032de4",
+   "9152e9f81ee057c9",
+   "9dd9a33e9395f81e",
+   "aa47f60caed149a1",
+   "aab543655a84be34",
+   "b0f6bf91e1ed60d5",
+   "b18204883f056e8b",
+   "c19601c89bdfc412",
+   "c906b9904572269a",
+   "cfb22075164a3fde",
+   "dd10d244486e3770",
+   "e7a91e77d3a01a7b",
+   "eb56ced909000efe"
+  ],
+  "48": [
+   "123ac6c23a0a938e",
+   "48c06583622121f0",
+   "65fba69fa3eacec5",
+   "76806f721e7c1f63",
+   "7ecd215fdc9326e3",
+   "e153de8ec4091423"
+  ]
+ }
+}

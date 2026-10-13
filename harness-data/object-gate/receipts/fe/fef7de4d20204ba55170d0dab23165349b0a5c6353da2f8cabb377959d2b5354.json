@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fef7de4d20204ba55170d0dab23165349b0a5c6353da2f8cabb377959d2b5354",
+ "width": 96,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-school-gate",
+ "label": "jp_city/street_hand/jp-school-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete gate pillars and sliding metal gates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and fence gates are drawn entirely in straight front elevation with horizontal borders and no visible top surfaces on the pillar caps or gate rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6222
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "school gate pillars and metal sliding gates",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate pillars and sliding metal gates are drawn in pure front elevation. The pillar caps are drawn flat with no visible top surface, and the gate rails have no top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5581
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "school gate with two pillars and barred gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn as a flat frontal elevation: the pillar caps and gate bars have rectangular front-facing faces with no distinct horizontal top surface or roof/lintel slope visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 85659
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "school gate with two posts and fence panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate, fence panels, and capped posts are presented as flat frontal rectangles. The caps show only front faces with no visible top slopes or horizontal top surfaces from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 91184
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.247Z",
+ "cells": {
+  "16": [
+   "585f9e9c17f35d45",
+   "6787730eeba1689f",
+   "720ca78722011880",
+   "80c9897abf58c12a",
+   "a5c36b33bbf04654",
+   "f2706a9f716fe209"
+  ],
+  "24": [
+   "1df28726604868ad",
+   "2133fb333845ba7a",
+   "53c8731fe4e519da",
+   "73df5a2ee03a84c1",
+   "7a35e0c25d3faa2b",
+   "9a51d39739dd2192",
+   "a5c6f1556497114e",
+   "ba01f249561f85ae",
+   "cde62668f59a2ac1",
+   "cff9902bb93932e4",
+   "d632f427a02e1bec",
+   "d690f92fea5ad3e4",
+   "f5397992b07e3a0b",
+   "f7a07552dd79de8d"
+  ],
+  "32": [
+   "4551e1aed6fa59c8",
+   "974b6610cd28adf6"
+  ],
+  "48": [
+   "1a4eb48579ffc594",
+   "2478cb75b4a57850",
+   "3f5880281fc06180",
+   "d19a958ff0240f57"
+  ]
+ }
+}

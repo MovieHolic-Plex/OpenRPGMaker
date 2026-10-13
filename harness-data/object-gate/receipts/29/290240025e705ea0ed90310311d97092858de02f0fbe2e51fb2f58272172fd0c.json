@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "290240025e705ea0ed90310311d97092858de02f0fbe2e51fb2f58272172fd0c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-s",
+ "label": "jp_city/street_hand/jp-mark-edge-s",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor border marking / mat edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Object is a flat floor marking/mat edge viewed from above, covering the ground tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat ground marking / edge lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of horizontal ground striping/markings lying flat on the floor plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3827
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat ground marking/plate",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a broad horizontal surface visible from above across roughly source rows 10-15; there is no receding side face or architectural front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 266026
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 271553,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.485Z",
+ "cells": {
+  "16": [
+   "22c2f84a2401faac"
+  ],
+  "24": [
+   "0a7cd5de2cb5a70c",
+   "227943b627053286",
+   "31f513683252dbb8",
+   "6e7c52c62233a017",
+   "6fd6cf8f92141bdb",
+   "c243fcc030a7db79"
+  ],
+  "32": [
+   "32660cb8d89f7c83",
+   "4f2d3832bc861d06",
+   "5c22af0ee0763a62",
+   "8fdb3713e4750539",
+   "b0b188c96239e54b",
+   "fe03e86b6971caf2"
+  ],
+  "48": [
+   "0a8aee437796563b",
+   "44420b4778b29e4a",
+   "8ac2146b1784d0cf",
+   "a825e675cb781b3b",
+   "b9995dde2981f2d2",
+   "febea46e023f1d67"
+  ]
+ }
+}

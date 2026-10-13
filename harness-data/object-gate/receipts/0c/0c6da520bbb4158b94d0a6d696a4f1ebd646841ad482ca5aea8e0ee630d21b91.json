@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c6da520bbb4158b94d0a6d696a4f1ebd646841ad482ca5aea8e0ee630d21b91",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-gomi-box",
+ "label": "jp_city/street_hand/jp-gomi-box",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese street garbage collection box (wire mesh cage)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is visible from above across rows 2-5 (4 pixel rows), separated by a shadow edge at row 6 from the south front face (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9041
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese green wire-mesh garbage collection box",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the wire-mesh box is visible from rows 2 to 5 (4 pixel rows deep) with its own framing and mesh pattern, separated by a horizontal dividing line from the front face (rows 7-14) which features the front mesh and sign.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6427
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular green box with a visible patterned top and front face",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad top surface visible from above for about 5 source-pixel rows, separated from the south-facing front face by a horizontal front edge. The front face includes a small light label/detail, but there is no receding isometric side face and the body is not a pure elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 79099
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "green rectangular garbage box with a flat front and patterned panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular elevation with no distinct horizontal top plane; the upper green band is only a front panel/rim, not a surface visible from above. No receding side face or interior opening is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 102830
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.916Z",
+ "cells": {
+  "16": [
+   "8c66d165c6e0a90f",
+   "931d2ded4956f91c"
+  ],
+  "24": [
+   "0728ea814838882f",
+   "0c42e9911b412e72",
+   "0f4653bd9f2117e1",
+   "11a02ca6407988dc",
+   "220ec82c0f08904a",
+   "24fffe4e356318f2",
+   "4bf65fc5f90577d0",
+   "506f3a993dc7f81a",
+   "59743dc15dff3da3",
+   "8e658b953bbb5238",
+   "a1b13a5df08f1e76",
+   "b0d1787c720378c1"
+  ],
+  "32": [
+   "78b3dd3a78b85c98",
+   "ae9cb9af005ad8cd"
+  ],
+  "48": [
+   "15a2e518034cfe08",
+   "3eb4fa258ad57e2b",
+   "466643022dd934b3",
+   "86212147486fbe70",
+   "8f861a08b5400741",
+   "b61e651e19687b5a"
+  ]
+ }
+}

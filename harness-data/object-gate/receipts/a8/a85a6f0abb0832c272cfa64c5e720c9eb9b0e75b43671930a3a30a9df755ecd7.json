@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a85a6f0abb0832c272cfa64c5e720c9eb9b0e75b43671930a3a30a9df755ecd7",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp_city/street_hand/jp-bwallf-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style building wall segment with stone foundation, plaster panel, wooden lattice, and tiled wall top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall section displays 4 pixel rows (rows 0-3) of a tiled horizontal cap/roof surface viewed from above, providing the requisite 3/4 top-down perspective for the structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11128
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building wall section with stone foundation and barred window/panel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of a foreshortened tiled top surface/cap of the wall structure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6892
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden building wall with a visible roof surface and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wooden structure has a substantial brown roof plane visible above its south-facing wall, spanning about source rows 5-8; the lower stone foundation is a secondary base. No receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 58298
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wooden wall/building end with a roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main structure has a clearly visible four-pixel-deep horizontal roof/top surface above the timber wall; the narrow dark edge at the right is only a boundary, not a receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 56583
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.916Z",
+ "cells": {
+  "16": [
+   "2d9509a180f01d37",
+   "c7feef3e313d9dd2"
+  ],
+  "24": [
+   "23f31b973d1f0933",
+   "3352e28b1ba7924d",
+   "3d8d2daf108882bd",
+   "606d264604be1b32",
+   "62acf97100aed62f",
+   "6748fa98516f9ece",
+   "78da12e48ee6bf97",
+   "9a14326e27ecb27e",
+   "9a80d82311cf4a77",
+   "c89ac247cb5247a0",
+   "d9573fd0f243bf48",
+   "eb600fea234984be"
+  ],
+  "32": [
+   "467d080c7693099c",
+   "50c9686d93f6998d",
+   "7be8ab5e94eb741b"
+  ],
+  "48": [
+   "30c76a59c32bbcf1",
+   "56e6d774b6270c16",
+   "7c0f772e9aba381f",
+   "d160ede34560d67d",
+   "dcf17f808b6f0fa4",
+   "fddb1808327ba069"
+  ]
+ }
+}

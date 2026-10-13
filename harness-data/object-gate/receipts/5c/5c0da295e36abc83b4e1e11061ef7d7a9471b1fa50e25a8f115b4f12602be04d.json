@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c0da295e36abc83b4e1e11061ef7d7a9471b1fa50e25a8f115b4f12602be04d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "jp-bank-mid",
+ "label": "jp_city/street_hand/jp-bank-mid",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical wall face / partition terrain tile with horizontal and vertical grid lines; valid terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8597
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall face tile pattern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a 16x16 terrain/wall face tile showing a paneled partition or wall structure with horizontal and vertical framing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6154
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Gray brick wall terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat gray masonry courses separated by dark mortar form a wall-face terrain tile. No top surface or receding side face is shown; a wall-face terrain tile does not require a standing object's visible top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12892
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Repeating masonry wall face with gray blocks and dark mortar joints",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body consists entirely of flat, front-facing masonry courses. No horizontal top surface is visible; the horizontal dark bands are mortar joints.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15228
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.479Z",
+ "cells": {
+  "16": [
+   "5d89539e3330ba27"
+  ],
+  "24": [
+   "6c168c5f188b8d76",
+   "6e55ff976fa6912a",
+   "7a411b76a6db166e",
+   "870de56341fd564a",
+   "8cbbffd6bd262292",
+   "cba9c9458a358126"
+  ],
+  "32": [
+   "4772047de199faeb",
+   "77de2186d12e74db",
+   "7ea4b2da4fa244d1",
+   "9e8ba58f515d50ec",
+   "b5139d2509ee111e",
+   "c60dfdaf362725c1"
+  ],
+  "48": [
+   "40e1b227ca36839f",
+   "55311e9a372890fe",
+   "6907f706896ce783",
+   "cec5cbf8b8cdf550",
+   "d256b22db6eb05e7",
+   "f1cd7867e5178bb0"
+  ]
+ }
+}

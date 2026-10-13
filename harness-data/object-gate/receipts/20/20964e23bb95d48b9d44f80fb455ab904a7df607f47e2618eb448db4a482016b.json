@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20964e23bb95d48b9d44f80fb455ab904a7df607f47e2618eb448db4a482016b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-streak",
+ "label": "jp_city/street_hand/jp-water-streak",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water surface streaks",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Two small horizontal water streaks/ripples lying flat on the surface, each 2px tall in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4341
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water streak decals",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Water streaks/ripples rendered flat on the horizontal ground plane as floor decals.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4707
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "two flat blue water streaks on the ground",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each streak is a filled, two-source-pixel-row ground decal viewed from above. These rows represent the entire flat surface, not a rim or cap on a standing body; no vertical or receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11157
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Two flat blue water streaks on the ground",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each streak occupies two source-pixel rows as a ground-facing surface, with no upright body or receding side face. These are flat markings, not thin top rims on standing objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9017
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.232Z",
+ "cells": {
+  "16": [
+   "ae736823d1f46c09"
+  ],
+  "24": [
+   "65e522fa18ee91be",
+   "79f7c25bb8541f1b",
+   "89cd3ea2238c6f93",
+   "9caefabb67932031",
+   "c2909f2ef03ec6e3",
+   "d1371a6bf8c2cb52"
+  ],
+  "32": [
+   "2aa02e9b11a7a901",
+   "482951529f7ff543",
+   "4fd5c61be7520f1b",
+   "7b37929c32d4fa67",
+   "a2859e36a6e77316",
+   "c0bda496a9a15da5"
+  ],
+  "48": [
+   "62b1309b5f25f182",
+   "9dbe3312c3c37367",
+   "c827401d27e749a2",
+   "ea3ca49a373d7ceb",
+   "f870e263564a7263",
+   "f93b09717ddbbd14"
+  ]
+ }
+}

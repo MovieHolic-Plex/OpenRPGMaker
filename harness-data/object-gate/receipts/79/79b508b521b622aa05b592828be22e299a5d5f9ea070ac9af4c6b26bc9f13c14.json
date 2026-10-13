@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79b508b521b622aa05b592828be22e299a5d5f9ea070ac9af4c6b26bc9f13c14",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-sukashi",
+ "label": "jp_city/street_hand/jp-bwall-sukashi",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete block wall with decorative breeze block opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is drawn in pure front elevation; the coping/top edge at rows 1-2 is only 2px tall, functioning as a cap highlight rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5155
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete breeze-block wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tile is drawn as a flat front elevation of a block wall with a sukashi cross motif; the top cap at rows 1-2 is only 2px tall, with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10142
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Decorative masonry wall panel with a central diamond-shaped perforation",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is shown as a flat rectangular front face. Its upper edge has only a two-pixel horizontal strip, not a substantial top surface viewed from above. The central perforation does not establish depth for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 13181
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Rectangular wall panel with a central diamond-shaped lattice opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall is shown as a flat frontal panel. The two-row light band along its upper edge reads as trim, not a visible horizontal top surface; no roof or lintel depth is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16306
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "4881fc79a1c18636"
+  ],
+  "24": [
+   "3f98065513339de3",
+   "6435d7118450ff19",
+   "673a332a39f86db3",
+   "682db8cd46eafd1f",
+   "8f9a51d68a04a512",
+   "d57004396ccc88a8"
+  ],
+  "32": [
+   "07d138741009e40a",
+   "42e2738e3d8bf7f9",
+   "aee7b1118b55c547",
+   "b71495fefd137e96",
+   "d7f7ee4d10b32d26",
+   "df9bedff63eb2104"
+  ],
+  "48": [
+   "0a2b9b9ea3206a6c",
+   "25a9c429ea84d861",
+   "7c11e4180a7fc47b",
+   "8945779ef3ec686a",
+   "b7e5a0df943bc2ae",
+   "d0a74b9ca11326f3"
+  ]
+ }
+}

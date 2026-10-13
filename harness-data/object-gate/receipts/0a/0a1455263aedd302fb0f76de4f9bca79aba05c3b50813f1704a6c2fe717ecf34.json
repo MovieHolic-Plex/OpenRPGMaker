@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a1455263aedd302fb0f76de4f9bca79aba05c3b50813f1704a6c2fe717ecf34",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-gate",
+ "label": "jp_city/street_hand/jp-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese wooden lattice gate / wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn entirely as a flat architectural front elevation: the upper panels (rows 1-4) and lower vertical lattice bars (rows 7-13) show no foreshortened top surfaces, lintel tops, or roof slopes seen from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8709
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese gate / fence with upper panels and lower wooden lattice",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate/wall structure is drawn entirely in front elevation with no visible top surface on the posts, beams, or upper section. The upper section consists of flat framed rectangular panels rather than a foreshortened roof or lintel cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7597
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large gate structure with a broad roof/lintel and vertical front supports",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof/lintel has a clearly visible horizontal top surface about 4 source pixels deep above its darker south-facing edge; the lower gate supports are shown in front view, with no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 103951
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "twin-roofed gate structure",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main gate structure has broad, clearly visible horizontal roof surfaces several pixels deep above the front lintels; the lower gate faces are frontal, with no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 148879
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.916Z",
+ "cells": {
+  "16": [
+   "436589dd5521f85d",
+   "6300081d4a846884"
+  ],
+  "24": [
+   "05eb2847c7f63229",
+   "11a7f092fa8276e7",
+   "25b9aee2e417ebbc",
+   "5f70cc91a4b9e5a1",
+   "80fc8d75abbc6068",
+   "91f6c36a15f327b4",
+   "a205c2727dbd2ba4",
+   "d5d15f0564df7141",
+   "d6acf39023ba2117",
+   "debb9c6c15718a0d",
+   "fc993414d6b81336",
+   "fd50f5b2af55f840"
+  ],
+  "32": [
+   "8439e7ae7980c43d",
+   "932ea2bdc7b4cc39"
+  ],
+  "48": [
+   "1e8464193e0b9437",
+   "28257c7d6e4273c7",
+   "42723af81a7517d7",
+   "58e46d8edeac0aa6",
+   "6f941ad0659fd888",
+   "de4066e04295bf08"
+  ]
+ }
+}

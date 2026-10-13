@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b8cd86cf002d3f008729a47fcc9e0e3dd27f213c54b61c7e52fad9a323f7bb45",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "jp-propane",
+ "label": "jp_city/street_hand/jp-propane",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pair of propane tanks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surfaces/domes of the propane tanks are rendered as foreshortened ellipses roughly 6 rows tall (rows 6-11/12) above the vertical cylindrical bodies.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "twin propane tanks",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top domes/collars of the propane tanks are drawn as distinct ellipses spanning rows 6 to 11 (approx 6 rows tall), clearly visible from above in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3884
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 175806,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "paired round propane-cylinder body with visible elliptical caps and front faces",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has substantial light elliptical top-cap surfaces above the vertical cylinder faces, approximately 5 source-pixel rows tall. No receding isometric side face is present; the central dark strip is a seam between the cylinders.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 169609
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.246Z",
+ "cells": {
+  "16": [
+   "443b5607ca845e93",
+   "aba9df0c02fdef61"
+  ],
+  "24": [
+   "26a9302d713b35d7",
+   "41385a345c729f8a",
+   "4919d336cddaa527",
+   "6e71eac25ba28309",
+   "813a2163344beb20",
+   "8e967456543bc634",
+   "af2655268242389a",
+   "be9642dc908dbd1a",
+   "c6a78182d1f5afa7",
+   "cfc9147e949c66f4",
+   "d1c848cb5497267c",
+   "e88419735958fea2"
+  ],
+  "32": [
+   "4ed1d663b384375f",
+   "a1d0bf319185a732",
+   "a91a7e936e786c74"
+  ],
+  "48": [
+   "085f1349d9f96653",
+   "5e12ce7f5dd0732c",
+   "704e04269a7a5aa9",
+   "a8c15d29ecb77e0d",
+   "ce9d7531c8551cc6",
+   "d331882b878b320a"
+  ]
+ }
+}

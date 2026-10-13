@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8075ef340093daa1be5dfb6072f10afaa494572b1c773bfdce848c50e7b0e2f1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-center-v-l",
+ "label": "jp_city/street_hand/jp-mark-center-v-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow floor marking line segments",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat yellow dashed road/floor marking lying directly on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4606
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow dashed road marking segment",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor marking consisting of vertical dashed line segments lying flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4457
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 286727,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "two yellow flat ground-mark strokes",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mark is shown as solid horizontal-surface patches viewed from above; each stroke is 5 source pixels deep. No receding side face or front-elevation body is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 170902
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "c06f06a686dd367a"
+  ],
+  "24": [
+   "60de44fda17b180d",
+   "79a60150cbc90ba4",
+   "8c1df2dc70a4a1d9",
+   "ad96a7b2aa4ac304",
+   "e0f2499ffb945db5",
+   "f999d318c97d5897"
+  ],
+  "32": [
+   "223534641271e8d6",
+   "30e36b640ab759fe",
+   "6e5557a2ba9a8492",
+   "c4e8862a354bed8a",
+   "e01c2d975f66b4c9",
+   "f8092a0a09c86a3d"
+  ],
+  "48": [
+   "172adee59f758b37",
+   "366879ecfba42b4c",
+   "3bd6f00a883957bf",
+   "6219958449b70b49",
+   "7bf8a58dc7190721",
+   "d50a3cba1d2d955a"
+  ]
+ }
+}

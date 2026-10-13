@@ -1,0 +1,154 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc193116c8d1558017209a7ff212813932fce61fb847346759c6622285d1e4b6",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-tsukigime",
+ "label": "jp_city/street_hand/jp-tsukigime",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "parking sign board on posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and its support legs are drawn in pure flat front elevation with no visible top surface or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "parking signboard on posts",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and its support posts are drawn in a completely flat orthographic front elevation with a 1-2px outline and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 21383
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "front-facing rectangular frame with vertical posts, horizontal beams, and an inset panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main frame is rendered as flat horizontal and vertical strips with no visible above-facing top surfaces; the horizontal beams are only 1–2px front bands. No receding side face or interior ellipse is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 79981
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular frame with horizontal beams and two supporting legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The frame and its horizontal beams are drawn as flat front-facing rectangles with no visible top surfaces; the blue and red beams show only their south faces. No receding isometric side face is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 67368
+  }
+ ],
+ "decidedAt": "2026-10-13T10:33:07.250Z",
+ "cells": {
+  "16": [
+   "02ec6e617d210f86",
+   "05dc2fe57bbd986a",
+   "61194f51562030b2",
+   "a8f0ba34a754c9db"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "09218da973315ee8",
+   "135e80afbb12895c",
+   "2b2029bb46869dec",
+   "2ee9e01d296c5f38",
+   "41425199372584b0",
+   "44d6f8a9986c2664",
+   "4a272c32ac720dc4",
+   "50299968017f748d",
+   "59ffc095ff2a43ee",
+   "669fab931783ad7c",
+   "706149fc7c38f15e",
+   "89a054963d9d08be",
+   "9b2c3c16e80ce473",
+   "a225f37ce8f5cb78",
+   "ab80e5f50fe1acf2",
+   "be648063e4a18d67",
+   "c528a72c989c156b",
+   "de8aa3e44f01f9c5",
+   "dfda9e951b75356b",
+   "dfe1bfb1fa85ef94",
+   "e19584f24cd24eb7",
+   "e6d94c2e3109f65a",
+   "f0653176fe89be1a"
+  ],
+  "32": [
+   "083e59cb9b517c58"
+  ],
+  "48": [
+   "04caaa6089047bbd",
+   "3ed767f28282b957",
+   "5273a53c7ee5d977",
+   "be2cc84cb3154e8d",
+   "cf4a00f63968c806",
+   "ded00c85d322d3c4"
+  ]
+ }
+}

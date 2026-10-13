@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8623dd79a6fd4dda371467443dbeefacdc51b6be80662873d5f2da065ee3dd21",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-gate",
+ "label": "jp_city/street_hand/jp-gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gate panels / slatted gate with lintel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and its upper beam/lintel are drawn in direct front elevation with no visible horizontal top surfaces or roof slope; the lintel and vertical slats show only their vertical south-facing surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6350
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate / fence structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The upper lintel beam (rows 2-5) is drawn in flat front elevation with front-facing joint details (row 3) and a 1px outline on top (row 0), showing no top horizontal surface or roof slope foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6005
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large gate structure with twin panels and a broad top lintel/roof band",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main gate body has a visible horizontal top surface about 3 source pixels deep above the lighter front lintel band. The gate is otherwise presented frontally, with no receding isometric side face; this is not a pure elevation because the top surface is substantially visible.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 112596
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "gate with twin wooden wings and a shallow overhead lintel",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main gate has a visible horizontal top plane approximately 3 source pixels deep above the front-facing vertical panels; the remaining body is a normal south/front face with no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 43884
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.012Z",
+ "cells": {
+  "16": [
+   "0deba65b25e3717a",
+   "c6a124f09c47efa6"
+  ],
+  "24": [
+   "17e99e6300fe6b2e",
+   "2de92eed5a6e414e",
+   "452ed1afc37827d7",
+   "7d0fd9d1501e9afb",
+   "890a92647074b89d",
+   "9aeb8d374aa8068c",
+   "a99f09a4b2ceb326",
+   "aba184b9387cbebe",
+   "be6ae551c4da0419",
+   "cb8af7facf085345",
+   "d4ef312d06799dfb",
+   "e76ee222a07df9a7"
+  ],
+  "32": [
+   "4bba3d6f7997d429",
+   "df9aaa08d3cb3bee"
+  ],
+  "48": [
+   "16af2ce8c8bb2954",
+   "31082faa85a63126",
+   "31a27c8a77740bbb",
+   "55804b19d48cdbbe",
+   "66924e0c657f9340",
+   "ee8ea1ba0c0c4d81"
+  ]
+ }
+}

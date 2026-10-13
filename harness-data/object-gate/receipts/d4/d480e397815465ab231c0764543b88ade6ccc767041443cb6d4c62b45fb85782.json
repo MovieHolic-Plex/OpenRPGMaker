@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d480e397815465ab231c0764543b88ade6ccc767041443cb6d4c62b45fb85782",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp_city/street_hand/jp-bwallf-end-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "boundary wall with tiled top, wooden grille, plaster section, and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall structure features a 4-row tiled cap/coping (rows 0-3) viewed from above, followed by the south-facing wall sections below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9166
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall structure with tiled coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel-tall foreshortened tiled top/coping surface above the front face of the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6741
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall plaster-and-stone wall structure with a tan upper lintel/roof band",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a clearly visible tan horizontal upper surface approximately 4 source pixels deep above the vertical facade; it is more than a 1-2px cap line. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 182742
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large wall or gate structure with a tan horizontal upper section and dark vertical front face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible tan horizontal top surface spanning roughly rows 5–8, with its front edge above the dark brown face. No receding isometric side face is present, and the structure is not a pure flat elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 97425
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.362Z",
+ "cells": {
+  "16": [
+   "224c6b6644f2818b",
+   "2338f38c748fae46"
+  ],
+  "24": [
+   "0f2cdb8603c3460c",
+   "23bada6d47017db4",
+   "3d8d2daf108882bd",
+   "59638e24e954d575",
+   "5a159c9b57ab7bc2",
+   "5e01181296c21c82",
+   "65621cfb5cdc9fae",
+   "bce6171914295475",
+   "d05b4e1a9bad80ff",
+   "d9573fd0f243bf48",
+   "eb600fea234984be",
+   "fa648c588fc222d1"
+  ],
+  "32": [
+   "5d9091514e359232",
+   "81037e091a0d4a07",
+   "ae9dffce4e63d659"
+  ],
+  "48": [
+   "4c0083ac46997002",
+   "6b595ea940cc2f58",
+   "95299d1993f5745a",
+   "a12ffad1b312eca1",
+   "d124ea857acf1679",
+   "fadf6d53a5c223a2"
+  ]
+ }
+}

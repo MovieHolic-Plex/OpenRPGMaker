@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "952d3a4ed53937027b0587b5a79ca00fccccf221f6e3f16f563261bce6faf03f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-foot-shadow",
+ "label": "jp_city/street_hand/jp-foot-shadow",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall foot shadow decal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat shadow decal cast on the floor at the base of a wall, occupying rows 0-2 with dithering.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6130
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drop shadow strip",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 3-row dithering shadow decal cast horizontally on the floor along the top edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4669
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat foot shadow/decal",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a thin, ground-level shadow/decal with a visible horizontal footprint from above; no receding side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 353420
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "flat ground shadow/decal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground shadow with no raised main body, visible top plane, or front face.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 251461
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "7ffe5670e341e870"
+  ],
+  "24": [
+   "145d047b4b543550",
+   "834ee13f30ca09ed",
+   "a79158bb59738906",
+   "e5a1e6ffb6c19b45",
+   "ea85438253ebe639",
+   "f7850d5e62d6c5c3"
+  ],
+  "32": [
+   "082400a9249f6980",
+   "4e430e154f946c43",
+   "79ad9163789f5978",
+   "7d70a47b8b7a2780",
+   "eaa441f7f4dfc006",
+   "edbe23e830ba687b"
+  ],
+  "48": [
+   "2e020439c4a4d334",
+   "4c9cd70bbf084ddf",
+   "78fca75ab1ab8ae7",
+   "c7f4596b2fe299a1",
+   "cd621cd83de1dea1",
+   "e1da67693ec28d30"
+  ]
+ }
+}

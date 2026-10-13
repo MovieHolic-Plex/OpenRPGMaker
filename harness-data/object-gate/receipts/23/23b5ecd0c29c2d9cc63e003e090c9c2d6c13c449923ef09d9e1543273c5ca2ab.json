@@ -1,0 +1,113 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "23b5ecd0c29c2d9cc63e003e090c9c2d6c13c449923ef09d9e1543273c5ca2ab",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "jp-pots",
+ "label": "jp_city/street_hand/jp-pots",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "plant pot with wide elliptical rim and green shoots inside",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot rim is drawn as a foreshortened ellipse spanning rows 6 to 11 with a clearly visible 4-row dark opening/interior cavity (rows 7-10) from which the plants emerge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5131
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pot / planter",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a clearly foreshortened elliptical rim from rows 6 to 12 with a 4-row deep dark interior opening/soil area (rows 8-11) and front face visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4192
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 225108,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "brown ceramic pot with an open top and dark interior",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has a clearly visible foreshortened elliptical rim/top surface, with a dark interior opening spanning several source-pixel rows and a distinct south/front body below it. No receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 260801
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.477Z",
+ "cells": {
+  "16": [
+   "030e90f82afd1915"
+  ],
+  "24": [
+   "06963e820feb9624",
+   "494174ec2842cf8e",
+   "5cdf83edda2d9c55",
+   "674424ab8b648a04",
+   "6c32ad1556e6321a",
+   "899831ad6c310363",
+   "92c3168a8385a7db",
+   "a65eecba59f82864",
+   "d5f6e1bd7ac0c811",
+   "e8933badb0a62d48",
+   "e8c9f083b382b115",
+   "f72d32d60a6c005b"
+  ],
+  "32": [
+   "3bdd036dc58878d5",
+   "9e7a70d08982d0ea"
+  ],
+  "48": [
+   "28cc41cdf399d908",
+   "2d66b5fc921d3898",
+   "6ee408cb1a94e5aa",
+   "70cdbcbb8834c072",
+   "74c48f8bbee72c12",
+   "8d5aca7091fb861c"
+  ]
+ }
+}

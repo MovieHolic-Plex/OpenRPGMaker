@@ -1,0 +1,186 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9d5eedbffd35bdd947b1d6145456c6afa26435162a1cd3c2f0f58c9e30dfa90d",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-5-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-5-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance lintel, red fascia, and upper beam are drawn as completely flat 2D architectural front elevations with zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ramen shop storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D architectural front elevation. Windows, sliding doors, noren curtain, and upper red facade panels have 0 visible top depth or roof slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4683
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 102525,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "central framed gate/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat frontal rectangle with red and blue panels. Its upper lintel is only a 1–2px dark edge/cap, with no visible horizontal top surface or slope; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 53187
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.480Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "3b323b00fbfe3bcc",
+   "3d38976c764cc395",
+   "5148c9aa5783149b",
+   "7edd093dad645154",
+   "8662ee74cb1b1d74",
+   "8d1e6d3fb949cb19",
+   "954be833b76b38af",
+   "b133644178093c6e",
+   "bbf792126b343f24",
+   "d461d27d881dbc20",
+   "f71ebb78b53cf3a3"
+  ],
+  "24": [
+   "1629828195bbf926",
+   "1893cb389ebd1f1f",
+   "1e84a71d1ab42e8e",
+   "39266895c84cecc9",
+   "41f10ff995297bc7",
+   "4b6e7b5c4cdffdee",
+   "4d8eb555589737bf",
+   "4fe920073659e2b1",
+   "5fbf4a698a286997",
+   "76abd86b42cda2be",
+   "79b30e80b72eebc0",
+   "7b411656b5ebb527",
+   "88b4cacde9debf07",
+   "a9d925f3be2d8c05",
+   "b0f00564583cb34c",
+   "b53d70e4fccc2123",
+   "bebac76579895d36",
+   "d400400b208e23ec",
+   "dd6cfcad452d3c11",
+   "e27645cfec1c2049",
+   "e2e257d5e14e7743",
+   "ed84780529e9abe0",
+   "edeb1fd6f21d8ebd",
+   "f811bf8baf86fac9"
+  ],
+  "32": [
+   "0bd0b2b40fb0987d",
+   "0c23c51b3c9069b9",
+   "0e2c0cc1d9c50f9a",
+   "25765ec08ddffc01",
+   "3a3d9a5f501234b3",
+   "3a7e8f93f29fbd5c",
+   "46de2c7c8d276d37",
+   "48f083febc19437f",
+   "4e44dfe3d9934c00",
+   "4f192a5b6befad49",
+   "518a036dedcafd9c",
+   "5923663104c1367c",
+   "5cc6b35384a3652c",
+   "5d14706c202f60b6",
+   "64a831f978acdaac",
+   "65aece3930c32630",
+   "88806e71a907b711",
+   "8d619fc5f870e9fb",
+   "9f10391cc4569f04",
+   "9f50ce8e93d469c7",
+   "adf37e7240e63270",
+   "b32a9ea3fe31e5fd",
+   "b8ced082551b8feb",
+   "b98c4d6908bf4e43",
+   "c72c3e5abfddee28",
+   "cd31f4b8c226ba48",
+   "d1e946e3a41e3e6d",
+   "d4fc114e22d4d35e",
+   "d66c92268b09beb4",
+   "d77b95ecbfb69a7f",
+   "ddd7b06a868a2ad4",
+   "e4bb1ea073bdf8ed",
+   "ee9eebf96e7d36e6",
+   "f5f0a53deca2d225",
+   "f70daa8ca874bad5",
+   "fd97a6595f27eb6a"
+  ],
+  "48": [
+   "0b91a7899c181c9a",
+   "25dfe4f15e64bf71",
+   "34bfd29bd94faf9c",
+   "57cd1e2adcfcf805",
+   "774833d8d79c4d31",
+   "ff95185f430df4f3"
+  ]
+ }
+}
