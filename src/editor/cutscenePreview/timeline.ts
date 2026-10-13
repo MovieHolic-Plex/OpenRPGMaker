@@ -19,7 +19,8 @@ export interface PictureSnapshot extends PicturePose {
 export type TimelineMark =
   | { readonly kind: "flash" | "shake"; readonly t: number; readonly durationMs: number }
   | { readonly kind: "say"; readonly t: number; readonly text: string }
-  | { readonly kind: "audio"; readonly t: number; readonly resourceId: string };
+  | { readonly kind: "audio"; readonly t: number; readonly resourceId: string }
+  | { readonly kind: "tint"; readonly t: number; readonly value: string };
 
 interface Segment {
   readonly start: number;
@@ -113,6 +114,8 @@ export function simulateCutscene(commands: readonly Command[]): CutsceneTimeline
           if (fields.wait === true || fields.waitForPicture === true) clock += duration;
         } else if (command.commandId === "m2-047-flash-screen") {
           marks.push({ kind: "flash", t: clock, durationMs: num(fields.durationMs, 300) });
+        } else if (command.commandId === "m2-046-tint-screen") {
+          marks.push({ kind: "tint", t: clock, value: String(fields.value ?? "") });
         } else if (command.commandId === "m2-048-shake-screen") {
           marks.push({ kind: "shake", t: clock, durationMs: num(fields.durationMs, 400) });
         }

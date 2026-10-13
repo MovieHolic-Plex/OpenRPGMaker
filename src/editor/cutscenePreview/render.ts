@@ -80,8 +80,25 @@ export async function loadPreviewSources(project: Project, resourceIds: Iterable
   return { get: (id) => decoded.get(id) ?? null };
 }
 
-export function renderFrame(timeline: CutsceneTimeline, t: number, viewport: { readonly width: number; readonly height: number }, sources: PreviewSources): RgbaImage {
-  const frame = blank(viewport.width, viewport.height, [0, 0, 0]);
+/** "r,g,b,a"(a 0~1) 장면 색조 값을 읽는다. 비었거나 none/neutral 이면 색조 없음. */
+function parseTint(value: string): readonly [number, number, number, number] | null {
+  const parts = value.split(",").map((part) => Number(part.trim()));
+  if (parts.length < 3 || parts.some((n) => !Number.isFinite(n))) return null;
+  return [parts[0]!, parts[1]!, parts[2]!, parts[3] ?? 0.4];
+}
+
+export interface FrameBase {
+  /** 실제 시작 맵 그림 — 있으면 검은 바탕 대신 깔고 장면 색조를 얹어 «실제 화면»에 가깝게 그린다. */
+  readonly map?: RgbaImage;
+}
+
+export function renderFrame(timeline: CutsceneTimeline, t: number, viewport: { readonly width: number; readonly height: number }, sources: PreviewSources, base?: FrameBase): RgbaImage {
+  const frame = base?.map ? resize(base.map, viewport.width, viewport.height) : blank(viewport.width, viewport.height, [0, 0, 0]);
+  if (base?.map) {
+    let tint: ReturnType<typeof parseTint> = null;
+    for (const mark of timeline.marks) if (mark.kind === "tint" && mark.t <= t) tint = parseTint(mark.value);
+    if (tint) overlay(frame, tint[0], tint[1], tint[2], tint[3]);
+  }
   for (const snapshot of timeline.snapshotAt(t)) drawPicture(frame, snapshot, sources.get(snapshot.resourceId));
   let slot = 0;
   for (const mark of timeline.marks) {
@@ -94,15 +111,15 @@ export function renderFrame(timeline: CutsceneTimeline, t: number, viewport: { r
   return frame;
 }
 
-/** 시각 목록 → 3열 접촉 시트(PNG dataURL). */
-export async function renderContactSheet(project: Project, timeline: CutsceneTimeline, times: readonly number[], viewport: { readonly width: number; readonly height: number }): Promise<string> {
+/** 시각 목록 → 3열(cols 지정 가능) 접촉 시트(PNG dataURL). base.map 이 있으면 실제 맵 위에 그린다. */
+export async function renderContactSheet(project: Project, timeline: CutsceneTimeline, times: readonly number[], viewport: { readonly width: number; readonly height: number }, base?: FrameBase, maxCols = 3): Promise<string> {
   const resourceIds = times.flatMap((t) => timeline.snapshotAt(t).map((snapshot) => snapshot.resourceId));
   const sources = await loadPreviewSources(project, resourceIds);
-  const cols = Math.min(3, times.length);
+  const cols = Math.min(maxCols, times.length);
   const rows = Math.ceil(times.length / cols);
   const sheet = blank(cols * (viewport.width + PREVIEW_CELL_GAP) + PREVIEW_CELL_GAP, rows * (viewport.height + PREVIEW_CELL_GAP) + PREVIEW_CELL_GAP, BACKGROUND);
   times.forEach((t, index) => {
-    const frame = renderFrame(timeline, t, viewport, sources);
+    const frame = renderFrame(timeline, t, viewport, sources, base);
     const ox = PREVIEW_CELL_GAP + (index % cols) * (viewport.width + PREVIEW_CELL_GAP);
     const oy = PREVIEW_CELL_GAP + Math.floor(index / cols) * (viewport.height + PREVIEW_CELL_GAP);
     for (let y = 0; y < viewport.height; y += 1) {

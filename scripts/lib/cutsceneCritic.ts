@@ -18,18 +18,19 @@ const JUDGES = [
 
 const RUBRIC = `You are a strict director reviewing an in-game opening cutscene for a 2D game, judging ONLY from the evidence given: (1) a render of the real start map, (2) a contact sheet of key frames of the scripted cutscene (pictures drawn over a plain backdrop; built-in pictures may appear as grey boxes), (3) measured numbers from a deterministic probe (visible seconds, size relative to the screen, travel, overlap, tint/weather/sound counts).
 Score 0-10: subject (the intended subject is clearly visible and reads as the story's focus), scale (size and spacing fit the screen and the landscape; tiny figures in a big landscape is good, huge overlapping sprites is bad), motion (the probe shows real travel and timing; the sheet shows progression, not one frozen pose), mood (map colour/tint/weather/props match the stated time and feeling — a bright daytime map for a night scene is a failure), staging (map is composed, not a flat empty field; nothing broken like stray placeholder tiles), polish (would a player think this is a considered opening, not a prototype).
-Do not reward intent; reward only what the evidence shows. verdict "accept" only if every score >= 6 and total >= 40; otherwise "regenerate" with ONE concrete, actionable fix in "fix" (in Korean, naming the tool/step to change). Reply with JSON only: {"scores":{"subject":0,"scale":0,"motion":0,"mood":0,"staging":0,"polish":0},"verdict":"accept|regenerate","fix":"..."}`;
+If a motion strip is given, motion is judged from it: identical sprite poses across frames while the position changes (sliding) caps motion at 3; a tint that is absent when the brief asks for night caps mood at 3; sprites overlapping the hero standing in the scene cap staging at 4. Do not reward intent; reward only what the evidence shows. verdict "accept" only if every score >= 6 and total >= 40; otherwise "regenerate" with ONE concrete, actionable fix in "fix" (in Korean, naming the tool/step to change). Reply with JSON only: {"scores":{"subject":0,"scale":0,"motion":0,"mood":0,"staging":0,"polish":0},"verdict":"accept|regenerate","fix":"..."}`;
 
 const jpeg = (dataUrl: string): Promise<string> => jpegDataUrl(dataUrl, 960, 82);
 
 export async function critiqueCutscene(input: {
-  readonly brief: string; readonly probeSummary: string; readonly mapImage?: string; readonly sheetImage?: string; readonly signal?: AbortSignal;
+  readonly brief: string; readonly probeSummary: string; readonly mapImage?: string; readonly sheetImage?: string; readonly motionImage?: string; readonly signal?: AbortSignal;
 }): Promise<CutsceneCritique> {
   const unjudged = (why: string): CutsceneCritique => ({ verdict: 'unjudged', scores: {}, fix: why, judge: 'none' });
-  if (!input.mapImage && !input.sheetImage) return unjudged('판정에 쓸 그림이 없습니다.');
+  if (!input.mapImage && !input.sheetImage && !input.motionImage) return unjudged('판정에 쓸 그림이 없습니다.');
   const parts: Array<Record<string, unknown>> = [{ type: 'text', text: `Requested opening: ${input.brief}\nProbe: ${input.probeSummary}` }];
   if (input.mapImage) parts.push({ type: 'text', text: 'Start map render:' }, { type: 'image_url', image_url: { url: await jpeg(input.mapImage) } });
   if (input.sheetImage) parts.push({ type: 'text', text: 'Cutscene key frames (left to right, top to bottom):' }, { type: 'image_url', image_url: { url: await jpeg(input.sheetImage) } });
+  if (input.motionImage) parts.push({ type: 'text', text: 'Motion strip: 8 consecutive frames 0.35s apart over the real map with the scene tint applied. Judge whether the walkers actually animate (legs/frames change, not a static sprite sliding), whether they overlap the hero or each other, and whether the tint/night mood holds:' }, { type: 'image_url', image_url: { url: await jpeg(input.motionImage) } });
   for (const judge of JUDGES) {
     let apiKey: string | undefined;
     try { apiKey = await resolveRequestApiKey(judge.provider) as string | undefined; } catch { apiKey = undefined; }

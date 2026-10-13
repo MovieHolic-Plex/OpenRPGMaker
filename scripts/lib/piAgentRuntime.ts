@@ -892,8 +892,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
       let mapImage: string | undefined, sheetImage: string | undefined;
       try { mapImage = `data:image/png;base64,${await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), 'show_map_region', { mapId: start.id, x: 0, y: 0, w: start.width, h: start.height }, options.signal)}`; } catch { mapImage = undefined; }
-      try { sheetImage = (await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }))[0]?.dataUrl; } catch { sheetImage = undefined; }
-      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
+      let motionImage: string | undefined;
+      try { const imgs = await cutscenePreviewImages(ctx.project, { mapId: start.id, eventId: event.id }, mapImage ? { mapImage } : undefined); sheetImage = imgs[0]?.dataUrl; motionImage = imgs[1]?.dataUrl; } catch { sheetImage = undefined; }
+      const critique = await critiqueCutscene({ brief: request.task, probeSummary: probe.summary, ...(mapImage ? { mapImage } : {}), ...(sheetImage ? { sheetImage } : {}), ...(motionImage ? { motionImage } : {}), ...(options.signal ? { signal: options.signal } : {}) });
       openingProduction.recordCutsceneReview(fingerprint, [], critique);
       emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: critique.verdict === 'accept', summary: critique.verdict === 'unjudged' ? `독립 판정 불가(${critique.fix}) — 합격으로 보고하지 않습니다` : `독립 판정자(${critique.judge}) ${critique.verdict === 'accept' ? '합격' : '불합격'}: ${Object.entries(critique.scores).map(([k, v]) => `${k} ${v}`).join(', ')}${critique.fix ? ` — ${critique.fix}` : ''}`, data: critique });
     };
