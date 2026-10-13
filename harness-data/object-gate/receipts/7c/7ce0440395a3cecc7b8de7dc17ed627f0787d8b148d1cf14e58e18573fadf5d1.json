@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ce0440395a3cecc7b8de7dc17ed627f0787d8b148d1cf14e58e18573fadf5d1",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "세면대 줄(2구, 아래 수납)",
+ "label": "modern-campus-int/mc-sink-vanity",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "double sink vanity counter with under-sink cabinets",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop top surface is clearly visible from row 8 to row 16 (9 pixel rows), showing two inset sink basins, with the cabinet south face below it spanning rows 20 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dual-basin sink counter with lower storage cabinets",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vanity spans rows 8 to 16 (9 pixel rows) showing two elliptical sink basins and faucets, while rows 17 to 31 show the south front face with two cabinet doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6109
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "double sink vanity counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop top surface spans 10 pixel rows (rows 8-17) containing two top-down sink basins, sitting above the front-facing cabinet doors (rows 18-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "double sink vanity with lower storage cabinet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop top surface spans rows 8 to 17 (10 rows) with two sink basins embedded into it, and the cabinet front face extends below from row 18 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5304
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.252Z",
+ "cells": {
+  "16": [
+   "36e4564f185b3b50",
+   "7ac2d548e2a7c80d",
+   "8d2113726681423f",
+   "d287b1a4a2540d4f"
+  ],
+  "24": [
+   "0d4539430eb0fe18",
+   "15f344e71e2781cd",
+   "1cd1627d50944d75",
+   "2202e73bca28587b",
+   "221761f14a01a8b5",
+   "2c7d20a4a8e3b2df",
+   "2ebdec0cc1ba9de6",
+   "481571321c74a8d0",
+   "4f9a2e08c9df0844",
+   "61ea81845a12886f",
+   "664141b1e8271cb9",
+   "7370c800b44698ce",
+   "781710e68d62a0f7",
+   "84fff09bc79876a4",
+   "92dc3d05ae37a817",
+   "9caf5bd7735dbd1f",
+   "a253daca2e71fa12",
+   "a34fa5d4f35dcda4",
+   "a9146ba62b0d27ed",
+   "aa8972ee8dfa760b",
+   "b30ed5f8c2095649",
+   "b78321463f950016",
+   "bd5041ea8bc75fed",
+   "d6b1a58ba409adf7"
+  ],
+  "32": [
+   "f03c20a36d2ea6ec"
+  ],
+  "48": [
+   "6a0e2198e513f76b",
+   "96263eac2119ebb0",
+   "978d2e003c365a2d",
+   "9b5c6954909af0b6",
+   "aa90a773db7b299a",
+   "d14eef51a044159e"
+  ]
+ }
+}

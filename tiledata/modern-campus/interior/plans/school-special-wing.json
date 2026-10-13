@@ -1,0 +1,365 @@
+{
+ "name": "학교 특별교실 동 1층(도서관·보건실·교무실 + 복도·계단)",
+ "tileset": "modern_campus",
+ "plan": [
+  "##########################",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "#...........##.....##....#",
+  "####.####.######.#####.###",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "#........................#",
+  "############..############"
+ ],
+ "floor": "mc-floor-parquet",
+ "wall": "mc-wall-dorm",
+ "zones": [
+  {
+   "x0": 14,
+   "y0": 1,
+   "x1": 18,
+   "y1": 8,
+   "floor": "mc-floor-cafe",
+   "wall": "mc-wall-tile"
+  },
+  {
+   "x0": 21,
+   "y0": 1,
+   "x1": 24,
+   "y1": 8,
+   "floor": "mc-floor-lino",
+   "wall": "mc-wall-class"
+  },
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 24,
+   "y1": 14,
+   "floor": "mc-floor-corridor",
+   "wall": "mc-wall-corridor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "sc-bookshelf",
+   "x": 1,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 3,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 7,
+   "y": 3
+  },
+  {
+   "id": "sc-bookshelf",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "mc-carrel",
+   "x": 1,
+   "y": 5
+  },
+  {
+   "id": "mc-carrel",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "id": "mc-carrel",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "mc-carrel",
+   "x": 1,
+   "y": 6
+  },
+  {
+   "id": "mc-carrel",
+   "x": 4,
+   "y": 6
+  },
+  {
+   "id": "mc-carrel",
+   "x": 7,
+   "y": 6
+  },
+  {
+   "id": "mc-book-trolley",
+   "x": 6,
+   "y": 8
+  },
+  {
+   "id": "sc-lib-counter",
+   "x": 11,
+   "y": 8
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "mc-eye-chart",
+   "x": 15,
+   "y": 1
+  },
+  {
+   "id": "sc-med-shelf",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "mc-aid-counter",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "sc-nurse-bed",
+   "x": 17,
+   "y": 5
+  },
+  {
+   "id": "mc-nurse-desk",
+   "x": 14,
+   "y": 6
+  },
+  {
+   "id": "sc-curtain",
+   "x": 17,
+   "y": 4
+  },
+  {
+   "id": "sc-scale",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "id": "mc-bin-wide",
+   "x": 14,
+   "y": 8
+  },
+  {
+   "id": "sc-whiteboard",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "sc-key-box",
+   "x": 23,
+   "y": 1
+  },
+  {
+   "id": "mc-cabinet-glass",
+   "x": 21,
+   "y": 3
+  },
+  {
+   "id": "sc-copy-machine",
+   "x": 24,
+   "y": 3
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "sc-staff-desk",
+   "x": 23,
+   "y": 7
+  },
+  {
+   "id": "mc-window-class",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 14,
+   "y": 10
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 12,
+   "y": 10
+  },
+  {
+   "id": "mc-window-class",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "mc-water-fountain",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "mc-trophy-shelf",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "mc-umbrella-stand",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 13,
+   "y": 12
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 23,
+   "y": 12
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 9,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 22,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  12,
+  13
+ ],
+ "rooms": [
+  {
+   "room": "library",
+   "x0": 1,
+   "y0": 1,
+   "x1": 11,
+   "y1": 8
+  },
+  {
+   "room": "infirmary",
+   "x0": 14,
+   "y0": 1,
+   "x1": 18,
+   "y1": 8
+  },
+  {
+   "room": "staffroom",
+   "x0": 21,
+   "y0": 1,
+   "x1": 24,
+   "y1": 8
+  },
+  {
+   "room": "corridor",
+   "x0": 1,
+   "y0": 10,
+   "x1": 24,
+   "y1": 13
+  }
+ ],
+ "doors": [
+  {
+   "x": 4,
+   "y": 9,
+   "to": "library",
+   "access": [
+    4,
+    8,
+    4,
+    12
+   ]
+  },
+  {
+   "x": 9,
+   "y": 9,
+   "to": "library",
+   "access": [
+    9,
+    8,
+    9,
+    12
+   ]
+  },
+  {
+   "x": 16,
+   "y": 9,
+   "to": "infirmary",
+   "access": [
+    16,
+    8,
+    16,
+    12
+   ]
+  },
+  {
+   "x": 22,
+   "y": 9,
+   "to": "staffroom",
+   "access": [
+    22,
+    8,
+    22,
+    12
+   ]
+  }
+ ],
+ "exits": [
+  {
+   "x0": 12,
+   "x1": 13,
+   "y": 14,
+   "to": "campus-yard",
+   "approach": [
+    12,
+    13
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": 23,
+   "y": 12,
+   "w": 2,
+   "dir": "up",
+   "to": "school-upper-floor",
+   "note": "위층 장소는 같은 규칙으로 따로 짓는다(기숙사 2층 예제와 같은 짝 연결)."
+  }
+ ]
+}

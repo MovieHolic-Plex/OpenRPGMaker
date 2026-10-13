@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3c30ee9f704694c44af792e4f1a6dd5045b3be557300846f8c7ccae431c925b3",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "복도 사물함 줄(철제 2×3 칸, 환기구)",
+ "label": "modern-campus-int/mc-hall-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steel locker unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker unit is clearly shown across rows 4 to 11 (8 source pixels tall) with top panel detailing, before the front face with locker doors begins below row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9394
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steel hallway locker unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker bank is clearly visible from rows 4 to 11 (8 pixels tall) showing the top plane in 3/4 perspective above the front face of the locker doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6157
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal hallway lockers bank",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker bank is clearly rendered from rows 4 to 11 (8 pixel rows deep) with foreshortened surface detailing above the front locker doors (rows 13 to 31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6489
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal corridor locker bank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the locker bank is clearly rendered across rows 3–11 (approx. 9 pixels tall) above the locker doors that begin at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9490
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.251Z",
+ "cells": {
+  "16": [
+   "4742d2176ea556e8",
+   "5cecd03443d4bafc",
+   "e09c1cc15e6d5f3d",
+   "e7a2b9c3244828cf"
+  ],
+  "24": [
+   "2b3ae81f3f599deb",
+   "3b57b63a37cc06c4",
+   "3ea4fbcb1a9240dd",
+   "440b2911ca5ec8d4",
+   "4b88c506d47c4329",
+   "4b8bf207a28f724f",
+   "4f293757d063c134",
+   "557df0edd8548dc6",
+   "5ccba58ea32d1313",
+   "680eb40b81801006",
+   "71114b2b1182ec97",
+   "7272d620e0f5b5a6",
+   "818b428940c45f2a",
+   "bd7c0195807284de",
+   "c5529de0d3ddb684",
+   "c9471e35dd68091e",
+   "cb944c613830c2ca",
+   "d0b5aff0eca3c992",
+   "d24e25872e879aba",
+   "dde08f4b1f8c2e98",
+   "f4bc538b24b417ba",
+   "f6e0f8bf86d6f602",
+   "f80a5dbcbb05ff28",
+   "f92dfb8020575c7d"
+  ],
+  "32": [
+   "fc6806c141dbeba4"
+  ],
+  "48": [
+   "3febf6d7b4f6a594",
+   "4ea1a55342860340",
+   "6a4a505339b2eff8",
+   "c1a37b1f989d22e7",
+   "cacf7d5a9793c995",
+   "e5a882aedec5c470"
+  ]
+ }
+}

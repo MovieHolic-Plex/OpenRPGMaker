@@ -1,0 +1,153 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18f7c7d52e570cffa5fe73d58f1d335913d9c850eb41950246c1e8dd9be5386e",
+ "width": 64,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "초록 칠판(넓은 4칸, 알루미늄 틀)",
+ "label": "modern-campus-int/mc-board-green",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "green chalkboard with aluminum frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted chalkboard mounted flat against the wall; standard flat projection with chalk ledge at the bottom is appropriate for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "green chalkboard with aluminum frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted chalkboard hanging flat on a south-facing wall; flat front view is standard and expected for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6425
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green chalkboard with aluminum frame and chalk tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted chalkboard mounted flat against the north wall, complete with chalk ledge and pieces of chalk along the bottom border. Top surface is not required for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6660
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "green chalkboard with aluminum frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a chalkboard mounted flat against a wall, correctly drawn facing the viewer with an aluminum frame, chalk tray, and chalk pieces at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8027
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.248Z",
+ "cells": {
+  "16": [
+   "55131184ef3a6f68",
+   "6f7f7e8994663068",
+   "719769cf2f8b6728",
+   "8749e8459fbcd84d",
+   "bef6f21344006de1",
+   "dd75494356ed3f4b",
+   "e7f457cade5db044",
+   "e977c907d19c4f95"
+  ],
+  "24": [
+   "0205159266762b89",
+   "05df121c2a5e1810",
+   "0614db99242a7e54",
+   "11250c4abd34a9d5",
+   "29246f559002cce1",
+   "29b139e951188de6",
+   "2f7687941f682c26",
+   "3af322c91e16d702",
+   "3ce3cee5fb8f901d",
+   "4875b3e363a79f4f",
+   "4d4604dc41d61bc1",
+   "57440e05645f9b1f",
+   "621d7a403a8edc82",
+   "682bf8aa18ccb353",
+   "6ef74c3ae23233e5",
+   "6f0add30bfe05d34",
+   "77ed74ebfb5bc0e2",
+   "8ad4e3639eca3054",
+   "aa2b7d188335a548",
+   "ae4372b186f3e6c7",
+   "aec5a21d1bfd6af9",
+   "b1ed0f93b496694c",
+   "bfa2d22a753a7bd7",
+   "c04577e3a00861ca",
+   "c116d2b95cbe6866",
+   "c3fa167c54c3221f",
+   "cfe040b7392ec17c",
+   "ddeebdf1199e73af",
+   "decdff67b2c16d91",
+   "e2625d6e8242e37b",
+   "efa26e83c7fe8f08",
+   "f198fa71720a1708",
+   "f1cad6d5c64644cd",
+   "ff5aad5711b17595"
+  ],
+  "32": [
+   "7ad4c52140f2356d",
+   "c38afa5e0062145f"
+  ],
+  "48": [
+   "20e9b3b19eae9b4d",
+   "20f91cb36c37e0e0",
+   "230761869038c3be",
+   "5a86656defd4c358",
+   "60caefb08513c084",
+   "70007b0c4fd41358",
+   "750e67387b480615",
+   "76bf275b954e31ff",
+   "8d7057499ca32bc4",
+   "c590fe484c78ee26",
+   "ce5bfd06a674460f",
+   "e02918f91677a69c"
+  ]
+ }
+}

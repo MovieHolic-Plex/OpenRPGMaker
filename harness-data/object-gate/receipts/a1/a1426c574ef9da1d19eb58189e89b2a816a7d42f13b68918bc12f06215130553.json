@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a1426c574ef9da1d19eb58189e89b2a816a7d42f13b68918bc12f06215130553",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "소화기함(빨간 문 + 흰 띠)",
+ "label": "modern-campus-int/mc-fire-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet clearly shows a 7-row horizontal top surface (rows 3–9) rendered in a lighter shade, above the front-facing door (rows 11–30) with glass window and white band.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5594
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered across rows 3 to 10 (8 source pixel rows tall), with the front face and door/window occupying rows 12 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4737
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible from rows 3 to 11 (approx. 8 rows tall) in a lighter red tone, foreshortened above the south-facing front door.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4064
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fire extinguisher cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly defined top surface spanning rows 3-10 (8 pixel rows tall) above the front door section (rows 12-30), correctly representing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.252Z",
+ "cells": {
+  "16": [
+   "01f1cda9d494df3c",
+   "aa4f3fbec60fd45a"
+  ],
+  "24": [
+   "11865d9c42f7e4ce",
+   "39c2a54cd4ea87e7",
+   "64d5fcc10c6a14a6",
+   "6fe33235e67bcade",
+   "708e1a749195f405",
+   "7cf4403953ef4f03",
+   "7d5377b03915c749",
+   "8bd5aad2eccb36df",
+   "c311d0f5f9471811",
+   "e6a8857ba4b45b47",
+   "f83e0a75b6f5af94",
+   "f900349f79947818"
+  ],
+  "32": [
+   "32b00167c3e8171a",
+   "9e2ab10271e5b5c6",
+   "cc9408afb34d2354"
+  ],
+  "48": [
+   "5562eb6667a11787",
+   "63f0744de5946c18",
+   "68e75ed76be3a3ae",
+   "73db87db437d4d60",
+   "94cf31b912f60761",
+   "eb5c6c65d192bd93"
+  ]
+ }
+}

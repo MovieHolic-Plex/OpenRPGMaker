@@ -1,0 +1,306 @@
+{
+ "name": "기숙사 1층(라운지 + 방 둘 + 현관·계단)",
+ "tileset": "modern_campus",
+ "plan": [
+  "########################",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#..........#.....#.....#",
+  "#####.##.#####.#####.###",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "#......................#",
+  "###########..###########"
+ ],
+ "floor": "mc-floor-dorm",
+ "wall": "mc-wall-dorm",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 22,
+   "y1": 14,
+   "floor": "mc-floor-corridor",
+   "wall": "mc-wall-corridor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mc-lounge-sofa",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "mc-lounge-sofa",
+   "x": 5,
+   "y": 3
+  },
+  {
+   "id": "sc-tv-stand",
+   "x": 10,
+   "y": 3
+  },
+  {
+   "id": "mc-low-table",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "id": "mc-bean-bag",
+   "x": 8,
+   "y": 5
+  },
+  {
+   "id": "mc-bean-bag",
+   "x": 9,
+   "y": 6
+  },
+  {
+   "id": "mc-fridge-counter",
+   "x": 1,
+   "y": 8
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "id": "mc-dorm-bed",
+   "x": 12,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-desk",
+   "x": 14,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-wardrobe",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-dresser",
+   "x": 13,
+   "y": 7
+  },
+  {
+   "id": "mc-window-class",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "id": "mc-dorm-bed",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-desk",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-wardrobe",
+   "x": 22,
+   "y": 3
+  },
+  {
+   "id": "mc-dorm-dresser",
+   "x": 19,
+   "y": 7
+  },
+  {
+   "id": "mc-window-class",
+   "x": 19,
+   "y": 1
+  },
+  {
+   "id": "mc-window-class",
+   "x": 6,
+   "y": 10
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 15,
+   "y": 10
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 10,
+   "y": 10
+  },
+  {
+   "id": "mc-shoe-rack-low",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "mc-umbrella-stand",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 15,
+   "y": 12
+  },
+  {
+   "id": "sc-stairs-up",
+   "x": 21,
+   "y": 12
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 5,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 8,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 14,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 20,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  11,
+  13
+ ],
+ "rooms": [
+  {
+   "room": "lounge",
+   "x0": 1,
+   "y0": 1,
+   "x1": 10,
+   "y1": 8
+  },
+  {
+   "room": "dorm-room",
+   "x0": 12,
+   "y0": 1,
+   "x1": 16,
+   "y1": 8
+  },
+  {
+   "room": "dorm-room",
+   "x0": 18,
+   "y0": 1,
+   "x1": 22,
+   "y1": 8
+  },
+  {
+   "room": "corridor",
+   "x0": 1,
+   "y0": 10,
+   "x1": 22,
+   "y1": 13
+  }
+ ],
+ "doors": [
+  {
+   "x": 5,
+   "y": 9,
+   "to": "lounge",
+   "access": [
+    5,
+    8,
+    5,
+    12
+   ]
+  },
+  {
+   "x": 8,
+   "y": 9,
+   "to": "lounge",
+   "access": [
+    8,
+    8,
+    8,
+    12
+   ]
+  },
+  {
+   "x": 14,
+   "y": 9,
+   "to": "dorm-room",
+   "access": [
+    14,
+    8,
+    14,
+    12
+   ]
+  },
+  {
+   "x": 20,
+   "y": 9,
+   "to": "dorm-room",
+   "access": [
+    20,
+    8,
+    20,
+    12
+   ]
+  }
+ ],
+ "exits": [
+  {
+   "x0": 11,
+   "x1": 12,
+   "y": 14,
+   "to": "campus-yard",
+   "approach": [
+    11,
+    13
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": 21,
+   "y": 12,
+   "w": 2,
+   "dir": "up",
+   "to": "dorm-2f"
+  }
+ ],
+ "links": [
+  {
+   "x": 21,
+   "y": 12,
+   "toMapId": "dorm-2f",
+   "toX": 20,
+   "toY": 13,
+   "direction": "up"
+  },
+  {
+   "x": 22,
+   "y": 12,
+   "toMapId": "dorm-2f",
+   "toX": 20,
+   "toY": 13,
+   "direction": "up"
+  }
+ ]
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06aa28f865998a6dd725cfd98baa46210d50366895ae4d3accbccf8acbedfc0f",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "낮은 실내화 선반(2단)",
+ "label": "modern-campus-int/mc-shoe-rack-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low 2-tier shoe/slipper rack",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is clearly visible across rows 8 to 15 (8 source pixel rows) with two slippers resting on top, above the two front-facing open shelf tiers (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 26308
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "shoe rack",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly rendered across rows 8–15 with objects resting on it, leading into a front face displaying two tiers of slippers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6416
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "2-tier low slipper rack",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is clearly visible across rows 9 to 15 (7 rows tall) with two items resting on it, above a front face showing the two lower shelf tiers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7794
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "shoe/slipper shelf unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly depicted from row 8 to 15 (8 rows tall) with items resting on top, above the two-tier front shelving compartment (rows 16-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4361
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.251Z",
+ "cells": {
+  "16": [
+   "1e8f733855d02998",
+   "64c4901384a469d5",
+   "65e0fa3d55cee705",
+   "d88162a4e6359ec2"
+  ],
+  "24": [
+   "0bfbc2da327bf4b7",
+   "0c3c2000d25b41d7",
+   "159b8576716c090c",
+   "37b24bb6c22f18f5",
+   "3b872bd25b7f655d",
+   "3c79bfa99820373e",
+   "698be44014e4ef22",
+   "6a9515c6d3f4fb21",
+   "6cf1d2e4980fc825",
+   "7adb5fca359a98e8",
+   "864abe0027040e1e",
+   "9d2d3f078b210b58",
+   "b6a716db915a6def",
+   "bc223c3a83a7a71d",
+   "db6603926fae1cf7",
+   "f1dea653659d996c",
+   "f23e06640a25a6d0",
+   "f8751e353ffa82ef"
+  ],
+  "32": [
+   "7c557df0c4ac8587"
+  ],
+  "48": [
+   "5a5f8e8f9cdc5154",
+   "6e26b3e1446fcd08",
+   "763c10c64825a579",
+   "77e766aa855b28d4",
+   "9d5e266f9f65cc2d",
+   "bdce480d1811d19f"
+  ]
+ }
+}

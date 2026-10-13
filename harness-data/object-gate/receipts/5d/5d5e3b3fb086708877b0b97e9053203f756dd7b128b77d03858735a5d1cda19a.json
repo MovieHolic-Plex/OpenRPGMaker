@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d5e3b3fb086708877b0b97e9053203f756dd7b128b77d03858735a5d1cda19a",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "코르크 게시판(색 종이 덩이)",
+ "label": "modern-campus-int/mc-cork-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cork bulletin board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Cork bulletin board mounted flat against the wall with pinned papers; wall-mounted objects are permitted to be flat front-facing.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4818
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cork bulletin board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a cork bulletin board with pinned papers mounted flat against the wall. For wall_mounted objects, a flat front-facing view is appropriate and expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8012
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cork bulletin board with pinned papers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Cork bulletin board mounted flat against a wall; as a wall-mounted flat object, a flat front-facing view without a top surface is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5389
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cork bulletin board with notes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted bulletin board mounted flat against a vertical wall, which is appropriate for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6272
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "199a2edd4184618e",
+   "a9c97d4ee2a325d2",
+   "da3554ac1cb25de3",
+   "db0911cc854e6082"
+  ],
+  "24": [
+   "0c51f57621e0a991",
+   "174cccce6e042f7a",
+   "18158efb03bd1170",
+   "2833c144112cb601",
+   "31495405170fb844",
+   "3dcd23fdc0960ee6",
+   "3e5efd1c32ddce14",
+   "41e00d4a8cbcce85",
+   "48878abc784e739c",
+   "49597fe2e25098da",
+   "4b759d60cf1b18ae",
+   "50d1783dfc73e8ff",
+   "55ac88b6e7da8ed5",
+   "5b15366b4b28767a",
+   "66f480c7bb5830e0",
+   "6ab5544d6c653cef",
+   "6b3ad45072e3b083",
+   "7bbfb92626dadb0b",
+   "8a307d7554f7ca84",
+   "b86a776389147dfe",
+   "bf46788efebdeb3d",
+   "c7d2d0526740bd9f",
+   "e99f9c7c4c6ff38f",
+   "f1f10e46c60171f0"
+  ],
+  "32": [
+   "0f752d011ada6983"
+  ],
+  "48": [
+   "0d2312015481b417",
+   "5474d2fad5780c61",
+   "6ad02df6101f0456",
+   "7e5d9ebe7a82e87c",
+   "be7706fbdb19ee2d",
+   "d8469b640f12192d"
+  ]
+ }
+}

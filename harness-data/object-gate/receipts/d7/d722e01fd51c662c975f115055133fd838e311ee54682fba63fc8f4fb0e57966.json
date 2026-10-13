@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d722e01fd51c662c975f115055133fd838e311ee54682fba63fc8f4fb0e57966",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "배식대(3칸, 스테인리스 보온통 셋)",
+ "label": "modern-campus-int/mc-serving-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stainless steel 3-pan food serving counter",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the counter is clearly visible from rows 6 to 14 (approx. 9px tall) displaying three food pans seen from above, positioned over the south-facing lower cabinet front spanning rows 15 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6459
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stainless steel 3-well serving counter / food warmer table",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top counter surface spans rows 6-14 (~8 rows) showing three inset food wells seen from above, resting on the south-facing lower cabinet (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5465
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria food counter",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Top counter surface spans rows 7 to 14 (8 px tall) displaying three recessed warmer trays viewed from above, above the south-facing front body spanning rows 15 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4919
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "buffet / steam table serving counter with three inset food trays",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the counter spans rows 6 to 14 (approx. 9 rows deep), clearly showing the horizontal countertop surface with three food warmers viewed from above, above the south front panel spanning rows 15 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6527
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.253Z",
+ "cells": {
+  "16": [
+   "07ec6cdb6459a969",
+   "2c9d19b10c7bef4b",
+   "4e6d4443ac1e0b3b",
+   "84cdf8b14048b71f",
+   "b02abb381dee140f",
+   "d521ba00c67fb2fa"
+  ],
+  "24": [
+   "2b2afe5086df6655",
+   "4ee9022566efc22a",
+   "680e9160c3124330",
+   "7b673dcb0860425f",
+   "83218ea7bd51d3cb",
+   "a97579ebaec76e6b",
+   "b42f45f307a73968",
+   "b4da509d6a224990"
+  ],
+  "32": [
+   "1831b7398e3c9943",
+   "2276edf63eab1100",
+   "89fc23a8b90e1100",
+   "d5747650701ab4d6",
+   "e0e09f82624c7c66",
+   "f68661d81f40c83a"
+  ],
+  "48": [
+   "9f08c5cc2fdf4e64",
+   "f6295cc7b13d09b1"
+  ]
+ }
+}

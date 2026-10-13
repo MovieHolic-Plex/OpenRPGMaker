@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d212ed356204fd04eda9e6f7076f42b4054c40f1123138c47db8061d3d53c83a",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "2인 책상·의자 한 쌍(나란히)",
+ "label": "modern-campus-int/mc-desk-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pair of desks with chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tops are visible from above spanning rows 1 to 8 with study materials on them, followed by a 2-pixel front edge/face on rows 9-10. The chairs below also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two desks with chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tops clearly show an 8-row deep top surface (rows 1-8) along with a 2-row front face (rows 9-10); the chairs below also clearly show their seat tops.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4789
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pair of desks with chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tops clearly show their horizontal surface over rows 1-8 with a south front face on rows 9-10. The chairs below also show distinct seats (rows 11-13) and front faces (rows 14-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "desks with chairs",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tops are clearly foreshortened horizontal surfaces visible across rows 1-7 (7 rows deep) with front faces visible below on rows 9-10. The stools/chairs below also show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5197
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "a8a2f9446a4caf0f",
+   "c8181d6bd1ff2842"
+  ],
+  "24": [
+   "0d598f39b5c2b40e",
+   "1220186553813db6",
+   "333c625f5d6e5e45",
+   "5485c88d6e55ddb5",
+   "5a528c5120128635",
+   "64eb3e7a896708dc",
+   "849bc4fc040fd2ff",
+   "bf9a3e1d358645d1",
+   "bfc703b1de86cc2c",
+   "d82f0bd640e205e6",
+   "fa8c78e65e1ab5ff",
+   "fd8b4dfe64ab3cda"
+  ],
+  "32": [
+   "44227c431ee0d7d2",
+   "447d9ddeca4264e4"
+  ],
+  "48": [
+   "021cdd1a56db0016",
+   "2a9eb92707539493",
+   "2e966c6b1c7290a1",
+   "6fd7863a64de40a1",
+   "837cfa2a52bf850c",
+   "e38eca6b95e86f12"
+  ]
+ }
+}

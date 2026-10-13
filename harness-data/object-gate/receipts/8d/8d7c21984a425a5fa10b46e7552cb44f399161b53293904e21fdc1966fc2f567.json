@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d7c21984a425a5fa10b46e7552cb44f399161b53293904e21fdc1966fc2f567",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "급식실 2칸 탁자 + 접이 의자 둘",
+ "label": "modern-campus-int/mc-cafe-table-2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafeteria table with meal trays and chairs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 0-8 with clearly visible trays from above, followed by a 1px front lip at row 9 and two chairs with visible seats at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6483
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria table with chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 1-8 showing cafeteria trays, with the front edge at row 9 and chairs in front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria table with trays and two folding chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible foreshortened from above across rows 1-8 with 4 meal trays placed on top, followed by a front rim at row 9 and two chairs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10782
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cafeteria table with meal trays and chairs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly extends from row 1 to row 8 displaying four meal trays from an overhead 3/4 perspective, with a front edge on row 9 and chairs positioned in front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7570
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.253Z",
+ "cells": {
+  "16": [
+   "34a732de38848a81",
+   "de4e8b2520883dd0"
+  ],
+  "24": [
+   "13c30961826826af",
+   "14583a1aea2b4655",
+   "239fcc9051629e6f",
+   "3acc576a479c4039",
+   "5f3274d058aaa77e",
+   "65bd7635a821c5f4",
+   "667de204210c1e4c",
+   "6c3c2d7bd1748a84",
+   "75c1f39b24068e59",
+   "a42c1a0263cdc6a9",
+   "c13f2ac55dec2ab0",
+   "d3a964e0b3e0a38a"
+  ],
+  "32": [
+   "5d3b13f253987299",
+   "e2f54ea2c386befe"
+  ],
+  "48": [
+   "1ff32db34f93f709",
+   "4c8dbf8e27116243",
+   "6d3abd36cdc4bbf4",
+   "9d646fe6574d2b25",
+   "afc9b1a55447bcce",
+   "fbff4c4b46a571a5"
+  ]
+ }
+}

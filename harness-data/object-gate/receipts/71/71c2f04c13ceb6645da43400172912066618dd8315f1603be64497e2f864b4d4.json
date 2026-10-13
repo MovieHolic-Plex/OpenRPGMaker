@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "71c2f04c13ceb6645da43400172912066618dd8315f1603be64497e2f864b4d4",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "실험실 둥근 의자 둘(나란히)",
+ "label": "modern-campus-int/mc-lecture-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stools feature circular seats drawn as foreshortened ellipses (spanning rows 3-9, ~7 pixel rows deep), clearly presenting the horizontal seat surface from above rather than a flat front-elevation profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round lab stool cushion seats",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both round stool seats are depicted with large foreshortened elliptical tops (approx 7 interior pixel rows tall) seen from above, resting on vertical stems.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4127
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool seat cushions",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round stool seats are drawn as foreshortened horizontal ellipses showing their top surfaces from above (approx. 7 pixel rows high from row 3 to row 9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool seat",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seats are drawn as foreshortened ellipses viewed from above (~7 rows tall), clearly showing the circular top surface rather than a flat elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6392
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.332Z",
+ "cells": {
+  "16": [
+   "1427dc30cf21b265"
+  ],
+  "24": [
+   "0f7b5ff936507a2a",
+   "22fb5ca059d80c5a",
+   "38eb8e193b3d2dfe",
+   "3b04297c3956841b",
+   "5678590595ae321e",
+   "5ad58879d406f3c1",
+   "8824fd0af26b6396",
+   "a970d529b0730279",
+   "b9d948cf3b378c01",
+   "ce9d1745e07bd45d",
+   "d2968765e3889f17",
+   "dfe73a264afceaef"
+  ],
+  "32": [
+   "050faf6846b4f82f",
+   "9befff31db84cee5"
+  ],
+  "48": [
+   "7df7dd2ba627e424",
+   "b046ecbfda81054a",
+   "c393d46c8f688aa3",
+   "e2d76770793c1b95",
+   "ea6221f990ff43f1",
+   "fe34038f9d420258"
+  ]
+ }
+}

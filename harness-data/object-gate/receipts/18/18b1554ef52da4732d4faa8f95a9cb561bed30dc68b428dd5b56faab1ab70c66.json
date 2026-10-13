@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18b1554ef52da4732d4faa8f95a9cb561bed30dc68b428dd5b56faab1ab70c66",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "독서실 칸막이 책상(2칸)",
+ "label": "modern-campus-int/mc-carrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "study cubicle desk with divider and chairs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is visible from row 5 to 13 (9 rows) with items placed on it, and the south-facing front apron extends from row 14 to 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5257
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two-seat partitioned study desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk's horizontal work surface is clearly visible from row 5 to row 13 (9 rows) with lamps, books, and a divider, followed by a south-facing front apron from row 14 to row 18.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4031
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "study cubicle desk with two seats",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface is clearly visible from rows 5 to 13 (9 rows tall) with lamps and paper on it, above a 5-row south-facing front apron (rows 14-18).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3402
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "study cubicle desk with two compartments",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible from row 5 to row 13 (9 pixel rows), showing lamps and study materials, with a 5-row south-facing front edge below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4719
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.253Z",
+ "cells": {
+  "16": [
+   "0ac864211ab1c047",
+   "2de13769c0751e4a",
+   "4b2f9dab19769792",
+   "afa1df5a05526f77"
+  ],
+  "24": [
+   "067346a4b2b3f18b",
+   "089f908aeb873b89",
+   "0e20a86705c35470",
+   "19a70ba37e000d54",
+   "1f052d4288863294",
+   "2019dbe816fb12dd",
+   "21c1258f75ac52c3",
+   "41800b04d30f1551",
+   "5ae68d596381cd12",
+   "6ce952ec3455e51d",
+   "754e3600a9b00cc3",
+   "75f3cdabd55d1d7c",
+   "797781ce303dfbc9",
+   "9726ebef959b1118",
+   "a5866f39a326b2a0",
+   "b79117caef801e14",
+   "b7b49151a3c13837",
+   "bb294875bf3cacc9",
+   "d50abf6b4655a74f",
+   "d5b4527afebcf041",
+   "e83beca26cd62890",
+   "efc49abe31fbc22b",
+   "efd2a939c451f493",
+   "f9601a3c03c22223"
+  ],
+  "32": [
+   "99cb451b6e0445f2"
+  ],
+  "48": [
+   "0eadc62ed519e0a0",
+   "56a4873fee34f091",
+   "5981b6dd1d1a592e",
+   "97f4071700c5fe15",
+   "9e4082b7c44a1e3c",
+   "fe4d466f07ed7427"
+  ]
+ }
+}

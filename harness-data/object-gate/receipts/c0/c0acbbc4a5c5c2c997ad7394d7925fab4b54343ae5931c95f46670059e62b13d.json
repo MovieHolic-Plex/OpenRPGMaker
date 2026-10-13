@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0acbbc4a5c5c2c997ad7394d7925fab4b54343ae5931c95f46670059e62b13d",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "급식실 체크 타일(흰·옅은 하늘색)",
+ "label": "modern-campus-int/mc-floor-cafe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkered floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground floor tile texture with checkered white and light blue tiles separated by grout lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5173
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkered floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image displays a flat checkered floor tile terrain surface spanning the full tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4472
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkered floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Checkered floor pattern in white and light blue tiles; standard flat ground terrain texture filling the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3883
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checkered floor tiles",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat checkerboard floor terrain tile pattern viewed from above; entirely a floor surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3838
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "6d727c1aac4813bd"
+  ],
+  "24": [
+   "0c200f47eeb13336",
+   "0f7fdc5730dc0490",
+   "32457a240c04214f",
+   "48a164869aa39693",
+   "6152c498f1a1b199",
+   "63c0604c934de098",
+   "6926620f8a52b0c0",
+   "6b7953528f823aed",
+   "7bc7f3fe5b6efea2",
+   "8e644fb7af51ba32",
+   "94affc946acf8b07",
+   "a641629a01514b7d",
+   "af733c0c5627ab71",
+   "b9d1fe086b26d509",
+   "c5d1dc5aee2d4671",
+   "c5ed293dec47d3b6",
+   "c6578b0d1bab6191",
+   "c93d90c994016f28",
+   "ddc76ca2724afcd3",
+   "e6d39e4a9497d6c8",
+   "ed3e90690380f6f6",
+   "fc87fa09f64e787a"
+  ],
+  "32": [
+   "12587560762c614d"
+  ],
+  "48": [
+   "2c20e003083dbe7c",
+   "35f1744092d97b91",
+   "4150ec22a94a705e",
+   "9e1806a8f4b8d41b",
+   "9f9c52e5f7d08e2b",
+   "b1fe6d19e9e0f5fa"
+  ]
+ }
+}

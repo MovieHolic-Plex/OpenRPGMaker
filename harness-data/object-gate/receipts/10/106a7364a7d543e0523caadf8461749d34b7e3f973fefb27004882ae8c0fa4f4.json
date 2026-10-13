@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "106a7364a7d543e0523caadf8461749d34b7e3f973fefb27004882ae8c0fa4f4",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "교실 벽(크림 + 초록 허리 칠 + 몰딩)",
+ "label": "modern-campus-int/mc-wall-class",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain: this is a standard interior wall face tile featuring cream plaster, a middle molding rail, green wainscot paneling, and a baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting an interior classroom wall face with cream plaster, horizontal molding, and green wainscoting with baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6035
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a standard 2-tile tall interior wall face terrain tile with cream upper wall, molding chair rail, green wainscot paneling, and baseboard. Correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile with cream upper wall, middle molding, green wainscoting, and baseboard; correctly textured for a south-facing interior wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3569
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "0c84b371c5bd96f3",
+   "6c48905a1cfa9ad6",
+   "ab31738ea7be5fd4",
+   "c1eabb1a6de674fc"
+  ],
+  "24": [
+   "0fbd008427d8c835",
+   "1736df76431e231b",
+   "2ff47b2e8a2d9fb9",
+   "362bd9eefdad9884",
+   "3d6b127e455ca229",
+   "3f1c0777cf0c31de",
+   "4ce7ab063471f496",
+   "52782b272806343e",
+   "52d12b1e8d01a1e3",
+   "63153d1c623269b3",
+   "83c9242ab505e517",
+   "9212ecbeee65f611",
+   "9566d8bbcaac8271",
+   "98869a237d736f81",
+   "a0eaefa1a704064e",
+   "aa6bc518155c7f94",
+   "ab9d6e428e6df63e",
+   "ac2ebca076d0ca48",
+   "ac92884325e4f47e",
+   "b533c8f0c4d752c1",
+   "be9c1140057d649d",
+   "d3f5834fbdcea802",
+   "e0b12155777e2639"
+  ],
+  "32": [
+   "25255dfc8b4322a5"
+  ],
+  "48": [
+   "0a216c9eeefe8f8d",
+   "22e5f0ad65e16bc5",
+   "4ac9d98a5ed301f1",
+   "56d9d90a0b806ad1",
+   "5c338ce5c5e899a9",
+   "7bb40832c3a734b3"
+  ]
+ }
+}

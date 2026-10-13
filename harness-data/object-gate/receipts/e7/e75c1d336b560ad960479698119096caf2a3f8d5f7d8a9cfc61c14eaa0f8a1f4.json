@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e75c1d336b560ad960479698119096caf2a3f8d5f7d8a9cfc61c14eaa0f8a1f4",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "우산꽂이(철제 격자, 열린 아가리)",
+ "label": "modern-campus-int/mc-umbrella-stand",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "umbrella stand",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the umbrella stand is viewed from above (rows 1-9), clearly showing the interior cavity (rows 3-8, 5-6 rows deep) with umbrella handles inside, and the front face is visible below (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9668
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron lattice umbrella stand",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly shows a large top opening looking down into the umbrella rack (with umbrella handles visible inside) spanning rows 1-9, and the front face with vertical bars across rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6486
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron umbrella stand with open top and front grid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from above across rows 1-9 (rims and a 6-row deep interior cavity containing umbrellas), and the front vertical grid face is shown below it on rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15992
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal umbrella stand with umbrellas inside",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object clearly displays a large foreshortened top opening (rows 1-9) looking down into the stand where umbrella handles are placed, along with a front lattice face below (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5439
+  }
+ ],
+ "decidedAt": "2026-10-13T14:14:53.490Z",
+ "cells": {
+  "16": [
+   "b123581f8a014ff1"
+  ],
+  "24": [
+   "187ff1ab562b18cc",
+   "1c55684ff1d42bb2",
+   "2da6a84250c6dd8f",
+   "63809917b2168fd2",
+   "7577964b5f5af6f1",
+   "deebe24e0dbfeaa1"
+  ],
+  "32": [
+   "000746e9ff92b11c",
+   "2205dfe0ba7a41e7",
+   "2f75226fd55597dc",
+   "47e923b5e98ae993",
+   "972a1ea6c0e4bdf4",
+   "e7e8b08513fab13a"
+  ],
+  "48": [
+   "7106930a02ee761f",
+   "78e30230c9d2268d",
+   "91cd7b0ecd45a251",
+   "a7969b5189df48ee",
+   "b83f1b0978618888",
+   "f28a00f9768a318f"
+  ]
+ }
+}

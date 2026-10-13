@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b19c5af5f8c583ca48d6cb619f0f297a4c3c196c8cbc8527075f199922d32731",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "푸프(둥근 노랑 쿠션 의자)",
+ "label": "modern-campus-int/mc-bean-bag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow cushion stool / pouf with brown base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation with straight vertical sides spanning rows 4 through 14. There is no foreshortened elliptical top surface separating the top cap from the front face; the yellow body extends directly down into the base without showing a horizontal seating surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15605
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow round pouf / cushion stool with base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cushion surface forms a large foreshortened ellipse spanning rows 2 to 10 (~9 pixel rows), sitting atop a visible south base in rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round yellow cushion stool / pouf",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion top forms a wide elliptical surface visible from above across rows 3 to 10 (~8 source pixel rows), resting on a south-facing base in rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4433
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round yellow pouf cushion stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pouf is drawn in pure front elevation with straight vertical sides, a rounded top silhouette, a vertical specular highlight down the center front, and no foreshortened top ellipse visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8659
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:24.751Z",
+ "cells": {
+  "16": [
+   "806db25c011744e1"
+  ],
+  "24": [
+   "24934b25de8d5b77",
+   "41672afa25ebc1e1",
+   "6df5a976a2911598",
+   "86322ca332244330",
+   "bf922fc434238552",
+   "f19f724dc2e0fcca"
+  ],
+  "32": [
+   "0dadadf425bf2a2b",
+   "43a5a983a11208c9",
+   "c3f19d9a20c2f0fa",
+   "e3e70f6824661796",
+   "f783a2a3f45bae6a",
+   "f9d8e07e34e39d45"
+  ],
+  "48": [
+   "0d352c2c2d5581dc",
+   "1e739527964959bc",
+   "d747a14c7460e437",
+   "e74b700e9d8d8417",
+   "e9a411fb711d3cdd",
+   "fd040e7964a34ad6"
+  ]
+ }
+}

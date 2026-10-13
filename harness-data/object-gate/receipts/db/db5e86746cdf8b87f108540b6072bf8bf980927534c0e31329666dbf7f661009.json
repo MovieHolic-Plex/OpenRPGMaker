@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db5e86746cdf8b87f108540b6072bf8bf980927534c0e31329666dbf7f661009",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 노트북 보관 카트",
+ "label": "modern-campus-int/mc-pc-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn in flat front elevation. The upper section (rows 7-14) is a front panel/window above the lower drawers (rows 16-29), with only a 1px border at row 6 where the top surface should be.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17361
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart shows a brightly illuminated 8-row top surface (rows 7-14) above the south-facing drawer section (rows 16-29), drawn in standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17577
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal top surface is prominently shown across rows 7–14 (8 pixel rows tall) in a light tone representing the top plane seen from above. Below it, the south-facing front face spans rows 16–30 with three drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16826
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is rendered in a flat 2D front elevation from row 6 to 31 with two front caster wheels at the bottom. The top border at row 6 is only a 1px outline with no foreshortened horizontal top surface shown (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11332
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.250Z",
+ "cells": {
+  "16": [
+   "084090b1529f315b",
+   "e4c19dd8559626a9"
+  ],
+  "24": [
+   "0d3a5179979907e3",
+   "3db3c80cb738aa17",
+   "63e428c78aa61d90",
+   "704d0f851d723a49",
+   "80e59715baba2e8d",
+   "ac291d9e91a430ee",
+   "b4b8db6d6832f227",
+   "c69d81831c04c7df",
+   "db42aa0c70a78016",
+   "dd4734bb24c7d0ee",
+   "f524d51acc797e30",
+   "f89f44b6d41b8283"
+  ],
+  "32": [
+   "2aeb7f5945712ce8",
+   "59e8e0e763bf4d53",
+   "f6163d539e59927b"
+  ],
+  "48": [
+   "0074a5107ec28d40",
+   "2b43ac5eefb920a7",
+   "569d078d005e1ca5",
+   "6e1af3664f196eb6",
+   "c4f9636a6308d9e2",
+   "cede9564f2b903f0"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e71f6f8baaae91e95025586fa3f452df49f1a73ebb14ba5670c27e22619c6ee4",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "급식실 벽(연노랑 + 아래 타일)",
+ "label": "modern-campus-int/mc-wall-cafe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafeteria wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile comprising upper yellow paint, middle wooden border trim, and lower white tiled wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5398
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat vertical wall face terrain tile with upper yellow wall, divider border, and lower tiled section; correct representation for a wall face autotile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5194
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard 2D vertical wall face terrain tile with light yellow paint on top, a mid-wall border rail, and wainscoting tiles below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4740
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cafeteria wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "2-tile tall indoor vertical wall face terrain consisting of light yellow upper paint, mid-rail trim, tiled lower wainscoting, and baseboard; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7689
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.248Z",
+ "cells": {
+  "16": [
+   "8b1953b02694afb1",
+   "8e8886076dba04e8"
+  ],
+  "24": [
+   "03b3d304a7262569",
+   "056a2c4147d79c7f",
+   "2371270dab29997c",
+   "258b8a905a8fe924",
+   "2ed6844013c59e1b",
+   "36a0718417ef4500",
+   "3e4c82dfef8bf553",
+   "636f46600a1f5514",
+   "638285af33b20583",
+   "69e54943a3efcdc1",
+   "73abf623079ef355",
+   "7442a50bfb1afe6a",
+   "7487869ac208c26e",
+   "a3b7cd7e1ce24e0d",
+   "bc65c33f82199596",
+   "bd0178b0f8457bb4",
+   "bd4032a3b1b80a82",
+   "be38ee4495b2d8d6",
+   "df143a1137b030ec",
+   "e6d11261b2555fa4"
+  ],
+  "32": [
+   "f49efc622e7ce9a7"
+  ],
+  "48": [
+   "30c417d5e816b7ba",
+   "58ad9d63d174a65b",
+   "5f35e1ba49475dc2",
+   "656c71f9efd5f738",
+   "a58a6a508e48a01e",
+   "e01355e3bec668a1"
+  ]
+ }
+}

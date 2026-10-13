@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "867fe04cf4fbb7fe08dd34e0a32886dc0365b1155a89ef0bd9b7d79995853179",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 유리문 캐비닛(교재장)",
+ "label": "modern-campus-int/mc-cabinet-glass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom glass-door cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible 8-row light-colored top surface across rows 2–9 bordered by the cabinet frame, sitting above the front face (rows 11–31) displaying glass doors with books and lower drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8526
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom glass-door cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet displays a prominent 9-row tall top surface (rows 2-10) above the front face (rows 11-31), correctly rendering the horizontal top surface in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom glass-door cabinet",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet correctly shows a large top surface spanning rows 2 to 10 (9 source pixels tall) rendered in a lighter illuminated wood tone above the south-facing front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13055
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom glass-door cabinet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly defined horizontal top surface visible from above (rows 1 to 10, 10 pixels tall) above the front face containing the glass doors and drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7340
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:24.748Z",
+ "cells": {
+  "16": [
+   "196972406c2d9879",
+   "241d77d27520a1ab",
+   "57cf38ecd87f7557",
+   "fd74bf69b55f58a2"
+  ],
+  "24": [
+   "20fe493bffc7cce2",
+   "2251c1ece5d27923",
+   "292bfa26de879579",
+   "29c0852f6a0a7418",
+   "355b3ebb9417d797",
+   "44d679b79802c48e",
+   "4c8f191c4658cdf6",
+   "5f1113f2dc69b8a5",
+   "628ab6cf078a4a68",
+   "67e08c415d84a3d0",
+   "7ed50bcc5c3fb318",
+   "7f5863b62e6b7a8e",
+   "8a6f934b49093d8f",
+   "9512997a8867fc86",
+   "a76e1d88f35bc31a",
+   "a840a3cad8e5d302",
+   "af4ea09c50ebd4d1",
+   "bf67ef34707d9fbc",
+   "c544300bcdd82f1d",
+   "cc9c409955ad4490",
+   "d1b174a1c4e31762",
+   "d8f326cca8b88f55",
+   "e30bc77fbdfbe150",
+   "e4c59503e4c54ce6"
+  ],
+  "32": [
+   "17e635212373c082"
+  ],
+  "48": [
+   "2a23e8d46794337a",
+   "2d056f7a027ce943",
+   "4006868f92667100",
+   "51b54f3ea3a89f09",
+   "d811874424955817",
+   "fda37709a7310cf1"
+  ]
+ }
+}

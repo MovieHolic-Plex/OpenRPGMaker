@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7dfce79e11511b31afb91d469acdbf8ca31b97c8058914603115f4ec3579053a",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 창(미닫이 알루미늄, 파란 하늘)",
+ "label": "modern-campus-int/mc-window-class",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sliding classroom window with sill",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted sliding window with a clearly visible foreshortened window sill top surface across rows 22-24 (3 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom sliding window with sill",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted classroom window with a projecting windowsill (top surface visible across rows 22-24, front edge at row 25 with cast shadow below). Perfectly conforms to wall-mounted 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom sliding window with windowsill",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classroom window mounted to a wall. A projecting windowsill at rows 22-24 shows a 3-row deep top horizontal surface, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6494
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom sliding window with sill",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classroom window mounted on a wall featuring a clearly visible 3-pixel-deep horizontal window sill (rows 22-24) foreshortened from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6754
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "3dce5b7b114380d9",
+   "a655a0ad87d2275f",
+   "a6f5c5edd1182cf1",
+   "b3b6a03a509b42c1"
+  ],
+  "24": [
+   "0aeaffcd77a44554",
+   "1de8be98382d7c96",
+   "224672034c380900",
+   "26734fbda8e0a6e4",
+   "2e7eaaf1ef21ac7e",
+   "34ab0eee2512a32c",
+   "3f72df624e49ec1c",
+   "3fc9cc634cdfa786",
+   "45aeae5847a2cad5",
+   "4d288d5c4451c265",
+   "666ff26c2cd9070b",
+   "7b645ac85856616e",
+   "8a0f00e8230c67a3",
+   "8ab5a57f1d6b3658",
+   "98315b592a657774",
+   "9f651ac629443bb1",
+   "aaa8d14ac48fec5c",
+   "b938c19ddce17972",
+   "c507257a29ee987c",
+   "cbedb5d4dad95049",
+   "e40ffb5f6c81dbca",
+   "ecb692604858de37",
+   "f0ca7beb42fb6055"
+  ],
+  "32": [
+   "8fc913e355509075"
+  ],
+  "48": [
+   "3c1c87b30e882fad",
+   "3f95e268a311a110",
+   "4c6b7a671ed9db01",
+   "5515e87649831b6a",
+   "6f57f35ad615e308",
+   "85c543a1a5f3049c"
+  ]
+ }
+}

@@ -1,0 +1,351 @@
+{
+ "name": "학교 급식·동아리 동 1층(급식실·화장실·동아리방 + 복도)",
+ "tileset": "modern_campus",
+ "plan": [
+  "############################",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "#.............#....#.......#",
+  "####.#####.#####.#####.#.###",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#..........................#",
+  "#############..#############"
+ ],
+ "floor": "mc-floor-cafe",
+ "wall": "mc-wall-cafe",
+ "zones": [
+  {
+   "x0": 15,
+   "y0": 1,
+   "x1": 18,
+   "y1": 8,
+   "floor": "mc-floor-tile-wc",
+   "wall": "mc-wall-tile"
+  },
+  {
+   "x0": 20,
+   "y0": 1,
+   "x1": 26,
+   "y1": 8,
+   "floor": "mc-floor-parquet",
+   "wall": "mc-wall-dorm"
+  },
+  {
+   "x0": 1,
+   "y0": 10,
+   "x1": 26,
+   "y1": 14,
+   "floor": "mc-floor-corridor",
+   "wall": "mc-wall-corridor"
+  }
+ ],
+ "objects": [
+  {
+   "id": "mc-serving-counter",
+   "x": 2,
+   "y": 3
+  },
+  {
+   "id": "mc-tray-cart",
+   "x": 6,
+   "y": 3
+  },
+  {
+   "id": "mc-fridge-counter",
+   "x": 9,
+   "y": 3
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "id": "mc-cafe-table",
+   "x": 2,
+   "y": 5
+  },
+  {
+   "id": "mc-cafe-table",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "id": "mc-cafe-table",
+   "x": 2,
+   "y": 7
+  },
+  {
+   "id": "mc-cafe-table",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "id": "mc-cafe-table-2",
+   "x": 11,
+   "y": 5
+  },
+  {
+   "id": "mc-cafe-table-2",
+   "x": 11,
+   "y": 7
+  },
+  {
+   "id": "mc-bin-wide",
+   "x": 13,
+   "y": 8
+  },
+  {
+   "id": "toilet",
+   "x": 15,
+   "y": 3
+  },
+  {
+   "id": "toilet",
+   "x": 17,
+   "y": 3
+  },
+  {
+   "id": "sc-sink",
+   "x": 16,
+   "y": 3
+  },
+  {
+   "id": "sc-urinal",
+   "x": 18,
+   "y": 3
+  },
+  {
+   "id": "mc-bin-wide",
+   "x": 18,
+   "y": 8
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 21,
+   "y": 1
+  },
+  {
+   "id": "sc-whiteboard",
+   "x": 24,
+   "y": 1
+  },
+  {
+   "id": "mc-lounge-sofa",
+   "x": 20,
+   "y": 3
+  },
+  {
+   "id": "mc-club-shelf",
+   "x": 25,
+   "y": 3
+  },
+  {
+   "id": "mc-club-table",
+   "x": 21,
+   "y": 5
+  },
+  {
+   "id": "mc-low-table",
+   "x": 21,
+   "y": 7
+  },
+  {
+   "id": "mc-amp-stack",
+   "x": 24,
+   "y": 7
+  },
+  {
+   "id": "mc-bean-bag",
+   "x": 26,
+   "y": 5
+  },
+  {
+   "id": "mc-window-class",
+   "x": 5,
+   "y": 10
+  },
+  {
+   "id": "mc-cork-board",
+   "x": 11,
+   "y": 10
+  },
+  {
+   "id": "mc-wall-clock",
+   "x": 13,
+   "y": 10
+  },
+  {
+   "id": "mc-window-class",
+   "x": 18,
+   "y": 10
+  },
+  {
+   "id": "mc-water-fountain",
+   "x": 1,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 6,
+   "y": 12
+  },
+  {
+   "id": "mc-hall-locker",
+   "x": 11,
+   "y": 12
+  },
+  {
+   "id": "mc-shoe-rack-low",
+   "x": 18,
+   "y": 12
+  },
+  {
+   "id": "mc-trophy-shelf",
+   "x": 25,
+   "y": 12
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 4,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 10,
+   "y": 9
+  },
+  {
+   "id": "door-open-toilet",
+   "x": 16,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 22,
+   "y": 9
+  },
+  {
+   "id": "sc-classroom-door",
+   "x": 24,
+   "y": 9
+  }
+ ],
+ "tables": [],
+ "goods": [],
+ "start": [
+  13,
+  13
+ ],
+ "rooms": [
+  {
+   "room": "cafeteria",
+   "x0": 1,
+   "y0": 1,
+   "x1": 13,
+   "y1": 8
+  },
+  {
+   "room": "toilet",
+   "x0": 15,
+   "y0": 1,
+   "x1": 18,
+   "y1": 8
+  },
+  {
+   "room": "club",
+   "x0": 20,
+   "y0": 1,
+   "x1": 26,
+   "y1": 8
+  },
+  {
+   "room": "corridor",
+   "x0": 1,
+   "y0": 10,
+   "x1": 26,
+   "y1": 13
+  }
+ ],
+ "doors": [
+  {
+   "x": 4,
+   "y": 9,
+   "to": "cafeteria",
+   "access": [
+    4,
+    8,
+    4,
+    12
+   ]
+  },
+  {
+   "x": 10,
+   "y": 9,
+   "to": "cafeteria",
+   "access": [
+    10,
+    8,
+    10,
+    12
+   ]
+  },
+  {
+   "x": 16,
+   "y": 9,
+   "to": "toilet",
+   "access": [
+    16,
+    8,
+    16,
+    12
+   ]
+  },
+  {
+   "x": 22,
+   "y": 9,
+   "to": "club",
+   "access": [
+    22,
+    8,
+    22,
+    12
+   ]
+  },
+  {
+   "x": 24,
+   "y": 9,
+   "to": "club",
+   "access": [
+    24,
+    8,
+    24,
+    12
+   ]
+  }
+ ],
+ "exits": [
+  {
+   "x0": 13,
+   "x1": 14,
+   "y": 14,
+   "to": "campus-yard",
+   "approach": [
+    13,
+    13
+   ]
+  }
+ ]
+}

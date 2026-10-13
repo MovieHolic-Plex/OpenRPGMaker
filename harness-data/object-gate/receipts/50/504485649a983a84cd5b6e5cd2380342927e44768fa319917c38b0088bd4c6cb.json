@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "504485649a983a84cd5b6e5cd2380342927e44768fa319917c38b0088bd4c6cb",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "음수대(스테인리스 대야)",
+ "label": "modern-campus-int/mc-water-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drinking fountain with basin and pedestal cabinet",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin deck is shown from above across rows 8–20 (13 rows deep) with the interior of the basin clearly visible (rows 12–17, 6 rows deep) including drain and highlight. The pedestal beneath (rows 22–30) provides the front/south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9051
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drinking fountain basin and cabinet base",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin top surface is visible from above (rows 8-20, 13px tall) with a clearly visible basin interior/water opening (rows 11-17, 7px tall) showing the drain, while the cabinet base below shows its front face (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17053
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drinking fountain basin and pedestal",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly viewed from above showing the inside of the bowl with water and drain (rows 12-17, 6 rows tall), resting above the front-facing pedestal base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11079
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drinking fountain basin and pedestal",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin top surface is visible from above across rows 9-20 (12 source pixels tall) with a 6-row visible opening showing the basin interior, water highlight, and drain (rows 12-17). The front face of the lower cabinet is visible below (rows 22-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14255
+  }
+ ],
+ "decidedAt": "2026-10-13T14:14:53.490Z",
+ "cells": {
+  "16": [
+   "52792ec65b65b246",
+   "dd76e548d074e345"
+  ],
+  "24": [
+   "1f43125f8a370ccc",
+   "3be93a2d954745b2",
+   "3c8894a031658c6b",
+   "7ab8fb4569066bb7",
+   "83e4d166590b094a",
+   "96237e05e29c653d",
+   "98eb85181a15b90b",
+   "a0146b0a74a10c02",
+   "a0f496c3ea3d98d1",
+   "c791b446c64c6aea",
+   "de0bcd50f5d76dd6",
+   "eb0995e3d98277c2"
+  ],
+  "32": [
+   "03c6ef0c91bd70a5",
+   "61f77d6af3b8e356",
+   "63a679dfc5d3bfea"
+  ],
+  "48": [
+   "0a6ef890af4dafe5",
+   "60c1bb45db0c46ca",
+   "60d7e70bd9d60501",
+   "c1c228fa589d461b",
+   "de1b04022b472f0f",
+   "ee0982e4043a62c7"
+  ]
+ }
+}

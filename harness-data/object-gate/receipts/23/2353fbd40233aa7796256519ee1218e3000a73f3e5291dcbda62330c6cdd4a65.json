@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2353fbd40233aa7796256519ee1218e3000a73f3e5291dcbda62330c6cdd4a65",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "앰프 낮은 단(2칸, 검은 상자 둘)",
+ "label": "modern-campus-int/mc-amp-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "audio rack / 2-shelf amp cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure front elevation with a 1px dark border at row 8 and no visible top surface. Even if the upper beige section were interpreted as a counter top, the two black units sitting on it are drawn flat with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15208
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden low amplifier cabinet/rack",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the low furniture rack has a clearly visible 10-row horizontal wooden top surface (rows 9-18) upon which two smaller units sit, and a south-facing front surface with two amplifier bays (rows 19-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low amp cabinet / counter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body displays a clear 10-row foreshortened top surface (rows 9-18) on which the two black boxes rest, above a front face (rows 19-31) housing two amplifier units.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10118
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "amplifier rack / shelf cabinet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body of the low amplifier shelf features a large top surface spanning rows 9 to 18 (~10 rows of beige wood planking upon which two devices rest), above a front face containing two units from rows 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6894
+  }
+ ],
+ "decidedAt": "2026-10-13T14:25:35.126Z",
+ "cells": {
+  "16": [
+   "12982080afdc7cfd",
+   "1d3307c30f576098",
+   "3aa8d9a7da85707a",
+   "5227188155188b7c"
+  ],
+  "24": [
+   "012ea65708ba654a",
+   "03c7fcaa2968a208",
+   "27207b8600512bda",
+   "36d17b52f7c4dbed",
+   "3b9f582230f1f5b7",
+   "42d02599f65e5dec",
+   "4f11fd43bc6a9a5d",
+   "56f7a45630f1d7be",
+   "5b6cc8744957aa6d",
+   "92c258fde42b5e25",
+   "9ffe4d247272786a",
+   "aa9fb50d76f310b0",
+   "aeca49951b5cf078",
+   "c318c6afade223b9",
+   "ec400c8a0fe8139d",
+   "edc1ee44a16f1f97",
+   "fa2f9e9fd2d69b3b",
+   "feb332d217fc3ca2"
+  ],
+  "32": [
+   "13f94cdaed0d540a"
+  ],
+  "48": [
+   "3575de9a991916ef",
+   "3d24f183d0026eff",
+   "42fcc47eaafd668e",
+   "4daae8c54b0e32bd",
+   "8db8300ab05f57ed",
+   "ea3453359523ff8e"
+  ]
+ }
+}

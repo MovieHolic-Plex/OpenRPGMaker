@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3fdef65ed651879b925e9f38e78438d0afc0da483a4973cbfacbbf25089048e",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "기숙사 책상 + 위 선반(스탠드·책)",
+ "label": "modern-campus-int/mc-dorm-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dormitory desk with upper bookshelf and corkboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire piece of furniture is drawn in flat 2D architectural front elevation. The top of the upper shelf is a 1px line (row 1), the books and shelf show no top surfaces, the desk surface is represented only by a 2px horizontal strip (rows 22-23), and the corkboard, monitor, and drawer are all viewed strictly straight-on with no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15849
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dorm desk with upper bookshelf",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk working surface is viewed from above across rows 13-21 (9 rows tall), with items (laptop/screen, notebook, lamp) resting on the foreshortened horizontal surface, followed by the front desk face and drawer below (rows 24-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dorm desk with overhead bookshelf/hutch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn in flat architectural front elevation: the top of the furniture is only a 1px edge line at row 1, the upper shelf shows no visible top surface (books sit directly on a 2px front rail), and the desk/drawer below is completely flat with no foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16283
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dorm desk with upper bookshelf",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk work surface is clearly visible from above across rows 13 to 21 (9 rows tall) with items (monitor/frame, notebook, lamp) resting on it, leading down to the front face with drawers and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6131
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.255Z",
+ "cells": {
+  "16": [
+   "1c4a7c2ab6a03284",
+   "61f36c1cfb35b35c",
+   "7a40775e1e149d98",
+   "9d22a591ff8ca79f"
+  ],
+  "24": [
+   "018e7a810566fa6c",
+   "021246b9097acfb0",
+   "103a67c50bc658b9",
+   "1bc30eb3d8fc481a",
+   "1bf1924b29f60033",
+   "3cf7888db400df78",
+   "4aee3d9cba45a963",
+   "4b8783c90430b152",
+   "4ee6ea58c6bdb1ae",
+   "509ff241a16c5586",
+   "5b724f2b6b58cd25",
+   "66a83aa759145d22",
+   "706fc80ec0f9cf81",
+   "7c33145c6a9bf2c0",
+   "869ab5d8539d884d",
+   "874c32335e238877",
+   "92aa27a537cccce4",
+   "b9ff03ccbc5529c5",
+   "c0c64c703fcec0d4",
+   "da1ea1411038717b",
+   "da44f23e9e282b59",
+   "eaa3562e3d528ae8",
+   "ed8bac008cd08660",
+   "f088c2666b072f29"
+  ],
+  "32": [
+   "6944f9c64675a44f"
+  ],
+  "48": [
+   "4e96931eeaec5655",
+   "78e52f2bd1c9ac85",
+   "8be3203692bda24c",
+   "901a1524d7715423",
+   "bb2262fb7ef4de88",
+   "cd701f6ff1d59c80"
+  ]
+ }
+}

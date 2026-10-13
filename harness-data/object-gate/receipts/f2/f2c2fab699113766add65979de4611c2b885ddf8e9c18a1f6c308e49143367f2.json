@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f2c2fab699113766add65979de4611c2b885ddf8e9c18a1f6c308e49143367f2",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "시력표·신체 계측 벽판(색 덩이)",
+ "label": "modern-campus-int/mc-eye-chart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "eye chart / measurement wall board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted chart hanging flat against the wall; no top surface is required or expected for flat wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted eye chart/measurement board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wall-mounted chart with markings and side color bar, correctly rendered flat against the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5282
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "eye chart / measurement wall board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted chart hanging flat against the wall; as a wall-mounted 2D fixture, it correctly faces south without requiring a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6982
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall-mounted eye chart / height measurement board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wall-mounted chart/board mounted vertically against a north wall. As a flat wall_mounted object, showing a flat vertical surface without a 3D top surface is standard and valid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6077
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "35a765451d463d0e",
+   "4a636f0d4323421a"
+  ],
+  "24": [
+   "066d2817e5cd3a0d",
+   "085909d4458cc54b",
+   "20791c67b3d9c948",
+   "28095d3454f3e36c",
+   "4c36dd53b52e0f4f",
+   "58a12bba4bee9387",
+   "6e465a9a2267533e",
+   "7fb4879c9228fee6",
+   "ccf6815e024576c8",
+   "e71218f362b07bb6",
+   "f20ccbaec604a469",
+   "f5edee1cd23b3fd4"
+  ],
+  "32": [
+   "3acec5636c6973e0",
+   "667de14ccd29a635",
+   "e2fd8e1190fdd464"
+  ],
+  "48": [
+   "27912a96c94c6554",
+   "5333d894afbf337f",
+   "7a74c03021d1aea8",
+   "93bdf2966cb8fcb0",
+   "a47322733f78fcd2",
+   "f5c9c4e92ba48c30"
+  ]
+ }
+}

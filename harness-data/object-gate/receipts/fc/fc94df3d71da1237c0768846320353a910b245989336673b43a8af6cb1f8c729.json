@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc94df3d71da1237c0768846320353a910b245989336673b43a8af6cb1f8c729",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "사물함 앞 긴 의자(나무 판 + 쇠 다리)",
+ "label": "modern-campus-int/mc-locker-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long wooden bench seat with metal legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal wooden seat surface is prominently visible from above across rows 3 to 10 (8 rows tall), with a 2px front edge at rows 11-12 and metal legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5683
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden bench seat surface is viewed from above across rows 2-10 (approx. 9 rows deep), with its front thickness shown at rows 11-12 and metal legs beneath at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5926
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench seat with metal legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden plank seat surface is clearly viewed from above across rows 3-10 (8 rows tall), with a 2px front thickness at rows 11-12 and legs visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench seat with metal legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal wooden seat surface is prominently visible from above across rows 3-10 (8 rows tall), with a 2px front thickness at rows 11-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5060
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.251Z",
+ "cells": {
+  "16": [
+   "019e7f595ca01bd9",
+   "7e1caeebf34e9080"
+  ],
+  "24": [
+   "3895f20369cc0a6e",
+   "41a7c66b1dbe47a6",
+   "4b79b5bee10b09bf",
+   "4d96b51773f8d3ec",
+   "525bee6d3d6ea006",
+   "7bebb070f0c3f3b3",
+   "a3609526958ff47c",
+   "a434705ad09d7f5f",
+   "b1e8a97209f88c5d",
+   "e1870a1b1166082e",
+   "f04eb4633559ad34",
+   "f155af7b8cc669ed"
+  ],
+  "32": [
+   "000ecdc8085ed3ac",
+   "326f7e77910266a0"
+  ],
+  "48": [
+   "161f458696f163a7",
+   "2c86ed16cea703bc",
+   "7dc8df1bc15d08d2",
+   "8989f1badbe04e7d",
+   "8ec9778149d0bada",
+   "9ece61b5f74a589f"
+  ]
+ }
+}

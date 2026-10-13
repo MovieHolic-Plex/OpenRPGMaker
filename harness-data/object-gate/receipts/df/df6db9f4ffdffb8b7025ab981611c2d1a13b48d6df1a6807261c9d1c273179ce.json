@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "df6db9f4ffdffb8b7025ab981611c2d1a13b48d6df1a6807261c9d1c273179ce",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "청소 수레(낮고 넓은 노랑, 물통·솔 올림)",
+ "label": "modern-campus-int/mc-cleaning-wagon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow cleaning cart",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the cart is clearly visible from rows 8 to 18 (11 source pixel rows) carrying two water basins and a mop/sign, with the front face and wheels occupying rows 19 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4931
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow cleaning cart",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the cart spans rows 8 to 18 (11 source pixel rows) showing buckets and mop base in top-down perspective, above the front face spanning rows 19 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4574
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow cleaning cart",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's top surface is visible across rows 9 to 18 (10 pixel rows tall) holding two bucket recesses seen from above, resting above the front cabinet face from row 19 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4289
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cleaning cart body",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main yellow cart body shows a distinct top surface spanning rows 9-18 (~10 rows) holding buckets and a brush/mop, followed by a front face spanning rows 21-31 with panels and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6251
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.331Z",
+ "cells": {
+  "16": [
+   "78742c0593632147",
+   "963547d76399bf62",
+   "9ff3cd6f8bf450e0",
+   "e46b93d85c929d1d"
+  ],
+  "24": [
+   "07cacda4dbf8fb70",
+   "11e4930d947add35",
+   "200128c290cb17ed",
+   "2db6b3190b6f74e3",
+   "3cda76cd3f078480",
+   "4cfa2b3c613aa7e6",
+   "600335c9bc6c672d",
+   "61e3ba70e450b4c1",
+   "6a3c3002d602e346",
+   "7c444b5af6ce78af",
+   "90e3799ffe6c1908",
+   "99b626a55a08e7b3",
+   "9bbb2a9cb569fa23",
+   "a17f0034d17ea8b7",
+   "bdf6046c36ca67b3",
+   "bf034804da6f5f35",
+   "c26b9d1bb30f6d44",
+   "c3aebf274f4bc53b",
+   "e8b550e79cb16d5d",
+   "ecff5bd10bfe3890",
+   "fba08f5380b71f9f",
+   "fbeaf0d6d4acea9f"
+  ],
+  "32": [
+   "94de981c36f5ce5d"
+  ],
+  "48": [
+   "0e65fb379498ad16",
+   "21f9a0f4af011016",
+   "2d5f715886c5c196",
+   "59c9ab340e98bc4f",
+   "c3c5086cfcebe5d5",
+   "fd0a5752afe4c99e"
+  ]
+ }
+}

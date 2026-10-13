@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f49708765418f2e96d6531d9d4dda822d3135749887a28707968461522dabf4",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "목록 서랍장(작은 서랍 3×4)",
+ "label": "modern-campus-int/mc-catalog-drawers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "card catalog cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible foreshortened top surface spanning rows 1 to 8 (8 pixel rows tall) above the front face containing the drawer tiers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall drawer cabinet / card catalog",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the cabinet is rendered as a 1px border line at row 1 with no visible top horizontal surface. The entire piece of furniture is drawn in pure front elevation with completely flat rectangular drawer fronts and framing.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8561
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "catalog drawer chest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest is clearly visible in rows 2-9 (8 source pixels tall), rendered in a light, top-lit wood tone with a front edge shade at row 9, before transitioning to the vertical front face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13932
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "card catalog drawer chest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet top surface is clearly visible from row 2 to row 9 (8 source pixel rows tall), rendered in a light top-lit wood tone distinct from the darker front-facing drawers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9659
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:24.750Z",
+ "cells": {
+  "16": [
+   "bb540ad4cfa7b8f7",
+   "e9f245399519307e"
+  ],
+  "24": [
+   "44c5e396e23edf76",
+   "5327b589e11f9c09",
+   "661ac7901587c07a",
+   "6937766fc08bde61",
+   "7580df55c8458b59",
+   "a66ca88e9687cd36",
+   "cbf091214e2abd72",
+   "cfef2884714f7dc6",
+   "da6e04281436cd3a",
+   "dfa4d021c0612657",
+   "e31ef8c3fb15c6b3",
+   "eee424d472d4f387"
+  ],
+  "32": [
+   "34681c69ddf11bda",
+   "3b76e62042d52bc7",
+   "4a6726674da43ae7"
+  ],
+  "48": [
+   "258508f93fcc0303",
+   "2cad2f7ce148807e",
+   "5241db9675ec6df0",
+   "53b2024d803eba43",
+   "786b5111ad8ce379",
+   "d32788b6b149b2c8"
+  ]
+ }
+}

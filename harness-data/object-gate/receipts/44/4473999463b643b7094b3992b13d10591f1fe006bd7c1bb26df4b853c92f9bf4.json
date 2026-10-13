@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4473999463b643b7094b3992b13d10591f1fe006bd7c1bb26df4b853c92f9bf4",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "기숙사 옷장(두 문)",
+ "label": "modern-campus-int/mc-dorm-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly visible from rows 1 to 9 (9 pixels tall), depicted in a lighter wood tone under standard overhead lighting, with the south face showing the dark frame and two cabinet doors from rows 10 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12524
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wardrobe is clearly shown from rows 1 to 9 (9 pixel rows tall) in a lighter wood tone, positioned above the south-facing front body and double doors spanning rows 10 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12091
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in pure front elevation: the continuous side stiles run from row 0 to row 30 enclosing an upper panel (rows 1-9) and two lower doors (rows 13-30). There is no horizontal top surface visible at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11524
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dormitory wardrobe",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is visibly drawn from rows 1 to 9 (9 pixel rows deep) in a lighter top-lit tone above the south-facing front doors (rows 10-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9137
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:24.750Z",
+ "cells": {
+  "16": [
+   "14d3e46e1727643a",
+   "4768df4d08d2a8a7"
+  ],
+  "24": [
+   "1008d0c52e035144",
+   "2fc6ba1b454e0d73",
+   "34a75eb700fd93ec",
+   "4920f744355f55d5",
+   "577d7e227bf42e92",
+   "66eda59295e72e04",
+   "84fd2a87d56f0da4",
+   "8b7e9e77b6d08cca",
+   "be5ab317133fcb71",
+   "e7506b7806014c41",
+   "ebbe89968476476d",
+   "ee5c7b04bff39706"
+  ],
+  "32": [
+   "5acd317cd6a6968a",
+   "e580fb9a5bc3794e",
+   "ed80dcf854a0ecb0"
+  ],
+  "48": [
+   "02d9f4ed6ac86ab1",
+   "3cca898a7ed5fd97",
+   "60ec0ada6393ed2e",
+   "9132ebd31b853a50",
+   "969ff14a60d6f690",
+   "e360755b99a62fde"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0325993d311edc2b2a23f6f7be3e12f89619f2300e3dc3fd91c5517f2ff2d1c",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "동아리방 긴 탁자(3칸, 종이·노트북)",
+ "label": "modern-campus-int/mc-club-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long desk/table top with papers and laptop",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 1 to 10 displaying papers and a laptop from above, with the south apron and legs visible below at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6089
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "long table with papers and a laptop",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden tabletop is prominently displayed from above spanning rows 1 to 10 with papers and a laptop resting on it, followed by a south front apron at rows 11-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long table with papers and a laptop on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface occupies rows 1 to 10 showing papers and a laptop, followed by a front apron edge at rows 11-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long table with papers and laptop",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly shows top-down foreshortening occupying rows 1-10 with papers and a laptop resting on it, followed by the table's front edge and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4731
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.256Z",
+ "cells": {
+  "16": [
+   "0b750d8ab2b5c3a4",
+   "dd819c8219e2d68d",
+   "df07c2f416780a8b"
+  ],
+  "24": [
+   "22dd176e19d92a78",
+   "5958bd616e73ac5c",
+   "bcd730d61fa384b4",
+   "ced282c6135f6b59"
+  ],
+  "32": [
+   "03bce54530087090",
+   "0a5d82e14cfa84cf",
+   "0b5fd5bcb29d97ce",
+   "2cb56b687afefc69",
+   "4b24cc1e796c445e",
+   "5cb24221558f21c5",
+   "74c5c894f1b6aad3",
+   "90c521520d672cd7",
+   "ac4b7bea2f45c13f",
+   "b937e76d63622faa",
+   "e3d94d14b5b64866",
+   "fa67e68669062e40"
+  ],
+  "48": [
+   "0704ee02ac8067f9",
+   "d4b3e92c69a99df6"
+  ]
+ }
+}

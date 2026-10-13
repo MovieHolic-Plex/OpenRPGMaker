@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e155a4cf2ad17b845e4947bdff06e60613889fe935aa6f8013dd89a28ffa20d4",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "도서 수레(낮은 2칸, 책 더미 올림)",
+ "label": "modern-campus-int/mc-book-trolley",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "book cart",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart spans rows 9 to 18 (10 source pixel rows) with book stacks placed upon it, while the front south face below (rows 19-31) shows two shelves of upright books and wheels.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7992
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "book cart",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the cart is clearly visible from rows 9 to 18 (10 source pixel rows) upon which three book piles rest, followed by the south-facing front shelves below (rows 19–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6852
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "book cart with stacks of books on top shelf and vertical books below",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart is clearly visible from row 9 to row 18 (10 rows deep) showing three stacks of books resting on top, with the front face and lower shelves extending downward from row 19 to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6052
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "book cart",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck of the cart is clearly visible as a 10-pixel deep horizontal surface (rows 9-18) holding three stacks of books, above the vertical front shelving faces (rows 19-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6551
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.331Z",
+ "cells": {
+  "16": [
+   "1b8e2cd8eeeba8e9",
+   "84dc04906f032d38",
+   "d3e2a5c2b09bcb1b",
+   "db7aec552f5313f8"
+  ],
+  "24": [
+   "18a47d91bcae5fb3",
+   "1d3f51b588c30065",
+   "27ea35bcb7927ec4",
+   "48c1b250950818a0",
+   "5e29023c749f2f55",
+   "67ead7c3e19e95a4",
+   "6941022ee3bd030f",
+   "6a848f6bb5b98620",
+   "894118e77585428e",
+   "9b60720022c86966",
+   "a86b962e4cafe5a0",
+   "b52c3071c168108f",
+   "ba8f344c1fc407a5",
+   "c585d67bb8880d44",
+   "dbd9cc61dad0b1ff",
+   "e114a736bd2f4516",
+   "e703fb91438a3267",
+   "f174532ba835540c"
+  ],
+  "32": [
+   "41f8019d73545bd9"
+  ],
+  "48": [
+   "10c2739b73b20e88",
+   "19ad10fc0a3cfb10",
+   "28670b4ca04e4ce2",
+   "2ddd7a78f4ada9fe",
+   "4dca966143b8137a",
+   "ce6a61c75187349e"
+  ]
+ }
+}

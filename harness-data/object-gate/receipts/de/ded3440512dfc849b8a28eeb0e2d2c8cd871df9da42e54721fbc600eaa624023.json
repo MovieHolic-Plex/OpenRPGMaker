@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ded3440512dfc849b8a28eeb0e2d2c8cd871df9da42e54721fbc600eaa624023",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "큰 쓰레기통(둥근 넓은 아가리)",
+ "label": "modern-campus-int/mc-bin-wide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large green trash bin with an open top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is viewed from above, showing a back rim at rows 0-2 and a 5-row-deep interior cavity (rows 3-7) containing visible trash before reaching the front rim at row 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large green trash can",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening is clearly visible from rows 3 to 7 (5 rows deep) showing the interior cavity and trash items from an overhead 3/4 angle, with the front wall extending down from row 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5363
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "green trash can with open top",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is viewed from above across rows 2-7 with trash items visible inside, followed by the south front face from rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4220
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large trash can with wide open top",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening is clearly visible from above across rows 1-7 with visible interior contents (trash), and the front vertical wall spans rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4655
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.332Z",
+ "cells": {
+  "16": [
+   "cfa44c7118932dbd"
+  ],
+  "24": [
+   "0f236b1dd139b97a",
+   "16b1d24f149d542a",
+   "1ef9df531b899b6d",
+   "396740d716683de1",
+   "6c5c271a85f59b73",
+   "ca7215d42a5043ba"
+  ],
+  "32": [
+   "43b776cbd6cbb4de",
+   "5ae1b4e22f161006",
+   "687995f938e8115a",
+   "6b55df58b3e12937",
+   "c21ed59e89f4a708",
+   "fc0d408b86d85918"
+  ],
+  "48": [
+   "09b6fed234cd0f7e",
+   "1bdf8735cb865b70",
+   "309b96a22862ca43",
+   "437d9894d8babbfc",
+   "605555ff55989b2c",
+   "ca65bdbdefebe03a"
+  ]
+ }
+}

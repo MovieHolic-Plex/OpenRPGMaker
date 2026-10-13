@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9093aafe3160ac87ee7f902151ae87419989021ff62eacec0c447d383db29cc",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "급식 냉장 보관대(낮은 은색, 전자레인지·상자 올림)",
+ "label": "modern-campus-int/mc-fridge-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low refrigerated counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter shows a clear top surface spanning rows 8 to 18 (11 pixels deep) upon which items sit, above the front-facing doors spanning rows 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6194
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "refrigerated counter unit",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter top surface extends from row 8 to row 18 (11 source pixel rows tall) with appliances resting on it, leading to the front face and cabinet doors below row 19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6156
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low refrigerated counter / prep table with appliances on top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body has a prominent horizontal top surface spanning rows 8 to 18 (11 source pixels tall) upon which the microwave and box are placed, meeting the front cabinet doors at row 19.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6288
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low stainless steel refrigerated counter",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main counter body clearly shows a foreshortened top surface spanning rows 8 to 18 upon which appliances sit, followed by a front edge and south-facing cabinet doors from rows 19 to 30.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4650
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.331Z",
+ "cells": {
+  "16": [
+   "326d64b73f4321fd",
+   "5066c3ebe160e37d",
+   "68aec5ececb96e6d",
+   "d705e5c92d352940"
+  ],
+  "24": [
+   "036c5062e22717b4",
+   "225029543acb76d0",
+   "2f851db2a132c72f",
+   "3f29d06272bc28b9",
+   "41891da7e5da276e",
+   "5560354b5a73e8ae",
+   "715e05b22a117215",
+   "76cbb4c08f5fda2f",
+   "78c42f0ff8ded9ee",
+   "81b772e93ea12033",
+   "9290b70a5019606e",
+   "b7b3b98a7e991999",
+   "c4df2e4b9d5c04a8",
+   "c62baf065243aff4",
+   "cd9827abdb29a254",
+   "d0035f2d4c91ab9b",
+   "f274842c8e03569f",
+   "ff8a13b127b37759"
+  ],
+  "32": [
+   "08319d6b75af48d4"
+  ],
+  "48": [
+   "914c7f4758c8e44d",
+   "9c7d118a9c2594bc",
+   "a1b83ec4aa22081b",
+   "be85eb7698952275",
+   "d8c46cb2a2a5f50e",
+   "eb8e638e90e70a9f"
+  ]
+ }
+}

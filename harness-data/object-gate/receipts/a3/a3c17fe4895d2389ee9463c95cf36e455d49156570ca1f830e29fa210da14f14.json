@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a3c17fe4895d2389ee9463c95cf36e455d49156570ca1f830e29fa210da14f14",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 벽시계(원형, 철망 없음)",
+ "label": "modern-campus-int/mc-wall-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round wall clock face and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular clock displayed flat against the wall, permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5032
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "circular clock face and rim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Classroom wall clock mounted flat to the wall; wall_mounted items are permitted to be flat front views.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6414
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "A round wall clock mounted flat against a vertical wall face. As a wall_mounted object, a flat front view without visible top depth is standard and permitted.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5127
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "circular wall clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted clock viewed flat against the wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5928
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.248Z",
+ "cells": {
+  "16": [
+   "5f95b5ef8f6d5d8f",
+   "91915efb07d0be98"
+  ],
+  "24": [
+   "0820ede9dd750f4f",
+   "1af98c1554e18416",
+   "31cf3bda3a6c2959",
+   "3df75120175444fd",
+   "52bc430b5fffe6f9",
+   "6c1545eb5187769a",
+   "8779309de3e65504",
+   "8bee9ce2c1d5386d",
+   "932286f26092fa7f"
+  ],
+  "32": [
+   "7a3880443c7f132c",
+   "db68bf3cd89a33ec",
+   "f2f638995e0ca1d7"
+  ],
+  "48": [
+   "4556a1dc87caa946",
+   "880689c28f4960ef",
+   "8be17c4805caf144",
+   "a5194267efd01694",
+   "ba16c0e13f3196ae",
+   "fa79ff650e4a7fcf"
+  ]
+ }
+}

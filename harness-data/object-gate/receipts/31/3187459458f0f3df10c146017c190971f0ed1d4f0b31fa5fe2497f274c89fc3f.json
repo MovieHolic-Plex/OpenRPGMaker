@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3187459458f0f3df10c146017c190971f0ed1d4f0b31fa5fe2497f274c89fc3f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "식판·배식 카트(2단, 식판 더미)",
+ "label": "modern-campus-int/mc-tray-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "food service cart with tray stack",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper tray stack/shelf is visible from above across rows 6–8 (3 pixel rows), with the corresponding front face below it on rows 10–14, properly following the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7387
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "meal distribution cart with stacked trays",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the upper tray stack is clearly drawn from row 5 to row 8 (4 source pixel rows deep), followed by the front face of the stack from row 10 to row 14, properly following the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "2-tier food/tray cart with tray stack on the top tier",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray of the stack displays a clear 3-row foreshortened horizontal surface (rows 6-8) with highlight, above its 5-row front face (rows 10-14). No isometric receding side faces are present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11156
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "meal service cart with stack of trays",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the topmost tray stack is clearly visible from rows 6 to 8 (3 source pixel rows tall), foreshortened above the front-facing stack on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10887
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.253Z",
+ "cells": {
+  "16": [
+   "d9555d6a66904fa5",
+   "e211972f81546117"
+  ],
+  "24": [
+   "0c93d8bdafa1d83d",
+   "0faf25c4062c6871",
+   "2ec4eb44f63bcc1f",
+   "40989b4507ff1c78",
+   "434b350cc3aa5693",
+   "4fa1da2c91fea6e9",
+   "5b467fe4f216d5b8",
+   "7f58d485d08730ae",
+   "946f3b46b2a9e928",
+   "a14ae7e5014daeba",
+   "a87b1b811e41ad68",
+   "d1b4b9ed65124f7c"
+  ],
+  "32": [
+   "833ea5b4a69efa34",
+   "bf499a18185f0ab3",
+   "fa70426facfe35e0"
+  ],
+  "48": [
+   "1250612be06bba9f",
+   "25bda8a2204a22fe",
+   "347c2c2d68c4b9a8",
+   "3d353388da4214e1",
+   "c6e6ecedb3d98381",
+   "eae501a28b859986"
+  ]
+ }
+}

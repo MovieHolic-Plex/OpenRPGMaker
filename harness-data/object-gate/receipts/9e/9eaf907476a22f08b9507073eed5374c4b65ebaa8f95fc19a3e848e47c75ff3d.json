@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9eaf907476a22f08b9507073eed5374c4b65ebaa8f95fc19a3e848e47c75ff3d",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "트로피 선반(낮은 2칸, 금색 컵·방패 올림)",
+ "label": "modern-campus-int/mc-trophy-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low trophy shelf / drawer cabinet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly shown across rows 9-18 (approx. 10 source pixel rows) upon which the trophies/plaques are placed, above the front-facing drawers (rows 19-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10460
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low trophy cabinet / dresser with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly visible from rows 9 to 17 (9 rows tall) with items displayed on it, above a south-facing drawer unit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6191
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "trophy display counter / dresser with drawers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low counter spans rows 9 to 17 (approx. 9 pixel rows deep) where trophies/plaques are placed, while the front face showing two tiers of drawers occupies rows 18 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7467
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low trophy cabinet / drawer unit",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low cabinet extends from row 9 to row 18 (10 source pixel rows) displaying wooden planks upon which display items rest, while the front south face with four drawers occupies rows 19-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6486
+  }
+ ],
+ "decidedAt": "2026-10-13T14:24:53.810Z",
+ "cells": {
+  "16": [
+   "0c984862a6d9ecee",
+   "4c455524d60f4acd",
+   "57fb70b8526d55a0",
+   "ba3726e4da9b41ae"
+  ],
+  "24": [
+   "0466d3af6ee707c8",
+   "19b839cd36633104",
+   "245a3122ff414339",
+   "2f07277150421f28",
+   "339a225ee91bf621",
+   "3d865ca4e8562b6e",
+   "4a06e858dbcbd88a",
+   "607c445f7abcf255",
+   "64dd037d41446c79",
+   "a0f14c325d3465e3",
+   "a402aeb49a265430",
+   "ac50870e97726d25",
+   "c69a13c786f7b0df",
+   "cc7d29a3e386b430",
+   "df715cce8a46a826",
+   "e0ede9608986528f",
+   "f4994cbadd26fb59",
+   "ffdd6df093bbfac3"
+  ],
+  "32": [
+   "21a848f054472a50"
+  ],
+  "48": [
+   "0138224f949575b2",
+   "15de234a1c5d8e5f",
+   "49af8a05b26b990e",
+   "862f1ca508689060",
+   "d8ae8d5726cd683d",
+   "e3bfd264ea813835"
+  ]
+ }
+}

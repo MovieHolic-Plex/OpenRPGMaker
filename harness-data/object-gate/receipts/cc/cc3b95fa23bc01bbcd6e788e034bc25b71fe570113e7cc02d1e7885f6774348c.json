@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc3b95fa23bc01bbcd6e788e034bc25b71fe570113e7cc02d1e7885f6774348c",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "급식실 긴 탁자(3칸, 밝은 합판 + 식판 줄)",
+ "label": "modern-campus-int/mc-cafe-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 0-9 showing meal trays from above, with the south edge and apron visible at rows 10-12 and legs at rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4466
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The table top surface spans rows 0 to 9 (10 source pixel rows) showing a line of meal trays, followed by the front edge/apron on rows 10-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4048
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface clearly shows top-down foreshortening occupying rows 0-10 with meal trays arranged across it, transitioning to a south front rim and slab edge at rows 10-12 supported by legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4898
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long cafeteria table with meal trays",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop occupies rows 0-10 (11 rows tall) foreshortened with food trays resting on it, and the south-facing front apron and legs are visible below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4218
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.253Z",
+ "cells": {
+  "16": [
+   "2a9503f5fe9ddb18",
+   "badddd6565e5c15d",
+   "e8a8217208d37a6a"
+  ],
+  "24": [
+   "432ef759a4df10fc",
+   "60960b37f4d83512",
+   "67bc207693854f8e",
+   "e0df2bd3e56b05c5"
+  ],
+  "32": [
+   "02dda074a35e6fa7",
+   "0837a3de874efd6c",
+   "2a5ba778c3ee4a18",
+   "7f27f152fe0881c9",
+   "804147bcfbe49049",
+   "8f781000a3c0bd57",
+   "9699e92173ab0193",
+   "aaf57c59aff0d983",
+   "badf4a3455260c2f",
+   "bfc504a15d2ca54d",
+   "e697db8d68092fa4",
+   "fad2960d2b7b9ead"
+  ],
+  "48": [
+   "41a5ad8d8e9d4067",
+   "51f8f450df34de79"
+  ]
+ }
+}

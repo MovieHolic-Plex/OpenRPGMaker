@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b2c62d420fe4fee3d600575f7a675ea818b9cf322867caa2abca44bc95076eb7",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "화장실·보건실 타일 벽(흰 사각 타일)",
+ "label": "modern-campus-int/mc-wall-tile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing white square tiles, a green decorative stripe, and baseboard trim; terrain wall faces correctly represent vertical wall surfaces in top-down JRPG tilesets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4373
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing an interior vertical tiled wall face with an accent stripe and baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4595
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid wall-face terrain tile consisting of white square tiles with horizontal border trim and baseboard; as a flat vertical wall surface terrain, top surface requirements for standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6347
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiled wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid 16-wide terrain tile depicting a white square-tiled wall face with a green border stripe and bottom baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5023
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "64998c10fc333a6e",
+   "bcd654b6a8b12b40"
+  ],
+  "24": [
+   "024e7609468ff72d",
+   "2d1635eb53d0e76b",
+   "3b50dac83e3b7bfc",
+   "591a10b2ec0f5b44",
+   "5bc07f03d92f4dd8",
+   "5f3d40f7cc56e44e",
+   "6bbed17e8fea2f87",
+   "78d2e84e48b88436",
+   "7a3fe30eb0775d11",
+   "8021b49031fb2dbe",
+   "9188b9d3a9e55945",
+   "9f1fdfc62f9286d2",
+   "b73aae382804d071",
+   "ba116dbea57fdfc5",
+   "bf92069ff43185c6",
+   "d6ebee5efc7ba912",
+   "d9b0b6ae0f845718",
+   "ddc76ca2724afcd3",
+   "f704c1003a203d03",
+   "fa2f51a958685d9c"
+  ],
+  "32": [
+   "a03ea69e83944245"
+  ],
+  "48": [
+   "10265f1ab8e3b6e4",
+   "1680c8796c3252c4",
+   "1e91b85cc7bd6e91",
+   "5117a434d3af431d",
+   "8c0353920ea13184",
+   "eeabb8a58caca9bb"
+  ]
+ }
+}

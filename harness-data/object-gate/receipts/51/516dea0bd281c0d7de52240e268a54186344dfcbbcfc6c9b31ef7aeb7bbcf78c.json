@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "516dea0bd281c0d7de52240e268a54186344dfcbbcfc6c9b31ef7aeb7bbcf78c",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "화장실 소형 타일(연녹 회색)",
+ "label": "modern-campus-int/mc-floor-tile-wc",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathroom floor tile pattern",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor tile pattern representing bathroom ground terrain across the entire 32x32 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4921
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tile texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating bathroom floor tile pattern covering the entire canvas; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor tile texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a repeating light greenish-grey small-tile floor texture appropriate for top-down floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4298
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bathroom tile pattern",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating floor/wall tile pattern correctly identified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3771
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "12cbf8919a440328",
+   "73a6ea18c1b6fc8a",
+   "bc7627e2fd02b74d",
+   "d99ab334ea94d66b"
+  ],
+  "24": [
+   "00883e2d56bf8189",
+   "05ec2ebe0ed800ec",
+   "18fcbf8a29a6dbc4",
+   "2a78c3a9b9e4e7bb",
+   "354d757dfd9d1a25",
+   "3a953b99d1bed087",
+   "4597c42f7ba77d0b",
+   "501b378c04b06ba1",
+   "590a070b837f2d8c",
+   "64f24045c80f91a6",
+   "8c32c45fa3fbfcaa",
+   "90e78728e6a863fa",
+   "a53718bf9853b424",
+   "a6c534700bcc25a6",
+   "abd4fedf17256f6e",
+   "b15745cf9bab61cb",
+   "b421327841839905",
+   "bb0bbd085a4ebd9b",
+   "be54f9e47aba9929",
+   "beb9c034117adc00",
+   "cfcf47fb4be25b98",
+   "d661f1e7a932f7e1",
+   "e9e4e10c7b5430ee",
+   "eac322224c325e94"
+  ],
+  "32": [
+   "b917f31411b7cb1d"
+  ],
+  "48": [
+   "3a5e386e4494b947",
+   "461c1453858cb944",
+   "a6a67a870e46e6c8",
+   "b63da17051b23361",
+   "dd35ae3bfd279f2a",
+   "ff51b73603f23ead"
+  ]
+ }
+}

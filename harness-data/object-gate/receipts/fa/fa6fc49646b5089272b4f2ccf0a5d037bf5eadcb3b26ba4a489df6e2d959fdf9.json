@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa6fc49646b5089272b4f2ccf0a5d037bf5eadcb3b26ba4a489df6e2d959fdf9",
+ "width": 16,
+ "height": 48,
+ "kind": "low_furniture",
+ "name": "기숙사 침대(남색 이불 + 흰 베개)",
+ "label": "modern-campus-int/mc-dorm-bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bed mattress with blanket and pillow",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above in classic 3/4 top-down perspective, with the mattress, pillow, and duvet top surface occupying rows 6-28 (23 rows tall) between the headboard and footboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6853
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "dormitory bed with headboard, mattress, pillow, and navy duvet",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (mattress, pillow, and navy blanket) is foreshortened and clearly visible from above across rows 6 to 28, with the footboard terminating at the south edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6365
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dormitory bed",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above at a 3/4 angle, displaying a large top surface spanning rows 6-28 (pillow, sheet, and blue quilt) with a visible headboard at the top and footboard edge at the bottom.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8061
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dormitory bed with pillow and blanket",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed is viewed from above in standard 3/4 top-down perspective, clearly showing the full top horizontal surface of the mattress, pillow, and blanket spanning rows 6 to 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6710
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.254Z",
+ "cells": {
+  "16": [
+   "7aaf9f539411900b",
+   "d1ba472daa1f1597"
+  ],
+  "24": [
+   "1c5dd6acfec1f33b",
+   "349aca7215800bb5",
+   "77be704aebc1d6d6",
+   "9182d9b052d1cdea",
+   "f63068fe0c02f35e",
+   "f968439c5197ad93"
+  ],
+  "32": [
+   "1eeb625d12d13b7f",
+   "2fa7b83e9effffc1",
+   "4511d8360a167b1c",
+   "5d2f3cea643af6bd",
+   "648226aaa4c2b139",
+   "9af1b2873f1659d8",
+   "e781da0d5050a19f",
+   "f5ef0738f2749266",
+   "ffd8105dcd6174a0"
+  ],
+  "48": [
+   "46718e3d189a7d6e",
+   "4a74df898b06301f",
+   "84d8fdec3fa5c1e7"
+  ]
+ }
+}

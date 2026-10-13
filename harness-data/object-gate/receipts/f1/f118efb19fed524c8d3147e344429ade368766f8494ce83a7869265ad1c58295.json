@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f118efb19fed524c8d3147e344429ade368766f8494ce83a7869265ad1c58295",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "보건실 책상(약상자·체온계 올림)",
+ "label": "modern-campus-int/mc-nurse-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "nurse's office desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface is clearly visible from rows 1 to 9 (9 source pixel rows deep), displaying items laid out on it, while rows 10 to 15 depict the front edge, drawer, and legs in standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1-9 (9 rows tall) with items resting on it, and the front face with a drawer is visible below on rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "nurse's office desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk's white horizontal tabletop surface spans rows 1 to 9 (9 rows tall) with items resting on it, and its front face with drawer and structure is visible below from row 10 downwards, providing a standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "infirmary desk",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk has a prominent top surface spanning rows 1 to 9 where medical items (medicine box, tray, thermometer) rest, followed by the front edge and drawer face below (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5030
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.254Z",
+ "cells": {
+  "16": [
+   "355baadb5638ee48",
+   "6f7a26b47b4ce8b4"
+  ],
+  "24": [
+   "006db0f2f04a3075",
+   "05fac19de826eb0e",
+   "18dab5613890f4c3",
+   "1ffad9ad29ad2212",
+   "26e88db524e20c89",
+   "26fc936a05d54ade",
+   "4f1170ac79f548f8",
+   "71c2f4ad49acc35c",
+   "78ba92070c20469d",
+   "9d62c89f41adaade",
+   "c86521bf9235cdc3",
+   "cef873b3339d8dfb"
+  ],
+  "32": [
+   "c04722c5691c4e16",
+   "d50d4e0541392f87"
+  ],
+  "48": [
+   "18d39882b014a0ea",
+   "59fa5739df713170",
+   "81a6707872ca120d",
+   "93ce1f9fdbe13668",
+   "a0928e3daed63fd6",
+   "a887b3a92e761614"
+  ]
+ }
+}

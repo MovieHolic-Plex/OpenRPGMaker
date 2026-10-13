@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7ae227d130969727caac8c4580f5ec561d6a25fcbfc72b8847880c6e9131a2d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "동아리방 잡동사니 선반(2칸)",
+ "label": "modern-campus-int/mc-club-shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "club room shelf / bookcase with top surface holding items and three lower shelf tiers",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly foreshortened and visible from row 3 to row 11 (9 source pixel rows tall), upon which multiple items (orange box, ball, blue box) rest, while the front shelves face south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6194
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall shelf / bookcase unit",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf is drawn strictly from a front elevation. The top edge at row 2 is a 1px outline with no visible horizontal top surface, all shelf boards are 1-2px flat horizontal strips, and the books and upper bulletin board are flat 2D front-facing rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14288
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "club room shelf unit with clutter on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf is clearly visible from rows 3 to 11 (9 pixel rows deep), showing a wooden surface with clutter (boxes and a ball) resting on it, above the front-facing shelf compartments (rows 12–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20430
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf / clutter shelf unit",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is visible across rows 4 to 11 (8 rows tall) with items (boxes, ball) resting on it, leading down to the lower shelving unit.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10202
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.256Z",
+ "cells": {
+  "16": [
+   "4c6502acda268ecb",
+   "62f870bf3817262d",
+   "cec1cfcb30476bc0",
+   "fca2252b0a2f7b8c"
+  ],
+  "24": [
+   "1b5d83175c1a0bf8",
+   "281313e95d555c08",
+   "28507736441e1f03",
+   "295e65d539d10e82",
+   "3354a9ab67475ac6",
+   "3818d4833a7fbbad",
+   "3d3b4f8f3f2418eb",
+   "48c167fdb0ba5a27",
+   "4994ef9428f42bef",
+   "4e7dce51b47d5b3e",
+   "5126f6884f55f35c",
+   "586914ab4b8b6bea",
+   "5bc10140628045c7",
+   "7bb031af03f81c68",
+   "7d86a4915b56ad87",
+   "8ed1068f2fe34c2a",
+   "a2f894065cb5593b",
+   "af9884f0fa214f5a",
+   "b87d43df6576f522",
+   "be8181fb1c643463",
+   "c34ed9bd998475df",
+   "c952054daa0c7e0d",
+   "cda465060872ae28",
+   "fbd04b6c234f24bb"
+  ],
+  "32": [
+   "c9ea5df5b385a415"
+  ],
+  "48": [
+   "25b7bab47c00b572",
+   "717fbaac9201bc49",
+   "728759098f9245f0",
+   "8dc88904088cd728",
+   "c0fc6fbf0f52e0e9",
+   "e83a30ebb8c81f03"
+  ]
+ }
+}

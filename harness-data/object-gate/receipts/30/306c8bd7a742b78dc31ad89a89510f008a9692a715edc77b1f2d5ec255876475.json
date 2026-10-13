@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "306c8bd7a742b78dc31ad89a89510f008a9692a715edc77b1f2d5ec255876475",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 영사막(말아 내린 흰 막)",
+ "label": "modern-campus-int/mc-screen-proj",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The projector screen is mounted flat against the wall and drawn in a flat front view with no top surface, which is valid and permitted for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The classroom projection screen is mounted flat against the wall, consisting of a top casing bar, the pulled-down white screen with a dark border, a bottom weight bar, and a pull tab. As a wall-mounted flat object, a flat front-facing presentation is standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6519
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "projection screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pull-down projection screen correctly depicted flat against the wall plane, conforming to the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "projector screen",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted pull-down projection screen correctly depicted flat against the wall plane as allowed for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6139
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "17e70cda4571e6cd",
+   "4b2708c981ec33ee",
+   "6c97ea46390a00b9",
+   "bbafe7a74a5eca70",
+   "c5981287640d00cd",
+   "c8f64b4d6c5e3080"
+  ],
+  "24": [
+   "1a4898ae2e3769fb",
+   "267c53c17156e464",
+   "56545fe9dfa409be",
+   "7276453f0ee10b61",
+   "8b2eb6a9df4362af",
+   "b62e1c9e77c64833",
+   "e4d292e188c9d567",
+   "e6a162ca060df68c"
+  ],
+  "32": [
+   "479e6b862755b631",
+   "a67fbe8a8ee52d89",
+   "afc90a01376e5d57",
+   "cf726d30bb1ea883",
+   "ea5ae9efdedb1537",
+   "f5d706a05ff9ea30"
+  ],
+  "48": [
+   "00829ce72f9578f3",
+   "9c695f23c8aed5de"
+  ]
+ }
+}

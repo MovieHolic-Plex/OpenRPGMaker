@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be4940cc63443febfcd8d037cf8fb790ac3f03015cf183334af928e6bf8acd08",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "낮은 탁자(밝은 나무, 책·컵)",
+ "label": "modern-campus-int/mc-low-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "low table with items on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The beige tabletop surface is viewed from above and spans rows 3 to 11 (approx 9 rows deep), displaying a book and a tray with two cups placed on top, with legs extending below rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10719
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "low table with tabletop items",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above, spanning approximately 9 pixel rows (rows 3 to 11) with a book and cups resting on it, above a front apron and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9208
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "low wooden table",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop is clearly visible from above across rows 3 to 11 (9 source pixel rows) with items (book and two cups with visible liquid) resting flat on its surface. The front apron/edge is shown at rows 12-13 with short legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13359
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "low table with legs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The table is drawn as a pure front elevation. The top surface is represented only by a 1-pixel dark brown outline at row 2, with no visible foreshortened tabletop surface before the front face and legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13675
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.255Z",
+ "cells": {
+  "16": [
+   "9e83c79f8d8f8fea",
+   "f6384f72df953d28"
+  ],
+  "24": [
+   "5508dbfece3fce4d",
+   "8898cf1e846caa46",
+   "9f9873874d982d42",
+   "b1be2cfc8360063c",
+   "bcf404881557aac0",
+   "cab585680ff9d604",
+   "de8dcaf8436e5356",
+   "f5fe45491f1da5f7",
+   "f731afc8feee1ecb",
+   "f7f8152a2d4e4985",
+   "f95bcf66c0fdfb17",
+   "fa2d4cf98cba9922"
+  ],
+  "32": [
+   "600aefcc0f374532",
+   "ea7f446f487b73fd"
+  ],
+  "48": [
+   "26d7fd8192d2c000",
+   "339a7202199a89d8",
+   "94688bbdb82e5569",
+   "a9afe05a5efe4913",
+   "ea5be7c198ffb77b",
+   "fd80c9142851dd02"
+  ]
+ }
+}

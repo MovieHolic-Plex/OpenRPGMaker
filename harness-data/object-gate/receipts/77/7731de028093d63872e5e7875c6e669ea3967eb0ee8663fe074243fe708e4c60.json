@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7731de028093d63872e5e7875c6e669ea3967eb0ee8663fe074243fe708e4c60",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "기숙사 서랍장(낮고 넓은 3단, 위에 소품)",
+ "label": "modern-campus-int/mc-dorm-dresser",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-drawer low dresser with objects on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the dresser is clearly shown from rows 9 to 18 (10 source pixel rows) with items resting on it, leading down to the front face (rows 19 to 31) showing three drawers in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-tier low wooden chest of drawers with props on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest spans rows 9-18 (~10 rows) holding small props, and the front face with three drawers spans rows 19-31, correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6658
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dresser / 3-drawer chest with items on top",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 8 to 18 (11 source pixel rows) with wooden planking and items resting on top. The front face with three drawers spans rows 19 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7561
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dresser with 3 drawers",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the low dresser is clearly visible spanning rows 9-18 (10 rows) with items placed on top, above the 3-drawer front face (rows 19-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10527
+  }
+ ],
+ "decidedAt": "2026-10-13T14:23:00.331Z",
+ "cells": {
+  "16": [
+   "5118be853fda4ba5",
+   "6169cfd0fda51514",
+   "7a2ccfa410229143",
+   "e014c0ec97153cdb"
+  ],
+  "24": [
+   "07e27b394553c69e",
+   "0c8d14215f455e93",
+   "48b3b7f645b7fc54",
+   "72540806976881f9",
+   "731f5d5278ed7fdf",
+   "76142d9572518257",
+   "8b1b21356efbeb7f",
+   "8c2076bcfd324b08",
+   "8cde8c07540b640e",
+   "9e9ac8742f53bdfd",
+   "aa258834c73af792",
+   "c35a06dcebeebbe8",
+   "c4f554d008b1d36f",
+   "d0756a0b5823d900",
+   "ddf092ffa8bf652d",
+   "e053a0571999204f",
+   "f39e528e436c9917",
+   "facc4f45a5488b10"
+  ],
+  "32": [
+   "7a0d89f87d7ee589"
+  ],
+  "48": [
+   "115c7ee0aa3ad471",
+   "816190a419b87a84",
+   "97d07882073e2b39",
+   "c94fbb9d93618f29",
+   "cdf59f73bbdddeeb",
+   "de412271392f240f"
+  ]
+ }
+}

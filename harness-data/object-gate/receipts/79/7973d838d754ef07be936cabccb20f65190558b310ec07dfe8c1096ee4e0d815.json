@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7973d838d754ef07be936cabccb20f65190558b310ec07dfe8c1096ee4e0d815",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "복도 벽(흰 벽 + 하늘색 띠 + 창틀 이음)",
+ "label": "modern-campus-int/mc-wall-corridor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "corridor wall face tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Corridor wall terrain tile featuring a white upper section, blue horizontal stripe, and lower window/wall division; properly formatted as a vertical wall face tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "corridor wall face with horizontal band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile represents a vertical wall face terrain segment (white wall with blue stripe and vertical framing accents), which is standard planar terrain in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "corridor wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a standard vertical corridor wall face terrain tile featuring horizontal colored bands and window frame seams; as a flat wall terrain surface, no top surface is required.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6337
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "corridor wall face with stripe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a vertical south-facing interior corridor wall surface with a decorative blue stripe and baseboard, correctly formatted as wall terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4594
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "64aa6d2366f089c0",
+   "e8d5b2188769808e",
+   "ec38497a9ad141e4"
+  ],
+  "24": [
+   "08feeef70f0c8764",
+   "1fa1bf9bbf76b0bc",
+   "214907fcf245d4c3",
+   "21d58c82ca194e49",
+   "34d913201eaaf96b",
+   "44b6d9b87dd3e178",
+   "4e88317c7a0ade03",
+   "649eabdb1ae9437c",
+   "65efb7016432eeda",
+   "6b1edaba0cd59dea",
+   "6cf5e659fa7c0d0e",
+   "6dc05fad909e7fdd",
+   "70537353be128b89",
+   "844b70363b2c1b59",
+   "9279a652a4b2a89c",
+   "97d7178654bab25c",
+   "ab1430e674af87d2",
+   "c583d14c8db992d3",
+   "d4daebf8a30d53d5",
+   "df95e288b4d65837",
+   "f9d952a9ff32630b",
+   "fd6e298b8a6dc8a5"
+  ],
+  "32": [
+   "7ae3b78c846660d5"
+  ],
+  "48": [
+   "0779a7b18b1ede22",
+   "467c1a967fbe008e",
+   "62566cdd177c1461",
+   "7e99f44c171ae8d1",
+   "e03f1bcf6b2a3bca",
+   "f774b4dae375534d"
+  ]
+ }
+}

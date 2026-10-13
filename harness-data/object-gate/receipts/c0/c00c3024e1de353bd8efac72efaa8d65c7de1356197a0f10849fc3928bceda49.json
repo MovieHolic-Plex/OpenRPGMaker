@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c00c3024e1de353bd8efac72efaa8d65c7de1356197a0f10849fc3928bceda49",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "기숙사 카펫(청회색 얇은 결)",
+ "label": "modern-campus-int/mc-floor-dorm",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dormitory carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor carpet texture with horizontal grain; valid terrain tile with no standing volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5521
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet floor tile",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dormitory carpet texture pattern representing flat ground/floor terrain, correctly categorized as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4074
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet floor texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal floor/carpet surface viewed top-down across the entire 32-pixel height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3124
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor texture",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Uniform repeating carpet floor terrain tile viewed entirely from above (32 rows of flat floor surface).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4301
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.247Z",
+ "cells": {
+  "16": [
+   "0b5815a7e125cc7c",
+   "179da7694265706c",
+   "7f86c2af680e7ef5",
+   "d1f243960707549d"
+  ],
+  "24": [
+   "01012f93df7880c4",
+   "0175fed928e61b33",
+   "027a4a95141523bf",
+   "0ba79ea8472b149b",
+   "0cf5684ad9a7469b",
+   "26dd3fa1954d6e04",
+   "2cc198b82609a689",
+   "324375c8f2e6985d",
+   "341ecb075a7d5aa1",
+   "44fc87b314b90619",
+   "5484a770189ddf4b",
+   "6d694f482942c285",
+   "7bd7062f41031fb1",
+   "81b0d8739b6faaa9",
+   "8288d01a133fdb54",
+   "9332a4e48486fead",
+   "a458b61dc5f4ac95",
+   "b89c0da2ecfa53b9",
+   "c95a40abdc22b400",
+   "cb48e7f8e4288027",
+   "d3cf5264b2600b50",
+   "d75dfefc65bd6f9f",
+   "e8000d36e866f7c7",
+   "f4989fc3d789d386"
+  ],
+  "32": [
+   "95b4504abeb9e28e"
+  ],
+  "48": [
+   "2512fe85ae27632d",
+   "6a9f6ddf077bb601",
+   "b1b9bf8b0cad779e",
+   "bb2242e2d852002d",
+   "f42a490b78f6b5b1",
+   "f65732d463a258db"
+  ]
+ }
+}

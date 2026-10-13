@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d54df34d0630e3abe5340dc8ad18aecdeccf6f18013ad443997d71ac47fb1eed",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "강의대(경사진 윗판 연단)",
+ "label": "modern-campus-int/mc-lectern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lectern podium",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted top reading surface of the podium is clearly visible from row 5 through 14 (10 rows) with a document resting on it, above the south front face extending from row 16 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5000
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lectern / podium",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted top reading surface of the podium is clearly visible from rows 5/6 to 14 (approx. 9-10 rows) displaying papers/notes, above the south front face (rows 16-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4773
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lectern / podium with reading surface and lower cabinet front",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The slanted top reading surface of the podium is clearly visible from above across rows 5-14 (10 pixel rows tall), complete with papers and a bottom lip, above the front cabinet face (rows 16-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6439
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "podium / lectern with slanted reading top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The reading surface of the lectern is viewed from above across rows 5-14 (10 rows tall) showing documents resting on it, above the south front face (rows 16-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4869
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:45.249Z",
+ "cells": {
+  "16": [
+   "99a458f02e8da652",
+   "f52133dd9f3fae2d"
+  ],
+  "24": [
+   "1d6ade095e7f31b1",
+   "3f0ddb8ab6fe07ea",
+   "47563be47780d01e",
+   "57132e2c7dfbcd6a",
+   "6a8be33969c619d8",
+   "748b1bcbdfa6c118",
+   "86ecc4b39cf60741",
+   "885ba4a85d252c21",
+   "b44086bc911cf04b",
+   "bc1a58aa1bd075ef",
+   "cdec7d78e57823b7",
+   "f316e34184e3ff3a"
+  ],
+  "32": [
+   "165c2446d849e261",
+   "4a690a09dd4b6dec",
+   "ed83afd955e997f7"
+  ],
+  "48": [
+   "36a7f2e16e251dc8",
+   "6e36d1de51396c56",
+   "88b54a1515fb9047",
+   "89ccbbf3bc17eb4a",
+   "bd4c5db8146dc3c2",
+   "ef7615dae998c7bb"
+  ]
+ }
+}
