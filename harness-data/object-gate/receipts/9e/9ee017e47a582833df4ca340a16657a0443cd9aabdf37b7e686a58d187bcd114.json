@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ee017e47a582833df4ca340a16657a0443cd9aabdf37b7e686a58d187bcd114",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "음료 자판기",
+ "label": "modern-campus/mc-vending",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 답을 읽지 못함"
+   ],
+   "ms": 8106
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drink vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite is drawn as a pure front elevation of a vending machine: rows 3–7 depict the front backlit header/billboard panel, rows 10–20 show the front can display window, and rows 25–27 show the dispenser flap. No top surface seen from above is present (only a 1px outline at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16293
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall rectangular vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire sprite is drawn as a flat, straight-on front elevation. The white rectangular section at rows 3–8 is the front-facing illuminated header/signboard panel (framed with inset bevel shading), followed directly by the front can-display window and dispenser flap. There is no visible top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9102
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "beverage vending machine",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire vending machine is drawn in a pure 2D front elevation (orthographic front view). Rows 3-8 depict the front illuminated advertisement/header panel above the can display window, not a top surface seen from above. There is no visible top surface foreshortened in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6448
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.869Z",
+ "cells": {
+  "16": [
+   "5259857efe68c99e",
+   "f38ac4f184c4133d"
+  ],
+  "24": [
+   "00b7f924a3c69179",
+   "123df880f75b734c",
+   "2ebeea95ebaa07af",
+   "4e6d0b4ed646fb73",
+   "5f837d5fd2be938f",
+   "6343d485e89c00da",
+   "6cc2775c28408d1b",
+   "7aeda62d20e0a26d",
+   "861756463cf1d1ac",
+   "ced5114b33007459",
+   "e3496f0569be0bb4",
+   "eba8d282bc77c96f"
+  ],
+  "32": [
+   "8d78501fd6c02c6f",
+   "931796ec12eb902f",
+   "eb2e4d8173287703"
+  ],
+  "48": [
+   "44ffee2c457e7311",
+   "756cd6e0f3fa0d88",
+   "85694039892aea74",
+   "be21b4fe1934369f",
+   "d0825e8fe2f7e53b",
+   "d341d5dd66e261fc"
+  ]
+ }
+}

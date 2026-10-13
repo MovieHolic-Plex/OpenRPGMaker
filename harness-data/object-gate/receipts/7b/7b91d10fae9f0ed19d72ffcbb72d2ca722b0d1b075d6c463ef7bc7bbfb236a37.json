@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b91d10fae9f0ed19d72ffcbb72d2ca722b0d1b075d6c463ef7bc7bbfb236a37",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "2인 책상·의자 한 쌍(나란히)",
+ "label": "modern-campus-int/mc-desk-pair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pair of desks with chairs behind them",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surfaces are clearly visible from above across rows 2–7 (6 rows deep) with items resting on them, while the south-facing aprons, leg cavities, and frame legs extend below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7168
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pair of desks",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desks clearly show a 5-row deep top surface (rows 3-7) with stationery/books laid on top, followed by a front-facing apron (row 8) and open leg space below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7449
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two desks with chairs behind",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both desks clearly show a 5-pixel-tall horizontal tabletop surface (rows 3-7) with stationery and books, viewed from above, along with south-facing front edges and leg space.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4498
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "study carrel desk pair (cubicle desks)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The desk unit is drawn in pure front elevation: an outer rectangular frame surrounds the carrel, with the desk surface reduced to a 1px horizontal line at row 8, knee space below (rows 9-11), and thin legs at rows 13-15. The top of the main body shows no visible top surface (0 rows, just a 1px border line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14138
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "1a9dd900a165ac55",
+   "73f6daac16958602"
+  ],
+  "24": [
+   "2b8dedfc274c5e87",
+   "325c4610606b043a",
+   "3ca3ce25240867cf",
+   "3ffdda427e85ed3f",
+   "429a1225c50366ba",
+   "472fe10215c66c3e",
+   "581999d8a4a51e96",
+   "848e847a7ae50619",
+   "91f7cfd90151468f",
+   "bed61b97ba84eb70",
+   "c8eabe7fcd8e26fd",
+   "e37d8307cb5b140e"
+  ],
+  "32": [
+   "d24f9fca9d4ff6e0",
+   "ff6dcabfa550b9a1"
+  ],
+  "48": [
+   "09329b9c79e24712",
+   "13e256fea1e75d1b",
+   "22c81a8f31ec9782",
+   "293ffcfe4516bb82",
+   "523c50ed267f26f1",
+   "88c551866337b46c"
+  ]
+ }
+}

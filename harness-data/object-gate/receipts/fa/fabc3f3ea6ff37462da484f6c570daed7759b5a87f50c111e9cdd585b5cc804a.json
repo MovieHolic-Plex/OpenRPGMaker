@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fabc3f3ea6ff37462da484f6c570daed7759b5a87f50c111e9cdd585b5cc804a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "아스팔트 차도",
+ "label": "modern-campus/mc-asphalt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile is a textured flat ground surface representing an asphalt road.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3616
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat asphalt road terrain tile spanning all 16 rows, representing horizontal ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile filling the 16x16 cell with textured dark grey asphalt.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4166
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile covering the full 16x16 area representing an asphalt roadway surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3647
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.863Z",
+ "cells": {
+  "16": [
+   "215097e9dccde4ad"
+  ],
+  "24": [
+   "0b7d059bcb746789",
+   "9634c386de7ec609",
+   "ba1a645b75086aa5",
+   "d3818a7a6937f666",
+   "e9d631e15a6d0790",
+   "ecf6421c131d231f"
+  ],
+  "32": [
+   "215d7f91a5e66c73",
+   "2ad1b0997d169175",
+   "2b4b7009670080f1",
+   "7934976c9ed3a34a",
+   "90de32f2dd943fa4",
+   "bc585ddc47ff792b"
+  ],
+  "48": [
+   "555232de4a54c258",
+   "8c8d75892e260c68",
+   "ad6c29eb3cdd335a",
+   "e05cfdfd197cdf62",
+   "e62f86b078449b8f",
+   "e9c9bebf1685065f"
+  ]
+ }
+}

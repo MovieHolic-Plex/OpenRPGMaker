@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc4fedf4453ff4d07a8246d3d96733faac913be50d559f7445367482ed8caebb",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "푸프(둥근 노랑 쿠션 의자)",
+ "label": "modern-campus-int/mc-bean-bag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pouf (cushion stool)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pouf is drawn as a nearly symmetrical upright circle/octagon with side shading and a central patch, lacking any distinct elliptical top surface or foreshortening to establish a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6162
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round yellow pouf / cushion stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cushion stool is drawn in pure front elevation with a flat horizontal outline at row 3 and no elliptical top surface showing the seat from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7073
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow round pouf cushion",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pouf is drawn as a flat circular/spherical silhouette facing straight at the camera. There is no distinct horizontal top surface or cap ellipse separating the top from the south face; only a round ball-like front elevation with an ambiguous patch/tuft in the center.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6415
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round yellow pouf / cushion stool",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pouf is drawn from a front elevation with a flat 1px top outline (row 3) and no elliptical top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4976
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.312Z",
+ "cells": {
+  "16": [
+   "a4d30a35f8f3cb19"
+  ],
+  "24": [
+   "694fc2817ad2d9f5",
+   "a01c2a8a8f6e958e",
+   "cd680baa821435d7",
+   "e6a4f23ad00454c2",
+   "f57f83f87bbe4413",
+   "f79e4499cc6a024a"
+  ],
+  "32": [
+   "44ba8b8885c4269a",
+   "9637e881222cee86",
+   "a1ed05bd6b569ce3",
+   "a89f7ae14b5496d2",
+   "db36455f26dcebb9",
+   "fe0c1993be334b1c"
+  ],
+  "48": [
+   "2b6b2e6d5d09bb05",
+   "71fb26109a54d493",
+   "7207fdc57440b8e8",
+   "d0fb4caaaa6d7174",
+   "e0a506d80bdbb5d9",
+   "fb72b71b42eb4422"
+  ]
+ }
+}

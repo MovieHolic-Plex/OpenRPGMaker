@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20c8a2b9bcaaff163b7a18fdc19681a072bbf300da334c7b8ffc0dec146db8af",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "교문 기둥(벽돌 + 넓은 돌 갓)",
+ "label": "modern-campus/mc-gate-pillar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick gate pillar with stone cap",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone cap at the top of the pillar clearly displays its top surface across rows 2–6, foreshortened above the front overhang (rows 7–9) and the brick pillar body below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6135
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick pillar with stone cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone cap atop the brick pillar displays a foreshortened top surface across rows 1-6 (approx. 6 rows tall) above its south-facing overhang (rows 7-9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6815
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick gate pillar with wide stone cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide stone cap on top of the brick pillar displays a foreshortened top surface spanning rows 1-6 (6 pixel rows) above its front overhang lip (rows 7-9).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick gate pillar with wide stone cap",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide stone cap has a clearly rendered top surface occupying rows 1-6 (about 6 source pixel rows) above its 3px south overhang face (rows 7-9) and the brick column shaft (rows 10-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5139
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.542Z",
+ "cells": {
+  "16": [
+   "3f8c24bf43139cdd",
+   "9824516ddc3455cd"
+  ],
+  "24": [
+   "13268a871d7265c8",
+   "273a5c880b36073a",
+   "2f3b87a04c377094",
+   "31ea759f5ff5c4a7",
+   "3cfce58c727a23a6",
+   "5dd6a10822283112",
+   "8854acc1361915a9",
+   "a58b758ea7b2f61a",
+   "c6f2d387333a4f97",
+   "c9907c6b29511ad1",
+   "d3489c76362f9354",
+   "feef75b1fc56da4b"
+  ],
+  "32": [
+   "57e6a1f7ce65ad5c",
+   "8c148d7f1b274fae",
+   "b0e178c6f7835ae6"
+  ],
+  "48": [
+   "1a16f203d270a656",
+   "330917170145d1da",
+   "57a553be23c88d22",
+   "e0b0f82d7c78e7af",
+   "e890e418d8f07aec",
+   "f6b187e36281e26f"
+  ]
+ }
+}

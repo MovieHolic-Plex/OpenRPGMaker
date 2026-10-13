@@ -1,0 +1,147 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9185e7dd156174247d6b8f610a99ab18cec119a5fa277a7dca5a73a2cadb785e",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "도서 수레(낮은 2칸, 책 더미 올림)",
+ "label": "modern-campus-int/mc-book-trolley",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookcase / book cart",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart/bookcase is drawn in flat front elevation with a 1-2px outline frame at row 7-8 and zero visible top surface or shelf depth from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7025
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "book cart / small bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the frame is merely a 1-2px dark border line (rows 7-8) with zero visible top surface. All three shelf tiers and books are drawn straight-on in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7335
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookcase / book cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top frame is only a 2px dark border at rows 7-8 with no visible horizontal top surface, and the shelves/books are rendered in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8302
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "book cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in direct front elevation with no visible top surface at rows 6-7 (only a 1px dark outline across the top).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6593
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.313Z",
+ "cells": {
+  "16": [
+   "1ed05e85c713b29e",
+   "8d472b22331281d6",
+   "b03fdc6dd690faf1",
+   "d38036e5ff90706d"
+  ],
+  "24": [
+   "09519928d83a46ea",
+   "0dd191f86c981976",
+   "2938a7000f9efa82",
+   "2d789c6a2139255e",
+   "2de1b444ea3de3c5",
+   "2ea8ceff9860cd41",
+   "32ff8179e5cec7e5",
+   "37dc52d7e1017f4e",
+   "6093619ce8042855",
+   "97fd5834bba24707",
+   "a76decf93256f734",
+   "af72087dc6e69153",
+   "c27eebb9ebbe0b83",
+   "cf172cd65f90f192",
+   "cf65b607488e2109",
+   "d24fd25dd8946b3c",
+   "de6d5160835260ea",
+   "e92ae36db1b8bebf"
+  ],
+  "32": [
+   "63c0791b11086694"
+  ],
+  "48": [
+   "37cad41715d0882a",
+   "579857b27371ee75",
+   "5dd07b70bf0d8c63",
+   "ae70d871c006e058",
+   "c44ab324b7dc8ab7",
+   "e907f4848565c1c2"
+  ]
+ }
+}

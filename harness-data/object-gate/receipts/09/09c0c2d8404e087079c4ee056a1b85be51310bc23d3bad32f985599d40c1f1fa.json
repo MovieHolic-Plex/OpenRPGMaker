@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09c0c2d8404e087079c4ee056a1b85be51310bc23d3bad32f985599d40c1f1fa",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "구급 약장(흰 + 빨간 십자 띠)",
+ "label": "modern-campus-int/mc-aid-cabinet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn straight-on in pure front elevation. Row 0 is the top outline and row 1 is a single pixel line above the top shelf, lacking the required top surface foreshortening for the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6207
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "first aid / medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn strictly from a front elevation with no visible horizontal top surface (only 0-1px of border outline at rows 0-1 before the front face shelves and compartments begin).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5099
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "first aid medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn in pure front elevation with completely flat horizontal dividers, front shelves, and red cross band. The top surface is only 1 pixel row (row 1), which counts as a negligible edge/rim rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 5864
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "medicine cabinet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cabinet is drawn straight-on in pure front elevation. Row 1 is merely a 1px white cap line under the black border before the front compartments start at row 2, with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4865
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.540Z",
+ "cells": {
+  "16": [
+   "a424aac3e020ac08",
+   "fb7dc49526ad7345"
+  ],
+  "24": [
+   "1acf79b6ed989c30",
+   "2324b39770178f43",
+   "250236dd72747a3c",
+   "4cf97c4a1f9f4441",
+   "6a7a1217c6929bdc",
+   "7c7f70d3e83dc505",
+   "9e251c04b8857aa5",
+   "a4dace9e41f236cf",
+   "adbfc0eeb7d23e1b",
+   "b80b52c35af8a1a3",
+   "d4573b0d43a8cb2e",
+   "e37529a40906734f"
+  ],
+  "32": [
+   "3e624745f1fa7d2b",
+   "4caa4baba5a243b5",
+   "99b24e016e534bfb"
+  ],
+  "48": [
+   "0cd6126f6cc7748b",
+   "2654832bd0ed6622",
+   "71ad384b0752cab3",
+   "7c9eab33641f8f77",
+   "a922933db234004c",
+   "f14698285ab908ff"
+  ]
+ }
+}

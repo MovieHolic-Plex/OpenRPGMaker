@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "291da8acce4ff03399ceee199515a3fe795c283e952b790c45196af2b791b460",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "목록 서랍장(작은 서랍 3×4)",
+ "label": "modern-campus-int/mc-catalog-drawers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drawer chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest spans rows 0 to 5 (6 rows deep) with objects resting on it, leading down to the front face containing a 3x4 grid of small drawers from row 6 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall drawer chest / card catalog",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the chest spans rows 0-5 (6 pixel rows deep) with items resting on it, leading down to the front face containing the 3x4 drawers from row 6 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "catalog drawer cabinet (3x4 drawers)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabinet has a clearly visible foreshortened top surface spanning rows 0-5 (6 pixel rows) with items placed on it, above a front face containing a 3x4 grid of small drawers (rows 6-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6215
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "card catalog drawer chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the drawer chest occupies rows 0-5 (6 pixel rows tall) and has items placed on top of it. Below row 6 is the front face containing 12 drawers (3x4).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6134
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.311Z",
+ "cells": {
+  "16": [
+   "9d0fb141d0f9aa84",
+   "a80d9fb59b34dfad"
+  ],
+  "24": [
+   "4eb061a3a24be3a4",
+   "57ff98229fcf4954",
+   "678072b7fb67d2cf",
+   "6be3a88679624e7a",
+   "8212d104a2e0ad1a",
+   "83e0de64c912dc8c",
+   "9cd94a3b42243fc0",
+   "cce01780ef53b9ad",
+   "e36e6bed85d7db9b",
+   "f0fa5d0a93754502",
+   "f103629e49becd84",
+   "f84aec391018a3ce"
+  ],
+  "32": [
+   "32d7bc2b3d635f8d",
+   "435dfc201d8f49e0",
+   "ebcdd6d59ff807df"
+  ],
+  "48": [
+   "31c7eb678b23af0f",
+   "3f08a3b2dba8f2b2",
+   "552a4d6549c61829",
+   "6b103637bce8b247",
+   "c3d4d0c60c9e60e6",
+   "eb3811f1ab7dabdf"
+  ]
+ }
+}

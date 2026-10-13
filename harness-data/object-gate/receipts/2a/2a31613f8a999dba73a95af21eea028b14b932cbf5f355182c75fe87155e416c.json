@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a31613f8a999dba73a95af21eea028b14b932cbf5f355182c75fe87155e416c",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "느티나무(큰 활엽수)",
+ "label": "modern-campus/mc-tree-zelkova",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tree canopy is structured in layered volumes stepping downward towards the viewer in 3/4 perspective, with the top canopy dome visible across rows 0–6. The base also sits on an elliptical ground patch (rows 41–46) foreshortened from a 45-degree angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8742
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn from a flat side/front elevation: the canopy consists of overlapping vertical circular leaf clumps viewed head-on, and the trunk is a straight vertical rectangle with a flat horizontal cut-off at the base (row 44). Despite the ground shadow ellipse, the main body exhibits 0 visible top-down rows.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10843
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure 2D side-scroller front elevation. The canopy lobes feature flat horizontal underside cuts (rows 25 and 30), and the trunk is a straight vertical rectangle terminating in a flat horizontal line at row 44, showing no foreshortened top surface or 3/4 downward angle despite the oval ground patch.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13067
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "deciduous tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn in pure front elevation (side-scroller style). Foliage clusters have completely flat horizontal underside cuts (rows 25 and 31), the trunk is an unforeshortened vertical column with a flat horizontal bottom edge at row 44, and no downward-angled top surface is visible on the canopy.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12360
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.871Z",
+ "cells": {
+  "16": [
+   "3d918267b4c27a04",
+   "42664a24aa01e9b7",
+   "5b87b211d587cfe7",
+   "5f240fde8ac9d80a",
+   "94205bb08dec6bbb",
+   "9dcd69c151b05aa3"
+  ],
+  "24": [
+   "0f9aa634f78c0ccc",
+   "1c8e9e613b95821f",
+   "366ef0d71b25b734",
+   "42b1fdeb4d212979",
+   "5a17d6dca0c44057",
+   "8852cf80031a1dca",
+   "a94b2ae02bda8ccc",
+   "bab4ce8aba6d899a",
+   "c2fde646102bc508",
+   "d909cb6e1b1e75d2",
+   "e2ad917f827e4257",
+   "f6dec02b0567defa"
+  ],
+  "32": [
+   "5d63fa6239c5e3e3",
+   "6bf81a29e7c7049f",
+   "72a9ea4e7c7bf76a",
+   "f1280c8ed5ae85b5"
+  ],
+  "48": [
+   "4c1d43fcfe1d290f",
+   "514e0abda0661913",
+   "6c61c3c18b22b500"
+  ]
+ }
+}

@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a9b3723babc5c8ee843b98ce68c363142ee2f09c3df8e930ccd6d7f0a0b2d2d",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "교실 노트북 보관 카트",
+ "label": "modern-campus-int/mc-pc-cart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart is clearly depicted from row 8 to row 16 (9 pixel rows) with a handle/tray indentation, situated above the vertical front cabinet face (rows 17-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6747
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom laptop charging cart",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main cabinet body has a clearly visible top surface (rows 12-16, with a handle/tray extending back to row 8) shown from above in 3/4 view above the south-facing blue locker doors (rows 17-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7171
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart is clearly visible spanning rows 8 to 16 (approx 9 rows) with a handle/tray seen from above, resting on top of the front cabinet face (rows 17-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom laptop storage cart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cart is drawn in pure front elevation: caster wheels at the bottom, cabinet doors with vent slots facing straight south, and an upright push handle standing vertically at the top (rows 8–16) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13739
+  }
+ ],
+ "decidedAt": "2026-10-13T16:35:07.538Z",
+ "cells": {
+  "16": [
+   "081959d00a72ae91",
+   "b8f6fa2deb1f3ea4"
+  ],
+  "24": [
+   "16f5fb0bb32b1a58",
+   "564e69cd13c1cfcf",
+   "569cdc66d1020f95",
+   "ab140e9788dbcc64",
+   "b08c5410099d89d4",
+   "b6e10803d2e35535",
+   "bc6efd2d19bd3a79",
+   "c54d62eb6cd41ce7",
+   "cdc11bc6bd2f8505"
+  ],
+  "32": [
+   "0e94362d0b4395ae",
+   "8021276678160691",
+   "8f280bed318fda6a"
+  ],
+  "48": [
+   "1fab5a0caba08bfc",
+   "b474b21a577ba7ec",
+   "c7e4690961f291b9",
+   "d9a8b84f91c91746",
+   "f019d29ccf85df50",
+   "f8074c6bac50cf48"
+  ]
+ }
+}

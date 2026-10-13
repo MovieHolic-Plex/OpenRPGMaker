@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f8b382bb2b0f301f694e2c60128d2ab07c9f7f0d65bfc6ede0feba121a6c206a",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "교실 창(미닫이 알루미늄, 파란 하늘)",
+ "label": "modern-campus-int/mc-window-class",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "classroom window frame with blue sky and clouds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted classroom window set flat against the north wall, correctly rendered as a wall feature with sill detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5347
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window viewed straight-on against a north wall, consistent with 3/4 perspective conventions for wall fixtures.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5405
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "classroom window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window showing a flat frame and panes looking out onto blue sky; valid flat wall-mounted object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "classroom window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted classroom window set flat against a north wall; appropriately rendered flat for its kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4708
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "212bf6977087e54c",
+   "3424656f0a2b1381",
+   "a2909489fdd3596f",
+   "c26df38d120d9a46"
+  ],
+  "24": [
+   "0123881c7d750fea",
+   "09e112ae6c9618a3",
+   "0c466fc40e2038aa",
+   "194d1f33488465a3",
+   "24115248bf25804d",
+   "24dde5003c8017db",
+   "3af9e27a9ecef8c7",
+   "3cb3c3c89abc33ec",
+   "42309e796b260510",
+   "45e4d24fda0771f1",
+   "85b41623bb1d7402",
+   "9385f1ce1a80bc56",
+   "9ed4e655d179be6e",
+   "a64c570f095a6c98",
+   "acc0f21497f2d858",
+   "b6e5cb390415cf14",
+   "c72a25cb0d67ecca",
+   "ce7e6cadd89cd6f4",
+   "d93182006cfba73d",
+   "dbe807b0625a2f11",
+   "e2dc5cccfb75af06",
+   "ef9011ff7e875e12",
+   "f502e33c96834f74",
+   "f880a2a0ddbfe557"
+  ],
+  "32": [
+   "fd7dbb78165221c1"
+  ],
+  "48": [
+   "7d0b37caf3dd1cc4",
+   "ae9537d94865f569",
+   "afcc02c30ad083d0",
+   "b88d9c422b1a6911",
+   "cbcf459106d32495",
+   "e8b7dbcd8da38883"
+  ]
+ }
+}

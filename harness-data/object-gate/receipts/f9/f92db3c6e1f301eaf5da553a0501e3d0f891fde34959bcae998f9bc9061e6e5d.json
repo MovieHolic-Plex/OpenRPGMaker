@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f92db3c6e1f301eaf5da553a0501e3d0f891fde34959bcae998f9bc9061e6e5d",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "시력표·신체 계측 벽판(색 덩이)",
+ "label": "modern-campus-int/mc-eye-chart",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "eye examination wall chart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wall-mounted eye chart (시력표) correctly drawn flush against a vertical north wall. Wall-mounted flat items (plaques, posters, charts) do not require a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall-mounted eye chart board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flat eye-examination chart hanging on a wall; as a wall_mounted item, a flat frontal view is expected and correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3920
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall eye test chart",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted eye examination chart drawn flat against the wall, permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3573
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "eye test chart on wall board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted eye chart/board drawn flat against a north wall, which is appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4142
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.307Z",
+ "cells": {
+  "16": [
+   "806b2fd3e5d61ee3",
+   "e5531205952c4946"
+  ],
+  "24": [
+   "2154fa8bd372e81b",
+   "2548345235cb38b0",
+   "27109dacead51e67",
+   "2de0e73e5797447b",
+   "3f5a27c3be79945d",
+   "4e9ad433d603b4e2",
+   "850f32654d895580",
+   "8d9e9b8b5b4dcc1b",
+   "e9a32cdda80ea849"
+  ],
+  "32": [
+   "70514d8eb9dc3db6",
+   "89b3ce19cdc54401",
+   "89cdbc2fb9ec44c3"
+  ],
+  "48": [
+   "095e757753522369",
+   "57992f28f09c04a9",
+   "78abc4b04c892a4d",
+   "dec085b50e7c66fc",
+   "f4394d6456e01f22",
+   "f5e2d797dc855c67"
+  ]
+ }
+}

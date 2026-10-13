@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ad8fe4d8199f65d7544a8c7940dcaff20dc3ab307a4a59e873460759116acdb",
+ "width": 32,
+ "height": 32,
+ "kind": "figure",
+ "name": "교명석(글자 없는 화강암 비석)",
+ "label": "modern-campus/mc-school-stone",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite monument stele on base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The monument rests on a wide rectangular base plinth whose top horizontal surface is clearly visible from rows 15 to 21 (approx. 6 rows tall) leading to the front edge highlight at row 21, above the south vertical face on rows 22-25. This establishes proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13663
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "granite monument stele on base plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The monument rests on a wide stone plinth whose top surface is clearly visible from above across rows 15-20 (6 source pixels tall) before dropping down to the south front face (rows 21-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11079
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "granite stele on a stone plinth",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth clearly displays a top surface measuring 5 source pixel rows deep (rows 17-21) in front of the stele, bounded by a front edge highlight before the 4-row south vertical face (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8215
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "granite monument stele on plinth",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The monument is mounted on a wide plinth whose top horizontal surface is clearly visible from above across rows 15-21 (6 rows deep) in front of and beside the upright stone, leading to a south-facing front edge (rows 22-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12467
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.304Z",
+ "cells": {
+  "16": [
+   "5174981dfb4b119b",
+   "6516cfc1a9cb7abf",
+   "e16e75f7348d6389",
+   "f1bdc0a0f5aab48c"
+  ],
+  "24": [
+   "11c3ddaa5b9a2039",
+   "1ead748582f87df0",
+   "2f023094027b4724",
+   "33e9beab51d40da1",
+   "3e7070e84364362e",
+   "54f3415b6c2d7931",
+   "5f7cdb9079968221",
+   "6472fa4e3f6eccd9",
+   "7fa690aa72ca9843",
+   "8ac1692c9b67d8d6",
+   "92eaefba6af0a723",
+   "9311bb65e6b75e45",
+   "9f4ab62a2731dcb7",
+   "a2d953afa5ec5737",
+   "aac906b1d3c8bd61",
+   "b9942cc1810d8c6c",
+   "c747a4c15103aad9",
+   "cbd1264f7410fd38",
+   "d756aef50d70047d",
+   "d7f7d43d172b8434",
+   "e0b75c7f81966e83",
+   "e262914921a9c51b",
+   "fb0e57f3c198b583",
+   "ff1bdfcec091b4e2"
+  ],
+  "32": [
+   "a8504b0081a0b44b"
+  ],
+  "48": [
+   "241c3f2ff1bafce0",
+   "359283d4c7d42509",
+   "39654344d9a9b177",
+   "6facf7b369a475f2",
+   "ab4a27a079c255c7",
+   "ae16a1fa79c27a4a"
+  ]
+ }
+}

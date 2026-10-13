@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b74731bef6c0a8060911420f8016f2623b103f5b517e7736a03ec9a8e5bd6a63",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "도서 수레(낮은 2칸, 책 더미 올림)",
+ "label": "modern-campus-int/mc-book-trolley",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two-tier book cart with low front compartments and top surface",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cart spans rows 9 to 16 (8 source pixel rows) with books resting on it, leading to the front edge at row 17 and the two open lower compartments facing south below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11539
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "book cart with upper tray and lower shelf",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top tray/surface spans rows 9 to 16 (8 rows deep), clearly viewed from above at 3/4 perspective with books lying flat displaying their top covers and front page edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7513
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two-compartment rolling book cart with a flat top surface holding piles of books",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cart's top surface is prominently visible from rows 9 to 16 (8 source pixels deep) with books lying on it, while the front face (rows 18 to 29) shows two lower compartments with standing books.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12037
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "book cart with two shelves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire cart is drawn as a flat rectangular front elevation enclosed by a 1-pixel dark outline at row 8, with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6725
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.492Z",
+ "cells": {
+  "16": [
+   "29ab75b34f57fbb4",
+   "3a220c533721b4d2",
+   "4274bd6be2a77792",
+   "f88889104ae3a7fd"
+  ],
+  "24": [
+   "0353cd4e9b06c2e4",
+   "0c82561983440979",
+   "0ce44add9aabdd69",
+   "25b22bd3d32b16e9",
+   "2645d8691eeead75",
+   "5d8768bd5c43c191",
+   "6d8977cbb29cb380",
+   "712fbf4ee636a6ee",
+   "77877d844a880ba3",
+   "787ad48c729c25b6",
+   "7a7a28d984c1a7f2",
+   "85241e6c868179ee",
+   "b29d2ce223fd4a73",
+   "bdb2947d08672f46",
+   "d4f90e9345a4240d",
+   "e20de698842adf67",
+   "ebb3a148803356f6",
+   "f7651a5195c1806f"
+  ],
+  "32": [
+   "d0c817a4f2b7173a"
+  ],
+  "48": [
+   "2c08f980a08a2a6e",
+   "6155d480f72de429",
+   "82e7b8652ba92534",
+   "be931731534347e3",
+   "cfccbe9240e966df",
+   "d2547a3efdfe713b"
+  ]
+ }
+}

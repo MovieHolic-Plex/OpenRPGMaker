@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "524d196ff5da71a5a86111bd8cb6a1b6610eb4b83c188a4304416fdb56d2cdc6",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "국기 게양대(흰 깃대 + 학교 깃발 + 돌 기단)",
+ "label": "modern-campus/mc-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with stone plinth base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tiered stone base plinth is drawn as flat vertical rectangles in pure front elevation, showing only 1px outline caps at rows 32 and 40 with no foreshortened top surfaces visible for either tier.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7184
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with stone pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole and both tiers of the stone pedestal are drawn in a flat 2D front elevation. Neither the pole, the finial, nor the stone blocks display any foreshortened top surfaces (top_rows = 0), and the upper block rests directly on the top outline of the lower block as in an architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with two-tiered stone pedestal and flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both tiers of the stone pedestal and the flagpole are drawn in flat front elevation with horizontal outline bars (rows 32 and 40) and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5284
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole and stepped stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the flagpole and the two stone base tiers are drawn in pure front elevation. The base tiers are stacked flat rectangles with 2D vertical shading (light top half, dark bottom half) with no top horizontal surface visible, and the pole is capped with a flat 2D finial.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8370
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.302Z",
+ "cells": {
+  "16": [
+   "9205072f6f6ffb62",
+   "c57b223a53eca300",
+   "e20c41df99400834"
+  ],
+  "24": [
+   "521dea48442164a3",
+   "818ff8760e2a56ea",
+   "a0d76d494c461eb3",
+   "b7ab8985f0047581",
+   "c880d4440755aa0d",
+   "cc46d39c4cd89225"
+  ],
+  "32": [
+   "2cbac88bc44337db",
+   "36b37c543994f306",
+   "37849cf1e604984c",
+   "778437d3e6be2a65",
+   "80ccd35095d6f1c1",
+   "850455398f7c40c7",
+   "87df694bad2e1c54",
+   "a779a5d23433ba83",
+   "c3b84f02552db943",
+   "c806a06b2db8cf8f",
+   "e6b5ce0a48dfe1a8",
+   "ea8961e0cf18dfd5"
+  ],
+  "48": [
+   "b5e9dbe9f06fee41",
+   "d5677dd078397572",
+   "f01eeae689d45e0c"
+  ]
+ }
+}

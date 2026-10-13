@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b676c7a0ff59f27588387178b00e4d2ddc9f13b771e7b8a5d6bfaedf447af3b",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "강의실 긴 책상(3인, 의자 붙음)",
+ "label": "modern-campus-int/mc-lecture-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "long classroom desk",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface spans rows 3 to 7 (5 source pixel rows) with items placed on it, above a distinct vertical front panel and legs on rows 8 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7427
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "classroom desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop is clearly visible from above spanning rows 2 to 7 (6 pixel rows tall) with items resting on it, followed by the front panel and legs in rows 8 to 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6368
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "long lecture hall desk with seats behind it",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop spans rows 2-7 (6 pixel rows tall) displaying objects resting on its surface, and the front face/modesty panel spans rows 8-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6352
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "long classroom desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface spans rows 2-7 (about 6 pixels deep) displaying objects resting on top, followed by the front modesty panel and legs from row 8 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4148
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.308Z",
+ "cells": {
+  "16": [
+   "1ca986622825563b",
+   "2770bd90677c4fdf",
+   "ad31d2d05dbfa005"
+  ],
+  "24": [
+   "3d25acc2ec809f57",
+   "42c114b054459a66",
+   "969225704125d204",
+   "ce22d1606bff2f18"
+  ],
+  "32": [
+   "0b7a69bd9eff08cc",
+   "3d77dd80b9c1e644",
+   "4e32e220eaf08b8d",
+   "5487a1f9a1bbbe9d",
+   "5e4709c09beb6ec8",
+   "88998d96595d40a1",
+   "9772e7b5a2f60292",
+   "a25495b073a31732",
+   "a59aa8aa988e8b2e",
+   "d7a80deaad4d5b56",
+   "d80370fdf83a30c6",
+   "ec2c5410fd1e461d"
+  ],
+  "48": [
+   "8d802c244d59ce9d",
+   "ce986b7a97323554"
+  ]
+ }
+}

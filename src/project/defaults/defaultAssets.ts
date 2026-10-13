@@ -14,6 +14,7 @@ import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramRefere
 import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
 import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
 import { WIZARDING_WORLD_TEXTURE, createWizardingWorldTileset, ensureWizardingWorldReferences, ensureWizardingWorldTileset } from "./wizardingWorld";
+import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset } from "./modernCampus";
 import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
@@ -162,6 +163,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === WIZARDING_WORLD_TEXTURE) {
         changed = ensureWizardingWorldTileset(project.tilesets[id]) || changed;
         changed = ensureWizardingWorldReferences(project.tilesets[id]) || changed;
+      }
+      // 현대 학교·캠퍼스 (modern_campus 굽기): 번들 칸 표·`mc-` 부품·참고문서(야외 mc-·실내 mci-)를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === MODERN_CAMPUS_TEXTURE) {
+        changed = ensureModernCampusTileset(project.tilesets[id]) || changed;
+        changed = ensureModernCampusReferences(project.tilesets[id]) || changed;
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       // 몬스터 수집 손 도트 시트(지역별): 다시 구운 시트면 칸 표를 번들 것으로, 아니면 빠진 번들 킷만 더한다.
@@ -327,6 +333,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
   if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
   if (asset.textureKey === WIZARDING_WORLD_TEXTURE) return createWizardingWorldTileset();
+  if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (isMonsterKitTexture(asset.textureKey)) return createMonsterKitTileset(asset.textureKey);
   if (isEmeraldMonsterKitTexture(asset.textureKey)) return createEmeraldMonsterKitTileset(asset.textureKey);
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();

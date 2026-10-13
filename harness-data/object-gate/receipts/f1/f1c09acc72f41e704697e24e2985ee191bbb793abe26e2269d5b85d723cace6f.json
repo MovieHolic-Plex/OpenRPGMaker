@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1c09acc72f41e704697e24e2985ee191bbb793abe26e2269d5b85d723cace6f",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "보건실 책상(약상자·체온계 올림)",
+ "label": "modern-campus-int/mc-nurse-desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "infirmary desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1 to 8 (8 rows) with items placed on it, and the front face with drawers occupies rows 9 to 14, providing a clear 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8545
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk with tabletop items and front drawers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop spans rows 1 to 8 (8 rows tall) displaying several medical items, and the front face with drawers spans rows 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6975
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "infirmary desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface is clearly visible from row 1 to row 8 (8 rows) displaying several small items, while the front face with drawers extends from row 9 to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4108
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1 to 8 (8 rows tall) displaying various items, with the front drawers visible on rows 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6432
+  }
+ ],
+ "decidedAt": "2026-10-13T16:20:17.311Z",
+ "cells": {
+  "16": [
+   "a56ed046872831c2",
+   "b1dd62734ba8a493"
+  ],
+  "24": [
+   "0a956004516944be",
+   "3061029417b70f32",
+   "53bfa23d6e1d5a9e",
+   "5ad2beaec0fa0df8",
+   "60d155680d849237",
+   "6478e9a15302267b",
+   "6865d55f697d1812",
+   "b0aad32b1be3a0bd",
+   "c0d543ce2afd4d03",
+   "c20baaee64dd4b78",
+   "cc5fa5cccdc49b62",
+   "d71ce8315b41b040"
+  ],
+  "32": [
+   "55fd8514c4ab0715",
+   "c3b6dd6d7dd7ea3e"
+  ],
+  "48": [
+   "184ab0900502f3c8",
+   "313a6abc028ab504",
+   "9998c8d442fdc7a5",
+   "b623bc68a5547735",
+   "d30364e5b227fcac",
+   "eb1fcfac39d93a81"
+  ]
+ }
+}

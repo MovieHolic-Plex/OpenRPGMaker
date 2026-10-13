@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9191b736a1a611af19d3d2e48efab6396776dfb2bd6171c078207253866b3e61",
+ "width": 16,
+ "height": 32,
+ "kind": "frame",
+ "name": "이동식 화이트보드(삼각 받침)",
+ "label": "modern-campus-int/mc-easel-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "whiteboard and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard, frame, tray, and base bar are all drawn in pure flat front elevation with no visible 3D top surface or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5148
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "whiteboard and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard, frame, marker tray, and base bar are drawn completely flat in pure front elevation without any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4005
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "whiteboard and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard, frame, and base bar are drawn completely flat in pure front elevation with no visible horizontal top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6446
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "whiteboard panel and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The whiteboard, frame, marker tray, and base are all drawn in pure flat front elevation without visible top surfaces showing 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4732
+  }
+ ],
+ "decidedAt": "2026-10-13T16:29:11.492Z",
+ "cells": {
+  "16": [
+   "7c3f9d4a0184b22a",
+   "9cb6d7ba48d328cf"
+  ],
+  "24": [
+   "0931ddc87d37ac35",
+   "0a9331eb9d8825db",
+   "15719db34331dd2b",
+   "40f5ce97da6247b7",
+   "4f432f30ac74276e",
+   "6e25e6da22ddcb2b",
+   "82a356abeeebcbbf",
+   "9f17987a257e23aa",
+   "b68912dd9e555b49",
+   "c442953f80f4ff02",
+   "daebeab7142884d6",
+   "edb7a82fb9644ffc"
+  ],
+  "32": [
+   "01d0d7a2c7b357e2",
+   "338854d4ac2b6f94",
+   "983dcc57039c2d43"
+  ],
+  "48": [
+   "2257247ce2e3985f",
+   "2872e663e63758f2",
+   "2afd55c5e1bd8151",
+   "2d66f29546ecf259",
+   "5d65a2ce2919754e",
+   "f0257a24764698b4"
+  ]
+ }
+}

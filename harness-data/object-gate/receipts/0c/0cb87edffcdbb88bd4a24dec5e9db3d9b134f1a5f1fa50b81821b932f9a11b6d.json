@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0cb87edffcdbb88bd4a24dec5e9db3d9b134f1a5f1fa50b81821b932f9a11b6d",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수 물결 프레임 2",
+ "label": "modern-campus/mc-fountain-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fountain basin with water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin forms a wide ellipse viewed from 3/4 perspective, displaying roughly 18 rows of interior water surface (rows 17-34) bounded by a circular stone rim and a south-facing basin wall (rows 35-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4435
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fountain basin with water and central jet",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly foreshortened in 3/4 view showing an elliptical water surface spanning roughly rows 16 to 34 (about 18 rows) with the front outer rim and wall below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6489
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "circular stone fountain basin filled with water and a central water jet",
+    "kind_matches": true,
+    "top_rows": 19,
+    "opening_visible": true,
+    "opening_rows": 19,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is drawn as a wide ellipse visible from above, showing roughly 19 rows of swirling water inside (rows 16-34) alongside an 8-row front basin wall (rows 35-42), perfectly following 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3965
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fountain basin with water",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": true,
+    "opening_rows": 18,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin forms a wide elliptical opening seen from above, filled with water across rows 16 to 34, with a foreshortened rim and front wall below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3780
+  }
+ ],
+ "decidedAt": "2026-10-13T16:12:18.870Z",
+ "cells": {
+  "16": [
+   "0810e12222a2ac34",
+   "0dc77fa95d3ed440",
+   "3a0f697ff2e35644",
+   "64d6ae5efd0b2832",
+   "67817474f1ea6190",
+   "8d5ec63ad834d1a5",
+   "9ca5c269dd098d9e",
+   "c78fd844dcb90ee9",
+   "f3d859434c1485b5"
+  ],
+  "24": [
+   "0117fdad35bb04bd",
+   "068e913bdb16ad1a",
+   "52dd74f3070b5216",
+   "d1053001c0cbf948"
+  ],
+  "32": [
+   "0d6966e645db59e4",
+   "1f03247b738cf173",
+   "1ff19bcaf92a8269",
+   "20fac171d44e9f52",
+   "2c65a82527bc6252",
+   "48d14ed782809e18",
+   "55472e4f0c42c60d",
+   "66ff29d0fa14c35b",
+   "6a25e46afc893909",
+   "6c94e3e1c610a7e5",
+   "736be85984a66e3b",
+   "749ec15a50a11674",
+   "7672bf48d4e8bdae",
+   "7d1fb04389c17097",
+   "97ab758bc7e13f5c",
+   "a5adca54ae614f0d",
+   "b14cc837e4daeb05",
+   "c07331b4db1e7c77",
+   "c7599be73689e3e8",
+   "c8b45bdd4071f8fb",
+   "f5597c8176feed24",
+   "f70cb373f63994b5",
+   "fa0c31601794a6e0",
+   "fd8411a93e370269"
+  ],
+  "48": [
+   "875b1163b48ed797"
+  ]
+ }
+}
