@@ -1,0 +1,117 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7d0c0d351a5044bfc32a5af2c76789921b6575647b009b36d7891630f8f79316",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(콘크리트 기둥 둘 + 굵은 가로대)",
+ "label": "modern-campus/mc-pullup-bar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal beam with two supporting pillars",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal beam clearly displays a broad top surface spanning rows 1 to 8 (8 pixels tall) above its darker south face on rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5761
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal beam and concrete pillar frame",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The thick horizontal top beam displays a prominent foreshortened top surface spanning rows 1 to 8, followed by a shaded south-facing front face on rows 9-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4438
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal crossbar spanning two pillars",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbar shows a clear 8-row top surface (rows 1-8) above its front face (rows 9-11) consistent with a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5292
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal crossbeam atop concrete pillars",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The crossbeam clearly shows an 8-row light-shaded horizontal top surface (rows 1-8) viewed from above, with a distinct front face below it (rows 9-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5369
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.153Z",
+ "cells": {
+  "16": [
+   "8cbde322edd851f9",
+   "976b99d14b58c80e",
+   "c3ea2eaebb4c2027",
+   "d4155e932b66ece7"
+  ],
+  "24": [
+   "3703007d83ef3841",
+   "4a4feccdcf391eec",
+   "4de59bae1ad62d9d",
+   "babc96fd5f04024b",
+   "cb58c0ca7dd233c4",
+   "ebb218595ce3e60b",
+   "f20a943968d160ec",
+   "f238a81064da822e"
+  ],
+  "32": [
+   "0fab75d6bd56b301",
+   "33d1b333cb7755a6",
+   "62a6daa5fe2a5681",
+   "835b3c07770152ba",
+   "bc6b9b2861c14c61",
+   "e6acbafff6da8bfd"
+  ],
+  "48": [
+   "49d32e19b24ec82b",
+   "651f0d4ee8634e40"
+  ]
+ }
+}

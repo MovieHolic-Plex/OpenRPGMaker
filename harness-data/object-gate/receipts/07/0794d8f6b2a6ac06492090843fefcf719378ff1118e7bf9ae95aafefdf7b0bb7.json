@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0794d8f6b2a6ac06492090843fefcf719378ff1118e7bf9ae95aafefdf7b0bb7",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "연석(남쪽 도로 가장자리)",
+ "label": "modern-campus/mc-curb-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pavement tiles and curb edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing stone paving and south curb edge viewed from above in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6504
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "curb and pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground paving stones (rows 0-11) leading to a south curb edge (rows 12-15) viewed from the standard top-down 3/4 angle, functioning as a terrain tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6099
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "curb and stone road pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone pavement with a southern curb edge, viewed correctly from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7992
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "curb and pavement terrain tile",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts sidewalk paving stones (rows 0-11) stepping down via a highlighted curb edge (row 12) to a south vertical curb drop (rows 13-14) and lower road surface (row 15), fully consistent with 3/4 perspective terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6863
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "ee11451475b94a9f"
+  ],
+  "24": [
+   "4aea99d7a6216021",
+   "4e51eb02e9d1cb00",
+   "65ddf9bae2c30f6e",
+   "720e648a5673837a",
+   "81fef90f7733a1db",
+   "e8ec8933369445e7"
+  ],
+  "32": [
+   "13164ee50fb1d2bf",
+   "36e354fc6bbe02f7",
+   "620bd76d346432b9",
+   "6ade39d05b9f1314",
+   "92289c5b6588ac96",
+   "ab480be69ec794a5"
+  ],
+  "48": [
+   "11365e0e4b40f5ea",
+   "2c6f96553c0bb11e",
+   "357f2a7530b6a479",
+   "6fbaad8b69870866",
+   "e78e1029464227ab",
+   "f35f00557148786a"
+  ]
+ }
+}

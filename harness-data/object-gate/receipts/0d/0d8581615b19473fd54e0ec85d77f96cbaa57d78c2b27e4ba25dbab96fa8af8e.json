@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d8581615b19473fd54e0ec85d77f96cbaa57d78c2b27e4ba25dbab96fa8af8e",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "시계탑(벽돌 몸통 + 시계판 + 평지붕 슬래브)",
+ "label": "modern-campus/mc-clock-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock tower roof slab and brick shaft",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof slab clearly shows its flat top surface from rows 1 to 12 (12 source pixels tall with an inset panel and roof structure) above its 4px front overhang edge, and the base plinth also shows a 4px top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7209
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock tower with flat roof slab and brick body",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat roof slab shows a foreshortened top surface spanning rows 1-12 with a center feature, resting above a 4-row front overhang (rows 13-16). The base plinth also shows a 4-row top surface (rows 49-52).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8859
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat roof slab shows a large top surface spanning rows 1-12 with its south edge/fascia at rows 13-16. The base also displays a visible top plane (rows 48-52).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6265
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock tower with flat roof slab, brick shaft, clock face, and base plinth",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof slab shows a large foreshortened horizontal top surface spanning rows 1-12, complete with an inset structure on top, and the base plinth also shows a 4-row top surface (rows 49-52).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6625
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.151Z",
+ "cells": {
+  "16": [
+   "2dcf3a500a0bc77e",
+   "3d8a94a0cd960915",
+   "8c87f8d2f6ecf117",
+   "9bab4008b0598378",
+   "ae613bdf935a64ad",
+   "c13f9d07304be010",
+   "ca0bd6602d0fd6cf",
+   "e6b0c1cb937e839e"
+  ],
+  "24": [
+   "0fff85bb82fb27fa",
+   "189a0597d98c0416",
+   "2429933975fc36a7",
+   "271f9f17e9f7b8ec",
+   "2a6d00f2cba96696",
+   "2d3c24e1ebc1ef97",
+   "32b937f3ba3e46a0",
+   "3576bf0a25872987",
+   "3756799eb470c67a",
+   "400a44f24536a0c0",
+   "47a26abe9efb67c0",
+   "48c010828fc5d4db",
+   "5fbad1bc58035aa2",
+   "6eff8a766c61fe47",
+   "8981828deb16cf6c",
+   "8f587bd0a6b2e363",
+   "95a32ca07348b415",
+   "a9fdada4de83c7a3",
+   "c073c5c10aec3cdf",
+   "c291edaee22fef59",
+   "d0772ec0b996c996",
+   "d09eba4b01b89a72",
+   "da876823c033f4b9",
+   "daf09cc8fab9b2f0",
+   "dbb32715899da4cc",
+   "e19bdcdb46c3c77b",
+   "e47c52bee8447eb5",
+   "e5603f15bb29ea4d",
+   "efbc9177fb9e13aa",
+   "f0113daba1810712",
+   "f653350794f12028",
+   "f69dbfd0e8b23073",
+   "f942de648bcc7e16",
+   "fceea2e516c62ea2",
+   "fd6a8b0aab6ceaaa",
+   "fe65089c8477a9c0"
+  ],
+  "32": [
+   "82b22ad497bf5e43",
+   "f88276c20f856e19"
+  ],
+  "48": [
+   "14ecf1ee7a50436a",
+   "1a22f3b7e0293484",
+   "2ef281a23ec76b8c",
+   "36668d0a048347e9",
+   "43278deaddda78b5",
+   "518b90c43f685a0d",
+   "671b75813cd3d41f",
+   "87f31661d9c0c1ad",
+   "8e92d4d0e4c964c7",
+   "d62a3dbe7b480de3",
+   "dac48f9b8b15cd6c",
+   "e137527162878745"
+  ]
+ }
+}

@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "100566c52b8e823ad58eb2d6c68e95e2aad1c4409202a923834ea9d176007f17",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "게시판(코르크 + 철제 틀 + 덮개)",
+ "label": "modern-campus/mc-notice-board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board with iron frame and overhead cover",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The overhead metal cover features a large 7-row top surface (rows 1-7) above its south-facing overhang (rows 8-10), correctly representing 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6022
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board with metal cover/roof",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cover/roof has a 7-pixel-tall top surface (rows 1-7) seen from above, followed by a south-facing rim (rows 8-10) and the vertical cork board (rows 11-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulletin board with iron frame and protective cover",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the protective cover/canopy is clearly shown foreshortened from rows 1 to 7 (7 pixel rows tall) above the cork board face, showing appropriate 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8792
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bulletin board with cork surface and metal canopy",
+    "kind_matches": false,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a wall-mounted or freestanding bulletin board (cork board with pinned notes), not a box. While the top surface of the upper metal canopy/cover is drawn with 7 rows of depth, the object category 'box' does not match a bulletin board.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 10996
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.179Z",
+ "cells": {
+  "16": [
+   "21dce9e20ed00350",
+   "2990b5b4a3d53f25",
+   "98ec910229eeeb75",
+   "c561a1ed472cd9b8"
+  ],
+  "24": [
+   "09c5117ce20da08b",
+   "138abaa1183ce009",
+   "22cf4c5ae83f9e97",
+   "29e020b70f1b28d0",
+   "31bac60382494202",
+   "32bbb5b6dc854287",
+   "350d9821476ce8e4",
+   "387adfd9dc9c0a67",
+   "3c430641c5e9b3f7",
+   "3dbdeb76b9fbdddf",
+   "60f6fb93be4baf63",
+   "6ef6f10c51ac77bf",
+   "95a7dc08da3be8d6",
+   "95c507bcaca5b40b",
+   "a1ff311e8ceabedb",
+   "a5a95d51d1834da5",
+   "b03fba04c203eb70",
+   "b13a71076ab6cd47",
+   "b4dcc5b5a23e32e8",
+   "d52a10fac6b84de8",
+   "e8d1d233a15c02ec",
+   "ef6edc8d5d177e9e",
+   "f5fea5c5ce2c099d",
+   "fe54a736ed7b1f89"
+  ],
+  "32": [
+   "f5c750ed63273c01"
+  ],
+  "48": [
+   "2d7e2834aad92aac",
+   "4be6aa3bcd1c5045",
+   "a6eb6b31f96c7b75",
+   "b7a593a3303cb738",
+   "bd5fef2bfa24f686",
+   "e43cb316cabe7268"
+  ]
+ }
+}

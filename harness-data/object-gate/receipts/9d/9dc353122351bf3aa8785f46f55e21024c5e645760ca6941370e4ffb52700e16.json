@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9dc353122351bf3aa8785f46f55e21024c5e645760ca6941370e4ffb52700e16",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "게양대 깃발 프레임3",
+ "label": "modern-campus/mc-flag-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular pedestal / monument frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rectangular block and pedestal are drawn completely flat in pure front elevation with flat horizontal 1px boundary lines (row 7, row 19) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7752
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole / pedestal with sign or panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central rectangular structure and its base are drawn completely flat from the front with horizontal outline borders at rows 7 and 19 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6572
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular display board / pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular structure is drawn as a flat 2D rectangle with a 1px outline at row 7, showing no visible top surface or 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular flagpole base/stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure has a completely flat 1px horizontal black border across row 7 with no visible foreshortened top surface or 3/4 view perspective, drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6584
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.138Z",
+ "cells": {
+  "16": [
+   "79b06f88dc61a051",
+   "fde01dc9f7afa204"
+  ],
+  "24": [
+   "09c857a6023f79b0",
+   "2bcd0f633d9d408d",
+   "38474fd716a03061",
+   "5a10e624412bd09e",
+   "6691e9e7bea3d7fd",
+   "794d55c15c0c75e1",
+   "8a484b9ff68ad3fe",
+   "8abf4d9747718130",
+   "9c9496aac494da4b",
+   "a84360270a771556",
+   "be4319bc9042e23c",
+   "ea6947f71ff3f7ba"
+  ],
+  "32": [
+   "069b55e917972337",
+   "356424014a665bea",
+   "9892f04c1fea8c54"
+  ],
+  "48": [
+   "76a01c3445e5b6b8",
+   "9ab2da967b9019aa",
+   "c8349347e34743d4",
+   "ca041b55d35fb8d3",
+   "d1d2b98ff16702c4",
+   "ecdc4632f4f70be6"
+  ]
+ }
+}

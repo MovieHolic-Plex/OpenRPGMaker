@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "16c03a48cfc382cf5d1649e5b4eeda348696ce01b199f02b78f123845fb54a82",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수 물 프레임0",
+ "label": "modern-campus/mc-fountain-f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fountain basin with water pool",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 9-30, ~22 rows tall) surrounded by a 3/4 view rim and a short south-facing front wall (rows 32-36).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6415
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening with water inside is shown as a large ellipse (approx. rows 8 to 31, about 23 rows tall) viewed from above at a 3/4 perspective, with a clearly visible rim and front south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4612
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fountain basin with water",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin is viewed from above at ~45 degrees with an elliptical opening filled with water spanning roughly 22 pixel rows vertically, showing both the top rim and south-facing outer wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3425
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a large foreshortened elliptical opening filled with water (rows 9-30, roughly 22 rows high) and a visible front outer rim/face in correct 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4051
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.138Z",
+ "cells": {
+  "16": [
+   "0341283dca9aa88a",
+   "0699f720ced1ac52",
+   "08d603bb8211b4be",
+   "386b66594efcadba",
+   "3e0e572b88d58f54",
+   "5399cad1438e913c",
+   "5921880b859b68c2",
+   "b0241576ef378b79",
+   "c58c3a958420a828"
+  ],
+  "24": [
+   "36460635ee35dc06",
+   "47026efe2a345f64",
+   "bb5e82627e052d4d",
+   "f425a795f263b75f"
+  ],
+  "32": [
+   "070c007a4fdb66c5",
+   "0ab14b66e6af03bd",
+   "1c0f0c10c27325cf",
+   "29ce628aff8bccd0",
+   "2a1d69af43a33e8c",
+   "2f324406f9926fe3",
+   "396989aa23d8f83f",
+   "3fcd15d1b14b8d66",
+   "408080e2b858b161",
+   "4353eac926a98dce",
+   "4759dbaeb2621328",
+   "503031397d755cdd",
+   "5a1cb4765d9b6521",
+   "5c0f21cb1e835cb0",
+   "8a1de83bfede725d",
+   "ad211f2f3da72f67",
+   "aeff028a80ae29bd",
+   "cb92592bc00a4cdd",
+   "ce69330c27dde141",
+   "d31f46bdc4802622",
+   "dc9f94d366e39333",
+   "e0530c8258d60d8c",
+   "e0ff7a18231457a5",
+   "fe8058281d0e5776"
+  ],
+  "48": [
+   "89633263edaf5be2"
+  ]
+ }
+}

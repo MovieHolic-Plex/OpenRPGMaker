@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c8c2cc5d600fa881ac933d3ee9afa0aaba12b4ec19d86ff40ecdd7108dabd0c6",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "축구 골대(흰 틀 + 그물 윗면)",
+ "label": "modern-campus/mc-soccer-goal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soccer goal with top netting roof",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-10 clearly depict the horizontal top plane (netting roof) of the goal box extending backward from the front crossbar at rows 11-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5689
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "soccer goal frame with top net surface",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the goal net is clearly foreshortened and visible from above across rows 1-10 above the front crossbar (rows 11-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7710
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soccer goal frame with top net",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top net of the soccer goal extends backward across rows 1-10 showing a clear foreshortened horizontal grid surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4899
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "soccer goal frame with top net surface",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top net surface extending back from the crossbar is clearly visible and foreshortened, spanning rows 1 to 10 (10 source pixel rows), accurately representing the horizontal top plane of the goal net in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6879
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.153Z",
+ "cells": {
+  "16": [
+   "0a69198b15d3eef8",
+   "1fe42cb70a3a7dae",
+   "3679cc28fac3a926",
+   "3b91074b50eb8f2c",
+   "922132290f1618fa",
+   "a9d70c2c3dd897d3",
+   "cf2197e10557b24b",
+   "d3d73a09df62f6af"
+  ],
+  "24": [
+   "0a36ddac94df84b9",
+   "13b21256e1d3ce1e",
+   "1adc4cd0d7ca2942",
+   "1ed085d28da1e2cf",
+   "1f5eceed4e785a16",
+   "2005cef5b9d1c6bb",
+   "217532ea79302993",
+   "3e31a492b10c4092",
+   "476f64406b25968c",
+   "4e92a5e5fcd2125b",
+   "53196c393f7445b9",
+   "587af8332e958b75",
+   "638c3034e7118686",
+   "6a430fd7f9374280",
+   "6abf1897557e5676",
+   "72acdf7f721ef966",
+   "75c673b4c1e6e47c",
+   "7de855ee29010946",
+   "812a28ac96809f1e",
+   "88c2aef30a3a9d4e",
+   "8c65bcc74491cb21",
+   "9cd334db99c7ce98",
+   "9d3757ff4316c3c7",
+   "a47221cb06ffd327",
+   "a8d0de4d8402d303",
+   "ca51b5bec74b58c6",
+   "cba6fecd153ed61c",
+   "cd4d506a27a47716",
+   "d53889a7521b81f5",
+   "dd1f5f7fc3738065",
+   "dd4660355af0e96d",
+   "df7ebff690a53b48",
+   "e5789b105d055d60",
+   "edc12defbc265ac4",
+   "eef9c869af1587ec",
+   "f3b422b205fe1828"
+  ],
+  "32": [
+   "a50d51cccdf113aa",
+   "a6a3a254f1e77b8f"
+  ],
+  "48": [
+   "20806b48d1ad73f9",
+   "6792a6265b94ddfa",
+   "6aa336f17fa1564b",
+   "9174f158c7dc8488",
+   "98faf8bf305f129d",
+   "ac5d5b096bf47f2a",
+   "cef6f9d841e9fb32",
+   "e2f720407f9f5c91",
+   "e3fddb822d8705ab",
+   "e7d6934bb4d06763",
+   "ef24df0432716739",
+   "fbdc751f1f86df3a"
+  ]
+ }
+}

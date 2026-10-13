@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8d0674f6943b1626f3354b07bf5df2ee3c5c34c93b5ad785672f630b0bd9687",
+ "width": 48,
+ "height": 16,
+ "kind": "box",
+ "name": "분리수거함 셋(색 상자 윗덮개)",
+ "label": "modern-campus/mc-crate-recycle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "set of three 16x16 recycling boxes (blue, green, yellow)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each 16x16 bin clearly shows both its top lid surface (rows 0–8, containing a 3-row disposal opening/slot) and its vertical south front face (rows 9–15) in standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10891
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "recycling bin set",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of each bin is clearly visible from above across rows 1–8 with an interior recycling slot opening (rows 3–5), while the south/front face is shown below it across rows 9–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8843
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "set of three recycling bins (blue, green, yellow)",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each recycling bin shows a clearly foreshortened, brightly lit top surface across rows 1–8 with a rectangular drop opening (rows 3–5) showing interior depth and shadow, followed by the darker vertical south face on rows 9–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12301
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "set of three recycling bins with colored top lids and dark front bodies",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brightly lit top surface of each bin lid occupies rows 0-7 (8 source pixel rows) and features a recessed slot opening (rows 3-5), clearly distinguished from the darker vertical south face below (rows 8-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6154
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.182Z",
+ "cells": {
+  "16": [
+   "3d32777d2c91da91",
+   "a367566c48f7da16",
+   "e79e5c1dc0760a29"
+  ],
+  "24": [
+   "a5e2369bff8661bc",
+   "c8088e8a3abfb375",
+   "f1cc804d1e3eeb30",
+   "f4904b8f6f6d1b0f"
+  ],
+  "32": [
+   "102f9a36a1d7e939",
+   "3d7b3798cf0d5a36",
+   "4d785388fa82039f",
+   "585b041476176a41",
+   "811c29a1cc01c541",
+   "8d193dec5be9d640",
+   "af0c7e24ad9b9d95",
+   "b087d7bfcf598f34",
+   "b27cfa423f71f6b9",
+   "c6dbf7fef40691be",
+   "d0fe65f7227683f8",
+   "ed864a2cb321593e"
+  ],
+  "48": [
+   "2a6107ac9dd4071f",
+   "a49953fe1e44f235"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6e0456f64020c66cc191c9ef5b800658a692a5974ac4865c53c13e6906b1d9f2",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "옥상 실외기(철 상자 + 팬)",
+ "label": "modern-campus/mc-ac-unit",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rooftop AC unit",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is clearly visible from rows 1 to 6 (6 rows tall) featuring an upward-facing vent/fan housing, while the south front face spans rows 7 to 14 with horizontal intake louvers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8156
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal outdoor AC unit box",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is clearly visible from rows 1 to 6 (6 pixel rows tall, rendered in lighter grey with a top fixture/recess), while the front face spans rows 7 to 13 with horizontal vent slats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7073
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rooftop AC outdoor unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is prominently rendered from row 0 to 6 (7 source pixels tall) in a lighter value with a foreshortened top vent/hatch, sitting above the darker south-facing face (rows 7-14) with horizontal slats.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13090
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal outdoor AC unit cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the unit is clearly visible from rows 1 to 6 (6 rows tall) in a lighter tone with an inset panel, while the front south face spans rows 7 to 14 with horizontal ventilation louvers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5893
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.061Z",
+ "cells": {
+  "16": [
+   "651149b9760803f3"
+  ],
+  "24": [
+   "05f816eafa8429c6",
+   "899ca692186fe7d0",
+   "a27e0af39ee1c052",
+   "ae9ec9de2f110118",
+   "c6bfdb3024d76009",
+   "cece41e800358468"
+  ],
+  "32": [
+   "44b06d8a8a73002e",
+   "5b19e053520ddf5d",
+   "66688cdb6b44995c",
+   "bfeac42ecef7a685",
+   "cadd586407155a65",
+   "e03d2d85f778386a"
+  ],
+  "48": [
+   "043188016dc31cd0",
+   "0e6159b302aefdd3",
+   "49d01e1f1475b6b3",
+   "893f56477c987010",
+   "e85d574b0d833682",
+   "f3697bc2c5f28eb8"
+  ]
+ }
+}

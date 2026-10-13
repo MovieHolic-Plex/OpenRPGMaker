@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ecd786505e26cde5e74fa2ffd750038c99955398580c7947e13a5a05b44c1856",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "아스팔트",
+ "label": "modern-campus/mc-road-asphalt",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a 16x16 seamless asphalt ground terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5158
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 dark grey asphalt texture representing a flat ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4033
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 dark grey textured asphalt ground terrain tile covering the full tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat asphalt terrain texture filling the entire 16x16 tile representing the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3143
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "5b6618bce25faf02"
+  ],
+  "24": [
+   "2002da864dce3700",
+   "2692e678fea8abfe",
+   "8ec0adee1cf17153",
+   "8f2b53e15612c106",
+   "aecb9ec2f3b65ed0",
+   "fa300a72c01c105e"
+  ],
+  "32": [
+   "092441b0bd655514",
+   "6a66139d91e47a94",
+   "6c987939ac42a824",
+   "72ff0adf425f647d",
+   "74c24d94a3d52331",
+   "81f72896ed8981a9"
+  ],
+  "48": [
+   "234efa45f938689d",
+   "243ea9ee1b3e1251",
+   "52c8bdb92818cc56",
+   "9a893cf77e4cddf4",
+   "a5e6d68aa4fe5cb6",
+   "ca5c5663f92ac240"
+  ]
+ }
+}

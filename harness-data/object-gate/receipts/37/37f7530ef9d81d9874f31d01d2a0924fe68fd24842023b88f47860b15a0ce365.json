@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37f7530ef9d81d9874f31d01d2a0924fe68fd24842023b88f47860b15a0ce365",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "붉은 벽돌 포석",
+ "label": "modern-campus/mc-pave-brick",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 red brick paving terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4889
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 brick pavement terrain tile covering the full tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6383
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red brick paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 red brick paving pattern representing flat ground/floor terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4965
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick paving terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting red brick pavement viewed from above across the full 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5142
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.837Z",
+ "cells": {
+  "16": [
+   "a147f3b2cfe99fa3"
+  ],
+  "24": [
+   "5d187f31367018fb",
+   "6b56fdcb50d07fc8",
+   "708b72a4452d07f2",
+   "904ba2cf042a7ac6",
+   "c1252464ca70ef28",
+   "d85d008f33390462"
+  ],
+  "32": [
+   "07a56734eaf77515",
+   "0cba59a6284a0866",
+   "2c02a33bc6091f82",
+   "d1b2f4caaac31219",
+   "f8ef82a9e03c1009",
+   "f9a593fc7ef6a11f"
+  ],
+  "48": [
+   "4366f83a0144b3ee",
+   "67c06d7e9ad2b696",
+   "6846700d6cb0347c",
+   "6c23affc13983303",
+   "b1ba440b01fc4f7d",
+   "c5a690e48c043b9c"
+  ]
+ }
+}

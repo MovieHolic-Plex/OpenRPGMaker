@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d9420e0101b23ec3de1aec866406136cbd6a7b53d242191f8b56347df43cdb5e",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "콘크리트 담 끝 기둥",
+ "label": "modern-campus/mc-wall-conc-end",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete wall pillar with cap",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete pillar cap is prominently rendered from rows 3 to 12 (approx 10 rows), with its south vertical face extending below from rows 13 to 16 above the main pillar shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5125
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete wall pillar with cap",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the pillar has a clearly rendered top surface spanning rows 3-12 (10 rows) above its south-facing front rim (rows 13-16) and main post body (rows 17-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete wall pillar with cap",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the pillar cap is clearly drawn from row 3 to row 12 (10 rows tall) above the south-facing cap edge and pillar shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4036
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete wall pillar with cap",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete pillar cap shows a large horizontal top surface spanning rows 3-12 (10 pixels tall), with a 4-pixel front rim/lip (rows 13-16) above the lower pillar shaft (rows 17-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4431
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.024Z",
+ "cells": {
+  "16": [
+   "245ab10aa9b49145",
+   "7f91b26a46fbf62c"
+  ],
+  "24": [
+   "2f5aa8ca7dee1540",
+   "519c00dba7faead0",
+   "54d654755889b4ef",
+   "6102fcff7cd03bf8",
+   "74d474358ca88676",
+   "7af18c482440003e",
+   "86cc2ce8fdd14869",
+   "974fc27e99326984",
+   "a5aed94bafd9d7ef",
+   "dd33858bef1fb60a",
+   "ef0d892eceab6bc2",
+   "f5fecbdd151a00ab"
+  ],
+  "32": [
+   "6d7aba6e8a65fa58",
+   "ba67799f075626b8",
+   "f28c36a399a27446"
+  ],
+  "48": [
+   "03495c26b33cb3cc",
+   "1fb13e71faaf9258",
+   "1fd32c8d24df7a62",
+   "3d93cbdee4e779b6",
+   "4614ba322e34478f",
+   "6556d854a3788784"
+  ]
+ }
+}

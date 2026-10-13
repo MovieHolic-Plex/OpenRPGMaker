@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04e6cdfcb2d98bed825beb954cff26f0d574de779ea33e1925ceb2c90a1eac6b",
+ "width": 16,
+ "height": 32,
+ "kind": "round_body",
+ "name": "옥상 물탱크(철 원통 + 뚜껑)",
+ "label": "modern-campus/mc-water-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank is drawn in pure front elevation: all horizontal seams, bands, and the base line are drawn as completely straight 1-pixel horizontal rows rather than downward-curving ellipses. The top cap is drawn as an arched dome profile from the side rather than an ellipse seen from above, showing 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7021
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water tank is drawn in a pure front elevation: all section dividers, rib bands, and base lines are completely straight horizontal lines across rows 8, 13, 19, and 25 without any elliptical curvature, and the top cap is rendered as a flat arch profile seen straight from the side rather than an ellipse seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6056
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "water tank cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank is drawn in pure front elevation. All dividing lines and bands across the cylinder (rows 8, 13, 19, 25) are completely straight horizontal lines rather than ellipses. The domed cap and body use vertical column shading running straight down from row 1 to 25, showing only the vertical south face with no top horizontal surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6757
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical water tank",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The water tank is drawn in pure front elevation: all horizontal seams, bands, and the base (rows 7-8, 13-14, 19-20, 25) are completely straight horizontal lines with zero elliptical curvature, and the top cap is drawn as an arched 2D profile rather than a top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6172
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.061Z",
+ "cells": {
+  "16": [
+   "4b38f4a69e30b30e",
+   "5d348777cfd2f306"
+  ],
+  "24": [
+   "056bf024c6becada",
+   "14ec8027df7f50b1",
+   "2773e174960eb820",
+   "4a71d6435671acf7",
+   "4a9841f7cead4ba0",
+   "5b4653bbc6af391c",
+   "9feed6a106cf10d2",
+   "a2f801ee2fabfa22",
+   "acf61b4a0059d932",
+   "d37f030ec06e82c4",
+   "f878f2b985145748",
+   "fc535d1e457cb9e0"
+  ],
+  "32": [
+   "4c41c094496f0941",
+   "94bc5e39022b3d95",
+   "b5727b3b1bc1e81c"
+  ],
+  "48": [
+   "299498fb25381b55",
+   "934ecfd3335b8701",
+   "947654cb6deafef5",
+   "aadb81aad381ac3a",
+   "dee2d00c579c7ef8",
+   "f1f5d95253e6fad2"
+  ]
+ }
+}

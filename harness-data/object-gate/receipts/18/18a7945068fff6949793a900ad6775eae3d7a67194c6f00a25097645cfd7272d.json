@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "18a7945068fff6949793a900ad6775eae3d7a67194c6f00a25097645cfd7272d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디→흙 가장자리(위 잔디·아래 흙)",
+ "label": "modern-campus/mc-edge-lawn-soil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass-to-dirt terrain edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing a transition edge between grass (upper ~5 rows) and dirt ground with small pebbles (lower ~11 rows), correctly textured for a top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4443
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass to dirt terrain transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain transition tile representing ground viewed from above (grass meeting dirt), fully flat horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6792
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass-to-dirt terrain transition tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain transition tile showing grass above transitioning into dirt below, viewed from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3986
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass-to-dirt terrain edge tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a terrain autotile/edge showing upper grass ground (rows 0-4) transitioning over dirt ground (rows 5-15). As a terrain tile, it represents ground surface rather than a standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5576
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.840Z",
+ "cells": {
+  "16": [
+   "01046a2d748b41e6"
+  ],
+  "24": [
+   "204a29c850412f34",
+   "2d4e87f7bfd1dca9",
+   "588d5413f6206ee1",
+   "865b2a51375f59c5",
+   "a41a294d3bd36813",
+   "a443428497afba89"
+  ],
+  "32": [
+   "0693fb90e6197f26",
+   "2e23c89de807daca",
+   "3d6001d72d4d89d6",
+   "de84dca3eed64102",
+   "e1f4744eddfeabd5",
+   "e8d4d61864e435cc"
+  ],
+  "48": [
+   "0d063d3e68909d31",
+   "6e8ab413fde9c36c",
+   "a6ff541a22bf9309",
+   "cb3ae59dbe1ab625",
+   "e63e2cec2398f70d",
+   "f66c46750db10635"
+  ]
+ }
+}

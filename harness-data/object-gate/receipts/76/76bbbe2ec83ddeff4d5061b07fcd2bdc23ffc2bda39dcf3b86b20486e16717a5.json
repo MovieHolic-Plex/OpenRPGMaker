@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "76bbbe2ec83ddeff4d5061b07fcd2bdc23ffc2bda39dcf3b86b20486e16717a5",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "테니스 네트(큰 윗띠 + 철 기둥 받침)",
+ "label": "modern-campus/mc-tennis-net",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tennis net with top tape and side posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire tennis net, posts, and top tape are drawn strictly in flat front elevation with only a 1px top outline (row 0) and no foreshortened top surfaces visible on the posts or the horizontal band.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8994
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tennis net with top band, net mesh, and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The net, top band, and posts are drawn completely flat in pure front elevation with no visible horizontal top surfaces or depth foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5088
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tennis net with top band and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The net top band, frame posts, and mesh are drawn entirely in flat 2D side-scroller/front elevation view with zero foreshortened top surfaces visible on the horizontal band or post tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4373
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tennis net with posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and horizontal bands are drawn strictly in flat front elevation. The post tops at row 5 are capped with a flat 1px horizontal black line with no top surface, and the base and net structure show zero foreshortened depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6552
+  }
+ ],
+ "decidedAt": "2026-10-13T14:16:25.794Z",
+ "cells": {
+  "16": [
+   "09f5b770b7072d4d",
+   "da4d5b453ef5497e",
+   "e214ef743c7957bf"
+  ],
+  "24": [
+   "1294415c89d51d5e",
+   "3f7d0d61b77952a0",
+   "45e045247cc218b8",
+   "bccfbfa5243a4a39"
+  ],
+  "32": [
+   "2f7d2aba50339879",
+   "45dc81197d2195b8",
+   "4f7165236e614874",
+   "50b21ce0b2153240",
+   "5992e368404c8bf1",
+   "7b95bd4f03e4cba8",
+   "9cccb5be6c8ee885",
+   "abfb4ad71b983e5f",
+   "b374950ffd7a7be8",
+   "dde4fda1eef128fb",
+   "e84adbde88be9767",
+   "eaef75521c4fde3a"
+  ],
+  "48": [
+   "a8e04ab0355eb946",
+   "e694c2eb34d860e0"
+  ]
+ }
+}

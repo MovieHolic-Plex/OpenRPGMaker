@@ -1,0 +1,1347 @@
+{
+ "schema": "modern-campus-outdoor/1",
+ "note": "object-gate 통과분만. 번들 미배선.",
+ "items": [
+  {
+   "id": "mc-gatepost",
+   "group": "props_legacy",
+   "name": "교문 기둥(벽돌·콘크리트 갓돌)",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-gatepost.png",
+   "sha": "56d868d8cf2988ae33aecc0663b28798a70b14d1b312fe2aa0ef4eed1e5a4696",
+   "pin": 0
+  },
+  {
+   "id": "mc-gate",
+   "group": "props_legacy",
+   "name": "교문(벽돌 기둥 둘 + 철제 양개 문)",
+   "kind": "structure",
+   "cells": [
+    4,
+    2
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-gate.png",
+   "sha": "9fdcd46c166eedb3571c327cabc46d5781dbbb70b9ecc8d12c817860139f930d",
+   "pin": 1
+  },
+  {
+   "id": "mc-bench",
+   "group": "props_legacy",
+   "name": "교정 벤치(나무 판 + 철제 다리)",
+   "kind": "seat",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-bench.png",
+   "sha": "f4ae3ea3e136bf469c45f30005649a64d67611653cbb7d538cb6c92e8f72735f",
+   "pin": 2
+  },
+  {
+   "id": "mc-bike-rack",
+   "group": "props_legacy",
+   "name": "자전거 거치대(콘크리트 받침 + 철 고리 4)",
+   "kind": "frame",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-bike-rack.png",
+   "sha": "ec6d9ca3778bf81d730b0f910b98d31bf9c57adde1d7ede9e64f491c288ac037",
+   "pin": 3
+  },
+  {
+   "id": "mc-flowerbed",
+   "group": "props_legacy",
+   "name": "화단(벽돌 둘레 + 흙 + 꽃)",
+   "kind": "container",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-flowerbed.png",
+   "sha": "943af6c697c261e3fe125cfedf510c5eab817f51d27e853a7c52cccd0efa3c8b",
+   "pin": 4
+  },
+  {
+   "id": "mc-shoe-locker",
+   "group": "props_legacy",
+   "name": "신발장 줄(철제 4×3 칸)",
+   "kind": "tall_furniture",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-shoe-locker.png",
+   "sha": "77e5c61ac742d1b4e46fb1e209cde673491adfa219482befdfe7688c7db4c72f",
+   "pin": 5
+  },
+  {
+   "id": "mc-field-line-h",
+   "group": "props_legacy",
+   "name": "운동장 흰 선(가로)",
+   "kind": "flat",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-field-line-h.png",
+   "sha": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+   "pin": 6
+  },
+  {
+   "id": "mc-field-line-corner",
+   "group": "props_legacy",
+   "name": "운동장 흰 선(ㄱ 모서리 동→남)",
+   "kind": "flat",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-field-line-corner.png",
+   "sha": "ff338b0d292325344de33347e5a2f8858b542053bc6890165771707deb7d1d48",
+   "pin": 7
+  },
+  {
+   "id": "mc-ground-soil",
+   "group": "terrain",
+   "name": "운동장 흙",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-ground-soil.png",
+   "sha": "692f3f579cbb9775665afc2595afec1645bd9af40dc3cc6e2017355a74128135",
+   "pin": 8
+  },
+  {
+   "id": "mc-ground-turf",
+   "group": "terrain",
+   "name": "인조잔디 운동장(줄무늬)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-ground-turf.png",
+   "sha": "6fee217e71ae5976e3b8ab25c0c44941604a7e24793bc406477e968ba104aaee",
+   "pin": 9
+  },
+  {
+   "id": "mc-pave-brick",
+   "group": "terrain",
+   "name": "붉은 벽돌 포석",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-pave-brick.png",
+   "sha": "37f7530ef9d81d9874f31d01d2a0924fe68fd24842023b88f47860b15a0ce365",
+   "pin": 10
+  },
+  {
+   "id": "mc-pave-brick-dark",
+   "group": "terrain",
+   "name": "어두운 벽돌 포석",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-pave-brick-dark.png",
+   "sha": "549a7822c7fce9dee9da2a6bc11e665d3b09c2cdf2ab08029966357266dfd248",
+   "pin": 11
+  },
+  {
+   "id": "mc-pave-slab",
+   "group": "terrain",
+   "name": "교정 화강암 판석(4분할)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-pave-slab.png",
+   "sha": "bc4b0ce6652ccf16f51fecb6b33fc787c3a2e26ea43a10a347497bcc1ab0cfd3",
+   "pin": 12
+  },
+  {
+   "id": "mc-lawn",
+   "group": "terrain",
+   "name": "캠퍼스 잔디",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-lawn.png",
+   "sha": "3f49086b3e6732667aa79bbdca3886b753b9a122eb39bd1775cc182e26f7e802",
+   "pin": 13
+  },
+  {
+   "id": "mc-lawn-flower",
+   "group": "terrain",
+   "name": "잔디 + 들꽃",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-lawn-flower.png",
+   "sha": "6c0a72daf9a7640880aa6799edf6ff6c45b9bec9fec6eb921f79fc52622a7e69",
+   "pin": 14
+  },
+  {
+   "id": "mc-road-asphalt",
+   "group": "terrain",
+   "name": "아스팔트",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-road-asphalt.png",
+   "sha": "ecd786505e26cde5e74fa2ffd750038c99955398580c7947e13a5a05b44c1856",
+   "pin": 15
+  },
+  {
+   "id": "mc-road-kr-center",
+   "group": "terrain",
+   "name": "도로 한국식(황색 중앙 겹선)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-road-kr-center.png",
+   "sha": "b4387763c0d13514acf79ee6c84071fb129f2a83e8601f12722690689285a73f",
+   "pin": 16
+  },
+  {
+   "id": "mc-road-w-dash",
+   "group": "terrain",
+   "name": "도로 서양식(흰 점선 중앙)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-road-w-dash.png",
+   "sha": "4b78bc4d5770cf080ad737dfc874faf41e46a4c8273c99941fc90133bee4ccc0",
+   "pin": 17
+  },
+  {
+   "id": "mc-road-crosswalk",
+   "group": "terrain",
+   "name": "횡단보도",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-road-crosswalk.png",
+   "sha": "e470f72b67b316dd34a78dcc4755ac36e1e2ea4bd18f3e6decd4234065c4b8ae",
+   "pin": 18
+  },
+  {
+   "id": "mc-sidewalk",
+   "group": "terrain",
+   "name": "보도블록",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-sidewalk.png",
+   "sha": "614b26ae79663dd77bda4ec8528572bdaaf5cb0bcc4a4431010fe324cd8b9681",
+   "pin": 19
+  },
+  {
+   "id": "mc-tactile",
+   "group": "terrain",
+   "name": "점자블록(황색)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-tactile.png",
+   "sha": "976abd19a59dba300af27a1dfa68191e038e4385326a6e076d3895eedabbec97",
+   "pin": 20
+  },
+  {
+   "id": "mc-curb-s",
+   "group": "terrain",
+   "name": "연석(남쪽 도로 가장자리)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-curb-s.png",
+   "sha": "0794d8f6b2a6ac06492090843fefcf719378ff1118e7bf9ae95aafefdf7b0bb7",
+   "pin": 21
+  },
+  {
+   "id": "mc-edge-lawn-soil",
+   "group": "terrain",
+   "name": "잔디→흙 가장자리(위 잔디·아래 흙)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-edge-lawn-soil.png",
+   "sha": "18a7945068fff6949793a900ad6775eae3d7a67194c6f00a25097645cfd7272d",
+   "pin": 22
+  },
+  {
+   "id": "mc-edge-lawn-pave",
+   "group": "terrain",
+   "name": "잔디→포석 가장자리",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-edge-lawn-pave.png",
+   "sha": "78db37a19c28be4085328a3fcf3530f283b36e2dffbf6041ca14faeb20fba85e",
+   "pin": 23
+  },
+  {
+   "id": "mc-soil-line-h",
+   "group": "terrain",
+   "name": "운동장 흙 + 흰 선",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-soil-line-h.png",
+   "sha": "6ffc29411b00b186ba29b9184811ae84b26ecd7ff4d5684288cccc7beac8f1aa",
+   "pin": 24
+  },
+  {
+   "id": "mc-bed-edge",
+   "group": "terrain",
+   "name": "화단 가장자리(잔디 위 흙 띠)",
+   "kind": "terrain",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/terrain/_gate/mc-bed-edge.png",
+   "sha": "6aab854a137f478ecfc249f4560b1267f19a3247feedfcabd89f5d156c273a8f",
+   "pin": 25
+  },
+  {
+   "id": "mc-clock-tower",
+   "group": "props_a",
+   "name": "시계탑(벽돌 몸통 + 시계판 + 평지붕 슬래브)",
+   "kind": "structure",
+   "cells": [
+    2,
+    4
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-clock-tower.png",
+   "sha": "0d8581615b19473fd54e0ec85d77f96cbaa57d78c2b27e4ba25dbab96fa8af8e",
+   "pin": 26
+  },
+  {
+   "id": "mc-flagpole",
+   "group": "props_a",
+   "name": "게양대(콘크리트 각기둥 + 깃발)",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-flagpole.png",
+   "sha": "5f4f044a39ff456e5cedc6c810aa4dbef5fae0b7de6fd6cc0b11b18e706938dd",
+   "pin": 27
+  },
+  {
+   "id": "mc-lamp-post",
+   "group": "props_a",
+   "name": "정원등(콘크리트 상자 + 등 윗면)",
+   "kind": "box",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-lamp-post.png",
+   "sha": "f1626b3c46fbf2f3452c9be028e3c40b844a2fde2b259aeafd37e0e353e5f08d",
+   "pin": 28
+  },
+  {
+   "id": "mc-trash-can",
+   "group": "props_a",
+   "name": "쓰레기통(콘크리트 각통 + 뚜껑)",
+   "kind": "box",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-trash-can.png",
+   "sha": "1085be13c08c5f8ef998304f253c9ef1c49f1c454847675059bcf2c4c833a433",
+   "pin": 29
+  },
+  {
+   "id": "mc-ac-unit",
+   "group": "props_a",
+   "name": "옥상 실외기(철 상자 + 팬)",
+   "kind": "box",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-ac-unit.png",
+   "sha": "6e0456f64020c66cc191c9ef5b800658a692a5974ac4865c53c13e6906b1d9f2",
+   "pin": 30
+  },
+  {
+   "id": "mc-water-tank",
+   "group": "props_a",
+   "name": "옥상 물탱크(철 각 탱크 + 뚜껑)",
+   "kind": "box",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-water-tank.png",
+   "sha": "732e9bc04d8015c0666f38e9e5b367f9d16b608003a8dd27bfcdf9fc3c88dc6d",
+   "pin": 31
+  },
+  {
+   "id": "mc-podium",
+   "group": "props_a",
+   "name": "조회대(콘크리트 단 + 계단)",
+   "kind": "box",
+   "cells": [
+    3,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-podium.png",
+   "sha": "e09434b2e1ae21879a512c99f8ef77ee39399cc88a8e55c42c051542964933a6",
+   "pin": 32
+  },
+  {
+   "id": "mc-school-sign",
+   "group": "props_a",
+   "name": "교명석(큰 돌 + 마크)",
+   "kind": "box",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-school-sign.png",
+   "sha": "9ac6e753af9fd4d159f3b77d9a5adb5147c44ca39d00b10ca11c49ec87221c48",
+   "pin": 33
+  },
+  {
+   "id": "mc-pullup-bar",
+   "group": "props_a",
+   "name": "철봉(콘크리트 기둥 둘 + 굵은 가로대)",
+   "kind": "frame",
+   "cells": [
+    3,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-pullup-bar.png",
+   "sha": "7d0c0d351a5044bfc32a5af2c76789921b6575647b009b36d7891630f8f79316",
+   "pin": 34
+  },
+  {
+   "id": "mc-soccer-goal",
+   "group": "props_a",
+   "name": "축구 골대(흰 틀 + 그물 윗면)",
+   "kind": "frame",
+   "cells": [
+    4,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-soccer-goal.png",
+   "sha": "c8c2cc5d600fa881ac933d3ee9afa0aaba12b4ec19d86ff40ecdd7108dabd0c6",
+   "pin": 35
+  },
+  {
+   "id": "mc-fountain",
+   "group": "props_a",
+   "name": "분수대(돌 수반 + 물 + 가운데 기둥)",
+   "kind": "container",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-fountain.png",
+   "sha": "0178f47734a496bcd57eb7b48630096d6b8957d96334ac8d3840a717a83205e3",
+   "pin": 36
+  },
+  {
+   "id": "mc-bus-stop",
+   "group": "props_a",
+   "name": "버스 정류장(지붕 + 뒷 유리판 + 벤치)",
+   "kind": "structure",
+   "cells": [
+    3,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-bus-stop.png",
+   "sha": "b65c00f4b0c3eb2cfe71c61ea5675d878bd160db768855ec212c8934c5869592",
+   "pin": 37
+  },
+  {
+   "id": "mc-bleacher",
+   "group": "props_a",
+   "name": "스탠드(콘크리트 3단 계단식 객석)",
+   "kind": "structure",
+   "cells": [
+    4,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-bleacher.png",
+   "sha": "29075c6eb902cb851b055c7228a24b92673da4b8f3794c18c1ef163cec7bacf0",
+   "pin": 38
+  },
+  {
+   "id": "mc-tree-sakura",
+   "group": "props_a",
+   "name": "벚나무(교정 가로수)",
+   "kind": "organic",
+   "cells": [
+    2,
+    3
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-tree-sakura.png",
+   "sha": "d64297631e088c965e87f7b404a9669cdab7f9f23db268a28dfb943c48f15a0c",
+   "pin": 39
+  },
+  {
+   "id": "mc-hedge",
+   "group": "props_a",
+   "name": "생울타리(둥근 덤불 윗면 + 앞면)",
+   "kind": "organic",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-hedge.png",
+   "sha": "35fe9635ffadad178e9d144ab1a2d69f034a2c455104c93fc267897807869334",
+   "pin": 40
+  },
+  {
+   "id": "mc-school-bus",
+   "group": "props_b",
+   "name": "통학 버스(노란 지붕 윗면 + 앞면 창띠)",
+   "kind": "structure",
+   "cells": [
+    5,
+    3
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-school-bus.png",
+   "sha": "51548c8762d4d6603cbf13c29fcf8850e483e477029487b95e4dd6537e2efd1f",
+   "pin": 41
+  },
+  {
+   "id": "mc-bicycle",
+   "group": "props_b",
+   "name": "자전거(눕혀 본 3/4: 안장 윗면 + 바퀴 + 프레임)",
+   "kind": "other",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-bicycle.png",
+   "sha": "c0489e7429d509f7644c19d3c817a47adc0f721077cd8fb8a7c59dbb36b05af3",
+   "pin": 42
+  },
+  {
+   "id": "mc-picnic-table",
+   "group": "props_b",
+   "name": "교정 식탁(윗면 판 + 벤치 둘)",
+   "kind": "low_furniture",
+   "cells": [
+    3,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-picnic-table.png",
+   "sha": "5d576d8d156766b777b093b936a431dc8e8f14a43b44c015e636e17b8fd0496a",
+   "pin": 43
+  },
+  {
+   "id": "mc-notice-board",
+   "group": "props_b",
+   "name": "게시판(코르크 + 철제 틀 + 덮개)",
+   "kind": "box",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-notice-board.png",
+   "sha": "100566c52b8e823ad58eb2d6c68e95e2aad1c4409202a923834ea9d176007f17",
+   "pin": 44
+  },
+  {
+   "id": "mc-drinking-fountain",
+   "group": "props_b",
+   "name": "수돗가(콘크리트 싱크 + 수도꼭지 셋)",
+   "kind": "container",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-drinking-fountain.png",
+   "sha": "d67ca6b35171b5c36674cf02d2c060b46e3ffe0f207b47da23ef6ddeb08b7fd5",
+   "pin": 45
+  },
+  {
+   "id": "mc-planter-round",
+   "group": "props_b",
+   "name": "둥근 화분(콘크리트 + 흙 + 관목)",
+   "kind": "container",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-planter-round.png",
+   "sha": "129889b7202bd262865c82933f769eb49ce47467b73c965e986211416f233e35",
+   "pin": 46
+  },
+  {
+   "id": "mc-jungle-gym",
+   "group": "props_b",
+   "name": "정글짐(철 격자 윗면 + 기둥)",
+   "kind": "frame",
+   "cells": [
+    3,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-jungle-gym.png",
+   "sha": "48e58f20865f6bd01134ac4b5e4377a016a6e3fe8d86493f4caa8d596d966df7",
+   "pin": 47
+  },
+  {
+   "id": "mc-sandbox",
+   "group": "props_b",
+   "name": "모래밭(나무 틀 + 모래)",
+   "kind": "container",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-sandbox.png",
+   "sha": "45ccb4168bf99b76be119f73753b08c83ea2ee93a5c37e0a11b70a5d49bdd50c",
+   "pin": 48
+  },
+  {
+   "id": "mc-slide",
+   "group": "props_b",
+   "name": "미끄럼틀(계단 탑 윗면 + 긴 미끄럼 판)",
+   "kind": "structure",
+   "cells": [
+    3,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-slide.png",
+   "sha": "c83bbcf33f2ad51beb9de1971764a10def499f9911a5159852db22acef08347b",
+   "pin": 49
+  },
+  {
+   "id": "mc-mailbox",
+   "group": "props_b",
+   "name": "우체통(빨간 큰 상자 · 넓은 윗면)",
+   "kind": "box",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-mailbox.png",
+   "sha": "a53043b0ff068efd06873e72358114c596bdcdf15926f5a603db1743a92ba5c5",
+   "pin": 50
+  },
+  {
+   "id": "mc-utility-pole",
+   "group": "props_b",
+   "name": "배전함(회색 큰 상자 + 문 + 윗덮개)",
+   "kind": "box",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-utility-pole.png",
+   "sha": "70ada5a2aab029c1ab5adcf9030885bfc96a32fd4b1c423f9e8e6e5cd3616cf5",
+   "pin": 51
+  },
+  {
+   "id": "mc-stone-lantern",
+   "group": "props_b",
+   "name": "정원 석등(넓은 돌 윗면 3단)",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-stone-lantern.png",
+   "sha": "b067385131fed0e9ed8402c49a568c5a5716c9434365168b613a27b78b1816b1",
+   "pin": 52
+  },
+  {
+   "id": "mc-gazebo",
+   "group": "props_b",
+   "name": "정자(기와 지붕 윗면 + 기둥 4)",
+   "kind": "structure",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-gazebo.png",
+   "sha": "ac0332494911764c1a668a3f9f3d83aad9117617891cd72c6a646bd1f0427b6c",
+   "pin": 53
+  },
+  {
+   "id": "mc-shed",
+   "group": "props_b",
+   "name": "창고(철판 지붕 윗면 + 문)",
+   "kind": "structure",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-shed.png",
+   "sha": "7c0d05f199ef525523484b1965b454281642b0473e02e1b0dad1218c31266c62",
+   "pin": 54
+  },
+  {
+   "id": "mc-scoreboard",
+   "group": "props_b",
+   "name": "전광판(철 틀 + 어두운 판 + 받침 슬래브)",
+   "kind": "structure",
+   "cells": [
+    3,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-scoreboard.png",
+   "sha": "baca0fab2ebb733cee5eea8f3a36370b03676b514ddd4fab32af9521ab23d09b",
+   "pin": 55
+  },
+  {
+   "id": "mc-crate-recycle",
+   "group": "props_b",
+   "name": "분리수거함 셋(색 상자 윗덮개)",
+   "kind": "box",
+   "cells": [
+    3,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-crate-recycle.png",
+   "sha": "d8d0674f6943b1626f3354b07bf5df2ee3c5c34c93b5ad785672f630b0bd9687",
+   "pin": 56
+  },
+  {
+   "id": "mc-sports-locker",
+   "group": "props_b",
+   "name": "운동 기구함(철 상자 + 큰 덮개)",
+   "kind": "box",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-sports-locker.png",
+   "sha": "4ee53abc388813cf87bb96ade43c27bab62a41b2ad45e59aecde277190942963",
+   "pin": 57
+  },
+  {
+   "id": "mc-wall-conc",
+   "group": "props_c",
+   "name": "콘크리트 담 2칸(두꺼운 갓돌 윗면 + 앞면)",
+   "kind": "structure",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-wall-conc.png",
+   "sha": "c9e2806b5a23b7722f87e437e44cfa52932d993202268720b395cfd32c6ab2fb",
+   "pin": 58
+  },
+  {
+   "id": "mc-wall-brick",
+   "group": "props_c",
+   "name": "벽돌 담 2칸(갓돌 윗면)",
+   "kind": "structure",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-wall-brick.png",
+   "sha": "7c8763b567f11204fd5e4b1b5c2c61a5c4e8d97f0c62b82c18df2157d460baf8",
+   "pin": 59
+  },
+  {
+   "id": "mc-wall-wire",
+   "group": "props_c",
+   "name": "철망 담 2칸(콘크리트 턱 윗면 + 철망)",
+   "kind": "structure",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-wall-wire.png",
+   "sha": "d0b4da2cf54347bfca07532eb55b8b86eb826b50de471ec6bfd9f1ca82d4ce9c",
+   "pin": 60
+  },
+  {
+   "id": "mc-wall-conc-end",
+   "group": "props_c",
+   "name": "콘크리트 담 끝 기둥",
+   "kind": "structure",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-wall-conc-end.png",
+   "sha": "d9420e0101b23ec3de1aec866406136cbd6a7b53d242191f8b56347df43cdb5e",
+   "pin": 61
+  },
+  {
+   "id": "mc-vending2",
+   "group": "props_c",
+   "name": "자판기(두꺼운 덮개 몸통)",
+   "kind": "box",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-vending2.png",
+   "sha": "0a54cdac709077e5a799610d3884965de2a2800c2e174835ceaedd8d84be8735",
+   "pin": 62
+  },
+  {
+   "id": "mc-bld-main3",
+   "group": "buildings",
+   "name": "본관 3층(벽돌·평지붕)",
+   "kind": "structure",
+   "cells": [
+    8,
+    6
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-main3.png",
+   "sha": "44baba08005c9ab72af2706118dba20fe28f821fffaccc1d40cc7ddabcdd3efd",
+   "pin": 63
+  },
+  {
+   "id": "mc-bld-main4",
+   "group": "buildings",
+   "name": "본관 4층(콘크리트·평지붕)",
+   "kind": "structure",
+   "cells": [
+    8,
+    7
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-main4.png",
+   "sha": "ec8dc199d6c441acd7d75356b850ab78b256c94735b7dd8ea2743ec1c27cd35c",
+   "pin": 64
+  },
+  {
+   "id": "mc-bld-annex",
+   "group": "buildings",
+   "name": "별관(베이지 콘크리트 2층)",
+   "kind": "structure",
+   "cells": [
+    5,
+    5
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-annex.png",
+   "sha": "3045e88450c36b7dde108339d4473afcf644660a0706bd902d261e7fe41fabee",
+   "pin": 65
+  },
+  {
+   "id": "mc-bld-gym",
+   "group": "buildings",
+   "name": "체육관(넓은 1층 + 채광창 지붕)",
+   "kind": "structure",
+   "cells": [
+    8,
+    4
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-gym.png",
+   "sha": "ec169ada81da5d21d5568d0c56e14a8de0f8b4915e63ce44c2e620967632b1ac",
+   "pin": 66
+  },
+  {
+   "id": "mc-bld-auditorium",
+   "group": "buildings",
+   "name": "강당(기와 寄棟 지붕)",
+   "kind": "structure",
+   "cells": [
+    7,
+    4
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-auditorium.png",
+   "sha": "00a6caeb0145dd6e144f0ead89e1478885e4ae1cae3836e2512f57ec0c99dd78",
+   "pin": 67
+  },
+  {
+   "id": "mc-bld-library",
+   "group": "buildings",
+   "name": "도서관(벽돌 아치창)",
+   "kind": "structure",
+   "cells": [
+    6,
+    4
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-library.png",
+   "sha": "8d8a61f18da270ea286bc88e96cea0a94b83afa0ade7183cbfe7bb87f3c77678",
+   "pin": 68
+  },
+  {
+   "id": "mc-bld-dorm",
+   "group": "buildings",
+   "name": "기숙사 동(4층 벽돌)",
+   "kind": "structure",
+   "cells": [
+    6,
+    7
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-dorm.png",
+   "sha": "088b337a98f97a393cb500fe1e19ad348f13299ff7282b21ff341aea941f4689",
+   "pin": 69
+  },
+  {
+   "id": "mc-bld-cafeteria",
+   "group": "buildings",
+   "name": "식당(1층 + 환기탑)",
+   "kind": "structure",
+   "cells": [
+    6,
+    4
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-cafeteria.png",
+   "sha": "7fa0ee95eb27eb3300698e8114ce728ccf7ac0a5c0d353ac81f2510e163510ee",
+   "pin": 70
+  },
+  {
+   "id": "mc-bld-studenthall",
+   "group": "buildings",
+   "name": "학생회관(2층 유리)",
+   "kind": "structure",
+   "cells": [
+    5,
+    5
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-studenthall.png",
+   "sha": "b7ce9a9d7f0b7be8656e23bbffca8ad67ccec184f423f738114246b91390a870",
+   "pin": 71
+  },
+  {
+   "id": "mc-bld-church",
+   "group": "buildings",
+   "name": "교회 부속 건물(기와 지붕)",
+   "kind": "structure",
+   "cells": [
+    4,
+    4
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-church.png",
+   "sha": "57efec539ff2fc865e71e7b3b8c4c997ee158d2f604c2a1989a8e02ff2da17c3",
+   "pin": 72
+  },
+  {
+   "id": "mc-bld-apartment",
+   "group": "buildings",
+   "name": "아파트 동(6층 발코니)",
+   "kind": "structure",
+   "cells": [
+    5,
+    9
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-apartment.png",
+   "sha": "71aff502a6cd89fa866516d5344e2c2a1950d36dbd5ba1560589c7e915deea38",
+   "pin": 73
+  },
+  {
+   "id": "mc-bld-shop",
+   "group": "buildings",
+   "name": "상가 건물(3층)",
+   "kind": "structure",
+   "cells": [
+    3,
+    6
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-shop.png",
+   "sha": "6c8478f4b673afa89fc00def995662eb10673da83a3a0ecd0e18583c2e45e864",
+   "pin": 74
+  },
+  {
+   "id": "mc-bld-hospital",
+   "group": "buildings",
+   "name": "병원(흰 4층 + 십자 표지)",
+   "kind": "structure",
+   "cells": [
+    7,
+    7
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-hospital.png",
+   "sha": "c80df3a9e7a7c03640453077c380789b3c135d34c1d4ed815b213a534c150ab4",
+   "pin": 75
+  },
+  {
+   "id": "mc-bld-police",
+   "group": "buildings",
+   "name": "경찰서(남색 띠 2층)",
+   "kind": "structure",
+   "cells": [
+    5,
+    5
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-police.png",
+   "sha": "07574c524f11e55c279600c4024dcf7d54dd020dc24ca8554439686cd00a8ce0",
+   "pin": 76
+  },
+  {
+   "id": "mc-bld-cafe",
+   "group": "buildings",
+   "name": "카페(작은 기와 지붕)",
+   "kind": "structure",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/buildings/_gate/mc-bld-cafe.png",
+   "sha": "d364c5bfc136a246153ad5b1702bdeb56fdb60e4ad54d0eaac1379cb9d4f5aeb",
+   "pin": 77
+  },
+  {
+   "id": "mc-clock-f2",
+   "group": "anim",
+   "name": "시계탑 초침 프레임2",
+   "kind": "structure",
+   "cells": [
+    2,
+    4
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-clock-f2.png",
+   "sha": "bfd124a2ede7961c9710a3b675244762394b3cacdf0ebdc85cb79b1b71be6853",
+   "pin": 78
+  },
+  {
+   "id": "mc-flag-f0",
+   "group": "anim",
+   "name": "게양대 깃발 프레임0",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-flag-f0.png",
+   "sha": "968170ab988323d6e9176107ebd99d17042ea3524d60d1f7c6e587f943820098",
+   "pin": 79
+  },
+  {
+   "id": "mc-flag-f2",
+   "group": "anim",
+   "name": "게양대 깃발 프레임2",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-flag-f2.png",
+   "sha": "968170ab988323d6e9176107ebd99d17042ea3524d60d1f7c6e587f943820098",
+   "pin": 80
+  },
+  {
+   "id": "mc-fountain-f0",
+   "group": "anim",
+   "name": "분수 물 프레임0",
+   "kind": "container",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-fountain-f0.png",
+   "sha": "16c03a48cfc382cf5d1649e5b4eeda348696ce01b199f02b78f123845fb54a82",
+   "pin": 81
+  },
+  {
+   "id": "mc-fountain-f1",
+   "group": "anim",
+   "name": "분수 물 프레임1",
+   "kind": "container",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-fountain-f1.png",
+   "sha": "284467eda0884aa0eee5ac2de5138c2db3431f5735d24c7ce47042f2bcd6de6d",
+   "pin": 82
+  },
+  {
+   "id": "mc-fountain-f2",
+   "group": "anim",
+   "name": "분수 물 프레임2",
+   "kind": "container",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-fountain-f2.png",
+   "sha": "87872b9d9e88889adb54fadf0a9837696548c590b2800a2381e9cb377facde69",
+   "pin": 83
+  },
+  {
+   "id": "mc-fountain-f3",
+   "group": "anim",
+   "name": "분수 물 프레임3",
+   "kind": "container",
+   "cells": [
+    3,
+    3
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-fountain-f3.png",
+   "sha": "4d56e96bee9d3aad69e9a85dc468573a74c781f75fd3aae17d55419664ca9f78",
+   "pin": 84
+  },
+  {
+   "id": "mc-petals-f0",
+   "group": "anim",
+   "name": "벚꽃 낙하 프레임0",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-petals-f0.png",
+   "sha": "8d749675b762a0b54f8e530432fec3fe1763dd77727067ebceb9af04bbcf14a5",
+   "pin": 85
+  },
+  {
+   "id": "mc-petals-f1",
+   "group": "anim",
+   "name": "벚꽃 낙하 프레임1",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-petals-f1.png",
+   "sha": "7b8d2d79b6765963be3317d0123f7e80eb3e01a50e7b498c589cac4fb5222d9f",
+   "pin": 86
+  },
+  {
+   "id": "mc-petals-f2",
+   "group": "anim",
+   "name": "벚꽃 낙하 프레임2",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-petals-f2.png",
+   "sha": "27cb2b68568b47f10159a0c2e11a9f28c5695c436ad99710e3438643b15fdbbe",
+   "pin": 87
+  },
+  {
+   "id": "mc-petals-f3",
+   "group": "anim",
+   "name": "벚꽃 낙하 프레임3",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-petals-f3.png",
+   "sha": "1e19be749e96de1a3595b0f16c268cb33b2897cc0d24c215957758ffddb4b603",
+   "pin": 88
+  },
+  {
+   "id": "mc-leaves-f0",
+   "group": "anim",
+   "name": "단풍 낙하 프레임0",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-leaves-f0.png",
+   "sha": "aeb6cdd892b96dade4c4820871145fa0af84fec1a6a1ef7b0b9dfca755555410",
+   "pin": 89
+  },
+  {
+   "id": "mc-leaves-f1",
+   "group": "anim",
+   "name": "단풍 낙하 프레임1",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-leaves-f1.png",
+   "sha": "9a9ab3cff95d8016a5d9a2e35d8acb883315a9169b8d744980c3f87483291809",
+   "pin": 90
+  },
+  {
+   "id": "mc-leaves-f2",
+   "group": "anim",
+   "name": "단풍 낙하 프레임2",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-leaves-f2.png",
+   "sha": "7e220ad6b8340a5fb45535e3e72e790ddd35229980acf4e8622c1966a350a8c9",
+   "pin": 91
+  },
+  {
+   "id": "mc-leaves-f3",
+   "group": "anim",
+   "name": "단풍 낙하 프레임3",
+   "kind": "debris",
+   "cells": [
+    1,
+    1
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-leaves-f3.png",
+   "sha": "0024a6df7ca99bbbd739d777695117318dc1a4d0c966a93bd0a427672b70c588",
+   "pin": 92
+  }
+ ],
+ "rejected": [
+  {
+   "id": "mc-fence",
+   "group": "props_legacy",
+   "name": "학교 담장 2칸(벽돌 기둥 + 벽돌 담 + 철제 울타리)",
+   "kind": "structure",
+   "cells": [
+    2,
+    2
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-fence.png",
+   "sha": "46644ff1bc4a9e4f8ab8e2ca4641f9c646020d3ae7f5428b71c9929d08b79995",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-vending",
+   "group": "props_legacy",
+   "name": "자판기(글자 없음)",
+   "kind": "tall_furniture",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/_gate/mc-vending.png",
+   "sha": "6d7cfb3f6bf0b06125d8b7e970da22d9a8c60f23cc6011b4c757f14e2b6b6a4e",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-basket-hoop",
+   "group": "props_a",
+   "name": "농구 골대(받침 블록 + 백보드 상자)",
+   "kind": "frame",
+   "cells": [
+    2,
+    3
+   ],
+   "png": "tiledata/modern-campus/props_a/_gate/mc-basket-hoop.png",
+   "sha": "f5d2cbf21fdfe0ffd051df1cb55e7c27123f4e1933f65b052f59e8b744128fc1",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-tennis-net",
+   "group": "props_b",
+   "name": "테니스 네트(받침 + 흰 윗띠)",
+   "kind": "frame",
+   "cells": [
+    3,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_b/_gate/mc-tennis-net.png",
+   "sha": "0c4e57b23bd809b42e697e2cc2dd3d8d37d7f6949c10f5f6cd9fca56fe3ccbc6",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-fence-roof",
+   "group": "props_c",
+   "name": "옥상 난간 2칸(콘크리트 윗면 넓게)",
+   "kind": "structure",
+   "cells": [
+    2,
+    1
+   ],
+   "png": "tiledata/modern-campus/props_c/_gate/mc-fence-roof.png",
+   "sha": "9697161824e3414dfaae9a086f57c205ce200746dcdd3a51301ce3b47c916743",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-clock-f0",
+   "group": "anim",
+   "name": "시계탑 초침 프레임0",
+   "kind": "structure",
+   "cells": [
+    2,
+    4
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-clock-f0.png",
+   "sha": "93bf9e74d3f92bcf20ef1fe435dfa8333a7a0ebf6bff3d0c423b94adced90499",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-clock-f1",
+   "group": "anim",
+   "name": "시계탑 초침 프레임1",
+   "kind": "structure",
+   "cells": [
+    2,
+    4
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-clock-f1.png",
+   "sha": "8a804c4754c2eec8bd53fe97c14f9892e7ec80263b6bfe4e1200d72f39b50037",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-clock-f3",
+   "group": "anim",
+   "name": "시계탑 초침 프레임3",
+   "kind": "structure",
+   "cells": [
+    2,
+    4
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-clock-f3.png",
+   "sha": "5172410f499d6aaaa8068d7f3c9fc5faeb933ae188626a9a90e18aaa1016f9e6",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-flag-f1",
+   "group": "anim",
+   "name": "게양대 깃발 프레임1",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-flag-f1.png",
+   "sha": "3edef18b851d2c3c972a8aa147ff2221f6a0113c9a7a630713bc39c8d80733aa",
+   "verdict": "fail"
+  },
+  {
+   "id": "mc-flag-f3",
+   "group": "anim",
+   "name": "게양대 깃발 프레임3",
+   "kind": "column",
+   "cells": [
+    1,
+    2
+   ],
+   "png": "tiledata/modern-campus/anim/_gate/mc-flag-f3.png",
+   "sha": "9dc353122351bf3aa8785f46f55e21024c5e645760ca6941370e4ffb52700e16",
+   "verdict": "fail"
+  }
+ ]
+}

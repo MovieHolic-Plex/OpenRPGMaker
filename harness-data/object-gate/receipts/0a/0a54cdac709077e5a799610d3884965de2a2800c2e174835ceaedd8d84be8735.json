@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a54cdac709077e5a799610d3884965de2a2800c2e174835ceaedd8d84be8735",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "자판기(두꺼운 덮개 몸통)",
+ "label": "modern-campus/mc-vending2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine with top cover",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the machine is prominently visible spanning rows 0 to 11 (12 pixel rows tall) above the front face showing the drink selection panel (rows 16-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4717
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from rows 1 to 11 (11 pixel rows deep) with panel ribbing, showing the horizontal top surface foreshortened from above before transitioning to the front face below row 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from above across rows 0–11 (with inset panel/vent lines at rows 3 and 9) above a front overhang/face (rows 12–31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5628
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine body is clearly visible from rows 0 through 11 (12 pixel rows tall) above the overhang and front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5128
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.024Z",
+ "cells": {
+  "16": [
+   "6f8f4a58bebc3e42",
+   "8bb02ff9feeef947"
+  ],
+  "24": [
+   "030a429137e65737",
+   "15cb7520b3004d0c",
+   "1eb1fcf0aa2f4a7e",
+   "2f099a1d79aef6fd",
+   "5d93994fe8a5bb81",
+   "5eaaf1bad2fe066e",
+   "97d5e5a7f7f10f2d",
+   "9be446f2cadf0dbb",
+   "d4944834584c146a",
+   "d659cde74056981f",
+   "f8fd1e585353407f",
+   "fb25834db3f9e984"
+  ],
+  "32": [
+   "a83a17d7b9867909",
+   "c5bfa279c331bf43",
+   "d9a914e3e9dbfa0f"
+  ],
+  "48": [
+   "3b8da6c748c9d27b",
+   "79d7453bfc0ac02b",
+   "8b0862dce0585eb0",
+   "8dba19c2b5e6de7a",
+   "94e23d702dafa16a",
+   "e18f9d3011656a23"
+  ]
+ }
+}

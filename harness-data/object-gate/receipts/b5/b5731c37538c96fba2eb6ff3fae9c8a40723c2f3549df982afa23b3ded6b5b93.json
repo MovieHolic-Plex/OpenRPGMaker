@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5731c37538c96fba2eb6ff3fae9c8a40723c2f3549df982afa23b3ded6b5b93",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(큰 받침 + 기둥 + 두꺼운 백보드)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball hoop with backboard, pole, and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (backboard, pole, base, and orange rim) is drawn as flat, orthogonal rectangles facing straight towards the camera with zero top surface visible on the base or rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop and backboard assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (backboard, rim, pole, and base) is drawn in pure 2D front elevation with 0 rows of visible top surface on any horizontal component. The basketball rim is drawn as a flat orange rectangle rather than an ellipse showing an opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7762
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop / backboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is drawn as a flat 2D front rectangle with 0 rows of visible top thickness, and the hoop is drawn as a flat solid orange rectangle with no visible opening or ellipse viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11345
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop (backboard, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation (flat 2D orthographic view). Neither the backboard, the orange rim (which is a solid flat 2-row rectangle with no visible opening/ellipse), nor the base show any top surface in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8562
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:00.488Z",
+ "cells": {
+  "16": [
+   "064bff7062d183b9",
+   "3d21300a3f818969",
+   "5bf34c30ec81b66a",
+   "81c8a6561d75b088",
+   "a9a4b4f3166cbf1a",
+   "cff14ddc237dc0b3"
+  ],
+  "24": [
+   "2e5ec88039a04332",
+   "436c3c829e5f94c3",
+   "67b0b462a4c95893",
+   "7eca977d2e91ae5b",
+   "981ca6c2e71c2987",
+   "9a2b8bc5990b7dae",
+   "a4c11ba3bd2a261b",
+   "a72a4812e747c63d",
+   "ada6a1dd9fa7da7a",
+   "bdbdb21cc5fcbe5b",
+   "d99bf860f4f8b40e",
+   "fbb785f3e944c6d8"
+  ],
+  "32": [
+   "76cd56e64574698f",
+   "bdba9322e2b11f6e",
+   "db4fd48c367c9470",
+   "df6be56caf547a18"
+  ],
+  "48": [
+   "0c45870ac7cb441a",
+   "0f11bf9a3dfaddd9",
+   "ce298e5209a7fbcf"
+  ]
+ }
+}

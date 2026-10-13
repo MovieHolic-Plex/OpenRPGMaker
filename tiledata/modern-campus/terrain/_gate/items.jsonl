@@ -1,0 +1,18 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-ground-soil.png", "kind": "terrain", "name": "운동장 흙", "label": "modern-campus/mc-ground-soil"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-ground-turf.png", "kind": "terrain", "name": "인조잔디 운동장(줄무늬)", "label": "modern-campus/mc-ground-turf"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-pave-brick.png", "kind": "terrain", "name": "붉은 벽돌 포석", "label": "modern-campus/mc-pave-brick"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-pave-brick-dark.png", "kind": "terrain", "name": "어두운 벽돌 포석", "label": "modern-campus/mc-pave-brick-dark"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-pave-slab.png", "kind": "terrain", "name": "교정 화강암 판석(4분할)", "label": "modern-campus/mc-pave-slab"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-lawn.png", "kind": "terrain", "name": "캠퍼스 잔디", "label": "modern-campus/mc-lawn"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-lawn-flower.png", "kind": "terrain", "name": "잔디 + 들꽃", "label": "modern-campus/mc-lawn-flower"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-road-asphalt.png", "kind": "terrain", "name": "아스팔트", "label": "modern-campus/mc-road-asphalt"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-road-kr-center.png", "kind": "terrain", "name": "도로 한국식(황색 중앙 겹선)", "label": "modern-campus/mc-road-kr-center"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-road-w-dash.png", "kind": "terrain", "name": "도로 서양식(흰 점선 중앙)", "label": "modern-campus/mc-road-w-dash"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-road-crosswalk.png", "kind": "terrain", "name": "횡단보도", "label": "modern-campus/mc-road-crosswalk"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-sidewalk.png", "kind": "terrain", "name": "보도블록", "label": "modern-campus/mc-sidewalk"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-tactile.png", "kind": "terrain", "name": "점자블록(황색)", "label": "modern-campus/mc-tactile"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-curb-s.png", "kind": "terrain", "name": "연석(남쪽 도로 가장자리)", "label": "modern-campus/mc-curb-s"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-edge-lawn-soil.png", "kind": "terrain", "name": "잔디→흙 가장자리(위 잔디·아래 흙)", "label": "modern-campus/mc-edge-lawn-soil"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-edge-lawn-pave.png", "kind": "terrain", "name": "잔디→포석 가장자리", "label": "modern-campus/mc-edge-lawn-pave"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-soil-line-h.png", "kind": "terrain", "name": "운동장 흙 + 흰 선", "label": "modern-campus/mc-soil-line-h"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/terrain/_gate/mc-bed-edge.png", "kind": "terrain", "name": "화단 가장자리(잔디 위 흙 띠)", "label": "modern-campus/mc-bed-edge"}

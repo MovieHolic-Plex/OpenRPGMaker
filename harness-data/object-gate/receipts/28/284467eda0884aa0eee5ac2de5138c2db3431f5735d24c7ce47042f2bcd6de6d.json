@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "284467eda0884aa0eee5ac2de5138c2db3431f5735d24c7ce47042f2bcd6de6d",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수 물 프레임1",
+ "label": "modern-campus/mc-fountain-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fountain basin with water",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 21,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin opening is clearly rendered as a foreshortened ellipse showing the interior pool of water (approx 21 rows tall) and a visible top rim, consistent with a top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10744
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fountain basin with water",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (approx rows 9 to 31) and a substantial rim visible around the entire perimeter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5757
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fountain basin",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 9-30, 22px tall) and thick stone rims consistent with 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5962
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fountain basin with water pool",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (rows 10-31, ~22 rows tall) surrounded by a 3/4 perspective rim, properly viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3707
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.139Z",
+ "cells": {
+  "16": [
+   "0699f720ced1ac52",
+   "08d603bb8211b4be",
+   "0da69924b50d30e1",
+   "258a562fe176f16d",
+   "386b66594efcadba",
+   "6bc1a58295e4ed5f",
+   "b0241576ef378b79",
+   "d735b2e43eca65f8",
+   "f82637eb057327f7"
+  ],
+  "24": [
+   "682a09dfc87fd955",
+   "79bb564bb76a3b27",
+   "809c13b25590a0bb",
+   "8380922768d51465"
+  ],
+  "32": [
+   "070c007a4fdb66c5",
+   "0ab14b66e6af03bd",
+   "0f86d33ad2893a07",
+   "218405b1ea049b71",
+   "277f28596454662f",
+   "29fb4aac18a62197",
+   "2f324406f9926fe3",
+   "396989aa23d8f83f",
+   "3fcd15d1b14b8d66",
+   "4759dbaeb2621328",
+   "481c2ede3279c2a4",
+   "4bf3a7f3c4b485ff",
+   "5d0af813a0f75456",
+   "6c1e751d6d25c5dc",
+   "6ede4f5941bb8201",
+   "79e45fabfb01b62e",
+   "861db9bcb52d449d",
+   "8a9b589b7aaa5096",
+   "b7e8f622fabb993e",
+   "cdc4697257e87038",
+   "ce69330c27dde141",
+   "d453fb9fd60e4501",
+   "e14cab757c0571e4",
+   "e50513ece97c14ca"
+  ],
+  "48": [
+   "94117b235727af43"
+  ]
+ }
+}

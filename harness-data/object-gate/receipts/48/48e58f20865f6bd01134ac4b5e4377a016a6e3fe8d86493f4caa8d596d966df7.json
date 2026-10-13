@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48e58f20865f6bd01134ac4b5e4377a016a6e3fe8d86493f4caa8d596d966df7",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "정글짐(철 격자 윗면 + 기둥)",
+ "label": "modern-campus/mc-jungle-gym",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal jungle gym structure with top grid platform and supporting pillars",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion (rows 1-12) clearly displays the horizontal top grid surface from an overhead 3/4 perspective, with vertical pillars and crossbars extending below on rows 15-29.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4650
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "jungle gym frame with top grid deck and pillars",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-12 clearly show the horizontal top grid surface of the jungle gym foreshortened in 3/4 view, with vertical pillars and lower bars descending below row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3538
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "jungle gym frame with top grid platform and supporting posts",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-12 clearly depict the horizontal top metal grid platform in 3/4 top-down perspective, with vertical support posts and bars extending below on rows 16-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3723
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "jungle gym with top grid platform and supporting posts",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-12 clearly depict the foreshortened top grid surface (12 rows tall), while rows 13-29 show the front edge beam and vertical supporting pillars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4791
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.180Z",
+ "cells": {
+  "16": [
+   "012f88e699a0712b",
+   "4b160d8438358628",
+   "82ef8ca26bde7567",
+   "90b85b5446a56749",
+   "cb713ebd7bcfed7c",
+   "ec8cdce964543ac5"
+  ],
+  "24": [
+   "204060fbe7e75855",
+   "418886ff5c783ac9",
+   "4de56518fa547d29",
+   "8ddcbf5254faf06c",
+   "bb0f12b0f151ed87",
+   "bedf9c3910998923",
+   "cee6143aed527178",
+   "eca0e4ab79c41d8d"
+  ],
+  "32": [
+   "0cf7d790f81c1e92",
+   "1ef78a90f44a5a59",
+   "2f984c835bb4c265",
+   "7a2d875bf437def2",
+   "accb9a4709f4d8cd",
+   "c210fd7a24689b99"
+  ],
+  "48": [
+   "4537148ac5901b4c",
+   "5c94d9f50bd16fa2"
+  ]
+ }
+}

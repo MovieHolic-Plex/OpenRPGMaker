@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ac6e753af9fd4d159f3b77d9a5adb5147c44ca39d00b10ca11c49ec87221c48",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "교명석(큰 돌 + 마크)",
+ "label": "modern-campus/mc-school-sign",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone block monument",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone block is prominently visible across rows 1 to 7 (7 pixels deep), with a south-facing front vertical face from rows 8 to 14 bearing the green emblem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large stone block with emblem",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone block is prominently visible across rows 1-7 (7 source pixels tall), and the south front face is shown from row 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone block / monument",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone block is clearly foreshortened and visible across rows 1 to 7 (7 pixels deep), with the south front face extending from row 8 down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5242
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "large stone block with mark",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the block is clearly visible from rows 1 to 7 (7 pixels deep), with the front face extending from row 8 downwards featuring a green insignia.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6627
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.062Z",
+ "cells": {
+  "16": [
+   "a45af9954d0caefb",
+   "d5a13b848c633d4b"
+  ],
+  "24": [
+   "14568246b23105ac",
+   "1a2c31c7eaa042a3",
+   "4779c7d28bf5b05d",
+   "4974ac30131624c2",
+   "54c974720ed4edaa",
+   "5fff932ce4023d32",
+   "6bf8382172e660ee",
+   "9ffe2d0c78ad0658",
+   "b12c0dd29902dbf0",
+   "c7a09e252ffe22ab",
+   "eb00cb7e2164d68b",
+   "ed3a6689da457440"
+  ],
+  "32": [
+   "0441039e0966f519",
+   "866d4f7a4796b872"
+  ],
+  "48": [
+   "0cd2c1ef740ecbfd",
+   "4d13723384c2a00c",
+   "59ccee1c82ea22c8",
+   "a291ccc297d61a63",
+   "b215cef55082409f",
+   "e18b45cdf5d1750b"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e09434b2e1ae21879a512c99f8ef77ee39399cc88a8e55c42c051542964933a6",
+ "width": 48,
+ "height": 16,
+ "kind": "box",
+ "name": "조회대(콘크리트 단 + 계단)",
+ "label": "modern-campus/mc-podium",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete platform/dais with steps",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete platform has a large visible horizontal top surface spanning rows 0-8 (9 rows tall) and a front vertical face on rows 9-14 with a central step.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4813
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete platform/podium",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 form an 8-row foreshortened top surface of the platform, and rows 9-14 form the front south-facing elevation with a step detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete platform / podium",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete platform spans rows 1 to 8 (8 rows tall), followed by a 6-row front face (rows 9 to 14) with central step detailing. Proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete platform/dais",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete platform occupies rows 0 to 7 (8 rows tall), and the front vertical face occupies rows 8 to 14, correctly depicting a 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3598
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.062Z",
+ "cells": {
+  "16": [
+   "3bee940c0b196773",
+   "5a64985d14ece9f0",
+   "d2b79431a2dbbea7"
+  ],
+  "24": [
+   "23ab91fb9b42c71b",
+   "9817c1ea02f00bac",
+   "b9dca1f83c0e3c33",
+   "e2b31c51d655392a"
+  ],
+  "32": [
+   "02496b047cf58bc5",
+   "32c868c1487c783c",
+   "68eac036e980b399",
+   "8b18532057c7b3cb",
+   "9721adac8a4a24a8",
+   "9fd8ff7664016a72",
+   "a362c5324df041f1",
+   "c0de5545a4904898",
+   "cff67584b2dec95e",
+   "d6beb2a9aa4cc21d",
+   "db15c790089b9461",
+   "f6329e53d9919e9a"
+  ],
+  "48": [
+   "40bb26279a244bda",
+   "9a30d7e02465f802"
+  ]
+ }
+}

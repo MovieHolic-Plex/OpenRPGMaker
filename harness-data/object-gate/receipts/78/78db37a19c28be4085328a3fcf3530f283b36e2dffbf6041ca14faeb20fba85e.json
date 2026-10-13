@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "78db37a19c28be4085328a3fcf3530f283b36e2dffbf6041ca14faeb20fba85e",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "잔디→포석 가장자리",
+ "label": "modern-campus/mc-edge-lawn-pave",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass-to-stone wall/cliff transition tile",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a 2.5D terrain transition: the top ground surface shows green grass (rows 0-5, ~5 rows tall) overlooking a vertical brick/stone wall face below (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27944
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass-to-brick wall terrain transition",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain autotile showing grass ground surface along the top (rows 0-3) overhanging a vertical brick wall face (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass to brick terrain edge",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile displaying a top grass surface (rows 0-3/4) transitioning down to a vertical brick/stone edge (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5991
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass-to-stone wall edge tile",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain edge tile showing foreshortened grass ground on top (rows 0-3 with fringe overhanging to row 6) and the vertical brick/stone wall face below (rows 4-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6900
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.840Z",
+ "cells": {
+  "16": [
+   "ed44d890bb98ce5b"
+  ],
+  "24": [
+   "887c179864e41a08",
+   "93e1140e74dd7f47",
+   "b5c910341dfc05f4",
+   "c5cc881c97e5838f",
+   "e313f0ccf114c7ea",
+   "f82c60fa2dbe7e4e"
+  ],
+  "32": [
+   "7e66d8acc5b224da",
+   "917e20ed556d1450",
+   "97b6281613ca8291",
+   "c17b3e9125ea8605",
+   "d7be760029d1725e",
+   "e47957a5a68c44a4"
+  ],
+  "48": [
+   "2170ef70f91ff9bc",
+   "4961bfa2ed6dfbdb",
+   "6d801343d60754bb",
+   "a33e639b4e4ec051",
+   "a5b0fbb08072a675",
+   "f700781fe59095f2"
+  ]
+ }
+}

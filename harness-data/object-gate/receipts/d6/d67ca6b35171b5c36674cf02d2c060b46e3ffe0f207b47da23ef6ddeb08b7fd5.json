@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d67ca6b35171b5c36674cf02d2c060b46e3ffe0f207b47da23ef6ddeb08b7fd5",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "수돗가(콘크리트 싱크 + 수도꼭지 셋)",
+ "label": "modern-campus/mc-drinking-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete outdoor sink basin with faucets",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sink basin opening is clearly visible from above across rows 3-9 showing the interior depth and water surface, with a 2-pixel front rim (rows 10-11) and a 4-pixel vertical front south face (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete sink basin with faucets",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sink basin opening is clearly viewed from above (rows 3-9 showing water and interior depth), framed by concrete rims and with a 4-pixel-tall front south wall at rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5334
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete sink basin with faucets",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sink basin opening is clearly visible from above across rows 3-9 with water visible at rows 6-8, surrounded by concrete rims and showing the south front face on rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7835
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete sink basin with faucets",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sink basin opening is clearly visible from above (rows 3-9, showing interior water depth), surrounded by concrete rims with a visible front rim surface (rows 10-11) above the south front face (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5734
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.179Z",
+ "cells": {
+  "16": [
+   "cd3a912dc3d21d38",
+   "d132ea4ac47f59fa"
+  ],
+  "24": [
+   "05d6ac2b4d95d9ee",
+   "05fa3336019e80a6",
+   "2e6d306f7d33d7c9",
+   "3a04da3950c4d0ec",
+   "3b98020e5d8f9df8",
+   "44e47ed969267df6",
+   "4f96bc325c060e72",
+   "760870bbf6529d3e",
+   "90a2cdce26aaf182",
+   "9df5a8409e6b7800",
+   "cd93157611f665ab",
+   "db2409b7b0bd3c25"
+  ],
+  "32": [
+   "ac904ede98157325",
+   "b50349c36554160f"
+  ],
+  "48": [
+   "03f9cc443b2e4710",
+   "5990ea0c53262dec",
+   "71e5518c3bffcebc",
+   "b56a41420d2be6ae",
+   "b59be141e1df5448",
+   "cccc8dc19f5638e1"
+  ]
+ }
+}

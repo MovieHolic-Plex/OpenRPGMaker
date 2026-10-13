@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b78bc4d5770cf080ad737dfc874faf41e46a4c8273c99941fc90133bee4ccc0",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "도로 서양식(흰 점선 중앙)",
+ "label": "modern-campus/mc-road-w-dash",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road surface with white dashed line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Asphalt road ground tile with a horizontal dashed lane marking; flat terrain tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3905
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road terrain tile with dashed white line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a flat ground terrain tile depicting dark asphalt road surface with a horizontal dashed white road marking; kind is terrain and passes automatically.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4681
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road terrain tile with dashed white line marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing an asphalt road surface with a painted white center dash. The entire 16x16 surface is viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4376
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road terrain tile with dashed white line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark asphalt ground with a horizontal white painted road marking across rows 7-8. Fully viewed from above as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4101
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "cb5832f01b681e85"
+  ],
+  "24": [
+   "28a03f6d2fbf8f10",
+   "298ca6b5f2edfec8",
+   "4ed98e0d3fc51a2e",
+   "738238247510a06b",
+   "77bf54c8aec83908",
+   "a700c394618ac79b"
+  ],
+  "32": [
+   "637151c7f3e9ee5d",
+   "69205bef0a3c76c6",
+   "7c83b8fba61fa128",
+   "993f810362877c66",
+   "c0cfe522428d6062",
+   "c2f6058b645bfcee"
+  ],
+  "48": [
+   "056d61b48825a06f",
+   "2b09a32f8efae628",
+   "3571192a4089056c",
+   "5143bbfafcf76fa7",
+   "a35aaf8f2327e3c3",
+   "f48ba1cb7e0bf1ff"
+  ]
+ }
+}

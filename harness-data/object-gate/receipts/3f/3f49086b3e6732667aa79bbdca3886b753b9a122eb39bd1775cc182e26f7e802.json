@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3f49086b3e6732667aa79bbdca3886b753b9a122eb39bd1775cc182e26f7e802",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "캠퍼스 잔디",
+ "label": "modern-campus/mc-lawn",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 flat grass terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4490
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 top-down ground terrain texture representing campus grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9394
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 pixel-art grass ground terrain texture seen from top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3678
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 ground terrain tile representing grass texture viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4845
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.838Z",
+ "cells": {
+  "16": [
+   "d5e56e52c53d0026"
+  ],
+  "24": [
+   "0d1e1e805eac9282",
+   "46fc6a95903b41fa",
+   "ad30af8ff805e91c",
+   "bdcd2e29862a1e60",
+   "d5a5dc6e6b801be1",
+   "fa0f2e6f45236b64"
+  ],
+  "32": [
+   "01cfce236c09c447",
+   "1efb1084df68a0ee",
+   "2361aba58f5b1975",
+   "2a2eaf72b6b7810c",
+   "74225bacf54d5b1e",
+   "e7b8e355574ca4f3"
+  ],
+  "48": [
+   "28474a1301ab42c5",
+   "96d5172b5e085ecd",
+   "9e90c40a13f79936",
+   "d70a72b8d0274bf8",
+   "d7b98d092fbed249",
+   "d9447c280e488bdc"
+  ]
+ }
+}

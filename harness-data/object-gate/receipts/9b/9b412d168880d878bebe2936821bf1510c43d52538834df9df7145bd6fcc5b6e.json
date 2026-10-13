@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b412d168880d878bebe2936821bf1510c43d52538834df9df7145bd6fcc5b6e",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(콘크리트 받침 + 기둥 + 백보드)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball goal (backboard, hoop, pole, concrete base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation. The concrete base shows only a vertical front face with no visible top surface around the pole, the basketball rim is a flat 2-pixel orange rectangle rather than an ellipse seen from above, and the backboard/frame has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8334
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "backboard and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire basketball hoop assembly (backboard, hoop, pole, and concrete base) is drawn in pure front elevation without any visible top surfaces. The hoop at rows 25-26 is rendered as a flat 2px orange rectangle with no circular opening/rim perspective, and the base shoulders (row 40) show no top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7439
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop with backboard, pole, and concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in flat front elevation. The backboard and concrete base show no visible top surfaces (only a 1px border outline), and the hoop/rim at rows 25-26 is drawn as a flat 2px horizontal bar without any elliptical opening or 3D projection.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5873
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop with backboard, pole, and concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete base (rows 39-47) is drawn entirely as a flat front face with 0px of visible top surface to the sides of the post. The rim (rows 25-26) is a flat 2px solid orange rectangle showing no elliptical hoop opening or top view, and the entire structure is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6584
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.062Z",
+ "cells": {
+  "16": [
+   "2dcfc5161ba578c2",
+   "4ef32adf6498340b",
+   "6b0350fb5b706354",
+   "7c4aa1b26baba3b9",
+   "a6c276268b3810d0",
+   "b2aeff9c07d8de31"
+  ],
+  "24": [
+   "143192d1e29a4525",
+   "1dcbfba179834f36",
+   "2d23e6abd30714ff",
+   "3f5a1830a5f28144",
+   "51eddea5adf56d45",
+   "7577c5817c614670",
+   "79535b7903954657",
+   "7df6a5d8e894eda3",
+   "90dbb7e200edac81",
+   "a57129af5f6771f4",
+   "abac2a55691e4446",
+   "b085fc2ad79a6985"
+  ],
+  "32": [
+   "0b3a452358b5b54d",
+   "2e956da71f2f475f",
+   "3c75082c8446f719",
+   "c7bb28bd6f64e609"
+  ],
+  "48": [
+   "37aa1bd92d24934d",
+   "5e9c6f2a5964f8f0",
+   "5f43eac6b69aa528"
+  ]
+ }
+}

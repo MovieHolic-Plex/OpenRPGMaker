@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d364c5bfc136a246153ad5b1702bdeb56fdb60e4ad54d0eaac1379cb9d4f5aeb",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "카페(작은 기와 지붕)",
+ "label": "modern-campus/mc-bld-cafe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cafe building with hipped roof",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large sloped hipped roof occupying rows 4-28 (approx. 24 rows) showing the roof surface from above, consistent with standard 3/4 top-down RPG Maker building styles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building with sloped hip roof",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a prominent south-facing sloped roof spanning rows 4 to 27 (24 pixel rows of top slope/surface) above the south facade, correctly conveying 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6215
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "building with large sloped roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof slope facing the camera is visible from row 4 down to row 28 (approx 25 pixels tall), correctly showing the downward-sloping top surface characteristic of a 3/4 perspective JRPG building.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4756
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "building with hipped roof and entrance awning",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body shows a large south-facing roof slope from row 4 to row 28 (approx. 25 rows tall) above the front wall, conforming to canonical 3/4 view JRPG building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5385
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:55.502Z",
+ "cells": {
+  "16": [
+   "06495c31c6b6e470",
+   "08044b0b6f32e193",
+   "33bcd0a242eebd6f",
+   "4ab5a9357066f3a1",
+   "54ccb7f63513dc3b",
+   "62445a93766c2d65",
+   "692647383af74330",
+   "b965dccdf89d8c5f",
+   "d837d73e8a8b7d40"
+  ],
+  "24": [
+   "0897c23ef2248149",
+   "46efa8cdea9bd186",
+   "86318241bbc7cd8f",
+   "f7ac5cb45aa273b4"
+  ],
+  "32": [
+   "22d46316e629dc4b",
+   "31366e932d819af9",
+   "4186cda19200aa27",
+   "4329ca13bb981bf6",
+   "4a79bf0371f65698",
+   "4e0612b8bb406aa2",
+   "4f671273449abf57",
+   "676464d84a684e46",
+   "84bd00af15d93012",
+   "8c8b5ad93c128f59",
+   "8cd10a38fde08577",
+   "951710860a4a1e1b",
+   "bf4ded3d9ef00f1b",
+   "c1a96fcfa83c2480",
+   "c2d708f994e8e143",
+   "cfd9d6d0ea1ca741",
+   "d016b2c24a2ccfa3",
+   "d2235a9183749152",
+   "d5f3e56a62821bdc",
+   "d71eaf34758aab3d",
+   "d793cd93b8b96fd4",
+   "e567b8b82dd00598",
+   "f07544ce84ea5bdb",
+   "fb091875e7797ff8"
+  ],
+  "48": [
+   "19b2700b6f38b9eb"
+  ]
+ }
+}

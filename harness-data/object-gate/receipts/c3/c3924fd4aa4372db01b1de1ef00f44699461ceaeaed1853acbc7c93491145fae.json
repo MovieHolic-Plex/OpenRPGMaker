@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3924fd4aa4372db01b1de1ef00f44699461ceaeaed1853acbc7c93491145fae",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "교정 가로등(각 기둥 + 등 상자)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square streetlight (lantern box, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire streetlight (lantern box at rows 0-11, pole at rows 12-21, and base at rows 22-31) is drawn in pure front elevation with straight horizontal bands and vertically shaded front faces, displaying no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10090
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "street lamp post and fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object consists of stacked flat rectangles with perfectly horizontal dividing lines and no top surfaces visible on the lamp head, mid-tier, or base. It is drawn as a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8996
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square streetlamp post with lantern head and tiered column/base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat 2D front elevation with perfectly horizontal division lines and strictly vertical outlines. The top of the lantern head cuts off at row 0 with no visible top surface, and the steps/ledges between the pillar tiers show no foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "campus streetlight with square post and lantern housing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire streetlight (lantern housing, post, and base) is drawn in a pure front elevation with flat rectangular South-facing blocks. No horizontal top surfaces or caps are foreshortened to show depth from above; the lantern box extends straight to the top edge (row 0) without a top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10601
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.152Z",
+ "cells": {
+  "16": [
+   "611775d43a9707a2",
+   "fbc14d79fdffba68"
+  ],
+  "24": [
+   "005b8875492940a1",
+   "0a3d18afaacc247f",
+   "1ae167bbd076cf6f",
+   "2adcd42af71226df",
+   "2f2645aa4b65b9bf",
+   "3c106b2ea9f32310",
+   "5b22be79c4fb7701",
+   "a3f33ab5a98360b4",
+   "bc1cf204f9c72f07",
+   "c36c1045506249b7",
+   "f9f199e765698903",
+   "fb08df99c7767020"
+  ],
+  "32": [
+   "0e8998cfb6d279f6",
+   "e24493be05f2f491",
+   "f641659ad5aaf34d"
+  ],
+  "48": [
+   "0674773297f72704",
+   "3180a4a86685c780",
+   "617e2f27ad2b0169",
+   "79543ace40073ff1",
+   "96bce806e0bab100",
+   "b92f8ac0fcfd2d72"
+  ]
+ }
+}

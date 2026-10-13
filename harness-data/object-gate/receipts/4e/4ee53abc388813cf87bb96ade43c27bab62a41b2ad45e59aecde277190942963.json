@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ee53abc388813cf87bb96ade43c27bab62a41b2ad45e59aecde277190942963",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "운동 기구함(철 상자 + 큰 덮개)",
+ "label": "modern-campus/mc-sports-locker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "large closed storage box / equipment chest",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface occupies rows 1-9 (9 rows tall) seen foreshortened from above, while rows 10-14 show the south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "equipment storage box with closed lid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the box is clearly visible spanning rows 1 to 9 (9 source pixels tall), while the front face spans rows 10 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sports equipment box with closed lid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The large top lid occupies rows 1-9 (9 rows tall) viewed from above, while the south-facing front panels occupy rows 10-14, matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3650
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "equipment storage box with large lid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is prominently shown from rows 1 through 9 (9 pixel rows), with the front face occupying rows 10 through 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4008
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.182Z",
+ "cells": {
+  "16": [
+   "71a2208870997ab9",
+   "8f20dcfc631e1a53"
+  ],
+  "24": [
+   "001e2d991e0a37e4",
+   "18b7c50ae62dd8ad",
+   "50660c986186f842",
+   "5ca3f04ae79639a2",
+   "7e505ea9f5b0acf9",
+   "8b0a7b002d5d06b6",
+   "cecbfb26c2e15279",
+   "de8185fa59e46ec8",
+   "ec699c5e6ae336b1",
+   "ef222b0539311a37",
+   "facff2fb745847cd",
+   "ffaf81053d6ae071"
+  ],
+  "32": [
+   "67d0fab6f7c47699",
+   "c89caea353628620"
+  ],
+  "48": [
+   "19370e6cbd8845af",
+   "387b5447f5a33589",
+   "4985f2b884d434b2",
+   "640204b70a73928c",
+   "6b643f618faddbce",
+   "a6d505fa17fbd48b"
+  ]
+ }
+}

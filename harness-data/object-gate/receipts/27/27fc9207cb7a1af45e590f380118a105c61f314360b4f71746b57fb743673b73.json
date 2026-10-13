@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "27fc9207cb7a1af45e590f380118a105c61f314360b4f71746b57fb743673b73",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(받침 + 기둥 + 두꺼운 백보드)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball hoop backboard, pole, and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (backboard, rim, pole, and base) is drawn in pure front elevation with 1px outlines and completely flat rectangular blocks. Neither the backboard, rim, nor base shows a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6725
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop structure (backboard, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All parts of the object (backboard, rim, pole, and base plinth) are drawn in pure front elevation with 0 pixel rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6587
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop (backboard, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All components (backboard, rim, post padding, and base plinth) are drawn in a completely flat front elevation with 0px of visible top surfaces. In top-down 3/4 view, horizontal planes such as the top of the base, the top edge/depth of the backboard, and the circular basketball rim must show receding top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14390
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop (backboard, pole, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire basketball hoop assembly (backboard, pole, and base) is drawn in a pure 2D front elevation. Neither the backboard, pole, nor the wide base plinth shows a visible top surface foreshortened from above; all horizontal boundaries are 1px outline lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7612
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:00.180Z",
+ "cells": {
+  "16": [
+   "0e29421bfa95ca8f",
+   "51ae716261e0031f",
+   "68bfb3f290170d8c",
+   "7c77fa10c43f7761",
+   "b0cfb91e2e45098d",
+   "cf2017725fe87d76"
+  ],
+  "24": [
+   "168e1b94acebb7c8",
+   "16b6dd7fff8f0177",
+   "1bc2ed8acfc21911",
+   "2bed2d89ee38730c",
+   "2e319db8c95e68d8",
+   "2edf222b120702b9",
+   "49396c92b6aab455",
+   "69d54a959617ee39",
+   "813f6cf1b254c243",
+   "8cf0149df54f5c1e",
+   "d9d5e4c855a22c04",
+   "edb51aedeea0e7ce"
+  ],
+  "32": [
+   "3eb5014022593514",
+   "6460975571372af0",
+   "652df0214b26f742",
+   "8b034467463b34ff"
+  ],
+  "48": [
+   "02ce044eac0e28b2",
+   "95d8400f77f6e665",
+   "cacb45946a1cf5b4"
+  ]
+ }
+}

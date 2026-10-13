@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6aab854a137f478ecfc249f4560b1267f19a3247feedfcabd89f5d156c273a8f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "화단 가장자리(잔디 위 흙 띠)",
+ "label": "modern-campus/mc-bed-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flowerbed edge terrain tile with grass, curb, and soil",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain transition tile showing grass from above (rows 0-8), a dividing stone curb border (rows 9-11), and soil bed (rows 12-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5215
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flowerbed edge terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile showing grass (rows 0-8), a dividing stone border (rows 9-11), and tilled soil with sprout markings (rows 12-15). It correctly depicts a horizontal top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6219
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terrain border between grass and flowerbed soil",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile showing grass in rows 0-8, a 3px horizontal border edge (rows 9-11), and tilled soil with small sprouts (rows 12-15). As a ground terrain tile, top-down projection is standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5518
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terrain border transition between grass, stone curb, and dirt plot",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile showing ground surfaces (grass, border strip, soil) viewed from top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3359
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.840Z",
+ "cells": {
+  "16": [
+   "c8f011bdc60d36be"
+  ],
+  "24": [
+   "0d20d8bd4b6dda6a",
+   "606df126ffa00d6a",
+   "c297847986db7a36",
+   "dfd4d5b8a6ac337f",
+   "e09564a10274a962",
+   "efe048cc897b20b8"
+  ],
+  "32": [
+   "129d127701f31f7d",
+   "4ae7a26bd6aaf186",
+   "91a54f9a9f8e7f87",
+   "a82032b160b2e6be",
+   "a9b646f3895e94ff",
+   "b2e9b8adf7ab079a"
+  ],
+  "48": [
+   "426cda02c9f3b51b",
+   "667a6be2b0c1af87",
+   "b72a72f461e4c92e",
+   "bec58e1e93996427",
+   "cbd820a9d38fcc39",
+   "e26b82b33efb9add"
+  ]
+ }
+}

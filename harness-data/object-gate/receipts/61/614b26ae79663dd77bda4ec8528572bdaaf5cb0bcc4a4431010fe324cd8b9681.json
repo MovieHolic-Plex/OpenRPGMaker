@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "614b26ae79663dd77bda4ec8528572bdaaf5cb0bcc4a4431010fe324cd8b9681",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "보도블록",
+ "label": "modern-campus/mc-sidewalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone paving blocks / sidewalk terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts ground paving stones / sidewalk blocks viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5640
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sidewalk paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone pavement / sidewalk blocks viewed from above across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6038
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "paving stones / sidewalk tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting sidewalk stone paving blocks with horizontal and vertical mortar seams across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3911
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "paving blocks ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts sidewalk stone blocks (running bond paving texture) covering the full ground surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4715
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "bd801cd2d6580e74"
+  ],
+  "24": [
+   "0f09db411f70830e",
+   "153ef11c317ef176",
+   "812e96ff9840620b",
+   "897c3f3d7f289d76",
+   "cf897f0df1b333aa",
+   "ed399f96e31207e0"
+  ],
+  "32": [
+   "3ac201639c9e3b74",
+   "59c57cd932d0bd71",
+   "b2276c26a191bc24",
+   "c1cafc505d60da32",
+   "caadcbc91c8faec7",
+   "d4b4546957335d3e"
+  ],
+  "48": [
+   "29c547c80a7b5265",
+   "3619a885bb57866b",
+   "8e368e4809ce7313",
+   "e00d1fc4331bf6ff",
+   "e8010ab8c0d268e6",
+   "f30281afa8a31ce8"
+  ]
+ }
+}

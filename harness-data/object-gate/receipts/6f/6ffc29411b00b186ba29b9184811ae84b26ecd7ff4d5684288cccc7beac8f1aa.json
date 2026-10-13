@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6ffc29411b00b186ba29b9184811ae84b26ecd7ff4d5684288cccc7beac8f1aa",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운동장 흙 + 흰 선",
+ "label": "modern-campus/mc-soil-line-h",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "ground terrain tile (schoolyard dirt with white line)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile is a flat ground surface (dirt with a horizontal painted line) viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4202
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground terrain tile with painted line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing schoolyard dirt with a horizontal white line across rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5266
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ground dirt tile with chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing schoolyard dirt with a horizontal white painted line across rows 7-8; correctly depicted as a horizontal ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5119
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dirt ground terrain with white chalk line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting dirt athletic field with a white line painted across rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3996
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.840Z",
+ "cells": {
+  "16": [
+   "a1a7c5b8c022beab"
+  ],
+  "24": [
+   "6afe71355cbe5875",
+   "8bee770d754c9ff5",
+   "b23a95a2cb7f65fd",
+   "d17f9348e12d5c2f",
+   "de3c26e97a426923",
+   "ece21dbaf03cd727"
+  ],
+  "32": [
+   "36e39d50b50a34a7",
+   "884d89fe877d2d9d",
+   "a60017f3373c3800",
+   "b3247359940cdc36",
+   "f53a8b3f6cfa355a",
+   "f846d83c80325476"
+  ],
+  "48": [
+   "10dbadb2b765bacc",
+   "3d83b0d44934864f",
+   "44dd32cd7c8898e6",
+   "6faf1f8a46993ea2",
+   "dc3140cdf823936c",
+   "f4e494dd46117224"
+  ]
+ }
+}

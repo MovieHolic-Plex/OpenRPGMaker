@@ -1,0 +1,171 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93bf9e74d3f92bcf20ef1fe435dfa8333a7a0ebf6bff3d0c423b94adced90499",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "시계탑 초침 프레임0",
+ "label": "modern-campus/mc-clock-f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows horizontal top surfaces in standard 3/4 view: the flat stone roof/platform at rows 1–12 (12 rows tall, featuring an inset panel and a central roof structure) above the south-facing overhang (rows 13–16), as well as a 4-row visible top surface on the base plinth (rows 49–52).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13498
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock tower is drawn entirely as a flat architectural front elevation. The upper structure terminates with a 1px outline at row 0 without showing any top roof slope or top surface, and the clock face is mounted flat on the vertical brick facade.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6809
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock tower shaft and capital",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat architectural front elevation. The top capital features a front-facing framed plaque with no top surface, the brick shaft has a flat circular clock face viewed directly from the front, and the base consists of stacked front-facing rectangular bands without any top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12983
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure ends abruptly at the top (row 1) with only a 1px outline border and no visible roof slope or top surface. The upper section (rows 1-12) is rendered as a flat front architectural panel/attic with a central plaque rather than a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8454
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.136Z",
+ "cells": {
+  "16": [
+   "2dcf3a500a0bc77e",
+   "3d8a94a0cd960915",
+   "574a5069777240b7",
+   "a4bb6b12acb1dd63",
+   "ae613bdf935a64ad",
+   "c13f9d07304be010",
+   "ca0bd6602d0fd6cf",
+   "e6b0c1cb937e839e"
+  ],
+  "24": [
+   "189a0597d98c0416",
+   "217dce9ae531278b",
+   "2429933975fc36a7",
+   "271f9f17e9f7b8ec",
+   "29987f2ef96057a0",
+   "2a6d00f2cba96696",
+   "2b86cad644a4a477",
+   "2d3c24e1ebc1ef97",
+   "32b937f3ba3e46a0",
+   "393e96193e56eab5",
+   "400a44f24536a0c0",
+   "446feafaefed6a96",
+   "47a26abe9efb67c0",
+   "5fbad1bc58035aa2",
+   "697a5cdf97add3b2",
+   "6eff8a766c61fe47",
+   "713a9fb8f3611193",
+   "8981828deb16cf6c",
+   "8f587bd0a6b2e363",
+   "95a32ca07348b415",
+   "964f0cabe1ce9154",
+   "a9fdada4de83c7a3",
+   "c073c5c10aec3cdf",
+   "c291edaee22fef59",
+   "d0772ec0b996c996",
+   "da876823c033f4b9",
+   "daf09cc8fab9b2f0",
+   "dbb32715899da4cc",
+   "e19bdcdb46c3c77b",
+   "e47c52bee8447eb5",
+   "e5603f15bb29ea4d",
+   "efbc9177fb9e13aa",
+   "f653350794f12028",
+   "fceea2e516c62ea2",
+   "fd6a8b0aab6ceaaa",
+   "fe65089c8477a9c0"
+  ],
+  "32": [
+   "a21fa3f38728f7a6",
+   "f88276c20f856e19"
+  ],
+  "48": [
+   "14ecf1ee7a50436a",
+   "352208646fd2d12b",
+   "36668d0a048347e9",
+   "3ef28f9a3e71af86",
+   "4099c641da0c9976",
+   "4123fb5ad3e9690c",
+   "43278deaddda78b5",
+   "518b90c43f685a0d",
+   "5338db71ac893906",
+   "87f31661d9c0c1ad",
+   "aa85535d5e8443bb",
+   "e137527162878745"
+  ]
+ }
+}

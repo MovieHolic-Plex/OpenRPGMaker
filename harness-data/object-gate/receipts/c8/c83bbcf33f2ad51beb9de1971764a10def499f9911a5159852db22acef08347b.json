@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c83bbcf33f2ad51beb9de1971764a10def499f9911a5159852db22acef08347b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "미끄럼틀(계단 탑 윗면 + 긴 미끄럼 판)",
+ "label": "modern-campus/mc-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tower platform has a clear top surface spanning rows 1-10 with a front face at rows 11-18, and the slide chute shows its top sliding surface spanning rows 10-20 with south-facing vertical drops below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4928
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "slide platform tower with slide chute extending to the right",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tower platform clearly displays a 10-row top surface (rows 1-10) and an 8-row south face (rows 11-18), while the attached slide chute also shows a top surface (rows 10-20) over its south-facing side wall (rows 21-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6268
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "playground slide tower and chute",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the tower platform (rows 1-10) and the slide bed (rows 10-19) display generous top surfaces in 3/4 perspective, each paired with their respective south-facing vertical surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "playground slide tower and ramp",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tower platform shows a substantial top surface (rows 1-10, 10px tall) above its front face (rows 12-18), and the adjacent slide ramp also clearly displays its top surface (rows 10-18) above its front edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6695
+  }
+ ],
+ "decidedAt": "2026-10-13T14:16:25.792Z",
+ "cells": {
+  "16": [
+   "1a4708f444a0764c",
+   "1bbcae428ca60f7e",
+   "4beb5c5e81f08eb1",
+   "5ba0589321352600",
+   "706b9e1a6fda1810",
+   "a2a6b1279de79b84"
+  ],
+  "24": [
+   "350db65b50eed095",
+   "62345d055b82c656",
+   "84b43697ac85cdc3",
+   "97f67fda5f5c6150",
+   "ca749e3a7ac5a938",
+   "cb779bd3ef592530",
+   "f816ed9736d1e104"
+  ],
+  "32": [
+   "0a71fcf989bedc94",
+   "0c8e2902198dedb1",
+   "3503b14dda460514",
+   "4d5c7bce9922abc5",
+   "9b82167b62a3f5f8",
+   "d72a286ee346c5a6"
+  ],
+  "48": [
+   "10925ab67874e7a6",
+   "7b39691d4395a393"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8a3a02c893126a4f578b4ec0f6e1dedd3ba2cf1c980f91a67185332973ac1032",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "전봇대(콘크리트 각 기둥 + 변압기 상자 + 가로대)",
+ "label": "modern-campus/mc-utility-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete utility pole with transformer box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarm, and transformer box sections are drawn entirely as flat rectangular shapes with purely horizontal and vertical outlines; no top surfaces are visible on any of the protruding boxes or segments.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9276
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete utility pole with transformer boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, and attached transformer boxes are drawn entirely in flat 2D front orthographic elevation with horizontal outline dividers and no foreshortened top surfaces visible anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete utility pole with transformer box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, mounted transformer box, and upper crossarm are all rendered as perfectly flat rectangles with no visible top faces on any of the protruding elements (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4827
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete utility pole with mounted transformer/boxes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarm, and mounted transformer boxes are all drawn purely as flat 2D rectangles in front elevation with horizontal division lines and no visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8791
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.181Z",
+ "cells": {
+  "16": [
+   "3c2187cf9df84404",
+   "b4a606a42ddb19ce",
+   "d1bc6047ce384197"
+  ],
+  "24": [
+   "272c838ce7ce2df6",
+   "30701545828aa500",
+   "5ffc8df0feec8397",
+   "b730f885d0507f13",
+   "cf07ce26ba8a6e7b",
+   "d5fe7e362286d03c"
+  ],
+  "32": [
+   "22ad6eac16c40ee5",
+   "295974e2920a3c29",
+   "3fe6dcb3549fe043",
+   "5571749b8f6a9769",
+   "617c869a8eda24e1",
+   "61efad4742d5f983",
+   "626c3a7d2e5d77c6",
+   "7e775fc1664e49dd",
+   "a0d9e77c2d3e874f",
+   "b01c539f661de4fe",
+   "ccacb8484c8ed720",
+   "db4e13b938e5dbc5"
+  ],
+  "48": [
+   "2fd8c6f547d05277",
+   "3005b3760b6487d9",
+   "f7b7a9a7b3d82217"
+  ]
+ }
+}

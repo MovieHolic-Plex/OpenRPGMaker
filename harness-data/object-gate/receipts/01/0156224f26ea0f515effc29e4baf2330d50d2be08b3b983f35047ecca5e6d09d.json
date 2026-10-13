@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0156224f26ea0f515effc29e4baf2330d50d2be08b3b983f35047ecca5e6d09d",
+ "width": 48,
+ "height": 32,
+ "kind": "frame",
+ "name": "철봉(철 기둥 둘 + 가로대 + 모래 받침)",
+ "label": "modern-campus/mc-pullup-bar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal bar (crossbar, posts, and bases)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D front elevation. The crossbar has horizontal cylindrical/bevel banding with no receding top plane, and the bases feature a flat 2D U-shaped notch cutout (rows 21-23) holding the posts rather than showing horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9426
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal pull-up bar frame with two vertical posts and support bases",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat 2D side-scroller/platformer elevation. The horizontal beam, vertical posts, and bottom base blocks have no visible top surfaces (the base blocks at rows 20-31 have flat 1px outlines at the top with no foreshortened top plane, and the pole sockets are drawn in front profile rather than revealing an elliptical top opening).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9010
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal pull-up bar frame with crossbeam, two vertical poles, and base brackets",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame is drawn in flat 2D front elevation (side-scroller style). The crossbeam and base blocks show only front-facing vertical surfaces with simple top-down lighting bands, not foreshortened horizontal planes seen from a 3/4 overhead perspective. The base supports feature 2D U-shaped cradle sockets holding the poles rather than depth-receding surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9637
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal bar frame (crossbar, two vertical posts, and two base mounts)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame is drawn in flat front elevation. The horizontal beam has no receding top plane, and the base mounts at the bottom are drawn straight from the front with a 2D U-shaped cutout where the posts enter, showing 0 pixel rows of top surface around the posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9001
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.062Z",
+ "cells": {
+  "16": [
+   "3f1b7a604ca01203",
+   "937c7283e937269b",
+   "9749fd53078e6aee",
+   "f8f57cc7194a3ca4"
+  ],
+  "24": [
+   "4ab5f00bacdfe000",
+   "4f320dee41721cec",
+   "606d998e297954de",
+   "884ee46514bc77fc",
+   "c38da18954762710",
+   "cc5625663e976512",
+   "d11e4cc3202b67c3",
+   "f8f177696425dab2"
+  ],
+  "32": [
+   "2a666a04c35726ff",
+   "4877f59dca7b521f",
+   "4bb0c2f40e8419ff",
+   "932ddda69e3d867a",
+   "9cc8b9b4e8f707c1",
+   "ec2556632be2400a"
+  ],
+  "48": [
+   "6ddc6eeb23af133f",
+   "cc98d1f96690acea"
+  ]
+ }
+}

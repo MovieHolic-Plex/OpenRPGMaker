@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "da9432bf48034574d8c75f547906a7f523f6190a394aac9360c67cca4f7bc740",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(받침 + 짧은 기둥 + 두꺼운 백보드)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball backboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is the main body and is drawn in pure front elevation with a 1px outline at row 0 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9330
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "backboard and support stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is drawn as a completely flat front elevation with a 1px outline at the top (row 1) and no visible horizontal top surface, despite the prompt calling for a thick backboard. Furthermore, the hoop floats detached below the backboard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7862
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop backboard and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is the largest element of the object and is drawn in a pure front elevation with only a 1px outline at the top (row 0) and no visible top surface/thickness, despite the title specifying a thick backboard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9943
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball backboard and hoop assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is the largest element (rows 0-19) and is drawn in pure front elevation with only a 1px outline at row 0 and no visible top surface (top_rows: 0), despite being specified as a thick backboard.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6759
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:22.100Z",
+ "cells": {
+  "16": [
+   "1e0ea5d7bb490fda",
+   "29299c27950df917",
+   "b859e0a9854b4062",
+   "bab8cd4759cef26c",
+   "cb8938d74a96aee3",
+   "eaa344cfd06e0de2"
+  ],
+  "24": [
+   "158cd6d807cdad8c",
+   "1cbe2941790b4498",
+   "234564a1d0452602",
+   "3685722e8b8c751e",
+   "36e9217b5029ef0b",
+   "4a49b2e37303086d",
+   "813d2c13ccd18141",
+   "86f1b7582b635a12",
+   "94ce509e59304021",
+   "b744af3d06536f51",
+   "cac5a117f3d2c340",
+   "f67633e5aeb2a648"
+  ],
+  "32": [
+   "b6dd5a308d9ad325",
+   "c87b09bfae25f0b3",
+   "d875faf77ec71005",
+   "fa860054a4d7742b"
+  ],
+  "48": [
+   "59f30d98b5057ce7",
+   "d8879abd6a2dad20",
+   "f267eae59b63a96f"
+  ]
+ }
+}

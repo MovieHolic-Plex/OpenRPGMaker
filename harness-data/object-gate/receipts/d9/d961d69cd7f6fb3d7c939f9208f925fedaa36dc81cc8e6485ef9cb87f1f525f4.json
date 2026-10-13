@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d961d69cd7f6fb3d7c939f9208f925fedaa36dc81cc8e6485ef9cb87f1f525f4",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "쓰레기통(철 원통)",
+ "label": "modern-campus/mc-trash-can",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical metal trash bin",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trash can is drawn from a direct front elevation. The top cap has no visible foreshortened top surface or ellipse, the horizontal rib lines (rows 5, 11) are completely flat, and the trash slot (rows 3-4) is a flat rectangle facing the viewer directly.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5755
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal cylinder trash can with slot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trash can is drawn in pure front elevation with straight horizontal bands and a front-facing rectangular slot. There is no foreshortened elliptical top surface or opening visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6231
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical trash bin with domed top and front slot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical trash bin is drawn entirely in pure front elevation: all horizontal seams and the bottom rim are flat straight lines with zero curvature, the disposal slot faces directly forward as a flat rectangle, and there is no visible top surface or elliptical cap seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6662
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "metal cylindrical trash can",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The trash can is drawn in pure front elevation with straight horizontal bands and a flat front-facing trash slot; there is no elliptical top cap visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5079
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.061Z",
+ "cells": {
+  "16": [
+   "39c658d12180213f"
+  ],
+  "24": [
+   "40496ffc707a32de",
+   "4b355065d8b06786",
+   "64128734cbafab33",
+   "6eef14047fb7f7f3",
+   "c56580db588ef18b",
+   "de26cd7ddfefa54f"
+  ],
+  "32": [
+   "22d4c7c649883bea",
+   "3373e33bd8da9937",
+   "4a3cf8aa015f8166",
+   "7bb4aa2fbf9542d7",
+   "e29942edc31c68b2",
+   "f36bb520183c42a0"
+  ],
+  "48": [
+   "1046a71ee96e012c",
+   "3f75e58199f6c829",
+   "9de9a7834e2f498f",
+   "c291f77d272305e4",
+   "c34e53b4b9acced8",
+   "e572aa103a132cb6"
+  ]
+ }
+}

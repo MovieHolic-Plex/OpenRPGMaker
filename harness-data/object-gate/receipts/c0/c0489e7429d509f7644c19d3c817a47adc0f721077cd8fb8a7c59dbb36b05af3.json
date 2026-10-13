@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c0489e7429d509f7644c19d3c817a47adc0f721077cd8fb8a7c59dbb36b05af3",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "자전거(눕혀 본 3/4: 안장 윗면 + 바퀴 + 프레임)",
+ "label": "modern-campus/mc-bicycle",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red top block / seat structure with wheels below",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper body shows a prominent 6-row top surface (rows 1-6) and a 2-row south face (rows 7-8) above the lower wheel assembly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8454
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "saddle / main body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main block spans rows 1 to 6 (6 rows deep), followed by a shaded front face on rows 7 to 9 and lower supporting frame elements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10230
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large upper block (saddle/seat structure)",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main upper body shows a 6-row foreshortened top surface (rows 1-6) and a 3-row front-facing south surface (rows 7-9) in classic 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9304
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "saddle / upper body",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper body features an expansive top surface from rows 1 to 6 with a front south face clearly shown at rows 8–9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8221
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.179Z",
+ "cells": {
+  "16": [
+   "e74c5274a86cf4aa"
+  ],
+  "24": [
+   "1866f941bf13158d",
+   "3fedef4ed7cd8e8d",
+   "9d97720440bef57a",
+   "d7d3988af63e4ddc",
+   "dfb6a1674baddc65",
+   "f0c17dc664a71fe8"
+  ],
+  "32": [
+   "075d34da7caddcbb",
+   "2011fc5bacfd5f04",
+   "39c90efcfa305dc7",
+   "485ff3afeb3ac956",
+   "ae58861184c87978",
+   "e4a894c7d700c530"
+  ],
+  "48": [
+   "1be5f13a491bdd30",
+   "4a86931f64ba92ff",
+   "65401e7a00267d7f",
+   "cb9d83548d4c0fbc",
+   "ec112553014ae4bc",
+   "fcddf961945abf7f"
+  ]
+ }
+}

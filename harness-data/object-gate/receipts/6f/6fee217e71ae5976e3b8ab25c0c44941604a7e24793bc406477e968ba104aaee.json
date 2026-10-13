@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6fee217e71ae5976e3b8ab25c0c44941604a7e24793bc406477e968ba104aaee",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "인조잔디 운동장(줄무늬)",
+ "label": "modern-campus/mc-ground-turf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat ground terrain texture of striped artificial turf.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4509
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting striped artificial turf ground surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4349
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Entire 16x16 tile represents flat terrain (artificial turf field) seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3880
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "artificial turf ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat ground terrain (artificial turf field texture) covering the full 16x16 area, viewed as a top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5017
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.837Z",
+ "cells": {
+  "16": [
+   "88deb49cccfa0bc0"
+  ],
+  "24": [
+   "32409612f847a3dc",
+   "4099ae2d79fc9573",
+   "53af576af6de9c0c",
+   "60d59ccdf51e4e76",
+   "9a97c99ba9ec2a27",
+   "d417d17e4189529b"
+  ],
+  "32": [
+   "35afa4764f8e810e",
+   "4d18a996e4533514",
+   "6168cb741c933193",
+   "c22f788c51112e5d",
+   "cb238754e1961459",
+   "f7f9c0e8f41b55c2"
+  ],
+  "48": [
+   "12ea881e8f98f478",
+   "17c0ec9436ca5e4c",
+   "4e1ce8b98d0cfbd1",
+   "7d0f08d22d6af6c4",
+   "cec6d0203e7b6f66",
+   "db5e7a357e589b88"
+  ]
+ }
+}

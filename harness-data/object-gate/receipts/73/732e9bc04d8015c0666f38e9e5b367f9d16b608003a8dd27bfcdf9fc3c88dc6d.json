@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "732e9bc04d8015c0666f38e9e5b367f9d16b608003a8dd27bfcdf9fc3c88dc6d",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "옥상 물탱크(철 각 탱크 + 뚜껑)",
+ "label": "modern-campus/mc-water-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water tank",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-10 form a clearly delineated, brightly lit horizontal top surface with an access hatch/lid (rows 5-7), distinct from the darker vertically paneled front face (rows 11-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7052
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular steel water tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main tank body features a clearly delineated, brightly lit top surface across rows 1-9 with an access hatch/lid, while the darker front face spans rows 11-26 above the support base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5442
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular steel rooftop water tank",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tank spans rows 1-9, rendered in a bright highlight with a rectangular access lid/hatch, while rows 11-26 form the vertical front face with panel details in shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7126
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steel rooftop water tank with access hatch",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-10 depict the top surface of the tank in bright lighting with a rectangular access hatch/manhole cover, while rows 11-27 form the shaded south-facing modular panel wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6540
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.152Z",
+ "cells": {
+  "16": [
+   "1156e22f7fe60a8b",
+   "141107faf4e1233c"
+  ],
+  "24": [
+   "166031493401dc09",
+   "21106431ca55e9a7",
+   "248d393307f542c2",
+   "24ebc17ac3b3480a",
+   "28e2e19cde784ce0",
+   "2f901f89653de7d9",
+   "4b717447062dde07",
+   "68c703a9e5ecbe93",
+   "767fd1cfc86b5147",
+   "773c87b3c2923336",
+   "80ee6b43564cc32c",
+   "9637821f1b8c74a6"
+  ],
+  "32": [
+   "27d794d2740a303a",
+   "319dd4c84bd3d17d",
+   "ef138de30601ff19"
+  ],
+  "48": [
+   "085724c475c642c5",
+   "2854f7bf4bdbdf6b",
+   "8a2d955c6619cc5d",
+   "8bf4abd7cd9a400e",
+   "ab2087e0e3442507",
+   "ea408180ccb787bc"
+  ]
+ }
+}

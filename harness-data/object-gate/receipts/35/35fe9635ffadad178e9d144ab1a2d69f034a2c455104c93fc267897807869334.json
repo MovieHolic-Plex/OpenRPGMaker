@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "35fe9635ffadad178e9d144ab1a2d69f034a2c455104c93fc267897807869334",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "생울타리(둥근 덤불 윗면 + 앞면)",
+ "label": "modern-campus/mc-hedge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hedge / bush wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a flat rectangular box enclosed in an outline with foliage patterning across the face and a dark band along the bottom. There is no foreshortened top surface showing depth in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13233
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hedge / bush wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn inside a flat rectangular frame with no visible top surface or perspective foreshortening separating a top plane from a front face.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7173
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hedge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hedge is rendered as a flat rectangular block with no visible horizontal top surface or foreshortening to indicate 3/4 perspective. It displays a flat front elevation with a dark bottom strip.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9315
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rectangular hedge block",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper 10 source pixel rows (rows 1-10) represent the lit horizontal top surface of the hedge, while rows 11-14 depict the shaded south front face, properly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7986
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.063Z",
+ "cells": {
+  "16": [
+   "e6c40540cace6b14",
+   "f41930b7d2513b3c"
+  ],
+  "24": [
+   "06841c1df31f2724",
+   "0fd3507903d305a3",
+   "384d980c7e796453",
+   "729a41d77a89c07b",
+   "937df24056ef07a9",
+   "a5f3ef990b9bcfaa",
+   "bb6ab7d8232731da",
+   "cb2d426d103031d3",
+   "ecd74d57e791cfe6",
+   "f4e0909d89697df5",
+   "faf560bb850bff3a",
+   "fc2bc10f1a979b42"
+  ],
+  "32": [
+   "1d2a5040ddeccb07",
+   "e59c346f3bb4ad90"
+  ],
+  "48": [
+   "063d93263c4b3219",
+   "0af0ef118935bd19",
+   "21b8a6bc41bae93f",
+   "2b49c53336e5f19e",
+   "5fcc2fd00bad03a7",
+   "62580a4b54f3b1a3"
+  ]
+ }
+}

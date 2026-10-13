@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c8763b567f11204fd5e4b1b5c2c61a5c4e8d97f0c62b82c18df2157d460baf8",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "벽돌 담 2칸(갓돌 윗면)",
+ "label": "modern-campus/mc-wall-brick",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick wall with stone cap",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall capstone is prominently visible from rows 4 to 12 (approx. 9 pixel rows tall) above the capstone front edge (rows 13-16) and brick wall face (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick wall with stone cap",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall's coping/capstone is prominently shown from rows 4 to 12 (9 rows tall) above the front face of the capstone and brick wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4760
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick wall with stone coping",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coping stone top surface spans rows 4 to 12 (approx. 9 pixel rows) above the coping rim and the brick wall front face, showing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4259
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick wall with stone coping",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone wall coping is clearly visible from row 3 to row 12 (10 pixel rows), above the coping front lip (rows 13-16) and brick face (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4648
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.022Z",
+ "cells": {
+  "16": [
+   "651a3f6c77c505a9",
+   "cc752e15dd821f12",
+   "d34d57c4f5d1bf27"
+  ],
+  "24": [
+   "02cdb89261c9dbf8",
+   "05693f3918f5496a",
+   "12f1c8c3bc00388c",
+   "144d6c69650403fd",
+   "16134fcbe8c999ae",
+   "228373c1d3a9ea07",
+   "54dd5689ba5b95cd",
+   "58c52597b97a4176",
+   "59511276bf0abe6f",
+   "6629c85faa5942b6",
+   "7bee229eba1e0561",
+   "8024620cb7636b3d",
+   "86d09c5d6db3499c",
+   "9a87a0d1c49642d7",
+   "a7dcb33b9fdefeb7",
+   "b0ce70ca146c5676",
+   "b3706c2d74f73d6d",
+   "c76e74d5c27c3145",
+   "cbc5670d2b8dddb2",
+   "cc13ddb2648ce86f",
+   "ecdbe4a8b377f664",
+   "f1749fa62c057734",
+   "fb054e114303c2ae"
+  ],
+  "32": [
+   "98859ca40be6c32a"
+  ],
+  "48": [
+   "3dd6250c1e3222a0",
+   "4eed28fa290002c8",
+   "6ceff370eba84b6a",
+   "710e8ec8859f204f",
+   "812ffd3f7e854079",
+   "b197212db9181f36"
+  ]
+ }
+}

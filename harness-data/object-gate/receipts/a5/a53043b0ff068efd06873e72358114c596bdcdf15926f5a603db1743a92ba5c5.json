@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a53043b0ff068efd06873e72358114c596bdcdf15926f5a603db1743a92ba5c5",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "우체통(빨간 큰 상자 · 넓은 윗면)",
+ "label": "modern-campus/mc-mailbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red mailbox body",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mailbox is shown with a large foreshortened top surface (rows 0-10, 11px tall) and a shaded front south face (rows 11-14, 4px tall), correctly rendering the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12438
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Rows 0–10 depict the front face of the mailbox containing a white horizontal band (row 2) and a mail slot (row 5), resting on a darker lower section/base (rows 11–15). There is no visible top surface above row 0, making this a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The front face of the mailbox (featuring the white bar/plaque at row 2 and mail slot at row 5) extends all the way to the top of the canvas (row 0) with no visible horizontal top surface above it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11367
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "postbox",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box is clearly visible and foreshortened from above across rows 0-10 (11 pixels tall, lit light red with mail slot and label), while the south front face is shown in shadow across rows 11-14 (4 pixels tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15506
+  }
+ ],
+ "decidedAt": "2026-10-13T14:21:38.369Z",
+ "cells": {
+  "16": [
+   "400560b7fea5a451"
+  ],
+  "24": [
+   "06f0a6c0267af5ca",
+   "1840f9e45ffa3af4",
+   "7c3ecea80047432f",
+   "acf384915190e9f1",
+   "d286ed7401786457",
+   "f00162630a0f54a5"
+  ],
+  "32": [
+   "41e0add2666277bc",
+   "472f63df3a2f330c",
+   "acd9380150e7a3fe",
+   "c7da5c095cd6b8a0",
+   "cd1b05accef4cc8c",
+   "eacaabb4e0a19046"
+  ],
+  "48": [
+   "1494ed5ffeb9d241",
+   "1961d369e559ed18",
+   "4b0df5569c703476",
+   "a464032ba27ceac7",
+   "a5e0f4ad44b57306",
+   "b896bdaf5967f49a"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bc4b0ce6652ccf16f51fecb6b33fc787c3a2e26ea43a10a347497bcc1ab0cfd3",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "교정 화강암 판석(4분할)",
+ "label": "modern-campus/mc-pave-slab",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "granite flagstone paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile depicting four sections of granite stone paving viewed from above; entirely represents top/ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "granite paving slab ground tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat granite flagstone paving/terrain viewed from above, filling the 16x16 surface as ground terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4814
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "granite paving stones",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing 4-split granite flagstones viewed directly as ground plane surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4773
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "granite paving stone tiles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing ground granite paving slabs, seen completely from above across the 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5184
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.838Z",
+ "cells": {
+  "16": [
+   "ae88d2804262f9fc"
+  ],
+  "24": [
+   "39bb9e8d30aae4b8",
+   "4f4fd15be0ba25d8",
+   "5149300a8984a92b",
+   "82613dce178ba66f",
+   "877c3f4b00c3825d",
+   "fb40e7964692a7b8"
+  ],
+  "32": [
+   "09320bfe609976d6",
+   "4caf5d0f561f6f5c",
+   "57d6b4f3d2cd2b73",
+   "956365653c3014bb",
+   "a3157d57c24761a2",
+   "bfdabb281cb9d296"
+  ],
+  "48": [
+   "13d7af20c3a537f5",
+   "2d2b43567cdcca6c",
+   "5e85361d3a96c7e6",
+   "b90ae8e0152ba0b5",
+   "cbc0d971a788d7b7",
+   "df531c98fbd7ca34"
+  ]
+ }
+}

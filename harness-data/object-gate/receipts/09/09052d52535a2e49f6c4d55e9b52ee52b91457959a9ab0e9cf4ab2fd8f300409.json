@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "09052d52535a2e49f6c4d55e9b52ee52b91457959a9ab0e9cf4ab2fd8f300409",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "정원 석등(돌 받침 + 갓)",
+ "label": "modern-campus/mc-stone-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stacked stone lantern sections",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All tiers of the stone lantern (base, middle block, lamp chamber, and upper section) are drawn as flat rectangular blocks viewed straight from the front with 0 horizontal top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5989
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern (tiered stone structure with light chamber)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All tiers and horizontal ledges of the stone lantern are drawn as flat horizontal rectangles with no visible top surfaces (0 px). Each section is rendered straight from the front like an architectural orthographic elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5870
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern tiers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All segments (base, middle block, lamp chamber, and top roof/block) are drawn as flat rectangular boxes stacked vertically with no foreshortened top surfaces visible on any tier.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4866
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern (tiered stone lantern structure)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire lantern is composed of flat rectangular tiers stacked vertically, drawn in pure front elevation with no visible top horizontal planes on any of the plinths, tiers, or top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4856
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.181Z",
+ "cells": {
+  "16": [
+   "3e271d501aa9b910",
+   "5c530fc8dd43b574"
+  ],
+  "24": [
+   "0966a33ab088de9c",
+   "0bd4a72ea698b772",
+   "16a5dfd7c91a0eac",
+   "37b9060d2ef62a71",
+   "74dc84169d750927",
+   "8178c669d03d26e0",
+   "91eceafbe7927789",
+   "c221df06565b8fda",
+   "c787fcf950b2ea91",
+   "ce0d4ec119ea28a8",
+   "dd09ba90970b4c05",
+   "e61e27df42b78419"
+  ],
+  "32": [
+   "2717d0b1bb399fac",
+   "6022d227ec62905d",
+   "eea12f0c8cae4aff"
+  ],
+  "48": [
+   "2fca435864b0919e",
+   "4373502df814bb68",
+   "47d43be233ab09af",
+   "9a2c45670727e940",
+   "bd2f151039e92290",
+   "f240640a00862064"
+  ]
+ }
+}

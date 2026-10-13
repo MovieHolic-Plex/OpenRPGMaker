@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f5d2cbf21fdfe0ffd051df1cb55e7c27123f4e1933f65b052f59e8b744128fc1",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(받침 블록 + 백보드 상자)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball hoop backboard and support base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All parts of the object (backboard, neck, and base block) are drawn as flat rectangular front faces with 1px outlines and zero visible horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop backboard and support base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the backboard and base components, is drawn as flat rectangular front elevations with no visible top surfaces for any of the horizontal volumes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6857
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball backboard and support blocks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the backboard (rows 0-21) and the support/base blocks (rows 22-47), is rendered in a pure flat front elevation like a 2D platformer asset. The backboard and blocks show no visible top surfaces (0 px depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6841
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop base block and backboard structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All components (backboard, middle structure, and bottom base block) are drawn as flat rectangular front faces with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4891
+  }
+ ],
+ "decidedAt": "2026-10-13T14:21:38.368Z",
+ "cells": {
+  "16": [
+   "41856fe7fb80e136",
+   "71ff8b7121d2e3b8",
+   "7c87afbefd53dfa5",
+   "80715f77aa7a4ab4",
+   "9802be442024d645",
+   "b76ae8ff4a25dd43"
+  ],
+  "24": [
+   "1370acfe58df8793",
+   "17d89168c18c8472",
+   "1d65bbf5cc1b4701",
+   "224ef99659addba6",
+   "22648faf58ec5bc7",
+   "2999e98a625d8de3",
+   "45b64a86bb0012c9",
+   "4fcf2d398ccaf019",
+   "548bee04c9f2f4dc",
+   "6548d2271ef97f4f",
+   "6985b762d81b77d5",
+   "ce7d3c626af3f1fb"
+  ],
+  "32": [
+   "4282a9000aaccf84",
+   "7e04609c1224a46f",
+   "a498f896f407058a",
+   "b608c205984e3a72"
+  ],
+  "48": [
+   "4e3a2eddd3287568",
+   "76a58531182146cc",
+   "dd57d45b3bf3db03"
+  ]
+ }
+}

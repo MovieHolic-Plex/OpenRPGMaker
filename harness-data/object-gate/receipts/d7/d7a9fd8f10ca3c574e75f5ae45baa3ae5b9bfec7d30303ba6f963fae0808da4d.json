@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d7a9fd8f10ca3c574e75f5ae45baa3ae5b9bfec7d30303ba6f963fae0808da4d",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "교정 정원등(낮은 콘크리트 기둥 + 등 상자)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "garden lantern pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure consists of flat horizontal rectangular bands and a flat front-facing yellow light window, showing no top surface of either the lantern cap or pillar ledge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13518
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern box and concrete post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern box and post are drawn entirely in straight horizontal bands and flat rectangles from row 0 to 15 with no visible top surface or roof foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6166
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp box and concrete pillar base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The garden light is rendered strictly in flat front elevation with horizontal bands across all rows (0-15) and no foreshortened top surface or cap visible for either the lamp housing or the pillar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4523
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "light box on concrete pillar base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is rendered in flat 2D front elevation: the light box (rows 0-7) and concrete pillar sections (rows 8-15) show only vertical front faces and horizontal bands, with no top surface or cap visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6271
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:00.487Z",
+ "cells": {
+  "16": [
+   "e430dff7b2aa9d13"
+  ],
+  "24": [
+   "239652279cbf0b8e",
+   "45666a6cd2289995",
+   "4b58d7fcd9033e24",
+   "54b6a6bbbd29bbce",
+   "7855d5e431e74984",
+   "e018539205c3dd66"
+  ],
+  "32": [
+   "182bbd008d4b3e0d",
+   "3b8c86e9a1b221be",
+   "76b07b801c6a7a9a",
+   "97bbd544bb5cf2cf",
+   "9b01072517307ea1",
+   "eb4799a8d811d616"
+  ],
+  "48": [
+   "2ee5bc087afc0934",
+   "6dc9b5df06656137",
+   "82266975c150c18c",
+   "ba3a5f81eb3ffbe9",
+   "c443725d23a0ed6c",
+   "cb123b1e1d3701b8"
+  ]
+ }
+}

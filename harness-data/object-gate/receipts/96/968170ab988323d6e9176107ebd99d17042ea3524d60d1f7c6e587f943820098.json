@@ -1,0 +1,192 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "968170ab988323d6e9176107ebd99d17042ea3524d60d1f7c6e587f943820098",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "게양대 깃발 프레임2",
+ "label": "modern-campus/mc-flag-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole pedestal / rectangular pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main rectangular block is clearly shown in rows 7 to 15 (9 rows tall), with the front face extending from row 16 to 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4962
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pedestal / column of the flag stand",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cuboid pedestal clearly displays its foreshortened top surface across rows 7–15 (9 pixel rows tall) in bright white, distinctly separated from the shaded south face below (rows 16–27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7343
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole pedestal / podium",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a tiered pedestal/stand for a flagpole. The top surface of the upper tier is clearly shown from rows 8 to 15 (8 rows tall in lighter tone), sitting above its shaded front face (rows 16 to 26). The lower stepped tier also shows its top and front surfaces correctly.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7196
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole podium block",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a stepped pedestal block. The top horizontal surface of the upper tier spans rows 7 to 15 (9 pixel rows tall) above its shaded south face (rows 16 to 27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5940
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pedestal / monument block",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main pedestal block clearly shows a 9-row-tall light top surface (rows 7-15) above its front face (rows 17-26), meeting 3/4 top-down perspective requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8013
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole pedestal / base block",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main pedestal block shows a clearly delineated top surface (rows 7-15, 9 source pixels tall) rendered in a lighter tone above the shaded front face (rows 17-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6401
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole pedestal / column",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The column/pedestal clearly displays a 9-pixel tall top horizontal surface (rows 7-15) above its front face (rows 16-26), properly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6411
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole pedestal / plinth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main pedestal block shows a foreshortened top surface across rows 7–15 (9 pixels tall) above its south-facing front surface (rows 17–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7136
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.138Z",
+ "cells": {
+  "16": [
+   "962abf0eddbfc6c5",
+   "fde01dc9f7afa204"
+  ],
+  "24": [
+   "2bcd0f633d9d408d",
+   "38474fd716a03061",
+   "5a10e624412bd09e",
+   "60e36d3bea281c2c",
+   "62292b22be9b26d0",
+   "91c17d1e9ca281da",
+   "93a2e531e58887cb",
+   "9c9496aac494da4b",
+   "a84360270a771556",
+   "be4319bc9042e23c",
+   "db6af9be14bae7ab",
+   "f0d8e91725481206"
+  ],
+  "32": [
+   "3f40ffd90af9f47b",
+   "9d4ce031b2258056",
+   "ccbe19b8054738b2"
+  ],
+  "48": [
+   "10b1659cf490508e",
+   "5f401bcce7af8e3a",
+   "7b969d6373550137",
+   "8c0eb46ccfcbb4df",
+   "a7fed4802db016ce",
+   "ee6d13c6be5b4c61"
+  ]
+ }
+}

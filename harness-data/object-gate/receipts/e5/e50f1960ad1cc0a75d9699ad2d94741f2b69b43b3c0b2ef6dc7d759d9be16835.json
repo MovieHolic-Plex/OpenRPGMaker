@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e50f1960ad1cc0a75d9699ad2d94741f2b69b43b3c0b2ef6dc7d759d9be16835",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "옥상 난간(콘크리트 턱 + 철망) 2칸",
+ "label": "modern-campus/mc-fence-roof",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rooftop railing with concrete curb and fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing and concrete curb are drawn completely flat from the front with horizontal bands and vertical posts, showing no visible top surface (0 rows) for the curb ledge or rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12692
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete curb and wire mesh railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing and concrete curb are drawn in flat front elevation. The concrete wall (rows 6-11) and base (rows 12-14) show only their vertical south-facing surfaces with vertical top-to-bottom shading, and the posts end directly at a 1px boundary line with 0px of top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 34777
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete curb with wire mesh railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The concrete parapet/wall (rows 7-11) and base trim (rows 12-14) are drawn as a flat vertical front elevation with vertical top-to-bottom shading and a ground shadow at row 15. The wire mesh fence sits directly on the top edge of the wall with 0 source pixel rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 32945
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rooftop railing with concrete curb and wire mesh",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing and concrete curb are drawn completely as a flat front elevation. There is no visible top surface for the concrete curb or the railing beam/posts; it consists entirely of flat vertical bands and horizontal stripes with 0 rows of foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12748
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.024Z",
+ "cells": {
+  "16": [
+   "3985b9d45250fba9",
+   "b1d3e03f370295d9"
+  ],
+  "24": [
+   "080a8433e165b372",
+   "4b2ef755826a304c",
+   "70d74581e3e849ec",
+   "8674678ce4e7279c",
+   "aff765930f4bd2a0",
+   "bb9154b071e090a5",
+   "c6e7518bdaea16bc",
+   "cc66ca484c824a7a",
+   "e08d330428a1c962",
+   "ef85c28cfb5c0c4f",
+   "fd71895179b8496c",
+   "ff656d373c5c02bf"
+  ],
+  "32": [
+   "087b3a1f41ab1c91",
+   "f3f651eb294e5fa3"
+  ],
+  "48": [
+   "6654914e77be7697",
+   "8492374c923fd5aa",
+   "8ba4b874fe05a793",
+   "b8a6ede6587ac34c",
+   "bd6d0b01dd46b3c5",
+   "dc6a858025820025"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5f4f044a39ff456e5cedc6c810aa4dbef5fae0b7de6fd6cc0b11b18e706938dd",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "게양대(콘크리트 각기둥 + 깃발)",
+ "label": "modern-campus/mc-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete square pillar / pedestal",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete pillar is clearly shown across rows 8 to 15 (8 rows tall) as a bright horizontal face above the south front face (rows 16 to 27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5708
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete pillar with flagpole",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal face of the concrete pillar is clearly rendered across rows 8–15 (8 source pixel rows tall, brightly lit), positioned directly above the front south face (rows 16–26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6015
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete rectangular pillar",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the main concrete pillar is clearly shown from row 8 to row 15 (8 pixels tall), with the front face extending from row 16 to row 26.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7004
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete rectangular pillar",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete pillar clearly displays a large horizontal top surface spanning rows 7-15 (9 pixel rows tall) above its front south face (rows 16-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7540
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.152Z",
+ "cells": {
+  "16": [
+   "60fc4c8c4429f55d",
+   "fde01dc9f7afa204"
+  ],
+  "24": [
+   "2bcd0f633d9d408d",
+   "38474fd716a03061",
+   "5a10e624412bd09e",
+   "7d31d19ba778e7b9",
+   "98262bf810fd9707",
+   "9c9496aac494da4b",
+   "a84360270a771556",
+   "be4319bc9042e23c",
+   "cd1711cb8f7d2284",
+   "d1a4a7a328b4e09b",
+   "f2f46b3cdc18b777",
+   "ffd3f5de2ff5f6cd"
+  ],
+  "32": [
+   "241c29e6df8d5c4a",
+   "4aa5a9ab7c819106",
+   "b7392ffa7720dc4e"
+  ],
+  "48": [
+   "46fbe0b1e36c46c4",
+   "47f34d8d402c1d14",
+   "65a815c85aad0b51",
+   "8de3baed8244b5e8",
+   "c0c097a131bad9f0",
+   "ce8a37c57a0e0fd5"
+  ]
+ }
+}

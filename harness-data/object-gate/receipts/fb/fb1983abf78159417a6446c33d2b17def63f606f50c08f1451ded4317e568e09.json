@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb1983abf78159417a6446c33d2b17def63f606f50c08f1451ded4317e568e09",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "우체통(빨간 큰 상자)",
+ "label": "modern-campus/mc-mailbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red upper section (rows 1-10) depicts the front face of the mailbox containing the mail slot (row 5). There is no visible top surface foreshortened from above (row 0 is background); the object is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mailbox is drawn in pure front elevation with the mail slot on the front plate and a recessed lower section, but no horizontal top surface is visible looking down from above (0 pixel rows of top surface).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12248
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mailbox body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mailbox is drawn in pure front elevation: the red main box (rows 1-10) with its horizontal mail slot (row 5) faces the camera flatly, terminating at row 1 with 0 rows of visible top surface above it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9712
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mailbox body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mailbox is drawn in pure front elevation: rows 1–10 show the front face with the mail slot at row 5, with no top/roof surface visible at all above row 1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9189
+  }
+ ],
+ "decidedAt": "2026-10-13T14:16:25.793Z",
+ "cells": {
+  "16": [
+   "7e981b87ee0e27d9"
+  ],
+  "24": [
+   "354cd2debba97dc5",
+   "416024036b291a9a",
+   "7b77a2cee0311e22",
+   "b69e0a7b8ca49a38",
+   "e11be09c91560598",
+   "efbe5ebcf1d05f61"
+  ],
+  "32": [
+   "1b48cce651d792e3",
+   "919230319e923c9a",
+   "91df0999133b7817",
+   "d10bde8e72fb1104",
+   "da24e3c2e85b4d26",
+   "e1b68142ec4c6539"
+  ],
+  "48": [
+   "06af26cf06cec03e",
+   "32b68a5503d0015e",
+   "5a106e5c15524098",
+   "89ce895aaaea060f",
+   "babd8d754d607ebb",
+   "f9e3b3e8aa797d21"
+  ]
+ }
+}

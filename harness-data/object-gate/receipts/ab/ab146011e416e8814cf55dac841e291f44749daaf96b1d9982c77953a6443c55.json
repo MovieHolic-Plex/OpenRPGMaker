@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ab146011e416e8814cf55dac841e291f44749daaf96b1d9982c77953a6443c55",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "테니스 네트(콘크리트 받침 크게 + 흰 윗띠)",
+ "label": "modern-campus/mc-tennis-net",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tennis net frame and concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net, top band, and concrete base are drawn entirely in flat 2D front elevation without visible horizontal top surfaces or 3/4 perspective depth on the beams, posts, or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tennis net with concrete base and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (white top band, side posts/panels, and concrete base) is drawn in pure 2D front elevation with perfectly horizontal outlines and flat front-facing bands, showing no visible top surface foreshortening for the horizontal beams or base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7138
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tennis net frame with concrete base and top band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The net tape and frame posts are drawn as flat 2D rectangular strips with no foreshortened top surfaces. The concrete base between the posts only shows a flat horizontal band with no clear 3/4 view depth, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tennis net frame and concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net, top band, posts, and concrete base are drawn entirely in a flat front elevation. The horizontal top band and concrete base show only vertical front faces without any foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6475
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:05.441Z",
+ "cells": {
+  "16": [
+   "7addcd472180a080",
+   "839c4cc68ccfbf64",
+   "f7fa2cbf449c5e90"
+  ],
+  "24": [
+   "98c16f31a940ceb5",
+   "c16bdd7c32e3796e",
+   "f2bea412d090afe5",
+   "faf6af8914147733"
+  ],
+  "32": [
+   "0acfe3ccfc386a5c",
+   "208e4f040e10faf1",
+   "2d1eed67dffacdd4",
+   "567801d019c99130",
+   "5ea95edaf4046603",
+   "615c6c81f49d3aed",
+   "8e2e90a6dadd1fa9",
+   "b58b903abaca8e48",
+   "bf5169ab1c569bb1",
+   "ec98ce26b64de86c",
+   "f31ee9de256fd359",
+   "fd7760f132a73bac"
+  ],
+  "48": [
+   "ac3680bb7905668b",
+   "f73490ddbfbcbec6"
+  ]
+ }
+}

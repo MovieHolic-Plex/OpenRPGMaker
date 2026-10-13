@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1085be13c08c5f8ef998304f253c9ef1c49f1c454847675059bcf2c4c833a433",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쓰레기통(콘크리트 각통 + 뚜껑)",
+ "label": "modern-campus/mc-trash-can",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete rectangular trash bin with lid",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface is clearly visible from above spanning rows 0-9 (10px deep) with an inset detail, while the front south face spans rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9542
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete trash bin with lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the upper portion depicts a front swing door/flap and the lower portion depicts horizontal concrete grooves, with 0 pixel rows allocated to the top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9336
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete trash can with lid",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface occupies rows 1-9 (9 rows tall) with an inset detail/handle, above a darker ribbed front face spanning rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete trash bin with lid",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface occupies rows 0-9 (10 rows tall) showing the top plane with a handle/recess detail, while the front south face spans rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6274
+  }
+ ],
+ "decidedAt": "2026-10-13T14:10:00.179Z",
+ "cells": {
+  "16": [
+   "99311f0b3784973e"
+  ],
+  "24": [
+   "0a6b5c2f08530b5c",
+   "3f72efed8bda32c9",
+   "5773e22211970b4a",
+   "75b1f308503c6956",
+   "7691fa0033dd5ecf",
+   "b594a098619d6527"
+  ],
+  "32": [
+   "40d8144a1e1432bd",
+   "b141efb349589bfe",
+   "cdefdd2f770c9a74",
+   "d16d4709774f76b6",
+   "da856e003900de1d",
+   "e889887085ce24c4"
+  ],
+  "48": [
+   "288a140a351a989f",
+   "72e0d75b5f311c75",
+   "90ae7a85d687f56c",
+   "a200782e88215aa8",
+   "a3f176cef3f4ad38",
+   "c17e2f84963042fb"
+  ]
+ }
+}

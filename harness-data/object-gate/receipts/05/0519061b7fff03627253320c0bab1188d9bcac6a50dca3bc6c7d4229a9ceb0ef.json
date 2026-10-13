@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0519061b7fff03627253320c0bab1188d9bcac6a50dca3bc6c7d4229a9ceb0ef",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "게양대(콘크리트 받침 + 흰 기둥 + 깃발)",
+ "label": "modern-campus/mc-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with tiered base (concrete base and white/grey pole sections)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object consists of stacked flat rectangles with horizontal two-tone shading. No horizontal top surfaces or cut faces are rendered with top-down perspective; the top of the pole at row 0 is a flat 1px cap, and all tiers are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole and tiered base are drawn as a flat front elevation. The top of the pole terminates at row 0 with only a 1px yellow line (no visible elliptical or foreshortened top face), and the base tiers show no horizontal top surfaces around their step-downs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12220
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with concrete base and flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole and base assembly is drawn in pure front elevation with completely flat horizontal lines. The top yellow finial is only 1px tall with no circular or foreshortened top surface visible, and both the middle tier and bottom concrete block are drawn as flat rectangular front faces with simple horizontal half-height shading.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9579
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire flagpole and base are drawn in flat front elevation as stacked rectangles. The concrete base shows no visible top plane around the pole, and the pole/finial has no circular/elliptical top surface visible from 45 degrees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8799
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.061Z",
+ "cells": {
+  "16": [
+   "49dc9f85eddc8f67",
+   "720db0a1cb69b3a8"
+  ],
+  "24": [
+   "1112f8a9309ae02b",
+   "1e7bc220efa0a3a2",
+   "206c057181c21357",
+   "34ddd0edd5186f84",
+   "77c7c5070a621981",
+   "8022c5d6d9ca5f1b",
+   "b4e19d7e07cbfe39",
+   "cad6a8ab3cd4b84b",
+   "d0f014d387ccd1d4",
+   "e648f9c83db9fea0",
+   "ef8b0d3e5b0a9fbe",
+   "fc982eb7d63490b3"
+  ],
+  "32": [
+   "12c2b114a1f312d8",
+   "82ad06e074e815dd",
+   "f2ffeb91e92214c2"
+  ],
+  "48": [
+   "54a78dacd5b9c57c",
+   "79f25f086cf22452",
+   "889c5352f86bdf5e",
+   "aa26fac02dfb5a98",
+   "b1ddb1e3b5b341e3",
+   "bb7c4f1ec06a2bbc"
+  ]
+ }
+}

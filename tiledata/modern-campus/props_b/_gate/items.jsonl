@@ -1,0 +1,18 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-school-bus.png", "kind": "structure", "name": "통학 버스(노란 지붕 윗면 + 앞면 창띠)", "label": "modern-campus/mc-school-bus"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-bicycle.png", "kind": "other", "name": "자전거(눕혀 본 3/4: 안장 윗면 + 바퀴 + 프레임)", "label": "modern-campus/mc-bicycle"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-picnic-table.png", "kind": "low_furniture", "name": "교정 식탁(윗면 판 + 벤치 둘)", "label": "modern-campus/mc-picnic-table"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-notice-board.png", "kind": "box", "name": "게시판(코르크 + 철제 틀 + 덮개)", "label": "modern-campus/mc-notice-board"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-drinking-fountain.png", "kind": "container", "name": "수돗가(콘크리트 싱크 + 수도꼭지 셋)", "label": "modern-campus/mc-drinking-fountain"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-planter-round.png", "kind": "container", "name": "둥근 화분(콘크리트 + 흙 + 관목)", "label": "modern-campus/mc-planter-round"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-jungle-gym.png", "kind": "frame", "name": "정글짐(철 격자 윗면 + 기둥)", "label": "modern-campus/mc-jungle-gym"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-sandbox.png", "kind": "container", "name": "모래밭(나무 틀 + 모래)", "label": "modern-campus/mc-sandbox"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-slide.png", "kind": "structure", "name": "미끄럼틀(계단 탑 윗면 + 긴 미끄럼 판)", "label": "modern-campus/mc-slide"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-mailbox.png", "kind": "box", "name": "우체통(빨간 큰 상자 · 넓은 윗면)", "label": "modern-campus/mc-mailbox"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-utility-pole.png", "kind": "box", "name": "배전함(회색 큰 상자 + 문 + 윗덮개)", "label": "modern-campus/mc-utility-pole"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-stone-lantern.png", "kind": "column", "name": "정원 석등(넓은 돌 윗면 3단)", "label": "modern-campus/mc-stone-lantern"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-gazebo.png", "kind": "structure", "name": "정자(기와 지붕 윗면 + 기둥 4)", "label": "modern-campus/mc-gazebo"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-shed.png", "kind": "structure", "name": "창고(철판 지붕 윗면 + 문)", "label": "modern-campus/mc-shed"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-scoreboard.png", "kind": "structure", "name": "전광판(철 틀 + 어두운 판 + 받침 슬래브)", "label": "modern-campus/mc-scoreboard"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-tennis-net.png", "kind": "frame", "name": "테니스 네트(받침 + 흰 윗띠)", "label": "modern-campus/mc-tennis-net"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-crate-recycle.png", "kind": "box", "name": "분리수거함 셋(색 상자 윗덮개)", "label": "modern-campus/mc-crate-recycle"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_b/_gate/mc-sports-locker.png", "kind": "box", "name": "운동 기구함(철 상자 + 큰 덮개)", "label": "modern-campus/mc-sports-locker"}

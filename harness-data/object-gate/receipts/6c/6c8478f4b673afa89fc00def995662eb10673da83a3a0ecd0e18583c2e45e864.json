@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c8478f4b673afa89fc00def995662eb10673da83a3a0ecd0e18583c2e45e864",
+ "width": 48,
+ "height": 96,
+ "kind": "structure",
+ "name": "상가 건물(3층)",
+ "label": "modern-campus/mc-bld-shop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-story commercial building",
+    "kind_matches": true,
+    "top_rows": 29,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large visible flat rooftop (approx. rows 13 to 41, ~29 rows) surrounded by parapets with a rooftop structure, atop a south-facing facade with windows and an entrance canopy.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4928
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "commercial building with flat rooftop",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large rooftop surface visible from rows 12 to 43 complete with an HVAC/rooftop structure, followed by the south-facing front facade from row 47 down to the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7406
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "commercial building with rooftop and multi-story front facade",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its flat rooftop surface (rows 14-41) enclosed by parapets with a rooftop access door structure, positioned directly above the front facade in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4731
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "commercial building with flat rooftop and front facade",
+    "kind_matches": true,
+    "top_rows": 34,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building clearly shows its top rooftop surface between rows 11 and 45 (about 34 rows), including a rooftop structure/HVAC unit and parapet. The entrance canopy at rows 77-84 also shows a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6429
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:55.502Z",
+ "cells": {
+  "16": [
+   "08044b0b6f32e193",
+   "17f81cb14f60a510",
+   "33bcd0a242eebd6f",
+   "3cf6d93e7929ea15",
+   "3f14b3680380cd9c",
+   "640a15e4e7c06421",
+   "7bab4578ffe3778f",
+   "84d056b687922924",
+   "9cafc1477f4cdca2",
+   "acaa42939b87c788",
+   "b25483c34346ccdd",
+   "b29750983b1f3b07",
+   "be13e2c7207ba24e",
+   "c04e03799ed33f70",
+   "c546c001181451fb",
+   "ca80fa60fc6be4aa",
+   "d837d73e8a8b7d40",
+   "fde962a9110d7287"
+  ],
+  "24": [
+   "1e12080db146b6c3",
+   "21b4a46aa6e4a9bc",
+   "2d223d59d2e93f76",
+   "37d0c0a35cb480f1",
+   "7173d5d16bd3ce28",
+   "e3f6644a3c84c7c8",
+   "f3ed30cafc98dad1",
+   "f8d30e75933b3808"
+  ],
+  "32": [
+   "0c564e9f62af4d6b",
+   "189c7e3a1286b42c",
+   "1a8be383bb4839ac",
+   "1c4facd246543704",
+   "387991c3be0841a1",
+   "455436b31c506ecd",
+   "47a23f897632df84",
+   "4d8c07192bdf4346",
+   "4d91bb95a531df60",
+   "513987c333f693e4",
+   "641bc5eb7fa17b9d",
+   "65349aa846632174",
+   "737611b1ea1dc626",
+   "8e786f9fb179f59f",
+   "cd77601ae729a383",
+   "ddab85eb76e087c2",
+   "e4de468815894ceb",
+   "faf3ea7e9f9bf747"
+  ],
+  "48": [
+   "62d92e941729ac10",
+   "da1c0013ce75c557"
+  ]
+ }
+}

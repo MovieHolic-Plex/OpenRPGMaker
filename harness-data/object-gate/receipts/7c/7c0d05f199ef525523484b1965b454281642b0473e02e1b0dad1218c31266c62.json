@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c0d05f199ef525523484b1965b454281642b0473e02e1b0dad1218c31266c62",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "창고(철판 지붕 윗면 + 문)",
+ "label": "modern-campus/mc-shed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "warehouse building with corrugated metal roof and door",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper portion clearly displays the sloped top surface of the corrugated metal roof across rows 1-12, followed by the south-facing eaves/fascia and front wall with doors below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7454
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "warehouse building with metal roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-12 clearly show the sloped top surface of the corrugated sheet metal roof, followed by the roof fascia (rows 13-17) and front wall with double doors (rows 18-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7490
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "warehouse building with corrugated metal roof and door",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The corrugated metal roof top slope is prominently displayed across rows 1-12 above the front eave and doorway wall, matching top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6827
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "warehouse roof and front entrance",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the corrugated metal roof is clearly visible from rows 1 to 12 (12 rows tall), with the front overhang/fascia at rows 13-17 and the front wall below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14836
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.181Z",
+ "cells": {
+  "16": [
+   "6933e4754dffeb91",
+   "7c762368308fcd91",
+   "865fc996fcbfe5e7",
+   "95c28d403d9b43f8"
+  ],
+  "24": [
+   "0641e113455bfed1",
+   "1ba3e10b3ff99ccc",
+   "217d4e53211eb069",
+   "311e1fa47d11534f",
+   "3d1324a67622dd8f",
+   "3d2b4accfc00f62c",
+   "3d4062fa43bc0b1b",
+   "4cedc9d174d58dcc",
+   "58384d15d1bba594",
+   "5d9f86913f86346a",
+   "6867d2b1db62ec5a",
+   "69789c13ae6d63d8",
+   "69edec603dd4666a",
+   "814851ad68044fe4",
+   "8970fc5a5a41a47c",
+   "8aa4b6828c966f93",
+   "aa9ab34ea391877a",
+   "c0c651fc849a74b5",
+   "d161e1217d667e11",
+   "d9ed441b986e9e01",
+   "df20481f361366b8",
+   "e9a48743b61bdfa8",
+   "f7ca6f5aa44d0e53",
+   "f947356e0a567708"
+  ],
+  "32": [
+   "43be83f792f1fdf5"
+  ],
+  "48": [
+   "3bafa848b9cd7f41",
+   "6792fc481dbfffec",
+   "781a96dc9f344851",
+   "854a34cb1fa5b2c5",
+   "c8083ec6802c45a6",
+   "cea5053f3efe3079"
+  ]
+ }
+}

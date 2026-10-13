@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "549a7822c7fce9dee9da2a6bc11e665d3b09c2cdf2ab08029966357266dfd248",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "어두운 벽돌 포석",
+ "label": "modern-campus/mc-pave-brick-dark",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick paving floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting brick paving seen from above, covering the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5658
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick paving pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark brick paving spanning the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4632
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick paving pattern",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark brick paving stones covering the entire 16x16 surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5806
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick paving tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain pattern representing dark brick paving/flooring, correctly covering the tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5088
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.838Z",
+ "cells": {
+  "16": [
+   "9ed17eb48c8a195e"
+  ],
+  "24": [
+   "57ffbf6a4c1bf68f",
+   "6e86165307c998c4",
+   "90f5aadf732f5806",
+   "a8809c4b237eecf0",
+   "b1a9100ee8348491",
+   "ecab54a0ed1178d0"
+  ],
+  "32": [
+   "2add34e2fcc2b7e5",
+   "61b4e9b98ac53bf9",
+   "85e99b2b152b0316",
+   "a8c5bc258d353d9f",
+   "c3836f74a076d837",
+   "e7e3b257b8fdbc26"
+  ],
+  "48": [
+   "5a2f6f682f3973ea",
+   "5dca284f5c77ddad",
+   "a93d5dab5ba297f1",
+   "d90100171db21d20",
+   "e4fb5666966aabc7",
+   "ef5927f811178632"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "baca0fab2ebb733cee5eea8f3a36370b03676b514ddd4fab32af9521ab23d09b",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "전광판(철 틀 + 어두운 판 + 받침 슬래브)",
+ "label": "modern-campus/mc-scoreboard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "electronic display board structure",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/hood surface of the display board is clearly drawn from rows 1 to 8 (8 rows tall) above the front face (rows 11-24) and support posts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6737
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "electronic display board housing",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/cap of the sign housing is clearly visible across rows 1-8 (8 pixel rows tall) above the front display panel.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6006
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "electronic display board with protective roof hood and support legs",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hood/roof surface of the billboard enclosure is clearly visible across rows 1-8 (8 source pixel rows) before overhanging the front display face at row 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7990
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "electronic display board with top roof/frame and support posts",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top roof/cap surface of the structure is clearly visible and foreshortened from row 1 to row 8 (8 rows tall), above the dark display face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6541
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.182Z",
+ "cells": {
+  "16": [
+   "2c2c0f6e0c977a67",
+   "343fe516b88c64fd",
+   "8f8b249d91cd8754",
+   "ad7d44a37f1598c9",
+   "e5f19a645d9d22a5",
+   "f4a1dfd36bd3c2b2"
+  ],
+  "24": [
+   "10f8713d19a54325",
+   "1a755f8e098705da",
+   "50d0fa43c9c49cd5",
+   "6194fb3c54186f86",
+   "8b59f27c2c348a9e",
+   "9faf5ca7b43030b5",
+   "a2db9112f333ad20",
+   "d2d010ab6767ab25"
+  ],
+  "32": [
+   "175d173f46b38ca8",
+   "2c6a849111fc3bc2",
+   "58078ebb87f0a33c",
+   "b617dec28a4080cd",
+   "bc05ace358009efa",
+   "cddcc1ddbf0568df"
+  ],
+  "48": [
+   "4e28384c993ba5c8",
+   "4fa36842db33b331"
+  ]
+ }
+}

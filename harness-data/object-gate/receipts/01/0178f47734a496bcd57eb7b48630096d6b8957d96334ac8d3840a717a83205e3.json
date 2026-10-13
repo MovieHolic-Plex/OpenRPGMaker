@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0178f47734a496bcd57eb7b48630096d6b8957d96334ac8d3840a717a83205e3",
+ "width": 48,
+ "height": 48,
+ "kind": "container",
+ "name": "분수대(돌 수반 + 물 + 가운데 기둥)",
+ "label": "modern-campus/mc-fountain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fountain basin with water and central pillar",
+    "kind_matches": true,
+    "top_rows": 23,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular stone basin is drawn in standard 3/4 top-down projection foreshortened into an ellipse. The water pool inside the basin is fully visible from row 8 to row 30 (~23 source pixels tall), surrounded by a stone rim, with the south edge showing the front rim face down to row 36.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6922
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fountain basin with water and central pillar",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin shows a wide elliptical opening filled with water (approx rows 9 to 30) and an elliptical stone rim visible from a 3/4 top-down angle, with a central column.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4713
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fountain basin with water and center pillar",
+    "kind_matches": true,
+    "top_rows": 22,
+    "opening_visible": true,
+    "opening_rows": 22,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The basin interior filled with water is fully visible as an ellipse spanning rows 9 to 30 (22 pixel rows), with a clear 3/4 top-down foreshortened perspective and front wall profile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4393
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fountain basin with central pillar",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": true,
+    "opening_rows": 23,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fountain basin is drawn as a foreshortened ellipse viewed from above (3/4 perspective) showing the interior water pool across rows 9-31, with a central column that also shows its top surface (rows 7-9) and south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3925
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.063Z",
+ "cells": {
+  "16": [
+   "0341283dca9aa88a",
+   "0699f720ced1ac52",
+   "08d603bb8211b4be",
+   "0a4f3cc02faf139a",
+   "386b66594efcadba",
+   "3e0e572b88d58f54",
+   "5399cad1438e913c",
+   "93555fa14f4f3e27",
+   "b0241576ef378b79"
+  ],
+  "24": [
+   "47026efe2a345f64",
+   "68d03171141ce3f2",
+   "b02df0b89e4f2638",
+   "bb5e82627e052d4d"
+  ],
+  "32": [
+   "06709413307def2a",
+   "070c007a4fdb66c5",
+   "0ab14b66e6af03bd",
+   "29ce628aff8bccd0",
+   "2f324406f9926fe3",
+   "396989aa23d8f83f",
+   "3fcd15d1b14b8d66",
+   "4427c3af002483f0",
+   "4759dbaeb2621328",
+   "503031397d755cdd",
+   "5438bb7c453298d5",
+   "6082c28197ad06d8",
+   "62b98abbeeeb624e",
+   "65aeba2e151b8dcb",
+   "7ba9c0fee6db5c16",
+   "a6d2cda924ff7c07",
+   "abc9237981a42b56",
+   "ad211f2f3da72f67",
+   "aeff028a80ae29bd",
+   "b50b49f64a9414fa",
+   "bf0ee8e632a08878",
+   "ce69330c27dde141",
+   "e0ff7a18231457a5",
+   "e3a77de8a0818fbc"
+  ],
+  "48": [
+   "b2da3e0693c89eb8"
+  ]
+ }
+}

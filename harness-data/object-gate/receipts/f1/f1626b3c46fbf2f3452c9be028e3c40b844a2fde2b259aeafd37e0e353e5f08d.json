@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1626b3c46fbf2f3452c9be028e3c40b844a2fde2b259aeafd37e0e353e5f08d",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "정원등(콘크리트 상자 + 등 윗면)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete garden light box with embedded/mounted light fixture",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete pillar/box clearly spans rows 1-10 (10 source pixel rows) showing the yellow light on top, while the front face starts at row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5555
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete garden lantern block",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete block with an embedded yellow light panel spans rows 1 to 9 (9 rows tall), with the front face visible from row 10 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7149
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete box garden light with inset light on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete box has a large horizontal top surface spanning rows 1-10 containing the light fixture, viewed from above, with the south front face extending downwards from row 11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6108
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete garden lamp box",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the concrete box/lamp spans rows 1-10 (10 rows deep) with the light fixture embedded on top, and the south-facing front side occupies rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5810
+  }
+ ],
+ "decidedAt": "2026-10-13T14:15:22.099Z",
+ "cells": {
+  "16": [
+   "4ddcd82b082c6baa"
+  ],
+  "24": [
+   "455240e9f1fae456",
+   "600771a77d28bc9c",
+   "72d245cf18619397",
+   "765b02d01bfb6748",
+   "9dd371e3df6c9613",
+   "fada22de8b2c972d"
+  ],
+  "32": [
+   "1d0e718933aad0a1",
+   "414333926fe402d9",
+   "b780991d9e7e02f9",
+   "bc11008f61840f3f",
+   "d5dc14db9268f42c",
+   "d973ed1734aa5962"
+  ],
+  "48": [
+   "1b33344d3f7bd57b",
+   "46f647c33b925d92",
+   "88c0729ae45086e9",
+   "d52ab0baddc4122b",
+   "d84011f2d6fef951",
+   "f67b31f277d53473"
+  ]
+ }
+}

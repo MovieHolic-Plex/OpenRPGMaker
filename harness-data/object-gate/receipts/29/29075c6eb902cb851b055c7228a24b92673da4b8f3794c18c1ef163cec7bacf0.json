@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "29075c6eb902cb851b055c7228a24b92673da4b8f3794c18c1ef163cec7bacf0",
+ "width": 64,
+ "height": 32,
+ "kind": "structure",
+ "name": "스탠드(콘크리트 3단 계단식 객석)",
+ "label": "modern-campus/mc-bleacher",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "3-tier concrete bleachers/stadium seating",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each tier clearly shows a 6-row deep horizontal tread (light grey) and a 2-row vertical riser (dark grey), consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5634
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "3-tier concrete stadium bleachers with wooden bench seats",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each of the 3 tiers features a clear top horizontal walking/seating surface (6 to 8 pixel rows deep) followed by vertical riser faces (2 to 4 rows deep), correctly depicting stepped stadium seating in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6199
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "3-tier concrete stadium seating",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each of the 3 stepped tiers shows a deep horizontal tread surface spanning 6 pixel rows with bench seating, followed by a 2-3 row vertical riser facing south.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5228
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "3-tier concrete bleachers",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiered bleacher structure clearly displays deep horizontal treads (top surfaces, 6-7 source pixel rows per tier) with wooden bench pads, and front-facing south vertical risers.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4462
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.063Z",
+ "cells": {
+  "16": [
+   "0dfdbf00e3a746f6",
+   "0fc3e15618fa1283",
+   "7d4c642e2b9beb44",
+   "912bc21dcd86575f",
+   "a7abd95a59eb5ec3",
+   "c11c2a4496b2fe5d"
+  ],
+  "24": [
+   "113db15073c94413",
+   "255dd926bd3d207e",
+   "2bb8e90d85f8acc2",
+   "33b395749e56254b",
+   "45cc7f36ae04e14f",
+   "49f4d46557e29cb4",
+   "5d5e60cd32b20f70",
+   "62a24f5846a9189b",
+   "66969c2919dfc0b7",
+   "79ccfe07cb5d2d9f",
+   "7d8ed68f9cecc064",
+   "92961df5ae01fa12",
+   "9302c148166ab4d1",
+   "991436c978fbd068",
+   "9df67521c90d0570",
+   "9f7dc2b3b6bce123",
+   "a60ca370c815023d",
+   "a634baea353ec175",
+   "a6e7be1b9f50a218",
+   "af7ce2ba2b8ca958",
+   "b1b518d1901745f4",
+   "bb8550f15875309b",
+   "c619e3ebe68f7e6c",
+   "d5e64b932925a34e",
+   "d6af8e5afdc3a8f6",
+   "d6f96e0a063bca51",
+   "dfb7dfbf9cbaa953",
+   "e2184eac47c21e2f",
+   "e2443a646ff74bde",
+   "e4695b5b41439ed8",
+   "ef1486040331605d"
+  ],
+  "32": [
+   "06b2ade479a59dc4",
+   "ecd90b7a7966b304"
+  ],
+  "48": [
+   "2dae9139b51d79ca",
+   "3cd1705bc86040e5",
+   "45ce4a29ff701c52",
+   "7876051831feb9d3",
+   "9866934751145a9d",
+   "a270cd38ea659396",
+   "aebdd781c25fa4eb",
+   "afa622654681be0a",
+   "b95ae767ffc42434",
+   "d1e2a8ed7b027cd7",
+   "edc20fdbe35ee909",
+   "ff437f5cf58991e6"
+  ]
+ }
+}

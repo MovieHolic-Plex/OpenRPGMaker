@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b4387763c0d13514acf79ee6c84071fb129f2a83e8601f12722690689285a73f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "도로 한국식(황색 중앙 겹선)",
+ "label": "modern-campus/mc-road-kr-center",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "asphalt road terrain with double yellow center line",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile showing an asphalt road surface with double yellow horizontal center lines, filling the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6271
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "asphalt road terrain with double yellow center lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain ground tile showing asphalt texture with double yellow center lines across the 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4766
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "asphalt road terrain with double yellow center lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing an asphalt road surface viewed top-down with double yellow lines across rows 5 and 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4307
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "asphalt road surface with double yellow lines",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain tile showing dark asphalt paving with double yellow road markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3104
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "87a92bbc357641d4"
+  ],
+  "24": [
+   "13e8900b7e7c1e87",
+   "198690aba256d1d5",
+   "4a4b706dd7e42fa8",
+   "4aa8d31366f11a6e",
+   "b4cc8e6e970a2bd1",
+   "ceb3f0b2b87fd3cc"
+  ],
+  "32": [
+   "03061e1bba684870",
+   "1a1acf209b67e543",
+   "b5fa35ba9518b6e3",
+   "e88d5f3d67210fb5",
+   "f316e84683ed9063",
+   "f4fb2ca55593e08e"
+  ],
+  "48": [
+   "036c3a53abe59580",
+   "17fa2a3fa59fc6a3",
+   "337e1eb7e6c20e59",
+   "52670b15d62caf91",
+   "57e1e22a1b0f652e",
+   "6ed4675b6da8aa40"
+  ]
+ }
+}

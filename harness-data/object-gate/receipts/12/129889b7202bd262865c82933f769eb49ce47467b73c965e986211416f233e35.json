@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "129889b7202bd262865c82933f769eb49ce47467b73c965e986211416f233e35",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "둥근 화분(콘크리트 + 흙 + 관목)",
+ "label": "modern-campus/mc-planter-round",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete planter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the round planter spans rows 2-7 (6 rows tall) showing the interior soil and shrub, above a 6-row front face (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4266
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round concrete planter with soil and shrub inside",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the planter is clearly visible from rows 2 to 7 (around 5 rows of interior soil and shrub visible inside the rim), with the vertical front concrete wall below it from rows 8 to 12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6026
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete planter",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top opening of the planter is clearly viewed from above across rows 2-7 showing the rim and inner contents (soil and shrubbery), while rows 8-13 display the south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4776
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete planter with plant",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete planter shows a clear top opening (rows 2-7) containing soil and shrubbery, sitting above the south-facing front wall (rows 8-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3599
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.180Z",
+ "cells": {
+  "16": [
+   "d1ea475bd2c6f9fa"
+  ],
+  "24": [
+   "172f7956e21182e6",
+   "3db1c7c65f0ae604",
+   "43c89e98f14b6d55",
+   "560acbb2d45442dd",
+   "5fb7a0d76dd38b34",
+   "d7c0586fa3e00091"
+  ],
+  "32": [
+   "2f2cec0fadc8fb19",
+   "58705ad3ef73362b",
+   "5dd02836256d5804",
+   "733daf09c35890af",
+   "9ebbb73a059f5e9d",
+   "f7d3b26df0ab68c4"
+  ],
+  "48": [
+   "0f7f55f1d0411911",
+   "20fef2f7e7e9cde8",
+   "328e35fcbfcbea00",
+   "6a03a995fa3f5332",
+   "83b201bd4443f2c1",
+   "bc06f67c50030b29"
+  ]
+ }
+}

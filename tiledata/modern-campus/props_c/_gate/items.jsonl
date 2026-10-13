@@ -1,0 +1,6 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-wall-conc.png", "kind": "structure", "name": "콘크리트 담 2칸(두꺼운 갓돌 윗면 + 앞면)", "label": "modern-campus/mc-wall-conc"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-wall-brick.png", "kind": "structure", "name": "벽돌 담 2칸(갓돌 윗면)", "label": "modern-campus/mc-wall-brick"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-wall-wire.png", "kind": "structure", "name": "철망 담 2칸(콘크리트 턱 윗면 + 철망)", "label": "modern-campus/mc-wall-wire"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-wall-conc-end.png", "kind": "structure", "name": "콘크리트 담 끝 기둥", "label": "modern-campus/mc-wall-conc-end"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-vending2.png", "kind": "box", "name": "자판기(두꺼운 덮개 몸통)", "label": "modern-campus/mc-vending2"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_c/_gate/mc-fence-roof.png", "kind": "structure", "name": "옥상 난간 2칸(콘크리트 윗면 넓게)", "label": "modern-campus/mc-fence-roof"}

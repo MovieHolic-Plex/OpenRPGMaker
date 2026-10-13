@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d64297631e088c965e87f7b404a9669cdab7f9f23db268a28dfb943c48f15a0c",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "벚나무(교정 가로수)",
+ "label": "modern-campus/mc-tree-sakura",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cherry blossom tree with circular foliage crown and straight post-like trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat lollipop silhouette from a direct side/front elevation. The foliage is a flat circle, the trunk is a straight vertical rectangle, and the base sits on a completely flat 1-pixel horizontal bar at rows 44-45 without any ground-plane curve or top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9799
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cherry blossom tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D lollipop elevation: a circular disc canopy atop a straight vertical trunk with a completely flat, horizontal base line at row 44, showing no 3/4 perspective, depth, or ground plane curve.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6867
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cherry blossom tree (canopy and trunk)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat lollipop-style front elevation: the canopy is a flat 2D circular silhouette and the trunk is a straight vertical rectangle terminating in a perfectly flat horizontal baseline at row 44 with no elliptical grounding or top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7733
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cherry blossom tree",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat circular lollipop shape on a vertical green trunk with a completely flat horizontal base at row 44, showing zero top-down 3/4 perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9339
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.063Z",
+ "cells": {
+  "16": [
+   "1da0cc4ad5e2f567",
+   "2947888b8bba5e9a",
+   "447b3112d31213b1",
+   "4826e2c111197401",
+   "48e405886b6a892e",
+   "a523fce25ab60d95"
+  ],
+  "24": [
+   "03c5e0fd69047f53",
+   "07c3b0d084ec6bde",
+   "1da7ddaf3063b417",
+   "36b82c240bd847de",
+   "4fece448655e6006",
+   "6590d51eb611faa3",
+   "79bbde1875074f35",
+   "adc8adcaffc9b925",
+   "ae3e44bc51ba3bf1",
+   "c94cfcbf747322a3",
+   "eb9d1726e947e5d5",
+   "f66b0fecb8830fbf"
+  ],
+  "32": [
+   "0bb8f0f531e3d2f2",
+   "4cc6c19dced17593",
+   "6ced22b0d584dadc",
+   "9db7c7e968c56112"
+  ],
+  "48": [
+   "3d12332c93c22a19",
+   "4088c59636f265af",
+   "655c91dd635983cb"
+  ]
+ }
+}

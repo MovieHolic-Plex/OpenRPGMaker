@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "70ada5a2aab029c1ab5adcf9030885bfc96a32fd4b1c423f9e8e6e5cd3616cf5",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "배전함(회색 큰 상자 + 문 + 윗덮개)",
+ "label": "modern-campus/mc-utility-pole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "distribution box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn as a flat front elevation with no visible horizontal top surface foreshortened from above. The top boundary at row 1 is a flat horizontal line with zero depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13520
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "electrical distribution box with top lid and front double doors",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid/surface spans rows 1-10, clearly visible from above, while the south-facing front with two door panels occupies rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5287
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "distribution box with top cover and front doors",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/cover spans rows 1 to 10 (10 pixel rows tall, rendered in lighter value with overhang at row 10), while the front face showing the lower cabinet doors spans rows 11 to 15 in darker shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15035
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "electrical distribution cabinet",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cabinet is clearly rendered in a lighter shade from row 0 to row 10 (11 rows deep), with the darker south front face containing doors visible below on rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8578
+  }
+ ],
+ "decidedAt": "2026-10-13T14:16:25.793Z",
+ "cells": {
+  "16": [
+   "77ccf26e57d72ddf"
+  ],
+  "24": [
+   "0949aca731cd0c35",
+   "134c942f357247d9",
+   "2a61f19a00500739",
+   "90c6e8f34f25912f",
+   "b74ee92ecb7bccfa",
+   "fbd408ceb16557ec"
+  ],
+  "32": [
+   "160000d072eb07d9",
+   "39a904dba7654c93",
+   "657236b1135e9af6",
+   "917cdf17d652f0a0",
+   "97e1ef87792a6cc0",
+   "cae24e37df3d64e8"
+  ],
+  "48": [
+   "0623753338b2271f",
+   "09a3002069fa4e9f",
+   "0badaf588e492edd",
+   "0c61fcbd5f4197ae",
+   "57f2e8f358989e83",
+   "6888e9ea8c959d5a"
+  ]
+ }
+}

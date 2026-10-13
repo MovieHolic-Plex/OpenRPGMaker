@@ -1,0 +1,172 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2577f48dd502a408aa0c43251839c22a7e519f7b09c0418c2c6605a79ac8fc9d",
+ "width": 64,
+ "height": 32,
+ "kind": "frame",
+ "name": "축구 골대(흰 틀 + 그물)",
+ "label": "modern-campus/mc-soccer-goal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "soccer goal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The goal is drawn from an eye-level front perspective rather than a 3/4 top-down view. The crossbar has no visible top surface (0px), and the rear bar recedes downward via 1-point perspective instead of receding upward (northward) onto the pitch.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "soccer goal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar and posts are drawn as flat rectangular shapes in pure front elevation with only a 1px dark border at row 2 instead of a visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6160
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "soccer goal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The soccer goal posts and crossbar are drawn in pure front elevation without any visible top surface on the horizontal crossbar or depth to the net structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5397
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "soccer goal frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The crossbar and posts of the goal frame are drawn as a flat front elevation. The crossbar has only a single 1px outline at row 2 with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6481
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.062Z",
+ "cells": {
+  "16": [
+   "1690eae504fa7bdf",
+   "3fc3b936e4b40a0e",
+   "45cca0c29bdf7370",
+   "89a5254660de88d7",
+   "aaf405cf1a849df1",
+   "b2361a0d2ba9490e",
+   "ca5baa225c9bcce1"
+  ],
+  "24": [
+   "046505e3d89a655a",
+   "175d5ae7110a33a5",
+   "1cf167088aeb2332",
+   "29c99980980558da",
+   "2b5b8768b892c6ab",
+   "2b7cbeee05f6d031",
+   "3549a47796abbfb7",
+   "3c563adad0fd6d02",
+   "41667358566e3dca",
+   "4ae6b317b706d3c0",
+   "560b5af41e3c6d02",
+   "611587f382211701",
+   "6d50def7f6a97031",
+   "6dbcf6f7158680d5",
+   "76c5f28f83efa35f",
+   "7a7b6dbd2e66cbd2",
+   "7cd0d1bf498d8753",
+   "866ccca20f125d83",
+   "93f90f24ccf92108",
+   "97a92829a1b44da3",
+   "9ec231c086e79cfa",
+   "b201ce68660495f8",
+   "be4219fe7c311ed3",
+   "c7ea55b062c406fb",
+   "ca145b1e90a63e82",
+   "dbe412fd9fe8ff6b",
+   "dc0a6abce6542584",
+   "de0b259e8eb8855f",
+   "e614a4e8f159aa86",
+   "ee0e70fc0f0bbc85",
+   "ef152df1767e686f",
+   "f4d36d8a702cf56b",
+   "f646cd5d6c82e392",
+   "fc550ce8147a5806"
+  ],
+  "32": [
+   "64c10473d4bfb690",
+   "fb081ee820cfca8d"
+  ],
+  "48": [
+   "27c9df312e308150",
+   "2d128bab3c0180d8",
+   "331e50e1271ebe6b",
+   "3629bdb00784c3fa",
+   "682cc415d0dac1fe",
+   "6b98fc3958964c49",
+   "7114df0a778da514",
+   "7d5bd3d3465a299f",
+   "959765054ecea21d",
+   "b303174896402952",
+   "bf7e7cba3d7964d7",
+   "e806e273756495ca"
+  ]
+ }
+}

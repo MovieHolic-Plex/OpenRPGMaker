@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ac0332494911764c1a668a3f9f3d83aad9117617891cd72c6a646bd1f0427b6c",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "정자(기와 지붕 윗면 + 기둥 4)",
+ "label": "modern-campus/mc-gazebo",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pavilion roof and pillars",
+    "kind_matches": true,
+    "top_rows": 21,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof top surface spans rows 1 to 21, shown foreshortened from above, with the south fascia edge at rows 22-24, pillars below, and no receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7350
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pavilion roof and pillar structure",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof top surface/slope is prominently visible from rows 1 to 20 (20 source pixels tall) above the front roof eave (rows 21-24) and support pillars.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5642
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pavilion roof and pillars",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a substantial top surface/slope spanning rows 1 to 20, with the front eave at rows 21-24 and the pillars and underside visible below in proper top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5329
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pavilion with roof and pillars",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof top surface/slope is prominently visible from rows 1 to 20 above the dark front eaves (rows 21-24), showing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6129
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.181Z",
+ "cells": {
+  "16": [
+   "0c44eb68ad49dfbc",
+   "14c5e6ff31b2bd8a",
+   "1e088c4975143b9c",
+   "7d3373b0b0517901",
+   "9398211920287413",
+   "a5bbfe30509b3f20",
+   "ab2144a828c9b2c8",
+   "be1e5fb5755285b8",
+   "ed8e46a53c7c126f"
+  ],
+  "24": [
+   "36928d94e336ebe6",
+   "67a76cb0b92ab681",
+   "e17ac1ec42c1f566",
+   "eac2e2a86330658e"
+  ],
+  "32": [
+   "02e6ec0f4c2594ce",
+   "0934c32d24cd96b3",
+   "0a6225025720682a",
+   "10a3c8ce54f53f8e",
+   "136e4561c16a08f1",
+   "13e9c8c95471e541",
+   "1cc2cbf2e62c644c",
+   "1fe38d6a655ea465",
+   "205bbfdd5656ff7b",
+   "2a9b8d8864c8c33c",
+   "462392a0645edb79",
+   "6210905bd4246d95",
+   "94de96201e2f03b5",
+   "9542f49ab9444d6e",
+   "b2568d40a9c3db97",
+   "b9ec79ead28cd052",
+   "c7ae1c2ce0dff485",
+   "c7eb4cf34350f71b",
+   "c8338203acad4821",
+   "d1d56da9a97352d9",
+   "d307fadf043d0c0d",
+   "ea7bb9b56058008d",
+   "eefac43237369e96",
+   "ff08ca4faecf0808"
+  ],
+  "48": [
+   "ccd8dbae91d8fa34"
+  ]
+ }
+}

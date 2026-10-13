@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d749675b762a0b54f8e530432fec3fe1763dd77727067ebceb9af04bbcf14a5",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "벚꽃 낙하 프레임0",
+ "label": "modern-campus/mc-petals-f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered pink cherry blossom petals lying on or drifting over the ground plane. As flat floor debris/particles, they appropriately have no vertical south face or front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9663
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 2D particle/debris clusters of cherry blossom petals scattered across the frame, fully compatible with top-down 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10458
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered flat cherry blossom petals distributed across the tile from rows 1 to 14. As flat floor debris / ground scatter, they lie on the floor plane with no vertical front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 26895
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered small 1-2 pixel petals across the tile representing fallen/falling cherry blossoms; not a standing vertical object drawn in front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5201
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.139Z",
+ "cells": {
+  "16": [
+   "f5b00dfefe18da47"
+  ],
+  "24": [
+   "113bfb01f7247384",
+   "15313a3a2584c5b6",
+   "3221cc606c33ff84",
+   "a8a3ace95e4cfebe",
+   "cb94c3805919310e",
+   "f8fb9642e33eac6b"
+  ],
+  "32": [
+   "055e389413e75541",
+   "18cad7519a623fd5",
+   "2c3144d9b6b55857",
+   "7405042d1440ccad",
+   "9b6e459ac953a895",
+   "b53eafbad049a555"
+  ],
+  "48": [
+   "6b9317ce40562b7c",
+   "7cafd2a3b3d4a71f",
+   "951312e81c4fb5ca",
+   "d1d148fb3498b6ee",
+   "d31d42f5d2e3e1ad",
+   "ed2644cf712bc4f4"
+  ]
+ }
+}

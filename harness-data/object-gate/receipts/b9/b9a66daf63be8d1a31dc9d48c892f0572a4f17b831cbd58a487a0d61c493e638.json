@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b9a66daf63be8d1a31dc9d48c892f0572a4f17b831cbd58a487a0d61c493e638",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "쓰레기통(철 각통 + 뚜껑)",
+ "label": "modern-campus/mc-trash-can",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular metal trash can with lid/hood",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a flat front elevation, showing the front face with an opening slot (rows 3-5) and lower bin body (rows 9-13). There is no foreshortened top surface visible (only a 1px outline border at row 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9187
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "trash can (steel bin with lid / stand)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in a pure front elevation: the intake slot and upper body (rows 1-7) and the lower panel/stand (rows 8-13) face straight forward with 0 rows of visible top surface (only a 1px outline at row 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14635
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square metal trash can with lid",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface (lid) is clearly foreshortened and illuminated across rows 1-7 (approx 7px tall) with a handle/slot, while the south vertical face occupies rows 8-13 with appropriate shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14096
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steel trash can with lid",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn entirely in flat front elevation within a vertical rectangular outline. The upper half depicts a front-facing trash inlet slot/flap, and the lower half depicts the front body/panel, with only a 1px top outline (row 0) and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14746
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.152Z",
+ "cells": {
+  "16": [
+   "031ddb615d5f9d97"
+  ],
+  "24": [
+   "35f065b8fda667bf",
+   "5af220e5f2a4c114",
+   "7fb6e22154213fc9",
+   "9b72c20472067546",
+   "d88235b771d7ac1f",
+   "e2cab396231a9523"
+  ],
+  "32": [
+   "36c60165b58de9cf",
+   "486487594027645f",
+   "93762ba408ca06b0",
+   "9804df6c7b9a05a8",
+   "db8b00c096b9a84b",
+   "f20f8dd1d90e3d5a"
+  ],
+  "48": [
+   "1e47b1d4a6434065",
+   "2e63792dd362401e",
+   "346c72d7b3380306",
+   "500237085a45c92e",
+   "66957f3830474548",
+   "aaf44ac836366ad0"
+  ]
+ }
+}

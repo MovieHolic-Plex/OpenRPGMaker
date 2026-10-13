@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a9ab3cff95d8016a5d9a2e35d8acb883315a9169b8d744980c3f87483291809",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "단풍 낙하 프레임1",
+ "label": "modern-campus/mc-leaves-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is an animation frame of falling autumn/maple leaves ('단풍 낙하') floating in mid-air, not debris lying on the floor, and consists of flat floating pixel clusters with no 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6957
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an animation frame of falling maple leaves in mid-air rather than debris lying on the floor; the floating leaf particles lack 3/4-view top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 7767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered falling maple leaf particles drifting diagonally across the frame. As small organic debris/particles, they do not have a vertical standing face and are visible from the overhead perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8489
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered falling leaves/debris drawn as small flat pixel clusters viewed from above, with no vertical standing surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5377
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.140Z",
+ "cells": {
+  "16": [
+   "e512f8a9f2d5692a"
+  ],
+  "24": [
+   "0af527d28277c677",
+   "2a875af7b480c068",
+   "2cc93b0e9edec54a",
+   "76289b69f9e54679",
+   "aa94231e4d9a870e",
+   "ad37b454f3b66a63"
+  ],
+  "32": [
+   "31d9c7719415580e",
+   "33c6bcb9bb1830f4",
+   "765532bc57e6264e",
+   "7dcdc71f0140369e",
+   "a58d85b2b2f8c75f",
+   "ade821be65edfba4"
+  ],
+  "48": [
+   "3497ff02dc0cd0e8",
+   "41a34d71e653ba7b",
+   "5e3030982dca1329",
+   "685fe3268e844234",
+   "b84aef2ee7f61b0f",
+   "e242f34b684200ed"
+  ]
+ }
+}

@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aeb6cdd892b96dade4c4820871145fa0af84fec1a6a1ef7b0b9dfca755555410",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "단풍 낙하 프레임0",
+ "label": "modern-campus/mc-leaves-f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered autumn leaves",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The leaves are flat scatter/debris seen from above, presenting their top surfaces lying across the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9786
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "falling autumn leaves / leaf particles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an animation frame of falling maple leaves in mid-air ('단풍 낙하 프레임0'), not static debris lying on the floor as described by the category.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6473
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite depicts animated airborne falling maple leaves ('단풍 낙하 프레임0'), not debris lying on the floor.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 8914
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered leaves",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small flat leaf particles scattered across the floor, viewed flat from above on the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7405
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.140Z",
+ "cells": {
+  "16": [
+   "10e6bfe9843146df"
+  ],
+  "24": [
+   "0f45e2586e7c6b3f",
+   "3b4cd1cd69ccf81c",
+   "d3aaa6f15e66293a",
+   "de8294feba6704ac",
+   "f1b2d74d584fe1e7",
+   "fbd970e7569c246c"
+  ],
+  "32": [
+   "4b6d49cf27c93c2f",
+   "6c04c184a1826fb2",
+   "a0ae5fad6a5d8a6e",
+   "ae140ca1947689c0",
+   "c7ae08a7caad656d",
+   "db486e31a3522476"
+  ],
+  "48": [
+   "2d8c7272f8e3b75a",
+   "81e35169142bc34d",
+   "926c56a86158090a",
+   "9f47d7ba35b34493",
+   "b4517506d054793f",
+   "ef2469c0c3c1a8b8"
+  ]
+ }
+}

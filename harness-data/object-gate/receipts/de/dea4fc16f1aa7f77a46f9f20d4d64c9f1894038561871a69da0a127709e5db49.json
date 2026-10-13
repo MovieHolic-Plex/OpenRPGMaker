@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dea4fc16f1aa7f77a46f9f20d4d64c9f1894038561871a69da0a127709e5db49",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "옥상 난간 2칸(콘크리트 턱 윗면 넓게)",
+ "label": "modern-campus/mc-fence-roof",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rooftop railing and concrete ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing and concrete ledge are drawn in pure front elevation. The railing consists of flat 1-2px rails and vertical posts with no visible top surfaces (top_rows = 0). The concrete ledge at the bottom (rows 11-14) is rendered straight-on as a 4px horizontal band without a top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24930
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rooftop railing on concrete curb",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn in pure front elevation: the top handrail is a 1px flat horizontal line with no top surface visible, the vertical posts show no top ends, and the curb top in front of the railing is only 2px. Standing horizontal rails and posts in 3/4 view must show visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18462
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rooftop railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn in pure front elevation: the top rail is a 1px line and the vertical posts are flat 2D rectangles with no top surfaces visible. The concrete ledge acts as a base/plinth, but the railing itself lacks any top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24067
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete parapet / rooftop ledge with railing",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete ledge top surface is clearly foreshortened and visible from above across rows 1 to 10 (10 pixel rows tall), with its south front face shown along rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10942
+  }
+ ],
+ "decidedAt": "2026-10-13T14:16:25.794Z",
+ "cells": {
+  "16": [
+   "1f7d988c44ce4b7b",
+   "f716d19bf8ab0ec7"
+  ],
+  "24": [
+   "26d243a513f49213",
+   "27880b9211f5f991",
+   "59653c3df06dc528",
+   "63ad87138cdf6e92",
+   "77eeaae6445a826e",
+   "7eff8aa3f4ad0a0e",
+   "8c638838bb7426d9",
+   "9c671c855c8498e8",
+   "b6f683399eb0dd1a",
+   "f6cfdcdb6895813b",
+   "fb7f7aaa57afb7ff",
+   "fbbbaf264a8dca07"
+  ],
+  "32": [
+   "75b66693d66272f7",
+   "a1013f2d456efc3f"
+  ],
+  "48": [
+   "5c1bdb6c19be4355",
+   "875538d51249e795",
+   "aa5b7660446e06eb",
+   "bb86269ec33b3576",
+   "d8070951e87616bc",
+   "fcf9c5d641105bf5"
+  ]
+ }
+}

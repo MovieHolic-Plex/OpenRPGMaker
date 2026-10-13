@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b067385131fed0e9ed8402c49a568c5a5716c9434365168b613a27b78b1816b1",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "정원 석등(넓은 돌 윗면 3단)",
+ "label": "modern-campus/mc-stone-lantern",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "garden stone lantern cap and tiers",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top stone tier shows an extensive horizontal top surface spanning rows 0 to 10 (11 source pixel rows tall) with its south face underneath, clearly displaying the required 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6946
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern tiers",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top stone tier shows an extensive 11-row top surface (rows 0-10) above a 3-row front edge (rows 11-13), and the lower plinth tier likewise shows a 7-row top surface (rows 24-30), fully consistent with 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7226
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone lantern cap / tiered stone lantern",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top stone slab displays a clear, large horizontal top surface spanning rows 0 to 10 (11 source pixel rows) above its front face and lower tiers, properly foreshortened for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6407
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone lantern cap and tiers",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top stone cap shows a prominent horizontal top surface spanning rows 0 to 10 (11 rows tall) above its south-facing overhang and light opening, accurately matching 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6351
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:05.440Z",
+ "cells": {
+  "16": [
+   "611275e3d2782203",
+   "c00cc66fff9829b4"
+  ],
+  "24": [
+   "15a4fbcb12e7b6ce",
+   "195dfdeb5379606f",
+   "21637aed67aa14c0",
+   "569df255ad841b5c",
+   "588945684a7ab7c9",
+   "7dea5a746cb23f88",
+   "804c1a81841ac088",
+   "936242abf6451ba1",
+   "93bc96ac1c9eaf44",
+   "9ddaa01d84624d37",
+   "af94c8d272629545",
+   "bea4fd570060fd33"
+  ],
+  "32": [
+   "450754d81fdff86d",
+   "5a3a69c4e94ac8c8",
+   "8aa8fbd9dac96a51"
+  ],
+  "48": [
+   "5981a97e59cdff9a",
+   "61b2d2fc699f40ff",
+   "66a71ea830b269ea",
+   "66cb22c349ef6f47",
+   "e92b25ba91e75ed6",
+   "ee57d4be6579162d"
+  ]
+ }
+}

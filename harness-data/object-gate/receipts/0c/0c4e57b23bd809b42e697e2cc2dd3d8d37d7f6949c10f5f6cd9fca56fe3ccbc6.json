@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0c4e57b23bd809b42e697e2cc2dd3d8d37d7f6949c10f5f6cd9fca56fe3ccbc6",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "테니스 네트(받침 + 흰 윗띠)",
+ "label": "modern-campus/mc-tennis-net",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tennis net frame and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal elements and posts consist of 1px lines or flat vertical bands with 0 rows of visible top surface, drawn as a flat 2D front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4766
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tennis net frame / base and net structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top horizontal bars are drawn as flat 1px lines at row 3 with no visible top surface, and the center/base structure is drawn strictly from the front without any foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4857
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tennis net frame and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top band and horizontal elements are drawn as flat 1-pixel-thick outlines with zero visible top surface or 3/4-perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4456
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tennis net frame and base structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal upper bar is drawn as a flat 1px line at row 3 with no top surface, and the posts and center base block are drawn in completely flat 2D elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4241
+  }
+ ],
+ "decidedAt": "2026-10-13T14:21:38.369Z",
+ "cells": {
+  "16": [
+   "1065cfb3919da8e8",
+   "19a775c153a3859b",
+   "63128c68ccf21ef6"
+  ],
+  "24": [
+   "069dba4fd78fa5bc",
+   "84907128e7e1b00f",
+   "8f9c2a7a7b6d0e5a",
+   "dcd0239bd3a8820d"
+  ],
+  "32": [
+   "16bb27c2f9b4db27",
+   "44f485c777051441",
+   "49c0718e31527ecf",
+   "4cc732f3749807cd",
+   "4f54918a9390335a",
+   "51bf639b0bb715e0",
+   "7730a6fae4ea6e3f",
+   "a9b33c540fd58f1a",
+   "aaa8eaa40d603f5d",
+   "e2a31a804641a365",
+   "f8046c3c3ad27f0b",
+   "fa14a71e9a7e75ea"
+  ],
+  "48": [
+   "37b19dae56523ba4",
+   "5ef564ec1d64d791"
+  ]
+ }
+}

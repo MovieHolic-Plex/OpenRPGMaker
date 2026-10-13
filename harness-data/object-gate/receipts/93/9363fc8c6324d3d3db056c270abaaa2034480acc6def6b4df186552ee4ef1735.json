@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9363fc8c6324d3d3db056c270abaaa2034480acc6def6b4df186552ee4ef1735",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "미끄럼틀(철 사다리 + 경사 판)",
+ "label": "modern-campus/mc-slide",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "slide platform and ramp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The right section (the slide ramp/chute, which constitutes the majority of the object's volume) is drawn as a flat vertical rectangle with no top surface, slope, or depth in 3/4 view. Even if the left platform shows a top surface, the main body of the slide fails to represent a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6865
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "large grey panel/slide body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest volume of the structure is the grey rectangular section on the right, which is drawn completely flat in pure front elevation with only a 1px outline along its top edge (row 5) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7661
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "slide ramp / panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest component (the main panel/ramp on the right, rows 6-27) is drawn as a completely flat vertical rectangle with no visible top surface or 3/4 perspective (top_rows = 0, bounded only by a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7074
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "slide platform and ramp panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest component (the slide board/ramp) is drawn as a completely flat front-facing rectangle with only a 1px outline on top and no foreshortened top or sloping surface, failing the 3/4 perspective requirement.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6635
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.181Z",
+ "cells": {
+  "16": [
+   "3e61161477c9e3b6",
+   "46055d217962943e",
+   "5a19a509dd8cb4f6",
+   "61978978932a96e5",
+   "b01679abd859c8eb",
+   "bcf317e0c0ab4faf"
+  ],
+  "24": [
+   "24b4788888615784",
+   "52edf1c057592e5a",
+   "5b378a04e600024a",
+   "7b27eee97f8e4aa2",
+   "94eecfe2ff4d0111",
+   "9524a563c615b172",
+   "bb2157bf549e6b75",
+   "cb453f4e440952b6"
+  ],
+  "32": [
+   "05cca0bd22ef8e51",
+   "1083d6f900906fd3",
+   "58996a5335a16c13",
+   "64feeb71375e67da",
+   "90053921fbb9e4a5",
+   "d48c0bee4605b57b"
+  ],
+  "48": [
+   "4078536b0beea187",
+   "99a6874eaaa869f8"
+  ]
+ }
+}

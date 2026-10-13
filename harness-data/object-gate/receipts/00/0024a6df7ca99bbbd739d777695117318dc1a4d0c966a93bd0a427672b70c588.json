@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0024a6df7ca99bbbd739d777695117318dc1a4d0c966a93bd0a427672b70c588",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "단풍 낙하 프레임3",
+ "label": "modern-campus/mc-leaves-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "falling autumn leaves",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The Korean name '단풍 낙하 프레임3' denotes an animation frame of falling maple leaves (airborne weather/particle effect), which does not match the kind 'debris lying on the floor'.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 9312
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "falling autumn leaves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Multiple small leaf particles/debris scattered across the tile, viewed flat from above as appropriate for top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10074
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered autumn leaves",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered autumn leaves lying flat/distributed across the tile. As flat ground debris, the surfaces are seen entirely from above without front vertical faces or isometric projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7097
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "scattered autumn / maple leaves",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small flat leaf debris scattered across the ground plane/air, viewed from above without improper front elevation or receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5123
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.140Z",
+ "cells": {
+  "16": [
+   "82a2c6e6cad3b069"
+  ],
+  "24": [
+   "15430b1d9081309c",
+   "2b9374a242f9a621",
+   "44de0940f8a53f78",
+   "4c33f991b8f3144f",
+   "bce4df87d2fdf9ce",
+   "f69b06400c9a8f96"
+  ],
+  "32": [
+   "4af15afd0c256fad",
+   "4b251092afaf6003",
+   "6842abedf0b60b29",
+   "9ba22d79dd50ee2a",
+   "c8afe565f10abeed",
+   "cf4f6249a415c5a3"
+  ],
+  "48": [
+   "05d57fd6af5f69e9",
+   "108069efda653de1",
+   "7eb5d658085a9522",
+   "91f5113458eab9a6",
+   "9370535f89699a20",
+   "e7ee369168ba07ff"
+  ]
+ }
+}

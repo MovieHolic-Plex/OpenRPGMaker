@@ -1,0 +1,15 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-main3.png", "kind": "structure", "name": "본관 3층(벽돌·평지붕)", "label": "modern-campus/mc-bld-main3"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-main4.png", "kind": "structure", "name": "본관 4층(콘크리트·평지붕)", "label": "modern-campus/mc-bld-main4"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-annex.png", "kind": "structure", "name": "별관(베이지 콘크리트 2층)", "label": "modern-campus/mc-bld-annex"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-gym.png", "kind": "structure", "name": "체육관(넓은 1층 + 채광창 지붕)", "label": "modern-campus/mc-bld-gym"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-auditorium.png", "kind": "structure", "name": "강당(기와 寄棟 지붕)", "label": "modern-campus/mc-bld-auditorium"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-library.png", "kind": "structure", "name": "도서관(벽돌 아치창)", "label": "modern-campus/mc-bld-library"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-dorm.png", "kind": "structure", "name": "기숙사 동(4층 벽돌)", "label": "modern-campus/mc-bld-dorm"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-cafeteria.png", "kind": "structure", "name": "식당(1층 + 환기탑)", "label": "modern-campus/mc-bld-cafeteria"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-studenthall.png", "kind": "structure", "name": "학생회관(2층 유리)", "label": "modern-campus/mc-bld-studenthall"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-church.png", "kind": "structure", "name": "교회 부속 건물(기와 지붕)", "label": "modern-campus/mc-bld-church"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-apartment.png", "kind": "structure", "name": "아파트 동(6층 발코니)", "label": "modern-campus/mc-bld-apartment"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-shop.png", "kind": "structure", "name": "상가 건물(3층)", "label": "modern-campus/mc-bld-shop"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-hospital.png", "kind": "structure", "name": "병원(흰 4층 + 십자 표지)", "label": "modern-campus/mc-bld-hospital"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-police.png", "kind": "structure", "name": "경찰서(남색 띠 2층)", "label": "modern-campus/mc-bld-police"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/buildings/_gate/mc-bld-cafe.png", "kind": "structure", "name": "카페(작은 기와 지붕)", "label": "modern-campus/mc-bld-cafe"}

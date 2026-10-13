@@ -1,0 +1,16 @@
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-clock-tower.png", "kind": "structure", "name": "시계탑(벽돌 몸통 + 시계판 + 평지붕 슬래브)", "label": "modern-campus/mc-clock-tower"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-flagpole.png", "kind": "column", "name": "게양대(콘크리트 각기둥 + 깃발)", "label": "modern-campus/mc-flagpole"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-lamp-post.png", "kind": "box", "name": "정원등(콘크리트 상자 + 등 윗면)", "label": "modern-campus/mc-lamp-post"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-trash-can.png", "kind": "box", "name": "쓰레기통(콘크리트 각통 + 뚜껑)", "label": "modern-campus/mc-trash-can"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-ac-unit.png", "kind": "box", "name": "옥상 실외기(철 상자 + 팬)", "label": "modern-campus/mc-ac-unit"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-water-tank.png", "kind": "box", "name": "옥상 물탱크(철 각 탱크 + 뚜껑)", "label": "modern-campus/mc-water-tank"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-podium.png", "kind": "box", "name": "조회대(콘크리트 단 + 계단)", "label": "modern-campus/mc-podium"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-school-sign.png", "kind": "box", "name": "교명석(큰 돌 + 마크)", "label": "modern-campus/mc-school-sign"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-basket-hoop.png", "kind": "frame", "name": "농구 골대(받침 블록 + 백보드 상자)", "label": "modern-campus/mc-basket-hoop"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-pullup-bar.png", "kind": "frame", "name": "철봉(콘크리트 기둥 둘 + 굵은 가로대)", "label": "modern-campus/mc-pullup-bar"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-soccer-goal.png", "kind": "frame", "name": "축구 골대(흰 틀 + 그물 윗면)", "label": "modern-campus/mc-soccer-goal"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-fountain.png", "kind": "container", "name": "분수대(돌 수반 + 물 + 가운데 기둥)", "label": "modern-campus/mc-fountain"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-bus-stop.png", "kind": "structure", "name": "버스 정류장(지붕 + 뒷 유리판 + 벤치)", "label": "modern-campus/mc-bus-stop"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-bleacher.png", "kind": "structure", "name": "스탠드(콘크리트 3단 계단식 객석)", "label": "modern-campus/mc-bleacher"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-tree-sakura.png", "kind": "organic", "name": "벚나무(교정 가로수)", "label": "modern-campus/mc-tree-sakura"}
+{"png": "/home/main/z-project/rpg-zzu-modern-campus/tiledata/modern-campus/props_a/_gate/mc-hedge.png", "kind": "organic", "name": "생울타리(둥근 덤불 윗면 + 앞면)", "label": "modern-campus/mc-hedge"}

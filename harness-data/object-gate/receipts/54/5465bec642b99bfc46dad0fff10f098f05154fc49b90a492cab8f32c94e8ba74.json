@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5465bec642b99bfc46dad0fff10f098f05154fc49b90a492cab8f32c94e8ba74",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "옥상 난간 2칸(콘크리트 윗면 넓게)",
+ "label": "modern-campus/mc-fence-roof",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete rooftop railing / parapet wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The parapet wall is drawn as a flat front elevation with four vertical cutout slots (rows 4-7), a horizontal groove (row 9), and a darker base trim (rows 12-15). There is no distinct horizontal top surface visible from above; the front face simply extends to row 0 with no depth, bevel, or foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14140
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rooftop railing and concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing posts (rows 4–7) and concrete base/curb (rows 12–15) are drawn strictly in front elevation with no visible horizontal top surfaces (0 px top surface on posts and base).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12755
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rooftop railing with concrete parapet base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing posts, rail, and lower concrete base are drawn entirely as flat 2D rectangles in pure front elevation with no visible horizontal top surfaces or 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20759
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rooftop concrete parapet with wide top surface",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete parapet shows a broad top horizontal surface spanning rows 0–11 (12 pixel rows) with railing mounting details, and a south-facing front wall face in shadow on rows 12–15 (4 pixel rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17742
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:05.441Z",
+ "cells": {
+  "16": [
+   "e4504afabfec7304",
+   "f1836e020912438c"
+  ],
+  "24": [
+   "0f9250ed235395ab",
+   "1ff50c566f105fb1",
+   "3874905c02ba3bcc",
+   "49eef529edd4332e",
+   "4a0358d28596a6b6",
+   "590b60b426688e9e",
+   "599ef31e7f2ca4d2",
+   "7e61730c553087e5",
+   "8a5c9caad108c5e3",
+   "9970a2997f3ab99e",
+   "a671c45537c32082",
+   "bb98357701a093b8"
+  ],
+  "32": [
+   "3b09464cb2107e55",
+   "b14f47d0bc1b5ebf"
+  ],
+  "48": [
+   "40122b7ca430cbd6",
+   "7c75309c6fab3ff2",
+   "e3f358f555393879",
+   "ecc1d0fbfb97ebe3",
+   "f12a95a1f9097eb0",
+   "feb93edfee47bba0"
+  ]
+ }
+}

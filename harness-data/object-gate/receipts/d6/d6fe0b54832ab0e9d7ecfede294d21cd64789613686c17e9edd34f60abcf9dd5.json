@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6fe0b54832ab0e9d7ecfede294d21cd64789613686c17e9edd34f60abcf9dd5",
+ "width": 48,
+ "height": 16,
+ "kind": "frame",
+ "name": "테니스 네트(철 기둥 + 네트 윗띠)",
+ "label": "modern-campus/mc-tennis-net",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tennis net with side posts and top tape",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net and side poles are drawn in pure front elevation; neither the top surface of the horizontal tape/cord nor the top circular caps of the posts are shown from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5321
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tennis net with side posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net and its supporting posts are drawn in pure front elevation as if for a side-scrolling platformer. Neither the tops of the vertical posts nor the top of the net tape show any 3/4 top surface perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5345
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tennis net with side posts and top band",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net and side posts are drawn entirely as a flat architectural front elevation with no visible top faces or foreshortened horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4382
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tennis net with posts and top tape",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tennis net and its supporting posts are drawn as a pure front elevation with no visible top surfaces for either the posts or the horizontal net tape.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5199
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.182Z",
+ "cells": {
+  "16": [
+   "02eddbb2efa5a47c",
+   "3dffa9a6c02bc9ea",
+   "d3febf0b1f5e8409"
+  ],
+  "24": [
+   "0d1306666b003d96",
+   "2412d55bc58d898e",
+   "dc655ddf5e33ea92",
+   "fb68b7502e5a6ffa"
+  ],
+  "32": [
+   "0ca0ae06a03e266f",
+   "0eafa65fe38aa6b4",
+   "24c74415b60f8ce5",
+   "394d306c1edc9bf4",
+   "41d969b70058b960",
+   "49fe91c40d4a73e9",
+   "5c5579fc2af21956",
+   "723f4bc191321e7a",
+   "8a7ba9061920417b",
+   "a67b0121c0e68df2",
+   "f3a85444767e5664",
+   "f61fd4053aba07ea"
+  ],
+  "48": [
+   "527e83e4171e5831",
+   "92b96b4f10800ae8"
+  ]
+ }
+}

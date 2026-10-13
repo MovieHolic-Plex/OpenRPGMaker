@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d0b4da2cf54347bfca07532eb55b8b86eb826b50de471ec6bfd9f1ca82d4ce9c",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "철망 담 2칸(콘크리트 턱 윗면 + 철망)",
+ "label": "modern-campus/mc-wall-wire",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete curb with wire mesh fence",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete curb features an 8-row foreshortened top surface (rows 18-25) in front of the wire mesh fence, with its south front face shown below (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9123
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wire fence on concrete curb",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete ledge/curb base shows a substantial top surface (rows 18-25, ~8px tall) meeting the front vertical face (rows 26-31), correctly rendering the horizontal depth of the base in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7403
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete ledge with wire mesh fence",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete curb/ledge beneath the wire mesh fence clearly shows a horizontal top surface (rows 18-25, 8 source pixels tall) on which the fence posts stand, followed by a south front face (rows 26-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10321
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wire mesh fence on concrete ledge",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete ledge features a clearly rendered 8-pixel-tall horizontal top surface (rows 18–25) and a 6-pixel-tall front face (rows 26–31), properly capturing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17021
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.023Z",
+ "cells": {
+  "16": [
+   "3750df0f1fc25392",
+   "838180167200e070",
+   "8ba4ed1b7bcadf3d"
+  ],
+  "24": [
+   "0fd080e3b6ccb4d4",
+   "0ff7da77ab1575d4",
+   "1254479037fda8eb",
+   "145b4134d331d8fb",
+   "170288090d76e842",
+   "22452ea129b3ff4f",
+   "3c594feb34fe3025",
+   "3ec82cc5bf2af84a",
+   "406f9598ca39d665",
+   "64f701ab3a1aad4e",
+   "7e86cfbafcb60c88",
+   "937cd722affa3496",
+   "b7374d3495bed87d",
+   "bd159c8373a09827",
+   "cade7c1829cc751b",
+   "cca4d8b6664363b7",
+   "e0e14ae7017f9746",
+   "e16760755e895b77",
+   "f1aed032a41f8302",
+   "f8d19e6894ccff4b",
+   "f9be9504bf370ebc",
+   "ff150f6cb36f87ae"
+  ],
+  "32": [
+   "847d27a77c8d30e8"
+  ],
+  "48": [
+   "0fa9bfffa3594121",
+   "40d29d5641522602",
+   "4a9cf9b0a580cae8",
+   "a3b81f326edc3996",
+   "caf102a1d9713167",
+   "e3f854260187ee29"
+  ]
+ }
+}

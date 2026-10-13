@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b992380276671f2575c39f1305214e8d972118ed79f57bf1daeeb24eabc9979",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "교정 가로등(콘크리트 받침 + 철 기둥 + 등갓)",
+ "label": "modern-campus/mc-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "streetlamp (lamp head and pole)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the streetlamp (the lamp head and pole) is drawn in pure front elevation with no visible top surface at the upper end. While the concrete base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9336
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "streetlamp (lamp head, pole, and concrete base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head and pole are drawn in pure front elevation with straight horizontal bands and no visible top surface, cut face, or cylindrical curvature. While the concrete base plinth attempts to show a top surface around the pole, base plinths do not count for credit and the main body above is completely flat front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12617
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "streetlamp (lamp head and pole)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lamp head at rows 0-9 is drawn in pure front elevation with straight horizontal bands and no visible top surface. Although the concrete base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10730
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp (iron pole and lamp shade)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Although the concrete base plinth shows a top surface around the pole insertion, the main column/lamp body and its top end (the lampshade) do not show any top surface or cut face at row 0; the lamp shade is drawn as a flat front elevation cylinder.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12574
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.061Z",
+ "cells": {
+  "16": [
+   "176a8819ec18bdae",
+   "7f5db7458cf231c9"
+  ],
+  "24": [
+   "0dda009522591493",
+   "4c60d3e8f94e616d",
+   "4d16147dad459a93",
+   "607b4a6680d06835",
+   "6f80d6f956b112e3",
+   "715ec25b4bb9f799",
+   "94d6c77b7131bc3e",
+   "95513a1c7d165a4b",
+   "e36c9711890c183c",
+   "ec976d110f1e2812",
+   "f1e76c1f57391a12",
+   "f99b76a7a879a2d5"
+  ],
+  "32": [
+   "4b75fa408abec5c4",
+   "8f23aee23a8e12fc",
+   "9039cffbccc041dd"
+  ],
+  "48": [
+   "91ea204a29f49c0e",
+   "a2ce0aa39875a2c7",
+   "acef25a78b73ca64",
+   "d00422811fa87248",
+   "d101d1bded4c6619",
+   "e19f86b89eefba99"
+  ]
+ }
+}

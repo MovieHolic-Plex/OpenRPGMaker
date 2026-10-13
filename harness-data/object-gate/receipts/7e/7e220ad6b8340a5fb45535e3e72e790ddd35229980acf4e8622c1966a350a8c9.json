@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7e220ad6b8340a5fb45535e3e72e790ddd35229980acf4e8622c1966a350a8c9",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "단풍 낙하 프레임2",
+ "label": "modern-campus/mc-leaves-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "falling autumn leaves / foliage particles",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small flat leaf particles/debris scattered across the tile, viewed from above without improper side faces or pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7170
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sprite depicts an animation frame of falling maple leaves / weather particles with diagonal motion, not debris lying on the floor. There is no 3D top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 11586
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "falling autumn leaves / scattered leaf particles",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small flat leaf clusters/particles scattered across the tile representing falling or fallen maple leaves, viewed flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5450
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "falling maple leaves",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is an airborne weather/particle animation frame of falling autumn leaves ('단풍 낙하'), not scattered floor debris, and consists of flat 2D floating pixel clusters with no perspective or top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6819
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.140Z",
+ "cells": {
+  "16": [
+   "cad7b5637c1e1a45"
+  ],
+  "24": [
+   "0a6a6c2a9c60dee4",
+   "404ca0221d210630",
+   "48aad193d2edd537",
+   "88e57b1af210a633",
+   "a5e1a2fb0fe4a01f",
+   "b4e6728a8f2bac8b"
+  ],
+  "32": [
+   "0c0db19434c8bd6a",
+   "1a7b5640f60e69ee",
+   "3fa7e37c7a7feea6",
+   "4c1dd7f9f627dea6",
+   "6d4ced466b8794e3",
+   "fec44458bb2b1561"
+  ],
+  "48": [
+   "08072d66fecc31d1",
+   "14ec8d66ee2f9ad4",
+   "2fff96987bd5f9c7",
+   "30380666281d1d8d",
+   "6355c73fa4d40ae9",
+   "ae0a2c0d9718fcae"
+  ]
+ }
+}

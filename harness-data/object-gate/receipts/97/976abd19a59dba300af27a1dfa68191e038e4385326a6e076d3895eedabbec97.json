@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "976abd19a59dba300af27a1dfa68191e038e4385326a6e076d3895eedabbec97",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "점자블록(황색)",
+ "label": "modern-campus/mc-tactile",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow tactile paving block tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tactile paving ground tile viewed from above across all 16 rows; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5033
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow tactile paving floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground terrain tile representing yellow Braille paving with raised tactile bumps, fully covering the 16x16 ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4647
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tactile paving block tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Yellow tactile paving block (braille tile) for ground/floor terrain, viewed flat from above covering all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3767
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "yellow tactile paving block (ground tile)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain ground tile depicting yellow tactile paving blocks (braille blocks) seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3712
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "919f5192cc2eb964"
+  ],
+  "24": [
+   "01b5dabf20aa0f16",
+   "291571daa8f2e111",
+   "729c52c4abe65825",
+   "9f62d698f269dc02",
+   "e4fd1384dcefd129",
+   "eb66b859117fcec7"
+  ],
+  "32": [
+   "3e5111ca903b6de1",
+   "76f8f7cf32a3408a",
+   "d851d1b5349da926",
+   "dfb6481634c36de8",
+   "e3878b85407da668",
+   "f17bdb5a3e1a4d4a"
+  ],
+  "48": [
+   "0eae085eae7dc555",
+   "32c0a0ace902f610",
+   "81ae4f5ee522f851",
+   "91fdff61b77f6b7a",
+   "9aa310bc1c3632af",
+   "ce402e3bfc63a3d6"
+  ]
+ }
+}

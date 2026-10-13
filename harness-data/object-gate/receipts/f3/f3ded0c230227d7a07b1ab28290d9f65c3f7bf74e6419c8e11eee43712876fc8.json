@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f3ded0c230227d7a07b1ab28290d9f65c3f7bf74e6419c8e11eee43712876fc8",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(넓은 받침 + 백보드 윗면)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball hoop backboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is drawn as a flat rectangular front elevation with no visible top surface or 3D depth, and it floats completely disconnected above the lower stand with no rim or net opening shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23307
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop and backboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard is rendered in pure front elevation with only a 1px black outline at the top (row 0). Despite the base showing foreshortened depth, the backboard itself lacks any top surface thickness.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11101
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All components (backboard, frame, and base) are drawn as flat rectangular front elevations with 1px outline borders and no visible top depth or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 23102
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball goal backboard and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The backboard (rows 0-19) is drawn in pure front elevation with a flat target rectangle and no top surface/thickness visible. The entire structure consists of disconnected flat rectangular panels stacked vertically without proper 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18010
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:05.439Z",
+ "cells": {
+  "16": [
+   "48a62355b49b3ca5",
+   "534def6c991e42e9",
+   "87db1d7beade1711",
+   "967b9a118660666d",
+   "9f667a50bce242df",
+   "d3f836b73110b3f2"
+  ],
+  "24": [
+   "02f679bf483d96c7",
+   "038a2c33ec0b971e",
+   "03cbbcba0625f976",
+   "26d0a81ecf0bd282",
+   "28fe9dc15f0fd9b3",
+   "385bdf610dd53b7e",
+   "4af97bab5cec4500",
+   "b6a90d02fa8355c5",
+   "bed7c177ac518b8d",
+   "c230d201b02b3a43",
+   "c548ba0ab420cb36",
+   "cb619f427e73f347"
+  ],
+  "32": [
+   "11b6597fee16a88c",
+   "6b856d33c351d5a6",
+   "d2e59cd62993f65e",
+   "f1ff98c02f033fe1"
+  ],
+  "48": [
+   "10fae2fa377088bd",
+   "c055fd95b14b4584",
+   "cabbb26889faa7d4"
+  ]
+ }
+}

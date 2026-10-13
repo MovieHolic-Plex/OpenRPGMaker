@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e470f72b67b316dd34a78dcc4755ac36e1e2ea4bd18f3e6decd4234065c4b8ae",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "횡단보도",
+ "label": "modern-campus/mc-road-crosswalk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pedestrian crossing markings on road surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile consisting of alternating vertical stripes of white crosswalk paint and dark asphalt, occupying the entire tile as a surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13325
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "crosswalk zebra stripes on asphalt ground",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a flat road crosswalk surface (terrain) viewed from above across all 16 rows, with alternating white stripes and dark asphalt.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4541
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "crosswalk road marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting painted zebra crossing stripes on asphalt ground viewed from above across the full 16x16 area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3743
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "crosswalk road marking (flat ground terrain)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile depicting vertical crosswalk stripes painted on asphalt across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3357
+  }
+ ],
+ "decidedAt": "2026-10-13T14:07:18.839Z",
+ "cells": {
+  "16": [
+   "22e082be604ad384"
+  ],
+  "24": [
+   "297289503e696acf",
+   "576c43515bd878e4",
+   "b1e11f6c1f8399ba",
+   "bca4b42199bc8664",
+   "cb858e859bfbb1aa",
+   "ea67a34dada9b772"
+  ],
+  "32": [
+   "11207f0f70fe3414",
+   "157d5a5b349ac520",
+   "45a252d72e771340",
+   "552905b0b09351e7",
+   "95ebc17dc0ee84d2",
+   "fcf026db0fc3f079"
+  ],
+  "48": [
+   "12ad065fe2d92650",
+   "23dbe318fc680e30",
+   "9ef93df12d816b91",
+   "a697148401cecf7c",
+   "ea7a71b6ce0e50c7",
+   "ef33719eac44c91a"
+  ]
+ }
+}

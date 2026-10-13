@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9697161824e3414dfaae9a086f57c205ce200746dcdd3a51301ce3b47c916743",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "옥상 난간 2칸(콘크리트 윗면 넓게)",
+ "label": "modern-campus/mc-fence-roof",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rooftop railing with concrete base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn in pure 2D front elevation (side-scroller style): the upper handrail is a 1-pixel-tall horizontal line, the posts are flat vertical rectangles with no visible top caps, and the concrete base below is a flat horizontal band with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10854
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rooftop railing / parapet",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn entirely in flat 2D front elevation: the top rail is a 1px line (row 2), the posts are flat vertical rectangles (rows 4-6), and no horizontal top surface or depth is shown in 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10222
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rooftop railing with concrete parapet/base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn in pure 2D front elevation: the top rail is a 1px line at row 2, the balusters are flat 2D rectangles, and the lower concrete band (rows 11-14) shows only its south vertical face with no visible horizontal top surface (0 rows of top depth).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rooftop railing with concrete base",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The railing is drawn in pure 2D front elevation: the top rail is a single 1px white line (row 2), the vertical balusters/posts are flat 2D rectangles (rows 4-6), and the lower concrete base/beam is drawn as a flat vertical band without a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 10900
+  }
+ ],
+ "decidedAt": "2026-10-13T14:21:38.369Z",
+ "cells": {
+  "16": [
+   "63d970a13d470f77",
+   "9608d1a801d70c4a"
+  ],
+  "24": [
+   "0d933fe53ee28a37",
+   "541013a1e521acce",
+   "88808a24288f207f",
+   "b3375a61ff6e9b9c",
+   "c5759f1c03e0ecb9",
+   "ccaa523e48a04604",
+   "cd19445d6afb5801",
+   "d24c466785e36523",
+   "d275dd70a29df53a",
+   "d89f45c1d38f6d8d",
+   "ea95853ce4fefd35",
+   "f1795cc269f94ddb"
+  ],
+  "32": [
+   "3f4be11108cdd454",
+   "62d4550b193630dd"
+  ],
+  "48": [
+   "259e268a8e263bbc",
+   "645ce8179f7ccc86",
+   "887356c08cc1b57a",
+   "ac750bb93f36b90f",
+   "cff425be3d6096f0",
+   "d32550602177f94d"
+  ]
+ }
+}

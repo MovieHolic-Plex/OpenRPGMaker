@@ -1,0 +1,163 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bfd124a2ede7961c9710a3b675244762394b3cacdf0ebdc85cb79b1b71be6853",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "시계탑 초침 프레임2",
+ "label": "modern-campus/mc-clock-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clock tower shaft and upper pavilion/cornice",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tower body and upper structure are drawn in pure front elevation with 0 visible top rows; the only horizontal surface shown is on the separate bottom plinth, which does not qualify for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11169
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock tower structure",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure clearly depicts 3/4 top-down perspective: the overhanging top roof/platform shows a wide top surface (rows 1-12, 12px tall) above its front lip (rows 13-16), with a small 3D feature resting on it. The base plinth also shows a distinct 4px top surface (rows 49-52) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12280
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "clock tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body and top section are drawn in pure front elevation with no visible top surface or roof slope at the top (only a 1px border outline at row 0). A top surface is only depicted on the lower base plinth (rows 48-52), which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10017
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock tower structure (roof terrace, tower shaft, and base)",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure shows horizontal top surfaces in 3/4 perspective: the flat roof terrace at the top spans rows 1-12 (complete with a parapet and a rooftop hatch showing top and front faces), and the projecting base plinth shows a 4-pixel top surface (rows 49-52) in front of the brick shaft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8993
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.137Z",
+ "cells": {
+  "16": [
+   "1bdcba38a8c16280",
+   "2dcf3a500a0bc77e",
+   "3d8a94a0cd960915",
+   "a4bb6b12acb1dd63",
+   "ae613bdf935a64ad",
+   "c13f9d07304be010",
+   "ca0bd6602d0fd6cf",
+   "e6b0c1cb937e839e"
+  ],
+  "24": [
+   "0e140c9888d06c0e",
+   "17b4486c1f5f6938",
+   "189a0597d98c0416",
+   "2429933975fc36a7",
+   "271f9f17e9f7b8ec",
+   "2b86cad644a4a477",
+   "2d3c24e1ebc1ef97",
+   "2f6b759d8e02cb97",
+   "32b937f3ba3e46a0",
+   "393e96193e56eab5",
+   "400a44f24536a0c0",
+   "47a26abe9efb67c0",
+   "5794ae2f51954f06",
+   "5fbad1bc58035aa2",
+   "6471c01f483b96b9",
+   "6eff8a766c61fe47",
+   "8069b4a2c13192f1",
+   "8981828deb16cf6c",
+   "8f587bd0a6b2e363",
+   "95a32ca07348b415",
+   "a9fdada4de83c7a3",
+   "bd259afe02725781",
+   "c073c5c10aec3cdf",
+   "c291edaee22fef59",
+   "d0772ec0b996c996",
+   "da876823c033f4b9",
+   "daf09cc8fab9b2f0",
+   "dbb32715899da4cc",
+   "e19bdcdb46c3c77b",
+   "e5603f15bb29ea4d",
+   "efbc9177fb9e13aa",
+   "f9ae9f23f28a64ec",
+   "fceea2e516c62ea2",
+   "fd0da1c15d91b4bd",
+   "fd6a8b0aab6ceaaa",
+   "fe65089c8477a9c0"
+  ],
+  "32": [
+   "ebd990a6ce4c8a2d",
+   "f88276c20f856e19"
+  ],
+  "48": [
+   "14ecf1ee7a50436a",
+   "36668d0a048347e9",
+   "3eadf182d78ba15f",
+   "41d419e502034b80",
+   "43278deaddda78b5",
+   "518b90c43f685a0d",
+   "87f31661d9c0c1ad",
+   "b0c849ca86cd0401",
+   "b5439b4e09c649e9",
+   "d303d8b8926f9eab",
+   "d591e521c51cee3f",
+   "e137527162878745"
+  ]
+ }
+}

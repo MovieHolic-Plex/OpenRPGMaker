@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7b8d2d79b6765963be3317d0123f7e80eb3e01a50e7b498c589cac4fb5222d9f",
+ "width": 16,
+ "height": 16,
+ "kind": "debris",
+ "name": "벚꽃 낙하 프레임1",
+ "label": "modern-campus/mc-petals-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Small flat pink cherry blossom petals scattered across the tile; appropriately represented as flat ground debris / falling particles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6850
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of scattered pink petals (1-3px each) distributed across the ground plane from row 1 to row 15. Being flat floor debris/particles viewed from above, there is no vertical front elevation or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11234
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "scattered cherry blossom petals",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Scattered flat cherry blossom petals viewed from above on the ground plane. Flat debris correctly lacks vertical elevation and displays as top-down scatter.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10839
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "falling cherry blossom petals",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset depicts animated airborne falling petals (diagonal falling motion streaks) rather than debris lying on the floor. It is a screen-space weather/particle effect without ground perspective or 3/4 top-down volume.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 13467
+  }
+ ],
+ "decidedAt": "2026-10-13T14:17:40.139Z",
+ "cells": {
+  "16": [
+   "75992aa8cf449712"
+  ],
+  "24": [
+   "0222db825e095c88",
+   "68fc4c32a8288aa2",
+   "6ebb1a7bc86bd5bd",
+   "6f7acc3eed5db19c",
+   "a53ca10e05bc796c",
+   "de07f14af4845707"
+  ],
+  "32": [
+   "1420b57b7717842a",
+   "24dda5e8a84f82ca",
+   "2e8e291ba40e2bbe",
+   "38c981231e67ed51",
+   "422bcdf253e42d2f",
+   "cd273ba32405d690"
+  ],
+  "48": [
+   "0ef0dad9598512f8",
+   "2294c1ba0da96093",
+   "43c434c17088f977",
+   "b4f63462279d1602",
+   "cc7ef706ebcd7839",
+   "e5893fab89c9ac1a"
+  ]
+ }
+}

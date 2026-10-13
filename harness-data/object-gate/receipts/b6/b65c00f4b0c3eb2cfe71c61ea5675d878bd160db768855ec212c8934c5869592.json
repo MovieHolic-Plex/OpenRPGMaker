@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b65c00f4b0c3eb2cfe71c61ea5675d878bd160db768855ec212c8934c5869592",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "버스 정류장(지붕 + 뒷 유리판 + 벤치)",
+ "label": "modern-campus/mc-bus-stop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus shelter canopy roof and frame",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canopy roof clearly shows a 9-pixel tall top surface (rows 1-9) above its front edge fascia (rows 10-13). The bench inside also displays a 3-pixel deep horizontal seat surface (rows 25-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5922
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bus stop canopy and bench",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bus shelter shows a clear top surface for its roof canopy spanning rows 1 to 9 above a 4-row front fascia (rows 10-13). The bench underneath also shows a visible 3-row seat surface (rows 25-27) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4452
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bus stop roof and shelter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a large top surface spanning rows 1–10 with a 3px front fascia beneath it (rows 11–13). Additionally, the bench below visibly shows a 3-row top seat surface (rows 25–27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7650
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bus stop shelter roof and bench",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof canopy top surface is clearly visible from rows 1 to 10 above a front eave/fascia at rows 11-13; the interior bench also demonstrates correct 3/4 perspective with 3 rows of top seat surface (rows 25-27) and a south front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6563
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.063Z",
+ "cells": {
+  "16": [
+   "95da1dbe52430906",
+   "a52ca39343cf6465",
+   "bccd27f1d6673a3b",
+   "d99ae9d52c7205a9",
+   "f2864dd67b23bd2c",
+   "fe184e07509cbe58"
+  ],
+  "24": [
+   "065b92837c0c56bb",
+   "12f4ebe31e60726d",
+   "1de39dbafc69adbc",
+   "1eef8754d07407ae",
+   "750b2ed66d8de8ee",
+   "9cc502bd4ae26fcb",
+   "a4d2a3e2c724472c",
+   "affc5e068eebacf8"
+  ],
+  "32": [
+   "1c120862c2265339",
+   "20afff91f0f3512f",
+   "3f372bbac7726570",
+   "673439b37fbeb8a2",
+   "8dea2797ec61a118",
+   "fb03a16a4b459bb8"
+  ],
+  "48": [
+   "3c1a09576507657b",
+   "8c19e0675890f045"
+  ]
+ }
+}

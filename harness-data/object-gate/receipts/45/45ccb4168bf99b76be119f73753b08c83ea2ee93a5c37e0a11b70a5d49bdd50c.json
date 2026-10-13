@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "45ccb4168bf99b76be119f73753b08c83ea2ee93a5c37e0a11b70a5d49bdd50c",
+ "width": 32,
+ "height": 16,
+ "kind": "container",
+ "name": "모래밭(나무 틀 + 모래)",
+ "label": "modern-campus/mc-sandbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden sandbox frame filled with sand",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox is viewed from a 3/4 top-down angle, showing the upper borders of the wooden frame (rows 1-4 back, rows 11-12 front), the interior sand pit (rows 5-10, 6 rows tall), and a short south front face at rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5021
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden sandbox frame filled with sand",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox interior holding sand is clearly visible from above across 6 pixel rows (rows 5 to 10), framed by wooden borders with the south face visible along rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5781
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sandbox with wooden frame",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox shows its interior filled with sand spanning rows 5 to 10 (6 rows tall) inside a wooden frame, viewed from the correct top-down 3/4 angle with front rim and front face visible below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5257
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sandbox filled with sand",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sandbox shows a clearly foreshortened top-down 3/4 perspective with the interior sand bed visible across rows 5-10 (6 rows tall), surrounded by the wooden frame rims and a front face on rows 13-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4673
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.180Z",
+ "cells": {
+  "16": [
+   "a748b82853896be5",
+   "e1c448a7aba8dcf1"
+  ],
+  "24": [
+   "14eaf5add84ba7f6",
+   "18d25ed41bacd833",
+   "35b29a7cc6729e8a",
+   "45b3a0da08a75299",
+   "4903b57a2ab58d4a",
+   "59d37737f54f7bfd",
+   "6232970128d972ec",
+   "7818c5fd3f53ac5d",
+   "a57c2930b9c8072c",
+   "a9454968d0e57d27",
+   "a9850a6560fbc606",
+   "e9787b70769d1bab"
+  ],
+  "32": [
+   "1064f8781dd0eb01",
+   "d826d16898b797d1"
+  ],
+  "48": [
+   "02c82b8c23c344f5",
+   "32b5ff66d3c222cf",
+   "5332bfde8ed98c48",
+   "b84470cfd02a13a9",
+   "d8101a94157bb157",
+   "ee84569815634290"
+  ]
+ }
+}

@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d576d8d156766b777b093b936a431dc8e8f14a43b44c015e636e17b8fd0496a",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "교정 식탁(윗면 판 + 벤치 둘)",
+ "label": "modern-campus/mc-picnic-table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "table top surface and bench",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is clearly viewed from above spanning rows 1-6 (6 rows tall), with a front edge at row 8, followed by a bench surface at rows 10-11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5897
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "table top and bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table top shows a clear top surface spanning rows 1-7 (7 source pixels tall) with a front edge on row 8, followed by a bench with a 3-row top surface (rows 10-12) and front face (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8019
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dining table top and bench",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is clearly seen from above across rows 1-7 (7 source pixel rows), followed by a front edge and bench top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4967
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dining table and bench tops",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main table surface is clearly foreshortened and visible from row 1 to row 7 (approx 7 rows), followed by a 1-row front edge, and an adjacent bench top of 3 rows with its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5417
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:53.179Z",
+ "cells": {
+  "16": [
+   "67a951bd77457667",
+   "86329f1032114672",
+   "a11b3735ca8e0602"
+  ],
+  "24": [
+   "2cad633b7cf00afc",
+   "368810bc9a025d70",
+   "3776737d9ad358e0",
+   "c0d04f8789c6dc78"
+  ],
+  "32": [
+   "06aaaafea72df315",
+   "1ed4187e1b5a83dd",
+   "299b0f5cec996f60",
+   "4ae63d38f226659c",
+   "4fca4583d0780428",
+   "52c9ea7f54ecf80d",
+   "5aee999754b23be2",
+   "66f59665d9e44a9b",
+   "704a69151cd87305",
+   "73075520f48aab1c",
+   "ec0615a628222fb7",
+   "f16b9f0a81bab4ce"
+  ],
+  "48": [
+   "f872a555b2a3d882",
+   "fa6914f2443400a3"
+  ]
+ }
+}

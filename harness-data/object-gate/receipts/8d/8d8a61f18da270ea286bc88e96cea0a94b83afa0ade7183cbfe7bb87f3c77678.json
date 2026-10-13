@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d8a61f18da270ea286bc88e96cea0a94b83afa0ade7183cbfe7bb87f3c77678",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "도서관(벽돌 아치창)",
+ "label": "modern-campus/mc-bld-library",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick building with hipped roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible forward-sloping roof occupying rows 4 to 29 (26 source pixel rows) above the front brick facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6489
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "library building with hipped/pitched roof",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly visible sloping roof surface extending from row 4 to row 29 (26 source pixel rows tall) in typical 3/4 top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5037
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick building with sloped roof",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large south-facing roof slope (rows 5-29, ~25 source pixels tall) showing significant depth in standard RPG Maker top-down 3/4 perspective above the vertical brick facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4597
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick building",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible large roof slope spanning rows 4 to 29, showing proper 3/4 perspective foreshortening above the south facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4331
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:55.500Z",
+ "cells": {
+  "16": [
+   "043dfacbb1ee5970",
+   "1cbb8e5136561d6b",
+   "1cdd4f8af73d50d5",
+   "32c28c83c1706d1e",
+   "4ab5a9357066f3a1",
+   "62445a93766c2d65",
+   "63064e658b58f404",
+   "692647383af74330",
+   "8567a935dc0bb87d",
+   "9a796ce4e8450e46",
+   "a39397b7a1b2c0b9",
+   "af68be512e83f0e2",
+   "cca9ded16e774661",
+   "d13c17a1a82806ea",
+   "d88b3740967807fa",
+   "e2082c03fccaa2ab"
+  ],
+  "24": [
+   "0897c23ef2248149",
+   "12b16c61ec2f0c52",
+   "32bc5d472df1a3ce",
+   "33386e1f832cb576",
+   "3636d3f8e7e4cf0e",
+   "40a1a5b944022170",
+   "4f6e7900a72b1b83",
+   "86318241bbc7cd8f",
+   "97e876b747b6e675",
+   "9ccbc1875913ce41",
+   "9d7a5fe8e3ac64af",
+   "a9594e611b32cddc",
+   "a9f37eebc61531d5",
+   "b0b8e9cb580f9625",
+   "b9c61c74ed6694cd",
+   "ba0127be7703249b",
+   "bf2bbfd0aecf6aa7",
+   "d4f89e8d4002fa83",
+   "e4e9c3469822ea14",
+   "ef10380e1efff995",
+   "f3acfb7936d0a885",
+   "fa6211b62d3929e3"
+  ],
+  "32": [
+   "1029105422b141f1",
+   "33162b987091e530",
+   "42982108a6b03c6e",
+   "4a1bb743e24439f2",
+   "8d14c2535d401b13",
+   "cca463998058e223"
+  ],
+  "48": [
+   "6c5340d363530654",
+   "7d00b3467aff675f",
+   "8eaff7a7b8e26871",
+   "924362d3d281b475",
+   "a4e34056189ee34b",
+   "afe91e2d759aa905",
+   "c9065bffc665e37e",
+   "f115b82a9e86389d"
+  ]
+ }
+}

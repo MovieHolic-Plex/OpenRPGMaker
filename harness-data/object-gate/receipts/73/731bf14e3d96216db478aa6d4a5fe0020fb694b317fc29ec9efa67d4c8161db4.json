@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "731bf14e3d96216db478aa6d4a5fe0020fb694b317fc29ec9efa67d4c8161db4",
+ "width": 32,
+ "height": 48,
+ "kind": "frame",
+ "name": "농구 골대(받침 + 기둥 + 백보드)",
+ "label": "modern-campus/mc-basket-hoop",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "basketball goal (base, pole, rim, and backboard)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire basketball goal is drawn in a flat front elevation. The base, post, and backboard show zero foreshortened top surfaces (top_rows = 0), and the rim at rows 25-26 is rendered as a flat 2-pixel bar rather than an angled hoop/ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6436
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "basketball hoop base and backboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire basketball hoop (base, pole, rim, and backboard) is drawn as a flat 2D front elevation. The base shows no top surface (top_rows=0), and the rim is drawn as a flat 2px horizontal bar without an open ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5231
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "basketball hoop (base, pole, and backboard)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front elevation. The base is an unforeshortened 2D rectangle showing no top surface (0 top rows), and the rim is drawn as a flat 2px horizontal strip rather than an ellipse seen from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4836
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "basketball hoop with backboard, rim, post and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base (rows 38-46), pole (rows 28-36), and rim (rows 25-26) are all drawn as flat orthographic rectangles facing straight forward with no top surfaces visible. The hoop rim is drawn as a flat 2px stripe rather than an ellipse/opening viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4491
+  }
+ ],
+ "decidedAt": "2026-10-13T14:06:48.152Z",
+ "cells": {
+  "16": [
+   "235bac84aba7edce",
+   "299f05319ab77e4e",
+   "4195d520098adc12",
+   "41a8399871082711",
+   "a1d5c99054bf151d",
+   "e28bd10e85e78696"
+  ],
+  "24": [
+   "131a5cd896572e52",
+   "21a923250b1fe71a",
+   "2adc14d2a07d1a19",
+   "39c6b0e6ca1d9121",
+   "3d99fbd6295103da",
+   "615f900c5fabdd0b",
+   "7f292e0c3a2ceeb4",
+   "81575e7d5bfa7d63",
+   "835fbcc14c25b6e1",
+   "9d7a7db7b45c2784",
+   "b91f1be49ad3c589",
+   "db4adc7432ccfd1e"
+  ],
+  "32": [
+   "03331941d52c2d2d",
+   "18dbaf04fe095cf7",
+   "5d8fcfde4c456042",
+   "a6c04f581989d9e3"
+  ],
+  "48": [
+   "37c043258483b42c",
+   "7948097c3791bed6",
+   "7bcd1f1f8371539f"
+  ]
+ }
+}

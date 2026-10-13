@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ca114e7b461c66bd690966d37d4fbf25102024e6c471bc69a3bf8ac87c8334a",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "우체통(빨간 큰 상자 · 넓은 윗면)",
+ "label": "modern-campus/mc-mailbox",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red box body extends directly to row 0 with no visible top surface foreshortened from above. The mail slot on row 6 is rendered on a vertical front face with zero pixel rows allocated to the top of the mailbox.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10396
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "red postbox body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red box body (rows 0–11) with the mail slot at row 6 is drawn in pure front elevation with 0 visible top surface rows, cutting off flat at the top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10397
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "red postbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red body with the mail slot (row 6) is drawn in pure front elevation with no visible top surface foreshortened from above. The top edge ends flat at row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 12560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red mailbox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The red box body spans rows 0 to 11 with the mail slot placed on it at row 6, representing a front-facing elevation with no foreshortened top surface visible above row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10138
+  }
+ ],
+ "decidedAt": "2026-10-13T14:19:05.440Z",
+ "cells": {
+  "16": [
+   "a322bbe56f4c6249"
+  ],
+  "24": [
+   "3de0675d62eabbc9",
+   "80e69e40c8880804",
+   "92b5af456138de52",
+   "a86582f0c3fe3b61",
+   "b7399ed6542f3840",
+   "eba6abf251f1523b"
+  ],
+  "32": [
+   "00efd4fc7cb6f4cc",
+   "6db668e8511ebfd5",
+   "769a818d39ae64c0",
+   "d89278808d665359",
+   "eff941ba0fa4524d",
+   "f65bafe88d3f753b"
+  ],
+  "48": [
+   "0bcc05d976721b7c",
+   "2a8d2493588843a5",
+   "b142b67d4472b1ca",
+   "b34d8e9bb32cc2cb",
+   "ebd5b69936658172",
+   "f92d74aa2eddffb8"
+  ]
+ }
+}

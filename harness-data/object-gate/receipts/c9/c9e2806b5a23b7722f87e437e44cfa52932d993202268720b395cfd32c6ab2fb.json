@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c9e2806b5a23b7722f87e437e44cfa52932d993202268720b395cfd32c6ab2fb",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "콘크리트 담 2칸(두꺼운 갓돌 윗면 + 앞면)",
+ "label": "modern-campus/mc-wall-conc",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete wall coping and front wall face",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall coping is drawn with 9 pixel rows of depth (rows 4-12), followed by a 4-pixel coping front overhang (rows 13-16) and the south wall face below (rows 17-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7361
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete wall with coping stone",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the coping stone is clearly visible from row 4 to row 12 (9 rows tall) above the wall front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6559
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "concrete wall coping and wall face",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the coping stone spans rows 4 through 12 (approx. 9 pixel rows) with visible horizontal depth before transitioning to the front lip (rows 14-16) and south-facing wall (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6117
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "concrete wall with coping stone",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wall's thick coping stone is prominently visible across rows 3-12 (10 pixel rows tall), above its front edge (rows 13-16) and the vertical wall face (rows 17-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6156
+  }
+ ],
+ "decidedAt": "2026-10-13T14:11:58.022Z",
+ "cells": {
+  "16": [
+   "3875ff702a938f9f",
+   "4cd9f4c1ef6cb416",
+   "651a3f6c77c505a9",
+   "d34d57c4f5d1bf27"
+  ],
+  "24": [
+   "05693f3918f5496a",
+   "12f1c8c3bc00388c",
+   "16134fcbe8c999ae",
+   "17736ce69d5c266b",
+   "29c021785a59757e",
+   "2d67996fd828a943",
+   "2fded5338b41f0d9",
+   "3d2f071915d36ccb",
+   "416be832a08f0178",
+   "66b860c7bafd89d1",
+   "77f14d2cb7dc6c6d",
+   "798c6a56bb44faad",
+   "7bee229eba1e0561",
+   "7f80ad884f327706",
+   "8bf80cb9284c8d67",
+   "90cdb9bd0612f23d",
+   "9322cfca07387a0b",
+   "98a0be1ef4cf642b",
+   "9a87a0d1c49642d7",
+   "a00abf0bd7858843",
+   "aaa95fa3f5efe5d5",
+   "cc13ddb2648ce86f",
+   "dfaa6e0ac079b89b",
+   "ef75020c9e371932"
+  ],
+  "32": [
+   "00872118f068df39"
+  ],
+  "48": [
+   "0bb8d458c95da419",
+   "48a13729263d4b45",
+   "5af166574eefd514",
+   "8b04556e1b7d12fa",
+   "c6a64d47bf54c431",
+   "f5c1f7a5d38b29b2"
+  ]
+ }
+}

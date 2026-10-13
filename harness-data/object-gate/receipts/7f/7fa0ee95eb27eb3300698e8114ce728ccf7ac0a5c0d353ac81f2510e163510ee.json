@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7fa0ee95eb27eb3300698e8114ce728ccf7ac0a5c0d353ac81f2510e163510ee",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "식당(1층 + 환기탑)",
+ "label": "modern-campus/mc-bld-cafeteria",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "restaurant building with rooftop ventilation units and 1st floor facade",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large, clearly visible horizontal roof plane spanning rows 12 to 41 (approx. 30 source pixel rows) upon which rooftop ventilation units and a roof door housing sit, each also showing top surfaces, above the south-facing ground floor facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6056
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "single-story building with rooftop deck and ventilation units",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building properly presents a 3/4 view with a fully visible rooftop deck surface spanning roughly rows 12-42 (approx 30 source pixel rows) above the south-facing front ground floor wall, complete with an awning that also clearly shows its top surface (rows 46-50).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6355
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "one-story building with flat roof and rooftop units",
+    "kind_matches": true,
+    "top_rows": 28,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building shows a large horizontal roof surface spanning rows 14-41 (approx 28 pixel rows) viewed from above in 3/4 perspective, with rooftop equipment and an entrance canopy that also displays a 4px top surface (rows 46-49).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6998
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "single-story building with flat rooftop and ventilation equipment",
+    "kind_matches": true,
+    "top_rows": 30,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large rooftop surface extending from row 12 to row 42 (approx. 30 rows tall) containing ventilation units, positioned above the south-facing ground floor facade (rows 46-62), correctly following 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5261
+  }
+ ],
+ "decidedAt": "2026-10-13T14:08:55.501Z",
+ "cells": {
+  "16": [
+   "17f81cb14f60a510",
+   "1e7a3e4b5e5fc48f",
+   "3c06b3fd82201802",
+   "3cf6d93e7929ea15",
+   "4179a1899fe401ce",
+   "44bb5c8a103187b0",
+   "47fbaec3c8afd213",
+   "4f54bf83a2cff43e",
+   "5a673a98494038c2",
+   "63709a848c4f8278",
+   "640a15e4e7c06421",
+   "7661cb5d6af8a5b0",
+   "7cfaba830eb9dc0c",
+   "84d056b687922924",
+   "9cafc1477f4cdca2",
+   "9ec17400c5f6475d",
+   "a92a40491c9d8adb",
+   "abee1832620a2bab",
+   "b25483c34346ccdd",
+   "c04e03799ed33f70",
+   "d1b9761a85ed7f4b",
+   "eb6b9d489d3b52ab"
+  ],
+  "24": [
+   "10e6f6345c43068a",
+   "1e12080db146b6c3",
+   "3d3db900b51fd738",
+   "3e30954ab629e297",
+   "52003ed21c0394e4",
+   "559b4aa082bcd534",
+   "5ace9d32f079e6fc",
+   "709003580565f11c",
+   "733ab11f12c4b732",
+   "7685fca703508760",
+   "84987c23715e15ba",
+   "85bac2a6d0e17e5c",
+   "91514f31b4157d42",
+   "a019795214e77f0b",
+   "a4e8ed141dc4da85",
+   "a7f6e4bea6a43ae5",
+   "a967a929f8b012ab",
+   "b4e8c53bab5a4cd1",
+   "c075432816229154",
+   "c10f75316c9e675a",
+   "c8b81f4b2e46e198",
+   "d12765f1665f03ee",
+   "f4391a5be0de05d2",
+   "f8d30e75933b3808"
+  ],
+  "32": [
+   "60de171b72ccac21",
+   "7df8f617c57c6b52",
+   "8bac104a161c423f",
+   "ac664118c45edef6",
+   "ced51e14acf1a49f",
+   "ddab85eb76e087c2"
+  ],
+  "48": [
+   "04e25c812c2191e4",
+   "18bb8fe803ddb57a",
+   "3f69b74d5a321c4e",
+   "51cc6be661fa7db8",
+   "6e68d75dc8d1fee7",
+   "84018a167a6a9490",
+   "d3d35bb01a536364",
+   "e584faefe9ec6be9"
+  ]
+ }
+}

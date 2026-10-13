@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48312bba06af941045b4418e49242bbf19aec4f1b4140cf79f8cca63856f6f05",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "시계탑(벽돌 몸통 + 시계판 + 기와 지붕)",
+ "label": "modern-campus/mc-clock-tower",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick clock tower with roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The roof and the main brick tower are drawn in flat front elevation with no visible top slope or top surface. The roof shows a straight horizontal top outline at row 0 and a darkened underside/soffit at rows 10-13, as if viewed from below or straight-on rather than from above. Although the base plinth shows 3 rows of top surface (rows 49-51), plinths cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8857
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "clock tower shaft and roof",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tower body and roof are drawn in pure front elevation with no visible top surface or roof slope (the roof even displays a visible underside overhang at rows 10-13). The only visible top surface is on the base plinth (rows 49-52), which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10760
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick clock tower shaft and upper roof section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tower body and upper roof/eave section are drawn in pure front elevation with no visible top slope or horizontal surface on the main volume. Only the bottom plinth/base shows a top surface, which cannot substitute for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8226
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clock tower shaft and upper roof/pediment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire clock tower is drawn in pure front elevation: the clock face and brick shaft are viewed completely straight-on with no top surface, and the upper section is drawn as a flat vertical rectangle with lower eaves rather than showing any visible top roof slope. The only horizontal surface depicted is on the bottom base plinth (rows 49-52), which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11090
+  }
+ ],
+ "decidedAt": "2026-10-13T14:03:16.060Z",
+ "cells": {
+  "16": [
+   "3d8a94a0cd960915",
+   "5af648f7de924df7",
+   "8e144ab1d86acaad",
+   "9f23bab578f88441",
+   "ae613bdf935a64ad",
+   "c13f9d07304be010",
+   "e6b0c1cb937e839e",
+   "f07c61aecfee8849"
+  ],
+  "24": [
+   "0d8e315576729bf0",
+   "189a0597d98c0416",
+   "271f9f17e9f7b8ec",
+   "2a7f67ded49e9412",
+   "2d3c24e1ebc1ef97",
+   "308077ffb2c182bd",
+   "32b937f3ba3e46a0",
+   "47a26abe9efb67c0",
+   "54c421bb78f469fa",
+   "5fbad1bc58035aa2",
+   "6086da2fe55bfb43",
+   "6eff8a766c61fe47",
+   "6f0fca04f5928d3a",
+   "780e3b9158a21bad",
+   "7d43976bc92b3117",
+   "8f587bd0a6b2e363",
+   "9124a19984b225f2",
+   "c073c5c10aec3cdf",
+   "d09eba4b01b89a72",
+   "d683513e8e700da5",
+   "d87c22b75e25da3f",
+   "daf09cc8fab9b2f0",
+   "dc86903d8901cc3d",
+   "de568ab4396d6875",
+   "e17be6806c6db92b",
+   "e54f19c894b249c1",
+   "e5603f15bb29ea4d",
+   "e746280523fb1c8f",
+   "eb6a2004be958580",
+   "efbc9177fb9e13aa",
+   "f0113daba1810712",
+   "f580052aed57f34d",
+   "f69dbfd0e8b23073",
+   "f942de648bcc7e16",
+   "fd6a8b0aab6ceaaa",
+   "fe65089c8477a9c0"
+  ],
+  "32": [
+   "13f41cbb74c79941",
+   "f88276c20f856e19"
+  ],
+  "48": [
+   "201a75e02f9e7741",
+   "2e79986ada35f923",
+   "2ed3967f97520fa6",
+   "36668d0a048347e9",
+   "518b90c43f685a0d",
+   "58bf31a8651ab4ed",
+   "61162fc39ab290b4",
+   "87f31661d9c0c1ad",
+   "c1558176e55901ba",
+   "cdbc51f78826efb4",
+   "e73dc318f79c3920",
+   "f87d2afc1f5f73bc"
+  ]
+ }
+}
