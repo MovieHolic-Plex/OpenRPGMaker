@@ -125,9 +125,9 @@ export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 1.55×(30k), 실제 Pi 런은 중앙값 기준 1.28~1.36×.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
 // 옛 blob 은 기본 제공자(Antigravity)로 읽히므로 이 상수가 그 blob 의 모델 기본값이기도 하다.
-export const DEFAULT_MODEL = "gemini-3.8-flash";
+export const DEFAULT_MODEL = "gemini-4-argon";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "gemini-3.8-flash";
+export const DEFAULT_LITE_MODEL = "gemini-4-argon";
 // 추론 토큰을 먼저 쓰는 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 소비되고
 // content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion 13토큰
 // 소비, 512 → 정상). 그래서 출력 예산을 넉넉히 잡는다.
@@ -143,13 +143,11 @@ const LEGACY_DEFAULT_MAX_TOKENS = new Set([2048, 10240, 32768]);
 const LEGACY_DEFAULT_MAX_TOOL_CALLS = new Set([200]);
 
 /**
- * 옛 공장 기본 모델. 2026-09-26 에 기본을 3.7-flash → 3.8-flash 로 옮길 때 상수·카탈로그만
- * 바뀌고 **저장된 설정에는 적용되지 않아**, 이미 저장된 사용자는 3.7 에 그대로 남았다
- * (loadAiConfig 는 저장값을 존중하고, 예전 방식만 소급 승격했다). 그래서 그 옛 공장 기본만
- * 새 기본으로 소급한다 — 사용자가 직접 고른 다른 모델(`gemini-9-...`·`glm-5.3` 등)은
- * 손대지 않는다.
+ * 옛 공장 기본 모델. 2026-09-26 에 기본을 3.7-flash → 3.8-flash 로, 2026-10-14 에 3.8-flash → 4-argon 으로
+ * 옮길 때 이미 저장된 설정이 옛 공장 기본에 그대로 남지 않도록 소급 승격한다 — 사용자가 직접 고른
+ * 다른 모델(`gemini-9-...`·`glm-5.3` 등)은 손대지 않는다.
  */
-const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tiered"]);
+const LEGACY_FACTORY_MODELS = new Set(["gemini-3.7-flash", "gemini-3.7-flash-tiered", "gemini-3.8-flash"]);
 
 /**
  * Codex 의 옛 공장 기본(gpt-5.6-sol). 2026-10-07 에 기본을 gpt-6.1-sol 로 올렸다 — 같은 날 조수 시험에서
@@ -167,7 +165,7 @@ function promoteLegacyFactoryModel(model: string, providerId: string): string {
 
 function promoteLegacyRoleModels(roles: SpecialistModels): SpecialistModels {
   const result: SpecialistModels = {};
-  for (const role of ["vision", "writer", "deep"] as const) {
+  for (const role of ["vision", "writer", "deep", "build"] as const) {
     const entry = roles[role];
     if (!entry) continue;
     result[role] = { ...entry, model: promoteLegacyFactoryModel(entry.model, entry.provider) };

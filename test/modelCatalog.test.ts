@@ -44,13 +44,13 @@ const CODEX_SUPPORTED = [
 ];
 
 describe("modelCatalog — 두 제공자만 해석한다", () => {
-  it("Antigravity 목록은 pi-catalog 와 같고 첫 항목이 gemini-3.8-flash 다", async () => {
+  it("Antigravity 목록은 pi-catalog + 로컬 확장과 같고 첫 항목이 gemini-4-argon 이다", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
 
-    expect([...models].sort()).toEqual([...ANTIGRAVITY_BUNDLED, "gemini-3.8-flash"].sort());
-    expect(models[0]).toBe("gemini-3.8-flash");
-    expect(defaultModelForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID)).toBe("gemini-3.8-flash");
+    expect([...models].sort()).toEqual([...ANTIGRAVITY_BUNDLED, "gemini-4-argon", "gemini-3.8-flash"].sort());
+    expect(models[0]).toBe("gemini-4-argon");
+    expect(defaultModelForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID)).toBe("gemini-4-argon");
     // `-high` 는 목록에 없다 — Cloud Code Assist 가 404 로 거부하는 ID 다(실측 2026-08-26).
     expect(models).not.toContain("gemini-3.7-flash-high");
   });
@@ -86,8 +86,8 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
 
   it("모르는 제공자 id 는 기본 제공자(Antigravity) 카탈로그로 떨어진다", async () => {
     const { modelCatalogForAuthMode } = await loadCatalog();
-    expect(modelCatalogForAuthMode("chatgpt", "zai")[0]?.models[0]).toBe("gemini-3.8-flash");
-    expect(modelCatalogForAuthMode("chatgpt")[0]?.models[0]).toBe("gemini-3.8-flash");
+    expect(modelCatalogForAuthMode("chatgpt", "zai")[0]?.models[0]).toBe("gemini-4-argon");
+    expect(modelCatalogForAuthMode("chatgpt")[0]?.models[0]).toBe("gemini-4-argon");
   });
 });
 
@@ -124,11 +124,12 @@ describe("isModelValidForAuthMode — 선택된 제공자 기준", () => {
     expect(isModelValidForAuthMode("chatgpt", "gemini-9-experimental", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 
-  it("Gemini 3.8 Flash is selectable through the verified local catalog extension", async () => {
+  it("Gemini 4 Argon and 3.8 Flash are selectable through the verified local catalog extension", async () => {
     const { isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     const models = modelCatalogForAuthMode("chatgpt", ANTIGRAVITY_PROVIDER_ID).flatMap((g) => g.models);
+    expect(models).toContain("gemini-4-argon");
     expect(models).toContain("gemini-3.8-flash");
-    // OAuth wire verified 2026-09-14; selection is preserved end to end.
+    expect(isModelValidForAuthMode("chatgpt", "gemini-4-argon", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
     expect(isModelValidForAuthMode("chatgpt", "gemini-3.8-flash", ANTIGRAVITY_PROVIDER_ID)).toBe(true);
   });
 

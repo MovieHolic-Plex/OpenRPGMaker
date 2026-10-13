@@ -1249,7 +1249,7 @@ without role selections retain their prior behavior.
 **Build(시공) 역할 (2026-10-08).** 실행 모델을 일의 종류로 나눈다. `src/ai/buildRole.ts` 의 `executionRoleFor(task, initialToolNames)` 가
 장르 프리셋 기획(게임 전체 짓기)이거나 첫 노출 도구 중 tile·world 영역 또는 map 쓰기 도구가 있으면 `build`, 아니면 `deep` 을 고르고
 `runPiCommand` 가 그 역할 모델로 실행한다(`roleModels.build` 가 없으면 `deep` 과 같다 — 옛 설정은 동작이 그대로다).
-ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-3.8-flash` 로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
+ChatGPT 계정을 연결하면 작문과 같이 시공도 `gemini-4-argon` 으로 채운다(`providerSelection.ts` `BUILD_FOR_PROVIDER`).
 설정 모달 「역할별 모델 직접 지정」에 「시공」 행이 있고, 시공 행이 실행 행과 같으면 저장하지 않는다(비우면 실행 모델을 따른다).
 근거: 장르 시험에서 같은 기획 전체 짓기가 Gemini 10분·자동 플레이 끝까지 통과, GPT 50분·보스 스위치에서 막힘. 작은 수정은 GPT 12/12·Gemini 11/12.
 판정은 Pi 워커의 `spatialWork`(지시문의 공간 줄을 싣는 판정)와 같지만, 도구 목록이 없을 때 지시문은 싣고 모델은 바꾸지 않는다. 스튜디오 레인(`aiLaneManager`)은 아직 deep 이다.
@@ -1325,14 +1325,14 @@ A/B(맵 id 해시로 자리 고정 섞기)로 보여 주고 `{"winner":"A"|"B"|"
 카드를 유지한다. 회귀: `test/ultrabrainReview.test.ts`(재시도·정확한 사유·재시도 안 하는 취소).
 
 AI settings exposes five role sections, including **Ultrabrain · 계획과 최종 판단**.
-`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-3.8-flash` / `high`.
+`ultrabrainConfig.ts` defaults to Google Antigravity / `gemini-4-argon` / `high` (migrated from `gemini-3.8-flash` on 2026-10-14).
 Writer model/provider changes and the autonomy dial do not overwrite it. These preferences
 live in `oprn:ai-config`, not the project database. No new credential store is used.
 
 The old 2026-09-10 claim that catalog absence proves Gemini 3.8 is unavailable is obsolete.
-OMP 17.4's bundled catalog is still missing it, but direct OAuth wire `gemini-3.8-flash-high`
-with `thinkingLevel: HIGH` returned OK on 2026-09-14. `scripts/lib/ohMyPiModel.ts` provides a
-narrow compatibility entry using 3.7's transport metadata until upstream includes 3.8.
+OMP 17.4's bundled catalog is still missing Gemini 3.8 Flash and Gemini 4 Argon, but direct OAuth wire `gemini-4-argon-{low,medium,high}` (2026-10-14) and `gemini-3.8-flash-high` (2026-09-14)
+with `thinkingLevel` returned OK. `scripts/lib/ohMyPiModel.ts` provides
+compatibility entries using 3.7's transport metadata until upstream includes them.
 Both Pi and completion use this exact resolver. Unknown explicit IDs now fail instead of
 silently changing models; `loadAiConfig` also preserves explicit IDs. Completion uses
 `completeSimple` and maps the envelope's reasoning effort and output limit into SDK options,
