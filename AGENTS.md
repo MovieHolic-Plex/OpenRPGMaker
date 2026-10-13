@@ -200,6 +200,7 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 - 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
 - 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
 - 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
+- **부품 예외:** 건물의 일부라 윗면을 혼자 보일 수 없는 부품(예: 1층 상가 띠 `jp-sf-*`)은 윗면 면제가 아니라, 그 부품을 화소 그대로 품은 **조립 건물** 그림의 영수증(kind `structure`, 같은 판정자·기준)으로 관문을 거친다. 부품을 한 화소라도 다시 그리면 덮임이 풀린다(`scripts/content/jp-city/gate_assembled.py`).
 
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 
