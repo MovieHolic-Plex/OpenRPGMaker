@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.201.0 — 2026-10-13
+
+### 기능
+
+- **jp-city** — high-rise towers, wall-attached Japanese street props (#2482) (`84d9ad4`)
+
 ## 0.200.3 — 2026-10-13
 
 ### 수정
