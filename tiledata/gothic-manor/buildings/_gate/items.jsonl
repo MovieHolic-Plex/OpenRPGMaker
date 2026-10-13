@@ -1,0 +1,15 @@
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-manor2.png", "kind": "structure", "name": "저택(2층 · 슬레이트 寄棟 · 굴뚝 둘)", "label": "gothic-manor/gx-bld-manor2"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-manor3.png", "kind": "structure", "name": "저택(3층 · 뾰족 중앙 탑)", "label": "gothic-manor/gx-bld-manor3"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-manor-ruin.png", "kind": "structure", "name": "폐저택(무너진 지붕 · 덩굴)", "label": "gothic-manor/gx-bld-manor-ruin"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-chapel.png", "kind": "structure", "name": "예배당(좁은 박공 · 뾰족 창 · 작은 탑)", "label": "gothic-manor/gx-bld-chapel"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-mausoleum.png", "kind": "structure", "name": "묘소(돌 지붕 · 철문)", "label": "gothic-manor/gx-bld-mausoleum"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-belltower.png", "kind": "structure", "name": "종탑(피라미드 첨탑 + 아가리 아치)", "label": "gothic-manor/gx-bld-belltower"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-gatehouse.png", "kind": "structure", "name": "정문(석조 문루 + 철제 양개 문)", "label": "gothic-manor/gx-bld-gatehouse"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-irongate.png", "kind": "structure", "name": "철문(철창 양개 · 석주 둘, 얕은 윗면)", "label": "gothic-manor/gx-bld-irongate"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-orphanage.png", "kind": "structure", "name": "고아원(붉은 벽돌 3층 · 긴 지붕)", "label": "gothic-manor/gx-bld-orphanage"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-asylum.png", "kind": "structure", "name": "요양소(창살 창 · 긴 벽돌 병동)", "label": "gothic-manor/gx-bld-asylum"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-greenhouse.png", "kind": "structure", "name": "온실(철 뼈대 유리 지붕 · 죽은 식물)", "label": "gothic-manor/gx-bld-greenhouse"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-shed.png", "kind": "structure", "name": "창고(낮은 나무 판벽 + 슬레이트)", "label": "gothic-manor/gx-bld-shed"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-carriage.png", "kind": "structure", "name": "마차고(넓은 문 · 낮은 지붕)", "label": "gothic-manor/gx-bld-carriage"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-castle-wall.png", "kind": "structure", "name": "폐성 성벽(총안 + 걷는 윗면)", "label": "gothic-manor/gx-bld-castle-wall"}
+{"png": "/home/main/z-project/rpg-zzu-gothic-out/tiledata/gothic-manor/buildings/_gate/gx-bld-castle-tower.png", "kind": "structure", "name": "폐성 탑(네모 · 총안 · 윗면 슬래브)", "label": "gothic-manor/gx-bld-castle-tower"}
