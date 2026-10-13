@@ -124,10 +124,11 @@ export function formatSkyIslandNote(target: SkyIslandTarget, targetMap: { id: st
     ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 하늘섬 칩셋이고 비어 있다 → 이 맵에 compose_sky_island_map({mapId:"${target.mapId}", style:"${target.style}", seed}) 를 부른다(작으면 도구가 늘린다).`
     : target.mapId
       ? `지금 맵 '${target.mapId}' 는 하늘섬 칩셋이고 이미 내용이 있다 → 다시 짜려면 compose_sky_island_map({replace:true}) 를, 더하기만 하려면 list_tileset_objects → stamp_tileset_object 로 빈 풀에 더한다(기존 칸을 지우지 않는다).`
-      : `하늘섬 맵이 아직 없다 → create_map({name, width:50, height:34, tilesetId:"sky_island"}) 로 새 맵을 만들고 compose_sky_island_map({style:"${target.style}", seed}) 를 부른다. 지금 보는 맵이 다른 계열이면 실행기가 거부한다 — 그때는 칠하지 말고 ask_tileset_change(toTilesetId:"sky_island", reason) 로 사용자에게 견본을 보이고 이 턴을 끝낸다.`;
+      : `하늘섬 맵이 아직 없다 → create_map({name, width:50, height:34, tilesetId:"sky_island"}) 로 새 맵을 만들고 compose_sky_island_map({style:"${target.style}", seed}) 를 부른다. 먼저 묻지 않는다 — create_map 이 «계열이 다르다»로 거부됐을 때만 칠하지 말고 ask_tileset_change(toTilesetId:"sky_island", reason) 로 견본을 보이고 이 턴을 끝낸다(빈 시작 맵에서는 거부되지 않는다).`;
   return [
     `[하늘섬 시공 — 하늘섬 칩셋] 이 요청의 칩셋은 번들 하늘섬 칩셋(sky_island)이다. 문장에서 읽은 구성은 ${STYLE_KO[target.style]}(style "${target.style}")이다 — 요청이 다른 것을 말하면 그쪽을 고른다. author_beodeul_town·다른 칩셋 도구는 쓰지 않는다.`,
     where,
+    "키트 id 는 list_tileset_objects 결과에 있는 것만 쓴다(없는 id 를 지어 부르지 않는다). 구성 결과는 이미 채워져 있다 — 더할 때는 빈 풀 덩이에 한두 개, 건물 둘레 1칸·길 옆 칸은 비운다.",
     "순서: compose_sky_island_map 한 번 → 결과를 읽고(건물·다리·쓰임 구역) → 필요하면 건물 실내를 새 맵에 compose_sky_island_map(style:\"room-…\") 로 짓고 link_sky_island_interior 로 문과 잇는다 → 사람·이벤트는 섬 안쪽 길·광장에 → check_reachability. 낱칸 번호로 섬·하늘을 칠하지 않는다.",
   ].join("\n");
 }

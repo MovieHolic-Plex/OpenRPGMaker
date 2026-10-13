@@ -625,10 +625,12 @@ function composeVillage(b: Board, rng: () => number): SkyCell {
   const aEdgeX = flip ? ax : ax + aw - 1, bEdgeX = flip ? bx + bw - 1 : bx;
   b.ropeH(Math.min(aEdgeX, bEdgeX), Math.max(aEdgeX, bEdgeX), pr);
   b.hpath(bx + 1, bx + bw - 2, pr);
-  const tower = b.kitOf("si-tower-house");
+  // 작은 섬은 별 보는 섬 — 본섬 집 줄에 돌탑 집이 이미 있어 같은 건물을 두 번 두지 않는다(조수 r1 지적).
+  const isleId = placed.some((p) => p.kit === "si-tower-house") ? "si-observatory" : "si-tower-house";
+  const tower = b.kitOf(isleId);
   const tx = bx + Math.floor((bw - tower.width) / 2);
-  const tw = b.building("si-tower-house", tx, pr - 1 - tower.height, 1);
-  if (tw) b.connect(tw); else b.notes.push("망루 섬 탑 자리가 없다");
+  const tw = b.building(isleId, tx, pr - 1 - tower.height, 1);
+  if (tw) b.connect(tw); else b.notes.push("작은 섬 건물 자리가 없다");
   b.lampNear(flip ? bx + bw - 2 : bx + 1, pr);
   b.prop("si-bench", bx + Math.floor(bw / 2) - 1, pr + 2, 0);
   b.grove(rng, flip ? bx + 1 : bx + bw - 3, pr + 1, 1, ["si-tree-young", "si-tree-round"]);
@@ -886,7 +888,9 @@ const ROOM: Readonly<Record<SkyRoomStyle, { w: number; h: number; floor: string;
     furn: (b, x0, y0, w, h) => {
       const cx = x0 + Math.floor(w / 2);
       b.prop("si-altar", cx - 1, y0 - 1, 0, F, FW);
-      for (let y = y0 + 3; y < y0 + h; y += 2) b.prop("si-rug-long", cx, y, 0, ["floor", "deck"], ["floor", "deck"]);
+      // 긴 깔개는 공물 앞에서 출구 바로 위까지 끊김 없이(조수 r1 지적) — 출구 통로 예약 칸도 걷는 깔개는 덮어도 된다.
+      const rug = b.kitOf("si-rug-long");
+      for (let y = y0 + 2; y + 1 <= y0 + h - 1; y += 2) { b.stamp(rug, cx, y, "floor"); b.props.push({ kit: "si-rug-long", x: cx, y }); b.reserve({ x: cx, y, w: 1, h: 2 }); }
       b.prop("si-offering", cx, y0 + 1, 0, ["floor", "deck"]);
       b.prop("si-cushion", cx - 2, y0 + 2, 0, F); b.prop("si-cushion", cx + 2, y0 + 2, 0, F);
       b.prop("si-incense", cx - 3, y0, 0, F); b.prop("si-incense", cx + 3, y0, 0, F);
