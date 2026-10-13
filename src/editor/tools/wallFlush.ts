@@ -82,7 +82,13 @@ export function expandCellsAgainstWalls(
       const key = `${gx},${gy}`;
       if (keys.has(key)) continue;
       if (!inMapBounds(map, gx, gy) || !isPassable(project, map, gx, gy)) continue;
-      if (!isInMapWall(project, map, gx + dir.x, gy + dir.y)) continue;
+      const wx = gx + dir.x;
+      const wy = gy + dir.y;
+      if (!isInMapWall(project, map, wx, wy)) continue;
+      // 벽은 이어진 줄이다. 혼자 선 나무·통·기둥 하나는 벽이 아니다 — 그 앞 한 칸을 메우면 선택한 사각형 밖에 혹이 자란다
+      // (실측 2026-10-13: 4×2 흙 칠하기가 길목의 나무 앞 한 칸을 더 칠했다).
+      const along = dir.x === 0 ? [{ x: 1, y: 0 }, { x: -1, y: 0 }] : [{ x: 0, y: 1 }, { x: 0, y: -1 }];
+      if (!along.some((step) => isInMapWall(project, map, wx + step.x, wy + step.y))) continue;
       keys.add(key);
       extra.push({ x: gx, y: gy });
     }

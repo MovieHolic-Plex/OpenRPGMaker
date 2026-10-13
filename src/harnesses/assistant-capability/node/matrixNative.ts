@@ -139,6 +139,13 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         }, { select: setup.select ? toSelection(setup.select) : null, event: setup.event ?? null });
         events = await sendTurn(page, command.prompt, timeoutMs);
         await saveThroughUi(page);
+        // Reviewers must see which command this screen answers: bring the user's bubble to the top of the chat, keep the end-of-chat view as well.
+        await page.screenshot({ path: resolve(dir, 'after-chat-end.png') });
+        await page.evaluate((text: string) => {
+          const leaves = [...document.querySelectorAll('*')].filter(node => node.children.length === 0 && (node.textContent ?? '').trim() === text);
+          leaves[leaves.length - 1]?.scrollIntoView({ block: 'start' });
+        }, command.prompt);
+        await page.waitForTimeout(400);
         await page.screenshot({ path: resolve(dir, 'after.png') });
         const applied = stored(projectDir);
         writeFileSync(resolve(dir, 'after.json'), JSON.stringify(applied.project));

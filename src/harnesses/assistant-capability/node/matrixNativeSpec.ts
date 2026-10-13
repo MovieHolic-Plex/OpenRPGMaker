@@ -250,6 +250,8 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const said = coordinatesIn(answer).filter(c => inside(AREA.trees, c.x, c.y));
       const hit = truth.filter(cell => said.some(c => c.x === cell.x && c.y === cell.y)).length;
       const spurious = said.filter(c => !truth.some(cell => cell.x === c.x && cell.y === c.y)).length;
+      const stated = /총\s*(\d+)\s*칸/u.exec(answer);
+      if (stated && Number(stated[1]) !== truth.length) return fail(`답이 총 ${stated[1]}칸이라 했지만 실제는 ${truth.length}칸이다`);
       return hit >= Math.ceil(truth.length * 0.7) && spurious <= Math.max(1, Math.floor(truth.length * 0.2))
         ? pass(`통행 불가 ${truth.length}칸 중 ${hit}칸 보고`) : fail(`통행 불가 ${truth.length}칸 중 ${hit}칸만 맞고 틀린 좌표 ${spurious}개`);
     });
@@ -258,13 +260,18 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const named = events.filter(event => mentions(answer, event.id) || (event.name && answer.includes(event.name)) || (event.pages ?? []).some((page: any) => page.name && answer.includes(page.name)));
       return named.length >= events.length - 1 ? pass(`이벤트 ${events.length}개 중 ${named.length}개 나열`) : fail(`이벤트 ${events.length}개 중 ${named.length}개만 나열`);
     });
-    case 'region-preview': return readOnly(input, id, () => called(tools, 'show_map_region') ? pass('영역 미리보기 호출') : fail('show_map_region 호출이 없다'));
+    case 'region-preview': return readOnly(input, id, () => {
+      if (!called(tools, 'show_map_region')) return fail('show_map_region 호출이 없다');
+      // The preview text must not hide what is really there: a tree in the region is an obstacle, not "decoration".
+      const blocked = blockedCells(before, { x: 8, y: 4, w: 5, h: 5 });
+      return !blocked.length || mentions(answer, '나무', '통행', '장애', '막') ? pass('영역 미리보기 호출, 막힌 칸을 언급') : fail('영역 안의 막힌 칸(나무)을 말하지 않았다');
+    });
     case 'paint-dirt': {
       const cells = changedCells(before, after);
       const rect = AREA.dirt;
       if (!cells.length) return fail('바뀐 칸이 없다');
-      // An auto-connected material recomputes its neighbours' edge shapes, so the ring around the area may legitimately change.
-      if (!cells.every(c => inside({ x: rect.x - 1, y: rect.y - 1, w: rect.w + 2, h: rect.h + 2 }, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
+      // The product must paint exactly the selected rectangle: a visual review found a one-cell stub growing outside it.
+      if (!cells.every(c => inside(rect, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
       const all = Array.from({ length: rect.w * rect.h }, (_, i) => ({ x: rect.x + (i % rect.w), y: rect.y + Math.floor(i / rect.w) }));
       if (!all.every(c => tileAt(before, 'lowerTiles', c.x, c.y) !== tileAt(after, 'lowerTiles', c.x, c.y))) return fail('선택 영역의 일부 칸이 바닥으로 바뀌지 않았다');
       if (!sameExcept(before, after, withoutTiles)) return fail('타일 밖 내용이 바뀌었다');
@@ -347,6 +354,7 @@ export function judge(id: string, input: JudgeInput): Verdict {
     case 'change-first-line': return eventEdit(input, NPC, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
       if (now[0]?.kind !== 'text' || !now[0].body?.trim() || now[0].body === was[0].body) return fail('첫 대사가 바뀌지 않았다');
+      if (now[0].speaker !== was[0].speaker) return fail('요청하지 않은 화자(speaker)가 바뀌었다');
       return isDeepStrictEqual(kinds(now), kinds(was)) && isDeepStrictEqual(now.slice(1), was.slice(1)) ? pass('첫 대사만 교체') : fail('첫 대사 밖의 명령이 바뀌었다');
     });
     case 'add-switch-condition': return eventEdit(input, NPC, (b, a) => {
@@ -497,7 +505,10 @@ export function judge(id: string, input: JudgeInput): Verdict {
       ? pass('선행 변경을 되돌려 원래 문서와 같다') : fail('선행 변경이 원래 상태로 되돌려지지 않았다');
     case 'plan-only': {
       if (!isDeepStrictEqual(normalizeContent(before), normalizeContent(after))) return fail('계획만 보여달라고 했는데 문서가 바뀌었다');
-      return answer.trim().length >= 20 ? pass('실행 없이 계획 제시') : fail('계획 답변이 없다');
+      if (answer.trim().length < 20) return fail('계획 답변이 없다');
+      // "이 작업" has no referent in the prompt: the plan must hang on the selected area, or ask which task. Inventing interior work is a defect.
+      if (/실내|내부 시공/u.test(answer)) return fail('요청에 없는 실내 시공을 지어내 계획했다');
+      return coordinatesIn(answer).some(c => inside(AREA.meadow, c.x, c.y)) || mentions(answer, '선택') || /[?？]/u.test(answer) ? pass('실행 없이, 선택 영역을 기준으로 계획') : fail('선택 영역을 기준으로 하지도, 무엇을 계획할지 되묻지도 않았다');
     }
     case 'suggest-selection-actions': return readOnly(input, id, () => answer.trim().length >= 20 ? pass('선택 영역 작업 추천') : fail('추천이 없다'));
     default: return fail(`판정기가 없는 명령: ${id}`);
