@@ -1,4 +1,7 @@
 node_modules/
+# 소유자 OAuth 클라이언트 설정. 예시는 scripts/oauth-clients.example.json, 실제 파일은 ~/.oprn/oauth-clients.json.
+oauth-clients.json
+
 .runtime-archive/
 /verify-shots/release-artifact/
 dist/

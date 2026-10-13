@@ -1,10 +1,7 @@
-// 제공자 레지스트리는 정확히 둘이다 — Antigravity(Gemini) 와 Codex.
-//
-// 예전 스펙은 oh-my-pi 카탈로그 69종을 그대로 고정했다. 그 목록은 고를 수 없는 선택지였고
-// (동반 서비스에 로그인 경로가 붙은 것은 이 둘뿐이다), 남겨 두면 화면에 거짓 표면이 생겼다.
-// 이제 이 파일은 "둘뿐이고 둘 다 구독 로그인" 을 고정한다.
+// 제공자 레지스트리는 ChatGPT·Google·Grok 구독 로그인과 Grok API 키다.
 import { describe, expect, it } from "vitest";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 import {
   DEFAULT_OH_MY_PI_PROVIDER,
   OH_MY_PI_PROVIDERS,
@@ -17,10 +14,12 @@ import {
 } from "@/ai/ohMyPiProviders";
 
 describe("oh-my-pi provider catalog", () => {
-  it("제공자는 정확히 둘이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
+  it("권장 제공자(ChatGPT)가 맨 앞이고 Grok 구독 다음에 API 키가 있다", () => {
     expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id)).toEqual([
       CODEX_PROVIDER_ID,
       ANTIGRAVITY_PROVIDER_ID,
+      XAI_OAUTH_PROVIDER_ID,
+      XAI_PROVIDER_ID,
     ]);
     expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
   });
@@ -36,17 +35,22 @@ describe("oh-my-pi provider catalog", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("두 제공자 모두 구독 로그인(oauth)이다 — API 키 제공자는 없다", () => {
-    for (const provider of OH_MY_PI_PROVIDERS) {
-      expect(provider.authKind, provider.id).toBe("oauth");
-      expect(ohMyPiAuthKind(provider.id), provider.id).toBe("oauth");
-    }
-    expect(ohMyPiProvidersByAuthKind("oauth")).toHaveLength(2);
-    expect(ohMyPiProvidersByAuthKind("apiKey")).toHaveLength(0);
+  it("구독 로그인은 ChatGPT·Google·Grok 이고 Grok API 만 키다", () => {
+    expect(ohMyPiAuthKind(CODEX_PROVIDER_ID)).toBe("oauth");
+    expect(ohMyPiAuthKind(ANTIGRAVITY_PROVIDER_ID)).toBe("oauth");
+    expect(ohMyPiAuthKind(XAI_OAUTH_PROVIDER_ID)).toBe("oauth");
+    expect(ohMyPiAuthKind(XAI_PROVIDER_ID)).toBe("apiKey");
+    expect(ohMyPiProvidersByAuthKind("oauth").map((provider) => provider.id)).toEqual([
+      CODEX_PROVIDER_ID,
+      ANTIGRAVITY_PROVIDER_ID,
+      XAI_OAUTH_PROVIDER_ID,
+    ]);
+    expect(ohMyPiProvidersByAuthKind("apiKey").map((provider) => provider.id)).toEqual([XAI_PROVIDER_ID]);
     expect(ohMyPiProvidersByAuthKind("local")).toHaveLength(0);
     expect(ohMyPiOAuthProviders().map((provider) => provider.id)).toEqual([
-      ANTIGRAVITY_PROVIDER_ID,
       CODEX_PROVIDER_ID,
+      ANTIGRAVITY_PROVIDER_ID,
+      XAI_OAUTH_PROVIDER_ID,
     ]);
   });
 
@@ -58,6 +62,17 @@ describe("oh-my-pi provider catalog", () => {
     const codex = getOhMyPiProvider(CODEX_PROVIDER_ID);
     expect(codex?.label).toBe("ChatGPT");
     expect(codex?.defaultModel).toBe("gpt-6.1-sol");
+
+    const grok = getOhMyPiProvider(XAI_OAUTH_PROVIDER_ID);
+    expect(grok?.label).toBe("Grok");
+    expect(grok?.defaultModel).toBe("grok-4.7");
+    expect(grok?.envVars).toEqual(["XAI_OAUTH_TOKEN"]);
+    expect(grok?.authKind).toBe("oauth");
+
+    const grokKey = getOhMyPiProvider(XAI_PROVIDER_ID);
+    expect(grokKey?.label).toBe("Grok API");
+    expect(grokKey?.defaultModel).toBe("grok-4.7");
+    expect(grokKey?.envVars).toEqual(["XAI_API_KEY"]);
   });
 
   it("옛 저장값을 읽을 때의 제공자는 Antigravity OAuth 다", () => {
@@ -68,6 +83,8 @@ describe("oh-my-pi provider catalog", () => {
   it("두 id 는 그대로 통과하고, 사라진 제공자 id 는 기본 제공자로 되돌린다", () => {
     expect(parseOhMyPiProvider(ANTIGRAVITY_PROVIDER_ID)).toBe(ANTIGRAVITY_PROVIDER_ID);
     expect(parseOhMyPiProvider(CODEX_PROVIDER_ID)).toBe(CODEX_PROVIDER_ID);
+    expect(parseOhMyPiProvider(XAI_PROVIDER_ID)).toBe(XAI_PROVIDER_ID);
+    expect(parseOhMyPiProvider(XAI_OAUTH_PROVIDER_ID)).toBe(XAI_OAUTH_PROVIDER_ID);
     // 옛 레지스트리에 있던 id 는 이제 존재하지 않는다 — 저장돼 있어도 기본값으로 스냅한다.
     for (const gone of ["anthropic", "zai", "openai", "ollama", "github-copilot", "not-a-provider"]) {
       expect(parseOhMyPiProvider(gone), gone).toBe(DEFAULT_OH_MY_PI_PROVIDER);

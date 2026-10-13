@@ -15,7 +15,7 @@ applyLegacyEnvAliases();
 
 const BASE = process.env.OPRN_URL ?? "http://127.0.0.1:9801";
 const OUT = process.argv[2] ?? "output/evidence/two-provider-settings";
-const EXPECTED = ["google-antigravity", "openai-codex"];
+const EXPECTED = ["openai-codex", "google-antigravity", "xai-oauth", "xai"];
 
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1500, height: 950 } });
@@ -45,6 +45,7 @@ async function openSettings() {
   await page.getByTestId("topbar-ai-settings").click();
   // 보이는 선택은 제공자 카드다 — select 는 숨은 값·change 원천으로만 남는다.
   await page.getByTestId("ai-auth-quick-google-antigravity").waitFor({ state: "visible", timeout: 30_000 });
+  await page.getByTestId("ai-auth-quick-xai").waitFor({ state: "visible", timeout: 30_000 });
   const select = page.getByTestId("ai-oh-my-pi-provider");
   await select.waitFor({ state: "attached", timeout: 30_000 });
   return select;
@@ -52,9 +53,9 @@ async function openSettings() {
 
 let select = await openSettings();
 const options = await select.locator("option").evaluateAll((nodes) => nodes.map((n) => n.value));
-check("provider select offers exactly the two backends", options, EXPECTED);
+check("provider select offers ChatGPT, Google, Grok OAuth, and Grok API", options, EXPECTED);
 check("provider select is enabled (user really has a choice)", await select.isEnabled(), true);
-check("factory default is Antigravity", await select.inputValue(), "google-antigravity");
+check("factory default is ChatGPT", await select.inputValue(), "openai-codex");
 await page.screenshot({ path: path.join(OUT, "01-provider-select-antigravity.png") });
 
 const labels = await select.locator("option").evaluateAll((nodes) => nodes.map((n) => n.textContent?.trim()));

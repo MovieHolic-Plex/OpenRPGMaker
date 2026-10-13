@@ -58,7 +58,9 @@ for (const file of files) console.log(`   ${file}`);
 
 if (listOnly) process.exit(0);
 
-const result = spawnSync(process.execPath, ["--test", ...files], {
+// Node 22.14 (this repo's floor) does not load imported .ts files unless type
+// stripping is enabled. Newer Node enables it by default; the flag stays valid.
+const result = spawnSync(process.execPath, ["--experimental-strip-types", "--test", ...files], {
   cwd: ROOT,
   stdio: "inherit",
 });

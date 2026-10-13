@@ -46,6 +46,7 @@ async function startCaseHost(root, entry, out) {
     ['OPRN_ANTIGRAVITY_CLIENT_ID', clients.antigravityClientId],
     ['OPRN_ANTIGRAVITY_CLIENT_SECRET', clients.antigravityClientSecret],
     ['OPRN_CODEX_CLIENT_ID', clients.codexClientId],
+    ['OPRN_XAI_CLIENT_ID', clients.xaiClientId],
   ].filter(([, value]) => value));
   const child = spawn(process.execPath, ['scripts/oprn-serve.mjs', '--project-dir', projectDir,
     '--host', '127.0.0.1', '--port', String(entry.port)], {

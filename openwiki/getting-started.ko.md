@@ -196,25 +196,38 @@ CDN 스트리밍을 계속 쓰거나 새 팩을 제작하는 관리자는 [`open
 <details>
 <summary>AI 어시스턴트 연결</summary>
 
-기본 연결은 API 키 과금 대신 로컬 Codex의 ChatGPT OAuth 로그인을 사용합니다. `npm run dev`만 띄우면 Codex 로그인 상태를 dev 서버와 **같은 포트**(same-origin)로 자동 브릿지합니다 — 별도 터미널이 필요 없습니다.
-`npm start`와 팀 호스트는 공유 호스트라 AI가 기본으로 꺼져 있습니다. 소유자가 쓰려면 `OPRN_HOST_OWNER_AI=1`을 붙여 실행합니다. 개인 실행기(`npm run mac:launch`)는 루프백 전용이라 따로 켤 필요가 없습니다.
+AI 설정에는 제공자가 넷입니다. ChatGPT(Codex), Google(Antigravity), Grok 구독은 OAuth 이고, Grok API 는 xAI API 키입니다. `npm run dev` 는 로그인·완료를 페이지와 **같은 포트**에 붙입니다. 별도 터미널은 필요 없습니다.
+`npm start`와 팀 호스트는 공유 호스트라 AI가 기본으로 꺼져 있습니다. 소유자만 쓰려면 `OPRN_HOST_OWNER_AI=1`을 붙여 실행하고, 그 계정으로 로그인해야 합니다. 개인 실행기(`npm run mac:launch`)는 루프백 전용이라 이 스위치가 필요 없습니다.
 
 ```bash
 npm run dev
 ```
 
-로그인이 없으면 `AI 설정 → Google Gemini → 로그인`이 Antigravity 기기 코드 로그인을 시작합니다. 기본 모델은 `gemini-3.7-flash`입니다.
+새 설정의 권장 제공자는 ChatGPT 이고 기본 모델은 `gpt-6.1-sol` 입니다. Google 카드는 Gemini(Antigravity) 로그인입니다. 브라우저 저장소에는 토큰도 API 키도 남지 않습니다. 자격은 이 컴퓨터의 `~/.oprn/oh-my-pi-auth.json` 에만 있습니다.
 
-- **DEV / PREVIEW (`npm run dev`, `npm start`)**: vite가 `/auth/*`·`/v1/chat/completions`를 페이지와 같은 오리진에 붙입니다. 브라우저는 `127.0.0.1:17832`를 치지 않습니다 — 그 포트는 oh-my-pi 단독 동반 서비스가 **이 머신 루프백**에서 듣는 주소입니다.
+Google 로그인이 「클라이언트 ID가 없다」고 하면, 설치된 `@oh-my-pi/pi-catalog` 가 client 값을 채웁니다. 패키지가 없는 머신(일부 패키징 앱)에서는 소유자가 직접 넣습니다. 예시는 `scripts/oauth-clients.example.json` 이고, 복사 위치는 `~/.oprn/oauth-clients.json` 또는 `OPRN_OAUTH_CLIENTS_FILE` 입니다. 환경 변수가 있으면 파일이 집니다.
+
+| 값 | 환경 변수 |
+| --- | --- |
+| Google client id | `OPRN_ANTIGRAVITY_CLIENT_ID` |
+| Google client secret | `OPRN_ANTIGRAVITY_CLIENT_SECRET` |
+| ChatGPT client id | `OPRN_CODEX_CLIENT_ID` |
+| Grok client id | `OPRN_XAI_CLIENT_ID` |
+
+직접 만든 Google/OpenAI 앱으로는 이 로그인이 되지 않습니다. redirect 와 스코프가 Antigravity·Codex 공개 클라이언트에 묶여 있습니다. 그 값을 설정에 넣을 때의 redirect 는 Google `http://127.0.0.1:51121/oauth-callback`(루프백 포트는 달라질 수 있음), ChatGPT 브라우저 `http://localhost:1455/auth/callback` 뿐입니다. 자세한 주소는 `openwiki/licensing.md` 의 OAuth 절입니다.
+
+Grok 계정 카드는 oh-my-pi 와 같은 디바이스 코드 로그인입니다. 설치된 `@oh-my-pi/pi-catalog` 가 client id 를 채우므로, 개발 머신에서는 `OPRN_XAI_CLIENT_ID` 를 따로 넣지 않아도 됩니다. 패키지에 카탈로그가 없으면 환경 변수나 `~/.oprn/oauth-clients.json` 의 `xaiClientId` 가 필요합니다. 그 값은 저장소에 적지 않습니다. 로그인은 xAI 가 보여주는 주소에서 코드를 입력하는 방식이고, 카탈로그는 SuperGrok 또는 X Premium+ 구독을 전제로 합니다. 기본 모델은 `grok-4.7` 입니다.
+
+구독 대신 API 키를 쓰려면 Grok API 카드를 고칩니다. [xAI 콘솔](https://console.x.ai)에서 키를 만들어 붙여 넣거나, 서버에 `XAI_API_KEY` 를 두고 「고급: 서버에 저장된 연결 정보 찾아보기」에서 찾아보기를 허용합니다. 주소는 `https://api.x.ai/v1` 입니다. 그림 생성은 Grok 이 아니라 기존 이미지 제공자를 그대로 씁니다.
+
+- **DEV (`npm run dev`)**: vite 가 `/auth/*`·`/v1/chat/completions` 를 페이지와 같은 출처에 붙입니다.
 - **단독 동반 서비스**가 필요할 때만:
 
 ```bash
 npm run ai:oauth   # 127.0.0.1:17832, 토큰은 서버의 ~/.oprn 에 보관
 ```
 
-환경 변수 이름은 2026-09 에 `RPG_ZZU_*`에서 `OPRN_*`로 바뀌었습니다. 옛 이름도 이번 릴리스까지는 경고 한 줄과 함께 그대로 읽힙니다(`scripts/lib/oprnEnv.mjs`가 새 이름으로 옮겨 줍니다).
-
-API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환해 OpenAI 호환 엔드포인트·모델·키를 입력할 수 있습니다. OAuth access/refresh token은 브라우저 localStorage나 프로젝트 데이터에 저장하지 않습니다.
+환경 변수 이름은 2026-09 에 `RPG_ZZU_*`에서 `OPRN_*`로 바뀌었습니다. 옛 이름도 경고 한 줄과 함께 읽힙니다(`scripts/lib/oprnEnv.mjs`).
 
 </details>
 

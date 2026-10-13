@@ -37,13 +37,14 @@ describe("account selection and persisted work models", () => {
     saveAiConfig(config);
     const next = configForProviderSelection(loadAiConfig(), codex);
     expect(next.roleModels?.vision).toEqual(config.roleModels.vision);
-    expect(next.imageProviderId).toBe(google);
+    // 그림 핀은 지금 설정의 그림 제공자를 유지한다. 새 설정의 그림 기본은 ChatGPT 다.
+    expect(next.imageProviderId).toBe(codex);
     expect(new Set(workProviderIds(next))).toEqual(new Set([codex, google]));
     const aligned = configForProviderSelection(next, codex, true);
     expect(workProviderIds(aligned)).toEqual([codex]);
     expect(aligned.roleModels?.vision?.model).toBe("gpt-6.1-sol");
     expect(aligned.modelSelectionOverrides).toEqual({ image: true });
-    expect(aligned.imageProviderId).toBe(google);
+    expect(aligned.imageProviderId).toBe(codex);
   });
 
   it("treats stored legacy choices as explicit until the user aligns them", () => {

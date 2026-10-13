@@ -1,5 +1,6 @@
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { XAI_MODELS, XAI_OAUTH_PROVIDER_ID, XAI_PROVIDER_ID } from "@/ai/xaiProvider";
 
 export interface AiModelCatalogGroup {
   readonly label: string;
@@ -57,12 +58,14 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
 ];
 
 /**
- * 제공자별 모델 목록. 에디터가 고를 수 있는 제공자가 둘뿐이므로 카탈로그도 둘뿐이다.
+ * 제공자별 모델 목록. 채팅에 쓰는 id 만 둔다.
  * 옛 게이트웨이 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
  */
 const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
   [CODEX_PROVIDER_ID]: CODEX_MODELS,
+  [XAI_PROVIDER_ID]: XAI_MODELS,
+  [XAI_OAUTH_PROVIDER_ID]: XAI_MODELS,
 };
 
 /**
