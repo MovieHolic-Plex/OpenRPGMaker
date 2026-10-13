@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """jp_city 블록 `autotiles_ground` — 지면 8방 오토타일 7종(각 49칸 = canon 47 + 몸통 변형 2).
 
-  보도 연석 sidewalk(보도/바깥=아스팔트) · 생활도로 lane(아스팔트/바깥=집 앞 콘크리트) · 잔디 lawn(잔디/바깥=맨흙)
+  보도 연석 sidewalk(보도/바깥=아스팔트) · 생활도로 lane(아스팔트/바깥=집 앞 콘크리트) · 잔디 lawn(잔디/바깥=대지 자갈)
   자갈 참배길 gravel(자갈/바깥=잔디) · 판석 광장 plaza(판석/바깥=잔디) · 연못 pond(물/바깥=잔디, 돌 호안)
   수로 canal(물/바깥=콘크리트 보도, 콘크리트 호안)
 
@@ -88,8 +88,9 @@ _DIRT = None
 
 
 def dirt_px(x, y):
+    """풀 가장자리 바깥 = 거리 대지 바닥(자갈 참배길 질감). 예전엔 맨흙 칸을 빌려 자갈 대지·판석과 닿는 곳마다 갈색 디더 테두리가 붙었다(2026-10-13 조화 QA)."""
     global _DIRT
-    if _DIRT is None: _DIRT = chip("gravel")
+    if _DIRT is None: _DIRT = gravel_tex()
     return tuple(int(v) for v in _DIRT[y % 16, x % 16])
 
 
@@ -97,7 +98,7 @@ def style_lawn(side, d, s, x, y):
     """잔디(member)/바깥=맨흙. 풀이 흙 위로 삐죽: 깊이 프로필 안은 흙, 경계에 풀끝(밝음)·뿌리 그늘."""
     depth = GRASS_PROFILE[side][s % 16]
     if d < depth:
-        if side in "SE" and d == depth - 1: return C("soil", 2)        # 풀이 드리운 그림자(오른쪽 아래)
+        if side in "SE" and d == depth - 1: return C("hodo", 3)        # 풀이 드리운 그림자(오른쪽 아래) — 대지 자갈보다 한 단 어둡게
         return dirt_px(x, y)
     if d == depth:
         return C("midori", 4) if h01(s, ord(side), 5) < 0.4 else C("midori", 3)

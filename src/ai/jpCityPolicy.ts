@@ -139,6 +139,7 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
       + "거리·마을·동네 한 장은 compose_jp_city_street({seed, style:\"shopping\"|\"residential\", shops}) 가 기본이다(손으로 땅→도로→건물을 쌓지 않는다). 낱칸 번호로 건물을 칠하지 않는다.",
     where,
     "순서: (새 맵이면 40×28 이상, 권장 50×36·큰 도심은 60×56) compose_jp_city_street → show_map_region·list_map_locations 로 확인 → 안 맞는 건물만 build_jp_city_building, 땅·소품은 fill_region·stamp_object(먼저 " + JP_START_READ_LIST + ") → "
-      + "문마다 link_jp_city_interior 로 실내 잇기 → check_reachability → 차·버스가 다니는 거리면 set_map_transit({auto:{}}). 건물 한두 채 수정이면 compose 없이 build_jp_city_building 만 쓴다.",
+      + "문마다 link_jp_city_interior 로 실내 잇기 → check_reachability → 차·버스가 다니는 거리면 set_map_transit({auto:{}}). 건물 한두 채 수정이면 compose 없이 build_jp_city_building 만 쓴다. "
+      + "건물을 띠 밖에 손으로 놓지 않는다(문 앞에 보도 줄이 있어야 한다), 옥상 간판 head 는 3층+·폭 6+ 건물에만(비워 두는 게 기본), 대지는 자갈 한 가지로 깔고 잔디는 담·생울타리로 두른 앞마당 줄에만 쓴다.",
   ].join("\n");
 }
