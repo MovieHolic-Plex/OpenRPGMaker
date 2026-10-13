@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c47c9286dc69aca40ce27e49c8d3975fa40dc5bc94439a4870530334d3ab0db5",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "striped signal pole with light assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, signal bar, and lights are drawn entirely in flat front elevation with no visible top surfaces (all horizontal elements like the base, cap, and signal box show only 0-2px flat strips).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5053
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "striped signal pole with signal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signal lights, mounting bar, pole cap, striped shaft, and base are all drawn in flat 2D front elevation with perfectly horizontal lines and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5052
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 97491,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vertical post is shown as a flat front elevation; its top is only a thin cap/edge rather than a visible top surface. The crossing lights and base do not provide a substantial top for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 72776
+  }
+ ],
+ "decidedAt": "2026-10-13T07:46:20.155Z",
+ "cells": {
+  "16": [
+   "0b9a7117934613b6",
+   "0fcec44fc801e8ff",
+   "b8950758c8a4f03c"
+  ],
+  "24": [
+   "1280ffcfbfa27a20",
+   "4f18306a0249c8f4",
+   "9a07576139defd5d",
+   "a5dc103c0111a7a6",
+   "b5c500b2753ebdc2",
+   "d56d6a65732516c1"
+  ],
+  "32": [
+   "0d67383eff2f680b",
+   "138ad9ee510773e2",
+   "253b75574b7477f2",
+   "2b043838dcf0f278",
+   "50393b7fbd563294",
+   "6c736dd8f697be43",
+   "9e885d1e03c1c0d0",
+   "a37b58f0290681f5",
+   "a87e29a144c835b0",
+   "cb13416bacc51614",
+   "e9c5372e6d327a5a",
+   "f8ecfc34c689bce5"
+  ],
+  "48": [
+   "03057a0e64fb0586",
+   "2574f36f44c5543f",
+   "e55fa2fd0bd333be"
+  ]
+ }
+}

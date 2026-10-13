@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2a77a5a97ea77fd6cb72591b0edb8be988575b68df5b1be45c5c3e6c962aa968",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "concrete track barrier wall",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrier is drawn in 3/4 view showing track gravel behind (rows 0-1), a 6-pixel illuminated top horizontal surface (rows 3-8), and a 5-pixel vertical south face with reflectors (rows 10-14) above the grass.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14159
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete barrier clearly depicts a foreshortened top surface (rows 3–8, 6 rows tall) illuminated in light grey, above a vertical south-facing front surface (rows 10–14) containing yellow reflectors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8634
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a flat rectangular front elevation with only a dark horizontal edge where a top surface would be; no above-view top band is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 40349
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main gray barrier is a flat rectangular front elevation with yellow markings; only a thin dark edge appears above it and no substantial top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 52710
+  }
+ ],
+ "decidedAt": "2026-10-13T07:51:12.689Z",
+ "cells": {
+  "16": [
+   "1a091aa4158db3fb"
+  ],
+  "24": [
+   "020ba5263575a116",
+   "7d20ea22d78d9a60",
+   "85860286c480caf3",
+   "8c0a58ae4f776c47",
+   "e2b70009eb117756",
+   "e464dad06c8de8b3"
+  ],
+  "32": [
+   "324ab92375853a23",
+   "8cc32c1edf6dcae4",
+   "b6f7e573cce9ae3e",
+   "b8904be07435bf15",
+   "e03e18310dbcf56a",
+   "e81575a23b316471"
+  ],
+  "48": [
+   "03ce35e35cc2aaa1",
+   "5184d7faddec4789",
+   "5903b164b9d12ca9",
+   "81e48eef005776a8",
+   "96fc7902d646d83a",
+   "d8df1aa889ee7bb9"
+  ]
+ }
+}

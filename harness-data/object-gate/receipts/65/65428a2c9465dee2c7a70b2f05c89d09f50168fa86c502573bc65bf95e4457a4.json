@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65428a2c9465dee2c7a70b2f05c89d09f50168fa86c502573bc65bf95e4457a4",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole body has zero visible top surface. Its yellow bands, cross marking, lights, collar (row 10), and base plinth (rows 44-46) are drawn with completely flat horizontal lines in pure front elevation without any 3/4 view perspective or curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9533
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway crossing signal column",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap/bell of the signal column is drawn as an ellipse foreshortened from above (rows 2-8, 7px tall), correctly showing the top surface in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8264
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular railway signal housing/post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main tall body is a flat rectangular front elevation with no visible top surface beyond a thin cap strip; the rounded signal head is a smaller upper component and does not provide a top for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 59620
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 16968,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:55:17.610Z",
+ "cells": {
+  "16": [
+   "3d5cde6ee6d17fd9",
+   "4d7bda3e2651ec83",
+   "eb7e5ea422bf876d"
+  ],
+  "24": [
+   "0aca62e27866639a",
+   "156d799dfb4543ac",
+   "1c53e26aa3aa33f9",
+   "3e14656d43fc6bf7",
+   "ad11f6f7ea826b4b",
+   "feeb991bde92a60e"
+  ],
+  "32": [
+   "2ecaa46c6f383b43",
+   "2f955479fc55a43f",
+   "3421c284d86006f3",
+   "3db87f9eae350218",
+   "437ccd5d32fda95b",
+   "470cdd820ee3aaca",
+   "7a3939cb1321772b",
+   "84cb3d14e6878b91",
+   "8db0d2562d2e94ad",
+   "c64799c092187efe",
+   "dfc7cc14a2a52a6e",
+   "fd2a754036d932a0"
+  ],
+  "48": [
+   "7509decd2df33cc5",
+   "cb129ba4763f72f0",
+   "efbfd7bf642d5dd1"
+  ]
+ }
+}

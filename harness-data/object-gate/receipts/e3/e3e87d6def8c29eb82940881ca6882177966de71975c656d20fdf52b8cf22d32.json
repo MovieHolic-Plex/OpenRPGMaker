@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e3e87d6def8c29eb82940881ca6882177966de71975c656d20fdf52b8cf22d32",
+ "width": 16,
+ "height": 64,
+ "kind": "flat",
+ "name": "railway crossing deck",
+ "label": "jp/rail-xing",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing deck surface",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire sprite represents flat crossing deck panels viewed directly from above in 3/4 perspective, with visible surface seams and bolt markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5149
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "ground decking panel",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-level railway crossing surface/plank deck seen flat from above with panel seams and bolt details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4371
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "broad rectangular railway crossing deck",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The deck is shown as a broad continuous overhead plane across the full 64-pixel height; the dark transverse bands read as surface rail details rather than a front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 93858
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "broad flat railway crossing deck surface with dark horizontal rail/board details",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a broad planar surface visible across the full 64-pixel source height; the dark horizontal bands are surface details, not a front elevation or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 118421
+  }
+ ],
+ "decidedAt": "2026-10-13T07:17:27.966Z",
+ "cells": {
+  "16": [
+   "399ea114a02574c4",
+   "ba9a94348588ec7f",
+   "eb2ba3ba67d7e086"
+  ],
+  "24": [
+   "124688b844b10649",
+   "1500f74c7f76c75c",
+   "30e2f3849a027619",
+   "39140c2d8cbc182b",
+   "3c4202d39c604520",
+   "4aab473d53ca18c5",
+   "547f10069b83bc90",
+   "549b8e41cdee44b7",
+   "783077e77d21dafa",
+   "7cc7a711a1fde2a8",
+   "a4f37eb1837f3e75",
+   "a91a77480e917583",
+   "aa3e7cc0387ad2f4",
+   "b00193e3900727b8",
+   "c48d8837da068f81",
+   "d0a2c2aef308df7f",
+   "e19a22611d5e0acc",
+   "f41e0e0629ec190b"
+  ],
+  "32": [
+   "1837284b08fc3807",
+   "3cfd9a6ec5ad445c",
+   "5e7c8811326264f6",
+   "69225205c097c0fe",
+   "756f9124b0cd5dac",
+   "8b0ae7f82ece9bd8"
+  ],
+  "48": [
+   "0d278f8d77ad3330",
+   "12689dd053d2f8ea",
+   "1653e21573dcd4ad",
+   "38ca6d1a0db823e8",
+   "39ddc66d2a02c6a8",
+   "41eb10b4cae1c727",
+   "601fdea3d00343f8",
+   "7e9944c849b9f263",
+   "8b366657acb26189",
+   "97b964380723752a",
+   "f029f148c16edf69",
+   "f3c4e4e07ef58d0c"
+  ]
+ }
+}

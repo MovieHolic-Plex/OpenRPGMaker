@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "406b340c917ace1dea155a41b29deaa78aec8ffa424d76c9d001baa45c340e96",
+ "width": 16,
+ "height": 64,
+ "kind": "terrain",
+ "name": "railway track band",
+ "label": "jp/rail-h",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway track on gravel ground",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile strip depicting a railway track laid over gravel ballast, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11673
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway track on gravel ground",
+    "kind_matches": true,
+    "top_rows": 64,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile band depicting railway tracks laid over gravel ground, fully viewed from above as a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7030
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "railway track band terrain tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat repeating ground/track pattern with no standing main body or front elevation; terrain kind is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 65926
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 68750,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:17:27.966Z",
+ "cells": {
+  "16": [
+   "0fd223945b9c8e8b",
+   "15e1afe95e7ab82f",
+   "4f352900c4a463fc",
+   "6de45a0fade04728"
+  ],
+  "24": [
+   "086c1a25933f1f41",
+   "1b50cddfecce748b",
+   "2140f4d9c97bab18",
+   "3adfd59a75b388b3",
+   "3db49a2cab9dc1d1",
+   "42602ebde7b5681a",
+   "4cbd00b47c0f1ee4",
+   "5d79d3941814c454",
+   "7a88d3bc9925c492",
+   "82de8941c2d8e30a",
+   "928919c99db1e7c7",
+   "9fc005b849732b0e",
+   "b0d52e8fa07be894",
+   "c111768dcf9a277e",
+   "d29c7796ed66d62c",
+   "d3e1352c559918e6",
+   "d9e5fa555796692d",
+   "ec8298c5f92edafb"
+  ],
+  "32": [
+   "157f88f6143e0c4e",
+   "3e3278747782c209",
+   "4741c5e8350a148d",
+   "6bfdb1f8a4808342",
+   "a5fd78fdb8ffa8b2",
+   "e70d08d6ed6b65d3"
+  ],
+  "48": [
+   "0fdb7fe791edd69a",
+   "151fc5e4874e4996",
+   "2e6a6c0b95c6849f",
+   "300b34d08a446938",
+   "356f022ebde97b31",
+   "39f0a9bfda5eaa80",
+   "4c14223e22665f76",
+   "6bdf524cec702606",
+   "84d6acab988d40a7",
+   "cd1f8b1fcf436a08",
+   "ced39011bf6af574",
+   "e68c0d894f81c58b"
+  ]
+ }
+}

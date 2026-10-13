@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dbab7af287d7105caf481e6eaa5dd163d5c034f1997f6d4ac9f1f674317da8dc",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "track mesh fence",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mesh fence / billboard frame with posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire frame and horizontal beams are drawn flat from the front with 1px horizontal border lines at row 0, row 5, and row 9, showing zero rows of top foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4442
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mesh fence / barrier panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top edge of the frame/panel at row 0 is a 1px flat black line with no foreshortened horizontal top surface visible, presenting a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4343
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular track-mesh fence panel with supporting posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main fence panel and its horizontal frame are drawn as a flat front elevation; no horizontal top surface is visible from above, only front-facing bands and posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 58616
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular mesh fence panel with lower supports",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main mesh panel is shown as a flat rectangular elevation; its top has only a thin edge with no visible horizontal top surface. No receding side face is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 96509
+  }
+ ],
+ "decidedAt": "2026-10-13T07:48:38.595Z",
+ "cells": {
+  "16": [
+   "48cf3f8453638a1b"
+  ],
+  "24": [
+   "064fe3728b204536",
+   "0def933b615ef1da",
+   "629ce7b2ac05e833",
+   "b460c0a8f5e33577",
+   "bb2369c564fc1cf5",
+   "f5356847017ab54a"
+  ],
+  "32": [
+   "2495b930f38b3505",
+   "3e9ef7489972f796",
+   "5b1fc2697c43b427",
+   "63959b02a01cd04f",
+   "6aa0cb84040846c1",
+   "9fc49efee13563f5"
+  ],
+  "48": [
+   "38ca894027b24ee7",
+   "3d9d24aaf089e43c",
+   "52d3e3f649e75d40",
+   "5bd48af58b0e1cc7",
+   "847a74c9707b5603",
+   "fa5efcb8c5fcf169"
+  ]
+ }
+}

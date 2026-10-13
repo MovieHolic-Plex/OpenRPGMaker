@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0292d74afb4b22240904e204e1ce3afe7899a1bec9ce6431f858398acd31e588",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall signal post / column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column, including the collar at rows 10-11, the base at rows 45-46, and the column shaft itself, is drawn in pure front elevation with perfectly horizontal edges and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6670
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall signal pole with alarm/light head and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire post, base, and top alarm head are drawn in flat front elevation with straight horizontal bands and no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6624
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 15593,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall railway crossing signal with a broad signal head and vertical post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The signal head has a broad stepped top surface visible from above for about 3 source-pixel rows; the remaining faces are front-facing with no receding isometric side face. This is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 74886
+  }
+ ],
+ "decidedAt": "2026-10-13T07:57:05.869Z",
+ "cells": {
+  "16": [
+   "3d5cde6ee6d17fd9",
+   "c2c7c9a9f6ebbc0d",
+   "eb7e5ea422bf876d"
+  ],
+  "24": [
+   "1c53e26aa3aa33f9",
+   "3e14656d43fc6bf7",
+   "ad11f6f7ea826b4b",
+   "bc0d836476a0636e",
+   "d4103a6b80cec0ea",
+   "ebceb4dc7d8f42b1"
+  ],
+  "32": [
+   "15c8f933e5df5408",
+   "3421c284d86006f3",
+   "3db87f9eae350218",
+   "6c21592c54996078",
+   "7a3939cb1321772b",
+   "7b1285169c5e6e43",
+   "84cb3d14e6878b91",
+   "a611170c4c699e71",
+   "ad32aa9cd2f43613",
+   "b0a8caf021866c5d",
+   "c64799c092187efe",
+   "dfc7cc14a2a52a6e"
+  ],
+  "48": [
+   "242c8fba0b19a1d4",
+   "5a01992f82bda01f",
+   "5c98939c8565797d"
+  ]
+ }
+}

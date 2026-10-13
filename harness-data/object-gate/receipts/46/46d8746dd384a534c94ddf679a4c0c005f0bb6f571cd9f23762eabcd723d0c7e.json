@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46d8746dd384a534c94ddf679a4c0c005f0bb6f571cd9f23762eabcd723d0c7e",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "concrete track barrier wall",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal top surface of the barrier is clearly visible across rows 2–8 (7 rows tall, rendered in a lighter tone with an edge highlight at row 8), transitioning to the shaded vertical south face at rows 10–13 with reflectors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9910
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The concrete barrier features a light-toned horizontal top surface spanning rows 2 to 8 (7 pixels tall) above a darker south-facing vertical face (rows 10-13) equipped with yellow reflector markings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6468
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "long rectangular concrete barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pale rectangular wall is shown as a flat south-facing elevation with no visible top surface; the dark strip above is only an edge/background line, not a multi-pixel top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 35266
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete track barrier wall",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wall has a broad visible top plane spanning source rows 2-8, above its south-facing front face with yellow markings. No receding side face or opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 80146
+  }
+ ],
+ "decidedAt": "2026-10-13T07:55:17.611Z",
+ "cells": {
+  "16": [
+   "dd23dd94a3f0a9c6"
+  ],
+  "24": [
+   "1398d63d40f33fde",
+   "1b843d0da1f2c83c",
+   "37cd45885fc37592",
+   "a9f40a85a673bce1",
+   "b5375bd07fe4bfa4",
+   "e4334ede80710464"
+  ],
+  "32": [
+   "2dbf45949fa778d2",
+   "56713b9d35dcd820",
+   "910674ec04b892d3",
+   "a1c5d12603c64337",
+   "c1e97661d4bc11d7",
+   "e34b1a3572b35aee"
+  ],
+  "48": [
+   "2e32e6a0b7c7600f",
+   "339a7bc3b282236b",
+   "44d2a7a2f55ff1e3",
+   "b96c36ef322f30bc",
+   "e8f3b87e35461f7c",
+   "ee243f4b2ce724dd"
+  ]
+ }
+}

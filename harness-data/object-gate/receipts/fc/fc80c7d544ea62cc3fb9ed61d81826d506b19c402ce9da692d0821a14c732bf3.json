@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fc80c7d544ea62cc3fb9ed61d81826d506b19c402ce9da692d0821a14c732bf3",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "concrete track barrier wall",
+ "label": "jp/rail-fence",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "concrete barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn in pure front elevation showing only its vertical stem (rows 2-9) and flared lower face with reflectors (rows 11-14). The horizontal top surface of the barrier is reduced to a 1px cap line at row 0.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6267
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "concrete barrier wall",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrier is drawn in pure front elevation: the vertical wall face spans rows 2-9, with a lower base/curb section on rows 11-14 facing the camera with yellow reflectors. The top surface is only 1 pixel row (row 0), which constitutes an edge line rather than a foreshortened top surface in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 4"
+   ],
+   "ms": 6394
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular concrete barrier block with a broad upper surface and south-facing front face",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main block has a clearly visible broad top surface spanning rows 2-8 above its darker front face; no receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 78554
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 24257,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:53:20.536Z",
+ "cells": {
+  "16": [
+   "a72bbee32b0c13bb"
+  ],
+  "24": [
+   "2ab3f74ed2be562f",
+   "41f0240c55aa25b5",
+   "a595edf9b5add79a",
+   "b021332d7076e63c",
+   "b9d03bfb3a539617",
+   "fb0570c4624b5124"
+  ],
+  "32": [
+   "1b3df4f0bfec8d49",
+   "399423a6681edeb8",
+   "3d242d1d15f848f0",
+   "5f2515acc5725718",
+   "61dbcc27612791d4",
+   "b93294957f7e4de0"
+  ],
+  "48": [
+   "2c4f6fa7f8e009d1",
+   "3cfb7ae83e21f336",
+   "85d8e4a92ab4ce0a",
+   "988d6466b387f184",
+   "edf88694a8b48ac8",
+   "fc32fa63306460dd"
+  ]
+ }
+}

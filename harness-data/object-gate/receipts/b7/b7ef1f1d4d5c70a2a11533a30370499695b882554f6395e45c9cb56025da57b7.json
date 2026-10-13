@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7ef1f1d4d5c70a2a11533a30370499695b882554f6395e45c9cb56025da57b7",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular signal post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar and its cap are drawn in flat front elevation with straight horizontal bands and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5296
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical signal pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal pillar is drawn in flat front elevation with vertical stripes, red lights, and an X emblem facing directly forward. The cap at rows 1-5 is rendered as a front-facing block without an angled top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5993
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular railway signal housing",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main housing has a broad, full-width light top surface about 6 source pixels deep above its front face; the signal face is otherwise frontal, with no receding side face. The top is more than a thin rim, so this is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 106843
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall rectangular railway-signal housing/column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main signal housing is a flat front-facing rectangle with only edge lines and no visible horizontal top or cut face from above; no receding side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 46964
+  }
+ ],
+ "decidedAt": "2026-10-13T07:51:12.688Z",
+ "cells": {
+  "16": [
+   "26bfbf5d73f5f881",
+   "3c9f874bba274332",
+   "69776344f3072c33"
+  ],
+  "24": [
+   "39edef89fcf4f871",
+   "856d595b04f21183",
+   "9d23fb5d9dd031a3",
+   "b8a837126fc17b4b",
+   "d1715233f44b5fd9",
+   "d87ece0662899b0f"
+  ],
+  "32": [
+   "1a1cb12d32ac1e8c",
+   "23ece046768d32bc",
+   "272f23d7a9def4e5",
+   "5a02431b39a40f61",
+   "5a21d0d50721264d",
+   "7a8532dece14048b",
+   "885f593e72da2784",
+   "acce1694c0941807",
+   "be962ae7b1b05805",
+   "cac4fb367c707350",
+   "cc463a08824a52b0",
+   "d4665b0cbb077617"
+  ],
+  "48": [
+   "192511c4c8057256",
+   "3f884dd6a61e81cd",
+   "79ceba410fde7e8d"
+  ]
+ }
+}

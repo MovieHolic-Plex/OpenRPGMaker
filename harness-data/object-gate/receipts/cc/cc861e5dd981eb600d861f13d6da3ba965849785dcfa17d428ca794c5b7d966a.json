@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cc861e5dd981eb600d861f13d6da3ba965849785dcfa17d428ca794c5b7d966a",
+ "width": 16,
+ "height": 64,
+ "kind": "terrain",
+ "name": "river embankment wall face",
+ "label": "jp/river-wall",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "river embankment wall face",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The asset is a terrain wall face tile strip depicting a stone river embankment with pavement at the top and water at the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5488
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "river embankment wall",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile column depicting a stone embankment wall face descending into water, topped by a 4-pixel ground surface strip at the top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6007
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "river embankment wall face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A broad horizontal surface is visible above the dark embankment edge for about 6 source-pixel rows; the remainder is a terrain wall face with no receding isometric side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 82658
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "river embankment wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main embankment wall is presented as a flat front-facing terrain strip; horizontal bands above it are terrain layers or edge lines rather than a clearly visible top surface of the main wall body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 113262
+  }
+ ],
+ "decidedAt": "2026-10-13T07:39:43.639Z",
+ "cells": {
+  "16": [
+   "2113e632e0d54c33",
+   "76d2524673dea2aa",
+   "83fa4c6c1d1936c9",
+   "84dac6fd6d79eb89"
+  ],
+  "24": [
+   "16439eea71568119",
+   "2525140ca8d73406",
+   "39c7672f46733c71",
+   "432317f90a2b9f75",
+   "4b1dcd80538a3b86",
+   "7886aa3ccc488e0a",
+   "80387a5d08d8bb2b",
+   "9eaaa5fdb70c780e",
+   "a093d4c250f12330",
+   "a8385e7872eb44ac",
+   "b05af29e74c672f8",
+   "b8c72dac1812186b",
+   "beda0263dbcea36c",
+   "cb7ebd0a35fa26a6",
+   "e81ba7f00249949a",
+   "f2fb88fd97f7b083",
+   "f41f6d55bc5e6da8",
+   "fb28e0728c7d8412"
+  ],
+  "32": [
+   "3795a89f4cd2e19e",
+   "3a9210bdf42eef83",
+   "55ec6b825bffe754",
+   "b0f40abb500e7641",
+   "d763efeaae8fc3bd",
+   "dbc0bf5865968c10"
+  ],
+  "48": [
+   "0ae0966c9964c543",
+   "1c456ed4815fe61d",
+   "1d6c0e135a795e4a",
+   "3acd6150feee058b",
+   "7859f5d3bad38ac1",
+   "9881ad748bb5d74e",
+   "988d0b8bafed52d5",
+   "9dfa24ccd7d78548",
+   "ac1204ab8d5f303c",
+   "b6a3cb446027e3c5",
+   "bf835c07e36c013c",
+   "cf0561bf280dda98"
+  ]
+ }
+}

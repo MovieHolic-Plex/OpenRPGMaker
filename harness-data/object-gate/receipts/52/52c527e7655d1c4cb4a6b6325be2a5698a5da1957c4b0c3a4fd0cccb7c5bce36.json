@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "52c527e7655d1c4cb4a6b6325be2a5698a5da1957c4b0c3a4fd0cccb7c5bce36",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "railway crossing signal",
+ "label": "jp/rail-signal",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway crossing signal pole and signal box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the lights, horizontal box, and base, is drawn in pure front elevation with completely flat horizontal lines and zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4862
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "striped signal pole with top-mounted lights and crossbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure—from the red lights and grey crossbar at the top to the striped pole and base—is drawn in pure front elevation with flat rectangular profiles and zero visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5158
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical railway signal column with stacked lights and a broad upper crossbar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main vertical column is a flat, straight-on rectangular elevation; its upper end has no clear top/cut surface, only a narrow horizontal cap/edge before the front face. The broad crossbar is also presented as a flat front-facing rectangle rather than a clearly foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 123051
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 15664,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T07:43:21.378Z",
+ "cells": {
+  "16": [
+   "3bfb9ca4b33109b4",
+   "a1b6fd09413dd951",
+   "ee033940688125c7"
+  ],
+  "24": [
+   "71c2a2386368e850",
+   "732445923063d03b",
+   "7621834183ec047a",
+   "80969bfcec53911f",
+   "9886686ff0a2acec",
+   "ddb047da0fa8932e"
+  ],
+  "32": [
+   "0210c51bdee8690f",
+   "0d3d32b9a7f658fa",
+   "44153cb0549226bb",
+   "7098f6a9a2101784",
+   "7acf7276ff35fb34",
+   "9dafda9a63b72e48",
+   "a9a2b5fef752632a",
+   "b3138f485cd166f4",
+   "dd8aeae4a096ee9b",
+   "e87c1fa85c4302f6",
+   "f38f9b1e87a05289",
+   "fa555c096be65334"
+  ],
+  "48": [
+   "40c0fc7bfc8cc877",
+   "7ba6988e557d4b23",
+   "bddd0ff858d1b3f7"
+  ]
+ }
+}
