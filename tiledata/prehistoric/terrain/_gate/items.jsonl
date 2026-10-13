@@ -1,0 +1,22 @@
+{"png": "ph-dirt.png", "kind": "terrain", "name": "다진 흙(마을 바닥)", "label": "prehistoric/ph-dirt"}
+{"png": "ph-dirt-b.png", "kind": "terrain", "name": "다진 흙(변주)", "label": "prehistoric/ph-dirt-b"}
+{"png": "ph-path.png", "kind": "terrain", "name": "밟힌 흙길", "label": "prehistoric/ph-path"}
+{"png": "ph-grass.png", "kind": "terrain", "name": "원시 풀밭", "label": "prehistoric/ph-grass"}
+{"png": "ph-grass-b.png", "kind": "terrain", "name": "원시 풀밭(변주)", "label": "prehistoric/ph-grass-b"}
+{"png": "ph-fern.png", "kind": "terrain", "name": "고사리 덮인 바닥", "label": "prehistoric/ph-fern"}
+{"png": "ph-stone.png", "kind": "terrain", "name": "평평한 암반", "label": "prehistoric/ph-stone"}
+{"png": "ph-gravel.png", "kind": "terrain", "name": "자갈밭", "label": "prehistoric/ph-gravel"}
+{"png": "ph-ash.png", "kind": "terrain", "name": "화산재 바닥", "label": "prehistoric/ph-ash"}
+{"png": "ph-crust.png", "kind": "terrain", "name": "굳은 용암 판(빛나는 틈)", "label": "prehistoric/ph-crust"}
+{"png": "ph-mud.png", "kind": "terrain", "name": "진흙", "label": "prehistoric/ph-mud"}
+{"png": "ph-mud-b.png", "kind": "terrain", "name": "진흙(변주)", "label": "prehistoric/ph-mud-b"}
+{"png": "ph-ash-b.png", "kind": "terrain", "name": "화산재 바닥(변주)", "label": "prehistoric/ph-ash-b"}
+{"png": "ph-swamp.png", "kind": "terrain", "name": "늪 물", "label": "prehistoric/ph-swamp"}
+{"png": "ph-swamp-f1.png", "kind": "terrain", "name": "늪 물 (프레임 2)", "label": "prehistoric/ph-swamp-f1"}
+{"png": "ph-swamp-f2.png", "kind": "terrain", "name": "늪 물 (프레임 3)", "label": "prehistoric/ph-swamp-f2"}
+{"png": "ph-water.png", "kind": "terrain", "name": "맑은 물(강·웅덩이)", "label": "prehistoric/ph-water"}
+{"png": "ph-water-f1.png", "kind": "terrain", "name": "맑은 물(강·웅덩이) (프레임 2)", "label": "prehistoric/ph-water-f1"}
+{"png": "ph-water-f2.png", "kind": "terrain", "name": "맑은 물(강·웅덩이) (프레임 3)", "label": "prehistoric/ph-water-f2"}
+{"png": "ph-lava.png", "kind": "terrain", "name": "용암", "label": "prehistoric/ph-lava"}
+{"png": "ph-lava-f1.png", "kind": "terrain", "name": "용암 (프레임 2)", "label": "prehistoric/ph-lava-f1"}
+{"png": "ph-lava-f2.png", "kind": "terrain", "name": "용암 (프레임 3)", "label": "prehistoric/ph-lava-f2"}

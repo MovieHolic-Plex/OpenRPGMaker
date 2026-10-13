@@ -18,6 +18,7 @@ describe("bundled tileset id parity", () => {
     const { createSkyIslandTileset } = await import("@/project/defaults/skyIsland");
     const { createSteampunkCityTileset } = await import("@/project/defaults/steampunkCity");
     const { createModernCampusTileset } = await import("@/project/defaults/modernCampus");
+    const { createPrehistoricTileset } = await import("@/project/defaults/prehistoric");
 
     const creators: Record<string, () => { id: string }> = {
       tex_joseon_baram: createJoseonBaramTileset,
@@ -28,6 +29,7 @@ describe("bundled tileset id parity", () => {
       tex_sky_island: createSkyIslandTileset,
       tex_steampunk_city: createSteampunkCityTileset,
       tex_modern_campus: createModernCampusTileset,
+      tex_prehistoric: createPrehistoricTileset,
     };
     const byKey = new Map(BUNDLED_EASYRPG_CHIPSET_ASSETS.map((a) => [a.textureKey, a]));
     for (const [textureKey, creator] of Object.entries(creators)) {

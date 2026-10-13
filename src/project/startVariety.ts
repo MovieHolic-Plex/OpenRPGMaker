@@ -142,6 +142,7 @@ const KIT_BUILD_LINES: Readonly<Record<string, string>> = {
   modern_campus: "캠퍼스(modern_campus): 먼저 list_tileset_references → read_tileset_reference 로 교정 배치(교문→본관→운동장)와 교사 조립 예제를 읽고, 교문·본관·운동장 땅을 그 배열대로 깐다(낱칸 번호로 칠하지 않는다). 건물 안은 build_hand_interior_room({tileset:\"modern_campus\", layout:{rooms:[{kind:\"classroom\"},{kind:\"corridor\"}…]}}) 로 짓고 문 앞 접근칸을 비운 채 이동 쌍으로 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   sf_station: "SF 정거장·네온 거리(sf_station): 맵 한 장은 compose_sf_station_map({kind, seed}) 한 번으로 짓는다 — kind 는 station(우주 정거장 로비·거주구)·lab(연구 기지 실내)·street(사이버펑크 네온 거리)·moonbase(달 기지 야외). 맵 크기는 도구 설명의 권장 크기로 만들고, list_map_locations 의 구역·건물 문 앞 접근칸에 이동 이벤트·인물을 둔다. 바깥과 안은 맵 두 장으로 짓고 create_transfer_pair 로 잇는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   gothic_manor: "고딕 저택(gothic_manor): 호러·추리·미술관 무대. build_gothic_place 로 장소를 한 장씩 짓는다 — 야외 manor-grounds(흉가 저택과 정원)·graveyard(공동묘지와 예배당)·gallery-plaza(미술관 앞마당), 실내 hall·library·bedroom·kitchen·cellar·chapel·crypt·gallery. 결과의 transferEndpoints 를 create_transfer_pair 에 그대로 넣어 잇고, 은신처는 기물 앞 칸에 상호작용 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  prehistoric: "선사 시대 원시 세계(prehistoric): 야외는 compose_prehistoric_map({style:\"village\"|\"swamp\"|\"volcano\"|\"fossil\"}) 한 번으로 깐다(바닥 가장자리·움집·동굴·소품 배치는 구성기가 한다). 동굴·움집 안은 같은 도구 style:\"cave-dwelling\"|\"chieftain-hut\"|\"shaman-hut\"|\"cave-gallery\" 로 새 맵에 짓고 link_prehistoric_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   wizarding_world: "마법 학교(wizarding_world): build_wizarding_space 로 성채 공간(복도·교실·기숙사 등)을 짓고 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
 };
 

@@ -219,6 +219,7 @@ const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
   "modern-sf": ["modern_city"],
   "snow-north": ["forest_harmony_snow"],
   "desert-east": ["forest_harmony_desert"],
+  prehistoric: ["prehistoric"],
 };
 
 function townArtHint(theme: string): string {
@@ -226,6 +227,8 @@ function townArtHint(theme: string): string {
   const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
   const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 던전·동굴은 등록 장소를 import_region_reference 로 가져온다(EasyRPG 계열 칩셋으로 새 맵을 만드는 것은 막혀 있다).";
   if (theme === "starmap" || theme === "alien") return `테마 ${theme} 전용 정거장·외계 거점 칩셋과 완성 지역은 현재 없다. 지형 생성과 거점 저작의 준비 상태를 구분해서 보고하라. 기본 로마풍 마을을 우주정거장으로 대신 깔지 마라. 월드맵 후보 아이콘은 사람이 하네스에서 선택한 것만 사용할 수 있다. ${interior}`;
+  // 선사(prehistoric): 마을·늪·화산·화석 계곡과 동굴·움집 실내는 구성기 도구 한 번으로 짓는다(낱칸 칠하기 대신).
+  if (theme === "prehistoric") return "야외 마을은 이 테마와 같은 문화권 번들 칩셋 prehistoric 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). compose_prehistoric_map({style:\"village\"|\"swamp\"|\"volcano\"|\"fossil\", newMap:{name}}) 한 번이 칩셋·크기를 맞춘 새 맵에 마을·땅·집·소품 배치까지 짓는다. 동굴·움집 안은 같은 도구의 실내 style(cave-dwelling·chieftain-hut·shaman-hut·cave-gallery)로 짓고 link_prehistoric_interior 로 잇는다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다.";
   if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
   return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")

@@ -21,6 +21,7 @@ import { STEAMPUNK_CITY_TEXTURE, createSteampunkCityTileset, ensureSteampunkCity
 import { MODERN_CAMPUS_TEXTURE, createModernCampusTileset, ensureModernCampusReferences, ensureModernCampusTileset } from "./modernCampus";
 import { SF_STATION_TEXTURE, createSfStationTileset, ensureSfStationReferences, ensureSfStationTileset } from "./sfStation";
 import { GOTHIC_MANOR_TEXTURE, createGothicManorTileset, ensureGothicManorReferences, ensureGothicManorTileset } from "./gothicManor";
+import { PREHISTORIC_TEXTURE, createPrehistoricTileset, ensurePrehistoricReferences, ensurePrehistoricTileset } from "./prehistoric";
 import { createEmeraldMonsterKitTileset, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture } from "./monsterKit";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
@@ -205,6 +206,11 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
         changed = ensureGothicManorTileset(project.tilesets[id]) || changed;
         changed = ensureGothicManorReferences(project.tilesets[id]) || changed;
       }
+      // 선사 시대 원시 세계 (prehistoric 굽기): 번들 칸 표·`ph-` 부품·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === PREHISTORIC_TEXTURE) {
+        changed = ensurePrehistoricTileset(project.tilesets[id]) || changed;
+        changed = ensurePrehistoricReferences(project.tilesets[id]) || changed;
+      }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       // 몬스터 수집 손 도트 시트(지역별): 다시 구운 시트면 칸 표를 번들 것으로, 아니면 빠진 번들 킷만 더한다.
       if (isMonsterKitTexture(asset.textureKey)) changed = ensureMonsterKitTileset(project.tilesets[id]) || changed;
@@ -376,6 +382,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === MODERN_CAMPUS_TEXTURE) return createModernCampusTileset();
   if (asset.textureKey === SF_STATION_TEXTURE) return createSfStationTileset();
   if (asset.textureKey === GOTHIC_MANOR_TEXTURE) return createGothicManorTileset();
+  if (asset.textureKey === PREHISTORIC_TEXTURE) return createPrehistoricTileset();
   if (isMonsterKitTexture(asset.textureKey)) return createMonsterKitTileset(asset.textureKey);
   if (isEmeraldMonsterKitTexture(asset.textureKey)) return createEmeraldMonsterKitTileset(asset.textureKey);
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();

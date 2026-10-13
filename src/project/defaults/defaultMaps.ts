@@ -35,6 +35,8 @@ const BUNDLED_PLAIN_GROUND_TILES: Record<string, number> = {
   modern_campus: 1,
   // SF 정거장: 갑판 판 기본 변형(sf:floor:deck-plate 첫 칸, 자리 키 핀 고정).
   sf_station: 60,
+  // 선사 시대 원시 세계: 4번 = 원시 풀밭(반복 가능한 아래층 바닥, 굽기 핀 tiledata/prehistoric/bake-pins.json 이 번호를 고정한다).
+  prehistoric: 4,
   scarloxy_chipset_grassland: 0,
   scarloxy_chipset_wilds: 0,
   atlas_biome_interior: 258,
