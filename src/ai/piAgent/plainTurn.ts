@@ -97,7 +97,7 @@ export function selectedEventFact(project: SelectedEventSource, mapId: string | 
   if (!event) return null;
   const pageIndex = pageId ? (event.pages ?? []).findIndex((page) => page.id === pageId) : -1;
   const page = pageIndex >= 0 ? ` · ${pageIndex + 1}번째 페이지` : "";
-  return `[선택한 이벤트] ${event.name ? `${event.name} ` : ""}(${event.id}) 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다. 다른 이벤트를 고르지 말고 get_event 로 이 id 를 읽어 고친다.`;
+  return `[선택한 이벤트] ${event.name ? `${event.name} ` : ""}(${event.id}) 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다. 다른 이벤트를 고르지 말고 get_event 로 이 id 를 읽어 고친다. 요청이 말하지 않은 다른 이벤트(반대쪽 맵의 문 포함)는 덮어쓰지 않는다 — 반대쪽 출입구가 필요하면 새 이벤트를 새 id 로 만든다.`;
 }
 
 /** 평문 한 줄 → 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */

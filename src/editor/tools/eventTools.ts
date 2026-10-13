@@ -1,3 +1,4 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
@@ -1104,6 +1105,12 @@ const upsertEvent: ToolDefinition = {
       : rawPatch;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    // transfer 는 m2Command 가 아니다 — direction·fade 는 명령 바로 아래에 둔다. `fields` 에 넣으면 조용히 무시돼 변경이 사라진다
+    // (실측 2026-10-13: 「출입구 방향을 맞춰줘」가 fields:{direction} 로 저장돼 방향이 그대로였다).
+    const misplaced = (node: unknown): boolean => Array.isArray(node)
+      ? node.some(misplaced)
+      : !!node && typeof node === "object" && (((node as { kind?: unknown }).kind === "transfer" && "fields" in (node as object)) || Object.values(node as object).some(misplaced));
+    if (misplaced(patch)) throw new ToolError("transfer 명령에는 fields 가 없습니다. direction(up/down/left/right/retain)·fade·mapId·x·y 를 명령 바로 아래에 직접 적으세요.", { code: "invalid-args" });
     // A trigger describes when to run; commands belong beside it. Do this on the
     // incoming patch before normalization can turn an omitted command list into [].
     const commandOwners = [
@@ -2610,7 +2617,7 @@ function cleanOptionalString(raw: unknown): string | undefined {
 const createTransferPair: ToolDefinition = {
   name: "create_transfer_pair",
   description:
-    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
+    "두 맵 사이 양방향 출입구를 원자적으로 생성한다. 이미 있는 왕복 출입구의 「방향을 맞춰줘」는 patch_event_page 로 **두 문 모두**의 transfer.direction 을 바꾼다(가는 문은 도착해서 바라볼 쪽, 돌아오는 문은 그 반대쪽 — 한쪽만 바꾸면 안 맞는다). 「이 맵을 월드맵의 북쪽에 연결」은 월드맵의 **북쪽 가장자리(y 가 작은 쪽)** 에 이 맵으로 가는 출입구를 놓는다는 뜻이다(남쪽 가장자리가 아니다). 출입구는 벽·맵 가장자리에 바짝 붙인 통행 가능 칸에 놓는다 인자 {a:{mapId,x,y}, b:{mapId,x,y}} — 문·계단·텔레포트의 왕복 쌍을 한 번에 만든다. 좌표는 벽·맵 끝에 바짝 붙인 통행 칸(1칸 띄우지 말 것). 문의 시각 배치는 place_door."
     + "(1칸 안쪽 좌표는 자동으로 당기고, 벽 칸 위 요청은 바로 앞 통행 칸으로 옮긴다 — playerTouch는 벽 위에서 발동하지 않음)."
     + " 착지점은 상대 출입구에 인접한 실제 왕복 통행 가능 칸으로 자동 선정(즉시 재전이 방지). 닿지 않는 출입구·봉쇄는 실패한다. 문 그림을 연결할 때는 place_door 결과의 transferEndpoint(x,y,doorAt)를 a/b에 넣는다. doorAt이 있으면 문앞을 옆 칸으로 옮기지 않는다.",
   mode: "write",
@@ -4095,7 +4102,17 @@ const patchEventPage: ToolDefinition = {
     const { id: _ignoredId, ...fields } = set as Record<string, unknown>;
     const nextPages = pages.map((page, i) => i === index ? { ...structuredClone(page), ...structuredClone(fields), id: page.id } : structuredClone(page));
     const result = upsertEvent.run(draft, { mapId: args.mapId, event: { id: event.id, pages: nextPages } });
-    return { ...result, summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
+    // commands 는 배열 통째 교체라 유지할 명령을 빠뜨리기 쉽다. 사라진 원래 명령을 결과에 적어 모델이 바로 되살리게 한다
+    // (실측 2026-10-13: 「화면 흔들림 추가」가 기존 화면 숨기기·대기·표시 명령을 지웠다).
+    const dropped: string[] = [];
+    if (Array.isArray(fields.commands)) {
+      const kept = fields.commands as unknown[];
+      for (const old of pages[index]!.commands ?? []) {
+        if (!kept.some((next) => jsonEqual(next, old))) dropped.push(String((old as { kind?: string }).kind ?? "?") + ((old as { commandId?: string }).commandId ? `(${(old as { commandId?: string }).commandId})` : ""));
+      }
+    }
+    const warnings = dropped.length ? [...(result.warnings ?? []), `원래 명령 ${dropped.length}개가 빠졌습니다: ${dropped.join(", ")}. 지우라는 요청이 아니었다면 get_event 로 원본을 읽어 다시 포함해 patch_event_page 를 한 번 더 호출하세요.`] : result.warnings;
+    return { ...result, ...(warnings ? { warnings } : {}), summary: `페이지 ${index}의 ${Object.keys(fields).join(", ")} 수정 — ${result.summary}`,
       data: { ...(result.data as Record<string, unknown> | undefined), pageIndex: index } };
   },
 };

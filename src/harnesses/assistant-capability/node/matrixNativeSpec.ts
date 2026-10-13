@@ -359,7 +359,10 @@ export function judge(id: string, input: JudgeInput): Verdict {
       if (now[0].speaker !== was[0].speaker) return fail('요청하지 않은 화자(speaker)가 바뀌었다');
       return isDeepStrictEqual(kinds(now), kinds(was)) && isDeepStrictEqual(now.slice(1), was.slice(1)) ? pass('첫 대사만 교체') : fail('첫 대사 밖의 명령이 바뀌었다');
     });
-    case 'add-switch-condition': return eventEdit(input, NPC, (b, a) => {
+    case 'add-switch-condition': {
+      // Giving a still-unnamed switch a name so the condition reads sensibly is part of using it; any other switch edit is not.
+      const namesOnly = (doc: any) => { const copy = clone(doc); copy.switches = (copy.switches ?? []).map((entry: any) => ((before as any).switches ?? []).some((old: any) => old.id === entry.id && !String(old.name ?? '').trim()) ? { ...entry, name: '' } : entry); return copy; };
+      return eventEdit({ ...input, after: namesOnly(input.after), before: namesOnly(input.before) }, NPC, (b, a) => {
       const ids = new Set((after as any).switches.map((entry: any) => entry.id));
       const conditionsOf = (event: any) => (event.pages ?? []).flatMap((page: any) => page.conditions ?? []);
       const added = conditionsOf(a).filter((condition: any) => !conditionsOf(b).some((old: any) => isDeepStrictEqual(old, condition)));
@@ -367,7 +370,8 @@ export function judge(id: string, input: JudgeInput): Verdict {
       // Either the page itself is gated, or a new gated page is added beside it; the existing commands must survive.
       const survives = (a.pages ?? []).some((page: any) => isDeepStrictEqual(page.commands, b.pages[0].commands));
       return survives ? pass(`스위치 조건 ${added.map((condition: any) => condition.switchId).join(',')} 추가`) : fail('원래 대사·명령이 사라졌다');
-    });
+      });
+    }
     case 'remove-move-command': return eventEdit(input, NPC, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
       return isDeepStrictEqual(now, was.filter((command: any) => command.kind !== 'moveEvent')) ? pass('이동 명령만 삭제') : fail('이동 명령만 지워지지 않았다');
