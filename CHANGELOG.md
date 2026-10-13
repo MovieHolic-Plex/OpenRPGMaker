@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.207.2 — 2026-10-14
+
+### 수정
+
+- **ci** — refresh the CSS live-class baseline after the surface update (`196835e`)
+
 ## 0.207.1 — 2026-10-14
 
 ### 수정
