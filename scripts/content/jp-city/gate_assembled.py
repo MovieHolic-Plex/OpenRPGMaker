@@ -130,8 +130,9 @@ def covering(kid: str, context: str = 'bundle') -> tuple[str | None, str]:
             sub = im[y:y + h, x:x + w] if y + h <= im.shape[0] and x + w <= im.shape[1] else None
             if sub is None or not np.array_equal(sub[..., 3] > 0, strip[..., 3] > 0) or not np.array_equal(sub[strip[..., 3] > 0], strip[strip[..., 3] > 0]):
                 why_last = f'띠 그림이 조립 표본 {name} 에 화소 그대로 들어 있지 않다(띠를 다시 그렸다 — gate_assembled.py build 후 다시 판정)'; continue
-            why = OG.refusal(m['png'], kind='structure', context=context)
-            if why is None or '보정되지 않았다' in why: return name, ('provisional' if why else 'pass')
+            import gate_kinds as GK
+            st, why = GK.state(m['png'], 'structure', context)
+            if st: return name, st
             why_last = f'조립 표본 {name}: {why}'
     return None, why_last
 

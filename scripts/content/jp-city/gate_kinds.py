@@ -70,6 +70,32 @@ def gate_kits() -> list[str]:
     return sorted(f[:-4] for f in os.listdir(GATE_DIR) if f.endswith('.png'))
 
 
+_CUR = None
+def current_profile() -> str:
+    """현재 판정 프로필 해시(npm run harness -- object-gate status 의 「현재 규칙 프로필 <해시>」). 한 번만 조회."""
+    global _CUR
+    if _CUR: return _CUR
+    import subprocess
+    out = subprocess.run(['npm', 'run', 'harness', '--', 'object-gate', 'status'], cwd=os.path.join(HERE, '..', '..', '..'), capture_output=True, text=True).stdout
+    m = re.search(r'현재 규칙 프로필 ([0-9a-f]{16})', out)
+    if not m: raise RuntimeError('현재 판정 프로필 해시를 못 읽었다(object-gate status)')
+    _CUR = m.group(1); return _CUR
+
+
+def state(png_path: str, kind: str, context: str = 'bundle'):
+    """('pass'|'provisional', None) 또는 (None, 이유). provisional = 현재 프로필의 PASS 영수증이지만 프로필이 아직 보정 전.
+    영수증이 FAIL 이거나 옛 프로필·다른 종류면 통과로 세지 않는다(OG.refusal 은 보정 여부를 판정보다 먼저 봐서 FAIL 도 「보정 안 됨」으로만 말한다)."""
+    import object_gate as OG
+    sha = OG.pixel_sha256(png_path)
+    rc = OG.read_receipt(sha)
+    if not rc: return None, '3/4 시점 판정 영수증이 없다 — object-gate review 를 먼저 받아라'
+    if rc.get('kind') != kind: return None, f"영수증 종류({rc.get('kind')})가 요청 종류({kind})와 다르다"
+    if rc.get('profileHash') != current_profile() and rc.get('profileHash') not in OG.calibrated_profiles():
+        return None, f"옛 판정 프로필({rc.get('profileHash')}) 영수증이다 — 다시 판정받아라"
+    if rc.get('verdict') != 'pass': return None, '3/4 시점 판정 불합격(' + ' · '.join(rc.get('reasons') or ['fail']) + ')'
+    return ('pass' if rc.get('profileHash') in OG.calibrated_profiles() else 'provisional'), None
+
+
 def check_all(context: str = 'bundle') -> dict:
     """모든 _gate 키트의 영수증 확인. {'ok':[...], 'bad':[(id, kind, why)], 'total':n}. 모델 호출 없음."""
     import object_gate as OG
@@ -82,10 +108,10 @@ def check_all(context: str = 'bundle') -> dict:
             if name: covered.append((kid, name + (' [미보정 프로필 임시]' if st == 'provisional' else ''))); continue
             bad.append((kid, kind, st)); continue
         try:
-            why = OG.refusal(os.path.join(GATE_DIR, kid + '.png'), kind=kind, context=context)
+            st, why = state(os.path.join(GATE_DIR, kid + '.png'), kind, context)
         except Exception as e:  # 깨진 PNG 등
-            why = f'확인 실패: {e}'
-        if why and '보정되지 않았다' in why:                      # 판정 자체는 통과했지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
+            st, why = None, f'확인 실패: {e}'
+        if st == 'provisional':                                  # 현재 프로필의 PASS 이지만 프로필이 아직 보정 전 → 임시 통과(보고에 「미보정」 표기)
             prov.append(kid); continue
         (bad if why else ok).append((kid, kind, why) if why else kid)
     return dict(ok=ok, prov=[p if isinstance(p, str) else p[0] for p in prov], covered=covered, bad=bad, total=len(ok) + len(prov) + len(covered) + len(bad))
