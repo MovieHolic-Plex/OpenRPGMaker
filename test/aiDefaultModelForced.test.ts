@@ -18,7 +18,7 @@ import { tierModelFor } from "@/ai/modelPresets";
 import { modelForRole } from "@/ai/modelRoles";
 import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
-const FORCED_DEFAULT = "gemini-3.8-flash";
+const FORCED_DEFAULT = "gemini-4-argon";
 
 describe("강제 기본 모델", () => {
   it("감독 모델과 실행(lite) 모델 상수가 모두 강제 기본값이다", () => {

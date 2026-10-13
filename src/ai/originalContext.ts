@@ -28,8 +28,9 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
     "gemini-3.5-flash": 1048576,
     "gemini-3.6-flash": 1048576,
     "gemini-3.7-flash": 1048576,
-    // 3.8-flash 는 지금도 접두 폴백(gemini-*)으로 같은 창을 받지만, 기본 모델이므로 명시해 둔다 —
-    // 폴백 규칙이 바뀌면 조용히 창이 줄어드는 취약함을 없앤다(2026-09-26 기본값 이동).
+    // 4-argon·3.8-flash 는 지금도 접두 폴백(gemini-*)으로 같은 창을 받지만, 기본 모델이므로 명시해 둔다 —
+    // 폴백 규칙이 바뀌면 조용히 창이 줄어드는 취약함을 없앤다(2026-09-26 / 2026-10-14 기본값 이동).
+    "gemini-4-argon": 1048576,
     "gemini-3.8-flash": 1048576,
     "gemini-3.7-flash-tiered": 1048576,
     "gpt-oss-120b": 131072,
