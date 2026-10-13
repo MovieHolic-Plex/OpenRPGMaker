@@ -240,45 +240,51 @@ def _(c):
 
 
 # ───────────────────────── 탈것 ─────────────────────────
+def canopy(c, x, y, w, h, s=0, tint='glass'):
+    """작은 유리 캐노피(트럭 캐빈): 위 밝은 반사 → 아래 어두움 + 사선 반사."""
+    for j in range(h):
+        k = max(0, 2 - j)
+        c.HL(x + k, y + j, w - 2 * k, K(tint, (3, 2, 1, 0, -1, -1)[min(5, j)]))
+    c.HL(x + 2, y, w - 4, K('glow', 0)); c.line(x + 3, y + h - 1, x + 5, y + 1, K('glass', 3))
+
+
 def hovercar(c, mat, accent, s=0, taxi=False):
-    """호버 차(3/4): 넓은 지붕 윗면(밝음, 둥근 끝) 한가운데 유리 캐노피(사방에 차체 테) + 밝은 턱 + 어두운 옆판(문 이음·띠·전조등·후미등) + 밑 추진 빛 + 그림자."""
+    """호버 차(3/4 내려다봄): 사다리꼴 지붕 윗면(뒤로 좁아짐, 뒤 어둡고 앞 밝음) 위 유리 돔 캐노피(법선 조명) + 밝은 턱 + 짧은 어두운 옆판(문 이음·띠·전조등·후미등) + 밑 추진 빛 + 그림자."""
     drop_shadow(c, 24, 29, 21, 2, 1)
-    y0, top, side = 4, 14, 7
-    for j in range(top):
-        k = (3, 2, 1, 1)[j] if j < 4 else 0
-        c.HL(2 + k, y0 + j, 44 - 2 * k, K(mat, 3 if j < 2 else 2 if j < 10 else 1))
-    c.HL(5, y0, 38, K(mat, 1))
-    c.VL(2, y0 + 4, top - 4, K(mat, 3)); c.VL(45, y0 + 4, top - 4, K(mat, 0))
-    # 캐노피(가운데, 사방 테)
-    cx0, cy0, cw, ch = 14, y0 + 3, 20, 8
-    for j in range(ch):
-        k = (2, 1, 0, 0, 0, 0, 1, 2)[j]
-        c.HL(cx0 + k, cy0 + j, cw - 2 * k, K('glass', (3, 2, 1, 0, 0, -1, -1, -2)[j]))
-    c.HL(cx0 + 3, cy0, cw - 6, K('glow', 0)); c.line(cx0 + 4, cy0 + 6, cx0 + 7, cy0 + 2, K('glass', 3))
-    c.HL(cx0 + 2, cy0 + ch, cw - 4, K(mat, 0))
-    c.HL(5, y0 + 11, 7, K(mat, 3)); c.HL(36, y0 + 11, 7, K(mat, 0))          # 보닛·트렁크 결
-    c.R(38, y0 + 2, 5, 2, K(accent, 2))                                        # 뒤 날개 등
+    x0, w, y0, top, side = 2, 44, 3, 16, 6
+    for r in range(top):
+        t = r / (top - 1); l = int(round(7 * (1 - t) ** 1.6)); xs, xe = x0 + l, x0 + w - l
+        tone = 0 if r < 2 else 1 if r < 6 else 2 if r < 12 else 3
+        c.HL(xs, y0 + r, xe - xs, K(mat, tone))
+        c.P(xs, y0 + r, K(mat, tone + 1)); c.P(xe - 1, y0 + r, K(mat, tone - 2))
+    c.HL(x0 + 7, y0, w - 14, K(mat, -1))
+    dome2(c, 24, y0 + 11, 11, 8, 'glass', s, ribs=False)
+    c.HL(14, y0 + 12, 21, K(mat, 0))
+    c.line(17, y0 + 8, 21, y0 + 5, K('glass', 3)); c.P(18, y0 + 6, K('glow', 0))
+    c.R(5, y0 + 10, 5, 2, K(mat, 3)); c.R(39, y0 + 10, 5, 2, K(mat, 1))             # 보닛·트렁크 결
+    c.R(41, y0 + 5, 3, 2, K(accent, 2))
     fy = y0 + top
-    c.HL(2, fy, 44, K(mat, 3))                                                 # 턱
+    c.HL(x0, fy, w, K(mat, 3))
     for j in range(1, side):
-        c.HL(2 if j < side - 1 else 3, fy + j, 44 if j < side - 1 else 42, K(mat, -1 if j < 4 else -2))
-    c.HL(2, fy + 1, 44, K(mat, -3))
-    c.HL(3, fy + 3, 42, K(accent, 1))
-    for dx in (16, 31): c.VL(dx, fy + 1, side - 2, K(mat, -3))
-    c.R(2, fy + 1, 2, 2, K('yellow', 3)); c.P(2, fy + 3, K('glow', 1)); c.R(44, fy + 1, 2, 2, K('magenta', 2))
+        c.HL(x0 + (1 if j == side - 1 else 0), fy + j, w - (2 if j == side - 1 else 0), K(mat, -2 if j < 4 else -3))
+    c.HL(x0 + 1, fy + 2, w - 2, K(accent, 1))
+    for dx in (17, 31): c.VL(dx, fy + 1, side - 2, K(mat, -3))
+    c.R(x0, fy + 1, 2, 2, K('yellow', 3)); c.R(x0 + w - 2, fy + 1, 2, 2, K('magenta', 2))
     for px in (7, 35):
         c.R(px, fy + side, 6, 1, K(accent, 3)); c.R(px + 1, fy + side + 1, 4, 1, K(accent, 1))
+    if not taxi:                                                                # 지붕 위 짐 받침대(윗면 위에 놓인 물건 — 지붕이 «위를 향한 면»임을 보인다)
+        box2(c, 17, 0, 14, 3, 2, 'cable', topmat='hull', tt=1, ft=0); c.HL(18, 1, 12, K('hull', 3)); c.P(18, 4, K(accent, 3)); c.P(29, 4, K(accent, 3))
     if taxi:
-        box2(c, 19, 0, 10, 3, 3, 'cable', topmat='yellow', tt=2, ft=0); c.R(20, 3, 8, 1, K('yellow', 3))
-        for i in range(4, 44, 4): c.R(2 + i, fy + 4, 2, 1, K('cable', -2)); c.R(4 + i, fy + 5, 2, 1, K('cable', -2))
+        box2(c, 19, 0, 10, 3, 2, 'cable', topmat='yellow', tt=2, ft=0); c.R(20, 3, 8, 1, K('yellow', 3))
+        for i in range(4, 42, 4): c.R(x0 + i, fy + 3, 2, 1, K('cable', -2)); c.R(x0 + 2 + i, fy + 4, 2, 1, K('cable', -2))
     c.outline()
 
 
-@piece2('pod-car', '호버 포드(둥근 차체 윗면 + 유리 캐노피 + 옆 띠·문 이음 + 밑 추진 빛 + 그림자)', 3, 2, 'structure', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '차'], desc='세워 둔 호버 차. 왼쪽이 앞.', **S)
+@piece2('pod-car', '호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 짧은 옆판 + 밑 추진 빛 + 그림자)', 3, 2, 'structure', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '차'], desc='세워 둔 호버 차. 왼쪽이 앞.', **S)
 def _(c): hovercar(c, 'magenta', 'cyan', 1)
 
 
-@piece2('street-pod-car-cyan', '시안 호버 포드(둥근 차체 윗면 + 유리 캐노피 + 밑 추진 빛)', 3, 2, 'structure', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '차'], desc='세워 둔 호버 차. 왼쪽이 앞.', **S)
+@piece2('street-pod-car-cyan', '시안 호버 포드(사다리꼴 지붕 윗면 + 유리 돔 캐노피 + 지붕 짐 받침대 + 밑 추진 빛)', 3, 2, 'structure', solid=[(0, 1), (1, 1), (2, 1)], tags=['탈것', '차'], desc='세워 둔 호버 차. 왼쪽이 앞.', **S)
 def _(c): hovercar(c, 'cyan', 'magenta', 2)
 
 
@@ -422,9 +428,9 @@ def _(c):
 
 @piece2('street-sign-vertical', '세로 네온 간판(두꺼운 판 윗면 + 램프 테 + 칸마다 도형 + 고정 다리)', 1, 2, 'box', solid=[(0, 1), (0, 0)], tags=['간판', '네온'], desc='세로 간판. 두 칸 모두 막힘.', **S)
 def _(c):
-    fy = box2(c, 2, 0, 12, 6, 24, 'cable', topmat='hull', tt=2, ft=-1); c.HL(3, 2, 10, K('hull', 3)); c.HL(4, 3, 8, K('cyan', 1))
-    c.R(3, fy + 1, 10, 22, K('cyan', -2)); c.VL(3, fy + 1, 22, K('cyan', 3)); c.VL(12, fy + 1, 22, K('cyan', 1)); c.HL(3, fy + 1, 10, K('cyan', 3))
-    for k, y in enumerate(range(fy + 4, fy + 20, 5)):
+    fy = box2(c, 2, 0, 12, 8, 22, 'cable', topmat='hull', tt=2, ft=-1); grille(c, 4, 2, 8, 3, 'hull', 1); c.HL(3, 6, 10, K('hull', 3))
+    c.R(3, fy + 1, 10, 20, K('cyan', -2)); c.VL(3, fy + 1, 20, K('cyan', 3)); c.VL(12, fy + 1, 20, K('cyan', 1)); c.HL(3, fy + 1, 10, K('cyan', 3))
+    for k, y in enumerate(range(fy + 4, fy + 18, 5)):
         col = ('magenta', 'yellow', 'cyan', 'violet')[k % 4]
         if k % 2: c.R(5, y, 6, 3, K(col, 2)); c.HL(5, y, 6, K(col, 3))
         else: c.ell(8, y + 1, 2, 1, K(col, 3)); c.P(8, y + 1, K('glow', 0))
@@ -527,27 +533,28 @@ def _(c):
     c.outline()
 
 
-@piece2('street-lamp-post', '가로등(받침 + 가는 기둥 + 위 넓은 등 머리(윗면 5줄·아래 발광면) + 땅 빛 웅덩이)', 1, 2, 'column', solid=[(0, 1)], tags=['가로등'], desc='거리 가로등. 아래 칸만 막힘.', **S)
+@piece2('street-lamp-post', '가로등(받침 + 가는 기둥 + 위 넓은 등 머리 상자(윗면 6줄·아래 발광면) + 땅 빛 웅덩이)', 1, 2, 'column', solid=[(0, 1)], tags=['가로등'], desc='거리 가로등. 아래 칸만 막힘.', **S)
 def _(c):
     c.ell(8, 29, 6, 2, K('cyan', -2)); c.ell(8, 29, 4, 1, K('cyan', -1))
-    c.R(7, 9, 2, 19, K('hull', -1)); c.VL(7, 9, 19, K('hull', 1))
+    c.R(7, 11, 2, 17, K('hull', -1)); c.VL(7, 11, 17, K('hull', 1))
     c.R(5, 26, 6, 4, K('hull', -2)); c.HL(5, 26, 6, K('hull', 1)); c.HL(5, 29, 6, K('hull', -3))
-    fy = box2(c, 2, 0, 12, 5, 3, 'hull', tt=2, ft=-1)
-    c.HL(4, 2, 8, K('hull', 3))
-    c.R(3, fy + 1, 10, 2, K('cyan', 2)); c.HL(3, fy + 2, 10, K('glow', 0))
+    fy = box2(c, 1, 0, 14, 7, 3, 'hull', tt=2, ft=-1)
+    grille(c, 4, 2, 8, 2, 'hull', 1)
+    c.R(2, fy + 1, 12, 1, K('cyan', 2)); c.HL(3, fy + 2, 10, K('glow', 0))
     for j in range(fy + 3, fy + 7): c.HL(3 + (j - fy - 3), j, 10 - 2 * (j - fy - 3), K('cyan', -3 + (fy + 6 - j) // 2))
     c.outline()
 
 
-@piece2('street-bollard', '발광 볼라드(위에서 보이는 둥근 윗면 램프 + 짧은 원통 + 고리 띠)', 1, 1, 'round_body', solid=[(0, 0)], tags=['볼라드'], desc='거리 볼라드.', **S)
+@piece2('street-bollard', '발광 볼라드(위에서 보이는 넓은 둥근 윗면 + 테 램프 고리 + 짧은 원통)', 1, 1, 'round_body', solid=[(0, 0)], tags=['볼라드'], desc='거리 볼라드.', **S)
 def _(c):
-    drop_shadow(c, 8, 14, 4, 1, 1)
-    for y in range(5, 14):
-        for x in range(4, 13):
-            u = (x - 8) / 4
+    drop_shadow(c, 8, 14, 5, 1, 1)
+    for y in range(6, 14):
+        for x in range(3, 14):
+            u = (x - 8) / 5
             if abs(u) <= 1: c.P(x, y, K('hull', 0 if u < -0.5 else -2 if u > 0.5 else -1))
-    c.HL(4, 9, 9, K('yellow', 2)); c.HL(4, 10, 9, K('yellow', 0))
-    c.ell(8, 5, 4, 3, K('hull', 2)); c.ell(8, 5, 3, 2, K('yellow', 1)); c.ell(8, 4, 2, 1, K('yellow', 3)); c.P(7, 4, K('glow', 0))
+    c.HL(3, 11, 11, K('yellow', 1))
+    c.ell(8, 6, 5, 4, K('yellow', 2)); c.ell(8, 6, 4, 3, K('hull', 2)); c.ell(8, 6, 3, 2, K('hull', 3)); c.ell(7, 5, 1, 1, K('white', 3))
+    c.P(4, 5, K('glow', 0))
     c.outline()
 
 

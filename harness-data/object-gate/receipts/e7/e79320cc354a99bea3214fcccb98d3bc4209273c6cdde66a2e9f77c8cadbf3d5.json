@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e79320cc354a99bea3214fcccb98d3bc4209273c6cdde66a2e9f77c8cadbf3d5",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "자판기(깊은 윗면 + 빛나는 진열창 + 색 캔 + 버튼 줄 + 꺼내는 곳)",
+ "label": "sf-station/sf-vending",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn across rows 1-5 (approx 5 rows tall) above the front face starting at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5264
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn across rows 1-5 (approx 5 pixel rows deep) with shading and surface detail, preceding the front face from row 6 down to row 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5267
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly drawn from row 1 to row 5 (5 pixel rows deep) above the front face, correctly rendering the top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4997
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vending machine",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the vending machine is clearly rendered across rows 1–5 (5 pixel rows deep) above the front face (rows 6–30), showing a proper 3/4 top-down perspective without receding side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6660
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.397Z",
+ "cells": {
+  "16": [
+   "0963a7e236b1c5b2",
+   "cc1e621822672dac"
+  ],
+  "24": [
+   "094ca9e61e23d3f0",
+   "13838a3325f2ba5b",
+   "270bba0bea24ef72",
+   "319cc108ea4221b1",
+   "504eb856bf2a7c62",
+   "5d3cc707c02af625",
+   "6e8f66445bb39b79",
+   "965f4424d1f83ff8",
+   "b2fccb13c6cb5cec",
+   "e3520233e59356d3",
+   "ee024a89a19278a1",
+   "fae5b438b08ef01d"
+  ],
+  "32": [
+   "0acc4139dcf1a8a3",
+   "43d0802bde02ae78",
+   "9092954e33cf690f"
+  ],
+  "48": [
+   "1f876b93d3c8f933",
+   "7556be5a7e091aab",
+   "821467b203075f31",
+   "88cea6943d16472f",
+   "ed8fad55d111d47d",
+   "ee50a112894280e7"
+  ]
+ }
+}

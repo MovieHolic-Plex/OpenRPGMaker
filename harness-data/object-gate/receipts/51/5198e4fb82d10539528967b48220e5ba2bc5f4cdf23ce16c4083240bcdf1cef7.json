@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5198e4fb82d10539528967b48220e5ba2bc5f4cdf23ce16c4083240bcdf1cef7",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "발광 볼라드(위에서 보이는 둥근 윗면 램프 + 짧은 원통 + 고리 띠)",
+ "label": "sf-station/sf-street-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "illuminated bollard / cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation: the decorative ring band (rows 9-10) and body seams are completely flat horizontal lines with no 3/4 downward elliptical curvature, and the yellow lamp area is a 6x6 circle/dome viewed directly from the side/front rather than a foreshortened top cap ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10046
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "glowing bollard cylinder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinder is drawn in pure front elevation: the sides run vertically from row 3 to row 14, the middle yellow band (rows 9-10) is completely flat and horizontal rather than curved, and the top forms a rounded dome profile rather than a foreshortened elliptical top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylinder is drawn in pure front elevation: its outer side outlines are straight vertical lines from row 3 to 14, the decorative band at rows 9-10 is completely horizontal with no elliptical curvature, and the yellow lamp is drawn as a flat 6x6 circle rather than a foreshortened ellipse on a top surface. No horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14587
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bollard (cylindrical post with glowing lamp and accent band)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation: straight vertical side outlines from row 3 to 14, completely flat horizontal stripes across the cylinder body (rows 8–10), and no elliptical top cap surface showing the cylinder's horizontal cross-section foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10606
+  }
+ ],
+ "decidedAt": "2026-10-13T16:11:07.399Z",
+ "cells": {
+  "16": [
+   "627995ad54feb1c7"
+  ],
+  "24": [
+   "1a1938b1dca9c08a",
+   "41706f8c8af4c429",
+   "46cefaf45d8a92b6",
+   "d1350450253e3a29",
+   "df66b3323a685351",
+   "dfd2c66e5fe61629"
+  ],
+  "32": [
+   "19e42066d880e9dc",
+   "53ad18cd3c9728fd",
+   "6d2fb459cddc508d",
+   "8f7b3dae179b70ce",
+   "8f98d0132ad7082e",
+   "a86f7b304dd69b34"
+  ],
+  "48": [
+   "27a03a64fd689f1b",
+   "8e7bafa4d41ef269",
+   "d7f9ae1764f9d172",
+   "e408c5026734cdf2",
+   "e4b66ca04b6b57a8",
+   "ed4dc3557f6c862d"
+  ]
+ }
+}

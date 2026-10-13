@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "052f6e9a92b2b78cbe4fbe359df872e5f9ad685426a81a128c0cba4e9d19bd27",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "시안 호버 포드(둥근 차체 윗면 + 유리 캐노피 + 밑 추진 빛)",
+ "label": "sf-station/sf-street-pod-car-cyan",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hover pod vehicle with glass canopy and front bumper",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn completely in pure front elevation facing the camera directly, showing only the front windshield and bumper. There is no visible top surface/roof foreshortened from above (top edge at row 2 is a single-pixel flat outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4996
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hover pod body with canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn as a flat front elevation; the roof terminates in a single 1px outline at row 2 with no foreshortened top surface or roof visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4376
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hover pod vehicle with glass canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn in a pure front elevation view facing directly at the camera. The canopy and front bumper are viewed straight-on, with only a 1px black outline at row 2 representing the roof and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5160
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hover pod vehicle with glass canopy and thrusters",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hover pod is drawn entirely in a flat front elevation. The roof/canopy terminates in a flat 1px horizontal outline at row 2 with no foreshortened top surface visible, and the interior dome/seat and lower bumper are seen directly from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4523
+  }
+ ],
+ "decidedAt": "2026-10-13T16:15:33.034Z",
+ "cells": {
+  "16": [
+   "1a21c745f3217333",
+   "1a4dc053e1a08ead",
+   "5ce4fed2dbf04915",
+   "68ef39d8ecc241fc",
+   "a2a163f0ad3a506d",
+   "bc6d7f94e1374975"
+  ],
+  "24": [
+   "276dcaa51b93418b",
+   "5ca71386aa07d876",
+   "92c5fa3c6b557f86",
+   "a1f088d7191afb0a",
+   "ae43115473a36a17",
+   "b42629514984ee41",
+   "e0d14c7478f4a8d9",
+   "f909d0f48c9d8b91"
+  ],
+  "32": [
+   "7728b6a848fdbc6c",
+   "a2e82ff3409baf8f",
+   "ad9384926df356ec",
+   "d446a8308d6775b8",
+   "e8df5148204da4f4",
+   "eda42e2a07dec056"
+  ],
+  "48": [
+   "1227379cd0e206bf",
+   "fc21aea463ec1973"
+  ]
+ }
+}

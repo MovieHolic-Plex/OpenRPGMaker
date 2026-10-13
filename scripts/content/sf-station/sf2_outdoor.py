@@ -474,21 +474,21 @@ def _(c):
     c.outline()
 
 
-@piece2('rover', '달 탐사 로버(넓은 흰 지붕 윗면 + 태양 전지판 + 앞 조종석 유리 + 어두운 옆판 + 바퀴 넷 + 그림자)', 3, 2, 'structure', solid=[(x, 1) for x in range(3)], tags=['탈것', '로버'], desc='달 표면 탐사차. 왼쪽이 앞.', **O)
+@piece2('rover', '달 탐사 로버(위에서 내려다본 넓은 흰 지붕 윗면 + 태양 전지판 + 조종석 유리 + 양옆으로 튀어나온 바퀴 넷 윗면 + 짧은 앞면 + 그림자)', 3, 2, 'structure', solid=[(x, 1) for x in range(3)], tags=['탈것', '로버'], desc='달 표면 탐사차. 왼쪽이 앞.', **O)
 def _(c):
-    drop_shadow(c, 24, 29, 21, 2, 1)
-    for x in (4, 34):
-        c.R(x, 19, 10, 9, K('cable', -1)); c.HL(x, 19, 10, K('cable', 1)); c.HL(x, 27, 10, K('cable', -3))
-        for k in range(x + 1, x + 10, 2): c.P(k, 22, K('cable', 2)); c.P(k, 25, K('cable', -2))
-        c.R(x + 3, 22, 4, 3, K('hull', 1))
-    fy = box2(c, 1, 2, 46, 13, 7, 'white', tt=2, ft=-2)
-    c.R(16, 4, 22, 9, K('navy', 0))                                            # 태양 전지판(윗면)
-    for x in range(16, 38, 4): c.VL(x, 4, 9, K('navy', -2))
-    c.HL(16, 8, 22, K('navy', -2)); c.HL(16, 4, 22, K('navy', 2)); c.P(18, 5, K('glass', 3)); c.P(22, 5, K('glass', 2))
-    c.R(3, 4, 10, 8, K('glass', 0)); c.HL(3, 4, 10, K('glass', 3)); c.line(4, 10, 8, 5, K('glass', 2))   # 조종석 유리(윗면 앞쪽)
-    c.R(40, 4, 5, 5, K('hull', 1)); c.HL(40, 4, 5, K('hull', 3)); c.P(42, 1, K('orange', 3)); c.VL(42, 2, 2, K('hull', 0))
-    c.HL(2, fy + 2, 44, K('orange', 1)); c.P(2, fy + 1, K('yellow', 3)); c.P(45, fy + 1, K('magenta', 2))
-    for dx in (16, 31): c.VL(dx, fy + 1, 5, K('white', -3))
+    drop_shadow(c, 24, 29, 22, 2, 1)
+    for wx in (1, 40):
+        for wy in (5, 17):
+            c.R(wx, wy, 7, 8, K('cable', -1)); c.HL(wx, wy, 7, K('cable', 1)); c.HL(wx, wy + 7, 7, K('cable', -3))
+            for k in range(wy + 1, wy + 7, 2): c.HL(wx + 1, k, 5, K('cable', 0))
+            c.VL(wx + (6 if wx < 20 else 0), wy + 1, 6, K('hull', 0))
+    fy = box2(c, 6, 2, 36, 19, 6, 'white', tt=2, ft=-2)
+    c.R(18, 5, 20, 12, K('navy', 0))
+    for x in range(18, 38, 5): c.VL(x, 5, 12, K('navy', -2))
+    c.HL(18, 10, 20, K('navy', -2)); c.HL(18, 5, 20, K('navy', 2)); c.P(20, 6, K('glass', 3)); c.P(25, 6, K('glass', 2)); c.P(30, 11, K('glass', 2))
+    c.R(8, 4, 8, 13, K('glass', 0)); c.HL(8, 4, 8, K('glass', 3)); c.VL(8, 5, 11, K('glass', 1)); c.line(9, 14, 13, 6, K('glass', 2))
+    c.HL(7, 19, 34, K('white', 0)); c.P(39, 3, K('orange', 3)); c.VL(39, 4, 3, K('hull', 0))
+    c.HL(7, fy + 2, 34, K('orange', 1)); c.P(6, fy + 1, K('yellow', 3)); c.P(41, fy + 1, K('magenta', 2))
     c.outline()
 
 
