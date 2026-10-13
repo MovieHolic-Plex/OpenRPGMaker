@@ -1,6 +1,6 @@
 // 오프닝 그림 후보를 독립 판정자가 비교해 하나를 고른다. 생성 모델(ChatGPT)과 다른 계열의 판정자를 먼저 쓴다.
 // 모델 호출이 실패하면 막지 않고 첫 후보로 진행하되 verdict 를 'unjudged' 로 남긴다 — 판정 불가를 합격으로 보고하지 않는다.
-import Jimp from 'jimp';
+import { jpegDataUrl } from './jpegShrink.ts';
 import { completeProvider } from './ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from './aiAuthRuntime.ts';
 
@@ -28,18 +28,9 @@ verdict: "accept" if the winner has total>=56 and no sub-score below 5; otherwis
 Reply with JSON only: {"scores":[{"id":"...","focal":0,"story":0,"cast":0,"composition":0,"light":0,"style":0,"slop":0,"defects":0,"total":0,"notes":"one short sentence"}],"winnerId":"...","verdict":"accept|regenerate","fix":"..."}`;
 
 /** Small JPEG for the activity feed (the tool_end visual cap is 1MB per image). */
-export async function activityThumbnail(dataUrl: string): Promise<string> {
-  const image = await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'));
-  if (image.bitmap.width > 640) image.resize(640, Jimp.AUTO);
-  return `data:image/jpeg;base64,${(await image.quality(70).getBufferAsync(Jimp.MIME_JPEG)).toString('base64')}`;
-}
+export const activityThumbnail = (dataUrl: string): Promise<string> => jpegDataUrl(dataUrl, 640, 70);
 
-async function shrink(dataUrl: string): Promise<string> {
-  const raw = Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64');
-  const image = await Jimp.read(raw);
-  if (image.bitmap.width > 960) image.resize(960, Jimp.AUTO);
-  return `data:image/jpeg;base64,${(await image.quality(82).getBufferAsync(Jimp.MIME_JPEG)).toString('base64')}`;
-}
+const shrink = (dataUrl: string): Promise<string> => jpegDataUrl(dataUrl, 960, 82);
 
 export async function critiqueOpeningStills(candidates: readonly StillCandidate[], context: StillContext, signal?: AbortSignal): Promise<StillCritique> {
   const unjudged = (why: string): StillCritique => ({ verdict: 'unjudged', winnerId: candidates[0]!.id, scores: [], fix: why, judge: 'none' });

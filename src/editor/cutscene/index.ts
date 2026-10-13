@@ -610,7 +610,7 @@ function compileBeat(
     case "music":
       return compileMusicBeat(beat);
     case "fade":
-      return compileFadeBeat(beat, options.forceNonBlocking);
+      return compileFadeBeat(beat, options.forceNonBlocking, state);
     case "tint":
       return compileTintBeat(beat, state, options.forceNonBlocking);
     case "distort":
@@ -845,14 +845,17 @@ function compileMusicBeat(beat: CutsceneMusicBeat): Command[] {
   return [{ kind: "playAudio", resourceId: beat.resourceId ?? "", loop: action === "bgm" ? true : beat.loop ?? false }];
 }
 
-function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Command[] {
+function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean, state?: CompileState): Command[] {
   const ms = durationMs(beat.durationMs, 300);
+  // 페이드인은 색조를 «없음»으로 걷어내므로, 앞서 깐 장면 색조(밤·세피아 등)가 있으면 페이드인 직후 다시 건다 — 안 그러면 밤 장면이 낮으로 바뀐다(실측).
+  const keepTint: Command[] = beat.direction === "in" && state?.tint ? [m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: ms })] : [];
   return [
     m2Command("Screen Effect", {
       effect: beat.direction === "out" ? "fadeOut" : "fadeIn",
       value: "",
       durationMs: ms,
     }),
+    ...keepTint,
     ...(!forceNonBlocking && beat.wait === true && ms > 0 ? [{ kind: "wait", ms } satisfies Command] : []),
   ];
 }

@@ -115,12 +115,32 @@ const previewCutscene: ToolDefinition = {
 export const CUTSCENE_PREVIEW_TOOLS: readonly ToolDefinition[] = [previewCutscene];
 
 /** Pi 에이전트 어댑터가 도구 결과에 붙이는 합성 시트. 브라우저·헤드리스 모두 같은 순수 합성기를 쓴다. */
-export async function cutscenePreviewImages(project: Project, args: Record<string, unknown>): Promise<{ dataUrl: string; label: string }[]> {
+/** 첫 이동 구간에서 0.35초 간격 8컷 — 걷기 프레임 교체·틴트 같은 «움직임»을 정지 6컷으로는 못 본다. */
+function motionTimes(timeline: CutsceneTimeline): number[] {
+  let start = -1;
+  let prev = new Map<string, number>();
+  for (let t = 0; t <= timeline.durationMs && start < 0; t += 100) {
+    const now = new Map<string, number>();
+    for (const snap of timeline.snapshotAt(t)) now.set(snap.pictureId, snap.x * 7 + snap.y);
+    for (const [id, v] of now) if (prev.has(id) && Math.abs(prev.get(id)! - v) > 4 ) { start = Math.max(0, t - 100); break; }
+    prev = now;
+  }
+  if (start < 0) return [];
+  return Array.from({ length: 8 }, (_, i) => Math.min(Math.round(start + i * 350), Math.round(timeline.durationMs)));
+}
+
+export async function cutscenePreviewImages(project: Project, args: Record<string, unknown>, extra?: { mapImage?: string }): Promise<{ dataUrl: string; label: string }[]> {
   try {
     const { timeline, times, viewport } = cutscenePreviewPlan(project, args);
     if (timeline.pictureIds.length === 0 || times.length === 0) return [];
     const { renderContactSheet } = await import("@/editor/cutscenePreview/render");
-    return [{ dataUrl: await renderContactSheet(project, timeline, times, viewport), label: `컷신 미리보기 ${String(args.eventId)}` }];
+    const { decodeImage } = await import("@/editor/cutsceneArt/imageProcess");
+    let base: { map: Awaited<ReturnType<typeof decodeImage>> } | undefined;
+    if (extra?.mapImage) { try { base = { map: await decodeImage(extra.mapImage) }; } catch { base = undefined; } }
+    const out = [{ dataUrl: await renderContactSheet(project, timeline, times, viewport, base), label: `컷신 미리보기 ${String(args.eventId)}` }];
+    const mt = motionTimes(timeline);
+    if (mt.length >= 4) out.push({ dataUrl: await renderContactSheet(project, timeline, mt, viewport, base, 4), label: `컷신 움직임 8컷(0.35초 간격) ${String(args.eventId)}` });
+    return out;
   } catch {
     return [];
   }

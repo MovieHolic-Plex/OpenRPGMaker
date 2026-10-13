@@ -106,7 +106,11 @@ export class PiOpeningProduction {
       } else if (start && /"kind":"auto"/u.test(events)) issues.push('컷신의 객관 검증(측정·독립 판정)이 아직 실행되지 않았습니다.');
       // 만들어 둔 컷신 소품 그림이 있는데 이벤트가 하나도 안 쓰면(기본 Actor1 걷기만 나오는 실측) 병기·소품이 화면에 안 나온다.
       const madeSprites = Object.keys(project.assets.uploaded).filter(id => /^cutscene_sprite_/u.test(id));
-      if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 배우를 {name, resourceId:'cutscene_sprite_...'} 로 넘겨 script_cutscene_staged 를 다시 호출하세요(도구가 아직 안 불려 있으면 먼저 find_tools 로 script_cutscene_staged 를 찾아 불러온 다음 호출). 기본 주인공(Actor1) 그림만 나오면 안 됩니다.`);
+      if (madeSprites.length && start && !madeSprites.some(id => events.includes(id))) {
+        const names = madeSprites.slice(0, 3);
+        const example = JSON.stringify({ mapId: start.id, trigger: 'auto', actors: names.map((id, k) => ({ name: `주체${k + 1}`, resourceId: id, scale: 30 })), steps: [{ do: 'letterbox', show: true }, { do: 'tint', tintColor: '20,30,90,0.45', ms: 600 }, { do: 'weather', weather: 'snow', intensity: 0.7 }, ...names.map((_, k) => ({ do: 'enter', actor: `주체${k + 1}`, from: 'left', to: { fx: 0.7 - k * 0.2, fy: 0.72 }, ms: 7000, anim: 'bob', ...(k ? { withPrevious: true } : {}) })), { do: 'wait', ms: 800 }, ...names.map((_, k) => ({ do: 'exit', actor: `주체${k + 1}`, exitTo: 'right', ms: 5000, anim: 'bob', ...(k ? { withPrevious: true } : {}) })), { do: 'fade', direction: 'out', ms: 900 }, { do: 'fade', direction: 'in', ms: 600 }] });
+        issues.push(`컷신 소품 그림 ${madeSprites.join(', ')} 이(가) 시작 맵 이벤트에 하나도 쓰이지 않았습니다. 지금 바로 script_cutscene_staged 를 호출하세요(안 불려 있으면 find_tools 로 먼저 불러온 뒤). 호출 형태 예(값은 이야기에 맞게 바꾸되 배우마다 enter 단계가 반드시 필요하고 배우는 resourceId 로 넘깁니다): ${example}`);
+      }
       if (/타이틀|title|켜자마자|첫\s*화면/iu.test(this.task) && !this.titleArt && !/^title_art_/u.test(String(project.system.titleScreen?.backgroundResourceId ?? ''))) issues.push('게임을 켜자마자 보이는 타이틀 화면이 기본 그림입니다. generate_title_art로 작품 전용 그림을 만드세요.');
       return issues;
     }

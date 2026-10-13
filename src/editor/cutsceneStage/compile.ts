@@ -126,9 +126,14 @@ export function compileStage(input: StageInput): StageResult {
   const { viewport: { width: W, height: H } } = input;
   const states = new Map<string, ActorState>();
   let whiteUp = false;
+  const usedPictures = new Set<string>();
   input.actors.forEach((spec, index) => {
     if (states.has(spec.name)) throw new StageError(`배우 이름 '${spec.name}' 이 중복됩니다.`);
-    states.set(spec.name, { spec, pictureId: `pic${spec.z ?? 2 + index}`, x: W / 2, y: H / 2, ...(spec.tile ? { tile: { ...spec.tile } } : {}), shown: false, pose: "default", walkPhase: 0 });
+    // 같은 z 를 둔 배우가 같은 그림 번호를 쓰면 «지워지기 전에 다시 표시» 충돌이 난다 — 겹치면 한 칸씩 위로 민다(층 순서는 유지).
+    let z = spec.z ?? 2 + index;
+    while (usedPictures.has(`pic${z}`) || z === 90) z += 1;
+    usedPictures.add(`pic${z}`);
+    states.set(spec.name, { spec, pictureId: `pic${z}`, x: W / 2, y: H / 2, ...(spec.tile ? { tile: { ...spec.tile } } : {}), shown: false, pose: "default", walkPhase: 0 });
   });
   const actorOf = (name: unknown, stepIndex: number): ActorState => {
     const found = typeof name === "string" ? states.get(name) : undefined;
@@ -192,7 +197,7 @@ export function compileStage(input: StageInput): StageResult {
   /** 한 걸음 시퀀스 → 시각 표. 시작 시각 t0. */
   const moveEvents = (a: ActorState, to: { x: number; y: number }, ms: number, ease: keyof typeof EASE, anim: "walk" | "bob" | undefined, t0: number, order: { n: number }): TimedEvent[] => {
     const events: TimedEvent[] = [];
-    const walkFrames = anim === "walk" ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
+    const walkFrames = a.spec.walk ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
     // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.
     const bob = anim === "bob" && !walkFrames;
     const segments = walkFrames || bob ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
@@ -205,7 +210,7 @@ export function compileStage(input: StageInput): StageResult {
         const frame = walkFrames[WALK_CYCLE[(a.walkPhase + i - 1) % WALK_CYCLE.length]!];
         const cur = topLeft(a, from.x + (to.x - from.x) * EASE[ease]((i - 1) / segments), from.y + (to.y - from.y) * EASE[ease]((i - 1) / segments));
         events.push({ t, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } });
-        events.push({ t, order: order.n++, beat: { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: frame, x: cur.x, y: cur.y } });
+        events.push({ t, order: order.n++, beat: { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: frame, x: cur.x, y: cur.y, ...(a.spec.scale && a.spec.scale !== 100 ? { scale: a.spec.scale } : {}) } });
       }
       const dest = topLeft(a, px, py);
       const lift = bob && i % 2 === 1 ? Math.max(2, round(a.spec.height * 0.04)) : 0;

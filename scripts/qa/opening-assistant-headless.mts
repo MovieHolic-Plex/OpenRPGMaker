@@ -4,10 +4,11 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import Jimp from 'jimp';
+import { pngShrinkBase64 } from '../lib/jpegShrink.ts';
 import { spawn } from 'node:child_process';
 import { buildModel } from '@oh-my-pi/pi-catalog/build';
 import { runPiAgent } from '../lib/piAgentRuntime';
+import { resolveOhMyPiModel } from '../lib/ohMyPiModel.ts';
 import { resolveRequestApiKey } from '../lib/aiAuthRuntime';
 import { createOhMyPiAdapters } from '../lib/ohMyPiPiAi.mjs';
 import { generateCinematicStill } from '../../src/editor/openingImageGeneration';
@@ -19,12 +20,17 @@ const project = (arg('project-json') ? JSON.parse(fs.readFileSync(arg('project-j
 const task = arg('task')!;
 const [provider, modelId] = arg('model', 'opencodex/gpt-6-astra')!.split('/');
 const cfg = Bun.YAML.parse(fs.readFileSync(path.join(os.homedir(), '.omp/agent/models.yml'), 'utf8')) as any;
-const prov = (cfg.providers ?? cfg)[provider!];
+const antigravity = provider === 'google-antigravity';
+const prov = antigravity ? { apiKey: (await resolveRequestApiKey(provider!)) as string } : (cfg.providers ?? cfg)[provider!];
 const like = arg('model-like');
+let model: any;
+if (antigravity) model = resolveOhMyPiModel(provider!, modelId!);
+else {
 const listed = prov?.models?.find((m: any) => m.id === (prov.models.some((m: any) => m.id === modelId) ? modelId : like));
 if (!listed || !prov?.apiKey) throw Error('모델/키를 models.yml에서 찾지 못했습니다');
 const md = { ...listed, id: modelId, name: listed.id === modelId ? listed.name : modelId };
-const model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking, input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens, compat: { ...prov.compat, ...md.compat } } as never);
+model = buildModel({ id: md.id, name: md.name, api: prov.api, provider, baseUrl: prov.baseUrl, reasoning: md.reasoning, thinking: md.thinking, input: md.input, cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 }, contextWindow: md.contextWindow, maxTokens: md.maxTokens, compat: { ...prov.compat, ...md.compat } } as never);
+}
 const imageProvider = arg('image-provider', 'openai-codex')!, imageModel = arg('image-model', 'codex-image-default')!;
 const providerApiKeys: Record<string, string | undefined> = { [provider!]: prov.apiKey };
 for (const p of [imageProvider, 'google-antigravity', 'openai-codex']) { try { providerApiKeys[p] ??= (await resolveRequestApiKey(p)) as string | undefined; } catch { /* absent */ } }
@@ -36,14 +42,14 @@ const note = (e: any) => {
   if (e.type === 'tool_end' && e.visuals) for (const [i, v] of e.visuals.entries()) if (v.uploaded?.startsWith('data:')) fs.writeFileSync(path.join(out, `${e.id.slice(-8)}-${i}-${v.caption}.jpg`), Buffer.from(v.uploaded.split(',')[1], 'base64'));
 };
 let live = project;
-const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: 'high' as const, imageProvider, imageModel,
-  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
+const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: (arg('thinking', 'high') as 'high'), imageProvider, imageModel,
+  initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'author_actor_charset', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
 // 맵·애니메틱 미리보기는 실제 브라우저 렌더러(편집기 dev 서버)로 그린다 — --browser-url 이 있을 때만.
 const origin = arg('browser-url');
 let bridgePort = 0; let bridge: ReturnType<typeof spawn> | undefined;
 if (origin) {
   bridge = spawn('node', [path.resolve('scripts/qa/opening-assistant-browser-bridge.mjs'), origin], { stdio: ['ignore', 'pipe', 'ignore'] });
-  bridgePort = await new Promise<number>((resolve, reject) => { let acc = ''; const t = setTimeout(() => reject(Error('bridge timeout')), 90000); bridge!.stdout!.on('data', c => { acc += c; const l = acc.split('\n').find(x => x.startsWith('{"ready":')); if (l) { clearTimeout(t); resolve(JSON.parse(l).port); } }); });
+  bridgePort = await new Promise<number>((resolve, reject) => { let acc = ''; const t = setTimeout(() => reject(Error('bridge timeout')), 300000); bridge!.stdout!.on('data', c => { acc += c; const l = acc.split('\n').find(x => x.startsWith('{"ready":')); if (l) { clearTimeout(t); resolve(JSON.parse(l).port); } }); });
 }
 const adapters = await createOhMyPiAdapters();
 const genImage = async (req: { prompt: string }) => { for (let a = 0; ; a++) { try { const r = await adapters.generateImage('openai-codex', { prompt: req.prompt, model: 'codex-image-default' }); return { dataUrl: `data:image/png;base64,${r.base64}`, mimeType: 'image/png', model: 'codex-image-default', provider: 'openai-codex' }; } catch (e) { if (a >= 3) throw e; } } };
@@ -55,13 +61,18 @@ const done = await runPiAgent(request as never, {
       const r = await fetch(`http://127.0.0.1:${bridgePort}/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project: p, toolName: name, data }) });
       const j = await r.json() as { png?: string; error?: string };
       if (!r.ok || !j.png) throw new Error(j.error ?? '브라우저 렌더 실패');
-      const img = await Jimp.read(Buffer.from(j.png, 'base64')); if (img.bitmap.width > 640) img.resize(640, Jimp.AUTO);
-      return (await img.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
+      return await pngShrinkBase64(Buffer.from(j.png, 'base64'), 640);
     }
-    const id = data?.resourceId as string | undefined; const url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
+    const id = data?.resourceId as string | undefined; let url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
+    // 번들(내장) 리소스는 업로드 자산이 아니다 — public/ 의 실제 파일에서 읽는다(실제 앱은 URL 로 받는다).
+    if (!url && id) {
+      const { resolveAssetResourceUrl } = await import('../../src/assets/generatedAssetResourceResolver');
+      const u = resolveAssetResourceUrl(id, { project: p }); const rel = u?.startsWith('/') ? u.split('?')[0]! : undefined;
+      const file = rel ? path.join(process.cwd(), 'public', rel) : undefined;
+      if (file && fs.existsSync(file) && /\.(png|jpe?g|webp)$/iu.test(file)) return await pngShrinkBase64(fs.readFileSync(file), 512);
+    }
     if (!url?.startsWith('data:image')) throw new Error('그림 데이터를 찾을 수 없습니다: ' + id);
-    const img = await Jimp.read(Buffer.from(url.split(',')[1]!, 'base64')); if (img.bitmap.width > 512) img.resize(512, Jimp.AUTO);
-    return (await img.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
+    return await pngShrinkBase64(Buffer.from(url.split(',')[1]!, 'base64'), 512);
   },
   onEvent: (e: any) => { note(e); },
   onToolCall: (r: any) => { void r; },

@@ -92,7 +92,8 @@ function characterOf(actor: Raw): { resourceId: string; characterIndex: number }
   if (!c || typeof c !== "object" || Array.isArray(c)) return undefined;
   const r = c as Raw;
   // 스키마가 빈 값으로 채운 character({resourceId:""})는 «캐릭터셋 없음»이다 — 그림 배우(resourceId)가 이미 있으면 기본 Actor1 로 바꿔치지 않는다.
-  if (typeof actor.resourceId === "string" && actor.resourceId.trim() && !(typeof r.resourceId === "string" && r.resourceId.trim())) return undefined;
+  // 그림 배우(resourceId)가 명시되면 그것이 정본이다 — 스키마가 채워 보낸 character(빈 값이나 기본 Actor1)에 끌려가지 않는다. 주인공(hero:true)만 예외.
+  if (typeof actor.resourceId === "string" && actor.resourceId.trim() && actor.hero !== true) return undefined;
   return { resourceId: typeof r.resourceId === "string" && r.resourceId.trim() ? r.resourceId.trim() : DEFAULT_CHARSET, characterIndex: Math.max(0, Math.min(7, Math.trunc(Number(r.characterIndex ?? 0)))) };
 }
 
@@ -175,7 +176,7 @@ const scriptCutsceneStaged: ToolDefinition = {
       const cached = preparedActors.get(key);
       if (cached && !("error" in cached)) continue;
       try {
-        preparedActors.set(key, await cropCharsetFrames(undefined, character.resourceId, character.characterIndex, WALK_ROLES));
+        preparedActors.set(key, await cropCharsetFrames(project, character.resourceId, character.characterIndex, WALK_ROLES));
       } catch (error) {
         preparedActors.set(key, { error: error instanceof Error ? error.message : String(error) });
       }
@@ -254,7 +255,16 @@ const scriptCutsceneStaged: ToolDefinition = {
       }
       const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
       const k = (scale ?? 100) / 100;
-      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
+      // 이미 잘라 둔 캐릭터 프레임(cutscene_char_<시트>_<번호>_walk<방향><0~2>) 한 장을 resourceId 로 넘겨도 그 인물의 걷기 프레임 전체를 붙인다 —
+      // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
+      const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
+      const trio = (d: string): [string, string, string] | undefined => {
+        const ids = [0, 1, 2].map((n) => `${frame![1]}_walk${d}${n}`);
+        return ids.every((id) => draft.assets.uploaded[id]) ? (ids as [string, string, string]) : undefined;
+      };
+      const walk = frame ? { down: trio("Down"), up: trio("Up"), left: trio("Left"), right: trio("Right") } : undefined;
+      const fullWalk = walk && walk.down && walk.up && walk.left && walk.right ? { down: walk.down, up: walk.up, left: walk.left, right: walk.right } : undefined;
+      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(fullWalk ? { walk: fullWalk } : {}), ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
     });
     let backdrop: { id: string; width: number; height: number } | undefined;
     if (typeof args.backdropResourceId === "string" && args.backdropResourceId.trim()) {
@@ -273,9 +283,18 @@ const scriptCutsceneStaged: ToolDefinition = {
     }
     // 배우가 어떤 단계에서도 등장·이동하지 않으면 화면에 안 보이거나 가만히 선 채로 끝난다(조수가 at 만 주고 단계를 비운 실측).
     const stepList = normalizeSteps(args.steps);
+    // 조수가 흔히 빠뜨리는 필드는 거절하지 않고 합리적으로 메운다 — 거절→재시도가 턴 상한을 먹는다(gen-24 실측: 10번 거절).
+    // (1) 단계에 actor 를 안 적었고 움직일 그림 배우가 하나뿐이면 그 배우로.
+    const movable = actors.filter((actor) => !actor.ghost && actor.mapTarget === undefined);
+    for (const step of stepList) {
+      if (["enter", "move", "exit", "show", "hide", "pose", "anim", "bob"].includes(String(step.do)) && !(step as Raw).actor && movable.length === 1) (step as Raw).actor = movable[0]!.name;
+    }
     for (const actor of actors) {
+      // 맵 위 주인공(ghost)·NPC 이벤트는 단계에 등장하지 않아도 이미 맵에 있다.
+      if (actor.ghost || actor.mapTarget !== undefined) continue;
       const appears = stepList.some((step) => ["enter", "move", "show"].includes(String(step.do)) && (step as Raw).actor === actor.name);
-      if (!appears) throw new ToolError(`배우 '${actor.name}' 이(가) 어떤 단계에서도 등장하지 않습니다 — {do:'enter',actor:'${actor.name}',from:'left',to:{fx:0.5,fy:0.6},ms:2400} 처럼 enter/move/show 단계를 넣으세요. 줄지어 걸을 때는 withPrevious:true 로 함께 움직이게 하고, 끝에는 exit 로 내보내세요.`, { code: "actor-never-appears" });
+      // (2) at 도 단계도 없는 그림 배우는 화면 가운데 아래에 처음부터 서 있게 한다.
+      if (!appears && !actor.at) (actor as { at?: unknown }).at = { fx: 0.5, fy: 0.6 };
     }
     let result: ReturnType<typeof compileStage>;
     try {
