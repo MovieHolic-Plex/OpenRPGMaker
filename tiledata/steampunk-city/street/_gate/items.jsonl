@@ -17,5 +17,5 @@
 {"png": "sp-gantry-crane.png", "kind": "frame", "name": "문형 기중기(위에서 보이는 넓은 들보 통로 + 앞뒤 다리 넷 + 수레·매단 상자)", "label": "steampunk-city/sp-gantry-crane"}
 {"png": "sp-jib-crane.png", "kind": "structure", "name": "부두 증기 기중기(돌 받침 + 운전실 + 비스듬한 격자 팔·갈고리)", "label": "steampunk-city/sp-jib-crane"}
 {"png": "sp-mooring-mast.png", "kind": "column", "name": "비행선 계류탑(무쇠 격자탑 + 꼭대기 원판 발판 + 놋쇠 계류 원뿔)", "label": "steampunk-city/sp-mooring-mast"}
-{"png": "sp-airship-docked.png", "kind": "structure", "name": "계류 비행선(위에서 본 기낭 윗면이 넓고 남쪽 옆구리는 좁게 — 십자 꼬리, 곤돌라 창이 밑으로 살짝)", "label": "steampunk-city/sp-airship-docked"}
+{"png": "sp-airship-docked.png", "kind": "structure", "name": "계류 비행선(위에서 본 기낭 — 넓은 윗면·굽은 늑골, 수평 꼬리 날개 판, 지붕이 보이는 곤돌라)", "label": "steampunk-city/sp-airship-docked"}
 {"png": "sp-tram-shelter.png", "kind": "structure", "name": "전차 정류장 지붕(무쇠 기둥 + 녹청 철판 지붕 + 벤치)", "label": "steampunk-city/sp-tram-shelter"}

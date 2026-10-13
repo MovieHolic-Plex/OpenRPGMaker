@@ -915,46 +915,43 @@ def _(c):
     c.ell(5, 26, 3, 4, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2)); c.line(0, 26, 3, 26, 'iron', 3)
 
 
-@redraw('airship-docked', name='계류 비행선(위에서 본 기낭 윗면이 넓고 남쪽 옆구리는 좁게 — 십자 꼬리, 곤돌라 창이 밑으로 살짝)')
+@redraw('airship-docked', name='계류 비행선(위에서 본 기낭 — 넓은 윗면·굽은 늑골, 수평 꼬리 날개 판, 지붕이 보이는 곤돌라)')
 def _(c):
-    # 곤돌라: 기낭 밑에 가려 남쪽 옆면 창 줄만 보인다 + 나무 받침대
     for x in (40, 84):
-        box3(c, x, 64, 8, 4, 8, 'wood', tt=5, ft=2); c.HL(x, 76, 8, 'ink', 1)
-    c.R(38, 50, 54, 12, 'navy', 2); c.HL(38, 50, 54, 'navy', 3); c.HL(38, 61, 54, 'ink', 1)
-    for x in range(42, 88, 7): c.R(x, 53, 4, 4, 'lit' if (x // 7) % 3 else 'glass', 3)
-    c.VL(37, 50, 12, 'ink', 1); c.VL(92, 50, 12, 'ink', 1)
-    # 기낭 = 윗면(평면 타원 — 넓고 밝다) + 남쪽 옆구리 띠(12행, 어둡다). 코·꼬리는 윗면 타원의 가운데 줄(y=19)에 있다 — 몸 가운데보다 위.
-    cx, cy, rx, ry, side = 60, 19, 56, 15, 12
-    def body(X, Y, dx, dy, d):
-        return ('canvas', 1 if dy > 0.55 else 2)
-    c.ell(cx, cy + side, rx, ry, body)                                       # 옆구리(아래로 내린 같은 타원)
-    for x in range(int(cx - rx), int(cx + rx) + 1):                          # 윗면 타원과 옆 타원 사이를 메운다
+        box3(c, x, 68, 8, 4, 6, 'wood', tt=5, ft=2); c.HL(x, 78, 8, 'ink', 1)
+    # 곤돌라: 기낭 남쪽으로 비켜 매달려 지붕 윗면(6행, 판자 + 난간)과 앞면 창 줄(8행)이 보인다
+    box3(c, 36, 50, 58, 7, 9, 'wood', tt=4, ft=2, fmat='navy')
+    c.HL(36, 49, 58, 'ink', 1); c.VL(35, 50, 16, 'ink', 1); c.VL(94, 50, 16, 'ink', 1); c.HL(36, 66, 58, 'ink', 1)
+    for x in range(38, 92, 4): c.VL(x, 51, 5, 'wood', 3)
+    c.HL(36, 51, 58, 'brass', 3); c.HL(36, 55, 58, 'brass', 4)
+    for x in range(40, 90, 7): c.R(x, 59, 4, 4, 'lit' if (x // 7) % 3 else 'glass', 3)
+    for x in (44, 62, 84): c.line(x, 40, x, 49, 'canvas', 1)
+    # 기낭: 윗면(넓고 밝은 평면 타원) + 남쪽 옆구리 띠(어둡다). 코는 왼쪽, 꼬리는 오른쪽.
+    cx, cy, rx, ry, side = 60, 18, 56, 15, 11
+    c.ell(cx, cy + side, rx, ry, lambda X, Y, dx, dy, d: ('canvas', 1 if dy > 0.5 else 2))
+    for x in range(int(cx - rx), int(cx + rx) + 1):
         dx = (x + 0.5 - cx) / rx
         if abs(dx) > 1: continue
         h = ry * math.sqrt(max(0.0, 1 - dx * dx))
         for y in range(round(cy), round(cy + side + h * 0.2)): c.P(x, y, 'canvas', 2)
-    def top(X, Y, dx, dy, d):
-        t = 4 if (dx + dy * 0.6) < -0.35 else 3 if dy < 0.5 else 2
-        return ('canvas', t)
-    c.ell(cx, cy, rx, ry, top)
-    for k in (-0.5, 0.5):                                                    # 윗면 경도선(코·꼬리로 모인다)
-        for x in range(int(cx - rx) + 3, int(cx + rx) - 2):
-            dx = (x + 0.5 - cx) / rx
-            y = cy + ry * k * math.sqrt(max(0.0, 1 - dx * dx))
-            c.P(x, round(y), 'canvas', 2)
-    for kx in range(-3, 4):                                                  # 놋쇠 늑골: 윗면을 가로지르는 남북 선 + 옆구리의 웃는 호
+    c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('canvas', 4 if (dx * 0.5 + dy) < -0.45 else 3 if dy < 0.55 else 2))
+    for kx in range(-3, 4):                                   # 늑골: 윗면에서 코·꼬리 쪽으로 휘는 호 + 옆구리를 두르는 웃는 호
         bx = cx + kx * 14
         dxn = (bx + 0.5 - cx) / rx
         hh = ry * math.sqrt(1 - dxn * dxn)
-        for y in range(int(cy - hh) + 1, int(cy + hh) + 1): c.P(bx, y, 'brass', 4 if y < cy else 3)
-        for y in range(int(cy + hh), int(cy + hh + side)): c.P(bx, y, 'brass', 1)
+        bow = 4 * (1 if kx > 0 else -1 if kx < 0 else 0)
+        for y in range(int(cy - hh) + 1, int(cy + hh) + 1):
+            dy = (y + 0.5 - cy) / hh
+            c.P(bx + round(bow * (1 - dy * dy)), y, 'brass', 4 if y < cy else 3)
+        for y in range(int(cy + hh), int(cy + hh + side)):
+            c.P(bx, y, 'brass', 1)
     c.ell(cx, cy, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 and dy < 0 else None)
     c.ell(cx, cy + side, rx, ry, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 and dy > -0.2 else None)
-    # 등 지느러미(꼬리 위 — 위에서 보면 등줄기 위 짧고 밝은 판) + 수평 꼬리 날개 둘(북·남으로 펼친 판, 남쪽 것은 아래로 더 길게 보인다)
-    c.poly([(100, 15), (126, 4), (127, 8), (110, 18)], lambda x, y: ('cloth', 3))
-    c.poly([(100, 24), (126, 40), (124, 43), (108, 30)], lambda x, y: ('cloth', 2))
-    c.line(100, 15, 126, 4, 'ink', 1); c.line(100, 24, 126, 40, 'ink', 1)
-    c.R(104, 17, 20, 3, 'cloth', 4); c.HL(104, 16, 20, 'ink', 1); c.HL(104, 20, 20, 'cloth', 1)
+    # 수평 꼬리 날개 둘: 위에서 넓게 보이는 판(밝은 윗면 + 앞 두께 1줄) — 북쪽 판은 짧고(멀다) 남쪽 판은 길다(가깝다)
+    c.poly([(98, 12), (120, 2), (127, 4), (112, 18)], lambda x, y: ('cloth', 4 if y < 9 else 3))
+    c.poly([(98, 26), (114, 22), (127, 42), (118, 46)], lambda x, y: ('cloth', 3 if y < 36 else 2))
+    c.line(118, 46, 127, 42, 'cloth', 1); c.line(98, 12, 120, 2, 'ink', 1); c.line(98, 26, 118, 46, 'ink', 1)
+    c.line(104, 17, 124, 18, 'ink', 1)                      # 세로 날개는 위에서 보면 등줄기 위 가는 선
     c.ell(5, 19, 3, 3, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2)); c.line(0, 19, 3, 19, 'iron', 3)
 
 

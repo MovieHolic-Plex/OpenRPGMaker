@@ -136,6 +136,7 @@ const KIT_BUILD_LINES: Readonly<Record<string, string>> = {
   jp_city: "일본 도시(jp_city): 큰길 하나와 골목을 fill_region·lay_path(생활도로·보도 연석·횡단보도)로 먼저 내고, 건물은 list_jp_city_building_parts → build_jp_city_building 으로 세우고(문 앞 접근칸 확보), 가게·집 안은 build_hand_interior_room({tileset:\"jp_city\"}) 또는 import_region_reference 로 짓고 link_jp_city_interior 로 문과 잇는다. 먼저 list_tileset_references → read_tileset_reference 로 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   joseon_baram: "조선(joseon_baram): 완성 장소를 먼저 쓴다 — list_spatial_designs({kind:\"place\", query:\"조선\"}) 로 마을·민가·주막 같은 장소를 찾아 import_region_reference 로 가져와 기획에 맞게 고친다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   gothic_manor: "고딕 저택(gothic_manor): 호러·추리·미술관 무대. list_tileset_references({tilesetId:\"gothic_manor\"}) 의 gothic-interior-authoring 을 읽고, 저택·전시실·서재는 build_hand_interior_room 으로 층마다 한 맵(계단칸 좌표 같게), 은신처 접근칸을 비운다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
+  steampunk_city: "스팀펑크 도시(steampunk_city): 먼저 list_tileset_references({tilesetId:\"steampunk_city\"}) 를 읽고, 야외는 compose_steampunk_city_map({style:\"street\"|\"industrial\"|\"dock\"}) 한 번으로 깐다(공장·선로·운하·광장 배치는 구성기가 한다). 건물 안은 같은 도구 style:\"boiler-room\"|\"workshop\"|\"engine-room\"|\"lab\"|\"inn\"|\"tavern\" 로 새 맵에 짓고 link_steampunk_interior 로 문과 잇는다. 사람은 Actor1 캐릭터 이벤트. 시작 맵을 버들항 마을로 바꾸지 않는다.",
   wizarding_world: "마법 학교(wizarding_world): build_wizarding_space 로 성채 공간(복도·교실·기숙사 등)을 짓고 참고문서를 읽는다. 시작 맵을 버들항 마을로 바꾸지 않는다.",
 };
 

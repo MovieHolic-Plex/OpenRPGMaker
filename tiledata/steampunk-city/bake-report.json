@@ -1,0 +1,36 @@
+{
+ "gate": {
+  "provisional_profile_uncalibrated": 187,
+  "blocked": [],
+  "pieces": 163,
+  "outdoor": 111,
+  "interior": 52
+ },
+ "tiles": {
+  "count": 835,
+  "rows": 18,
+  "sheetPx": [
+   768,
+   288
+  ],
+  "strips": 38,
+  "kits": 102,
+  "groups": 66
+ },
+ "palette_violations": 0,
+ "definition": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 835,
+  "kits_checked": 102,
+  "groups_checked": 66,
+  "autotiles_checked": 0
+ },
+ "reassembly": {
+  "kits": 102,
+  "checked": 102,
+  "mismatched": 0,
+  "ids": []
+ }
+}

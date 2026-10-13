@@ -286,49 +286,32 @@ def _redraw(id_, name=None):
     return deco
 
 
-@_redraw('locomotive', '증기 기관차(위에서 본 발판·보일러·돔 — 동쪽이 앞, 남쪽 옆 치마판)')
+@_redraw('locomotive', '상자형 증기 기관차(무쇠 판 덮개 기관차 — 지붕 위로 굴뚝·증기 돔, 동쪽이 앞)')
 def _(c):
-    # 발판(러닝보드) 윗면: 보일러 둘레의 넓은 줄무늬 철판 — 북쪽 띠(보일러 뒤) 6행, 남쪽 띠 6행. 난간 기둥은 위에서 본 점.
-    x0, x1 = 22, 78
-    c.HL(x0, 0, x1 - x0, 'ink', 1)
-    c.R(x0, 1, x1 - x0, 27, 'iron', 4); c.HL(x0, 1, x1 - x0, 'iron', 3)
-    for y in (2, 4, 23, 25):
-        for x in range(x0 + 1 + (y % 4), x1 - 1, 4): c.P(x, y, 'iron', 6)
-    c.HL(x0, 27, x1 - x0, 'iron', 6)
-    # 보일러(가운데 띠 14행 — 위에서 본 원통: 위 1/3 빛, 아래로 그늘) + 놋쇠 띠(웃는 호가 아니라 위에서 본 곧은 띠)
-    for j in range(14):
-        u = (j + 0.5) / 14
-        t = 2 if u < 0.1 else 4 if u < 0.25 else 5 if u < 0.45 else 4 if u < 0.7 else 3 if u < 0.88 else 2
-        c.HL(x0 + 2, 7 + j, 46, 'iron', t)
-    for bx in (34, 46, 58):
-        for j in range(14): c.P(bx, 7 + j, 'brass', 4 if 2 < j < 7 else 3 if j < 11 else 2)
-    c.HL(x0 + 2, 6, 46, 'ink', 1); c.HL(x0 + 2, 21, 46, 'ink', 1)
-    # 연기실 + 굴뚝(위에서 본 원 아가리)
-    c.R(70, 6, 8, 16, 'iron', 2); c.HL(70, 6, 8, 'iron', 3); c.VL(78, 0, 28, 'ink', 1)
-    disc(c, 73.5, 10, 4.2, 3.2, 'iron', 5, band=3, bt=2)
-    c.ell(73.5, 10, 2.4, 1.6, lambda X, Y, dx, dy, d: ('coal', 0))
-    disc(c, 52, 11, 4.4, 3, 'brass', 4, band=2, bt=2)      # 증기 돔
-    disc(c, 40, 12, 3.4, 2.4, 'iron', 5, band=2, bt=2)     # 모래 돔
-    disc(c, 63, 13, 1.6, 1.2, 'brass', 5, band=1, bt=2, rim=False)   # 기적
-    # 운전실(뒤): 넓은 지붕 윗면 20행 + 남쪽 옆면(창) 9행
-    tones = (2, 3, 4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3)
-    for j, t in enumerate(tones): c.HL(2, 1 + j, 20, 'iron', t)
-    c.HL(2, 0, 20, 'ink', 1); c.HL(1, 21, 22, 'iron', 6); c.HL(1, 22, 22, 'iron', 1)
-    for y in (4, 17): c.HL(3, y, 18, 'iron', 2)                                   # 지붕 판 이음(동서로 길다 — 위에서 본 철판)
-    c.R(5, 7, 14, 7, 'glass', 2); c.HL(5, 7, 14, 'glass', 3); c.HL(5, 13, 14, 'iron', 6)   # 채광 덮개(위에서 본 유리 지붕창)
-    for x in (8, 12, 16): c.VL(x, 7, 6, 'iron', 4)
-    disc(c, 4.5, 16, 1.6, 1, 'iron', 6, band=1, bt=3, rim=False); disc(c, 19.5, 16, 1.6, 1, 'iron', 6, band=1, bt=3, rim=False)
-    c.R(2, 23, 20, 9, 'navy', 2); c.HL(2, 23, 20, 'navy', 3)
-    c.R(5, 24, 5, 4, 'lit', 3); c.R(13, 24, 5, 4, 'glass', 2)
-    c.HL(2, 29, 20, 'brass', 4)
-    c.VL(1, 0, 32, 'ink', 1); c.VL(22, 22, 10, 'ink', 1)
-    # 남쪽 옆 치마판(발판 밑, 5행) — 바퀴는 그 밑으로 어두운 아랫부분만
-    c.R(x0, 28, x1 - x0, 4, 'iron', 2); c.HL(x0, 28, x1 - x0, 'cloth', 2); c.HL(x0, 31, x1 - x0, 'iron', 1)
-    for cx in (12, 32, 47, 62):
-        c.ell(cx, RAIL_Y - 4, 5.5, 4, lambda X, Y, dx, dy, d: ('iron', 2 if dx < 0 else 1) if dy > -0.2 else None)
-    c.R(2, 32, 76, 4, 'iron', 2); c.HL(2, 32, 76, 'iron', 3); c.HL(2, 35, 76, 'iron', 1)
-    rivets(c, 4, 33, 72, 1, 6, 'iron', 4, 0)
-    c.R(78, 10, 2, 5, 'lit', 4); c.R(78, 30, 2, 6, 'cloth', 2)
+    x0, x1 = 3, 77
+    chassis(c, x0 + 1, x1 - 1, 37)
+    # 지붕 윗면 19행: 리벳 판 이음(동서) + 채광 덮개 + 지붕을 뚫고 오른 굴뚝·돔(위에서 본 원반)
+    tones = (2, 3, 4, 4, 5, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3)
+    for j, t in enumerate(tones): c.HL(x0, 1 + j, x1 - x0, 'iron', t)
+    c.R(x0 + 4, 8, 18, 5, 'glass', 2); c.HL(x0 + 4, 8, 18, 'glass', 3); c.HL(x0 + 4, 13, 18, 'iron', 6)   # 운전실 채광창
+    for x in (x0 + 9, x0 + 15): c.VL(x, 8, 5, 'iron', 4)
+    disc(c, 66, 8, 5, 3.4, 'iron', 4, band=3, bt=2)                  # 굴뚝(지붕 위)
+    c.ell(66, 8, 3, 2, lambda X, Y, dx, dy, d: ('coal', 0))
+    disc(c, 50, 9, 4.4, 3, 'brass', 4, band=3, bt=2)                 # 증기 돔
+    disc(c, 37, 10, 3.2, 2.2, 'iron', 5, band=2, bt=2)               # 모래 상자
+    disc(c, 58, 12, 1.4, 1, 'brass', 5, band=2, bt=2, rim=False)     # 기적
+    c.HL(x0, 0, x1 - x0, 'ink', 1); c.HL(x0 - 1, 20, x1 - x0 + 2, 'iron', 6); c.HL(x0 - 1, 21, x1 - x0 + 2, 'iron', 1)
+    # 남쪽 옆면: 검은 철판 + 둥근 창 + 놋쇠 띠 + 빨강 밑 띠
+    c.R(x0, 22, x1 - x0, 13, 'iron', 2); c.HL(x0, 22, x1 - x0, 'iron', 3)
+    for k, x in enumerate(range(x0 + 4, x1 - 6, 9)):
+        lit = k % 3 != 1
+        c.R(x, 24, 5, 4, 'lit' if lit else 'glass', 3 if lit else 2); c.HL(x, 24, 5, 'lit' if lit else 'glass', 4 if lit else 3); c.VL(x - 1, 24, 4, 'brass', 3)
+    c.HL(x0, 30, x1 - x0, 'brass', 4); c.HL(x0, 31, x1 - x0, 'brass', 2)
+    c.R(x0, 32, x1 - x0, 3, 'cloth', 2); c.HL(x0, 32, x1 - x0, 'cloth', 3)
+    c.VL(x0 - 1, 1, 34, 'ink', 1); c.VL(x1, 1, 34, 'ink', 1); c.HL(x0, 35, x1 - x0, 'ink', 1)
+    c.R(x1, 24, 2, 4, 'lit', 4)                                       # 앞 등
+    for cx in (12, 24, 56, 68):                                       # 바퀴: 치마판 밑으로 어두운 아랫부분만
+        c.ell(cx, RAIL_Y - 3, 4, 2.6, lambda X, Y, dx, dy, d: ('iron', 2 if dx < 0 else 1) if dy > 0 else None)
 
 
 @_redraw('handcart', '손수레(위에서 본 넓은 나무 짐칸 — 바닥 판자가 보인다, 손잡이 동쪽)')
