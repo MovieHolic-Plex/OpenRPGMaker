@@ -106,7 +106,8 @@ export function formatSkySteamNote(target: SkySteamTarget, targetMap: { id: stri
   return [
     `[하늘섬·증기 도시 시공 — sky_steam] 이 요청의 칩셋은 번들 sky_steam(스팀펑크 손 도트)이다. 주 맵 종류는 ${KIND_KO[kind]}(kind:"${kind}"). 버들항·고딕·일본 도시 도구는 쓰지 않는다.`,
     where,
-    "순서: compose_sky_steam 한 번 → show_map_region 으로 결과 그림 확인 → (필요하면) 다른 seed 로 replace:true → 사용자에게 무엇을 지었는지 알린다. 땅·건물을 낱칸 paint 로 다시 칠하지 않는다."
+    "순서: compose_sky_steam 한 번 → show_map_region 으로 결과 그림 확인 → (필요하면) 다른 seed 로 replace:true → 사용자에게 무엇을 지었는지 알린다. "
+      + "차도·선로·갑판 통로·구름 바다·문 앞 줄은 일부러 비운 동선·배경이다 — 빈 바닥 비율 경고가 나와도 그 칸을 채우지 않는다. 더할 소품은 stamp_object(kit:\"sky_steam/<id>\")로 키트 통째로만, paint_tiles 로 키트 칸 번호를 칠하지 않는다."
       + (more.length ? ` 요청에 ${more.join("·")}도 있으면 compose_sky_steam(kind, newMap:true)로 그 맵을 따로 만들고 문 앞 접근칸끼리 create_transfer_pair 로 잇는다.` : ""),
   ].join("\n");
 }

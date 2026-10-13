@@ -206,6 +206,9 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
   for (const mapId of ids) {
     const map = project.maps[mapId];
     if (!map || skip.has(mapId)) continue;
+    // compose_sky_steam 이 짠 맵은 구성기 자체 검사(문 앞·밑땅·층·이어짐)와 배치 규칙을 이미 통과했다. 이 밀도 지표는 일부러 비운 차도·갑판 통로를
+    // 빈 바닥으로 세어 조수에게 키트 칸을 한 칸씩 칠하게 했다(2026-10-14 실시험 r1 「증기기관 도시 거리」) — 그 맵은 묻지 않는다.
+    if (map.locations?.some((l) => l.tags?.includes("sky-composed"))) continue;
     if (map.width * map.height < MIN_CELLS) continue;
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);

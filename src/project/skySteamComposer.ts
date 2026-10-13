@@ -10,11 +10,11 @@ import type { StructureKitDef, TilesetDef } from "./types";
 export type SkySteamKind = "street" | "yard" | "dock" | "island" | "workshop" | "boiler" | "inn";
 export const SKY_STEAM_KINDS: readonly SkySteamKind[] = ["street", "yard", "dock", "island", "workshop", "boiler", "inn"];
 export const SKY_STEAM_MIN_SIZE: Readonly<Record<SkySteamKind, { w: number; h: number }>> = {
-  street: { w: 32, h: 20 }, yard: { w: 34, h: 22 }, dock: { w: 34, h: 20 }, island: { w: 28, h: 18 },
+  street: { w: 32, h: 20 }, yard: { w: 34, h: 22 }, dock: { w: 34, h: 20 }, island: { w: 28, h: 16 },
   workshop: { w: 14, h: 10 }, boiler: { w: 16, h: 11 }, inn: { w: 16, h: 11 },
 };
 export const SKY_STEAM_DEFAULT_SIZE: Readonly<Record<SkySteamKind, { w: number; h: number }>> = {
-  street: { w: 44, h: 24 }, yard: { w: 44, h: 22 }, dock: { w: 44, h: 22 }, island: { w: 40, h: 26 },
+  street: { w: 44, h: 24 }, yard: { w: 44, h: 22 }, dock: { w: 40, h: 20 }, island: { w: 40, h: 20 },
   workshop: { w: 20, h: 13 }, boiler: { w: 22, h: 15 }, inn: { w: 22, h: 15 },
 };
 export const SKY_STEAM_KIND_LABEL: Readonly<Record<SkySteamKind, string>> = {
@@ -311,6 +311,27 @@ function island(c: Canvas, x0: number, y0: number, w: number, bottom: number): v
   if (e.length >= 3 && bottom + 1 < c.h) for (let x = x0; x < x0 + w; x++) c.lower[(bottom + 1) * c.w + x] = x === x0 ? e[0]! : x === x0 + w - 1 ? e[2]! : e[1]!;
 }
 
+/** 섬 윗부분(건물 지붕보다 위 줄)에 줄 A 소품 무리 — 나무·증기 탱크·자루·풍향계 등을 왼→오로, 무리 사이 1칸(개선 1회: 섬 위가 빈 풀밭이던 것). */
+const ISLAND_PROPS: readonly (readonly string[])[] = [
+  ["sky-a-tree-sky", "sky-a-planter"], ["sky-a-gas-tank", "sky-a-barrel"], ["sky-a-sack-stack", "sky-a-rope-crate"], ["sky-a-water-tank"],
+  ["sky-a-windvane", "sky-a-bench"], ["sky-a-pulley-crane", "sky-a-crate-stack"], ["sky-a-boiler", "sky-a-anchor-box"], ["sky-a-tree-sky"], ["sky-a-signpost", "sky-a-stone-wall"],
+];
+function islandProps(c: Canvas, r: () => number, x0: number, y0: number, w: number, bottom: number): number {
+  const roof = Math.min(bottom, ...c.placed.filter((p) => p.h >= 2 && p.x >= x0 && p.x < x0 + w && p.y >= y0 - 1 && p.y <= bottom).map((p) => p.y));   // 건물 지붕 줄(덤불·꽃 1칸은 빼고)
+  let x = x0 + (r() < 0.5 ? 0 : 1), n = 0;
+  for (const grp of shuffle(r, ISLAND_PROPS)) {
+    let cx = x; const plan: [string, number, number][] = []; let ok = true;
+    for (const id of grp) {
+      const s = c.size(id); const y = Math.max(y0, roof - s.h - (r() < 0.4 ? 1 : 0));
+      if (cx + s.w > x0 + w || y + s.h > roof || !c.free(cx, y, s.w, s.h)) { ok = false; break; }
+      plan.push([id, cx, y]); cx += s.w;
+    }
+    if (ok && plan.length) { for (const [id, px, py] of plan) c.kit(id, px, py); n += plan.length; x = cx + 1; }
+    if (x >= x0 + w - 1) break;
+  }
+  return n;
+}
+
 /** 섬 위 줄 A 건물: 발 = bottom-1 줄, 문 앞 = 섬 맨 아래 풀 줄(bottom). 다리도 이 줄로 들어온다. */
 function aBuildings(c: Canvas, r: () => number, x0: number, y0: number, w: number, bottom: number, max: number): number {
   const pool = ["sky-a-house", "sky-a-windmill-anim", "sky-a-lighthouse", "sky-a-watch-hut", "sky-a-market-stall", "sky-a-house", "sky-a-well"];
@@ -337,6 +358,7 @@ function composeDock(c: Canvas, r: () => number): string {
   c.auto("steam-at-deck", deck);
   c.kit("sky-a-bridge", ix + iw, walk - 1);                     // QA D5: 다리 양 끝 = 섬 풀 · 갑판
   const a = aBuildings(c, r, ix, walk - 6, iw, walk, 2);        // QA D1·D2: 줄 A 건물은 따로 섬 풀 위에만
+  islandProps(c, r, ix, walk - 6, iw, walk);
   c.kit("steam-hangar", dx0 + 1, dy0 - 1);
   if (dw >= 16) c.kit("steam-dock-crane", dx0 + 11, dy0 - 2);
   const my = dy0 + 2;
@@ -347,8 +369,16 @@ function composeDock(c: Canvas, r: () => number): string {
     const s = c.size(id); const x = sx(ox), y = dy0 + oy;
     if (y + s.h <= dy0 + dh && c.free(x, y, s.w, s.h)) c.kit(id, x, y);
   }
+  // 갑판 아래쪽 화물 마당(개선 1회: 갑판 아래 절반이 빈 판자였다) — 왼쪽 상자·통 무리, 가운데 드럼, 오른쪽 탱크·케이블, 남쪽 가장자리 계류 기둥 줄
+  let cargo = 0;
+  for (const [ox, oy, id] of [[1, 10, "steam-crate-stack"], [3, 11, "steam-crate"], [4, 11, "steam-barrel"], [6, 10, "steam-oil-drum"], [7, 10, "steam-oil-drum"],
+    [11, 10, "steam-pressure-tank"], [13, 11, "steam-gear-pile"], [14, 11, "steam-cable-drum"]] as const) {
+    const s = c.size(id); const x = sx(ox), y = dy0 + oy;
+    if (y + s.h <= dy0 + dh - 1 && c.free(x, y, s.w, s.h)) { c.kit(id, x, y); cargo++; }
+  }
+  for (let x = dx0 + 2; x < dx0 + dw - 1; x += 5) if (c.free(x, dy0 + dh - 2, 1, 1)) { c.kit("steam-bollard", x, dy0 + dh - 2); cargo++; }
   if (H - (dy0 + dh) >= 7) { c.kit("sky-a-island-s", 4, dy0 + dh + 2); if (W - 8 > dx0 + dw) c.kit("sky-a-island-m", W - 8, dy0 + dh + 2); c.kit("sky-a-cloud-mist", Math.floor(W / 2), H - 3); }
-  return `갑판 ${dw}×${dh}·격납고·계류탑+비공정·하늘섬(줄 A 건물 ${a})·다리`;
+  return `갑판 ${dw}×${dh}·격납고·계류탑+비공정·화물 ${cargo}·하늘섬(줄 A 건물 ${a})·다리`;
 }
 
 function composeIsland(c: Canvas, r: () => number): string {
@@ -356,19 +386,23 @@ function composeIsland(c: Canvas, r: () => number): string {
   c.fill("sky-a-cloud-sea", 0, 0, W, H, 5);
   const n = W >= 38 ? 3 : 2;
   const iw = Math.floor((W - 2 - (n - 1) * 5) / n);
-  const bottom = Math.min(H - 4, 10 + Math.floor(r() * Math.max(1, H - 15)));   // 섬마다 맨 아래 풀 줄을 같게 — 다리가 그 줄로 잇는다
-  let built = 0;
+  // 섬마다 맨 아래 풀 줄을 같게 — 다리가 그 줄로 잇는다. 섬 덩이를 맵 세로 가운데 아래쪽에(개선 1회: 위쪽 절반이 빈 구름이었다)
+  const bottom = Math.min(H - 3, Math.floor(H / 2) + 4 + Math.floor(r() * 2));
+  let built = 0, props = 0;
   for (let i = 0; i < n; i++) {
     const ix = 1 + i * (iw + 5);
-    const top = Math.max(1, bottom - 5 - Math.floor(r() * 3));
+    const top = Math.max(4, bottom - 7 - Math.floor(r() * 3));
     island(c, ix, top, iw, bottom);
     built += aBuildings(c, r, ix, top, iw, bottom, 3);
+    props += islandProps(c, r, ix, top, iw, bottom);
     if (i > 0) c.kit("sky-a-bridge", ix - 5, bottom - 1);
-    if (r() < 0.6) { const tx = ix + Math.floor(r() * Math.max(1, iw - 2)); if (c.free(tx, top - 2, 2, 3)) c.kit("sky-a-tree-sky", tx, top - 2); }
   }
+  // 하늘: 섬 위 구름에 비공정 한 척·기구 하나(나는 것은 밑땅 검사에서 빠진다)
+  const ax = 2 + Math.floor(r() * Math.max(1, W - 14));
+  if (c.free(ax, 0, 6, 4)) c.kit("sky-a-airship-anim", ax, 0);
   if (c.free(W - 3, 0, 2, 3)) c.kit("sky-a-hot-air-balloon", W - 3, 0);
   if (H - bottom >= 5) { c.kit("sky-a-cloud-puff", Math.floor(W / 3), H - 2); c.kit("sky-a-cloud-mist", Math.floor((2 * W) / 3), H - 2); }
-  return `섬 ${n}개·다리 ${n - 1}·줄 A 건물 ${built}`;
+  return `섬 ${n}개·다리 ${n - 1}·줄 A 건물 ${built}·섬 소품 ${props}·비공정`;
 }
 
 const ROOMS: Readonly<Record<"workshop" | "boiler" | "inn", { walls: readonly string[]; floor: number; alt: number; north: readonly string[]; mount: readonly string[]; mid: readonly (readonly string[])[] }>> = {

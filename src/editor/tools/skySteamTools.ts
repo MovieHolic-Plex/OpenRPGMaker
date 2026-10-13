@@ -62,6 +62,17 @@ function relocateEvents(draft: Project, map: GameMap): number {
   return moved;
 }
 
+/** 종류마다 일부러 비워 둔 칸 — 빈 바닥 경고가 나와도 채우지 않는다. */
+const CLEAR_NOTE: Readonly<Record<SkySteamKind, string>> = {
+  street: "차도·전차 선로 줄과 건물 바로 아래 보도 줄(문 앞)은 일부러 비운 동선이다.",
+  yard: "선로 줄과 공장 문 앞 줄은 일부러 비운 동선이다.",
+  dock: "구름 바다는 배경이고, 갑판 가운데 통로·다리 줄·격납고 문 앞은 일부러 비운 동선이다.",
+  island: "구름 바다는 배경이고, 섬 맨 아래 풀 줄은 다리와 문 앞을 잇는 길이라 비워 둔다.",
+  workshop: "문 열(가운데 세로 줄)과 맨 아래 줄은 일부러 비운 통로다.",
+  boiler: "문 열(가운데 세로 줄)과 맨 아래 줄은 일부러 비운 통로다.",
+  inn: "문 열(가운데 세로 줄)과 맨 아래 줄은 일부러 비운 통로다.",
+};
+
 export const COMPOSE_SKY_STEAM_TOOL: ToolDefinition = {
   name: "compose_sky_steam",
   mode: "write",
@@ -130,7 +141,10 @@ export const COMPOSE_SKY_STEAM_TOOL: ToolDefinition = {
     target.lowerTiles = [...plan.lower];
     target.upperTiles = [...plan.upper];
     const moved = relocateEvents(next, target);
-    target.locations = (target.locations ?? []).filter((l) => !(l.tags ?? []).includes("sky-building"));
+    target.locations = (target.locations ?? []).filter((l) => !(l.tags ?? []).includes("sky-building") && !(l.tags ?? []).includes("sky-composed"));
+    // 맵 전체 이름표 = 구성기가 짠 맵이라는 표시(종류·씨앗). 배치 품질 밀도 검사(layoutQuality)는 이 맵을 건너뛴다 — 차도·갑판 통로를 «빈 바닥»으로 세어 채우라고 하기 때문(r1 실측).
+    addMapLocation(target, { name: `${SKY_STEAM_KIND_LABEL[kind]} 전체`, x: 0, y: 0, w: target.width, h: target.height,
+      note: `compose_sky_steam kind:${kind} seed:${seed} 로 짠 맵 — 다른 배치는 seed 를 바꿔 replace:true`, tags: ["sky-composed", kind, `seed:${seed}`] });
     const kits = new Map((next.tilesets[SKY_STEAM_ID]!.structureKits ?? []).map((k) => [k.id, k.name] as const));
     const doors: string[] = [];
     for (const d of plan.doors) {
@@ -153,7 +167,9 @@ export const COMPOSE_SKY_STEAM_TOOL: ToolDefinition = {
     return {
       summary: `${how} ${SKY_STEAM_KIND_LABEL[kind]}을(를) 짰다(seed ${seed}) — ${plan.summary}. 구조 검사 통과.`
         + (doors.length ? ` 건물 문 앞: ${doors.slice(0, 8).join(" · ")}${doors.length > 8 ? ` 외 ${doors.length - 8}` : ""}.` : "")
-        + (moved ? ` 막힌 칸 위 이벤트 ${moved}개를 옆 칸으로 옮겼다.` : ""),
+        + (moved ? ` 막힌 칸 위 이벤트 ${moved}개를 옆 칸으로 옮겼다.` : "")
+        // 실시험 r1(2026-10-14): 「빈 바닥 비율」 경고를 본 조수가 paint_tiles 로 키트 칸 번호를 한 칸씩 차도 연석에 칠했다 — 비운 칸이 의도라는 것을 결과에 적는다.
+        + ` ${CLEAR_NOTE[kind]} 소품을 더할 때는 stamp_object({objectId:"kit:sky_steam/<id>"}) 로 키트 통째로만 찍는다 — paint_tiles 로 키트 칸 번호를 한 칸씩 칠하지 않는다. 다른 배치가 필요하면 seed 를 바꿔 replace:true.`,
       data: { mapId: target.id, kind, seed, width: target.width, height: target.height, placed: plan.placed.length, doors: plan.doors },
     };
   },
