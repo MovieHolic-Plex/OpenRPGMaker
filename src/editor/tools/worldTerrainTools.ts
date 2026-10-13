@@ -214,6 +214,7 @@ function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): stri
  */
 const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
   joseon: ["joseon_baram"],
+  sengoku: ["sengoku_edo"],
   "modern-town": ["jp_city", "modern_city"],
   "modern-sf": ["modern_city"],
   "snow-north": ["forest_harmony_snow"],
@@ -230,7 +231,9 @@ function townArtHint(theme: string): string {
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
     + (isRetiredEasyRpgTileset({ tilesets: {} }, tilesets[0]!)
       ? `${tilesets[0]} 은 폐기된 EasyRPG 계열이라 새 맵을 만들 수 없다 — 완성 마을을 가져오거나, 없으면 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. `
-      : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
+      : tilesets[0] === "sengoku_edo"
+        ? "새로 지으려면 create_map(tilesetId=sengoku_edo) 뒤 compose_sengoku_edo_map({style:\"castle_town\"|\"inn_street\"|\"samurai\"|\"castle\"|\"temple\"|\"village\"}) 한 번으로 깐다(장소 역할에 맞는 style). 건물 안은 build_hand_interior_room({tileset:\"sengoku_edo\"}) + link_sengoku_edo_interior. "
+        : `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. `)
     + `세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }
 

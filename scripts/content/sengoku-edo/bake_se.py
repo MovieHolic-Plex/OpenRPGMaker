@@ -138,7 +138,7 @@ def bake(dry=False):
                 floors={}, walls={}, ceilings={}, objects={}, tables={}, lines={}, daises={}, goods={})
     for k, f in it['floors'].items(): spec['floors'][k] = dict(f, tiles=[n(t) for t in f['tiles']])
     for k, w in it['walls'].items(): spec['walls'][k] = dict(w, tiles=[n(t) for t in w['tiles']])
-    for k, c in it['ceilings'].items(): spec['ceilings'][k] = [n(t) for t in c]
+    for k, c in it['ceilings'].items(): spec['ceilings']['default' if k == 'se-ceil' else k] = [n(t) for t in c]   # 조립기는 천장 'default' 를 찾는다
     for k, o in it['objects'].items(): spec['objects'][k] = dict(o, cells=[[dx, dy, n(l), layer] for dx, dy, l, layer in o['cells']])
     spec['rooms'] = ROOMS
     extra_groups = []
@@ -158,7 +158,7 @@ def bake(dry=False):
             rows.append(dict(tiles=lo, upperTiles=up))
         ai = dict(snap=a['snap'], tags=['전국·에도', '실내'] + list(a['tags']), description=a['description'][:400], placementRules=(a['placementRules'] or '방 짓기 도구가 놓는다.')[:400],
                   repeatability='fixed', role='prop', anchor=a['anchor'], layerHome='upper', origin='ai', confidence='high')
-        extra_kits.append(dict(id=k['id'].replace('jp-in-', 'se-in-'), kind='section', name=k['name'], width=len(grid[0]), height=len(grid), tileSize=16, rows=rows,
+        extra_kits.append(dict(id=k['id'].replace('jp-in-se-', 'se-in-').replace('jp-in-', 'se-in-'), kind='section', name=k['name'], width=len(grid[0]), height=len(grid), tileSize=16, rows=rows,
                                learnedFrom='db-authored', ai=ai))
     data, sheet, count = TB.finalize(ID, NAME, TEXTURE, FAMILY, TPR, O, extra_groups, extra_kits)
     expected = {pid: pc['src'] for pid, pc in O.piece_cells.items() if pc['W'] * pc['H'] > 1 or pc['piece']['kind'] not in ('terrain', 'flat')}

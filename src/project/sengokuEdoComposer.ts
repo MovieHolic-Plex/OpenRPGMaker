@@ -202,6 +202,8 @@ class Board {
   /** 논 한 배미: 둘레는 논두렁 칸, 안쪽은 물논. */
   paddy(r: Rect, inner: string): boolean {
     if (!this.free(r, 0, ["grass"])) return false;
+    // 논두렁 칸은 물논 그림이라, 자란 벼·익은 벼 논에 두르면 벼 사각형에 물 테가 생긴다(QA D8) — 그 논은 한 가지 칸으로 채우고 풀 두렁이 경계다.
+    if (inner !== "paddy") { this.fill(inner, r, "paddy"); return true; }
     for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
       const n = y === r.y, s = y === r.y + r.h - 1, w = x === r.x, e = x === r.x + r.w - 1;
       const nm = n && w ? "paddy-nw" : n && e ? "paddy-ne" : s && w ? "paddy-sw" : s && e ? "paddy-se" : n ? "paddy-n" : s ? "paddy-s" : w ? "paddy-w" : e ? "paddy-e" : inner;
@@ -226,7 +228,9 @@ class Board {
   finish(seed: number): void {
     const { W, H } = this;
     const dirt = (x: number, y: number) => { const u = this.u(x, y); return u !== null && DIRT.includes(u); };
-    const wet = (x: number, y: number) => { const u = this.u(x, y); return u === null || u === "water" || u === "bridge"; };
+    const wT = this.t("water");
+    // 배처럼 물 위에 놓인 소품 칸도 물이다(QA D3: 배 둘레에 축대 테가 생겼다).
+    const wet = (x: number, y: number) => { const u = this.u(x, y); return u === null || u === "water" || u === "bridge" || this.lower[y * W + x] === wT; };
     const grass = this.t("grass");
     const gB = this.pal.tile("grass-b"), gF = this.pal.tile("grass-flower");
     const rB = this.pal.tile("road-b"), rC = this.pal.tile("road-c"), road = this.t("road");
@@ -243,7 +247,8 @@ class Board {
         if (nm && this.pal.tile(nm) >= 0) { this.lower[i] = this.pal.tile(nm); continue; }
         const v = vnoise(x + 900, y + 900, 7, seed) * 0.8 + vnoise(x + 900, y + 900, 3, seed + 5) * 0.2;
         const f = vnoise(x + 300, y + 300, 6, seed + 11);
-        if (gB >= 0 && v > 0.62) this.lower[i] = gB;
+        // 짙은 풀은 덩이 속만 꽉 채우고 가장자리는 확률로 흩뜨린다(QA D1: 문턱 하나로 자르면 네모 덩이가 보였다).
+        if (gB >= 0 && (v > 0.7 || (v > 0.58 && hash2(x, y, seed + 31) < (v - 0.58) / 0.12))) this.lower[i] = gB;
         else if (gF >= 0 && f < 0.15 && hash2(x, y, seed + 3) < 0.4) this.lower[i] = gF;
       } else if (u === "road" && this.lower[i] === road) {
         const v = vnoise(x + 50, y + 50, 5, seed + 17);
@@ -313,8 +318,9 @@ function castleBlock(b: Board, cx: number, y0: number): { below: number; bridgeX
   const wb = ky + 7;                                           // 성벽 밑변
   const x0 = cx - 12, x1 = cx + 13;                            // 성벽 서·동 끝 칸
   // 해자(서·동 3칸, 남 5칸)
-  b.water({ x: x0 - 3, y: y0, w: 3, h: wb + 6 - y0 });
-  b.water({ x: x1 + 1, y: y0, w: 3, h: wb + 6 - y0 });
+  // 서·동 해자와 성벽은 맵 북쪽 끝(0줄)까지 — 성이 맵 밖으로 이어지는 것으로 보고, 북쪽 틈으로 다리를 건너지 않고 성 안에 들어가지 못하게 한다.
+  b.water({ x: x0 - 3, y: 0, w: 3, h: wb + 6 });
+  b.water({ x: x1 + 1, y: 0, w: 3, h: wb + 6 });
   b.water({ x: x0 - 3, y: wb + 1, w: x1 - x0 + 7, h: 5 });
   // 성 안: 풀밭 + 돌길(천수각 문 → 성문)
   const keep = b.building("castle-keep", kx, y0);
@@ -330,7 +336,7 @@ function castleBlock(b: Board, cx: number, y0: number): { below: number; bridgeX
   b.reserve({ x: gx, y: wb - gs.h + 1, w: gs.w, h: gs.h });
   for (let y = wb - gs.h + 1; y <= wb; y++) for (const x of [cx, cx + 1]) { const i = y * b.W + x; b.use[i] = "stone"; b.lower[i] = b.t("cobble"); }
   // 서·동 성벽(세로)
-  const sideTop = y0 + 1, sideBot = wb - (ts ? ts.h : 3);
+  const sideTop = 0, sideBot = wb - (ts ? ts.h : 3);
   for (let y = sideTop; y <= sideBot; y++) for (const x of [x0, x1]) { b.stamp("castle-wall-v", x, y, "wall"); b.reserve({ x, y, w: 1, h: 1 }); }
   // 해자 다리(성문 통로 아래)
   const bridge = b.has("bridge-plain") ? "bridge-plain" : "bridge-arch";
@@ -374,7 +380,7 @@ function composeCastleTown(b: Board): SengokuCell {
   for (const tx of [c.x0 - 4, c.x1 + 2]) for (let ty = 2; ty < roadA - 4; ty += 6) b.prop(pick(rng, ["tree-willow", "tree-cherry", "tree-pine"]), tx, ty, 0);
   b.prop("boat", c.x0 + 4, roadA - 3, 0, ["water"]);
   // 성 밖 빈 띠(서·동 해자 바깥)에 숲 덩이
-  b.groves(Math.floor(W * H / 400), ["tree-pine", "tree-cherry", "tree-maple", "bamboo"], ["azalea", "rock-small", "hedge"]);
+  b.groves(Math.floor(W * H / 400), ["tree-pine", "tree-cherry", "tree-maple", "bamboo"], ["azalea", "rock-small"]);
   return { x: cx, y: H - 1 };
 }
 
@@ -429,6 +435,16 @@ function composeInnStreet(b: Board): SengokuCell {
   return { x: 0, y: road + 2 };
 }
 
+/** 마른 산수(가레산스이) 한 판: 갈퀴 자갈 + 가장자리 물결 자갈 한 줄 + 바위 셋(큰 것 하나). */
+function zenGarden(b: Board, x: number, y: number, w: number, h: number): void {
+  b.fill("gravel", { x, y, w, h }, "gravel");
+  b.fill("gravel-wave", { x, y, w, h: 1 }, "gravel");
+  if (h >= 4) b.fill("gravel-wave", { x, y: y + h - 1, w, h: 1 }, "gravel");
+  b.prop("rock-big", x + 1 + Math.floor(b.rng() * 2), y + 1, 0, ["gravel"]);
+  b.prop("rock-small", x + w - 2, y + 1 + Math.floor(b.rng() * 2), 0, ["gravel"]);
+  b.prop("rock-small", x + Math.floor(w / 2), y + h - 2, 0, ["gravel"]);
+}
+
 // ───────────────────────── 무가 저택 거리 ─────────────────────────
 function compound(b: Board, x0: number, x1: number, top: number, wallY: number, withTea: boolean, main: string): void {
   const { rng } = b;
@@ -454,37 +470,57 @@ function compound(b: Board, x0: number, x1: number, top: number, wallY: number, 
   const gy0 = hy + hs.h + 2, gy1 = wallY - gs.h - 1;
   const gardenLeft = gx - x0 > x1 - gx - gs.w;
   const zx0 = gardenLeft ? x0 + 1 : gx + gs.w + 1, zx1 = gardenLeft ? gx - 2 : x1 - 1;
+  let pondAt: { gw: number; gh: number } | null = null;
   if (zx1 - zx0 >= 5 && gy1 - gy0 >= 4) {
-    b.fill("gravel", { x: zx0, y: gy0, w: zx1 - zx0 + 1, h: gy1 - gy0 + 1 }, "gravel");
-    b.fill("gravel-wave", { x: zx0 + 1, y: gy0 + 1, w: zx1 - zx0 - 1, h: 1 }, "gravel");
-    b.prop("rock-big", zx0 + 1, gy0 + 2, 0, ["gravel"]);
-    b.prop("rock-small", zx1 - 1, gy1 - 1, 0, ["gravel"]);
-    b.prop("tree-pine-small", zx1 - 2, gy0 + 1, 0, ["gravel"]);
-    b.prop("lantern-snow", zx0 + 4, gy1 - 1, 0, ["gravel"]);
+    // 자갈 정원 8×5 이하 + 그 아래 작은 연못(축대 물가) + 소나무·눈 석등(QA D10: 정원 전체가 빈 자갈판이었다).
+    const gw = Math.min(8, zx1 - zx0 + 1), gh = Math.min(5, gy1 - gy0 + 1);
+    zenGarden(b, zx0, gy0, gw, gh);
+    pondAt = { gw, gh };
   }
   // 다실: 반대쪽 정원 구석, 디딤돌로 저택 길과 잇는다
   const ox0 = gardenLeft ? gx + gs.w + 1 : x0 + 1, ox1 = gardenLeft ? x1 - 1 : gx - 2;
-  if (withTea && b.has("chashitsu") && ox1 - ox0 >= 4) {
-    const cs = b.size("chashitsu");
-    const cxp = gardenLeft ? ox1 - cs.w : ox0;
-    const cyp = gy0;
-    if (b.free({ x: cxp, y: cyp, w: cs.w, h: cs.h + 1 }, 0, ["grass"])) {
+  // 다실 자리 후보: ① 대문 반대쪽 빈 띠 ② 자갈 정원 옆 ③ 자갈 정원 아래(그러면 연못은 빠진다). 한 자리만 보면 저택이 담 끝에 붙은 씨앗에서 다실이 자주 빠졌다.
+  const regions: [number, number, number][] = [[ox0, ox1, gy0]];
+  if (pondAt) { regions.push([zx0 + pondAt.gw + 2, zx1, gy0]); regions.push([zx0 + 1, zx1, gy0 + pondAt.gh + 2]); }
+  let cxp = -1, cyp = -1;
+  const cs = b.has("chashitsu") ? b.size("chashitsu") : { w: 0, h: 0 };
+  if (withTea && cs.w) for (const [rx0, rx1, ry0] of regions) {
+    for (let yy = ry0; yy + cs.h + 2 <= gy1 && cxp < 0; yy++) for (const xx of [gardenLeft ? rx1 - cs.w + 1 : rx0, gardenLeft ? rx1 - cs.w - 1 : rx0 + 2]) {
+      if (xx >= rx0 && xx + cs.w - 1 <= rx1 && b.free({ x: xx, y: yy, w: cs.w, h: cs.h + 1 }, 0, ["grass"])) { cxp = xx; cyp = yy; break; }
+    }
+    if (cxp >= 0) break;
+  }
+  {
+    if (cxp >= 0) {
       const tea = b.building("chashitsu", cxp, cyp);
-      b.fill("moss", { x: Math.min(ox0, cxp - 1), y: cyp + cs.h, w: Math.min(ox1, cxp + cs.w) - Math.min(ox0, cxp - 1) + 1, h: Math.max(1, gy1 - cyp - cs.h) }, "moss");
+      // 이끼는 다실 앞 3줄만(QA D11: 다실 아래로 5×10 이끼 판이 깔렸다).
+      b.fill("moss", { x: cxp - 1, y: cyp + cs.h, w: cs.w + 2, h: Math.min(3, Math.max(1, gy1 - cyp - cs.h)) }, "moss");
       // 디딤돌: 다실 접근칸 → 돌길
       const a = tea.access[0]!;
       const stoneX = gx + 1;
       const yLink = Math.min(gy1, a.y + 1);
-      for (let yy = a.y; yy <= yLink; yy++) b.fill("stepping-stones" in {} ? "moss" : "moss", { x: a.x, y: yy, w: 1, h: 1 }, "moss");
-      for (let xx = Math.min(a.x, stoneX); xx <= Math.max(a.x, stoneX); xx++) b.fill("moss", { x: xx, y: yLink, w: 1, h: 1 }, "moss");
-      for (let yy = a.y; yy <= yLink; yy++) b.prop("stepping-stones", a.x, yy, 0, ["moss"]);
-      for (let xx = Math.min(a.x, stoneX) + 1; xx < Math.max(a.x, stoneX); xx++) b.prop("stepping-stones", xx, yLink, 0, ["moss"]);
+      // 디딤돌은 바닥 칸(걷는 길망 stone) — 흙길로 잇지 않는다(QA D12: 다실 앞이 흙길 띠 + 물통이었다).
+      const step = b.has("stepping-stones") || b.pal.tile("stepping-stones") >= 0 ? "stepping-stones" : "cobble";
+      for (let yy = a.y; yy <= yLink; yy++) b.fill(step, { x: a.x, y: yy, w: 1, h: 1 }, "stone");
+      for (let xx = Math.min(a.x, stoneX); xx <= Math.max(a.x, stoneX); xx++) if (b.u(xx, yLink) !== "stone") b.fill(step, { x: xx, y: yLink, w: 1, h: 1 }, "stone");
       b.prop("tsukubai", a.x + (gardenLeft ? -2 : 2), a.y + 1, 0, ["moss", "grass"]);
       b.prop("tree-maple", gardenLeft ? cxp - 3 : cxp + cs.w, cyp, 0, ["grass", "moss"]);
     }
-  } else if (ox1 - ox0 >= 4) {
+  }
+  if (ox1 - ox0 >= 4 && !b.buildings.some((d) => d.kit.endsWith("chashitsu") && d.rect.x >= ox0 && d.rect.x <= ox1)) {
     b.prop("kura", ox0 + 1, gy0, 0, ["grass"]);
     b.prop("well", ox1 - 2, gy0 + 1, 0, ["grass"]);
+  }
+  // 연못·소나무는 다실 자리를 먼저 잡은 뒤에 둔다.
+  if (pondAt) {
+    const { gw, gh } = pondAt;
+    const pw = Math.min(5, zx1 - zx0 - 1), ph = 3, py = gy0 + gh + 2;
+    if (py + ph <= gy1 && pw >= 3 && b.free({ x: zx0 + 1, y: py, w: pw, h: ph }, 0, ["grass"])) {
+      b.water({ x: zx0 + 1, y: py, w: pw, h: ph });
+      b.prop("lantern-snow", zx0 + pw + 2, py, 0) || b.prop("lantern-stone", zx0 + pw + 2, py, 0);
+      b.prop("tree-pine-small", zx0 + pw + 2, py + ph, 0);
+    }
+    b.prop("tree-pine", zx0 + gw + 1, gy0, 0) || b.prop("tree-pine-small", zx0 + gw + 1, gy0, 0);
   }
   // 저택 양옆 소나무·곳간
   b.prop("tree-pine", x0 + 1, hy + hs.h - 2 >= top ? top + 1 : top, 0) || b.prop("tree-pine-small", x0 + 1, top + 1, 0);
@@ -558,7 +594,8 @@ function composeTemple(b: Board): SengokuCell {
   b.prop("chozuya", ax - 6, sy + ss.h + 3, 0);
   b.prop("ema-rack", ax + 5, sy + ss.h, 0);
   b.prop("hokora", sx + ss.w + 2, sy + 1, 0);
-  b.prop("offering-box", ax + 5, sy + ss.h + 4, 0);
+  // 새전함은 본전 앞마당 돌 위, 참배길 바로 옆(QA D7: 풀밭 아무 데나 놓였다).
+  b.prop("offering-box", ax - 2, sy + ss.h + 1, 0, ["stone"]) || b.prop("offering-box", ax + 2, sy + ss.h + 1, 0, ["stone"]);
   // 신목(삼나무) · 숲
   b.prop("tree-cedar", sx - 3, sy, 0);
   b.prop("tree-cedar", sx + ss.w + 4, sy + 3, 0);
@@ -580,18 +617,26 @@ function composeTemple(b: Board): SengokuCell {
   if (gy1 - gy0 >= 3) {
     const zx0 = split + 2, zx1 = tx - 3;
     if (zx1 - zx0 >= 4) {
-      b.fill("gravel", { x: zx0, y: gy0, w: zx1 - zx0 + 1, h: gy1 - gy0 + 1 }, "gravel");
-      b.fill("gravel-wave", { x: zx0, y: gy0 + 1, w: zx1 - zx0 + 1, h: 1 }, "gravel");
-      b.prop("rock-big", zx0 + 1, gy0 + 2, 0, ["gravel"]);
-      b.prop("rock-small", zx1 - 1, gy0, 0, ["gravel"]);
+      // 자갈 정원은 8×5 이하로, 남은 자리 가운데(QA D5: 빈 자갈 벌판이 경내 가운데를 다 먹었다). 바위 셋 + 이끼 섬.
+      const gw = Math.min(8, zx1 - zx0 + 1), gh = Math.min(5, gy1 - gy0 + 1);
+      const qx = zx0 + Math.floor((zx1 - zx0 + 1 - gw) / 2), qy = gy0 + Math.floor((gy1 - gy0 + 1 - gh) / 2);
+      zenGarden(b, qx, qy, gw, gh);
+      b.prop("tree-pine", qx - 3, qy - 1, 0) || b.prop("tree-pine-small", qx - 2, qy, 0);
+      b.prop("lantern-stone", qx + gw + 1, qy + gh - 2, 0);
     }
     b.prop("tree-maple", tx + 4, gy0, 0);
     b.prop("jizo", tx + 3, gy1, 0);
     b.prop("jizo", tx + 5, gy1, 0);
   }
   // 경계: 두 경내 사이 대숲
-  for (let y = 2; y < roadY - 4; y += 4) b.prop("bamboo", split - 1, y, 0);
-  b.groves(Math.floor(W * H / 380), ["tree-cedar", "tree-maple", "tree-pine", "tree-cherry"], ["azalea", "rock-small", "hedge"]);
+  // 경계 대숲은 한 줄로 세우지 않고 두세 포기 덩이로(QA D6).
+  for (let y = 1 + Math.floor(rng() * 2); y < roadY - 5; y += 4 + Math.floor(rng() * 3)) {
+    const jx = split - 2 + Math.floor(rng() * 3);
+    b.prop("bamboo", jx, y, 0);
+    if (rng() < 0.55) b.prop("bamboo", jx + (rng() < 0.5 ? -2 : 2), y + 1, 0);
+    if (rng() < 0.3) b.prop("azalea", jx + 1, y + 3, 0);
+  }
+  b.groves(Math.floor(W * H / 380), ["tree-cedar", "tree-maple", "tree-pine", "tree-cherry"], ["azalea", "rock-small"]);
   return { x: ax, y: H - 1 };
 }
 
@@ -616,7 +661,8 @@ function composeVillage(b: Board): SengokuCell {
   // 우물 하나(길가 풀밭)
   b.prop("well", lx + 3, roadY + 2, 0) || b.prop("well", lx - 4, roadY + 2, 0);
   // 집 뒤 대숲·밭
-  for (let x = 1; x < W - 3; x += 4 + Math.floor(rng() * 3)) b.prop(pick(rng, ["bamboo", "tree-pine-small", "bamboo", "tree-cedar"]), x, 0, 0);
+  // 집 뒤 숲 띠는 줄 세우지 않는다(QA D9) — 두세 그루 덩이와 빈 틈을 섞고 높이를 흔든다.
+  for (let x = 1; x < W - 3; x += 3 + Math.floor(rng() * 5)) { if (rng() < 0.25) continue; b.prop(pick(rng, ["bamboo", "tree-pine-small", "bamboo", "tree-cedar", "tree-maple"]), x, Math.floor(rng() * 2), 0); }
   // 마을길 ~ 강 사이: 논(논두렁 길 1칸) + 채소밭
   const py0 = roadY + 3, py1 = ry - 2;
   for (const [x0, x1] of [[1, lx - 2], [lx + 3, W - 2]] as const) {
@@ -627,7 +673,7 @@ function composeVillage(b: Board): SengokuCell {
       while (x + 5 <= x1) {
         const w = Math.min(7, x1 - x + 1);
         if (b.rng() < 0.18) { b.fill(pick(rng, ["field", "field-bare"]), { x, y, w: Math.min(4, w), h: Math.min(3, h) }, "field"); }
-        else b.paddy({ x, y, w, h }, pick(rng, ["paddy", "paddy-grown", "paddy-ripe"]));
+        else b.paddy({ x, y, w, h }, pick(rng, ["paddy", "paddy-grown", "paddy-grown", "paddy-ripe"]));
         x += w + 1;
       }
       y += h + 1;

@@ -12,6 +12,7 @@
 import spec from "@/assets/handInteriorSpec.json";
 import jpSpec from "@/assets/jpInteriorSpec.json";
 import wizardingSpec from "@/assets/wizardingRoomSpec.json";
+import sengokuSpec from "@/assets/sengokuEdoRoomSpec.json";
 import { passabilityOf } from "@/project/collision";
 import type { TilesetDef } from "@/project/types";
 
@@ -62,9 +63,12 @@ export const JP_INTERIOR_SPEC = jpSpec as unknown as HandInteriorSpec;
 /** 마법 학교(wizarding_world) — 바닥·벽면·천장 변형 칸만 scripts/content/wizarding/roomkit_wz.py 가 굽는다. 가구는 칩셋 조립 부품에서(kitHandObjects). */
 export const WIZARDING_INTERIOR_TILESET_ID = "wizarding_world";
 export const WIZARDING_INTERIOR_SPEC = wizardingSpec as unknown as HandInteriorSpec;
+/** 전국·에도 일본(sengoku_edo) — 다다미 방·다실·여관 방·알현실·가게·농가·도장 사양을 scripts/content/sengoku-edo/bake_se.py 가 굽는다(art/interior.py). 조립 규칙은 같다. */
+export const SENGOKU_INTERIOR_TILESET_ID = "sengoku_edo";
+export const SENGOKU_INTERIOR_SPEC = sengokuSpec as unknown as HandInteriorSpec;
 /** 실내를 지을 수 있는 칩셋 → 사양. */
 export const HAND_INTERIOR_SPECS: Readonly<Record<string, HandInteriorSpec>> = {
-  [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC, [WIZARDING_INTERIOR_TILESET_ID]: WIZARDING_INTERIOR_SPEC,
+  [HAND_INTERIOR_TILESET_ID]: HAND_INTERIOR_SPEC, [JP_INTERIOR_TILESET_ID]: JP_INTERIOR_SPEC, [WIZARDING_INTERIOR_TILESET_ID]: WIZARDING_INTERIOR_SPEC, [SENGOKU_INTERIOR_TILESET_ID]: SENGOKU_INTERIOR_SPEC,
 };
 
 /**

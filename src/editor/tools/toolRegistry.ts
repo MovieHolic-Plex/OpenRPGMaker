@@ -83,6 +83,7 @@ import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
 import { JP_CITY_TOOLS } from "./jpCityTools";
 import { WIZARDING_SPACE_TOOLS } from "./wizardingSpaceTools";
+import { SENGOKU_EDO_TOOLS } from "./sengokuEdoTools";
 import { TRANSIT_TOOLS } from "./transitTools";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -223,6 +224,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(JP_CITY_TOOLS, "tile"),
   // 마법 학교(해리포터풍, wizarding_world) 공간 빌더 — 13공간 레시피로 방·야외 한 장을 한 번에 짓는다(통행 한 덩이 보장).
   ...withDomain(WIZARDING_SPACE_TOOLS, "tile"),
+  // 전국·에도 일본(sengoku_edo) 야외 구성(성하마을·여관 거리·무가 저택·성·신사/절·농촌)과 건물 문 ↔ 실내 이음. sengoku_edo 맵에서만 동작한다.
+  ...withDomain(SENGOKU_EDO_TOOLS, "tile"),
   // 맵 위 탈것(차 흐름·버스·노면전차·전철·지하철) — 길 그림에서 자동으로 또는 칸 경로로 노선을 깐다. 런타임이 실제로 움직인다.
   ...withDomain(TRANSIT_TOOLS, "map"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
