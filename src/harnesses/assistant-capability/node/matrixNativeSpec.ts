@@ -521,7 +521,10 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const rect = AREA.trail;
       const cells = changedCells(before, after);
       if (cells.length < 4) return fail(`바뀐 칸이 ${cells.length}개뿐이다`);
-      if (!cells.every(c => inside({ x: rect.x - 1, y: rect.y - 1, w: rect.w + 2, h: rect.h + 2 }, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
+      // Visual review (2026-10-14) found a stray stone tile one row above the area and a row of empty ground tiles (holes); both are failures.
+      if (!cells.every(c => inside(rect, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
+      const holes = cells.filter(c => tileAt(before, 'lowerTiles', c.x, c.y) > 0 && tileAt(after, 'lowerTiles', c.x, c.y) <= 0);
+      if (holes.length) return fail(`바닥 타일이 비어 구멍이 된 칸 ${holes.length}개`);
       return sameExcept(before, after, withoutTiles) ? pass(`숲길 ${cells.length}칸`) : fail('타일 밖 내용이 바뀌었다');
     }
     case 'summarize-diff': return readOnly(input, id, () => mentions(answer, '나무', '타일') || coordinatesIn(answer).some(c => c.x === 14 && c.y === 2) ? pass('방금 변경 요약') : fail('방금 놓은 나무(14,2)를 요약하지 않았다'));
