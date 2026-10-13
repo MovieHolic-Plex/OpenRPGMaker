@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3e3e5da031b6ffd6f56da7e2f7b6cd792b7e3809a632ecfb9a51e1fe9423f37b",
+ "width": 16,
+ "height": 32,
+ "kind": "container",
+ "name": "증기 구멍(쇠 굴뚝 토막에서 김이 오른다) (프레임 4)",
+ "label": "steampunk-city/sp-steam-vent-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "아가리 3행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "short metal steam pipe/chimney stump",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the metal pipe has a clearly visible elliptical opening rendered in dark pixels across rows 21-23 with the surrounding rim visible in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5995
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "short metal chimney vent pipe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the vent pipe clearly shows an elliptical dark opening spanning rows 21-23 (3 rows tall) with foreshortened rims around it, matching the expected 3/4 perspective for an open vertical cylinder.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 6109
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "short metal steam vent / pipe stub",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The steam pipe has a clearly foreshortened circular opening at rows 21-23 (3 rows tall dark interior) surrounded by a visible rim (row 20 to 24) viewed from a 3/4 top-down angle, above a vertical south-facing cylinder body.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5994
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "short metal steam vent / chimney pipe",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pipe opening is rendered as an elliptical hole visible from above spanning rows 21 to 23 (3 rows tall), framed by a circular rim on rows 20-23 above the cylindrical south face.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "아가리 3행 < 4"
+   ],
+   "ms": 5575
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.909Z",
+ "cells": {
+  "16": [
+   "bb8e23d2d33a5366",
+   "f6a584c7d0c6494b"
+  ],
+  "24": [
+   "1516dc92f6570da1",
+   "41118964830181d3",
+   "75f8ecdee17ce082",
+   "8387fa4142f9a25a",
+   "8afeadb3d7c49156",
+   "957103d11f30d1ba",
+   "ab20cc5c49872825",
+   "bc3739a9068a1113",
+   "c8e98567c75e4e8a",
+   "ea0378a63ea86d94",
+   "eb72c15770cd7383",
+   "f95f465e2a487ab5"
+  ],
+  "32": [
+   "348e0cb4d9d860ee",
+   "95cbbad446c519d3",
+   "e757bba4d1285899"
+  ],
+  "48": [
+   "7a262f1de3142069",
+   "a45ccd274b709195",
+   "a95f5b180ba82c6b",
+   "b3c4b49daf73c757",
+   "ecf8c06251f59da5",
+   "ffd07bb43926e338"
+  ]
+ }
+}

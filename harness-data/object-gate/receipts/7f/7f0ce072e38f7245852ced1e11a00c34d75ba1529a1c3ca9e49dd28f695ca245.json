@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7f0ce072e38f7245852ced1e11a00c34d75ba1529a1c3ca9e49dd28f695ca245",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "석탄재 마당",
+ "label": "steampunk-city/sp-cinder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coal ash yard ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a coal ash yard ground texture across the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3268
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coal ash terrain ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image is a seamless flat ground terrain texture depicting coal ash and dirt, occupying the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3004
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coal ash yard ground terrain",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting dark grey coal ash ground with scattered specks and textured shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4187
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coal ash yard terrain tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground terrain tile representing coal ash/dirt ground; covers the entire 16x16 tile as top-down ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4268
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.051Z",
+ "cells": {
+  "16": [
+   "90c8083ed83004ab"
+  ],
+  "24": [
+   "3c276d99486fd4e8",
+   "5c484acb4208ab7f",
+   "9446a05fa3cf62ee",
+   "b634e618e90226cf",
+   "f430c3dd2bb7c352",
+   "fef055e4e2b443e2"
+  ],
+  "32": [
+   "0dc39b06c43a025a",
+   "28561ff51ce2fa37",
+   "583208028633a667",
+   "6c557d20a85f45d7",
+   "bbcb88a78e427f8b",
+   "bd506d29eed2ac6b"
+  ],
+  "48": [
+   "8b16e0611b945c05",
+   "900493149694ee83",
+   "a23aba816b5f6767",
+   "a4c0417547b41cc3",
+   "cfaed1ff3fd47ef0",
+   "f705fb0d83e31234"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "15051c63d4784baacad423a2a7cf9911ff1b66a753394ad7c72ab8c650a8d226",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "무쇠 창살 담(한 칸, 잇는 조각)",
+ "label": "steampunk-city/sp-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron fence with brick base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cast-iron bars and the brick base wall are drawn in a completely flat front elevation. The horizontal rails are 1px flat lines, and the stone coping atop the brick wall is merely a 2px horizontal strip with no visible top surface depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6269
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron-bar wall section with brick base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron bars (rows 2-8) and brick wall base (rows 9-14) are drawn in pure flat front elevation. The horizontal rails are 1px lines with no top surfaces, and the 2px beige molding (rows 10-11) is merely a trim/rim rather than a valid top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6151
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron bar fence and low brick base wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron bars are drawn as flat 1px grid lines with no visible top depth on the horizontal rails, and the lower brick wall shows only a 2px horizontal cap band (rows 10-11) atop its front face, representing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4922
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron fence bars on a brick wall base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The iron fence consists of 1px horizontal rails and 1px vertical bars drawn completely flat in pure front elevation with no visible top surface. The coping atop the lower brick wall is only a 2px band/highlight, showing no depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6754
+  }
+ ],
+ "decidedAt": "2026-10-13T18:16:30.908Z",
+ "cells": {
+  "16": [
+   "540b3cbe82f31cbb"
+  ],
+  "24": [
+   "0627c9895b2c0123",
+   "32a5c7282b580c75",
+   "5af756d3879dc10e",
+   "73de2b3cafb688ab",
+   "971f9e887da5ea47",
+   "ccf80001f825f643"
+  ],
+  "32": [
+   "2509cda1ae0879eb",
+   "42e8697822c93f81",
+   "5925b67f2cb89741",
+   "cd94ecf66ac71cdb",
+   "e4ec2eca287c6667",
+   "f811e1513c63237a"
+  ],
+  "48": [
+   "2547b35c5aaba111",
+   "2b41c44fbd4ac9b0",
+   "838b78d525919abc",
+   "87fe1b36fab62bb8",
+   "90dfd0795fac761f",
+   "f261afb269d2b11a"
+  ]
+ }
+}

@@ -1,0 +1,198 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ff9d289457f4765874f71f0e572e1ed2768871a89a2a5aa38540b245e8a1f6b",
+ "width": 80,
+ "height": 48,
+ "kind": "structure",
+ "name": "증기 기관차(검은 보일러·놋쇠 띠·빨강 바퀴, 동쪽이 앞)",
+ "label": "steampunk-city/sp-locomotive",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The train is drawn in a pure 2D side profile with no visible top surface on the boiler, cab, or roof.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in pure side profile without foreshortened top surfaces visible along the boiler, cab, or running gear.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11471
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam locomotive boiler and cab",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn in pure side profile; the horizontal boiler and running boards lack visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13327
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "locomotive cab and boiler",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Main body is drawn as a flat side-view elevation with perfectly round wheels and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12024
+  }
+ ],
+ "decidedAt": "2026-10-13T18:32:03.858Z",
+ "cells": {
+  "16": [
+   "15508f978b20cbbe",
+   "1f4b2041e48d0d50",
+   "224013bbcaf41ddd",
+   "5728a5604f8ac850",
+   "593cda8901d0adfc",
+   "5f7017b28b919d04",
+   "78bee9a4b302bc86",
+   "a5cdd284fbd46404",
+   "a917bec3accff489",
+   "b5b811587aca4feb",
+   "c9bcde74a2b35ad1",
+   "d652710c5fdb654a",
+   "d8922884f99da9e0",
+   "dc2cbbca8990d71b",
+   "febab96caf0c3cdd"
+  ],
+  "24": [
+   "0130286d01b8d6fb",
+   "22a12270b42d5d74",
+   "246f443f49873956",
+   "2a393377e7a62c7e",
+   "2ff225558090aabf",
+   "38d0399f77617932",
+   "3e95088e0304b495",
+   "4527a323fad636b2",
+   "59b7f7ae21fddba5",
+   "78387f5450e938e2",
+   "9469437982feddbf",
+   "9856a62ca0c81ddd",
+   "a82cbec2dfeb22df",
+   "ac569083158d2a35",
+   "b20616f2a46bc5d2",
+   "b57735c0f1b788d4",
+   "b7ab98402bface2d",
+   "bf280cd77d8f481d",
+   "c780d7579245f0f9",
+   "d5ee1bfac11812d6",
+   "d6bd2ea0a56dc1a9",
+   "e1c5e568e742e2a0",
+   "f083c939199278c6",
+   "fb90cd2a9c2560f7"
+  ],
+  "32": [
+   "016ac0798c88b4a6",
+   "0cabcc7b902f01f9",
+   "0e73a5ef588c3a19",
+   "1398647dd38dda64",
+   "1d326fdd63f91617",
+   "1de0ca6481493e8a",
+   "1e9a3a07561b5267",
+   "20aef12c9415a88a",
+   "229afea6e8d43395",
+   "283fe83cf275a32d",
+   "2bad7d45c10d0ac7",
+   "3320aa67e1cf7e6c",
+   "371a4c1472710782",
+   "3ecd44301a20dac5",
+   "442932bb19bc63ad",
+   "4adbe7d2fab3e43e",
+   "4c0d25f7c59338df",
+   "4f91f607bbdb2db1",
+   "6310ae5770cc1c09",
+   "704c8bafd76ffab4",
+   "7feb7cce6ad3adbc",
+   "857dd9f80a150e4d",
+   "974ab471ba509ca6",
+   "a11904dcb2a2fd05",
+   "ae2ded70ce4928b1",
+   "ae5b8b42c266550a",
+   "afa2557b12ff1532",
+   "b20f4d08389aef73",
+   "b4db7ddf830b4546",
+   "bbde2204e820c730",
+   "c0aea1057ec68271",
+   "e0f46edeb89410b6",
+   "e63f985ee0ad3208",
+   "e6521b3216184464",
+   "fb0c2f2860487e1e",
+   "ff8f96697aea632d"
+  ],
+  "48": [
+   "2a0f1fd581b1a2a2",
+   "327b55c5052c6f7f",
+   "7d0c9fae9132fbb2",
+   "8d86826f2e4d0b55",
+   "b0184c8c2788a927",
+   "f858245e8a79f554"
+  ]
+ }
+}

@@ -8,7 +8,7 @@
 """
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from px import C, rnd, h32, tex_brick, box3, cyl_v, NT, MI, rivets
+from px import C, rnd, h32, tex_brick, box3, cyl_v, NT, MI, rivets, disc
 from kit import Reg, contact, OUT
 
 R = Reg('props')
@@ -34,46 +34,42 @@ def post(c, x, y0, y1, mat='iron', w=2):
 
 
 def lantern(c, cx, y, lit=True):
-    """가스등 머리: 갓(윗면 4행) + 유리 칸(불빛) + 밑 받침. cx = 가운데 x, y = 갓 꼭대기."""
-    c.P(cx - 1, y, 'brass', 5); c.P(cx, y, 'brass', 4); c.P(cx - 1, y + 1, 'iron', 3); c.P(cx, y + 1, 'iron', 2)
-    c.R(cx - 4, y + 2, 8, 4, 'iron', 5); c.HL(cx - 4, y + 2, 8, 'iron', 3); c.HL(cx - 3, y + 3, 6, 'iron', 6); c.HL(cx - 5, y + 5, 10, 'iron', 2)
-    c.P(cx - 5, y + 4, 'iron', 4); c.P(cx + 4, y + 4, 'iron', 2)
-    for j in range(7):
-        for i in range(-3, 3):
-            c.P(cx + i, y + 6 + j, 'lit', 4 if (abs(i + 0.5) < 1.6 and 1 < j < 5) else 3 if j < 5 else 2)
-    c.VL(cx - 4, y + 6, 7, 'iron', 3); c.VL(cx + 3, y + 6, 7, 'iron', 1); c.VL(cx - 1, y + 6, 7, 'iron', 2)
-    c.HL(cx - 4, y + 13, 8, 'iron', 4); c.HL(cx - 3, y + 14, 6, 'iron', 2); c.HL(cx - 2, y + 15, 4, 'iron', 1)
+    """가스등 머리(위에서 내려다본 육각 등): 넓은 무쇠 버섯 갓(타원 윗면 7행, 왼쪽 위 밝게) + 놋쇠 꼭지 + 유리 등(불빛) + 밑 받침 원반.
+    cx = 가운데 x, y = 꼭지 위."""
+    # 유리 등(갓 밑) — 먼저 그린다
+    for j in range(8):
+        for i in range(-4, 4):
+            c.P(cx + i, y + 9 + j, 'lit', 4 if (abs(i + 0.5) < 2 and 1 < j < 6) else 3 if j < 6 else 2)
+    c.VL(cx - 5, y + 9, 8, 'iron', 4); c.VL(cx + 4, y + 9, 8, 'iron', 1); c.VL(cx - 1, y + 9, 7, 'iron', 2)
+    disc(c, cx, y + 18, 4.6, 1.8, 'iron', 4, band=1, bt=2)
+    # 버섯 갓(윗면이 넓게 보인다)
+    disc(c, cx, y + 6, 7.8, 5.0, 'iron', 5, band=2, bt=2)
+    c.ell(cx, y + 5.0, 2.4, 1.4, lambda X, Y, dx, dy, d: ('brass', 5 if dx < 0 else 3))
+    c.P(cx - 1, y + 3, 'brass', 5); c.P(cx, y + 3, 'brass', 3)
 
 
 def plinth(c, cx, y, w=8):
-    """기둥 받침(팔각 받침 — 윗면 3행 + 앞면 3행)."""
-    x = cx - w // 2
-    box3(c, x, y, w, 3, 3, 'iron', tt=5, ft=2)
-    c.HL(x, y + 6, w, 'ink', 1)
+    """둥근 기둥 받침(윗면 타원 + 앞 두께, 맨 밑 먹 선). y = 받침 윗면 가운데 높이."""
+    disc(c, cx, y, w / 2, w / 4 + 0.6, 'iron', 5, band=3, bt=2)
 
 
 @R.add('gas-lamp', '가스 가로등(무쇠 기둥·켜진 등)', 1, 3, 'column', tags=['가로등', '거리'], rules='보도 바깥 줄(연석 쪽)에 5~6칸 간격. 문 앞 접근칸·노점 앞에는 두지 않는다.')
 def _(c):
-    lantern(c, 8, 3)
-    c.R(6, 19, 4, 2, 'iron', 2); c.HL(6, 19, 4, 'iron', 4)
-    c.HL(3, 21, 10, 'iron', 4); c.HL(3, 22, 10, 'iron', 1); c.P(3, 20, 'iron', 4); c.P(12, 20, 'iron', 3)   # 사다리 받침 팔
-    post(c, 7, 23, 40)
+    post(c, 7, 19, 43)
     c.R(6, 30, 4, 2, 'iron', 4); c.HL(6, 30, 4, 'iron', 5); c.HL(6, 32, 4, 'iron', 1)
-    plinth(c, 8, 40)
-    c.HL(4, 47, 8, 'ink', 1)
+    lantern(c, 8, 1)
+    plinth(c, 8, 42, w=14)
 
 
-@R.add('gas-lamp-double', '쌍 가스등(광장용, 등 둘)', 2, 3, 'column', tags=['가로등', '광장'], rules='광장·역 앞 한가운데·모서리. 둘레 1칸 비움.')
+@R.add('plaza-lamp', '광장 가스등(돌 받침대 위 큰 등)', 1, 3, 'column', tags=['가로등', '광장'], rules='광장 네 모퉁이·기념비 둘레·역 앞. 둘레 1칸 비움.')
 def _(c):
-    lantern(c, 7, 4); lantern(c, 25, 4)
-    # 가로 팔(소용돌이) + 가운데 꼭지
-    c.HL(7, 20, 19, 'iron', 4); c.HL(7, 21, 19, 'iron', 1)
-    for x in (10, 21): c.ell(x, 18, 2, 1.6, lambda X, Y, dx, dy, d: ('iron', 3) if d > 0.4 else None)
-    c.R(14, 6, 4, 4, 'brass', 3); c.HL(14, 6, 4, 'brass', 5); c.P(15, 4, 'brass', 5); c.P(16, 5, 'brass', 4)
-    post(c, 14, 10, 40, w=4)
-    c.R(13, 24, 6, 2, 'iron', 4); c.HL(13, 24, 6, 'iron', 5); c.HL(13, 26, 6, 'iron', 1)
-    plinth(c, 16, 40, w=10)
-    c.HL(11, 47, 10, 'ink', 1)
+    box3(c, 1, 31, 14, 6, 10, 'stone', tt=5, ft=3)
+    c.R(4, 39, 8, 5, 'stone', 2); c.HL(4, 39, 8, 'stone', 1); c.R(6, 40, 4, 3, 'brass', 3)
+    c.HL(1, 47, 14, 'ink', 1)
+    post(c, 7, 18, 32)
+    c.R(6, 24, 4, 2, 'iron', 4); c.HL(6, 26, 4, 'iron', 1)
+    disc(c, 8, 32, 4, 1.6, 'iron', 4, band=1, bt=2, rim=False)
+    lantern(c, 8, 0)
 
 
 @R.add('bench', '무쇠 다리 나무 벤치', 2, 1, 'seat', tags=['벤치', '광장', '공원'], rules='광장 가장자리·쌈지 공원·승강장. 길 칸 위에는 두지 않는다.')
@@ -94,70 +90,78 @@ def _(c):
 
 
 def crate(c, x, y, w, topn, front, s=0):
-    """나무 상자: 윗면(판자 + 쇠 모서리) + 앞면(판자 + 대각 버팀)."""
-    box3(c, x, y, w, topn, front, 'wood', tt=4, ft=3)
-    for i in range(x + 3, x + w - 1, 4): c.VL(i, y + 1, topn - 2, 'wood', 3)
-    c.line(x + 1, y + topn + 1, x + w - 2, y + topn + front - 2, 'wood', 4)
-    c.VL(x + 1, y + topn, front, 'wood', 4); c.VL(x + w - 2, y + topn, front, 'wood', 1)
+    """나무 상자: 윗면(판자 줄 + 쇠 모서리, 뒤 가장자리 어둡게) + 앞면(판자 + 대각 버팀)."""
+    box3(c, x, y, w, topn, front, 'wood', tt=5, ft=2)
+    for j in range(y + 2, y + topn - 1, 2): c.HL(x + 1, j, w - 2, 'wood', 4)
+    c.HL(x + 1, y + topn - 1, w - 2, 'wood', 5)
+    c.line(x + 1, y + topn + 1, x + w - 2, y + topn + front - 2, 'wood', 3)
+    c.VL(x + 1, y + topn, front, 'wood', 3); c.VL(x + w - 2, y + topn, front, 'wood', 1)
     for (px_, py) in ((x, y), (x + w - 2, y), (x, y + topn + front - 2), (x + w - 2, y + topn + front - 2)):
         c.R(px_, py, 2, 2, 'iron', 4)
-    c.HL(x, y + topn + front - 1, w, 'ink', 1)
+    c.HL(x, y + topn + front, w, 'ink', 1)
 
 
-@R.add('crates', '쌓은 나무 상자', 2, 2, 'box', tags=['상자', '짐', '부두', '창고'], rules='창고 화물 문 옆·부두·역 화물칸 곁. 문 앞 접근칸은 비운다.')
+@R.add('crates', '나무 상자 두 개(큰 것 + 작은 것)', 2, 2, 'box', tags=['상자', '짐', '부두', '창고'], rules='창고 화물 문 옆·부두·역 화물칸 곁. 문 앞 접근칸은 비운다.')
 def _(c):
-    crate(c, 1, 12, 16, 6, 9)
-    crate(c, 14, 14, 17, 5, 8)
-    crate(c, 5, 1, 14, 5, 7)
-    c.HL(0, 31, 32, 'ink', 1)
+    crate(c, 1, 6, 18, 9, 10)
+    crate(c, 18, 14, 13, 7, 8)
 
 
 def barrel(c, x, y, w=12, h=16, mat='wood'):
-    """통: 위 타원(뚜껑 판·윗면 4행) + 불룩한 몸(무쇠 테 둘)."""
-    for j in range(h - 4):
-        bulge = 1 if 2 < j < h - 7 else 0
+    """통: 위 타원 뚜껑(윗면 6행 — 판자 줄 + 무쇠 테) + 불룩한 몸(무쇠 테 둘). y = 뚜껑 위 끝."""
+    top = 6
+    for j in range(h - top // 2):
+        bulge = 1 if 2 < j < h - top // 2 - 4 else 0
         for i in range(-bulge, w + bulge):
             u = (i + 0.5) / w
             t = 4 if u < 0.3 else 3 if u < 0.65 else 2 if u < 0.88 else 1
-            c.P(x + i, y + 3 + j, mat, t)
-    for by in (5, h - 4):
+            c.P(x + i, y + top // 2 + j, mat, t)
+    for by in (top // 2 + 3, h - 3):
         for i in range(-1, w + 1):
             if c.on(x + i, y + by): c.P(x + i, y + by, 'iron', 4 if i < w / 2 else 2)
-    c.ell(x + w / 2, y + 3, w / 2, 3, lambda X, Y, dx, dy, d: (mat, 5 if dx < 0 else 4) if d > 0.55 else (mat, 3 if (X - x) % 3 else 2))
-    c.ell(x + w / 2, y + 3, w / 2, 3, lambda X, Y, dx, dy, d: ('iron', 3) if d > 0.8 else None)
-    c.HL(x, y + h - 2, w, 'ink', 1)
+    c.ell(x + w / 2, y + top / 2, w / 2, top / 2, lambda X, Y, dx, dy, d: ('iron', 4 if dx < 0 else 3) if d > 0.7 else (mat, 5 if (X - x) % 3 else 4))
+    c.ell(x + w / 2, y + top / 2, w / 2, top / 2, lambda X, Y, dx, dy, d: ('iron', 2) if (d > 0.7 and dy < -0.3) else None)
+    c.HL(x, y + h - 1, w, 'ink', 1)
 
 
 @R.add('barrels', '나무 통 두 개', 2, 2, 'round_body', tags=['통', '짐', '선술집', '부두'], rules='선술집 문 옆·부두. 접근칸 비움.')
 def _(c):
-    barrel(c, 2, 10, 13, 20); barrel(c, 16, 12, 13, 19)
-    c.HL(1, 31, 30, 'ink', 1)
+    barrel(c, 2, 6, 13, 21); barrel(c, 17, 9, 13, 19)
 
 
 @R.add('barrel', '나무 통 하나', 1, 2, 'round_body', tags=['통', '짐'], rules='가게 옆·골목 끝.')
 def _(c):
-    barrel(c, 2, 11, 12, 20)
+    # 큰 뚜껑 원반(윗면 8행) + 불룩한 몸
+    barrel(c, 1, 9, 14, 21)
+    disc(c, 8, 13, 7, 4, 'wood', 5, band=0, rim=False)
+    c.ell(8, 13, 7, 4, lambda X, Y, dx, dy, d: ('iron', 4 if dx < 0 else 2) if d > 0.72 else (('wood', 4) if (X % 3 == 0) else None))
+    c.ell(8, 13, 7, 4, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.8 and dy < -0.2 else None)
+    c.R(7, 12, 2, 2, 'iron', 3)
 
 
-@R.add('coal-bunker', '석탄 칸(벽돌 세 벽 + 석탄 더미)', 3, 2, 'container', tags=['석탄', '공장', '보일러실'], rules='보일러실·공장 마당. 앞(남쪽)이 트여 삽질한다 — 앞 칸은 비운다.')
+@R.add('coal-bunker', '석탄 상자(리벳 철판 통, 위에서 석탄이 보인다)', 2, 2, 'container', tags=['석탄', '공장', '보일러실'], rules='보일러실·공장 마당·선로 하역장. 앞 칸은 비운다(삽질 자리).')
 def _(c):
-    # 뒤 벽(윗면 3행 + 앞면) 과 양 옆 벽(윗면이 보이는 띠) — 남쪽이 트인 ㄷ자
-    box3(c, 0, 2, 48, 3, 6, 'brick', tt=5, ft=3)
-    for x in (0, 42):
-        c.R(x, 5, 6, 22, 'brick', 5); c.HL(x, 5, 6, 'brick', 6); c.VL(x, 5, 22, 'brick', 4); c.VL(x + 5, 5, 22, 'brick', 3)
-        c.R(x, 27, 6, 4, 'brick', 2); c.HL(x, 27, 6, 'brick', 3)
-    # 석탄 더미(안쪽이 보인다: 덩이 + 반짝임)
+    x, y, w = 1, 4, 30
+    # 아가리(위에서 보이는 사각 안쪽): 뒤 벽 안쪽 면(밝음) → 석탄 더미
+    c.R(x, y, w, 14, 'iron', 4); c.HL(x, y, w, 'ink', 1)
+    c.R(x + 2, y + 2, w - 4, 3, 'iron', 2)                      # 안쪽 뒤 벽(그늘)
     def coal(X, Y, dx, dy, d):
         r = rnd(X // 2, Y // 2, 3)
-        t = 2 if (dy < -0.2 and r > 0.4) else 1 if r > 0.3 else 0
-        if rnd(X, Y, 8) > 0.93: return ('iron', 5)
+        t = 2 if (dy < -0.1 and r > 0.4) else 1 if r > 0.3 else 0
+        if rnd(X, Y, 8) > 0.93: return ('iron', 6)
         return ('coal', t)
-    c.ell(24, 22, 17, 10, coal)
-    c.ell(18, 18, 9, 6, coal)
-    # 삽(손잡이 나무 + 쇠 날)
-    c.line(30, 10, 36, 22, 'wood', 4); c.line(31, 10, 37, 22, 'wood', 2)
-    c.R(35, 21, 4, 4, 'iron', 4); c.HL(35, 21, 4, 'iron', 5)
-    c.HL(0, 31, 48, 'ink', 1)
+    c.R(x + 2, y + 5, w - 4, 8, 'coal', 1)
+    c.ell(x + w / 2, y + 6, w / 2 - 3, 5, coal)
+    c.VL(x + 1, y + 1, 12, 'iron', 6); c.VL(x + w - 2, y + 1, 12, 'iron', 3)
+    c.HL(x, y + 13, w, 'iron', 6)                                 # 앞 테(빛)
+    # 앞면(리벳 철판)
+    c.R(x, y + 14, w, 11, 'iron', 3); c.HL(x, y + 14, w, 'iron', 2)
+    rivets(c, x + 2, y + 16, w - 3, 1, 4); rivets(c, x + 2, y + 22, w - 3, 1, 4)
+    c.VL(x, y + 14, 11, 'iron', 4); c.VL(x + w - 1, y + 14, 11, 'iron', 1)
+    c.R(x + 12, y + 18, 6, 3, 'brass', 3); c.HL(x + 12, y + 18, 6, 'brass', 5)   # 놋쇠 손잡이
+    c.HL(x, y + 25, w, 'ink', 1)
+    # 삽(통에 기댄)
+    c.line(x + 24, y + 1, x + 27, y + 12, 'wood', 4); c.R(x + 25, y + 11, 4, 3, 'iron', 5)
 
 
 @R.add('coal-heap', '석탄 더미', 2, 1, 'organic', tags=['석탄', '공장 마당'], rules='석탄 칸 옆·선로 하역장. 덩이로 1~3개.')
@@ -171,64 +175,87 @@ def _(c):
     c.HL(2, 15, 28, 'ink', 1)
 
 
-def fence_cell(c, end=None, gate=False):
-    """낮은 벽돌 담 + 무쇠 창살: 갓돌 윗면 3행 + 담 앞면 + 창살(창끝)."""
-    # 창살(뒤): 2px 간격 세로 살, 창끝, 가로 띠
-    for x in range(1, 16, 3):
-        c.VL(x, 2, 8, 'iron', 2); c.P(x, 1, 'iron', 4); c.P(x, 0, 'iron', 5)
-    c.HL(0, 3, 16, 'iron', 3); c.HL(0, 7, 16, 'iron', 2)
-    # 갓돌(윗면 3) + 담(앞면 4)
-    c.HL(0, 9, 16, 'stone', 3); c.R(0, 10, 16, 2, 'stone', 6); c.HL(0, 11, 16, 'stone', 5)
-    c.F(0, 12, 16, 3, lambda wx, wy, i, j: tex_brick(i, j + 12, base=3, mat='brick', s=4))
-    c.HL(0, 15, 16, 'ink', 1)
-    if end in ('L', 'R'):
-        x = 0 if end == 'L' else 11
-        box3(c, x, 2, 5, 3, 10, 'stone', tt=5, ft=3)
-        c.P(x + 2, 0, 'brass', 4); c.R(x + 1, 1, 3, 1, 'brass', 3)
-        c.HL(x, 15, 5, 'ink', 1)
+def railing_run(c, x0, x1):
+    """무쇠 창살 담 한 줄(동서): 창 머리(점) + 윗 가로대(윗면 2행 밝게 + 앞면 1행) + 세로 창살 + 아래 가로대 +
+    낮은 돌 받침(윗면 4행 — 뒤 가장자리 어둡게, 앞 테 밝게 + 앞면 2행) + 먹 접지 선."""
+    w = x1 - x0
+    for x in range(x0 + 1, x1, 3):
+        c.P(x, 0, 'iron', 5); c.R(x, 1, 1, 9, 'iron', 2); c.P(x, 1, 'iron', 4)
+    c.R(x0, 2, w, 2, 'iron', 5); c.HL(x0, 2, w, 'iron', 6); c.HL(x0, 4, w, 'iron', 2)      # 윗 가로대: 윗면 + 앞면
+    c.HL(x0, 7, w, 'iron', 4); c.HL(x0, 8, w, 'iron', 1)                                  # 아래 가로대
+    c.HL(x0, 9, w, 'ink', 1)
+    c.R(x0, 10, w, 4, 'stone', 5); c.HL(x0, 10, w, 'stone', 3); c.HL(x0, 13, w, 'stone', 6)   # 받침 윗면
+    for x in range(x0 + 7, x1, 8): c.VL(x, 11, 2, 'stone', 4)
+    c.R(x0, 14, w, 1, 'stone', 2)                                                          # 받침 앞면
+    c.HL(x0, 15, w, 'ink', 1)
 
 
-@R.add('fence', '무쇠 창살 담(한 칸, 잇는 조각)', 1, 1, 'frame', tags=['울타리', '담', '공원'], rules='쌈지 공원·공장 마당 둘레를 한 줄로 잇는다. 끝은 fence-post-l/r.')
-def _(c): fence_cell(c)
+def pier(c, x, w=8):
+    """담 기둥: 넓은 돌 갓(윗면 6행 — 놋쇠 공 머리) + 앞면."""
+    box3(c, x, 1, w, 6, 8, 'stone', tt=5, ft=3)
+    c.HL(x, 0, w, 'ink', 1)
+    disc(c, x + w / 2, 3.6, w / 2 - 1.6, 1.8, 'brass', 4, band=1, bt=2, rim=False)
+    c.HL(x, 15, w, 'ink', 1)
 
 
-@R.add('fence-post-l', '무쇠 창살 담 왼쪽 끝 기둥', 1, 1, 'frame', tags=['울타리', '담'], rules='담 줄의 왼쪽 끝.')
-def _(c): fence_cell(c, 'L')
+@R.add('fence', '무쇠 창살 담(낮은 돌 받침 위, 한 칸 잇는 조각)', 1, 1, 'other', tags=['울타리', '담', '공원'],
+       rules='쌈지 공원·공장 마당 둘레 동서 줄. 3칸 이상이면 fence-h3 를 먼저 쓰고 남는 칸만 이것으로.')
+def _(c): railing_run(c, 0, 16)
 
 
-@R.add('fence-post-r', '무쇠 창살 담 오른쪽 끝 기둥', 1, 1, 'frame', tags=['울타리', '담'], rules='담 줄의 오른쪽 끝.')
-def _(c): fence_cell(c, 'R')
+@R.add('fence-h3', '무쇠 창살 담 세 칸(양 끝 돌 기둥)', 3, 1, 'other', tags=['울타리', '담', '공원'],
+       rules='쌈지 공원·공장 마당 둘레 동서 줄에 3칸씩. 문(빈칸) 양옆이 기둥이 되게 둔다.')
+def _(c):
+    railing_run(c, 0, 48)
+    pier(c, 0, 9); pier(c, 39, 9)
+
+
+@R.add('fence-v', '무쇠 창살 담(남북 줄 — 위에서 길게 보이는 받침 갓)', 1, 1, 'other', tags=['울타리', '담', '공원'],
+       rules='쌈지 공원·공장 마당 둘레의 서·동 쪽 남북 줄. 위아래로 이어 칠한다.')
+def _(c):
+    x0, w = 4, 8
+    c.R(x0, 0, w, 16, 'stone', 5); c.VL(x0, 0, 16, 'stone', 6); c.VL(x0 + 1, 0, 16, 'stone', 6); c.VL(x0 + w - 1, 0, 16, 'stone', 3)
+    c.VL(x0 - 1, 0, 16, 'ink', 1); c.VL(x0 + w, 0, 16, 'ink', 1); c.VL(x0 + w + 1, 0, 16, 'stone', 1)
+    c.VL(x0 + 4, 0, 16, 'iron', 2)
+    for y in range(1, 16, 3):
+        c.R(x0 + 3, y, 2, 2, 'iron', 4); c.P(x0 + 3, y, 'iron', 6); c.P(x0 + 4, y + 1, 'iron', 2); c.P(x0 + 5, y + 2, 'stone', 3)
 
 
 @R.add('water-tower', '급수탑(나무 물통 + 무쇠 다리 + 급수관)', 3, 5, 'structure', tags=['급수탑', '선로', '공장'], rules='선로 곁(급수관이 선로 쪽) 또는 공장 마당 모퉁이. 다리 둘레 1칸 비움.')
 def _(c):
-    # 원뿔 지붕(윗면이 보이는 경사) + 물통
-    c.poly([(5, 14), (24, 2), (43, 14), (43, 16), (5, 16)], lambda X, Y: ('slate', 4 if X < 22 else 3 if X < 34 else 2))
-    for y in range(3, 16):
-        for x in range(5, 44):
-            if c.on(x, y) and (x + y * 2) % 7 == 0: c.P(x, y, 'slate', 2)
-    c.line(5, 14, 24, 2, 'slate', 5); c.line(24, 2, 43, 14, 'ink', 1); c.HL(4, 16, 41, 'ink', 1)
-    c.P(24, 0, 'brass', 5); c.P(24, 1, 'brass', 3)
+    # 물통 윗면: 넓은 타원 뚜껑(위에서 보인다) + 가운데 낮은 원뿔 지붕(왼쪽 위 밝게) + 점검 뚜껑
+    def lid(X, Y, dx, dy, d):
+        if d > 0.86: return ('iron', 4 if dx < 0 else 2)
+        k = (dx + dy)
+        return ('slate', 5 if k < -0.5 else 4 if k < 0.1 else 3 if k < 0.6 else 2)
+    c.ell(24, 11, 19, 9, lid)
+    for a in range(12):
+        ang = a * math.pi / 6
+        c.line(24, 11, round(24 + 17 * math.cos(ang)), round(11 + 7.5 * math.sin(ang)), 'slate', 2 if a % 2 else 3)
+    c.ell(24, 11, 3, 1.6, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2)); c.P(23, 8, 'brass', 5); c.P(23, 9, 'brass', 3)
+    c.ell(24, 11, 19, 9, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.95 and dy < 0 else None)
     # 통 몸(세로 판자 + 무쇠 테 셋)
-    for y in range(17, 40):
-        for x in range(6, 42):
-            u = (x - 6 + 0.5) / 36
+    for y in range(13, 40):
+        for x in range(5, 44):
+            dx = (x + 0.5 - 24) / 19
+            if dx * dx > 1: continue
+            if y < 20 and (((x + 0.5 - 24) / 19) ** 2 + ((y + 0.5 - 11) / 9) ** 2) <= 1: continue
+            u = (x - 5 + 0.5) / 39
             t = 4 if u < 0.25 else 3 if u < 0.6 else 2 if u < 0.85 else 1
-            if (x - 6) % 4 == 3: t -= 1
-            c.P(x, y, 'wood', t)
-    for by in (19, 28, 37): c.HL(6, by, 36, 'iron', 4); c.HL(6, by + 1, 36, 'iron', 1)
-    c.VL(5, 17, 23, 'ink', 1); c.VL(42, 17, 23, 'ink', 1); c.HL(6, 40, 36, 'wood', 1)
+            if (x - 5) % 4 == 3: t -= 1
+            c.P(x, y, 'wood', max(0, t))
+    for by in (25, 33): c.HL(5, by, 39, 'iron', 4); c.HL(5, by + 1, 39, 'iron', 1)
+    c.VL(5, 12, 28, 'ink', 1); c.VL(43, 12, 28, 'ink', 1); c.HL(6, 39, 37, 'wood', 1)
     # 받침 판(윗면 3) + 무쇠 다리 넷 + 가새
     box3(c, 3, 40, 42, 3, 2, 'iron', tt=4, ft=2)
     for x in (5, 17, 29, 40):
-        c.R(x, 45, 3, 33, 'iron', 3); c.VL(x, 45, 33, 'iron', 5); c.VL(x + 2, 45, 33, 'iron', 1)
-    c.line(8, 47, 29, 76, 'iron', 2); c.line(40, 47, 19, 76, 'iron', 2); c.line(8, 62, 40, 62, 'iron', 2)
-    for x in (4, 16, 28, 39): c.R(x, 76, 5, 3, 'stone', 5); c.HL(x, 76, 5, 'stone', 6); c.HL(x, 79, 5, 'ink', 1)
+        c.R(x, 45, 3, 31, 'iron', 3); c.VL(x, 45, 31, 'iron', 5); c.VL(x + 2, 45, 31, 'iron', 1)
+    c.line(8, 47, 29, 74, 'iron', 2); c.line(40, 47, 19, 74, 'iron', 2); c.line(8, 61, 40, 61, 'iron', 2)
+    for x in (4, 16, 28, 39): box3(c, x, 74, 5, 3, 2, 'stone', tt=5); c.HL(x, 79, 5, 'ink', 1)
     # 급수관(오른쪽으로 내려온 팔 + 주둥이)
-    c.R(42, 30, 4, 3, 'iron', 3); c.HL(42, 30, 4, 'iron', 5)
-    c.R(44, 33, 3, 14, 'iron', 3); c.VL(44, 33, 14, 'iron', 5)
+    c.R(42, 28, 4, 3, 'iron', 3); c.HL(42, 28, 4, 'iron', 5)
+    c.R(44, 31, 3, 16, 'iron', 3); c.VL(44, 31, 16, 'iron', 5)
     c.R(43, 47, 5, 3, 'iron', 2); c.HL(43, 47, 5, 'iron', 4)
-    c.line(45, 50, 45, 56, 'canvas', 1)
 
 
 def stall(c, awn, goods):
@@ -317,24 +344,25 @@ def cloud(c, blobs, dark=False):
                 c.P(x, y, 'steam', max(0, g[1] - 1))
 
 
-STEAM = [  # 프레임마다 김 덩이(cx, cy, r) — 아래에서 위로, 조금 오른쪽으로 흐른다
-    [(8, 17, 3.6), (9, 11, 4.4), (8, 4.5, 3.6)],
-    [(8, 16, 4.2), (10, 10, 4.6), (9, 3.5, 3.0)],
-    [(8, 17, 3.2), (9, 12, 4.2), (11, 6, 4.2)],
-    [(8, 16, 3.9), (8, 10, 4.0), (11, 4, 3.8)],
+STEAM = [  # 프레임마다 김 덩이(cx, cy, r) — 아가리 뒤에서 위로, 오른쪽으로 흐른다(아가리를 가리지 않는다)
+    [(10, 11, 3.4), (10, 7, 4.0), (9, 2.5, 2.6)],
+    [(10, 11, 3.6), (11, 6, 4.2), (10, 2, 2.4)],
+    [(10, 11, 3.0), (10, 7, 3.8), (12, 3, 3.0)],
+    [(10, 11, 3.6), (9, 6, 3.6), (12, 2.5, 2.6)],
 ]
 
 
 @anim('steam-vent', '증기 구멍(쇠 굴뚝 토막에서 김이 오른다)', 4, 1, 2, 'container', tags=['증기', '거리', '공장'], rules='보도 가장자리·공장 마당·배관 끝. 길 칸 위·문 앞에는 두지 않는다.', fps=5)
 def steam_vent(c, f):
     cloud(c, STEAM[f])
-    # 쇠 토막(지름 12, 위 아가리 타원 + 몸 + 받침 테) — 김보다 앞에 그린다
-    cyl_v(c, 2, 19, 12, 9, 6, 'iron', base=3)
-    c.ell(8, 22, 6, 3, lambda X, Y, dx, dy, d: ('iron', 5 if dx < 0 else 3) if d > 0.45 else ('coal', 0 if d < 0.2 else 1))
-    c.HL(2, 27, 12, 'iron', 1); c.R(1, 28, 14, 2, 'iron', 4); c.HL(1, 28, 14, 'iron', 5); c.HL(1, 30, 14, 'iron', 2); c.HL(1, 31, 14, 'ink', 1)
-    c.P(3, 25, 'iron', 6); c.P(12, 25, 'iron', 6)
-    for (cx, cy, r) in STEAM[f][:1]:
-        c.ell(8, 20, 3, 1.5, lambda X, Y, dx, dy, d: ('steam', 3))
+    # 낮고 넓은 쇠 토막: 큰 아가리(타원 9행) — 두꺼운 테 윗면(밝게) + 안쪽 뒤 벽(그늘 진 쇠) + 깊은 구멍
+    c.R(1, 22, 14, 6, 'iron', 3); c.VL(1, 22, 6, 'iron', 4); c.VL(2, 22, 6, 'iron', 4); c.VL(13, 22, 6, 'iron', 2); c.VL(14, 22, 6, 'iron', 1)
+    c.HL(1, 25, 14, 'iron', 2); c.HL(1, 26, 14, 'iron', 4)
+    c.ell(8, 20, 7.5, 4.8, lambda X, Y, dx, dy, d: ('iron', 6 if dx + dy < -0.4 else 5 if dx < 0.3 else 4))
+    c.ell(8, 20.6, 5.2, 3.0, lambda X, Y, dx, dy, d: ('iron', 2) if dy < -0.1 else ('coal', 0))
+    c.ell(8, 21.4, 3.6, 1.8, lambda X, Y, dx, dy, d: ('coal', 0))
+    c.ell(8, 20, 7.5, 4.8, lambda X, Y, dx, dy, d: ('ink', 1) if d > 0.82 and dy < -0.1 else None)
+    c.HL(1, 28, 14, 'ink', 1); c.R(0, 29, 16, 2, 'iron', 4); c.HL(0, 29, 16, 'iron', 5); c.HL(0, 31, 16, 'ink', 1)
 
 
 SMOKE = [

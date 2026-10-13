@@ -552,11 +552,11 @@ def flat(c, row, col):
     L, Rr = col == 'L', col == 'R'
     def tar(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
-        r = rnd(lx, ly, 12)
-        t = 3
-        if r < 0.05: t = 2
-        elif r > 0.97: t = 4
-        if lx == 15: t = 2                                  # 타르지 이음
+        r = rnd(wx, wy, 12)
+        k = wy % 7                                           # 타르지 띠(동서로 길게 겹친 이음)
+        t = 4 if k == 0 else 2 if k == 6 else 3
+        if r < 0.05: t -= 1
+        elif r > 0.96: t += 1
         return ('slate', t)
     c.F(0, 0, 16, 16, tar)
     if row == 'b':
@@ -885,6 +885,157 @@ add_bld('warehouse', '창고(붉은 벽돌 2층, 폭 8, 화물 문)',
 add_bld('station', '기차역(다듬은 돌 2층, 폭 8, 양개문)',
         roof_rows(8, 'mans', 3, dormers=(2, 5), chims=(1, 6)) + facade('ds', 8, 2, door=3, door_kind='double', paint='green', piers={1: 'lamp', 6: 'lamp'}, lit_seed=23), 3, 2,
         ['기차역', '정거장'], '승강장 북쪽. 문 앞은 광장 포석.')
+
+
+# ═══════════════════════ 큰 부품(여러 칸을 한 번에 그려 칸으로 자른 블록) ═══════════════════════
+def region(prefix, W, H, painter):
+    """W×H 칸 그림을 한 번 그리고 칸마다 블록 '<prefix>.<x>.<y>' 로 등록한다(여러 건물이 같은 부품을 화소 그대로 쓴다)."""
+    big = C(W * 16, H * 16); painter(big)
+    for y in range(H):
+        for x in range(W):
+            blk('%s.%d.%d' % (prefix, x, y))(lambda c, x=x, y=y: c.paste(big.crop(x * 16, y * 16, 16, 16), 0, 0))
+    return [['%s.%d.%d' % (prefix, x, y) for x in range(W)] for y in range(H)]
+
+
+def clock_face(c, cx, cy, r=15):
+    """시계판: 놋쇠 테(왼쪽 위 빛) + 크림 판 + 눈금 12(글자 없음) + 바늘 + 가운데 톱니 꼭지. 드러난 톱니 둘."""
+    for (gx, gy, gr) in ((cx - r + 2, cy + r - 3, 5), (cx + r - 3, cy + r - 5, 4)):
+        c.ell(gx, gy, gr, gr, lambda X, Y, dx, dy, d: ('brass', 4 if dx + dy < -0.3 else 3 if d < 0.5 else 2) if d > 0.18 else ('iron', 1))
+        for a in range(10):
+            ang = a * math.pi / 5
+            c.P(round(gx + (gr + 1) * math.cos(ang) - 0.5), round(gy + (gr + 1) * math.sin(ang) - 0.5), 'brass', 2)
+    c.ell(cx, cy, r, r, lambda X, Y, dx, dy, d: ('brass', 5 if (dx + dy) < -0.6 else 4 if dx + dy < 0 else 3 if dx + dy < 0.6 else 2))
+    c.ell(cx, cy, r - 2, r - 2, lambda X, Y, dx, dy, d: ('canvas', 3 if (dx + dy) < 0.4 else 2))
+    c.ell(cx, cy, r - 2.5, r - 2.5, lambda X, Y, dx, dy, d: ('canvas', 2) if d > 0.88 else None)
+    for k in range(12):
+        ang = k * math.pi / 6
+        for rr in ((r - 4, r - 6) if k % 3 == 0 else (r - 4,)):
+            c.P(round(cx + rr * math.sin(ang) - 0.5), round(cy - rr * math.cos(ang) - 0.5), 'ink', 1)
+    c.line(round(cx - 0.5), round(cy - 0.5), round(cx - 0.5), round(cy - 9), 'ink', 1)          # 분침(12)
+    c.line(round(cx - 0.5), round(cy - 0.5), round(cx + 5), round(cy + 2), 'ink', 1)           # 시침(4시)
+    c.ell(cx, cy, 2, 2, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2))
+
+
+def spire(c, W, H, mat='verd'):
+    """녹청 구리 첨탑(사각뿔 남쪽 면): 아래 폭 W → 꼭짓점, 왼쪽 반 밝게, 구리 이음 띠, 놋쇠 꼭지."""
+    cx = W / 2
+    for y in range(4, H):
+        half = (y - 4) / (H - 5) * (W / 2 - 1) + 1
+        for x in range(int(cx - half), int(cx + half) + 1):
+            if not (0 <= x < W): continue
+            u = (x + 0.5 - (cx - half)) / (2 * half)
+            t = 4 if u < 0.25 else 3 if u < 0.5 else 2 if u < 0.8 else 1
+            if (y - 4) % 6 == 5: t = max(0, t - 1)
+            m = mat
+            if abs(x + 0.5 - cx) < 0.8: m, t = 'copper', 3
+            c.P(x, y, m, t)
+        c.P(int(cx - half), y, 'ink', 1); c.P(int(cx + half), y, 'ink', 1)
+    c.R(int(cx) - 1, 0, 2, 5, 'brass', 4); c.P(int(cx) - 1, 0, 'brass', 5); c.P(int(cx), 2, 'brass', 2)
+    c.HL(0, H - 2, W, 'copper', 4); c.HL(0, H - 1, W, 'ink', 1)
+
+
+import math
+
+
+def _ct_face(c):
+    """시계 층 4칸×2줄: 다듬은 돌 + 가운데 시계판(지름 30) + 모서리 기둥."""
+    wall(c, 'ds', 0, 0, 64, 32)
+    for x in (0, 60): c.R(x, 0, 4, 32, 'stone', 5 if x == 0 else 3)
+    c.VL(0, 0, 32, 'ink', 1); c.VL(63, 0, 32, 'ink', 1)
+    course(c, 0, 'ds')
+    clock_face(c, 32, 17, 14)
+
+
+def _ct_spire(c):
+    """시계탑 지붕 4칸×3줄(위에서 내려다본 녹청 구리 모임지붕): 넓은 처마 바닥(앞 처마 띠) + 네 면이 모두 보이는 낮은 사각뿔
+    (꼭짓점이 바닥 사각 안쪽 — 북면은 얇게 밝게, 서면 밝게, 동면 어둡게, 남면 넓게) + 놋쇠 꼭지 + 난간 갓."""
+    x0, x1, y0, y1 = 1, 62, 14, 40          # 지붕 바닥 사각(처마 끝)
+    ax, ay = 32, 25                          # 꼭짓점(바닥 사각 안쪽, 북쪽 가까이)
+    N = [(x0, y0), (x1, y0), (ax, ay)]; S = [(x0, y1), (x1, y1), (ax, ay)]
+    W = [(x0, y0), (x0, y1), (ax, ay)]; E = [(x1, y0), (x1, y1), (ax, ay)]
+    def face(base, bands):
+        def f(x, y):
+            t = base
+            if bands == 'h' and (y - ay) % 5 == 4: t -= 1
+            if bands == 'v' and (x - ax) % 6 == 5: t -= 1
+            if abs(x + 0.5 - ax) < 0.8 and y > ay: return ('copper', 2)
+            return ('verd', t)
+        return f
+    c.poly(S, face(2, 'h')); c.poly(W, face(4, 'v')); c.poly(E, face(1, 'v')); c.poly(N, face(3, None))
+    # 모서리 능선(밝은 구리 띠)
+    for (px_, py) in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
+        c.line(px_, py, ax, ay, 'copper', 4 if px_ < ax else 2)
+    c.line(x0, y0, x1, y0, 'ink', 1); c.line(x0, y0, x0, y1, 'ink', 1); c.line(x1, y0, x1, y1, 'ink', 1)
+    c.HL(x0, y1, x1 - x0 + 1, 'copper', 4); c.HL(x0, y1 + 1, x1 - x0 + 1, 'copper', 2); c.HL(x0, y1 + 2, x1 - x0 + 1, 'ink', 1)   # 처마 띠
+    # 놋쇠 꼭지(구슬 + 피뢰침)
+    c.ell(ax, ay - 1, 2.6, 1.8, lambda X, Y, dx, dy, d: ('brass', 5 if dx < 0 else 3))
+    c.VL(ax - 1, ay - 16, 15, 'brass', 4); c.VL(ax, ay - 16, 15, 'brass', 2); c.P(ax - 1, ay - 17, 'brass', 5); c.ell(ax, ay - 8, 2, 1.2, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2))
+    # 처마 밑 난간 갓(시계 층과 만나는 띠, 윗면 보인다)
+    c.R(0, 43, 64, 2, 'stone', 5); c.HL(0, 43, 64, 'stone', 6); c.R(0, 45, 64, 2, 'stone', 2); c.HL(0, 47, 64, 'ink', 1)
+
+
+CT_FACE = region('ct.face', 4, 2, _ct_face)
+CT_SPIRE = region('ct.spire', 4, 3, _ct_spire)
+
+
+def _pump_dome(c):
+    """급수 펌프장 지붕 3칸×2줄: 평평한 돌 지붕 바닥(윗면 — 둘레 갓돌 + 앞 난간) 위에 앉은 작은 구리 돔(반구)."""
+    # 돌 지붕 바닥(위에서 보인다): 뒤 갓돌(어두운 뒤 테) → 판석 → 앞 갓돌 + 앞면
+    c.R(0, 10, 48, 18, 'stone', 4)
+    for y in range(12, 25, 4): c.HL(1, y, 46, 'stone', 3)
+    for x in range(8, 48, 12): c.VL(x, 12, 13, 'stone', 3)
+    c.HL(0, 9, 48, 'ink', 1); c.R(0, 10, 48, 2, 'stone', 5); c.HL(0, 10, 48, 'stone', 2)
+    c.R(0, 10, 3, 18, 'stone', 5); c.R(45, 10, 3, 18, 'stone', 3); c.VL(0, 9, 23, 'ink', 1); c.VL(47, 9, 23, 'ink', 1)
+    c.R(0, 25, 48, 3, 'stone', 6); c.HL(0, 25, 48, 'stone', 5); c.R(0, 28, 48, 3, 'stone', 2); c.HL(0, 31, 48, 'ink', 1)
+    # 돔(바닥 위 반구) + 둥근 받침 테
+    cx, base, rx, ry = 24, 23, 15, 20
+    c.ell(cx, base, rx + 1.5, 3.2, lambda X, Y, dx, dy, d: ('brass', 4 if dx < 0 else 2) if dy > -0.2 else None)
+    for y in range(32):
+        for x in range(48):
+            dx = (x + 0.5 - cx) / rx; dy = (y + 0.5 - base) / ry
+            d = dx * dx + dy * dy
+            if d > 1 or y >= base: continue
+            t = 4 if (dx < -0.25 and dy < -0.5) else 3 if dx < 0.15 else 2 if dx < 0.6 else 1
+            if d > 0.9: t = 1
+            m = 'copper'
+            if (x % 6 == 3 and y > 8): m, t = 'verd', max(1, t - 1)
+            if abs(x + 0.5 - cx) < 0.7: m, t = 'copper', 1
+            c.P(x, y, m, t)
+    c.HL(cx - rx, base, 2 * rx + 1, 'brass', 3); c.HL(cx - rx, base + 1, 2 * rx + 1, 'iron', 2)
+    c.R(23, 0, 2, 5, 'brass', 4); c.P(23, 0, 'brass', 5)
+
+
+PUMP_DOME = region('pd', 3, 2, _pump_dome)
+
+
+def lab_roof_extras():
+    pass
+
+
+add_bld('clock-tower', '시계탑(다듬은 돌 밑동 + 벽돌 몸 + 놋쇠 시계 + 녹청 구리 모임지붕·피뢰침, 폭 4)',
+        CT_SPIRE + CT_FACE + facade('rb', 4, 2, door=None) + facade('ds', 4, 1, door=1, door_kind='double', paint='green'), 1, 2,
+        ['시계탑', '광장', '랜드마크'], '광장 북쪽 가운데 또는 큰길 끝. 둘레 2칸은 포석으로 비우고 쌍 가스등·벤치를 둔다.')
+add_bld('guild-hall', '조합 회관(다듬은 돌 3층, 폭 8, 발코니·양개문)',
+        roof_rows(8, 'mans', 3, dormers=(1, 6), chims=(0, 7)) + facade('ds', 8, 3, door=3, door_kind='double', paint='navy', balcony=(1,), piers={1: 'lamp', 6: 'lamp'}, lit_seed=31), 3, 2,
+        ['회관', '광장', '관청'], '광장 북쪽. 문 앞 2칸 포석.')
+add_bld('workshop', '기계 공방(벽돌 1층, 폭 6, 화물 문·천창)',
+        roof_rows(6, 'flat', 2, rooftop={(1, 1): 'rt.sky', (2, 1): 'rt.sky', (4, 0): 'rt.vent'}, stacks=(5,)) + facade('rb', 6, 1, door=2, door_kind='cargo', piers={1: 'pipe', 4: 'gauge'}, lit_seed=33), 2, 2,
+        ['공방', '공장', '거리'], '공장 거리. 화물 문 앞 마당에 상자·수레.')
+add_bld('lab', '연구소(다듬은 돌 2층, 폭 6, 구리 돔·피뢰침)',
+        roof_rows(6, 'flat', 3, rooftop={(2, 0): 'rt.dome.TL', (3, 0): 'rt.dome.TR', (2, 1): 'rt.dome.BL', (3, 1): 'rt.dome.BR', (5, 1): 'rt.vent', (0, 1): 'rt.sky'}) + facade('ds', 6, 2, door=2, door_kind='double', paint='green', piers={1: 'gauge', 4: 'pipe'}, lit_seed=35), 2, 2,
+        ['연구소', '실험실'], '광장 옆·운하 옆 조용한 자리.')
+add_bld('pump-house', '급수 펌프장(다듬은 돌 1층, 폭 3, 구리 돔)',
+        PUMP_DOME + facade('ds', 3, 1, door=1, paint='green', piers={}, lit_seed=37), 1, 1,
+        ['펌프장', '운하', '공장'], '운하·급수탑 옆.')
+add_bld('dock-warehouse', '부두 창고(그을린 벽돌 3층, 폭 7, 하역 문 줄·도르래)',
+        roof_rows(7, 'gab', 3, chims=(1,)) + facade('sb', 7, 3, door=3, door_kind='cargo', piers={1: 'plain', 5: 'lamp'}, upper={3: 'loft'}, lit_seed=39), 3, 2,
+        ['창고', '부두', '운하'], '운하 북쪽 둑. 하역 문 앞은 판자·포석 하역장으로 비운다.')
+add_bld('row-soot-4', '그을린 벽돌 노동자 주택(3층, 폭 4, 발코니)',
+        roof_rows(4, 'gab', 2, chims=(0, 3)) + facade('sb', 4, 3, door=1, paint='green', balcony=(1,), piers={2: 'pipe'}, lit_seed=41), 1, 1,
+        ['연립주택', '노동자', '공장 거리'], '공장 거리 뒤편에 어깨를 붙여.')
+add_bld('row-flush-3', '붉은 벽돌 연립(양옆 잇는 3칸, 망사르드)',
+        roof_rows(3, 'mans', 2, flush=True, dormers=(1,), chims=(0,)) + facade('rb', 3, 3, door=2, paint='red', balcony=(1,), lit_seed=43), 2, 1,
+        ['연립주택', '집', '거리'], '연립 줄 가운데에 끼운다(양 끝은 row-3·row-4).')
 
 
 def sheet(path=None, z=3):

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d8ade29a3e93633c69a3ba2c9d26afc8a30fc142a65bc0dbf90c2322263ff21",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 석축(북쪽 물가, 벽면이 물로 내려간다)",
+ "label": "steampunk-city/sp-quay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal stone wall face meeting water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall tile showing the vertical stone embankment face leading down into water at rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5764
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "canal stone embankment wall face meeting water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face terrain tile meeting water at rows 13-15. As a standard 3/4 view wall face terrain tile, it represents the south-facing vertical surface of the embankment.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4602
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal stone wall face meeting water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain wall tile showing the vertical stone embankment face meeting water at the bottom (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4450
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone canal wall face meeting water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall face and water edge terrain tile; correct front-facing wall plane in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4420
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:40.070Z",
+ "cells": {
+  "16": [
+   "7b9318ba30e8d04f"
+  ],
+  "24": [
+   "97560d8d913ba218",
+   "a5346c9afd17b8a7",
+   "ce4859462cda7106",
+   "f340b53cb238bfd5",
+   "f9e7fdbacd1a524f",
+   "fa9b4b0260417799"
+  ],
+  "32": [
+   "0de33d2b828ab363",
+   "664aa4d52852a2f1",
+   "794f0cc8c32e0137",
+   "97c4bbf0bc275058",
+   "9cf118baeb8e8096",
+   "bde043364bef7fe8"
+  ],
+  "48": [
+   "01e847c54f0f69e2",
+   "521862430a158c51",
+   "82199c0dfb586466",
+   "b7bc25f5809c8bc4",
+   "bc6d4ae7c918adcb",
+   "c62924136aac7d73"
+  ]
+ }
+}

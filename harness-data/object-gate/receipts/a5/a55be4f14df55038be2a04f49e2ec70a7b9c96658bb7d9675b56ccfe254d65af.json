@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a55be4f14df55038be2a04f49e2ec70a7b9c96658bb7d9675b56ccfe254d65af",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "계선주(무쇠 버섯 머리)",
+ "label": "steampunk-city/sp-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mushroom-head bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap slopes toward the viewer with clearly rendered top-surface lighting spanning rows 2-6, and the underside rim forms a downward-curving ellipse from row 7 to row 9 consistent with a 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9301
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mushroom-headed mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom cap and neck are drawn in pure front elevation: the spherical/domed cap sits directly atop a visible narrow neck (rows 9-10) with the base below, showing no foreshortened top surface or overhead perspective (from a 45-degree angle, the overhang of the cap would occlude or heavily foreshorten the neck, and the cap's top surface would dominate).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10733
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mushroom-headed mooring bollard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mushroom cap is viewed from above, displaying 5 rows of the upper dome (rows 2-6). Its lower rim curves downward in a clear 3/4 perspective ellipse from row 7 at the sides to row 8-9 in the center, correctly foreshortened.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10917
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mushroom-head bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mushroom-shaped cap is drawn in pure front elevation as a 2D circle/dome with side-lit spherical shading and a straight-on silhouette; no foreshortened top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6628
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "df4d62c537b0a7ae"
+  ],
+  "24": [
+   "1b17f56bf0ffe77f",
+   "6a868e367eec4567",
+   "6ad8cbb59b6490e0",
+   "7130140ae8edccf8",
+   "7265dc1e49161249",
+   "c6f17c02ed6e0507"
+  ],
+  "32": [
+   "92b6eb0eca3549a8",
+   "c65afd5fc968199e",
+   "c8a2764dce13e070",
+   "cca88182b94eb788",
+   "de81c3da2e1f66d0",
+   "e815aa2ec8edc202"
+  ],
+  "48": [
+   "1603a54996df7d90",
+   "3bfdf5731d91d00c",
+   "4a71ee00c828d7e1",
+   "4bc89c43bbe09c11",
+   "b634f6db3551363f",
+   "f4f8184e7c215e4a"
+  ]
+ }
+}

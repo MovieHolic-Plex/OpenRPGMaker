@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0cc23f711d9a0dc03ea51b27ad0cf70faebc013a98af77e2974eedd85d85f7e6",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "땅 위 배관 — 남·서 꺾임",
+ "label": "steampunk-city/sp-pipe-sw",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular junction box / chest body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central main body (rows 2-12) is rendered in a pure front elevation with only a 1px border at row 2 and no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5498
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "junction box / chest-shaped pipe hub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central main body (rows 2–11) is drawn in pure front elevation with a frontal latch/lock across rows 3–6 and a horizontal seam at row 7, showing no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5757
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pipe corner junction box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The junction box clearly shows its horizontal top surface on rows 2–6 (with bolted corners and a brass inspection hatch casting shadow southward to row 6, ending in a highlight edge at row 7) above a 4-row shaded south face on rows 8–11.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8150
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "junction box or chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central box/junction unit is drawn in pure front elevation: the latch/lock spans rows 3–6 on the upper section with no foreshortened top surface visible above it (only a 1px boundary line at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5184
+  }
+ ],
+ "decidedAt": "2026-10-13T18:40:36.080Z",
+ "cells": {
+  "16": [
+   "10353d85f0789227"
+  ],
+  "24": [
+   "713326fb73b7d953",
+   "bea84f9b9fb57ab9",
+   "cdeb283aede7211c",
+   "e66dc86701e6cbf8",
+   "ef2566666fba46af",
+   "fe19f7118cc85402"
+  ],
+  "32": [
+   "0bb953c2714c0f5f",
+   "853c03ea91ccfc3a",
+   "ba52de490f8a2532",
+   "bc1e2f1607f2efcf",
+   "c226bf74e88b00ba",
+   "f893b8197512a2db"
+  ],
+  "48": [
+   "21c36a1682f5dd10",
+   "3eed9a4a809ce659",
+   "588220debdd7706d",
+   "947fdab1bdc6f7cf",
+   "dba8c4d67c2e4625",
+   "e61907b8c0b1eaa3"
+  ]
+ }
+}

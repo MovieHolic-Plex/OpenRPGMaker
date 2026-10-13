@@ -170,11 +170,11 @@ def _(c):
 def _(c):
     def f(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
-        m, t = tex_cluster(lx, ly, 'cinder', 3, s=4, scale=3, amt=0.4)
+        m, t = tex_cluster(lx, ly, 'cinder', 3, s=4, scale=3, amt=0.22)
         r = rnd(lx, ly, 17)
-        if r < 0.05: return ('coal', 1)
-        if r > 0.965: return ('stone', 5)
-        if r > 0.94: return ('cinder', 4)
+        if r < 0.025: return ('coal', 1)
+        if r > 0.985: return ('stone', 4)
+        if r > 0.965: return ('cinder', 4)
         return (m, t)
     c.F(0, 0, 16, 16, f)
 
@@ -270,7 +270,7 @@ def water(c, f=0):
     def fn(wx, wy, i, j):
         lx, ly = wx % 16, wy % 16
         band = (ly // 4) % 2
-        t = 2 + (1 if rnd(lx // 4, ly // 4, 3) > 0.7 else 0)
+        t = 2 + (1 if rnd(lx, ly, 3) > 0.93 else 0)
         # 잔물결: 짧은 밝은 획 + 밑 어두운 획, 프레임마다 2px 흐른다
         for k, (ox, oy, ln) in enumerate(((1, 2, 4), (9, 6, 3), (4, 10, 5), (12, 13, 3))):
             xx = (lx - ox - f * 2) % 16
@@ -355,6 +355,31 @@ def _(c):
     c.HL(0, 12, 16, 'brick', 1); c.HL(0, 9, 16, 'brick', 3)
     c.HL(0, 15, 16, 'ink', 1)
 
+
+
+# ── 운하를 남북으로 건너는 돌다리(왼쪽 난간 · 가운데 · 오른쪽 난간) ──
+def bridge(c, part):
+    cobble(c, 0, 0, 16, 16, s=17, base=3)
+    if part == 'w':
+        c.VL(0, 0, 16, 'ink', 1); c.R(1, 0, 5, 16, 'stone', 5); c.VL(1, 0, 16, 'stone', 6); c.VL(5, 0, 16, 'stone', 3)
+        for y in (3, 11): c.HL(1, y, 5, 'stone', 3)
+        c.VL(6, 0, 16, 'stone', 1); c.VL(7, 0, 16, 'stone', 2)
+    if part == 'e':
+        c.VL(9, 0, 16, 'stone', 2); c.R(10, 0, 5, 16, 'stone', 5); c.VL(10, 0, 16, 'stone', 6); c.VL(14, 0, 16, 'stone', 3)
+        for y in (3, 11): c.HL(10, y, 5, 'stone', 3)
+        c.VL(15, 0, 16, 'ink', 1)
+
+
+for part, nm in (('w', '서쪽 난간'), ('m', '가운데'), ('e', '동쪽 난간')):
+    R.add('bridge-' + part, '운하 돌다리 ' + nm + '(남북으로 건넌다)', 1, 1, 'terrain', tags=['다리', '운하', '길'],
+          rules='운하(물·석축·갓돌 줄 전부)를 남북으로 덮는다: 서쪽 난간 · 가운데(1~2칸) · 동쪽 난간 순. 다리 남북 끝은 길·보도로 잇는다.')(lambda c, part=part: bridge(c, part))
+
+
+@R.add('flag-b', '판석 보도(배수 홈 변주)', 1, 1, 'terrain', tags=['보도', '인도'], rules='판석 보도 사이에 드문드문 섞는다.')
+def _(c):
+    flag(c, 0, 0, 16, 16, s=8)
+    c.R(6, 6, 4, 4, 'iron', 2); c.HL(6, 6, 4, 'iron', 4)
+    for x in (7, 9): c.VL(x, 7, 2, 'ink', 1)
 
 def sheet(path=None, z=3):
     items = []

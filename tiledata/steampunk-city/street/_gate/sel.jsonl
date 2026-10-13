@@ -1,0 +1,12 @@
+{"png": "sp-clock-post.png", "kind": "column", "name": "거리 시계 기둥(무쇠 기둥 + 네 면 시계 상자 + 작은 모임지붕)", "label": "steampunk-city/sp-clock-post"}
+{"png": "sp-pillar-box.png", "kind": "column", "name": "빨강 무쇠 우체통(둥근 기둥, 넓은 둥근 뚜껑이 위에서 보인다)", "label": "steampunk-city/sp-pillar-box"}
+{"png": "sp-poster-column.png", "kind": "column", "name": "둥근 광고탑(빛바랜 포스터 — 글자 없음, 녹청 갓)", "label": "steampunk-city/sp-poster-column"}
+{"png": "sp-planter.png", "kind": "container", "name": "무쇠 화분(둥근 통, 흙과 다듬은 관목이 위에서 보인다)", "label": "steampunk-city/sp-planter"}
+{"png": "sp-sacks.png", "kind": "other", "name": "곡물·석탄 자루 더미(위에서 본 불룩한 자루 셋)", "label": "steampunk-city/sp-sacks"}
+{"png": "sp-boiler-tank.png", "kind": "other", "name": "누운 압력 탱크(리벳 철판 원통 — 위가 넓게 보인다, 돌 받침·맨홀·압력계)", "label": "steampunk-city/sp-boiler-tank"}
+{"png": "sp-rail-signal.png", "kind": "column", "name": "선로 신호기(날개 신호 + 등, 무쇠 기둥)", "label": "steampunk-city/sp-rail-signal"}
+{"png": "sp-bollard.png", "kind": "column", "name": "계선주(무쇠 버섯 머리)", "label": "steampunk-city/sp-bollard"}
+{"png": "sp-standpipe.png", "kind": "column", "name": "급수 기둥(기관차 물 넣는 무쇠 기둥 + 팔)", "label": "steampunk-city/sp-standpipe"}
+{"png": "sp-gantry-crane.png", "kind": "frame", "name": "문형 기중기(무쇠 다리 둘 + 리벳 들보 + 도르래 수레·갈고리)", "label": "steampunk-city/sp-gantry-crane"}
+{"png": "sp-airship-docked.png", "kind": "structure", "name": "정박한 비행선(가죽 기낭 + 놋쇠 늑골 + 꼬리 날개, 곤돌라가 나무 받침대 위에 내려앉았다)", "label": "steampunk-city/sp-airship-docked"}
+{"png": "sp-tram-shelter.png", "kind": "structure", "name": "전차 정류장 지붕(무쇠 기둥 + 녹청 철판 지붕 + 벤치)", "label": "steampunk-city/sp-tram-shelter"}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "305802097b56875dbd761d4f51afb4ef3938a350dee23b092bc6f919b0e5ca9c",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "선로 신호기(날개 신호 + 등, 무쇠 기둥)",
+ "label": "steampunk-city/sp-rail-signal",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "railway semaphore signal post (iron column)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column terminates at the top in a rounded cap/finial drawn in flat front elevation with no visible top surface or cut face (0 top rows). The semaphore arm and green lens are also drawn as flat 2D elevation shapes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9739
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "railway semaphore signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the top cap, collar (rows 20-22), signal arm, and base show no foreshortened top surfaces or elliptical horizontal cross-sections, using flat horizontal lines and 2D silhouettes throughout.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5216
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signal pole with top cap, semaphore arm, and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire signal is drawn in pure front elevation: the top finial shows its underside (rows 6-8), the collar at row 20-22 has no visible top ellipse, the signal arm is a flat side-on rectangle, and the green lens is a flat 2D circle with no 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6304
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "railway semaphore signal pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, finial cap, signal arm, roundel, middle collar, and base dome are all drawn in flat front elevation with no visible horizontal top surfaces or 3/4 view foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5780
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.658Z",
+ "cells": {
+  "16": [
+   "43c423580c9e46d6",
+   "4e69354f2073fbac",
+   "dad05bc01cb12e48"
+  ],
+  "24": [
+   "0390d5c49ce3c0f4",
+   "0f280c4f745ede07",
+   "211097081b0b824a",
+   "3054b3eb69fad6d9",
+   "bc4636d33ec411c4",
+   "ef0ab0defe375e6d"
+  ],
+  "32": [
+   "166c264aeba67cdc",
+   "1cb30b45db0632aa",
+   "3cdfb7025dc6a0be",
+   "5378a6014a88014b",
+   "6676d9e81aaa006b",
+   "6f5678e01f43870a",
+   "8337a703006b61eb",
+   "8e325b6980553156",
+   "a3ca877dd796c210",
+   "c0c452784d44be2b",
+   "c1d01ddd545a675c",
+   "f26cd00ceef66824"
+  ],
+  "48": [
+   "846d20f68f1553f4",
+   "9aba99f7fef0b341",
+   "fb448c59f7879ee5"
+  ]
+ }
+}

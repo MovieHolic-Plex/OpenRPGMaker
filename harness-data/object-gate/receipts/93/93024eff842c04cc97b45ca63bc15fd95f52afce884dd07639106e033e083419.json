@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93024eff842c04cc97b45ca63bc15fd95f52afce884dd07639106e033e083419",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "운하 석축(북쪽 물가, 벽면이 물로 내려간다)",
+ "label": "steampunk-city/sp-quay",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "canal stone wall face meeting water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical canal stone embankment wall descending into water at rows 13-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4700
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone embankment wall and water edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting a vertical canal stone embankment wall descending into water at rows 13-15. Fits standard JRPG wall/water boundary terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5252
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "canal stone wall face descending into water",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical canal stone revetment wall meeting water at the base; standard JRPG wall face tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4184
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "canal stone revetment wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical wall face terrain block representing canal masonry descending into water at rows 13-15. As standard terrain wall face, it correctly shows the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5736
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "2b69a86471436bd1"
+  ],
+  "24": [
+   "0fe1b04f35b5d962",
+   "5b48ee075ef85602",
+   "baf05daa6d0cb98c",
+   "d0ff43a85eb0c33d",
+   "dd8ca16467ef27bf",
+   "e1e25d57e8aaddf2"
+  ],
+  "32": [
+   "1e23326ecd2fbac3",
+   "3ee1c7eea07355e7",
+   "4091c308d7462e42",
+   "6940a61132904fc1",
+   "ad43903e8b2677dd",
+   "fda63c449f8d2974"
+  ],
+  "48": [
+   "027be6861858623b",
+   "32bffc2ca2cc8e02",
+   "50de01ed6842c9e9",
+   "5233aa80c6c51d4b",
+   "d201fc187abfd2bd",
+   "d8f7b9f88f9da7ac"
+  ]
+ }
+}

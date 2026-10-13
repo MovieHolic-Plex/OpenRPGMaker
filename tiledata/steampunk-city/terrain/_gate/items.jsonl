@@ -24,3 +24,7 @@
 {"png": "sp-deck-edge.png", "kind": "terrain", "name": "부두 끝(판자 앞면 + 물 위 말뚝)", "label": "steampunk-city/sp-deck-edge"}
 {"png": "sp-platform.png", "kind": "terrain", "name": "승강장 판석", "label": "steampunk-city/sp-platform"}
 {"png": "sp-platform-edge.png", "kind": "terrain", "name": "승강장 끝(놋쇠 안전선 + 선로로 내려가는 벽)", "label": "steampunk-city/sp-platform-edge"}
+{"png": "sp-bridge-w.png", "kind": "terrain", "name": "운하 돌다리 서쪽 난간(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-w"}
+{"png": "sp-bridge-m.png", "kind": "terrain", "name": "운하 돌다리 가운데(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-m"}
+{"png": "sp-bridge-e.png", "kind": "terrain", "name": "운하 돌다리 동쪽 난간(남북으로 건넌다)", "label": "steampunk-city/sp-bridge-e"}
+{"png": "sp-flag-b.png", "kind": "terrain", "name": "판석 보도(배수 홈 변주)", "label": "steampunk-city/sp-flag-b"}

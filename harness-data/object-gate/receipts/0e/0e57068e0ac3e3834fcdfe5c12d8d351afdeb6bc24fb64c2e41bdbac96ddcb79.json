@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0e57068e0ac3e3834fcdfe5c12d8d351afdeb6bc24fb64c2e41bdbac96ddcb79",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "밧줄 사리(둥글게 감긴 굵은 밧줄)",
+ "label": "steampunk-city/sp-rope-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "coiled rope lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is depicted as an elliptical ring lying flat on the floor, foreshortened across rows 4-12 in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5215
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "coiled rope lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is rendered as a foreshortened ellipse lying flat on the ground plane, spanning rows 4 to 12 (9 rows tall) with a hole in the center and a rope tail extending south-east.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2928
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "coiled rope lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is rendered as a foreshortened oval disc lying flat on the ground spanning rows 4 to 12 with a center hole and trailing end, correctly showing a top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2930
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "coiled rope lying on the floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The coiled rope is drawn as a foreshortened ellipse spanning rows 4-12 (9 rows tall) lying flat on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3339
+  }
+ ],
+ "decidedAt": "2026-10-13T18:42:41.659Z",
+ "cells": {
+  "16": [
+   "1ee5ef76f6b27543"
+  ],
+  "24": [
+   "3b60abe867ee3c37",
+   "3ca7d9e45b6738ec",
+   "92cc5e5b6a143143",
+   "9f9119f42d328da9",
+   "aa0d7b71c2dc3dcf",
+   "f610125be20cef7b"
+  ],
+  "32": [
+   "128d1cf71ea785b3",
+   "3d4f1d2d39012e8d",
+   "5e3c259f4c6fdf9a",
+   "7610626c45ba65d1",
+   "cd8b18bc2f3c387a",
+   "df48625f63326619"
+  ],
+  "48": [
+   "1a38d2f0c1426843",
+   "c43a2fde1dfe558a",
+   "ccb817906101104b",
+   "e5eb773d52bcff68",
+   "f4816bf7afdece3b",
+   "f9175509a27dd9f9"
+  ]
+ }
+}

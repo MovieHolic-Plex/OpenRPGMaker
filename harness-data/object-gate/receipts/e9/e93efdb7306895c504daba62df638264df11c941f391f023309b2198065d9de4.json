@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e93efdb7306895c504daba62df638264df11c941f391f023309b2198065d9de4",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "나무 부두 판자",
+ "label": "steampunk-city/sp-deck",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden pier plank flooring",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wooden pier planks representing floor/ground terrain covering the entire 16x16 tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3429
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal wooden dock/floor planks viewed from above across all 16 rows, matching the terrain category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4652
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden pier planks (floor tile)",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tileable wooden floor planks with nail details viewed from above; qualifies as terrain flooring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3350
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dock planks floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts horizontal wooden planks seen from above with nail/peg details, functioning as a ground/floor terrain texture.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3601
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.052Z",
+ "cells": {
+  "16": [
+   "d37132f7431b6321"
+  ],
+  "24": [
+   "1da352f57f444767",
+   "4e3f9a8d10dcae9d",
+   "5577eb54b5b353a8",
+   "a2ecae5bb15b5ff3",
+   "b6ae20068bb80843",
+   "dda5e77ffc162d55"
+  ],
+  "32": [
+   "31fcb40661e77b6e",
+   "5c0a88b2578da6a4",
+   "63e927b69d80d90e",
+   "671948a33b77691e",
+   "89f965504ba9603a",
+   "cfc62339e163fe9d"
+  ],
+  "48": [
+   "0227bca38965fc1a",
+   "143ec908cf5147c2",
+   "18ac65729d94f82f",
+   "525aa8841a2dc83d",
+   "57708a9fe4d65f87",
+   "749ff52769342546"
+  ]
+ }
+}

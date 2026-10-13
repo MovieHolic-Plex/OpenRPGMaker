@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fbf236ba646173246487f0a4a4576ddfa56a33b81266d2a79af9fad91481423f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "판석 보도",
+ "label": "steampunk-city/sp-flag",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat ground tile depicting stone pavement slabs seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3268
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a repeating flagstone or stone paver ground texture with mortar joints, correctly categorised as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3289
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down ground surface composed of rectangular stone pavers with mortar lines and surface highlights across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2580
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone pavement tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting stone flagstones / pavement with mortar seams, viewed entirely as ground surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4293
+  }
+ ],
+ "decidedAt": "2026-10-13T18:27:58.050Z",
+ "cells": {
+  "16": [
+   "70263f2269a688b4"
+  ],
+  "24": [
+   "1865afb4bb6b40a8",
+   "46234b83e755a8b8",
+   "4f8225037b7e1c75",
+   "64d8758f815f9920",
+   "b9a7d6754e2dc146",
+   "c910807a81934c21"
+  ],
+  "32": [
+   "260f3e5b34791753",
+   "4c9ca5c083e34737",
+   "5eb3ec276d4dfe07",
+   "63777af00a3d0264",
+   "d586597de1cd11d1",
+   "e6ed1d25a33df08c"
+  ],
+  "48": [
+   "2867595135f84426",
+   "7f9379281a931f27",
+   "99b0a3630a06a4d7",
+   "bacbf044c9e1023b",
+   "e69bee48ad41e28a",
+   "efd51a8db49e126b"
+  ]
+ }
+}

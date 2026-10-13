@@ -232,3 +232,14 @@ def save(c_or_img, path, scale=1):
     os.makedirs(os.path.dirname(path), exist_ok=True)
     if scale != 1: im = im.resize((im.width * scale, im.height * scale), Image.NEAREST)
     im.save(path)
+
+
+def disc(c, cx, cy, rx, ry, mat, t, band=2, bt=None, rim=True):
+    """위에서 본 원반(밝은 윗면, 왼쪽 위 더 밝게, 뒤 가장자리 먹) + 앞쪽 두께 band 행(어둡게)."""
+    bt = t - 3 if bt is None else bt
+    if band:
+        c.ell(cx, cy + band, rx, ry, lambda x, y, dx, dy, d: (mat, bt + (1 if dx < -0.4 else 0) - (1 if dx > 0.5 else 0)) if dy > -0.2 else None)
+        for k in range(band): c.ell(cx, cy + k, rx, ry, lambda x, y, dx, dy, d: (mat, bt) if dy > 0.2 else None)
+    c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: (mat, t + (1 if dx + dy < -0.6 else 0) - (1 if dy > 0.6 else 0)))
+    if rim: c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: ('ink', 1) if d > 0.8 and dy < 0.1 else None)
+    if band: c.ell(cx, cy + band, rx, ry, lambda x, y, dx, dy, d: ('ink', 1) if d > 0.8 and dy > 0.3 else None)
