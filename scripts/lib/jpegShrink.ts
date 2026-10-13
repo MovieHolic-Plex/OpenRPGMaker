@@ -16,3 +16,13 @@ export async function jpegDataUrl(dataUrl: string, maxWidth: number, quality: nu
     : await image.getBuffer('image/jpeg', { quality });
   return `data:image/jpeg;base64,${buffer.toString('base64')}`;
 }
+
+/** PNG 바이트를 maxWidth 로 줄여 PNG base64 로 돌려준다(하네스의 브라우저 렌더 결과 축소용). */
+export async function pngShrinkBase64(raw: Buffer, maxWidth: number): Promise<string> {
+  const image: AnyJimp = await Jimp.read(raw);
+  if (image.bitmap.width > maxWidth) {
+    if (!('MIME_JPEG' in Jimp)) image.resize({ w: maxWidth }); else image.resize(maxWidth, Jimp.AUTO);
+  }
+  const buffer: Buffer = 'MIME_PNG' in Jimp ? await image.getBufferAsync(Jimp.MIME_PNG) : await image.getBuffer('image/png');
+  return buffer.toString('base64');
+}

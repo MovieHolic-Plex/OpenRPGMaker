@@ -4,7 +4,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import Jimp from 'jimp';
+import { pngShrinkBase64 } from '../lib/jpegShrink.ts';
 import { spawn } from 'node:child_process';
 import { buildModel } from '@oh-my-pi/pi-catalog/build';
 import { runPiAgent } from '../lib/piAgentRuntime';
@@ -55,13 +55,11 @@ const done = await runPiAgent(request as never, {
       const r = await fetch(`http://127.0.0.1:${bridgePort}/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ project: p, toolName: name, data }) });
       const j = await r.json() as { png?: string; error?: string };
       if (!r.ok || !j.png) throw new Error(j.error ?? '브라우저 렌더 실패');
-      const img = await Jimp.read(Buffer.from(j.png, 'base64')); if (img.bitmap.width > 640) img.resize(640, Jimp.AUTO);
-      return (await img.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
+      return await pngShrinkBase64(Buffer.from(j.png, 'base64'), 640);
     }
     const id = data?.resourceId as string | undefined; const url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
     if (!url?.startsWith('data:image')) throw new Error('그림 데이터를 찾을 수 없습니다: ' + id);
-    const img = await Jimp.read(Buffer.from(url.split(',')[1]!, 'base64')); if (img.bitmap.width > 512) img.resize(512, Jimp.AUTO);
-    return (await img.getBufferAsync(Jimp.MIME_PNG)).toString('base64');
+    return await pngShrinkBase64(Buffer.from(url.split(',')[1]!, 'base64'), 512);
   },
   onEvent: (e: any) => { note(e); },
   onToolCall: (r: any) => { void r; },
