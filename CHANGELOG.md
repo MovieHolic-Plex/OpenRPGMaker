@@ -5,6 +5,35 @@
 
 <!-- releases -->
 
+## 0.207.0 — 2026-10-14
+
+### 기능
+
+- **assistant** — gemini-4-argon model resolution (unverified) and MATRIX_NATIVE_MODEL pin for matrix-native (`ce70bf2`)
+- **assistant** — edit history works under the Pi worker; semantic matrix-native judges (`2ace256`)
+
+### 수정
+
+- **assistant** — event edit notes for stale speaker after rename and unpaired screen fade (`9f40d1e`)
+- **assistant** — create_transfer_pair ignores gates that were already sealed; stricter judges after visual review; robust bubble capture (`e43eee8`)
+- **assistant** — return-door note names the exact direction to set (`f78b5f6`)
+- **assistant** — reject malformed command keys; flag the return door when a transfer direction changes (`5d3bd27`)
+- **assistant** — show_map_region reports blocked cells; patch_event_page summary flags dropped commands; judge ignores empty choices.branch (`e5427cd`)
+- **assistant** — page-scope event assist rejects dropped commands even when the prompt says to keep them; touch trigger alias in judge (`ec1d603`)
+- **assistant** — event edits can no longer silently drop commands or misplace transfer direction; assist results report added/removed (`07f6f71`)
+- **assistant** — retry intent declaration once on timeout; count blocked cells in get_map_region; new doors are not blamed for gates sealed before them (`cef9344`)
+- **assistant** — fill_region no longer grows past the rectangle at lone obstacles; anaphoric requests bind to the selection; capture shows the command's bubble (`e0be861`)
+- **assistant** — sharpen event_command_assist guidance; matrix-native judges accept default-field fill and displayTextSettings (`e07a11e`)
+- **assistant** — tell the Pi turn which event the user selected; fix cutsceneCritic for jimp 1.x (`4e2f5bb`)
+
+### 테스트
+
+- **assistant** — forest-path judge rejects holes and cells outside the area (`eb43532`)
+
+### 기타
+
+- **assistant** — native 50-command matrix with semantic judges and per-command host (`c94b8a9`)
+
 ## 0.206.0 — 2026-10-14
 
 ### 기능
