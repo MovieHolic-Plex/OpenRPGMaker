@@ -36,6 +36,17 @@ export function resolveOhMyPiModel(provider: string, requested?: string) {
       },
     } };
   }
+  // Gemini 4 Argon: Antigravity 가 새로 낸 모델(2026-10-14). 전역 omp 18.9 의 카탈로그에서 id 는 gemini-4-argon, 전송 ID 는
+  // gemini-4-argon-{low,medium,high}(3.8 과 같은 effortRouting 방식, minimal 은 없다). 설치된 pi-catalog 에는 아직 없어 3.7 메타데이터에 덮어 쓴다.
+  if (provider === "google-antigravity" && id === "gemini-4-argon") {
+    const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
+    if (base) return { ...base, id, name: "Gemini 4 Argon", thinking: {
+      ...base.thinking!, effortRouting: {
+        minimal: "gemini-4-argon-low", low: "gemini-4-argon-low",
+        medium: "gemini-4-argon-medium", high: "gemini-4-argon-high",
+      },
+    } };
+  }
   if (provider === "openai-codex" && CODEX_GPT6_EXTENSION[id]) {
     const base = getBundledModel("openai-codex", "gpt-5.6-sol");
     // 웹소켓 핸드셰이크는 옛 클라이언트 버전을 박아 보내 새 모델을 거절당한다 — SSE 로 보내야
