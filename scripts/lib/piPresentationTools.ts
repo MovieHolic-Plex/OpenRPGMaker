@@ -103,7 +103,7 @@ export function createPiPresentationTool(
           const count = Math.min(3, Math.max(1, Math.trunc(Number(args.candidates)) || 1));
           const stillOptions = { signal, generateImage,
             hasTransparentPixels: async dataUrl => {
-              const { default: Jimp } = await import('jimp');
+              const JimpModule = await import('jimp') as any; const Jimp = JimpModule.Jimp ?? JimpModule.default;
               const { data } = (await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'))).bitmap;
               let clear = 0, solid = 0;
               for (let i = 3; i < data.length; i += 4) { if (data[i] < 16) clear++; if (data[i] > 240) solid++; }

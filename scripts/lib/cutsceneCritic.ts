@@ -2,7 +2,7 @@
 // 판정자를 호출하지 못하면 막지 않고 'unjudged' 로 남긴다 — 판정 불가를 합격으로 보고하지 않는다.
 import { completeProvider } from './ohMyPiPiAiRuntime.ts';
 import { resolveRequestApiKey } from './aiAuthRuntime.ts';
-import Jimp from 'jimp';
+import { jpegDataUrl } from './jpegShrink.ts';
 
 export type CutsceneCritique = {
   readonly verdict: 'accept' | 'regenerate' | 'unjudged';
@@ -20,11 +20,7 @@ const RUBRIC = `You are a strict director reviewing an in-game opening cutscene 
 Score 0-10: subject (the intended subject is clearly visible and reads as the story's focus), scale (size and spacing fit the screen and the landscape; tiny figures in a big landscape is good, huge overlapping sprites is bad), motion (the probe shows real travel and timing; the sheet shows progression, not one frozen pose), mood (map colour/tint/weather/props match the stated time and feeling — a bright daytime map for a night scene is a failure), staging (map is composed, not a flat empty field; nothing broken like stray placeholder tiles), polish (would a player think this is a considered opening, not a prototype).
 Do not reward intent; reward only what the evidence shows. verdict "accept" only if every score >= 6 and total >= 40; otherwise "regenerate" with ONE concrete, actionable fix in "fix" (in Korean, naming the tool/step to change). Reply with JSON only: {"scores":{"subject":0,"scale":0,"motion":0,"mood":0,"staging":0,"polish":0},"verdict":"accept|regenerate","fix":"..."}`;
 
-async function jpeg(dataUrl: string): Promise<string> {
-  const image = await Jimp.read(Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64'));
-  if (image.bitmap.width > 960) image.resize(960, Jimp.AUTO);
-  return `data:image/jpeg;base64,${(await image.quality(82).getBufferAsync(Jimp.MIME_JPEG)).toString('base64')}`;
-}
+const jpeg = (dataUrl: string): Promise<string> => jpegDataUrl(dataUrl, 960, 82);
 
 export async function critiqueCutscene(input: {
   readonly brief: string; readonly probeSummary: string; readonly mapImage?: string; readonly sheetImage?: string; readonly signal?: AbortSignal;

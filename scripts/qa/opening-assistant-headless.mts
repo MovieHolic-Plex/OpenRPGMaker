@@ -36,7 +36,7 @@ const note = (e: any) => {
   if (e.type === 'tool_end' && e.visuals) for (const [i, v] of e.visuals.entries()) if (v.uploaded?.startsWith('data:')) fs.writeFileSync(path.join(out, `${e.id.slice(-8)}-${i}-${v.caption}.jpg`), Buffer.from(v.uploaded.split(',')[1], 'base64'));
 };
 let live = project;
-const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: 'high' as const, imageProvider, imageModel,
+const request = { provider: provider!, model: modelId!, task, mapIds: [], scopeStrict: false, project, maxTurns: Number(arg('max-turns', '60')), thinkingLevel: (arg('thinking', 'high') as 'high'), imageProvider, imageModel,
   initialToolNames: ['find_tools', 'get_opening', 'list_opening_media', 'get_title_screen', 'show_title_opening', 'review_opening', 'script_cutscene_staged', 'preview_cutscene', 'read_directing_guide', 'show_map_region'] };
 // 맵·애니메틱 미리보기는 실제 브라우저 렌더러(편집기 dev 서버)로 그린다 — --browser-url 이 있을 때만.
 const origin = arg('browser-url');

@@ -876,14 +876,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const reviewInGameCutscene = async (): Promise<void> => {
       if (!openingProduction.inGame) return;
       const start = ctx.project.maps[ctx.project.startMapId];
-      const candidates = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto'));
-      const event = candidates.sort((a, b) => JSON.stringify(b.pages).length - JSON.stringify(a.pages).length)[0];
-      const page = event?.pages?.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto');
-      if (!start || !event || !page) return;
+      const autoEvents = (start?.events ?? []).filter(e => (e.pages ?? []).some(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture')));
+      if (!start || !autoEvents.length) return;
       const fingerprint = openingProduction.cutsceneFingerprint(ctx.project);
       if (openingProduction.hasCutsceneReview(fingerprint)) return;
-      const probe = probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION);
-      emit({ type: 'execution_status', name: 'cutscene.review', ok: probe.issues.length === 0, summary: `컷신 객관 측정: ${probe.summary}${probe.issues.length ? ` — 문제 ${probe.issues.length}건` : ' — 통과'}`, data: probe });
+      // 시작 맵의 자동 컷신은 전부 잰다 — 옛 컷신이 남은 채 새 이벤트가 따로 생기면(실측) 둘이 겹쳐 재생된다.
+      const probes = autoEvents.map(e => ({ event: e, page: e.pages.find(pg => (pg.trigger as { kind?: string } | undefined)?.kind === 'auto' && pg.commands.some(c => c.kind === 'showPicture'))! }))
+        .map(({ event, page }) => ({ event, probe: probeCutscene(ctx.project, page.commands, ctx.project.system.playResolution ?? DEFAULT_PLAY_RESOLUTION) }));
+      const merged = probes.flatMap(({ event, probe }) => probe.issues.map(issue => (probes.length > 1 ? `[이벤트 ${event.id}] ` : '') + issue));
+      if (probes.length > 1) merged.push(`시작 맵에 자동 컷신 이벤트가 ${probes.length}개(${probes.map(p => p.event.id).join(', ')})라 겹쳐 재생됩니다. 하나만 남기세요 — script_cutscene_staged 에 eventId 를 주어 기존 것을 대체하거나, 쓸모없는 이벤트를 지우세요.`);
+      const main = probes.slice().sort((a, b) => b.probe.subjects.length - a.probe.subjects.length)[0]!;
+      const event = main.event, probe = { ...main.probe, issues: merged };
+      emit({ type: 'execution_status', name: 'cutscene.review', ok: merged.length === 0, summary: `컷신 객관 측정(${probes.length}개): ${probes.map(p => `${p.event.id}: ${p.probe.summary}`).join(' || ')}${merged.length ? ` — 문제 ${merged.length}건` : ' — 통과'}`, data: probe });
       if (probe.issues.length || !options.renderToolImage) { openingProduction.recordCutsceneReview(fingerprint, probe.issues); return; }
       emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
       let mapImage: string | undefined, sheetImage: string | undefined;
