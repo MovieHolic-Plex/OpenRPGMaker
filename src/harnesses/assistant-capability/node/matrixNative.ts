@@ -24,6 +24,15 @@ const expandProject = (projectDir: string, snapshot: Project, file: string): Pro
   return JSON.parse(readFileSync(file, 'utf8')) as Project;
 };
 
+/** MATRIX_NATIVE_MODEL pins every role (agent loop, intent declaration) to one Antigravity model; unset = product default. */
+const aiConfig = () => {
+  const model = process.env.MATRIX_NATIVE_MODEL?.trim();
+  const base = { piApply: 'yolo', piApplyPolicyVersion: 1, piTeam: false, autonomyLevel: 'balanced' };
+  if (!model) return base;
+  const role = { provider: 'google-antigravity', model, thinkingLevel: process.env.MATRIX_NATIVE_EFFORT?.trim() || 'low' };
+  return { ...base, providerId: 'google-antigravity', model, liteModel: model, roleModels: { deep: role, build: role, writer: role, vision: role } };
+};
+
 const toSelection = (rect: Rect) => ({ mapId: MAP, x: rect.x, y: rect.y, width: rect.w, height: rect.h });
 
 async function saveFresh(root: string, projectDir: string): Promise<void> {
@@ -93,7 +102,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
       const setup = setupFor(command.id);
       try {
         host = await startHost(projectDir, root);
-        editor = await newEditor(browser, host.url, projectDir, { piApply: 'yolo', piApplyPolicyVersion: 1, piTeam: false, autonomyLevel: 'balanced' });
+        editor = await newEditor(browser, host.url, projectDir, aiConfig());
         const page = editor.page;
         // Boot migrations and bundled asset folding can rewrite the canonical document. Establish the
         // comparison baseline only after the real UI has loaded and flushed that normalization.
@@ -182,7 +191,7 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         rmSync(scratch, { force: true });
         await editor.context.close();
         editor = undefined;
-        const reloadedEditor = await newEditor(browser, host.url, projectDir, { piApply: 'yolo', piApplyPolicyVersion: 1, piTeam: false, autonomyLevel: 'balanced' });
+        const reloadedEditor = await newEditor(browser, host.url, projectDir, aiConfig());
         const reloaded = stored(projectDir);
         await reloadedEditor.page.screenshot({ path: resolve(dir, 'reloaded.png') });
         await reloadedEditor.context.close();
