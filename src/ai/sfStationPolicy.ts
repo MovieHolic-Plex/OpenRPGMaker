@@ -94,7 +94,7 @@ export function formatSfStationNote(target: SfStationTarget, targetMap: { id: st
   const where = target.mapId && !target.lived
     ? `지금 맵 '${target.mapId}'(${targetMap?.width ?? "?"}×${targetMap?.height ?? "?"})은 sf_station 이고 비어 있다 → 이 맵에 compose_sf_station_map 으로 짓는다(작으면 resize_map 먼저).`
     : target.mapId
-      ? `지금 맵 '${target.mapId}' 는 sf_station 이고 이미 내용이 있다 → 다시 짜는 요청이면 compose_sf_station_map({kind, seed:다른 값, replace:true}), 더하는 요청이면 get_map_region 으로 빈 곳을 찾아 stamp_object 로 더한다.`
+      ? `지금 맵 '${target.mapId}' 는 sf_station 이고 이미 내용이 있다 → 다시 짜는 요청이면 compose_sf_station_map({kind, seed:다른 값, replace:true}), 더하는 요청이면 show_map_region 으로 빈 곳을 찾아 stamp_object 로 더한다.`
       : "sf_station 맵이 아직 없다 → create_map({name, width, height, tilesetId:\"sf_station\"}) 로 권장 크기의 새 맵을 만든다. 지금 보는 맵이 다른 계열이면 실행기가 거부한다 — 그때는 칠하지 말고 ask_tileset_change(toTilesetId:\"sf_station\") 로 묻는다.";
   return [
     "[SF 장소 시공 — sf_station] 이 요청의 칩셋은 번들 SF 정거장·네온 거리(sf_station, 계열 oprn-scifi)다. 버들항·일본 도시·고딕 도구는 쓰지 않는다. 맵 한 장은 compose_sf_station_map({kind, seed}) 한 번이 기본이다(벽·바닥·기물을 손으로 쌓지 않는다).",
