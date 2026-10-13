@@ -187,6 +187,20 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 
 **Do not create a new agent config dir.** If your agent isn't listed, add it to this table with its purpose.
 
+## 새 도트 그림(키트·타일·기물)은 3/4 탑뷰 관문을 통과해야 한다 (hard rule, 2026-10-13)
+
+**손 도트·코드 도트로 새로 그린 그림(jp_city 키트·건물 정면·소품, 칩셋 조각, 실내 기물, 월드맵 아이콘, 스토어 팩 그림 등 종류 불문)은
+3/4 탑뷰 검증을 통과한 뒤에만 번들·공용 DB·맵·스토어에 들어간다.** 「눈으로 봤다」「기계 지표 통과」「서브에이전트 QA 점수」는 이 관문을 대신하지 못한다.
+
+- 관문의 정본은 `object-gate` 하나다: `npm run harness -- object-gate review|check|status` · 문서 `openwiki/harnesses/object-gate.md`.
+  판정자 둘×두 번(중앙값·과반)이고 영수증은 그림 화소 해시에 묶인다. 그림이 한 화소라도 바뀌면 다시 받는다.
+- **지금 상태(2026-10-13 실측): 영수증 0장, 보정 프로필 미보정(`status`), 출구 미배선** — 어느 굽기 스크립트(`bake_jp.py` 등)도 이 관문을 호출하지 않는다.
+  그래서 새 키트가 관문 없이 계속 들어왔다. 이 상태를 「관문이 있다」고 쓰거나 「통과했다」고 보고하지 마라.
+- 새 그림을 만든 에이전트는 완료 보고에 `object-gate review` 영수증(또는 `status` 출력)을 붙인다. 없으면 「3/4 관문 미통과」라고 쓴다.
+- 굽기·게시 스크립트에는 `src/harnesses/_core/object_gate` 의 `require_pass(img, kind=, context=, label=)` 를 붙인다(Python). 새 굽기 스크립트를 만들 때 이것부터 건다.
+- 관문을 건너뛰거나 점수·기준을 완화하지 마라. 막히면 그림을 고치거나 사용자에게 묻는다.
+- 시점 규칙 면제 종류(`flat`·`terrain`·`organic`·`debris`·`wall_mounted`)도 판정자 과반이 「종류가 맞다」고 해야 한다.
+
 ## 편집기 QA 와 런타임 QA 는 다른 도구를 쓴다 (hard rule)
 
 **게임(런타임)을 브라우저로 QA 할 때 편집기 셸을 통과하지 마라. 전용 하네스가 있다.**
