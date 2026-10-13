@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.206.0 — 2026-10-14
+
+### 기능
+
+- **jp-city** — gate-clean street kits, flat-roof art, rail kits, composer-first assistant routing (#2496) (`d847e06`)
+
+### 수정
+
+- **jp-city** — street composer harmony pass from one adversarial visual QA round (#2497) (`090ca8c`)
+
 ## 0.205.0 — 2026-10-14
 
 ### 기능
