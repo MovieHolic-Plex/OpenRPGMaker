@@ -119,6 +119,16 @@ function normalizeSteps(raw: unknown): TimedStep[] {
       if (typeof step.faceDir === "string") step.facing = step.faceDir;
       if (typeof step.fadeColor === "string") step.fade = step.fadeColor;
     }
+    if (step.do === "tint" && typeof step.tintColor === "string") {
+      // 런타임은 알파를 0~1 로 자르므로 «0.48» 대신 «48»·«255» 를 주면 알파 1 — 화면이 한 색으로 꽉 찬다(실측: 순파랑 화면).
+      const v = step.tintColor.trim();
+      if (v && v !== "none" && v !== "neutral" && !v.startsWith("#")) {
+        const parts = v.split(",").map((part) => Number(part.trim()));
+        const alpha = parts[3];
+        if (parts.length >= 3 && (parts.some((n) => !Number.isFinite(n)) || parts.slice(0, 3).some((n) => n < 0 || n > 255))) throw new ToolError(`steps[${index}] tintColor '${v}' 는 'r,g,b,알파'(r·g·b 0~255) 형식이어야 합니다 — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
+        if (alpha !== undefined && (alpha < 0 || alpha > 0.75)) throw new ToolError(`steps[${index}] tintColor 알파 ${String(alpha)} 는 0~0.75 여야 합니다(0.75 를 넘으면 맵이 가려집니다; 푸른 밤은 0.3~0.45) — 예: '20,30,80,0.4'.`, { code: "invalid-args" });
+      }
+    }
     if (step.do === "fade" && typeof step.direction !== "string") throw new ToolError(`steps[${index}] fade 에는 direction(in/out)이 필요합니다.`, { code: "invalid-args" });
     return step as unknown as TimedStep;
   });
