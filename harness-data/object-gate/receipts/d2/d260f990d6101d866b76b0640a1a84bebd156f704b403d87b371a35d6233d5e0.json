@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d260f990d6101d866b76b0640a1a84bebd156f704b403d87b371a35d6233d5e0",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence / wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is rendered as purely flat horizontal bands stacked from row 0 to row 15 across all columns, with no foreshortened top surface visible on the wall cap or fence rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6017
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence / wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is rendered as stacked horizontal bands with cylinder/elevation shading (rows 1-8) atop a dark base wall (rows 9-12), showing only a pure front elevation without any top surface showing the thickness or depth of the fence rails/top edge.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail fence / barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier is rendered as flat horizontal bands across the entire tile with cylindrical front-facing shading on the top rail (highlight along row 2 flanked by shadow), showing no foreshortened top surface from the 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5826
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "guardrail / rail fence",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/guardrail consists of entirely horizontal stripes with cylindrical/corrugated front-elevation shading and straight-on reflectors, with only a 1px outline along the top edge (row 0) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6314
+  }
+ ],
+ "decidedAt": "2026-10-13T13:20:39.999Z",
+ "cells": {
+  "16": [
+   "a87885b2d80e1a2e"
+  ],
+  "24": [
+   "1554ff1414bfabbf",
+   "2bc70608c47fd60e",
+   "6d67e1b99c46785e",
+   "6ee1c872ea258ec5",
+   "83d4859cd5b0c582",
+   "aec12ad234f439fc"
+  ],
+  "32": [
+   "57b51b0c05b92c40",
+   "75bb7bd4f6ac9be1",
+   "db5b0a2efd285f74",
+   "e878f79e052b5ce8",
+   "fac34096ce9f6349",
+   "feb5b7a42ec0da04"
+  ],
+  "48": [
+   "74859a1b90982a83",
+   "957baab9537961a6",
+   "a8fe3c5811857480",
+   "bde64f279bc62c16",
+   "f020607a35de344c",
+   "f80c9ca769a10844"
+  ]
+ }
+}

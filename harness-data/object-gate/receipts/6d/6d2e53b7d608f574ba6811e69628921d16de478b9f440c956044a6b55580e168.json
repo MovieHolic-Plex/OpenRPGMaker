@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6d2e53b7d608f574ba6811e69628921d16de478b9f440c956044a6b55580e168",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-r",
+ "label": "jp/jp-bwallf-end-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style building wall with lattice window and stone foundation",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall shows a 4-row deep tiled horizontal surface (rows 0-3) above the front facade, representing the wall top viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9477
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese boundary wall section with tiled roof",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 depict a 4-pixel-tall foreshortened tiled roof (kawara) atop the wall structure, providing the required top-down surface above the front wall elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13670
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "Japanese style wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire wall is drawn in flat front elevation with 0 rows of visible top surface (rows 0-3 are transparency checkerboard, and row 4 begins the front face with a 1px boundary line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7503
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "Japanese-style building wall segment",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wall segment (including horizontal beams, vertical slats, panels, and stone foundation) is drawn strictly in pure front elevation with no visible horizontal top surfaces or 3/4 downward perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8002
+  }
+ ],
+ "decidedAt": "2026-10-13T13:24:46.392Z",
+ "cells": {
+  "16": [
+   "735060f5024cd7aa",
+   "c7feef3e313d9dd2"
+  ],
+  "24": [
+   "23f31b973d1f0933",
+   "2a2016a128ca4e1e",
+   "606d264604be1b32",
+   "6b418ec5233f5d8e",
+   "7b0e39cf136637bb",
+   "7b142b42f8431269",
+   "853fb4f451814e41",
+   "996586e5b899998a",
+   "9a80d82311cf4a77",
+   "b2c4552ba80f2d08",
+   "daf5578eedb196cc",
+   "fd4c9f93e787701a"
+  ],
+  "32": [
+   "5a647500fdab568e",
+   "6762709cd857823e",
+   "b24b50bff805ea4b"
+  ],
+  "48": [
+   "082067cfb4b08fda",
+   "2b1776a33eb4de9a",
+   "33ce64a7565f0c97",
+   "4a707c5570f3df77",
+   "575c2c323c63ab24",
+   "684e057032a7a69a"
+  ]
+ }
+}

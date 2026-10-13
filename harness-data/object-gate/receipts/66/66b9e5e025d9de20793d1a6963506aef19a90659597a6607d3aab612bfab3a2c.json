@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "66b9e5e025d9de20793d1a6963506aef19a90659597a6607d3aab612bfab3a2c",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-rail-fence",
+ "label": "jp/jp-rail-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rail fence barrier",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/wall panel is drawn entirely as a flat front elevation. The top rim is only a 1px dark outline at row 0 with no visible horizontal top surface showing the structure's thickness from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rail fence / barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/wall is rendered completely flat in front elevation with only a 1px dark top outline (row 0) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rail fence / barrier panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/barrier is depicted entirely from the front as a flat 2D elevation, with only a 1px dark edge at row 0 and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rail fence / barrier wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence and barrier wall are drawn entirely from the front with no visible top surface or thickness foreshortening (row 0 is only a 1px dark outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 2973
+  }
+ ],
+ "decidedAt": "2026-10-13T13:17:35.745Z",
+ "cells": {
+  "16": [
+   "af434ba3661fae4b"
+  ],
+  "24": [
+   "06cb0ef86959a5e2",
+   "3f6380459c520027",
+   "5dc04d125a64f688",
+   "6785bd7c48eebe42",
+   "bf6f9a88481b3b9b",
+   "c686b63f22cc3c68"
+  ],
+  "32": [
+   "3c53436a2815dd55",
+   "40dcafbe33437ff5",
+   "547c4cb70a77f8d3",
+   "5887f459785c957a",
+   "5f263855b1b82717",
+   "b3b2191e3073b602"
+  ],
+  "48": [
+   "15dbd81f88b5fee4",
+   "1656baa82a7adb4c",
+   "1d628f53292019bd",
+   "81ac51a96402314c",
+   "bfeb2c36bedd6d5f",
+   "e7e83d9fb21c7f13"
+  ]
+ }
+}
