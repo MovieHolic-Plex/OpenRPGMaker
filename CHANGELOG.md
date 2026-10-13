@@ -5,6 +5,35 @@
 
 <!-- releases -->
 
+## 0.204.0 — 2026-10-13
+
+### 기능
+
+- **cutscene** — author_actor_charset tool — code-pixel walking charset for machines/robots/mounts (`639a9b6`)
+- **opening** — motion strip over real map+tint for the judge, hero-overlap and focal-size probe checks (`77c087d`)
+- **opening** — mech charset drawer, charset-actor gate, cover/size probe checks (`b77e642`)
+
+### 수정
+
+- **ci** — give each surface axis a fresh process and a DOM before Phaser (`e2ba0ab`)
+- **cutscene** — detect a player move as moveEvent, not moveActor (`0a48128`)
+- **cutscene** — lenient staging for common omissions; harness loads bundled resource images (`c8e4cc0`)
+- **cutscene** — unique picture ids for actors sharing z (`28c837c`)
+- **cutscene** — walk frames for charset-frame actors, keep scene tint after fade-in, scale on walk frames (`42ed2fd`)
+- **qa** — headless harness supports google-antigravity models; phaser LICENSE resolve via package.json (`7650a3a`)
+- **stage** — explicit picture resourceId wins over schema-filled default Actor1 character (unless hero) (`01eec5e`)
+- **opening** — jimp 1.x-compatible image shrink; probe every auto cutscene on the start map and flag duplicates (`5e16db0`)
+- **opening** — gate nag includes a concrete working script_cutscene_staged call shape (models went silent after tool errors); turn.diag diagnostics (`72498b2`)
+
+### 정리
+
+- **opening** — drop forced charset gate; critic judges intent fit (`f5d8047`)
+
+### 잡무
+
+- **qa** — QA_CHROME env to use system Chrome when Playwright browsers are missing (`55e18ea`)
+- **qa** — headless bridge startup timeout 300s (machine load) (`907748c`)
+
 ## 0.203.0 — 2026-10-13
 
 ### 기능
