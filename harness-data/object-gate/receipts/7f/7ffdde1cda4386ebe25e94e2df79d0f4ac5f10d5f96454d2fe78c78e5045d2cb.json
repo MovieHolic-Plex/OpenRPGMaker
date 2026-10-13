@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ffdde1cda4386ebe25e94e2df79d0f4ac5f10d5f96454d2fe78c78e5045d2cb",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden gate and flanking posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and gate are drawn in pure front elevation; the post tops end abruptly in a flat 1px outline at row 2 with zero top surface rows, and the gate rail only has a 1-2px highlight rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11427
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate and fence posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden fence posts terminate at row 2 with a flat 1-pixel outline and no visible top surface. The gate and posts are drawn entirely as a flat architectural front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6798
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "two vertical wooden fence posts with horizontal gate rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both substantial posts show multi-row light top surfaces above their darker south-facing faces; the horizontal rail also has a visible top band. No receding isometric side face is drawn, and the object is not a pure front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 103236
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate frame with two posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The posts and upper rail show visible horizontal top planes from above, with approximately 2 source-pixel rows of top surface; the south-facing post and rail faces are also visible. No receding isometric side face or pure front elevation is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 80361
+  }
+ ],
+ "decidedAt": "2026-10-13T10:17:07.373Z",
+ "cells": {
+  "16": [
+   "2c79da71d2704ea2"
+  ],
+  "24": [
+   "0abec0dcd4341b57",
+   "205cd67f3b3e6f3f",
+   "52deca3eb8b861f0",
+   "5c3be4c98a3dba36",
+   "9cbc5cbafb945067",
+   "a1fc2447c0b70c5f"
+  ],
+  "32": [
+   "16a0be2c653e128f",
+   "4a4eb134ba89c0da",
+   "cd2258ef486b7514",
+   "cd5ab82ba20e1007",
+   "cd7a468d2c6ef5f2",
+   "efd69a3ff5f2e676"
+  ],
+  "48": [
+   "38fb169f5e0270e5",
+   "7fc00138620aa42f",
+   "88ecb4450d558c43",
+   "8b942b769a122b06",
+   "a8405e84c5f9c965",
+   "c2a1f0dbe831c734"
+  ]
+ }
+}

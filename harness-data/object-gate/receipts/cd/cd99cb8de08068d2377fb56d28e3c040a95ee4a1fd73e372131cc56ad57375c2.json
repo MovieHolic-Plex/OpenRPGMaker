@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cd99cb8de08068d2377fb56d28e3c040a95ee4a1fd73e372131cc56ad57375c2",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece h (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_h",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails are drawn in flat front elevation. The post has a rectangular front silhouette with only a 1px top highlight (row 3) rather than a distinct top surface seen from above, and the rails are simple horizontal gradient bands without visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7927
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails are drawn in pure front elevation with simple 1px gradient edge highlights on top (row 3 on post, rows 6 and 11 on rails), lacking any foreshortened 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5695
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 492354,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence frame with two horizontal rails and posts",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rails and post tops show approximately 2 source-pixel rows of visible horizontal top surface above their south-facing front faces; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 175802
+  }
+ ],
+ "decidedAt": "2026-10-13T10:05:21.911Z",
+ "cells": {
+  "16": [
+   "0a410cc08646e235"
+  ],
+  "24": [
+   "1e255ed59df2482f",
+   "60430e3b6a1323e9",
+   "a6fce43255bdb457",
+   "b444aed15f3fda5b",
+   "ea1178719f10646a",
+   "f67749227c582d3c"
+  ],
+  "32": [
+   "1fb87e998a17c3eb",
+   "5005d7503cfc2270",
+   "b412ef2e21c85772",
+   "ea8b68b35ef361b3",
+   "f8000042467d19bd",
+   "fa98fd316fd3caeb"
+  ],
+  "48": [
+   "4011bde37d245a1a",
+   "465f882e7e59d83d",
+   "4ea6bc8c8b1ce05c",
+   "6ed7b1ebc2564972",
+   "7549452e8d60e163",
+   "bf4e8bb73ccbf4da"
+  ]
+ }
+}

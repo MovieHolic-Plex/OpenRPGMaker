@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f1338df35688cab6d703c2450c22bdc2e1a919073c272cffffc5c41c74f22509",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cNW (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cNW",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a clearly rendered top surface occupying rows 3-6 (4 rows tall), and both horizontal rails display 2-row light top faces alongside darker front faces, correctly conforming to the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8290
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the vertical post is clearly visible from rows 3 to 6 (4 source pixel rows tall), and both horizontal rails show 2-row top surfaces above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8301
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post-and-rail frame",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post has a broad tan top plane about 4 source pixels deep, with a distinct darker south/front face below it. The rails show simple south-facing beam profiles without receding isometric side faces; this is an open frame consistent with the supplied kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 245736
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 420089,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:17:07.372Z",
+ "cells": {
+  "16": [
+   "527c0528f6932cb3"
+  ],
+  "24": [
+   "4c5233bed0b40c51",
+   "52e51f306b00b112",
+   "76613e8613311780",
+   "964d829650877c03",
+   "b589f54a6c524524",
+   "f59919f57d701f03"
+  ],
+  "32": [
+   "16a6f37863a71195",
+   "1e897460f06beed5",
+   "406d00acdff95fbe",
+   "f12dcd4d9fb0d42e",
+   "f8f6a3092041caf3",
+   "fa524680b80650ca"
+  ],
+  "48": [
+   "6277e80641e23b32",
+   "704a3b96254b0c84",
+   "8f2d5685871dbfef",
+   "aff252cd2956515b",
+   "b62a7da56d5c3ef3",
+   "ba6f8f25275bee81"
+  ]
+ }
+}

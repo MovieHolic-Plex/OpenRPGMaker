@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8359126062f7f656094dc858aabfc9a298ea772fe9bdc75d86609b34d6aa4e91",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "muffin or cupcake in a ribbed wrapper (or pastry in a tin)",
+    "kind_matches": false,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The graphic depicts a muffin or cupcake with a rounded tan top and dark fluted wrapper, completely mismatching the requested wooden farm fence gate / frame kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 6978
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence gate's horizontal rail at row 7 is only 1 pixel tall, showing no top surface visible from a 45-degree downward angle. The gate posts and rails are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12448
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden gate / fence structure",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower portion depicts vertical wooden bars/slats shown in pure front elevation with no visible top surface on posts or rails (only a 1px divider at row 7). Furthermore, rows 1-6 are filled with a solid tan domed block (resembling bread or a solid lid) rather than an open frame fence.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7572
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "fence gate / frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and posts are drawn entirely in flat front elevation. Neither the posts nor the horizontal framing beams show any top-down horizontal surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9193
+  }
+ ],
+ "decidedAt": "2026-10-13T13:47:23.778Z",
+ "cells": {
+  "16": [
+   "9bfd800c5f3ebfc6"
+  ],
+  "24": [
+   "0623d05a974fc338",
+   "3301e9e1dd80b847",
+   "5a33647e00b2dec2",
+   "aff6ff6b0ce284f7",
+   "e7560fd68f794f5f",
+   "f069dc5a4330c606"
+  ],
+  "32": [
+   "42d0491f8a6983e8",
+   "4b718722b00fa4e6",
+   "82f40ce4f6b70978",
+   "9d9c52748ed29056",
+   "a2bf1ac699972532",
+   "bc13a8a6009ae17a"
+  ],
+  "48": [
+   "2f52ddce4b832fe7",
+   "327076bea03ba353",
+   "5b531dd52ebca69f",
+   "ba196957db489ef4",
+   "cb45e1b191bc0c75",
+   "e9da747f392916b1"
+  ]
+ }
+}

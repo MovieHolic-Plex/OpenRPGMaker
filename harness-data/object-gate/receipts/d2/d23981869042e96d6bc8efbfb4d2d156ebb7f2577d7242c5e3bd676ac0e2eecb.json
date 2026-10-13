@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d23981869042e96d6bc8efbfb4d2d156ebb7f2577d7242c5e3bd676ac0e2eecb",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cNE (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cNE",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post with horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post top surface is clearly visible across rows 3-5 (3 rows deep), and the horizontal rails each show distinct top faces (2 rows deep) above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5758
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post features a 3-row foreshortened top surface (rows 3-5) above its front face, and the horizontal rails each display a 2-row top surface above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5242
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Wooden fence frame with a tall post and two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rails show only two-row light bands above their dark front faces, not substantial foreshortened top surfaces. The larger light cap on the narrow post does not establish a visible top for the main frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 17452
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Wooden fence frame with a tall right post and two horizontal rails extending left",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main horizontal rails have only two-row bright bands along their upper edges, rather than substantial top surfaces. The brighter three-row cap on the right post is confined to a small part and does not establish an overhead view of the main frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 15875
+  }
+ ],
+ "decidedAt": "2026-10-13T10:07:44.840Z",
+ "cells": {
+  "16": [
+   "7d93826ec87aad8b"
+  ],
+  "24": [
+   "11c41bea286b25ca",
+   "221d8537cf2dcfda",
+   "5fdbc72210514b90",
+   "ce933846d850c121",
+   "dc35def6d5aa4da4",
+   "e7c629ef1d11e505"
+  ],
+  "32": [
+   "17e854224431adab",
+   "4af533215eac8b50",
+   "8dcc6500698ae049",
+   "ae08e7db06ed8d69",
+   "cb32dbb5ef134406",
+   "f45b000737648856"
+  ],
+  "48": [
+   "0f825abc31d56dd4",
+   "7cfabb11ae431c36",
+   "92a021be9d302c78",
+   "e8a438e7d2ed005f",
+   "ed88cbdb77c87e99",
+   "f19a65e1d775f993"
+  ]
+ }
+}

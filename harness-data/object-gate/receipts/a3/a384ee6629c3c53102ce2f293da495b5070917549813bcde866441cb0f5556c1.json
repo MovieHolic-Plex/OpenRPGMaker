@@ -6,7 +6,7 @@
  "kind": "organic",
  "name": "farm crop wheat mature growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_wheat_mature",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,16 +21,34 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The wheat crop is drawn as flat vertical stalks with side-facing ears, entirely in front elevation with no downward 3/4 perspective or top surfaces visible.",
+    "evidence": "The wheat crop is drawn as a flat 2D side-view silhouette with no top-down perspective, depth, or foreshortened foliage, resembling a side-scrolling platformer sprite.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 189196
+   "ms": 3862
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "wheat stalks and ears",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wheat crop consists of perfectly vertical stalks drawn entirely in flat 2D front elevation with no 3/4 top-down foreshortening or visible top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5142
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "wheat stalks",
     "kind_matches": true,
@@ -39,44 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The wheat stalks are drawn in pure front elevation with vertical stems and grain heads facing flat to the camera, typical of a 2D side-scroller rather than a 3/4 top-down perspective.",
+    "evidence": "The wheat stalks and grain heads are drawn in a flat 2D side-scroller elevation with straight vertical stems and no top-down foreshortening or visible top surfaces.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4695
+   "ms": 8187
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 269314,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "mature wheat stalk cluster",
+    "main_body": "wheat stalks",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The wheat is drawn as flat vertical stalks and leaf silhouettes with no visible top-facing surface on the main plant mass; there is no receding side face or opening.",
+    "evidence": "The wheat stalks are drawn in pure front elevation as vertical 2D stems with side grains, lacking any 3/4 perspective depth or visible top-down foreshortening.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 63055
+   "ms": 9426
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.880Z",
+ "decidedAt": "2026-10-13T13:43:58.194Z",
  "cells": {
   "16": [
    "1b72a7a26395daea"

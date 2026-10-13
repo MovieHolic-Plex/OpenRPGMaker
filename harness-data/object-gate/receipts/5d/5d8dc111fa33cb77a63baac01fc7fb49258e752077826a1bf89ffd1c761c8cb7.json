@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5d8dc111fa33cb77a63baac01fc7fb49258e752077826a1bf89ffd1c761c8cb7",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece h (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_h",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central wooden post clearly displays a foreshortened top surface across rows 4–6 (3 pixel rows tall) delineated by a dark dividing line at row 7 before the south vertical face descends. The rails also show top highlights consistent with a 3/4 top-down angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central post clearly shows a 3-row foreshortened top cap (rows 4-6) above a shaded transition to its front face, and both horizontal rails show distinct 2-row top surfaces (rows 6-7 and 11-12) above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 50785
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence with central post and two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rails and post are essentially flat front-facing rectangles; any darker/light bands are only thin edge or cap treatment, and no substantial top surface is visible across the main fence body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 69265
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "central fence post with two horizontal wooden rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The post and rails are drawn as a flat straight-on elevation; the horizontal rails have only edge bands with no visible above-facing top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 121616
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.881Z",
+ "cells": {
+  "16": [
+   "20ab6bccb7f512a6"
+  ],
+  "24": [
+   "08fa0a900e0a55ba",
+   "1c78623be7b70ddc",
+   "44bff24e2158b2f6",
+   "9ebe6d33ab81441a",
+   "e9a35ce9f955ee02",
+   "ef8484f0d3adc56f"
+  ],
+  "32": [
+   "023cb8e299d529c3",
+   "0985c454675d0b02",
+   "6bc057efcc3413fc",
+   "72f7827d475c0c07",
+   "c33f737f909076f8",
+   "f0202f84c97ab5e0"
+  ],
+  "48": [
+   "1cc6fc680177ae51",
+   "1d26bad55fe32460",
+   "3349fe7d020d40db",
+   "4f2fbab4823982b8",
+   "a64dd8368b4b3a87",
+   "c89afb4c37ea412a"
+  ]
+ }
+}

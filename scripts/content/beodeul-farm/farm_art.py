@@ -7,7 +7,7 @@ from PIL import Image
 
 PAL = {
     # 흙 (버들항 밭 이랑 #633712 #452a17 계열 + 나무 #885a26 #714d29)
-    "a": "#885a26", "A": "#b77541", "T": "#d9a566", "b": "#714d29", "c": "#633712", "d": "#452a17", "e": "#3d220c", "n": "#2a1a0f", "m": "#543719",
+    "a": "#885a26", "U": "#e6c08a", "A": "#b77541", "T": "#d9a566", "b": "#714d29", "c": "#633712", "d": "#452a17", "e": "#3d220c", "n": "#2a1a0f", "m": "#543719",
     # 풀 (버들항 잔디 #579f35 + 밝은 #73b83e, 어두운 #4b8232, 윤곽 #3a5a34)
     "g": "#579f35", "h": "#73b83e", "i": "#4b8232", "j": "#3a5a34",
     # 잎·작물
@@ -271,15 +271,15 @@ def _fence(left_rails, right_rails, stripe_top=0):
 
 FENCE = {}
 FENCE["h"] = _fence(True, True)
-# 세로 줄: 가로대(윗면이 길게 보인다)가 말뚝 윗면으로 이어진다 — 윗면 8행
+# 세로 줄: 3/4 윗면 슬래브 5행(밝고 결 있음) + 어두운 뒷가장자리 + 어두운 앞면
+_VTOP = ["..nnnnnn..", "nnUUUUUUnn", "nUUTUUUTUn", "nUTTTUTTTn", "nTTATTTATn", "nTAAAAAATn", ".nnnnnnnn."]
+_VFRONT = ["ndbdddbdn"[:0] + "nddbddbddn"] * 7 + ["neeeeeeeen", "nnnnnnnnnn"]
+FENCE["v"] = ["...%s..." % r for r in (_VTOP + _VFRONT)]
 _VPOST = ["nnnnnn", "nTTTTn", "nTAATn", "nAAAAn", "nnnnnn", "nmbmmn", "nmbmmn", "nmbmmn", "nmbmmn", "nmbmmn", "neeeen", "nnnnnn"]
 _STRIPE = ["nTTTTn", "nTTTTn", "nTAATn", "nTTTTn"]
-FENCE["v"] = [".....%s....." % r for r in (_STRIPE + _VPOST)]
 FENCE["cNW"] = _fence(False, True)
 _rails_s = {4: "T", 5: "T", 6: "A", 7: "m", 8: "m", 10: "T", 11: "T", 12: "A", 13: "m", 14: "m"}
 FENCE["cSW"] = [(rt := ("." * 5 if y not in _rails_s else _rails_s[y] * 5)) and ("....." + r + rt) for y, r in enumerate(_STRIPE + _VPOST)]
-_rails_g = {4: "TTTT", 5: "TTTT", 6: "AAAA", 7: "mmmm", 8: "mmmm", 9: "bmmb", 10: "TTTT", 11: "TTTT", 12: "AAAA", 13: "mmmm", 14: "mmmm"}
-FENCE["gate"] = []
-for _y in range(16):
-    if _y < 2: FENCE["gate"].append("." * 16); continue
-    FENCE["gate"].append(_POST[_y - 2] + _rails_g.get(_y, "....") + _POST[_y - 2])
+_GTOP = [".nnnnnnnnnnnnnn.", "nnUUUUUUUUUUUUnn", "nUUUUTUUUUTUUUUn", "nUUTUUUUUUUUTUUn", "nUTTTUUTUUUTTTUn", "nTTATTTTTTTTATTn", "nTAAAAAAAAAAAATn", ".nnnnnnnnnnnnnn."]
+_GFRONT = ["nddedn" + "dbdb" + "ndeddn"] * 6 + ["neeeeeeeeeeeeeen", "n" * 16]
+FENCE["gate"] = _GTOP + _GFRONT

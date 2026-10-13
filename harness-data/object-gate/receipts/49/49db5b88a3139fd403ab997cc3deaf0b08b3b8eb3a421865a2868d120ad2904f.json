@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49db5b88a3139fd403ab997cc3deaf0b08b3b8eb3a421865a2868d120ad2904f",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal rails are drawn entirely in front elevation with no visible top surfaces (top_rows: 0). The posts end flush with the border without top caps or visible top faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate / fence frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All horizontal rails and beams (row 0, row 7, rows 9 and 11) are drawn as flat 1-pixel-tall horizontal lines with no visible top surface foreshortened from above. The structure is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden gate / arched door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate is drawn in pure front elevation as an arched vertical panel: rows 1-6 form the upper panel and rows 8-14 form the lower panel, with only a 1px outline along the top edge at row 0 and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence gate",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lower portion depicts posts and horizontal rails drawn in flat front elevation with no visible top surfaces, while the upper half consists of an anomalous solid tan block rather than an open fence frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12058
+  }
+ ],
+ "decidedAt": "2026-10-13T13:46:38.833Z",
+ "cells": {
+  "16": [
+   "ceb97834f19f8a91"
+  ],
+  "24": [
+   "00e032cc3ada836a",
+   "36a8b9c391b42c3e",
+   "5c3aba14fcdd0f05",
+   "5da13ce46d9f6472",
+   "a8ff71d00a0aad32",
+   "edcce61ab08e28d2"
+  ],
+  "32": [
+   "0bda4bca78871072",
+   "57b685ff10e45760",
+   "6d1eb6ee88242fad",
+   "b113ef6a13926180",
+   "cad6fa5aeed7b85b",
+   "da20f74ba0b81363"
+  ],
+  "48": [
+   "34f5184a689e6a08",
+   "84c74760a997ca69",
+   "a603db9acda90f3c",
+   "d7a9f43214270923",
+   "eacf79a76f8ecfde",
+   "f6ebb6993e48ddd2"
+  ]
+ }
+}

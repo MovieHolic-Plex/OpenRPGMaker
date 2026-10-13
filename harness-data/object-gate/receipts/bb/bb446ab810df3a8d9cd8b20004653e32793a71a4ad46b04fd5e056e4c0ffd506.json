@@ -6,7 +6,7 @@
  "kind": "organic",
  "name": "farm crop cabbage sprout growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_cabbage_sprout",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,76 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "cabbage sprout foliage",
+    "main_body": "sprout leaves",
     "kind_matches": true,
     "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The small sprout displays the upper surface of its leaf rosette across rows 11-13 with lighter highlight shading, terminating in shaded undersides and stem in rows 14-15 consistent with a 3/4 top-down angle.",
+    "evidence": "Small sprout shows top-facing leaf surfaces from rows 11 to 13 (approx 3 rows) foreshortened over dark green underside/stem pixels on rows 14-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4927
+   "ms": 4094
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "cabbage sprout foliage",
-    "kind_matches": true,
-    "top_rows": 2,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The small sprout shows a foreshortened top cluster of light green leaves spanning rows 11-12 before descending into darker shaded undersides and short stems on rows 14-15, consistent with 3/4 top-down perspective.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 4893
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "cabbage sprout foliage",
+    "main_body": "sprout leaves",
     "kind_matches": true,
     "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The leafy canopy has a broad visible upper surface across several source-pixel rows, with darker foliage along the south/front edge; it is not a flat front elevation and has no receding isometric side face.",
+    "evidence": "The sprout shows light green upper leaf surfaces foreshortened over rows 11-13 with shaded underside and stem visible below in rows 14-15, consistent with top-down 3/4 perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 70450
+   "ms": 4143
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "rounded cabbage sprout foliage",
+    "main_body": "leaf cluster and stems",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprout is drawn in pure front elevation like a side-scroller bush or miniature tree, showing vertical stems beneath a 2D profile cap of leaves with no visible top surface or 3/4 depth.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6726
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sprout leaves",
     "kind_matches": true,
     "top_rows": 3,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The low rounded foliage has a visible upper green surface over roughly 3 source rows, with darker lower/front foliage beneath; it is not a flat elevation and has no receding side face.",
+    "evidence": "The small sprout leaf cluster shows foreshortened upper leaf surfaces across rows 11-13 with underside shading and stem visible at rows 14-15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 178238
+   "ms": 5881
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.881Z",
+ "decidedAt": "2026-10-13T13:43:58.195Z",
  "cells": {
   "16": [
    "7c884890f548524f"

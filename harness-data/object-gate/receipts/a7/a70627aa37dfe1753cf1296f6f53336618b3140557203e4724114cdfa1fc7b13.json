@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a70627aa37dfe1753cf1296f6f53336618b3140557203e4724114cdfa1fc7b13",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence gate with posts, rails, and top lintel/beam",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence gate consists of vertical posts and horizontal crossbars/lintel drawn in flat front elevation with no visible horizontal top surfaces on the posts, rails, or top beam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8247
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence gate with two posts and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal rails are drawn in pure front elevation without visible top faces. The large upper block/board is also drawn flat facing the camera with no foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12993
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fence gate with posts and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal rails are drawn in pure front elevation with no visible top faces on the posts, rails, or upper beam.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5915
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence gate with posts and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal crossbars/rails are drawn in flat front elevation with no visible top surfaces (the rails are merely 1-2px flat front strips). The light-colored block at rows 1-5 does not form a proper foreshortened top for the frame elements.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9681
+  }
+ ],
+ "decidedAt": "2026-10-13T13:44:59.418Z",
+ "cells": {
+  "16": [
+   "69ddf76f6edca033"
+  ],
+  "24": [
+   "07bcbaa1fe809d80",
+   "1d0ec5d7d9443d64",
+   "5e2f764083cca4da",
+   "bef3a2e16e0c033b",
+   "d594ae19605ff994",
+   "eefbfa939098c0c2"
+  ],
+  "32": [
+   "039a556c776a0089",
+   "40074f0889182eba",
+   "4a8e3dfa20d1990a",
+   "8ee01318d7b3e36b",
+   "92819c7cf2c5ecf4",
+   "dc55a9c76829549e"
+  ],
+  "48": [
+   "033f21e0129da101",
+   "48bd90d618014ac9",
+   "4da36f63301f0a12",
+   "69cf36fe88d24ce4",
+   "984f7d8796bc1719",
+   "c8134d7cb90da62a"
+  ]
+ }
+}

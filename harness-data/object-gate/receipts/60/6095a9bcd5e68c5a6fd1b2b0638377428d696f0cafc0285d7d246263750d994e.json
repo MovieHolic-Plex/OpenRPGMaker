@@ -6,13 +6,49 @@
  "kind": "organic",
  "name": "farm crop tomato young growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_tomato_young",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
   {
    "judge": "gemini",
    "run": 1,
+   "answer": {
+    "main_body": "young tomato plant foliage on stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The plant and central stake are drawn purely as a flat 2D front elevation with no visible top surface or 3/4 view perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3943
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "young tomato plant tied to a stake",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stake and foliage are drawn in pure 2D front elevation like a side-scroller sprite, showing no foreshortened top surfaces, leaf spread in depth, or 3/4 downward perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3462
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "growing plant with support stake",
     "kind_matches": true,
@@ -21,69 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The stake is a straight 1px vertical column with no top end visible, and the leaves are arranged as a flat 2D silhouette viewed directly from the front with 0 rows of visible top surface.",
+    "evidence": "The plant and vertical stake are drawn entirely in flat 2D front elevation with no visible top perspective or foreshortening of foliage or stake.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4776
+   "ms": 3745
   },
   {
    "judge": "gemini",
-   "run": 2,
+   "run": 4,
    "answer": {
-    "main_body": "tomato plant foliage on stake",
+    "main_body": "young tomato plant foliage on a wooden stake",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The stake is a vertical 1px line with no visible top end, and the foliage is drawn as a flat 2D silhouette facing straight forward with no top-down perspective or volume.",
+    "evidence": "The stake is drawn as a flat 1px vertical strip without a visible top surface, and the foliage is arranged symmetrically in a purely flat vertical front elevation without top-down depth.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 3814
-  },
-  {
-   "judge": "gpt",
-   "run": 1,
-   "answer": {
-    "main_body": "young tomato plant foliage and stem",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The plant is rendered as a flat, symmetric front-facing foliage silhouette with no distinct above-visible top surface on the main foliage mass.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 40288
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "young tomato plant foliage and stem",
-    "kind_matches": true,
-    "top_rows": 0,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": true,
-    "evidence": "The plant is a flat, front-facing cluster of leaves around a vertical stem; no top-facing surface of the main foliage mass is shown.",
-    "verdict": "fail"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 36367
+   "ms": 3652
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.881Z",
+ "decidedAt": "2026-10-13T13:43:58.195Z",
  "cells": {
   "16": [
    "b0a14e7790398298"

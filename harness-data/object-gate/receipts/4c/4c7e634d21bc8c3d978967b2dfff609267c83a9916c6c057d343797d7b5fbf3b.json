@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4c7e634d21bc8c3d978967b2dfff609267c83a9916c6c057d343797d7b5fbf3b",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cSE (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cSE",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence rails and post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal fence rails clearly display a 3-pixel-tall top surface (light tan, rows 4-6 and 10-12) above a 2-pixel-tall front/south face (dark brown, rows 7-8 and 13-14), conforming to standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8527
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden farm fence with horizontal rails and post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal rails show distinct light 3-pixel-tall top surfaces (rows 4-6 and 10-12) over dark 2-pixel-tall front faces (rows 7-8 and 13-14), matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5617
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence with post and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal fence rails show clear 3px tall top surfaces (rows 4-6 and 10-12) above 2px front shadow faces, consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7030
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal rails show a clear 3-row top surface (rows 4-6 and 10-12) above a 2-row front face (rows 7-8 and 13-14) in standard 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4397
+  }
+ ],
+ "decidedAt": "2026-10-13T13:43:58.197Z",
+ "cells": {
+  "16": [
+   "4c05e3cf1f339f38"
+  ],
+  "24": [
+   "00ed0aef570308c0",
+   "0d485bd8d25f9b16",
+   "1771051cd2268fec",
+   "23d77ac4ed3682b4",
+   "3d8c255567907bc8",
+   "e377cf6d848bbdf1"
+  ],
+  "32": [
+   "08f889a2a2a0d523",
+   "0b3f29794a45a6b8",
+   "19db2f9f0b143e32",
+   "2cba1a7ea94257a6",
+   "d53c649752802018",
+   "db56f1596d66f1dc"
+  ],
+  "48": [
+   "0ad3eb8a084c2cf6",
+   "3c709156f9f82ff3",
+   "47a39eeb6caa615d",
+   "6ac9075743718db4",
+   "8eea375ec83801af",
+   "93cb0c7a9f4f5336"
+  ]
+ }
+}

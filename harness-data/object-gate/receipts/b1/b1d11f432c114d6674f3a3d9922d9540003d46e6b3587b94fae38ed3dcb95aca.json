@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1d11f432c114d6674f3a3d9922d9540003d46e6b3587b94fae38ed3dcb95aca",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cNE (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cNE",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vertical fence post has no distinct top face seen from above (only a 1px highlight at row 3 directly under the outline at row 2), and the horizontal rails are drawn as flat front-facing bands without visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 6316
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vertical fence post has no top surface visible (only a 1px highlight line on row 3 inside a rectangular outline), and the horizontal rails are drawn in pure front elevation with simple vertical shading gradients.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5530
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post-and-rail frame",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post and horizontal rails show visible brown top planes rather than only front-edge lines; the post also has a distinct south-facing front face. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 363803
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 477708,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:05:21.913Z",
+ "cells": {
+  "16": [
+   "ea6735e1370e40ac"
+  ],
+  "24": [
+   "1a6a31e554a5c849",
+   "56ae3d4ff5438e0c",
+   "74bc0412b098f92f",
+   "b73ec310015c92d1",
+   "c78a50d601050ec3",
+   "db411fc9dddfa6dc"
+  ],
+  "32": [
+   "168b362ccfc37ba9",
+   "329ce299db8177f3",
+   "41af822acb1d77d8",
+   "920374d7195df79f",
+   "c187b41e04753fc3",
+   "e56b6925b774b165"
+  ],
+  "48": [
+   "58505297670f0144",
+   "7bb71d099e0546b8",
+   "af5f9e031075770c",
+   "c636b7c79bc3d9a9",
+   "cf48195d5d68a9eb",
+   "cfc9a572400f5b8c"
+  ]
+ }
+}

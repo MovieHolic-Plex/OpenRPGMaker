@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "46c799ae9212331e9e069d4e4617adf7fd25f9c640aeb58a76e976cae06908fa",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden farm fence gate with posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and central gate are drawn in flat front elevation. The post tops have no visible top caps/surfaces, and the gate's top rail only has a 1px highlight line on row 6 rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7455
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden gate between two fence posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and gate are rendered entirely in flat front elevation. The tops of the posts at row 2 are flat outlines with no top surface, and the middle gate shows a flat front face with vertical planks and diagonal brace with only a 1px edge highlight on row 6.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5918
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Wooden gate frame with two upright posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and rails read as flat front-facing rectangles. The rails have narrow upper highlight bands but no distinct horizontal top surfaces seen from above; the bright post sections likewise read as frontal panels rather than top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18482
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Two wooden posts joined by horizontal gate rails",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and rails read as flat front-facing rectangles. The upper rail has only a thin top-edge highlight, not a distinct foreshortened horizontal surface; the lower rail likewise lacks a visible top face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 14104
+  }
+ ],
+ "decidedAt": "2026-10-13T10:07:44.841Z",
+ "cells": {
+  "16": [
+   "90cc4bb9bf371be9"
+  ],
+  "24": [
+   "134360c1362098be",
+   "44be5740766e5a9d",
+   "7e2fc1b40e495ed2",
+   "7f4d1b3803700ccf",
+   "d97d6481adbd649b",
+   "eeba54a422279c63"
+  ],
+  "32": [
+   "092f1c562e1c72ac",
+   "24b84be30b2f3b84",
+   "328dc672b89d9169",
+   "8d3f75590d260084",
+   "d08100094dc3f4ef",
+   "e8193a835bae86e2"
+  ],
+  "48": [
+   "3a57c80cb8a1d3a8",
+   "5296852b10f3c484",
+   "58d6434a0d398fba",
+   "5cfd4fe78292b17a",
+   "bf1566bbb7038969",
+   "f8972207f5e9a3fa"
+  ]
+ }
+}

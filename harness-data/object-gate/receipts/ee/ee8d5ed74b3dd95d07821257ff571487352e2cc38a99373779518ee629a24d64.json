@@ -6,7 +6,7 @@
  "kind": "organic",
  "name": "farm crop cabbage mature growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_cabbage_mature",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -16,21 +16,39 @@
    "answer": {
     "main_body": "cabbage head",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 2,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The cabbage head is rendered with a 3/4 downward angle showing rounded, overlapping leaves across its top surface (rows 6-10) before curving down to the front and base.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The cabbage is drawn from a direct side/equatorial elevation with vertical leaf segments and shading running straight top-to-bottom, lacking the top-down 3/4 perspective where overlapping leaves would wrap radially around a visible upper rosette/core.",
+    "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5878
+   "ms": 8257
   },
   {
    "judge": "gemini",
    "run": 2,
+   "answer": {
+    "main_body": "cabbage head",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabbage is rendered as a rounded dome/sphere with distinct leaf folds and top-down illumination across rows 6-9, showing the upward-facing surface of the head before rounding down into the front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
    "answer": {
     "main_body": "cabbage head",
     "kind_matches": true,
@@ -39,51 +57,33 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The cabbage is drawn directly from the side like a 2D side-scroller icon, with leaf striations running vertically down the sphere and a stem at the bottom edge. There is no top-down foreshortening or visible top surface showing the upper rosette/curved top leaves from above.",
+    "evidence": "The cabbage is drawn as a circular shape viewed straight from the side (pure front elevation) with vertical leaf folds and a stem at the bottom, lacking the 3/4 overhead perspective where outer leaves spread around the base and the top of the head is viewed from above.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7833
+   "ms": 9510
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "rounded cabbage head with layered leaves",
+    "main_body": "cabbage head",
     "kind_matches": true,
-    "top_rows": 4,
+    "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The cabbage has a broad rounded, top-facing crown visible across several source-pixel rows, with a darker lower/front leaf mass; it is not a flat front elevation and has no receding isometric side face or container opening.",
-    "verdict": "pass"
+    "pure_front_elevation": true,
+    "evidence": "The cabbage is drawn from a direct side elevation as a circular shape with vertical/diagonal rib stripes, showing no foreshortened top surface, rosette, or visible top leaves that would indicate a 3/4 downward camera angle.",
+    "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 159522
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
-   "answer": {
-    "main_body": "rounded cabbage head",
-    "kind_matches": true,
-    "top_rows": 4,
-    "opening_visible": null,
-    "opening_rows": null,
-    "side_face_visible": false,
-    "pure_front_elevation": false,
-    "evidence": "The cabbage is a rounded, volumetric leafy mound with a visibly modeled upper surface across its back and upper rows, rather than a flat front elevation. Its darker lower foliage forms the south-facing portion; no receding isometric side face or opening is present.",
-    "verdict": "pass"
-   },
-   "pass": true,
-   "reasons": [],
-   "ms": 112770
+   "ms": 7378
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.881Z",
+ "decidedAt": "2026-10-13T13:43:58.195Z",
  "cells": {
   "16": [
    "449d8d7ed82df88f"

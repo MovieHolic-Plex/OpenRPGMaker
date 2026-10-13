@@ -6,7 +6,7 @@
  "kind": "frame",
  "name": "wooden farm fence piece h (posts and two rails, 16px tile)",
  "label": "beodeul_farm/fence_h",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -21,73 +21,69 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The wooden post shows a foreshortened top surface with end-grain wood texture spanning rows 3-6 (4 source pixel rows tall), and the horizontal rails show light top surfaces (3 source pixel rows tall).",
+    "evidence": "The wooden post shows a foreshortened top surface spanning rows 3-6 (4 rows tall) bounded by outline. The horizontal rails also show top surfaces (rows 4-5 and 10-11, 2 rows tall) distinct in color from their south-facing front sides.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7974
+   "ms": 5296
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "wooden post with horizontal rails",
+    "main_body": "wooden fence post and horizontal rails",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The wooden post has a clearly defined 4-row top surface (rows 3-6) and the horizontal rails show distinct top planes (rows 4-5 and 10-11) foreshortened above their front faces.",
+    "evidence": "The wooden post has a clearly defined top surface 4 source pixel rows tall (rows 3-6), and both horizontal rails show top surfaces (rows 4-5 and 10-11) distinct from their vertical front faces.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6502
+   "ms": 6822
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "wooden fence with two horizontal rails and posts",
+    "main_body": "wooden fence post and horizontal rails",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The two rails and post tops have clearly visible two-pixel horizontal top surfaces above their darker south-facing front faces; no receding isometric side face or enclosed opening is present.",
+    "evidence": "The wooden post clearly displays a 4-row top surface (rows 3-6) above its front face (rows 8-14), and both horizontal rails show top surfaces foreshortened in 3/4 perspective.",
     "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "윗면 2행 < 3"
-   ],
-   "ms": 190820
+   "pass": true,
+   "reasons": [],
+   "ms": 6287
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "wooden fence with two horizontal rails and vertical posts",
+    "main_body": "wooden fence post and horizontal rails",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "Both horizontal rails have visible two-row top surfaces above their darker south-facing front faces; the frame remains open and shows no receding isometric side face.",
+    "evidence": "The fence post shows a clear top surface spanning rows 3-6 (4 rows tall) viewed from above, and the horizontal rails also clearly display foreshortened top surfaces (rows 4-5 and 10-11) distinct from their shaded south front faces.",
     "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "윗면 2행 < 3"
-   ],
-   "ms": 70286
+   "pass": true,
+   "reasons": [],
+   "ms": 6840
   }
  ],
- "decidedAt": "2026-10-13T10:25:33.787Z",
+ "decidedAt": "2026-10-13T13:43:58.196Z",
  "cells": {
   "16": [
    "2c9e94f33ce2e9c7"

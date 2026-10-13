@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bb407ee3b87a626122127cb8de52e9568863f6c05a8b08239f77c522d53d3709",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece v (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden vertical fence piece with side posts and crossbeams",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The vertical fence section is rendered entirely in a flat front elevation. Neither the top of the posts nor the horizontal crossbeams have visible top surfaces (row 0 is only a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6845
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence/post structure has no visible horizontal top surfaces (row 0 is just a 1px dark outline/border), presenting a flat front elevation with 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8864
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vertical wooden fence piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence post and rails show no horizontal top surfaces (top_rows = 0); the structure is drawn entirely flat in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5889
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence panel / vertical piece",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence frame is drawn in pure front elevation with no visible top faces on the posts or horizontal crossbeams (only 1px dark outlines/edges).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5940
+  }
+ ],
+ "decidedAt": "2026-10-13T13:44:59.417Z",
+ "cells": {
+  "16": [
+   "b002a8b24c4a979f"
+  ],
+  "24": [
+   "092c1d7cc76ac00c",
+   "114a1e4b3dee5bae",
+   "26b892c8ec076d88",
+   "58ca2c0a03f4fcff",
+   "94d0e6d695a54998",
+   "9675b03b450cdbe8"
+  ],
+  "32": [
+   "21151710d42abdf7",
+   "8d37bb8a7e893477",
+   "9b68613c8af66622",
+   "a1f90cddbdbaa0ad",
+   "b6e43e09c4599495",
+   "ee531aabb8e0216d"
+  ],
+  "48": [
+   "4defa68419650123",
+   "6cfc7f3540b6ad94",
+   "8f98cf66712bfb6b",
+   "a0db9019e64db670",
+   "d6865d301bf605a4",
+   "d6e5d518cf2f096a"
+  ]
+ }
+}

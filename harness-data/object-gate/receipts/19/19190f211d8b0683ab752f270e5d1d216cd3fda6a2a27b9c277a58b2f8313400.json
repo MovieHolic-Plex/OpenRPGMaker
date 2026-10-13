@@ -6,7 +6,7 @@
  "kind": "frame",
  "name": "wooden farm fence piece cNE (posts and two rails, 16px tile)",
  "label": "beodeul_farm/fence_cNE",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,78 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wooden post with two horizontal rails",
+    "main_body": "fence post and rails",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The post cap shows a clear top surface 4 pixel rows tall (rows 3-6) above its front face, and both horizontal rails show 3-row top surfaces with distinct darker front faces beneath.",
+    "evidence": "The fence post clearly features a 4-pixel tall top end-surface (rows 3-6) above its front vertical face, and both horizontal rails show 3-pixel tall top surfaces (rows 4-6 and 10-12).",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6174
+   "ms": 6993
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "wooden fence post and rails",
+    "main_body": "wooden fence post with two horizontal rails",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The fence post clearly shows a 4-pixel tall top face (rows 3-6) above its front face (rows 8-14), and both horizontal rails show 3-pixel tall top surfaces (rows 4-6 and 10-12) above their darker south faces.",
+    "evidence": "The vertical post features a clearly drawn top surface measuring 4 pixel rows (rows 3-6), and both horizontal rails show top surfaces measuring 3 pixel rows each (rows 4-6 and 10-12) above their south-facing sides.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 6125
+   "ms": 6427
   },
   {
-   "judge": "gpt",
-   "run": 1,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "wooden fence section with two horizontal rails and a vertical corner post",
+    "main_body": "wooden fence post with two connecting horizontal rails",
     "kind_matches": true,
-    "top_rows": 3,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The corner post has a clearly visible tan top plane about 3 source pixels deep, with its south face continuing below; the rails are shown as front/south-facing wooden bands. No separate receding isometric side face or container opening is present.",
+    "evidence": "The fence post top shows a 4-pixel-tall top surface (rows 3-6), and both horizontal rails clearly display foreshortened top surfaces (rows 4-6 and rows 10-12) above their front faces.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 267325
+   "ms": 5216
   },
   {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 4,
    "answer": {
-    "main_body": "wooden fence frame with two horizontal rails and upright posts",
+    "main_body": "wooden fence post and horizontal rails",
     "kind_matches": true,
-    "top_rows": 2,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The rails and upright post show clear 2-pixel-high top surfaces above their darker south-facing faces; no receding isometric side face is present.",
+    "evidence": "The top of the post is clearly visible from above across rows 3-6 (4 rows tall), and both horizontal rails show light top surfaces (rows 4-6 and 10-12) above their front-facing shadows.",
     "verdict": "pass"
    },
-   "pass": false,
-   "reasons": [
-    "윗면 2행 < 3"
-   ],
-   "ms": 125037
+   "pass": true,
+   "reasons": [],
+   "ms": 5770
   }
  ],
- "decidedAt": "2026-10-13T10:25:33.788Z",
+ "decidedAt": "2026-10-13T13:43:58.197Z",
  "cells": {
   "16": [
    "0b8c0be1b927b6c7"

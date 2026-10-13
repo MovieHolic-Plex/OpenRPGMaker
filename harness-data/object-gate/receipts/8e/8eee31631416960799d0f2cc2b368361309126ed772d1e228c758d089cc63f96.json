@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8eee31631416960799d0f2cc2b368361309126ed772d1e228c758d089cc63f96",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece v (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_v",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vertical fence piece / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece is drawn as a flat vertical strip in pure front elevation with only a 1px rounded tip at row 0 and a 1px dark divider at row 6; there are no foreshortened top surfaces visible for the post cap or rails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical fence piece / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence piece is drawn as a flat vertical strip in pure front elevation; the 1px protruding top at row 0 is merely a cap line and no horizontal top surface or foreshortened rails are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5924
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 431949,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence posts and two rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is presented as a flat front elevation: the posts and rails have only narrow edge highlights/caps, with no 2D top surface visible on the main beams or posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 51703
+  }
+ ],
+ "decidedAt": "2026-10-13T10:05:21.912Z",
+ "cells": {
+  "16": [
+   "f5f4e65b6dccafcc"
+  ],
+  "24": [
+   "06498f3b172ded04",
+   "280c09955dc33b42",
+   "9108740e9018555b",
+   "c0421fea058fc9cf",
+   "d9ef474aebb7a493",
+   "f5e35ed53165ba23"
+  ],
+  "32": [
+   "33acc1774734fb6e",
+   "74c1a319f1158fa8",
+   "93842668add9a7d9",
+   "c0bd89d01526d407",
+   "cdf519e968646a35",
+   "d49e9291bc237b6a"
+  ],
+  "48": [
+   "1002846aef6ee175",
+   "244bac3f4de9b922",
+   "b293db1e647eba9d",
+   "c1f7451ff0601820",
+   "c227d2d0b583236d",
+   "d044509618c157e2"
+  ]
+ }
+}

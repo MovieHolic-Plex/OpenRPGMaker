@@ -38,7 +38,7 @@ FENCE_ORDER = ["h", "v", "cNW", "cNE", "cSW", "cSE", "gate"]
 FENCE_ROW = 5
 # 3/4 관문(object-gate)을 통과하지 못한 울타리 조각은 시트에 굽지 않는다(칸 번호는 예약만 — 비워 둔다).
 # 2026-10-13 6판 실측: h·cNW·cNE PASS, v·cSW·cSE·gate FAIL. 다시 그려 통과하면 여기서 빼면 된다(번호는 그대로).
-PENDING_FENCE = {"v", "cSW", "cSE", "gate"}
+PENDING_FENCE = {"gate"}  # 2026-10-13 새 판정(gemini x4): h·v·cNW·cNE·cSW·cSE PASS, gate 4판 FAIL
 
 
 def tid(row, col): return BASE + row * COLS + col
@@ -176,7 +176,7 @@ def main():
         dict(id="beodeul:farm_crops", name="버들항 작물 3종 × 3단계", role="object", source="bundled-default", tileIds=[tid(CROP_ROW, c) for c in range(len(CROP_ORDER))], defaultLayer="upper", confidence="high",
              description="밀·배추·토마토의 싹/자라는 중/익음 (각 윗층 한 칸, 투명 바탕). 경작지 칸 위에 얹는다.", placementRules="경작지 몸통·가장자리 칸 위 윗층에 한 칸씩. 같은 줄은 한 작물·한 단계로 맞춘다."),
         dict(id="beodeul:farm_fence", name="버들항 밭 나무 울타리", role="object", source="bundled-default", tileIds=[tid(FENCE_ROW, c) for c, n in enumerate(FENCE_ORDER) if n not in PENDING_FENCE], defaultLayer="upper", confidence="high",
-             description="가로 + 위쪽 모서리 둘(3/4 관문 통과분). 세로·아래 모서리·문은 관문 미통과로 아직 없다(칸 번호 28289·28292·28293·28294 예약). 윗층, 막힘.", placementRules="밭 둘레 한 칸 밖에 두른다. 문 한 칸은 길 쪽에."),
+             description="가로·세로·모서리 넷(3/4 관문 통과분). 문은 관문 미통과로 아직 없다(칸 번호 28294 예약). 윗층, 막힘.", placementRules="밭 둘레 한 칸 밖에 두른다. 문 한 칸은 길 쪽에."),
     ]
 
     # ---- 키트 ----

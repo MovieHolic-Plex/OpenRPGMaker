@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00668f6754bd8eebede74208b46cb37badab0eb6e23a6712c2d7a0516118d3f8",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence posts and gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and gate are rendered entirely in front elevation with no visible top surface on the posts (row 2 is a flat 1px outline with no foreshortened top cap).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5589
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence gate with posts and gate door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and gate are rendered entirely in a flat front elevation with a 1px dark outline at row 2; no top surfaces of the posts or rails are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7213
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence gate with two posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The posts and central rail show clearly visible horizontal top surfaces several pixels deep, with their south-facing front faces below; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 116934
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 255227,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:25:33.789Z",
+ "cells": {
+  "16": [
+   "cfefe1dc8addc9f0"
+  ],
+  "24": [
+   "234b75b005283c3f",
+   "39f39a300f5878f6",
+   "3b3cac81049bd0ee",
+   "9f9006d351d4ca5d",
+   "df1a2bf08b72c767",
+   "e405ef2cc939d291"
+  ],
+  "32": [
+   "2a87c37d4ba225e5",
+   "5c33eaa6834c7442",
+   "87aa62212934bb7e",
+   "981e43a0cc1c2a22",
+   "bab05afed275c80c",
+   "e8bb693bff134603"
+  ],
+  "48": [
+   "24ebf1bda92a1b25",
+   "4f7b3b090b3021be",
+   "52d4b7548e7365c2",
+   "5c134cad473d358f",
+   "bec7636feb7c4aca",
+   "d507c0ebed4bae2f"
+  ]
+ }
+}

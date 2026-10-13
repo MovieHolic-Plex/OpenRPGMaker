@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fab857e6fe75d57cfaacaeb5aeebd66d648d48feb25fde3d0a60e88837a82438",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cSE (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cSE",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post and rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and post have no visible top surfaces; the horizontal rails are drawn as flat rectangles with only a 1px outline on top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5070
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The horizontal fence rails (rows 7-10 and 12-15) and post are drawn in pure front elevation with only a 1px outline on top and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5567
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence piece with vertical posts and two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rails and posts are rendered as flat front-facing rectangles with only edge shading; no substantive horizontal top surfaces are visible on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 82315
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 74109,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.882Z",
+ "cells": {
+  "16": [
+   "c10cee0c0a9a53dc"
+  ],
+  "24": [
+   "076b83dbf0080022",
+   "0bb3160f73eccb50",
+   "647b2a3b457e9885",
+   "841e448052c14af8",
+   "a488f1e225b7291b",
+   "c6e80785d258bbae"
+  ],
+  "32": [
+   "1fd12b3dfdcb06af",
+   "2ef83972fed44f53",
+   "66861a06c6c5c9e2",
+   "8a1251870e78279a",
+   "b3aba6938f1e486f",
+   "d5cc06065c623b58"
+  ],
+  "48": [
+   "0dc6490fec99b3ae",
+   "2585355bfd4fe522",
+   "426efa95c9519991",
+   "742f545887198216",
+   "82433f23ec489c57",
+   "cb5da593100a6852"
+  ]
+ }
+}

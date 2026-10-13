@@ -6,7 +6,7 @@
  "kind": "organic",
  "name": "farm crop wheat sprout growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_wheat_sprout",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,19 +14,19 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "wheat sprouts",
+    "main_body": "four small wheat sprouts",
     "kind_matches": true,
     "top_rows": 0,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The sprouts are drawn as flat vertical 2D stalks viewed straight from the front/side with 0 rows of visible top surface or 3/4 foreshortening.",
+    "evidence": "The sprouts are drawn as flat vertical 1-2px wide strips in a pure 2D side/front elevation with no top-down foreshortening or visible top surfaces.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 7312
+   "ms": 5370
   },
   {
    "judge": "gemini",
@@ -39,37 +39,51 @@
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": true,
-    "evidence": "The sprouts are drawn as flat 2D vertical pixel strips aligned strictly across rows 14-15 with no 3/4 perspective, top surface, or ground depth.",
+    "evidence": "The sprouts are drawn as flat 2D vertical silhouettes with zero top surface or depth (0 top rows), matching a side-scroller front elevation rather than a 3/4 top-down perspective.",
     "verdict": "fail"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5907
+   "ms": 5614
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 218282,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wheat sprouts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are drawn as flat 2D vertical silhouettes from a side/front elevation with no top-down perspective or depth (0 top rows visible).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6977
   },
   {
-   "judge": "gpt",
-   "run": 2,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 216929,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wheat sprout shoots",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprouts are depicted purely as flat 2D vertical stalks (rows 10-15) with no top-down perspective, visible ground footprint, or top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7010
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.880Z",
+ "decidedAt": "2026-10-13T13:43:58.193Z",
  "cells": {
   "16": [
    "30d63bcd22718c0b"

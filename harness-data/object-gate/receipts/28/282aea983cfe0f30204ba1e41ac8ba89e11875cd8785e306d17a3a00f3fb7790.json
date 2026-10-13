@@ -6,7 +6,7 @@
  "kind": "organic",
  "name": "farm crop cabbage young growing in tilled soil (plant only, soil is a separate tile)",
  "label": "beodeul_farm/crop_cabbage_young",
- "profileHash": "c69574d8ced1cdf8",
+ "profileHash": "ca6aaa9c55194dc5",
  "verdict": "pass",
  "reasons": [],
  "runs": [
@@ -14,69 +14,76 @@
    "judge": "gemini",
    "run": 1,
    "answer": {
-    "main_body": "cabbage head and outer leaves",
+    "main_body": "young cabbage plant",
     "kind_matches": true,
     "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The young cabbage is rendered as a rounded organic mound occupying rows 7-14. The upper dome and leaves viewed from above span rows 7-10 with overhead highlights, before sloping down into the shadowed front/base in rows 11-14.",
+    "evidence": "The cabbage forms a rounded mound occupying rows 6 to 14, with the top-facing crown and lit leaf surfaces visible across rows 6-9, consistent with 3/4 top-down perspective.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 4688
+   "ms": 4137
   },
   {
    "judge": "gemini",
    "run": 2,
    "answer": {
-    "main_body": "cabbage head",
+    "main_body": "cabbage plant",
     "kind_matches": true,
-    "top_rows": 3,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The young cabbage head displays a foreshortened top dome spanning rows 7-9 (3 rows) with highlight shading before sloping down toward the front and base leaves.",
+    "evidence": "The cabbage head is viewed from a high 3/4 angle, displaying the rounded upper foliage/crown across rows 7-10 sloping down into the southern base and stem across rows 11-14.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 5158
+   "ms": 4359
   },
   {
-   "judge": "gpt",
-   "run": 1,
-   "answer": null,
-   "pass": false,
-   "reasons": [
-    "판정자 호출 실패"
-   ],
-   "ms": 124556,
-   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
-  },
-  {
-   "judge": "gpt",
-   "run": 2,
+   "judge": "gemini",
+   "run": 3,
    "answer": {
-    "main_body": "young cabbage plant",
+    "main_body": "cabbage plant",
     "kind_matches": true,
-    "top_rows": 5,
+    "top_rows": 4,
     "opening_visible": null,
     "opening_rows": null,
     "side_face_visible": false,
     "pure_front_elevation": false,
-    "evidence": "The leafy mound has a broad visible upper surface spanning several source-pixel rows, with darker foliage forming the south/front portion; it is not a flat front elevation and has no receding isometric side face.",
+    "evidence": "The young cabbage is shown with a clear top-down 3/4 view; the upper leaves/dome are visible across rows 7-10 with front-facing lower leaves and ground shadow underneath extending to row 15.",
     "verdict": "pass"
    },
    "pass": true,
    "reasons": [],
-   "ms": 116396
+   "ms": 3174
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "young cabbage foliage cluster",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The young cabbage head has a foreshortened elliptical shape viewed from 3/4 perspective, with the top rounded surface visible across rows 7-10 highlighted from above and shading descending to the base at rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4985
   }
  ],
- "decidedAt": "2026-10-13T09:51:57.881Z",
+ "decidedAt": "2026-10-13T13:43:58.195Z",
  "cells": {
   "16": [
    "72b1e6ea09da84b6"

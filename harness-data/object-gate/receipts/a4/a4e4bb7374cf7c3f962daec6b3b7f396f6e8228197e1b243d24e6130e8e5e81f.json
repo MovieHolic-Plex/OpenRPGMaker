@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4e4bb7374cf7c3f962daec6b3b7f396f6e8228197e1b243d24e6130e8e5e81f",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cNW (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cNW",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post with rails",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden post shows a 4-pixel-tall top end surface (rows 2-5) viewed from above, and both horizontal rails show clear 2-pixel-tall top faces (rows 6-7 and 11-12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7066
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence post top shows a 3-row foreshortened end grain (rows 3-5), and both horizontal rails show clear 2-row top surfaces (rows 6-7 and rows 11-12) above their front faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5761
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Tall wooden fence post with two horizontal rails extending right",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post has a filled top surface spanning source rows 3–5, above its darker south-facing body. The rails also have lighter upper surfaces. No receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18407
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Wooden fence post with two horizontal rails extending right",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main post has a filled top surface spanning source rows 3–5, distinct from its darker south-facing body below. The rails also have lighter upper surfaces. No receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 18541
+  }
+ ],
+ "decidedAt": "2026-10-13T10:07:44.840Z",
+ "cells": {
+  "16": [
+   "a4d660dfc339dde3"
+  ],
+  "24": [
+   "0ae096b2981d9357",
+   "3ab2f14d873b86a9",
+   "8dc69d7c6df7e8af",
+   "cc2a2a083b04616e",
+   "d73aae2da9dd4374",
+   "d81d6970713b79a7"
+  ],
+  "32": [
+   "1c6fd545834e309d",
+   "2eb3e517432b782e",
+   "40ee9f3e797764b5",
+   "6c568317c2c0d5df",
+   "84990f782574bbf0",
+   "a53a18dd228b4c98"
+  ],
+  "48": [
+   "2e21b582349c70cd",
+   "36a6df69865078b0",
+   "76caee8b203c5d05",
+   "7c61b55d9a016c31",
+   "811e6226755ddd46",
+   "e237fa40711b3cac"
+  ]
+ }
+}

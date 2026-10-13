@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5fa84190d57ac6d6200602b9c4f19de7730fdce27e726ae8877da0650e4a3c7e",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece gate (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_gate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence gate with posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence gate and vertical posts are drawn completely in front elevation with no visible top faces on the posts, rails, or gate frame.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5996
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden farm fence gate",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The gate and posts are drawn entirely as a flat 2D front elevation. The post tops terminate at row 3 with only a 1px outline, and the horizontal rails and gate frame show no top faces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7372
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden farm fence gate with two posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and rails are presented as flat front-facing rectangles. Any dark/light edge at the tops is only a thin rim or highlight, not a visible horizontal top surface of the main body; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 44194
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence gate with two vertical posts and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The posts and rails are presented as flat front-facing rectangles; no meaningful top surface is visible on the main body, only narrow edge lines/highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 41058
+  }
+ ],
+ "decidedAt": "2026-10-13T09:51:57.882Z",
+ "cells": {
+  "16": [
+   "cab4839103565ecd"
+  ],
+  "24": [
+   "21f184e10fb6a6c5",
+   "21fb3c21de00b238",
+   "6fdcc69be6789b3f",
+   "99734e3722bbb011",
+   "e89342591fc49062",
+   "ead4aaf379071744"
+  ],
+  "32": [
+   "0ed103137c19c08c",
+   "5d0bf059854c2017",
+   "cb863c606007cea0",
+   "d4351194a98109ae",
+   "d7eba5345df5e9a1",
+   "dbe341aca5349cb3"
+  ],
+  "48": [
+   "3d8d86be9025b1f6",
+   "467a979a1419f55f",
+   "5c0519ba79de742f",
+   "71f12aee7f8e2135",
+   "a1d5a9573c3a3ef6",
+   "c9954c666ae795a1"
+  ]
+ }
+}

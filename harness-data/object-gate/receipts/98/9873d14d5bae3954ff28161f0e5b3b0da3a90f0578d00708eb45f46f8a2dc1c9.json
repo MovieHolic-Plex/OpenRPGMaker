@@ -1,0 +1,123 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9873d14d5bae3954ff28161f0e5b3b0da3a90f0578d00708eb45f46f8a2dc1c9",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "wooden farm fence piece cSW (posts and two rails, 16px tile)",
+ "label": "beodeul_farm/fence_cSW",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 1행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "fence post and rails",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the fence post is depicted as a flat 1-pixel line (row 1) enclosed by dark outlines, lacking a foreshortened top surface visible from the 3/4 perspective. The entire post and horizontal rails are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 8748
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence post and horizontal rails",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence rails and post top lack any distinct top surface (only 1px highlight/cap lines at row 1 and along the top edges of the rails), rendering the fence in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7902
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence post with two horizontal rails",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The fence rails show narrow but clearly visible horizontal top planes from above, with their south-facing front faces below. The post also has a visible top cap; no receding isometric side face or pure front elevation is present.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 62880
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 134560,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:25:33.788Z",
+ "cells": {
+  "16": [
+   "01859ca076162f42"
+  ],
+  "24": [
+   "04593799a3e37c53",
+   "166307436e0b255a",
+   "38126b2d022a0ccc",
+   "42f04fff956b2ad5",
+   "74bd1e3abc51a8b4",
+   "859a6a5cc7955319"
+  ],
+  "32": [
+   "1ab202f875c29071",
+   "57bf7022f8a8ee55",
+   "67acab4da0b45a87",
+   "c34f4465f4c3527e",
+   "de17fe67b28b4e04",
+   "e331a0192545404c"
+  ],
+  "48": [
+   "35af8e667ff4f133",
+   "66bd1c6efc113452",
+   "b5b26adcd886328a",
+   "c969a105ab1e3246",
+   "fb419d6a801a59a2",
+   "fc780e0500e569ee"
+  ]
+ }
+}
