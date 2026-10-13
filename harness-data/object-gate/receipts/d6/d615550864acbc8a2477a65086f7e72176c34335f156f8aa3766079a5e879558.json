@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d615550864acbc8a2477a65086f7e72176c34335f156f8aa3766079a5e879558",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 놋쇠 고리 + 구 + 불꽃)",
+ "label": "steampunk-city/sp-tesla-coil",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Tesla coil tower with brass toroid and terminal sphere",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid terminal at rows 12–17 is rendered in clear 3/4 perspective with an elliptical top surface and central hole (approx. 5 pixel rows). The base plinth also shows a 3px top surface (rows 38–41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12064
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tesla coil column with toroid and base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid shows its foreshortened elliptical opening and top surface (rows 12-16), and the lower base plinth clearly exposes its top surface (rows 38-41, ~4 rows) in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13134
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tesla coil tower (base, copper coil column, brass torus, and terminal sphere)",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The Tesla coil is drawn in proper 3/4 top-down perspective: the base shows a clear 3px foreshortened top surface (rows 39-41), and the brass torus above the coil is rendered tilted in perspective with a visible interior recess/opening (rows 13-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8671
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tesla coil column and terminal sphere",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The column shaft is drawn with completely flat horizontal coil stripes, and the top terminal sphere/cap has a flat 1px horizontal outline at row 4 with no visible top surface (0 top rows). While the intermediate brass ring and base show top-down perspective, the top end of the column lacks a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10086
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.126Z",
+ "cells": {
+  "16": [
+   "008722483d460d36",
+   "49767216345b2abc",
+   "9323ef9cdc5c5232"
+  ],
+  "24": [
+   "0771b19d7f30705f",
+   "5bde88f02bf49ab2",
+   "a56ccc8be9063bca",
+   "bee877dd0bc5fd1e",
+   "cd7fbf7519073131",
+   "e7f1607ed9b2b1d9"
+  ],
+  "32": [
+   "7321be0996308f84",
+   "88fca5e05da5b412",
+   "904e07ede6cd79d8",
+   "a28bcfd8f1a1076e",
+   "a827a95dae0f2a04",
+   "b3280d6e0db1e5e6",
+   "bfe0455e6847e602",
+   "c2ed14ce8bcb940e",
+   "cd19a02efd99e410",
+   "d2f242f5feafe10c",
+   "f4cfcebbd14b4f00",
+   "fcac6231d3a36c29"
+  ],
+  "48": [
+   "1ae4b92895975c63",
+   "56bc4ebfa5c58f4b",
+   "aa5392df375c237f"
+  ]
+ }
+}

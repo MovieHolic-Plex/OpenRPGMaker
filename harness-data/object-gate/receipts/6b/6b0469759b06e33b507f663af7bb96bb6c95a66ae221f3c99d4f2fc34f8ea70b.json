@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b0469759b06e33b507f663af7bb96bb6c95a66ae221f3c99d4f2fc34f8ea70b",
+ "width": 32,
+ "height": 32,
+ "kind": "terrain",
+ "name": "오르는 나무 계단(북쪽으로)",
+ "label": "steampunk-city/sp-stairs-up",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden staircase ascending north",
+    "kind_matches": true,
+    "top_rows": 24,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile depicting wooden stairs ascending northward with clearly visible horizontal step treads (approx. 3px deep each) and vertical risers in standard top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden staircase ascending north with side railings",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase terrain displays repeated step treads of 2-3 pixels depth foreshortened from above alternating with 1px dark risers, properly representing 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4686
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden staircase",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ascending wooden stairs terrain tile. Each step clearly renders a horizontal tread surface (2-3px) along with vertical risers/separation lines, conforming to standard top-down 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6058
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden staircase ascending north",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ascending wooden stairs properly classified as terrain. Each step features a visible 3-4px horizontal tread separated by darker riser shadow lines, with vertical side railings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4240
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.470Z",
+ "cells": {
+  "16": [
+   "38a8fca40b20d4e0",
+   "b7a45e7e56210b2e",
+   "beecb9d4bb7edfd5",
+   "ec53360e10300dc1"
+  ],
+  "24": [
+   "09e1e84dbdfd8292",
+   "0d47fe5d73923c75",
+   "0dc4a644e81be43a",
+   "188d660822094e2e",
+   "1b4c4f087233cf21",
+   "1da3098fa2d0b746",
+   "315ad746519d822f",
+   "38065f612f43bd0f",
+   "3f8e1d800af139bb",
+   "487b03122a2d6739",
+   "49540e09ebd03e77",
+   "5e24e96b26aae17d",
+   "82bcd653d0485a9a",
+   "8a69ff121dec9c8a",
+   "95387e802cd7746d",
+   "a08fb1240d636df5",
+   "a61dbed1a9d22976",
+   "bd6e1935168fc71b",
+   "bdea2d163ab7ca22",
+   "c9acae3d0efb3080",
+   "d1c87f9b6790c45c",
+   "d3e577158678adf6",
+   "e7475a578d8676c5",
+   "ea56dc02ec102c87"
+  ],
+  "32": [
+   "32f323db7fbd4f16"
+  ],
+  "48": [
+   "0f2fb0c743d07670",
+   "1002739a0a48fc70",
+   "1670625105e523f8",
+   "ae1ca13c800f1866",
+   "ba9dd336e7785ea1",
+   "cbe51a815ac1a044"
+  ]
+ }
+}

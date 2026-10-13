@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "abb1c4d0e35c5718c6824a30026c192410e986bbe6fce2bfdcea726bfd597841",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "리벳 철판 벽면(윗줄)",
+ "label": "steampunk-city/sp-wall-iron-u",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "riveted iron wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall surface tile showing riveted steel plates with upper shadow; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4534
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "riveted metal wall surface",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard vertical wall-face terrain tile depicting riveted steel panels. As terrain representing a south-facing wall segment, it correctly spans the tile surface without needing an integrated top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4600
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "riveted iron wall tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile is a vertical wall surface (terrain) with rivets and plate seams designed to tile as part of a wall face, not an independent standing object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5424
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "riveted metal wall surface",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the vertical face of a riveted metal plate wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3665
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.463Z",
+ "cells": {
+  "16": [
+   "c0719506f53c7e2d"
+  ],
+  "24": [
+   "1a3dc9e04b827961",
+   "3412a17b3a41601c",
+   "3b55112004645333",
+   "500f293df0f4b4e6",
+   "6f60afb13116b707",
+   "c0757c93fe3c61cd"
+  ],
+  "32": [
+   "154372a07f401548",
+   "5991a62fb8684270",
+   "5da56ca52962df94",
+   "68471508ff2310fa",
+   "b3c8ae2768d5b4b5",
+   "c417a8af250a6699"
+  ],
+  "48": [
+   "439577e49dbb9e19",
+   "77bcea050dcb15e2",
+   "8be2cfbb005cddfd",
+   "a9c23bd046896b3d",
+   "e5e16d2a931b2254",
+   "fef7f0070922b9dd"
+  ]
+ }
+}

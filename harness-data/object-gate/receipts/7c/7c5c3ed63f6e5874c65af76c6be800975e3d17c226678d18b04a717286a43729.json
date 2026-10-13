@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c5c3ed63f6e5874c65af76c6be800975e3d17c226678d18b04a717286a43729",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(구리 감은 탑 + 놋쇠 구 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "copper-wound coil cylinder with brass terminal head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The coil tower and brass head are drawn in pure front elevation with straight horizontal bands, flat base plinth, and a flat horizontal top edge at row 4 without any elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6108
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper-wound cylindrical tower with top brass terminal and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire assembly (brass top, coiled cylinder, and base plinth) is drawn in straight front elevation with completely flat horizontal lines, no elliptical curvature on the coils or cylinder top, and no visible top surface on either the top terminal or the base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8067
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column with brass cap and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the top brass cap has a flat horizontal 1px line at row 4 with no visible top surface, the coil body consists of flat horizontal stripes, and the base at rows 38-45 is a flat frontal rectangle with no top plane visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6052
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper-wound coil column on a base with brass top cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base, coil, and top brass cap are all drawn in pure front elevation with completely flat horizontal lines; no foreshortened top surfaces or rounded ellipse perspective are shown anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5944
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.467Z",
+ "cells": {
+  "16": [
+   "a5af7d2b902e2fdc",
+   "c392c892b58ccf63",
+   "f707863933bcce60"
+  ],
+  "24": [
+   "2c0506b04f14c567",
+   "50354e9df1b72d68",
+   "6581c90343bd55f7",
+   "9fcab91a11a5fb4a",
+   "ba37259f47d1bf1b",
+   "ba40e4c297826ad5"
+  ],
+  "32": [
+   "0748bc471cfb0981",
+   "093b6ecd839df2fe",
+   "0b0f5b9b942eea2a",
+   "481445cae9d42d47",
+   "503e2bba57e4dd47",
+   "5fde4da151a46ec7",
+   "78daf1c0c080e2a2",
+   "9a117379676d9a51",
+   "a8e4ac314e489088",
+   "b4a8ea18912ebafb",
+   "c91d52d5851dcf99",
+   "d502553062e4a973"
+  ],
+  "48": [
+   "035f10a822726aad",
+   "8b31e6125fce0acb",
+   "a913c88dfe2b146c"
+  ]
+ }
+}

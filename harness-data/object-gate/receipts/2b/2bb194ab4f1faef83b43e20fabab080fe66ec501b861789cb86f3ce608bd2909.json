@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2bb194ab4f1faef83b43e20fabab080fe66ec501b861789cb86f3ce608bd2909",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "테슬라 코일(둥근 받침 + 구리 감은 탑 + 꼭대기 놋쇠 도넛 + 불꽃) (프레임 2)",
+ "label": "steampunk-city/sp-tesla-coil-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Tesla coil column with brass toroid cap and round base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top toroid terminal (rows 5-12) is rendered from a clear 3/4 downward angle as an ellipse with its top surface and center hole visible (approx 7 rows tall). The base also shows downward perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6019
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid top",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid at the top of the column is clearly foreshortened in 3/4 view across rows 5 to 11 (approx 7px tall), showing its elliptical top surface and hollow center seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4239
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid terminal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid terminal at the top (rows 5-12) is rendered in clear 3/4 perspective as an elliptical ring with foreshortened depth and a visible center opening, properly topping the cylindrical column.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5102
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "copper-wound coil column with brass toroid topload",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The brass toroid at the top of the column is clearly drawn in 3/4 perspective with an elliptical form and visible recessed center hole spanning rows 6-9, showing roughly 6 rows of top foreshortened surface (rows 5-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5831
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:14.486Z",
+ "cells": {
+  "16": [
+   "17340d7063879118",
+   "420d677b24776c15",
+   "f3ee55abd92a0e11"
+  ],
+  "24": [
+   "11c52885960aadb3",
+   "178823f3da70076d",
+   "69b9e9ed5ff4a025",
+   "9fc16faba3998764",
+   "b6d2debc8437d2ea",
+   "c73ba6909c40fd62"
+  ],
+  "32": [
+   "080f0edbad6b16af",
+   "097bd1a66976a3eb",
+   "2ad9c195ccbf92c3",
+   "33019652367d9553",
+   "3358414025b03851",
+   "5b11cf3b9db5cda8",
+   "769f411afce278fd",
+   "83bbff7a276d5cee",
+   "9f9a9679d43bfd31",
+   "c6e6e94207ff0ae5",
+   "e906f0a0d5ff9289",
+   "fa3205f62f5450ca"
+  ],
+  "48": [
+   "4b66556376c8c772",
+   "b42ebf2455095c77",
+   "d106a1693114d6ae"
+  ]
+ }
+}

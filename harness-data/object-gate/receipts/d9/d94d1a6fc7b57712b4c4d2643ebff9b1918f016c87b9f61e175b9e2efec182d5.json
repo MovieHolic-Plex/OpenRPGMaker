@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d94d1a6fc7b57712b4c4d2643ebff9b1918f016c87b9f61e175b9e2efec182d5",
+ "width": 64,
+ "height": 48,
+ "kind": "other",
+ "name": "세운 실린더 증기 기관(받침대 + 뚜껑이 보이는 실린더 + 크로스헤드 + 누운 플라이휠) (프레임 4)",
+ "label": "steampunk-city/sp-engine-f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam engine plinth with upright cylinder and horizontal flywheel",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base plinth has an 11-row visible top surface (rows 27-37), the upright cylinder shows a rounded lid top surface of 8 rows (rows 8-15), and the flywheel is drawn in horizontal 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6544
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam engine cylinder on plinth with horizontal flywheel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinder features a clearly drawn top elliptical lid spanning rows 9-15 (7 rows), and the supporting plinth shows a large horizontal top surface spanning rows 28-37 (10 rows), consistent with the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4529
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam engine with vertical cylinder and horizontal flywheel on a base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinder lid is clearly visible as an 8-row foreshortened ellipse (rows 8-15) with bolted rim, the base table top spans ~11 rows (rows 27-37), and the flywheel lies horizontally viewed from 3/4 top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4712
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "standing steam cylinder and horizontal flywheel on a base plinth",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cylinder lid is clearly visible as an elliptical top surface spanning rows 8-16 (9 rows), the horizontal flywheel is foreshortened in 3/4 view, and the large base deck shows ample top surface (rows 27-38).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5411
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.126Z",
+ "cells": {
+  "16": [
+   "044530208a33e31e",
+   "28bbba24b264b399",
+   "2cb81e8962f020f1",
+   "351bcf4ef48e3208",
+   "4edeacc4ec198d00",
+   "71deb2b7a1452ea9",
+   "91ea32ae2d3f3dbd",
+   "b93027cd8259b4a3",
+   "ef05dffea8e2b7b4",
+   "f015f3e668231ba1",
+   "f0e8a3c1308df718",
+   "fe897afeb0fb8f46"
+  ],
+  "24": [
+   "0bcc2ce9449d7d08",
+   "0f07a18c3cf58125",
+   "3e64088511bc6885",
+   "45429e25c41387a4",
+   "59cf4c6cebbca1ca",
+   "63a3d4f639f7b3a6",
+   "66db86d1c8a27d68",
+   "7beca42dbcd8b314",
+   "7cb70a8e76733a85",
+   "891a6e5d55984afe",
+   "89d104e7109026f2",
+   "8d24563d53d1bde7",
+   "b3821b64c8bcff56",
+   "b7ee35f42aa73343",
+   "bb59c5aaec854f47",
+   "ccf103c9ae9aeaf4",
+   "e86c4e6d8524e613",
+   "ed7c80c42085e3aa"
+  ],
+  "32": [
+   "01777751b813dfd0",
+   "0e580c657ad06e27",
+   "26e0980538c23e00",
+   "68351258fe0426f4",
+   "7a8597753192182d",
+   "d15ce89073cf98d8",
+   "dd11f0b483397274",
+   "f5528dffec162957"
+  ],
+  "48": [
+   "105e252833ed08dd",
+   "2e449321b5fdb13e",
+   "3cae812ba6e900fc",
+   "48f9d66ec183e2eb",
+   "8f5342994070420f",
+   "f2704c243824640a"
+  ]
+ }
+}

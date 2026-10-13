@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "08f7b3dc5175efc611254b0bfe78b6c4c823a2cd05a1086a655466a5386191b9",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "둥근 걸상",
+ "label": "steampunk-city/sp-stool",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round stool cushion and base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion top is clearly drawn as a foreshortened ellipse spanning rows 3-7 (approx 5 rows tall), resting on stool legs and a foot ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4321
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round stool seat and legs",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cushion seat surface is drawn as a foreshortened ellipse visible from above across rows 3-7 (approx 5 rows tall), resting on a front-facing base and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4530
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round stool cushion and seat frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round cushion on the seat is rendered from above as an ellipse spanning rows 3-7 (approx 5 rows tall), resting on front-facing legs and support rings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4171
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round stool seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round seat cushion shows a clear top surface spanning rows 3-7 (approx 5 rows tall) viewed from above at a 3/4 angle, with the stool frame and legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3864
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.469Z",
+ "cells": {
+  "16": [
+   "a717a70161a0e32b"
+  ],
+  "24": [
+   "104a2450fdedb169",
+   "1a4ed42766f785e4",
+   "360553137f2e12c7",
+   "4695760eb4b51efe",
+   "cc847a460969fee9",
+   "d70811ba92d260ef"
+  ],
+  "32": [
+   "09337eccc733b182",
+   "114fe4ae1ca33c43",
+   "635088a2915b95ab",
+   "d534406609eccccc",
+   "dd46eaad74d61eba",
+   "ddf6f581b9c2789b"
+  ],
+  "48": [
+   "06c5a4afbc952cd8",
+   "273bdb0db598c156",
+   "d2e495ec52d576c1",
+   "d3dd96cda5c7a7c9",
+   "e4596ded5537fc5d",
+   "e6c36c2fa268765a"
+  ]
+ }
+}

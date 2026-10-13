@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "313916ba159ccb4db0a7985b80842b63e9a56b52657c9a4ae7834b2ffe7a609c",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "책장",
+ "label": "steampunk-city/sp-bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible across rows 1-4 (about 3-4 pixel rows deep) with a front highlight at row 4 before the overhanging trim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6690
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly rendered across rows 2–4 with a light plane and highlighted front edge above the cornice shadow.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4881
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the bookshelf is rendered from above across rows 2–4 (3 px tall) with a highlight at row 4 and an overhang shadow at row 5 above the south-facing frame.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6260
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookcase is clearly visible across rows 1-4 (4 source pixel rows) with a highlighted front edge at row 4 and an overhang shadow at row 5 before the south-facing shelf frame begins.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5192
+  }
+ ],
+ "decidedAt": "2026-10-13T18:30:09.468Z",
+ "cells": {
+  "16": [
+   "2164a7ad9edfc0ef",
+   "2fae4cd69d691439",
+   "442c24d9934015f2",
+   "7eee6616b33ee5ec"
+  ],
+  "24": [
+   "09b62a3f1a5ba914",
+   "14dfaad403ea26fb",
+   "197b69fd76250e4d",
+   "1a796a271538ac93",
+   "2797eae462185b23",
+   "34577bf5ade6eefb",
+   "480d6cb04a1cf32c",
+   "528ff28b8bc0a7e6",
+   "53047233184da7a7",
+   "5dc0136f264abfe8",
+   "6a486140ea82f659",
+   "6e6adddd10c349c9",
+   "70cfc00b6c631461",
+   "71edea638cb9296e",
+   "7f0862576699a0f1",
+   "a73236bffe362d2f",
+   "aa2efbc5c76fbda7",
+   "aa616afc178d46e5",
+   "ab16771091100dd8",
+   "ad74079b187a1f01",
+   "bd9fd215e4dcbe9b",
+   "ca422caf5b83292b",
+   "dbee0accec455092",
+   "fb5f0669d74ff0d5"
+  ],
+  "32": [
+   "a8d54e0bdfb8518c"
+  ],
+  "48": [
+   "0613061298be0868",
+   "0f45d224d96804de",
+   "27516299c9ab5cea",
+   "6123ec30be25edf0",
+   "7aee4c5597d15f5a",
+   "b7b8f1a3d8438abf"
+  ]
+ }
+}

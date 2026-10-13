@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "384dcb91555b02eaedb30b14bdbb8580fc10a04bb302534f237b4f5d27883e46",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "술통 받침대(받침 위 세운 술통 둘 + 꼭지)",
+ "label": "steampunk-city/sp-barrel-rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "two upright barrels on a wooden rack/stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two upright barrels (occupying most of the sprite) show no top elliptical lid or surface whatsoever at rows 6-7, terminating flatly against a top beam. Additionally, the top horizontal beam of the frame shows no top surface (0px). While the lower shelf shows ~3-4px of surface, the primary volume (the barrels) is rendered in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9473
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "two upright barrels on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The two upright barrels occupying the upper half of the sprite (rows 6-21) are drawn in pure front elevation with completely flat top edges and no visible top surface or lid ellipses. The top horizontal frame beam behind them is also drawn with no top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6887
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "two upright barrels on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object depicts two upright barrels ('세운 술통') set into a rack, but the barrels have completely flat horizontal tops at row 6 with 0 rows of visible top surface/head. The top crossbeam and post tops also show only 1-2px flat lines rather than top faces, rendering the upper half and main volume in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7906
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "two upright kegs on a wooden stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The shelf base shows a 3px top surface (rows 21-23), but the main volume comprises the two standing kegs (rows 6-21), which cut off with completely flat horizontal lines at row 6 with 0px of visible top lid or circular surface, drawn as a front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11519
+  }
+ ],
+ "decidedAt": "2026-10-13T18:41:09.126Z",
+ "cells": {
+  "16": [
+   "04267a5b2200bd3e",
+   "145391c4bc5bfc94",
+   "2abcd3544d3b06a4",
+   "5ebb63d97ab422fd"
+  ],
+  "24": [
+   "1b274f16ded16b1c",
+   "1c74c8d5334df8ab",
+   "21d14e7028488b04",
+   "21d7a6c08accd04a",
+   "2d6056f2b9e9003b",
+   "32aba5849ffd4a27",
+   "3487c012d70bb23a",
+   "3de336ae37b9915b",
+   "49b960f365eaeaba",
+   "4c278d8be42af1b6",
+   "5396539ec8276729",
+   "6bfa2040ce2e1014",
+   "77739983fbe15288",
+   "7e6d24c32b8b1908",
+   "83499d7181cc1319",
+   "8eb30c26e1aaa828",
+   "b17fbe5035035b98",
+   "c316ace17355d459",
+   "c902933c262c47a2",
+   "ce543e0335777bda",
+   "d4897deb70345f1f",
+   "d9e8b3f7fabee160",
+   "dfda71b2d62a5924",
+   "f08110b0a6c51ef9"
+  ],
+  "32": [
+   "eeee9a8ef0a54556"
+  ],
+  "48": [
+   "0ea2a935b4b3fd4c",
+   "187802f4ba067705",
+   "18a87a526ea875c7",
+   "84c274b425116eab",
+   "c587edde4bdbe128",
+   "e604797bedec7dda"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "319cf5110c8fc532669755b931d71f4a7e28ba171818b2dc3ebc0e2930b3f135",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "드릴 프레스(세운 기둥 + 둥근 작업대)",
+ "label": "steampunk-city/sp-drill-press",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "drill press upper head unit and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top motor unit (rows 1-13) and the base (rows 24-30) are drawn as flat rectangular boxes in pure front elevation with no visible horizontal top surface (0 pixel rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4404
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drill press upper head and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the top motor head (rows 1-13) and the base (rows 24-31) are drawn completely flat in 2D front elevation with only a 1px outline along the top edges and 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5376
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "drill press machine (head unit, column, worktable, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top motor housing (rows 1-13) and bottom base (rows 24-30) are drawn as completely flat rectangular front elevations with a 1px outline across the top and no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4995
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "drill press machine (head unit, pillar, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The head unit (rows 1-13) and base (rows 24-30) are drawn as flat rectangular front faces with zero top surface visible from above (only a 1px top border line at row 1). The object is depicted in pure front/side elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4793
+  }
+ ],
+ "decidedAt": "2026-10-13T18:45:44.247Z",
+ "cells": {
+  "16": [
+   "1bcf5f1c41e7a63c",
+   "a00094902d1fe64c"
+  ],
+  "24": [
+   "1493fe26e5ffc966",
+   "2988cb7347f2a087",
+   "3c322e23eb5e10c3",
+   "4262b5eec61fc04c",
+   "49996b10ed594664",
+   "51cc56936cd474be",
+   "871bf5c225db67c4",
+   "8baa19c56e643751",
+   "8bace9e38e4f86a6",
+   "9f92d10a941320af",
+   "c7ee1cf2e277d1c2",
+   "f6f429018e86ec94"
+  ],
+  "32": [
+   "4ed9bcf8b30a5ea4",
+   "b147ac3e9bd9d924",
+   "c451289974831b26"
+  ],
+  "48": [
+   "05a0dd13f871b7d9",
+   "5756d6d1b8d51d14",
+   "595de25c99d2732d",
+   "70d57c9be6ebb940",
+   "bfefd7b39c272d6b",
+   "ef21f572f5ec51fd"
+  ]
+ }
+}
