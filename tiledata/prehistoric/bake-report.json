@@ -4,12 +4,12 @@
   "provisional_profile_uncalibrated": 0,
   "covered_by_assembled": 0,
   "blocked": [],
-  "pieces": 282,
-  "outdoor": 216,
+  "pieces": 284,
+  "outdoor": 218,
   "interior": 66
  },
  "tiles": {
-  "count": 737,
+  "count": 739,
   "rows": 16,
   "sheetPx": [
    768,
@@ -17,16 +17,16 @@
   ],
   "strips": 22,
   "kits": 87,
-  "groups": 199
+  "groups": 201
  },
  "palette_violations": 0,
  "definition": {
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 737,
+  "tiles_checked": 739,
   "kits_checked": 87,
-  "groups_checked": 199,
+  "groups_checked": 201,
   "autotiles_checked": 0
  },
  "reassembly": {

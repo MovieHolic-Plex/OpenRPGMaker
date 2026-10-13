@@ -9,5 +9,5 @@
 {"png": "ph-cave-mouth-v.png", "kind": "structure", "name": "현무암 동굴 입구(화산 골짜기)", "label": "prehistoric/ph-cave-mouth-v"}
 {"png": "ph-chief-house.png", "kind": "structure", "name": "족장 긴 집(이엉 우진각 지붕 + 통나무 벽)", "label": "prehistoric/ph-chief-house"}
 {"png": "ph-earth-lodge.png", "kind": "structure", "name": "흙 움집(뗏장 둔덕 + 통나무 현관)", "label": "prehistoric/ph-earth-lodge"}
-{"png": "ph-lean-to.png", "kind": "structure", "name": "가지 차양(털 잠자리)", "label": "prehistoric/ph-lean-to"}
+{"png": "ph-lean-to.png", "kind": "structure", "name": "짚 차양(갈래 기둥 + 털 잠자리)", "label": "prehistoric/ph-lean-to"}
 {"png": "ph-granary.png", "kind": "structure", "name": "곡식 창고(기둥 위 이엉 오두막 + 사다리)", "label": "prehistoric/ph-granary"}

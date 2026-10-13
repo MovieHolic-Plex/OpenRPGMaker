@@ -207,6 +207,28 @@ class Board {
     }
   }
 
+  /** 열기(침식 후 팽창): 가족 f 의 단 lv 이상 꼭짓점 중 한 칸 폭 실오라기·외톨이를 한 단 내린다(웅덩이 끝에 1칸 도랑이 매달리지 않게). */
+  open(f: Exclude<Fam, "none">, lv: number): void {
+    const W1 = this.W + 1, H1 = this.H + 1;
+    const hi = (x: number, y: number) => x < 0 || y < 0 || x >= W1 || y >= H1 || (this.vf[y * W1 + x] === f && this.vl[y * W1 + x]! >= lv);
+    const core = new Array<boolean>(W1 * H1).fill(false);
+    for (let y = 0; y < H1; y++) for (let x = 0; x < W1; x++) {
+      let ok = hi(x, y);
+      for (let dy = -1; dy <= 1 && ok; dy++) for (let dx = -1; dx <= 1 && ok; dx++) if (!hi(x + dx, y + dy)) ok = false;
+      core[y * W1 + x] = ok;
+    }
+    for (let y = 0; y < H1; y++) for (let x = 0; x < W1; x++) {
+      const i = y * W1 + x;
+      if (this.vlock[i] || this.vf[i] !== f || this.vl[i]! < lv) continue;
+      let near = false;
+      for (let dy = -1; dy <= 1 && !near; dy++) for (let dx = -1; dx <= 1 && !near; dx++) {
+        const X = x + dx, Y = y + dy;
+        if (X >= 0 && Y >= 0 && X < W1 && Y < H1 && core[Y * W1 + X]) near = true;
+      }
+      if (!near) { this.vl[i] = lv - 1; if (this.vl[i] === 0) this.vf[i] = "none"; }
+    }
+  }
+
   /** 꼭짓점을 그릴 수 있는 상태로 맞추고 칸 바닥을 고른다. */
   settle(): void {
     const W1 = this.W + 1, H1 = this.H + 1;
@@ -272,7 +294,7 @@ class Board {
   }
   /** 바닥 변주: 큰 덩이 값 잡음으로만(띠 통째·자잘한 점 금지). */
   variety(): void {
-    const swaps: [string, string, number, number][] = [["dirt", "dirt-b", 0.62, 5], ["grass", "grass-b", 0.6, 6], ["mud", "mud-b", 0.55, 5], ["ash", "ash-b", 0.55, 5], ["floor-cave", "floor-cave-b", 0.6, 4]];
+    const swaps: [string, string, number, number][] = [["dirt", "dirt-b", 0.62, 5], ["grass", "grass-b", 0.6, 6], ["mud", "mud-b", 0.55, 5], ["ash", "ash-b", 0.55, 5], ["floor-cave", "floor-cave-b", 0.6, 4], ["stone", "stone-b", 0.5, 4], ["path", "path-b", 0.55, 3]];
     for (const [base, alt, cut, g] of swaps) {
       const a = this.pal.tile(base), b = this.pal.tile(alt);
       if (a < 0 || b < 0) continue;
@@ -729,7 +751,14 @@ function composeVillage(b: Board, rng: () => number): PrehistoricCell {
   // 서쪽 풀밭 가장자리 나무 덩이 · 남쪽 모퉁이 덤불 · 바위 몇 개
   b.scatter({ x: 0, y: 8, w: 6, h: H - 12 }, ["ph-cycad", "ph-tree-fern", "ph-bush"], 4, [...GREEN, "edge:grass"], 1, 43);
   b.scatter({ x: 0, y: H - 6, w: W, h: 6 }, ["ph-bush", "ph-rock-s", "ph-fern-s", "ph-rock-l"], 6, [...GREEN, "dirt", "edge:grass"], 1, 47);
-  b.scatter({ x: 0, y: H * 0.5 | 0, w: 9, h: 9 }, ["ph-rock-l", "ph-rock-s"], 2, ["stone", "edge:stone", "grass"], 0, 53);
+  // 울타리 밖 남쪽 들: 나무 덩이 두셋(숲가 나무·소철·열매 덤불) — 빈 풀밭 띠로 남지 않게(QA 1차)
+  const outY = Math.min(H - 2, gateY + 4);
+  for (const [i, gx] of [Math.floor(W * 0.08), Math.floor(W * 0.28), Math.floor(W * 0.62)].entries()) {
+    const r = { x: gx, y: outY, w: Math.floor(W * 0.16), h: H - outY };
+    if (b.cluster(r, ["ph-jungle-tree", "ph-cycad", "ph-berry-bush", "ph-araucaria", "ph-bush", "ph-fern-giant"], [...GREEN, "edge:grass"], 0, ["open", "wild", "field"]) >= 2) b.zone(`남쪽 들 ${i + 1}`, "울타리 밖 나무 덩이·열매 덤불", r);
+  }
+  // 풀밭 속 암반 언덕: 바위 무더기를 얹어 «바위 언덕»으로 읽히게(맨 포장 바닥처럼 보였다, QA 1차)
+  b.cluster({ x: 0, y: Math.floor(H * 0.62) - 4, w: 10, h: 8 }, ["ph-rock-outcrop", "ph-rock-mossy", "ph-rock-l", "ph-rock-s"], ["stone", "edge:stone"], 0, ["open", "wild"]);
   // 들꽃(풀밭 위 덧그림, 드문드문)
   const fl = b.pal.tile("flowers");
   if (fl >= 0) for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -758,6 +787,7 @@ function composeSwamp(b: Board, rng: () => number): PrehistoricCell {
     b.hole(cx, cy, rx + 1.6, 2.9, 0.1, 400 + i);        // 진흙 ↔ 고사리 사이 흙 띠(다른 가족은 한 칸에 모이지 않는다)
     b.blob("fern", 1, cx, cy, rx, 1.3, 0.2, true, 400 + i);
   }
+  b.open("mud", 2);   // 웅덩이에 매달린 한 칸 폭 도랑·외톨이 물 칸을 진흙으로(QA 1차)
   // 섬: 흙 덩이(집터) — 웅덩이를 지운다
   const islands: [number, number][] = [[Math.floor(W * 0.25), Math.floor(H * 0.42)], [Math.floor(W * 0.68), Math.floor(H * 0.35)], [Math.floor(W * 0.5), Math.floor(H * 0.72)]];
   const isleCells: PrehistoricCell[][] = islands.map(([cx, cy]) => {
@@ -837,7 +867,9 @@ function composeVolcano(b: Board, rng: () => number): PrehistoricCell {
   }
   // 재 벌판 변주: 굳은 용암 판 조각 · 맨땅 구멍(띠 통째 재가 되지 않게)
   for (let i = 0; i < 7; i++) b.blob("ash", 2, 3 + rng() * (W - 6), 6 + rng() * (H - 18), 1.1 + rng() * 0.8, 0.9 + rng() * 0.6, 0.3, false, 100 + i);
-  for (let i = 0; i < 5; i++) b.hole(3 + rng() * (W - 6), 8 + rng() * (H - 20), 1.5 + rng() * 1.5, 1 + rng(), 0.4, 200 + i);
+  // (맨땅 구멍은 뺐다 — 쓰임 없는 흙 네모가 재 벌판에 흩어져 보였다, QA 1차. 재 벌판 변주는 굳은 용암 판 조각 + ash-b 덩이로 충분하다.)
+  for (let i = 0; i < 5; i++) rng();
+  b.open("ash", 3);   // 용암 웅덩이 끝 실오라기 정리(줄기는 이 뒤에 그린다)
   // 화산 언덕 아래 흐르는 용암 줄기(언덕 밑 → 웅덩이 A 쪽)
   for (let y = 7; y < lavaA[1]; y++) {
     const t = (y - 7) / Math.max(1, lavaA[1] - 7), x = Math.round(vx + 2 + (lavaA[0] - vx - 2) * t + (vnoise(0, y, 4, b.seed + 9) - 0.5) * 2);
@@ -880,6 +912,14 @@ function composeVolcano(b: Board, rng: () => number): PrehistoricCell {
   b.scatter({ x: 0, y: 2, w: W, h: H - 10 }, ["ph-dead-tree", "ph-dead-tree", "ph-lava-spire"], 6, ["ash", "edge:ash"], 1, 67, ["open", "wild"]);
   b.scatter({ x: 0, y: 2, w: W, h: H - 10 }, ["ph-vent", "ph-obsidian", "ph-bone-pile"], 6, ["ash", "crust"], 1, 71, ["open", "wild"]);
   b.scatter({ x: 0, y: 0, w: W, h: 6 }, ["ph-basalt-columns", "ph-rock-l"], 4, ["ash", "edge:ash"], 1, 73, ["open", "wild"]);
+  // 죽은 숲 두 덩이(재에 묻힌 고목 무리 + 바위 + 뼈) — 넓은 재 벌판이 비어 보이지 않게, 흩뿌리지 않고 무리로(QA 1차)
+  const groveSpots: [number, number][] = shuffle(rng, [[2, 4], [W - 12, 4], [2, H - 18], [W - 12, H - 18], [Math.floor(W / 2) - 4, Math.floor(H / 2) - 2], [Math.floor(W * 0.3), 3], [Math.floor(W * 0.6), H - 18]]);
+  let groves = 0;
+  for (const [gx, gy] of groveSpots) {
+    if (groves >= 2) break;
+    const r = { x: gx, y: gy, w: 10, h: 7 };
+    if (b.cluster(r, ["ph-dead-tree", "ph-dead-tree", "ph-rock-l", "ph-dead-tree", "ph-bone-pile", "ph-rock-s"], ["ash", "edge:ash"], 0, ["open", "wild"]) >= 3) { b.zone("죽은 숲", "재에 묻힌 고목 무리", r); groves++; }
+  }
   // 남쪽 들머리 가장자리 바위·덤불
   b.scatter({ x: 0, y: H - 7, w: W, h: 7 }, ["ph-rock-s", "ph-bush", "ph-rock-l"], 5, ["dirt", "dirt-b", "edge:ash"], 1, 79);
   return start;
@@ -970,6 +1010,10 @@ function composeFossil(b: Board, rng: () => number): PrehistoricCell {
   // 언덕 나무: 아라우카리아·소철·나무고사리(풀 위)
   b.scatter({ x: 0, y: 0, w: W, h: H - 2 }, ["ph-araucaria", "ph-cycad", "ph-tree-fern", "ph-araucaria"], 9, ["grass", "edge:grass"], 1, 89, ["open", "wild"]);
   b.scatter({ x: 0, y: 0, w: W, h: H }, ["ph-bush", "ph-fern-s", "ph-rock-s"], 8, ["grass", "edge:grass", "dirt"], 1, 97, ["open", "wild"]);
+  // 골짜기 바닥: 흩어진 뼈·화석 조각 무리 두 곳(발굴터에서 쓸려 내려온 뼈) — 넓은 흙 골짜기가 비지 않게(QA 1차)
+  for (const [i, r] of [{ x: Math.floor(W / 2) + 3, y: Math.floor(H * 0.5), w: 9, h: 6 }, { x: Math.floor(W * 0.22), y: Math.floor(H * 0.18), w: 9, h: 6 }].entries()) {
+    if (b.cluster(r, ["ph-bone-pile-l", "ph-bone-pile", "ph-rock-s", "ph-fern-s", "ph-bone-pile"], ["dirt", "dirt-b", "edge:grass", "edge:mud"], 0, ["open", "wild"]) >= 2) b.zone(`뼈 무더기 ${i + 1}`, "쓸려 내려온 뼈·화석 조각", r);
+  }
   void valley;
   if (!tipi) b.notes.push("발굴 야영지 천막 자리가 없어 천막 없이 지었다");
   return start;
@@ -1099,6 +1143,8 @@ function composeRoom(b: Board, rng: () => number, style: PrehistoricRoomStyle): 
       backWall("ph-fur-bed", left ? xs(x1 - 5, x1 - 1).reverse() : xs(x0 + 1, x0 + 5));
       backWall("ph-fur-bed", left ? xs(x1 - 8, x1 - 4).reverse() : xs(x0 + 3, x0 + 8));
       backWall("ph-knap-bench", left ? xs(x0, cx - 2) : xs(cx + 1, x1 - 1).reverse());
+      // 화덕 위 바위 벽에 짐승 벽화 한 폭(사는 동굴이라는 표시 — 벽걸이보다 먼저 자리를 잡는다)
+      mural(pick(rng, ["deer", "bison", "mammoth"]), true, shuffle(rng, xs(x0 + 1, x1 - 2)));
       wallHang("ph-antler-wall", left ? xs(x0, cx) : xs(cx, x1).reverse());
       wallHang("ph-herbs-wall", left ? xs(cx, x1).reverse() : xs(x0, cx));
       if (b.has("ph-paint-hands-u")) mural("hands", false, shuffle(rng, xs(x0 + 1, x1 - 1)));

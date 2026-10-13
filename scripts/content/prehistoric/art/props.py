@@ -9,6 +9,7 @@
 """
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pelt import pelt  # noqa: E402
 from px import C, rnd, h32, NT, MI
 from kit import Reg, contact, OUT
 from shapes import seeds, near2, rock_px, rock_hill, lit, tusk_arc
@@ -279,19 +280,26 @@ def _(c):
 
 @R.add('quern', '맷돌(갈판 + 갈돌)', 1, 1, 'low_furniture', tags=['맷돌', '살림', '곡식'], rules='움집 앞 작업터.')
 def _(c):
-    # 납작한 갈판: 위에서 보이는 오목한 윗면 + 앞면 두께
-    for y in range(4, 11):
-        for x in range(1, 15):
-            dx = (x + 0.5 - 8) / 7; dy = (y + 0.5 - 7.5) / 3.6
+    # 갈판: 낮고 넓은 판돌(윗면 넓게, 앞 두께 2줄) + 가운데 길게 닳은 홈 + 그 위 짙은 갈돌(현무암) + 흩어진 낟알
+    for y in range(3, 13):
+        for x in range(0, 16):
+            dx = (x + 0.5 - 8) / 7.8; dy = (y + 0.5 - 8) / 4.8
             if dx * dx + dy * dy > 1: continue
-            t = 5 if dy < -0.5 else 4
-            if dx * dx + dy * dy < 0.4: t = 3
+            t = 6 if dy < -0.55 else 5
+            if dx * dx * 0.5 + dy * dy < 0.3: t = 4 if dy > -0.1 else 5
+            if dx * dx * 0.5 + dy * dy < 0.3 and dy > 0.25: t = 3
             c.P(x, y, 'stone', t)
-    for x in range(2, 14):
-        for y in range(11, 14): c.P(x, y, 'stone', 3 if x < 7 else 2 if y < 13 else 1)
-    for x in range(4, 12): c.P(x, 6, 'stone', 6 if x < 8 else 5); c.P(x, 7, 'stone', 4)
-    c.HL(5, 8, 4, 'bone', 4)
-    done(c)
+    for x in range(0, 16):
+        ys = [y for y in range(16) if c.get(x, y)]
+        if ys: yb = max(ys); c.P(x, yb, 'stone', 3); c.P(x, yb + 1, 'stone', 2); c.P(x, yb + 2, 'stone', 1)
+    for y in range(4, 10):
+        for x in range(4, 13):
+            dx = (x + 0.5 - 8.5) / 4.2; dy = (y + 0.5 - 6.8) / 2.0
+            if dx * dx + dy * dy > 1: continue
+            c.P(x, y, 'basalt', 5 if dy < -0.3 else 4 if dy < 0.4 else 2)
+    for (x, y) in ((2, 8), (13, 9), (3, 11), (12, 11), (10, 12)): c.P(x, y, 'thatch', 5)
+    c.outline(bottom=('ink', 1))
+
 
 
 @R.add('log-seat', '통나무 의자', 2, 1, 'seat', tags=['의자', '모닥불'], rules='모닥불 둘레(불에서 한 칸 띄워).')

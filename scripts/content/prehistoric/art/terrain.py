@@ -57,31 +57,41 @@ def vor(x, y, n, s):
     return best[0][1], best[0][0], best[1][0]
 
 
+def sm(x, y, s):
+    """잔 무늬 잡음(4px·2px 격자만). 8px 격자 덩이는 칸마다 같은 자리에 같은 얼룩을 찍어 바닥 전체가 바둑판처럼 보였다(QA 1차)."""
+    return 0.6 * vn(x, y, 4, s) + 0.4 * vn(x, y, 2, s + 1)
+
+
+def speck(lx, ly, s, p):
+    """드문 낱점(위치 해시) — 칸 하나에 몇 점, 서로 다른 자리."""
+    return rnd(lx, ly, s) < p
+
+
 def p_dirt(lx, ly, s=1):
-    n = fbm(lx, ly, s)
-    t = 3 + (1 if n > 0.62 else 0) - (1 if n < 0.34 else 0)
-    r = rnd(lx, ly, s + 11)
-    # 자갈: 밝은 머리 + 오른쪽 아래 그늘
-    if r < 0.02: return ('stone', 5)
-    if rnd(lx - 1, ly - 1, s + 11) < 0.02: return ('dirt', 1)
-    if r > 0.978: return ('dirt', 5)
-    if rnd(lx, ly, s + 3) < 0.06: return ('dirt', t - 1)
+    n = sm(lx, ly, s)
+    t = 3 + (1 if n > 0.8 else 0) - (1 if n < 0.2 else 0)
+    # 잔돌: 밝은 머리 + 오른쪽 아래 그늘
+    if speck(lx, ly, s + 11, 0.018): return ('stone', 4)
+    if speck(lx - 1, ly - 1, s + 11, 0.018): return ('dirt', 1)
+    if speck(lx, ly, s + 3, 0.05): return ('dirt', t - 1)
+    if speck(lx, ly, s + 5, 0.03): return ('dirt', min(5, t + 1))
     return ('dirt', t)
 
 
 def p_path(lx, ly, s=2):
-    n = fbm(lx, ly, s)
-    t = 4 + (1 if n > 0.66 else 0) - (1 if n < 0.3 else 0)
-    r = rnd(lx, ly, s + 5)
-    if r < 0.014: return ('stone', 4)
-    if rnd(lx - 1, ly - 1, s + 5) < 0.014: return ('dirt', 2)
-    if r > 0.985: return ('dirt', 3)
+    """밟힌 흙길: 흙보다 한 단 밝고 매끈하다 — 무늬는 잔 점뿐(큰 얼룩이 칸마다 반복되면 길에 도장이 찍힌 것처럼 보였다)."""
+    n = sm(lx, ly, s)
+    t = 4 - (1 if n < 0.18 else 0)
+    if speck(lx, ly, s + 5, 0.012): return ('stone', 4)
+    if speck(lx - 1, ly - 1, s + 5, 0.012): return ('dirt', 2)
+    if speck(lx, ly, s + 9, 0.035): return ('dirt', 3)
+    if speck(lx, ly, s + 13, 0.03): return ('dirt', 5)
     return ('dirt', t)
 
 
 def p_grass(lx, ly, s=3):
-    n = fbm(lx, ly, s)
-    t = 3 + (1 if n > 0.62 else 0) - (1 if n < 0.32 else 0)
+    n = sm(lx, ly, s)
+    t = 3 + (1 if n > 0.66 else 0) - (1 if n < 0.3 else 0)
     # 풀잎: 밝은 끝(위) + 밑 그늘(아래) 쌍
     if rnd(lx, ly, s + 7) < 0.09: return ('grass', min(5, t + 2))
     if rnd(lx, (ly - 1) % 16, s + 7) < 0.09: return ('grass', max(1, t - 1))
@@ -106,75 +116,72 @@ def p_fern(lx, ly, s=4):
 
 
 def p_stone(lx, ly, s=5):
-    """판판한 바위 바닥: 불규칙한 판(보로노이) + 틈, 판마다 왼쪽 위 빛."""
-    k, d1, d2 = vor(lx, ly, 8, s)
-    if d2 - d1 < 0.9: return ('stone', 2 if h32(k, 9, s) % 3 else 3)
-    ku, a1, a2 = vor(lx, ly - 1, 8, s)
-    if a2 - a1 < 0.9: return ('stone', 5)
-    t = 4 + (h32(k, 7, s) % 2)
-    kl, b1, b2 = vor(lx - 1, ly, 8, s)
-    if b2 - b1 < 0.9: t += 1
-    kd, c1, c2 = vor(lx, ly + 1, 8, s)
-    if c2 - c1 < 0.9: t -= 1
-    if fbm(lx, ly, s + 11) > 0.66: t -= 1
-    if rnd(lx, ly, s + 3) < 0.05: t -= 1
+    """판판한 암반: 큰 판(보로노이 5) + 옅은 틈(한 단 어둡게만), 판 윗변만 한 단 밝게. 판 속은 잔 점."""
+    k, d1, d2 = vor(lx, ly, 5, s)
+    if d2 - d1 < 0.8: return ('stone', 3)
+    ku, a1, a2 = vor(lx, ly - 1, 5, s)
+    if a2 - a1 < 0.8: return ('stone', 5 if h32(k, 4, s) % 2 else 4)
+    t = 4
+    n = sm(lx, ly, s + 11)
+    if n < 0.3: t = 3
+    if n > 0.74: t = 5
+    if speck(lx, ly, s + 3, 0.04): t -= 1
     return ('stone', max(2, min(6, t)))
 
 
 def p_gravel(lx, ly, s=6):
     k, d1, d2 = vor(lx, ly, 22, s)
-    if d2 - d1 < 0.8: return ('dirt', 2)
-    t = 3 + h32(k, 1, s) % 3
+    if d2 - d1 < 0.8: return ('dirt', 2 if h32(k, 2, s) % 2 else 3)
+    t = 3 + h32(k, 1, s) % 2
     kd, c1, c2 = vor(lx, ly + 1, 22, s)
     if c2 - c1 < 0.8: t -= 1
     ku, a1, a2 = vor(lx, ly - 1, 22, s)
     if a2 - a1 < 0.8: t += 1
-    return ('stone', max(2, min(6, t)))
+    return ('stone', max(2, min(5, t)))
 
 
 def p_ash(lx, ly, s=7):
-    n = fbm(lx, ly, s)
-    t = 2 + (1 if n > 0.58 else 0) - (1 if n < 0.3 else 0)
-    r = rnd(lx, ly, s + 2)
-    if r < 0.03: return ('basalt', 2)
-    if rnd(lx - 1, ly, s + 2) < 0.03: return ('ash', 1)
-    if r > 0.975: return ('ash', 4)
+    """화산재: 한 단 차이 잔 얼룩 + 드문 현무암 알갱이·밝은 재 점. 줄무늬·덩이 없음."""
+    n = sm(lx, ly, s)
+    t = 3 - (1 if n < 0.22 else 0)
+    if speck(lx, ly, s + 9, 0.06): return ('ash', 2)
+    if speck(lx, ly, s + 2, 0.022): return ('basalt', 2)
+    if speck(lx - 1, ly, s + 2, 0.022): return ('ash', 1)
+    if speck(lx, ly, s + 6, 0.025): return ('ash', 4)
     return ('ash', t)
 
 
 def p_crust(lx, ly, s=8):
-    """굳은 용암 판: 현무암 판(보로노이) 사이 틈이 붉게 빛난다."""
-    k, d1, d2 = vor(lx, ly, 3, s)
-    if d2 - d1 < 0.7: return ('lava', 2 if rnd(lx, ly, s) < 0.7 else 3)
-    if d2 - d1 < 1.6: return ('basalt', 1)
+    """굳은 용암 판: 크고 작은 현무암 판(보로노이 6) 사이 가는 틈이 군데군데 붉게 빛난다(모든 틈이 빛나면 칸마다 같은 붉은 그물이 보였다)."""
+    k, d1, d2 = vor(lx, ly, 6, s)
+    if d2 - d1 < 0.8:
+        return ('lava', 2) if h32(k, 3, s) % 3 == 0 else ('basalt', 1)
     t = 3 + (h32(k, 5, s) % 2)
-    ku, a1, a2 = vor(lx, ly - 1, 3, s)
-    if a2 - a1 < 1.6: t = 4
+    ku, a1, a2 = vor(lx, ly - 1, 6, s)
+    if a2 - a1 < 0.8: t = 4
     if rnd(lx, ly, s + 1) < 0.06: t -= 1
     return ('basalt', t)
 
 
 def p_mud(lx, ly, s=9):
-    n = fbm(lx, ly, s)
-    t = 3 + (1 if n > 0.64 else 0) - (1 if n < 0.36 else 0)
-    if n < 0.27: return ('mud', 1)
-    if n < 0.30: return ('mud', 5 if rnd(lx, ly, s + 1) < 0.6 else 2)
-    if rnd(lx, ly, s + 4) < 0.05: return ('mud', t + 1)
-    if rnd(lx, ly, s + 8) < 0.05: return ('mud', t - 1)
-    # 젖은 물기 번들: 잡음 높은 곳 위쪽 가장자리만 밝게(칸마다 같은 자리에 찍는 거품은 격자처럼 보였다)
-    if n > 0.62 and fbm(lx, ly - 1, s) <= 0.62: return ('mud', 5)
+    """진흙: 두 단 섞임 + 젖은 번들 낱점(아래 어두운 점과 짝) — 큰 검은 얼룩 없음."""
+    n = sm(lx, ly, s)
+    t = 3 - (1 if n < 0.22 else 0)
+    if speck(lx, ly, s + 12, 0.06): return ('mud', 2)
+    if speck(lx, ly, s + 4, 0.03): return ('mud', 5)
+    if speck(lx, ly - 1, s + 4, 0.03): return ('mud', 1)
+    if speck(lx, ly, s + 8, 0.05): return ('mud', 4 if t == 3 else 3)
     return ('mud', t)
 
 
 def p_swamp(lx, ly, s=10, f=0):
-    n = fbm(lx, ly, s)
-    t = 2 if n > 0.38 else 1
-    for (ox, oy, ln) in ((2, 3, 4), (10, 7, 3), (5, 12, 5)):
+    n = sm(lx, ly, s)
+    t = 2 if n > 0.45 else 1
+    for (ox, oy, ln) in ((3, 4, 3), (11, 11, 2)):
         xx = (lx - ox - f) % 16
-        if ly == oy and xx < ln: return ('swamp', 4 if xx == 1 else 3)
-    # 개구리밥(작은 잎 두 화소)
-    for (px_, py_) in ((12, 2), (3, 8), (13, 13)):
-        if ly == py_ and lx in (px_, px_ + 1): return ('grass', 4 if lx == px_ else 3)
+        if ly == oy and xx < ln: return ('swamp', 3)
+    # 개구리밥(작은 잎) 드문드문
+    if (lx, ly) == (13, 3): return ('grass', 3)
     return ('swamp', t)
 
 
@@ -188,13 +195,13 @@ def p_water(lx, ly, s=11, f=0):
 
 
 def p_lava(lx, ly, s=12, f=0):
-    """용암: 흐르는 밝은 줄기 + 식은 검붉은 껍질 조각(프레임마다 오른쪽 아래로 흐른다)."""
+    """용암: 밝은 줄기와 어두운 식은 줄이 비스듬히 흐른다(프레임마다 오른쪽 아래로). 검은 껍질 덩이는 두지 않는다(칸마다 같은 검은 점이 바둑판으로 보였다)."""
     x, y = (lx - f * 2) % 16, (ly - f) % 16
-    n = fbm(x, y, s)
-    if n < 0.25: return ('basalt', 2 if n > 0.2 else 1)
-    if n < 0.30: return ('lava', 1)
-    t = 2 + (1 if n > 0.5 else 0) + (1 if n > 0.68 else 0)
-    if n > 0.74 and rnd(x, y, s + 3) < 0.3: return ('fire', 4)
+    n = sm(x, y, s)
+    m = 0.5 * n + 0.5 * vn((x + y) % 16, y, 2, s + 7)      # 비스듬한 흐름 결
+    if m < 0.2: return ('lava', 1)
+    t = 3 - (1 if m < 0.42 else 0) + (1 if m > 0.66 else 0)
+    if m > 0.8 and rnd(x, y, s + 3) < 0.3: return ('fire', 4)
     return ('lava', t)
 
 
@@ -219,6 +226,8 @@ SINGLE = [
     ('ash', '화산재 바닥', ['화산', '재'], '화산 골짜기 바닥.', p_ash, {}),
     ('crust', '굳은 용암 판(빛나는 틈)', ['화산', '용암'], '용암 웅덩이 둘레. 걸을 수 있다.', p_crust, {}),
     ('mud', '진흙', ['늪', '진흙'], '늪 가장자리 바닥. 걸을 수 있다.', p_mud, {}),
+    ('stone-b', '평평한 암반(변주)', ['바위', '암반'], '암반 사이에 덩이로 섞는다.', p_stone, dict(s=23)),
+    ('path-b', '밟힌 흙길(변주)', ['길', '흙길'], '흙길 사이에 섞는다.', p_path, dict(s=25)),
     ('mud-b', '진흙(변주)', ['늪', '진흙'], '진흙 사이에 덩이로 섞는다.', p_mud, dict(s=19)),
     ('ash-b', '화산재 바닥(변주)', ['화산', '재'], '재 사이에 덩이로 섞는다.', p_ash, dict(s=21)),
 ]

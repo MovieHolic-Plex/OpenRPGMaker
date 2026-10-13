@@ -9,6 +9,8 @@
 {"png": "ph-ash.png", "kind": "terrain", "name": "화산재 바닥", "label": "prehistoric/ph-ash"}
 {"png": "ph-crust.png", "kind": "terrain", "name": "굳은 용암 판(빛나는 틈)", "label": "prehistoric/ph-crust"}
 {"png": "ph-mud.png", "kind": "terrain", "name": "진흙", "label": "prehistoric/ph-mud"}
+{"png": "ph-stone-b.png", "kind": "terrain", "name": "평평한 암반(변주)", "label": "prehistoric/ph-stone-b"}
+{"png": "ph-path-b.png", "kind": "terrain", "name": "밟힌 흙길(변주)", "label": "prehistoric/ph-path-b"}
 {"png": "ph-mud-b.png", "kind": "terrain", "name": "진흙(변주)", "label": "prehistoric/ph-mud-b"}
 {"png": "ph-ash-b.png", "kind": "terrain", "name": "화산재 바닥(변주)", "label": "prehistoric/ph-ash-b"}
 {"png": "ph-swamp.png", "kind": "terrain", "name": "늪 물", "label": "prehistoric/ph-swamp"}

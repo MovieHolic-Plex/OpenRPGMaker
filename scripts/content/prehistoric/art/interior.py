@@ -12,6 +12,7 @@
 """
 import os, sys, math, json
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pelt import pelt  # noqa: E402
 from px import C, rnd, h32, NT, MI, save
 from kit import Reg, contact, OUT
 from shapes import seeds, near2, rock_px, lit, tusk_arc
@@ -28,18 +29,14 @@ def done(c):
 
 # ═══════════════════════ 바닥 ═══════════════════════
 def p_cave(lx, ly, s=31):
-    """동굴 바닥: 다진 흙에 납작한 바위판이 드문드문 박혀 있다(포장길처럼 고르지 않게). 바깥 바닥보다 한 단 어둡다."""
-    k, d1, d2 = T.vor(lx, ly, 6, s)
-    n = T.fbm(lx, ly, s + 7)
-    if h32(k, 5, s) % 3 == 0 and d2 - d1 > 1.6:
-        t = 3 + (h32(k, 3, s) % 2)
-        ku, a1, a2 = T.vor(lx, ly - 1, 6, s)
-        if ku != k or a2 - a1 <= 1.6: t += 1
-        kd, b1, b2 = T.vor(lx, ly + 1, 6, s)
-        if kd != k or b2 - b1 <= 1.6: t = 1
-        return ('stone', t)
-    t = 2 + (1 if n > 0.55 else 0) - (1 if n < 0.3 else 0)
-    if rnd(lx, ly, s + 2) < 0.05: return ('stone', 3)
+    """동굴 바닥: 바깥 흙보다 한 단 어두운 다진 흙에 잔돌이 드문드문(칸마다 같은 자리에 판을 박으면 물방울 무늬 바둑판이 됐다 — QA 1차)."""
+    n = T.sm(lx, ly, s)
+    t = 2 + (1 if n > 0.8 else 0) - (1 if n < 0.18 else 0)
+    if rnd(lx, ly, s + 9) < 0.06: return ('dirt', 3)
+    if rnd(lx, ly, s + 2) < 0.022: return ('stone', 3)
+    if rnd(lx - 1, ly, s + 2) < 0.022: return ('stone', 2)
+    if rnd(lx, ly - 1, s + 2) < 0.022: return ('dirt', 0)
+    if rnd(lx, ly, s + 6) < 0.04: return ('dirt', t + 1)
     return ('dirt', max(1, t))
 
 
@@ -61,7 +58,7 @@ def p_straw(lx, ly, s=35):
     return ('thatch', max(1, min(5, t)))
 
 
-for id_, nm, fn, s_, rl in (('floor-cave', '동굴 바닥(돌판 + 흙)', p_cave, 31, '동굴 거처·벽화 회랑 바닥.'),
+for id_, nm, fn, s_, rl in (('floor-cave', '동굴 바닥(다진 흙 + 잔돌)', p_cave, 31, '동굴 거처·벽화 회랑 바닥.'),
                              ('floor-cave-b', '동굴 바닥(변주)', p_cave, 37, '동굴 바닥 사이 덩이로.'),
                              ('floor-hut', '움집 바닥(다진 흙 + 짚 오라기)', p_hut, 33, '움집·족장 집·무당 천막 안 바닥.'),
                              ('floor-straw', '짚 깐 바닥', p_straw, 35, '잠자리 둘레·창고 바닥.')):
@@ -70,11 +67,10 @@ for id_, nm, fn, s_, rl in (('floor-cave', '동굴 바닥(돌판 + 흙)', p_cave
 
 @R.add('rug-fur', '털 깔개(짐승 가죽 모양)', 2, 2, 'flat', tags=['실내', '깔개', '털'], rules='화덕 앞·족장 자리 앞. 위층 덧그림.')
 def _(c):
-    pts = [(4, 6), (9, 2), (16, 4), (23, 2), (28, 6), (26, 14), (29, 22), (24, 29), (16, 27), (8, 29), (3, 22), (6, 14)]
-    c.poly(pts, lambda x, y: ('fur', 4 if (x + y) % 5 == 0 else 3 if x < 16 else 2))
-    for (x, y) in pts: c.P(x, y, 'fur', 1)
-    c.ell(16, 15, 8, 7, lambda x, y, dx, dy, d: ('hide', 4 if dx + dy < -0.3 else 3) if d < 0.8 else None)
-    for k in range(6): c.P(12 + k * 2, 15, 'ochre', 2)
+    pelt(c, 16, 16, 9.5, 8.6, 'hide', 3, s=3)
+    for y in range(11, 21): c.P(16, y, 'hide', 2)                         # 등줄기(짙은 털)
+    for (x, y) in ((12, 12), (20, 13), (11, 18), (21, 19), (14, 22), (18, 10)): c.P(x, y, 'hide', 2)   # 반점
+
 
 
 @R.add('mat-reed', '갈대 자리', 2, 1, 'flat', tags=['실내', '깔개', '갈대'], rules='잠자리 앞·작업 자리. 위층 덧그림.')
@@ -309,38 +305,37 @@ for fr in range(3):
 ANIM.append(('lamp', '돌 등잔', ids, 6))
 
 
-@R.add('fur-bed', '털 잠자리(낮은 가지 받침 + 털가죽 두 장)', 2, 2, 'low_furniture', tags=['실내', '잠자리', '털'], rules='벽(북쪽) 곁이나 방 구석. 옆 한 칸을 비운다.')
+@R.add('fur-bed', '털 잠자리(고사리 단 위 털가죽 두 겹 + 가죽 베개)', 2, 2, 'low_furniture', tags=['실내', '잠자리', '털'], rules='벽(북쪽) 곁이나 방 구석. 옆 한 칸을 비운다.')
 def _(c):
-    # 위에서 보이는 넓은 잠자리 면(털 깔개, 줄무늬) + 아래 2/3 를 덮은 가죽 이불(접힌 선) + 머리 쪽 말아 둔 베개 + 앞 가지 받침 3줄.
-    for y in range(5, 26):
-        for x in range(2, 30):
-            cx = min(x - 2, 29 - x); cy = min(y - 5, 25 - y)
-            if cx + cy < 2: continue
-            if min(cx, cy) == 0 and h32(x, y, 5) % 3 == 0: continue
-            t = 4 if x < 12 else 3 if x < 24 else 2
-            if (x * 2 + y) % 5 == 0: t -= 2
-            elif (x + y) % 3 == 0: t -= 1
-            c.P(x, y, 'fur', max(0, min(4, t)))
-    for y in range(13, 23):
-        for x in range(7, 26):
-            if min(x - 7, 25 - x) + min(y - 13, 22 - y) < 2: continue
-            t = 4 if y == 12 else 3 if x < 14 else 2
-            if y == 13: t = 5
-            if y == 13: t = 5
-            if x in (12, 20) and y > 14: t -= 1
-            if y == 22: t = 1
-            c.P(x, y, 'hide', t)
-    for y in range(6, 11):
-        for x in range(6, 26):
-            dy = (y + 0.5 - 8.5) / 2.6
-            if abs(dy) > 1: continue
-            c.P(x, y, 'hide', 5 if dy < -0.3 else 4 if dy < 0.4 else 2)
-    c.VL(6, 7, 3, 'hide', 1); c.VL(25, 7, 3, 'hide', 1)
+    # 마른 고사리 단 위에 털가죽을 두세 겹 쌓은 낮은 잠자리: 밑 짙은 털가죽(가장자리가 술로 비어져 나옴) → 위 밝은 가죽(비스듬히) → 머리맡 말아 둔 가죽 베개.
+    # 앞(남쪽)은 쌓인 가죽 두께가 둥글게 두 줄 보인다(상자처럼 곧은 앞판 없음).
+    for y in range(7, 29):
+        for x in range(0, 32):
+            dx = (x + 0.5 - 16) / 15.8; dy = (y + 0.5 - 18) / 10.5
+            d = dx * dx + dy * dy
+            if d > 1 or (d > 0.86 and h32(x, y, 21) % 2): continue
+            c.P(x, y, 'fern', 3 if (x * 3 + y) % 4 == 0 else 2)
+    pelt(c, 16, 15.5, 12.5, 8.6, 'fur', 3, s=7)
+    # 두께: 밑 가죽 아래 테두리 두 줄
     for x in range(3, 29):
-        for y in range(26, 29):
-            c.P(x, y, 'bark', 4 if y == 26 else 3 if y < 28 else 1)
-    for x in (3, 15, 28): c.VL(x, 26, 3, 'bark', 1)
-    done(c)
+        ys = [y for y in range(c.h) if c.get(x, y) and c.get(x, y)[0] == 'fur']
+        if not ys: continue
+        yb = max(ys)
+        if yb + 2 < 30: c.P(x, yb + 1, 'fur', 1); c.P(x, yb + 2, 'fur', 0)
+    top = C(32, 32)
+    pelt(top, 17.5, 17.5, 8.6, 6.2, 'hide', 4, s=13)
+    for y in range(32):
+        for x in range(32):
+            g = top.get(x, y)
+            if g: c.P(x, y, *g)
+    for y in range(7, 12):
+        for x in range(9, 24):
+            dy = (y + 0.5 - 9.5) / 2.5; dx = (x + 0.5 - 16.5) / 7.5
+            if dx * dx + dy * dy > 1: continue
+            c.P(x, y, 'hide', 5 if dy < -0.35 else 4 if dy < 0.4 else 2)
+    c.HL(12, 9, 2, 'hide', 3); c.HL(19, 10, 2, 'hide', 3)
+    c.outline(bottom=('ink', 1))
+
 
 
 @R.add('straw-bed', '짚 잠자리', 2, 1, 'low_furniture', tags=['실내', '잠자리', '짚'], rules='움집 안 벽 곁.')

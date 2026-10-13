@@ -6,7 +6,7 @@
 {"png": "ph-lamp.png", "kind": "container", "name": "돌 등잔", "label": "prehistoric/ph-lamp"}
 {"png": "ph-lamp-f1.png", "kind": "container", "name": "돌 등잔 (프레임 2)", "label": "prehistoric/ph-lamp-f1"}
 {"png": "ph-lamp-f2.png", "kind": "container", "name": "돌 등잔 (프레임 3)", "label": "prehistoric/ph-lamp-f2"}
-{"png": "ph-fur-bed.png", "kind": "low_furniture", "name": "털 잠자리(낮은 가지 받침 + 털가죽 두 장)", "label": "prehistoric/ph-fur-bed"}
+{"png": "ph-fur-bed.png", "kind": "low_furniture", "name": "털 잠자리(고사리 단 위 털가죽 두 겹 + 가죽 베개)", "label": "prehistoric/ph-fur-bed"}
 {"png": "ph-straw-bed.png", "kind": "low_furniture", "name": "짚 잠자리", "label": "prehistoric/ph-straw-bed"}
 {"png": "ph-chief-seat.png", "kind": "seat", "name": "족장 자리(낮은 돌 단 + 털 + 엄니 등받이)", "label": "prehistoric/ph-chief-seat"}
 {"png": "ph-shaman-altar.png", "kind": "low_furniture", "name": "무당 제단(머리뼈·물감 그릇·깃털)", "label": "prehistoric/ph-shaman-altar"}

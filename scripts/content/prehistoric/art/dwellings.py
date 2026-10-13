@@ -8,6 +8,7 @@
 """
 import os, sys, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from pelt import pelt  # noqa: E402
 from px import C, rnd, h32
 from kit import Reg, contact, OUT
 from shapes import thatch_cone, hide_cone, cyl_wall, daub, log_wall, doorway, rock_hill, tusk_arc, arch_mask, seeds, near2, rock_px, lit
@@ -424,33 +425,41 @@ def _(c):
 
 
 # ═══════════════════════ 차양·곡식 창고 ═══════════════════════
-@R.add('lean-to', '가지 차양(털 잠자리)', 3, 2, 'structure', tags=['차양', '야영', '잠자리'], rules='사냥 야영지·숲가. 앞 한 칸을 비운다(통째로 막힘).')
+@R.add('lean-to', '짚 차양(갈래 기둥 + 털 잠자리)', 3, 2, 'structure', tags=['차양', '야영', '잠자리'], rules='사냥 야영지·숲가. 앞 한 칸을 비운다(통째로 막힘).')
 def _(c):
-    # 뒤로 기운 지붕면(위에서 보이는 큰 면): 가지 위에 덮은 고사리 잎·가죽
-    for y in range(4, 19):
-        for x in range(2, 46):
-            u = (x - 2) / 44
-            k = (y - 4)
-            t = 3 + lit(u) + (1 if k < 3 else 0)
-            if (x + k // 2) % 5 == 0: t -= 1
-            mat = 'fern'
-            t += 1
-            if (x + 2 * k) % 7 == 0: t -= 2                      # 잎 겹 사이 그늘
-            if 14 <= x <= 30 and 6 <= y <= 13: mat = 'hide'; t = 4 if x < 22 else 3   # 가운데 덮은 가죽 한 장
-            c.P(x, y, mat, max(0, min(5, t)))
-    for x in range(2, 46): c.P(x, 19, 'bark', 4); c.P(x, 20, 'bark', 2)
-    # 지붕 밑 그늘 속 털 잠자리
+    # 갈래 기둥 둘에 걸친 앞 처마 통나무 → 뒤로 비스듬히 땅에 닿는 지붕면. 지붕면은 앞뒤로 긴 가지 서까래 위에 짚 다발을 덮었다(위에서 보이는 큰 면).
+    # 뒷변은 짚 끝이 들쭉날쭉하고 양옆은 안쪽으로 좁아진다(사다리꼴) — 평평한 판(탁자)처럼 보이지 않게.
+    for y in range(3, 19):
+        k = (y - 3) / 15                                  # 0 뒤 → 1 앞
+        x0 = int(round(7 - 5 * k)); x1 = int(round(41 + 5 * k))
+        for x in range(x0, x1):
+            if y < 5 and h32(x, y, 3) % 3 == 0: continue
+            u = (x - x0) / max(1, x1 - x0)
+            t = 3 + (1 if u < 0.35 else 0) - (1 if u > 0.78 else 0) + (1 if k > 0.75 else 0)
+            # 짚 결: 앞뒤 세로 획
+            if h32(x, y // 3, 7) % 4 == 0: t += 1
+            elif h32(x, y // 3, 9) % 5 == 0: t -= 1
+            c.P(x, y, 'thatch', max(1, min(5, t)))
+        if y in (8, 14):                                  # 짚을 묶은 가로 끈(줄 두 개)
+            for x in range(x0 + 1, x1 - 1): c.P(x, y, 'thatch', 1 if (x % 4) else 2)
+    for x in range(9, 41, 8):                             # 서까래 끝이 처마 위로 삐죽
+        c.P(x, 2, 'bark', 3); c.P(x, 1, 'bark', 4)
+    for (x, y) in ((12, 6), (30, 5), (22, 11), (36, 12), (15, 15)):   # 짚 위에 얹은 고사리 잎 몇 장
+        c.P(x, y, 'fern', 5); c.P(x - 1, y + 1, 'fern', 4); c.P(x + 1, y + 1, 'fern', 4); c.P(x, y + 1, 'fern', 3)
+    for x in range(1, 47): c.P(x, 19, 'bark', 5 if x < 24 else 4); c.P(x, 20, 'bark', 2)
     for y in range(21, 30):
+        for x in range(5, 43): c.P(x, y, 'ink', 1 if y < 25 else 2)
+    pc = C(48, 32)
+    pelt(pc, 24, 27, 13, 3.2, 'fur', 3, s=11)
+    for y in range(24, 31):
         for x in range(6, 42):
-            c.P(x, y, 'ink', 1 if y < 24 else 2)
-    for y in range(24, 30):
-        for x in range(9, 39):
-            dx = (x + 0.5 - 24) / 15; dy = (y + 0.5 - 27) / 3.5
-            if dx * dx + dy * dy > 1: continue
-            c.P(x, y, 'fur', 4 if dy < -0.3 else 3 if (x + y) % 3 else 2)
+            g = pc.get(x, y)
+            if g: c.P(x, y, *g)
     for x in (3, 43):
-        for y in range(15, 30): c.P(x, y, 'bark', 4); c.P(x + 1, y, 'bark', 2)
+        for y in range(19, 31): c.P(x, y, 'bark', 4); c.P(x + 1, y, 'bark', 2)
+        c.P(x - 1, 18, 'bark', 4); c.P(x + 2, 18, 'bark', 4); c.P(x - 1, 17, 'bark', 5); c.P(x + 2, 17, 'bark', 5)
     c.outline(bottom=('ink', 1))
+
 
 
 @R.add('granary', '곡식 창고(기둥 위 이엉 오두막 + 사다리)', 2, 3, 'structure', tags=['창고', '곡식', '마을'], rules='마을 가장자리. 사다리 앞 한 칸을 비운다(통째로 막힘).')

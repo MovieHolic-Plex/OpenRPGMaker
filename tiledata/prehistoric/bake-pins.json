@@ -669,7 +669,9 @@
 "out/ph-w-crust-1101/0.0": 733,
 "out/ph-w-crust-1110/0.0": 734,
 "out/ph-mud-b/0.0": 735,
-"out/ph-ash-b/0.0": 736
+"out/ph-ash-b/0.0": 736,
+"out/ph-stone-b/0.0": 737,
+"out/ph-path-b/0.0": 738
 },
 "strips": {
 "out/ph-swamp/0.0": [
