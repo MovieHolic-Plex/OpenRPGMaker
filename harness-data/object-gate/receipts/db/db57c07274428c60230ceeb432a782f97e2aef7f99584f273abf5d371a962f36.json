@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "db57c07274428c60230ceeb432a782f97e2aef7f99584f273abf5d371a962f36",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "square stone pedestal with a thick flat top slab, a small bone-white urn standing on it",
+ "label": "gothic_manor/plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square stone pedestal with thick top slab",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat front elevation: the thick top slab's front face occupies rows 12-17 (6px tall), while the top surface where the urn stands is only a 2px dark strip (rows 10-11). The shaft and base plinth are likewise seen straight-on without 3/4 perspective depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 10079
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square stone pedestal with urn",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front architectural elevation. The pedestal slab (rows 11-17) shows only a tall front face with no top surface visible (at most a 1px outline at row 10). The shaft (rows 18-27) shows a centered recessed panel straight-on, and the urn atop it is also drawn purely from the front with a flat rim.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10221
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal with urn",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The pedestal shows the front face of its cornice (rows 10-17) overhanging the recessed shaft (rows 18-27) and base plinth (rows 28-31), with only a 1px flat edge at row 10 where the top surface should be. The urn on top is also drawn in flat side silhouette with a flat top line at row 4 and no visible opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9918
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn in pure front elevation. Rows 12-17 depict the front vertical face of the thick top slab, rows 18-27 depict the front face of the shaft, and the top surface where the urn stands is only 1 pixel tall (row 11), with no visible depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 13801
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:07.070Z",
+ "cells": {
+  "16": [
+   "d4a685a31c1f4381",
+   "e69e7dc7366172fa"
+  ],
+  "24": [
+   "1a7e1760eb75598b",
+   "4786c06b2af50c1b",
+   "49d462ac3977c761",
+   "71f6a2bca991e98d",
+   "75b9e5710abbee5f",
+   "774917ae4a137cf1",
+   "7bea888bbc0c6725",
+   "7bf17fdf3f90f8f6",
+   "7ca1663a30479b82",
+   "7fc45a93d3981dc9",
+   "84043aecb6a24ccd",
+   "c7314b1679e3e9f6"
+  ],
+  "32": [
+   "59c1deeb54b08018",
+   "9e332d8b99369703",
+   "cc22db4a28c87492"
+  ],
+  "48": [
+   "0ee73b74da4bd7a7",
+   "2ba9207f8c8b9d0c",
+   "35655b29062ee452",
+   "8c4e8301d5513d92",
+   "c5f1a2a8bffc0709",
+   "e47d139c967cf240"
+  ]
+ }
+}

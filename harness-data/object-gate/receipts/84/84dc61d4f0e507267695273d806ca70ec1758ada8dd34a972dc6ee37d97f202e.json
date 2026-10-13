@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "84dc61d4f0e507267695273d806ca70ec1758ada8dd34a972dc6ee37d97f202e",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle (animation frame)",
+ "label": "gothic_manor/chandelier_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chandelier is drawn as a vertically elongated cage/ring structure without any foreshortened top horizontal surface. The iron bands and candle tops show no 3/4 top-down depth, and the ring's vertical span exceeds its horizontal width rather than being foreshortened.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9982
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an open iron chandelier ring/hoop with candles arranged in an ellipse in 3/4 perspective, not a closed cylinder with a solid top cap. It lacks a solid top surface (top_rows is 0), so it fails the specified closed-cylinder kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16422
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier is rendered as an ellipse seen from above at a 3/4 angle, with rear candles positioned higher (rows 4-10) and front candles lower (rows 18-26), clearly revealing the interior opening and top surfaces of the ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7276
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an open iron chandelier hoop with candles arranged in an ellipse, not a closed cylinder. If evaluated as a closed cylinder, it lacks any visible top cap ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12974
+  }
+ ],
+ "decidedAt": "2026-10-13T14:45:17.427Z",
+ "cells": {
+  "16": [
+   "5a5fde790b9ff4fb",
+   "a9417a294d2f6d84",
+   "be348e9f063afe8a",
+   "ebe2083caf0bd326"
+  ],
+  "24": [
+   "05ec195e36b3b542",
+   "13aace8f09047fd2",
+   "1716e5f5229f0586",
+   "2004d5c2f084300c",
+   "30556c6f75f6d2dd",
+   "322893330fafc33d",
+   "32a879c26954692b",
+   "44300ec726a570e6",
+   "48eb136a793d2fc3",
+   "4f72029d3090fcfc",
+   "532d45a4a58c2681",
+   "5d1c0039ad0d4564",
+   "828aa628e7af46d8",
+   "90684ee05a7c7446",
+   "9473813d1c204a10",
+   "b032795be6d4add8",
+   "b621022ea9faff8c",
+   "be3a90a932cdecb5",
+   "cd48c3843ac3ff0a",
+   "df515c9a6f6e8352",
+   "e10a51eb1c61dab9",
+   "e15c008d4be88194",
+   "f682b26a9b53e6a2",
+   "facde4c78a385fde"
+  ],
+  "32": [
+   "d4c823df3f45447e"
+  ],
+  "48": [
+   "414fccd1b2b4ec34",
+   "6fa496c514bd7a1e",
+   "8de4e2c4b7114b1d",
+   "a394dd0900beafaf",
+   "ec6d50ec8f8adfd2",
+   "ed5fc31534fbb96a"
+  ]
+ }
+}

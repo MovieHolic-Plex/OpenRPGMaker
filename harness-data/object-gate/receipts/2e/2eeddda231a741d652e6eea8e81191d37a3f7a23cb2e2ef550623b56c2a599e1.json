@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2eeddda231a741d652e6eea8e81191d37a3f7a23cb2e2ef550623b56c2a599e1",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "standing brass candelabra with three lit candles on a round base",
+ "label": "gothic_manor/candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass candelabra base and stem",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra, candle holders, and round base plinth are drawn in a completely flat front elevation. Neither the candle cups, horizontal arms, nor the tiered base plinth display any foreshortened top surfaces (top_rows=0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7084
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass candelabra with candles and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn as a flat front elevation. The candles, crossbar, and supposedly round base all have completely straight horizontal lines with no elliptical curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7373
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass candelabra with pedestal base and three candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn strictly in front elevation: candle tops are flat 1px cuts, the branches form a straight flat bar, and the base plinth has a flat horizontal bottom (row 30) with no elliptical top surface or foreshortened plane visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8476
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass candelabra with candles and tiered round base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabra is drawn as a flat front elevation: the candle tops are flat 1px lines (no top ellipse), the arms are straight horizontal crossbars, and the round base has a completely straight horizontal bottom baseline (row 30) and stepped profile with no visible elliptical top surface or foreshortened horizontal plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7048
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.223Z",
+ "cells": {
+  "16": [
+   "0ce8cc14930208a4",
+   "58578ec3fbae8db7"
+  ],
+  "24": [
+   "0bfd06a714048cf6",
+   "11b7b7116dcd71c7",
+   "130ed6f68645fecd",
+   "26d3cdeb9debbe22",
+   "38c58f8edcbda7f2",
+   "397cb9d35bee5e07",
+   "80f67928fb6cb210",
+   "810957aea2e6d37b",
+   "a0b58306a11dc158",
+   "c034b12c6fb620e5",
+   "f30889e20c653e37",
+   "fce9273136fa5efe"
+  ],
+  "32": [
+   "2d1a5a983a037e9f",
+   "99b93caf470a4d40",
+   "b57755e697d039f2"
+  ],
+  "48": [
+   "2c5b5a116feebbbd",
+   "56269192e0fe6a73",
+   "77ffb9a121ad027d",
+   "8b6ed3c8d2dc2650",
+   "d005944ef2208409",
+   "f386f5824a8e8e0f"
+  ]
+ }
+}

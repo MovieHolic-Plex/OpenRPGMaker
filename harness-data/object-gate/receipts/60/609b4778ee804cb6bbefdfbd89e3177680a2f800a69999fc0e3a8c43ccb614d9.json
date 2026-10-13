@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "609b4778ee804cb6bbefdfbd89e3177680a2f800a69999fc0e3a8c43ccb614d9",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "faint low grey fog bank drifting along the floor, flat translucent overlay (animation frame)",
+ "label": "gothic_manor/fog_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "translucent fog overlay patch",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of faint translucent pixels lying flat across rows 6 to 8 to depict low drifting floor fog, appropriate for a ground-level flat effect.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4334
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "faint ground fog overlay",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Low, flat translucent fog overlay drifting along the floor surface spanning rows 6 to 8 with no vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3892
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fog bank overlay",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent horizontal fog patch drifting across rows 6 to 8, functioning as a ground-level overlay with no vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3538
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "faint translucent fog overlay",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent grey overlay drifting across the floor plane spanning rows 6-8, functioning as a flat ground effect.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3624
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:25.990Z",
+ "cells": {
+  "16": [
+   "2a08941c0d6ca9ad",
+   "3e0ecb16a57a3dbf"
+  ],
+  "24": [
+   "02afbbc823e03577",
+   "04616974e24c2e0a",
+   "0755800c506f64a9",
+   "1524b98037d041c5",
+   "24fa09f36a2884e3",
+   "31e0fead6660f9c6",
+   "4306da735d71667f",
+   "6fb6ef80f135389b",
+   "74b2b141f610a189",
+   "8355f78c377a5ebd",
+   "a648bf5467055619",
+   "e93282108b96db48"
+  ],
+  "32": [
+   "5be6a4fe2cb48250",
+   "87ec0cbe4524077d"
+  ],
+  "48": [
+   "15eea936011dc4a2",
+   "18b1df33f92b2c36",
+   "1934a2916055730e",
+   "1ca8e639f9bd2002",
+   "5431996e4f63e555",
+   "839aac5127ff050f"
+  ]
+ }
+}

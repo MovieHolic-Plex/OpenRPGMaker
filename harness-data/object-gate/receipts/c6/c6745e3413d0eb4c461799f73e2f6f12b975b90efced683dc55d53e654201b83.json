@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c6745e3413d0eb4c461799f73e2f6f12b975b90efced683dc55d53e654201b83",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "heavy wooden writing desk with papers and an ink pot",
+ "label": "gothic_manor/desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1 to 7 (approx. 7 rows) holding papers, a book, and an ink pot, leading to the desk's front face with drawers from rows 8 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4705
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1 to 7 (7 rows deep) and displays papers, a red book/box, and an ink pot. Below row 8 is the front face with drawers and handles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3871
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface spans rows 1-8 showing papers, an ink pot, and other items from above, while rows 9-14 show the front face with drawers and handles in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Desk shows a large top surface spanning rows 1-8 containing papers, a book, and an ink pot, above a vertical front face with drawers from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4143
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:44.869Z",
+ "cells": {
+  "16": [
+   "6aa1bb6e664da7fc",
+   "f373cf7308f8f214"
+  ],
+  "24": [
+   "1702daabd04adf79",
+   "3cccf85e34e84afe",
+   "4999f4404d543d34",
+   "650a943b9736c373",
+   "67d51de656044807",
+   "7763eec12d6e914d",
+   "8bb892cef07288ae",
+   "ad2e2f3ed90b53b1",
+   "ae8d7cb9e30040e3",
+   "ca72bf5a07a80f19",
+   "e7caf45822a4a6bc",
+   "f1e2bf04ac376c7e"
+  ],
+  "32": [
+   "06f283f143d46048",
+   "4f2c2a868023e2b9"
+  ],
+  "48": [
+   "1d5a849c008bc531",
+   "350c2263700a35d3",
+   "7f70742a059067cd",
+   "bd3fb078b67d5b32",
+   "c55fb9c785c36bba",
+   "f2e522cc7dbcea28"
+  ]
+ }
+}

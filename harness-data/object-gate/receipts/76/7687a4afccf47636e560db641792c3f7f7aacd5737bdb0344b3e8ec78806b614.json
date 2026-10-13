@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7687a4afccf47636e560db641792c3f7f7aacd5737bdb0344b3e8ec78806b614",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cold black and grey marble checker floor tile, flat",
+ "label": "gothic_manor/floor_checker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "checkerboard marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing a 2x2 checker pattern of dark and light marble filling the entire 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3011
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "checkerboard marble floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile displaying a 2x2 checkerboard pattern with marble veining across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "checkerboard floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile spanning the full 16x16 grid viewed directly as a horizontal surface from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3025
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "checker floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat checkerboard marble terrain tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.635Z",
+ "cells": {
+  "16": [
+   "83e0caa6f6351cd1"
+  ],
+  "24": [
+   "2469c1cde1174d12",
+   "2ac78479800b3ea2",
+   "311e570994f290d9",
+   "612954fbbb2da70c",
+   "ac5e4292dedc4fda",
+   "fd8af956c6810393"
+  ],
+  "32": [
+   "6a47165ecf357adc",
+   "7edf9ef2f845e753",
+   "d2cd6019fadfa9d5",
+   "d844e337026b6d02",
+   "e2642a71d61db1a0",
+   "f338777137eb5ee2"
+  ],
+  "48": [
+   "3cb3e8ca3d3f65a8",
+   "6bdfebdc6245e5f1",
+   "83f26905538b5531",
+   "8517dd78a6618aa0",
+   "97b426a53c8ab1c8",
+   "cf811d9f91faa27d"
+  ]
+ }
+}

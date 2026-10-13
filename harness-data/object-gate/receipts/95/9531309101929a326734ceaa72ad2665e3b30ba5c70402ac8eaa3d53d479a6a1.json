@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9531309101929a326734ceaa72ad2665e3b30ba5c70402ac8eaa3d53d479a6a1",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rough dark flagstone cellar floor tile, flat",
+ "label": "gothic_manor/floor_cellar",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting rough stone cellar paving seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3898
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile showing flagstones seen entirely from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3055
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing flat cellar flagstones viewed entirely from above, covering the full 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12186
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagstone floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts flat flagstone terrain covering the full 16x16 area, showing horizontal floor surface viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3382
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.636Z",
+ "cells": {
+  "16": [
+   "6a71da2482252f9b"
+  ],
+  "24": [
+   "0799bfab100c2bf2",
+   "4b40702489edc495",
+   "a50be8c402a94e00",
+   "a961f087660c99c6",
+   "fc7d511b645ff1d0",
+   "fd0752df0c4099c3"
+  ],
+  "32": [
+   "2fe71025354920e2",
+   "36225b83617e51df",
+   "5d040a3461f98854",
+   "709b6ea9e298b9a6",
+   "f277d24d4ebd99e5",
+   "f4994fe7db198418"
+  ],
+  "48": [
+   "2a9144e8220fa806",
+   "7b82d4366f4e53a5",
+   "7f68566f74044b3d",
+   "8258333bae3f76f8",
+   "db127542ae423446",
+   "efc4c05b52a49992"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2ee99ffd6d50caba8be9c5948e26f320192c2bf2ae86f73d2b936ebdb4959cc1",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "heavy wooden writing desk with papers and an ink pot",
+ "label": "gothic_manor/desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top is prominently visible across rows 0-7 (approx 8 pixel rows) holding papers, a red book, and an ink pot, leading down to the front edge at row 8 and the front drawers from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7924
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "heavy wooden writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the desk spans rows 0-7 (8 pixels deep) holding papers, a book, and an ink pot. Below row 8 is the south front face showing drawers and handles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5002
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden writing desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface occupies rows 1-7 and holds papers, a book, and an ink pot, leading to a front edge on row 8 and a front face with drawers extending from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5398
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "writing desk",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is visible from rows 1 to 8 displaying papers and desk accessories, while the south front face with drawers spans rows 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4587
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.222Z",
+ "cells": {
+  "16": [
+   "2afa90ddd321a246",
+   "3cc4a0d8381dc267"
+  ],
+  "24": [
+   "06f7b93cd1b5f1b5",
+   "354dae691914db1d",
+   "42b0082f5a0a5a42",
+   "837c2573ea866c02",
+   "917b425d302d7edd",
+   "9a6343b3ac17221a",
+   "9b68cf56a5ad056e",
+   "b95fd217f7b50db6",
+   "ba7c1eca5514bfae",
+   "bbb7d9d77b3799cb",
+   "cfa4d1cd310c9bf0",
+   "d9a33bd38f768974"
+  ],
+  "32": [
+   "9fd243c7b5d3314f",
+   "f961362d2c5eed57"
+  ],
+  "48": [
+   "027682bf7412586c",
+   "05b3c41709ee8d73",
+   "2e5ebfa2493d275b",
+   "54b10be070d7c380",
+   "66f32865d2883ff3",
+   "da832d6b2e6378ff"
+  ]
+ }
+}

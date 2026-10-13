@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20beeb8aa06a3c7c2915c21c54166a81f27ac4ac513a97db7752ec96a5f79fd5",
+ "width": 16,
+ "height": 24,
+ "kind": "round_body",
+ "name": "wooden barrel with iron hoops, closed round lid seen from above",
+ "label": "gothic_manor/barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is visible from above spanning rows 1 to 5 (approx. 5 pixel rows tall) in a lighter wood tone with grain details, sitting atop the front south face of the barrel staves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7584
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The closed top lid of the barrel is clearly rendered from rows 1 to 5 (5 source pixel rows tall), showing foreshortened horizontal planks from above before transitioning to the front barrel staves and hoops below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the barrel is visibly foreshortened and textured, spanning approximately 5 pixel rows (rows 1-5) above the vertical front body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The closed top lid of the barrel is drawn as an elliptical surface from row 1 to row 5 (5 rows tall), clearly presenting the horizontal top surface in 3/4 perspective before the vertical south face begins at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13846
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:07.070Z",
+ "cells": {
+  "16": [
+   "258daf62c67ca478",
+   "300a1223ffef843f",
+   "8bc010f35b1af2a4",
+   "c52a8cf4a864cbb7"
+  ],
+  "24": [
+   "4116719d182c7328",
+   "60767ad96301d928",
+   "dd10201943e6312b"
+  ],
+  "32": [
+   "0cdc187eecf88276",
+   "0f97a6d1cd8d27f0",
+   "27412386b697020e",
+   "2eeaf3377fac772e",
+   "57a608ed69a84cf5",
+   "8dda5e3032e695f9"
+  ],
+  "48": [
+   "182175d340b3dcbc",
+   "6e4e6c5de0d8a9b3",
+   "848dc1c8cd245727",
+   "baef624f0b3fb733",
+   "c8f7940fa8db3d74",
+   "f86e121e71fabc2d"
+  ]
+ }
+}

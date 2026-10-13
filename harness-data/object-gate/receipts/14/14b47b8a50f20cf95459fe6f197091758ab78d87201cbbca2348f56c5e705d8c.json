@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "14b47b8a50f20cf95459fe6f197091758ab78d87201cbbca2348f56c5e705d8c",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle (animation frame)",
+ "label": "gothic_manor/chandelier_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier is drawn as a foreshortened ellipse viewed from above at ~45 degrees: candles are distributed in depth (back candles higher up, front candles lower down and overlapping the front rim), and the central ring opening is clearly visible as an ellipse interior spanning roughly 5 pixel rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7234
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 9,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier ring is correctly foreshortened in 3/4 view: candles form an elliptical loop with back candles high (rows 3-10), side candles at rows 10-19, and front candles lowest (rows 17-26). The central opening of the ring is clearly visible as an ellipse spanning about 9 rows.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 13614
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier ring is drawn in 3/4 top-down perspective as an ellipse tilted toward the viewer. Candles are arranged around the rim at distinctly staggered vertical depths (back candles at rows 4-10, side candles at rows 10-18, front candles at rows 18-26), revealing the open interior and crossbars from above.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 0행 < 3"
+   ],
+   "ms": 16627
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier hoop is drawn in 3/4 top-down perspective, foreshortened into an ellipse spanning about 14 pixel rows in depth. The candles follow this ellipse with back candles placed high (rows 3-10), side candles at mid-height (rows 10-18), and front candles low (rows 17-26), clearly showing the horizontal plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 22965
+  }
+ ],
+ "decidedAt": "2026-10-13T14:46:11.211Z",
+ "cells": {
+  "16": [
+   "2d0378191e89d21c",
+   "3a3fdf172b71b7d7",
+   "bee9273e925c09af",
+   "e82b8048119fd246"
+  ],
+  "24": [
+   "1507bf16d6b9cad9",
+   "1ab3516c37cd8979",
+   "22877247168188cf",
+   "242d420a8a330137",
+   "259409d14aa897ed",
+   "2b7d4df7b46837b4",
+   "2fd93584e122c665",
+   "3831148060cc2189",
+   "44865060d4abe1e2",
+   "4df6dc5fff4b99ff",
+   "875f1e237d513c2f",
+   "8dbf9cdf6f7ede27",
+   "9ec252718cc79fe6",
+   "9fc9c0a896f52ffa",
+   "a76ecc1bc742f659",
+   "a91e465f87cf9ed9",
+   "ae240e89db962004",
+   "b55e57fbee6ff894",
+   "b67ffc8221efa8a2",
+   "b743120f497897ab",
+   "ba0e6a6585a4b814",
+   "eb7e67ba1eb0e89b",
+   "f448a03751d9ad56"
+  ],
+  "32": [
+   "3f16761f2c6a97cf"
+  ],
+  "48": [
+   "541eb1d5aca984f8",
+   "5a9d740366c477c6",
+   "80c17a6a88796fd9",
+   "97173863d730386f",
+   "b3a29db6e5d5e6c6",
+   "d128824ae030e4c0"
+  ]
+ }
+}

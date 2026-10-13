@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "873b1ffc1d686ee2891f96713c9c8f9109fb5b5270c143dbb6b8501c66441168",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "standing brass candle stand with a wide round top dish holding three lit candles, round foot",
+ "label": "gothic_manor/candelabra",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "candle stand (dish, stem, and round foot)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candle stand is drawn in pure front elevation: the wide top dish shows its front/side profile without any visible interior opening or ellipse, the candles are arranged flatly, and the bottom foot has a completely flat horizontal base line (row 31) with no foreshortened round surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8250
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "candle stand (brass dish, stem, and base)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire candle stand is drawn in pure front elevation: the top dish is rendered as a chalice/goblet side profile with candles sticking out rather than an elliptical dish seen from above, the stem and collar are flat, and the round foot is drawn as a flat tiered plinth with a horizontal base rather than an ellipse showing a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8640
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass candelabra / candle stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wide round dish holding the candles is drawn in pure front elevation with no visible elliptical opening or top surface. The candle tops are also flat lines without visible tops.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9343
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dish and stem of the candle stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wide top dish is drawn in pure front elevation as a flat silhouette with no visible elliptical opening or recessed top surface (0 rows of top surface). The candles emerge directly from the front rim with no interior surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9586
+  }
+ ],
+ "decidedAt": "2026-10-13T14:43:56.227Z",
+ "cells": {
+  "16": [
+   "1ab1710b01954e3e",
+   "33ab580b75e9a2fd"
+  ],
+  "24": [
+   "3036c09864c46c85",
+   "5fd0916c4a045a82",
+   "69916fba93483d5a",
+   "6c0cb003bff4876e",
+   "6cef08f090522f60",
+   "6fcb33ce31c56ae9",
+   "847720e0ae5a6433",
+   "975815fce6537b58",
+   "c06084fd54e22413",
+   "ca056c0e60dc7b6b",
+   "cf9a81655e24cc5f",
+   "d65b8a2756ed5112"
+  ],
+  "32": [
+   "2a53bc844d8f7af5",
+   "445d36e631402de2",
+   "a49aa5d98078959b"
+  ],
+  "48": [
+   "2ed22dae97c368f0",
+   "36987e44e19fb803",
+   "406ca5c45a075128",
+   "90c4b745381e731d",
+   "a30ba498cd7dda27",
+   "c9b7eb8ad2a4a051"
+  ]
+ }
+}

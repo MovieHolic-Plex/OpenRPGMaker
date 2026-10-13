@@ -1,0 +1,149 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "751efefd95a749a773d63866cf78978d0084f34bdbcb866338a44e2a5a56130a",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle (animation frame)",
+ "label": "gothic_manor/chandelier_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "윗면 0.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": false,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The caller specifies a closed cylinder, but this is an iron chandelier ring. Regardless, the body shows no visible foreshortened top surface (only a 1-2px dark rim along row 8), drawing the central metalwork as a flat front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 12686
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The circular chandelier ring is viewed from above at a 3/4 angle, foreshortened into an ellipse with back candles placed higher and front candles lower. The inside opening of the hoop is visible across rows 16-24, and the top surface of the ring band spans rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7223
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chandelier frame is drawn as a vertical band with no visible top surface foreshortened from above (top_rows is 0; only a 1px outline/highlight at rows 8-9). The object is an open chandelier ring rather than a closed cylinder, and lacks the horizontal elliptical surface expected for a ring viewed at 45 degrees.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15163
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "chandelier ring",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an open iron chandelier ring with candles rather than a closed cylinder (kind mismatch). It lacks the closed elliptical top cap expected of a round body, and no solid top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 20519
+  }
+ ],
+ "decidedAt": "2026-10-13T14:43:56.228Z",
+ "cells": {
+  "16": [
+   "9bb26e31513ff39a",
+   "af84a66003e8347c",
+   "ce2da9c1dfd1863e",
+   "fb33865108dd5503"
+  ],
+  "24": [
+   "22877247168188cf",
+   "242b0729c86c927d",
+   "2af8d4769b7a6d4b",
+   "2c103ab44530bd2a",
+   "2fd93584e122c665",
+   "2fe59b2b1d755abc",
+   "44865060d4abe1e2",
+   "458acfb0df04f175",
+   "4615b737de7d65d3",
+   "4b4f703b85f00891",
+   "4beebfa44e71d20f",
+   "5d644dae390b1287",
+   "72bbf5c90d495c32",
+   "72dcb9b273301d3e",
+   "76e602b0a698e4de",
+   "774f41e318f79265",
+   "a7a25b35829430bd",
+   "b0411c3d52b3ebd3",
+   "b09e4fd97a8eb6b7",
+   "b743120f497897ab",
+   "ba0e6a6585a4b814",
+   "c410f0c5c1925f2f",
+   "f1ae2d7a5ffa1092"
+  ],
+  "32": [
+   "40589c0061092565"
+  ],
+  "48": [
+   "05ba292a1e292dd8",
+   "0c12f1981bb06bfd",
+   "5acbe3f6c2f4f513",
+   "6a73381db1e37a70",
+   "e57f6a71d2799776",
+   "f9cb5737b2b979b5"
+  ]
+ }
+}

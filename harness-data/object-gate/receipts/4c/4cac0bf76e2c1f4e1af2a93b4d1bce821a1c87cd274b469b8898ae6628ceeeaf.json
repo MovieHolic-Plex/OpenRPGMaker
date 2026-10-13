@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4cac0bf76e2c1f4e1af2a93b4d1bce821a1c87cd274b469b8898ae6628ceeeaf",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "dark red blood stain splatter on the floor, lying flat",
+ "label": "gothic_manor/blood_stain",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "blood puddle splatter",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor decal/splatter viewed from above, spanning approximately rows 3 to 12 with surrounding droplets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5096
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "blood pool/splatter on floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The decal lies flat on the ground plane, foreshortened into an elliptical shape spanning rows 3 to 12 with surrounding droplets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4484
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "blood puddle stain",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blood puddle lies flat on the floor plane, covering rows 3 to 12 as a top-down flattened pool with satellite droplets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4018
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "blood puddle / stain on floor",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The blood splatter lies flat on the ground, drawn as an elliptical puddle seen from above spanning rows 3 to 12 with surrounding droplets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3408
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.634Z",
+ "cells": {
+  "16": [
+   "3d34a5062c3ec57e"
+  ],
+  "24": [
+   "06c6407b71be0da4",
+   "1087052d53bd6b90",
+   "4c156c438147c835",
+   "6d694ba7d20d7186",
+   "ae8a724d5c96f191",
+   "b36b6f3daccf8d7e"
+  ],
+  "32": [
+   "27f02d482a6d7a1e",
+   "2c3810e8d083ce1c",
+   "2e4f64262c312078",
+   "3409554a461b4e0b",
+   "676908e5e11be896",
+   "f5e1ccbfb057abdb"
+  ],
+  "48": [
+   "22579f44a984f8ae",
+   "393d7cc0973bb0b8",
+   "4ffcb8985b379cac",
+   "5df550b17dc20d1b",
+   "8884ea0514eb5438",
+   "acb6d2bbac842a6d"
+  ]
+ }
+}

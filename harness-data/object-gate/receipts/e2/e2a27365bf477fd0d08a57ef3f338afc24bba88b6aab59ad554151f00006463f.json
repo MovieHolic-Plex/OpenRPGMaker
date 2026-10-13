@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e2a27365bf477fd0d08a57ef3f338afc24bba88b6aab59ad554151f00006463f",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall dark wooden wardrobe with two doors, one slightly ajar",
+ "label": "gothic_manor/wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wardrobe is foreshortened across rows 1-5 (5 rows tall) above the bright front rim highlight at row 6, with the doors and south face extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8115
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn as a flat front elevation. The area above the doors (rows 1-5) is a front-facing upper frieze/cornice panel rather than a foreshortened top surface, showing 0 pixel rows of top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16128
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-5 depict the top horizontal surface of the wardrobe, drawn with top-down lighting and wood texture, bounded by a front edge highlight on row 6 before dropping into the shadowed front-facing doors below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7022
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall dark wooden wardrobe with two doors",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-6 depict the top surface of the wardrobe viewed from above, terminating in a highlighted front edge at row 6 with shadow cast onto the front doors below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7961
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:07.070Z",
+ "cells": {
+  "16": [
+   "77fd8c3f31268958",
+   "d4a8d0e525d71c62"
+  ],
+  "24": [
+   "4f1599e6699cdb8e",
+   "6edeaf5c08605781",
+   "9737907e67862128",
+   "b7cbd6eab40754d0",
+   "bf09c75179ba2721",
+   "c40d154384031e7b",
+   "cd79725753f8c46a",
+   "d246c608738750b6",
+   "d50c9b35f2aaf0df",
+   "d7d3d3c6d5841ca6",
+   "e24ae6157be3c8ca",
+   "fa84fbfdc49a74e1"
+  ],
+  "32": [
+   "294d7ed18b4659a2",
+   "3eb2e8a1cc67cb4a",
+   "ad58a4767120c19c"
+  ],
+  "48": [
+   "36dcb114e1c80d82",
+   "40b0f6f4ee05c322",
+   "64174aa984944401",
+   "a67997d961ddf42c",
+   "d1c40e1bf87a4ccc",
+   "f5ae35b0f32a0349"
+  ]
+ }
+}

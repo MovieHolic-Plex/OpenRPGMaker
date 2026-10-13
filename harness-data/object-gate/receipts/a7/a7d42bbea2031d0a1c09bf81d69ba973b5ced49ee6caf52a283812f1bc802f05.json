@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a7d42bbea2031d0a1c09bf81d69ba973b5ced49ee6caf52a283812f1bc802f05",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "museum glass display case on a wooden base, flat glass lid showing a relic on red cloth",
+ "label": "gothic_manor/glass_case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "glass display case on wooden base",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the case features a glass lid spanning rows 1-8, showing a top-down view looking through the glass onto the relic on red cloth, while rows 10-31 form the front face with the front glass pane and wooden cabinet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6109
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "museum glass display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass lid is clearly rendered from above across rows 1-8 (8 rows tall), looking down into the case onto the red cloth and relic, above the front-facing glass pane (rows 10-20) and wooden cabinet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 15812
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "museum glass display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 clearly depict the flat glass lid/top surface foreshortened from above, looking down onto the relic on red cloth, while rows 10-20 and 23-31 form the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5938
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "museum glass display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface (lid) is clearly foreshortened and visible from above across rows 1 to 8 (about 8 pixels tall), revealing the relic resting on red cloth within, above the vertical front glass pane and cabinet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 17535
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.224Z",
+ "cells": {
+  "16": [
+   "1a28ed2cf19d74b3",
+   "1c26a7fac9651314",
+   "4d11256d14c25601",
+   "ffaa87b2500ad13e"
+  ],
+  "24": [
+   "0024a2ed006f9d0d",
+   "07afa3b74f8e467f",
+   "1eb102048d826343",
+   "1fc592c1b17fbfa3",
+   "218043d5f263d53f",
+   "223e37dd79f4ee42",
+   "32ca93bc40505158",
+   "341039b8eb581de0",
+   "3735f8279a99cd1f",
+   "3bbc642a18520e33",
+   "4891d70de18ba123",
+   "4e48ce92d6a975ad",
+   "5df5ca5a1fb7f04b",
+   "6ecd1e558f66927d",
+   "753c2872cdd73b11",
+   "7b627ffda467af00",
+   "83154f2f976cfdcf",
+   "bf92454b6c6b29ce",
+   "e82535cb04ac3961",
+   "eca7d2ba02e1ab81",
+   "ef80d3e3d487d41f",
+   "f45cb56d072a1bfa",
+   "f5d63a94defbafa7",
+   "fc64c8eaed1322ed"
+  ],
+  "32": [
+   "ab93b35d5677a4b4"
+  ],
+  "48": [
+   "270cd32db1d2c521",
+   "32db79c4342c1b51",
+   "403fd70a9b0a25fc",
+   "5677e8a0b8308593",
+   "99a5e580aa694291",
+   "e22c99207a523d2a"
+  ]
+ }
+}

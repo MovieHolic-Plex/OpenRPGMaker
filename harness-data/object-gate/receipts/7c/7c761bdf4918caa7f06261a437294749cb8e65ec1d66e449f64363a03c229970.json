@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c761bdf4918caa7f06261a437294749cb8e65ec1d66e449f64363a03c229970",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "faint low grey fog bank drifting along the floor, flat translucent overlay",
+ "label": "gothic_manor/fog",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "translucent floor fog patch",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent fog overlay spanning rows 6 to 9, functioning as a ground-level flat decal viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3961
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "translucent floor fog decal",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Low translucent grey fog overlay drifting horizontally across rows 7-9, flat on the floor plane as described.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4264
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "translucent fog overlay",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint drifting fog layer lying flat along the ground across rows 6-9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4156
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor fog overlay",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Translucent flat ground-level fog patch spanning rows 6-9 (4 rows tall), behaving as a floor overlay decal with no vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3539
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.635Z",
+ "cells": {
+  "16": [
+   "594a60b1f1fddb52",
+   "7b262e74f733d41e"
+  ],
+  "24": [
+   "06ec00f745909480",
+   "23298309e5d9d22b",
+   "39b75f86a9952279",
+   "5a143d43362d50f9",
+   "715c63eee52b802c",
+   "77367a210a9fe70d",
+   "78937b824e9fce8e",
+   "a968fe7dfbec6ee0",
+   "ab0fc1ff9c2c14f7",
+   "ba3746dd1b44abe3",
+   "d104b7fa2644561c",
+   "e124bad84aa6fce3"
+  ],
+  "32": [
+   "2cf1c4ec6781758c",
+   "5732025eb3d47c9a"
+  ],
+  "48": [
+   "0b77930ca962df6a",
+   "6c28b84fe14ba33e",
+   "7c7ab3894d3f2d01",
+   "8fc8bb12e2bfb653",
+   "cb9b67c0825781e6",
+   "dc0356b78b8da710"
+  ]
+ }
+}

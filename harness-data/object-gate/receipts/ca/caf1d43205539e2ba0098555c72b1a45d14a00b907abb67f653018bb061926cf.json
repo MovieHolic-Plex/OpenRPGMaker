@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "caf1d43205539e2ba0098555c72b1a45d14a00b907abb67f653018bb061926cf",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "square stone pedestal with a thick flat top slab, holding a small bone-white urn",
+ "label": "gothic_manor/plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn as a flat front elevation with no visible top surface foreshortening; the urn sits directly on a 1px outline at row 8.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10292
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat architectural front elevation. The slab, central recessed panel, and base are separated only by horizontal 1px lines (rows 8, 14, 30) with no visible top surface anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19437
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn in pure front elevation: its upper slab (rows 9-13) and shaft (rows 15-29) show only their vertical front faces, with the urn resting directly on a 1-pixel top outline at row 8 with no visible horizontal top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14261
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pedestal is drawn as a flat front elevation: rows 8-14 show the vertical front face of the overhanging top slab, with row 15 in shadow underneath, but there is no top surface visible behind row 8 (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10448
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.224Z",
+ "cells": {
+  "16": [
+   "5062c80081e1cf0c",
+   "949874fdbc86f5d9"
+  ],
+  "24": [
+   "2193ba114df6b2c0",
+   "354b74f7af77f7a4",
+   "39c5e546ca7ebcc0",
+   "56fd9e8b8151f66d",
+   "7f13df1a80afe5a5",
+   "8399b5646660cfe3",
+   "915a0a50eeb17350",
+   "98a315de1430849d",
+   "9a075321503630e2",
+   "d01fe04ed587cf88",
+   "d612166d5174bf93",
+   "f1ff5f2341915ddb"
+  ],
+  "32": [
+   "3dfb313bd00bec55",
+   "760fd46be7f88b71",
+   "c45bc05b9791df8c"
+  ],
+  "48": [
+   "0009a90bd7eb958b",
+   "186a989ff7501a07",
+   "5f8c81b6b8cacf9c",
+   "a18d027fc5c6b36f",
+   "e273e2fbe9d1452b",
+   "ecfa3b9e0874834b"
+  ]
+ }
+}

@@ -1,0 +1,129 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8d34e331361ffe57bf22501f8f46bba5a062d701a2a19b659bd4af2825f8e5bb",
+ "width": 32,
+ "height": 24,
+ "kind": "column",
+ "name": "two brass stanchion posts with wide flat round brass caps joined by a sagging red velvet rope",
+ "label": "gothic_manor/rope_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass stanchion post caps and posts",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round brass caps at the top of each stanchion show their horizontal top surface across rows 2-5 (about 4 rows tall) before curving down to the front rim/lip at rows 6-7, rather than being drawn as a flat edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10607
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchions and caps are drawn in pure 2D front elevation (side-scroller style). There is no visible top surface or 3/4 foreshortening on either the caps, shafts, or bases.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12269
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts with caps",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion posts and their top caps are drawn in pure front elevation; the round caps are drawn as vertically symmetrical front-facing discs/spheres with no foreshortened top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7863
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide flat circular caps atop each post are drawn as foreshortened ellipses (rows 1-6, roughly 5-6 px tall) showing their top horizontal surface from the 3/4 perspective rather than as thin flat horizontal lines.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7855
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:07.070Z",
+ "cells": {
+  "16": [
+   "107af2519e509469",
+   "277ea8bc417224f9",
+   "3ff874ca287555e7",
+   "564d79f0d0e2e712",
+   "75aca6b880d453f6",
+   "8592873ff44cb3b4",
+   "86e3ce61b06d278d",
+   "9a09502b3adbdd86"
+  ],
+  "24": [
+   "2547899b92924bc4",
+   "36300a4a10f22e51",
+   "38c736f6441d4cbf",
+   "9309a62bc4d165c6",
+   "ad74f40546724f28",
+   "e9a467d44674c86d"
+  ],
+  "32": [
+   "62e2daa0c34335a5",
+   "943dc1583e022bfb"
+  ],
+  "48": [
+   "4b2928624214dce1",
+   "5c6ae1b9101434ab",
+   "858780a51754064d",
+   "9fb383b7fe7fdfbe",
+   "c9744bbb63bd9b77",
+   "d5ddf356ddaae0d1"
+  ]
+ }
+}

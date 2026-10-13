@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20b4d790183119b1e2c840dea1de1c523c6268ee2422aa44f06414516bb1dc5c",
+ "width": 16,
+ "height": 20,
+ "kind": "seat",
+ "name": "worn red velvet armchair with wooden feet, thick cushion seen from above",
+ "label": "gothic_manor/armchair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "red velvet armchair",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair faces south in 3/4 perspective, showing the top of the backrest, armrests, and a large horizontal seat cushion surface measuring approximately 7 rows tall (rows 6 to 12) before dropping down to the front apron and feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5358
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "armchair with seat cushion and armrests",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair faces south in 3/4 view; its seat cushion is clearly visible from above across rows 6 to 12 (7 rows deep) between the armrests, resting above a front base and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5469
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "armchair with seat cushion",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The armchair faces south in 3/4 view, showing the top of the seat cushion across rows 6 to 12 (7 pixel rows tall) between the armrests, followed by the south-facing front edge (rows 13-15) and wooden feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6184
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "red velvet armchair",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chair back is at rows 0-3, armrests frame the sides, and the seat cushion is clearly visible from above across rows 6-12 above the front rim/skirt (rows 13-15) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4760
+  }
+ ],
+ "decidedAt": "2026-10-13T14:40:23.604Z",
+ "cells": {
+  "16": [
+   "06870ce1847866ae",
+   "376ee56dc1ae21b6",
+   "44f75088402df23a",
+   "fc674d9b0b862da1"
+  ],
+  "24": [
+   "020d391e9aa9ec9d",
+   "2be39c1890e26b7e",
+   "39d2da9a0d49c9d4",
+   "3beaf97bb8678aa6",
+   "6755424601514527",
+   "9c068e248ffb553e"
+  ],
+  "32": [
+   "016f94fb6f1ab2be",
+   "041634977e9115e8",
+   "542abebb7dc18c90",
+   "e8021ede2e2fac3b",
+   "efe4085ae91bb139",
+   "f73d8784ef7b6ec5"
+  ],
+  "48": [
+   "43d16240eb0f2b52",
+   "786a6e49eaa985b4",
+   "78c779dea16f74f6",
+   "d16bcfc4901a3aed",
+   "d57560cae38c5cab",
+   "ed5101ce2357f093"
+  ]
+ }
+}

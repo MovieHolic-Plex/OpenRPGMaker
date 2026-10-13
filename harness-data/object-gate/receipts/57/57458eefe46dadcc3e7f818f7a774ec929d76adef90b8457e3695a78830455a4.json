@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "57458eefe46dadcc3e7f818f7a774ec929d76adef90b8457e3695a78830455a4",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall dark wooden wardrobe with two doors, one slightly ajar",
+ "label": "gothic_manor/wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wardrobe with two doors",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn straight-on in pure front elevation with only a 1px dark top outline (row 0) and no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4081
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn in a pure flat front elevation. Rows 0-4 form a vertical decorative front cornice/header above the doors, with no foreshortened top horizontal surface visible at all.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5585
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wardrobe body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn straight on in pure front elevation with only a 1px dark top edge line at row 0; no horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7565
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wardrobe is drawn straight-on in flat front elevation with a header frieze and doors facing directly forward. The top has only a 1-2px cap line (row 0-1) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6837
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.225Z",
+ "cells": {
+  "16": [
+   "777f89116a1aa550",
+   "77fd8c3f31268958"
+  ],
+  "24": [
+   "06582d4164c56ab0",
+   "080cc4cc9b73880b",
+   "36ac42117420049b",
+   "3792c97ee5dfc8dd",
+   "6edeaf5c08605781",
+   "9737907e67862128",
+   "b877b10ffdc12d91",
+   "bf09c75179ba2721",
+   "c40d154384031e7b",
+   "d7d3d3c6d5841ca6",
+   "de912a6e60f38717",
+   "fa84fbfdc49a74e1"
+  ],
+  "32": [
+   "19b7490d5204e9e7",
+   "7bcc2c35c4b73955",
+   "895de95c15608f68"
+  ],
+  "48": [
+   "27688ce563a35860",
+   "706963bae006c782",
+   "88410049a407e56c",
+   "990ba0f504a0d4f0",
+   "c5d7e0d599ca50c8",
+   "eddff60eed241689"
+  ]
+ }
+}

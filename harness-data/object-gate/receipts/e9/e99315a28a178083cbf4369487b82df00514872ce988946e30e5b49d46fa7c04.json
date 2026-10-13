@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e99315a28a178083cbf4369487b82df00514872ce988946e30e5b49d46fa7c04",
+ "width": 32,
+ "height": 16,
+ "kind": "flat",
+ "name": "faint low grey fog bank drifting along the floor, flat translucent overlay (animation frame)",
+ "label": "gothic_manor/fog_f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "translucent floor fog overlay",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent fog particles drift horizontally across rows 6-9 directly on the floor plane as a flat ground effect.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "translucent low fog patch",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A faint translucent cluster of pixels representing a low ground fog overlay spans rows 6 to 9, lying flat against the ground plane without elevation artifacts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8201
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "translucent floor fog patch",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent fog particles lie horizontally across rows 6 to 9 covering roughly 3-4 pixel rows on the floor plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5482
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "translucent low fog overlay",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Faint translucent fog pixels drift across rows 6-9 as a flat ground-level overlay. There is no vertical front elevation or isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4874
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:25.990Z",
+ "cells": {
+  "16": [
+   "7994af96f75fbe70",
+   "84127fe0f570bd2f"
+  ],
+  "24": [
+   "19b44b548e749480",
+   "3278ac82f3ac6214",
+   "4c12fc4c8b081fb5",
+   "4e85362740b05f36",
+   "7ad2aa59aa6a6845",
+   "82236281e1732904",
+   "bfcd68d46e398d52",
+   "c44f9b2e7b30efbb",
+   "e80121f56e15c071",
+   "ebb95f8f89fd878d",
+   "ee5bb1f1ae07d5f9",
+   "ef31a8b37f058c98"
+  ],
+  "32": [
+   "9be42b1c4d6adca8",
+   "d3bd3d7a7c8a0f5f"
+  ],
+  "48": [
+   "16a8cfa9332de9cc",
+   "513837f98d0ca62a",
+   "892d9d14a1a42f56",
+   "8fc8303869022cb0",
+   "b419e351e9a2c5ef",
+   "de55ed47769d6a7f"
+  ]
+ }
+}

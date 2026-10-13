@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8fef39a57b953b89bd25a83bf56f6c61be9d6c5b911d6d4ee58a75803daa56dd",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle (animation frame)",
+ "label": "gothic_manor/chandelier_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier is drawn as a clearly foreshortened horizontal ring viewed from above (3/4 perspective), with an interior opening spanning roughly 11 pixel rows (rows 11-21) between the back rim and the front rim, and candles properly distributed around the elliptical perimeter.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "윗면 2행 < 3"
+   ],
+   "ms": 5752
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier hoop with candles and crossbar",
+    "kind_matches": false,
+    "top_rows": 2,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier is drawn as an open elliptical hoop in 3/4 top-down perspective: the rear candles and rim sit high (rows 4-10) while the front candles and rim sit low (rows 17-25), with the hollow center and crossbar spanning 7 rows in depth.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "윗면 2행 < 3"
+   ],
+   "ms": 7925
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier hoop is rendered as a foreshortened ellipse in 3/4 perspective, with back candles positioned higher up (rows 4-10) and front candles positioned lower down (rows 16-26), clearly revealing the interior opening of the ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6250
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier hoop and candle arrangement form a clear foreshortened ellipse seen from a 3/4 top-down angle, with candles positioned in depth (back, sides, and front) around the ring.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5602
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:25.989Z",
+ "cells": {
+  "16": [
+   "2cc8f6c6f8051810",
+   "6a597a920a77a2cd",
+   "be348e9f063afe8a",
+   "ebe2083caf0bd326"
+  ],
+  "24": [
+   "13aace8f09047fd2",
+   "1716e5f5229f0586",
+   "17da83ae50ebcff3",
+   "1fea8e69fced23c5",
+   "22877247168188cf",
+   "2fd93584e122c665",
+   "30556c6f75f6d2dd",
+   "322893330fafc33d",
+   "32a879c26954692b",
+   "44865060d4abe1e2",
+   "49a8acec81a69d9d",
+   "5450ddb5b891ea67",
+   "64f93a44ad51456f",
+   "656a5bf72ce0dd6e",
+   "680f4f43a480f36a",
+   "6f0100854e620917",
+   "7731969274d90258",
+   "7ef029463f6c546c",
+   "828aa628e7af46d8",
+   "97362e553330d53c",
+   "b743120f497897ab",
+   "ba0e6a6585a4b814",
+   "be3a90a932cdecb5"
+  ],
+  "32": [
+   "54fb1004fd136d5b"
+  ],
+  "48": [
+   "05dc17bdeee39d92",
+   "27f14c7811c87c8f",
+   "7a16e981a1a89e41",
+   "8ff8fbe7ed8a3c52",
+   "9149a8c8166dc51f",
+   "d884e5b5fad4ad20"
+  ]
+ }
+}

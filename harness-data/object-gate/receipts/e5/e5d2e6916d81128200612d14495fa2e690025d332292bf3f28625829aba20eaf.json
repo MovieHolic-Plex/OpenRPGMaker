@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5d2e6916d81128200612d14495fa2e690025d332292bf3f28625829aba20eaf",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "old wooden rocking chair with a worn red cushion",
+ "label": "gothic_manor/rocker",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seat cushion and chair frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seat cushion is clearly visible from above, spanning rows 6 to 10 (5 pixel rows deep) with tufting/wear details, positioned between the upright backrest (rows 0-5) and the front apron/legs below (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11119
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seat cushion and chair seat",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion surface is viewed from above across rows 6–10 (5 source pixel rows deep) between the upright spindle backrest (rows 0–5) and the south front edge/apron (rows 11–12).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11396
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seat cushion and chair frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red seat cushion is viewed from above across rows 6 to 10 (5 rows deep), positioned between the backrest spindles above and the front apron/legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9441
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seat cushion and wooden frame",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red cushion's top surface extends forward from the spindle backrest across rows 6–10 (5 rows deep), with the front wooden frame and legs shown below on rows 11–14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5712
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.222Z",
+ "cells": {
+  "16": [
+   "ecfd49498f7565e0"
+  ],
+  "24": [
+   "0f9daff2e3c217a0",
+   "5820a970c85a753a",
+   "5fafd3297a06e34a",
+   "8af243143535c0e7",
+   "9f4b3b9741cc8208",
+   "cbb6b23c40881d28"
+  ],
+  "32": [
+   "1067e201fe1afd4c",
+   "17472974d7fa9a42",
+   "63ecf0db82e7b2f8",
+   "964838e84fdd94ba",
+   "bdc5a53dd86dad62",
+   "cc4c88021d073d30"
+  ],
+  "48": [
+   "33aa0295d354ada1",
+   "76b8af6e2f553c36",
+   "b9e827f3b4fa1888",
+   "c6a52dcab6d71538",
+   "dc0e69443b12c5db",
+   "f610fc653ff0b80e"
+  ]
+ }
+}

@@ -1,0 +1,126 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0d108b56afb4ad4b47c94e332cf4d1dea7aa4dd0272d90bf9250707202d50595",
+ "width": 16,
+ "height": 16,
+ "kind": "seat",
+ "name": "worn red velvet armchair with wooden feet, cushion seen from above",
+ "label": "gothic_manor/armchair",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "armchair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The armchair is drawn in pure front elevation: the backrest, armrests, seat cushion, and base apron are all rendered as flat vertical front-facing surfaces with no depth. The armrests lack horizontal top surfaces running from back to front, and the cushion seat is drawn straight from the front rather than seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14911
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "armchair",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The armchair is drawn in pure front elevation: the backrest, vertical armrest pillars, cushion face, bottom rail, and legs are all depicted flat facing the camera with no foreshortened top surfaces on either the seat, armrests, or backrest.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14675
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "armchair with seat cushion",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion is clearly foreshortened and viewed from above between rows 5 and 10 (6 pixel rows deep), nestled between the armrests with the vertical skirt and legs shown below on rows 11-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9948
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "worn red velvet armchair",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat cushion surface viewed from above is clearly visible between the backrest and the front apron, spanning rows 6 to 10 (5 rows tall). The south-facing front apron and armrest faces are also clearly depicted below and beside it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8623
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.633Z",
+ "cells": {
+  "16": [
+   "40c2bdae125df0fe"
+  ],
+  "24": [
+   "0c6eff9ad5fd4884",
+   "0d962afbd6e835e7",
+   "43734bf4bac457e2",
+   "777ca404b45add58",
+   "c3a9259e86ebb4a9",
+   "ecc321ec8db68d4b"
+  ],
+  "32": [
+   "1b17b700838b6d84",
+   "47e2658c08b210a5",
+   "64f1b0614532eb1e",
+   "683f4a53ed2afed6",
+   "c199713331589837",
+   "e749a4b3c72d94d8"
+  ],
+  "48": [
+   "015a0a78588fd777",
+   "8317e9949916b2d2",
+   "dc26cf1fbcadfa44",
+   "e45f21e53214cac8",
+   "e9b47464c931e83f",
+   "f579c952d3aa547b"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0b5620a6ad4b772025dac18052a516fcdd3342784147c0f13fa2d7e16e6198e",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "small gilded picture frame holding a dark moonlit landscape painting",
+ "label": "gothic_manor/frame_s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "picture frame with canvas",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame correctly depicted flat against the vertical wall face, as appropriate for the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6689
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "picture frame with landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall as permitted for wall_mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3676
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gilded picture frame with canvas",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against the wall as allowed for wall_mounted items, depicting a gilded frame with a moonlit landscape.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6357
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "picture frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame showing a moonlit landscape; flat frontal orientation is valid for wall-mounted items.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7910
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.223Z",
+ "cells": {
+  "16": [
+   "2dd638a50576bbe6"
+  ],
+  "24": [
+   "3d32471ac466e516",
+   "64a4698c27b6faa1",
+   "698010358cc92cb5",
+   "8019d39ebba35fa0",
+   "be98af6b785cdcc1",
+   "e6f5891896965b6a"
+  ],
+  "32": [
+   "06411d17a1013926",
+   "0cba751e49079b14",
+   "881020ba4ccc190e",
+   "9015eabe567046ce",
+   "d385f3e6a2a7890b",
+   "f0515fcb7baa3f0a"
+  ],
+  "48": [
+   "32be6e59ee3cb55c",
+   "450207ffe1491dac",
+   "471ec383cb7764d4",
+   "70893eac142eefc4",
+   "92436d2fd0344eef",
+   "c45b7dfdc95329b7"
+  ]
+ }
+}

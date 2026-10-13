@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d5350be6504df4a9825afd4b7b89e5b3ff3682a66fc3f2441b79b6daca6912a1",
+ "width": 16,
+ "height": 24,
+ "kind": "low_furniture",
+ "name": "wooden toy chest with a thick flat lid seen from above, a small porcelain doll lying on the lid",
+ "label": "gothic_manor/doll",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden toy chest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest spans rows 5-12 (8 pixel rows), clearly showing its horizontal surface with a porcelain doll resting on it, above a front vertical chest face spanning rows 13-21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden toy chest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is shown foreshortened from above occupying rows 5-12 (8 pixel rows) with a porcelain doll resting on it. Below it, the south front face of the chest extends from row 13 to row 21.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden toy chest",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface spans rows 5-12 (8 pixel rows tall) with a doll resting on it, followed by the front face from row 13 to 22.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5255
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "toy chest with flat lid",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is shown with significant 3/4 depth spanning rows 5 to 12 (8 rows) with a doll resting on it, meeting the darker front face and latch at row 13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4721
+  }
+ ],
+ "decidedAt": "2026-10-13T14:40:23.604Z",
+ "cells": {
+  "16": [
+   "45bb2499fafcb204",
+   "b12866e364844509",
+   "eecddcaaff2f1b25",
+   "f5435f83ec764857"
+  ],
+  "24": [
+   "4f377149293fce6e",
+   "a151e5f79d877119",
+   "d47590fb7a2e2c28"
+  ],
+  "32": [
+   "32670aa75ab13fbe",
+   "66bf6c73435a70b4",
+   "80cbf98386193801",
+   "95167dde95986efa",
+   "d2e3ea88965136c9",
+   "d53aaceb55b7e267"
+  ],
+  "48": [
+   "0c4fba9fdc7fc448",
+   "2e1895a7eda48d06",
+   "4f755b8065614fe8",
+   "803d59fa7b02e6f2",
+   "9aae2e508d85756a",
+   "bf27bd7bb53fe073"
+  ]
+ }
+}

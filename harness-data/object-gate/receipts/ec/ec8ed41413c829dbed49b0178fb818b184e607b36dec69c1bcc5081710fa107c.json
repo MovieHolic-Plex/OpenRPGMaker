@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec8ed41413c829dbed49b0178fb818b184e607b36dec69c1bcc5081710fa107c",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "standing brass candle stand with a wide round top dish holding three lit candles, round foot (animation frame)",
+ "label": "gothic_manor/candelabra_f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass candle stand with top dish and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candelabrum and its wide dish are drawn in pure front elevation (like a 2D chalice/trophy). The dish shows no elliptical top opening or interior surface seen from above, and the candle tops are flat 1px lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8591
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass candle stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candle stand is drawn in pure front elevation: the base has a completely straight horizontal bottom baseline at row 30, the central collar is drawn flat, and the upper dish has no elliptical opening or top surface visible from above (the candles emerge directly from a front-facing goblet cup profile).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7843
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass candle stand with top dish and round base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the wide top dish shows no ellipse or top opening (0 rows), the candles have flat 1px tops with no visible tops, and the 'round' base has a completely flat horizontal bottom line (rows 30-31) rather than a curved perspective contour.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6681
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "candle stand (dish, stem, and round foot)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The candle stand is drawn entirely in pure front elevation: the candle tops are flat horizontal lines, the dish shows no foreshortened top opening or rim ellipse (wax drips directly into a front-facing bowl profile), and the base ends in a completely flat horizontal bottom line at row 30 with no 3/4 downward curvature or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6664
+  }
+ ],
+ "decidedAt": "2026-10-13T14:43:56.228Z",
+ "cells": {
+  "16": [
+   "33ab580b75e9a2fd",
+   "b98cfea4a642a7d1"
+  ],
+  "24": [
+   "114e5f75713900c9",
+   "16fb530f2ad52b8f",
+   "69916fba93483d5a",
+   "6c0cb003bff4876e",
+   "6cef08f090522f60",
+   "7a38ae5b95135148",
+   "975815fce6537b58",
+   "9aaecc72214f7911",
+   "b85c4d28ae6f7077",
+   "c06084fd54e22413",
+   "cf9a81655e24cc5f",
+   "de7bc277760fc6ba"
+  ],
+  "32": [
+   "a5036a8a9d8967bd",
+   "ca0d7cbc0cc3e24b",
+   "f32759b422c9676c"
+  ],
+  "48": [
+   "2fcf2a28e162f5ef",
+   "ab267319c5a634ed",
+   "b3379970cc55b3b0",
+   "d0d06aa098082df3",
+   "f7af6044b55bced4",
+   "fe589a4ed8b6b341"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "545af4c954006214594d95e2b179a64b41c912264519a55a6516fb04d3f95c1f",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "old cracked white bathroom tile floor with grimy grout, flat",
+ "label": "gothic_manor/floor_bath",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tile floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 2x2 grid of cracked and stained bathroom floor tiles viewed from above as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5628
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathroom tile floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile shown entirely from above across all 16 rows with grimy grout grid dividing four square tiles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4651
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiled floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite depicts a flat top-down bathroom tile floor with grout lines and cracks, matching terrain specifications.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3762
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bathroom tile floor",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile viewed from top-down perspective, depicting grimy tiles and grout lines across the full 16x16 canvas.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3198
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.636Z",
+ "cells": {
+  "16": [
+   "1753bf24e0b7eb74"
+  ],
+  "24": [
+   "72b8520e78f3ef25",
+   "7300ae8aa37ba19d",
+   "904215cae7acd741",
+   "ad41c8d2cf69a5ff",
+   "b2a5a1377c685c45",
+   "b56a69d4b36e39b9"
+  ],
+  "32": [
+   "0d91409a13411f00",
+   "2e73d5daf0f1b67d",
+   "3471bd47a72aa440",
+   "9035773fefe21e42",
+   "a485029762732617",
+   "bb5b195e6002ad35"
+  ],
+  "48": [
+   "7ab9cf6736f754e6",
+   "8ce3eb153cfb0d57",
+   "aa613c122f6f44c7",
+   "ae7241ca231ece8f",
+   "bec96c81fa0333de",
+   "d117a13efbd58fb7"
+  ]
+ }
+}

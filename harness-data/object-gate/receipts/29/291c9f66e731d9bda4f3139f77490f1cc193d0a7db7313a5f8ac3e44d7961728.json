@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "291c9f66e731d9bda4f3139f77490f1cc193d0a7db7313a5f8ac3e44d7961728",
+ "width": 32,
+ "height": 32,
+ "kind": "container",
+ "name": "old clawfoot bathtub with its inside seen from above, filled with dark blood-red water",
+ "label": "gothic_manor/bathtub",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "clawfoot bathtub",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bathtub opening is viewed from above with a 3px thick top rim, a visible 12-row tall interior cavity containing blood-red liquid and inner back wall (rows 6-17), and a 6-row front face (rows 21-26) supported by clawfeet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6332
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathtub",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bathtub clearly shows its top rim and a large opening viewed from above (rows 6-17) filled with red liquid, sitting above the south-facing front wall (rows 21-26) and claw feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10168
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bathtub",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tub's top opening and wide rim are clearly foreshortened and viewed from above (rows 2-19), displaying the interior filled with blood-red liquid across 12 source pixel rows, above a south front face (rows 20-26) with claw feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 33035
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "clawfoot bathtub",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": true,
+    "opening_rows": 13,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bathtub is drawn in a clear 3/4 top-down perspective showing the top opening and inner basin (rows 6-18, filled with red liquid) surrounded by a wide rim, and a vertical south front face (rows 21-27) supported by claw feet.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5063
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.225Z",
+ "cells": {
+  "16": [
+   "1f80f346aa98ff87",
+   "56adc81e655cac6d",
+   "67427617c2142b71",
+   "d48cbcdfa3a1a82e"
+  ],
+  "24": [
+   "0465eefbdb554f9f",
+   "07f6fc188bc4b6cd",
+   "18fefc4dbdd8b414",
+   "1f107c37f940e0d4",
+   "246819d068567b49",
+   "3bdf4ccd8b964bd7",
+   "4c625faf65e03d00",
+   "61125dc7eaa6e342",
+   "6168b48f53a2d581",
+   "6c3967c7f9c2f702",
+   "7264be9d45771a5b",
+   "76d16180b9875a48",
+   "7ef6d8e4497e6c91",
+   "b0be85e2b36aa75a",
+   "b337c7afc1628c88",
+   "bfbf032a3ff5d12f",
+   "c2656dbb98f545cb",
+   "ccd61e42aaf61a8e",
+   "cec9ee8398fcae52",
+   "d582c56f52b75ef5",
+   "db98c0dcc8283d49",
+   "f7c9683d8e024c42",
+   "f87e1e78dfbef80c",
+   "fcffde79b2e81dda"
+  ],
+  "32": [
+   "61a2eed87eac2f79"
+  ],
+  "48": [
+   "2c1db6be5491ee52",
+   "b236e2b8e5857ae2",
+   "b821c623d7f778be",
+   "bd1df08a689f4e35",
+   "ce970353846902b9",
+   "e6d619b91d1776e6"
+  ]
+ }
+}

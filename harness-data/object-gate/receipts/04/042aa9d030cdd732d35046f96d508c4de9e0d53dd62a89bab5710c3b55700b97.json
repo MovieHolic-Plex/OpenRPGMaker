@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "042aa9d030cdd732d35046f96d508c4de9e0d53dd62a89bab5710c3b55700b97",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "museum glass display case on a wooden base, flat glass lid showing a relic on red cloth",
+ "label": "gothic_manor/glass_case",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "museum glass display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface is foreshortened from rows 1 to 8 (about 8 source pixels tall), revealing the top view of the relic on a red velvet cushion, resting above the front glass pane (rows 9-19) and wooden cabinet base (rows 20-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6410
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "museum display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the case is clearly visible from rows 1 to 8 with a glass lid looking down onto red velvet and a relic, above the front vertical glass pane (rows 10-19) and wooden base (rows 20-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6608
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "glass display case on wooden base cabinet",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-8 depict the horizontal top glass surface looking down onto the relic and red velvet lining, while rows 9-31 depict the front glass pane and wooden cabinet base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6140
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "museum glass display case",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top glass surface is clearly visible from above across rows 1-8, showing a foreshortened horizontal plane with a frame looking down onto the relic and red cloth. Below it, the front glass pane (rows 10-19) and wooden base (rows 20-31) form the south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6929
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:44.871Z",
+ "cells": {
+  "16": [
+   "1c26a7fac9651314",
+   "a5546e599a5861a0",
+   "d61086f7c43a4ff4",
+   "ffaa87b2500ad13e"
+  ],
+  "24": [
+   "04d2c20b8c8a6631",
+   "0b6be14b4042ff13",
+   "158909b31c87b176",
+   "1868aa5b4f2002a4",
+   "1ab370133a852c4f",
+   "223e37dd79f4ee42",
+   "4e48ce92d6a975ad",
+   "58d03cb32019ec00",
+   "5b83dcc1a0a31341",
+   "6dbfc76a3775002c",
+   "74dc3f721ff3c15c",
+   "753c2872cdd73b11",
+   "91132519f1e124da",
+   "91276facb495513f",
+   "995ec370049eb33d",
+   "a3d7e353be6b3f57",
+   "a8232b6a8e3a0289",
+   "ba06d882e46c5ca6",
+   "bf92454b6c6b29ce",
+   "c771f6c90d014086",
+   "cc139f0bcbc23835",
+   "e71d1343815477c5",
+   "eca7d2ba02e1ab81",
+   "fc64c8eaed1322ed"
+  ],
+  "32": [
+   "3fa503525f6a681d"
+  ],
+  "48": [
+   "2e49dea1073b2be9",
+   "397da8fbfb23a060",
+   "692e70e8a7083268",
+   "aa9fc5e902149d39",
+   "cfb7062935817397",
+   "e668a476b268b77b"
+  ]
+ }
+}

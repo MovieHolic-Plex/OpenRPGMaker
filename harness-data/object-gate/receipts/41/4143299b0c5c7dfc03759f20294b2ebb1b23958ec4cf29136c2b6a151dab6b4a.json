@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4143299b0c5c7dfc03759f20294b2ebb1b23958ec4cf29136c2b6a151dab6b4a",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "dark wooden parquet floor tile, flat",
+ "label": "gothic_manor/floor_parquet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dark wooden parquet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat terrain floor tile spanning all 16 rows viewed from above, perfectly matching the terrain kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6225
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor/terrain tile filling the 16x16 grid, viewed entirely from above as a horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5581
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dark wooden parquet floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile viewed entirely from above, filling the 16x16 footprint.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 pixel area depicts a flat wooden parquet floor tile viewed from above as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3245
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.635Z",
+ "cells": {
+  "16": [
+   "252df0a525893a14"
+  ],
+  "24": [
+   "3f190c86b7eea492",
+   "66e14febbf0a26c7",
+   "71c9558a3fbb448f",
+   "8fc71cd9bdf7a24a",
+   "a50519a347aeac40",
+   "db6da2b20b42de1c"
+  ],
+  "32": [
+   "063ab6d3ac865ba2",
+   "1d9d36ae526f9c86",
+   "254dc869d5ed65c9",
+   "4f096c5a71c9f107",
+   "5dc2ede16873be77",
+   "9726a33822c5378e"
+  ],
+  "48": [
+   "5f1162aa743a51f7",
+   "64465bf280eff69f",
+   "c094f71b4ad97e11",
+   "c2be59504c80d5d1",
+   "d14f356bf53bf9e0",
+   "eface7c449cb62e7"
+  ]
+ }
+}

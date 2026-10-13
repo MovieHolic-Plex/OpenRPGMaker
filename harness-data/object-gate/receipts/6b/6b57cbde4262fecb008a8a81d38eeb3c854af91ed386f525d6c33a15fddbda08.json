@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b57cbde4262fecb008a8a81d38eeb3c854af91ed386f525d6c33a15fddbda08",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle",
+ "label": "gothic_manor/chandelier",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier ring is drawn in clear 3/4 top-down perspective as a foreshortened ellipse spanning rows 8 to 25. The candles are arranged around the circular frame at varying depths and heights, with the back candles elevated and front candles lower down, clearly showing the horizontal plane seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 37802
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier is rendered in full 3/4 perspective as an ellipse: candles in the back are positioned higher (rows 3-9) while front candles are positioned lower (rows 17-26), and the open center of the ring is visible with interior spokes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10790
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 10,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier ring is drawn as an ellipse foreshortened at roughly 45 degrees (spanning rows 8 to 24), with seven candles correctly distributed in depth around the ring perimeter and the dark interior space visible within the hoop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier ring is rendered as an ellipse seen from above at a 3/4 angle, with rear candles positioned higher (rows 3-9) and front candles positioned lower (rows 17-27), clearly exposing the inside of the ring and its elliptical perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7527
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:44.871Z",
+ "cells": {
+  "16": [
+   "1f6fab95f6a9af2f",
+   "72a68d438f426f59",
+   "b7af9b6c84d778a0",
+   "c221287946fc16f3"
+  ],
+  "24": [
+   "077f56a0d3df6c48",
+   "1507bf16d6b9cad9",
+   "22b71935f3b947ff",
+   "28a7187c771ff1ef",
+   "2f3c5f050ee002c8",
+   "3b802fbdd1a8fab4",
+   "646239087abbb5de",
+   "672eaa63cd9c9823",
+   "6771c66d46752282",
+   "875f1e237d513c2f",
+   "8f604bd57f4696a5",
+   "94c374f15a4f77c4",
+   "9ec252718cc79fe6",
+   "a91e465f87cf9ed9",
+   "aba1d81b218ea706",
+   "abc972499c7325f7",
+   "ae240e89db962004",
+   "b1527af639cf4d92",
+   "b5ecf628b4bf2213",
+   "ce6692b9eb4fcdbc",
+   "d6faaeb2ee2c9d0f",
+   "ed52b3885da7f0f2",
+   "f448a03751d9ad56"
+  ],
+  "32": [
+   "bed1605152008dd5"
+  ],
+  "48": [
+   "23fe15db3e63ec1e",
+   "2abe9576264fa607",
+   "9702aec33b7325c8",
+   "a2d336ccef5295a2",
+   "a779de9464c9b33a",
+   "c189655c9d160cd4"
+  ]
+ }
+}

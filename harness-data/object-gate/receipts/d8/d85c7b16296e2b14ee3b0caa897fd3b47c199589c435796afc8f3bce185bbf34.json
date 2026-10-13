@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d85c7b16296e2b14ee3b0caa897fd3b47c199589c435796afc8f3bce185bbf34",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "old bed with a worn red blanket and pillow, dark gap under the bed",
+ "label": "gothic_manor/bed",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bed with headboard, mattress/blanket, and under-bed opening",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow and red blanket surface) extends from row 7 to row 20 (14 pixel rows), followed by a 4-pixel front drop/face of the blanket (rows 21-24) and the under-bed gap with legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7472
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bed mattress and blanket",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bed (pillow and red blanket) occupies rows 8 through 20 (13 source pixels tall), followed by a 4-pixel front drop/face (rows 21-24) and open space with legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7580
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bed mattress with blanket and pillow",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed top surface spans rows 8 through 21 (pillow and red blanket), with rows 22-24 forming the vertical front face and rows 25-30 showing the legs and gap beneath in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4208
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bed with headboard, pillow, and blanket",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bed clearly displays its horizontal sleeping surface from rows 7 to 20 (including pillow and worn red blanket, ~14 rows tall) and south-facing front skirt (rows 21-24) above the under-bed gap and front legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3899
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.225Z",
+ "cells": {
+  "16": [
+   "03ed4f39baaac5b2",
+   "2cab58151fe87bd8",
+   "bc634b1451107627",
+   "fefd0658da5ff41e"
+  ],
+  "24": [
+   "15010579c37e939e",
+   "164e9f576e555845",
+   "1dad302695cf7a96",
+   "2ec2574dcdd75a74",
+   "3079fc0ab43a0e92",
+   "3459086c0a0c9f27",
+   "352e4694840af256",
+   "497ab8c6c19949e7",
+   "63c242a4f1dc07e5",
+   "70aa299360670c99",
+   "74ba8606f5772071",
+   "75d1e0385326ced9",
+   "8dde6f87fd3e815a",
+   "93076b9bfbb1a884",
+   "9e578b0b09dd5d60",
+   "9e8dfd9089639ebc",
+   "ae810a63f88e0da9",
+   "afa9fa44d0d587f0",
+   "b5ff3e2403e6b09a",
+   "b6e9f01360d6eb4e",
+   "ecf33125ce178947",
+   "edc12a002aa40194",
+   "f69f4c4feba5434f",
+   "f854e157890b300a"
+  ],
+  "32": [
+   "57c6c1ef4e2ed82c"
+  ],
+  "48": [
+   "0342cb3dc86ac6ce",
+   "1a4e6f1ac78b8352",
+   "570f644f49b9a791",
+   "6f1a31610abe32ca",
+   "7ed53649020b503b",
+   "87f1d41a0af008e2"
+  ]
+ }
+}

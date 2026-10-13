@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4620e09a2773bf80ef75da62a35bdf4c2c59792c7fc835dec22ced0f9d33678a",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "large gilded picture frame holding a dark moonlit landscape painting",
+ "label": "gothic_manor/frame_l",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gilded picture frame with landscape painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Framed painting mounted flat against a vertical wall; conforms to the wall_mounted category where flat front view is standard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9732
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "picture frame and canvas",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame displayed flat on a vertical wall surface as expected for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20209
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gilded picture frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The picture frame is mounted flat against the north wall, which correctly shows its front-facing surface without a 3/4 top view for this kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9411
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "picture frame and canvas",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted picture frame correctly drawn flat against the wall face; wall-mounted objects are exempt from showing a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11545
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.224Z",
+ "cells": {
+  "16": [
+   "03837e06ac4f249b",
+   "0dae5b7a9e4c069e",
+   "64b85abd7179c808",
+   "67835052b24005d4",
+   "760b98d009f59d7f",
+   "d87dbb0ca3f3d48d"
+  ],
+  "24": [
+   "174970a31dc7b2cb",
+   "2bee7f438a4b9176",
+   "537f407e32ef103c",
+   "914ff268582af6cf",
+   "ac9af56b8c15aed1",
+   "c1da215ba1905976",
+   "c781988e1056968d",
+   "d80a63ee63bfbe90"
+  ],
+  "32": [
+   "348bdc9178c3a68c",
+   "62a6cbb84611c37f",
+   "6d8c02dfac2934b4",
+   "80cbddad5890f3be",
+   "8e2373c91aed4e8c",
+   "bac020e71d4cc7d1"
+  ],
+  "48": [
+   "255759868645a8f8",
+   "b9a3755460870cb3"
+  ]
+ }
+}

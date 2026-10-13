@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3a38a82804699697b7759326739c26d3361bf9c88766eff03afce519f81d5fb8",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden bookshelf full of books, dark gothic study",
+ "label": "gothic_manor/bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a flat front elevation with a 1-2px cap line at rows 0-1 and a vertical front fascia at rows 2-4, lacking any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6792
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn entirely in front elevation with no visible top surface (row 0 is only a 1px dark edge line). The shelves and books are also rendered straight-on with 1px shelf dividers and no visible horizontal shelf planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8165
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn in pure front elevation; row 0 is merely a 1px dark cap edge, rows 1-5 form the vertical front fascia, and shelves are drawn straight on with no foreshortened top or shelf surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5694
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a flat front elevation. Row 0 has only a 1px dark edge line with no visible top surface, and the shelves are flat horizontal lines.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5686
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.221Z",
+ "cells": {
+  "16": [
+   "b761fa26d745c9ba",
+   "df78afef576305fe"
+  ],
+  "24": [
+   "0a82264e4a105932",
+   "366b3700da00a894",
+   "39399ee6719a1368",
+   "44c2cdd7e110b4a5",
+   "5516e7acf032b5c3",
+   "84be567232851100",
+   "9d97ebc46d3432fa",
+   "a2291171361eab50",
+   "a7a38225681a00fe",
+   "e5c1f2a026cb40c8",
+   "f08333c0800c8f92",
+   "f112cd8e473badab"
+  ],
+  "32": [
+   "1091167c6740aa19",
+   "571d8f361283d1a4",
+   "9cb083818252c46c"
+  ],
+  "48": [
+   "078a7963c2e86a07",
+   "1d76bd87075f57f3",
+   "25e408a59aed41f5",
+   "280a0c116107b5a9",
+   "3559e16a6ad99af1",
+   "bed4b4c81a456b6c"
+  ]
+ }
+}

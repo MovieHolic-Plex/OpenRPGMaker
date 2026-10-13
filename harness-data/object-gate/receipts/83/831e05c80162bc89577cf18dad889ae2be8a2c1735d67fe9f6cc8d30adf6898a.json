@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "831e05c80162bc89577cf18dad889ae2be8a2c1735d67fe9f6cc8d30adf6898a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "wooden wine rack with rows of dark green bottle ends",
+ "label": "gothic_manor/wine_rack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wine rack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top horizontal surface of the wine rack is clearly visible across rows 1-6 with a highlighted front edge at row 7, providing proper 3/4 perspective foreshortening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6144
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden wine rack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the rack is clearly visible across rows 2-6 (about 5-6 pixels tall) with a front edge rim at row 7 before descending into the front face containing the shelves of bottles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21415
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden wine rack cabinet",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wine rack is clearly visible across rows 2 to 7 (approx 5-6 pixel rows tall) above the front shelves containing the bottle ends.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6965
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden wine rack",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wine rack is clearly rendered from rows 1 to 6 (approx 6 rows deep) with textured wood grain before the front moulding at row 7 and the shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4265
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.634Z",
+ "cells": {
+  "16": [
+   "00104eb3ba3e3803",
+   "698791bf22ab1224",
+   "b3a87e0400bfa9bd",
+   "d6c16dec0623860a"
+  ],
+  "24": [
+   "02d1330d09426574",
+   "09b50abf597b1361",
+   "0ae1e0f262e9dac1",
+   "0c136342beeda4a5",
+   "16bddfaed1050e5f",
+   "1ac0ffe26a95987d",
+   "1d23069bc1ad0ac3",
+   "509f94868b4d1c6f",
+   "59b635b59758deaf",
+   "5d0db5e1679620f3",
+   "60834cbd58f77b18",
+   "616cf1addae4bb6e",
+   "63bcc0593a88447d",
+   "67966deaa754ea61",
+   "6c6619a0f4fe6f8a",
+   "6dabf87fd8ccda6a",
+   "7ce518e3a0534760",
+   "7d38466a77510e9a",
+   "8dcd796acb38179a",
+   "b705db3132238843",
+   "baf57b574558753e",
+   "bdda7778584f2568",
+   "c21d1fb354719a85",
+   "f44e3c1ccb51d421"
+  ],
+  "32": [
+   "681a96a97410a13a"
+  ],
+  "48": [
+   "59037e450111df98",
+   "69b0db92e0613d95",
+   "948640fe44613aea",
+   "a1321860a6617b55",
+   "e6ad0cc14a54ee0d",
+   "f690348f176cff71"
+  ]
+ }
+}

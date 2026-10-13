@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f8143f3e6a27bc560f17af02442a179721ff19c484b6c71f643bc6acdca3cb0",
+ "width": 16,
+ "height": 32,
+ "kind": "flat",
+ "name": "long dark red carpet runner with a gold border, lying flat on the floor",
+ "label": "gothic_manor/rug_runner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet runner",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The runner is a flat floor object correctly drawn top-down, showing the entire decorative surface and borders across rows 0-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet runner lying flat on the floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-level runner rug viewed from above spanning rows 0 to 31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4771
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet runner",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a floor-lying carpet runner viewed from above across all 32 rows with gold borders and patterned red fabric.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3308
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet runner lying flat on floor",
+    "kind_matches": true,
+    "top_rows": 32,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The runner is drawn entirely as a flat surface on the floor from row 0 to 31, consistent with the top-down perspective for floor rugs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3248
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.226Z",
+ "cells": {
+  "16": [
+   "4052da83dabfc6fa",
+   "ba8647d0b9c3a792"
+  ],
+  "24": [
+   "05dd07f7513dc215",
+   "306998fd88ac4534",
+   "3de4af2b62fef6ec",
+   "6797e9152bcaf1f3",
+   "81157089f048f408",
+   "8f3738f7d063dcfe",
+   "af44efda42ffc0e5",
+   "bec045fb03c2fc8e",
+   "cb5b6bc00b283169",
+   "e5fbe879ee8b02b7",
+   "e8d283e740c12452",
+   "f56fb02a8003fbb7"
+  ],
+  "32": [
+   "10cc477690e4c5ab",
+   "232a065404826a82",
+   "5d0b387d065f7e5d"
+  ],
+  "48": [
+   "80abb9d349ee0cee",
+   "831140a25d3340aa",
+   "b98798f71d74945b",
+   "c5b7a24bc3cf6c01",
+   "e944716de9315845",
+   "fd16fd4a4dfae4d2"
+  ]
+ }
+}

@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2fdec7806d4dc6ae7f56cae4f8959d48a56b90f809f30671319d1a4b30593b57",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "narrow wooden console table with a small bone-white vase and a candle",
+ "label": "gothic_manor/console_table",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "narrow wooden console table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop surface is clearly visible from above across rows 1-7 (approx 7 rows tall), supporting the vase and candle, above a front apron/face extending down to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5567
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "narrow wooden console table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console table clearly shows a prominent top surface across rows 1-7 where the vase and candle rest, followed by the south-facing front side on rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4572
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "narrow wooden console table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console table top surface is visible from row 1 to row 7 (approx 7px tall) with a lighter front rim on row 7, followed by the darker vertical front face from rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5120
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "narrow wooden console table",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console table top surface is clearly visible across rows 1 to 7 (7 pixel rows deep) with items resting on it, followed by the south/front face from rows 8 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4174
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.633Z",
+ "cells": {
+  "16": [
+   "3699b1fbcfe08c81",
+   "e1b4cfa61ddbbd87"
+  ],
+  "24": [
+   "581ba96352a14c87",
+   "5fc4f45d3b6c1bca",
+   "8771a17a434d8714",
+   "88b2cb4ef1fa6e02",
+   "8ca736ec44bc74f1",
+   "ac31db290f4eea2f",
+   "d70268e4a952b146",
+   "e3b80c970db86d7b",
+   "e71370969126669a",
+   "e993aefe12419d6f",
+   "ed7d038958e9188e",
+   "f15bc543cf338a40"
+  ],
+  "32": [
+   "2c3f8bff04e33429",
+   "f289eb9ca8b933c8"
+  ],
+  "48": [
+   "02dca399ea17d047",
+   "275708a623a57fcb",
+   "52995c70cee9fbf3",
+   "96315cd5c88d54ad",
+   "c924cf5228ea6078",
+   "f5bdc360fd029075"
+  ]
+ }
+}

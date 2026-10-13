@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "79e507d2c4da3b835ec856f8552fcb4c372f0a36d8e13d9fe646dc2838ecb98e",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "tall arched manor window with dark blue night glass and a stone sill, wall mounted",
+ "label": "gothic_manor/night_window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular window set into a stone wall frame with a sill at the bottom",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted object designed flat against the north wall. No isometric side faces; appropriate front-facing perspective for a wall-mounted fixture in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6915
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wall-mounted window with stone sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window set flat into the wall surface with dark night glass, wooden frame, and a protruding stone sill at rows 28-31. As a wall-mounted fixture, a flat front elevation is appropriate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5984
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window set flat into the wall plane with a 2px projecting stone sill at the base; wall_mounted items are permitted to be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8358
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall window with stone sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window designed for a north wall. The frame and panes lie flat against the wall, while the stone sill at rows 28-29 correctly displays a foreshortened horizontal top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8273
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.635Z",
+ "cells": {
+  "16": [
+   "1bf8299da7fef88d",
+   "7f9edeb1767c6e26"
+  ],
+  "24": [
+   "19a09467c62f54f2",
+   "19f82ab0ce81f2d5",
+   "1b9b1ffa7ef2b0b9",
+   "406403ae572d5c56",
+   "5df1b798632494c8",
+   "5ea96924f847495d",
+   "66fe6d96e0f52be7",
+   "9550255e9f8f075e",
+   "a27838626a9bd50f",
+   "ba383ba60d78c485",
+   "f109c3408421b63f",
+   "f56d55c1373dd05b"
+  ],
+  "32": [
+   "5e40f803889cc382",
+   "7faa1fe65c499d99",
+   "cbfcde6e45e8b890"
+  ],
+  "48": [
+   "317d3484b5d9905c",
+   "5ae0f3cdc7d77da5",
+   "772c037ca08e2091",
+   "924125d72c9ec8b1",
+   "b0d251a94f96192b",
+   "bb7a1d95d7908b72"
+  ]
+ }
+}

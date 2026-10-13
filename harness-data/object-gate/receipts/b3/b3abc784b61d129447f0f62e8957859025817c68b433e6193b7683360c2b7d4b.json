@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b3abc784b61d129447f0f62e8957859025817c68b433e6193b7683360c2b7d4b",
+ "width": 32,
+ "height": 24,
+ "kind": "column",
+ "name": "two brass stanchion posts with wide flat round brass caps joined by a sagging red velvet rope",
+ "label": "gothic_manor/rope_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass stanchions are drawn entirely in front elevation. The round caps at the top are drawn as 8x7 pixel vertical circles/discs facing straight at the viewer rather than horizontal ellipses showing a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8833
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion caps and bases are drawn from a straight-on front elevation (the caps are drawn as circular/spherical front-facing disks/balls rather than horizontally foreshortened ellipses, showing 0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6115
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion posts and their top caps are drawn in pure front elevation; the round caps are drawn as vertical flat circles (or spherical finials) with no horizontal top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6043
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The brass caps at the top of the stanchions are drawn as near-perfect circles (8x7 pixels) viewed straight-on in pure front elevation rather than foreshortened horizontal discs seen from above, showing no top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6225
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:49.174Z",
+ "cells": {
+  "16": [
+   "02d4e66ae48c1351",
+   "20ef70858f148165",
+   "28c28f9f212a843a",
+   "461fc211c54ea7e6",
+   "a460e34f28d1fd00",
+   "dcedf001b398029a",
+   "f20b923a9c6f33a1",
+   "fa255cc42a70d034"
+  ],
+  "24": [
+   "53217bf5766749f4",
+   "6d8a2c67f5509b45",
+   "a0e429df696c87cb",
+   "a692544a156efaf2",
+   "d173eb704bb7018a",
+   "f4587e654cda742f"
+  ],
+  "32": [
+   "1e7ce7a7052e6da4",
+   "283521185d958a6c"
+  ],
+  "48": [
+   "3f7858670b0b0019",
+   "52e4a56dc38b6448",
+   "c49843eade88b1ec",
+   "cf0d7b6c840ab7d0",
+   "d0032d11344ee5cd",
+   "d963288264f759cb"
+  ]
+ }
+}

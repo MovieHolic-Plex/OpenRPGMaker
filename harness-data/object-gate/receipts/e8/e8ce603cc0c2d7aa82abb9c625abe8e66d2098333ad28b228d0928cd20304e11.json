@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e8ce603cc0c2d7aa82abb9c625abe8e66d2098333ad28b228d0928cd20304e11",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "iron wall sconce holding a lit candle, wall mounted (animation frame)",
+ "label": "gothic_manor/wall_sconce_f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron wall sconce with candle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture (sconce with candle) designed to hang flat on a north wall; appropriately rendered facing the camera without top-down perspective distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9827
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron wall sconce with candle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted sconce and candle drawn flat facing the camera, which is standard and acceptable for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8632
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "candle in iron wall sconce",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted sconce and candle drawn flat against the wall face; appropriate for wall-mounted kind which permits flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7578
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "candle in iron wall sconce",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted fixture drawn flat for vertical wall placement (acceptable under the wall_mounted category), with no isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6941
+  }
+ ],
+ "decidedAt": "2026-10-13T14:46:41.005Z",
+ "cells": {
+  "16": [
+   "ec0286a868b628f0"
+  ],
+  "24": [
+   "1c0a9100c0536554",
+   "1d3ed9f57a54525c",
+   "2ba10c11dc6bc39d",
+   "3b6893c9af8cc024",
+   "5a50021f00a89a4f",
+   "6b4954cfdd5f5447"
+  ],
+  "32": [
+   "5ad8e838131c17c3",
+   "9257f52f169ac3a0",
+   "92feb7fcda3d4aec",
+   "a9052c72ca813f04",
+   "ba8e35672b2bec96",
+   "f3bbeed3a264db57"
+  ],
+  "48": [
+   "69f4daafe5b00548",
+   "6bbe306f3c5fef21",
+   "903f3f843e2d23a3",
+   "9b889e4c33ce6de5",
+   "acccaac894632ffc",
+   "edff3572c4db5fdf"
+  ]
+ }
+}

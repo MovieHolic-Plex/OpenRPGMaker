@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1e9c90f309d2b01bb532e4290cc68654574897c4adfba563f8669d3e3f8fae58",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "two brass stanchion posts joined by a red velvet rope, round brass caps, round base",
+ "label": "gothic_manor/rope_post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchions are drawn entirely in front elevation like a 2D side-scroller sprite. The round bases at rows 12-15 are rendered as flat horizontal bands rather than foreshortened ellipses with a visible top surface, and the caps at rows 1-5 are drawn as flat silhouette domes with straight horizontal undersides.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The round bases and caps of both stanchions are drawn in flat front elevation with straight horizontal bands (rows 5, 12, 13, and 14 are completely straight horizontal lines) instead of showing the foreshortened elliptical top surfaces expected in 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6852
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the brass caps and the round bases are drawn in pure front elevation: the bases are drawn as flat rectangular slices without an elliptical top surface visible, and the caps are drawn as flat 2D silhouettes without foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5678
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass stanchion posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stanchion posts, caps, and bases are drawn from a pure front elevation (2D side-view profile). Neither the round base plates nor the top caps exhibit a foreshortened elliptical top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8126
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.224Z",
+ "cells": {
+  "16": [
+   "6bf3efa33eb3c7b6"
+  ],
+  "24": [
+   "7662c166be4ff86c",
+   "abf464402544ad66",
+   "b9c40c0adb26649a",
+   "cbf60cbc10dd60e6",
+   "cf855dc8ca5d6cc3",
+   "ec3bebefe5846cbb"
+  ],
+  "32": [
+   "15e2d4760d410a3b",
+   "2aaa6cf2c82607a7",
+   "55376eb2d135181a",
+   "74a3461d9c6cd9be",
+   "758e6dbe0209ae7f",
+   "df6057e1c05fb4e6"
+  ],
+  "48": [
+   "3997b83b307c4e4b",
+   "441325bcc14af760",
+   "5478a2c3049af60f",
+   "5986daef3562ea8f",
+   "77676a519c073fd3",
+   "d5890116e47c569b"
+  ]
+ }
+}

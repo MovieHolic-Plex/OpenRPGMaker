@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4b9ef36bdecbeca58de7adc3efdf09801df1e26ef6101283ae590d4ab26ab95d",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden bookshelf full of books, dark gothic study",
+ "label": "gothic_manor/bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly depicted across rows 1-5 (5-6 pixels deep) with a highlighted front edge along row 6 casting a shadow onto the shelf cavity below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 21166
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a flat front elevation. Rows 1-5 form the vertical front header/cornice board, with only a 1px dark outline at row 0 where the top surface should be. The shelves and book spines are also drawn entirely flat from the front with no visible top depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8882
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn strictly in front elevation. The vertical side uprights, horizontal shelf dividers (1px lines), and front header frieze (rows 2-5) show no foreshortened top surface from above. The top edge is only a 1-2px dark border at rows 0-1.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10420
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden bookcase",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bookshelf is drawn as a pure front architectural elevation. The top section (rows 2-6) is a front-facing wooden header/fascia between the vertical side pillars, with row 6 serving as a bottom edge highlight. No horizontal top surface of the bookcase is visible (0 px), and the interior shelves and book tops are also drawn flat from the front with 1px horizontal shelf dividers.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17551
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:07.069Z",
+ "cells": {
+  "16": [
+   "7e24a1e0ae44dc1c",
+   "df78afef576305fe"
+  ],
+  "24": [
+   "063226a0f502b114",
+   "1491bd7414df8597",
+   "39399ee6719a1368",
+   "3b1fc53b5523b128",
+   "3caa8a3ffa9d5554",
+   "44c2cdd7e110b4a5",
+   "9fe82cbe43b408c6",
+   "a2291171361eab50",
+   "a7a38225681a00fe",
+   "d42c227aeb0f7da7",
+   "e5c1f2a026cb40c8",
+   "f112cd8e473badab"
+  ],
+  "32": [
+   "1d5707027f1715fb",
+   "37b41875efebfaa6",
+   "4c189113e5ba59b2"
+  ],
+  "48": [
+   "1f7ca7791578f72b",
+   "3f2957700a46e787",
+   "901780db5f5d92a2",
+   "9853b4934d071c58",
+   "d765e7b8c195117b",
+   "dcabc960f8455204"
+  ]
+ }
+}

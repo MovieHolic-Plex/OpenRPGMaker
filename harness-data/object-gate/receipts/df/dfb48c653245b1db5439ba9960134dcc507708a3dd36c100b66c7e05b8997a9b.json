@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dfb48c653245b1db5439ba9960134dcc507708a3dd36c100b66c7e05b8997a9b",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "stone sarcophagus with a thick carved lid, no figure",
+ "label": "gothic_manor/sarcophagus",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone sarcophagus lid and body",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved top surface of the lid occupies rows 1-7 (approx 7 rows tall) with a highlighted front lip at row 8, resting atop a dark front-facing basin body from rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7834
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone sarcophagus lid and base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-7 depict the illuminated top surface of the carved stone lid (approx. 7 rows deep) with a bright front edge highlight on row 8, overhang shadow on row 9, and the vertical front face of the sarcophagus base occupying rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9863
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone sarcophagus",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lid is shown clearly from above across rows 1-8 (with carved stone details), while the south/front face of the base is visible beneath it across rows 9-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7237
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone sarcophagus lid and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The carved top surface of the sarcophagus lid occupies rows 1-6 (about 6 rows tall), followed by the lid overhang on rows 7-8, shadow on row 9, and the south/front face of the sarcophagus body on rows 10-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6752
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:44.871Z",
+ "cells": {
+  "16": [
+   "b1020b973c11c730",
+   "b62cbe02273dbc64"
+  ],
+  "24": [
+   "38704a6954bed3ca",
+   "48dc08757dc066af",
+   "4fa523b345c11a7e",
+   "6f217726c597b180",
+   "719fa1dff10cddde",
+   "71cc8ebe22fb145b",
+   "a4273d3054d4dabe",
+   "c4a58d81c553bb70",
+   "c7b364ec8aef0e20",
+   "d0323425abb30516",
+   "d8a2688f52e70fd5",
+   "f8c339c8e4d3adff"
+  ],
+  "32": [
+   "5eb541a4b8a2ae18",
+   "70bedc986efc0904"
+  ],
+  "48": [
+   "1fbaa8135cc1eb69",
+   "39cb2982a733b0cc",
+   "3e547eefeedf285b",
+   "51da81835ec0ef90",
+   "72488a1fac5269ad",
+   "9698e4bff2957664"
+  ]
+ }
+}

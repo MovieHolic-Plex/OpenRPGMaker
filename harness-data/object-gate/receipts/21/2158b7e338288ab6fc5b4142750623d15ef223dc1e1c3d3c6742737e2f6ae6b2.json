@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2158b7e338288ab6fc5b4142750623d15ef223dc1e1c3d3c6742737e2f6ae6b2",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "tall arched manor window with dark blue night glass and a stone sill, wall mounted (animation frame)",
+ "label": "gothic_manor/night_window_f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall rectangular window with wooden frame, blue glass pane, and bottom sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window flat against the north wall, correctly displayed facing south with no incorrect isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6851
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall arched window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window set flat against the vertical wall. As a wall-mounted object, it appropriately faces the camera flat without requiring a top perspective surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8407
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall rectangular window with dark blue glass, wood frame and stone sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window set flat into the wall surface with a light stone sill at row 28; valid 3/4 top-down wall decoration.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5544
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wall-mounted window with frame, glass, and sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted fixture (window set into a vertical north wall). Flat representation is correct and expected for wall-mounted objects in this perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6017
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:25.989Z",
+ "cells": {
+  "16": [
+   "150e97f2537a5a00",
+   "815a798fe5605af8"
+  ],
+  "24": [
+   "0fe61bc2856fc7f1",
+   "1897b5f82fb3a689",
+   "1e408b44642332de",
+   "290296ff69cecc38",
+   "7bc527bb7f200c69",
+   "8c1cf8b501aa643e",
+   "8faafd366d8f3890",
+   "9bf55229494d8cd0",
+   "acd91c65350a388c",
+   "b9b2eaf28136fe13",
+   "f14d38bb9678eead",
+   "f542dbaeef3bf7f2"
+  ],
+  "32": [
+   "8f9a5a10db3f3d37",
+   "9fc118323ea55b1a",
+   "e7995ac642ff16bb"
+  ],
+  "48": [
+   "4c415669110bf843",
+   "96b27437956713c4",
+   "a8a76559ebd5a8d6",
+   "c40526b314636948",
+   "daeb5c9da5ed522e",
+   "ea2003dad5a32ce4"
+  ]
+ }
+}

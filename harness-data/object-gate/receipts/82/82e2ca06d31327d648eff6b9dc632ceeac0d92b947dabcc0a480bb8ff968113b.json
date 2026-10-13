@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "82e2ca06d31327d648eff6b9dc632ceeac0d92b947dabcc0a480bb8ff968113b",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "bathroom vanity with a round white basin seen from above and tarnished brass tap",
+ "label": "gothic_manor/vanity_sink",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "vanity cabinet with counter and inset basin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vanity countertop is seen from above on rows 0-8 with an elliptical basin opening visible inside (rows 3-7), and the south cabinet front is visible on rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5363
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bathroom vanity with basin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vanity countertop is clearly foreshortened and seen from above across rows 1-9 (approx 9 rows tall), containing an elliptical basin opening visible from rows 3 to 7 (5 rows tall) above the south cabinet drawer face (rows 10-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5534
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "vanity cabinet with basin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The countertop surface is visible across rows 0-8 (9 rows deep), containing an elliptical basin opening (rows 3-7) with interior visible, atop a front-facing cabinet drawer (rows 9-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6458
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "vanity countertop and cabinet base",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The vanity countertop occupies rows 0-8 (9 rows deep) showing a clear 3/4 top-down plane. Inside it is a round/elliptical basin with an opening visible from rows 3-7 (5 rows deep) with water/drain depth. The front face with drawer occupies rows 9-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5866
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.634Z",
+ "cells": {
+  "16": [
+   "08260a6d5cc01f50"
+  ],
+  "24": [
+   "20610ac1b80f0b63",
+   "23cad8fdbc222324",
+   "5328b9432428338c",
+   "a8d2a0032269fca7",
+   "d30b5c64d87c3bca",
+   "f2a98185b3200767"
+  ],
+  "32": [
+   "3954a6aaddbdb226",
+   "4a5044cf8d0dd7fc",
+   "8184aae4acc70d66",
+   "b9426c38871cbc52",
+   "bdaff62e41a7cc96",
+   "d675738ca6b4f5ba"
+  ],
+  "48": [
+   "127eadeca8d9f3c3",
+   "2771e2def43f3a34",
+   "8193051e0421c90f",
+   "ad643a730618a850",
+   "ec2873da9a8715f5",
+   "f2cefecee2916628"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af26526ecd353f20152828916efd8e449efedfd2c1d9afe6108f99e753c38d0f",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "iron chandelier ring with candles, seen from above at an angle (animation frame)",
+ "label": "gothic_manor/chandelier_f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron chandelier ring",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": true,
+    "opening_rows": 8,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier hoop is correctly foreshortened into a 3/4 view ellipse, showing an 8-row interior opening between the back rim (around row 10) and the front rim (around rows 19-21). Back candles sit behind the ring while front candles sit lower and in front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12866
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": true,
+    "opening_rows": 11,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chandelier hoop is drawn as a foreshortened ellipse spanning rows 8 to 25. Candles are positioned in 3/4 perspective along the ring perimeter (back candles at y=4-9, side candles at y=11-18, front candles at y=17-26), clearly showing the horizontal plane seen from above rather than a flat front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20783
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an open iron chandelier ring with candles arranged in an ellipse viewed from above, not a closed cylinder with a solid top cap. The ring geometry and candle heights correctly reflect a 3/4 perspective, but it does not match the 'closed cylinder' kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16170
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron chandelier ring with candles",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is an open hanging chandelier ring, not a closed cylinder (no solid top cap exists). While the candles and circular ring are arranged in a foreshortened ellipse in 3/4 view rather than a flat front elevation, it does not match the closed cylinder category and possesses no solid top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "윗면 0행 < 3"
+   ],
+   "ms": 17263
+  }
+ ],
+ "decidedAt": "2026-10-13T14:46:11.211Z",
+ "cells": {
+  "16": [
+   "109b2fbd67feda0f",
+   "391c8da693bf7564",
+   "58f960a60d3111c2",
+   "6c06d2a364201d0c"
+  ],
+  "24": [
+   "1507bf16d6b9cad9",
+   "170770afdcc2d8a9",
+   "194d998f104b261f",
+   "1b38abd5ef53c2fd",
+   "1dfee2ab95e48f39",
+   "1e23014a0cba4869",
+   "2c19fbb9e11dedf1",
+   "2fd93584e122c665",
+   "37bdcd5ad92a8721",
+   "5352dd07642409b8",
+   "5398bdec2fcdbcc8",
+   "5e76e7e575cf4df2",
+   "5f7378934ebd9aac",
+   "875f1e237d513c2f",
+   "9ec252718cc79fe6",
+   "a91e465f87cf9ed9",
+   "ae240e89db962004",
+   "c254649b71de14b3",
+   "d2b155260140a8f6",
+   "dffb3de7ab8e9d72",
+   "f19e1ba0fdabda0d",
+   "f448a03751d9ad56",
+   "fae2c7fccd03f131"
+  ],
+  "32": [
+   "5a8fa3aee7093fbe"
+  ],
+  "48": [
+   "0bfe84b00ad1288a",
+   "5c8178871bcf6dbf",
+   "643b91b7347419a3",
+   "7ea9566f5aff9874",
+   "8abd723dbde7429d",
+   "d6b93c1f1610248e"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0b3a5004f08d0b1efac7494f70e181a649e9be876ef9286aa7e961e735ef654d",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "old upright piano, dark wood with a worn keyboard",
+ "label": "gothic_manor/piano",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "upright piano",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the piano is visible from above across rows 1-6 (about 6 source pixel rows tall) with a highlighted front overhang edge at row 7 casting shadow onto the vertical upper board beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8024
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "upright piano",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the piano is clearly depicted across rows 0-6 (7 rows tall) with a highlighted front edge at row 7, above the vertical south-facing front panel and keyboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9396
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "upright piano",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire upright piano is drawn in straight front elevation: vertical side pillars run the full height from top to bottom, the upper panel, music stand, keyboard, and pedals are all depicted flatly from the front with 0 rows of visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7218
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "upright piano",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The piano is drawn in pure front elevation (2D architectural view). The side posts run straight from top to bottom, the music stand and pedals are drawn completely flat from the front, and the keyboard is rendered as a vertical strip on the front face rather than a receding horizontal plane. There is no top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16571
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.223Z",
+ "cells": {
+  "16": [
+   "27d8136baf0faa12",
+   "4b22ff05c3326c4e",
+   "e2d7a5a0132f8389",
+   "ec19a77de7c9be3c"
+  ],
+  "24": [
+   "0a425c88cd58efb1",
+   "16c5001a5924aa94",
+   "265db17a342741a3",
+   "2cb2477c3d6e828d",
+   "305d8e902b413859",
+   "32f767bc22418a65",
+   "419fbc04e29b2ebb",
+   "62e599b16800ca99",
+   "76f9a6deec52831e",
+   "772c75f6e71e307e",
+   "7e05098a37e15bb4",
+   "822b1e4a452aa3ce",
+   "96bdb5ca12233ce2",
+   "97c5ad41dba8a3bf",
+   "9b560929c8e2aeb5",
+   "9cea5601ef6f2a08",
+   "a799f3c4178d10d0",
+   "a97c9af119795a0c",
+   "b331da0534a40d3c",
+   "d25bbc13e7d6bc80",
+   "d50778317dbbf583",
+   "e820b553b915706d",
+   "f562d2e3e9dc157a",
+   "fefddedda344ada7"
+  ],
+  "32": [
+   "b8aabfe476d39e64"
+  ],
+  "48": [
+   "1bb77e9556c2ca22",
+   "4e1032773158a9ab",
+   "62bf3339efebb3c5",
+   "84e2d3d49ddc4880",
+   "bf374d4aecda5e20",
+   "c8c6c0288db8569e"
+  ]
+ }
+}

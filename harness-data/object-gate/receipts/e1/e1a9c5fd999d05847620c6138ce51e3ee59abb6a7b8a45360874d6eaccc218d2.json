@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e1a9c5fd999d05847620c6138ce51e3ee59abb6a7b8a45360874d6eaccc218d2",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "tall wall mirror with a dark wooden frame and spiderweb cracks, murky glass",
+ "label": "gothic_manor/cracked_mirror",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall mirror in dark wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is classified as wall_mounted (flat against wall). It is drawn flat facing the camera as appropriate for a wall mirror, with no isometric distortion or improper side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6996
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wall mirror in dark wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Object is wall-mounted and drawn flat against the wall, which is appropriate for the wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7341
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall mirror",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted mirror depicted flat against the north wall, which is appropriate for wall-mounted decor in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5842
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall mirror",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted mirror mounted flat on a vertical wall; as a flat wall-mounted object, it correctly displays its front face flush to the wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7433
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.635Z",
+ "cells": {
+  "16": [
+   "7933725cae6cc6d8",
+   "ee5226a55acdd982"
+  ],
+  "24": [
+   "012a7dc7b8561cba",
+   "19c28693987e2331",
+   "47b4ea1a2efddf27",
+   "50d14e7039914615",
+   "5d541c9d435f43f2",
+   "778120ce4e70e847",
+   "83f92f7a373fba2d",
+   "af5256d6e45ae38d",
+   "b938730cd8c5c82e",
+   "d0b035491ca02ea2",
+   "da7e6b28cfcd07de",
+   "e64b6480dbcb6470"
+  ],
+  "32": [
+   "15581ac43ce2c900",
+   "cdf8cf050b421ca8",
+   "d4afbbe6d80d8f5a"
+  ],
+  "48": [
+   "03d7c1eeb9cd4f71",
+   "5719829e4e8cb0ba",
+   "854290da97ec6970",
+   "9d84f85dcf9a5eb0",
+   "e0d2383f09e1b52d",
+   "fcef0b3721209eaa"
+  ]
+ }
+}

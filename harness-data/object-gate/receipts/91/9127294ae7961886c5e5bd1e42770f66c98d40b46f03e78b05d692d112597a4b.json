@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9127294ae7961886c5e5bd1e42770f66c98d40b46f03e78b05d692d112597a4b",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden storage crate with planks and iron corners, lid seen from above",
+ "label": "gothic_manor/crate",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden storage crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is viewed from above across rows 1-7 with vertical plank divisions, while the front face with iron corner brackets occupies rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4450
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden crate with lid",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lid/top surface occupies rows 1-7 with vertical plank divisions, while the front face with iron corner brackets occupies rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3663
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden storage crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the crate is clearly seen foreshortened from above across rows 1-7 (7 px tall), while the front face with iron corner brackets occupies rows 8-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4679
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden storage crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is clearly visible across rows 1-7 with vertical plank seams, meeting the south front face which spans rows 8-15 with iron corner reinforcements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4523
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.634Z",
+ "cells": {
+  "16": [
+   "9801924f03584064"
+  ],
+  "24": [
+   "4b7ecc289d185350",
+   "4e2c2d94bf2c306d",
+   "55d91e3125109af5",
+   "97c6ccabf2c38f48",
+   "98aaee24cd60be8c",
+   "a435af1001fd3a2c"
+  ],
+  "32": [
+   "0f4ff12b0f5fc20d",
+   "6d6e65a7603dc14c",
+   "899973f3ec0c031e",
+   "b866273bf1e017ff",
+   "e9dc4896a865a876",
+   "eef099616209d861"
+  ],
+  "48": [
+   "6495ce2c201d424f",
+   "6b112da510234b76",
+   "875426fd89955b7a",
+   "98a23ff496fb81c5",
+   "c0bb6a62657ffcd5",
+   "efbae4c05d4ed1e0"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "07a29ed390d748a28eb091a48a80a1e408699adcb0cd1516f481c1a9b54aa1a3",
+ "width": 16,
+ "height": 16,
+ "kind": "figure",
+ "name": "small porcelain doll sitting on a wooden toy box, cracked pale face with button eyes",
+ "label": "gothic_manor/doll",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden toy box with sitting doll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the doll and the toy box are drawn in pure front elevation; the box front panel faces directly forward with no visible top surface (at most a 1px sliver at row 8), and the doll's hat and head also lack top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8263
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "porcelain doll on wooden toy box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The toy box base and the doll are drawn in pure front elevation. The toy box displays only a vertical front panel (rows 9-14) with at most a 1px top edge strip at row 8 on the sides, lacking any foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5882
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden toy box with doll",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The toy box is drawn in a pure front elevation with a flat panel face and no visible top surface (only a 1px border at row 8 flanking the doll). The doll is also drawn completely flat with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5772
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "porcelain doll on wooden toy box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The toy box acts as the base of the figure and is drawn in a pure front elevation, showing only the vertical front panel (rows 9-15) with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5938
+  }
+ ],
+ "decidedAt": "2026-10-13T14:39:58.634Z",
+ "cells": {
+  "16": [
+   "e78cd5bb84f0f42b"
+  ],
+  "24": [
+   "1ad0af3c61c5624e",
+   "1b7533708a8201e3",
+   "4c870375aa068cab",
+   "8ff527d8caa0702a",
+   "9c3817741e2f39cc",
+   "9e692d1e90e18a36"
+  ],
+  "32": [
+   "7764ad0fb380b508",
+   "861cb42398ec3486",
+   "977920d239256d49",
+   "b1c28eae756c631d",
+   "cbe18347eddd851a",
+   "fbe4257895403d5b"
+  ],
+  "48": [
+   "2a567af77370a287",
+   "482f526ea5a70f3d",
+   "6c286356bafe75a6",
+   "70810ccad5a523f5",
+   "992b47c8a15b5967",
+   "ffe3c7d41faf5071"
+  ]
+ }
+}

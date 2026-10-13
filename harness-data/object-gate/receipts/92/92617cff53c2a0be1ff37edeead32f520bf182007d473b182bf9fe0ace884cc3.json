@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "92617cff53c2a0be1ff37edeead32f520bf182007d473b182bf9fe0ace884cc3",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall wooden bookshelf full of books, dark gothic study",
+ "label": "gothic_manor/bookshelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from rows 1 to 7 (7 pixels tall) with foreshortened horizontal wood texture, leading down to a front lip/shadow at row 8 and the recessed shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9864
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is rendered across rows 1-7 (7 pixels deep) between the back edge (row 0) and the front lip/overhang (rows 7-8), correctly displaying the horizontal top plane in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11027
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bookshelf is clearly visible from above across rows 1-7 (7 source pixels tall) before dropping down to the shelf openings below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19249
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall wooden bookshelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 1-7 depict the foreshortened horizontal top surface of the bookshelf cabinet with wood grain texture, terminating at row 7 with a front-edge highlight and row 8 with an under-edge shadow casting onto the shelf below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9542
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:49.173Z",
+ "cells": {
+  "16": [
+   "af05c193364cefa6",
+   "fca8687b49b26e1a"
+  ],
+  "24": [
+   "04e03d353880071d",
+   "060c51c6225c850f",
+   "06d6b4bbca4a8c31",
+   "19821e77510d8222",
+   "346ce9af590523da",
+   "3b5198f45a52f8ed",
+   "4000af1863021130",
+   "6c7aefbf05bb493b",
+   "cd36918bf791697b",
+   "cfcdba1e1b41a618",
+   "dafbdf97e774dd09",
+   "f2f85ccb9d827888"
+  ],
+  "32": [
+   "b239db1e76da5b5d",
+   "b65fdca7c281fe94",
+   "f6bcf63aa8221688"
+  ],
+  "48": [
+   "00f2e067b075afb5",
+   "29f645ca0b295089",
+   "687521c1b85df922",
+   "96cdb74b4568398b",
+   "ccb2c005c336daa7",
+   "f37f2905c367635f"
+  ]
+ }
+}

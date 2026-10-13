@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "06110dbd8f70934305457b9cedaeec2f74a640dece36326224f7ab50ba0d112b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "square stone pedestal with a thick flat top slab seen from above, empty",
+ "label": "gothic_manor/plinth",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square stone pedestal with capital slab and shaft",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 5-11 clearly depict the top surface of the stone slab in foreshortened 3/4 view (approx 7px tall), with its front edge at row 12-13 and the vertical shaft below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5588
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal with top slab",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab clearly shows its foreshortened top surface across rows 5-10 (approx. 6 rows tall) above the front edge thickness (rows 11-13) and main shaft below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6672
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab's horizontal surface is clearly visible from rows 5 to 11 (approx 7 rows deep), showing the flat top surface from above before dropping into the front edge and shaft below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5884
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "square stone pedestal",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top slab's upward-facing surface is clearly visible from rows 5 to 11 (approx. 7 source pixels tall), followed by the slab's south-facing front edge (rows 12-13) and the main shaft (rows 14-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9247
+  }
+ ],
+ "decidedAt": "2026-10-13T14:36:49.174Z",
+ "cells": {
+  "16": [
+   "7fc2ce268aaf3d7f",
+   "8b8b28ee5346778f"
+  ],
+  "24": [
+   "02f2d81da50bbd21",
+   "4786c06b2af50c1b",
+   "7bea888bbc0c6725",
+   "7ca1663a30479b82",
+   "7ec0b1a5daf00824",
+   "9fcae3f90a322e4d",
+   "abe0ff1fbdd03100",
+   "bea32896bd01b179",
+   "c2a50203ea263478",
+   "c56f7d8da32e9f7f",
+   "c86e9b8320693121",
+   "eef1e4e723c956bd"
+  ],
+  "32": [
+   "1727eaf28e39d37e",
+   "4ce15aa6e827330c",
+   "d6a17c82da9da6ba"
+  ],
+  "48": [
+   "4dac51dbbd2f1ee6",
+   "6153f086c4408eae",
+   "7d03bbe4a228d9fd",
+   "c546c2501df7a3da",
+   "e420320aa8b49c88",
+   "f8b84778ff55b3c6"
+  ]
+ }
+}

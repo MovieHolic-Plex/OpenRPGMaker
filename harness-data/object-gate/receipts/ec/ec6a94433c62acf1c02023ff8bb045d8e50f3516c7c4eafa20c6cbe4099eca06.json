@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ec6a94433c62acf1c02023ff8bb045d8e50f3516c7c4eafa20c6cbe4099eca06",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "wooden barrel with iron hoops, closed round lid seen from above",
+ "label": "gothic_manor/barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: vertical staves run all the way to the top edge (rows 0-1), the iron hoop is a perfectly straight horizontal bar (rows 7-8), and there is no visible elliptical top lid/surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6698
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the vertical stave divisions run all the way to the top edge (rows 0-1), the metal hoops are completely horizontal straight bands with no curvature, and there is no elliptical top surface/lid visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4347
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the iron hoop across rows 7-8 is completely horizontal with no elliptical curvature, the vertical stave seams run directly to the flat top edge, and no foreshortened top lid or cap surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation with vertical staves running to the flat top edge and straight horizontal iron hoops (rows 7-8) without elliptical curvature; no top lid or elliptical cap is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7472
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.225Z",
+ "cells": {
+  "16": [
+   "01aab14939109179"
+  ],
+  "24": [
+   "02f8e10e4db1070a",
+   "25539272afbdb384",
+   "62aedd4c303acb90",
+   "6cefc2c4b213ad48",
+   "a440de29dfe3a7d3",
+   "d10911ffb11bf7f4"
+  ],
+  "32": [
+   "003e7c647aeeae52",
+   "2e708e2f6faea6e4",
+   "8eb4cd86356d796b",
+   "aa2a1bffd511d6f1",
+   "d2cd990e7ea4f651",
+   "d71e8998f98d55ae"
+  ],
+  "48": [
+   "2d073bb7c3e4a505",
+   "67527e11bb267c2d",
+   "854f626f548e9ece",
+   "a6ccb92b7a62b71b",
+   "d708602fa16e97b2",
+   "e39c9652d868381f"
+  ]
+ }
+}

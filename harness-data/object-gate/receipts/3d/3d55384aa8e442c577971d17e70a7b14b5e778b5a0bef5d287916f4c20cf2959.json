@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3d55384aa8e442c577971d17e70a7b14b5e778b5a0bef5d287916f4c20cf2959",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "tall arched manor window with dark blue night glass and a stone sill, wall mounted",
+ "label": "gothic_manor/night_window",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "window frame and panes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted window flat against a north wall; the sill below it shows a 1px top highlight and front rim. Wall-mounted objects are correctly depicted flat in top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9014
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall rectangular wall-mounted window with stone sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted object set flat into the wall surface as expected for a north-wall fixture in top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5518
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window drawn flat against the wall with 0 top rows; permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "window with stone sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted window set flat into the wall; as a wall-mounted feature, it correctly displays a flat front-facing design without a 3/4 top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6304
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:44.871Z",
+ "cells": {
+  "16": [
+   "abed4b8011bed09f",
+   "b3a776c44cccb2eb"
+  ],
+  "24": [
+   "0de71683dd0d86e9",
+   "1907f06b283d278d",
+   "235ff10dcc0b83e0",
+   "31218ef1106b33ce",
+   "41556e19d606eb0e",
+   "4655776dbc681c0c",
+   "501279edb84a303b",
+   "71480c3c33343339",
+   "9260e52fad6cba53",
+   "a53024fddf3d6935",
+   "b80133e331275d81",
+   "e9dff90eed7a718e"
+  ],
+  "32": [
+   "5240cd2d631e8d98",
+   "9e04204feb91c4aa",
+   "eb9318b6b6ff3c0a"
+  ],
+  "48": [
+   "27f1ec37f5f29aaf",
+   "2e566a4a71c7e636",
+   "4a275491c1c36515",
+   "56e65f769ed70ccf",
+   "7858dc545b05b957",
+   "914d8f1b43ac0d9f"
+  ]
+ }
+}

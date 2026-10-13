@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6a96c719b40ed9088c416cebaad25106b1a8c26ab4a4effb8bc0ce77ccd1b7c1",
+ "width": 32,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "medium gilded picture frame holding a dark painting of a manor under a moon",
+ "label": "gothic_manor/frame_m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "gilded picture frame with dark painting",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against a north-facing wall, which is standard and acceptable for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4623
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gilded picture frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame mounted flat against a wall, correctly depicted head-on for wall-mounted decor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7728
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gilded picture frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against a north wall as expected for wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3168
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "picture frame and canvas",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted picture frame drawn flat against a north wall, completely consistent with the wall_mounted category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4061
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.224Z",
+ "cells": {
+  "16": [
+   "0d69c5124dd394a0",
+   "123bcc5518655f45",
+   "7d8a290685a54d45",
+   "99e483c3eff6470d"
+  ],
+  "24": [
+   "117b622d70e07a93",
+   "1e03986f58b8458d",
+   "1fe0e043ddc5fb67",
+   "27ecea735069edd3",
+   "298935bb0cfb902a",
+   "41a9aef71ffb904f",
+   "4dd09aed0803e0ca",
+   "656338fe22d97f02",
+   "65f6ad28b426c354",
+   "6cfb97a24c33cf24",
+   "73a71e70d8cc22fb",
+   "74b80543bb0f5553",
+   "78b9a0f75b9569a0",
+   "a49362548300392d",
+   "ae4422b9d8b96d30",
+   "b13cafa5704116bc",
+   "b46d54981fed9f2c",
+   "b6a3fdc2b70ddcd8",
+   "c5f6938c9bd3f49a",
+   "da28d3e23c637e9a",
+   "df91527c9544f783",
+   "dfa88243b4750cb2",
+   "dffbb5f5f1e06e28",
+   "e6faba6ad6bba559"
+  ],
+  "32": [
+   "a7532195e99214e0"
+  ],
+  "48": [
+   "037bb7d7bd3a75dd",
+   "1c3c727cfeb83da4",
+   "266bb5d7eda5d5fa",
+   "3c948e88f0ce195f",
+   "6d6a3e54557861e1",
+   "f1cd88829f8d4b42"
+  ]
+ }
+}

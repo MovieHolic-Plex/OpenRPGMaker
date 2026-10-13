@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2f41d91411b963a4e4dc7ce87f5d7ff0387f7f4cdcb311f774b6406c19d86193",
+ "width": 16,
+ "height": 32,
+ "kind": "other",
+ "name": "standing brass candle stand with a wide round top dish holding three lit candles, round foot (animation frame)",
+ "label": "gothic_manor/candelabra_f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass candle stand with top dish and round base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dish features an elliptical inner surface (rows 13-15, ~3 rows tall) viewed from above, and the spreading round base shows a foreshortened top surface (rows 23-26, ~4 rows tall) leading down to the front rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7113
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "standing brass candle stand (top dish, stem, and round foot)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The round base foot exhibits a foreshortened top surface across rows 23-26 (approx 4 rows tall), and the upper dish shows an elliptical depression/opening across rows 13-15 (~3 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4980
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass candle stand with top dish and round base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wide top dish clearly reveals its interior surface/depth via an elliptical depression across rows 13-15 (3 rows deep), and the wide base slopes down with top surface visible across rows 24-27 (4 rows tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5241
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "candle stand",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper dish (rows 12-16, with a visible recessed elliptical interior of ~3 rows) and the round base (rows 24-27, showing ~4 rows of top surface) are properly foreshortened in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5448
+  }
+ ],
+ "decidedAt": "2026-10-13T14:45:17.426Z",
+ "cells": {
+  "16": [
+   "4f0cb0a0894346a0",
+   "73cca320a9d691d3"
+  ],
+  "24": [
+   "05edb5d0abf61fd5",
+   "287ecb858cc68984",
+   "5dd9f94f43287e36",
+   "62ad431697da48c8",
+   "69916fba93483d5a",
+   "7fca4b649fd89d05",
+   "828b319e76551a3e",
+   "86c8080fb1c49295",
+   "9a96238bc0fc9840",
+   "a77bc8fa35cda712",
+   "c06084fd54e22413",
+   "cf9a81655e24cc5f"
+  ],
+  "32": [
+   "07ce58dead78db9c",
+   "2391f2e7c742c4a4",
+   "786bfe725083b817"
+  ],
+  "48": [
+   "08b51405e04091da",
+   "3e398562788cb748",
+   "58b7ab1918b2fa04",
+   "9465ea434a4966a8",
+   "960114463387a7ae",
+   "9e8d65aa630b864d"
+  ]
+ }
+}

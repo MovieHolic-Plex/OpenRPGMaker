@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3dc5aa9f672abc49bac957e3d3a7f99cb600d1f42d46dfd10ccd8f123e32b64c",
+ "width": 16,
+ "height": 16,
+ "kind": "wall_mounted",
+ "name": "thin grey cobweb in a wall corner, flat overlay",
+ "label": "gothic_manor/cobweb",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cobweb overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Corner cobweb designed as a flat wall overlay, explicitly permissible under the wall_mounted kind.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3803
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cobweb overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Corner cobweb designed as a flat wall overlay; as an inherently flat wall-mounted decal, standard top-down 3/4 perspective requirements for 3D standing objects do not apply.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5669
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cobweb corner overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cobweb in upper-left corner designed as a flat wall overlay with diagonal strands; wall-mounted flat objects do not require top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3197
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cobweb strands spanning corner",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wall-mounted cobweb overlay spanning top-left corner with diagonal web strands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8671
+  }
+ ],
+ "decidedAt": "2026-10-13T14:34:45.225Z",
+ "cells": {
+  "16": [
+   "61cf5c210c4432fa"
+  ],
+  "24": [
+   "0cc30ec45a41d98b",
+   "1a991fe88ffce68d",
+   "43c71a6389fdc2fe",
+   "6a006a5a37837feb",
+   "7e0046f80b6358e0",
+   "b15778e1cb2b22af"
+  ],
+  "32": [
+   "0fffb72b918556be",
+   "18eb8cd0025bd92b",
+   "2c12ec4e63349ad9",
+   "6facc6ba2f47a9c0",
+   "7c7d55bb1881af5f",
+   "e41603f17041d531"
+  ],
+  "48": [
+   "11e796a309d90977",
+   "228d89cd23eaa7f1",
+   "569ed7e8c350dd54",
+   "6f8495353e09f47e",
+   "80325b33d8631107",
+   "b8be2acca2d4cc25"
+  ]
+ }
+}
