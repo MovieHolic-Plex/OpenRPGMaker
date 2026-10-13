@@ -43,7 +43,7 @@ const origin = arg('browser-url');
 let bridgePort = 0; let bridge: ReturnType<typeof spawn> | undefined;
 if (origin) {
   bridge = spawn('node', [path.resolve('scripts/qa/opening-assistant-browser-bridge.mjs'), origin], { stdio: ['ignore', 'pipe', 'ignore'] });
-  bridgePort = await new Promise<number>((resolve, reject) => { let acc = ''; const t = setTimeout(() => reject(Error('bridge timeout')), 90000); bridge!.stdout!.on('data', c => { acc += c; const l = acc.split('\n').find(x => x.startsWith('{"ready":')); if (l) { clearTimeout(t); resolve(JSON.parse(l).port); } }); });
+  bridgePort = await new Promise<number>((resolve, reject) => { let acc = ''; const t = setTimeout(() => reject(Error('bridge timeout')), 300000); bridge!.stdout!.on('data', c => { acc += c; const l = acc.split('\n').find(x => x.startsWith('{"ready":')); if (l) { clearTimeout(t); resolve(JSON.parse(l).port); } }); });
 }
 const adapters = await createOhMyPiAdapters();
 const genImage = async (req: { prompt: string }) => { for (let a = 0; ; a++) { try { const r = await adapters.generateImage('openai-codex', { prompt: req.prompt, model: 'codex-image-default' }); return { dataUrl: `data:image/png;base64,${r.base64}`, mimeType: 'image/png', model: 'codex-image-default', provider: 'openai-codex' }; } catch (e) { if (a >= 3) throw e; } } };
