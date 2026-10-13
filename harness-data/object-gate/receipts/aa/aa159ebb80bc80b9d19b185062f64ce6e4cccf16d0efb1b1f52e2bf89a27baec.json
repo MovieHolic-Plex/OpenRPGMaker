@@ -1,0 +1,209 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa159ebb80bc80b9d19b185062f64ce6e4cccf16d0efb1b1f52e2bf89a27baec",
+ "width": 144,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-9-R",
+ "label": "jp_city/street_hand/jp-sf-izakaya-9-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya building storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, signboard, entrance awning, and windows are drawn in pure front elevation with no visible roof slope or foreshortened top surfaces (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4517
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront is drawn as a flat 2D front elevation (side-scroller style) with no visible roof slope or horizontal top surface (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5023
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is presented as a flat straight-on facade; the roof/lintel bands are only horizontal edge lines with no visible top surfaces or slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 133577
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal elevation. Roof and lintel areas are only thin horizontal edge bands; no substantial top surface is visible from above, and there is no receding side face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 169176
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.818Z",
+ "cells": {
+  "16": [
+   "12887e2d64459229",
+   "22bde9a997a67f7c",
+   "29e85aece0d5b893",
+   "31503ef37ea162cf",
+   "39b8c0dee8103764",
+   "3f9158ecea34bdb4",
+   "47bc0719befa22e0",
+   "5b56ab9854f9e31c",
+   "62e1845c49bab753",
+   "6cf515bd1be9e0c0",
+   "78ae855731ecd33d",
+   "793e22e8f32d8a57",
+   "86184b2ba15ccb36",
+   "8e6f6144b4deb5f6",
+   "90df32abf9c52aa0",
+   "97fd92c3e9fb6f97",
+   "9e0d634da44c4fd1",
+   "a60f4ed3f84d5a30",
+   "ac5ecd96b93ab690",
+   "ce2f4cd8dd1453ea",
+   "d49c5fb1da0755cc",
+   "ffb95ef70f0924ae"
+  ],
+  "24": [
+   "03e9ec747b4789ec",
+   "538cab57f4d09866",
+   "78b31933a658aedb",
+   "9b2b48a17477052f",
+   "a42350fb82e4cecf",
+   "c9acd598ebcca84d",
+   "dbe7d40d32b7513f",
+   "e1369a1f39a56669",
+   "e1d4df408582275d",
+   "e6d62ba263de21e0",
+   "fcc09db326d7692a"
+  ],
+  "32": [
+   "05ca84525b130e66",
+   "1276cb301708de99",
+   "132f1c366a5da1b5",
+   "1382ae47f39c7b1b",
+   "16d11149d94b20bf",
+   "20f8c195b1fd35eb",
+   "232b5d41fe2800e6",
+   "26e268ebaa31e681",
+   "2b0b85f1532b7dc0",
+   "2ee374a7ba97b213",
+   "3402323e1d34310c",
+   "34bdb3cd90cd3cc6",
+   "38985458f792b1bc",
+   "3c8f532ac028c8db",
+   "3cf3c60bed8b01d4",
+   "4342f3cb91a5919b",
+   "46cf40220172ebb0",
+   "485ce97145baf0fc",
+   "4e7d83a114606353",
+   "4fa09ae6bfc69cf5",
+   "5a8aba9172a9c33f",
+   "5bbb65054e5994b0",
+   "5c066a40147bb92f",
+   "5f8c8b253f7ca555",
+   "6210445827f62e23",
+   "644973c553272617",
+   "64dc7c4b8d2f0596",
+   "66347b06c5ec5bac",
+   "77f69a59fc2453c5",
+   "79cced9dde914629",
+   "7a46d5ae120128ca",
+   "7a7b1d98ef0809e2",
+   "818180a01ba873fc",
+   "852b04dbdcf2667b",
+   "8efeecb10db8e386",
+   "9143b3ffb6e0aeea",
+   "9410f2294fa8c697",
+   "9bffc8406f22f745",
+   "a1d3ccab4a5f424d",
+   "a6394c97997c6180",
+   "a6c7422d22ec5a97",
+   "a898b763df471fc4",
+   "b559bf29dfa70094",
+   "b7a1627b0aad5029",
+   "b8b50c141fcf8616",
+   "cc07319cc851b845",
+   "ccaa57b3ebb9005c",
+   "cea60fbf30d6b0f7",
+   "e11b247d744687ad",
+   "e43ffc507370eda7",
+   "e8431cb401d6d1dc",
+   "eef05f6eeea3912f",
+   "f0b32e5988ba6b20",
+   "f603492d7b2deb49",
+   "f8ba57bac21e0d63",
+   "f970969249d01cf9"
+  ],
+  "48": [
+   "29f2545160138a33",
+   "ef25fe4dfcbe5291",
+   "fffe5a850eeacb66"
+  ]
+ }
+}

@@ -1,0 +1,184 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6304b973f3aadf9b0f4a9062ffd5285788886094ced2ff39f735e9d08270733c",
+ "width": 144,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-9-R",
+ "label": "jp_city/street_hand/jp-sf-konbini-9-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance canopy, shelves, and baseboard are depicted in a flat architectural front elevation with no visible roof or horizontal top surfaces (0 px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6531
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store storefront",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the fascia stripes, awning over the sliding doors, and window bays, is drawn in pure flat front elevation with 0 rows of visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6284
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience-store building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; the roof and horizontal lintel bands are only thin frontal strips with no visible top surface or depth. The central doors are front-facing and do not constitute a container opening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 107419
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 248438,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.821Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "4571655b0f2a45d4",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "8d89cb2a840e7e2c",
+   "9617129c5616f952",
+   "a85f374984f82a6d",
+   "b038b334f32a18f2",
+   "b65d05d203fc28f2",
+   "c420ed7e86803c46",
+   "dc0f45c04e822588",
+   "e09dad0b84f07f9a",
+   "e27b77b4bed816b5",
+   "ed308cd86f7435b5",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "30cd9a388be0c012",
+   "472b20f83104b856",
+   "47e48fdc07c2392f",
+   "4a0247476d0b856e",
+   "656363ce95cefca8",
+   "770802184eedc648",
+   "a03bec5f37bfd08a",
+   "bb7fdda3755c03a0",
+   "bd214eb45dc1f533",
+   "bf5cf87cacc2fc1e",
+   "e5527967dfe2cf7d",
+   "fecde020d5f4323e"
+  ],
+  "32": [
+   "0a58408bd27fbcd6",
+   "0dadb894f07f2053",
+   "0de6a39a1f79857f",
+   "0f598ed4c3d4dccd",
+   "100f9d3cfdb684b6",
+   "1bfeb008cadadd80",
+   "1d3853e8e1038d68",
+   "1fbf7ed66980ac99",
+   "213f7aaaa9e998c1",
+   "3246f61d4550b53f",
+   "33f155d3dbad6f0a",
+   "341aa62b2f715c62",
+   "3be31e01b4e31f0a",
+   "457e7f5088b8b459",
+   "48e1f8943ed49420",
+   "584fdebbb5f66f50",
+   "62c0cb595f7fbc76",
+   "62e2ddd3d8192316",
+   "67ca18e82cbf2e1b",
+   "75a0b57ef1aa6546",
+   "79531774590ea063",
+   "86fc4fca3e6699c6",
+   "8b9b7761c0ba1d17",
+   "934041bbe4fb7778",
+   "9aa8fc0b42e1aadc",
+   "a27629878767b4ae",
+   "a647aee1034a7b07",
+   "aafdc431ffdbfde7",
+   "b306e6f8a3a27acb",
+   "b538c5880016bd85",
+   "b5ebbac49c951169",
+   "b9ec0fbbfab13f79",
+   "bd1574bb35a26f67",
+   "c3cc2359f677f7a7",
+   "c3f382079df8d841",
+   "c457865dac291fbc",
+   "cfdf50fb82ac6cbc",
+   "d48357051175353a",
+   "d6856debb23cd5cd",
+   "d7d6d2760847fa1a",
+   "e0e7f489dc168dfc",
+   "e3242e99595d7868",
+   "edb610ddb184c2ff",
+   "eeb0f959de1a7b6b",
+   "f918703731c35d27",
+   "fc6d0b183dd5c892",
+   "fd8ae87a6500631c"
+  ],
+  "48": [
+   "244a228b3c11e3bc",
+   "5917d50da89061e3",
+   "666cb2cdfc75e5eb"
+  ]
+ }
+}

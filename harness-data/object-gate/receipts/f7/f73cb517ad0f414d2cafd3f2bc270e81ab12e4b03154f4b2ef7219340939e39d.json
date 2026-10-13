@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f73cb517ad0f414d2cafd3f2bc270e81ab12e4b03154f4b2ef7219340939e39d",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-dark-r",
+ "label": "jp_city/street_hand/jp-water-dark-r",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain/water edge autotile lying flat on the ground surface across all 16 rows without 3D vertical elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9850
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water edge autotile piece drawn directly on the ground plane spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5242
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "dark water flat ground patch",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a flat dark-water strip extending through the full 16-pixel height, with its horizontal surface visible from above; no receding side face or front-elevation treatment is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 395324
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "A narrow dark water/ground decal strip occupying a vertical band.",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground-like strip with its surface visible across the full source-pixel height; there is no distinct upright front elevation, receding side face, or container opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 372690
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.232Z",
+ "cells": {
+  "16": [
+   "2864799013fb77ea"
+  ],
+  "24": [
+   "406a30c706b4da97",
+   "a0485cce0377bec9",
+   "e024887104cacbe9",
+   "e21b14734c41d312",
+   "ed02afced9635fd4",
+   "f143222376d7abf4"
+  ],
+  "32": [
+   "1bad92a4fe551caa",
+   "45d33fcac08853c6",
+   "4934b3157a8635bf",
+   "729a105f33f71576",
+   "91c77c5f09bf64dd",
+   "ecf6cfdde6e2a615"
+  ],
+  "48": [
+   "0eee326f01935b30",
+   "70f08fcdbc452c58",
+   "7fdbd3cefe902366",
+   "912517c8bfe458cb",
+   "a55136fda42f9c29",
+   "fcc230aee58ada02"
+  ]
+ }
+}

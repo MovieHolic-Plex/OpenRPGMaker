@@ -1,0 +1,188 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "baa695e7cd48318157ad85d783fb0af52769d6ae453854d8de85e0c1dad5d3a1",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-line-s",
+ "label": "jp_city/street_hand/jp-mark-line-s",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat painted line decal on the ground occupying rows 12-13, correctly viewed lying flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4246
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor/road marking line spanning 2 pixel rows (rows 2-3) directly on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6185
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A 2-pixel wide horizontal painted line/floor marking lying flat on the floor plane across rows 12-13.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4618
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal floor marking line",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a 2-pixel tall horizontal painted line lying flat on the ground plane (rows 2-3), serving as a floor decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6865
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "A thin horizontal ground marking",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a solid white stripe spanning source rows 12–13. Its entire two-row area represents a flat ground surface, not a rim or cap on a standing object; no vertical or receding faces are drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11120
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat white ground-marking stripe",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stripe occupies source rows 2–3; its entire white area is a ground-facing surface viewed from above, not a rim or cap on a standing body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9858
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Thin horizontal ground-marking strip",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The marking occupies source rows 12–13 as a flat, filled strip viewed from above. It has no standing front face or receding side face; its two-row thickness is the entire ground decal, not a cap on a larger body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 20292
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal white ground-marking stripe",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stripe occupies source rows 2–3. Its entire visible area is a flat ground-facing surface, not a rim or the edge of a standing body; no vertical or receding side faces are drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10119
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.279Z",
+ "cells": {
+  "16": [
+   "84d42ce20a6d1f7a"
+  ],
+  "24": [
+   "000c4157abca7625",
+   "98143a0fbd8b3320",
+   "9953b8e3c2979ce1",
+   "9ef54ab20efe04ec",
+   "a2f2ebbcb082d8de",
+   "b39c290bd9fdf857"
+  ],
+  "32": [
+   "10378d6cb272c4dd",
+   "2039f6771cf0ec68",
+   "24f67b24ca278431",
+   "269e639c486936e3",
+   "6eaa81f0ebe2c134",
+   "b06170a00cab5b53"
+  ],
+  "48": [
+   "0570b5da73258c20",
+   "453dec510eee9728",
+   "6391f08d385eaddc",
+   "8720827c96e8d31a",
+   "8c4e535ce8a64f93",
+   "e86e2dd4bed49db5"
+  ]
+ }
+}

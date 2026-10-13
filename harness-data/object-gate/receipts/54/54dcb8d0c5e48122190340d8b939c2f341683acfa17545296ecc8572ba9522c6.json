@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54dcb8d0c5e48122190340d8b939c2f341683acfa17545296ecc8572ba9522c6",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-hydrant-sign",
+ "label": "jp_city/street_hand/jp-hydrant-sign",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The round hydrant sign is drawn as a flat circle facing directly forward in pure front elevation with no foreshortened top surface or thickness visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5722
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signpost with circular sign",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The circular sign disc, pole, and base are drawn entirely flat from a front elevation with no visible top surface, depth, or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7003
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 335829,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "round sign panel on a narrow pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main sign panel is shown as a flat circular front with no visible top surface; the pole is likewise a straight frontal strip. No receding side face or cut/top face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 53428
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.483Z",
+ "cells": {
+  "16": [
+   "c64ec4deb2f98e33",
+   "c8dfb07335ce0349",
+   "d512125fbb857dcb"
+  ],
+  "24": [
+   "02e26d3fece32d53",
+   "24bb636dea679b4c",
+   "3cb4cb78f47cc20a",
+   "7349ec2ec739dfdd",
+   "8e667096278b18df",
+   "b56bf54d1af989d1"
+  ],
+  "32": [
+   "02cceced94cb3766",
+   "0be1ba4d6d3a8e5e",
+   "3de1e123c662b89d",
+   "4f717bc2c819a427",
+   "5d80932ae3ae98ff",
+   "6e905b60a3bc4114",
+   "837d6237302893e7",
+   "a78aef1328cd5a5c",
+   "c785ab8e408bb2d4",
+   "ca86478bc4d15278",
+   "f5788716561cc1d7",
+   "ff0eaee8afc47405"
+  ],
+  "48": [
+   "2549ff20668a280d",
+   "78bc0b4c9bc9ef0e",
+   "afdee2a8a0b1f9fe"
+  ]
+ }
+}

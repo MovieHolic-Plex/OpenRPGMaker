@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7cd303d70d3b9f4f3e57232c0ed735e011a971ac81c6065bffe65c945280d3b",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-keijiban",
+ "label": "jp_city/street_hand/jp-keijiban",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board with roof canopy",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden roof canopy shows a 5-row foreshortened top slope (rows 2-6) with an eave edge at row 7, establishing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6637
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board with roof",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden roof canopy over the board shows a 5-row top/sloped surface (rows 2-6) viewed from above in 3/4 perspective before shading to the underside at rows 7-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6246
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bulletin board with a framed notice panel",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main board has a substantial brown top plane about 5 source pixels deep above its south-facing notice panel; no receding side face or container opening is shown. It is a solid bulletin board rather than an open frame or rack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail"
+   ],
+   "ms": 131716
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bulletin-board frame with a large notice panel and supporting posts",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main frame has a broad wooden horizontal top surface visible from above for about 5 source-pixel rows, plus its south-facing front panel. No receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 207024
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "4c02e151b68125b8",
+   "664c37dcc10ac037",
+   "7026046ce69970fd",
+   "a3a673567be6d649"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "044a98128dea2fbb",
+   "10afc5482d362ffd",
+   "135e80afbb12895c",
+   "15a03c059167fd66",
+   "224a5b2ae7d4a388",
+   "23e2cece53488274",
+   "2ee9e01d296c5f38",
+   "50dc9e71b2c65d9e",
+   "602aa11789be7fc6",
+   "63c1e306758152b3",
+   "63eb315053c7eb83",
+   "669fab931783ad7c",
+   "6c82d6c90cc61729",
+   "7b6c8abb4ac22083",
+   "9bd0ca0d12d85be4",
+   "9eee4cc2fc0b0b39",
+   "bc5187823a87ed3c",
+   "c6721a8513e9790b",
+   "d37d88c452dff433",
+   "d3b21ab5ea592cc3",
+   "dfda9e951b75356b",
+   "e6d94c2e3109f65a",
+   "f9fc45cef36db4b2"
+  ],
+  "32": [
+   "b38d97e6de817603"
+  ],
+  "48": [
+   "1bee440b36ff006d",
+   "5c6e1828e17f7a65",
+   "985b43a4eca39620",
+   "9dec4194345e49fc",
+   "bbd4e7f88bd613ab",
+   "ff1e956abc555056"
+  ]
+ }
+}

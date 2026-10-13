@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6a7c7080a187ed3dc43cd42ceef4b8d462ba1d8e715a8a06cabbb8a51ba6731",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-hydrant-sign",
+ "label": "jp_city/street_hand/jp-hydrant-sign",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hydrant sign head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign head and post are drawn in pure front elevation facing south with no top surface visible. While the base plinth shows a top plane, the main body itself has 0 top rows.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5972
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sign head and pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign head and pole are drawn in flat front elevation with no visible top surface. The only top surface shown is on the base plinth (rows 39-42), which does not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8053
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "red hydrant signboard on a narrow post",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main red signboard and post are shown as flat front-facing silhouettes with no visible horizontal top surface; the narrow dark edge at the top does not form a top plane. No receding side face or opening is visible. The object is primarily a signboard rather than a column-like object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 158673
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "red hydrant signpost with a vertical pole and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main red sign and pole are drawn as flat front-facing shapes with no visible top surface; only thin edge lines are present. The gray base has a visible top area, but it is a secondary plinth and does not establish a top for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 127252
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "18da0850053efcd5",
+   "1a6f0ade0374a08b",
+   "e9aa04338adc92f3"
+  ],
+  "24": [
+   "17034a1a40a92098",
+   "4419505e70f7c74f",
+   "7ab54f938f0790b9",
+   "aa440977de2a4b5a",
+   "cca31a27a7d24031",
+   "d8d8cddbe64f0c9d"
+  ],
+  "32": [
+   "06a1990c5193f8e5",
+   "1306e49f7ca206d0",
+   "14b78eb334fda93f",
+   "2a9c4a94f25bd8ce",
+   "57e59438c14c69c0",
+   "5c56e5ede2162b24",
+   "6f7ffe3ee6c7f241",
+   "744f6ab6ed60e1ef",
+   "786ddf2b710eb24e",
+   "874670c28072eb0d",
+   "e641fee048506f39",
+   "f303c9a567d2da4a"
+  ],
+  "48": [
+   "0adfa82dd9d4f38f",
+   "5ed2aec0c00136e7",
+   "a3c024aa7676167a"
+  ]
+ }
+}

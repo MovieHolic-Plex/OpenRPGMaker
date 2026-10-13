@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af0a5644cac37f4d8688070666848a39e1204454a0ee3abc349d8c4c4ffd846b",
+ "width": 16,
+ "height": 16,
+ "kind": "structure",
+ "name": "jp-bwall-plain",
+ "label": "jp_city/street_hand/jp-bwall-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall segment with plaster panel and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire 16x16 tile is a completely flat front elevation of a wall (plaster upper section and brick lower section) with 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5020
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese-style wall",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tile consists of an upper framed plaster panel (rows 1-5) and a lower stone wall section (rows 6-14), both drawn entirely in pure front elevation with no visible top surface or wall cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7256
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large rectangular wall/building body with a pale plaster face over a dark foundation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is presented as a flat rectangular front elevation; the horizontal color bands are facade/foundation rows, not a foreshortened top surface. No top slope or visible horizontal surface is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 53948
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular building wall with a broad roof/top surface",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main structure has a broad, multi-row horizontal top plane above its darker south-facing wall; it is not just a thin rim or edge highlight. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 140335
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.915Z",
+ "cells": {
+  "16": [
+   "8ec91c5c4c486484"
+  ],
+  "24": [
+   "0c6da5ae9d49bf7b",
+   "3211651ae669123b",
+   "812c0a8ef203f2e8",
+   "8a2e854e06620e55",
+   "c4ec175800f5d9f0",
+   "dc00a781a3133ee9"
+  ],
+  "32": [
+   "4f8a5a26ff2b7dd9",
+   "67a6e5a7c3cc2e1c",
+   "8107fa70ebced543",
+   "a530180baa78430d",
+   "c2454483144d4c23",
+   "e863859a036c3a26"
+  ],
+  "48": [
+   "02603cec99b2dbfb",
+   "0bf1269ac595e143",
+   "1ce5ebe8ada1649f",
+   "448d0fc24c87b22a",
+   "8838159e621dc420",
+   "9bf67286a6a654ae"
+  ]
+ }
+}

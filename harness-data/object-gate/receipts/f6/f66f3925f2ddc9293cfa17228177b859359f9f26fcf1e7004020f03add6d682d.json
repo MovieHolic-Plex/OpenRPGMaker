@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f66f3925f2ddc9293cfa17228177b859359f9f26fcf1e7004020f03add6d682d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "jp-bus-stop",
+ "label": "jp_city/street_hand/jp-bus-stop",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bus stop timetable board and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bus stop is drawn in pure front elevation: both the timetable board (rows 21-35) and the base block (rows 39-43) are completely flat rectangles with 0px top surface visible, lacking the required top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7784
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "timetable board and base block of bus stop",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The timetable board, post, and concrete base are drawn in flat front elevation with horizontal 1px outline caps and zero visible top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4881
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "the large rectangular timetable/signboard body in the lower middle",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular body is presented as a flat front-facing panel with only a thin dark top edge and no visible horizontal top surface. The broad purple upper element has a substantial top-like area but is a separate smaller cap/sign detail, not the top of the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 114346
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular bus-stop sign/shelter body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The largest lower rectangular body is shown as a flat south-facing elevation. Its top is only a thin edge line, with no visible horizontal top surface; no receding side face is drawn. A bus-stop signpost is plausibly column-like.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 102076
+  }
+ ],
+ "decidedAt": "2026-10-13T10:51:06.360Z",
+ "cells": {
+  "16": [
+   "5654766ebb81ec2f",
+   "8e6b273f858580e0",
+   "a224597d5247b59e"
+  ],
+  "24": [
+   "500961d571d6ad36",
+   "532ff1f5b2c1aded",
+   "7bb086f3526d1d00",
+   "832095a08a206626",
+   "ccd5e9868c7b2e6e",
+   "e8e12cc11fbff7ed"
+  ],
+  "32": [
+   "21102f9b3ffe8200",
+   "637099a80844bdfc",
+   "7b60e1d566813451",
+   "ba8ef4ea3e8ac72f",
+   "c6c20ecba3f633fd",
+   "cebf459140f06049",
+   "d17f9eb816ce4b21",
+   "d76a3172b4bdd8f4",
+   "dc74d71e4764c5a9",
+   "e315f0cdc506b675",
+   "f1ada8d40d12f69b",
+   "f9b435f3521b9856"
+  ],
+  "48": [
+   "3ec0dcf3833c11d0",
+   "65e85b4c522e831d",
+   "ed3290a52951ccce"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dedb38cace70c46131148cb5cc4d68673f572018459f1491987c0ab1912ec0e8",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-e",
+ "label": "jp_city/street_hand/jp-mark-edge-e",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "road marking painted on pavement",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical road marking lines and asphalt textures lying completely flat on the ground plane across the full 16x16 tile.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4470
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road surface marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Floor decal/pavement marking pattern lying flat across the ground plane occupying all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3246
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "narrow vertical rectangular strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body reads as a flat vertical band with no visible foreshortened top surface; only edge/face pixels are shown.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 198374
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "a narrow vertical ground-mark edge/strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a flat, vertically elongated ground marking with its surface visible across the full source height; it has no receding side face or front-elevation volume.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 336587
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "ae9c9986e17c6200"
+  ],
+  "24": [
+   "0b332f0b5ae64822",
+   "174174a33add9c65",
+   "27d4a9340287f7b9",
+   "292ff53a85b26865",
+   "987321c340b237de",
+   "e2a699c1a120a431"
+  ],
+  "32": [
+   "76b974d52f093855",
+   "89394483ccba3bf3",
+   "ac8ef0949faabef4",
+   "dbd247bc8f6c8d4a",
+   "f1ac2762b05c3f44",
+   "ff81f92f4128806c"
+  ],
+  "48": [
+   "315a86f717669aea",
+   "3acbedf58c784d8d",
+   "4947564737596639",
+   "6377cef53fcb3141",
+   "8c12da0e664b0795",
+   "9da70010627ba083"
+  ]
+ }
+}

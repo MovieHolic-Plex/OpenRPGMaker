@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d10c7a3261fd790048ecfd6af4d6dbe06e6eac286e4b851097073e20d21b04d6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-water-dark",
+ "label": "jp_city/street_hand/jp-water-dark",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "water edge / vertical seam",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The element is a vertical water edge or transition strip lying entirely flat on the ground plane across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6648
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "water strip / water edge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat water surface edge running vertically across all 16 rows, viewed entirely from above as flat ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5529
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "dark blue flat water/decal strip",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a narrow, vertically oriented flat surface with visible top shading across its full 16-pixel height; no raised front or receding side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 322501
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "narrow dark-blue vertical strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body appears as a nearly uniform vertical strip with no discernible horizontal top surface or ground-plane footprint; only a thin front-facing silhouette is visible.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 466046
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.232Z",
+ "cells": {
+  "16": [
+   "b52fae576b451b27"
+  ],
+  "24": [
+   "149c007693b14293",
+   "995a385d253152e4",
+   "9fa6896cb768defc",
+   "ba9da483c2dadfc0",
+   "d2b1e123a8214cea",
+   "ea22ae20edc2d25c"
+  ],
+  "32": [
+   "87cba00c6bacc1d9",
+   "91c2762b9a9c548e",
+   "a254c60a714088f1",
+   "b9ae37ce10fc2f1c",
+   "d6317bc916697aea",
+   "dfb50f1a6902e509"
+  ],
+  "48": [
+   "163ec32eb0adbce3",
+   "1a934640a455e3ef",
+   "2169160c4cf90da8",
+   "53f9df7c14db852b",
+   "82cad604d518bbac",
+   "d4f61ddf4409bc4c"
+  ]
+ }
+}

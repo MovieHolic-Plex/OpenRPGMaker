@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0700bd1f0c96fc35d458fc8439892777f9192f3a0c39ba27bd9ef025f3108c50",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp_city/street_hand/jp-bwallf-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese boundary wall with roof coping",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wall is capped at rows 0-3 by a 4-row tiled roof/coping viewed from a foreshortened overhead angle above the vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8237
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wall / building segment with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show a 4-pixel-tall foreshortened top roof surface with tile texturing, above the vertical wall face spanning rows 4-31.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5104
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Wooden wall section above a stone-brick foundation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The wooden panels and brick foundation are shown as flat vertical faces. The narrow horizontal strip above the wood is only an edge or cap line, not a visible top surface with depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10579
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Wooden wall panel above a gray masonry foundation",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main wall is a flat rectangular elevation. Its upper edge has only a thin dark cap and narrow highlight, with no visible horizontal top surface or roof slope. The masonry below is also shown front-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7793
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.482Z",
+ "cells": {
+  "16": [
+   "12a212e5069b5d31",
+   "a10ef6ec1098d1f5"
+  ],
+  "24": [
+   "0de6d00d6b39af92",
+   "3fd735d84981f202",
+   "4414c78ca4272049",
+   "5b8290153f8009d4",
+   "63a83ab79755854c",
+   "6a46e001f34dc7cd",
+   "8cd3378280d122b9",
+   "9d918f1c1de9bd6b",
+   "a4c9f1e688f4f82c",
+   "a805614e46c4fe25",
+   "bf56ad26b1ab3f7a",
+   "d39acef4e3b3753d"
+  ],
+  "32": [
+   "35ebe28374feb086",
+   "9c47a91ccb029214",
+   "caff814acbace413"
+  ],
+  "48": [
+   "47fc69469a16e9f8",
+   "c91e244e99f68828",
+   "d04481622ffba22e",
+   "d218c4a9fa1a8002",
+   "f0169d00c11c7952",
+   "f4f38979da5a32e3"
+  ]
+ }
+}

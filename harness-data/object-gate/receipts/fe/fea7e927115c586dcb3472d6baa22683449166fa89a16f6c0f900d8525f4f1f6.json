@@ -1,0 +1,151 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fea7e927115c586dcb3472d6baa22683449166fa89a16f6c0f900d8525f4f1f6",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-machiya-3-R",
+ "label": "jp_city/street_hand/jp-sf-machiya-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machiya building facade with sliding door and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade is drawn in pure 2D orthographic front elevation. All elements (upper wall, door eave/awning, sliding lattice doors, window, and base plinth) are flat vertical surfaces with no foreshortened top surfaces or roof slopes visible from a 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8211
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "machiya building facade with sliding door and roof",
+    "kind_matches": true,
+    "top_rows": 15,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The structure features prominent sloped roof surfaces (rows 5–19 on the left section, and rows 8–13 above the sliding door) viewed from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5918
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large machiya-style building facade with barred/latticed windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; its roof/lintel tops are not visibly foreshortened as horizontal surfaces, with only thin horizontal edge bands above the facade.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 65917
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large machiya building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is a flat front elevation; its roof/top is represented only by about a 1px dark edge with no visible foreshortened top slope or surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 172376
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.822Z",
+ "cells": {
+  "16": [
+   "005aaa52c3f5efe4",
+   "11b851a8d82e25ab",
+   "2a750be2acb717cc",
+   "3355644826b31b91",
+   "3fae5867f8e17aba",
+   "43ca3ab691c339a9",
+   "a1a696a945fcac22",
+   "a3043c90ab422321",
+   "b028a4a8f04550fa"
+  ],
+  "24": [
+   "0c673c271503da93",
+   "27dfac652a6a956c",
+   "6aeaef5d81ca31c6",
+   "8b4d546887dd9381"
+  ],
+  "32": [
+   "0153d637b804139e",
+   "02d3baacdd750542",
+   "02e35c4d7312bc2e",
+   "0968c0393095324a",
+   "0cfec8cfff86f325",
+   "1dfadc00d7649763",
+   "27225c48026817d6",
+   "32e3ee6f4274cf46",
+   "389ff231fa90c1e9",
+   "4cb146a0c3288b34",
+   "5a22dcf626eecaf4",
+   "6dc40313941c859a",
+   "6fd2d6865d1409b1",
+   "7969762fc4fa1b1f",
+   "82554b6304a86872",
+   "8472121460f3a7fc",
+   "90be05d8476929a2",
+   "9bb2fb34813376d8",
+   "a262f6aaeba5a1a7",
+   "aef03714d6702977",
+   "bd300bb5ae23e146",
+   "c7932f9f2527b9b1",
+   "e36b3b925674eab2",
+   "f819fe7e098d7614"
+  ],
+  "48": [
+   "58e1ccb5e360f534"
+  ]
+ }
+}

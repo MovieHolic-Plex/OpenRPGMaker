@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "def6fb4ae367b41f9506c40b7bd3ea3cad3bd8941e990333945df0e08f683ea3",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-w-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-w-grate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat ground grate and road/edge marking",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 tile represents a flat floor surface with a drain grate and painted edge lines viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4360
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "drain grate and road marking tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Tile represents flat ground elements including a drainage grate, curb, and painted road line, viewed entirely from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4103
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat ground-level grate with parallel horizontal slats and bordering strips",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grate is shown from above across all 16 source-pixel rows. Its repeated slats form a flat ground surface, with no upright front elevation or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9879
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Ground-level edge strip with a slatted grate and adjacent paving",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grate and adjacent paving are shown as ground-facing surfaces spanning all 16 source rows, with no upright front elevation or receding side face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10267
+  }
+ ],
+ "decidedAt": "2026-10-13T09:40:33.278Z",
+ "cells": {
+  "16": [
+   "011f8b7742dc9c78"
+  ],
+  "24": [
+   "3504622355da8516",
+   "4c787106c6dbd043",
+   "5d42c8433cfacc55",
+   "727a21c61515dd9d",
+   "7509fa5b3c6912fb",
+   "d024a78835ea7e1c"
+  ],
+  "32": [
+   "334e207a0e858f44",
+   "35a8a92d73da1993",
+   "6c263e2f380ee715",
+   "9ab1806acc214c12",
+   "b7b8c24ec1fbc8d1",
+   "cadfe233e82592b6"
+  ],
+  "48": [
+   "1f51499c5023861f",
+   "7d20dd6d2ba2de5b",
+   "92af8ef74d292961",
+   "a38b8b2fdf12ee2b",
+   "bc423056fc7a8a91",
+   "de35325cc4ef33cc"
+  ]
+ }
+}

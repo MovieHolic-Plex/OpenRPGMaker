@@ -1,0 +1,187 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ff6151fe13dfddf03b59ce1a236a768330ff2a6425649868b5531c40b63b7790",
+ "width": 144,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-konbini-9-L",
+ "label": "jp_city/street_hand/jp-sf-konbini-9-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience store facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The store front, signage fascia, door frame, and windows are drawn completely flat in 2D front elevation with no visible roof, overhang top surface, or top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6238
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "convenience store building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, entrance door, fascia stripes, and window display are drawn as a flat architectural front elevation with no visible top surface or roof slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5678
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "convenience-store building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main building is presented as a flat frontal facade; the roof and lintel bands are horizontal elevation stripes with no visible top surfaces or slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 293257
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 377399,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.821Z",
+ "cells": {
+  "16": [
+   "111f96b51c7e191f",
+   "45091d2f58a20182",
+   "4571655b0f2a45d4",
+   "6e97d7906472b915",
+   "84615d43c894a1b6",
+   "8615b728c5edb7b4",
+   "8d89cb2a840e7e2c",
+   "9617129c5616f952",
+   "96f131cc674d1d0a",
+   "a85f374984f82a6d",
+   "b038b334f32a18f2",
+   "b65d05d203fc28f2",
+   "c420ed7e86803c46",
+   "dc0f45c04e822588",
+   "e09dad0b84f07f9a",
+   "e1980b8137460843",
+   "ed308cd86f7435b5",
+   "f77f37bb52b582e0"
+  ],
+  "24": [
+   "2081a47fc4027ab9",
+   "29940760d6a42a81",
+   "35fa0435a39defa9",
+   "4e618c1aaa06ecbb",
+   "60cc4c8e12b98566",
+   "656363ce95cefca8",
+   "9668c652d8c17a1a",
+   "a03bec5f37bfd08a",
+   "bb7fdda3755c03a0",
+   "bf5cf87cacc2fc1e",
+   "d87457922233324e",
+   "eab9043f5ba62a97"
+  ],
+  "32": [
+   "02832f5085525e48",
+   "03c20557e6c8b4bf",
+   "0ad1d2102847b873",
+   "0de6a39a1f79857f",
+   "0f0746ed7aa05faf",
+   "1bfeb008cadadd80",
+   "1d3853e8e1038d68",
+   "1da77b628ba2aff4",
+   "1eb321f3d755b20f",
+   "20799caf55f0888f",
+   "213f7aaaa9e998c1",
+   "221c06b273302b86",
+   "2595181dd186681b",
+   "266a7a81174b37b6",
+   "3203727622bcb895",
+   "3be31e01b4e31f0a",
+   "4d865431aa8e8428",
+   "560a8718367e0763",
+   "62c0cb595f7fbc76",
+   "62e1d472d306fa30",
+   "66c174333e70264c",
+   "6e02d9b9020102f7",
+   "71b84a3ab149cd48",
+   "75a0b57ef1aa6546",
+   "82559444777ae50b",
+   "86fc4fca3e6699c6",
+   "8b9b7761c0ba1d17",
+   "8c55d7a8ce986aff",
+   "934041bbe4fb7778",
+   "9751dcc17ed27d3a",
+   "a27629878767b4ae",
+   "aa4c53e150b76d05",
+   "b306e6f8a3a27acb",
+   "b538c5880016bd85",
+   "c3f382079df8d841",
+   "c9e85c04c7296f36",
+   "cd204d17769507bb",
+   "d3e7c0df74e73e4c",
+   "d48357051175353a",
+   "d621f4db9f6c2942",
+   "ddd71f1bfc302a63",
+   "dddbbd33bc22bf77",
+   "e0e7f489dc168dfc",
+   "e3242e99595d7868",
+   "e893cee1e6109638",
+   "edb610ddb184c2ff",
+   "f0934a64cecd2eb0",
+   "f69c0072a4309350"
+  ],
+  "48": [
+   "403ee71fd109e976",
+   "c8516866dbfcaa89",
+   "e87608925c9be9bb"
+  ]
+ }
+}

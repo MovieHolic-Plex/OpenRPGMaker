@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f9056402b2e2d80eca4a11c0e8d38f7638c0d4ab23bb2af6ef5fa006c9801dc2",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-n",
+ "label": "jp_city/street_hand/jp-mark-edge-n",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor marking / pavement edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Ground surface / floor marking shown entirely in top-down perspective flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6063
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor edge marking / mat border",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat ground tile/edge marking lying completely in the floor plane across rows 0-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5539
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "a thin horizontal ground marking/edge strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Only a 2-pixel horizontal stripe is visible; it reads as an edge line rather than a substantive top surface of the main body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 140648
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "dark horizontal flat ground plate with a light front edge",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main dark patterned plate occupies roughly source rows 5-11 as a broad visible horizontal surface; the lighter strip is an edge, not the only top indication. No receding side face or front-elevation-only body is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 129995
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.485Z",
+ "cells": {
+  "16": [
+   "b84aa5af9e94a63c"
+  ],
+  "24": [
+   "60acd2e18d708c7b",
+   "6b7f3e74cab588a4",
+   "80b15cc76ebdb172",
+   "8e90874cc9d50f80",
+   "95cad2896a8b6cc2",
+   "e34167b0b4e45f36"
+  ],
+  "32": [
+   "18c5718d8eb320a1",
+   "433762e61aba0e5f",
+   "49fe807ba72f5dbb",
+   "61ca8383a8fb9e9c",
+   "9c05fa0a36975093",
+   "ce9596b2f0a38e90"
+  ],
+  "48": [
+   "02598dce83122b65",
+   "23dd1d11abf22eab",
+   "5326c21438946372",
+   "6a0891a221a36e2d",
+   "84ae4b533f1826fc",
+   "c7499ce4dab9eabf"
+  ]
+ }
+}

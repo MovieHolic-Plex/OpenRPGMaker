@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b1b3e5f60a1e43b38e562e9d67d9fffc32d160d842571fabd05f5fa9df210fce",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-lip",
+ "label": "jp_city/street_hand/jp-bridge-lip",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bridge lip / plank decking",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal bridge decking seen flat from above from rows 4 to 15, consisting of wooden planks abutting dark water/space above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4676
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge edge planking",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal wooden planks forming the edge/lip of a bridge lying flat on the ground plane, occupying rows 4-15 (12px visible top surface).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5092
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Flat wooden bridge decking with horizontal plank bands",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main wooden surface spans source rows 4–15, with horizontal dark seams separating plank bands. It reads as a broad ground-level surface viewed from above, not a standing front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9994
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Flat wooden bridge decking with horizontal plank bands",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad decking surface occupies source rows 4–15, with horizontal dark seams separating the plank bands. No upright main body or receding side face is shown.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13088
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.480Z",
+ "cells": {
+  "16": [
+   "84acec5f80596e0d"
+  ],
+  "24": [
+   "047c788fb19a7a01",
+   "18e99e6b298bd8e7",
+   "62b3d8f7b3f8e7a3",
+   "6783a41b44cdca97",
+   "c374c378734458fa",
+   "d2a86d6c27a536fb"
+  ],
+  "32": [
+   "22bb38a02db22504",
+   "637e47c7c6fbaf55",
+   "8196a1ce0d4e1513",
+   "9040c862f0c44792",
+   "c582634188442c9f",
+   "e416ddc146ca5359"
+  ],
+  "48": [
+   "0d6da4704d48f319",
+   "639434d8350483ea",
+   "7c030436f7adfb81",
+   "7fbd5774afa22d77",
+   "89c5bd9d714f4fc9",
+   "d11574ad894616b8"
+  ]
+ }
+}

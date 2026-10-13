@@ -1,0 +1,102 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7aacf35cc5b553d20f9cbcea358e62d610b266e2ebaccc065caaa1e75c0ec3a6",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-center-v",
+ "label": "jp_city/street_hand/jp-mark-center-v",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "yellow vertical dashed road/floor marking",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor marking/road center line painted directly on the ground, correctly rendered flat in top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5788
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow dashed road marking line",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat road center marking consisting of vertical dashed yellow segments painted on the ground, entirely flat surface as appropriate for kind 'flat'.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6202
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 344668,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 360677,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "781183e3a20a2054"
+  ],
+  "24": [
+   "16734e44324a554a",
+   "17891b82b09877a9",
+   "19a4c4cf1d2fdf32",
+   "5dc7f5147e527281",
+   "768f64f0edf3ddd7",
+   "e81bfe1f0f2d6498"
+  ],
+  "32": [
+   "10569521e1403ab2",
+   "30825e87a7dc1337",
+   "43b2388c606baf0d",
+   "4e05fa77a1afcc86",
+   "9605ee8547ffdeb6",
+   "c6ccc3e7240b0805"
+  ],
+  "48": [
+   "15b51b7a8b7b4387",
+   "3f4ba28e489a0797",
+   "605d9002ddd05369",
+   "af59d3971dec937c",
+   "c50e9857a2d4243b",
+   "f13abf766426af37"
+  ]
+ }
+}

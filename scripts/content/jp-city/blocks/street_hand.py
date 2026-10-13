@@ -32,6 +32,30 @@ def shadow(c, x, y, w):
     c.HL(x, y, w, K('yoru', -2)); c.HL(x + 1, y + 1, w - 2, K('yoru', -1))
 
 
+def top_face(c, x, y, w, rows, ramp, t=1, edge=True, grain=True):
+    """3/4 윗면: rows 줄의 밝고 결 있는 면(왼쪽 위 빛). 뒷모서리는 OL(y-1), 앞 모서리는 어두운 줄(윗면 ↔ 앞면을 가르는 선),
+    안쪽에 한 칸 들인 테두리 홈(윗판이 판으로 읽히게)."""
+    c.R(x, y, w, rows, K(ramp, t + 1))
+    if grain:
+        for j in range(1, rows - 1, 2):
+            for i in range(x + (j * 3) % 5, x + w, 7): c.HL(i, y + j, 3, K(ramp, t))
+        for i in range(x + 1, x + w, 5): c.P(i, y + (i * 3) % max(1, rows - 1), K(ramp, t + 2))
+    if rows >= 5 and w >= 6:
+        c.HL(x + 1, y + 1, w - 2, K(ramp, t - 1)); c.VL(x + 1, y + 1, rows - 2, K(ramp, t - 1)); c.VL(x + w - 2, y + 1, rows - 2, K(ramp, t - 1))
+        c.HL(x + 2, y + 2, w - 4, K(ramp, t + 3))
+    if edge: c.HL(x, y + rows - 1, w, K(ramp, -3))
+    c.HL(x, y - 1, w, OL); c.VL(x - 1, y - 1, rows + 1, OL); c.VL(x + w, y - 1, rows + 1, OL)
+
+
+def disc_top(c, cx, cy, rx, ry, ramp, t=2):
+    """원판·원통 위의 타원 윗면(밝은 면 + OL 테두리)."""
+    for j in range(-ry - 1, ry + 2):
+        for i in range(-rx - 1, rx + 2):
+            d = (i * i) / ((rx + 0.5) ** 2) + (j * j) / ((ry + 0.5) ** 2)
+            if d <= 1.0: c.P(cx + i, cy + j, K(ramp, t + 1) if j < 0 else K(ramp, t))
+            elif d <= 1.45: c.P(cx + i, cy + j, OL)
+
+
 # ─────────────────────────── 전봇대·전선 (조사 02: 지상 약 10m, 위→아래 고압·저압·변압기·통신선, 노랑 검정 표지판) ───────────────────────────
 ARM1, ARM2, CABLE = 9, 21, 37          # 전봇대 키트 맨 위에서 고압 완목·저압 완목·통신선 높이(px). 전선 키트가 이 높이에 맞춘다.
 
@@ -48,12 +72,15 @@ def pole_body(c, x, top, bot, mat='conc'):
     for y in range(bot - 14, bot - 2):                                                                             # 호랑이 무늬 표지
         for i in range(-3, 3):
             c.P(x + i, y, K('kii', 1) if ((y + i) // 2) % 2 else K('sumi', 1))
-    c.P(x - 4, bot - 1, OL); c.HL(x - 4, bot - 1, 9, K('conc', -2))
+    c.P(x - 4, bot - 1, OL); c.HL(x - 4, bot - 1, 9, K(mat if mat != 'conc' else 'conc', -2))
+    disc_top(c, x, top - 4, 6, 4, mat, 2)                                                                              # 기둥 머리 윗면(타원 7줄)
 
 
 def crossarm(c, x0, x1, y, mat='tekko'):
-    """완목 2px + 애자(흰 2×3) 4개."""
-    c.HL(x0, y, x1 - x0, K(mat, 1)); c.HL(x0, y + 1, x1 - x0, K(mat, -2)); c.HL(x0, y - 1, x1 - x0, OL); c.HL(x0, y + 2, x1 - x0, OL)
+    """완목: 윗면 3줄(밝은 결) + 앞면 2줄 + 애자(흰 2×3) 4개. 애자는 윗면 뒤쪽에 선다(전선 높이는 y-4~y-2 그대로)."""
+    top_face(c, x0, y, x1 - x0, 4, mat, 2)
+    c.R(x0, y + 4, x1 - x0, 3, K(mat, -3)); c.HL(x0, y + 4, x1 - x0, K(mat, -1)); c.HL(x0, y + 7, x1 - x0, OL)
+    c.VL(x0 - 1, y + 4, 3, OL); c.VL(x1, y + 4, 3, OL)
     for ix in (x0 + 2, x0 + (x1 - x0) // 3, x0 + 2 * (x1 - x0) // 3, x1 - 4):
         c.R(ix, y - 4, 2, 3, K('shiro', 2)); c.P(ix + 1, y - 3, K('shiro', 0))
 
@@ -69,7 +96,7 @@ def transformer(c, x, y):
 @prop('pole', '전봇대(콘크리트·변압기)', 3, 10, solid=[(1, 9)], tags=['전봇대', '전선', '가로 시설'],
       rules='생활도로 길가(보도 없는 길은 길 칸 안쪽 가장자리)에 25~35칸마다 하나. 완목이 키트 폭 전체(3칸)라 전선 키트가 양옆 칸 경계에서 이어진다.')
 def _pole(c):
-    pole_body(c, 24, 4, 160)
+    pole_body(c, 24, 8, 160)
     crossarm(c, 0, 48, ARM1); crossarm(c, 4, 44, ARM2)
     transformer(c, 30, ARM2 + 5); c.HL(27, ARM2 + 8, 3, K('tekko', -1))
     c.R(18, CABLE - 2, 5, 6, K('tekko', -1)); c.HL(18, CABLE - 2, 5, K('tekko', 1))                                # 통신선 단자함
@@ -92,7 +119,7 @@ def _pole_guy(c):
 @prop('pole-wood', '나무 전봇대(옛 동네)', 3, 9, solid=[(1, 8)], tags=['전봇대', '옛 동네', '가로 시설'],
       rules='골목·下町 쪽. 콘크리트 전봇대와 섞어 둬도 된다.')
 def _pole_wood(c):
-    pole_body(c, 24, 6, 144, 'ita')
+    pole_body(c, 24, 8, 144, 'ita')
     crossarm(c, 2, 46, ARM1 + 2, 'ita')
     c.R(28, 30, 7, 9, K('tekko', 0)); c.HL(28, 30, 7, K('tekko', 2)); c.VL(35, 30, 9, OL)                          # 통신 단자
     c.R(19, 60, 10, 14, K('shiro', 1)); c.R(20, 62, 8, 4, K('aka', 0)); c.HL(20, 68, 8, K('sumi', 2)); c.HL(20, 70, 6, K('sumi', 2))   # 옛 광고판
@@ -150,40 +177,48 @@ for _L in (6, 8, 10):
       rules='보이지 않는 모퉁이(T자·十자 생활도로) 길가. 지주와 테두리는 주황이 표준(조사 02).')
 def _mirror(c):
     o = 'daidai'
-    c.R(7, 12, 3, 36, K(o, 0)); c.VL(7, 12, 36, K(o, 2)); c.VL(9, 12, 36, K(o, -2)); c.VL(6, 12, 36, OL); c.VL(10, 12, 36, OL)
-    c.HL(4, 14, 22, K(o, -1)); c.HL(4, 13, 22, OL)
-    for cx, cy in ((7, 8), (22, 9)):
+    c.R(7, 17, 3, 31, K(o, 0)); c.VL(7, 17, 31, K(o, 2)); c.VL(9, 17, 31, K(o, -2)); c.VL(6, 17, 31, OL); c.VL(10, 17, 31, OL)
+    top_face(c, 4, 15, 22, 3, o, 0)                                                # 가로 지지대 윗면
+    c.HL(4, 18, 22, K(o, -2)); c.HL(4, 19, 22, OL)
+    for cx, cy in ((7, 10), (22, 11)):
         for j in range(-7, 8):
             for i in range(-7, 8):
                 d = i * i + j * j
                 if d <= 49: c.P(cx + i, cy + j, OL if d > 36 else K(o, 1) if d > 25 else K('garasu', 1) if (i + j) < 0 else K('garasu', -1))
         c.P(cx - 2, cy - 2, K('garasu', 3)); c.P(cx - 1, cy - 3, K('garasu', 3))
-    shadow(c, 3, 46, 10)
+        disc_top(c, cx, cy - 7, 6, 3, o, 2)                                        # 거울 테두리 윗면(두께)
+    c.R(3, 43, 10, 4, K('conc', 0)); top_face(c, 3, 40, 10, 3, 'conc', 1); shadow(c, 2, 46, 12)
 
 
 @prop('hydrant-sign', '소화전 표지(빨강 원판)', 1, 3, solid=[(0, 2)], tags=['소화전', '가로 시설'],
       rules='길가 전봇대·담 곁. 빨간 기둥 위 빨간 원판.')
 def _hydrant(c):
-    c.R(7, 12, 2, 36, K('aka', 0)); c.VL(7, 12, 36, K('aka', 2)); c.VL(6, 12, 36, OL); c.VL(9, 12, 36, OL)
+    """소화전 표지: 두께 있는 빨간 원판(위에서 보이는 타원 윗면 7줄) + 기둥 + 받침."""
+    c.R(7, 22, 2, 20, K('aka', -1)); c.VL(7, 22, 20, K('aka', 1)); c.VL(6, 22, 20, OL); c.VL(9, 22, 20, OL)
     for j in range(-6, 7):
         for i in range(-6, 7):
             d = i * i + j * j
-            if d <= 36: c.P(8 + i, 7 + j, OL if d > 25 else K('aka', 1) if d > 9 else K('shiro', 2))
-    c.HL(6, 7, 5, K('aka', 0)); shadow(c, 4, 46, 8)
+            if d <= 36: c.P(8 + i, 15 + j, OL if d > 25 else K('aka', -1) if d > 9 else K('shiro', 1))
+    c.HL(6, 15, 5, K('aka', -2))
+    disc_top(c, 8, 8, 6, 3, 'aka', 2)                                              # 원판 윗면(밝은 타원)
+    c.R(3, 42, 10, 5, K('conc', -1)); top_face(c, 3, 38, 10, 5, 'conc', 2); c.HL(2, 47, 12, OL); shadow(c, 3, 47, 10)
 
 
 @prop('bus-stop', 'バス停 버스 정류장 표지', 1, 3, solid=[(0, 2)], tags=['버스', '정류장', '가로 시설'],
       rules='간선·역 앞 보도 가장자리. 둥근 표지판 + 시간표 판 + 무거운 받침.')
 def _bus(c):
-    c.R(7, 10, 2, 32, K('tekko', 1)); c.VL(6, 10, 32, OL); c.VL(9, 10, 32, OL)
+    """버스 정류장: 둥근 표지(위에서 보이는 윗면) + 시간표 상자(윗면 4줄) + 받침."""
+    c.R(7, 19, 2, 21, K('tekko', -1)); c.VL(6, 19, 21, OL); c.VL(9, 19, 21, OL)
     for j in range(-6, 7):
         for i in range(-6, 7):
             d = i * i + j * j
-            if d <= 36: c.P(8 + i, 6 + j, OL if d > 25 else K('kon', 0) if d > 12 else K('shiro', 2))
-    c.R(3, 20, 10, 12, K('shiro', 2)); c.HL(3, 20, 10, K('kon', 0))
-    for j in (23, 25, 27, 29): c.HL(4, j, 7, K('sumi', 2))
-    c.VL(2, 20, 12, OL); c.VL(13, 20, 12, OL); c.HL(2, 32, 12, OL)
-    c.R(3, 42, 10, 5, K('conc', 0)); c.HL(3, 42, 10, K('conc', 2)); c.HL(2, 47, 12, OL); shadow(c, 2, 47, 12)
+            if d <= 36: c.P(8 + i, 11 + j, OL if d > 25 else K('kon', -1) if d > 12 else K('shiro', 1))
+    disc_top(c, 8, 4, 6, 3, 'kon', 2)                                              # 표지 윗면
+    top_face(c, 3, 22, 10, 4, 'shiro', 2)                                          # 시간표 상자 윗면
+    c.R(3, 26, 10, 9, K('shiro', -1)); c.HL(3, 26, 10, K('kon', 0))
+    for j in (28, 30, 32): c.HL(4, j, 7, K('sumi', 2))
+    c.VL(2, 26, 9, OL); c.VL(13, 26, 9, OL); c.HL(2, 35, 12, OL)
+    c.R(3, 43, 10, 4, K('conc', -1)); top_face(c, 3, 39, 10, 4, 'conc', 2); c.HL(2, 47, 12, OL); shadow(c, 2, 47, 12)
 
 
 # ─────────────────────────── 노면 표시(flat, 캐릭터 밑) ───────────────────────────
@@ -287,31 +322,38 @@ for _k, _f in EDGES.items():
 
 @prop('mark-lockplate', '코인 주차 잠금판', 1, 1, other='flat', tags=['노면', '주차'], rules='코인 주차장 칸마다 한가운데(차 앞 바퀴 자리).')
 def _lock(c):
-    c.R(4, 6, 8, 5, K('tekko', -1)); c.HL(4, 6, 8, K('kii', 1)); c.HL(4, 7, 8, K('kii', -1)); c.HL(4, 10, 8, K('tekko', -3))
-    c.P(7, 8, K('tekko', 2)); c.P(8, 8, K('tekko', 2))
+    """코인 주차 잠금판: 땅 위에 놓인 얇은 금속판을 위에서 본 모양(윗면 전체가 판, 볼트 넷, 가운데 잠금 원, 앞 가장자리 2줄만 어둡다)."""
+    c.R(3, 4, 10, 8, K('tekko', 2)); c.HL(3, 4, 10, K('tekko', 3)); c.VL(3, 4, 8, K('tekko', 3))
+    for x, y in ((4, 5), (11, 5), (4, 9), (11, 9)): c.P(x, y, K('tekko', -1))
+    for j in range(-2, 3):
+        for i in range(-2, 3):
+            if i * i + j * j <= 5: c.P(8 + i, 7 + j, K('kii', 1) if i * i + j * j <= 2 else K('tekko', -2))
+    c.HL(3, 12, 10, K('tekko', -3)); c.HL(3, 13, 10, K('yoru', -2)); c.HL(4, 14, 9, K('yoru', -1))
+    c.HL(2, 3, 12, OL); c.VL(2, 4, 9, OL); c.VL(13, 4, 9, OL)
 
 
 # ─────────────────────────── 블록 담·대문·카포트 (조사 02·03: 블록 한 단 20cm, 보통 1.2m 이하 + 위 펜스) ───────────────────────────
 def block_wall(c, x, y, w, sukashi=(), cap=True, end_l=False, end_r=False):
-    """블록 담 높이 14px(6단 + 갓돌 2): 단마다 가로 줄눈, 엇갈린 세로 줄눈, 투각 블록(꽃 모양 구멍)."""
-    c.R(x, y, w, 14, K('conc', 1))
-    for j in range(y + 4, y + 14, 2): c.HL(x, j, w, K('conc', -1))
-    for k, j in enumerate(range(y + 2, y + 14, 2)):
-        for i in range(x + (0 if k % 2 else 4), x + w, 8): c.VL(i, j, 2, K('conc', -1))
+    """블록 담 높이 14px: 갓돌 윗면 6줄(밝은 결) + 앞 모서리 + 어두운 앞면 단 7줄(가로 줄눈·엇갈린 세로 줄눈·투각 블록)."""
+    c.R(x, y + 6, w, 8, K('conc', -1))
+    for j in range(y + 8, y + 14, 2): c.HL(x, j, w, K('conc', -3))
+    for k, j in enumerate(range(y + 7, y + 14, 2)):
+        for i in range(x + (0 if k % 2 else 4), x + w, 8): c.VL(i, j, 2, K('conc', -3))
     for sx in sukashi:
-        c.R(sx, y + 6, 7, 5, K('conc', -2)); c.P(sx + 3, y + 7, K('conc', 1)); c.HL(sx + 2, y + 8, 3, K('conc', 1)); c.P(sx + 3, y + 9, K('conc', 1))
-    if cap: c.R(x, y, w, 2, K('conc', 2)); c.HL(x, y, w, K('conc', 3)); c.HL(x, y + 2, w, K('conc', -2))
-    c.HL(x, y + 13, w, K('conc', -2))
-    if end_l: c.VL(x, y, 14, K('conc', 2)); c.VL(x - 1, y, 14, OL)
-    if end_r: c.VL(x + w - 1, y, 14, K('conc', -2)); c.VL(x + w, y, 14, OL)
-    c.HL(x, y - 1, w, OL); c.HL(x, y + 14, w, OL)
+        c.R(sx, y + 8, 7, 4, K('conc', -3)); c.P(sx + 3, y + 8, K('conc', 0)); c.HL(sx + 2, y + 9, 3, K('conc', 0)); c.P(sx + 3, y + 10, K('conc', 0))
+    top_face(c, x, y, w, 6, 'conc', 2)
+    c.HL(x, y + 6, w, K('conc', -2))
+    c.HL(x, y + 13, w, K('conc', -3))
+    if end_l: c.VL(x, y + 6, 8, K('conc', 1)); c.VL(x - 1, y + 6, 8, OL)
+    if end_r: c.VL(x + w - 1, y + 6, 8, K('conc', -3)); c.VL(x + w, y + 6, 8, OL)
+    c.HL(x, y + 14, w, OL)
 
 
 def fence_top(c, x, y, w, h=11):
-    """블록 위 알루미늄 가림 펜스(세로 살, 갈색)."""
-    c.R(x, y, w, h, K('ita', -1)); c.HL(x, y, w, K('ita', 1))
-    for i in range(x + 1, x + w, 3): c.VL(i, y + 1, h - 1, K('ita', 0))
-    c.HL(x, y - 1, w, OL)
+    """블록 위 알루미늄 가림 펜스: 윗면 4줄(갈색 판 결) + 앞면 세로 살."""
+    top_face(c, x, y, w, 4, 'ita', 0)
+    c.R(x, y + 4, w, h - 4, K('ita', -1))
+    for i in range(x + 1, x + w, 3): c.VL(i, y + 4, h - 4, K('ita', 0))
 
 
 for _v, _n in (('plain', '블록 담(가로)'), ('sukashi', '블록 담(가로·투각 블록)'), ('end-l', '블록 담 왼쪽 끝'), ('end-r', '블록 담 오른쪽 끝')):
@@ -337,20 +379,22 @@ for _v, _n in (('plain', '블록 담 + 가림 펜스(가로)'), ('end-l', '블�
 @prop('gatepost', '門柱 대문 기둥(표찰·인터폰·우편함)', 1, 1, solid=[(0, 0)], tags=['대문', '주택가'],
       rules='블록 담이 끊긴 대문 자리 한쪽(담과 같은 줄). 반대쪽 칸은 걸어 들어가는 길로 비우거나 gate 를 둔다.')
 def _gatepost(c):
-    c.R(2, 3, 12, 13, K('tairu', 1)); c.R(1, 1, 14, 2, K('conc', 2)); c.HL(1, 1, 14, K('conc', 3)); c.VL(2, 3, 13, K('tairu', 2)); c.VL(13, 3, 13, K('tairu', -2))
-    c.R(4, 4, 8, 3, K('ita', 1)); c.HL(5, 5, 6, K('sumi', 2))                     # 표찰
-    c.R(4, 8, 3, 3, K('tekko', 0)); c.P(5, 9, K('sora', 1))                         # 인터폰
-    c.R(8, 9, 5, 5, K('tekko', 2)); c.HL(9, 10, 3, K('tekko', -2))                   # 우편함
-    c.VL(0, 1, 15, OL); c.VL(15, 1, 15, OL); c.HL(0, 0, 16, OL); c.HL(1, 15, 14, K('conc', -2))
+    top_face(c, 0, 1, 16, 6, 'shiro', 2)                                             # 갓돌 윗면
+    c.R(2, 7, 12, 9, K('tairu', -1)); c.VL(2, 7, 9, K('tairu', 0)); c.VL(13, 7, 9, K('tairu', -3))
+    c.R(4, 8, 8, 2, K('ita', 1)); c.HL(5, 9, 6, K('sumi', 2))                        # 표찰
+    c.R(4, 11, 3, 3, K('tekko', 0)); c.P(5, 12, K('sora', 1))                         # 인터폰
+    c.R(8, 11, 5, 4, K('tekko', 2)); c.HL(9, 12, 3, K('tekko', -2))                   # 우편함
+    c.HL(1, 15, 14, K('conc', -2))
 
 
 @prop('gate', '門扉 알루미늄 대문(두 칸)', 2, 1, solid=[(0, 0), (1, 0)], tags=['대문', '주택가'],
       rules='gatepost 옆 2칸. 닫힌 대문이라 막힘 — 들어가는 길이 필요하면 대신 비워 둔다.')
 def _gate(c):
     for x0 in (1, 16):
-        c.R(x0, 3, 15, 12, K('ita', -1)); c.HL(x0, 3, 15, K('ita', 1)); c.HL(x0, 14, 15, K('ita', -2))
-        for i in range(x0 + 2, x0 + 14, 3): c.VL(i, 4, 10, K('ita', 1))
-        c.VL(x0, 3, 12, OL); c.VL(x0 + 15, 3, 12, OL); c.HL(x0, 2, 16, OL)
+        top_face(c, x0, 1, 15, 5, 'ita', 2)                                          # 위 가로대 윗면
+        c.R(x0, 6, 15, 9, K('ita', -3)); c.HL(x0, 6, 15, K('ita', -1)); c.HL(x0, 14, 15, K('sumi', 1))
+        for i in range(x0 + 2, x0 + 14, 3): c.VL(i, 7, 7, K('ita', 0))
+        c.VL(x0, 6, 9, OL); c.VL(x0 + 15, 6, 9, OL)
 
 
 @prop('carport', 'カーポート 알루미늄 카포트', 4, 3, solid=[(0, 2), (3, 2)], tags=['카포트', '주차', '주택가'],
@@ -370,7 +414,8 @@ def _carport(c):
 @prop('tsukigime', '月極駐車場 간판(空あり)', 2, 2, solid=[(0, 1), (1, 1)], tags=['주차', '月極', '간판'],
       rules='월정 주차장 길 쪽 모퉁이. 주차 칸 선은 기존 주차 바닥 칸을 쓴다.')
 def _tsuki(c):
-    c.R(2, 4, 28, 18, K('shiro', 2)); c.HL(2, 4, 28, K('kon', 0)); c.HL(2, 5, 28, K('kon', 0))
+    top_face(c, 2, 0, 28, 5, 'kinari', 2)                                                   # 간판 상자 윗면
+    c.R(2, 5, 28, 17, K('shiro', 0)); c.HL(2, 5, 28, K('kon', 0)); c.HL(2, 6, 28, K('kon', 0))
     c.R(4, 8, 10, 10, K('kon', 0)); c.R(6, 9, 3, 8, K('shiro', 2)); c.R(8, 9, 4, 4, K('shiro', 2)); c.R(9, 10, 2, 2, K('kon', 0))   # P
     for j in (9, 12, 15): c.HL(16, j, 12, K('sumi', 2))
     c.R(4, 19, 24, 2, K('aka', 0))                                                    # 空あり 띠
@@ -383,45 +428,54 @@ def _tsuki(c):
 @prop('propane', 'プロパン 가스통 두 개', 1, 2, solid=[(0, 1)], tags=['가스', '생활', '주택가'],
       rules='도시가스가 없는 동네의 집 옆벽 앞(건물 키트 바로 아래 줄 옆 칸).')
 def _propane(c):
-    for x0 in (1, 8):
-        c.R(x0, 10, 7, 20, K('shiro', 1)); c.VL(x0, 10, 20, K('shiro', 2)); c.VL(x0 + 6, 10, 20, K('tekko', 1))
-        c.R(x0 + 1, 7, 5, 3, K('tekko', 1)); c.R(x0 + 2, 5, 3, 2, K('tekko', -1))
-        c.HL(x0, 15, 7, K('sumi', 1)); c.HL(x0, 25, 7, K('sumi', 1))              # 쇠사슬 2줄
-        c.VL(x0 - 1, 7, 23, OL); c.VL(x0 + 7, 7, 23, OL)
+    for x0 in (0, 8):
+        c.R(x0, 11, 8, 19, K('shiro', 1)); c.VL(x0, 11, 19, K('shiro', 2)); c.VL(x0 + 7, 11, 19, K('tekko', 1))
+        disc_top(c, x0 + 4, 8, 3, 3, 'shiro', 1)                                       # 탱크 위 타원 윗면
+        c.R(x0 + 3, 4, 3, 2, K('tekko', -1)); c.P(x0 + 4, 3, K('aka', 1))               # 밸브
+        c.HL(x0, 16, 8, K('sumi', 1)); c.HL(x0, 25, 8, K('sumi', 1))                    # 쇠사슬
+        c.VL(x0 - 1, 9, 21, OL); c.VL(x0 + 8, 9, 21, OL)
     c.HL(0, 30, 16, OL); shadow(c, 1, 30, 14)
 
 
 @prop('ac-unit', '에어컨 실외기', 1, 1, solid=[(0, 0)], tags=['실외기', '생활'],
       rules='집·가게 옆벽 앞이나 골목.')
 def _ac(c):
-    HK.ac_unit(c, 1, 5)
+    top_face(c, 1, 2, 14, 6, 'tekko', 2)                                             # 윗면(밝은 판)
+    c.R(1, 8, 14, 7, K('tekko', -2)); c.R(2, 9, 8, 5, K('tekko', -3))
+    for i in range(3, 10, 2): c.VL(i, 9, 5, K('tekko', -1))
+    c.VL(14, 8, 7, K('tekko', -3)); c.VL(0, 8, 7, OL); c.VL(15, 8, 7, OL); c.HL(0, 15, 16, K('conc', -3))
+    c.P(11, 11, K('kii', 2))
 
 
 @prop('pots', '화분 줄(下町)', 2, 1, solid=[], tags=['화분', '下町', '생활'],
       rules='下町 골목의 집 앞·담 위. 마당이 없는 집 앞을 화분으로 채운다(조사 02). 지나갈 수 있다.')
 def _pots(c):
-    cols = (('midori', 1), ('aka', 1), ('midori', 2), ('kii', 2), ('pinku', 2))
-    for k, x0 in enumerate((1, 8, 15, 22)):
-        h = 6 + (k % 3) * 2
-        c.R(x0, 16 - 5, 6, 5, K('renga', 0)); c.HL(x0, 11, 6, K('renga', 2)); c.VL(x0 + 5, 11, 5, K('renga', -2))
-        m, t = cols[k % len(cols)]
-        for j in range(h):
-            w = 2 + (j % 3)
-            c.HL(x0 + 3 - w // 2, 11 - h + j, w, K('ki', 1 - (j % 2)))
-        c.P(x0 + 2, 11 - h, K(m, t)); c.P(x0 + 4, 11 - h + 2, K(m, t))
-        c.VL(x0 - 1, 11, 5, OL)
+    """화분 둘: 둥근 화분마다 위에서 보이는 타원 아가리(흙) + 식물."""
+    for x0 in (1, 17):
+        c.R(x0 + 1, 11, 12, 5, K('renga', -1))
+        for j in range(5): c.HL(x0 + 1 + (j == 4), 11 + j, 12 - 2 * (j == 4), K('renga', -1 if j else 0))
+        c.VL(x0 + 1, 11, 5, K('renga', 1)); c.VL(x0 + 12, 11, 5, K('renga', -3)); c.HL(x0 + 2, 15, 10, OL)
+        disc_top(c, x0 + 7, 9, 7, 3, 'renga', 2)                                   # 아가리 림(밝은 테)
+        for j in range(-2, 3):
+            for i in range(-5, 6):
+                if (i * i) / 30.0 + (j * j) / 5.0 <= 1.0: c.P(x0 + 7 + i, 9 + j, K('ita', -4) if (i + j) % 3 else K('ita', -3))
+        for k in range(5): c.VL(x0 + 5 + k, 2 + (k % 2) * 2, 7 - (k % 2) * 2, K('midori', 1 if k % 2 else 2))
+        c.P(x0 + 7, 1, K('aka', 2)); c.P(x0 + 5, 3, K('kii', 2))
 
 
 @prop('monohoshi', '物干し 빨래 장대(마당)', 3, 2, solid=[(0, 1), (2, 1)], tags=['빨래', '생활', '주택가'],
       rules='집 앞마당이나 아파트 1층 앞. 양 끝 받침만 막힘.')
 def _monohoshi(c):
     for px in (5, 41):
-        c.R(px, 6, 2, 24, K('tekko', 2)); c.HL(px - 3, 6, 8, K('tekko', 1)); c.R(px - 3, 28, 8, 2, K('tekko', 0)); c.VL(px - 1, 6, 24, OL)
-    c.HL(2, 8, 44, K('shiro', 2)); c.HL(2, 9, 44, K('tekko', 0))
-    clothes = (('sora', 1, 8, 10), ('shiro', 2, 7, 12), ('pinku', 2, 6, 9), ('kii', 2, 8, 11), ('midori', 1, 6, 8))
+        c.R(px - 1, 9, 4, 21, K('tekko', 2)); c.VL(px - 1, 9, 21, K('tekko', 3)); c.VL(px - 2, 9, 21, OL); c.VL(px + 3, 9, 21, OL)
+        c.R(px - 3, 28, 8, 2, K('tekko', 0))
+        top_face(c, px - 2, 5, 6, 4, 'tekko', 2)                                       # 기둥 머리 윗면
+    top_face(c, 2, 3, 44, 6, 'shiro', 2)                                              # 장대 윗면
+    c.HL(2, 9, 44, K('tekko', 0)); c.HL(2, 10, 44, OL)
+    clothes = (('sora', 1, 8, 9), ('shiro', 2, 7, 11), ('pinku', 2, 6, 8), ('kii', 2, 8, 10), ('midori', 1, 6, 7))
     x = 7
     for m, t, w, h in clothes:
-        c.R(x, 10, w, h, K(m, t)); c.HL(x, 10, w, K(m, t + 1)); c.VL(x + w - 1, 10, h, K(m, t - 1)); c.HL(x, 10 + h, w, K(m, t - 2))
+        c.R(x, 11, w, h, K(m, t)); c.HL(x, 11, w, K(m, t + 1)); c.VL(x + w - 1, 11, h, K(m, t - 1)); c.HL(x, 11 + h, w, K(m, t - 2))
         x += w + 1
     shadow(c, 2, 30, 44)
 
@@ -429,11 +483,12 @@ def _monohoshi(c):
 @prop('keijiban', '町内会 掲示板', 2, 2, solid=[(0, 1), (1, 1)], tags=['게시판', '町内会', '생활'],
       rules='골목 모퉁이·공원 입구·신사 앞. 다리 둘, 차양, 유리 안 종이.')
 def _board(c):
-    c.R(1, 4, 30, 3, K('ita', -1)); c.HL(1, 4, 30, K('ita', 1))                           # 차양
-    c.R(2, 7, 28, 16, K('tekko', 2)); c.R(3, 8, 26, 14, K('kinari', 1))
-    for x0, y0, w, h, m in ((4, 9, 7, 9, 'shiro'), (12, 9, 8, 6, 'kii'), (21, 10, 7, 10, 'shiro'), (12, 16, 7, 5, 'pinku')):
+    top_face(c, 1, 2, 30, 5, 'ita', 0)                                               # 차양 윗면(판 결)
+    c.R(1, 7, 30, 2, K('ita', -1)); c.HL(1, 7, 30, K('ita', 1)); c.HL(0, 9, 32, OL)
+    c.R(2, 9, 28, 14, K('tekko', 2)); c.R(3, 10, 26, 12, K('kinari', 1))
+    for x0, y0, w, h, m in ((4, 11, 7, 8, 'shiro'), (12, 11, 8, 5, 'kii'), (21, 12, 7, 8, 'shiro'), (12, 17, 7, 4, 'pinku')):
         c.R(x0, y0, w, h, K(m, 2)); c.HL(x0 + 1, y0 + 2, w - 2, K('sumi', 2)); c.HL(x0 + 1, y0 + 4, w - 3, K('sumi', 2))
-    c.VL(1, 4, 20, OL); c.VL(30, 4, 20, OL); c.HL(0, 3, 32, OL); c.HL(1, 23, 30, OL)
+    c.VL(1, 7, 16, OL); c.VL(30, 7, 16, OL); c.HL(1, 23, 30, OL)
     for px in (6, 24): c.R(px, 24, 2, 21, K('tekko', 1)); c.VL(px - 1, 24, 21, OL); c.VL(px + 2, 24, 21, OL)
     shadow(c, 3, 45, 26)
 
@@ -441,34 +496,40 @@ def _board(c):
 @prop('gomi-box', 'ゴミ集積所 접이식 철망 상자', 2, 1, solid=[(0, 0), (1, 0)], tags=['쓰레기', '생활', '주택가'],
       rules='골목 길가(전봇대 곁). 녹색 철망 상자 + 자치회 명패.')
 def _gomi(c):
-    c.R(1, 3, 30, 12, K('midori', -1)); c.HL(1, 3, 30, K('midori', 1))
-    for i in range(2, 31, 3): c.VL(i, 4, 10, K('midori', 0))
-    for j in range(5, 14, 3): c.HL(2, j, 28, K('midori', 0))
-    c.R(11, 6, 10, 5, K('shiro', 2)); c.HL(12, 8, 8, K('sumi', 2))
-    c.VL(0, 3, 12, OL); c.VL(31, 3, 12, OL); c.HL(0, 2, 32, OL); c.HL(0, 15, 32, OL)
+    top_face(c, 1, 2, 30, 5, 'midori', 0)                                            # 철망 뚜껑 윗면
+    for i in range(3, 30, 3): c.VL(i, 3, 3, K('midori', -1))
+    c.R(1, 7, 30, 8, K('midori', -1)); c.HL(1, 7, 30, K('midori', 1))
+    for i in range(2, 31, 3): c.VL(i, 8, 6, K('midori', 0))
+    for j in (9, 12): c.HL(2, j, 28, K('midori', 0))
+    c.R(11, 9, 10, 4, K('shiro', 2)); c.HL(12, 11, 8, K('sumi', 2))
+    c.VL(0, 7, 8, OL); c.VL(31, 7, 8, OL); c.HL(0, 15, 32, OL)
 
 
 @prop('jizo', 'お地蔵さん 길가 祠', 1, 2, solid=[(0, 1)], tags=['지장', '祠', '골목'],
       rules='골목 모퉁이·담 곁. 빨간 턱받이와 모자를 쓴 돌 지장 + 작은 나무 사당.')
 def _jizo(c):
-    c.R(1, 8, 14, 3, K('ita', -1)); c.HL(1, 8, 14, K('ita', 1)); c.HL(0, 7, 16, OL)          # 지붕
-    c.R(2, 11, 12, 18, K('ita', -2)); c.VL(2, 11, 18, K('ita', 0)); c.VL(13, 11, 18, K('ita', 0))
-    c.R(5, 14, 6, 6, K('conc', 1)); c.R(5, 14, 6, 2, K('aka', 0))                            # 머리 + 모자
-    c.R(4, 20, 8, 3, K('aka', 1)); c.R(5, 23, 6, 5, K('conc', 0)); c.VL(5, 20, 8, K('conc', 2))
-    c.P(6, 17, K('sumi', 1)); c.P(9, 17, K('sumi', 1))
+    top_face(c, 0, 1, 16, 7, 'tairu', 2)                                             # 사당 지붕 윗면(기와 줄)
+    for i in range(2, 16, 4): c.VL(i, 2, 5, K('tairu', -1))
+    c.R(1, 8, 14, 2, K('ita', -1)); c.HL(1, 8, 14, K('ita', 1)); c.HL(0, 10, 16, OL)  # 처마 앞
+    c.R(2, 10, 12, 19, K('ita', -2)); c.VL(2, 10, 19, K('ita', 0)); c.VL(13, 10, 19, K('ita', 0))
+    c.R(5, 13, 6, 5, K('conc', 1)); c.R(5, 13, 6, 2, K('aka', 0))                    # 머리 + 모자
+    c.R(4, 18, 8, 3, K('aka', 1)); c.R(5, 21, 6, 6, K('conc', 0)); c.VL(5, 18, 9, K('conc', 2))
+    c.P(6, 16, K('sumi', 1)); c.P(9, 16, K('sumi', 1))
     c.R(1, 28, 14, 3, K('conc', 1)); c.HL(1, 28, 14, K('conc', 2))
-    c.VL(1, 11, 18, OL); c.VL(14, 11, 18, OL); c.HL(0, 31, 16, OL)
+    c.VL(1, 10, 19, OL); c.VL(14, 10, 19, OL); c.HL(0, 31, 16, OL)
 
 
 @prop('torii', '鳥居 주홍 도리이', 4, 3, solid=[(0, 2), (3, 2)], tags=['신사', '도리이'],
       rules='신사 참배길 입구. 가운데 두 칸이 걸어 지나가는 길이다(기둥 두 칸만 막힘). 뒤쪽(북쪽)에 참배길·拝殿.')
 def _torii(c):
     v = 'aka'
-    c.R(0, 4, 64, 4, K('sumi', 1)); c.HL(0, 4, 64, K('sumi', 2))                             # 笠木(검은 윗면)
+    top_face(c, 0, 0, 64, 6, 'sumi', 3)                                                      # 笠木 윗면(기와처럼 결 있는 검은 면)
+    c.R(0, 6, 64, 2, K('sumi', -2)); c.HL(0, 6, 64, K('sumi', 0)); c.VL(-1, 6, 2, OL); c.VL(64, 6, 2, OL)   # 笠木 앞
     c.R(2, 8, 60, 4, K(v, 0)); c.HL(2, 8, 60, K(v, 2)); c.HL(2, 11, 60, K(v, -2))          # 島木
-    c.P(0, 3, OL); c.P(63, 3, OL); c.HL(0, 3, 64, OL); c.HL(1, 12, 62, OL)
+    c.HL(0, 8, 64, OL); c.HL(1, 12, 62, OL)
     c.R(29, 12, 6, 6, K(v, 0)); c.VL(29, 12, 6, OL); c.VL(34, 12, 6, OL)                    # 額束
-    c.R(4, 18, 56, 3, K(v, 0)); c.HL(4, 18, 56, K(v, 2)); c.HL(4, 20, 56, K(v, -2)); c.HL(4, 17, 56, OL); c.HL(4, 21, 56, OL)   # 貫
+    top_face(c, 4, 15, 56, 3, 'aka', 2)
+    c.R(4, 18, 56, 3, K(v, -2)); c.HL(4, 18, 56, K(v, 0)); c.HL(4, 20, 56, K(v, -3)); c.HL(4, 21, 56, OL)   # 貫
     for px in (6, 52):
         c.R(px, 12, 6, 34, K(v, 0)); c.VL(px, 12, 34, K(v, 2)); c.VL(px + 5, 12, 34, K(v, -2)); c.VL(px - 1, 12, 34, OL); c.VL(px + 6, 12, 34, OL)
         c.R(px - 1, 42, 8, 4, K('sumi', 1))                                                 # 根巻
@@ -496,13 +557,15 @@ def _gas(c):
       rules='학교 운동장 남쪽 담 한가운데. 가운데 두 칸은 열린 문(지나감), 양쪽 기둥·접힌 문 칸은 막힘.')
 def _sgate(c):
     for px in (2, 82):
-        c.R(px, 6, 12, 26, K('conc', 1)); c.HL(px, 6, 12, K('conc', 3)); c.VL(px, 6, 26, K('conc', 2)); c.VL(px + 11, 6, 26, K('conc', -2))
-        c.VL(px - 1, 6, 26, OL); c.VL(px + 12, 6, 26, OL); c.HL(px - 1, 5, 14, OL)
-    c.R(4, 9, 8, 20, K('ita', 1)); c.VL(5, 10, 18, K('sumi', 2)); c.VL(9, 12, 14, K('sumi', 2))    # 교명판(세로 글 줄)
+        c.R(px, 10, 12, 22, K('conc', -1)); c.VL(px, 10, 22, K('conc', 1)); c.VL(px + 11, 10, 22, K('conc', -3))
+        c.VL(px - 1, 10, 22, OL); c.VL(px + 12, 10, 22, OL)
+        top_face(c, px - 1, 3, 14, 7, 'shiro', 2)                                           # 기둥 머리 윗면
+    c.R(4, 13, 8, 16, K('ita', 1)); c.VL(5, 14, 14, K('sumi', 2)); c.VL(9, 16, 10, K('sumi', 2))    # 교명판(세로 글 줄)
     for x0 in (14, 66):                                                                       # 접힌 미닫이 문
-        c.R(x0, 16, 16, 14, K('tekko', 2))
-        for i in range(x0 + 1, x0 + 16, 3): c.VL(i, 17, 12, K('tekko', 0))
-        c.HL(x0, 16, 16, K('tekko', 3)); c.VL(x0 + 15, 16, 14, OL)
+        top_face(c, x0, 12, 16, 4, 'tekko', 2)                                               # 문 윗 가로대 윗면
+        c.R(x0, 16, 16, 14, K('tekko', -2))
+        for i in range(x0 + 1, x0 + 16, 3): c.VL(i, 17, 12, K('tekko', -3))
+        c.HL(x0, 16, 16, K('tekko', 0)); c.VL(x0 + 15, 16, 14, OL)
     shadow(c, 0, 32, 96)
 
 
@@ -867,11 +930,9 @@ prop('rail-xing', '건널목 노면 판(1×4)', 1, 4, other='flat', tags=['철�
 
 
 def rail_fence(c):
-    """선로 옆 콘크리트 방호벽 1칸(가로 이음): 윗면 7줄(밝고 결 있음, 뒷모서리 짙은 선) + 앞 모서리 밝은 줄 + 어두운 앞면 5줄 + 밑 풀."""
-    c.HL(0, 0, 16, K('conc', -2)); c.HL(0, 1, 16, OL)
-    c.R(0, 2, 16, 7, K('shiro', 0)); c.HL(0, 2, 16, K('conc', 3)); c.HL(0, 8, 16, K('shiro', 2))
-    for x in range(0, 16, 5): c.P(x + 2, 4, K('conc', 2)); c.P(x, 6, K('conc', 3))
-    c.HL(0, 9, 16, OL); c.R(0, 10, 16, 5, K('conc', -2)); c.HL(0, 10, 16, K('conc', -1)); c.HL(0, 14, 16, K('sumi', 1))
+    """선로 옆 콘크리트 방호벽 1칸: 윗면 8줄(밝고 결 있음) + 앞 모서리 + 어두운 앞면 5줄 + 밑 풀."""
+    top_face(c, 0, 1, 16, 8, 'shiro', 2, grain=True)
+    c.HL(0, 9, 16, OL); c.R(0, 10, 16, 5, K('conc', -3)); c.HL(0, 10, 16, K('conc', -2)); c.HL(0, 14, 16, K('sumi', 1))
     for x in (3, 11): c.R(x, 12, 2, 1, K('kii', 1))
     c.HL(0, 15, 16, K('midori', -1))
 

@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "97ad1b35af2b460ddde12d8b4f1b06b67640e1adb238b5b00dd4f8f71027587e",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-plain",
+ "label": "jp_city/street_hand/jp-bwallf-plain",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese building wall front",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 show 4 pixel rows of the top roof/wall surface with a tiled pattern, foreshortened from above, before the south-facing facade begins at row 4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8144
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wall / building facade section with tiled roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-3 depict the foreshortened tiled top surface/eave cap (4 pixel rows tall) viewed from above, above the vertical wooden and plaster front wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6776
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large wall/building facade with a visible top cap or roof surface",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad tan horizontal top surface spanning rows 5-7, bounded by darker edge rows, above the south-facing vertical wall facade. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 41818
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large flat brown wall/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is presented as a straight-on facade with vertical brick/panel divisions. Its upper edge is only a thin dark line, with no visible horizontal top surface or slope; the lower pale/gray pixels appear to be ground or shadow rather than a receding face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 52634
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.916Z",
+ "cells": {
+  "16": [
+   "4225ea479b125a11",
+   "8ec91c5c4c486484"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "19d2055280a508a5",
+   "2a5ab3e44a10329a",
+   "3262905895ac0327",
+   "471cc918c47e8dbc",
+   "51b7c74eea70b62e",
+   "7699855da129e42d",
+   "835001176d16ceea",
+   "92d5aaebc7e94f55",
+   "a88c7107d99f88c0",
+   "c5994c88dcb9efcf",
+   "ec97bd6f6c1fa94b"
+  ],
+  "32": [
+   "7103071054d84051",
+   "96605011c52a74bd",
+   "fe6627f0cfbfd2d0"
+  ],
+  "48": [
+   "1bffc7f695b84320",
+   "5bb82f0984441c8e",
+   "8aaada934cf70353",
+   "96efde88322d46a2",
+   "a23500f681bdebea",
+   "d0906a1416d48c6e"
+  ]
+ }
+}

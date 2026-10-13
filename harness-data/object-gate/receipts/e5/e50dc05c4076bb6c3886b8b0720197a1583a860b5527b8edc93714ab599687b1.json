@@ -1,0 +1,160 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e50dc05c4076bb6c3886b8b0720197a1583a860b5527b8edc93714ab599687b1",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-ramen-4-L",
+ "label": "jp_city/street_hand/jp-sf-ramen-4-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "storefront entrance with door and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire storefront, including the upper fascia/awning, door lintel, windows, and ground sills, is rendered as a flat architectural front elevation with no visible 3/4 top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8221
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "storefront facade with central entrance and flanking windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade is rendered as a flat architectural front elevation with no visible top surfaces on the roof, lintel, door frame, or sills (only 1-2px edge lines).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4022
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large gate-like facade with pillars and a horizontal lintel",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is presented almost entirely as a flat south-facing elevation. Its lintel has only about a 1-pixel dark upper strip, functioning as a cap/edge rather than a readable top slope or surface; no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 233985
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large red-and-blue gate/pavilion facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal elevation with vertical posts and facade panels; the upper horizontal beam is only an edge/cap with no visible top surface or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 169017
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.003Z",
+ "cells": {
+  "16": [
+   "1f8902597d7a39c9",
+   "2108dc4c09e0014f",
+   "31836a5a65ac806a",
+   "8cf9e5b7bb765399",
+   "b133644178093c6e",
+   "b30488b7baf6aa41",
+   "bbf792126b343f24",
+   "c75cf8084b4255eb",
+   "cb66d29e67efcb93",
+   "f6f17248e487b700",
+   "f7d5ac2173a58fe2"
+  ],
+  "24": [
+   "01cae67a6c012307",
+   "0b015249f57ab24b",
+   "131097aba43bf116",
+   "1adfd09f2a30bd86",
+   "1e84a71d1ab42e8e",
+   "350a696a5e64207c",
+   "39266895c84cecc9",
+   "4d8eb555589737bf",
+   "6383b52a3b283b02",
+   "9f606c89e5b74ce3",
+   "9fc441f5b3dab677",
+   "a32ba3bdc01eb874",
+   "b0655e3630a95122",
+   "b0f00564583cb34c",
+   "b3e70cbfaa9af458",
+   "b53d70e4fccc2123",
+   "bb4056189e34a67e",
+   "f3dc04d74abad4b4"
+  ],
+  "32": [
+   "02a5ed51b6d4b81d",
+   "55d6458e3960125a",
+   "8a5e4e8f51c60af2",
+   "9c5b9f49c77e1623",
+   "adf37e7240e63270",
+   "b2dfeba3f2f959a0",
+   "d66c92268b09beb4",
+   "eaf2d9a1c0dcb847"
+  ],
+  "48": [
+   "0b7d181a9b975b26",
+   "270d6e206437feb6",
+   "4f3e2c3927c71d88",
+   "ca742b150ddb2a8d",
+   "cc879e8fe7f0b236",
+   "dfc4b4a2c1635d22"
+  ]
+ }
+}

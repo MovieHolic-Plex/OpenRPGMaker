@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "03899bd886a677c6c67b5e1ffaa1f6caa0d10785deb7a4f60022f6af67f8e7fa",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-lockplate",
+ "label": "jp_city/street_hand/jp-mark-lockplate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "square lock plate / floor switch",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The plate shows a large top face (rows 3-10, 8 rows tall) viewed from above, with a 2-3 row south thickness/face below it (rows 11-13), fitting the top-down 3/4 perspective for a floor plate.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4643
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "square lockplate / floor plate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lockplate is viewed from above in 3/4 perspective, showing a prominent top surface across rows 3-11 and a south-facing front thickness edge on rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4051
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular floor lock plate",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main plate has a broad, clearly visible horizontal top surface about 8 source pixels deep, with a darker south front edge. It is not a pure front elevation and has no receding isometric side face or container opening.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 48643
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "A square lockplate with a light inset top surface, central yellow marking, and a dark south-facing thickness",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main plate has a clearly visible horizontal top surface approximately 8 source pixels deep, plus a darker south/front face. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 213136
+  }
+ ],
+ "decidedAt": "2026-10-13T10:32:48.013Z",
+ "cells": {
+  "16": [
+   "180ebd89da18a349"
+  ],
+  "24": [
+   "45c12f36df01b705",
+   "9d4894d81a7b4cb6",
+   "b1f57583e1bc64ab",
+   "c6e6bfd72b14b51c",
+   "e5666576a97747fe",
+   "e8dcedc2e5cc0c32"
+  ],
+  "32": [
+   "09f31fa5e34d5949",
+   "2971347384743506",
+   "2f8104fddf6b2df8",
+   "494167f2d428d8a2",
+   "51dec20797a3c604",
+   "862448a64103f7d5"
+  ],
+  "48": [
+   "3683c781ec9b943c",
+   "9f5badd6f0db2db0",
+   "bf2c3f576cfb7a6f",
+   "e2411a68591b4dff",
+   "e97c0e752f408b79",
+   "f6831c3c6082ed56"
+  ]
+ }
+}

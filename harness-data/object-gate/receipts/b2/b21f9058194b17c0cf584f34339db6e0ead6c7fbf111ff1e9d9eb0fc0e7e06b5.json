@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b21f9058194b17c0cf584f34339db6e0ead6c7fbf111ff1e9d9eb0fc0e7e06b5",
+ "width": 48,
+ "height": 96,
+ "kind": "wall_mounted",
+ "name": "jp-wire-v6",
+ "label": "jp_city/street_hand/jp-wire-v6",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hanging vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Thin vertical wires/cables hanging against a wall, correctly classified as wall_mounted which may be flat.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4702
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "vertical wires",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted or hanging vertical wire lines; flat by nature as permitted for wall-mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3968
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "several thin vertical wire strands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is composed of thin wall-mounted vertical strands with no substantial volumetric body or horizontal top surface to show; this is appropriate for a wire-like wall object rather than a flat elevation of a solid object.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 191985
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "thin vertical wire strands",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object consists of flat, one-pixel-wide wall-mounted vertical strands with no volumetric main body or receding side face; a visible top surface is not applicable.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 124501
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:54.236Z",
+ "cells": {
+  "16": [
+   "024f12b6ac105723",
+   "34f61be2e8b1b5fc",
+   "5c0a112a8e063d80",
+   "813a72f36e08f93d",
+   "de8cf35792d6a69a",
+   "e91b5e1a78d7e494",
+   "f4923d86f9bc4576",
+   "fd7b17028773fd7b"
+  ],
+  "24": [
+   "65327c2df306a403",
+   "67fde94508c68d0e",
+   "acff4f0165f34ac3",
+   "c59945c10b890f4b",
+   "da4e4cae3306770c"
+  ],
+  "32": [
+   "271b7337d5a7e408",
+   "429d51b45a7a8926",
+   "4fe036cba594961f",
+   "64d6328fd96eb165",
+   "7470576553b35ef3",
+   "7b74a0c4889bae76",
+   "8650289299ccd2a4",
+   "9b7fd313eca1bab6",
+   "9cd54654a8494de9",
+   "b6b82fae7a0a1f7c",
+   "bd6ac665676bfa8c",
+   "bdd8d142569f7890",
+   "becd90689cc02253",
+   "e896bc6c251ee1d9",
+   "feca2f41b797a585"
+  ],
+  "48": [
+   "779b4cd2b24463bd",
+   "7a25d05cf8097e4e"
+  ]
+ }
+}

@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "33bad8b6040b06931c99839a16a7878f9ddb7dad47e34274e1b730fbb3fa4bd1",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-keijiban",
+ "label": "jp_city/street_hand/jp-keijiban",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board and its posts are drawn in flat front elevation with no visible horizontal top surfaces on the roof overhang, frame, or legs.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board panel and posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board is drawn in flat front elevation. The top overhang is just a 1px dark line and 1px trim line with no foreshortened top surface, and the posts and frame face straight forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8164
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular bulletin board in a wooden frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main rectangular board and its frame are shown as a flat south-facing elevation. The upper beam is only a narrow front strip with no visible top plane; no receding side face is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 444566
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 413777,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "47ea4ec146606852",
+   "65412f1948b70500",
+   "6ca066fc98b279b1",
+   "eb5357450e90dae5"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "03c78ac9911980e4",
+   "0e59a75199067ec5",
+   "1116d556224ce423",
+   "135e80afbb12895c",
+   "16195e6f91f27a39",
+   "2ee9e01d296c5f38",
+   "30757e7c5b66bcf7",
+   "35690b4d23274a0b",
+   "3a8b7f3d13439a96",
+   "575e82204f5d3cff",
+   "5876ee64bfe6971e",
+   "5ff5665ca85168a0",
+   "669fab931783ad7c",
+   "6c6832d4cbf957cb",
+   "777689aac561de9d",
+   "93f7e75fa4835d9c",
+   "9ef495914d129c47",
+   "a8753d9812b907f8",
+   "dc75e9e3fea93de9",
+   "dfda9e951b75356b",
+   "e1e0d67d769b6e2f",
+   "e6d94c2e3109f65a",
+   "fdc36ab4852242b8"
+  ],
+  "32": [
+   "e309d4cd788d2db5"
+  ],
+  "48": [
+   "174bc41abe9b8326",
+   "4fb9244512a274bf",
+   "68707d10cad4a954",
+   "cfd466d51e30e176",
+   "eeddfd59f102fc7d",
+   "f3bb18efdf3e7b13"
+  ]
+ }
+}

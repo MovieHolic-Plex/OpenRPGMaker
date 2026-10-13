@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "38f7b0f2d27573f2e1b83ac42d0c1516f4e0162f79b7f01c373081316f235dcd",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "jp-keijiban",
+ "label": "jp_city/street_hand/jp-keijiban",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bulletin board with roof and support posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The notice board is drawn in flat front elevation: the roof shows only a 2px strip (rows 2-3) above front-facing eave brackets (rows 4-5), with no foreshortened top roof surface or visible depth on the board frame and support posts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7593
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bulletin board with posts and roof canopy",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bulletin board is drawn as a flat architectural front elevation. The roof canopy, horizontal framing beams, and posts show only flat vertical front faces with no foreshortened top surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11078
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular bulletin board with a thick wooden frame and posted notices",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main board is presented as a flat rectangular front elevation; its upper edge has only frame/bevel bands, not a visible top surface with measurable depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 98798
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large rectangular bulletin-board frame and panel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is a broad flat front-facing rectangle; the upper horizontal trim is only a thin edge/beam treatment, not a multi-row visible top surface. No receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 126045
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.917Z",
+ "cells": {
+  "16": [
+   "664c37dcc10ac037",
+   "8bebd45d94127e74",
+   "a3a673567be6d649",
+   "bf4188ea47a58a07"
+  ],
+  "24": [
+   "028b29700f2d67fd",
+   "135e80afbb12895c",
+   "2ee9e01d296c5f38",
+   "4572599a92f7de50",
+   "50dc9e71b2c65d9e",
+   "5d3b334667a432ea",
+   "629d8eaf3cffdcb7",
+   "63c1e306758152b3",
+   "669fab931783ad7c",
+   "6d77f1e107896116",
+   "6fb51000feb6d388",
+   "7b6c8abb4ac22083",
+   "80b360cf87101fac",
+   "9110ef49d7b80ca3",
+   "9bd0ca0d12d85be4",
+   "abfa45cf0cb1bd4e",
+   "c6721a8513e9790b",
+   "d37d88c452dff433",
+   "dad885a4add47f8d",
+   "dfda9e951b75356b",
+   "e352db0db79bc692",
+   "e6d94c2e3109f65a",
+   "e7520dfd36970e06",
+   "efd01d6bf4326373"
+  ],
+  "32": [
+   "ac73bd12a7b12173"
+  ],
+  "48": [
+   "31e3011541493af8",
+   "70eb6bdbcf34945f",
+   "b8eee695d5cf85d9",
+   "cf3160660bb9765d",
+   "e0e8c8ac6bac2bce",
+   "f60e298c0a0ea162"
+  ]
+ }
+}

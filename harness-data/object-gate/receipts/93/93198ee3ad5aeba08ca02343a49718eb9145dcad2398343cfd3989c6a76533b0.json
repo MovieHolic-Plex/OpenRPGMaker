@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "93198ee3ad5aeba08ca02343a49718eb9145dcad2398343cfd3989c6a76533b0",
+ "width": 16,
+ "height": 32,
+ "kind": "structure",
+ "name": "jp-bwallf-end-l",
+ "label": "jp_city/street_hand/jp-bwallf-end-l",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese building wall segment",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall structure features 4 rows of foreshortened tiled roof surface (rows 0-3) above the vertical wall facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7096
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "Japanese wall section with tile roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the wall structure features a 4-pixel-tall tiled roof cap/eave (rows 0–3) showing its angled top surface above the vertical wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11387
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large wall or gate facade with a flat roof cap",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main facade has a substantial horizontal top plane spanning source rows 5-8, bounded by a dark back edge at row 4 and front rim at row 9. The rows below form the south-facing wall/gate face; no receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 76349
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large brown-and-stone wall/building section",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a visible brown horizontal top plane spanning about source rows 5-7, between dark rear and front edge bands; the remaining wall is a south-facing front face. No receding isometric side face or container opening is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 95805
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.915Z",
+ "cells": {
+  "16": [
+   "08e4c67381e2f030",
+   "5baf56d775c3d098"
+  ],
+  "24": [
+   "02eb9ebdf2132fb2",
+   "3518b1708dce5791",
+   "46768cf14308fad1",
+   "51b7c74eea70b62e",
+   "78ca3a713702666d",
+   "7ce8c76023650097",
+   "90ee87e823fe32cb",
+   "92d5aaebc7e94f55",
+   "b4d36293beb323ed",
+   "b9e7d0c110b2e826",
+   "e2cc9bb522274bfd",
+   "fdeabb43e97b78f3"
+  ],
+  "32": [
+   "40b05f08a74c2697",
+   "c7b39ab6b3b79861",
+   "d8d19210d5bf3c25"
+  ],
+  "48": [
+   "05f1682cb8549923",
+   "3f855c7b6639338f",
+   "8a993e70caea9f98",
+   "9dce13750b279bab",
+   "bdfedb6d9559c46b",
+   "f04ab97afb420067"
+  ]
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3824a93216f403f08a42e7d3f9f56a7ec89b46aa8519f843b76a20e9745a3782",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-izakaya-3-L",
+ "label": "jp_city/street_hand/jp-sf-izakaya-3-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "izakaya storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, including the entrance, noren, windows, and lintels, is drawn in completely flat architectural front elevation with no visible top surfaces or roof slope foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4724
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "izakaya storefront facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire izakaya facade (sliding lattice doors, noren curtain, lantern, and upper wall) is drawn in pure flat front elevation with no visible roof slope or horizontal surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3772
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large blue-and-yellow gate/building facade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is presented as a flat frontal facade; its roof/lintel top has only a thin edge/trim with no visible above-facing surface or slope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 318694
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Large front-facing izakaya/gate facade with blue upper panels and yellow lower panels",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main facade is presented as a flat front elevation. Its upper blue mass has only thin horizontal edge/cap lines rather than a visible foreshortened top surface, and the lower structure likewise has no top plane or roof slope visible. No receding isometric side face is drawn.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 564704
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.084Z",
+ "cells": {
+  "16": [
+   "29e85aece0d5b893",
+   "31503ef37ea162cf",
+   "47bc0719befa22e0",
+   "5b56ab9854f9e31c",
+   "8e6f6144b4deb5f6",
+   "97fd92c3e9fb6f97",
+   "9e0d634da44c4fd1",
+   "a60f4ed3f84d5a30",
+   "ac5ecd96b93ab690"
+  ],
+  "24": [
+   "a42350fb82e4cecf",
+   "e1369a1f39a56669",
+   "e1d4df408582275d",
+   "e6d62ba263de21e0"
+  ],
+  "32": [
+   "132f1c366a5da1b5",
+   "1382ae47f39c7b1b",
+   "20f8c195b1fd35eb",
+   "232b5d41fe2800e6",
+   "26e268ebaa31e681",
+   "2d7fdeb2da124306",
+   "2ef8dee295c44542",
+   "3402323e1d34310c",
+   "3cf3c60bed8b01d4",
+   "485ce97145baf0fc",
+   "4fa09ae6bfc69cf5",
+   "64dc7c4b8d2f0596",
+   "79cced9dde914629",
+   "9bffc8406f22f745",
+   "a1d3ccab4a5f424d",
+   "ab74a36d36d30e27",
+   "b0581fa959844bb5",
+   "c4a9e8174c1164a9",
+   "cea60fbf30d6b0f7",
+   "dd842b97754797d6",
+   "e1259760de9ac651",
+   "f7289f3e7441217f",
+   "f8ba57bac21e0d63",
+   "f970969249d01cf9"
+  ],
+  "48": [
+   "29f2545160138a33"
+  ]
+ }
+}

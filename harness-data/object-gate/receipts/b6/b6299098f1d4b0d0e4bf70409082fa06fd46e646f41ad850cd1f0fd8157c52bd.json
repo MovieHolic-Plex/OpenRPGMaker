@@ -1,0 +1,189 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6299098f1d4b0d0e4bf70409082fa06fd46e646f41ad850cd1f0fd8157c52bd",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-sento-8-R",
+ "label": "jp_city/street_hand/jp-sf-sento-8-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bathhouse building facade with entrance curtain and windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, entryway frame, beams, and ledges are drawn entirely as a flat architectural front elevation with no visible top surface or roof slope (top_rows: 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6774
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sento (bathhouse) entrance facade with noren curtain and window displays",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure, including the entrance frame, lintels, shelves, and base wall, is drawn in pure 2D architectural front elevation with no visible horizontal top surfaces (0 top_rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6284
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large double-door gate structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main gate/façade is drawn as a flat front elevation. Its roof/lintel has only a thin edge line with no visible top surface, and no receding side face is shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 192794
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 414900,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.008Z",
+ "cells": {
+  "16": [
+   "0485028b5fbfb1e0",
+   "275b0493ef0c53f4",
+   "30c40de893614fb0",
+   "43818f6e6234418c",
+   "492309af242ec3ef",
+   "5507cf34602eb1e4",
+   "577dcae62142a7c2",
+   "5e232eff7bd84c85",
+   "6ec4d5455ed1f334",
+   "739b05687bab70cc",
+   "8a0024a5ea16da93",
+   "9721588eed3352ee",
+   "a36454dce61a956c",
+   "b6e98f1355235ce4",
+   "b7f2f2c086da4551",
+   "c004eb750489049b",
+   "c03732f0dc187032",
+   "d124d4f5fcead829",
+   "dc1eacea141785cf",
+   "e28db1323582e953",
+   "fbc11aa2d9687ca4",
+   "ff20c61997320264"
+  ],
+  "24": [
+   "095f2129ec21b428",
+   "15f3eb09efae94aa",
+   "33634449ef4f0112",
+   "3ee833c28432f292",
+   "4a41448fa486da75",
+   "4cedcb8e8a326520",
+   "4d80a7c2f3be1556",
+   "57937e049af93c1f",
+   "5d8383601ac7d3ae",
+   "5e7559d989ea1c9e",
+   "64a2ef445f615dd2",
+   "6e9248e0b66589cb",
+   "74030c8b2945cb5b",
+   "782c79bff4c9f600",
+   "7c63e9419325f943",
+   "7cf8446804851dee",
+   "8111140cfaa9fa12",
+   "83a477734850a037",
+   "984d6d66bba72e22",
+   "9a8ad0c73ccb23c6",
+   "a089b4ec1a4fc140",
+   "a2f114f54342b8a5",
+   "ab5f8573fb46ea41",
+   "ac3ce100335f6596",
+   "ac648b3862382735",
+   "b4b5c1b907fcb980",
+   "b6643b7bdd344c6f",
+   "bc836f782144f432",
+   "c8c6fd18428d1f46",
+   "cc46cea026e5515a",
+   "e7c1867d2640a4c9",
+   "edaf94b85542864d",
+   "f007eb613bb1923b",
+   "f82fc58614262275",
+   "fa5c3829501aa505",
+   "fad5e6e9842877a6"
+  ],
+  "32": [
+   "06645dfc5f2f72cb",
+   "08e49ad6165a0b6e",
+   "0aded0827011ead4",
+   "1d0442bf142bdc1d",
+   "4207ed9f5a2b4761",
+   "5090184a05d7173d",
+   "6c0aaf0f399be5c5",
+   "856a2941920a3ef7",
+   "8622a04c50ebd4a8",
+   "8a63ea92c99d3b10",
+   "93c65990dbe71da2",
+   "9db28b95b852c410",
+   "a3e5b6f012fbab17",
+   "b3333c4cf170ecbb",
+   "b77e60a04d84dc5a",
+   "d966dcba30f2d88e"
+  ],
+  "48": [
+   "2734da2192027d0f",
+   "48f84eca67184f62",
+   "687a5c8811d88f6e",
+   "78dac5fc80ce0d70",
+   "9fac9fe109b4528f",
+   "a1cd5e4ce9fdf00b",
+   "b849ba336e960c11",
+   "c35e3baf6899f6ef",
+   "e6b306405b5e0a35"
+  ]
+ }
+}

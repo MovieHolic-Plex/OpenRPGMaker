@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "deb54c2fc37d16a28feef75c649be67286e0ecc0f659619ad8c569f7261d73ff",
+ "width": 96,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-house-6-L",
+ "label": "jp_city/street_hand/jp-sf-house-6-L",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese-style building facade with tiled roof and sliding entrance gate",
+    "kind_matches": true,
+    "top_rows": 20,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slope is clearly visible from rows 0 to 19 (20 pixel rows) facing toward the camera in standard 3/4 view above the front wall and shoji doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5731
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "traditional Japanese building facade / gatehouse",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure 2D architectural front elevation. The foundation plinth (rows 43-47), window sills, lintels, door frame, and horizontal beams show 0 pixels of top surface. The roof/eaves along the top (rows 0-7) are depicted as a flat front-facing fascia/edge rather than a sloped top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9022
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Building with a broad blue-gray sloped roof above a windowed front facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad roof surface occupies source rows 2–17, above the dark eave at rows 18–19. This substantial visible roof slope accompanies the south-facing wall and windows; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12156
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Building with a broad blue-gray tiled roof and a windowed front facade",
+    "kind_matches": true,
+    "top_rows": 18,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main roof has a substantial visible sloping surface spanning source rows 2–19, with tile shading extending down toward the eave. The windowed south facade is visible below it; no receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12709
+  }
+ ],
+ "decidedAt": "2026-10-13T10:19:32.082Z",
+ "cells": {
+  "16": [
+   "044ad660a23d9974",
+   "05ac00bd8eb9cf25",
+   "145a4be9af5a056f",
+   "18dc7a52868e1fb3",
+   "20cd01004168c324",
+   "393864fc9a4cd1c6",
+   "4001b576cf7a0aed",
+   "5858809b753ca6ea",
+   "71eda351f607a952",
+   "78807d07062ba12b",
+   "78c41a968f38f85d",
+   "b4224f076633e09e",
+   "c8270065076e290d",
+   "dced0e85dd5401fe",
+   "f2e68ef66ba416a9"
+  ],
+  "24": [
+   "00dbfb0dbed51a3f",
+   "201fa010714cce8b",
+   "41cf78a067c1f3f1",
+   "78489de6f258f1ec",
+   "79132db507ae7f0e",
+   "b8a81e84180568c2",
+   "f124d3e9aa640c9b",
+   "ffb33b69ff3530b0"
+  ],
+  "32": [
+   "08a13a2520839412",
+   "0ebf653c506f6997",
+   "2ecec4e37cc201e0",
+   "3331d7b775de2cb4",
+   "3db691fcd4c3f25e",
+   "5e976c286b7e3647",
+   "780aa13726277b10",
+   "7b173d25ac61e8b8",
+   "89486396487ae274",
+   "cf01f095232eabec",
+   "e802b23945b9b511",
+   "ec07613bf4dbb087"
+  ],
+  "48": [
+   "18f385c1e8f3cf8d",
+   "a5eba26a0f941a60"
+  ]
+ }
+}

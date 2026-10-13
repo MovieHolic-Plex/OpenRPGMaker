@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fd292d5e133bb370929e3d7dd524633b285cf27853001b0d933a090ee56af183",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-3-R",
+ "label": "jp_city/street_hand/jp-sf-office-3-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "office building entrance facade with glass sliding doors and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire building facade, including the door frame, canopy/lintel above the door (rows 7-11), and window frame, is drawn in pure front architectural elevation with zero foreshortened horizontal top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5270
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office building entrance with sliding glass doors and window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building facade, door frame, canopy/lintel, and window are drawn in straight architectural front elevation with no visible top surface or 3/4 perspective foreshortening anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5234
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "Office building facade with glazed double doors and a side window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is a flat front facade. Horizontal bands above the doors and along the roofline are only 1–2px edges or highlights; no roof or lintel top surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9688
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Office/storefront facade with large glazed entrance doors",
+    "kind_matches": true,
+    "top_rows": 1,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main structure is shown as a flat facade. Roof and lintel edges have only single-row horizontal highlights; the broad gray areas read as vertical fascia rather than visible roof surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 1행 < 3"
+   ],
+   "ms": 13631
+  }
+ ],
+ "decidedAt": "2026-10-13T10:16:17.824Z",
+ "cells": {
+  "16": [
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "659da1797ea32993",
+   "8df1ae22bb17822d",
+   "b7dd29a8143779e8",
+   "bc3ea4328f130ebc",
+   "c125afcc4180df26",
+   "c28ae83d17a2a399",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "457cd0d85f37988a",
+   "a1b95270ec3dd065",
+   "d5265930fe1bbdbc",
+   "e406e0d842dce791"
+  ],
+  "32": [
+   "0b62b950962b0df1",
+   "0d3b0febee906f4b",
+   "121623a657d0951c",
+   "20e7ec8486244877",
+   "341dcf27e340b686",
+   "3f33c5bfa2a28ef9",
+   "432ef8a0196c4e0a",
+   "49baeb7cf1a7946f",
+   "4ac0ef5a123cc648",
+   "4f69fee32170c0a6",
+   "945eb43f71d0979b",
+   "967af82e9f00db49",
+   "aa73521486da0be7",
+   "aebcee8441444598",
+   "c2657ba02bc05d8a",
+   "c9c0bf4f97ea6384",
+   "cfc149b7da3ea7f2",
+   "d42d9e1fa5cb9c49",
+   "d587c7ef1c1be975",
+   "ee5eb9db3fd60c10",
+   "f3c6c5623f547878",
+   "f4a034696a6c58c3",
+   "f7d6b682221e3ae4",
+   "f91dabe8b9d40f47"
+  ],
+  "48": [
+   "786b47cf4d0c4a70"
+  ]
+ }
+}

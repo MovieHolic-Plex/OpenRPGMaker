@@ -1,0 +1,109 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b6543f4719138888616ca31c18cc796f82fcc598e8db3ad0f4b836b56e407b2c",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-mark-edge-s-grate",
+ "label": "jp_city/street_hand/jp-mark-edge-s-grate",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor drain grate and pavement marking",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor feature comprising a pavement strip and a floor drain grate set flush into the ground, viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floor edge grate",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat floor element representing a drain grate along a pavement edge, viewed entirely from above on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4093
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular grate panel with vertical openings",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main grate is presented as a flat rectangular front panel; the light strip at its upper edge is only a 1px rim, with no visible top surface. The openings are shown as front-facing vertical bars rather than a surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 204960
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": null,
+   "pass": false,
+   "reasons": [
+    "판정자 호출 실패"
+   ],
+   "ms": 172863,
+   "error": "Error: Codex error event: Our servers are currently overloaded. Please try again later. (code=server_is_overloaded)"
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.485Z",
+ "cells": {
+  "16": [
+   "79c31bbad959c1cd"
+  ],
+  "24": [
+   "0e565b763b7f7a9c",
+   "42bd340715fa5fcb",
+   "531a08fe34ebda9d",
+   "73640d35886966a8",
+   "bd75e56ecbb29f31",
+   "ee2435de237b888a"
+  ],
+  "32": [
+   "28b847e14f872c81",
+   "57a205a1dae5877c",
+   "89714bff999d7963",
+   "d758faeacebccfea",
+   "ed89c4b1b1fa4045",
+   "f67ce5c42022caf8"
+  ],
+  "48": [
+   "122de3da0f21df48",
+   "23c8cf921a1ce2de",
+   "72333a4ef1bcb776",
+   "9dcd981ff93902e4",
+   "dcb9f8b0a2601aa9",
+   "f054c83b77c28913"
+  ]
+ }
+}

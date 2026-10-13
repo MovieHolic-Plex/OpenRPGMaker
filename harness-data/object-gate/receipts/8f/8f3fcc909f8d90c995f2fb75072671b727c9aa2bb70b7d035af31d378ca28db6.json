@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8f3fcc909f8d90c995f2fb75072671b727c9aa2bb70b7d035af31d378ca28db6",
+ "width": 32,
+ "height": 64,
+ "kind": "flat",
+ "name": "jp-mark-30",
+ "label": "jp_city/street_hand/jp-mark-30",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "Japanese road surface speed limit marking '30'",
+    "kind_matches": true,
+    "top_rows": 55,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a vertically elongated Japanese road surface marking ('30' km/h) painted flat on the ground. As a flat floor decal, its entire surface lies on the ground plane seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9377
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "road marking '30'",
+    "kind_matches": true,
+    "top_rows": 54,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Elongated road surface marking ('30') painted flat on the asphalt, fully visible from above as a ground decal.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6809
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat orange ground mark composed of narrow connected bands",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The mark is presented as a flat ground-level shape with its colored upper surfaces visible across the bands; there is no receding isometric side face or architectural front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 278153
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "orange flat ground marking / glyph",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is a flat, filled orange marking composed of broad 3-4px strokes lying on the ground; its visible face is the top surface, with no receding side face or architectural front elevation.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 109849
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.484Z",
+ "cells": {
+  "16": [
+   "2df178cc744a358b",
+   "3325a93e56177108",
+   "44465e9e2eee6829",
+   "4aeb1c636a3231a3",
+   "535c1e828c6f7681",
+   "8bf38edf1bdc847e",
+   "ce73bf06b5a534cd"
+  ],
+  "24": [
+   "007770d5ab5ff3b7",
+   "099f74dc3ac43eb5",
+   "0fc71322dcb0bedf",
+   "1f5f2cbcb35d5fbf",
+   "25336e16708baa48",
+   "317f15507691d858",
+   "42378789af464751",
+   "46fc81cc4f01d3a8",
+   "48fc473b891c2236",
+   "56dd3ab19e1b201a",
+   "5fbf59d364de7699",
+   "6a25768bfdb08df0",
+   "82d87d1f38b09959",
+   "85b039bada3f9b38",
+   "8d1d5faee49905e5",
+   "8e7a5a5a0a07f7bf",
+   "9f031894daa48d61",
+   "a24b405a32a3cf63",
+   "a912a71153089fe2",
+   "b14ad7d43ec197af",
+   "b80498cc1272fe9c",
+   "c3b7a04be2ed5489",
+   "c9ee1f2b064ee3f5",
+   "d8a155da8f10a216",
+   "dd8f86ac7215e041",
+   "e1a04dddb401c1fa",
+   "e32f935a7e7e8442",
+   "e48b99a49303ead6",
+   "eaa880e72c6d18ce",
+   "f03f553bc6a64506",
+   "f4c90cfb2b27123f",
+   "f76f67fa95cd4432",
+   "f933c105144d8948",
+   "fdaa9d9290d4ba3b"
+  ],
+  "32": [
+   "f35ba266b315483f",
+   "fd221814fa17ab6c"
+  ],
+  "48": [
+   "0c474f9c09d1c970",
+   "182a90e36decc1e7",
+   "3ed0329e28215b74",
+   "62382d67cf0f08ab",
+   "64d7fdab4e55cc98",
+   "6b4bd9dc794d8346",
+   "8aee33f464312e02",
+   "beab6e62429e1ef7",
+   "c8cc760a189cc6d4",
+   "ca0c6e3e32e6bd32",
+   "d284eee9c35e96b0",
+   "e535c60131f98377"
+  ]
+ }
+}

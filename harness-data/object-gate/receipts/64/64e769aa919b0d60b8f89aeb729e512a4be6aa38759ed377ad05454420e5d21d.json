@@ -1,0 +1,182 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "64e769aa919b0d60b8f89aeb729e512a4be6aa38759ed377ad05454420e5d21d",
+ "width": 128,
+ "height": 48,
+ "kind": "structure",
+ "name": "jp-sf-office-8-R",
+ "label": "jp_city/street_hand/jp-sf-office-8-R",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "building facade with glass panels and entrance door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a flat architectural front elevation with no visible top surface or roof plane (top_rows = 0; row 0 is just a 1px border line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5102
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "office building facade with entrance door and glass windows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The facade, windows, and doorway are drawn entirely as a flat architectural front elevation with no visible top surface or roof slope anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6396
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "large office building facade with central entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The building is presented as a flat frontal elevation; its roof/lintels and entrance have only horizontal edge lines with no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 646475
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "large building facade with central double-door entrance",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure is drawn as a straight-on facade; the lintels and roof/header elements are only thin horizontal bands with no visible top surfaces or slopes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 99874
+  }
+ ],
+ "decidedAt": "2026-10-13T10:20:30.001Z",
+ "cells": {
+  "16": [
+   "1f9df1d889f05700",
+   "253ec576d516793a",
+   "37210adf83f964ab",
+   "537c23bb38f18dfb",
+   "659da1797ea32993",
+   "6e9835e08f0f35f0",
+   "8df1ae22bb17822d",
+   "b7dd29a8143779e8",
+   "bc3ea4328f130ebc",
+   "c125afcc4180df26",
+   "c28ae83d17a2a399",
+   "c7bc0e7332cbf039",
+   "d15647df49101aa3",
+   "fcb0a8781b056a77"
+  ],
+  "24": [
+   "1bc5fc29dbeb95f0",
+   "22fdea2d9e3eb699",
+   "4478e3e906ee1b8e",
+   "457cd0d85f37988a",
+   "45f16f905f9fe5ae",
+   "46950b83a656ca51",
+   "480d56d9205d0afe",
+   "51afbeb0aa461e3f",
+   "5b81ff0e405173f2",
+   "6991bf4ca7eace6a",
+   "74ae45831eddf79c",
+   "7bf0c6cbffe5e25f",
+   "7ee27e292ad5c0fc",
+   "837d6cf20034d356",
+   "85b91de13bd7fd88",
+   "8ebed162287371d3",
+   "9fd4ae75b7f072f0",
+   "a01ed8912c3bf42b",
+   "ad1b335215797fd5",
+   "af9f4473e026afa1",
+   "bbcb7ef5b4b69a96",
+   "caf7d24105a1a46a",
+   "d5265930fe1bbdbc",
+   "e26438b4c9cd868e",
+   "e2becac4e296d410",
+   "e3747639deea0908",
+   "e7fd84f62c28e3d7"
+  ],
+  "32": [
+   "13f2ccec7ad52ad0",
+   "33bb3e3274852cec",
+   "4f89e6ba66a34c7b",
+   "557f782cc4846b87",
+   "98112393f4ce28d9",
+   "a59b8f0143882e7d",
+   "aaf15582ce1ccb5b",
+   "ab813e42450a47f6",
+   "c6ec5b95d9601650",
+   "c93a9110a6993ca6",
+   "de47c3fec33b84f0",
+   "df8698a1e66e34f9",
+   "e79868dc70bbd10e",
+   "ec4e150941e743db",
+   "f7d6b682221e3ae4"
+  ],
+  "48": [
+   "2f517f2d9aa9268a",
+   "45e8ca4973fd113b",
+   "48230890b2c69a27",
+   "5c932c6a69b5bb0b",
+   "64722075e43036e2",
+   "6e8bcb649537a705",
+   "7e55e9a93afca524",
+   "83de60af6c5fdf36",
+   "a0197910622ac29b"
+  ]
+ }
+}

@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "68c56c057bc44257b72949744bfafa3fabb698ed24099485d8c04ff974c3cd02",
+ "width": 48,
+ "height": 160,
+ "kind": "column",
+ "name": "jp-pole",
+ "label": "jp_city/street_hand/jp-pole",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "utility pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and its crossbars are drawn in pure front elevation (or even looking slightly upward, showing dark undersides beneath the horizontal beams). Neither the crossbars nor the pole body show a foreshortened top surface seen from above; the top cap is drawn as a flat 2D silhouette dome.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7802
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "utility pole (shaft and crossarms)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, crossarms, transformer, and base are drawn entirely in flat front elevation with straight horizontal lines and no visible top surface anywhere (e.g. crossarms have no top plane, base is a flat horizontal cut at row 157).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7220
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "tall vertical pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is a flat, front-elevation rectangle with no visible top or cut surface; its upper end is hidden beneath the horizontal fixture. Only edge shading is present, not a top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 27537
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "tall rectangular pole beneath a horizontal fixture",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main pole is presented as a flat vertical front face with no visible top/cut surface; the horizontal fixture obscures or replaces the pole's top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 157369
+  }
+ ],
+ "decidedAt": "2026-10-13T10:49:32.476Z",
+ "cells": {
+  "16": [
+   "34b5a0ecddd851a5",
+   "35ed9c566142981e",
+   "5e09bfb905b8b938",
+   "6527dd5a9f0fc80f",
+   "66b7fcf860ffd794",
+   "69a19c14cbc0157d",
+   "9d813e01884c0ce3",
+   "a66f5c7f5747e8cf",
+   "bdf177300bab65ef",
+   "d2c941afd8f64ed7",
+   "d4a42f69e5c4fe40",
+   "d9c8a71fa9094dd1",
+   "db9ae207faa08c4b",
+   "dce557961f6c7ae4",
+   "e6633b60dbf9ea07"
+  ],
+  "24": [
+   "03a8d5b9e8cf003a",
+   "0c2904cbffbad857",
+   "13d23617cba1ef58",
+   "1de3a1fe5a90a0fa",
+   "2048930db266953e",
+   "23990a03f63bad47",
+   "27e16bc74cd21124",
+   "2816c8fa0cbc245c",
+   "320d56a3939d27f1",
+   "3a9a0e38aeea11cc",
+   "3d7b376662753bb0",
+   "3fdc996b86042ddf",
+   "5f5f87f9fbce96e8",
+   "629c92f6c9843d24",
+   "644c67c0e026a82c",
+   "6570f1e3ecb22d8b",
+   "7f853eac4e6142d4",
+   "84017846fcd532fd",
+   "85e86bebad1806cf",
+   "9143bafc6e872222",
+   "95a4831bd962e0c2",
+   "98d8b2bc8296309b",
+   "bbca726580be65fe",
+   "bf153764acc00a95",
+   "bf6d4daadb8b53a4",
+   "d20c9ab74420d3c0",
+   "edf6205d3c46eb73",
+   "f0cf748cb4fd8a99"
+  ],
+  "32": [
+   "0580d4d5a4e6cea3",
+   "2e9e749633b6b4b0",
+   "3724f92ffae2f96b",
+   "37aebba747787770",
+   "46749f75c6d25dfc",
+   "74df7687a5e2206a",
+   "83249a027509f209",
+   "8454bf9657617101",
+   "90b5371adb7e216e",
+   "90c38f8a74766dcf",
+   "97b26722796334e9",
+   "9f019ec3e163766a",
+   "c1b2d3112452457a",
+   "c54daa599c7beab9",
+   "c72dc4b046d93ad2",
+   "cbffedbe12c2caab",
+   "d4b03b86486f723a",
+   "d75e49276447c446",
+   "ebc808795d62ea71",
+   "f4752fb3f8d64997",
+   "f5d7ac5ee4f4ea06",
+   "fa1b797cee2bbed1",
+   "ffa63573e6a6a722"
+  ],
+  "48": [
+   "00f718cf59f19955",
+   "22bb31ca4b60776e",
+   "28b356cac2aafe84",
+   "310730901b1750cd",
+   "4fafdc2a988066c7",
+   "811780da69b91e7f",
+   "c00910b3bc963bb1",
+   "e9d2a616d9814aee"
+  ]
+ }
+}

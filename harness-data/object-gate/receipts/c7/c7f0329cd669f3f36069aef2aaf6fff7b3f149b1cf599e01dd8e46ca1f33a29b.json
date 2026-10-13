@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c7f0329cd669f3f36069aef2aaf6fff7b3f149b1cf599e01dd8e46ca1f33a29b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "jp-bridge-plank",
+ "label": "jp_city/street_hand/jp-bridge-plank",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bridge planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Four horizontal bridge planks seen flat from above, each with visible top surface and nails/grain separated by shadow grooves.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5037
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bridge planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A floor/bridge decking surface composed of horizontal wooden planks viewed from above across all 16 rows with nail/gap details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3750
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "flat wooden bridge deck with horizontal plank bands",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The broad brown decking is visible from above across the full 16-row footprint, with dark horizontal seams separating plank bands. No upright front elevation or receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11368
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "Flat wooden plank bridge deck",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body is a broad, top-down wooden deck spanning 16 source-pixel rows. Plank seams and grain marks lie across its visible upper surface; no upright front elevation or receding side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10678
+  }
+ ],
+ "decidedAt": "2026-10-13T09:44:56.480Z",
+ "cells": {
+  "16": [
+   "0f658197c48c180d"
+  ],
+  "24": [
+   "44e85bf23aafef27",
+   "58d39913a5235b2b",
+   "9bb98d59cc60bc84",
+   "bb11c9684eef65e8",
+   "e8a10d69af6ecd82",
+   "f7f194fb99725e6b"
+  ],
+  "32": [
+   "245ce1687f62807e",
+   "35bf3cf08e9de62c",
+   "7239647aa97329dc",
+   "a994ca1bb45a8440",
+   "b8797f8870f219de",
+   "c1671ed73c169c48"
+  ],
+  "48": [
+   "12d1dafb802d6bf3",
+   "48400521843de1ab",
+   "5b3f78e3b4da9e0c",
+   "6c87ef8b0971079d",
+   "6dec5965d9aefa7b",
+   "80719c990e82de6c"
+  ]
+ }
+}

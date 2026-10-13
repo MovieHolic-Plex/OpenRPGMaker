@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "54f3384290641b195b535e47bae1bce972d18e8af966298bf3d8393c66c7f58d",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "jp-ac-unit",
+ "label": "jp_city/street_hand/jp-ac-unit",
+ "profileHash": "c69574d8ced1cdf8",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "air conditioning outdoor unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top panel is clearly foreshortened and visible from above across rows 2 to 6 (5 rows tall), showing panel detail, while the front face with ventilation slats spans rows 7 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6936
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "outdoor air conditioner unit",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the AC unit is clearly rendered from rows 2 to 6 (5 pixel rows tall) with recessed detailing, while rows 7 to 14 form the front face with vents and a yellow label.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12836
+  },
+  {
+   "judge": "gpt",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular box-like AC unit with a broad visible top panel and dark front grille",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a clearly visible horizontal top surface several pixels deep above its south-facing front grille; no receding isometric side face is present.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 95956
+  },
+  {
+   "judge": "gpt",
+   "run": 2,
+   "answer": {
+    "main_body": "rectangular box with a vented front panel",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main body has a broad, clearly visible top plane approximately 5 source pixels deep above the south/front face; the front contains vertical vents. No receding isometric side face is drawn.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 86609
+  }
+ ],
+ "decidedAt": "2026-10-13T11:06:04.914Z",
+ "cells": {
+  "16": [
+   "4542ddb82b624e49"
+  ],
+  "24": [
+   "25d7d3e34cb169f2",
+   "612a56fc7a6c4c81",
+   "899818f2c8606d92",
+   "b4d60da5b03d08f9",
+   "f0110cc836952d5f",
+   "f04ad3d435365d6a"
+  ],
+  "32": [
+   "281616a2f450293b",
+   "2a9e8ad877663b05",
+   "3dd3e57fb6d017c3",
+   "65f1b9ad4f93d6b0",
+   "a13b9475f2ecb680",
+   "c97f117f05f2f997"
+  ],
+  "48": [
+   "013215a0cbb6374b",
+   "0af9806df6f7ca41",
+   "0ff94cfbc53104d7",
+   "5586a1b88a861c09",
+   "918030a2c5bd9263",
+   "b92fd804e7fd0c34"
+  ]
+ }
+}
