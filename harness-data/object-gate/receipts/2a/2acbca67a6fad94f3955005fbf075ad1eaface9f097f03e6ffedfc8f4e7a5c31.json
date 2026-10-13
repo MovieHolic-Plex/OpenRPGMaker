@@ -1,0 +1,128 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2acbca67a6fad94f3955005fbf075ad1eaface9f097f03e6ffedfc8f4e7a5c31",
+ "width": 16,
+ "height": 32,
+ "kind": "organic",
+ "name": "증기 분출",
+ "label": "sky-steam/sky-a-steam-vent",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sprite depicts a vertical column of steam puffs drawn in flat 2D front elevation with no 3/4 top-down perspective (top_rows: 0). Additionally, steam is an atmospheric/vapor effect, not an organic object (plants, rocks, trees, mushrooms).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 13750
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn as a flat 2D billboard of rising steam puffs with no 3/4 perspective, ground vent, or foreshortened top surface (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6601
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rising steam puffs",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam plume is drawn as a flat vertical chain of circular puffs in pure 2D front elevation with no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6026
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam plume",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam plume is drawn as a flat 2D side-view column of circular vapor puffs with no top-down 3/4 perspective, ground vent opening, or visible foreshortened top surface (0 top rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4931
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.327Z",
+ "cells": {
+  "16": [
+   "a53b608145ba35ea",
+   "cd374fe943fcb776"
+  ],
+  "24": [
+   "08a19785a7a8255e",
+   "1fe0dd14b2c981a7",
+   "203c97f8bc9ce969",
+   "22bfd1d80e3b1419",
+   "2bb7fe56d7729c52",
+   "465ea4213b447812",
+   "82a3fe5e2d7eaead",
+   "845789674d705fd3",
+   "a8a791f6186c6b68",
+   "ab4fa3f28ff7298d",
+   "c599e39723649910",
+   "eacb210d8094a0f7"
+  ],
+  "32": [
+   "5bfa5f0d14b99d42",
+   "5e12762e6325069b",
+   "edef1a835176a633"
+  ],
+  "48": [
+   "0a53708f3f3b0fe4",
+   "0c19d567a946cc95",
+   "58d3fe8d2c878f45",
+   "8166734d31be0eb7",
+   "9a067ad67f756879",
+   "f6499376af68856c"
+  ]
+ }
+}

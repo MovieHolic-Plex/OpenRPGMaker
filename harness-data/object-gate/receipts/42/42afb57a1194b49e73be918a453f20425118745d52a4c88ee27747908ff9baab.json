@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "42afb57a1194b49e73be918a453f20425118745d52a4c88ee27747908ff9baab",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "감시 오두막",
+ "label": "sky-steam/sky-a-watch-hut",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cabin with hipped roof, window, and door",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red tiled roof shows its front-facing slope spanning from row 3 to row 13 (approx 11 pixel rows) above the vertical front wall, consistent with standard 3/4 JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4323
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "small cabin with hipped tiled roof",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof slopes down toward the viewer across rows 3-13 (about 11 rows of roof tiles seen from above) overhangs the south wall (rows 15-30), which is drawn straight-on without receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabin with shingled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin displays a large south-facing roof slope and flat ridge spanning rows 3-14 (12 pixel rows) above the front wall (rows 15-30), classic top-down JRPG structure view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6234
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cabin with shingled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes forward toward the camera across rows 3-14 (12 rows), showing standard top-down 3/4 perspective over the front vertical wall (rows 15-30).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3550
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.903Z",
+ "cells": {
+  "16": [
+   "3dfd231d4505fec2",
+   "d6dcda3f5ec30ebb",
+   "e84b6425c0a005dc",
+   "ee15fa8c20bf4b19"
+  ],
+  "24": [
+   "1c47d3e7fffcba3b",
+   "2eac19c9cc1341fd",
+   "3085631c83b44634",
+   "31fa7d2aebd6bfdc",
+   "3991b6d05bbc9aea",
+   "5ca49046922838f1",
+   "5f8c75304ed94259",
+   "832d41ff859f3728",
+   "83499a74cfd6cf4d",
+   "85cc47330bf464c1",
+   "974a8665df61b0d6",
+   "9dbe10d7d8cd8305",
+   "a1bf1a0051677c43",
+   "a75ccea85063163a",
+   "bed9ffbfa54a1465",
+   "c22731e5d778ee8f",
+   "c7c1aaee78b0428c",
+   "cfe1b37c3f7dff27",
+   "d54ebf2b5525a776",
+   "db8f000619354002",
+   "dc3a2ae3d734ff65",
+   "e6f548f389565899",
+   "f102041b4603ed03",
+   "f8b8765e931857a4"
+  ],
+  "32": [
+   "149b9edc0327f002"
+  ],
+  "48": [
+   "137612364020a89c",
+   "44d8a19b02be2954",
+   "9f06a0705eac7576",
+   "d5893b03831755e3",
+   "e617e080680fd84e",
+   "ffe5e0a38dbfe513"
+  ]
+ }
+}

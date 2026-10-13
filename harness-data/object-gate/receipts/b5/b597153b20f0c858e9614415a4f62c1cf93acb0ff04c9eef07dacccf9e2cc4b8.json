@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b597153b20f0c858e9614415a4f62c1cf93acb0ff04c9eef07dacccf9e2cc4b8",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "섬 풀 윗면",
+ "label": "sky-steam/sky-a-grass-top",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat top-down ground terrain texture depicting grass with small white flower details spanning the entire 16-row height.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2892
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "island grass terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal grass terrain surface with scattered small white flower/highlight pixels, viewed entirely from above as flat ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3632
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal strip of green grass terrain with small flower specks, representing a horizontal ground plane viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3106
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "island grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain strip depicting a grass ground texture viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6825
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.903Z",
+ "cells": {
+  "16": [
+   "48ec34151f34df44",
+   "54b2c4efcdbc8ea8",
+   "c8c690c3dc09192a",
+   "c8f81264dac40e19"
+  ],
+  "24": [
+   "07c50a733c193544",
+   "238d0089f141bd23",
+   "24769961a6af4392",
+   "41490f6afb21d9c9",
+   "493e1d02cd3b2346",
+   "4d02ba6c8c5361b7",
+   "58e9fb56e2e652ea",
+   "677870a107670752",
+   "70b540e61b965fc7",
+   "737ba7b13e8bf933",
+   "8d5b8c5dbe98d819",
+   "b6c8a96873542a8d",
+   "be3365455fabbed7",
+   "cbb95c409d08c94d",
+   "dd45d82fcae659f5",
+   "e1aa9e60c1571b50",
+   "f3f90b5cb4c20ddc",
+   "fef611d891c0f068"
+  ],
+  "32": [
+   "24da80f566f7d1cd",
+   "297df5a33db70ab2",
+   "db2299c6e4c3295c",
+   "ffb7134f40d98606"
+  ],
+  "48": [
+   "15043132bec680a8",
+   "2f1669db5bf25a22",
+   "4af4366d3f6c8733",
+   "595a09ead14cb0c4",
+   "6d01c65e0f0db337",
+   "77a22f71e46cd3db",
+   "bf23fe9cff9f4bb8",
+   "c37215c9cc87422a",
+   "c66e05adb31a7c69",
+   "c837935a67ab10be",
+   "f3c0ab5bdb5f9cd1",
+   "ff0058e6723dd105"
+  ]
+ }
+}

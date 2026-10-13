@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4e1d05eb49d505d64d24d0b3688609df0cdb7b93ae0b05b3a0b1498bb3a975fc",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "화물 그물 더미",
+ "label": "sky-steam/sky-a-cargo-net",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cargo bundle covered with tarp and net",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cargo pile has a clearly defined top surface occupying rows 3 through 7 (5 source pixel rows tall) above the front face which features the cargo netting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4139
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cargo pile under net",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cargo bundle is visible from row 3 to row 7 (5 source pixel rows) with lighter coloring, while the front face below (rows 8-15) shows the darker netting grid in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3791
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cargo pile covered with a tarp and netting",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cargo pile is clearly visible as a foreshortened plane from row 3 to row 7 (5 source pixel rows tall), above the vertical front face featuring the cargo netting (rows 8-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5044
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cargo stack covered with canvas and netting",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stack is clearly visible from rows 3 to 7 (5 source pixel rows tall), with the front face extending below row 8 covered by a cargo net grid.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3908
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.900Z",
+ "cells": {
+  "16": [
+   "7d9eb167809b5706"
+  ],
+  "24": [
+   "1428d475b18a2e14",
+   "20918d0edf490d87",
+   "2996a7cf85bb58d7",
+   "52f814e7f5f31e5b",
+   "d7ced34e24963e5f",
+   "eaf9e558408a38a6"
+  ],
+  "32": [
+   "1cfaee23bbe0c2d3",
+   "361a9f69ca8444c9",
+   "61c627538157c5f0",
+   "70f7aea6e3be5ae0",
+   "7c3cbccf84e30b85",
+   "efff6759ad9a5d38"
+  ],
+  "48": [
+   "7459cce55b54e243",
+   "82079032e895c561",
+   "a0412a27027e8c0d",
+   "a79bdcda8765fad0",
+   "b7a7bfd49d04d540",
+   "dfbde0f9ea316a5f"
+  ]
+ }
+}

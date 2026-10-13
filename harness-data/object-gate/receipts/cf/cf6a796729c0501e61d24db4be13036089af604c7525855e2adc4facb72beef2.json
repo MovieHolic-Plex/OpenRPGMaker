@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cf6a796729c0501e61d24db4be13036089af604c7525855e2adc4facb72beef2",
+ "width": 48,
+ "height": 48,
+ "kind": "frame",
+ "name": "풍차 날개(회전)",
+ "label": "sky-steam/sky-a-windmill-blades.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill blades",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object represents rotating windmill blades rather than a frame or rack. It is drawn entirely flat in the 2D vertical plane with zero foreshortened top surfaces visible on the arms or central hub.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5293
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windmill blades / cross",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn flat in the vertical screen plane with 0px top depth on any beam or hub, resulting in a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6202
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill blades / rotor",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn in a completely flat 2D front elevation perpendicular to the camera with 0 visible top rows on any beams or hub, and the object is not a standing frame or rack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windmill blades/rotor",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn flat in the vertical plane as a pure front elevation with no visible top surfaces (0 rows) on any beam or hub.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8428
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.906Z",
+ "cells": {
+  "16": [
+   "0967424ed8e8b68f",
+   "45cfb66da9d78e46",
+   "49842a5ed5ab474b",
+   "4c3ddc0cf918e7f3",
+   "8ad2604fe97918bd",
+   "98883a047d99f866",
+   "a9949bb3ccb997c6",
+   "bffdf231ca449629"
+  ],
+  "24": [
+   "03b0594f9c1efa18",
+   "60ce09d2a4dec132",
+   "73751050537e92a2",
+   "edd3dad4c43f5dd5"
+  ],
+  "32": [
+   "059fe13b1f499724",
+   "064e5b6949a84484",
+   "1411eb444c35d501",
+   "1ba099c941db4efa",
+   "22d6590e1f0b9e77",
+   "44b800e64b647a7e",
+   "482b45bf23d1ca4c",
+   "60858b4f285ad206",
+   "682aa4bd4b7b329d",
+   "695cee51ee3eb43e",
+   "8e1e28dc41ba779b",
+   "a5526b79d923a7d6",
+   "a769889f83c5b1ed",
+   "a85d421f21726ce7",
+   "a86895fdd15cd501",
+   "aceb23988ea5ef77",
+   "ba40344d46a665f5",
+   "d112f59a2475e01b",
+   "dd4a4c54129d7127",
+   "e6fc4f62af4e2b32",
+   "e938fd779a7fd8ce",
+   "f39c8366e863737e"
+  ],
+  "48": [
+   "b50229064bd3105d"
+  ]
+ }
+}

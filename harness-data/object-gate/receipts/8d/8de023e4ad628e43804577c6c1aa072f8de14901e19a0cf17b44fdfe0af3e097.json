@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8de023e4ad628e43804577c6c1aa072f8de14901e19a0cf17b44fdfe0af3e097",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "감시 오두막 + 지붕 깃발(펄럭)",
+ "label": "sky-steam/sky-a-hut-flag-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hut with tiled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red tiled roof is viewed from above in standard 3/4 top-down perspective, showing 12 rows of roof slope above the south-facing front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8118
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "watch cabin with tiled roof and wooden front wall",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red tiled roof slope is seen from an overhead 3/4 perspective across rows 19-30 (12 pixel rows tall) above the south-facing front wall (rows 31-45), fitting standard RPG Maker building projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6834
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cabin with red shingled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red tiled roof slope spans rows 19 to 30 (12 source pixel rows) displaying clear top-down foreshortening above the south-facing wooden wall (rows 31 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6937
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "watch cabin with tiled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly foreshortened roof slope showing rows of shingles across rows 19-30 (12 px rows tall) above the vertical front wall (rows 31-46), adhering to standard top-down 3/4 RPG Maker structure perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6332
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.327Z",
+ "cells": {
+  "16": [
+   "0c5a12e4345bc5fe",
+   "3db624fac3229ed3",
+   "41cd3c7b1e00dbbe",
+   "486275fc6eb8b5f0",
+   "4cebfffd2ef6784a",
+   "e9561008a0ce11ed"
+  ],
+  "24": [
+   "2ff531d15a5f26cf",
+   "5c20e534896b8f7a",
+   "7a2659500133a4b2",
+   "83499a74cfd6cf4d",
+   "a160aa3305851601",
+   "bdbf39d9a254f1b0",
+   "c106302eb28e3a10",
+   "c29f4dcf4d1d2cfe",
+   "c48a757c381f3797",
+   "c7c1aaee78b0428c",
+   "f85b201c201f00f3",
+   "fa0292113884e07d"
+  ],
+  "32": [
+   "607fe57ecefd94a6",
+   "71499462ef2bd9db",
+   "8b86a1d7be554d66",
+   "a4dc1cd33ae72318"
+  ],
+  "48": [
+   "036a212b61e9eb04",
+   "698037ba9a5d250c",
+   "c70b23158f197565"
+  ]
+ }
+}

@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "948f072427c238a1326f4b25a8f9e211c256034160025474358b1e5831e2008e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar / flagpole base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone pillar and the flagpole mounted on it are drawn in pure front elevation; the arched top of the stone body is a flat 2D profile rather than a foreshortened top surface, and the pole's top end has no visible top cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8488
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar / flagpole base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone body has a clearly rendered top surface/cap across rows 21-24 (4 rows tall) delineated by a darker shadow band below it, as well as a stepped base top visible at rows 39-41.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 13723
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar/support of the flagpole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone body has a clearly foreshortened top surface across rows 21-24 (4 source pixel rows) above the front face, and the plinth base also clearly displays its top surface across rows 38-41.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9217
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stele / flagpole monument",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The monument and pole are drawn in pure front elevation; the arched top of the stone monument (row 19) and the pole top have only a 1px contour outline with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 16619
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.191Z",
+ "cells": {
+  "16": [
+   "2cab329663ec7b32",
+   "8d314d1b29c60010",
+   "bbacb4e53e31269e"
+  ],
+  "24": [
+   "4e26af92db736665",
+   "8b1ae6ec5271277d",
+   "ab7cd4822869c427",
+   "c5acc23cb60a9b6a",
+   "e144752d1a1fec27",
+   "fe63a9631ac4166a"
+  ],
+  "32": [
+   "26decbe2d5ca77a9",
+   "5509fd1f36e4d0fe",
+   "5b9ef6a1bd4df381",
+   "681c32b9ed434f3e",
+   "691a341d7fd756f4",
+   "7c321e44dcb711d4",
+   "a6caf8752f4023af",
+   "af3c31bfc5ffa5e6",
+   "cfda46072fb7a9af",
+   "e5765b0729359403",
+   "f614d39cacb3926a",
+   "fda22e5882434da1"
+  ],
+  "48": [
+   "66d261c9d2ee7bdb",
+   "86b961cc1c9242dd",
+   "a5b09aa52c02983d"
+  ]
+ }
+}

@@ -1,0 +1,191 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "efb6981b310250767c845058aa9fc286658d22a30207ee873a9b9a7d279ad0ec",
+ "width": 64,
+ "height": 64,
+ "kind": "structure",
+ "name": "풍차 탑(날개 회전)",
+ "label": "sky-steam/sky-a-windmill-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cylindrical windmill tower and conical roof are drawn in pure front elevation (side-scroller style). Both the roof eave (row 32) and the base (row 61) are completely flat horizontal lines with no 3/4 perspective curvature or downward ellipse, and no horizontal top surface is visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9602
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windmill tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill tower is drawn entirely in flat 2D front elevation (side-scroller style). Both the eaves of the roof (rows 32-33) and the base of the cylindrical tower (row 61) are completely straight horizontal lines with no curvature or top-down foreshortening. The sails rotate in a vertical plane parallel to the screen, and no horizontal surfaces are visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7771
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire windmill is drawn as a flat 2D front elevation (side-scroller style). The rotor rotates on a plane parallel to the screen with zero foreshortening, the roof eave is a completely flat horizontal line (rows 32-33), and the tower base and roof dome show no top-down surface or 3/4 perspective curve.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10344
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windmill tower",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The windmill roof displays a substantial south-facing slope spanning rows 21–32 (approx. 11 source pixel rows) above the vertical brick tower body, meeting the requirement for building roof surfaces in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10344
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.728Z",
+ "cells": {
+  "16": [
+   "318a5e1e02fc6fa2",
+   "55b77a9fecf80f85",
+   "5c866398d91c7338",
+   "7d6248aaa3e8ce35",
+   "9695612e254b25b2",
+   "99073d12576a5084",
+   "a5bd6196a954b692",
+   "bc93219d363eb5e7",
+   "d083842629bc189e",
+   "e1dc46b0e0852134",
+   "fb73326049ebf2bc"
+  ],
+  "24": [
+   "02da21331352bc61",
+   "05f140eae72482fc",
+   "0a0ac7341a8730e1",
+   "0b99b4b56dd888d6",
+   "144785fec84f16a9",
+   "165089bc2e5fdf8d",
+   "1910ccc0abe51cca",
+   "1a542bd49ab267ab",
+   "1b519730e6901855",
+   "1bc4004cf3e43fa6",
+   "28cc4c4daff11695",
+   "29c9f23c70781ec8",
+   "38019c606aea5c38",
+   "3b2151c98aefcdc2",
+   "3b783d10cc9f4dd2",
+   "40e8bd0d47b2bf4e",
+   "48bdc3a05c20534d",
+   "4e6d98945b8407c0",
+   "5c6e0f6c29002eb5",
+   "5cbd8ab01e17189e",
+   "626de9702c1decf7",
+   "65ee7bd9826f7d18",
+   "68c8c006f2c7503c",
+   "69a3fc80a131db7e",
+   "6ab7338a79519759",
+   "6b445949df2732d5",
+   "768bd4458a4d643d",
+   "7e15ef34edb89c7f",
+   "847869ec883c118c",
+   "8bf3bd9fffb02f50",
+   "90e9052d4fed8e45",
+   "b09196231f06ffe2",
+   "b429d8f23911a117",
+   "bb1211f4f6988ea7",
+   "c4e4f53c3640c693",
+   "ca374f2f00a4d644",
+   "cc37641080f940d3",
+   "ce887b031990e01f",
+   "d517a52127eb0b08",
+   "d77fbb19548e5f65",
+   "da7dbfbe96ea5427",
+   "e7482c5c91f80056"
+  ],
+  "32": [
+   "60798563f6a69155",
+   "befc8bfc59ad96ab",
+   "dcf858d95ad9074b",
+   "e263a657f19b4405"
+  ],
+  "48": [
+   "0cdd41fc078b3060",
+   "0d338a3bd13bb903",
+   "2c56e41c9125f69b",
+   "3baf99566896ebf7",
+   "433c704f45e33e7d",
+   "5596a94c4a86e94e",
+   "707ed635678c7cbd",
+   "805d106dfdee8e0f",
+   "9e0881c6d02b5f99",
+   "9e90c5a8104d9dfd",
+   "9ef1f52fbcc8cbfa",
+   "a691e0dda5bc840e",
+   "bd4feb66d0fc866b",
+   "c1e5cc8936ee66a2",
+   "c789a5d0eafca7a5",
+   "d6afa51e3ab953cc",
+   "d973f6ac7f2ff49a",
+   "e6816dd20318d7d3",
+   "ee426453ffd3a5d4",
+   "eed4e2375436e64c",
+   "fdb70e771a053927"
+  ]
+ }
+}

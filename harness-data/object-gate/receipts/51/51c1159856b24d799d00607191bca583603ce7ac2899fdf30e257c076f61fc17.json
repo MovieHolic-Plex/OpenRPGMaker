@@ -1,0 +1,145 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "51c1159856b24d799d00607191bca583603ce7ac2899fdf30e257c076f61fc17",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with base/pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flagpole ('깃발대') rather than a box. The flagpole floats above a stone base, and neither the pole nor the base exhibits any foreshortened top surface; the entire object is drawn in a flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7430
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole / flag with stone pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a flagpole (깃발대), which does not match the 'box' kind. Both the flag/pole and the stone pedestal beneath it are drawn in flat front elevation with no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with stone pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flag, pole, and stone pedestal below it are all drawn in pure flat front elevation. The stone block at the bottom shows only a vertical front face with a 1px top outline (no foreshortened top surface visible), and the flag/pole has zero depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 11048
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flag and pole are drawn in flat 2D side/front elevation, and the stone base below shows no foreshortened top surface (drawn in pure front elevation). Furthermore, a flagpole does not match the 'box' kind.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6527
+  }
+ ],
+ "decidedAt": "2026-10-13T14:45:58.334Z",
+ "cells": {
+  "16": [
+   "438901cf648c7da4",
+   "8ddb351ed8aaeee2"
+  ],
+  "24": [
+   "4e23c07f5862afa7",
+   "650eac0334bdf784",
+   "69a3888b8d2b76bd",
+   "7012ea25823b5aab",
+   "7fa0655afd25791a",
+   "822a2eed0c34b1d5",
+   "963f4c0d7383e45b",
+   "982f1551a4d56831",
+   "b246275f2c1fdd17",
+   "edf0d9d9bd461951",
+   "f4073ef3ebc8eccc",
+   "f6eef3a0c9d8ce12"
+  ],
+  "32": [
+   "43abf055191fc87f",
+   "95999046c8dcd74d",
+   "b8a9740cfcb8f6b5"
+  ],
+  "48": [
+   "10c792a30d5fcbf8",
+   "2c541b70d839488e",
+   "5130c906c1b4555f",
+   "6f3e403a81f65824",
+   "a3f6496e78d6c118",
+   "e904bf91cefb84c1"
+  ]
+ }
+}

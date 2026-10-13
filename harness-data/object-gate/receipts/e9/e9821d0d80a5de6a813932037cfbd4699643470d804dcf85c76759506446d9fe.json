@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e9821d0d80a5de6a813932037cfbd4699643470d804dcf85c76759506446d9fe",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "곡물 자루 더미",
+ "label": "sky-steam/sky-a-sack-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn as flat rectangular vertical shapes with rounded top corners in pure front elevation. There is no visible top surface foreshortened from above (top_rows = 0); the lighter color on the upper portion is front-facing vertical shading rather than a distinct top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14413
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grain sacks / rice bags",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The grain sacks show a clearly defined top surface foreshortened from above across rows 3-7 (approx. 5 pixel rows tall, brightly lit), transitioning at row 8 to a darker south-facing front face (rows 8-15) with a brown stripe.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19332
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grain sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn in flat front elevation as vertical rectangular blocks with slightly rounded top corners, lacking any foreshortened top surface or top plane viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 6900
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grain sacks standing side by side",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sacks are drawn in a flat front elevation with vertical sides and simple rounded outline caps at the top. There is no foreshortened top surface visible from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10938
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.325Z",
+ "cells": {
+  "16": [
+   "317d068ee84f07a3",
+   "a64cd0edbcca1668"
+  ],
+  "24": [
+   "466e2cc220908568",
+   "50a7cc87e96e4250",
+   "58c6a7262bb5e564",
+   "73c52d94725dd472",
+   "756ef84838bef8f2",
+   "9c8184d03ce3ff30",
+   "9d97d755065c55e8",
+   "a1b00168a9820b25",
+   "be9de29feac6f2ef",
+   "bf4b857c462410a1",
+   "d10fd678003320ba",
+   "f444ed2fb6afe3f6"
+  ],
+  "32": [
+   "4b09ea70884354d0",
+   "e2a3903c3cf6ca36"
+  ],
+  "48": [
+   "2e5a5a7909072b72",
+   "7b4a67761bb4f830",
+   "ac3c64e9e5470182",
+   "c3ae29730b211fd3",
+   "d3e420841ca2b2f6",
+   "f4c7ddc130d8fc46"
+  ]
+ }
+}

@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2405984bb6d0e44b1e1ffa2ef519cb20c7e67ef59d8211a1efc3885a44de5913",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "소형 기구",
+ "label": "sky-steam/sky-a-hot-air-balloon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "covered basket / structure base with canopy",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main lower body features a wooden planked vertical wall at rows 35-45 surmounted by a broad 13-row sloped canopy/roof face (rows 21-33) properly foreshortened from the 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8541
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "structure base with roof / covered basket",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lower structure clearly displays a large foreshortened sloped top/roof surface (rows 21-33, ~13 rows tall) above the vertical south-facing wall (rows 34-45), correctly fitting the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6552
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large basket/cabin base with sloped roof/cargo and balloon attachment",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main lower body features a 12-pixel-tall sloped top surface (rows 22-33) above the vertical south-facing wooden wall (rows 34-45), providing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8015
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grounded hot-air balloon basket with thatched/canvas canopy and balloon envelope",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main lower body features a 12-row south-facing sloped canopy/roof (rows 22-33) resting above a vertical wooden base (rows 34-45), providing clear top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5994
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.192Z",
+ "cells": {
+  "16": [
+   "0afbd3aeb9fc8ea6",
+   "26b6deb8afb1c9ff",
+   "2fb3b1f00267a85e",
+   "6513575df24d88e1",
+   "a5ba487f72c0feb4",
+   "edbaae1b42d8ebb0"
+  ],
+  "24": [
+   "00809bf5089093b2",
+   "0cce914770a07a89",
+   "2320e1f2f29242da",
+   "30d1849ea952f1e6",
+   "3e46a3be36296ea2",
+   "569f54189778fcfe",
+   "6b1747c06b932f33",
+   "711773e6df196b42",
+   "78721a9682ae2853",
+   "b4279ff4cdb94c15",
+   "e14d225393263928",
+   "ec8e7c7f0db6fdc0"
+  ],
+  "32": [
+   "5a3a43a67a2709b5",
+   "67c65e76146459e7",
+   "71456ce05cf19d3c",
+   "ae96d7f86aa3891c"
+  ],
+  "48": [
+   "300af26a42500e60",
+   "7754bbb3129b852c",
+   "fd2dfbe14afd63b3"
+  ]
+ }
+}

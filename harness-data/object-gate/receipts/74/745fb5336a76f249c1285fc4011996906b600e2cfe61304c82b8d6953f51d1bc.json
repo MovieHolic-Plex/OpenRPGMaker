@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "745fb5336a76f249c1285fc4011996906b600e2cfe61304c82b8d6953f51d1bc",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal with flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation: the pole has no visible top cut face/ellipse at row 1, and the stone pedestal is drawn as a flat architectural facade (capital, shaft, base) with a flat 1px top outline at row 18 and no foreshortened top surface showing the pole anchored into it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9117
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal with flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn as a flat front elevation; the pole is planted directly on the top outline (row 18) with no visible horizontal top surface foreshortened around it. The banding and recessed panel (rows 20-39) are all front-facing details.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9361
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal / flag stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn as a classical architectural front elevation with a cap (rows 18-26), recessed central shaft (rows 27-39), and plinth base (rows 40-47). The top has only a 1-2px outline (rows 18-19) with no foreshortened horizontal top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 52485
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar base of the flagpole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone block shows a clearly foreshortened top surface (rows 20-24, ~5px tall) into which the flagpole is mounted, above the darker vertical front face (rows 27-39).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7772
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.003Z",
+ "cells": {
+  "16": [
+   "1ba14e59a9d661be",
+   "c96350a6fd63f835",
+   "edee29b7bf164b23"
+  ],
+  "24": [
+   "0b90bfa2baa505c4",
+   "1581582f8678ac9f",
+   "21324b8c9d1761fc",
+   "283bef55f87209ff",
+   "28cf78ed976dec9a",
+   "406455f3d6fb5339"
+  ],
+  "32": [
+   "1992fff5d37f0a69",
+   "35eb7bbcf868d8c3",
+   "588ed19928b854cd",
+   "62c2e3a57c68247d",
+   "687ce459967ed035",
+   "7ab76df2210d963c",
+   "863c46cde61429e5",
+   "958f9f0639e789cb",
+   "a6e9d6dd04db66ba",
+   "ac4e6201ba05a2da",
+   "b669f15df9095273",
+   "f048c9d6b188df64"
+  ],
+  "48": [
+   "602a6c7321e816f8",
+   "68e41163e3cac114",
+   "d4ca01ed14bca01a"
+  ]
+ }
+}

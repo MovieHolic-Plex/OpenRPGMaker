@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "04ea403de363d77d64d494a033f307f9a80ba6b3f264a96ad69afd4ceca7cf9b",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "표지판",
+ "label": "sky-steam/sky-a-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard with post and base block",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper sign block and the lower base block clearly show horizontal top surfaces (rows 1-5 and rows 19-23, each ~5 rows tall) foreshortened above their vertical south faces, with the post noticeably anchored into the top surface of the base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11461
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden signboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and base are drawn entirely from the front as flat vertical planks (with horizontal plank seam lines at rows 6 and 24). Neither the top edge of the board, the post cut, nor the base shows any foreshortened horizontal top surface (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14316
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden signboard",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top block of the sign clearly displays a foreshortened top surface across rows 1–5 (5 source pixel rows tall), distinct in lighting from the south-facing front face below (rows 6–12). The base also shows its top horizontal surface on rows 20–23.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12996
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sign / post blocks",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both wooden blocks clearly depict top horizontal surfaces in 3/4 view (rows 1-5 for the upper block, rows 19-23 for the lower block surrounding the post) before transitioning to the darker south faces below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7843
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "37470b81827fb30b",
+   "6ad077618fac8773"
+  ],
+  "24": [
+   "2afb29b63f0273aa",
+   "2d0fe75963b414bb",
+   "4e66ddd8fa7093e1",
+   "628b11c1b899ad1b",
+   "8647b09bbfd72be2",
+   "86f1388cd998b178",
+   "8a3181a03087383d",
+   "8c1c2dda51d240a7",
+   "8f6e4149b3c1ea99",
+   "af5d35f6dc6637ab",
+   "c1cb5822c1586d83",
+   "d5dfba61795f863f"
+  ],
+  "32": [
+   "3024f046ea509093",
+   "3e9c043ff47aadb0",
+   "c42b1af837c9a3f5"
+  ],
+  "48": [
+   "37630644b062fa07",
+   "4d8e5e464bd0f802",
+   "520c50880df699f4",
+   "83b74d70c07a49d5",
+   "9ef91155b3f459bd",
+   "f829634f3a905cab"
+  ]
+ }
+}

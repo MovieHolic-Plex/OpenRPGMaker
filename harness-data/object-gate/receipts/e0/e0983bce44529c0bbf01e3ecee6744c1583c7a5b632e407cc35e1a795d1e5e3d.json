@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0983bce44529c0bbf01e3ecee6744c1583c7a5b632e407cc35e1a795d1e5e3d",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "신호 대포 상자",
+ "label": "sky-steam/sky-a-cannon-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal/stone signal cannon supply box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface spans rows 2 through 8 (7 pixel rows) with an object resting on it, meeting the south front face at row 9 which extends to row 15 with riveted metal bands.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6067
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal crate with top lid and front face",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the box spans rows 2 to 8 (lighter shade, containing a gold rectangular emblem/handle), separated by a shadow line at row 9 from the darker south-facing front panel (rows 9-15) with rivet details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6625
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "open ammunition crate / signal cannon box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 7,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The box clearly displays its top interior/opening across rows 2–8 (7 rows tall) containing a projectile/signal block, with the vertical front face and rivets rendered across rows 9–15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10059
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "box / crate",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface/lid of the box spans rows 1 to 8 (approx 7-8 rows), clearly visible from above, while the south vertical face spans rows 9 to 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10466
+  }
+ ],
+ "decidedAt": "2026-10-13T14:48:41.707Z",
+ "cells": {
+  "16": [
+   "e8216595ddd7cc7f"
+  ],
+  "24": [
+   "023336431c3aee4b",
+   "14c78417c7f00341",
+   "8f2133616a8c4e7d",
+   "952826ffda7aefb4",
+   "aededadc254babf9",
+   "cb8d3dc23760ecdd"
+  ],
+  "32": [
+   "20e9b7d01a8b0a80",
+   "390f6fd6615226fa",
+   "4976cdde48ffddec",
+   "584125b72f2d5ae5",
+   "b448215d4c2961a5",
+   "d5dcf341794c103d"
+  ],
+  "48": [
+   "6296d08819bd7c84",
+   "7ea47bb1c3831197",
+   "7f81790ac1f81db1",
+   "90f7bad7423e3256",
+   "b57aedc54744ccb9",
+   "f41f0c634e7c57a8"
+  ]
+ }
+}

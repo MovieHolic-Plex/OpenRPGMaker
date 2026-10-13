@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cecc187c20287c6f35f0167b70328e78cc45ac0fc914154fb19fb25a59bd6974",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "하늘 등대",
+ "label": "sky-steam/sky-a-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tower and lantern are drawn in pure front elevation: all bands, platform edges, and base lines are completely horizontal with 0px curvature or top perspective, and no top surfaces are visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4506
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn entirely in pure front elevation: all stripe bands, balcony edges, lantern room, and base are flat horizontal lines with no 3/4 downward perspective curvature or visible horizontal/top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5129
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse is drawn in a pure 2D front/side elevation. The tower cylinder has perfectly flat horizontal stripes with no elliptical curvature, the bottom edge is a flat line, and the upper balcony and roof show no top-down surfaces or visible deck/walkway floor.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6196
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tower, lantern room, and balcony are drawn in a pure front elevation with completely flat horizontal stripes and base (no elliptical curvature or visible top surfaces for the balcony platform or tower body).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5138
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.896Z",
+ "cells": {
+  "16": [
+   "0a8236e955568d4d",
+   "2ee6f7ec788b2a57",
+   "42714dd93a83ff7f",
+   "81087303a4defd34",
+   "9214bdeed3bf940a",
+   "9682d2fb26eecc6a",
+   "b35a685b634558a0",
+   "df689a9842d8f96a"
+  ],
+  "24": [
+   "0793206d94ef9255",
+   "08420f961336a3f2",
+   "1c16a7bd0e53f206",
+   "2b717de82bf03f7a",
+   "2cd3e885f0b98276",
+   "32f76b6e54061a98",
+   "46bbc656b8eecd1d",
+   "4a5e5440aff6d0dd",
+   "4e4d72c530ded62c",
+   "5108365e9292d353",
+   "5de4d090feeabe96",
+   "62fe58c32f51442e",
+   "63a6d4e75b158e0a",
+   "6c10d99c2559dbd2",
+   "6e0e7b59ea1bf3e9",
+   "7929e5415992a6c9",
+   "7fda44c332199f2b",
+   "817c394f80b1d23f",
+   "85a6205392e1d116",
+   "907ef940bd80cd62",
+   "9ed79f8366d2cea1",
+   "b7fe3a49be179fc5",
+   "bb78546f3e7d3d9d",
+   "bba8c66f6d60ac0f",
+   "bcb4325326edd3bf",
+   "c0bcfd6fe77c1af2",
+   "c68a308a45c33858",
+   "ca5bd339d39c3d0b",
+   "cca7a25738ec8343",
+   "d3706884cddd13ea",
+   "d566321ecfbd6978",
+   "da3eb30c3a7c3a26",
+   "e35e54582781d1a9",
+   "f74dfc1d65241931",
+   "f8559c4a4b54b37e",
+   "fa60e8246b85eae4"
+  ],
+  "32": [
+   "0c7cdc723052b649",
+   "1be6a224f0d2923e"
+  ],
+  "48": [
+   "0e5eb0d3ba5cbbe5",
+   "121a8a9bd45cc38c",
+   "15af413ef7a52361",
+   "166c4c906bca0d80",
+   "1de713625ba71d24",
+   "277766d868a343a6",
+   "2ba90932e4e0cd19",
+   "5327805eea87c2a5",
+   "5f83920430d48fe7",
+   "65a69e17fdb68065",
+   "b56a45dc88e28624",
+   "e864e539aac10abd"
+  ]
+ }
+}

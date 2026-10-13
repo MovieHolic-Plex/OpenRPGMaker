@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f7f457042897d7fa680b6682df54eeebe0629012f0dd1444fd0ac46350b59c1",
+ "width": 32,
+ "height": 16,
+ "kind": "box",
+ "name": "프로펠러 포드",
+ "label": "sky-steam/sky-a-propeller-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "box/chest",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn straight-on in pure front elevation. It features a front-facing chest/box lid and body separated by a horizontal band, with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "yellow pod/crate body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body is drawn completely flat in front elevation with horizontal bands across rows 8-15 and a vertical left edge. There is no visible top surface foreshortened from above (top_rows = 0); the top is just a 2px black outline on rows 6-7.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 9162
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "yellow pod / chest body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main yellow body is drawn as a flat 2D elevation (rounded rectangle silhouette with a 4px lid band and base band) with no foreshortened top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 10336
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "box / pod body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure 2D front elevation. The main yellow body shows only a vertical front face with horizontal banding and rivets, while the attached blade on the right is also in flat profile. There is no visible top surface foreshortened from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8439
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.903Z",
+ "cells": {
+  "16": [
+   "030249ce8bda719d",
+   "77eac09272fde01f"
+  ],
+  "24": [
+   "0cc6371fa149fea9",
+   "0f812c74ffcbf218",
+   "11ac5d9d8381284d",
+   "18a899cd0a4187b3",
+   "3b79757ed11a772c",
+   "5442dbeb304c5446",
+   "5876813de520caa7",
+   "6ec97839afb25129",
+   "741c1ea66a995182",
+   "88450197a1a29155",
+   "8eeef4cff59db722",
+   "a5c16385eaa20d43"
+  ],
+  "32": [
+   "73a86c55c017c722",
+   "b43649b02184e34b"
+  ],
+  "48": [
+   "035aedfdb7fc41e6",
+   "1a78a9b0d87d8c2e",
+   "5bdaeb117c8509e5",
+   "8aca8adebaf083ca",
+   "9c8b29a85678180e",
+   "e6e8cb120902040b"
+  ]
+ }
+}

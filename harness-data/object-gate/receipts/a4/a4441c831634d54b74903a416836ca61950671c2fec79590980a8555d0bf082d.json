@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4441c831634d54b74903a416836ca61950671c2fec79590980a8555d0bf082d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar / flag base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar/stele is rendered straight-on from the front: rows 21-25 show vertical lighting continuous with the front face rather than a foreshortened top surface, and the dark arch/outline above (rows 19-20) follows a flat front elevation silhouette. The flag pole at the top also terminates with a flat 1px cap without showing a cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9469
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar / stele with flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone body and the flagpole are drawn entirely in front elevation with no visible horizontal top surface foreshortened from above. The arched top of the stone body is rendered as a flat vertical arch, and the flagpole is a 2D vertical bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7292
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone stele / pillar with mounted flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Both the flagpole and the stone stele body are drawn in pure front elevation. Neither the pole tip (row 3) nor the stone body has a visible top surface or cut face seen from above; rows 21-25 form an arched front profile rather than a foreshortened top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9829
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar / base of flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillar/base is drawn in pure front elevation: the pole emerges from the top with only a 1-2px flat black outline (rows 19-20) representing the top edge, and the lighter cap section (rows 21-25) is part of the vertical south face with vertical edge highlights rather than a foreshortened horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11927
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.191Z",
+ "cells": {
+  "16": [
+   "8d314d1b29c60010",
+   "bbacb4e53e31269e",
+   "d4eadb9029790106"
+  ],
+  "24": [
+   "3cde90fc0ae0f2ca",
+   "77a262f8f30bd88f",
+   "7f3c204fb5e139a1",
+   "8b1ae6ec5271277d",
+   "c5acc23cb60a9b6a",
+   "e144752d1a1fec27"
+  ],
+  "32": [
+   "26decbe2d5ca77a9",
+   "2c6913f461e7d9a9",
+   "53457685d7170e06",
+   "580efb8d76620862",
+   "681c32b9ed434f3e",
+   "691a341d7fd756f4",
+   "7c321e44dcb711d4",
+   "8f1d0774a6e9ca9e",
+   "af3c31bfc5ffa5e6",
+   "cc5d82599ab8b637",
+   "d84416a8755c19c7",
+   "f614d39cacb3926a"
+  ],
+  "48": [
+   "21e0d1bb44263397",
+   "c8174e9162449b07",
+   "edc6d47571a71e80"
+  ]
+ }
+}

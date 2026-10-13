@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "480e14d6595b18123cea4a92083c7aec0cb28beb84d64f5c6dae4f920b2d0876",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "바람개비 기둥",
+ "label": "sky-steam/sky-a-windvane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 1.5행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pillar / post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column is drawn in pure front elevation: the lower grey shaft and the upper yellow section are flat rectangles with perfectly horizontal division lines and no foreshortened top or round surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9005
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pillar shaft with upper block",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire column, including the grey shaft and yellow section, is drawn in pure 2D front elevation with flat rectangular bands and no visible top surface or elliptical foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6821
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pillar shaft with top capital/housing",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow collar/capital atop the pillar shaft displays a clear 3-row foreshortened top surface (rows 9-11) where the upper pinwheel spindle connects, above a 3-row front face (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12493
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pillar shaft with yellow collar and pinwheel axle",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The yellow collar block shows a clearly delineated 3-pixel-tall top surface (rows 9-11) textured with lighter tones, from which the center rod emerges, above a 3-pixel-tall south vertical face (rows 12-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5835
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.897Z",
+ "cells": {
+  "16": [
+   "42b68295844d0a21",
+   "e666cea471b788c8"
+  ],
+  "24": [
+   "0aa68b9f7e24a776",
+   "155c885644dfc438",
+   "26cae1255dbb5f88",
+   "319a26df9825e535",
+   "5c9714c43c7a19f8",
+   "63090feea7d2a27a",
+   "69004d21b5f0e9bf",
+   "761ba1c3c4721b83",
+   "7a8b914163c26c5f",
+   "7f017310ca53e437",
+   "afc3d3e811e2dd8e",
+   "eb7cfe3e419cacc3"
+  ],
+  "32": [
+   "32fab13afd9fd87b",
+   "5d2e4e7714a7f579",
+   "de8ea50893612f64"
+  ],
+  "48": [
+   "462b69c79d292936",
+   "672f3d61796dde04",
+   "6cc896567435a100",
+   "a1c227f395bf7052",
+   "acf758e06c51e852",
+   "e3f56affd703bc97"
+  ]
+ }
+}

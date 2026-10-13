@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7c84bdbf4e08a0794ec659db7e8e94b6a95f12218f40d8602ea38e2b47a2987d",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대",
+ "label": "sky-steam/sky-a-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with top finial and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top finial of the pole is drawn as a flat rectangular block (rows 3-6) with a straight horizontal outline and no foreshortened top surface visible (top_rows = 0). The pole and flag are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5104
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with finial and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole finial at rows 3-6 is drawn in pure front elevation with vertical column shading and a flat horizontal outline, showing no visible top surface or cut face seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5616
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top finial/cap (rows 2-6) are drawn in pure front elevation with a flat horizontal top outline and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7029
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with top finial and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top finial of the pole is drawn as a flat rectangular block with a horizontal outline (rows 2-6) showing no foreshortened top surface or cut face seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9192
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.898Z",
+ "cells": {
+  "16": [
+   "aae00207a725bd00",
+   "dba97643c3886b4c",
+   "e34ed4605ba795ba"
+  ],
+  "24": [
+   "575550ad62a1214a",
+   "8944987e64bba709",
+   "b648b5077e682472",
+   "b8fa8763af54640c",
+   "d57862dd5a6f374b",
+   "e35eb312ec3390cd"
+  ],
+  "32": [
+   "04e992cbfa5eaa98",
+   "0ce611c70cf51a1a",
+   "20d41eb949383bcc",
+   "2a74609bef7e04ba",
+   "32bf7c7563883693",
+   "4db97f9ba4366a34",
+   "4fba1fbf0fbc9ede",
+   "8b4cfc094cea6135",
+   "9200af37080f3705",
+   "d20fad0ad39f975c",
+   "f3dc72e4e24bf778",
+   "f7e317227e4a1177"
+  ],
+  "48": [
+   "032b6d049b18bfa2",
+   "a84f74d6a1c42fab",
+   "c2a14662c7726099"
+  ]
+ }
+}

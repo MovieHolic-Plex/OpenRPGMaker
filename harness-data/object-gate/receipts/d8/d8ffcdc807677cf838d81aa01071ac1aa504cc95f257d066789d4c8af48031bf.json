@@ -1,0 +1,138 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d8ffcdc807677cf838d81aa01071ac1aa504cc95f257d066789d4c8af48031bf",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "프로펠러(회전)",
+ "label": "sky-steam/sky-a-propeller.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mechanical base with vertical shaft/blade",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in completely flat 2D elevation: both the base block and the vertical shaft have horizontal 1-pixel borders with no visible top surface or 3/4-view perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6843
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical/rectangular base block with vertical shaft",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation with straight horizontal bands (rows 8-9) and no foreshortened top surface or elliptical curve on either the base block or the vertical post.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7606
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical base and central shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn entirely in flat orthographic front elevation with straight horizontal bands; neither the shaft end nor the main base body exhibits an elliptical top surface visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6642
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base cylinder/housing with central vertical shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base body is drawn completely flat in pure front elevation with straight horizontal bands and no foreshortened top surface or elliptical cap to indicate the 3/4 top-down angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5266
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.905Z",
+ "cells": {
+  "16": [
+   "3cd54abaa4b2098e"
+  ],
+  "24": [
+   "04952987594107cb",
+   "5cae764efb50906e",
+   "5e62887b7cee712e",
+   "5efefd6822af7c64",
+   "e2f4dbe8fc3a330d",
+   "f28cead97b59a2b9"
+  ],
+  "32": [
+   "27b3b0d380001656",
+   "3d3274ce98a696f6",
+   "523a7dac29c21d7a",
+   "8dfd21ca031bc943",
+   "966f6d77eec4bd4a",
+   "c3f580d13cc6ca53"
+  ],
+  "48": [
+   "2beea50aa0f40cac",
+   "3a1a1b148aef4bbc",
+   "5d3eaa0a802515d6",
+   "5e5bb4bec1d03b14",
+   "aacd7108a84caeb9",
+   "d611cf5ed327c2d4"
+  ]
+ }
+}

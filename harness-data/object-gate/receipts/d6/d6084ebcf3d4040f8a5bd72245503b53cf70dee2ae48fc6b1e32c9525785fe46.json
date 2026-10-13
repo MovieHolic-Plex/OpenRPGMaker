@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6084ebcf3d4040f8a5bd72245503b53cf70dee2ae48fc6b1e32c9525785fe46",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "통",
+ "label": "sky-steam/sky-a-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the metal hoops at rows 8 and 12 are completely straight horizontal lines rather than perspective ellipses, and the top tapers into a dome/arch without any visible flat elliptical top cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8402
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: both metal bands (rows 8 and 12) and the bottom edge (row 15) are completely straight horizontal lines with no perspective curvature, and there is no elliptical top cap surface showing the top of the cylinder.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10222
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn in pure front elevation with straight horizontal bands (rows 8 and 12) and an arched/domed silhouette at the top with no distinct foreshortened elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7496
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "barrel / container",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The barrel is drawn in pure front elevation: the metal hoops at rows 8 and 12 are perfectly straight horizontal lines rather than curved ellipses, and the top has an arched silhouette with no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8503
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.898Z",
+ "cells": {
+  "16": [
+   "84a3a93877e7872b"
+  ],
+  "24": [
+   "02ef6226729b42d2",
+   "2223d41dad3b4e0e",
+   "505b3f7192c6b8b8",
+   "8b49fe49abd3fb10",
+   "a2cb0cb1c6362916",
+   "fe256e230e069381"
+  ],
+  "32": [
+   "0cbc9941db18cb56",
+   "1ae3081b2b9a3a00",
+   "38a65f7932f5e516",
+   "99a58c39e45eaff4",
+   "a71057ecfea12ef8",
+   "cbb60e369fb1d006"
+  ],
+  "48": [
+   "28d0649bf6c761fc",
+   "59c163f05403c25b",
+   "68f4564faf306ca1",
+   "7db04ddfa8717f62",
+   "8fb8bf0313b5e04e",
+   "bd42cfdb5fbe6a50"
+  ]
+ }
+}

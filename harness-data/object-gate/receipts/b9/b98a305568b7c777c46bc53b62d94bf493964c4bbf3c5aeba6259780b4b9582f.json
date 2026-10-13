@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b98a305568b7c777c46bc53b62d94bf493964c4bbf3c5aeba6259780b4b9582f",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "통",
+ "label": "sky-steam/sky-a-barrel",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the barrel is drawn as a clearly foreshortened ellipse spanning rows 2 to 8 (about 7 source pixels tall), with the curved south-facing cylindrical body below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4163
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the barrel is drawn as an ellipse spanning rows 2 to 8 (7 rows tall) seen from above, resting atop the front cylindrical body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3632
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "barrel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the barrel is drawn as a clearly defined ellipse spanning rows 2 through 8, showing the top surface foreshortened from above in proper 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5330
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden barrel",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The barrel has a clearly visible recessed top head drawn as an ellipse from row 2/3 down to row 7/8 (about 7 source rows tall), with the front wall and lower hoop extending below to row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8939
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "e4c07f39582dc2c3"
+  ],
+  "24": [
+   "0953802acc594ff2",
+   "12a4c4f73f73dcf8",
+   "1c296e635d3cb3dc",
+   "36d372a3d3b2d33b",
+   "b37f9e295cd8ade7",
+   "f84ef58a0a53f98e"
+  ],
+  "32": [
+   "1e185b27519f998e",
+   "38104ea5eeb6018c",
+   "7fb6f7e75c8292b5",
+   "b560847b794d17ed",
+   "c205d059eb83fb62",
+   "d5d8358ab8bb9344"
+  ],
+  "48": [
+   "036995cfcf23bedc",
+   "6434ac99970a9b0f",
+   "8a75622b78c983b1",
+   "ca76fcfc69fa47e7",
+   "d29e279220079e8b",
+   "ed9db81afd810af7"
+  ]
+ }
+}

@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a6ab20ffa455722a82bbbdf2d6b1017f0d43dcdf75cd7181e0543101e8da62ea",
+ "width": 48,
+ "height": 48,
+ "kind": "frame",
+ "name": "풍차 날개(회전)",
+ "label": "sky-steam/sky-a-windmill-blades.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill blades cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cross beams and center hub are drawn as a completely flat 2D elevation with no visible top surface on the horizontal beam (top_rows=0) or depth anywhere.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5822
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windmill blades cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn in a flat 2D frontal cross shape; the horizontal beam has no visible top surface (only a 1px outline over 2px of front face) and no 3/4 perspective foreshortening is present.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3436
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill blades cross",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades and horizontal beam are drawn in a completely flat 2D front view with zero visible top surfaces (the horizontal bar is only 2-3 pixels tall with no top face foreshortening, and the center hub is flat).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4417
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windmill blades cross",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn in a flat 2D front elevation (orthographic cross). The horizontal arms show no top surface (0 rows), drawn as a simple 2px-tall straight bar with outlines, and the central hub has no top face foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3742
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.906Z",
+ "cells": {
+  "16": [
+   "122918ce8ca868a5",
+   "5cfa40657857b70f",
+   "955bb5436e7d4038",
+   "d08db6706fe6d7b2",
+   "e442c09ac8dd2906"
+  ],
+  "24": [
+   "bfb503dde849d444",
+   "c46fda0d6b602c9a",
+   "e50af69852aad15c",
+   "f497a0798d8a329f"
+  ],
+  "32": [
+   "0631ed3926e219e3",
+   "0b4ae7803f13be3f",
+   "0f58865771443164",
+   "2c49e21b6d2471b4",
+   "3276ad38db9a8526",
+   "67d12d8a36afae23",
+   "72782c2dd311e16d",
+   "81ca6df4d0554ff8",
+   "901ea0de454b0399",
+   "908a08c7112da891",
+   "a5f8c4ae6c3f2c64",
+   "afc0527edd737845",
+   "afc07f2110b60c74",
+   "b9ba43afa4495d40",
+   "bf9be4d1384d0ab1",
+   "c6a5ec82f9959fc1",
+   "e6d9173e93e680d5",
+   "f72b40ec84a9914b",
+   "faea034fd8aed528",
+   "ffd5e8f1ea26838b"
+  ],
+  "48": [
+   "2de09b8f4cefbcc0"
+  ]
+ }
+}

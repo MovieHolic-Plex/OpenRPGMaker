@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2369534e472c654013e6cea1a91365323a286585548baba0cb218449ec425255",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "비공정(프로펠러 회전)",
+ "label": "sky-steam/sky-a-airship-anim.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship gondola and balloon envelope",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The airship cabin/gondola clearly displays a foreshortened top roof surface spanning rows 36 to 44 (~9 px tall) above its vertical south-facing wall (rows 45-55), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5602
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship gondola and balloon envelope",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin/gondola features a prominent sloped roof (rows 36-44, 9 source pixel rows tall) viewed from an elevated 3/4 angle above the south-facing wooden wall (rows 46-55).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7012
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship balloon and cabin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin features a fully visible 3/4-view hip roof slope spanning rows 36 to 44 (9 rows tall) above the vertical front wall (rows 45-55).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9684
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gondola and blimp balloon of an airship",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin/gondola features a prominent top roof surface spanning rows 36 to 44 (approx. 9 pixel rows) above the vertical south-facing wall (rows 46 to 55), providing clear 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8094
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.728Z",
+ "cells": {
+  "16": [
+   "05fe67080927a5cc",
+   "0814e8eb1e9b0bda",
+   "0834301d01fcde80",
+   "0d34bc8d3b158c20",
+   "16375bdff0f30462",
+   "1d997f9a1ece5c12",
+   "2150fc42661a7385",
+   "22d65bfefdbdbb54",
+   "257dbc8afcdce4b0",
+   "5224a4bf826ca041",
+   "5e0422cdd62b0fb4",
+   "6348c33b033bd1c6",
+   "64bd2e2cb4658d28",
+   "830f053981428455",
+   "83c425a6a4d26671",
+   "a681a0b5fa7169bd",
+   "b6e87d102ea4a584",
+   "cc53a7ba16a1f9e6",
+   "d8bf3aa166ddd5e3",
+   "dac32dfb31192050",
+   "e36aa409291a94fa",
+   "f29554bee64161c6"
+  ],
+  "24": [
+   "0b023cc466eab273",
+   "108b346dd406056e",
+   "115f12ed203d4517",
+   "1ccea7ae210b67ca",
+   "3fde5e216bc87a56",
+   "42c1bae199cca664",
+   "4d4b9c237f610ab5",
+   "6521c655f010ad2e",
+   "6a8b0d3f15a93b43",
+   "7f308659de7cda8a",
+   "84970264a17b4c53",
+   "9793c2f61468ac17",
+   "9cd21bcd8f4997d8",
+   "9d240cece7e32080",
+   "a8d9645b2d01ca5a",
+   "ab47a36abd7ca4bb",
+   "bc7cbc6399d76aba",
+   "ca069c6504c088d4",
+   "cba9240213ee21bc",
+   "cc18efc371b34e91",
+   "d87178d862014e13",
+   "d9346eb84985b58e",
+   "dc70959b7bc259aa",
+   "f3e8eb08036881c7"
+  ],
+  "32": [
+   "450aaad8a9e8854e",
+   "5ab87c4f01725884",
+   "62d7a7fefe2abf94",
+   "9fb009d1d508ddb6",
+   "cf17a825a80ee71d",
+   "d5b1800ea04b0d19"
+  ],
+  "48": [
+   "00e27f082c83a209",
+   "07cd4d1480e03b30",
+   "556daeafbdaa2eff",
+   "8e3090888852c4d8",
+   "916e0730ff092709",
+   "b703f63ddb181c44",
+   "bb73ef102bca39e4",
+   "fd39af1967c60eb1"
+  ]
+ }
+}

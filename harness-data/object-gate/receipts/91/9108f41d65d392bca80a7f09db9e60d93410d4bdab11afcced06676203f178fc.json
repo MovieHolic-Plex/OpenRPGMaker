@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9108f41d65d392bca80a7f09db9e60d93410d4bdab11afcced06676203f178fc",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "하늘 등대 오두막",
+ "label": "sky-steam/sky-a-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cottage with tiled roof and top lantern/cupola",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The red tiled roof shows an ample forward-sloping top surface spanning rows 12 to 24 (13 rows), and the cupola on top also clearly displays its top surface (rows 1 to 6) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7852
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cottage with hipped tiled roof",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large foreshortened tiled roof slope visible from rows 12 to 24 (13 rows tall), and the golden lantern structure on top also clearly shows its top face (rows 1 to 7).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5809
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cottage with pitched tile roof and beacon on top",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cottage features a prominent south-facing roof slope spanning rows 12-24 (13 rows) with visible tile tiers, and the beacon atop also clearly displays its top surface (rows 1-6) and front face (rows 7-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 24977
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cottage with tiled roof and top lantern",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled roof slopes visibly towards the camera across rows 12-24 (13 pixel rows) and the top lantern also shows its top face across rows 1-7, properly rendering horizontal/sloped surfaces in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 19336
+  }
+ ],
+ "decidedAt": "2026-10-13T14:45:58.334Z",
+ "cells": {
+  "16": [
+   "2ff2c6d5071ef584",
+   "43c3813193d2c5f1",
+   "4a2efc00b3daa96b",
+   "779254291b6542f5",
+   "b24e7d31e68391f0",
+   "b818a3529e22f86e",
+   "becb741e52749151",
+   "ee01f5810028d697",
+   "f542ef00fc8f83b5"
+  ],
+  "24": [
+   "0be653419a92d891",
+   "61a4b32f2b945744",
+   "de72436cf80130da",
+   "ec7861c0ec6f3a4d"
+  ],
+  "32": [
+   "08724aea4edcd0da",
+   "167dac45234b9b95",
+   "1a367d7685619524",
+   "2d0398da8c0f2916",
+   "36cf765a68c71c18",
+   "3ccb11bbf3a4f059",
+   "44e2f14a830527cb",
+   "460a44fb4825fde2",
+   "6a94a6dc0c0f0287",
+   "77197655cbecb15a",
+   "7cd7bb05afec261b",
+   "91eb4d5eb036f26f",
+   "94e915a08141e05e",
+   "9ec2433d47d30da6",
+   "b14db496ac5753a8",
+   "b83add296adbc87d",
+   "c0429ff754195e6d",
+   "c18fb10de9080f78",
+   "cd80539dd4df9ffc",
+   "d5bb1e9ff01126c0",
+   "e35834858d0f272c",
+   "e9997117f10367ff",
+   "e9c07cd4f111f9b5",
+   "fd450fc50434b47e"
+  ],
+  "48": [
+   "6e2d62b527c10214"
+  ]
+ }
+}

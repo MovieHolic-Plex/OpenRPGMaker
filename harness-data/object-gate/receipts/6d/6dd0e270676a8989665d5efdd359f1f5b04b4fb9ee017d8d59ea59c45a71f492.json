@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6dd0e270676a8989665d5efdd359f1f5b04b4fb9ee017d8d59ea59c45a71f492",
+ "width": 64,
+ "height": 16,
+ "kind": "terrain",
+ "name": "구름 바다 바닥",
+ "label": "sky-steam/sky-a-cloud-sea",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud sea floor texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile representing a sea of clouds viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3940
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud sea terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat cloud ground/floor terrain texture spanning the entire tile surface seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3301
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud sea ground texture",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain tile depicting a sea of clouds viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4036
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud sea terrain surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless horizontal floor/water terrain texture representing a sea of clouds viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3020
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.903Z",
+ "cells": {
+  "16": [
+   "26698ac11d704f6e",
+   "587731f856b0880d",
+   "906190ccea6bab35",
+   "ca8faebb9cd7c162"
+  ],
+  "24": [
+   "1eff46bd97be1cb3",
+   "4a2d08958e8d8c10",
+   "54357fa765e02686",
+   "6a789863f914bf0d",
+   "71f26351cb2ff519",
+   "73bae00eefee93f4",
+   "850a2018862b4672",
+   "9b940ea75418e17f",
+   "9c30a8e63670709d",
+   "ab773d71fc422565",
+   "b4bb077d58d0af10",
+   "bf00dea0cac59905",
+   "c82d674bede28f63",
+   "dd9b84a5049376db",
+   "e72e1041d39a2048",
+   "eca7b5f72c652f7d",
+   "fc3b903f0a80d11a",
+   "ffc345c56b3a864d"
+  ],
+  "32": [
+   "33c5861976fd180f",
+   "6e85ebaed91b8fdc",
+   "8f1eb280400c71ef",
+   "e952cb05060db23f"
+  ],
+  "48": [
+   "09e8fea5a9b16d8f",
+   "0afe887d1fefdd28",
+   "1e505a0bf8f29f64",
+   "381c475124a52e80",
+   "390955186bc8734b",
+   "57aa36b5dbd3871f",
+   "667a5a7599db9ab3",
+   "7e396ec1ee359c5f",
+   "a5e31fe8711795e3",
+   "a74f4f4b7c10d658",
+   "e16b46c35bb68e2d",
+   "fdbbe4ddef702416"
+  ]
+ }
+}

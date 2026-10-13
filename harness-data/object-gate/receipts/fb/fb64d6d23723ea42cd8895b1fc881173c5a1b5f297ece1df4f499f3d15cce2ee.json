@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fb64d6d23723ea42cd8895b1fc881173c5a1b5f297ece1df4f499f3d15cce2ee",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "바위 뿌리",
+ "label": "sky-steam/sky-a-rock-root",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floating stone pillar / island platform",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dirt/ground surface is clearly foreshortened and visible as an ellipse spanning approximately 12 pixel rows (rows 3 to 14), with the stone underside tapering downwards in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5360
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "floating stone platform",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dirt surface is drawn as a clearly foreshortened ellipse spanning rows 3 to 14 (approx 12 pixel rows tall), with the stone brick underbelly extending downward in proper 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6235
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floating island base with a flat top surface and tapering stone masonry cone",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top brown ground surface is clearly foreshortened and visible from row 2 to row 15 (approx 13-14 rows tall) atop the stone structure body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5989
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floating stone platform",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top dirt surface is drawn as a clear foreshortened ellipse spanning approximately 12 pixel rows (rows 3 to 14), with the masonry south face tapering downward below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10743
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.896Z",
+ "cells": {
+  "16": [
+   "06c39d2e0513fcc8",
+   "1f4c73d558948634",
+   "2604323d6ae98149",
+   "30b4e6b78c411f67",
+   "416b911cdd7d4ae3",
+   "8e85b7551b0fe2ed",
+   "9d180d4e5f96b14a",
+   "da2fe7aa0375225c",
+   "ef9b0892e2506a73"
+  ],
+  "24": [
+   "1c019659beabf417",
+   "9ef522576e2a4d73",
+   "ac23faa4caa7249e",
+   "cb27fee0f8f52f83"
+  ],
+  "32": [
+   "11ac7a6be71b38be",
+   "1e71d8b562604f7d",
+   "26dd1d9525e65d76",
+   "3b51fdd36e841414",
+   "430999fac4b23d3b",
+   "651268d161db93e8",
+   "67f245d243581fe3",
+   "69ef1ebdf447ceb1",
+   "6b869767a2abdbdc",
+   "70a2f862e0ff4059",
+   "71f9305c257f4440",
+   "774ee10fc085723d",
+   "84d73317516b3625",
+   "8c4242953e408d72",
+   "92457ee6cdc4c954",
+   "9405c8eb0bb3690e",
+   "96799017b0609e19",
+   "99c9809e43b1d398",
+   "a8001ff361f2ec6a",
+   "b84541006a314e8e",
+   "c4cdacd7792774c6",
+   "d5c602d118fb3c48",
+   "df0e6a8445f4a50e",
+   "e0809db000700da5"
+  ],
+  "48": [
+   "2d44e317176277ca"
+  ]
+ }
+}

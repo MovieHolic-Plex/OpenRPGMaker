@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "af58d302d49e83d7b5e2dc45c4ec62e637dbf561ddf26e4b008dc84664725674",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "증기 가스 탱크",
+ "label": "sky-steam/sky-a-gas-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an elliptical surface spanning from row 5 to row 14 (approx 10 rows), with a vertical front body extending below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5767
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam gas tank",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an elliptical surface spanning roughly rows 5 to 14 (approx 10 rows), with a vertical front face extending below it with bands and rivets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5357
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is rendered as a prominent ellipse spanning rows 5 to 14 (approx. 10 rows), above a south-facing cylindrical body extending to row 28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6235
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical tank",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an elliptical surface spanning roughly 11 pixel rows (rows 4 to 14) above the vertical south body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5397
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.898Z",
+ "cells": {
+  "16": [
+   "04e55c24fefcdd57",
+   "0aa66ef8437f86b9",
+   "1100b485bec96e99",
+   "20c9c8b02e6d1bc1"
+  ],
+  "24": [
+   "00cba53663450139",
+   "0481197926abb59b",
+   "070e12167171e33e",
+   "0d848c5081f14e95",
+   "13439f9a6eb178be",
+   "1602fdbb1e0d536e",
+   "1e183a9b871fcccf",
+   "277cbae780bf943d",
+   "354c53d87b234d2b",
+   "465558d7dd1932de",
+   "6d32ee0c8007f7b6",
+   "89cc696ca309102c",
+   "8f1862d40e356644",
+   "95821511ca78e9af",
+   "98b4ea7d07f3c509",
+   "a47222b058c50c0e",
+   "b6502a18ac93ed1d",
+   "cf10832db1858b0e",
+   "db7493c6100e9d9f",
+   "dcb477647f06b2a3",
+   "eb071d5e957ea143",
+   "eba4ecca5f744314",
+   "ef147cc6f58d62bc",
+   "f6b394225c9d2dec"
+  ],
+  "32": [
+   "62a4ac05bc367aeb"
+  ],
+  "48": [
+   "50d6581cb6487c0d",
+   "65d45f86f3dfd83e",
+   "8b8ae44d502516b0",
+   "9e1311a27dfa4dad",
+   "a051a5fa683436b6",
+   "dce38f966e9ff4d4"
+  ]
+ }
+}

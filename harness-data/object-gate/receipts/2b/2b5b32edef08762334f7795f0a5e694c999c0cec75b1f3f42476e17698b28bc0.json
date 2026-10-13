@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2b5b32edef08762334f7795f0a5e694c999c0cec75b1f3f42476e17698b28bc0",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "구름 덩이",
+ "label": "sky-steam/sky-a-cloud-puff",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a 2D side-view / platformer cloud with a flattened underside and puffy profile seen straight from the side, lacking any 3/4 top-down perspective or visible upper surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9031
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud clump",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat 2D silhouette/front elevation with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn in side-scroller profile with a characteristic flat horizontal base (rows 12-13) and curved upper silhouette, showing no foreshortened top surface viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn in side-view elevation with a classic flat cumulus base and rounded puffy top silhouette, lacking any 3/4 top-down perspective or visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6325
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.901Z",
+ "cells": {
+  "16": [
+   "1a5b7ea628d88a36",
+   "ca40d3a1343b180f"
+  ],
+  "24": [
+   "07bcdd31d7d6e545",
+   "2367e95813a76262",
+   "4151e41c273d234b",
+   "465f3841cacbe3aa",
+   "845f45c1eceef256",
+   "9e7b9bf28e9eb377",
+   "cb100bb542ee9460",
+   "cee78b60e2c1ac67",
+   "d013f1b74e0bddc6",
+   "e1ef1eee5d07355a",
+   "e2ffd82ed0c7b135",
+   "ff30fc7f80729d70"
+  ],
+  "32": [
+   "183a5b697415ce1c",
+   "5aafb14fa932e172"
+  ],
+  "48": [
+   "0442ea04b9a97a52",
+   "7904f5437a304c14",
+   "7fb9ba98cbfcc57e",
+   "b14d9529d7586dd1",
+   "ef0f76ae3a9a3d4c",
+   "f4e03bd1cbbe8148"
+  ]
+ }
+}

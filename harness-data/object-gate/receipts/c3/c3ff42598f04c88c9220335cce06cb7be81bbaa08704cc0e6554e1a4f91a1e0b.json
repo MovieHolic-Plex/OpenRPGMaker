@@ -1,0 +1,121 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c3ff42598f04c88c9220335cce06cb7be81bbaa08704cc0e6554e1a4f91a1e0b",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "구름 안개",
+ "label": "sky-steam/sky-a-cloud-mist",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud / fog puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat 2D side-view silhouette without any top-down foreshortening or visible top surface defining a 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6043
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud / fog puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud puff is drawn entirely as a 2D side-elevation silhouette with no top surface foreshortened for a 3/4 top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5508
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud / mist puff",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Drawn as a flat 2D side-view cartoon cloud silhouette without top-down 3/4 perspective foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5479
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud / mist puff",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat 2D side-view silhouette with flat-bottomed puffs, showing no top-down 3/4 volume or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 4870
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.901Z",
+ "cells": {
+  "16": [
+   "3d895c990005de7c",
+   "a995610a78619d14"
+  ],
+  "24": [
+   "24940f22a2ccb03a",
+   "281a41f2c0b533a8",
+   "3456200c0a90f3f3",
+   "4d210d2ee761b202",
+   "638ff04f7fa4b0d1",
+   "7a5aa8e8bd8374d8",
+   "7b84772ebd0d23fa",
+   "92e7d07a1444091d",
+   "9717f52772ef96cf",
+   "9a61bcc09590e968",
+   "a7ad3bc50ba67293",
+   "ad2de04b0a74d2e1"
+  ],
+  "32": [
+   "30753fdaa656220a",
+   "94220cf0676e13ec"
+  ],
+  "48": [
+   "3399b05b884cd730",
+   "344da60d1e243483",
+   "c068c02857889646",
+   "d43342cae6f31b52",
+   "d4a490d6f38b7e08",
+   "d9189cac694de6b0"
+  ]
+ }
+}

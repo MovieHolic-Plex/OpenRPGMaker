@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0ec0daeedc2a8545ccad38305845c4114b7ed28994709f64e935a93d3a887059",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대",
+ "label": "sky-steam/sky-a-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal and flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in pure front elevation. The pole terminates with a flat 1px cap at row 1, the flag is flat, and the stone pedestal shows only front-facing moldings and shaft with no visible horizontal top surface or plinth step surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13600
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pedestal and flag pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal has a flat horizontal top edge at row 18 with no top surface visible. The pole also has no visible top cut face and attaches directly to the silhouette edge in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7718
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal with flag pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone pillar/pedestal has a flat top line at row 18 where the pole emerges, with 0 rows of visible top surface foreshortening. The entire pedestal and pole are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6478
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone base / flagpole pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation. The flagpole sits directly on the top outline (row 18) with no visible top surface around its base, and all sections of the stone pedestal and pole lack foreshortened horizontal planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8422
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.002Z",
+ "cells": {
+  "16": [
+   "949fe071a0775fb0",
+   "c96350a6fd63f835",
+   "edee29b7bf164b23"
+  ],
+  "24": [
+   "0b90bfa2baa505c4",
+   "21324b8c9d1761fc",
+   "28cf78ed976dec9a",
+   "6fc8ae3eea170d9c",
+   "980793375e7d3870",
+   "fc4f04aaf7e94932"
+  ],
+  "32": [
+   "035de41ac1ec23c2",
+   "1992fff5d37f0a69",
+   "35eb7bbcf868d8c3",
+   "4488706cbd0a1e45",
+   "564083ec69c3a469",
+   "62c2e3a57c68247d",
+   "642b000c6ceb4bb1",
+   "72caf1b8a5f1d85a",
+   "863c46cde61429e5",
+   "958f9f0639e789cb",
+   "970ea1210042b1c7",
+   "a6e9d6dd04db66ba"
+  ],
+  "48": [
+   "6acd03ce732b1b92",
+   "6d4dcf603a2e36c9",
+   "99666a641db8ff29"
+  ]
+ }
+}

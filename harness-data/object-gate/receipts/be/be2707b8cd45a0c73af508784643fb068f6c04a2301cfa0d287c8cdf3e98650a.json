@@ -1,0 +1,143 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be2707b8cd45a0c73af508784643fb068f6c04a2301cfa0d287c8cdf3e98650a",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "소형 기구",
+ "label": "sky-steam/sky-a-hot-air-balloon",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hot air balloon (envelope and basket)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hot air balloon is drawn in pure 2D front elevation. The envelope has a flat horizontal bottom rim (rows 27-28) and symmetric front-facing vertical gore lines, while the basket below (rows 35-47) is drawn as a flat vertical rectangle with completely straight horizontal dividers and no visible top opening into the basket.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7097
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hot air balloon (envelope and basket)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The balloon envelope and the basket are drawn in pure front elevation. The basket has completely flat horizontal rims with no visible top opening or interior (rows 35-47), and the balloon panels and bottom rim (rows 27-29) are completely flat with no top-down 3/4 perspective curve.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5716
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hot air balloon and basket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire hot-air balloon (both envelope and gondola basket) is drawn in a flat side/front elevation view. The balloon envelope shows no top-down perspective or foreshortening, and the basket below is drawn as a flat vertical rectangle with no opening or visible interior.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5630
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hot air balloon envelope and basket",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hot air balloon is drawn in pure front elevation: the envelope ribs are straight vertical lines with no 3/4 curvature or top foreshortening, and the passenger basket is drawn as a flat rectangular front view with a straight horizontal top edge (row 35) showing no open interior or top rim ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7619
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.902Z",
+ "cells": {
+  "16": [
+   "36e5c17476945b14",
+   "39bf72a88968c583",
+   "47f2f9b2ca3f1882",
+   "5c9a8b8a3ed42cdd",
+   "e00c0606d6a4ebea",
+   "e2ba99368e24209b"
+  ],
+  "24": [
+   "1e94ba3b44cd34e4",
+   "26ac2608d1172471",
+   "2b1a7463a6abcd9d",
+   "4398ed309833e38c",
+   "4a80d8e18dc412fd",
+   "54833df42c983e2a",
+   "5afcd424ca173c0a",
+   "6e53b1c130263fe4",
+   "aa976d53aa129e9b",
+   "be4f539b06486c8e",
+   "c0cfd9b5530a42f9",
+   "f00c2698da10052c"
+  ],
+  "32": [
+   "1569b4cffab90369",
+   "19deebaa833e7342",
+   "a0406806193f70c3",
+   "c8b7e693405145f7"
+  ],
+  "48": [
+   "2d7812caaa7d7795",
+   "47834e479b31781b",
+   "d6bf044e605043d4"
+  ]
+ }
+}

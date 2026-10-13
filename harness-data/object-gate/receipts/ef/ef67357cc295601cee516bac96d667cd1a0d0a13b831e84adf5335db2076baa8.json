@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ef67357cc295601cee516bac96d667cd1a0d0a13b831e84adf5335db2076baa8",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "증기 보일러",
+ "label": "sky-steam/sky-a-boiler",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cylindrical boiler drum",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the boiler is clearly visible as an elliptical surface spanning rows 5 to 14 (about 10 rows deep), with concentric circular shading and a central hatch plate. The cylindrical south face and support legs extend below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 85587
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cylindrical steam boiler / vat on feet",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the boiler is clearly visible as an elliptical surface spanning roughly rows 5 to 14 (about 10 source pixels tall) with a central hatch plate and rear valve, above the vertical front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12144
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cylindrical boiler tank with top cap and hatch",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the cylindrical tank is clearly visible as an elliptical surface spanning rows 5 to 13 with concentric shading and a metal hatch, meeting the vertical front face around row 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4851
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cylindrical boiler tank on legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the cylindrical boiler is depicted as a foreshortened ellipse spanning approximately 9 rows (rows 5 to 13) with concentric shading and a central hatch, positioned above the south-facing front cylinder body (rows 14 to 26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5698
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.326Z",
+ "cells": {
+  "16": [
+   "33a3ae43f96ad696",
+   "852b5b4b5466829e",
+   "9b8537427428d2d0",
+   "a49a090fc37f9dfb"
+  ],
+  "24": [
+   "047cd8fe788a8f02",
+   "08bd704a939a367f",
+   "10fea2c1899a8422",
+   "16247eb3cb900f7a",
+   "190cdf845392ae7f",
+   "2726124d4034f963",
+   "2fa694f757153846",
+   "35fc1e24e77b823a",
+   "402d63b76a97544b",
+   "48f0f85ac3270fa7",
+   "4cf42dedefef5f5b",
+   "677d6fca70416e50",
+   "7ebe0fdecac6ba51",
+   "bbadb96c09756225",
+   "bdbe1fd9695bd04c",
+   "c2aad3041e1040e6",
+   "c8b61f571c1ee059",
+   "d36e5e18a12f6caa",
+   "dada71e1194fec4e",
+   "dc9803f5d821f94e",
+   "ddb5f4e68162608b",
+   "e5402a2788ec495a",
+   "f0e8d825d436e47f",
+   "f7ee7466689a1adb"
+  ],
+  "32": [
+   "0893d1974af615b1"
+  ],
+  "48": [
+   "3359b05fd18ed99a",
+   "55763f6194b5df70",
+   "61cac0dcd8a403d4",
+   "65ac60ea46508f9d",
+   "c9e5281f30e837dc",
+   "e52bb50fcbc75fa3"
+  ]
+ }
+}

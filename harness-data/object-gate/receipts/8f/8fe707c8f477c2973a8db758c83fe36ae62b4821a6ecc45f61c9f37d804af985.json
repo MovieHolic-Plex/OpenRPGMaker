@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8fe707c8f477c2973a8db758c83fe36ae62b4821a6ecc45f61c9f37d804af985",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "바람개비 석주",
+ "label": "sky-steam/sky-a-windvane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar with pinwheel pole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pillar's main body is clearly visible around the base of the metal rod from row 11 to 14 (about 4 pixel rows tall), correctly foreshortened above the south-facing vertical block.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7386
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pillar and the weather vane on top are drawn in pure front elevation. All dividing seams and horizontal bands (rows 15, 23, 26) are perfectly flat horizontal lines with no foreshortened curve or top surface visible from the 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10657
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar with top-mounted pinwheel rod",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the stone pillar where the pinwheel pole is anchored is drawn foreshortened across rows 11-14 (approx. 4 source pixel rows), showing clear 3/4 downward perspective before transitioning to the vertical south face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5758
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar with top-mounted rod",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top face of the main stone pillar is visible across rows 11-14 (around 4 rows tall) where the central rod is anchored into the top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6973
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.002Z",
+ "cells": {
+  "16": [
+   "b484e366263c83dc",
+   "d7f45c387a03ba01"
+  ],
+  "24": [
+   "08a7cb426c6c76c9",
+   "39271933cfd89213",
+   "3d70224eb41c8633",
+   "3f751d7698acf394",
+   "4042c4a197baea2d",
+   "5e7117b480b48e23",
+   "620f7e37c6127696",
+   "66bd8c337ace7ab8",
+   "8386db9075083b4b",
+   "c1011588c298cc85",
+   "c516e11b274aa181",
+   "f5e1f812d04ffa6a"
+  ],
+  "32": [
+   "06d4282ac42bbb58",
+   "4364e02e44d24a9d",
+   "f3e621f45914996b"
+  ],
+  "48": [
+   "0298526e040ec7c3",
+   "0f90edff5a8d77d0",
+   "467a8d1e70a5a0a3",
+   "751cac31611f22aa",
+   "8ff9cfc31a5978bc",
+   "c3c7e209995932b2"
+  ]
+ }
+}

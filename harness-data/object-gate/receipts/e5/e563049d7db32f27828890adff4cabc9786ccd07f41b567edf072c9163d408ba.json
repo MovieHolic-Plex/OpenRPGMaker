@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e563049d7db32f27828890adff4cabc9786ccd07f41b567edf072c9163d408ba",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "화단 상자",
+ "label": "sky-steam/sky-a-planter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden planter box",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening filled with soil and small flowers spanning rows 4-9, with front and back rims visible and a front wooden face below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8093
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden planter box / flowerbed container",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a large opening filled with dark brown soil and sprouts spanning rows 4 to 9 (6 pixel rows tall), framed by a top rim, with the south wooden front face visible below from row 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6797
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden planter box with soil and flowers",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear 3/4 perspective view with a wide opening (rows 4-8, 5 rows of visible soil with sprouts) surrounded by wooden rims, positioned above a vertical south-facing front wooden facade (rows 11-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6162
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "planter box with soil and small sprouts",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The planter box shows a clear top opening foreshortened in 3/4 view across rows 4-9 containing dark soil and sprouts, surrounded by the top wooden rim, with the front face visible below in rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6169
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.327Z",
+ "cells": {
+  "16": [
+   "09462434f20aefee"
+  ],
+  "24": [
+   "03bb54e063fa946c",
+   "11cda3c8791d3d28",
+   "30b841eaeae6800a",
+   "989fb9c9d4e15bdd",
+   "a4fd8f1ca51c3cb6",
+   "aa070e92d4de6e9f"
+  ],
+  "32": [
+   "2050f5323e4a16af",
+   "349724b3523804b2",
+   "40e1c3189fb78880",
+   "58466f48202698e1",
+   "6ce271cf1262cb05",
+   "d3d066da7718b1a2"
+  ],
+  "48": [
+   "4295cb16a0807142",
+   "7a364e1323a86a60",
+   "7e7796f144272209",
+   "92f31221f5a68166",
+   "c5b9e7cd2e62a340",
+   "e0ce62c1d77b8faa"
+  ]
+ }
+}

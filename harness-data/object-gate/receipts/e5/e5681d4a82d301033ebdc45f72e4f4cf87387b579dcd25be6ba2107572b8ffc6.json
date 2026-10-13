@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e5681d4a82d301033ebdc45f72e4f4cf87387b579dcd25be6ba2107572b8ffc6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "굴뚝",
+ "label": "sky-steam/sky-a-chimney-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick chimney",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney flue is clearly rendered in 3/4 view with a dark interior opening (rows 4-6) surrounded by a visible rim/cap.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick chimney",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney shows a foreshortened rim and a distinct 3-row dark opening hole (rows 4-6) seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8064
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick chimney with top opening and stepped base",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the chimney shows a clear foreshortened elliptical flue opening (rows 4-6, 3px tall) surrounded by the top rim (rows 3-7), correctly showing the top surface in 3/4 top-down view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick chimney with top collar and flue opening",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": true,
+    "opening_rows": 3,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chimney top features a clear top-down view of the flue opening (rows 4-6) framed by the back and front rim (rows 2-3 and 7), correctly foreshortened in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5959
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "7f2cfe012b6b36b9",
+   "e9e7352194a8d2ed"
+  ],
+  "24": [
+   "141c4eebd852d453",
+   "1a376da86e061223",
+   "5b93e4e4455b5e82",
+   "5d24958487d0dc4a",
+   "82e57b67c3daf30c",
+   "9813c116ce531bc0",
+   "98f54cce66d35db9",
+   "99986914635e8080",
+   "a957cc72d8233553",
+   "aaa9d6c7b6305fab",
+   "ad3a2517bd72b286",
+   "dbca2e26a848ae98"
+  ],
+  "32": [
+   "6da6f8768a67f01d",
+   "ef920fe3c2eafebe",
+   "fd5380760d270f8a"
+  ],
+  "48": [
+   "25c22ed4b8fda074",
+   "446957878d323af8",
+   "cc9a283041a511e3",
+   "cea33461822524d5",
+   "da82e9afe52fcce0",
+   "f1606b8a336028d2"
+  ]
+ }
+}

@@ -1,0 +1,180 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b29301513185be695760515db4b1489439f6b11a00abc66735f326cc34a31043",
+ "width": 80,
+ "height": 32,
+ "kind": "structure",
+ "name": "구름 다리",
+ "label": "sky-steam/sky-a-bridge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bridge beam and railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bridge is drawn in pure front elevation (side-scroller platformer style): a single handrail on vertical posts sits on top of a horizontally shaded log/beam (rows 14-21) above vertical wooden support planks (rows 22-27). No horizontal deck/walkway surface is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15230
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bridge / walkway structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire bridge is drawn as a flat side/front elevation: the handrail, vertical posts, horizontal beam/deck, and lower wooden skirt are all rendered from a straight-on profile with 1px top highlights and no visible top/walking surface from the 3/4 camera angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14233
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bridge deck",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge deck shows an 8-pixel deep horizontal walking surface (rows 14-21) viewed from above in 3/4 perspective, with a north railing at the back and a vertical south-facing wooden fascia (rows 22-27) below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10315
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bridge platform with railing",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bridge is drawn as a side-scroller platform in pure front elevation: the railing bar has no visible top surface, the railing posts connect directly to the 2D top edge, and the platform body shows only its front face with vertical cylindrical shading rather than a foreshortened horizontal deck seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14619
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.895Z",
+ "cells": {
+  "16": [
+   "12fdcb468a0e4b3e",
+   "1e9422c65b92d50d",
+   "455a2e6e3b33ecc3",
+   "518a75605554b133",
+   "65212d2b5cb98e31",
+   "89f245eec17d902c",
+   "b825c9a152b8fbf0",
+   "b9bcbc2c559aa183",
+   "f5745ed7d6e4140b",
+   "f8501242f1fd0486"
+  ],
+  "24": [
+   "02ae6c269b64162a",
+   "030aca159de560de",
+   "0d1e57136c58179c",
+   "0e1a50743225cf3c",
+   "154c1b12b8215730",
+   "1b79723e3d15d65d",
+   "20e948b2adfd569b",
+   "26892fbd5fd37c65",
+   "452b97fb1f1e7f36",
+   "4d3994edb1e34e56",
+   "4e0a1221a9ca307b",
+   "5cfeb0bc1d8710ad",
+   "5ded73a926c1a391",
+   "5f50fb88045504f0",
+   "64a67fb6ca13c483",
+   "6951e072074cf221",
+   "78ff8c000e79dfa5",
+   "7b9578137565472d",
+   "89427b908b23d700",
+   "90514e111b0d75e7",
+   "9623d052ec28b4bd",
+   "9eb7150c88ed1f90",
+   "a11614307bb22966",
+   "a55b441e43497279",
+   "af1e5691c1babda0",
+   "b0260f1af5ef93be",
+   "be01e9a1a9d8762e",
+   "c4e31f1f27eae5f4",
+   "c732bdb680c4cc5b",
+   "ca589b53d96b0206",
+   "d90b8af49dce0f55",
+   "dbacc68faf8d9f96",
+   "dfdebf706e30d2a0",
+   "ea5a28fcb9f87c16",
+   "eed88d7d766d3a55",
+   "f7eef99adcb47727"
+  ],
+  "32": [
+   "185ecf85d86e8fc5",
+   "468256b3d555b1db",
+   "4e7c60488b847d78",
+   "5ac8145a90855846",
+   "69a302d629b9e3cd",
+   "8eed591938d58176",
+   "c230a4f29bc0606d",
+   "d786dc8b8c931fa8",
+   "f93783bf5b911151"
+  ],
+  "48": [
+   "0aa46affd02b6f5d",
+   "21d9e78b2289746d",
+   "2fb1ac9e153ccb36",
+   "35cfe8b2ed701a56",
+   "5b5dd0b06aee77ed",
+   "7457d74fa930167b",
+   "79e524a202f7a9ec",
+   "986b11a5e95aea3d",
+   "b4923ca049954aa8",
+   "bc100770c2aa3579",
+   "e206343212ddd5b6",
+   "ed5b83dbc1b23407"
+  ]
+ }
+}

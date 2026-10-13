@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "19394da5c06950aa3288dd38a80db5f00c277a2ff30941a51ff4abb638b28931",
+ "width": 32,
+ "height": 32,
+ "kind": "frame",
+ "name": "도르래 기중기",
+ "label": "sky-steam/sky-a-pulley-crane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "horizontal crane beam and support post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam shows a distinct 3-row top surface (rows 4-6) above a 3-row front face (rows 7-9), properly rendering horizontal planes in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7594
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal crane beam",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam shows a 4-pixel-tall top surface (rows 3-6) illuminated in light wood above a darker 3-pixel-tall front face (rows 7-9). The suspended load also shows a visible top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8178
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "horizontal beam and support frame of pulley crane",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam clearly displays a 4-row top surface (rows 3-6) above a shaded 3-row front face (rows 7-9). The suspended block also features a distinct top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7409
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "horizontal wooden crane beam and vertical support",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main horizontal beam clearly displays a 4-pixel-tall top surface (rows 3-6) above a 3-pixel-tall south face (rows 7-9). The base and suspended weight also correctly show top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7729
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.902Z",
+ "cells": {
+  "16": [
+   "17c716b404b0fd17",
+   "39e9bde561b071af",
+   "45cc1add77ea158e",
+   "febd797d95728283"
+  ],
+  "24": [
+   "131de2d51f912c9d",
+   "3ec0cc0f98e0cc30",
+   "40d82d9f7e01cccf",
+   "431dacc7debfcbc9",
+   "4b0a36413faf774b",
+   "544feb8b0380e251",
+   "6b01cd9921d4558c",
+   "6edc8907bdf3794a",
+   "73000ee4f54739f6",
+   "891e1763746c0a11",
+   "8f248a700f1cfa95",
+   "a0f97ee719704baf",
+   "a65fe920cfdd53cd",
+   "b203481e956af1ce",
+   "b2cf1e27d20dccfa",
+   "b7c21a9a925f9038",
+   "bfdee0632b541568",
+   "c229a11e722c2d42",
+   "c76a9513aa792d3d",
+   "cf319fd0f3183fd0",
+   "d0be2b86c036a546",
+   "eb2870fda4e6c98f",
+   "ed3204546d431fde",
+   "f037a65fccc4673a"
+  ],
+  "32": [
+   "1e8a186949d9becd"
+  ],
+  "48": [
+   "5191bb759ce79ac7",
+   "521bd2f10921d3a4",
+   "62f7d4429c5296c5",
+   "b5a0b1f942ef5e92",
+   "eec4ebc70c639e12",
+   "efaee9616f0c6ffd"
+  ]
+ }
+}

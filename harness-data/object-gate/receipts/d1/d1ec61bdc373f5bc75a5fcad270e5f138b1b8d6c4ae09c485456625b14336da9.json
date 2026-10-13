@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d1ec61bdc373f5bc75a5fcad270e5f138b1b8d6c4ae09c485456625b14336da9",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "풍차 탑",
+ "label": "sky-steam/sky-a-windmill",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill tower with tiled roof",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a clear downward-sloping top surface (rows 15-26, ~12 source pixel rows) above the vertical stone wall body, consistent with 3/4 top-down building perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5479
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone tower with tiled roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a substantial south-facing top slope spanning rows 14-27 (14 pixels tall) with shingle texturing, appropriately foreshortened for 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4811
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill tower with tiled roof",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof shows a clear southward-facing sloped top surface measuring approximately 14 pixel rows (rows 14-27) above the front facade of the stone tower.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4397
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone tower with tiled roof",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a wide sloped roof face spanning rows 15-27 (13 rows) visible from above in standard 3/4 RPG perspective above the vertical stone wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4532
+  }
+ ],
+ "decidedAt": "2026-10-13T14:33:42.539Z",
+ "cells": {
+  "16": [
+   "096b08d3f93344fd",
+   "1f82a4d939024a36",
+   "3044f2ee24cf2cba",
+   "38c1e9b011c9dd5b",
+   "44f670a4b939a779",
+   "540973b9878952d6",
+   "88f1ed3267610947",
+   "ccd41927310aff1f"
+  ],
+  "24": [
+   "04f3e0c53f256dea",
+   "058666fb30f8929e",
+   "0b04747743fd0c3d",
+   "0b426ff0ba7f3fc8",
+   "0c451952b61c49bc",
+   "165089bc2e5fdf8d",
+   "1d7d5c6d97935062",
+   "1e310d8291ea6026",
+   "2828c33d1e156750",
+   "302f300b36d1ee4e",
+   "3fe8959a012f80da",
+   "49d4f5d16c52e1e6",
+   "4b606d7ea987d3e5",
+   "4bae125228b62275",
+   "55577a4b0d8b3c17",
+   "5c2f09fffa5d69e4",
+   "7228ce063afe9893",
+   "761cc9556e53026f",
+   "7959d8dd351ac624",
+   "836d5fe1564f97b3",
+   "88f65af046bba6d2",
+   "8c72e3118f808e5c",
+   "9e9b72acf11e9003",
+   "9f8777501f79b140",
+   "a8341af7bda9bfe3",
+   "babac0d32b735d11",
+   "c5c7e197bdd78708",
+   "d554f80f665675c8",
+   "d668a0c2e063c3d3",
+   "dd48d6090f758daa",
+   "e00f8f39c511284b",
+   "e05699a239fa376d",
+   "e35b758b05813bc9",
+   "fadc6d56e1fb3059",
+   "fb822496c75f3a7f",
+   "fe2ee74e9c88de52"
+  ],
+  "32": [
+   "68fbf50dd969f930",
+   "988ddbda7b526a4b"
+  ],
+  "48": [
+   "1fdc40e92368296f",
+   "381bca68cf1d58b2",
+   "40231eb9202be3b0",
+   "af349341f3ff426e",
+   "b08f955ac8335e45",
+   "bb2665d52d7a2133",
+   "cf2f1a6da57474b9",
+   "e06d6e4c125ac149",
+   "e46caab4833ad8cf",
+   "e7db0a2fa4aa90cd",
+   "f18a6b1915b31194",
+   "fbb9c0de4c69ec51"
+  ]
+ }
+}

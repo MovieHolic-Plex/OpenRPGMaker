@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "48bc1aaa2d445acef9cb12482dcad1524e74eae672cf083b59c28127d12b328e",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar / pedestal with flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stone pedestal and flag are drawn in pure front elevation: all horizontal divisions (the top edge at row 18, decorative band at rows 25-26, and base plinth at rows 40-43) are completely flat horizontal lines with no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11288
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar / stele base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone body and base are drawn entirely in front elevation with horizontal bands (rows 20-25 upper section, 27-39 main shaft, 41-47 plinth). There is no visible foreshortened top surface; the flagpole attaches directly to the top contour outline with 0 top rows visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7479
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pedestal / stele base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn as a flat front elevation; the pole is anchored directly onto the top outline at row 18 rather than into a visible horizontal top surface, and no foreshortened top plane is depicted.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6005
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pedestal / pillar with flag",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn in pure 2D front elevation with perfectly horizontal bands and no visible top surface foreshortening; the pole emerges directly from the flat top outline.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5198
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.003Z",
+ "cells": {
+  "16": [
+   "06b1b751f6a2ed8a",
+   "c96350a6fd63f835",
+   "edee29b7bf164b23"
+  ],
+  "24": [
+   "0b90bfa2baa505c4",
+   "21324b8c9d1761fc",
+   "28cf78ed976dec9a",
+   "9868b86c95386694",
+   "a027bd307b89ac40",
+   "a58f60160e264c35"
+  ],
+  "32": [
+   "1992fff5d37f0a69",
+   "35eb7bbcf868d8c3",
+   "62c2e3a57c68247d",
+   "8035d3fa32c0d9d4",
+   "863c46cde61429e5",
+   "8b180e042270d6f9",
+   "8f82ef178fe7419f",
+   "958f9f0639e789cb",
+   "a6e9d6dd04db66ba",
+   "a98b1baea7e52402",
+   "b3609590a87cf4c5",
+   "db2574978cbfae69"
+  ],
+  "48": [
+   "12afc49da076567a",
+   "82720b402e358460",
+   "e3f88f6ecb42dcdb"
+  ]
+ }
+}

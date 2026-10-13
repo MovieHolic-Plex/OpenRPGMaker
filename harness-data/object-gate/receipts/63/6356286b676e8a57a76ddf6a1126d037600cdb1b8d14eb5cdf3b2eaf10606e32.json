@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6356286b676e8a57a76ddf6a1126d037600cdb1b8d14eb5cdf3b2eaf10606e32",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "덤불",
+ "label": "sky-steam/sky-a-bush",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is rendered as a flat symmetrical oval with no volumetric shading or separation between a top surface and a front/south face. It lacks 3/4 perspective entirely, appearing either as a flat 2D front-facing shape or a flat overhead disc.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat, symmetrical green ellipse with no 3/4 perspective volume; it lacks distinct top-down surface foreshortening and a south-facing front body.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6938
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bush / shrub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is drawn as a flat 2D oval without any 3/4 perspective: there is no distinction between a foreshortened top surface and a front/south face, lacking 3D volume or height.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9204
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bush",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bush is rendered as a flat symmetrical green ellipse with no distinction between a top surface and a front south face, lacking 3/4 perspective volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9313
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.901Z",
+ "cells": {
+  "16": [
+   "8d908f7654cba035"
+  ],
+  "24": [
+   "2d4af93353941dd9",
+   "b3b7004e0a9bc618",
+   "cdb7764e6273baec",
+   "dc56029d01e091ff",
+   "f27e2a0d72474f75",
+   "ff2227832a8010f9"
+  ],
+  "32": [
+   "63e9d113a86ab43c",
+   "868b02204ebc52c0",
+   "a0427d371fb57535",
+   "ee2dc0d9fd6920dd",
+   "ee50050300f0b731",
+   "fdfb7bb1bfbec264"
+  ],
+  "48": [
+   "1fc02bbd6ecbada8",
+   "69953be22f79a91d",
+   "b1bd0862961bd1cd",
+   "c964e707128a8c97",
+   "f0f935ab2f29cf54",
+   "f1b57b690e571396"
+  ]
+ }
+}

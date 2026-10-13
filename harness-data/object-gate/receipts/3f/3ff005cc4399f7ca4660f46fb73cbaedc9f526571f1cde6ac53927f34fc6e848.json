@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "3ff005cc4399f7ca4660f46fb73cbaedc9f526571f1cde6ac53927f34fc6e848",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "바람개비 석주",
+ "label": "sky-steam/sky-a-windvane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone column block clearly displays its top surface across rows 11-14 (4 rows tall) from which the iron pinwheel shaft emerges, and the base block also shows its top surface on rows 23-25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6397
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central stone pillar shows a clearly foreshortened top horizontal surface at rows 11-14 (4 pixel rows tall) above its front face (rows 15-22), properly adhering to 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7102
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone pillar block displays a 4-row foreshortened top surface (rows 11-14) above its south front face (rows 15-22), properly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7165
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar with pinwheel",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone block shows a 4-row tall top surface (rows 11-14) in lighter grey tones, separated from the darker south face (rows 16-22) by a shadow/crease line. The lower base also shows a 3-row horizontal surface (rows 23-25).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8759
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.190Z",
+ "cells": {
+  "16": [
+   "8915385325a28c01",
+   "d7f45c387a03ba01"
+  ],
+  "24": [
+   "08a7cb426c6c76c9",
+   "293b0feae984edb6",
+   "3ba3b145dee58faf",
+   "5ba044fe4669ee7b",
+   "5e7117b480b48e23",
+   "6ee4e890008b1219",
+   "b13dddeba5e1aa97",
+   "ba59025c435abf1e",
+   "c516e11b274aa181",
+   "e52de49ef30745e1",
+   "f091d6ed6288970e",
+   "fb3724e9186c8d03"
+  ],
+  "32": [
+   "5c39a62c543cefee",
+   "5c52306ffc24d62a",
+   "dc156d4faf9c7004"
+  ],
+  "48": [
+   "58e0ce751d5205f1",
+   "7b9cbd7fc6c83739",
+   "8292113faa7cf1a1",
+   "8a271f29d17d7845",
+   "8e7c22e1a05b08c0",
+   "9058344fed829f18"
+  ]
+ }
+}

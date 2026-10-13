@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9b17cb0f03159d799740794a0e5c5633b6c0507c1382a4147c283a08181d7a6d",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "하늘 등대",
+ "label": "sky-steam/sky-a-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lighthouse tower shaft and lantern room",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tower, bands, and lantern structure are drawn as a flat architectural elevation with completely straight horizontal lines across the stripes, balcony, and roof, showing 0 rows of visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6266
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower (shaft and lantern)",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the lighthouse is drawn in pure front elevation: all stripes, overhangs, and section boundaries are completely straight horizontal lines with no top surface or cylindrical curve. The only visible top surface is on the base plinth, which cannot be credited.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6817
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lighthouse tower shaft and lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the lighthouse (tower shaft and lantern) is drawn in pure front elevation: the stripes and base contact line of the cylindrical shaft are perfectly horizontal without any 3/4 curvature, and the roof caps/overhangs are flat front profiles without top surfaces. The top surface on the plinth cannot validate the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6390
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in a pure front architectural elevation with zero 3/4 downward angle: all horizontal boundaries (roof eaves, lantern base, cylindrical stripes, and tower foot) are perfectly straight horizontal lines with no perspective curvature or visible top surface on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15671
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.727Z",
+ "cells": {
+  "16": [
+   "04238c6bd6a1ae3e",
+   "2ee6f7ec788b2a57",
+   "33bb401ce7cbee88",
+   "4865f5590065e637",
+   "7bed86db4a84d8c3",
+   "b5fc08a41ac3b180",
+   "dcdfd1f4f1b5e5d2",
+   "df689a9842d8f96a"
+  ],
+  "24": [
+   "034799d612b699c3",
+   "0e3dd993a6d44f48",
+   "215df0aa21be8e72",
+   "277bfa7283aaabc5",
+   "2b0d170519fa3785",
+   "2f856e82f6ac2d73",
+   "32a48c3dd36fa559",
+   "368c3a4ee4ebe227",
+   "385358082761ae7e",
+   "41bd13d2d02083c5",
+   "447bc4d475e677d0",
+   "547aea7b30c49527",
+   "63f4b98b83ecea69",
+   "6a50b7bd0f4d59b4",
+   "803c32c9f8d1fed5",
+   "8b0efc3208b532ea",
+   "8f1b57c141daeaa6",
+   "9111efa6653fd654",
+   "980226b57fceac44",
+   "981efa8499d6b7d9",
+   "9ac920cfa4ca9fe4",
+   "9c0fca3cb297cc3c",
+   "aace3e18d2cb72ef",
+   "b8e0aa2d81c21e83",
+   "b9451b3eda3fd777",
+   "bac00d5e79f61fa2",
+   "c08fde784fd2739a",
+   "c60ac84fa4da4eab",
+   "cadaa8afa81f9c2c",
+   "cdba93d20891056a",
+   "e6799500c08e1f0e",
+   "e8cb3c0802a8d8d3",
+   "e98a4e7e4cbef40c",
+   "eec85a2f4c527907",
+   "ef70caab2272f2e5",
+   "f49f5348073b4e11"
+  ],
+  "32": [
+   "72f8d5d4176b9408",
+   "7cf1373db3a838c9"
+  ],
+  "48": [
+   "3b01522950d4b3ae",
+   "3f29e2e3f91d6b27",
+   "57ba389706b9a26b",
+   "6a541c65f9d9a044",
+   "7668fbda42852e45",
+   "875d7ab3fbfafbc3",
+   "ba373be5eb5a9a5f",
+   "be7d52b3fce8a12c",
+   "bfb22c5b76a217d3",
+   "def523593b77a82c",
+   "e2437a73a0373946",
+   "eefce9709d73e757"
+  ]
+ }
+}

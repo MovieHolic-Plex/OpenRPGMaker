@@ -1,0 +1,157 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "63e69979ace4c769fd918f1229a0fdf83ed04fadc28ed360645e2ea890c805ab",
+ "width": 48,
+ "height": 48,
+ "kind": "frame",
+ "name": "풍차 날개(회전)",
+ "label": "sky-steam/sky-a-windmill-blades.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill blades / sail cross",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn entirely as a flat 2D front-facing cross with no top surface, thickness, or 3/4 top-down perspective depth (top_rows: 0). Additionally, windmill blades do not match the 'frame' kind (racks, stands, bars).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5810
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windmill blades/sails",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill sails are drawn in a completely flat 2D frontal plane with no foreshortening or top surfaces on the beams or sails, and it is a rotating sail mechanism rather than a standing frame/rack.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4863
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill blades",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill sails are drawn completely flat in the vertical plane facing the camera (pure front elevation) with 0 rows of foreshortened top surfaces. Furthermore, windmill blades do not match the 'frame' kind (open ground-standing frame or rack).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5697
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windmill blades / rotor",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is a rotating windmill blade assembly drawn in completely flat 2D front view without any top-down foreshortening or top surfaces on the spars/hub.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5492
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.907Z",
+ "cells": {
+  "16": [
+   "2092ed22ca079e11",
+   "5c3ad484e35fca17",
+   "8d17f3eb323f2256",
+   "9640f9fe7895d4b0",
+   "ac950a5fc33f3231",
+   "b173e37a45d55a73",
+   "eb2b66dfd85d8503",
+   "efd98483720079b9"
+  ],
+  "24": [
+   "1dce8e17eb996f30",
+   "29d230f40d0585ba",
+   "3b773f0e3b3f35b3",
+   "d8250a0244397ee5"
+  ],
+  "32": [
+   "008d29697f4e7254",
+   "1ef16381ef1746a2",
+   "45d36d58a427fcfa",
+   "4c056a1c456aaea2",
+   "50c75ef5b4ab19f2",
+   "60fbe973c611bfdd",
+   "6ec0fbcc157251c8",
+   "7a0926dbd85abf30",
+   "7cb29d2376b8156a",
+   "80230313c1580b5b",
+   "8a21066bf31a8e5f",
+   "92bcd169889dea85",
+   "9581a8118088879d",
+   "9612743d2d36a318",
+   "bae0e8610bb43fcb",
+   "bbd7fe3d2cc0ee36",
+   "c1d04bb00682feda",
+   "c66323bda59cc2a4",
+   "da29fd2aeef6a396",
+   "dc04c81847aaa975",
+   "e389f4c617a8cc0b",
+   "f75ff1c2f0b2be22"
+  ],
+  "48": [
+   "3661e11398b19754"
+  ]
+ }
+}

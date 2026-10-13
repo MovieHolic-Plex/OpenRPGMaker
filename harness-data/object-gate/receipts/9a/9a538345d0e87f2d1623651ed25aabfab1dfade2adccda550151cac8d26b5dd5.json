@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9a538345d0e87f2d1623651ed25aabfab1dfade2adccda550151cac8d26b5dd5",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "계류 기둥",
+ "label": "sky-steam/sky-a-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cap of the bollard (rows 3-6) has vertical column shading indicating a front-facing cylinder with no visible top circular surface, and the rope band (rows 10-11) is drawn completely flat horizontal rather than curving downward as an ellipse in 3/4 view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6707
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mooring bollard cap and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring bollard is drawn entirely in front elevation with no visible elliptical top surface on the cap. The shading consists of vertical cylindrical highlights and the wrapped rope band at rows 10-11 is a flat horizontal bar.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6703
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring bollard head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring bollard is drawn entirely in front elevation: the top cap has no visible horizontal top surface (no foreshortened ellipse), and the rope wrapped around the post at rows 10-11 is a completely straight horizontal band with no 3/4 downward curvature.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4617
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard cap and trunk are drawn in pure front elevation with straight horizontal bands (including a completely straight rope wrap at rows 10-11) and vertical cylindrical shading stripes running down from row 3. There is no foreshortened top surface or elliptical face visible on the cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5817
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.899Z",
+ "cells": {
+  "16": [
+   "a062d3d2bf0535b4"
+  ],
+  "24": [
+   "0f3a4214455849e0",
+   "34bf7ea24357c007",
+   "4f3396d872f604da",
+   "85be9dd0acef3587",
+   "a20909a17f96cb38",
+   "e346385a96759eeb"
+  ],
+  "32": [
+   "750d671e6bd17dcf",
+   "8ead6a626b85ac6e",
+   "951a123e52e5ee57",
+   "b4c7ebbfd8da3ab9",
+   "c1ec8bbeb36660ab",
+   "d35f92b4f82fa34e"
+  ],
+  "48": [
+   "04b355e6a461d4c7",
+   "332b50a3ec1d5a4c",
+   "64c7935f4ac19b25",
+   "834174cef4d99187",
+   "8cf3109588885c33",
+   "cb0fd05dea88aa11"
+  ]
+ }
+}

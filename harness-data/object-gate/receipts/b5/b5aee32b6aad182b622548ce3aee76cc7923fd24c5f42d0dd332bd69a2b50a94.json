@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b5aee32b6aad182b622548ce3aee76cc7923fd24c5f42d0dd332bd69a2b50a94",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "섬 가장자리 절벽 앞면",
+ "label": "sky-steam/sky-a-island-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cliff edge tile with grass top surface and stone wall face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-5 show the horizontal top surface (grass ground), while rows 6-15 show the vertical stone cliff face in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4964
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cliff edge with grass top and stone wall face",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-5 depict the top horizontal grass surface (6 rows tall), and rows 6-15 show the south-facing cliff wall face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3941
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cliff edge with grass top and stone wall front",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile displays a standard 3/4 top-down terrain cliff: rows 0-5 show the horizontal top surface (grass) and rows 6-15 show the vertical south face (stone cliff wall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2750
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cliff edge tile with grass top and stone cliff face",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile correctly shows the upper ground surface (green grass, rows 0-4) and the south-facing vertical cliff wall (rows 6-15) typical of JRPG 3/4 cliff edges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3494
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.904Z",
+ "cells": {
+  "16": [
+   "9c4d788c1fd80764",
+   "a7ebf15d5884b587",
+   "e3a8e83baa908e5f"
+  ],
+  "24": [
+   "2ba10e50bcf7a21a",
+   "4e61a87b1bdaee86",
+   "810d0c1bf1d94c1d",
+   "b9f417e8cc3eac5f"
+  ],
+  "32": [
+   "14f324c168fd6e27",
+   "20b9adef42335719",
+   "21f91df0e6f47e9c",
+   "2d229531e933c907",
+   "399e0ff3e69da260",
+   "6f2377c85d8bbabd",
+   "b58ea2a3bb6f2c79",
+   "b5bdd318fa2dc21e",
+   "b637891b6110746b",
+   "bb61e074d05aa017",
+   "bee06f4dddeb56f0",
+   "e23562b03fb21176"
+  ],
+  "48": [
+   "5be1e24f15d17060",
+   "855507a30d7f711a"
+  ]
+ }
+}

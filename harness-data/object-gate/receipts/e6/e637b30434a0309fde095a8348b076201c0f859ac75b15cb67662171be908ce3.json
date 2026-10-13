@@ -1,0 +1,142 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e637b30434a0309fde095a8348b076201c0f859ac75b15cb67662171be908ce3",
+ "width": 16,
+ "height": 32,
+ "kind": "box",
+ "name": "깃발대",
+ "label": "sky-steam/sky-a-flagpole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole and stone pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object, including both the flag/pole and the stone base below, is drawn in pure 2D front elevation with no visible horizontal top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7085
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone base / flagpole pedestal",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn in pure front elevation as a stepped block with a 1px flat top outline at row 20 and no foreshortened top surface visible. The floating flagpole above it is also drawn in flat side/front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8185
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone base / flagpole stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone structure at the bottom is drawn in pure front elevation with a 1px outline over the top (row 20) and no foreshortened top surface visible. The floating flag above is also in pure flat elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 7927
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone base / flagpole",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pedestal is drawn as a flat front elevation with no visible top surface (the flag even floats detached above it without a top plane or socket visible), and the flag/pole itself is also drawn in flat side/front view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 8662
+  }
+ ],
+ "decidedAt": "2026-10-13T14:45:58.333Z",
+ "cells": {
+  "16": [
+   "14de0625d68f72a0",
+   "438901cf648c7da4"
+  ],
+  "24": [
+   "0cfdee1c5379961e",
+   "177d8dd3053fcb83",
+   "3110349fdd2b3703",
+   "4bb7973f0e0ee2e7",
+   "4bd7e4c88c494c50",
+   "4e23c07f5862afa7",
+   "4e957bc3c89f26a5",
+   "5b42bd7b88cc6c9e",
+   "66b514f7f75a4d9e",
+   "b246275f2c1fdd17",
+   "e57f6ef477d716a4",
+   "f6eef3a0c9d8ce12"
+  ],
+  "32": [
+   "04890a2699284f97",
+   "a8ebe26702416f32",
+   "ad5282fb09380a0c"
+  ],
+  "48": [
+   "315a5898fdf48863",
+   "3735cc74f5f744b9",
+   "5131267a97500999",
+   "bb6124c0accbeb7c",
+   "ef2fefdb641ee1db",
+   "feff9ea33fb2daae"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9ec1825e18cb746535eed6e33e02446b79393d6ae713039e64b21ca90e21e49a",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등 석주",
+ "label": "sky-steam/sky-a-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar supporting a gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone pillar and its lamp attachment are drawn in pure front elevation with completely straight horizontal banding and no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5590
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar with gas lamp bracket",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire pillar, metal brackets, and lantern are drawn in pure front elevation with straight horizontal bands and lines. No horizontal top surfaces or foreshortened planes are visible anywhere on the pillar or lantern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6251
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar supporting a gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Every section of the pillar, lantern, and base is drawn with completely flat horizontal lines and 90-degree vertical edges with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4580
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar supporting a lantern",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire stone pillar and the lantern on top are drawn in pure front elevation; all ledges and top edges are straight 1px horizontal lines with no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5539
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.003Z",
+ "cells": {
+  "16": [
+   "2600c6d37b33a431",
+   "dff2f7439954f489"
+  ],
+  "24": [
+   "1535e52300c1b28f",
+   "428ed7975c3e0afb",
+   "4ada0e7cfe5974de",
+   "5346f5f399eb1fd5",
+   "5519abfca8e5afd4",
+   "6d49ce3ba6fc2c5d",
+   "71cbcc8236252a58",
+   "8d0efd4c2a167e7e",
+   "d110b4042392183a",
+   "e8638af50c64439a",
+   "f68bac121857b528",
+   "f99051aa0b696d32"
+  ],
+  "32": [
+   "2a8a6db624490ce6",
+   "8c96bd54726eaff4",
+   "98dc1182c891e9b7"
+  ],
+  "48": [
+   "552a2cdb2d866545",
+   "8cd39041ebdedfc3",
+   "afcd0f909303dbb5",
+   "d4c630deb7e2a923",
+   "d8b2685e419f3249",
+   "fd2daf30afb62de5"
+  ]
+ }
+}

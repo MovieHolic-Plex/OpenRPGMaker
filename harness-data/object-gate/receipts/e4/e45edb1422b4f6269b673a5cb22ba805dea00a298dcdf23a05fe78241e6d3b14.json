@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e45edb1422b4f6269b673a5cb22ba805dea00a298dcdf23a05fe78241e6d3b14",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "정박탑",
+ "label": "sky-steam/sky-a-mooring",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tower shaft and structure",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower sections and cap are drawn in flat front elevation with straight horizontal bands and front-facing crenellations. No foreshortened top surfaces or elliptical cylindrical lines are visible anywhere on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8561
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tower shaft and upper column",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring tower is drawn as a flat front elevation. Both the wide lower shaft and the narrower upper shaft have completely horizontal segment lines (e.g. rows 16, 22, 28, 42, 48, 54, 60) without any top-down curvature or foreshortened top surfaces. The collar and top cap are also drawn flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6188
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tower shaft and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The mooring tower is drawn entirely in a flat front elevation. Both tower shafts and the yellow cap have straight horizontal division lines with no elliptical curvature or visible top horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6181
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tower shaft and lower tower section",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tower is drawn entirely as a flat front architectural elevation with horizontal division lines, a vertical ladder/window stripe, and no foreshortened top surfaces visible on the base tier, shaft, or cap.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6841
+  }
+ ],
+ "decidedAt": "2026-10-13T14:33:42.539Z",
+ "cells": {
+  "16": [
+   "3a7e27a69019cbd2",
+   "7099b4a768bac239",
+   "9c9e604670c52d1b",
+   "aa5c365567225308",
+   "d13b16e5a9e5aa2d",
+   "d5cf411d3524356d",
+   "f1987251d18dd315",
+   "f5b7f755d0e920a6"
+  ],
+  "24": [
+   "0654fe39c26957af",
+   "07d251e858c0c8e2",
+   "098b0e9c61f4360f",
+   "1bad3797b8c6d96f",
+   "20978629c22e3e20",
+   "219d71bb3af1a4be",
+   "261ee1b332c43e5b",
+   "26ff9d09017c4d4f",
+   "2ba16fd41907d7b3",
+   "355acb08ee184742",
+   "3ad701265a22e99a",
+   "430d8526ed861b35",
+   "505b06c0905a4469",
+   "5c7d007cb822f7c4",
+   "5f12b62a9b631958",
+   "6fbbe009efbe02b7",
+   "7d3e9c00003a7c1c",
+   "7da5634683e34d12",
+   "8a1f147754772566",
+   "918c48c80bd972ab",
+   "96217df0a6e2b208",
+   "aa5023145ff7c016",
+   "b2a5a67b30404f41",
+   "c083e465ab5e67b8",
+   "c243a311349eab24",
+   "c8b8b5fad8a1cf56",
+   "c9bb26beaeb77cd9",
+   "ca922c81780bb973",
+   "cbfdf6cc8e4123d9",
+   "cfda459b68b95f9b",
+   "db862fe540b67b26",
+   "e803f19981504f0f",
+   "e9ae614cc03abad6",
+   "f1207f8fd694a33a",
+   "f597263a048baa58",
+   "ffb5f091cd50c17c"
+  ],
+  "32": [
+   "3159f2f578a17692",
+   "e9dd88ed658818a0"
+  ],
+  "48": [
+   "01cda8d3e7da26db",
+   "10f7457fa4fae531",
+   "17c5e0d31dc655e8",
+   "24731177b720b3f2",
+   "247b168dbe4bf8d7",
+   "6b43daa76b33a2ff",
+   "6d99db27d639aea3",
+   "931b39b1036f7219",
+   "b2091347a9c00fe9",
+   "b6d6498a655e0df2",
+   "bbf9ee019c3f3bd4",
+   "e329ffe84012233a"
+  ]
+ }
+}

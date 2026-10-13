@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "280ca91b347967d3976dd1fd5dd54e7b06a4b1295ca4ae904cfdd5d3d1e174d5",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "빗물 우물",
+ "label": "sky-steam/sky-a-well",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone well with water opening",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well is clearly drawn in 3/4 top-down perspective, with an elliptical opening containing visible water from rows 4 to 8 surrounded by a stone rim, sitting above a 5-pixel tall south-facing wall (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6872
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone rainwater well",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well features a clearly visible elliptical opening on rows 4-8 showing blue water inside, framed by a stone rim on the top surface (rows 1-9), sitting above a vertical south front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7685
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone well with round/elliptical opening filled with water",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well displays a clear top rim enclosing an elliptical opening with blue water from row 4 to row 7 (4 rows tall), positioned above a south-facing stone front wall (rows 9 to 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6591
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone well body",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": true,
+    "opening_rows": 4,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The well is drawn in 3/4 perspective with an 8-row top rim/opening area (rows 2-9) showing a 4-row deep elliptical opening filled with blue water (rows 4-7), above a 5-row vertical front face (rows 10-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7106
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.326Z",
+ "cells": {
+  "16": [
+   "9699494e2934ee74"
+  ],
+  "24": [
+   "167437cc578f3960",
+   "2bc6e5e34bbe5a86",
+   "7b68b14d1c022423",
+   "97e1357ec55c2d80",
+   "ab98a94ef790c9df",
+   "d58ff1d08d30fc8b"
+  ],
+  "32": [
+   "07ba8e59a14b6366",
+   "23d5517770588b53",
+   "74f517a85513f543",
+   "9ad1c50d83917f2e",
+   "c438ca9fd8615aa9",
+   "fc5df7885643aaa2"
+  ],
+  "48": [
+   "43f023536e48ecbb",
+   "5353a62b8d3336d3",
+   "6ade9049a19e2f8e",
+   "751d6f2ff99ae4ce",
+   "8bc50ece70eb53f4",
+   "dfa90846d15a377d"
+  ]
+ }
+}

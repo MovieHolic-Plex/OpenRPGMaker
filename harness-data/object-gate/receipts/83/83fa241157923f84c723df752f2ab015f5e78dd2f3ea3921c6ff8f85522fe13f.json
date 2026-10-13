@@ -1,0 +1,156 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "83fa241157923f84c723df752f2ab015f5e78dd2f3ea3921c6ff8f85522fe13f",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "하늘 항구",
+ "label": "sky-steam/sky-a-harbor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "dock platform and building",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden dock platform clearly displays its top deck surface across rows 33-44 (12 pixels high) above a south-facing edge, and the building roof also shows a clear south slope from rows 0-8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 28715
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "building and dock platform",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden dock platform clearly shows a foreshortened top deck surface (rows 33-45, 13px tall) above its front face (rows 46-55), and the house roof shows an angled roof slope (rows 0-8, 9px tall).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7128
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock platform with cabin",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden dock platform clearly displays its top deck surface across rows 33-45 (13 source pixels tall) above its vertical south face (rows 46-55). Additionally, the cabin's roof slope is shown from row 0 to 8.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6216
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dock platform with house",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden dock platform clearly displays its deck surface from above across rows 34 to 45 (12 rows tall) above its front vertical face, and the house roof also shows its top slope across rows 0 to 9.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7843
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.894Z",
+ "cells": {
+  "16": [
+   "05d85d387ca07204",
+   "31030cf71bc0eb07",
+   "566243366221506c",
+   "56a29031bc34e7a9",
+   "5cdcfa2cb09f67f4",
+   "71e244972bd891b3",
+   "8810c34b55a1b8db",
+   "89646ca9cfc03be6",
+   "8d46ef2ea120aec9",
+   "92be1f7cfa97f680",
+   "92f788111cfccd2e",
+   "99a15056862c62bd",
+   "ae938592232cd1fd",
+   "ba7ede34e2d7d5ae",
+   "d3d1e20b3fe2cce0",
+   "d928141b23861529",
+   "db6c11782a6a625c",
+   "dc84c61bef6c7def",
+   "e995b1425f1018df",
+   "ecbb6183fa863a2a",
+   "f2f5904b3cad38a9",
+   "fbe2d1ff5c3cc581"
+  ],
+  "24": [
+   "181a6c22ca2bb692",
+   "1e7ea4be1f0820a2",
+   "25a70e752f6dfac2",
+   "29d9ff1fc947a47e",
+   "3154ec849670b644",
+   "48e03fec5412bdde",
+   "5ed02b6817894db1",
+   "63de0a06bf6eec6a",
+   "6a8480a6d51f13bb",
+   "6f41ecb5563a06d7",
+   "7c109dac9e35304b",
+   "829e8ffde43ecb52",
+   "90389e4d10cdc4bb",
+   "b0474ff601a7d308",
+   "b6c5a5521baffd4d",
+   "b8d7aaa6f9992230",
+   "bf975d241c4e9b83",
+   "c0befc2627e376eb",
+   "c839bc9831c1aa7c",
+   "cae3ceb7411a6a01",
+   "ddb7799a0fb83ca9",
+   "ec6e4d6f424345d2",
+   "f78666c40cc466ec"
+  ],
+  "32": [
+   "06c4d58d3d1c9fb5",
+   "5cef7590abea2b75",
+   "6a923bb16a9d076b",
+   "781b725cc2f09e88",
+   "a15b0ef90bacafaf",
+   "cd282493cf083f00"
+  ],
+  "48": [
+   "2b9afac22f773c9c",
+   "2fecc662580af41c",
+   "65ad9bd490c239f2",
+   "9370117ec9ae7100",
+   "ad7cb368c008dc05",
+   "b5adc33c492bf1ba",
+   "b937125f74bad6fa",
+   "c414caf22ec26bac"
+  ]
+ }
+}

@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8fdca32e5f3cb63f5969fb36e073bc763936c537396f15a938702c4ba8508e10",
+ "width": 32,
+ "height": 16,
+ "kind": "structure",
+ "name": "섬 울타리",
+ "label": "sky-steam/sky-a-fence",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden fence on an island ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence consists of vertical posts and a 1px horizontal rail drawn entirely in pure front elevation; the rail and post caps show no foreshortened top surfaces seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12964
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden fence on ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence is drawn in flat front elevation: the horizontal rail (rows 4–5) and vertical posts show no visible top surfaces from the 3/4 perspective, only 1px cap highlights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12738
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden fence with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts, horizontal crossbar (row 5, only 1px tall), and base are drawn entirely in flat front elevation with no visible top surfaces for any of the horizontal elements.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 15013
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden fence with posts and crossrail",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fence posts and horizontal crossrail are drawn in pure front elevation. The post tops have only a 1px highlight line at row 2, and the horizontal rail (rows 5-6) is a flat 2px bar showing no top surface from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10282
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.327Z",
+ "cells": {
+  "16": [
+   "2256c9f042e2b196",
+   "4c69bd5518821a3e"
+  ],
+  "24": [
+   "0c9aabb37428b7c7",
+   "275a23b405676531",
+   "31e6e6c1cafc6325",
+   "3bc3465c66c2f09d",
+   "3f2208fc2493d0fd",
+   "4c36e8c91d3bba29",
+   "4dfda50c61ff05ea",
+   "7d6d3787d9d578b2",
+   "8c349bf765cdf452",
+   "9b3c098569590ebc",
+   "ce41a36274cd2156",
+   "e090fed11dac16f2"
+  ],
+  "32": [
+   "3f697aabe68fa53e",
+   "cb7b5aafb2b6f117"
+  ],
+  "48": [
+   "052fbe2bbf02faeb",
+   "34eaa4dab62764ee",
+   "379364de5658b148",
+   "88285efc6a0677cf",
+   "96d577edf1154e1b",
+   "b216f96441200e70"
+  ]
+ }
+}

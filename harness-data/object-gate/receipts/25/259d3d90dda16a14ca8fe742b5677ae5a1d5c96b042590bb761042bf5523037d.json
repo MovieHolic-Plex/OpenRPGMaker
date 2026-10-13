@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "259d3d90dda16a14ca8fe742b5677ae5a1d5c96b042590bb761042bf5523037d",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등 기둥",
+ "label": "sky-steam/sky-a-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lamp post with lantern head and vertical shaft",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern top and pole are drawn straight from the front with a 1px outline over a dome/cap; no horizontal top surface or foreshortened plane is visible anywhere on the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5390
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lamp head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire gas lamp post, including the domed top cap and vertical pole, is drawn in pure front elevation with no visible top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6351
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp post with lantern head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern top and pole are drawn straight-on in flat front elevation with a 1-pixel rounded outline at the top (rows 0-1) and no visible foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5210
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "gas lamp post with lantern head",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern top and pole are rendered in pure front elevation without any visible top surface or cap viewed from above (top_rows is 0).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4325
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.898Z",
+ "cells": {
+  "16": [
+   "7dfe52c9d9233e20",
+   "ccf8157e58ffbffd"
+  ],
+  "24": [
+   "09c5826f13014abd",
+   "0c8a91336283fc23",
+   "12c4b1ec7e8896c9",
+   "37764ae7d1adc7a7",
+   "4c8bfc88a4632ac6",
+   "584a3b6f33ac4524",
+   "6d37568746ed13a9",
+   "99e2719b6f06c279",
+   "9c9334a540e690ef",
+   "e680d1f2465e2e36",
+   "f44cb6697007d85a",
+   "f63492f195f97b99"
+  ],
+  "32": [
+   "b3932b87b13a2e69",
+   "e2c2e7ac90d7e530",
+   "e9b0cd20a727fbf6"
+  ],
+  "48": [
+   "0d5df1bd02c360e9",
+   "225ebb79ca9f0c4f",
+   "3a10986fb9e773eb",
+   "41f4bf0cc4e255e0",
+   "968b8e7653251c19",
+   "e94e0f18cc255df9"
+  ]
+ }
+}

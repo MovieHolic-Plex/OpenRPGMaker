@@ -1,0 +1,159 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5ff3025183a2b543356d3638fbe389e68b49f907160ca8f6f12693167bc69d6c",
+ "width": 48,
+ "height": 48,
+ "kind": "frame",
+ "name": "풍차 날개(회전)",
+ "label": "sky-steam/sky-a-windmill-blades.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "windmill blades/sails",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn completely flat in a front-facing 2D plane with perfect 1:1 symmetry and no vertical foreshortening or top surfaces visible on the blades, hub, or sails.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4979
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "windmill blades / rotor",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill rotor hub, diagonal spars, and square sails are drawn completely flat in 2D front view without any top surface foreshortening or depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3610
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "windmill rotor and blades",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades and central hub are drawn completely flat in 2D front elevation without any 3/4 top-down foreshortening or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4229
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "windmill blades / rotor",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The windmill blades are drawn in a completely flat 2D front view with an unforeshortened cross shape, showing no top surfaces or 3/4 perspective depth on the hub or arms.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5733
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.906Z",
+ "cells": {
+  "16": [
+   "119da156c463eca7",
+   "12586e05ad68b8b5",
+   "31dc09fd5d132777",
+   "343af881636eac19",
+   "441a6b56bedc01c8",
+   "5903b2607516d47c",
+   "75ef3fd3ab27a4e6",
+   "a635ca050a30c0b5",
+   "c0447a1276dbf0e9"
+  ],
+  "24": [
+   "1bb143ecc0d3e910",
+   "6c6399e7d6eae221",
+   "a689b590a8506c4f",
+   "b22d3da92db04a2a"
+  ],
+  "32": [
+   "034a36a446a8c488",
+   "064dd0f5de2d344b",
+   "1187b5a515cdbca7",
+   "18a126e3014bfc81",
+   "22b1bd26cf9dbfcd",
+   "323fa3f830d68a6e",
+   "4d4aa785064982b1",
+   "4eef685960d2fe61",
+   "643c17b12361e193",
+   "71638f95ce46eeed",
+   "82fe150e0e284310",
+   "8c114fa0eb2142e9",
+   "8e968ea84206af1a",
+   "9a2c3498e585004d",
+   "a37e70a4613e34b7",
+   "a4b0c91be43a2977",
+   "a71717925f063b00",
+   "ae2717ec7f51d7e7",
+   "b2fa4cd1c2a1bb5e",
+   "ca378a1b2812289f",
+   "dcff63580b09d5f9",
+   "f36e4490d517de36",
+   "f8cc7464bebd980a",
+   "f9da0e27b5e3cd4d"
+  ],
+  "48": [
+   "d8859001a3b8f016"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0172e3303a018425655a5d1281887373c768cb8ffb4755a8749ecaadfa5fad9",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "표지판",
+ "label": "sky-steam/sky-a-signpost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "signboard on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard is drawn in pure front elevation with no visible top edge/surface showing the thickness of the board or the top of the post. The front face of the board directly meets the top outline at row 3 with 0 source pixels of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6730
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "signboard on a post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board and post are drawn strictly from a front elevation with no visible top surface or board thickness foreshortened from above; the upper rows of the board represent the upper plank/front face rather than a top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5543
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "signboard on post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard consists of two horizontal planks mounted on a post drawn completely in flat front elevation. There is no visible top surface showing the thickness of the board or the top of the post.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8677
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "signboard on post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The signboard and post are drawn strictly from a front elevation with no visible top edge/thickness of the board or post end seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5705
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.899Z",
+ "cells": {
+  "16": [
+   "7115346c8f9a9203",
+   "e32c3e9893e169ea"
+  ],
+  "24": [
+   "3fe17641b8f2fed9",
+   "4d7b961a787e3043",
+   "5f21000498935158",
+   "64b60591725167dd",
+   "723608e811f66311",
+   "745f418cc34e85f8",
+   "981b2cf43467413b",
+   "be12f9d3c193c1c0",
+   "c75d8e526bcedd36",
+   "c77ebd9b0e33baa2",
+   "fc7e9fa10550f697",
+   "fc7ed6cf545e1ba1"
+  ],
+  "32": [
+   "29a6c26a80b6e660",
+   "fe4f1ab9fe9538da",
+   "ffa7d1bd9c4da3a6"
+  ],
+  "48": [
+   "205dfd9b6b75694f",
+   "490e1c81478a25ae",
+   "85f0cb83e5d854de",
+   "ae2c9f736f829ff1",
+   "aedcd394841239b4",
+   "df14d8d3c1d62033"
+  ]
+ }
+}

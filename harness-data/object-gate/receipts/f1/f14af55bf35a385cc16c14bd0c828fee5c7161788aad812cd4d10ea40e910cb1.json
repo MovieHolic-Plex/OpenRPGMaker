@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f14af55bf35a385cc16c14bd0c828fee5c7161788aad812cd4d10ea40e910cb1",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "들꽃",
+ "label": "sky-steam/sky-a-flowers",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wildflower stems and blossoms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers and stems are drawn as flat vertical lines with 2D triangular blossoms pointing upward in pure front elevation with no foreshortened top surface or overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4357
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wildflower stems and blossoms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers and stems are drawn as flat triangular arrow shapes in pure side/front profile with vertical stems, showing no top surfaces or blossoms viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5314
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wildflower stems and blooms",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers and vertical stems are drawn in a flat 2D side-scroller elevation with no top-down foreshortening or visible top surfaces on the blooms.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5138
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cluster of wildflowers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flowers and stems are drawn as flat 2D silhouettes in pure front/side elevation with triangular caps pointing upward and no foreshortened top surfaces or petal faces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4243
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.901Z",
+ "cells": {
+  "16": [
+   "59280f351efb345a"
+  ],
+  "24": [
+   "001db56b9ed2586e",
+   "13c324aa5f1330c9",
+   "1d127042a508f564",
+   "7ce9019d959563ac",
+   "8a4aa63b37224cd9",
+   "e438c78347b4cd3a"
+  ],
+  "32": [
+   "00a2279d5f5b1794",
+   "483f8095f4ff6971",
+   "60455ff2c0ffd745",
+   "df4140245f6e278c",
+   "e498b895d5ee6544",
+   "e71be11d7fbdb814"
+  ],
+  "48": [
+   "0189e3e08ad2afb4",
+   "17bffb7490a6bfab",
+   "231f4d2b1915bbcf",
+   "8031984c6aa154d2",
+   "d832a4418fbe934a",
+   "e4ba774693c65b7c"
+  ]
+ }
+}

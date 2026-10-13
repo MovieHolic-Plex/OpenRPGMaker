@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d075bd089259e34effe4e7dfbe3dc2d3c8ebfce4741c7849c920ed97a100df5c",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "계류 기둥",
+ "label": "sky-steam/sky-a-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring bollard head and post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard clearly shows its foreshortened top surface across rows 1-3 (3 source pixel rows), before dropping down to the south-facing front and rope wrapping.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5926
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mooring bollard / post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bollard cap is clearly rendered on rows 1–3 (3 source pixels tall) in a lighter shade, showing the top face viewed from above, followed by the south-facing cylindrical body with rope and base.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7293
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring bollard head and post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard shows a clear top surface spanning rows 1-3 (3 rows tall) with the south face, rope wrap, and base extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3865
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring bollard / post",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top cap of the bollard clearly shows a 3-row foreshortened top surface (rows 1-3) above its front face (rows 4-7) with a wrapped rope.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6822
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "8e54bdd9488680bf"
+  ],
+  "24": [
+   "5d06c28771db9b1f",
+   "733d64d27b403950",
+   "80c18a4c568741a9",
+   "8b753a24c54e54ff",
+   "cdf33f015080c50b",
+   "d2680bc0838454ef"
+  ],
+  "32": [
+   "0d29ae6c179b1112",
+   "4f9c587f47c165c1",
+   "6daed82e5c423b69",
+   "8ffec0281176c19e",
+   "e0d400f3157fbc4e",
+   "e187c610850cea4c"
+  ],
+  "48": [
+   "468f96e85e745c11",
+   "790e3a61c7bc13bf",
+   "ad3895db8c192b22",
+   "d2970217957b184f",
+   "d33e304609dce4ef",
+   "ed103c9676c9fb00"
+  ]
+ }
+}

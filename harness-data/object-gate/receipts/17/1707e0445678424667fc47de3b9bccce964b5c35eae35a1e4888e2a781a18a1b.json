@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1707e0445678424667fc47de3b9bccce964b5c35eae35a1e4888e2a781a18a1b",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "닻 보관함",
+ "label": "sky-steam/sky-a-anchor-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "anchor storage chest",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest lid/top surface is clearly visible from above across rows 2–6 (5 rows tall), tapering at the back edge to show depth in 3/4 view, above the front face (rows 9–15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 14913
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "closed chest / storage box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lid/top surface of the box is clearly visible and foreshortened across rows 2-6 (5 rows tall), tapering toward the back edge, above the south front face (rows 7-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 51464
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "metal chest / storage box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is foreshortened and clearly visible from above across rows 2-6 (5 rows tall), resting above the front face which spans rows 7-14 with a yellow cross emblem.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6417
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "closed chest / storage box",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface occupies rows 2 to 6 (5 source pixel rows tall) tapering slightly towards the back in classic 3/4 perspective, sitting above the dark rim and front face (rows 7-15).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4978
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.899Z",
+ "cells": {
+  "16": [
+   "9037792c9890feab"
+  ],
+  "24": [
+   "0bb796e9fa0f7d47",
+   "38aed3ecdcf06558",
+   "e0df06e521305203",
+   "f0287467102408fc",
+   "fac52d460354c9c1",
+   "ffb21e0e0a03db8a"
+  ],
+  "32": [
+   "621de047296408a6",
+   "66656471e8b83347",
+   "871475dd031612e5",
+   "b240aefd9c722e33",
+   "badf6af5429f43d8",
+   "c3986d99932ded1d"
+  ],
+  "48": [
+   "4fe70984d5b6173d",
+   "538bd0c05a539e82",
+   "58e69292d653165d",
+   "c2116c746b204e31",
+   "e240648f5d21c9f0",
+   "f39345e2098f938d"
+  ]
+ }
+}

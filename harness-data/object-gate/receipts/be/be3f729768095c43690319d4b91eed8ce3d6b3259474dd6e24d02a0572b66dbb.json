@@ -1,0 +1,175 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "be3f729768095c43690319d4b91eed8ce3d6b3259474dd6e24d02a0572b66dbb",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "하늘 등대",
+ "label": "sky-steam/sky-a-lighthouse",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tiered lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lighthouse tiers and lantern are drawn entirely in front elevation with flat horizontal dividing lines, side battlement profiles, and no visible foreshortened top surfaces or horizontal planes between the tiers.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6100
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lighthouse tower tiers",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The structure consists of stepped cylindrical/rectangular tiers drawn in straight architectural front elevation. All stripes and tier boundaries are strictly horizontal lines, and the horizontal stepped landings between tiers show 0 rows of foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4761
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tiered lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All tiers and horizontal ledges of the lighthouse are drawn as flat horizontal lines with no top surface depth visible, resulting in a pure front architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tiered lighthouse tower",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "All tiers of the lighthouse tower (stone base, white mid-sections, and top lantern) are drawn in a flat orthographic front elevation with completely flat horizontal section dividers and 0 visible rows of foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7664
+  }
+ ],
+ "decidedAt": "2026-10-13T14:44:46.003Z",
+ "cells": {
+  "16": [
+   "059a6e577c4505cb",
+   "1c075e248c3d4ad0",
+   "394dbae94bb3850a",
+   "637ae54e31192227",
+   "7f6bf64c862f1495",
+   "99382de06e468332",
+   "a25dc284a898cc15",
+   "be1430953084c37a"
+  ],
+  "24": [
+   "1b839a1a2a90d0f5",
+   "1f1326525068a9b5",
+   "23024940d67d64e5",
+   "237437ecea0cd632",
+   "2e5c958989010d3d",
+   "3ad4cd59f2d0f95d",
+   "42a0ec24046603a1",
+   "43c35b49d641781d",
+   "4d182d92d9019f31",
+   "506daa2eef88cfab",
+   "54ae12c270f80488",
+   "6a89121ebe6d1ea1",
+   "6b664a5fdfe4afc0",
+   "74220b0465fa7d5f",
+   "7533f48d7a9986d0",
+   "75477a852a79b142",
+   "782355a04a6179c0",
+   "7830050816d73732",
+   "7c738bbe2dfca985",
+   "802f3614bc3ae976",
+   "84db5b22eb2120a4",
+   "8e18c5ab20c54d16",
+   "91bd6aa4b340b3d2",
+   "9cf6b340c0666350",
+   "9d6766f29122ae81",
+   "aa6f03253280222d",
+   "af5a8e94ba02e60d",
+   "b125c72b029685c1",
+   "c00fc1f65906fd75",
+   "c9ec85845232557d",
+   "d318ccb392ec7577",
+   "e28cb2455d40a17c",
+   "f0afe3ed35ccd1e8",
+   "f49df0a784ad3248",
+   "f90db9baf96d722e",
+   "fa903c3d91ab8b39"
+  ],
+  "32": [
+   "364b51c5d2edb03e",
+   "44fbdbc3e6c3a741"
+  ],
+  "48": [
+   "1722a9287d9e2605",
+   "2ba210068ad431d9",
+   "37f3db679f5071c0",
+   "68def5f83257ff8c",
+   "69e141c2ee9cd6e4",
+   "7e5a8ed3b488e671",
+   "9cc48fad03a2af21",
+   "abb3dbfae9e6bb37",
+   "b753ea1601e0ee2b",
+   "c33054a148a1b3b1",
+   "d5c4503c2f6e5e80",
+   "faca6944a143aaae"
+  ]
+ }
+}

@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "8300e75532803a3db8a44285aaccc88eb176b512354d8368fc89c8ad721d563c",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "곡물 자루 더미",
+ "label": "sky-steam/sky-a-sack-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the grain sack pile spans rows 8 to 16 (9 source pixel rows tall), properly foreshortened in 3/4 perspective above the front vertical face (rows 17-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6300
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pile of grain sacks / grain crate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the grain sacks/pile spans rows 8 to 16 (approx 9 rows) with clear downward top-down lighting above the vertical front face (rows 17-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5818
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pile of grain sacks",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object is drawn entirely in a flat front elevation: both the lower tier (rows 17-27) and the upper tier (rows 8-16) show only south-facing vertical profiles with horizontal dividing bands and vertical seams, with no visible foreshortened top surface (0 rows).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 17185
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pile of grain sacks / crate",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the pile/box occupies rows 8 through 16 (approximately 9 source pixels tall), clearly showing the horizontal upper plane above the vertical south face (rows 17-27).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6341
+  }
+ ],
+ "decidedAt": "2026-10-13T14:48:41.706Z",
+ "cells": {
+  "16": [
+   "191a34bba507d833",
+   "3851ede345356c7f",
+   "878ce7d23596cd4f",
+   "ca579e22d16a66d0"
+  ],
+  "24": [
+   "012b31d4106bdb66",
+   "0286e9fe26e1f3bf",
+   "087cfc4b0bc7127f",
+   "09ce4786716b9092",
+   "0dd2bc79af8d7860",
+   "317ac4ca44121b46",
+   "3d28e2415f06e06d",
+   "5bd254291190fe8a",
+   "6acbbb9d0cf582d1",
+   "6b47e117cf6988b2",
+   "8e191ebff05f90d1",
+   "8e4a61ac3d73df9e",
+   "9fae958de620878a",
+   "a766b5b258c44108",
+   "b1588725de7f8306",
+   "b4a16a4b329920e7",
+   "c0bc32c56674dc71",
+   "c14f28f99a606882",
+   "c1e156359c33c858",
+   "c3e2cf32381198d2",
+   "d2fc080b956c6d3d",
+   "e919a29457f9b2e6",
+   "eade13a527489e15",
+   "fecbf19c162725b6"
+  ],
+  "32": [
+   "9204d12e7f28a0f4"
+  ],
+  "48": [
+   "132f4a540beda9e8",
+   "17684ca19292deab",
+   "23a8509a685a32ea",
+   "79bb15a0c96b3542",
+   "d778fc0bcee33872",
+   "e62a8136baf0db70"
+  ]
+ }
+}

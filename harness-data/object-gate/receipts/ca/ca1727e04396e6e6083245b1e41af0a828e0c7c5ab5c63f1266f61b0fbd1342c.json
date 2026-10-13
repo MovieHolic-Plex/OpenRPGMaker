@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ca1727e04396e6e6083245b1e41af0a828e0c7c5ab5c63f1266f61b0fbd1342c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "굴뚝",
+ "label": "sky-steam/sky-a-chimney-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brick chimney shaft with cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney is drawn as a flat 2D architectural front elevation with straight horizontal bands. The top has no visible elliptical opening (only a flat 1px horizontal dark line at row 4) and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8153
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brick chimney shaft with collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney is drawn in a pure front view with flat horizontal lines. The top opening is represented merely by a 1-pixel dark horizontal strip at row 4 with no visible depth, interior opening ellipse, or 3/4 top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6285
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brick chimney shaft with widened rim",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney is drawn in pure front elevation; the chimney hole is represented only as a 1px flat horizontal dark line at row 4 without an elliptical opening into the flue or a visible top rim surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6556
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brick chimney shaft with top collar",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney is drawn in pure front elevation with straight horizontal bands. The opening is represented only by a single 1-pixel-tall dark horizontal line at row 4 without any elliptical opening visible into the flue, and there is no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6496
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.900Z",
+ "cells": {
+  "16": [
+   "be8c95d161a92cac",
+   "c0de4e637fcc3af9"
+  ],
+  "24": [
+   "12cdf6d8cac60eaa",
+   "25a7b2d6e6374a21",
+   "260f6da8d70a0a7a",
+   "3b5a35fe97e46df9",
+   "79f68509e265c21c",
+   "7c3601f8ac0f3781",
+   "891a2d4c3756f95c",
+   "8a9114c3532b161e",
+   "adb3ea1d140de9fc",
+   "db3c251374bb5096",
+   "f3af98d403482d92",
+   "fa9311ac426738f0"
+  ],
+  "32": [
+   "60e78dd30d08cdfb",
+   "ed6a425e82d5bd64",
+   "f899b57f6407597e"
+  ],
+  "48": [
+   "0686f472c68ef8c6",
+   "24ac7058af9e7b84",
+   "24dde94efb1190b0",
+   "40246e047313696e",
+   "98afb1174defc4ed",
+   "f4b8a8fb78d71b91"
+  ]
+ }
+}

@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6c6f7b80adac1988ede8289a0543a09c97501116849d5119a55f9c7893351d92",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "프로펠러(회전)",
+ "label": "sky-steam/sky-a-propeller.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "propeller base and rotor assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The propeller blade (rows 3-5) is drawn completely flat from a pure front/side elevation rather than foreshortened in 3/4 perspective, and the shaft lacks a visible top surface. The base top is only a 2px flat band.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5314
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "propeller shaft and base mechanism",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The propeller, central shaft, and base are all drawn in pure flat front elevation. The top of the shaft has no visible top cut face (0 px), and the propeller bar is viewed strictly from the side.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6171
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "propeller mechanism on a pillar/pedestal base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base, vertical shaft, and horizontal propeller blade) is drawn in pure 2D front elevation with perfectly horizontal, flat rectangular bands and no visible foreshortened top surfaces or elliptical cut faces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6189
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "propeller mechanism with pedestal base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The propeller blade and pedestal are drawn in pure front elevation with straight horizontal bands; the 2-pixel band atop the base is merely an edge highlight/cap rather than a foreshortened top surface, and the spinning blade shows no top surface ellipse.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7565
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.904Z",
+ "cells": {
+  "16": [
+   "31f0f05fd949b41a"
+  ],
+  "24": [
+   "22bab7096fed9e05",
+   "2c3c1c8369173957",
+   "4dee1687324134bb",
+   "52d824aaa9fef02f",
+   "75c8ae7bb0cdb1b0",
+   "b6c7da11fed19e23"
+  ],
+  "32": [
+   "50556714cc07251c",
+   "560aa0768b40bbb3",
+   "8f703b3bdcfb451b",
+   "be9b02890e4e8977",
+   "c381607d59162698",
+   "e80f29f823177e5c"
+  ],
+  "48": [
+   "05837bc1ffe6337e",
+   "7554f9f5e43a55cb",
+   "8607e81e490f0791",
+   "b30e27eda47267d7",
+   "c7f957cc5413fd43",
+   "f463546f79a402bf"
+  ]
+ }
+}

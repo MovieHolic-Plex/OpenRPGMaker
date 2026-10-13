@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d33d6a32af4584f980b41d6da4bc7d6e3d99d102bd7f6c468d32dd5d92111d86",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "감시 오두막 + 지붕 깃발(펄럭)",
+ "label": "sky-steam/sky-a-hut-flag-anim.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "hut with tiled roof and wooden walls",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof slope is shown from an overhead 3/4 angle spanning rows 19 to 30 (12 source pixel rows) above the vertical south-facing wall (rows 31 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7136
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cabin / hut",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tiled front slope of the pitched roof is visible from row 19 to row 30 (12 source pixel rows) above the vertical front wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6267
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden hut with tiled roof and flag",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The hut features a prominent foreshortened forward-facing roof slope spanning rows 19 to 30 (12 rows tall) sitting above the south wall (rows 31 to 45), typical of 3/4 top-down JRPG buildings.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6338
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "watch hut with roof and flag",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The sloping roof surface is viewed from above across rows 19-30 (12 source pixels tall) with visible horizontal shingle courses, over a flat south-facing wall (rows 31-45), fitting standard 3/4 top-down JRPG structure perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5801
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.328Z",
+ "cells": {
+  "16": [
+   "0c5a12e4345bc5fe",
+   "3db624fac3229ed3",
+   "41cd3c7b1e00dbbe",
+   "486275fc6eb8b5f0",
+   "4cebfffd2ef6784a",
+   "da354ebd0b36ab7f"
+  ],
+  "24": [
+   "2ff531d15a5f26cf",
+   "338decd6b3fceb22",
+   "7a2659500133a4b2",
+   "7c07798f99bdaf8e",
+   "83499a74cfd6cf4d",
+   "a160aa3305851601",
+   "b0b1bd54abee46f5",
+   "c106302eb28e3a10",
+   "c29f4dcf4d1d2cfe",
+   "c7c1aaee78b0428c",
+   "f85b201c201f00f3",
+   "fa0292113884e07d"
+  ],
+  "32": [
+   "607fe57ecefd94a6",
+   "a4dc1cd33ae72318",
+   "ccc998d7883c5bed",
+   "e0e996ec617f43b6"
+  ],
+  "48": [
+   "5e75050ca95c60a0",
+   "607139c943496881",
+   "ccde4ebbec1f81d3"
+  ]
+ }
+}

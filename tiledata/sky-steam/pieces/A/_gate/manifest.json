@@ -1,0 +1,1083 @@
+[
+ {
+  "id": "sky-a-island-s",
+  "name": "하늘섬 작은 덩이",
+  "w": 4,
+  "h": 4,
+  "kind": "structure",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-island-s"
+  ],
+  "tags": [
+   "island"
+  ]
+ },
+ {
+  "id": "sky-a-island-m",
+  "name": "하늘섬 큰 덩이",
+  "w": 6,
+  "h": 5,
+  "kind": "structure",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-island-m"
+  ],
+  "tags": [
+   "island"
+  ]
+ },
+ {
+  "id": "sky-a-house",
+  "name": "부유 마을 집",
+  "w": 3,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-house"
+  ],
+  "tags": [
+   "house"
+  ]
+ },
+ {
+  "id": "sky-a-windmill",
+  "name": "풍차 탑",
+  "w": 2,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-windmill"
+  ],
+  "tags": [
+   "tower"
+  ]
+ },
+ {
+  "id": "sky-a-mooring",
+  "name": "정박탑",
+  "w": 2,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-mooring"
+  ],
+  "tags": [
+   "tower"
+  ]
+ },
+ {
+  "id": "sky-a-airship",
+  "name": "비공정",
+  "w": 6,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-airship"
+  ],
+  "tags": [
+   "vehicle"
+  ]
+ },
+ {
+  "id": "sky-a-harbor",
+  "name": "하늘 항구",
+  "w": 6,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ],
+   [
+    4,
+    3
+   ],
+   [
+    5,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-harbor"
+  ],
+  "tags": [
+   "harbor"
+  ]
+ },
+ {
+  "id": "sky-a-shrine",
+  "name": "부유 신전",
+  "w": 4,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    3
+   ],
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-shrine"
+  ],
+  "tags": [
+   "temple"
+  ]
+ },
+ {
+  "id": "sky-a-whale-pier",
+  "name": "고래 선착장",
+  "w": 5,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ],
+   [
+    3,
+    2
+   ],
+   [
+    4,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-whale-pier"
+  ],
+  "tags": [
+   "harbor"
+  ]
+ },
+ {
+  "id": "sky-a-rock-root",
+  "name": "바위 뿌리",
+  "w": 3,
+  "h": 3,
+  "kind": "structure",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-rock-root"
+  ],
+  "tags": [
+   "island"
+  ]
+ },
+ {
+  "id": "sky-a-gondola",
+  "name": "곤돌라",
+  "w": 3,
+  "h": 2,
+  "kind": "structure",
+  "solid": [
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-gondola"
+  ],
+  "tags": [
+   "vehicle"
+  ]
+ },
+ {
+  "id": "sky-a-rope-crate",
+  "name": "밧줄 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-rope-crate"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-crate-stack",
+  "name": "화물 상자 더미",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-crate-stack"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-gas-tank",
+  "name": "증기 가스 탱크",
+  "w": 2,
+  "h": 2,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-gas-tank"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-anchor-box",
+  "name": "닻 보관함",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-anchor-box"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-water-tank",
+  "name": "지붕 물탱크",
+  "w": 2,
+  "h": 2,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-water-tank"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-cargo-net",
+  "name": "화물 그물 더미",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-cargo-net"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-tree-sky",
+  "name": "섬 나무",
+  "w": 2,
+  "h": 3,
+  "kind": "organic",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-tree-sky"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-bush",
+  "name": "덤불",
+  "w": 1,
+  "h": 1,
+  "kind": "organic",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-bush"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-flowers",
+  "name": "들꽃",
+  "w": 1,
+  "h": 1,
+  "kind": "organic",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-flowers"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-cloud-puff",
+  "name": "구름 덩이",
+  "w": 2,
+  "h": 1,
+  "kind": "organic",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-cloud-puff"
+  ],
+  "tags": [
+   "prop",
+   "overlay"
+  ]
+ },
+ {
+  "id": "sky-a-cloud-mist",
+  "name": "구름 안개",
+  "w": 2,
+  "h": 1,
+  "kind": "organic",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-cloud-mist"
+  ],
+  "tags": [
+   "prop",
+   "overlay"
+  ]
+ },
+ {
+  "id": "sky-a-pulley-crane",
+  "name": "도르래 기중기",
+  "w": 2,
+  "h": 2,
+  "kind": "frame",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-pulley-crane"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-watch-hut",
+  "name": "감시 오두막",
+  "w": 2,
+  "h": 2,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-watch-hut"
+  ],
+  "tags": [
+   "house"
+  ]
+ },
+ {
+  "id": "sky-a-cloud-sea",
+  "name": "구름 바다 바닥",
+  "w": 4,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-cloud-sea"
+  ],
+  "tags": [
+   "autotile",
+   "cloud"
+  ]
+ },
+ {
+  "id": "sky-a-grass-top",
+  "name": "섬 풀 윗면",
+  "w": 4,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-grass-top"
+  ],
+  "tags": [
+   "autotile",
+   "grass"
+  ]
+ },
+ {
+  "id": "sky-a-island-edge",
+  "name": "섬 가장자리 절벽 앞면",
+  "w": 3,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-island-edge"
+  ],
+  "tags": [
+   "autotile",
+   "cliff"
+  ]
+ },
+ {
+  "id": "sky-a-cloud-edge",
+  "name": "구름 바다 가장자리",
+  "w": 3,
+  "h": 1,
+  "kind": "terrain",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-cloud-edge"
+  ],
+  "tags": [
+   "autotile",
+   "cloud"
+  ]
+ },
+ {
+  "id": "sky-a-bollard",
+  "name": "계류 기둥",
+  "w": 1,
+  "h": 1,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-bollard"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-signpost",
+  "name": "표지판",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-signpost"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-chimney-stack",
+  "name": "굴뚝",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-chimney-stack"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-barrel",
+  "name": "통",
+  "w": 1,
+  "h": 1,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-barrel"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-telescope",
+  "name": "관측 망원경",
+  "w": 1,
+  "h": 1,
+  "kind": "other",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-telescope"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-propeller-pod",
+  "name": "프로펠러 엔진 포드",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-propeller-pod"
+  ],
+  "tags": [
+   "vehicle"
+  ]
+ },
+ {
+  "id": "sky-a-bridge",
+  "name": "구름 다리",
+  "w": 5,
+  "h": 3,
+  "kind": "structure",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-bridge"
+  ],
+  "tags": [
+   "bridge"
+  ]
+ },
+ {
+  "id": "sky-a-airship-anim",
+  "name": "비공정(프로펠러 회전)",
+  "w": 6,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    2,
+    3
+   ],
+   [
+    3,
+    3
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "sky-a-airship-anim.f0",
+   "sky-a-airship-anim.f1",
+   "sky-a-airship-anim.f2",
+   "sky-a-airship-anim.f3"
+  ],
+  "tags": [
+   "anim",
+   "vehicle"
+  ]
+ },
+ {
+  "id": "sky-a-windvane",
+  "name": "바람개비 석주",
+  "w": 1,
+  "h": 2,
+  "kind": "column",
+  "solid": [
+   [
+    0,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-windvane"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-hot-air-balloon",
+  "name": "소형 기구",
+  "w": 2,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-hot-air-balloon"
+  ],
+  "tags": [
+   "vehicle"
+  ]
+ },
+ {
+  "id": "sky-a-windmill-anim",
+  "name": "풍차 탑(날개 회전)",
+  "w": 4,
+  "h": 4,
+  "kind": "structure",
+  "solid": [
+   [
+    1,
+    3
+   ],
+   [
+    2,
+    3
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "sky-a-windmill-anim.f0",
+   "sky-a-windmill-anim.f1",
+   "sky-a-windmill-anim.f2",
+   "sky-a-windmill-anim.f3"
+  ],
+  "tags": [
+   "anim",
+   "tower"
+  ]
+ },
+ {
+  "id": "sky-a-lighthouse",
+  "name": "하늘 등대 오두막",
+  "w": 3,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ],
+   [
+    2,
+    2
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-lighthouse"
+  ],
+  "tags": [
+   "tower"
+  ]
+ },
+ {
+  "id": "sky-a-boiler",
+  "name": "증기 보일러",
+  "w": 2,
+  "h": 2,
+  "kind": "round_body",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-boiler"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-market-stall",
+  "name": "장터 가판",
+  "w": 2,
+  "h": 2,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-market-stall"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-well",
+  "name": "빗물 우물",
+  "w": 1,
+  "h": 1,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-well"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-bench",
+  "name": "벤치",
+  "w": 1,
+  "h": 1,
+  "kind": "low_furniture",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-bench"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-planter",
+  "name": "화단 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "container",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-planter"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-hut-flag-anim",
+  "name": "감시 오두막 + 지붕 깃발(펄럭)",
+  "w": 2,
+  "h": 3,
+  "kind": "structure",
+  "solid": [
+   [
+    0,
+    2
+   ],
+   [
+    1,
+    2
+   ]
+  ],
+  "frames": 4,
+  "files": [
+   "sky-a-hut-flag-anim.f0",
+   "sky-a-hut-flag-anim.f1",
+   "sky-a-hut-flag-anim.f2",
+   "sky-a-hut-flag-anim.f3"
+  ],
+  "tags": [
+   "anim"
+  ]
+ },
+ {
+  "id": "sky-a-sack-stack",
+  "name": "곡물 자루 더미",
+  "w": 2,
+  "h": 2,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    1
+   ],
+   [
+    1,
+    1
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-sack-stack"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-cannon-box",
+  "name": "신호 대포 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-cannon-box"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-stone-wall",
+  "name": "섬 돌담",
+  "w": 2,
+  "h": 1,
+  "kind": "box",
+  "solid": [
+   [
+    0,
+    0
+   ],
+   [
+    1,
+    0
+   ]
+  ],
+  "frames": 1,
+  "files": [
+   "sky-a-stone-wall"
+  ],
+  "tags": [
+   "prop"
+  ]
+ },
+ {
+  "id": "sky-a-steam-cloud",
+  "name": "증기 구름",
+  "w": 2,
+  "h": 1,
+  "kind": "organic",
+  "solid": [],
+  "frames": 1,
+  "files": [
+   "sky-a-steam-cloud"
+  ],
+  "tags": [
+   "prop",
+   "overlay"
+  ]
+ }
+]

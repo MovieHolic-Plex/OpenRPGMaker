@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d2d74b6e6627a9d4e143895814dde29cc5f29f0019322483d56e2a06fc9bcb5c",
+ "width": 48,
+ "height": 32,
+ "kind": "structure",
+ "name": "곤돌라",
+ "label": "sky-steam/sky-a-gondola",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden gondola cabin / suspended cart",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gondola cabin has a clearly visible top/roof surface spanning rows 14 to 20 (approx. 7 rows tall) above the south front face (rows 21 to 29), correctly depicted in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6397
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hanging wooden gondola / platform box",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the gondola (rows 14-20, 7 pixels tall) is clearly visible and foreshortened above the front wooden plank wall (rows 21-29), matching standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6653
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "gondola cabin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin shows a prominent foreshortened top/roof section spanning rows 14 to 20 (7 rows tall) above the vertical front wooden paneling (rows 21-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6804
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hanging gondola cabin",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gondola cabin has a clearly visible 7-row top roof/deck (rows 14-20) tapering upward where the suspension chains attach, sitting above an overhanging rim and an 8-row vertical front face (rows 22-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5995
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.896Z",
+ "cells": {
+  "16": [
+   "0fed1115432e820a",
+   "2943a83d22b345a3",
+   "669021ce984140e4",
+   "825b153c550a1a58",
+   "bcdca783cd5802fe",
+   "c1ce18ead38099f1"
+  ],
+  "24": [
+   "012153daea24df2a",
+   "371a86bbd43196ba",
+   "463f497a330b3335",
+   "5dd0f1aefe77a729",
+   "674009521d7a2498",
+   "b5b493f96c060125",
+   "dd74bae09611affc",
+   "e003dcf08ef3c96f"
+  ],
+  "32": [
+   "038a84be25b67e12",
+   "7cd4f1c28131ed89",
+   "86c562654012ff9f",
+   "8df54551377de554",
+   "b1fee5b9ad4991d5",
+   "d6d9564dd7a911e2"
+  ],
+  "48": [
+   "6eabb85960a80d38",
+   "8fce9089c68fa0a4"
+  ]
+ }
+}

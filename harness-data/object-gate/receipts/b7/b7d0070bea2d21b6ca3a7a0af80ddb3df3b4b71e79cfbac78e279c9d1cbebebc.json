@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b7d0070bea2d21b6ca3a7a0af80ddb3df3b4b71e79cfbac78e279c9d1cbebebc",
+ "width": 16,
+ "height": 16,
+ "kind": "frame",
+ "name": "관측 망원경",
+ "label": "sky-steam/sky-a-telescope",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "observation telescope mounted on a stone pedestal/parapet",
+    "kind_matches": false,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal/battlement on which the telescope is mounted clearly shows a foreshortened top horizontal surface across rows 6-10 (5 pixel rows deep) above its south vertical face (rows 11-15).",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 13869
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "observation telescope on pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal/parapet base clearly shows a 5-row light-shaded top surface (rows 6-10) above its darker south front face (rows 11-15), correctly showing 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7983
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "telescope mounted on a pedestal or wall",
+    "kind_matches": false,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone pedestal/wall shows a clear 4-row light-gray top surface (rows 8-11) and a darker front face (rows 12-15), with the telescope angled in 3D perspective.",
+    "verdict": "pass"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치"
+   ],
+   "ms": 6533
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "telescope mounted on stone base",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The telescope is drawn as a flat 2D silhouette angled at 45 degrees without top-down 3/4 perspective or foreshortening on its tube and lens. Additionally, the kind 'frame' does not match a mounted telescope.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11654
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.902Z",
+ "cells": {
+  "16": [
+   "e8db94155970dd42"
+  ],
+  "24": [
+   "0918e57c3962722d",
+   "1887ad213990cd69",
+   "7c5096470cd49796",
+   "835a54e32c6930c1",
+   "892283e762d7f19a",
+   "f6f7e0dec179f2c1"
+  ],
+  "32": [
+   "162051699178c331",
+   "3b1c1f27ef2ca213",
+   "b0b6a03eb0ead405",
+   "bdee1bffdda83d09",
+   "cae2891a3d5968b3",
+   "d6e68a75c6ce4de5"
+  ],
+  "48": [
+   "2ceb6c84c9111150",
+   "61b904f0a4ab1531",
+   "7ca834b95845099f",
+   "8d22dd3cde849334",
+   "b7ef1fd9fead0475",
+   "f75c8912ee117436"
+  ]
+ }
+}

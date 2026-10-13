@@ -1,0 +1,131 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e9a8bd6c78323eff623220f7b7678ec2a17d79122efbfc5a6fecb595658078c",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "화물 상자 더미",
+ "label": "sky-steam/sky-a-crate-stack",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stack of crates and a sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate shows a clear 5-row foreshortened top surface (rows 3-7) above its front face (rows 8-16). The other stacked items also show distinct top surfaces in 3/4 perspective without isometric receding sides.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5667
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stacked cargo boxes and crates",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stacked crates clearly show their top lids/surfaces foreshortened from above (e.g., top crate lid spans rows 3-7, 5 rows tall; right box top spans rows 13-17, 5 rows tall) above their vertical south-facing fronts.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10480
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stacked cargo boxes and sack",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top crate shows a clear 5-row top lid surface (rows 3-7) above its front face (rows 8-16). The adjacent sack/crate also clearly displays a 5-row foreshortened top surface (rows 12-16).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6553
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stack of cargo crates/chests",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Each crate/chest in the stack clearly displays a foreshortened top surface (4-5 rows tall, lighter shading) above its vertical front face, consistent with 3/4 top-down perspective without isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9354
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.898Z",
+ "cells": {
+  "16": [
+   "daa8583a27d9998e",
+   "f5c863767c78d0ca",
+   "fbada8b4909869f4",
+   "fef068c100d63e42"
+  ],
+  "24": [
+   "0c44f827dd37de9c",
+   "0f1cc9b591822b64",
+   "16bf06642e179a73",
+   "17592c0ab41f4102",
+   "3d8f411dc477bc5b",
+   "435938396b39c64b",
+   "500a82d86c31c710",
+   "5709046b90a02812",
+   "643de9537e057bc4",
+   "67397166c65a1f34",
+   "7708282642f3e5e6",
+   "78ab00fd3e1a3431",
+   "864321c5ebfc6958",
+   "992c6fbb75fcb9c1",
+   "9aab70175d15d33d",
+   "9e91ba2c9c74cdcf",
+   "9eb98444d8adf357",
+   "a0d44d47a773dd10",
+   "ab759ebd54cd2c7b",
+   "d390b16ed567f76b",
+   "e214e723725de77c",
+   "e47e99f208724ffe",
+   "fff1c3d1463c3c22"
+  ],
+  "32": [
+   "89ab86a84196d353"
+  ],
+  "48": [
+   "06ee06a8d3522111",
+   "38bfb63a3b798593",
+   "6d47195130c40edb",
+   "b154b9b7e21e1820",
+   "d1fc9c6eab71745c",
+   "dcfece919560da00"
+  ]
+ }
+}

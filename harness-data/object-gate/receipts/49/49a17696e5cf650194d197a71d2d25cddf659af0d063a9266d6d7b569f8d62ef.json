@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "49a17696e5cf650194d197a71d2d25cddf659af0d063a9266d6d7b569f8d62ef",
+ "width": 32,
+ "height": 32,
+ "kind": "box",
+ "name": "프로펠러 엔진 포드",
+ "label": "sky-steam/sky-a-propeller-pod",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rectangular pod/casing with attached blade on the right",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main body is clearly visible from row 6 to row 13 (8 pixel rows tall), foreshortened above the front face which spans rows 14 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6104
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "box-shaped engine housing with propeller attached to the right side",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the main housing is clearly visible across rows 6–13 (8 pixel rows tall) above the front face (rows 14–24).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5696
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "engine pod housing",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main yellow/gold pod body has a clearly visible top surface from rows 6 to 13 (approx. 8 rows tall) illuminated from above, sitting atop the front face spanning rows 14 to 24 with rivet details.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5950
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "box-shaped engine housing with propeller blade on right",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main box body features a clearly foreshortened top surface spanning rows 6 to 13 (8 rows tall) above the front vertical face from rows 14 to 24.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5156
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.727Z",
+ "cells": {
+  "16": [
+   "2f6c24bf4fd58a18",
+   "515b8404e0fb45c5",
+   "6955b3a8b16741a0",
+   "8cef6d41540b93ba"
+  ],
+  "24": [
+   "1e27f86414d6c695",
+   "2156dbb797da4d94",
+   "3af09940e893dc25",
+   "3f97bbefb1e55658",
+   "4063df21aa00f9b7",
+   "414f9f79126021a0",
+   "49891c1fb46f88cc",
+   "49c4bcefc52805c6",
+   "51addb47946af6e7",
+   "53b8e5e3d4985192",
+   "6df4d688aff21486",
+   "70049f2b5235c0a1",
+   "7bf139d02aecc359",
+   "849ddb157a78ce03",
+   "8fbfef3708f8f300",
+   "9019147434837de7",
+   "96f07f9bf7a9bee6",
+   "a4dcacfa28d423a1",
+   "a81415855dabf4d6",
+   "a8f7d7f9be759ff4",
+   "c5e9c09df7618607",
+   "d151eb74e380699a",
+   "f4903fe94511e88e",
+   "f6b6a7fdd6ae3458"
+  ],
+  "32": [
+   "ddf368930d02eb2f"
+  ],
+  "48": [
+   "02942e262412a165",
+   "965ed43c03b80fb4",
+   "b56410217c2210b9",
+   "cf1f664f05ad5ec3",
+   "ee7b780ba6b9ab97",
+   "fde29aa89cef8277"
+  ]
+ }
+}

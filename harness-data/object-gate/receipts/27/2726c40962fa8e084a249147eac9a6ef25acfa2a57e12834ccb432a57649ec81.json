@@ -1,0 +1,137 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "2726c40962fa8e084a249147eac9a6ef25acfa2a57e12834ccb432a57649ec81",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar / flagpole base",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone column/base features a clearly visible top surface rendered in lighter tones across rows 21-24 (4 source pixels tall) above its darker front face (rows 27-38), properly conforming to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11787
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone stele / pillar with flag pole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone stele/pillar is drawn straight-on in pure front elevation with a rounded arch top and no horizontal top surface visible from above. The pole inserted into/behind it also lacks any visible top cut face.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8532
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar / flag stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone column is drawn in pure front elevation. The upper section (rows 21-24) has vertical cylindrical shading (highlight on left, shadow on right) showing it is a front-facing surface rather than a horizontal top face, and the divider at row 25 and the base at row 39 are completely straight horizontal lines with no visible top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12349
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar / stele holding the flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone pillar is drawn in flat front elevation with a rounded top edge and vertical highlight columns across rows 21-25, showing no foreshortened horizontal top surface. The pole and pillar are viewed straight-on.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9347
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.191Z",
+ "cells": {
+  "16": [
+   "64dd7fa30a1365f1",
+   "8d314d1b29c60010",
+   "bbacb4e53e31269e"
+  ],
+  "24": [
+   "5d8afbbe7350a5f1",
+   "7c892d333de07693",
+   "829a501727e71176",
+   "8b1ae6ec5271277d",
+   "c5acc23cb60a9b6a",
+   "e144752d1a1fec27"
+  ],
+  "32": [
+   "0afb005b44f0b850",
+   "26decbe2d5ca77a9",
+   "2be4e4c9f27c5ace",
+   "681c32b9ed434f3e",
+   "691a341d7fd756f4",
+   "7c321e44dcb711d4",
+   "af3c31bfc5ffa5e6",
+   "b4c4cbcb488e13b9",
+   "cc741108a2549cb0",
+   "cccf387bff055780",
+   "e8e4674ac5b018e6",
+   "f614d39cacb3926a"
+  ],
+  "48": [
+   "31f4744c82afc368",
+   "4805734f7efb6ca2",
+   "5fd288277f02899d"
+  ]
+ }
+}

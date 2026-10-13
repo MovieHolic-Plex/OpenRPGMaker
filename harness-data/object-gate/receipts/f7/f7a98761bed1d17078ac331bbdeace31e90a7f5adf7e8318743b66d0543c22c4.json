@@ -1,0 +1,239 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f7a98761bed1d17078ac331bbdeace31e90a7f5adf7e8318743b66d0543c22c4",
+ "width": 96,
+ "height": 64,
+ "kind": "structure",
+ "name": "비공정(프로펠러 회전)",
+ "label": "sky-steam/sky-a-airship-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship gondola and gasbag",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gondola cabin features a clearly rendered top-sloping roof surface visible from row 36 to row 44 (approx 9 rows) above its front vertical wooden wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6659
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airship balloon envelope",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The balloon envelope (the main volume) is drawn in pure 2D side elevation: circumferential panel seams run purely vertical rather than foreshortened ellipses, top and bottom brackets are vertically symmetrical, and the propeller is drawn flat in profile. There is no visible top surface for the balloon.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 14170
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship gondola and balloon envelope",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof shows a distinct 9-pixel-tall top surface/slope (rows 36-44) above the south wall (rows 46-55), consistent with 3/4 RPG Maker perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6603
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airship balloon and gondola",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The gondola roof clearly displays a visible 3/4 top surface across rows 36-44 (9 pixel rows) above the vertical south-facing cabin wall (rows 46-55).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 16422
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship envelope (balloon)",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The airship envelope—the largest volume of the object—is drawn in pure side elevation with vertically symmetrical elliptical contours, straight vertical panel seams, and no 3/4 top-down foreshortening. The propeller is also drawn as a pure side-profile silhouette. Only the small gondola roof attempts a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9163
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "airship balloon envelope and gondola cabin",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin roof clearly displays a 9-row deep top/sloping surface (rows 35–43) above the vertical south wall (rows 44–56), correctly adhering to the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7593
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship gondola and envelope",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin/gondola features a prominent forward-facing roof slope measuring 10 pixel rows (rows 35-44) above the vertical south wall (rows 45-56), properly foreshortened in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6612
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "airship gondola and balloon envelope",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cabin/gondola clearly displays a 10px tall top roof surface (rows 35-44) above its 11px tall vertical south face (rows 45-55), consistent with 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6707
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.728Z",
+ "cells": {
+  "16": [
+   "05fe67080927a5cc",
+   "0814e8eb1e9b0bda",
+   "0834301d01fcde80",
+   "0d34bc8d3b158c20",
+   "16375bdff0f30462",
+   "1d997f9a1ece5c12",
+   "22d65bfefdbdbb54",
+   "257dbc8afcdce4b0",
+   "3b9e315c08cc369b",
+   "5224a4bf826ca041",
+   "5e0422cdd62b0fb4",
+   "6348c33b033bd1c6",
+   "64bd2e2cb4658d28",
+   "830f053981428455",
+   "83c425a6a4d26671",
+   "8b8b62cf857fd31c",
+   "a681a0b5fa7169bd",
+   "cc53a7ba16a1f9e6",
+   "d8bf3aa166ddd5e3",
+   "dac32dfb31192050",
+   "e36aa409291a94fa",
+   "f29554bee64161c6"
+  ],
+  "24": [
+   "0b023cc466eab273",
+   "108b346dd406056e",
+   "115f12ed203d4517",
+   "1ccea7ae210b67ca",
+   "1cfc806819cc4a9e",
+   "34954bd771921849",
+   "42c1bae199cca664",
+   "4d4b9c237f610ab5",
+   "4d98d471c112b519",
+   "4dc580d3f230d2f3",
+   "6521c655f010ad2e",
+   "6a8b0d3f15a93b43",
+   "7f308659de7cda8a",
+   "84970264a17b4c53",
+   "9793c2f61468ac17",
+   "9cd21bcd8f4997d8",
+   "9d240cece7e32080",
+   "a8d9645b2d01ca5a",
+   "ab47a36abd7ca4bb",
+   "bc7cbc6399d76aba",
+   "ca069c6504c088d4",
+   "d87178d862014e13",
+   "d9346eb84985b58e",
+   "f3e8eb08036881c7"
+  ],
+  "32": [
+   "5ab87c4f01725884",
+   "62d7a7fefe2abf94",
+   "87cbaf69bd12ebde",
+   "9fb009d1d508ddb6",
+   "cf17a825a80ee71d",
+   "d5b1800ea04b0d19"
+  ],
+  "48": [
+   "00e27f082c83a209",
+   "146d91fd10f0fdef",
+   "398592430fb925db",
+   "556daeafbdaa2eff",
+   "8e3090888852c4d8",
+   "b703f63ddb181c44",
+   "bb73ef102bca39e4",
+   "d6d8b43f4c228407"
+  ]
+ }
+}

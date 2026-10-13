@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dda271f71ec44281552a9415904cf690b44656a07d65593b880987ee46bc2d98",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발(펄럭)",
+ "label": "sky-steam/sky-a-flag-wave.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with top finial and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top finial of the pole (rows 2-5) is drawn as a flat front-facing rectangle/cap with no visible top surface or elliptical foreshortening. While the base plinth shows a top surface, column-like objects require the top end/cut face of the main shaft or finial to show a top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4781
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The finial/cap at the top end of the pole (rows 2-5) is drawn as a flat rectangle in pure front elevation without any foreshortened top face or ellipse visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4298
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole finial (rows 3-5) is drawn as a flat rectangular block in pure front elevation without any visible top surface or rounded cap plane viewed from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3661
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and its top cap (rows 2-5) are drawn in pure front elevation with no visible top surface or cut face at the top end.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5465
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.906Z",
+ "cells": {
+  "16": [
+   "250072358ef68943",
+   "e34ed4605ba795ba",
+   "f4927a3b0a751ad0"
+  ],
+  "24": [
+   "2dfb36a4a3ea02c3",
+   "49da88cce5751562",
+   "575550ad62a1214a",
+   "8ae434789f79fb1e",
+   "b8fa8763af54640c",
+   "d57862dd5a6f374b"
+  ],
+  "32": [
+   "04e992cbfa5eaa98",
+   "2ac75289e244d44a",
+   "3d255eeb3ffe88d1",
+   "4db97f9ba4366a34",
+   "5177b6f6b5aee698",
+   "538a7c2ab27aa97e",
+   "5b7e2f3bdedc5556",
+   "93a1655716825e88",
+   "de99f944fcf69ee9",
+   "e649663a61c6762b",
+   "f3dc72e4e24bf778",
+   "fe28622f0e34ecda"
+  ],
+  "48": [
+   "36f9aada95da722b",
+   "8cb597f7bac3f2f9",
+   "d887c277768b6f33"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "277ec0e6e4fdb9aa7da691dbf434f1a9e4df68fd98cd9bcd6d0b925ee20a8821",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "바람개비 기둥",
+ "label": "sky-steam/sky-a-windvane",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "pinwheel pole with stone base and top hub",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, top hub (yellow block), and stone base are all drawn in pure flat front elevation with no visible 3/4 top surface anywhere on the structure.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7628
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "pinwheel pole with top hub mechanism",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top hub mechanism (rows 3-6) and attached blade are drawn in pure front elevation as flat rectangles with 0 visible top rows. The vertical pole also has no 3/4 view perspective, with no top surface shown.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8360
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "pinwheel pole with top hub and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top yellow hub and red attachment are drawn as flat rectangular shapes with no visible top surface foreshortened from above (0 top rows). The pole and stone base are likewise depicted in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7605
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "pinwheel pole assembly",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top pinwheel hub/vane (rows 1–19) are drawn in flat front elevation with 0 rows of visible top surface on the hub or pole top. Only the stone base plinth at the bottom shows perspective, which does not satisfy the column requirement that the top end show its top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18211
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.725Z",
+ "cells": {
+  "16": [
+   "63de682401a3357e",
+   "dfb488112e7c8694"
+  ],
+  "24": [
+   "013de5070fed1ffb",
+   "0a6433298c3b3fcf",
+   "2a923687a26fdb64",
+   "3745219a9d6027b5",
+   "44ebbf7677932a77",
+   "467d75dbb767562e",
+   "881f42ab4866d65d",
+   "892db1dff11feb95",
+   "8e6a16365b157eee",
+   "b10f74584b1ab978",
+   "c14de8490fee6b3a",
+   "d6817e67ea5d3f2d"
+  ],
+  "32": [
+   "01a4b35648b60bc5",
+   "0f34e34fc4e10062",
+   "338fb379f584319f"
+  ],
+  "48": [
+   "2721738ddfc694fd",
+   "2ce9f7dff750e6ed",
+   "48817da7e2a21a68",
+   "4cdbfea4aae2225b",
+   "aafa9103edd599d1",
+   "fc636b895707f1b7"
+  ]
+ }
+}

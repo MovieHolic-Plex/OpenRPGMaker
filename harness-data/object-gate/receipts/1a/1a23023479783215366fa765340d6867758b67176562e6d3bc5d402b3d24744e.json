@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1a23023479783215366fa765340d6867758b67176562e6d3bc5d402b3d24744e",
+ "width": 32,
+ "height": 48,
+ "kind": "organic",
+ "name": "섬 나무",
+ "label": "sky-steam/sky-a-tree-sky",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tree foliage and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat lollipop shape with a circular foliage disk and a straight vertical trunk, completely in front elevation with no visible top surface or top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tree canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat 2D side/front elevation lollipop shape with a circular foliage disc and a flat vertical rectangular trunk, lacking 3/4 perspective foreshortening or a visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3959
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tree crown and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a flat lollipop shape with a circular 2D crown and a completely vertical straight-bottom trunk, showing no top-down 3/4 perspective or foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3689
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "foliage canopy and trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tree is drawn as a completely flat 2D front elevation (circular lollipop canopy and rectangular vertical trunk) with no top surface foreshortening or top-down 3/4 perspective volume.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5372
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.901Z",
+ "cells": {
+  "16": [
+   "0c704c7570da0d9e",
+   "800c6df7840d91a3",
+   "950c9c5609bd545d",
+   "9c6555c4449d46b0",
+   "a9b7999bcca0200d",
+   "cdeedc71ca064491"
+  ],
+  "24": [
+   "2783a7435536b9c9",
+   "3da65243b7b890bc",
+   "48fe6e9e52bd5ee6",
+   "750f49f889ca5095",
+   "84b58ca808be329f",
+   "86f27ceaa7d82fe0",
+   "a476de3f08d54f78",
+   "a57f691e0e0bf92d",
+   "ac62372b1b540bb6",
+   "b79e16ee5f505ac9",
+   "df5510a98add2a54",
+   "e563399ba96dde94"
+  ],
+  "32": [
+   "0201098234a07899",
+   "6ea6de9278ee0ea2",
+   "8abdc463447d95e7",
+   "f7ea953f8da79c4f"
+  ],
+  "48": [
+   "1d31c93236652aa7",
+   "5e03da0550f90f72",
+   "f838742a2e45cc25"
+  ]
+ }
+}

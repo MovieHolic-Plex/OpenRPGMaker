@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e097f3666badcb8e3ac5b969fcbc9f9a6d693cb619f98232e61bfae07fa81ab7",
+ "width": 32,
+ "height": 16,
+ "kind": "organic",
+ "name": "증기 구름",
+ "label": "sky-steam/sky-a-steam-cloud",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "steam cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam cloud is drawn as a flat 2D side-profile elevation with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4514
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "steam cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam cloud is drawn as a flat side-view 2D cloud/plume silhouette with no top-down foreshortening or visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4265
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "steam cloud / vapor plume",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam cloud is drawn as a flat side-view/front elevation silhouette rising from a vertical stem at the bottom, without top-down 3/4 foreshortening or ground contact perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4540
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "steam cloud",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The steam cloud is drawn as a flat 2D side-view silhouette/profile with no visible top surface or 3/4 top-down foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4998
+  }
+ ],
+ "decidedAt": "2026-10-13T14:48:41.707Z",
+ "cells": {
+  "16": [
+   "3b493f497b3e7a54",
+   "c13e869d0ceeae59"
+  ],
+  "24": [
+   "1e2c593829e484ae",
+   "3b816df16d1734d6",
+   "48bf4ca6669bd4d4",
+   "5976559bdc44a6fa",
+   "817cbc4b10745084",
+   "94bc6fd4bcc31efc",
+   "9cb47402e84789d9",
+   "d7b8c2afaa45ccc3",
+   "dae115a37f034a59",
+   "f06082e46f6b68d1",
+   "f2b627ef48b80a94",
+   "fffe6553cdbb5bd9"
+  ],
+  "32": [
+   "6299fa210c5e275a",
+   "6eac5cdc77acf442"
+  ],
+  "48": [
+   "0d3a19b08a04cbf4",
+   "74d120d238860cbe",
+   "750c819c27e22871",
+   "8d3af625652e659d",
+   "ac291c333cd5ea3c",
+   "beed41a37b732136"
+  ]
+ }
+}

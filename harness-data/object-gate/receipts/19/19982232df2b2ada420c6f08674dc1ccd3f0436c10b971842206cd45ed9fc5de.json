@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "19982232df2b2ada420c6f08674dc1ccd3f0436c10b971842206cd45ed9fc5de",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "프로펠러(회전)",
+ "label": "sky-steam/sky-a-propeller.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "machine base cylinder with vertical shaft and horizontal propeller",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base, shaft, and propeller) is drawn in pure front elevation with straight horizontal lines, rectangular blocks, and no foreshortened elliptical or top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6732
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "base cylinder and propeller mechanism",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The base, vertical shaft, and horizontal propeller blade are all drawn as perfectly flat rectangles in straight side/front elevation with no foreshortened top surfaces or circular perspective curves visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6428
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "propeller mechanism with base, shaft, and horizontal blade",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The propeller blade, vertical shaft, and lower base are all drawn in pure flat front elevation with straight horizontal bands and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6048
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base block with vertical shaft and horizontal propeller",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base, shaft, and propeller blade) is drawn in pure front elevation with straight horizontal bands and no foreshortened top surfaces or elliptical rotation plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6656
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.904Z",
+ "cells": {
+  "16": [
+   "115cbac80d3bad03"
+  ],
+  "24": [
+   "1a68a74ae4e87614",
+   "367bdecd128c826f",
+   "424cb0a8d7ac67a3",
+   "7ec17671f3959563",
+   "b9c131dc2a514a5d",
+   "f5c52b58a14d87dc"
+  ],
+  "32": [
+   "1a6764c708e32b36",
+   "30f5821f2a5dead3",
+   "40f80af1ccbdb968",
+   "bb684a6480c30a1f",
+   "e49639ea6794be24",
+   "e8bcdbf5efeebe1c"
+  ],
+  "48": [
+   "1ec7e340da564092",
+   "2d9a78af3788605c",
+   "57a2559849c8d030",
+   "674e90470e6a7f0f",
+   "b21ada092593fbc7",
+   "e9da68bb214c3fb5"
+  ]
+ }
+}

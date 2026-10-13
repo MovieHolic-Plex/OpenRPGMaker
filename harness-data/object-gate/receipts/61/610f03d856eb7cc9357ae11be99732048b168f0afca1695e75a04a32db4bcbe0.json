@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "610f03d856eb7cc9357ae11be99732048b168f0afca1695e75a04a32db4bcbe0",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등 석주",
+ "label": "sky-steam/sky-a-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "윗면 2행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pillar with gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure (base, lantern frame, and lamp) is drawn from a flat architectural front elevation with straight horizontal bands and no foreshortened top surfaces visible on the main pillar or lantern.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8002
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar / gas lamp body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern at the top (rows 0-4) is drawn as a flat rectangle with no top face visible (0px). The column/body beneath (rows 11-23) is drawn as a front elevation with vertical cylindrical shading rather than a foreshortened top surface, and the plinth at the bottom is likewise rendered in flat frontal view without a clear top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7649
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone pillar / lantern column",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main pillar section shows a foreshortened top surface across rows 11-14 (4 rows tall) where the lamp pole enters, and the lower plinth also clearly displays a 3-row top surface across rows 23-25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5438
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone pillar with lantern assembly",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The middle block features a clearly delineated 4-row light grey top surface (rows 11-14) above its front face (rows 15-23), and the lower base also displays an exposed horizontal top surface (rows 22-25), conforming to 3/4 view perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5971
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.192Z",
+ "cells": {
+  "16": [
+   "18b3f8c5a0e2dcb5",
+   "e1515dfc0f9ec8fe"
+  ],
+  "24": [
+   "23a6167f9d85a9e6",
+   "301c02afa9591c5d",
+   "6449c0280884a690",
+   "74c6e40d602563e8",
+   "98255048badc5cd8",
+   "9d6dda322a529259",
+   "a432bfaebc2aa76a",
+   "a9caab3a4b998aef",
+   "af5fed3488ca9481",
+   "bc4d444ce9d23bc0",
+   "cb2764598116e091",
+   "cb4c0ea700e35a76"
+  ],
+  "32": [
+   "6e7bfef2ff505200",
+   "7c616fd5255c76ea",
+   "8e0a827fb55f7fb8"
+  ],
+  "48": [
+   "594ea95d27f9ff5d",
+   "5d24f0f77f5160d9",
+   "6d068652bc8cd506",
+   "8c5d5f10e6e2e40e",
+   "9b694e860c5688b3",
+   "ea93568c23719ed8"
+  ]
+ }
+}

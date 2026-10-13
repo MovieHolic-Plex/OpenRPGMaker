@@ -1,0 +1,125 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b0f8338d0f72380fe91593a1880907c49b9bce8b7cdde15f7977af89743baa4f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone stele / pillar base of the flagpole",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone pillar clearly renders its top surface from row 21 to 25 (5 rows) with lighter shading above the textured south face (rows 26-38), and the base tier also shows a visible top step at rows 40-41.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6641
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone pillar base with flagpole",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main stone pillar shows a 4-row light-shaded horizontal top surface (rows 21-24) separated by a dividing edge from the textured vertical south face (rows 26-38). The lower plinth also shows a 2-row horizontal step (rows 40-41).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5424
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone flagpole base / pillar (danggan jiju)",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The central stone pillar shows a 4-pixel-tall top surface from row 21 to 24, distinctly separated from the front face below row 25. The lower plinth also reveals a 3-pixel-deep top plane (rows 40-42).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5233
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone stele and flagpole",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The flagpole and stone stele are drawn in pure front elevation. Neither the pole top nor the stone stele shows a horizontal top surface viewed from above; only the lower base plinth has a ledge, which does not grant credit for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 22141
+  }
+ ],
+ "decidedAt": "2026-10-13T14:42:58.191Z",
+ "cells": {
+  "16": [
+   "8d314d1b29c60010",
+   "bbacb4e53e31269e",
+   "dc4c3e30daaf50b9"
+  ],
+  "24": [
+   "3625d51dda575ac3",
+   "4be9031d0182d64c",
+   "8b1ae6ec5271277d",
+   "c5acc23cb60a9b6a",
+   "e144752d1a1fec27",
+   "f7d4950d7e1b8d82"
+  ],
+  "32": [
+   "12d1bdef8914505d",
+   "26decbe2d5ca77a9",
+   "681c32b9ed434f3e",
+   "691a341d7fd756f4",
+   "7c321e44dcb711d4",
+   "9f0ac5f6b73d6d2f",
+   "af3c31bfc5ffa5e6",
+   "b626b12da91c5f71",
+   "c9ffb7eef389af48",
+   "cb69f709a63e94c1",
+   "dddd15df7c34e340",
+   "f614d39cacb3926a"
+  ],
+  "48": [
+   "43d9a3bfe45b8be9",
+   "738d9cfbf4cdf344",
+   "c780a34631182b4c"
+  ]
+ }
+}

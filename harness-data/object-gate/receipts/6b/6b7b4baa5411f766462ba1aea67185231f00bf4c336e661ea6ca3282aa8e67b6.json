@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "6b7b4baa5411f766462ba1aea67185231f00bf4c336e661ea6ca3282aa8e67b6",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "가스등 기둥",
+ "label": "sky-steam/sky-a-lamp-post",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The lantern top, post, and base are all drawn in pure front elevation with vertical cylindrical shading and flat horizontal segmentation; no foreshortened top surface is shown anywhere on the object.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9754
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "gas lamp pedestal and post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Both the upper brass fixture (rows 1-4) and the stone pedestal base (rows 18-21) display clear foreshortened top surfaces visible from above, each about 4 rows tall, leading to south-facing front surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10340
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lamp post with lantern and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top lantern of the post is drawn in pure front elevation with vertical cylindrical shading and an arched silhouette, showing no foreshortened top surface. Per the instructions, the base plinth cannot be credited for the top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12320
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "base and column of gas lamp",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object (base, pole, and upper brass fixture) is drawn in pure 2D front elevation with horizontal bands, flat vertical faces, and no visible foreshortened top surfaces.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6997
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "575feed13941c23b",
+   "eecba9d1165062ca"
+  ],
+  "24": [
+   "3629e85fa9f5615c",
+   "56f3216475cfc2bb",
+   "599bed300997bec6",
+   "8085fa5b35a8beff",
+   "a02f413f5519562b",
+   "a5c82066eeb161ae",
+   "c6782f96c13aaac0",
+   "db566ecdca61ed98",
+   "e0630ade50af8f10",
+   "e832722752e3eb99",
+   "eb0390ed02f761b6",
+   "f0629aa4ca5839a6"
+  ],
+  "32": [
+   "0b279957360fa8bf",
+   "6852b2e3d01c85f1",
+   "7a82b8fcd620d18a"
+  ],
+  "48": [
+   "0bde32b40f5e8934",
+   "23c23358f4bbbea4",
+   "7143002a134c47e1",
+   "a00cc5e3eccf5bec",
+   "ab8ca2942c91fedb",
+   "c4a3dfa0c7bbd23e"
+  ]
+ }
+}

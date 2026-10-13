@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "170df253380d1fa98696dd37367fee36be88e2cb533a7d43168ea0311294396e",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "벤치",
+ "label": "sky-steam/sky-a-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench seat and front base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top seat surface spans rows 3 to 8 (6 source pixel rows), showing a clear foreshortened horizontal surface above the front face and legs (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3863
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench seat",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the bench seat is visible from row 3 to row 8 (6 pixel rows tall), with the front face and legs extending below from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3656
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden bench seat and base",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seating surface of the bench spans rows 3 to 8 (6 source pixels tall) showing the top surface in 3/4 perspective, above the front apron and legs (rows 9-14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4492
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "bench seat / top surface and front frame",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The horizontal seating surface of the bench is clearly visible from rows 3 to 8 (6 pixel rows tall), with the front apron and legs shown facing south below it.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3806
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.326Z",
+ "cells": {
+  "16": [
+   "6e7cf4cdaf12757d"
+  ],
+  "24": [
+   "17a21d2c88e5acbf",
+   "4052a49f49c3cff1",
+   "47e2e85cb86b7676",
+   "af58d52bb6848373",
+   "bea89efcdbb02865",
+   "d14e4190d8537d09"
+  ],
+  "32": [
+   "0026bab318f21886",
+   "5a19836b72eb96b3",
+   "61695540578590a6",
+   "9a7497c4e5dcb163",
+   "c83e82f0af249faa",
+   "e163b29bb3fe6727"
+  ],
+  "48": [
+   "0fa1edb4247fbea3",
+   "37d2335daadfd401",
+   "52cfb292d9686650",
+   "95100bb53b38fe9b",
+   "aca52deb2609bfbe",
+   "d87fe3d11f32e81e"
+  ]
+ }
+}

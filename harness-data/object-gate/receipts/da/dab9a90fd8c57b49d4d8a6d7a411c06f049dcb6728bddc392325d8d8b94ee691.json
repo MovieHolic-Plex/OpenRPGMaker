@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "dab9a90fd8c57b49d4d8a6d7a411c06f049dcb6728bddc392325d8d8b94ee691",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "장터 가판",
+ "label": "sky-steam/sky-a-market-stall",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "market stall counter with awning roof",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a 6-row foreshortened top surface (rows 17-22) supporting wares, above a vertical front panel (rows 23-31), beneath a sloped awning roof (rows 0-13).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8356
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "market stall with canopy and counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear top surface (~5 rows, rows 19-23) on which merchandise rests, above a vertical front planked face (rows 24-31). The canopy roof also shows its top sloping surface (rows 1-10).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3926
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "market stall with canopy roof and counter table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stall counter shows a clear top surface spanning rows 18 to 22 (5 rows deep) supporting three items, and the canopy roof above clearly displays a foreshortened sloped top surface from rows 1 to 10.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4382
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "market stall counter and canopy",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The canopy shows a clearly sloping top surface of 10 rows (rows 1-10), and the counter below displays a visible 4-row deep tabletop surface (rows 19-22) supporting goods, fitting standard 3/4 top-down projection.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4081
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.326Z",
+ "cells": {
+  "16": [
+   "82885d1a77d054fb",
+   "83b2b248d8a11510",
+   "a32640de229b219a",
+   "bdb4378a9461ceed"
+  ],
+  "24": [
+   "32d47b2c059511da",
+   "3d499095f38501b3",
+   "5115c92d44c03b93",
+   "5862d2644fd14c19",
+   "628f32eb4a5ac0eb",
+   "64d8aab641d60912",
+   "68689b13b641cf46",
+   "6cfe16fd745c0b44",
+   "71811373e2ec78fc",
+   "788c40ef175fbd68",
+   "828d44d35bbebe7e",
+   "8b20365ab0ecd6e0",
+   "97748053b80dcfed",
+   "9a34ab42368833bc",
+   "a0c9793ca256b602",
+   "a72b542708452629",
+   "aa597bc9dfb275e2",
+   "b4fb5e5139198ef3",
+   "c6d4d94683890420",
+   "cba776301ccdc23d",
+   "e461453e9e9e56bf",
+   "f60c655bfaf20bfc",
+   "f7bfc7ef7fe9919c",
+   "fe96fdcb8c99037b"
+  ],
+  "32": [
+   "e6aee8f9803f2694"
+  ],
+  "48": [
+   "52e31c03916064d2",
+   "8111438a9eb7a4e7",
+   "d2e68afcb86b3084",
+   "e3ab2ac068bb32ee",
+   "e81414477e418640",
+   "f7cfe2735171468d"
+  ]
+ }
+}

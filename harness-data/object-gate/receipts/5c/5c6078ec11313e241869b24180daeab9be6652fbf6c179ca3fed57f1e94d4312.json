@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5c6078ec11313e241869b24180daeab9be6652fbf6c179ca3fed57f1e94d4312",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "관측 망원경",
+ "label": "sky-steam/sky-a-telescope",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone pedestal and mounted brass telescope",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone mounting pedestal displays a 5-row deep top surface (rows 5-9) above its front face (rows 10-15), supporting the brass telescope armature.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9501
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "telescope base / pedestal",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The base/stand features a clearly visible foreshortened top surface spanning rows 5 to 9 (approx. 5 px tall) with the south face occupying rows 10 to 15, correctly following 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4071
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone or metal base/mount of the telescope",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main base has a clearly drawn top surface from rows 5 to 9 (approx. 4-5 rows) above a south-facing front face from row 10 downwards.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5251
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone observation stand/parapet with telescope mount",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone mounting base shows a clearly foreshortened top surface across rows 5–9 (5 pixel rows deep) above the darker south face spanning rows 10–15, drawn correctly in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5823
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.726Z",
+ "cells": {
+  "16": [
+   "6ac1f4192f9eac12"
+  ],
+  "24": [
+   "1b5632a11148a030",
+   "2aa14e6af670ef51",
+   "5d6f45060cc57d58",
+   "74cfadf5feb57396",
+   "bdb568a8dfbb20e3",
+   "c299aae3741003f9"
+  ],
+  "32": [
+   "03b2dc6760967b1d",
+   "125e24ff0f5c5972",
+   "264beba2abe97f8b",
+   "8412918c04e1a81a",
+   "91a568c1cb688f3a",
+   "bac1151a8f30ecdd"
+  ],
+  "48": [
+   "4f7f416ec64ff888",
+   "546392a079310955",
+   "6ea5d642be6fc96c",
+   "a59ed51070995b17",
+   "a870c9e7dc29cf51",
+   "bb35ec2f7f28c18c"
+  ]
+ }
+}

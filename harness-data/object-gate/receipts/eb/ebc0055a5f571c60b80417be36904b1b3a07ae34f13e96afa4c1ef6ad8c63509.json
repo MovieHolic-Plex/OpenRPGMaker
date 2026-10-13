@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ebc0055a5f571c60b80417be36904b1b3a07ae34f13e96afa4c1ef6ad8c63509",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "신호 대포 상자",
+ "label": "sky-steam/sky-a-cannon-box",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "metal chest / signal cannon box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chest is drawn in pure front elevation with an arched/chamfered lid and a brass handle sticking up above it. No horizontal top surface of the main body is visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 24382
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "metal/stone chest or trunk",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the chest (rows 5–15) is drawn straight-on in pure front elevation with a rounded trunk lid silhouette at rows 5–6, showing no foreshortened top surface. The yellow element atop row 5 is also drawn flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 13195
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "large chest / crate with a smaller golden box or emblem on top",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The main grey box shows a foreshortened top surface spanning rows 3-6 (around and beneath the yellow block), before stepping out to the vertical front face on rows 7-15. The yellow item resting on top also displays top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8076
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grey arched crate/box",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The grey chest/crate is drawn straight-on in pure front elevation with an arched upper silhouette (rows 5-9) and front band/panels (rows 10-15). It has no foreshortened top surface showing from above (0 rows; the lighter shoulder at rows 5-6 is only 2px and forms the front curve, while the gold block on top also only has a 1px top line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 4"
+   ],
+   "ms": 14263
+  }
+ ],
+ "decidedAt": "2026-10-13T14:47:59.327Z",
+ "cells": {
+  "16": [
+   "7cd5d459953bb280"
+  ],
+  "24": [
+   "10e24528aa6a6518",
+   "1f967bebb05e1cb5",
+   "5d151dbe5ead90b8",
+   "7620fa60d8855481",
+   "97808173ebd6e35d",
+   "f62373d50a069b1f"
+  ],
+  "32": [
+   "5d2415f638868f10",
+   "65597093d6f44e6c",
+   "677823bb425a11b1",
+   "a11808f1e8533f50",
+   "ec771ff7fecf10d8",
+   "fccefd8c8b4af2f1"
+  ],
+  "48": [
+   "0408080782e0784c",
+   "72dde9fc3a6ce20c",
+   "a3d1c28371b35149",
+   "cd6a93f717bde135",
+   "ec370355c2d005e9",
+   "feb7a02715975ef6"
+  ]
+ }
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9e539a656ca9b5af92a1bb65e800b9f473a8f1fd2b77b063f05bc095deb41daa",
+ "width": 32,
+ "height": 32,
+ "kind": "round_body",
+ "name": "지붕 물탱크",
+ "label": "sky-steam/sky-a-water-tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden water tank cylinder on legs",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the tank is prominently shown from above as an ellipse spanning rows 7-16, revealing an interior opening filled with water (rows 9-14, 6 rows tall) surrounded by a wooden rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7147
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden water tank / barrel",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The water tank clearly displays an elliptical top opening filled with water spanning 6 rows (rows 9-14) with an outer rim spanning rows 7-16, atop a front-facing wooden barrel body and support legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4399
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden rooftop water tank / barrel on legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the cylindrical tank is clearly visible in 3/4 perspective as a large ellipse spanning rows 7 to 15, with an inner water surface/opening spanning 6 rows (rows 9-14) above the vertical barrel face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8280
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden rooftop water tank / barrel on legs",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the water tank is drawn as a wide ellipse spanning rows 7 to 15 (with a 6-row blue water pool/interior from row 9 to 14) over the cylindrical wooden body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3845
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.900Z",
+ "cells": {
+  "16": [
+   "16e0fd2d80243b11",
+   "1c4668d31de241b6",
+   "2d7807922d4bd529",
+   "ea1a380cb94d3383"
+  ],
+  "24": [
+   "00daec06058b2c30",
+   "07658f293bb2251f",
+   "0a3846e36378042d",
+   "0f9e5c754c6c21eb",
+   "19f54f2d42317dee",
+   "1a6977bc33587a13",
+   "2610469f88c3b0b1",
+   "3825a1c9c7150bca",
+   "450f759e57d576ee",
+   "5c06a01254456811",
+   "710c7dd002f37b69",
+   "7a06fb971e98498d",
+   "c47aba7786cf8e2e",
+   "cc93e6a319ac29e3",
+   "ce9e8616cfc0e16c",
+   "d4588f0dfa02c332",
+   "d78510dae6f8cf91",
+   "eccd0b1481764750",
+   "eed901e969c8d39b",
+   "f13cfa66aa362a58",
+   "f1ba404a10ebfc3f",
+   "fbca084d3ac800f8"
+  ],
+  "32": [
+   "22ffd983ebff51f8"
+  ],
+  "48": [
+   "1dba51fefd84fddb",
+   "31d501b3aaf41709",
+   "5ca172a79cc8266b",
+   "6c68ec76fc31a3f2",
+   "8412ef3d3502211d",
+   "b92b2872e1c90dc5"
+  ]
+ }
+}

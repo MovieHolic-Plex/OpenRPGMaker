@@ -1,0 +1,135 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f0707db2daf86e20a5ba0e01bc28db39485319b7f50fc419807b78ee353ffe38",
+ "width": 48,
+ "height": 48,
+ "kind": "structure",
+ "name": "부유 마을 집",
+ "label": "sky-steam/sky-a-house",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "house with tiled hip/gabled roof and stone wall facade",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southward-sloping roof is prominently displayed across rows 11-27 (17 pixel rows tall), sitting above the vertical front wall spanning rows 28-45 in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4338
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "house with stone walls and shingled roof",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The southern roof slope spans 17 pixel rows (rows 11-27) showing the shingles viewed from above at a 3/4 angle, sitting atop the front brick wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4711
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "house with pitched tiled roof and brick facade",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The roof slope facing the 3/4 top-down camera is clearly visible from rows 11 to 27 (17 source pixels tall) above the vertical south-facing wall (rows 28 to 45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3800
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "house with stone walls and tiled roof",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The house displays a large forward-sloping roof plane across rows 11-27 (17 pixel rows) above the south-facing front wall (rows 28-45), fitting standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5524
+  }
+ ],
+ "decidedAt": "2026-10-13T14:33:42.539Z",
+ "cells": {
+  "16": [
+   "1abbc77c33efad04",
+   "1f7b4d35a059c180",
+   "22b96c1bb367ee1b",
+   "41486b5965bfc9dc",
+   "711d6e04ecd0b253",
+   "7b92fd1466e13d80",
+   "8736d0b6d7288b94",
+   "9a42e5a9902f6185",
+   "ab7ea33d59308ec4"
+  ],
+  "24": [
+   "0edc42070c7d4a4d",
+   "8646ed3f9d8a2683",
+   "99ae27536d428d88",
+   "a49c4835c938c617"
+  ],
+  "32": [
+   "03da0ef48649688e",
+   "0cbbcc1dddd37105",
+   "12e79cd5f72efb3e",
+   "15e348c65030cde7",
+   "41abbca840bca6e0",
+   "4930e7488ee2b394",
+   "4ce552e20a344023",
+   "50fafb2e5ae16595",
+   "5486bc3b113f7d36",
+   "56428c054a851ebb",
+   "64d8bfbeccbf4a97",
+   "6823896531474765",
+   "80c93f307d401d5d",
+   "909c8ad7b229d1be",
+   "933cdb48c627040a",
+   "9b0e40c3167f16b8",
+   "bf24d50f4151174f",
+   "d0be606456984d07",
+   "d2a1f80389d2a650",
+   "d9799806b03bdf0d",
+   "e02100b957d191d9",
+   "e7dd2e25dd94af08",
+   "f05bc6e8bbff2e41",
+   "f41c30515ebbc0f9"
+  ],
+  "48": [
+   "d4193f0e27c23be1"
+  ]
+ }
+}

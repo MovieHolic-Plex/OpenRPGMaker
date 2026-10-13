@@ -1,0 +1,155 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "432b9d5fd71dadc16db917b0063db2f031e87a3ee1647055ce65d4e385e6a085",
+ "width": 32,
+ "height": 64,
+ "kind": "structure",
+ "name": "정박탑",
+ "label": "sky-steam/sky-a-mooring",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "mooring tower with an upper cabin/roof, central shaft, and large base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper golden structure displays a prominent 7-pixel-tall top/roof surface (rows 5-11) above its vertical front face, and the lower base also shows a 5-pixel-tall top surface (rows 41-45).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6181
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "mooring tower with upper lantern/cabin and wide base",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper yellowish chamber shows a 7-row sloped top roof (rows 5-11) above its vertical front face (rows 12-20), and the lower base shows a 4-row top surface (rows 42-45) in proper 3/4 RPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6639
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "mooring tower with tiered sections (golden upper chamber, central shaft, and heavy base)",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The golden top chamber features a clearly foreshortened top roof surface (rows 5-11, 7px tall) above its front face (rows 13-20). The lower base also shows a 5px tall top shoulder surface (rows 41-45) from which the central shaft emerges.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7135
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "mooring tower with tiered sections",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The upper gold section has a clearly defined top slope/surface spanning rows 5-11 (7 rows) above its front face (rows 12-19), and the lower stone/metal base also shows an angled/top surface on rows 41-45 (5 rows).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6351
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.893Z",
+ "cells": {
+  "16": [
+   "03b0ab78bc67e334",
+   "0f8175244da4f2aa",
+   "166deab39e820565",
+   "1920f549edbd3adf",
+   "220c5d2f6ee9e05b",
+   "2a07bc750a00f2e5",
+   "61f6d11850e9a525",
+   "c921b7e59cfcead1"
+  ],
+  "24": [
+   "0d57488fd84eb6ba",
+   "0e0cd94504258d1b",
+   "0e688d0ee8bfc82b",
+   "0f9b5508994d0ed2",
+   "1a726f674531bd00",
+   "202dd16a74a4eb55",
+   "2329eebf2cc200b9",
+   "2652792fee05ec86",
+   "2d18f552128592a5",
+   "307d69724d69205b",
+   "4167288e75a7db1c",
+   "44f979887b1db4e6",
+   "5a7d96367f279fbd",
+   "69d9d2a95cd9e001",
+   "69e803914458ea38",
+   "6d1df4800bf48da5",
+   "6e999f906306565b",
+   "78cd880e3070ceae",
+   "79482eb12a9b51b7",
+   "80142eede332cb91",
+   "839dcff6edb6ce8a",
+   "a5b4ecceb0dc071e",
+   "a8fccf28f1fd5f1e",
+   "aabd4fe1ac6ae3c9",
+   "b325fea5e4843818",
+   "bde04748c2dcbbaa",
+   "c83abd1224282a9d",
+   "d35109397ef1da2f",
+   "d955214994532074",
+   "d98f88ffa96994c4",
+   "e1146c35e79c5ceb",
+   "e6cc8419d22d217c",
+   "e976c5931ed0ce7d",
+   "e9e783b88d37b7a5",
+   "ebbf74e1f421a5a5",
+   "fec705fe1697d5a5"
+  ],
+  "32": [
+   "50670b5a22fe48c3",
+   "a61abe71cb5c5c03"
+  ],
+  "48": [
+   "6f4f699f428c1e16",
+   "7325fac57115d06a",
+   "a26aebf6eee6918c",
+   "bd45fade2c725e74",
+   "cd03e936c7772101",
+   "d205e8f2270e43ae",
+   "d734ccd603a8fdd7",
+   "e416c044c2e45098",
+   "e4361c324f878e2d",
+   "e5ccb634b6d9e030",
+   "ee5bda41f3cfee14",
+   "f9d48d01d74164eb"
+  ]
+ }
+}

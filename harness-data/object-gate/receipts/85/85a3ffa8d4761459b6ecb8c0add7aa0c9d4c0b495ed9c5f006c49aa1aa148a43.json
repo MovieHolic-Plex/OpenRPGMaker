@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "85a3ffa8d4761459b6ecb8c0add7aa0c9d4c0b495ed9c5f006c49aa1aa148a43",
+ "width": 48,
+ "height": 16,
+ "kind": "terrain",
+ "name": "구름 바다 가장자리",
+ "label": "sky-steam/sky-a-cloud-edge",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "sea of clouds edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud terrain boundary strip spanning rows 5 to 15, representing the flat top-down surface/edge of a cloud sea.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5075
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sea of clouds edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts a cloud sea terrain edge across rows 5-15 with undulating tops, representing a flat horizontal cloud layer/terrain boundary.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5602
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sea of clouds edge",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud sea terrain edge filling rows 5-15, representing a horizontal top-down terrain surface; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4248
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sea of clouds edge",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud sea terrain edge spanning rows 5 to 15 as flat top-down surface/edge transition.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7152
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.904Z",
+ "cells": {
+  "16": [
+   "44086629e777ccc5",
+   "83625516ee190d26",
+   "f6e0b555d8653f12"
+  ],
+  "24": [
+   "0508aa0165393ea8",
+   "0df56dc05d026107",
+   "134f6a681600085d",
+   "bd2aa08c1b059bc3"
+  ],
+  "32": [
+   "07fea9109bff3d31",
+   "22172cce4f04ad1b",
+   "2de2a3320cf7f72a",
+   "4fb9c7847aed560e",
+   "60cb6381310d5d1c",
+   "766b728911c3d901",
+   "807576e426822ea1",
+   "85fb1ffef213cb8f",
+   "afd22f02a1d4cb2e",
+   "b521e8cb03140bb6",
+   "bb0f8aaa1cb1111e",
+   "cd75b359a9aed323"
+  ],
+  "48": [
+   "4f1ea574f30d81c6",
+   "d44c04bf3aa537ad"
+  ]
+ }
+}

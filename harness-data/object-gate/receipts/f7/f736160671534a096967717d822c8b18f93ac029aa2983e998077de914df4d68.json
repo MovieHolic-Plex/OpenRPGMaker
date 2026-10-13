@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f736160671534a096967717d822c8b18f93ac029aa2983e998077de914df4d68",
+ "width": 16,
+ "height": 16,
+ "kind": "column",
+ "name": "프로펠러(회전)",
+ "label": "sky-steam/sky-a-propeller.f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "종류 불일치",
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "base container/pedestal",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body (rows 8-14) is drawn in pure front elevation with straight horizontal bands and no foreshortened top surface visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6806
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "bottle or dispenser body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object appears to be a spray bottle or pump dispenser, not a column. The main lower body and neck are drawn with perfectly flat horizontal bands from a pure front elevation, showing no top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6806
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "dispenser bottle / flask",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object appears to be a pump dispenser or spray bottle rather than a column. The main bottle body (rows 8-14) is drawn in pure front elevation with straight horizontal bands and no elliptical top surface foreshortened from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5664
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "dispenser bottle body",
+    "kind_matches": false,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The object appears to be a pump dispenser or spray bottle rather than a column. The main body (rows 8-14) is drawn in flat front elevation with horizontal bands across the shoulder and no visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "종류 불일치",
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6380
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.905Z",
+ "cells": {
+  "16": [
+   "ff6b078cb3ad33fa"
+  ],
+  "24": [
+   "5db622971848dcce",
+   "8e0ea1273895b95e",
+   "949a9888ec57dc9c",
+   "a01de980a87ba3b9",
+   "ca0888dd66e2dab1",
+   "d9a61ec1cb465503"
+  ],
+  "32": [
+   "17535ebb8eed8e15",
+   "2dd025b118052288",
+   "56afeaac29e7173b",
+   "a77d34d623e42dd7",
+   "b61ec10c249afce7",
+   "d3c482ae6fc0200a"
+  ],
+  "48": [
+   "17e9df5b4421c524",
+   "17ff59f6f47b1052",
+   "623736e3f0f764f1",
+   "96484d6e3ee87daa",
+   "a8dda32e1b56f73c",
+   "b727818716b82ec8"
+  ]
+ }
+}

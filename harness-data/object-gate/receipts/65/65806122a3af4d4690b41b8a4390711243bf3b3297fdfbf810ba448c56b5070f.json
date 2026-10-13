@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "65806122a3af4d4690b41b8a4390711243bf3b3297fdfbf810ba448c56b5070f",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발대(펄럭)",
+ "label": "sky-steam/sky-a-flag-anim.f3",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The finial cap at the top (rows 2-5), the pole, and the large stone base at the bottom (rows 33-46) are all rendered in pure front elevation with no visible horizontal top surfaces or foreshortened circular/rectangular top planes.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6255
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole cap, pole shaft, and stone base are all drawn in pure front elevation. Neither the top of the pole cap nor the top horizontal surface of the stone base is depicted from a 3/4 overhead perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5121
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The finial/cap at the top of the pole (rows 2-5) is drawn as a flat rectangle with a horizontal outline, showing no visible top surface. The stone base (rows 34-45) is also drawn in pure front elevation without any top plane visible where the pole inserts.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5625
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole, its top cap (rows 2-5), and the stone base (rows 34-45) are drawn strictly in pure front elevation with no visible horizontal top surfaces or elliptical roundings.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4265
+  }
+ ],
+ "decidedAt": "2026-10-13T14:41:33.729Z",
+ "cells": {
+  "16": [
+   "3f2e769be5ce49f6",
+   "73b66f553a9281d5",
+   "e6a3b08d55bf53e0"
+  ],
+  "24": [
+   "4b780afd6c5862c3",
+   "5ff08a6433308a06",
+   "605d2a7f8355bfd0",
+   "9cde707509ab67db",
+   "9edaa30ea7050f21",
+   "f879cec55b26d5f8"
+  ],
+  "32": [
+   "108ca0ecf82ef2cf",
+   "14da351d7acd29c1",
+   "367cf26b7130cb0c",
+   "65267569cbc45ea4",
+   "76bccc43d3edfd53",
+   "a856c75b9504f5ff",
+   "ae837166553b25db",
+   "bef2430bde07ca9b",
+   "c50357993e1f3b0b",
+   "cc1bcb3351bfecae",
+   "d07873ddf753bb28",
+   "e0e43a2ef0af7356"
+  ],
+  "48": [
+   "19b07d0a627ef43f",
+   "19db8d94944fd9c0",
+   "abc86a59bf6bb0c2"
+  ]
+ }
+}

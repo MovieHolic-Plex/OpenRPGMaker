@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7ff663f7620aa61bbaa57d551a8cbf334c1ea2847c80ed30fb1dcfee8602ba12",
+ "width": 16,
+ "height": 48,
+ "kind": "column",
+ "name": "깃발(펄럭)",
+ "label": "sky-steam/sky-a-flag-wave.f0",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flagpole with finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top finial of the pole is drawn as a flat 2D square (rows 3-5) with no foreshortened top surface visible, and the pole itself is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5654
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flagpole with top finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole and top finial are drawn in pure front elevation without any foreshortened top surface or cut face visible at the top end. While the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7315
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flagpole with flag and finial",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole finial at rows 3-5 is drawn as a flat square/rectangle with no visible top surface or cut face, and the pole shaft is a vertical front elevation. Although the base plinth shows a top surface, base plinths do not count for the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7543
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flagpole with flag and stone base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pole finial at the top (rows 2-5) is drawn as a flat 2D square block with no top surface or foreshortened circular face visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4033
+  }
+ ],
+ "decidedAt": "2026-10-13T14:38:57.905Z",
+ "cells": {
+  "16": [
+   "664e16e80a460194",
+   "e34ed4605ba795ba",
+   "f575da27c90e8bc4"
+  ],
+  "24": [
+   "5255a49b51ddff22",
+   "56a75f0a0c730a8d",
+   "575550ad62a1214a",
+   "b157844a4db6c484",
+   "b8fa8763af54640c",
+   "d57862dd5a6f374b"
+  ],
+  "32": [
+   "04e992cbfa5eaa98",
+   "13f778f0cc97eec1",
+   "1a66fba74f0a2126",
+   "1b2877bf6c3f0e35",
+   "2ac9568d491949ce",
+   "48a44f2eb409b5c9",
+   "4db97f9ba4366a34",
+   "88e4903eaaacfbe9",
+   "c01de9a79e61ac8f",
+   "cd08a7d884e7de6e",
+   "f3db90708e59fdec",
+   "f3dc72e4e24bf778"
+  ],
+  "48": [
+   "169198ebd64eefb6",
+   "ed74add50331534f",
+   "f40f2b8b06c7ba42"
+  ]
+ }
+}
