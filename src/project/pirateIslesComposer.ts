@@ -77,6 +77,8 @@ function noise2(x: number, y: number, s: number, period = 6): number {
 // 땅 문자: ~ 깊은 바다 · w 얕은 물 · s 모래 · g 풀 · p 흙길 · v 모래길 · q 방파제 포석 · c 포석 · r 바위땅 · b 판자 부두 · F 성벽 윗면 · f 성벽 앞면
 //          실내: 1 배 바닥 · 2 술집 마루 · 3 갈대 돗자리 · 4 동굴 바닥 · 5 보물 바닥 · S/T/H/C 벽 천장 · x 벽 앞면
 const LAND = "sgpvqcrFfb";
+/** 기물을 얹을 수 있는 땅(물·성벽·벽 천장·벽 앞면 제외). */
+const GROUND_OK = "sgpvqcrbd12345";
 const WATER = "~w";
 const AUTO: Readonly<Record<string, { id: string; conn: string; eight: boolean }>> = {
   "~": { id: "at-deep", conn: "~", eight: true },
@@ -98,8 +100,10 @@ const PLAIN: Readonly<Record<string, { id: string; col: number }>> = {
 };
 const FACE_OF: Readonly<Record<string, string>> = { F: "wall-face-fort", S: "wall-face-ship", T: "wall-face-tavern", H: "wall-face-hut", C: "wall-face-cave" };
 
+/** 줄지어 되풀이해도 되는 조각(등불·계선주·대포·울타리·실내 줄 가구). */
+const REPEATABLE = new Set(["lantern-post", "bollard", "pier-post", "cannon", "fence", "fence-bamboo", "palisade", "tiki-torch", "tavern-chair", "stool-int", "tavern-table-round", "tavern-table", "bunk-ship", "cargo-barrels", "bar-counter", "bar-shelf", "cannon-int", "hammock-int", "rock-pillar", "stalagmite", "torch-stand"]);
 /** 물 위에만 두는 조각. */
-const WATER_PIECES = new Set(["rowboat", "canoe", "fishing-boat", "galleon", "coral", "coral-purple", "rock-water", "sea-stack"]);
+const WATER_PIECES = new Set(["rowboat", "canoe", "fishing-boat", "galleon", "coral", "coral-purple", "rock-water", "sea-stack", "bamboo-raft", "pier-post"]);
 
 const N = 1, E = 2, S = 4, W = 8, NE = 16, SE = 32, SW = 64, NW = 128;
 
@@ -117,6 +121,10 @@ class Board {
   readonly clear: boolean[];
   private journal: { layer: 1 | 2 | 3; i: number; prev: number }[] | null = null;
   readonly placed: PiratePlaced[] = [];
+  /** 이동 이벤트로 이어지는 두 칸(요새 대문 안팎 등) — 통행 검사에서 붙어 있다고 본다. */
+  readonly portals: [Pt, Pt][] = [];
+  /** 건물 키트를 고른 횟수(맵 전체) — 같은 건물이 되풀이되지 않게. */
+  readonly usedBuild = new Map<string, number>();
   skipped = 0;
   readonly rng: () => number;
 
@@ -231,7 +239,7 @@ class Board {
       if (up >= 0 && this.taken[i]) return false;
       if (ground === "water" && !WATER.includes(this.g(X, Y))) return false;
       if (ground === "land") {
-        if (WATER.includes(this.g(X, Y)) || "fx".includes(this.g(X, Y))) return false;
+        if (!GROUND_OK.includes(this.g(X, Y))) return false;
         if (up >= 0 && !flat && !this.passableTile(up)) {
           const lower = this.map.lowerTiles[i] ?? -1;
           if (lower < 0 || !this.passableTile(lower)) return false;
@@ -273,6 +281,11 @@ class Board {
     seen[stack[0]!] = 1;
     while (stack.length) {
       const i = stack.pop()!; const x = i % this.w, y = (i - x) / this.w;
+      for (const [a, c] of this.portals) for (const [p, q] of [[a, c], [c, a]] as const) {
+        if (p.x !== x || p.y !== y || !this.inb(q.x, q.y)) continue;
+        const j = this.idx(q.x, q.y);
+        if (!seen[j] && this.walkable(q.x, q.y)) { seen[j] = 1; stack.push(j); }
+      }
       for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) {
         if (!this.inb(nx, ny)) continue;
         const j = this.idx(nx, ny);
@@ -302,8 +315,20 @@ class Board {
     for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) if (this.inb(xx, yy)) this.clear[this.idx(xx, yy)] = true;
   }
   /** 소품 자리로 쓸 수 있는가: 맞는 땅·건물 둘레 밖·비울 칸 밖·길 밖(+ 옵션 여백). */
-  propFits(id: string, x: number, y: number, ground: string, pad = 0): boolean {
+  propFits(id: string, x: number, y: number, ground: string, pad = 0, dry = true): boolean {
     const s = this.kitSize(id); if (!s) return false;
+    const outdoor = !/[12345]/.test(ground);
+    if (outdoor && (x < 1 || y < 1 || x + s.w > this.w - 1 || y + s.h > this.h - 1)) return false;          // 맵 가장자리에 잘리지 않게
+    // 땅 기물: 그림 칸과 그 둘레 1칸에 물이 없어야(물가에 발이 걸치지 않게). 물 기물은 반대로 둘레 1칸에 땅이 없어야.
+    const wet = /[~w]/.test(ground) && !/[sg]/.test(ground);
+    for (let yy = y - 1; yy <= y + s.h; yy++) for (let xx = x - 1; xx <= x + s.w; xx++) {
+      if (!this.inb(xx, yy)) continue;
+      const c = this.g(xx, yy);
+      if (dry && outdoor && !wet && WATER.includes(c)) return false;
+      if (wet && (c === "b" || GROUND_OK.includes(c))) return false;
+    }
+    // 같은 기물은 4칸 안에 또 두지 않는다(나란히 찍힌 쌍둥이 금지)
+    for (const p of this.placed) if (p.id === id && Math.abs(p.x - x) <= 3 + s.w && Math.abs(p.y - y) <= 3 + s.h && !REPEATABLE.has(id)) return false;
     for (let yy = y - pad; yy < y + s.h + pad; yy++) for (let xx = x - pad; xx < x + s.w + pad; xx++) {
       const inside = xx >= x && xx < x + s.w && yy >= y && yy < y + s.h;
       if (!this.inb(xx, yy)) { if (inside) return false; continue; }
@@ -317,19 +342,37 @@ class Board {
   }
 }
 
-/** 땅에서 거리 n(±잡음) 이하 물 칸을 얕은 물로 — 3-4 챔퍼 거리라 모서리가 둥글다(깊은 바다 → 얕은 물 띠). */
+/** 땅에서 거리 n(±잡음) 이하 물 칸을 얕은 물로 — 유클리드 거리 + 두 겹 잡음이라 띠가 계단·팔각형으로 굳지 않는다(깊은 바다 → 얕은 물 띠). */
 function shallowRing(b: Board, n: number): void {
-  const INF = 1e9, D = new Array<number>(b.w * b.h).fill(INF);
-  for (let i = 0; i < D.length; i++) if (!WATER.includes(b.grid[i]!) && b.grid[i] !== "b") D[i] = 0;
-  const relax = (i: number, x: number, y: number, dx: number, dy: number, c: number) => { const nx = x + dx, ny = y + dy; if (!b.inb(nx, ny)) return; const v = D[b.idx(nx, ny)]! + c; if (v < D[i]!) D[i] = v; };
-  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) { const i = b.idx(x, y); relax(i, x, y, -1, 0, 3); relax(i, x, y, 0, -1, 3); relax(i, x, y, -1, -1, 4); relax(i, x, y, 1, -1, 4); }
-  for (let y = b.h - 1; y >= 0; y--) for (let x = b.w - 1; x >= 0; x--) { const i = b.idx(x, y); relax(i, x, y, 1, 0, 3); relax(i, x, y, 0, 1, 3); relax(i, x, y, 1, 1, 4); relax(i, x, y, -1, 1, 4); }
+  const R = n + 3;
+  const isLand = (x: number, y: number) => b.inb(x, y) && !WATER.includes(b.g(x, y)) && b.g(x, y) !== "b";
+  const next = b.grid.slice();
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
-    const i = b.idx(x, y);
-    if (D[i]! > 0 && b.grid[i] !== "b" && D[i]! / 3 <= n + noise2(x, y, b.seed + 21, 5) * 1.2) b.grid[i] = "w";
+    if (!WATER.includes(b.g(x, y))) continue;
+    let d = 99;
+    for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) if (isLand(x + dx, y + dy)) d = Math.min(d, Math.hypot(dx, dy));
+    const lim = n + noise2(x, y, b.seed + 21, 4) * 1.1 + noise2(x, y, b.seed + 22, 9) * 0.9;
+    next[b.idx(x, y)] = d <= lim ? "w" : "~";
   }
+  for (let i = 0; i < next.length; i++) b.grid[i] = next[i]!;
   // 깊은 바다 덩이 다듬기: 두께 1 깊은 물·외톨이는 얕은 물로(오토타일 덩이 모양 지키기)
   smooth(b, "~", "w", 2);
+}
+
+/** 해안 다듬기(야외 공통): 섬 안 고인 물 → 모래, 물로 튀어나온 한 칸 땅 혀 → 물, 풀 한 칸 혀 → 모래, 물에 닿은 풀 → 모래(해변 띠 보장). */
+function tidyCoast(b: Board): void {
+  // 바깥(맵 가장자리)과 이어지지 않은 물 = 섬 안 웅덩이 → 모래
+  const seen = new Uint8Array(b.w * b.h); const st: number[] = [];
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) if ((x === 0 || y === 0 || x === b.w - 1 || y === b.h - 1) && WATER.includes(b.g(x, y))) { seen[b.idx(x, y)] = 1; st.push(b.idx(x, y)); }
+  while (st.length) { const i = st.pop()!; const x = i % b.w, y = (i - x) / b.w; for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]] as const) if (b.inb(nx, ny) && !seen[b.idx(nx, ny)] && WATER.includes(b.g(nx, ny))) { seen[b.idx(nx, ny)] = 1; st.push(b.idx(nx, ny)); } }
+  for (let i = 0; i < b.grid.length; i++) if (WATER.includes(b.grid[i]!) && !seen[i]) b.grid[i] = "s";
+  smooth(b, "sgpvqcrFf", "~", 2);                    // 물로 튀어나온 한 칸 땅(모래 혀·한 칸 섬)
+  smooth(b, "g", "s", 2);                         // 모래로 튀어나온 풀 혀
+  smooth(b, "s", "g", 1);                         // 풀 속 외톨이 모래
+  for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
+    if (b.g(x, y) !== "g") continue;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (b.inb(x + dx, y + dy) && WATER.includes(b.g(x + dx, y + dy))) b.set(x, y, "s");
+  }
 }
 
 /** 칸 모양 다듬기: 외톨이·한 칸 돌기(오토타일이 깨지는 모양)를 이웃 다수로. */
@@ -380,7 +423,7 @@ function plotOf(b: Board, id: string, x: number, y: number): Plot | null {
 /** 건물 줄: 발 줄(foot) 위에 왼쪽부터 늘어놓는다. 간격 1~2(나무·소품 자리). 문 앞 접근칸 목록을 돌려준다. */
 function buildingRow(b: Board, ids: readonly string[], x0: number, x1: number, foot: number, topLimit: number, ground: string, plots: Plot[], gapLo = 1, gapHi = 2, skipCols: (x: number, w: number) => boolean = () => false, setback = 0): void {
   let x = x0;
-  const used = new Map<string, number>();
+  const used = b.usedBuild;
   while (x < x1) {
     const fits = ids.filter((id) => { const s = b.kitSize(id); return s && x + s.w <= x1 && foot - s.h + 1 >= topLimit && !skipCols(x, s.w); });
     if (!fits.length) { x++; continue; }
@@ -413,6 +456,34 @@ function cluster(b: Board, ids: readonly string[], cx: number, cy: number, n: nu
     const x = cx + b.int(-spread, spread), y = cy + b.int(-1, 1);
     if (!b.propFits(id, x, y, ground)) continue;
     if (b.stampSafe(id, x, y, start, must, WATER_PIECES.has(id) ? "water" : "land")) k++;
+  }
+  return k;
+}
+
+/** cluster 와 같되 기물끼리 pad 칸 띄운다(흩어진 짐·보물 표식처럼 하나하나 읽혀야 할 때). */
+function clusterPad(b: Board, ids: readonly string[], cx: number, cy: number, n: number, ground: string, start: Pt, must: Pt[], spread = 2, pad = 1): number {
+  let k = 0;
+  for (let t = 0; t < n * 14 && k < n; t++) {
+    const id = ids[(k + t) % ids.length]!; const s = b.kitSize(id); if (!s) continue;
+    const x = cx + b.int(-spread, spread), y = cy + b.int(-1, 1);
+    if (!b.propFits(id, x, y, ground, pad)) continue;
+    if (b.stampSafe(id, x, y, start, must, WATER_PIECES.has(id) ? "water" : "land")) k++;
+  }
+  return k;
+}
+
+/** 나무 덩이: 기준점 둘레 반지름 3 안에 나무 n 그루(겹치지 않게, 같은 나무 연달아 금지 — REPEATABLE 아닌 것은 propFits 가 4칸 간격을 강제하므로 덩이 안에서는 직접 찍는다). */
+function grove(b: Board, ids: readonly string[], cx: number, cy: number, n: number, ground: string, start: Pt, must: Pt[]): number {
+  let k = 0;
+  for (let t = 0; t < n * 12 && k < n; t++) {
+    const id = ids[(k + t) % ids.length]!; const s = b.kitSize(id); if (!s) continue;
+    const x = cx + b.int(-3, 3), y = cy + b.int(-1, 2);
+    if (x < 1 || y < 0 || x + s.w > b.w - 1) continue;
+    let ok = true;
+    for (let yy = y; yy < y + s.h && ok; yy++) for (let xx = x; xx < x + s.w; xx++) { if (!b.inb(xx, yy)) continue; const i = b.idx(xx, yy); if (!ground.includes(b.g(xx, yy)) || b.taken[i] || b.near[i] || b.clear[i]) { ok = false; break; } }
+    if (!ok) continue;
+    if (b.placed.some((p) => p.id === id && Math.abs(p.x - x) < 3 && Math.abs(p.y - y) < 3)) continue;
+    if (b.stampSafe(id, x, y, start, must)) k++;
   }
   return k;
 }
@@ -455,7 +526,7 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
     const inQuay = x >= qx0 && x < qx1;
     const sy = inQuay ? shore : shore + Math.round(noise1(x, b.seed, 6) * 1.6) - 1;
     for (let y = sy; y < Hd; y++) b.set(x, y, "~");
-    if (!inQuay) for (let y = Math.max(0, sy - 4 - Math.round(noise1(x, b.seed + 9, 5))); y < sy; y++) b.set(x, y, "s");
+    if (!inQuay) for (let y = Math.max(0, sy - 7); y < sy; y++) if (y >= sy - 3.6 + noise2(x, y, b.seed + 9, 4) * 1.4 + noise2(x, y, b.seed + 10, 9) * 0.8) b.set(x, y, "s");
   }
   b.rect(qx0, quayTop, qx1 - qx0, shore - quayTop, "q");
   // 숲 가장자리(위 3~4줄)
@@ -505,9 +576,9 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
     b.rect(px, shore, 2, len, "b");
     if (b.chance(0.6)) b.rect(px - 1, shore + len - 2, 4, 2, "b");      // 끝 넓은 판(T자)
   }
+  tidyCoast(b);
   shallowRing(b, 3);
   // 방파제·부두 바로 옆은 깊은 물이어도 된다(배가 댄다) — 단, 얕은 물 띠가 해변을 감싼다
-  smooth(b, "s", "g", 1);
   b.paintGround();
   // 건물
   stampPlots(b, plots, areas);
@@ -518,7 +589,7 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
     const lhp = plotOf(b, "lighthouse", x, shore - 7 + b.int(-1, 1));
     if (!lhp) break;
     const accOk = !!lhp.access && "sgcv".includes(b.g(lhp.access.x, lhp.access.y)) && "sgcv".includes(b.g(lhp.access.x, lhp.access.y + 1));
-    if (accOk && b.propFits("lighthouse", lhp.x, lhp.y, "sg") && b.stamp("lighthouse", lhp.x, lhp.y)) { b.markNear(lhp.x, lhp.y, lhp.w, lhp.h); if (lhp.access) b.markClear(lhp.access.x, lhp.access.y, 1, 2); areas.push({ name: lhp.name, x: lhp.x, y: lhp.y, w: lhp.w, h: lhp.h, tag: "lighthouse", ...(lhp.door ? { door: lhp.door } : {}), ...(lhp.access ? { access: lhp.access } : {}) }); break; }
+    if (accOk && b.propFits("lighthouse", lhp.x, lhp.y, "sg", 0, false) && b.stamp("lighthouse", lhp.x, lhp.y)) { b.markNear(lhp.x, lhp.y, lhp.w, lhp.h); if (lhp.access) b.markClear(lhp.access.x, lhp.access.y, 1, 2); areas.push({ name: lhp.name, x: lhp.x, y: lhp.y, w: lhp.w, h: lhp.h, tag: "lighthouse", ...(lhp.door ? { door: lhp.door } : {}), ...(lhp.access ? { access: lhp.access } : {}) }); break; }
   }
   // 통로·문 앞 비우기
   for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if ("vb".includes(b.g(x, y))) b.markClear(x, y);
@@ -533,8 +604,10 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const gs = b.kitSize("galleon");
   if (gs) {
     const tries: Pt[] = [];
-    for (let y = shore + 2; y + gs.h <= Hd; y++) for (const x of [big.x + 3, big.x - gs.w - 1, ...piers.map((p) => p.x + 3), ...piers.map((p) => p.x - gs.w - 1)]) tries.push({ x, y });
-    for (const t of tries.sort((a, c) => Math.abs(a.x - big.x) - Math.abs(c.x - big.x) || c.y - a.y)) if (b.stampSafe("galleon", t.x, t.y, spawn, must, "water")) { areas.push({ name: "해적 범선", x: t.x, y: t.y, w: gs.w, h: gs.h, tag: "galleon" }); break; }
+    for (let y = shore + 2; y + gs.h <= Hd; y++) for (let x = 1; x + gs.w < Wd; x++) tries.push({ x, y });
+    const clearOf = (x: number, y: number) => { if (x < 1 || x + gs.w > Wd - 1 || y + gs.h > Hd - 1) return false; for (let yy = y - 1; yy <= y + gs.h; yy++) for (let xx = x - 1; xx <= x + gs.w; xx++) if (b.g(xx, yy) === "b" || GROUND_OK.includes(b.g(xx, yy))) return false; return true; };
+    const near = (t: Pt) => Math.min(Math.abs(t.x - (big.x + 3)), Math.abs(t.x + gs.w + 1 - big.x)) + Math.abs(t.y - (shore + 3));
+    for (const t of tries.sort((a, c) => near(a) - near(c))) if (clearOf(t.x, t.y) && b.stampSafe("galleon", t.x, t.y, spawn, must, "water")) { areas.push({ name: "해적 범선", x: t.x, y: t.y, w: gs.w, h: gs.h, tag: "galleon" }); break; }
   }
   // 부두마다 배 한 척(고깃배 하나는 꼭), 부두 옆 물 칸에 붙여 정박
   piers.forEach((p, k) => {
@@ -545,6 +618,15 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
       if (b.stampSafe(boat, side < 0 ? p.x - s.w : p.x + 2, shore + 1 + b.int(0, Math.max(0, p.len - s.h - 1)), spawn, must, "water")) break;
     }
   });
+  // 부두 끝 말뚝: 판 끝 양옆 물 칸(부두가 물 위에 선 것으로 읽힌다)
+  for (const p of piers) {
+    const ey = shore + p.len - 1;
+    for (let x = p.x - 2; x <= p.x + 3; x++) {
+      if (b.g(x, ey) === "b" || !WATER.includes(b.g(x, ey + 1))) continue;
+      if (b.g(x - 1, ey + 1) === "b" || b.g(x + 1, ey + 1) === "b") continue;
+      if (x === p.x - 2 || x === p.x + 3 || (b.g(x - 1, ey) !== "b" || b.g(x + 1, ey) !== "b")) b.stampSafe("pier-post", x, ey + 1, spawn, must, "water");
+    }
+  }
   // 방파제: 계선주(남쪽 가장자리 줄, 부두 사이), 기중기 하나, 짐 무더기(창고 문 옆)
   for (let x = qx0 + 1; x < qx1 - 1; x += b.int(4, 6)) if (!piers.some((p) => x >= p.x - 1 && x <= p.x + 2)) b.stampSafe("bollard", x, shore - 1, spawn, must);
   const craneX = b.int(qx0 + 2, qx1 - 4);
@@ -572,24 +654,40 @@ function composeHarbor(b: Board): { areas: PirateArea[]; spawn: Pt } {
   for (const x of [plazaRect.x, plazaRect.x + plazaRect.w - 1]) b.stampSafe("lantern-post", x, plazaRect.y + plazaRect.h - 3, spawn, must);
   cluster(b, ["table-stools", "bench"], pcx + (b.chance(0.5) ? -4 : 4), pcy + 2, 1, "c", spawn, must, 1);
   // 큰길: 등불 기둥 일정 간격(길 위쪽 가장자리 풀 칸), 푯말 하나
+  // 등불은 건물 줄이 있는 구간의 길가에만(빈 풀밭 한가운데 두지 않는다)
+  const builtX = (x: number) => plots.some((p) => x >= p.x - 1 && x <= p.x + p.w);
   for (let x = b.int(2, 5); x < Wd - 2; x += b.int(7, 9)) {
+    if (!builtX(x)) continue;
     for (const y of [street - 2, street + 2]) if (b.propFits("lantern-post", x, y, "g")) { b.stampSafe("lantern-post", x, y, spawn, must); break; }
   }
   // 술집 앞: 탁자·통
   if (tv) cluster(b, ["barrel", "table-stools", "barrels"], tv.x + tv.w + 1, northFoot - 1, 2, "g", spawn, must, 1);
-  // 숲 가장자리(위쪽 땅): 야자·활엽수 띠 + 덤불(건물 뒤)
-  sprinkle(b, ["palm", "tree-broad", "palm-pair", "tree-fruit", "banana", "palm-young"], Math.floor(Wd / 3), "g", { x: 0, y: 0, w: Wd, h: northTop + 3 }, spawn, must, 0);
-  sprinkle(b, ["bush", "bush-hibiscus", "fern", "grass-tuft", "flowerbed"], Math.floor(Wd / 4), "g", { x: 0, y: 0, w: Wd, h: southFoot }, spawn, must, 1);
+  // 북쪽 땅: 맨 위는 숲 띠(맵 끝 숲 — 나무 덩이 몇 개, 사이사이 빈틈), 집마다 뒤뜰(과일나무·바나나·꽃밭 텃밭) — 남은 풀밭을 고르게 흩뿌리지 않는다
+  const northPlots = plots.filter((p) => p.y < street);
+  for (let gx = b.int(1, 4); gx < Wd - 3; gx += b.int(7, 10)) grove(b, ["palm", "tree-broad", "palm-pair", "tree-broad", "palm"], gx, 1, b.int(2, 3), "g", spawn, must);
+  for (const p of northPlots) {
+    if (p.y - 3 < 1 || !b.chance(0.75)) continue;
+    cluster(b, b.shuffle(["tree-fruit", "banana", "flowerbed", "bush-hibiscus"]), p.x + Math.floor(p.w / 2) - 1, p.y - 2, 2, "g", spawn, must, 2);
+  }
+  // 집 사이 틈: 덤불·꽃(틈 하나에 하나)
+  for (let i = 0; i + 1 < northPlots.length; i++) {
+    const a = northPlots[i]!, c = northPlots[i + 1]!;
+    if (c.x - (a.x + a.w) >= 3) cluster(b, ["bush", "bush-hibiscus", "flowerbed"], a.x + a.w + 1, northFoot - 1, 1, "g", spawn, must, 0);
+  }
   // 해변(양옆): 야자·그물·밧줄·쪽배(물가), 조개·해초
   for (const side of [{ x: 0, w: qx0 }, { x: qx1, w: Wd - qx1 }]) {
     if (side.w < 3) continue;
     const area = { x: side.x, y: shore - 6, w: side.w, h: 8 };
     sprinkle(b, ["palm-lean", "palm", "palm-young"], Math.max(1, Math.floor(side.w / 4)), "sg", { x: side.x, y: street + 2, w: side.w, h: shore - street }, spawn, must, 1);
-    sprinkle(b, ["nets", "rope-coil", "net-rack", "fish-rack", "driftwood", "shells", "seaweed"], Math.max(2, Math.floor(side.w / 3)), "s", area, spawn, must, 1);
+    // 해변 어구 마당: 그물 시렁·생선 시렁 둘레에 그물·밧줄을 모은다(한 무더기) + 조개·게·물웅덩이 몇 개
+    const yard = { x: side.x + Math.floor(side.w / 2) - 1, y: shore - 4 };
+    cluster(b, ["net-rack", "fish-rack", "nets", "rope-coil", "lobster-traps"], yard.x, yard.y, 3, "s", spawn, must, 2);
+    sprinkle(b, ["shells", "crab", "tide-pool", "driftwood", "coconuts"], Math.max(1, Math.floor(side.w / 5)), "s", area, spawn, must, 1);
     sprinkle(b, ["canoe", "rowboat"], 1, "w", { x: side.x, y: shore - 2, w: side.w, h: 5 }, spawn, must, 0);
   }
   // 얕은 물: 산호·물 바위(부두에서 떨어진 곳)
-  sprinkle(b, ["coral", "coral-purple", "rock-water"], Math.floor(Wd / 8), "w", { x: 0, y: shore, w: Wd, h: Hd - shore }, spawn, must, 1);
+  // 산호·물 바위: 부두 구간 밖 양옆 얕은 물에 한 덩이씩
+  for (const side of [{ x: 0, w: qx0 }, { x: qx1, w: Wd - qx1 }]) if (side.w >= 4) cluster(b, ["coral", "rock-water", "coral-purple"], side.x + Math.floor(side.w / 2), shore + 2, 2, "w", spawn, must, 2);
   sprinkle(b, ["sea-stack"], 1, "~w", { x: 0, y: Hd - 6, w: Wd, h: 6 }, spawn, must, 1);
   areas.push({ name: "방파제", x: qx0, y: quayTop, w: qx1 - qx0, h: shore - quayTop, tag: "quay" });
   areas.push({ name: "시장 광장", ...plazaRect, tag: "plaza" });
@@ -609,7 +707,7 @@ function island(b: Board, cx: number, cy: number, rx: number, ry: number, bw: nu
   for (let y = 0; y < b.h; y++) for (let x = 0; x < b.w; x++) {
     let d = 9;
     for (const l of lobes) d = Math.min(d, Math.hypot((x + 0.5 - l.x) / l.rx, (y + 0.5 - l.y) / l.ry));
-    d += noise2(x, y, s, 5) * 0.16 + noise2(x, y, s + 7, 11) * 0.1;
+    d += noise2(x, y, s, 4) * 0.13 + noise2(x, y, s + 7, 7) * 0.14 + noise2(x, y, s + 9, 13) * 0.1;
     const inner = 1 - bw / Math.min(rx, ry) + noise2(x, y, s + 13, 4) * 0.08;
     if (d < 1) b.set(x, y, d < inner ? "g" : "s");
     else b.set(x, y, "~");
@@ -624,6 +722,7 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const areas: PirateArea[] = [];
   const cx = Wd / 2 + b.int(-2, 2), cy = Hd / 2 - 2 + b.int(-1, 1);
   island(b, cx, cy, Wd * 0.4, Hd * 0.36, 3.2, b.seed);
+  tidyCoast(b);
   // 마을 길: 위 길·아래 길(동서) + 가운데 남북 길(광장) + 남쪽 해변으로 내려가는 길
   const y1 = Math.round(cy - Hd * 0.1), y2 = Math.round(cy + Hd * 0.12);
   const rowSpan = (y: number) => { let lo = -1, hi = -1; for (let x = 0; x < Wd; x++) if (b.g(x, y) === "g" && b.g(x, y + 1) === "g") { if (lo < 0) lo = x; hi = x; } return { lo, hi }; };
@@ -641,10 +740,17 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
     // 길 위쪽에 오두막 줄(문 → 길). 자리(둘레 1칸 포함)가 모두 풀·모래일 때만 — 광장·남북 길을 덮지 않는다.
     buildingRow(b, hutIds, r.lo + 2, r.hi - 1, yy - 2, Math.max(1, yy - 8), "g", plots, 2, 3, (x, w) => {
       for (let k = x - 1; k < x + w + 1; k++) for (let j = yy - 6; j <= yy - 1; j++) if (b.g(k, j) !== "g" && b.g(k, j) !== "s") return true;
+      for (let k = x - 3; k < x + w + 3; k++) for (let j = yy - 8; j <= yy + 1; j++) if (WATER.includes(b.g(k, j))) return true;   // 물가에서 2칸 이상 안쪽
       return false;
     });
   }
   for (const p of plots) if (p.access) b.set(p.access.x, p.access.y, "v");
+  // 길은 집이 있는 구간까지만(양 끝이 빈 모래로 빠지지 않게) — 남북 길·광장은 그대로
+  for (const [yy] of [[y1], [y2]] as const) {
+    const row = plots.filter((p) => p.access && Math.abs(p.access.y - yy) <= 1);
+    const lo = Math.min(px - 1, ...row.map((p) => p.x)), hi = Math.max(px + 4, ...row.map((p) => p.x + p.w - 1));
+    for (let x = 0; x < Wd; x++) if ((x < lo || x > hi) && !(x >= px + 2 && x <= px + 3)) for (const y of [yy, yy + 1]) if (b.g(x, y) === "v") b.set(x, y, "g");
+  }
   // 남쪽 해변으로: 아래 길에서 남쪽 모래까지
   let sy = y2 + 2; while (sy < Hd - 1 && b.g(px + 2, sy) === "g") { b.set(px + 2, sy, "v"); b.set(px + 3, sy, "v"); sy++; }
   // 부두: 남쪽 해변 끝에서 바다로, 끝에 수상 가옥
@@ -686,7 +792,7 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   b.stampSafe("totem", plaza.x + plaza.w - 2, plaza.y, spawn, must);
   b.stampSafe("tiki-torch", plaza.x, plaza.y, spawn, must);
   b.stampSafe("tiki-torch", plaza.x + plaza.w - 1, plaza.y + plaza.h - 2, spawn, must);
-  b.stampSafe("bench", plaza.x + 4, plaza.y + plaza.h - 1, spawn, must) || b.stampSafe("bench", plaza.x, plaza.y + plaza.h - 1, spawn, must);
+  b.stampSafe("log-bench", plaza.x + 3, plaza.y + plaza.h - 1, spawn, must) || b.stampSafe("bench", plaza.x + 4, plaza.y + plaza.h - 1, spawn, must) || b.stampSafe("bench", plaza.x, plaza.y + plaza.h - 1, spawn, must);
   // 오두막 곁: 우물 하나·생선 시렁·바구니(통)
   for (const a of areas.filter((x) => x.tag.startsWith("hut") || x.tag === "longhouse" || x.tag === "fish-shack")) {
     if (b.chance(0.8)) beside(b, a, b.chance(0.5) ? ["barrel", "sacks", "crate", "barrels"] : ["fish-rack", "flowerbed", "oar-rack", "net-rack", "lobster-traps"], "gs", spawn, must);
@@ -695,13 +801,17 @@ function composeBeach(b: Board): { areas: PirateArea[]; spawn: Pt } {
   if (wellSpot) cluster(b, ["well"], wellSpot.x - 3, wellSpot.y + wellSpot.h - 2, 1, "g", spawn, must, 1);
   // 숲: 섬 안쪽 풀(마을 둘레) 야자·활엽수·바나나·덤불
   const all = { x: 0, y: 0, w: Wd, h: Hd };
-  sprinkle(b, ["palm", "palm-pair", "tree-broad", "tree-fruit", "banana", "palm-young"], Math.floor((Wd * Hd) / 90), "g", all, spawn, must, 1);
-  sprinkle(b, ["bush", "bush-hibiscus", "fern", "grass-tuft", "rock-small"], Math.floor((Wd * Hd) / 110), "g", all, spawn, must, 1);
-  // 해변 둘레: 기운 야자·해먹·쪽배·그물·조개
-  sprinkle(b, ["palm-lean", "palm-lean", "palm-young"], Math.floor(Wd / 5), "s", all, spawn, must, 1);
-  sprinkle(b, ["hammock", "net-rack", "nets", "rope-coil", "coconuts", "driftwood", "shells", "seaweed"], Math.floor(Wd / 4), "s", all, spawn, must, 1);
-  sprinkle(b, ["canoe", "canoe", "rowboat"], 2, "w", { x: 0, y: Math.floor(Hd / 2), w: Wd, h: Hd / 2 }, spawn, must, 1);
-  sprinkle(b, ["coral", "coral-purple", "rock-water"], Math.floor(Wd / 6), "w", all, spawn, must, 1);
+  // 숲: 마을 밖 풀밭에 나무 덩이(고르게 흩뿌리지 않는다) + 덩이 곁 덤불
+  for (let t = 0, made = 0; t < 40 && made < Math.floor((Wd * Hd) / 260); t++) {
+    const gx = b.int(2, Wd - 4), gy = b.int(1, Hd - 4);
+    if (b.g(gx, gy) !== "g" || b.near[b.idx(gx, gy)] || b.clear[b.idx(gx, gy)]) continue;
+    if (grove(b, ["palm", "tree-broad", "palm-pair", "banana", "tree-fruit", "palm"], gx, gy, b.int(2, 4), "g", spawn, must) > 0) { made++; cluster(b, ["bush", "fern", "bush-hibiscus", "palm-stump"], gx + b.pick([-3, 3]), gy + 2, 1, "g", spawn, must, 1); }
+  }
+  // 해변 둘레: 기운 야자(물가 쪽)·쪽배 끌어 올린 자리·조개·게
+  sprinkle(b, ["palm-lean", "palm-lean", "palm"], Math.floor(Wd / 5), "s", all, spawn, must, 2);
+  sprinkle(b, ["coconuts", "driftwood", "shells", "crab", "tide-pool"], Math.floor(Wd / 5), "s", all, spawn, must, 2);
+  sprinkle(b, ["canoe", "bamboo-raft", "rowboat"], 2, "w", { x: 0, y: Math.floor(Hd / 2), w: Wd, h: Hd / 2 }, spawn, must, 1);
+  for (let k = 0; k < 2; k++) cluster(b, ["coral", "rock-water", "coral-purple"], b.int(4, Wd - 6), b.pick([3, Hd - 5]), 2, "w", spawn, must, 2);
   sprinkle(b, ["sea-stack"], 2, "~", all, spawn, must, 1);
   areas.push({ name: "마을 광장", ...plaza, tag: "plaza" });
   areas.push({ name: "부두", x: pierX, y: shoreY - 1, w: 2, h: pierLen + 1, tag: "pier" });
@@ -717,129 +827,150 @@ function composeFort(b: Board): { areas: PirateArea[]; spawn: Pt } {
   for (let x = 0; x < Wd; x++) {
     const sy = shore + Math.round(noise1(x, b.seed, 6) * 1.5);
     for (let y = sy; y < Hd; y++) b.set(x, y, "~");
-    for (let y = sy - 4 + Math.round(noise1(x, b.seed + 3, 5)); y < sy; y++) b.set(x, y, "s");
+    for (let y = sy - 7; y < sy; y++) if (y >= sy - 3.6 + noise2(x, y, b.seed + 3, 4) * 1.4 + noise2(x, y, b.seed + 4, 9) * 0.8) b.set(x, y, "s");
   }
-  // 요새 사각: 성벽 두께 2(윗면) + 남쪽 바깥 앞면 2. 안뜰 위쪽 벽의 앞면 2줄은 안뜰 안.
-  const fw = Math.min(Wd - 8, 26 + b.int(0, 4)), fh = Math.min(shore - 8, 17 + b.int(0, 2));
+  tidyCoast(b);
+  // 요새 사각: 성벽 두께 2(윗면) + 남쪽 바깥 앞면 2. 안뜰 위쪽 벽의 앞면 2줄은 안뜰 안. 안뜰은 쓸 만큼만(빈 포석 마당이 남지 않게).
+  const fw = Math.min(Wd - 10, 22 + b.int(0, 3)), fh = Math.min(shore - 8, 15 + b.int(0, 1));
   const fx = Math.floor((Wd - fw) / 2) + b.int(-2, 2), fy = 3;
   b.rect(fx, fy, fw, fh, "F");
   b.rect(fx + 2, fy + 2, fw - 4, fh - 4, "c");                        // 안뜰 포석
-  // 앞면: 북벽 안쪽 남 가장자리 아래 두 줄(안뜰 안), 남벽 바깥 아래 두 줄
   for (let x = fx + 2; x < fx + fw - 2; x++) { b.set(x, fy + 2, "f"); b.set(x, fy + 3, "f"); }
   for (let x = fx; x < fx + fw; x++) { b.set(x, fy + fh, "f"); b.set(x, fy + fh + 1, "f"); }
-  // 옆 통로(서쪽 또는 동쪽 벽): 폭 2, 안뜰 가운데 높이
-  const sideW = b.chance(0.5);
-  const gy = fy + Math.floor(fh / 2);
-  const gxs = sideW ? fx : fx + fw - 2;
-  b.rect(gxs, gy, 2, 2, "c");
-  // 통로 칸 바로 위 벽 조각의 남쪽 가장자리 → 앞면(통로 안 두 줄): 통로 높이 2 라 앞면이 통로를 덮는다 → 통로 위 벽을 한 줄 낮춰 앞면을 통로 밖에 두지 않는다.
-  // 간단히: 통로 위 두 칸을 F 그대로 두면 앞면이 통로(gy, gy+1)를 차지해 막힌다 — 통로는 세로 3칸(gy..gy+2) 으로 열고 위 앞면 2줄 아래 한 줄을 걷게 한다.
-  b.rect(gxs, gy, 2, 1, "f"); b.rect(gxs, gy + 1, 2, 1, "f"); b.rect(gxs, gy + 2, 2, 2, "c");
-  // 문루: 남벽 가운데(문 = 잠긴 대문 — 이동 이벤트를 달면 안뜰로)
+  // 문루: 남벽 가운데(문 = 잠긴 대문, 이동 이벤트로 안뜰과 잇는다). 문 앞에서 해변까지 곧은 흙길(모래에 닿으면 멈춘다)
   const gateX = fx + Math.floor(fw / 2) - 2;
-  // 길: 옆 통로 → 바깥 → 남쪽 해변 / 문루 앞 → 해변
-  const outX = sideW ? fx - 3 : fx + fw + 1;
-  lpath(b, { x: outX, y: gy + 2 }, { x: outX, y: shore - 4 }, "p");
-  for (let x = Math.min(outX, gxs); x <= Math.max(outX + 1, gxs + 1); x++) { if (b.g(x, gy + 2) === "g") b.set(x, gy + 2, "p"); if (b.g(x, gy + 3) === "g") b.set(x, gy + 3, "p"); }
-  lpath(b, { x: gateX + 1, y: fy + fh + 2 }, { x: gateX + 1, y: shore - 4 }, "p");
-  lpath(b, { x: Math.min(outX, gateX + 1), y: shore - 4 }, { x: Math.max(outX, gateX + 1), y: shore - 4 }, "p");
+  for (let y = fy + fh + 2; y < Hd && b.g(gateX + 1, y) === "g"; y++) { b.set(gateX + 1, y, "p"); if (b.g(gateX + 2, y) === "g") b.set(gateX + 2, y, "p"); }
   shallowRing(b, 3);
   b.paintGround();
-  const spawn = { x: gateX + 1, y: shore - 4 };
-  const must: Pt[] = [{ x: gxs, y: gy + 2 }, { x: fx + Math.floor(fw / 2), y: fy + 6 }];
-  // 포대 탑: 네 모퉁이(성벽 위)
+  const spawn = { x: gateX + 1, y: fy + fh + 3 };
+  const must: Pt[] = [];
   for (const [x, y] of [[fx - 1, fy - 1], [fx + fw - 2, fy - 1], [fx - 1, fy + fh - 3], [fx + fw - 2, fy + fh - 3]] as const) {
     if (b.stamp("fort-bastion", x, y, "wall")) areas.push({ name: NAME_KO["fort-bastion"]!, x, y, w: 3, h: 4, tag: "fort-bastion" });
   }
-  // 문루
   const gate = plotOf(b, "fort-gate", gateX, fy + fh + 1 - 4);
+  let inner: Pt = { x: gateX + 1, y: fy + fh - 5 };
   if (gate && b.stamp("fort-gate", gate.x, gate.y, "wall")) {
     areas.push({ name: gate.name, x: gate.x, y: gate.y, w: gate.w, h: gate.h, tag: "fort-gate", ...(gate.door ? { door: gate.door } : {}), ...(gate.access ? { access: gate.access } : {}) });
-    if (gate.access) { must.push(gate.access); b.markClear(gate.access.x - 1, gate.access.y, 4, 2); }
+    if (gate.door) inner = { x: gate.door.x, y: gate.y - 1 };
+    if (gate.access) { must.push(gate.access); b.markClear(gate.access.x - 1, gate.access.y, 4, 2); b.portals.push([gate.access, inner]); }
   }
-  // 성벽 위 대포(남벽, 문루 양옆) — 남벽 윗면 두 줄에 걸친다
-  for (const dx of [5, fw - 7]) b.stamp("cannon", fx + dx, fy + fh - 2, "wall");
-  if (fw >= 30) b.stamp("cannon", fx + Math.floor(fw / 4) - 1, fy + fh - 2, "wall");
-  // 안뜰: 병영(북벽 앞면 아래, 문 → 안뜰), 깃대 가운데, 화약·포탄·상자 무더기, 우물, 망루 한 구석
-  const cy0 = fy + 4, cx0 = fx + 2, cw = fw - 4, ch = fh - 6;
-  const bar = plotOf(b, "fort-barracks", cx0 + 1 + b.int(0, 2), cy0);
-  if (bar && b.stamp("fort-barracks", bar.x, bar.y)) { b.markNear(bar.x, bar.y, bar.w, bar.h); if (bar.access) { must.push(bar.access); b.markClear(bar.access.x - 1, bar.access.y, 3, 2); } areas.push({ name: bar.name, x: bar.x, y: bar.y, w: bar.w, h: bar.h, tag: "fort-barracks", ...(bar.door ? { door: bar.door } : {}), ...(bar.access ? { access: bar.access } : {}) }); }
-  for (let x = gxs; x < gxs + 2; x++) for (let y = gy + 2; y < gy + 4; y++) b.markClear(x, y);
-  b.markClear(cx0, gy + 2, cw, 2);                                    // 통로 → 안뜰 가로 길
-  b.markClear(gateX, fy + fh - 4, 4, 2);                               // 문루 안쪽
+  must.push(inner);
+  b.markClear(inner.x - 2, inner.y - 1, 5, 2);                          // 문루 안쪽 마당
+  // 성벽 위 대포(남벽, 문루 양옆 — 포구가 바다 쪽 남쪽)
+  for (const dx of [4, fw - 6]) b.stamp("cannon", fx + dx, fy + fh - 2, "wall");
+  // 안뜰 둘레 1칸(벽 앞면 밑·옆벽 안쪽)은 비워 둔다 — 건물·기물이 벽에 붙지 않게
+  const cx0 = fx + 2, cy0 = fy + 4, cw = fw - 4, ch = fh - 6;
+  for (let x = cx0; x < cx0 + cw; x++) { b.near[b.idx(x, cy0)] = true; b.near[b.idx(x, cy0 + ch - 1)] = true; }
+  for (let y = cy0; y < cy0 + ch; y++) { b.near[b.idx(cx0, y)] = true; b.near[b.idx(cx0 + cw - 1, y)] = true; }
+  // 병영(북쪽, 앞면에서 한 줄 띄움) — 옆에 보급 마당(상자·자루·통)
+  const bar = plotOf(b, "fort-barracks", cx0 + 2, cy0 + 1);
+  if (bar && b.stamp("fort-barracks", bar.x, bar.y)) {
+    b.markNear(bar.x, bar.y, bar.w, bar.h);
+    if (bar.access) { must.push(bar.access); b.markClear(bar.access.x - 1, bar.access.y, 3, 2); }
+    areas.push({ name: bar.name, x: bar.x, y: bar.y, w: bar.w, h: bar.h, tag: "fort-barracks", ...(bar.door ? { door: bar.door } : {}), ...(bar.access ? { access: bar.access } : {}) });
+  }
   b.prune(spawn, must);
-  b.stampSafe("flagpole", fx + Math.floor(fw / 2) + 3, cy0, spawn, must);
-  const wt = { x: cx0 + cw - 3, y: cy0 };
-  if (b.stampSafe("watchtower", wt.x, wt.y, spawn, must)) areas.push({ name: NAME_KO.watchtower!, x: wt.x, y: wt.y, w: 2, h: 5, tag: "watchtower" });
-  cluster(b, ["cannonballs", "keg-powder", "cannonballs", "barrels"], cx0 + Math.floor(cw / 2) + 2, cy0 + ch - 3, 3, "c", spawn, must, 2);
-  cluster(b, ["crates", "barrel", "crate", "sacks"], cx0 + 2, cy0 + ch - 3, 3, "c", spawn, must, 2);
-  cluster(b, ["well", "bench"], cx0 + Math.floor(cw / 2) - 4, cy0 + 4, 1, "c", spawn, must, 1);
-  // 바깥: 해변 야자·바위·쪽배, 풀숲 덤불·나무(요새 둘레 2칸 비움)
+  // 망루(동쪽 위, 벽에서 두 칸) + 깃대(가운데 위)
+  const wt = { x: cx0 + cw - 4, y: cy0 + 1 };
+  if (b.stampSafe("watchtower", wt.x, wt.y, spawn, must)) { b.markNear(wt.x, wt.y, 2, 5); areas.push({ name: NAME_KO.watchtower!, x: wt.x, y: wt.y, w: 2, h: 5, tag: "watchtower" }); }
+  const flagX = bar ? bar.x + bar.w + 2 : cx0 + Math.floor(cw / 2);
+  if (flagX + 1 < wt.x - 1) b.stampSafe("flagpole", flagX, cy0 + 1, spawn, must);
+  // 포대 보급: 남벽 대포 안쪽 아래(벽 바로 위 줄 피해서)에 포탄·화약 / 보급 마당: 병영 아래 / 우물: 가운데
+  const sy = cy0 + ch - 3;
+  cluster(b, ["cannonballs", "keg-powder", "cannonballs"], fx + 4, sy, 2, "c", spawn, must, 1);
+  cluster(b, ["cannonballs", "keg-powder", "barrels"], fx + fw - 6, sy, 2, "c", spawn, must, 1);
+  if (bar) cluster(b, ["crates", "sacks", "barrel", "crate"], bar.x + 1, bar.y + bar.h + 2, 3, "c", spawn, must, 2);
+  cluster(b, ["well"], cx0 + Math.floor(cw / 2) + 2, cy0 + Math.floor(ch / 2), 1, "c", spawn, must, 1);
+  // 바깥: 해변 야자·바위·쪽배, 풀숲 나무 덩이(요새 둘레 2칸 비움)
   b.markNear(fx - 1, fy - 1, fw + 2, fh + 3, 1);
-  const all = { x: 0, y: 0, w: Wd, h: Hd };
-  sprinkle(b, ["palm", "tree-broad", "palm-pair", "tree-fruit", "banana"], Math.floor(Wd / 4), "g", all, spawn, must, 1);
-  sprinkle(b, ["bush", "fern", "grass-tuft", "rock-small", "bush-hibiscus"], Math.floor(Wd / 4), "g", all, spawn, must, 1);
-  sprinkle(b, ["palm-lean", "palm-young", "rock-large"], Math.floor(Wd / 7), "s", all, spawn, must, 1);
-  sprinkle(b, ["driftwood", "shells", "anchor", "rope-coil", "seaweed"], Math.floor(Wd / 7), "s", all, spawn, must, 1);
-  sprinkle(b, ["rowboat", "canoe"], 1, "w", all, spawn, must, 1);
-  sprinkle(b, ["rock-water", "coral", "sea-stack"], Math.floor(Wd / 9), "w~", all, spawn, must, 1);
-  areas.push({ name: "요새 안뜰", x: cx0, y: cy0, w: cw, h: ch, tag: "courtyard" });
-  areas.push({ name: "옆 통로", x: gxs, y: gy, w: 2, h: 4, tag: "postern", access: { x: gxs, y: gy + 2 } });
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if (b.g(x, y) === "p") b.markClear(x, y);
+  for (const gx of [b.int(1, Math.max(2, fx - 6)), b.int(Math.min(Wd - 6, fx + fw + 2), Wd - 5)]) for (const gy of [b.int(1, 6), b.int(10, shore - 9)]) grove(b, ["palm", "tree-broad", "palm-pair", "banana", "tree-fruit"], gx, gy, b.int(2, 3), "g", spawn, must);
+  sprinkle(b, ["bush", "fern", "rock-small", "bush-hibiscus"], Math.floor(Wd / 6), "g", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 2);
+  sprinkle(b, ["palm-lean", "rock-large", "palm"], Math.floor(Wd / 9), "s", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 2);
+  sprinkle(b, ["driftwood", "shells", "anchor", "crab", "tide-pool"], Math.floor(Wd / 8), "s", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 2);
+  sprinkle(b, ["rowboat", "canoe"], 1, "w", { x: 0, y: 0, w: Wd, h: Hd }, spawn, must, 1);
+  cluster(b, ["rock-water", "sea-stack", "coral"], b.int(4, Wd - 6), Hd - 4, 2, "w~", spawn, must, 3);
+  areas.push({ name: "요새 안뜰", x: cx0, y: cy0, w: cw, h: ch, tag: "courtyard", access: inner });
   return { areas, spawn };
 }
 
 // ─────────────────────────────── 난파선·보물 동굴 섬
+/** 굽은 길: a → c 를 한 칸씩, 가로·세로 중 남은 거리가 큰 쪽으로 가되 잡음으로 흔든다(폭 2). 모래 칸은 모래길, 풀 칸은 흙길. */
+function wpath(b: Board, a: Pt, c: Pt, keep = "~wb"): void {
+  let x = a.x, y = a.y, guard = 0;
+  const put = () => { for (let k = 0; k < 2; k++) for (let j = 0; j < 2; j++) { const ch = b.g(x + k, y + j); if (!keep.includes(ch) && b.inb(x + k, y + j)) b.set(x + k, y + j, ch === "s" || ch === "v" ? "v" : "p"); } };
+  put();
+  while ((x !== c.x || y !== c.y) && guard++ < 400) {
+    const dx = c.x - x, dy = c.y - y;
+    const horiz = Math.abs(dx) > 0 && (Math.abs(dy) === 0 || Math.abs(dx) + noise1(x + y * 3, b.seed + 41, 4) * 3 > Math.abs(dy));
+    if (horiz) x += Math.sign(dx); else y += Math.sign(dy);
+    put();
+  }
+}
+
 function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
   const { w: Wd, h: Hd } = b;
   const areas: PirateArea[] = [];
   const cx = Wd / 2 + b.int(-3, 3), cy = Hd / 2 - 1;
-  island(b, cx, cy, Wd * 0.38, Hd * 0.36, 4.2, b.seed + 11);
-  // 북쪽 풀숲 가운데 동굴 자리(동굴 그림이 바위 둔덕을 품는다) — 둘레에 바위 소품을 모은다
+  island(b, cx, cy, Wd * 0.38, Hd * 0.36, 3.2, b.seed + 11);
+  tidyCoast(b);
+  // 북쪽 풀숲 가운데 동굴 자리(동굴 그림이 바위 둔덕을 품는다)
   const rx = Math.round(cx) + b.int(-5, 5), ry = Math.round(cy - Hd * 0.2);
-  let southY = Math.round(cy); while (southY < Hd - 1 && b.g(Math.round(cx), southY + 1) !== "~") southY++;
   const caveX = rx - 1, caveY = ry - 1;
   b.rect(caveX - 1, caveY - 1, 5, 5, "g");
-  lpath(b, { x: Math.round(cx), y: southY - 3 }, { x: caveX + 1, y: caveY + 3 }, "p", 2, "~w");
+  // 난파선 자리(땅 격자로 먼저 고른다): 배 밑 두 줄이 모래, 그 아래가 물 — 남쪽 반에서
+  let wreck: Pt | null = null;
+  for (let t = 0; t < 120 && !wreck; t++) {
+    const x = b.int(2, Wd - 7), y = b.int(Math.round(cy), Hd - 4);
+    let ok = true; for (let k = 0; k < 5; k++) { if (b.g(x + k, y + 2) !== "s") ok = false; if (b.g(x + k, y + 1) !== "s" && b.g(x + k, y + 1) !== "g") ok = false; }
+    if (ok && (WATER.includes(b.g(x + 2, y + 4)) || WATER.includes(b.g(x + 2, y + 3)))) wreck = { x, y };
+  }
+  const cave = plotOf(b, "cave-entrance", caveX, caveY);
+  const caveAcc = cave?.access ?? { x: caveX + 1, y: caveY + 3 };
+  // 동굴 앞 → 난파선 옆 모래까지 굽은 길(흙길 → 모래길)
+  const wreckSide: Pt = wreck ? { x: wreck.x + 2, y: wreck.y - 2 } : { x: Math.round(cx), y: Math.round(cy) + 4 };
+  wpath(b, { x: caveAcc.x, y: caveAcc.y }, wreckSide);
   shallowRing(b, 3);
   b.paintGround();
-  const spawn = { x: Math.round(cx), y: southY - 3 };
+  const spawn = { x: wreckSide.x, y: wreckSide.y };
   const must: Pt[] = [];
-  const cave = plotOf(b, "cave-entrance", caveX, caveY);
   if (cave && b.stamp("cave-entrance", cave.x, cave.y)) {
     b.markNear(cave.x, cave.y, cave.w, cave.h);
     if (cave.access) { must.push(cave.access); b.markClear(cave.access.x - 1, cave.access.y, 3, 2); }
     areas.push({ name: cave.name, x: cave.x, y: cave.y, w: cave.w, h: cave.h, tag: "cave-entrance", ...(cave.door ? { door: cave.door } : {}), ...(cave.access ? { access: cave.access } : {}) });
   }
   b.prune(spawn, must);
-  // 동굴 둘레 바위·해골 표식
-  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if (b.g(x, y) === "p") b.markClear(x, y);
-  sprinkle(b, ["rock-large", "rock-small", "rock-large", "fern", "rock-small"], 7, "gs", { x: rx - 7, y: ry - 4, w: 15, h: 8 }, spawn, must, 0);
-  // 난파선: 남쪽 해변 물가(배 밑이 모래, 뱃머리 쪽이 물에 걸친다)
-  let wrecked = false;
-  for (let t = 0; t < 60 && !wrecked; t++) {
-    const x = b.int(2, Wd - 7), y = b.int(Math.round(cy), Hd - 4);
-    // 아래 줄이 모래·물가(바로 아래가 물)여야
-    let ok = true; for (let k = 0; k < 5; k++) { if (b.g(x + k, y + 2) !== "s") ok = false; if (b.g(x + k, y + 1) !== "s" && b.g(x + k, y + 1) !== "g") ok = false; }
-    if (!ok || !WATER.includes(b.g(x + 2, y + 4)) && !WATER.includes(b.g(x + 2, y + 3))) continue;
-    if (b.stampSafe("shipwreck", x, y, spawn, must)) {
-      wrecked = true; b.markNear(x, y, 5, 3);
-      areas.push({ name: NAME_KO.shipwreck!, x, y, w: 5, h: 3, tag: "shipwreck" });
-      // 흩어진 짐: 난파선 옆 모래
-      cluster(b, ["barrel", "crate", "driftwood", "rope-coil", "keg-powder", "anchor"], x + b.pick([-3, 6]), y + 1, 4, "s", spawn, must, 2);
-    }
+  for (let y = 0; y < Hd; y++) for (let x = 0; x < Wd; x++) if ("pv".includes(b.g(x, y))) b.markClear(x, y);
+  if (wreck && b.stampSafe("shipwreck", wreck.x, wreck.y, spawn, must)) {
+    b.markNear(wreck.x, wreck.y, 5, 3);
+    areas.push({ name: NAME_KO.shipwreck!, x: wreck.x, y: wreck.y, w: 5, h: 3, tag: "shipwreck" });
+    // 떠밀려 온 짐: 난파선 한쪽 모래에 한 무더기(서로 한 칸씩 띄움) + 부서진 쪽배
+    const side = b.chance(0.5) ? -1 : 1;
+    clusterPad(b, ["barrel", "crate", "rope-coil", "keg-powder"], side < 0 ? wreck.x - 4 : wreck.x + 6, wreck.y, 3, "s", spawn, must, 2);
+    clusterPad(b, ["broken-rowboat", "anchor", "driftwood"], side < 0 ? wreck.x + 6 : wreck.x - 4, wreck.y + 1, 2, "s", spawn, must, 2);
   }
-  // 보물 표시: 동굴 앞(길 옆) 닫힌 상자·금화·푯말
-  cluster(b, ["signpost", "tiki-torch"], caveX + 4, caveY + 2, 1, "gs", spawn, must, 1);
-  cluster(b, ["tiki-torch"], caveX - 2, caveY + 2, 1, "gs", spawn, must, 1);
-  cluster(b, ["chest-closed", "gold-pile", "barrel"], caveX - 3, caveY + 4, 2, "gs", spawn, must, 1);
+  // 동굴 앞 표식: 양옆 횃불, 해골 바위(옆 풀숲), 길가 푯말, 보물 표시(X)와 상자는 한 칸씩 띄워서
+  if (cave) {
+    b.stampSafe("tiki-torch", cave.x - 1, cave.y + cave.h - 2, spawn, must);
+    b.stampSafe("tiki-torch", cave.x + cave.w, cave.y + cave.h - 2, spawn, must);
+    clusterPad(b, ["skull-rock"], cave.x - 4, cave.y + 1, 1, "g", spawn, must, 1);
+    clusterPad(b, ["signpost"], caveAcc.x + 3, caveAcc.y + 1, 1, "gs", spawn, must, 1);
+    clusterPad(b, ["treasure-x", "chest-closed", "gold-pile"], cave.x + cave.w + 2, cave.y + cave.h + 1, 2, "gs", spawn, must, 2);
+  }
+  // 동굴 둘레 바위
+  sprinkle(b, ["rock-large", "rock-small", "fern"], 5, "g", { x: rx - 7, y: ry - 4, w: 15, h: 8 }, spawn, must, 1);
+  // 숲 덩이
+  for (let t = 0, made = 0; t < 40 && made < Math.floor((Wd * Hd) / 300); t++) {
+    const gx = b.int(2, Wd - 4), gy = b.int(1, Hd - 4);
+    if (b.g(gx, gy) !== "g" || b.near[b.idx(gx, gy)] || b.clear[b.idx(gx, gy)]) continue;
+    if (grove(b, ["palm", "tree-broad", "palm-pair", "banana", "palm"], gx, gy, b.int(2, 3), "g", spawn, must) > 0) { made++; clusterPad(b, ["bush", "fern", "palm-stump", "bush-hibiscus"], gx + b.pick([-3, 3]), gy + 2, 1, "g", spawn, must, 1); }
+  }
   const all = { x: 0, y: 0, w: Wd, h: Hd };
-  sprinkle(b, ["palm", "palm-pair", "tree-broad", "banana", "palm-young", "tree-fruit"], Math.floor((Wd * Hd) / 110), "g", all, spawn, must, 1);
-  sprinkle(b, ["bush", "fern", "bush-hibiscus", "grass-tuft"], Math.floor((Wd * Hd) / 140), "g", all, spawn, must, 1);
-  sprinkle(b, ["palm-lean", "palm-young"], Math.floor(Wd / 6), "s", all, spawn, must, 1);
-  sprinkle(b, ["shells", "seaweed", "driftwood", "coconuts"], Math.floor(Wd / 5), "s", all, spawn, must, 1);
-  sprinkle(b, ["rowboat"], 1, "w", { x: 0, y: Math.floor(Hd / 2), w: Wd, h: Hd / 2 }, spawn, must, 1);
-  sprinkle(b, ["coral", "coral-purple", "rock-water"], Math.floor(Wd / 5), "w", all, spawn, must, 1);
-  sprinkle(b, ["sea-stack"], 3, "~", all, spawn, must, 2);
+  sprinkle(b, ["palm-lean", "palm"], Math.floor(Wd / 7), "s", all, spawn, must, 2);
+  sprinkle(b, ["shells", "crab", "tide-pool", "coconuts", "driftwood"], Math.floor(Wd / 6), "s", all, spawn, must, 2);
+  sprinkle(b, ["rowboat", "bamboo-raft"], 1, "w", { x: 0, y: Math.floor(Hd / 2), w: Wd, h: Hd / 2 }, spawn, must, 1);
+  for (let k = 0; k < 2; k++) cluster(b, ["coral", "rock-water", "coral-purple"], b.int(4, Wd - 6), b.pick([3, Hd - 5]), 2, "w", spawn, must, 2);
+  sprinkle(b, ["sea-stack"], 2, "~", all, spawn, must, 2);
   return { areas, spawn };
 }
 
@@ -847,7 +978,7 @@ function composeWreck(b: Board): { areas: PirateArea[]; spawn: Pt } {
 interface Room { name: string; tag: string; x: number; y: number; w: number; h: number; floor: string }
 
 /** 실내 방 묶음: 벽(천장 문자) 바탕에 방을 판다. 방 맨 위 두 줄은 앞면(x). 방끼리 남북 문 통로 폭 2. jitter = 동굴처럼 가장자리를 들쭉날쭉하게. */
-function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[], jitter = false, extraFloor: Pt[] = []): void {
+function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[], jitter = false, extraFloor: Pt[] = [], hull = false): void {
   b.grid.fill(wall);
   const nearDoor = (x: number, y: number) => doors.some((d) => x >= d.x - 2 && x <= d.x + 3 && Math.abs(y - d.y) <= 3) || extraFloor.some((d) => Math.abs(d.x - x) <= 2 && Math.abs(d.y - y) <= 2);
   for (const r of rooms) for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
@@ -860,6 +991,15 @@ function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[], jitte
   }
   for (const d of doors) for (let dy = -1; dy <= 1; dy++) for (const dx of [0, 1]) if (dy === 0 || b.g(d.x + dx, d.y + dy) === wall) b.set(d.x + dx, d.y + dy, rooms[0]!.floor);
   for (const d of extraFloor) b.set(d.x, d.y, rooms[0]!.floor);
+  if (hull) {                                                           // 배 모양: 오른쪽 뱃머리로 뾰족, 왼쪽 고물 모서리 둥글게
+    const mid = (b.h - 1) / 2, bow = Math.max(6, Math.round(b.w * 0.22));
+    for (let y = 0; y < b.h; y++) {
+      const u = Math.min(1, Math.abs(y - mid) / mid);
+      const right = b.w - 2 - Math.round(bow * Math.pow(u, 1.7));
+      const left = 1 + Math.round(2.2 * Math.pow(u, 4));
+      for (let x = 0; x < b.w; x++) if ((x > right || x < left) && !extraFloor.some((d) => d.x === x && d.y === y)) b.set(x, y, wall);
+    }
+  }
   if (jitter) {                                                         // 외톨이 바닥·한 칸 홈 다듬기
     for (let pass = 0; pass < 2; pass++) for (let y = 1; y < b.h - 1; y++) for (let x = 1; x < b.w - 1; x++) {
       if (b.g(x, y) === wall || nearDoor(x, y)) continue;
@@ -878,6 +1018,9 @@ function interiorShell(b: Board, wall: string, rooms: Room[], doors: Pt[], jitte
 
 /** 벽 앞면 아래 첫 바닥 줄을 따라 키 큰 가구를 왼쪽부터. 문 통로 열은 비운다. */
 function alongBack(b: Board, r: Room, ids: readonly string[], start: Pt, must: Pt[], gap = 1, blocked: (x: number, w: number) => boolean = () => false): void {
+  // 방 폭에 맞게 간격을 넓혀 한쪽에 몰리지 않게
+  const total = ids.reduce((a, id) => a + (b.kitSize(id)?.w ?? 0), 0);
+  if (ids.length > 1) gap = Math.max(gap, Math.min(4, Math.floor((r.w - 2 - total) / ids.length)));
   let x = r.x + 1;
   for (const id of ids) {
     const s = b.kitSize(id); if (!s) continue;
@@ -891,7 +1034,10 @@ function onFace(b: Board, r: Room, ids: readonly string[], step: number, start: 
   for (let x = r.x + 1 + b.int(0, 2), k = 0; x < r.x + r.w - 1; x += step, k++) {
     const id = ids[k % ids.length]!; const s = b.kitSize(id); if (!s) continue;
     if (x + s.w > r.x + r.w - 1 || blocked(x, s.w)) continue;
-    b.stampSafe(id, x, r.y + 1 - (s.h - 1), start, must, "wall");
+    const y0 = r.y + 1 - (s.h - 1);
+    let onWall = true;                                                   // 벽 앞면(x) 칸 위에만 — 배 뱃머리처럼 앞면이 잘린 곳에 떠 있지 않게
+    for (let yy = Math.max(r.y, y0); yy < y0 + s.h; yy++) for (let xx = x; xx < x + s.w; xx++) if (b.g(xx, yy) !== "x") onWall = false;
+    if (onWall) b.stampSafe(id, x, y0, start, must, "wall");
   }
 }
 function scatterIn(b: Board, r: Room, ids: readonly string[], n: number, start: Pt, must: Pt[], rowFrom = 2): void {
@@ -900,15 +1046,15 @@ function scatterIn(b: Board, r: Room, ids: readonly string[], n: number, start: 
     const id = ids[(k + t) % ids.length]!; const s = b.kitSize(id); if (!s) continue;
     const x = b.int(r.x + 1, r.x + r.w - 1 - s.w), y = b.int(r.y + 2 + rowFrom, r.y + r.h - 1 - s.h);
     if (y < r.y + 2) continue;
-    if (!b.propFits(id, x, y, "12345", 0)) continue;
+    if (!b.propFits(id, x, y, "12345", 1)) continue;
     if (b.stampSafe(id, x, y, start, must)) k++;
   }
 }
 
 interface RoomSpec { name: string; tag: string; w: [number, number]; floor?: string }
 const INTERIOR_LAYOUT: Readonly<Record<"ship" | "tavern" | "cave", { top: RoomSpec[]; bottom: RoomSpec[]; corridor: boolean; topShare: number }>> = {
-  ship: { top: [{ name: "선장실", tag: "captain", w: [12, 15] }, { name: "포 갑판", tag: "gundeck", w: [99, 99] }], corridor: true, topShare: 0.5,
-    bottom: [{ name: "선원 선실", tag: "crew", w: [9, 11] }, { name: "주방", tag: "galley", w: [7, 9] }, { name: "선창", tag: "hold", w: [99, 99] }] },
+  ship: { top: [{ name: "선장실", tag: "captain", w: [12, 14] }, { name: "선원 선실", tag: "crew", w: [9, 11] }, { name: "주방", tag: "galley", w: [99, 99] }], corridor: true, topShare: 0.5,
+    bottom: [{ name: "선창", tag: "hold", w: [10, 12] }, { name: "포 갑판", tag: "gundeck", w: [99, 99] }] },
   tavern: { top: [{ name: "부엌", tag: "kitchen", w: [8, 10] }, { name: "창고", tag: "cellar", w: [7, 9] }, { name: "뒷방", tag: "backroom", w: [99, 99] }], corridor: false, topShare: 0.4,
     bottom: [{ name: "술집 홀", tag: "hall", w: [99, 99] }] },
   cave: { top: [{ name: "굴 입구 방", tag: "cave-hall", w: [99, 99] }], corridor: false, topShare: 0.5,
@@ -947,11 +1093,11 @@ function composeInterior(b: Board, kind: "ship" | "tavern" | "hut" | "cave", pla
     exit = { x: cx, y: Hd - 1 };
   } else {
     const L = INTERIOR_LAYOUT[kind];
-    const inner = Hd - 2 - (L.corridor ? 6 : 0) - 1;
+    const inner = Hd - 2 - (L.corridor ? 5 : 0) - 1;
     const topH = Math.max(8, Math.round(inner * L.topShare));
     const top = splitBand(b, L.top, 1, topH, fl);
     let y = 1 + topH + 1;
-    if (L.corridor) { corr = { name: "복도", tag: "corridor", x: 1, y, w: Wd - 2, h: 5, floor: fl }; y += 6; }
+    if (L.corridor) { corr = { name: "복도", tag: "corridor", x: 1, y, w: Wd - 2, h: 4, floor: fl }; y += 5; }
     const bottom = splitBand(b, L.bottom, y, Hd - 1 - y, fl);
     rooms = [...top, ...(corr ? [corr] : []), ...bottom];
     const doorIn = (r: Room, wy: number) => doors.push({ x: r.x + Math.max(1, Math.min(r.w - 3, Math.floor(r.w / 2) - 1 + b.int(-2, 2))), y: wy });
@@ -962,12 +1108,12 @@ function composeInterior(b: Board, kind: "ship" | "tavern" | "hut" | "cave", pla
     else if (kind === "cave") { const t = top[0]!; extra.push({ x: 0, y: t.y + 3 }, { x: 0, y: t.y + 4 }); exit = { x: 0, y: t.y + 3 }; }
     else exit = { x: corr!.x + 2, y: corr!.y + 2 };
   }
-  interiorShell(b, wall, rooms, doors, kind === "cave", extra);
+  interiorShell(b, wall, rooms, doors, kind === "cave", extra, kind === "ship");
   b.paintGround();
   const spawn = kind === "cave" ? { x: 1, y: exit.y } : kind === "ship" ? { x: exit.x, y: exit.y + 1 } : { x: exit.x, y: exit.y - 1 };
   const must: Pt[] = [exit];
   for (const d of doors) must.push({ x: d.x, y: d.y }, { x: d.x, y: d.y + 1 }, { x: d.x, y: d.y - 1 });
-  for (const r of rooms) must.push({ x: r.x + Math.floor(r.w / 2), y: r.y + 2 + Math.floor((r.h - 2) / 2) });
+  for (const r of rooms) { const c = { x: r.x + Math.floor(r.w / 2), y: r.y + 2 + Math.floor((r.h - 2) / 2) }; while (c.x > r.x && !"12345".includes(b.g(c.x, c.y))) c.x--; must.push(c); }
   b.prune(spawn, must);
   const doorCols = (r: Room) => doors.filter((d) => (d.y === r.y - 1 || d.y === r.y + r.h) && d.x + 1 >= r.x && d.x < r.x + r.w).flatMap((d) => [d.x - 1, d.x, d.x + 1, d.x + 2]);
   const blockedIn = (r: Room) => (x: number, w: number) => doorCols(r).some((c) => c >= x && c < x + w) || (corr === r && x <= exit.x + 2 && x + w > exit.x - 1);
@@ -1025,17 +1171,17 @@ function furnishHall(b: Board, r: Room, start: Pt, must: Pt[], blk: (x: number, 
   }
 }
 
-/** 포 갑판: 남쪽 줄에 대포(남쪽 겨눔) 간격 두고, 사이에 화약통·포탄, 가운데 돛대 밑동, 뒷벽 통. */
+/** 포 갑판: 남쪽 뱃전(맨 아래 줄)에 대포를 남쪽으로 겨눠 줄 세우고 사이에 화약·포탄, 가운데 돛대 밑동, 뒷벽 짐 선반. */
 function furnishGundeck(b: Board, r: Room, start: Pt, must: Pt[], blk: (x: number, w: number) => boolean): void {
-  const cy = r.y + r.h - 3;
+  const cy = r.y + r.h - 2;
   for (let x = r.x + 2; x + 2 <= r.x + r.w - 1; x += 5) {
-    if (blk(x, 2)) continue;
-    if (b.stampSafe("cannon-int", x, cy, start, must)) b.stampSafe(b.pick(["keg-powder", "cannonballs", "barrel"]), x + 3, cy + 1, start, must);
+    if (blk(x, 2) || !"12345".includes(b.g(x, cy + 1)) || !"12345".includes(b.g(x + 1, cy + 1))) continue;
+    if (b.stampSafe("cannon-int", x, cy, start, must)) b.stampSafe(b.pick(["keg-powder", "cannonballs"]), x + 3, cy + 1, start, must);
   }
-  b.stampSafe("mast-base", r.x + Math.floor(r.w / 2), r.y + 2 + Math.floor((r.h - 2) / 2) - 1, start, must);
-  onFace(b, r, ["porthole", "lantern-wall", "porthole", "cutlass-rack"], 4, start, must, blk);
+  b.stampSafe("mast-base", r.x + Math.floor(r.w / 2) - 1, r.y + 2 + Math.floor((r.h - 2) / 2) - 1, start, must);
+  onFace(b, r, ["lantern-wall", "cutlass-rack", "lantern-wall", "porthole"], 5, start, must, blk);
   let x = r.x + 1;
-  for (const id of ["cargo-barrels", "crates", "cargo-barrels"]) { const s = b.kitSize(id); if (s && !blk(x, s.w) && b.stampSafe(id, x, r.y + 2, start, must)) x += s.w + 2; else x++; }
+  for (const id of ["cargo-barrels", "crates"]) { const s = b.kitSize(id); if (s && !blk(x, s.w) && b.stampSafe(id, x, r.y + 2, start, must)) x += s.w + 3; else x++; }
 }
 
 /** 방 종류 → 가구 계획(실내 가구 id 는 interior 묶음). 없는 id 는 건너뛴다. */
@@ -1047,7 +1193,7 @@ export const PIRATE_INTERIOR_PLANS: Readonly<Record<"ship" | "tavern" | "hut" | 
     captain: { back: ["captain-bed", "bookshelf-ship", "wardrobe-ship", "globe", "bookshelf-ship"], face: ["ship-window", "wall-map", "lantern-wall", "cutlass-rack", "porthole"], center: { ids: ["map-table", "captain-desk"], count: 2 }, scatter: { ids: ["chest-big", "chair-ship", "sea-chest", "globe"], count: 3 } },
     crew: { back: ["bunk-ship", "bunk-ship", "bunk-ship", "sea-chest", "bunk-ship"], face: ["porthole", "lantern-wall", "dartboard"], scatter: { ids: ["hammock-int", "sea-chest", "stool-int", "rope-coil", "hammock-int"], count: 4 } },
     galley: { back: ["galley-stove", "galley-shelf", "water-barrel", "galley-shelf"], face: ["pot-rack", "hanging-herbs", "porthole"], center: { ids: ["galley-table"], count: 1 }, scatter: { ids: ["sacks", "barrel", "stool-int", "water-barrel"], count: 3 } },
-    hold: { back: ["cargo-barrels", "cargo-barrels", "crates", "cargo-barrels"], face: ["lantern-wall", "porthole"], scatter: { ids: ["crates", "barrel", "sacks", "keg-powder", "cannon-int", "rope-coil", "mast-base"], count: 7 } },
+    hold: { back: ["cargo-barrels", "crates", "cargo-barrels"], face: ["lantern-wall", "porthole"], scatter: { ids: ["crates", "barrel", "sacks", "keg-powder", "rope-coil", "water-barrel"], count: 6 } },
   },
   tavern: {
     hall: {},                                                     // furnishHall 이 짓는다

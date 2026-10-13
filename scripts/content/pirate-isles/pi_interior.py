@@ -669,19 +669,20 @@ def _gcannon(c):
     for (wx, wy) in ((2, 8), (27, 8), (1, 24), (28, 24)):
         c.R(wx, wy, 3, 7, K('dark', -1)); c.VL(wx, wy, 7, K('dark', 1)); c.HL(wx, wy, 3, K('dark', 2)); c.HL(wx, wy + 6, 3, K('dark', -3))
         c.P(wx + 1, wy + 3, K('iron', 1))
-    # 포신
-    for y in range(2, 31):
-        f = (y - 2) / 28
-        r = 4 - 0.9 * f
+    # 포신: 뒤(위)가 가늘고 앞(아래, 남쪽 겨눔)이 굵다 — 포구가 보는 쪽으로 열린다
+    for y in range(3, 27):
+        f = (y - 3) / 24
+        r = 2.6 + 2.0 * f
         for x in range(int(16 - r - 1), int(16 + r + 2)):
             nx = (x + .5 - 16) / r
             if abs(nx) > 1: continue
             t = 2 if nx < -.45 else 1 if nx < 0 else 0 if nx < .5 else -2
-            if y in (8, 9, 25): t -= 1
-            if y == 10: t += 1
+            if y in (9, 18): t -= 1
+            if y in (22, 23): t += 1
             c.P(x, y, K('iron', t))
-    c.ellf(16, 30, 3, 1.6, lambda x, y, nx, ny, d: K('shadow', 0) if d < .45 else K('iron', 2 if ny < 0 else 0))
-    c.ellf(16, 1.5, 2, 1.5, lambda x, y, nx, ny, d: K('iron', 1 if nx < 0 else -1))
+    c.ellf(16, 27.5, 5.4, 3.2, lambda x, y, nx, ny, d: K('iron', 2 if ny < -0.2 else 0 if ny < 0.4 else -2))
+    c.ellf(16, 27.8, 3.3, 2.0, lambda x, y, nx, ny, d: K('shadow', 0 if d < .6 else 1))
+    c.ellf(16, 2.2, 1.7, 1.4, lambda x, y, nx, ny, d: K('iron', 1 if nx < 0 else -1))
     # 제동 밧줄
     rope_line(c, 7, 6, 16, 3, sag=-1); rope_line(c, 16, 3, 25, 6, sag=-1)
     c.outline()

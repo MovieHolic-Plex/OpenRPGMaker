@@ -149,18 +149,20 @@ def _cannon(c):
     for wx in (3, 26):
         c.R(wx, 14, 4, 12, K('dark', 0)); c.VL(wx, 14, 12, K('dark', 2)); c.HL(wx, 14, 4, K('dark', 2)); c.HL(wx, 25, 4, K('dark', -2))
         c.R(wx + 1, 19, 2, 2, K('iron', 1))
-    # 포신: 뒤(위)에서 앞(아래)으로 오는 원통 — 윗면 밝은 띠
-    for y in range(2, 30):
-        f = (y - 2) / 28
-        r = 3.6 - 0.6 * f
+    # 포신: 뒤(위, 멀다·가늘다)에서 앞(아래, 가깝다·굵다)으로 오는 원통 — 남쪽(보는 쪽)을 겨눈다. 윗면 밝은 띠.
+    for y in range(3, 27):
+        f = (y - 3) / 24
+        r = 2.4 + 1.9 * f
         for x in range(int(16 - r - 1), int(16 + r + 2)):
             nx = (x + .5 - 16) / r
             if abs(nx) > 1: continue
             t = 2 if nx < -.4 else 1 if nx < 0 else 0 if nx < .5 else -2
-            if y in (6, 7, 24): t -= 1
+            if y in (8, 17): t -= 1
+            if y in (22, 23): t += 1                                                     # 포구 보강 띠
             c.P(x, y, K('iron', t))
-    c.ellf(16, 29.5, 3.2, 1.8, lambda x, y, nx, ny, d: K('shadow', 0) if d < .5 else K('iron', 2 if ny < 0 else 0))   # 포구
-    c.ellf(16, 2, 2.4, 1.6, lambda x, y, nx, ny, d: K('iron', 1))
+    c.ellf(16, 27.5, 5.2, 3.2, lambda x, y, nx, ny, d: K('iron', 2 if ny < -0.2 else 0 if ny < 0.4 else -2))   # 포구 테(앞으로 열린 둥근 입)
+    c.ellf(16, 27.8, 3.2, 2.0, lambda x, y, nx, ny, d: K('shadow', 0 if d < .6 else 1))                     # 포구 안 구멍
+    c.ellf(16, 2.2, 1.6, 1.4, lambda x, y, nx, ny, d: K('iron', 1 if nx < 0 else -1))                       # 뒤 손잡이(작게)
     c.outline()
 
 
