@@ -22,28 +22,28 @@ def roof_neon_slab(c, x, y, w, col='magenta'):
     cube(c, x, y, w, 4, 3, 'navy', tt=3, ft=0, ol=True, topmat=col)
 
 
-def windows(c, x, y, w, h, rows, cols, seed=0, pal=('cyan', 'orange', 'magenta', 'violet'), dark=0.28, ww=None, wh=None):
-    """x,y,w,h 영역에 rows×cols 창(켜진 직사각형 + 어두운 틀). 글자 없음."""
+def windows(c, x, y, w, h, rows, cols, seed=0, pal=('cyan', 'orange', 'magenta', 'violet'), dark=0.28, ww=None, wh=None, sill=None):
+    """x,y,w,h 영역에 rows×cols 창. 창마다 틀·창턱·안쪽 빛(천장등 띠·바닥빛)·꺼진 창 반사. 글자 없음.
+    켜진 창은 따뜻한 주황이 주(밤 거리), 차가운 색은 드물게 — 무지개 조각보가 되지 않게."""
     cw = w // cols; rh = h // rows
-    ww = ww or cw - 2; wh = wh or rh - 2
+    ww = ww or (cw - 4 if cw >= 9 else cw - 2); wh = wh or (rh - 4 if rh >= 9 else rh - 2)
+    warm = [p for p in pal if p in ('orange', 'yellow')] or [pal[0]]
     for r in range(rows):
         for q in range(cols):
             wx = x + q * cw + (cw - ww) // 2; wy = y + r * rh + (rh - wh) // 2
             v = hsh(q, r, seed)
-            c.R(wx - 1, wy - 1, ww + 2, wh + 2, K('navy', -3))
-            if (v % 100) / 100 < dark:
-                c.R(wx, wy, ww, wh, K('glass', -1)); c.HL(wx, wy, ww, K('glass', 1))
-            else:
-                col = pal[(v >> 4) % len(pal)]
-                c.R(wx, wy, ww, wh, K(col, 1)); c.HL(wx, wy, ww, K(col, 3))
-                if wh >= 4: c.HL(wx, wy + wh - 1, ww, K(col, 0))
+            if (v % 100) / 100 < max(dark, 0.38): col = None
+            else: col = warm[(v >> 3) % len(warm)] if (v >> 6) % 3 else pal[(v >> 4) % len(pal)]
+            window(c, wx, wy, ww, wh, col, seed=v, sill=sill, blinds=bool((v >> 9) % 3 == 0))
 
 
-def neon_band(c, x, y, w, col='magenta', h=2):
-    c.R(x, y, w, h, K(col, 2)); c.HL(x, y, w, K(col, 3)); c.HL(x, y + h, w, K(col, -2))
+def neon_band(c, x, y, w, col='magenta', h=2, under=None):
+    if under: halo(c, x, y, w, h, col, under, r=2)
+    c.R(x, y, w, h, K(col, 2)); c.HL(x, y, w, K(col, 3))
 
 
-def vneon(c, x, y, h, col='cyan'):
+def vneon(c, x, y, h, col='cyan', under=None):
+    if under: halo(c, x, y, 2, h, col, under, r=2)
     c.VL(x, y, h, K(col, 3)); c.VL(x + 1, y, h, K(col, 1))
 
 
@@ -70,15 +70,22 @@ def building(c, w, h, top, ins, wall, rows, cols, seed, accent='magenta', accent
     front = h - 2 - top
     tcube(c, x0, 1, ww_, top, front, wall, ins=ins, tt=3, ft=ft, topmat=topmat, ol=False, s=seed)
     fy = 1 + top
-    # 옆 네온 띠
-    vneon(c, x0 + 2, fy + 4, front - 12, accent); vneon(c, x0 + ww_ - 4, fy + 4, front - 12, accent2)
+    rh_ = max(wh_tot_ := front - base - 17 - 3, 8) // rows
+    texture_face(c, x0, fy + 1, ww_, front - 1, wall, ft, seam=0, band=rh_, seed=seed, grime=4, light=2)
+    wy = fy + 5
+    windows(c, x0 + 6, wy, ww_ - 12, max(wh_tot_, 8), rows, cols, seed, pal, dark, ww, wh, sill=K(wall, ft + 2))
+    under = {K(wall, ft + d) for d in (-2, -1, 0, 1, 2)}
+    # 옆 네온 띠(벽에 빛 번짐)
+    vneon(c, x0 + 2, fy + 4, front - 12, accent, under); vneon(c, x0 + ww_ - 4, fy + 4, front - 12, accent2, under)
     if neon_top: neon_band(c, x0 + 1, fy + 1, ww_ - 2, accent, 1)
-    wy = fy + 5; wh_tot = front - base - 17 - 3
-    windows(c, x0 + 6, wy, ww_ - 12, max(wh_tot, 8), rows, cols, seed, pal, dark, ww, wh)
-    # 아래: 문 + 차양
-    dx = x0 + ww_ // 2 - door_w // 2
+    # 아래: 1층 상가 — 문 양옆 진열창(안쪽 빛) + 차양 + 문 위 간판 상자(글자 없음)
+    dx = x0 + ww_ // 2 - door_w // 2; gy = fy + front - base - 12
+    c.R(x0 + 3, gy - 3, ww_ - 6, 1, K(wall, ft - 2))
+    for sx, sw in ((x0 + 5, dx - x0 - 8), (dx + door_w + 3, x0 + ww_ - 5 - (dx + door_w + 3))):
+        if sw >= 5: window(c, sx, gy + 1, sw, 8, accent2 if sw % 2 else 'orange', sill=K('conc', 2))
+    awning(c, dx - 4, gy - 3, door_w + 8, accent, 2)
     base_strip(c, x0, fy + front - base, ww_)
-    door(c, dx, fy + front - base - 11, door_w, 11, door_col)
+    door(c, dx, fy + front - base - 9, door_w, 9, door_col)
     return fy, front
 
 
@@ -128,6 +135,7 @@ def _nd(c):
     awning(c, 4, fy + 22, 56, 'magenta', 3)
     door(c, 28, fy + 30, 8, 12, 'orange'); base_strip(c, 1, fy + 47, 62)
     roof_tank(c, 14, 4, 4); roof_fan(c, 38, 4, 10); roof_neon_slab(c, 48, 3, 9, 'orange')
+    texture_face(c, 1, 14, 62, 49, 'rust', -2, seam=6, band=0, seed=4, grime=3)
     c.outline()
 
 
@@ -142,6 +150,7 @@ def _ar(c):
     windows(c, 44, fy + 16, 28, 16, 1, 3, 6, ('cyan', 'magenta', 'violet'), 0.1, ww=6, wh=12)
     door(c, 35, fy + 24, 10, 11, 'magenta'); base_strip(c, 1, fy + 46, 78)
     roof_neon_slab(c, 30, 3, 20, 'cyan'); roof_fan(c, 10, 5, 10); roof_box(c, 58, 5, 12)
+    texture_face(c, 1, 15, 78, 48, 'violet', -2, seam=10, band=0, seed=5)
     c.outline()
 
 
@@ -157,6 +166,7 @@ def _cl(c):
     c.R(13, fy + 21, 6, 6, K('cyan', 2)); c.R(61, fy + 21, 6, 6, K('orange', 2))
     door(c, 34, fy + 24, 12, 11, 'magenta'); c.R(30, fy + 20, 20, 2, K('orange', 3)); base_strip(c, 1, fy + 46, 78)
     cube(c, 28, 3, 24, 5, 3, 'navy', tt=3, ft=0, topmat='cyan'); roof_fan(c, 8, 5, 10); roof_fan(c, 62, 5, 10)
+    texture_face(c, 1, 15, 78, 48, 'navy', -2, seam=8, band=0, seed=6)
     c.outline()
 
 
@@ -171,14 +181,15 @@ def _cn(c):
     windows(c, 38, fy + 20, 20, 14, 1, 2, 8, ('cyan', 'cyan', 'green'), 0.1, ww=7, wh=10)
     door(c, 28, fy + 30, 8, 12, 'cyan'); base_strip(c, 1, fy + 47, 62)
     roof_box(c, 8, 4, 12, mat='white'); roof_fan(c, 42, 4, 10); cube(c, 26, 3, 10, 4, 3, 'white', tt=3, ft=-1, topmat='cyan')
+    texture_face(c, 1, 14, 62, 49, 'white', -3, seam=8, band=0, seed=7)
     c.outline()
 
 
 @piece('street-capsule-hotel', '캡슐 호텔(사다리꼴 옥상 + 작은 캡슐 창 격자)', 5, 5, 'structure', group='street',
        solid=[(x, y) for x in range(5) for y in (3, 4)], tags=['건물', '호텔'], desc='캡슐 호텔. 작은 창이 줄지은 벽.', line='B')
 def _ch(c):
-    fy, fr = building(c, 80, 80, 13, 6, 'hull', 5, 8, 9, 'cyan', 'violet', topmat='conc', pal=('cyan', 'violet', 'orange', 'cyan'), dark=0.25, ww=5, wh=5, ft=-2, door_w=10, door_col='violet')
-    roof_box(c, 10, 5, 14); roof_neon_slab(c, 32, 3, 16, 'violet'); roof_fan(c, 56, 5, 10)
+    fy, fr = building(c, 80, 80, 20, 9, 'hull', 4, 8, 9, 'cyan', 'violet', topmat='conc', pal=('cyan', 'violet', 'orange', 'cyan'), dark=0.25, ww=5, wh=5, ft=-2, door_w=10, door_col='violet')
+    roof_detail(c, 14, 3, 52, 16, 'conc', seed=3, hatch=True, vents=True); roof_fan(c, 54, 9, 8)
     c.outline()
 
 
@@ -195,6 +206,7 @@ def _dc(c):
     vneon(c, 3, fy + 4, 44, 'green'); vneon(c, 91, fy + 4, 44, 'cyan')
     door(c, 42, fy + 40, 12, 14, 'green'); base_strip(c, 1, fy + 59, 94)
     for x in (10, 40, 66): cube(c, x, 5, 16, 6, 5, 'hull', tt=3, ft=-1, tex='grate'); c.HL(x + 2, 12, 12, K('cyan', 2))
+    texture_face(c, 1, 18, 94, 61, 'cable', 0, seam=12, band=13, seed=8)
     c.outline()
 
 
@@ -208,6 +220,7 @@ def _dg(c):
     for j in range(5): c.HL(12, fy + 12 + j * 5, 56, K('cable', 3))
     hazard(c, 12, fy + 34, 56, 3); vneon(c, 4, fy + 6, 30, 'orange'); vneon(c, 74, fy + 6, 30, 'orange')
     neon_band(c, 20, fy + 2, 40, 'orange', 2); base_strip(c, 1, fy + 44, 78)
+    texture_face(c, 1, 17, 78, 46, 'hull', -2, seam=8, band=0, seed=9)
     c.outline()
 
 
@@ -223,6 +236,7 @@ def _tsn(c):
     windows(c, 50, fy + 8, 38, 22, 2, 4, 11, ('cyan', 'cyan', 'violet'), 0.1, ww=7, wh=8)
     c.R(40, fy + 6, 16, 5, K('cable', 0)); c.R(41, fy + 7, 14, 3, K('green', 1)); c.HL(41, fy + 7, 14, K('green', 3))
     door(c, 40, fy + 22, 16, 14, 'cyan'); hazard(c, 2, fy + 40, 92, 2); base_strip(c, 1, fy + 44, 94)
+    texture_face(c, 1, 17, 94, 46, 'navy', -2, seam=12, band=0, seed=10)
     c.outline()
 
 

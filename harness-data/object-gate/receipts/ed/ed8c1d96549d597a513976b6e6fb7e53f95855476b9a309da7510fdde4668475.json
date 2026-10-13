@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ed8c1d96549d597a513976b6e6fb7e53f95855476b9a309da7510fdde4668475",
+ "width": 32,
+ "height": 32,
+ "kind": "structure",
+ "name": "내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 위험 띠)",
+ "label": "sf-station/sf-airlock-inner",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The airlock door is drawn entirely in front elevation with no visible top surface (only a 1px black outline at row 0). The upper trapezoidal section contains an upright screen, buttons, and vertical mullions, making it a front-facing bulkhead/lintel rather than a horizontal top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12146
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation as an octagonal/chamfered sci-fi bulkhead with a front-facing monitor screen on the upper frame and an elliptical hatch below. The top edge at row 0 is a flat 1px outline with no visible top surface or lintel depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 11914
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "bulkhead door frame and hatch",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn in pure front elevation like a side-scroller/platformer sci-fi blast door, complete with chamfered upper corners, an upper monitor/indicator panel, hazard stripe, and split hatch. There is no visible top surface showing the depth/thickness of the frame or roof (0px).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10417
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sci-fi airlock bulkhead door",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire structure is drawn as a flat front elevation of a sci-fi door with chamfered upper corners, an upper display screen with status lights, a hazard stripe, and an oval hatch. There is no visible top surface or horizontal depth at the top edge (row 0 is just a 1px outline).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9256
+  }
+ ],
+ "decidedAt": "2026-10-13T15:32:45.208Z",
+ "cells": {
+  "16": [
+   "2fd08f012aca056d",
+   "3ae2ab04943c64d5",
+   "7e1628ff14f68686",
+   "88e30b1a2784214f"
+  ],
+  "24": [
+   "012b41ca00f4abb6",
+   "02a581e084258761",
+   "1bd0f8f25fadffef",
+   "214d82d70ce53bef",
+   "285b21ea94f9733c",
+   "338c2c07095e28d3",
+   "33da81d77eb0e79b",
+   "3c2b1b3764ea6df9",
+   "40bc5861ed42e5d2",
+   "4366e60dfd162d1e",
+   "48cffbf721b2a452",
+   "6a13e09a8770001e",
+   "7e814ef6738fd759",
+   "8ace7137af055aa9",
+   "917da79f5fa82e46",
+   "929443c59eb4660c",
+   "9366dd233c6a1abc",
+   "bfa662e7291aac70",
+   "c14994eb68425167",
+   "ca041e7ef9a99157",
+   "ce8bea31b2a2b9cf",
+   "d96d11600579d86e",
+   "e0b65706eca19680",
+   "fb34ddd13cb2ba28"
+  ],
+  "32": [
+   "e75b8f4ed0e4ba46"
+  ],
+  "48": [
+   "6227abca19a8ebb9",
+   "639a9a398ab9ee4f",
+   "954dd78202ee9e59",
+   "a8ccf3b04f9d8646",
+   "af01a1246c8bb56e",
+   "edcea9aec9064acf"
+  ]
+ }
+}

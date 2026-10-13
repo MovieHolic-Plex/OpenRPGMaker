@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9fb44f404267797cfad7b2a51fc0dd32e90ae3248bee150dc11913606dfe25fb",
+ "width": 64,
+ "height": 48,
+ "kind": "structure",
+ "name": "주거 모듈(조립식 평지붕 건물, 창 줄과 문)",
+ "label": "sf-station/sf-hab-module",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "prefabricated building / residential module",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a clearly visible sloped roof / top surface extending from row 6 to row 21 (~16 rows tall) above the south-facing facade.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4614
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "prefabricated residential module / building",
+    "kind_matches": true,
+    "top_rows": 17,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building features a large, well-defined roof surface spanning rows 5 to 21 (17 pixel rows) sloping down toward the camera, clearly distinguishing the top from the south front facade below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4955
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "prefabricated living module building",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building has a large forward-facing sloped metal roof spanning rows 5 to 20 (16 rows) above the front facade, properly representing the top surface in 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5258
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "prefabricated building module with sloped metal roof and front facade",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The building shows a substantial top roof surface spanning rows 5 to 20 (~16 px rows tall) above the front facade and entrance door, adhering properly to 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4444
+  }
+ ],
+ "decidedAt": "2026-10-13T15:38:14.589Z",
+ "cells": {
+  "16": [
+   "0e5d8b1232248020",
+   "1d7d4c04288d0908",
+   "39b757912ef2177a",
+   "5a1b9b860ee7b12a",
+   "6576a4e6489b9637",
+   "6a4fcb5dd1f53b9d",
+   "846366bfaf4e9da6",
+   "da698ebe90f37e6c",
+   "e7a1fc256a0c01f1",
+   "efd6c5428aca91d6",
+   "f47f19436caba95a",
+   "f719015ad5698b1b"
+  ],
+  "24": [
+   "1ee2baa788f69f1a",
+   "22361091d4014f58",
+   "27d7194a4c8ddcfa",
+   "2e298ad4c1e57049",
+   "49458b7452e9a573",
+   "5d511bd467ec87c8",
+   "6514afd976927f06",
+   "654f348ff74114ed",
+   "679ef5c958722575",
+   "712759fb6af927d7",
+   "74440a02856c4e57",
+   "74aee71dd0b92ca4",
+   "99eb9ecb5743a654",
+   "9f98ad63b21d5b01",
+   "c20d3692ac226d41",
+   "cdb5617c9ced16f2",
+   "e3af9604362327f1",
+   "e5c817af79338b78"
+  ],
+  "32": [
+   "213124722947a655",
+   "2357a6fec979ce0e",
+   "4ee1b2ab51e8e1a3",
+   "5c481a7a48341383",
+   "69bcbbc0d72f9aa5",
+   "6c4aab856462342e",
+   "7436bfc2ecae067a",
+   "af6747bfc402122c"
+  ],
+  "48": [
+   "375f9a631ba700e9",
+   "5a152c2d049e9c64",
+   "7277f3e5ce5d590e",
+   "ab3031c8a159a044",
+   "e66d6aa1b3e7448d",
+   "ee895ab7cd386b5e"
+  ]
+ }
+}

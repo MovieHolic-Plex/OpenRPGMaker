@@ -14,6 +14,7 @@ def _airlock(c):
     tcube(c, 0, 3, 48, 15, 26, 'hull', ins=5, tt=3, ft=-3, ol=False)
     cube(c, 18, 7, 12, 5, 3, 'white', tt=3, ft=-1, ol=False)
     hazard(c, 1, 20, 46, 2); door_panel(c, 16, 25, 16, 15)
+    texture_face(c, 0, 18, 48, 26, 'hull', -3, seam=8, band=0, seed=11)
     c.HL(0, 44, 48, K('hull', 2)); c.HL(0, 45, 48, K('hull', -3)); c.outline()
 
 @piece('neon-sign-tower', '네온 간판 탑(콘크리트 윗면 + 간판 상자, 글자 없음)', 1, 3, 'box', group='street', solid=[(0, 2)], tags=['네온', '간판'], desc='거리 간판 탑. 마젠타 띠.', line='B')

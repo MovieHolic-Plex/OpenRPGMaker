@@ -176,10 +176,11 @@ def _centri(c):
 
 @piece('fume-hood', '흄 후드 실험장(윗면 환기구 + 유리 앞창 + 안의 기구)', 2, 2, 'tall_furniture', group='interior', solid=[(0, 1), (1, 1), (0, 0), (1, 0)], tags=['후드', '실험실'], desc='실험실 유독 가스 후드. 벽 쪽에 놓는다.')
 def _fume(c):
-    box(c, 1, 2, 30, 11, 19, 'white', tt=3, ft=-2, lip=True, tex='panel')
-    c.R(5, 5, 8, 3, K('cable', 0)); [c.HL(6, 5 + k, 6, K('hull', 2)) for k in (0, 2)]; c.R(17, 5, 4, 3, K('white', 0)); c.R(23, 4, 5, 5, K('white', 1)); c.HL(23, 4, 5, K('white', 5)); c.ell(25, 6, 1, 1, K('cable', 0))
-    c.R(4, 15, 24, 10, K('glass', -1)); c.HL(4, 15, 24, K('cyan', 3)); c.VL(16, 15, 10, K('white', 0))
-    c.R(6, 20, 6, 5, K('green', 2)); c.HL(6, 20, 6, K('green', 4)); c.R(7, 18, 2, 2, K('white', 4)); c.R(19, 21, 4, 4, K('orange', 2)); c.HL(19, 21, 4, K('orange', 4)); c.R(24, 19, 3, 6, K('cyan', 2)); c.HL(24, 19, 3, K('cyan', 5))
+    box(c, 1, 2, 30, 12, 18, 'white', tt=4, ft=-2, lip=True, topmat='hull', tex='grate')
+    cyl(c, 9, 7, 5, 2, 2, 'white', tt=3, ft=-1, ol=False); c.ell(9, 7, 3, 1, K('cable', 0))
+    box(c, 17, 4, 11, 6, 3, 'white', tt=3, ft=-2, lip=True); c.P(22, 9, K('orange', 3)); c.P(24, 9, K('cyan', 3)); c.HL(18, 5, 9, K('white', 5))
+    c.R(4, 16, 24, 9, K('cable', -1)); c.R(5, 17, 22, 2, K('glass', -1)); c.HL(5, 17, 22, K('cyan', 1)); c.R(5, 19, 22, 5, K('glass', 0)); c.R(5, 24, 22, 1, K('hull', 4)); c.VL(16, 17, 7, K('white', 0))
+    c.R(7, 21, 5, 3, K('green', 2)); c.HL(7, 21, 5, K('green', 4)); c.R(19, 22, 4, 2, K('orange', 2)); c.HL(19, 22, 4, K('orange', 4)); c.R(24, 20, 2, 4, K('cyan', 2))
     c.R(4, 26, 24, 4, K('hull', -2)); c.HL(4, 26, 24, K('hull', 2)); led(c, 6, 28, 'green'); led(c, 9, 28, 'orange'); c.outline()
 
 
@@ -241,12 +242,14 @@ def leaves(c, x, y, w, s=0, tt=2):
 
 @piece('hydroponic-rack', '수경 재배 선반(윗면 + 잎 + 보라 재배등 + 물 트레이)', 2, 2, 'tall_furniture', group='interior', solid=[(0, 1), (1, 1), (0, 0), (1, 0)], tags=['수경', '재배'], desc='수경 재배실 선반 한 단. 줄지어 놓는다.')
 def _hydro(c):
-    box(c, 1, 2, 30, 11, 19, 'hull', tt=3, ft=-1, tex='grate')
-    c.R(5, 4, 22, 6, K('cable', -1)); c.R(6, 5, 20, 4, K('cyan', -1)); c.HL(6, 5, 20, K('cyan', -2)); c.HL(6, 8, 20, K('cyan', 1))
-    leaves(c, 7, 8, 6, 1); leaves(c, 15, 8, 5, 2); leaves(c, 21, 8, 4, 3)
-    c.R(3, 15, 26, 12, K('cable', -1)); c.R(4, 16, 24, 3, K('violet', 3)); c.HL(4, 16, 24, K('violet', 6)); c.HL(4, 18, 24, K('violet', 0))
-    c.R(4, 20, 24, 6, K('cyan', 0)); c.HL(4, 20, 24, K('cyan', 2)); leaves(c, 6, 25, 6, 4, 1); leaves(c, 15, 25, 8, 5, 1)
-    c.R(3, 28, 26, 2, K('hull', -2)); led(c, 6, 29, 'green'); led(c, 9, 29, 'cyan'); led(c, 12, 29, 'orange')
+    box(c, 1, 2, 30, 14, 15, 'hull', tt=3, ft=-1, lip=True, tex='panel')
+    for x, sd in ((8, 1), (16, 2), (24, 3)):
+        c.ell(x, 9, 5, 3, K('cable', -1)); c.ell(x, 9, 4, 2, K('rust', -2)); c.ell(x, 8, 3, 1, K('plant', 2))
+        for k in range(5): c.P(x - 3 + k * 1 + (k // 3), 6 - (hsh(k, sd, 2) % 3), K('plant', 3 + k % 2))
+        c.P(x - 1, 7, K('plant', 5)); c.P(x + 2, 8, K('plant', 5))
+    c.R(4, 18, 24, 9, K('cable', -1)); c.R(5, 19, 22, 2, K('violet', 3)); c.HL(5, 19, 22, K('violet', 6)); c.R(5, 21, 22, 5, K('cyan', 0)); c.R(5, 26, 22, 1, K('hull', 4))
+    leaves(c, 7, 26, 6, 4, 1); leaves(c, 17, 26, 7, 5, 1)
+    c.R(4, 28, 24, 2, K('hull', -2)); led(c, 6, 29, 'green'); led(c, 9, 29, 'cyan'); led(c, 12, 29, 'orange')
     c.R(2, 30, 3, 1, K('hull', -2)); c.R(27, 30, 3, 1, K('hull', -2)); c.outline()
 
 
@@ -381,11 +384,11 @@ def _elev(c):
 
 @piece('airlock-inner', '내부 에어록 격벽문(사다리꼴 윗면 틀 + 큰 원형 해치 + 위험 띠)', 2, 2, 'structure', group='interior', solid=[(0, 1), (1, 1), (0, 0), (1, 0)], tags=['에어록', '문'], desc='구역 사이 격벽 에어록.')
 def _airin(c):
-    tcube(c, 0, 2, 32, 11, 18, 'hull', ins=5, tt=3, ft=-2, ol=False, seams=True)
-    hazard(c, 1, 13, 30, 2); c.R(10, 4, 12, 5, K('cable', 0)); c.R(11, 5, 4, 3, K('orange', 3)); c.R(17, 5, 4, 3, K('green', 2))
-    c.ell(16, 22, 8, 6, K('hull', -2)); c.ell(16, 22, 7, 5, K('hull', 2)); c.ell(16, 22, 5, 4, K('white', 0)); c.ell(16, 22, 2, 2, K('hull', 0)); c.R(13, 21, 6, 2, K('orange', 3)); c.VL(16, 18, 9, K('cable', 0))
-    for dx, dy in ((-6, 0), (6, 0), (0, -5), (0, 5)): c.P(16 + dx, 22 + dy, K('white', 5))
-    c.R(3, 30, 26, 1, K('hull', -3)); c.outline()
+    tcube(c, 0, 1, 32, 15, 16, 'hull', ins=6, tt=3, ft=-3, ol=False, seams=True)
+    cyl(c, 16, 8, 6, 2, 2, 'white', tt=3, ft=-1, ol=False); c.ell(16, 8, 4, 1, K('cable', 0)); c.P(15, 8, K('orange', 3)); c.P(18, 8, K('cyan', 3))
+    c.HL(2, 15, 28, K('hull', 4)); hazard(c, 1, 17, 30, 2); door_panel(c, 8, 22, 16, 8)
+    c.R(3, 22, 3, 5, K('cable', 0)); c.P(4, 23, K('orange', 3)); c.P(4, 25, K('green', 3)); c.R(26, 22, 3, 5, K('cable', 0)); c.P(27, 23, K('cyan', 3))
+    c.HL(0, 31, 32, K('hull', -3)); c.outline()
 
 
 @piece('hatch-floor', '바닥 해치(정사각 판 + 가운데 손잡이 + 경고 모서리)', 1, 1, 'flat', group='interior', solid=[], tags=['해치', '바닥'], desc='갑판 바닥 점검 해치. 위로 걷는다.')

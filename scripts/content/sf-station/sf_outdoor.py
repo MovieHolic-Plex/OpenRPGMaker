@@ -3,11 +3,10 @@ from sf_core import *
 
 
 def wins(c, x, y, n, ww, wh, gap, lit='cyan', every=2, seed=0, glass='glass'):
-    """정면 창 줄: 어두운 유리 + 위 밝은 줄 + 아래 턱. 일부는 램프 켜짐."""
+    """정면 창 줄: 틀 + 창턱 + (켜진 창: 천장등 띠·바닥빛 / 꺼진 창: 유리 그러데이션·대각 반사)."""
     for i in range(n):
         xx = x + i * (ww + gap)
-        c.R(xx, y, ww, wh, K(glass, -1)); c.HL(xx, y, ww, K(lit, 3 if (i + seed) % every == 0 else 1)); c.HL(xx, y + wh, ww, K('hull', 2))
-        c.VL(xx, y + 1, wh - 1, K(glass, 1))
+        window(c, xx, y, ww, wh, lit if (i + seed) % every == 0 else None, seed=i + seed, frame=K('hull', -3), sill=K('hull', 2))
 
 
 def baseline(c, w, y, mat='hull'):
@@ -67,6 +66,7 @@ def _(c):
     stripe(c, 1, 22, 62, 'orange')
     wins(c, 5, 27, 2, 8, 6, 3); wins(c, 41, 27, 2, 8, 6, 3)
     door_low(c, 27, 30, 10, 14)
+    texture_face(c, 0, 22, 64, 24, 'white', -2, seam=8, band=0, seed=1)
     baseline(c, 64, 46); c.outline()
 
 
@@ -78,6 +78,7 @@ def _(c):
     wins(c, 6, 33, 2, 10, 8, 4, seed=0); wins(c, 66, 33, 2, 10, 8, 4, seed=1)
     wins(c, 6, 46, 2, 10, 8, 4, seed=1); wins(c, 66, 46, 2, 10, 8, 4, seed=0)
     door_panel(c, 40, 40, 16, 17)
+    texture_face(c, 0, 26, 96, 36, 'hull', -3, seam=8, band=12, seed=2)
     baseline(c, 96, 62); c.outline()
 
 
@@ -93,6 +94,7 @@ def _(c):
     c.R(6, 35, 68, 8, K('glass', -1)); c.HL(6, 35, 68, K('cyan', 3)); c.HL(6, 43, 68, K('hull', 2))
     for i in range(6, 74, 11): c.VL(i + 11 - 1, 36, 7, K('white', -1)); c.R(i + 2, 38, 6, 3, K('cyan', 1))
     door_low(c, 33, 46, 14, 15)
+    texture_face(c, 0, 29, 80, 33, 'white', -2, seam=10, band=0, seed=3)
     baseline(c, 80, 62); c.outline()
 
 
@@ -107,6 +109,7 @@ def _(c):
     stripe(c, 1, 51, 94, 'orange')
     wins(c, 6, 56, 2, 10, 6, 4); wins(c, 66, 56, 2, 10, 6, 4)
     door_low(c, 41, 55, 14, 12)
+    texture_face(c, 0, 51, 96, 18, 'white', -2, seam=8, band=0, seed=4); texture_face(c, 14, 23, 68, 20, 'hull', -3, seam=8, band=0, seed=5)
     baseline(c, 96, 69); c.outline()
 
 
@@ -119,6 +122,7 @@ def _(c):
     for j in range(29, 41, 3): c.HL(16, j, 48, K('hull', -1)); c.HL(16, j + 1, 48, K('hull', -3))
     c.VL(40, 28, 14, K('hull', 2)); c.HL(15, 43, 50, K('orange', 3)); c.R(38, 24, 4, 2, K('orange', 3))
     hazard(c, 15, 42, 50, 2)
+    texture_face(c, 0, 20, 80, 26, 'hull', -3, seam=8, band=0, seed=6)
     baseline(c, 80, 46); c.outline()
 
 
@@ -164,6 +168,7 @@ def _(c):
     c.R(9, 22, 30, 7, K('glass', -1)); c.HL(9, 22, 30, K('cyan', 3)); [c.VL(i, 23, 6, K('hull', 2)) for i in (17, 25, 33)]
     cube(c, 18, 3, 12, 4, 4, 'white', tt=3, ft=-1, ol=False); c.R(22, 0, 4, 3, K('hull', 1)); c.P(23, 0, K('orange', 3))
     door_low(c, 19, 62, 10, 6)
+    texture_face(c, 0, 62, 48, 8, 'hull', -3, seam=8, band=0, seed=7, grime=2)
     baseline(c, 48, 70); c.outline()
 
 
@@ -187,6 +192,7 @@ def _(c):
     hazard(c, 1, 40, 78, 2)
     wins(c, 6, 47, 2, 9, 6, 3, lit='orange'); wins(c, 53, 47, 2, 9, 6, 3, lit='orange')
     door_panel(c, 32, 48, 16, 13)
+    texture_face(c, 0, 38, 80, 24, 'hull', -3, seam=8, band=0, seed=9)
     baseline(c, 80, 62); c.outline()
 
 
@@ -200,6 +206,7 @@ def _(c):
     wins(c, 8, 45, 2, 9, 6, 3, lit='cyan'); wins(c, 55, 45, 2, 9, 6, 3, lit='cyan')
     door_low(c, 34, 47, 12, 14)
     stripe(c, 1, 40, 78, 'cyan')
+    texture_face(c, 0, 38, 80, 24, 'hull', -3, seam=8, band=0, seed=10)
     baseline(c, 80, 62); c.outline()
 
 
@@ -214,6 +221,7 @@ def _(c):
     c.R(54, 40, 4, 2, K('orange', 3)); c.R(21, 44, 2, 28, K('orange', 2)); c.R(89, 44, 2, 28, K('orange', 2))
     hazard(c, 23, 70, 66, 2)
     wins(c, 4, 52, 1, 10, 7, 1); wins(c, 98, 52, 1, 10, 7, 1)
+    texture_face(c, 0, 34, 112, 43, 'hull', -3, seam=8, band=14, seed=8)
     baseline(c, 112, 77); c.outline()
 
 
@@ -330,10 +338,10 @@ def _(c):
     hazard(c, 6, 22, 36, 1); c.outline()
 
 
-@piece('beacon', '신호 비콘(받침 상자 위에 램프 상자를 올린 착륙장 신호등)', 1, 1, 'box', group='outdoor', solid=[(0, 0)], tags=['비콘', '램프'], desc='착륙장 신호 비콘.')
+@piece('beacon', '착륙 유도등 상자(윗면에 주황 렌즈가 박힌 낮은 상자)', 1, 1, 'box', group='outdoor', solid=[(0, 0)], tags=['비콘', '램프'], desc='착륙장 유도등.')
 def _(c):
-    cube(c, 1, 6, 14, 6, 3, 'hull', tt=3, ft=-1, ol=False)
-    cube(c, 4, 1, 8, 4, 3, 'orange', tt=3, ft=0, ol=False); c.P(7, 6, K('glow', 1)); c.P(8, 6, K('glow', 1)); c.outline()
+    tcube(c, 1, 2, 14, 9, 4, 'hull', ins=2, tt=3, ft=-1, topmat='white', ol=False, seams=False)
+    c.ell(8, 6, 3, 2, K('orange', 1)); c.ell(8, 6, 2, 1, K('orange', 3)); c.P(7, 5, K('glow', 1)); c.P(3, 12, K('cyan', 3)); c.P(12, 12, K('cyan', 3)); c.outline()
 
 
 @piece('sign-chunky', '경고 표지 상자(깊은 윗면이 있는 높은 표지 상자)', 1, 2, 'box', group='outdoor', solid=[(0, 1)], tags=['표지', '경고'], desc='구역 경고 표지.')
@@ -395,17 +403,32 @@ def _(c):
 
 
 def rock(c, cx, cy, rx, ry, seed=0, mat='regolith'):
-    """달 바위 덩이: 불규칙 반타원 + 왼쪽 위 빛 + 아래 접지 그림자 + 윤곽."""
+    """달 바위 덩이: 불규칙 반타원을 «면(facet)» 여럿으로 쪼갠다 — 면마다 빛 방향으로 단을 정하고(윗면 밝음·아래 어두움),
+    면 경계는 밝은 능선/어두운 골, 아래 접지 그림자 한 줄 + 윤곽. 둥근 그러데이션 덩이(평평한 회색)가 되지 않게."""
+    n = 3 + (rx * ry) // 30
+    seeds = [(cx + ((hsh(k, 1, seed) % (2 * rx + 1)) - rx) * .8, cy + ((hsh(k, 2, seed) % (2 * ry + 1)) - ry) * .8) for k in range(n)]
+    tone = []
+    for sx, sy in seeds:
+        lit = (cx - sx) / (rx + 1) * .6 + (cy - sy) / (ry + 1) * 1.1 + ((hsh(int(sx), int(sy), seed) % 3) - 1) * .25
+        tone.append(3 if lit > .55 else 2 if lit > .15 else 1 if lit > -.3 else 0 if lit > -.7 else -1)
+    own = {}
     for y in range(cy - ry - 1, cy + ry + 2):
         for x in range(cx - rx - 1, cx + rx + 2):
             j = ((hsh(x, y, seed) % 5) - 2) * .035
             d = ((x - cx) / (rx + .5)) ** 2 + ((y - cy) / (ry + .5)) ** 2 + j
-            if d <= 1:
-                lit = (cx - x) * .45 + (cy - y) * .9
-                t = 1 + (2 if lit > rx * .5 else 1 if lit > 0 else 0 if lit > -rx * .5 else -1) - (1 if d > .82 and y > cy else 0)
-                if y > cy + ry * .4: t -= 1
-                if hsh(x, y, seed + 7) % 11 == 0: t += 1
-                c.P(x, y, K(mat, t))
+            if d > 1: continue
+            k = min(range(n), key=lambda i: (x - seeds[i][0]) ** 2 + ((y - seeds[i][1]) * 1.3) ** 2)
+            own[(x, y)] = k
+            t = tone[k] - (1 if y > cy + ry * .55 else 0)
+            if hsh(x, y, seed + 7) % 13 == 0: t -= 1
+            c.P(x, y, K(mat, t))
+    for (x, y), k in own.items():                     # 면 경계: 위 이웃과 면이 다르면 능선(밝음)/골(어두움)
+        up = own.get((x, y - 1)); lf = own.get((x - 1, y))
+        if up is not None and up != k: c.P(x, y, K(mat, max(tone[k], tone[up]) + 1 if tone[up] < tone[k] else min(tone[k], tone[up]) - 1))
+        elif lf is not None and lf != k and hsh(x, y, seed) % 2: c.P(x, y, K(mat, min(tone[k], tone[lf]) - 1))
+    for x in range(cx - rx + 1, cx + rx):                # 접지 그림자: 바닥 한 줄 어둡게
+        for y in range(cy + ry + 1, cy - ry - 2, -1):
+            if (x, y) in own: c.P(x, y, K(mat, -2)); break
     c.outline()
 
 

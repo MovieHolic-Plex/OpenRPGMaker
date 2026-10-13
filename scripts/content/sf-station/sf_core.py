@@ -347,3 +347,63 @@ def tcube(c, x, y, w, top, front, mat, ins=4, tt=3, ft=-2, topmat=None, ol=True,
     c.R(x, y + top, w, front, K(mat, ft)); c.VL(x, y + top, front, K(mat, ft + 1)); c.VL(x + w - 1, y + top, front, K(mat, ft - 1))
     c.HL(x, y + top, w, K(mat, ft + 3)); c.HL(x, y + top + front - 1, w, K(mat, ft - 2))
     if ol: c.outline()
+
+
+# ------------------------------------------------------------------ 재질 후처리(2026-10-14 공예 보강): 평평한 면 색만 바꾼다 — 창·문·간판은 그대로 둔다
+def _col_at(c, x, y):
+    if not c.has(x, y): return None
+    r, g, b = (int(v) for v in c.a[y, x, :3]); return (r << 16) | (g << 8) | b
+
+
+def texture_face(c, x, y, w, h, mat, ft, seam=8, band=12, seed=0, grime=3, light=2, stains=True, rivets=True):
+    """앞면 [x,x+w)×[y,y+h) 의 «평평한 벽색 K(mat,ft)» 화소에만 결을 넣는다:
+    세로 판 이음(어두운 줄 + 오른쪽 밝은 줄) · 층 띠(어두운 줄 + 아래 밝은 턱) · 이음 교차점 리벳 · 아래 grime 그러데이션 · 왼쪽 빛 · 얼룩 점.
+    창·문·네온처럼 다른 색으로 이미 칠한 화소는 건드리지 않으므로 그림을 다 그린 뒤 마지막에 부른다."""
+    base = K(mat, ft); todo = []
+    for yy in range(y, y + h):
+        for xx in range(x, x + w):
+            if _col_at(c, xx, yy) == base: todo.append((xx, yy))
+    for xx, yy in todo:
+        rx, ry = xx - x, yy - y; t = ft
+        if seam and rx > 0 and rx % seam == 0: t = ft - 1
+        elif seam and rx > 1 and rx % seam == 1: t = ft + 1
+        if band and ry > 0 and ry % band == 0: t = ft - 1
+        elif band and ry > 1 and ry % band == 1: t = ft + 1
+        if rivets and seam and band and ry % band == 3 and rx % seam in (3, seam - 3): t = ft + 2
+        if grime and ry >= h - grime: t = min(t, ft - 1) if ry < h - 1 else ft - 2
+        if light and rx < light and t == ft: t = ft + 1
+        if stains and t == ft:
+            n = hsh(xx, yy, seed + 71) % 29
+            if n == 0: t = ft - 1
+            elif n == 1 and ry > h // 2: t = ft - 1
+        if t != ft: c.P(xx, yy, K(mat, t))
+
+
+def halo(c, x, y, w, h, col, under, r=2):
+    """네온·창 둘레 빛 번짐: 사각 (x,y,w,h) 바깥 r 화소 안의 «under 색» 화소를 램프 어두운 단으로 물들인다(거리 1 = -2, 거리 2 = -3 체커)."""
+    under = set(under)
+    for yy in range(y - r, y + h + r):
+        for xx in range(x - r, x + w + r):
+            if x <= xx < x + w and y <= yy < y + h: continue
+            d = max(x - xx, xx - (x + w - 1), y - yy, yy - (y + h - 1))
+            cc = _col_at(c, xx, yy)
+            if cc not in under: continue
+            if d == 1: c.P(xx, yy, K(col, -2))
+            elif d == 2 and (xx + yy) % 2 == 0: c.P(xx, yy, K(col, -3))
+
+
+def window(c, wx, wy, ww, wh, col=None, seed=0, frame=None, sill=None, blinds=False):
+    """창 하나: 어두운 틀 + (켜짐: 위 상인방 그림자·천장등 띠·아래 밝은 바닥빛·블라인드 / 꺼짐: 유리 그러데이션 + 대각 반사) + 가운데 살 + 아래 밝은 창턱."""
+    frame = K('navy', -3) if frame is None else frame
+    c.R(wx - 1, wy - 1, ww + 2, wh + 2, frame)
+    if col is None:
+        for j in range(wh): c.HL(wx, wy + j, ww, K('glass', -2 if j == 0 else -1 if j < wh - 1 else 0))
+        for k in range(min(ww, wh) - 1): c.P(wx + ww - 2 - k, wy + 1 + k, K('glass', 1 if k == 0 else 0)) if k < 3 else None
+    else:
+        for j in range(wh):
+            t = -1 if j == 0 else 3 if j == 1 else 2 if j == wh - 1 else 1
+            if blinds and j > 1 and j % 2 == 0 and j < wh - 1: t = 0
+            c.HL(wx, wy + j, ww, K(col, t))
+        if ww >= 4: c.VL(wx, wy + 1, wh - 1, K(col, 0))
+    if ww >= 7: c.VL(wx + ww // 2, wy, wh, frame)
+    if sill is not None: c.HL(wx - 1, wy + wh + 1, ww + 2, sill)
