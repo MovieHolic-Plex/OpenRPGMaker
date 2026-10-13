@@ -39,6 +39,7 @@ import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
+import { selectedEventFact } from "@/ai/contextFooter";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail } from "@/editor/aiRegionHandoff";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
@@ -1504,6 +1505,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const inBounds = !map || (sel.x >= 0 && sel.y >= 0 && sel.x < map.width && sel.y < map.height);
       if (inBounds) parts.push(`사용자 선택 영역: (${sel.x},${sel.y}) ${sel.width}×${sel.height}`);
     }
+    // 「이 이벤트」「이 NPC」「현재 이벤트」「이 문」은 사용자가 편집기에서 고른 이벤트다. 영역 선택과 같은 사실이라
+    // 모델이 맵의 모든 이벤트를 훑어 짐작하지 않고 바로 get_event/patch_event_page 로 간다.
+    const selectedEvent = ctx.mapId ? selectedEventFact(store.getCurrent(), ctx.mapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId) : null;
+    if (selectedEvent) parts.push(selectedEvent);
     // 컴포저 모드(제안서 D4·§06). 강제는 세션이 한다(sendUserMessage 옵션 composerMode — 쓰기 툴 미노출·
     // 거부, 계획만 수립). 여기 한 절은 모델이 상황을 알게 하는 안내일 뿐이다. 지시(기본)는 덧붙이지 않는다 —
     // 기계 텍스트가 사용자 채널에 실리던 「도구 규칙」 사고(2026-09-03 의도 라우터 감사)를 되풀이하지 않기 위해.

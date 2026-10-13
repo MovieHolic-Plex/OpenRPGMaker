@@ -117,6 +117,8 @@ npm run harness -- assistant-capability aggregate --sources <실행1>,<실행2> 
 
 `npm run harness -- assistant-capability matrix-ui-all --out <새 폴더>`는 50개 명령을 각각 새로 저장한 SQLite fixture에서 시작해 실제 `ai-input` 제출과 scripted `/v1/agent/run` 적용 이벤트를 거친다. 명령 사이에는 같은 Firefox 컨텍스트를 페이지 재로드해 fixture를 다시 읽고, 저장 완료 후 `stored(projectDir)`로 정본을 확인한다. 에디터가 같은 agent 요청을 재전송할 수 있으므로 각 명령의 응답을 캐시해 비멱등 도구가 두 번 실행되지 않게 한다. 결과 JSON의 `uiAgentAppliedCommands`가 50이고 `directTransportCommands`가 0이어야 이 단계가 통과한다. 이 단계도 모델 제공자 성공과 독립 시각 판정은 측정하지 않는다.
 
+`npm run harness -- assistant-capability matrix-native --out <새 폴더>`는 50개 명령을 각각 새 SQLite fixture에서 시작해 **실제 provider의 응답**을 실제 `ai-input`으로 제출한다. `/v1/chat/completions`는 읽기 답변의 완료 신호로만 기록하고, 명령 수행 합격에는 canonical tool의 `tool_end`와 정본 결과 비교가 필요하다. 쓰기 명령은 `command-matrix.json`의 canonical tool 결과와 저장 문서를 비교하고, 읽기 명령은 tool 호출과 무변경을 확인한다. 각 명령 뒤 실제 SQLite 저장, 새 브라우저 context 재로드, project ID·SHA 일치를 검사한다. 이 단계의 `matrix-native.json`에서 `nativeAgentCalls`·`chatCompletions`·`sqliteReloads`와 명령별 실패를 확인하며, 시각 검수는 별도 `review` 영수증으로 남긴다.
+
 `npm run harness -- assistant-capability matrix-score --out <새 폴더>`는 50개 명령 각각의 canonical tool·범위·인자를 실제 provider 모델에 묻고 자연어 이해력과 판단 품질을 계산한다. 현재 실행 설정은 텍스트·비전 모두 `cbcn/glm-5.3-flash`이며, provider가 바뀌어도 결과 JSON에 실제 provider/model을 기록한다. 같은 50개에 대해 도구 적용 전후 PNG 100장을 생성하고, 2개씩 묶은 25회의 실제 비전 모델 호출로 시각 품질을 채점한다. 텍스트·비전 응답이 비거나 항목을 누락하면 같은 입력을 최대 3회 재시도하며, 재시도 뒤에도 점수가 없으면 정적 픽셀 점수로 승격하지 않고 `incomplete`로 기록한다. `matrix-score.json`에는 모델 응답 원문, 호출 수, 실패, 명령별 점수와 전후 이미지 SHA를 남긴다. `status: scored`는 50개 채점 완료를, `qualityGate: pass|fail`는 자연어 ≥60/100·판단 ≥60/100·시각 ≥2/5 기준을 각각 뜻한다. 운영 목표인 시각 평균 4.5/5는 이 파일의 `aggregate.visualQuality`로 확인한다. 시각 모델 점수는 사람 검수의 대체가 아니며, 이 단계는 실제 모델이 도구를 호출했다는 뜻이 아니라 모델의 해석·판단 품질을 별도로 측정한다.
 
 ## 시각 검수
