@@ -1767,7 +1767,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본이며, 「이 NPC 와 대화하면 상점이 열리게」 같은 요청은 이 도구 하나로 끝난다(기존 대사·이름·이동·그림은 그대로 두고 상점 명령만 붙는다 — patch_event_page 로 대사·이동을 새로 쓰지 마라). itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",

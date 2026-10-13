@@ -20,6 +20,7 @@ import { inspectPiLayoutQuality, piLayoutRepairPrompt, piLayoutShortfallPrompt }
 import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
+import { setClientEditHistory } from "../../src/editor/tools/historyTools.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
 import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
@@ -248,6 +249,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
     assistantRun: true,
   };
+  setClientEditHistory(request.editHistory ?? []);
   setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   const charsetGate = new PiCharsetSelectionGate();

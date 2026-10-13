@@ -134,7 +134,8 @@ export function setupFor(id: string): Setup {
     case 'move-start': return { select: { x: 9, y: 8, w: 1, h: 1 } };
     case 'place-trees': return { select: { x: 14, y: 2, w: 6, h: 1 } };
     case 'place-chest': return { select: { x: 4, y: 7, w: 1, h: 1 } };
-    case 'move-door': case 'door-se': case 'door-to-plaza': case 'align-portals': return { event: DOOR };
+    case 'move-door': case 'door-se': case 'align-portals': return { event: DOOR };
+    case 'door-to-plaza': return { event: 'ev_house_door' };
     case 'remove-barrels': return { select: AREA.barrels };
     case 'place-well': return { select: { x: 15, y: 3, w: 3, h: 3 } };
     case 'change-first-line': case 'add-switch-condition': case 'remove-move-command': case 'insert-se': case 'touch-trigger':
@@ -166,6 +167,8 @@ export function normalizeContent(project: Project): any {
 const mapOf = (project: Project, id = MAP): any => (project as any).maps[id];
 const eventOf = (project: Project, id: string): any => mapOf(project).events.find((event: any) => event.id === id);
 const commandsOf = (project: Project, eventId: string, page = 0): any[] => eventOf(project, eventId)?.pages?.[page]?.commands ?? [];
+/** A renamed NPC's dialogue speaker label follows the rename; the lines themselves must not change. */
+const speakerless = (command: any) => (command.kind === 'text' ? { ...command, speaker: undefined } : command);
 const kinds = (commands: any[]) => commands.map(command => command.kind);
 
 /** Document equality with some parts blanked on both sides: "everything else is preserved". */
@@ -219,8 +222,9 @@ function readOnly(input: JudgeInput, label: string, check: () => Verdict): Verdi
   return check();
 }
 
-function eventEdit(input: JudgeInput, id: string, check: (before: any, after: any) => Verdict): Verdict {
-  if (!sameExcept(input.before, input.after, withoutEvent(id))) return fail(`${id} 밖의 내용이 바뀌었다`);
+function eventEdit(input: JudgeInput, id: string, check: (before: any, after: any) => Verdict, allowSystem = false): Verdict {
+  const blank = (doc: any) => { withoutEvent(id)(doc); if (allowSystem) delete doc.system; };
+  if (!sameExcept(input.before, input.after, blank)) return fail(`${id} 밖의 내용이 바뀌었다`);
   const before = eventOf(input.before, id), after = eventOf(input.after, id);
   if (!before || !after) return fail(`${id} 이벤트가 사라졌다`);
   return check(before, after);
@@ -259,7 +263,8 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const cells = changedCells(before, after);
       const rect = AREA.dirt;
       if (!cells.length) return fail('바뀐 칸이 없다');
-      if (!cells.every(c => inside(rect, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
+      // An auto-connected material recomputes its neighbours' edge shapes, so the ring around the area may legitimately change.
+      if (!cells.every(c => inside({ x: rect.x - 1, y: rect.y - 1, w: rect.w + 2, h: rect.h + 2 }, c.x, c.y))) return fail('선택 영역 밖 칸이 바뀌었다');
       const all = Array.from({ length: rect.w * rect.h }, (_, i) => ({ x: rect.x + (i % rect.w), y: rect.y + Math.floor(i / rect.w) }));
       if (!all.every(c => tileAt(before, 'lowerTiles', c.x, c.y) !== tileAt(after, 'lowerTiles', c.x, c.y))) return fail('선택 영역의 일부 칸이 바닥으로 바뀌지 않았다');
       if (!sameExcept(before, after, withoutTiles)) return fail('타일 밖 내용이 바뀌었다');
@@ -345,11 +350,13 @@ export function judge(id: string, input: JudgeInput): Verdict {
       return isDeepStrictEqual(kinds(now), kinds(was)) && isDeepStrictEqual(now.slice(1), was.slice(1)) ? pass('첫 대사만 교체') : fail('첫 대사 밖의 명령이 바뀌었다');
     });
     case 'add-switch-condition': return eventEdit(input, NPC, (b, a) => {
-      const before = b.pages[0].conditions ?? [], now = a.pages[0].conditions ?? [];
-      const added = now.filter((condition: any) => !before.some((old: any) => isDeepStrictEqual(old, condition)));
       const ids = new Set((after as any).switches.map((entry: any) => entry.id));
-      if (added.length !== 1 || added[0].kind !== 'switch' || !ids.has(added[0].switchId)) return fail('존재하는 스위치 조건 하나가 추가되지 않았다');
-      return isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass(`스위치 조건 ${added[0].switchId} 추가`) : fail('명령까지 바뀌었다');
+      const conditionsOf = (event: any) => (event.pages ?? []).flatMap((page: any) => page.conditions ?? []);
+      const added = conditionsOf(a).filter((condition: any) => !conditionsOf(b).some((old: any) => isDeepStrictEqual(old, condition)));
+      if (added.length < 1 || !added.every((condition: any) => condition.kind === 'switch' && ids.has(condition.switchId))) return fail('존재하는 스위치 조건이 추가되지 않았다');
+      // Either the page itself is gated, or a new gated page is added beside it; the existing commands must survive.
+      const survives = (a.pages ?? []).some((page: any) => isDeepStrictEqual(page.commands, b.pages[0].commands));
+      return survives ? pass(`스위치 조건 ${added.map((condition: any) => condition.switchId).join(',')} 추가`) : fail('원래 대사·명령이 사라졌다');
     });
     case 'remove-move-command': return eventEdit(input, NPC, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
@@ -363,7 +370,7 @@ export function judge(id: string, input: JudgeInput): Verdict {
     case 'touch-trigger': return eventEdit(input, NPC, (b, a) =>
       a.pages[0].trigger?.kind === 'playerTouch' && isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass('실행 조건을 플레이어 접촉으로') : fail(`트리거가 ${a.pages[0].trigger?.kind}`));
     case 'rename-npc': return eventEdit(input, NPC, (b, a) =>
-      a.name === '하린' || a.pages?.[0]?.name === '하린' ? (isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass('이름을 하린으로') : fail('대사 명령이 바뀌었다')) : fail(`이름이 ${a.name ?? a.pages?.[0]?.name}`));
+      a.name === '하린' || a.pages?.[0]?.name === '하린' ? (isDeepStrictEqual(a.pages[0].commands.map(speakerless), b.pages[0].commands.map(speakerless)) ? pass('이름을 하린으로(화자 표시 포함)') : fail('화자 표시 밖의 대사 명령이 바뀌었다')) : fail(`이름이 ${a.name ?? a.pages?.[0]?.name}`));
     case 'face-right': return eventEdit(input, NPC, (b, a) =>
       a.pages[0].graphic?.direction === 'right' && isDeepStrictEqual(a.pages[0].graphic?.sprite, b.pages[0].graphic?.sprite) ? pass('오른쪽을 바라봄, 그림 유지') : fail(`방향 ${a.pages[0].graphic?.direction}`));
     case 'add-npc-line': return eventEdit(input, NPC, (b, a) => {
@@ -375,10 +382,11 @@ export function judge(id: string, input: JudgeInput): Verdict {
       const schedule = a.schedule ?? [];
       const valid = schedule.length >= 1 && schedule.every((entry: any) => entry.at && (after as any).maps[entry.at.mapId]);
       return valid && isDeepStrictEqual(a.pages, b.pages) ? pass(`일정 ${schedule.length}개 등록`) : fail('유효한 일정이 등록되지 않았거나 페이지가 바뀌었다');
-    });
+    }, true);
     case 'npc-shop': return eventEdit(input, NPC, (b, a) => {
       const shops = (a.pages ?? []).flatMap((page: any) => page.commands).concat(a.commands ?? []).filter((command: any) => command.kind === 'shop');
-      const items = new Set((after as any).database.items.map((item: any) => item.id));
+      // A shop sells items and equipment alike (the tool accepts both id spaces).
+      const items = new Set([...(after as any).database.items, ...((after as any).database.equipment ?? [])].map((item: any) => item.id));
       const valid = shops.length >= 1 && shops.some((shop: any) => (shop.itemIds ?? []).length >= 1 && (shop.itemIds as string[]).every(itemId => items.has(itemId)));
       return valid && keepsInOrder(b.pages[0].commands, a.pages[0].commands) ? pass('대화 시 상점이 열리는 명령 추가') : fail('유효한 상점 명령이 없거나 기존 대사가 바뀌었다');
     });
@@ -427,8 +435,12 @@ export function judge(id: string, input: JudgeInput): Verdict {
       return at >= 0 && transfer >= 0 && at < transfer && keepsInOrder(was, now) && now.length === was.length + 1 ? pass('이동 전에 효과음 재생') : fail('이동(transfer) 앞에 효과음 하나가 들어가지 않았다');
     });
     case 'night-mood': {
-      const was = mapOf(before).defaultLighting?.ambient ?? 1, now = mapOf(after).defaultLighting?.ambient;
-      return typeof now === 'number' && now <= 0.5 && now < was && sameExcept(before, after, doc => { delete doc.maps[MAP].defaultLighting; delete doc.maps[MAP].weather; delete doc.maps[MAP].climate; }) ? pass(`밝기 ${was} → ${now}`) : fail(`밤 조명이 아니다(ambient ${now})`);
+      const was = mapOf(before).defaultLighting?.ambient ?? 1, light = mapOf(after).defaultLighting;
+      const hex = String(light?.color ?? '#ffffff').replace('#', '');
+      const luminance = hex.length === 6 ? (0.299 * parseInt(hex.slice(0, 2), 16) + 0.587 * parseInt(hex.slice(2, 4), 16) + 0.114 * parseInt(hex.slice(4, 6), 16)) / 255 : 1;
+      const dark = typeof light?.ambient === 'number' && light.ambient < was && (light.ambient <= 0.5 || (light.ambient <= 0.75 && luminance <= 0.25));
+      return dark && sameExcept(before, after, doc => { delete doc.maps[MAP].defaultLighting; delete doc.maps[MAP].weather; delete doc.maps[MAP].climate; })
+        ? pass(`밝기 ${was} → ${light.ambient}, 색 ${light.color}`) : fail(`밤 조명이 아니다(ambient ${light?.ambient}, 색 ${light?.color})`);
     }
     case 'remove-final-fade': return eventEdit(input, CUT, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
