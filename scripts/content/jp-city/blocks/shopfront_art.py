@@ -46,12 +46,22 @@ def fascia(c, W, ramp, shade=0, stripe=None, tile=False):
     w = W * 16
     roof = 'tairu' if tile else 'conc'
     c.HL(0, 0, w, OL)
-    c.R(0, 1, w, 7, K(roof, 2))
-    for r in range(7):                                   # 지붕 줄(가로) + 엇갈린 세로 이음
-        if r % 2 == 1: c.HL(0, 1 + r, w, K(roof, 0))
-        for x in range((r % 2) * 3, w, 6): c.VL(x, 1 + r, 1, K(roof, -1))
-    c.HL(0, 2, w, K(roof, 3))
-    c.HL(0, 8, w, K(roof, -3))                            # 앞 모서리(어두운 줄)
+    if tile:
+        c.R(0, 1, w, 7, K(roof, 2))
+        for r in range(7):                               # 기와 줄(가로) + 엇갈린 세로 이음
+            if r % 2 == 1: c.HL(0, 1 + r, w, K(roof, 0))
+            for x in range((r % 2) * 3, w, 6): c.VL(x, 1 + r, 1, K(roof, -1))
+        c.HL(0, 2, w, K(roof, 3))
+        c.HL(0, 8, w, K(roof, -3))                        # 앞 모서리(어두운 줄)
+    else:                                                # 평지붕 윗면: 뒤 난간(밝은 턱+그늘) → 자갈/방수 바닥(아래로 갈수록 밝음) → 앞 난간 윗면
+        c.HL(0, 1, w, K(roof, 4)); c.HL(0, 2, w, K(roof, -2))
+        for r, t in enumerate((-1, -1, 0, 0, 1)):
+            c.HL(0, 3 + r, w, K(roof, t))
+        for x in range(w):
+            h = (x * 7 + 3) % 11
+            if h == 0: c.P(x, 3 + (x % 5), K(roof, 3))
+            elif h == 5: c.P(x, 3 + ((x * 3) % 5), K(roof, -3))
+        c.HL(0, 8, w, K(roof, 5))                         # 앞 난간 윗면 밝은 모서리
     c.R(0, 9, w, 15, K(ramp, shade))
     c.HL(0, 9, w, K(ramp, shade - 2)); c.HL(0, 22, w, K(ramp, shade - 2)); c.HL(0, 23, w, K(ramp, shade - 3))
     if stripe:
