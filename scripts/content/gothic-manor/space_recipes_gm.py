@@ -67,7 +67,7 @@ HORROR_DECALS = [D('gm-ov-cobweb', 1, 2), D('gm-ov-dust', 1, 3), D('gm-ov-stain'
 SPACES = {
     'hall': dict(
         ko='저택 현관 홀', indoor=True, layout='room', wall='manor',
-        size=dict(min=[14, 11], default=[22, 16], max=[40, 30]), floor=FL('gm-fl-marble'), runner=RUNNER,
+        size=dict(min=[14, 11], default=[18, 14], max=[40, 30]), floor=FL('gm-fl-marble'), runner=RUNNER,
         defaultDoors=[dict(side='s', kind='double'), dict(side='n', kind='double')],
         furniture=[F('gm-clock', 'north-wall', 1, 1, 0, wallTop=2, wallMatch='plain'),
                    *PAINTINGS,

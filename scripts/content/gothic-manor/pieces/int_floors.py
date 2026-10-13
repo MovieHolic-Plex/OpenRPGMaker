@@ -30,16 +30,19 @@ def parquet(c, v):
 
 
 def marble(c, v):
-    """체크무늬 대리석(검정·상아 8px)."""
+    """체크무늬 대리석(회청 점판·상아 8px) — 검정·흰 대비가 방을 다 먹지 않게 두 판의 명도 차를 줄였다(QA 1회 개선)."""
     for y in range(16):
         for x in range(16):
             dark = ((x // 8) + (y // 8)) % 2 == 1
-            if dark: t = 1 if hsh(x, y, 5 + v) > .12 else 2; col = K('ink', t)
+            if dark:
+                t = 2 if hsh(x, y, 5 + v) > .14 else 3
+                if (2 * x + y + v * 5) % 13 == 0: t = 3                    # 흰 결
+                col = K('stone', t)
             else:
-                t = 5 if hsh(x, y, 6 + v) > .1 else 4
-                if (x + 2 * y + v * 3) % 11 == 0: t = 4                    # 대리석 결
+                t = 4 if hsh(x, y, 6 + v) > .18 else 5
+                if (x + 2 * y + v * 3) % 11 == 0: t = 3                    # 대리석 결
                 col = K('bone', t)
-            if x % 8 == 7 or y % 8 == 7: col = K('bone', 2) if not dark else K('ink', 0)
+            if x % 8 == 7 or y % 8 == 7: col = K('bone', 3) if not dark else K('stone', 1)
             c.P(x, y, col)
 
 

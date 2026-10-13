@@ -111,7 +111,8 @@ interface Piece { readonly id: string; readonly w: number; readonly h: number; r
 function makeResolver(tileset: TilesetDef) {
   const kits = new Map((tileset.structureKits ?? []).map((k) => [k.id, k] as const));
   const groups = new Map<string, readonly number[]>();
-  for (const g of tileset.tileGroups ?? []) if (g.id.startsWith("wz:floor:")) groups.set(g.id.slice("wz:floor:".length), g.tileIds);
+  // `wz:floor:<id>`(마법 학교) · `gm:floor:<id>`(고딕 저택) — 같은 조립기를 다른 번들 사양으로 쓸 때도 1×1 반복 조각을 읽는다.
+  for (const g of tileset.tileGroups ?? []) { const m = /^(?:wz|gm):floor:(.+)$/.exec(g.id); if (m) groups.set(m[1]!, g.tileIds); }
   const autos = new Map((tileset.autotileGroups ?? []).map((a) => [a.id, a] as const));
   const cache = new Map<string, Piece | null>();
   const resolve = (id: string): Piece | null => {

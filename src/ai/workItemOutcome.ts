@@ -40,6 +40,7 @@ export const MAP_CREATING_TOOLS: ReadonlySet<string> = new Set([
   "duplicate_map",
   "build_hand_interior_room",
   "build_wizarding_space",
+  "build_gothic_place",
 ]);
 
 /** 툴 결과에서 새로 만들어진 mapId 를 꺼낸다(툴마다 data/args 위치가 달라 순서대로 훑는다). */
