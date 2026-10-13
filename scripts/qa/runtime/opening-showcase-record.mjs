@@ -7,7 +7,7 @@ const [projectPath, outDir] = process.argv.slice(2);
 const projectJson = await readFile(projectPath, "utf8");
 await mkdir(outDir, { recursive: true });
 const server = await startPlayerQaServer();
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
+const browser = await chromium.launch({ headless: true, ...(process.env.QA_CHROME ? { executablePath: process.env.QA_CHROME } : {}), args: ["--no-sandbox", "--use-gl=swiftshader", "--disable-gpu", "--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 const context = await browser.newContext({ viewport: { width: 960, height: 720 }, recordVideo: { dir: outDir, size: { width: 960, height: 720 } } });
 const pageStart = Date.now();
 const page = await context.newPage();
