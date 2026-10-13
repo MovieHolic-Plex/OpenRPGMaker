@@ -206,7 +206,7 @@ class Board {
   vpath(x: number, y0: number, y1: number): void { for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++) this.path(x, y); }
   /** 테두리 있는 네모 땅(plaza·field). 안쪽 풀 칸에만 깐다. */
   patch(base: "plaza" | "field", r: Rect, use: Use, rim = true): boolean {
-    for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) { const u = this.u(x, y); if ((u !== "grass" && u !== "path") || this.reserved[this.k(x, y)]) return false; }
+    for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) { const u = this.u(x, y); if (u === "path") continue; if (u !== "grass" || this.reserved[this.k(x, y)]) return false; }   // 예약된 길 칸(문 앞 접근칸 아래)은 포석으로 덮어도 걷는다 — 소품은 예약이 그대로 막는다
     for (let y = r.y; y < r.y + r.h; y++) for (let x = r.x; x < r.x + r.w; x++) {
       const kk = !rim ? "" : (y === r.y ? "n" : y === r.y + r.h - 1 ? "s" : "") + (x === r.x ? "w" : x === r.x + r.w - 1 ? "e" : "");
       this.setLower(x, y, kk ? `${base}-${kk}` : base, use);
@@ -661,7 +661,10 @@ function composeShrine(b: Board, rng: () => number): SkyCell {
   if (!shrine) throw new Error("신전 자리가 없다");
   const a = shrine.access[0]!;
   const pw = 9, ph = 4;
-  b.patch("plaza", { x: a.x - 4, y: a.y + 1, w: pw, h: ph }, "plaza");
+  // 문 앞 접근칸 아래 한 칸은 예약(소품 금지)이지만 포석은 깔아도 된다 — 잠깐 풀었다가 다시 예약한다.
+  const below = b.k(a.x, a.y + 1); b.reserved[below] = false;
+  if (!b.patch("plaza", { x: a.x - 4, y: a.y + 1, w: pw, h: ph }, "plaza")) b.notes.push("신전 앞 광장 자리가 없다");
+  b.reserved[below] = true;
   b.vpath(a.x, a.y + ph + 1, sy + sh - 2);
   b.zones.push({ name: "참배길", use: "path", rect: { x: a.x, y: a.y + ph + 1, w: 1, h: sy + sh - 2 - (a.y + ph) } });
   // 옆 정원 섬 + 돌다리(광장 가운데 줄로 바로 — QA D18)

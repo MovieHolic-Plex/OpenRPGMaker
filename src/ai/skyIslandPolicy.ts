@@ -104,7 +104,7 @@ export const SKY_ISLAND_POINTER_LINE =
 /** sky_island 맵이 범위에 있을 때만 붙는 상세 순서. */
 export const SKY_ISLAND_DETAIL_LINE =
   "이 작업의 맵은 하늘섬 칩셋(sky_island)이다. ⓪ 땅은 compose_sky_island_map 으로 깐다(손댄 맵은 replace:true, 다른 배치는 seed 를 바꾼다). 결과 data.buildings[].doors 는 실내 이음에, data.zones 는 이벤트 자리 고르기에 쓴다. "
-  + "① 섬 가장자리(풀 테두리 칸)와 밑면 바위·하늘 칸은 막힘이다 — 물건·이벤트는 섬 안쪽 풀·길·광장에만 둔다. 다리 칸은 걷는다. "
+  + "① 하늘·섬 밑면 바위 칸은 막힘이다(섬 테두리 풀 칸은 걷지만 물건은 두지 않는다) — 물건·이벤트는 섬 안쪽 풀·길·광장에만 둔다. 다리·잔교 칸은 걷는다. "
   + "② 소품을 더할 때는 list_tileset_objects({tilesetId:\"sky_island\"}) → stamp_tileset_object 로 키트째 찍고, 문 앞 접근칸·길·다리·잔교를 막지 않는다. "
   + "③ 끝나면 check_reachability 로 시작 칸에서 문·다리 끝까지 닿는지 확인한다. 참고문서 list_tileset_references({tilesetId:\"sky_island\"}) 에 조각 사전·예제 배열·오류 그림이 있다.";
 
