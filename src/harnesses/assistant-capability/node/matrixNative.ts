@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, linkSync, rmSync } 
 import { resolve } from 'node:path';
 import { backup, DatabaseSync } from 'node:sqlite';
 import { isDeepStrictEqual } from 'node:util';
+import { gunzipSync } from 'node:zlib';
 import { firefox } from 'playwright';
 import { initLocalProjectStore } from '../../../../electron/local-store/store';
 import { sharedContentFile } from '../../../../scripts/lib/sharedContentSqlite';
@@ -101,9 +102,15 @@ export async function runMatrixNative(root: string, timeoutMs = 240000): Promise
         writeFileSync(resolve(dir, 'original.json'), JSON.stringify(original.project));
         page.on('request', (request: any) => {
           if (request.method() !== 'POST' || !/\/v1\/(agent\/run|chat\/completions)/.test(request.url())) return;
-          let body: any = {};
-          try { body = JSON.parse(request.postData() ?? '{}'); } catch { /* structural receipt only */ }
-          requests.push({ endpoint: new URL(request.url()).pathname, model: body.model, provider: request.headers()['x-oprn-provider'], runId: body.runId });
+          let body: any = {}, raw = '';
+          try {
+            const buffer = request.postDataBuffer();
+            raw = buffer ? (buffer[0] === 31 ? gunzipSync(buffer) : buffer).toString('utf8') : '';
+            body = JSON.parse(raw || '{}');
+          } catch { /* structural receipt only */ }
+          // What the model was told about the editor: the receipt for "this event" / "this area" being a given referent.
+          const context = [...raw.replace(/\\n/g, '\n').matchAll(/(\[선택한 이벤트\]|\[컨텍스트\])[^\n"]*/gu)].map(match => match[0].slice(0, 300)).join(' | ') || undefined;
+          requests.push({ endpoint: new URL(request.url()).pathname, model: body.model, provider: request.headers()['x-oprn-provider'], runId: body.runId, context });
         });
         page.on('response', (response: any) => {
           const endpoint = new URL(response.url()).pathname;

@@ -54,6 +54,8 @@ export interface PlainPiTurnInput {
   readonly text: string;
   readonly currentMapId: string | null;
   readonly selection: IntentSelectionFact | null;
+  /** 사용자가 편집기에서 골라 둔 이벤트 한 줄(`selectedEventFact`). 「이 NPC」「현재 이벤트」「이 문」이 가리키는 대상이다. */
+  readonly selectedEvent?: string | null;
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
   /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
@@ -77,6 +79,24 @@ export interface PlainPiTurnClassification {
    * 원인을 코드로 역추적해야 했다. 선언을 부르지 않은 턴(장르 프리셋·읽기 전용)은 그 사실을 적는다.
    */
   readonly routingAudit: string;
+}
+
+interface SelectedEventSource {
+  readonly maps: Readonly<Record<string, { readonly events?: ReadonlyArray<{ readonly id: string; readonly name?: string; readonly x: number; readonly y: number; readonly pages?: ReadonlyArray<{ readonly id: string; readonly name?: string }> }> } | undefined>>;
+}
+
+/**
+ * 편집기에서 고른 이벤트를 모델에 주는 한 줄 사실. 영역 선택(`formatScopeNote`)과 같은 종류의 지시어 대상이다 —
+ * 이 줄이 없으면 「이 이벤트를 접촉형으로」 같은 요청에서 모델이 맵의 이벤트를 훑어 비슷한 것 하나를 골라
+ * 엉뚱한 이벤트를 고친다(2026-10-13 실측: 선택한 주민 대신 집 문의 트리거를 바꿨다). 고른 이벤트가 그 맵에 없으면 null.
+ */
+export function selectedEventFact(project: SelectedEventSource, mapId: string | null, eventId: string | null, pageId: string | null): string | null {
+  if (!mapId || !eventId) return null;
+  const event = project.maps[mapId]?.events?.find((candidate) => candidate.id === eventId);
+  if (!event) return null;
+  const pageIndex = pageId ? (event.pages ?? []).findIndex((page) => page.id === pageId) : -1;
+  const page = pageIndex >= 0 ? ` · ${pageIndex + 1}번째 페이지` : "";
+  return `[선택한 이벤트] ${event.name ? `${event.name} ` : ""}(${event.id}) 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다. 다른 이벤트를 고르지 말고 get_event 로 이 id 를 읽어 고친다.`;
 }
 
 /** 평문 한 줄 → 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
@@ -181,6 +201,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       }
     }
   }
+  if (input.selectedEvent) intentNote = intentNote ? `${intentNote}\n${input.selectedEvent}` : input.selectedEvent;
   const team = input.piTeam && !plan.readOnly;
   return { mode: team ? "team" : "single", plan: { ...plan, routingAudit }, questionPromoted, ...(initialToolNames ? { initialToolNames } : {}), intentNote, routingAudit };
 }

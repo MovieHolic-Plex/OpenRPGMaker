@@ -29,29 +29,6 @@ const FOOTER_LINE = /^\s*\[컨텍스트\]\s*(.*)$/;
 const MAP_ID_PATTERN = /현재 맵: .+? \(([^()]+)\)(?= · |\s*$)/;
 const SELECTION_PATTERN = /사용자 선택 영역: \((-?\d+),(-?\d+)\) ([1-9]\d*)×([1-9]\d*)/;
 
-interface FooterEventSource {
-  readonly maps: Readonly<Record<string, { readonly events?: ReadonlyArray<{ readonly id: string; readonly name?: string; readonly x: number; readonly y: number; readonly pages?: ReadonlyArray<{ readonly id: string; readonly name?: string }> }> } | undefined>>;
-}
-
-/**
- * 편집기에서 사용자가 고른 이벤트를 한 줄 사실로 만든다. 「이 이벤트」「이 NPC」「현재 이벤트」「이 문」처럼
- * 지시어로 가리킨 대상이 무엇인지 모델이 맵 전체를 훑어 짐작하지 않게 한다. 고른 이벤트가 이 맵에 없으면 null.
- */
-export function selectedEventFact(
-  project: FooterEventSource,
-  mapId: string,
-  eventId: string | null,
-  pageId: string | null,
-): string | null {
-  if (!eventId) return null;
-  const event = project.maps[mapId]?.events?.find((candidate) => candidate.id === eventId);
-  if (!event) return null;
-  const label = event.name ? `${event.name} (${event.id})` : event.id;
-  const pageIndex = pageId ? (event.pages ?? []).findIndex((page) => page.id === pageId) : -1;
-  const page = pageIndex >= 0 ? ` · 페이지 ${pageIndex + 1}${event.pages?.[pageIndex]?.name ? `「${event.pages[pageIndex]!.name}」` : ""}` : "";
-  return `사용자가 선택한 이벤트: ${label} 위치 (${event.x},${event.y})${page} — 「이 이벤트」「이 NPC」「이 문」「현재 이벤트」는 이 이벤트다`;
-}
-
 /** `[컨텍스트]` 줄을 뗀 사용자 발화. */
 export function stripContextFooter(text: string): string {
   return text
