@@ -4137,7 +4137,10 @@ function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
       for (const entry of changed) {
         for (const door of draft.maps[entry.mapId!]?.events ?? []) {
           const back = transfersOf(door).find((candidate) => candidate.mapId === mapId);
-          if (back) notes.push(`돌아오는 문 '${door.id}'(${draft.maps[entry.mapId!]!.name})의 착지 방향은 ${back.direction ?? "(없음)"} 입니다 — 「출입구 방향을 맞춰줘」 요청이면 그 문도 같은 축으로 맞추세요(가는 쪽 ${entry.direction} ↔ 돌아오는 쪽 반대 방향). 다른 요청이면 무시하세요.`);
+          if (back) {
+          const opposite = ({ up: "down", down: "up", left: "right", right: "left" } as Record<string, string>)[entry.direction!];
+          if (opposite && back.direction !== opposite) notes.push(`돌아오는 문 '${door.id}'(${draft.maps[entry.mapId!]!.name})의 착지 방향은 ${back.direction ?? "(없음)"} 입니다. 「출입구 방향을 맞춰줘」 요청이면 가는 쪽을 ${entry.direction} 으로 둔 채 그 문의 transfer.direction 을 ${opposite} 로 바꾸세요(가는 쪽을 다시 바꾸지 말 것). 다른 요청이면 무시하세요.`);
+        }
         }
       }
       return notes.length ? { ...result, summary: `${result.summary} ⚠ ${notes.join(" ")}` } : result;
