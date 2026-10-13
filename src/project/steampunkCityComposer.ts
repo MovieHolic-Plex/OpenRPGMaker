@@ -325,6 +325,30 @@ function fitRow(b: Board, plan: RowPlan, W: number): RowPlan {
   while (p.ids.length > 1 && rowWidth(b, p) > W) { p.ids.pop(); p.gaps.pop(); }
   return p;
 }
+/** 남는 폭을 양끝 연립 주택으로 메운다 — 가운데 정렬로 생긴 양옆 빈 석탄재 공터(QA S1·D2). 앞·뒤 번갈아 골목 2칸을 두고 붙인다. */
+function padRow(b: Board, rng: () => number, plan: RowPlan, W: number, fillers: readonly string[]): RowPlan {
+  let p = { ids: [...plan.ids], gaps: [...plan.gaps.slice(0, Math.max(0, plan.ids.length - 1))] };
+  const fs = fillers.map(kitIdOf).filter((id) => b.has(id));
+  if (!fs.length) return plan;
+  for (let i = 0, front = rng() < 0.5; i < 8; i++, front = !front) {
+    const id = pick(rng, fs);
+    const tryP = front ? { ids: [id, ...p.ids], gaps: [2, ...p.gaps] } : { ids: [...p.ids, id], gaps: [...p.gaps, 2] };
+    if (rowWidth(b, tryP) <= W - 2) p = tryP;
+  }
+  return p;
+}
+/** 묶음 소품: 사각형 가운데에서 가까운 빈 자리부터 하나씩(흩뿌리지 않고 한 덩이로). */
+function cluster(b: Board, r: Rect, kits: readonly string[], allow: readonly Use[], margin = 0): number {
+  const cx = r.x + r.w / 2, cy = r.y + r.h / 2; let n = 0;
+  for (const kit of kits) {
+    if (!b.has(kit)) continue;
+    const s = b.kitSize(kit), spots: [number, number][] = [];
+    for (let y = r.y; y + s.h <= r.y + r.h; y++) for (let x = r.x; x + s.w <= r.x + r.w; x++) spots.push([x, y]);
+    spots.sort((a, c) => Math.hypot(a[0] + s.w / 2 - cx, a[1] + s.h / 2 - cy) - Math.hypot(c[0] + s.w / 2 - cx, c[1] + s.h / 2 - cy));
+    if (b.propNear(kit, spots, margin, allow)) n++;
+  }
+  return n;
+}
 /** 건물 줄 위(뒷마당) 빈 칸: 키 낮은 건물 위에 생긴 2줄 이상 틈에 뒷마당 소품 하나(통·상자·석탄). */
 function backyards(b: Board, rng: () => number, blds: readonly SteampunkBuilding[]): void {
   // 건물 사이 골목 안쪽(건물 벽에 붙여)에만 통·상자 하나 — 지붕 위 빈 땅에 두면 «지붕 위 상자»로 읽혔다(자체 검수).
@@ -351,6 +375,7 @@ function composeStreet(b: Board, rng: () => number, want: readonly string[]): St
   let plan = fitRow(b, { ids, gaps }, W - 2);
   if (rowWidth(b, plan) < W - 14 && b.has("sp-clock-tower") && !plan.ids.includes("sp-clock-tower")) plan = { ids: [...plan.ids, "sp-clock-tower"], gaps: [...plan.gaps.slice(0, plan.ids.length - 1), 2, 0] };
   plan = fitRow(b, plan, W - 2);
+  if (!want.length) plan = padRow(b, rng, plan, W, ["row-3", "row-4", "row-soot-3"]);
   const maxH = Math.max(...plan.ids.map((id) => b.kitSize(id).h));
   const baseY = maxH;                                     // 맨 윗줄(0)은 뒷골목
   const left = Math.max(1, Math.floor((W - rowWidth(b, plan)) / 2));
@@ -362,17 +387,17 @@ function composeStreet(b: Board, rng: () => number, want: readonly string[]): St
     const a = blds[i]!, c = blds[i + 1]!, gx = a.rect.x + a.rect.w, gw = c.rect.x - gx;
     if (gw > 0) b.fill("cobble", { x: gx, y: 0, w: gw, h: baseY + 1 }, "lane");
   }
-  // ② 북쪽 보도 3줄 + 연석 · 차도 6줄(가운데 노면 궤도) · 연석 · 남쪽 보도 1줄
+  // ② 북쪽 보도 3줄 + 연석 · 차도 5줄(둘째·셋째 줄 노면 궤도) · 연석 · 남쪽 보도 — 6줄 차도는 빈 검은 띠였다(QA S2)
   const sw0 = baseY + 1;
   b.fill("flag", { x: 0, y: sw0, w: W, h: 3 }, "walk");
   b.fill("curb-s", { x: 0, y: sw0 + 3, w: W, h: 1 }, "walk");
-  const r0 = sw0 + 4;
-  b.fill("cobble", { x: 0, y: r0, w: W, h: 6 }, "road");
+  const r0 = sw0 + 4, RH = 5;
+  b.fill("cobble", { x: 0, y: r0, w: W, h: RH }, "road");
   b.fill("tram-n", { x: 0, y: r0 + 1, w: W, h: 1 }, "road");
   b.fill("tram-s", { x: 0, y: r0 + 2, w: W, h: 1 }, "road");
-  b.zone("큰길", "자갈 차도 + 노면 궤도", { x: 0, y: r0, w: W, h: 6 });
-  b.fill("curb-n", { x: 0, y: r0 + 6, w: W, h: 1 }, "walk");
-  const sw1 = r0 + 7;
+  b.zone("큰길", "자갈 차도 + 노면 궤도", { x: 0, y: r0, w: W, h: RH });
+  b.fill("curb-n", { x: 0, y: r0 + RH, w: W, h: 1 }, "walk");
+  const sw1 = r0 + RH + 1;
   b.fill("flag", { x: 0, y: sw1, w: W, h: H - sw1 }, "walk");
   // ③ 남쪽: 판석 보도 위에 벽돌 시장 광장(판석 테 1칸 안쪽) + 쌈지 공원 — 벽돌 바닥은 광장에만
   const p0 = sw1 + 1, p1 = H - 2;
@@ -383,6 +408,11 @@ function composeStreet(b: Board, rng: () => number, want: readonly string[]): St
   b.fill("brickpave", { x: mx0 + 1, y: p0 + 1, w: mx1 - mx0 - 1, h: p1 - p0 }, "plaza");
   b.zone("시장 광장", "노점·기념비 광장", { x: mx0, y: p0, w: mx1 - mx0 + 1, h: p1 - p0 + 1 });
   const start = { x: Math.floor((mx0 + mx1) / 2), y: H - 1 };
+  // 판석 건널목 두 곳: 광장 가운데 열 · 공원 출입구 열(궤도 두 줄은 그대로 지나간다). 전차 자리는 비켜 둔다.
+  const tramX = Math.max(1, Math.min(W - 6, Math.floor(W * (0.25 + rng() * 0.5))));
+  const crossXs = [start.x - 1, park.x + Math.floor(park.w / 2) - 1].filter((x) => x + 1 < tramX - 1 || x > tramX + 4);
+  for (const x of crossXs) for (const y of [r0, r0 + 3, r0 + 4]) b.fill("flag", { x, y, w: 2, h: 1 }, "walk");
+  for (const x of crossXs) b.zone("건널목", "판석 건널목", { x, y: r0, w: 2, h: RH });
   b.start = start;
   // ── 소품(이제부터 BFS 연결 검사) ──
   pocketPark(b, rng, park, "n");
@@ -402,18 +432,18 @@ function composeStreet(b: Board, rng: () => number, want: readonly string[]): St
   const stallSide = mx > (mx0 + mx1) / 2 ? "w" : "e";
   let sx = stallSide === "w" ? mx0 + 2 : mx1 - 4;
   for (const st of stalls) {
-    if (b.prop(st, sx, p0 + 1, 0, ["plaza"])) { b.reserve({ x: sx, y: p0 + 4, w: 3, h: 2 }); b.propNear(pick(rng, ["sp-crates", "sp-barrel", "sp-handcart"]), [[sx, p0 + 6], [sx + 1, p0 + 6]], 0, ["plaza"]); }
+    if (b.prop(st, sx, p0 + 1, 0, ["plaza"])) b.reserve({ x: sx, y: p0 + 4, w: 3, h: 2 });
     sx += stallSide === "w" ? 4 : -4;
   }
-  // 손수레·통: 노점 끝
-  b.propNear("sp-handcart", [[sx + (stallSide === "w" ? 0 : 1), p0 + 2], [sx, p0 + 1]], 0, ["plaza"]);
+  // 노점 무리 끝 한 곳에만 상자·통·손수레 묶음(노점마다 같은 자리에 하나씩 찍으면 일렬로 줄 섰다 — QA S3)
+  const endX = stallSide === "w" ? sx : sx + 1;
+  cluster(b, { x: endX - 1, y: p0 + 1, w: 4, h: 4 }, ["sp-crates", "sp-barrel", "sp-handcart"], ["plaza"]);
   // 광장 모퉁이: 가판대·광고탑·시계 기둥
   b.propNear("sp-kiosk", [[mx1 - 2, p1 - 2], [mx0 + 1, p1 - 2]], 1, ["plaza"]);
   b.propNear("sp-poster-column", [[mx0 + 1, p1 - 3], [mx1 - 1, p1 - 3]], 1, ["plaza"]);
   b.propNear("sp-clock-post", [[stallSide === "w" ? mx1 - 1 : mx0 + 1, p0 + 1]], 1, ["plaza"]);
   // ④ 거리 소품: 북쪽 보도 바깥 줄 가스등 6칸 간격, 우체통·소화전, 증기 구멍, 전차 정류장 + 전차
   lampsAlong(b, 2, W - 2, sw0 + 2, 6, ["walk"]);
-  const tramX = Math.max(1, Math.min(W - 6, Math.floor(W * (0.25 + rng() * 0.5))));
   b.propNear("sp-tram-shelter", [[tramX, sw0 + 1], [tramX + 2, sw0 + 1], [tramX - 3, sw0 + 1]], 0, ["walk"]);
   b.prop("sp-steam-tram", tramX, r0, 0, ["road"]);
   b.propNear("sp-pillar-box", [[tramX + 5, sw0 + 1], [tramX + 7, sw0 + 1], [tramX - 4, sw0 + 1]], 0, ["walk"]);
@@ -492,6 +522,19 @@ function composeIndustrial(b: Board, rng: () => number, want: readonly string[])
   b.zone("본선", "선로", { x: 0, y: main, w: W, h: 2 });
   b.zone("화물 측선", "측선·하역장", { x: 0, y: siding - 1, w: W, h: H - siding + 1 });
   const station = b.has("sp-station") ? b.building("sp-station", stX, stY0) : null;
+  // 역 양옆: 측선 쪽 화물 창고 + 반대쪽 철도원 연립 — 판석 광장이 맵 폭 전체라 역 양옆이 넓게 비었다(QA F2). 광장은 역 앞으로 좁아진다.
+  const sideRow = (x0: number, x1: number, kits: readonly string[], gap: number): void => {
+    let x = x0;
+    for (const id of kits.map(kitIdOf)) {
+      if (!b.has(id)) continue;
+      const s = b.kitSize(id);
+      if (s.h > st.h || x + s.w - 1 > x1) continue;
+      b.building(id, x, stBase - s.h + 1); x += s.w + gap;
+    }
+  };
+  const towerRoom = 7;   // 급수탑 자리(승강장 서쪽 끝 밖)
+  sideRow(stX + st.w + 4, W - 2, ["warehouse", "row-soot-3", "row-soot-3"], 2);
+  sideRow(1, Math.max(0, platX0 - towerRoom), ["row-soot-3", "row-soot-3", "row-soot-3", "workshop"], 0);
   // 공장 마당 석탄재와 역 광장 사이 철 울타리
   for (let x = 0; x < W; x++) { if (x >= gateX && x < gateX + 3) continue; if (b.has("sp-fence")) b.stamp("sp-fence", x, fenceY, "fence"); }
   b.fill("cobble", { x: gateX, y: fenceY, w: 3, h: 1 }, "road");
@@ -554,6 +597,18 @@ function composeIndustrial(b: Board, rng: () => number, want: readonly string[])
     if (/factory/.test(d.kit)) b.propNear("sp-scrap-heap", [[d.rect.x, y0 + 5], [d.rect.x + d.rect.w - 2, y0 + 5]], 0, ["yard"]);
   }
   b.propNear("sp-steam-vent", [[gateX - 2, y0 + 4], [gateX + 4, y0 + 4]], 0, ["yard"]);
+  // 노동자 주택 앞: 문 옆 통·화분 · 가장 넓은 빈 마당 구간은 석탄 야적장 — 마당 동쪽 절반이 쓰임 없이 비었다(QA F1)
+  for (const d of blds) if (/row-soot/.test(d.kit)) { const a = d.access[0]!; b.propNear(pick(rng, ["sp-barrel", "sp-planter"]), [[a.x + 1, a.y], [a.x - 1, a.y]], 0, ["yard"]); }
+  {
+    const works = blds.filter((d) => /factory|boiler|warehouse|workshop/.test(d.kit));
+    const wx1 = works.length ? Math.max(...works.map((d) => d.rect.x + d.rect.w)) : 0;
+    const yx0 = Math.max(wx1 + 1, 1), yx1 = W - 2;
+    if (yx1 - yx0 >= 8) {
+      const r = { x: yx0 + 1, y: y0 + 3, w: Math.min(12, yx1 - yx0 - 1), h: 4 };
+      b.zone("석탄 야적장", "석탄 더미·광차·고철", r);
+      cluster(b, r, ["sp-coal-heap", "sp-coal-heap", "sp-coal-bunker", "sp-minecart", "sp-minecart", "sp-scrap-heap", "sp-coal-heap"], ["yard"]);
+    }
+  }
   // 역 앞 광장: 가판대·시계 기둥·광고탑·가로수·벤치, 길 쪽 가스등
   if (station) {
     const sa = station.access[0]!;
@@ -594,7 +649,8 @@ function composeIndustrial(b: Board, rng: () => number, want: readonly string[])
 function composeDock(b: Board, rng: () => number, want: readonly string[]): SteampunkCell {
   const { W, H } = b;
   const ids0 = want.length ? want : shuffle(rng, ["dock-warehouse", "warehouse", "tavern"]).concat(rng() < 0.5 ? ["pump-house"] : ["lab"]);
-  const plan = fitRow(b, { ids: ids0.map(kitIdOf).filter((id) => b.has(id)), gaps: ids0.map(() => 3) }, W - 2);
+  let plan = fitRow(b, { ids: ids0.map(kitIdOf).filter((id) => b.has(id)), gaps: ids0.map(() => 3) }, W - 2);
+  if (!want.length) plan = padRow(b, rng, plan, W, ["row-soot-3", "row-soot-4"]);
   const maxH = Math.max(...plan.ids.map((id) => b.kitSize(id).h));
   const baseY = maxH;
   b.fill("cinder", { x: 0, y: 0, w: W, h: baseY + 1 }, "lane");
@@ -667,16 +723,22 @@ function composeDock(b: Board, rng: () => number, want: readonly string[]): Stea
   }
   // 생선 시장: 정박장 반대쪽 광장에 노점 둘 + 벤치 + 가로수
   const mx0 = pierLeft ? 1 : (airFits ? ax + aw + 1 : 1), mx1 = pierLeft ? (airFits ? ax - 2 : W - 2) : W - 2;
-  b.fill("brickpave", { x: mx0, y: s0 + 2, w: Math.min(14, Math.max(1, mx1 - mx0 + 1)), h: Math.min(6, H - s0 - 3) }, "plaza");
-  b.zone("생선 시장", "노점 광장", { x: mx0, y: s0 + 2, w: Math.min(14, Math.max(1, mx1 - mx0 + 1)), h: Math.min(6, H - s0 - 3) });
+  // 시장은 아래 보도 한 줄 위까지 내린다(아래쪽 빈 판석 — QA D1)
+  const mkt = { x: mx0, y: s0 + 2, w: Math.min(14, Math.max(1, mx1 - mx0 + 1)), h: Math.max(1, H - s0 - 3) };
+  b.fill("brickpave", mkt, "plaza");
+  b.zone("생선 시장", "노점 광장", mkt);
   let sx = mx0 + 1;
   for (const st of ["sp-stall-fish", pick(rng, ["sp-stall-fruit", "sp-stall-parts"])]) { if (b.prop(st, sx, s0 + 2, 0, ["plaza"])) b.reserve({ x: sx, y: s0 + 5, w: 3, h: 1 }); sx += 4; }
   b.propNear("sp-barrels", [[sx, s0 + 3], [sx + 1, s0 + 3]], 0, ["plaza"]);
   b.propNear("sp-handcart", [[mx0 + 1, s0 + 6], [mx0 + 5, s0 + 6]], 0, ["plaza"]);
+  // 시장 안 아래쪽: 광고탑·가판대·벤치 — 노점 줄 밑이 빈 포석이었다
+  cluster(b, { x: mkt.x + 1, y: s0 + 6, w: mkt.w - 2, h: Math.max(1, mkt.h - 5) }, ["sp-poster-column", "sp-bench", "sp-kiosk", "sp-crates"], ["plaza"], 1);
   lampsAlong(b, 2, W - 2, s0 + 1, 11, ["walk"]);
-  // 시장 옆 남은 광장: 철 울타리 쌈지 공원(공터를 두지 않는다)
-  const parkX0 = Math.min(mx1 - 9, Math.max(mx0, sx + 3)), parkW = mx1 - parkX0;
-  if (parkW >= 8 && H - s0 - 4 >= 6) pocketPark(b, rng, { x: parkX0, y: s0 + 3, w: Math.min(parkW, 13), h: Math.min(8, H - s0 - 4) }, "n");
+  // 산책로: 운하를 보는 벤치(가스등 사이) — 남쪽 산책로가 비었다(QA D1)
+  for (let x = 7; x < W - 3; x += 11) if (x + 1 < bx - 1 || x > bx + 4) b.propNear("sp-bench", [[x, s0], [x + 1, s0], [x - 1, s0]], 0, ["walk"]);
+  // 시장 옆 남은 광장: 철 울타리 쌈지 공원 — 시장 끝부터 정박장(또는 맵 끝)까지 남김없이(가운데 빈 판석 — QA D1)
+  const parkX0 = Math.min(mx1 - 9, mkt.x + mkt.w + 1), parkW = mx1 - parkX0;
+  if (parkW >= 8 && H - s0 - 4 >= 6) pocketPark(b, rng, { x: parkX0, y: s0 + 3, w: Math.min(parkW, 18), h: H - s0 - 4 }, "n");
   backyards(b, rng, blds);
   return start;
 }
@@ -744,12 +806,26 @@ function composeRoom(b: Board, rng: () => number, style: SteampunkRoomStyle): St
       // 보일러는 북쪽 벽 앞 가운데에서 한쪽으로, 옆에 석탄 통, 반대쪽 벽 앞 화덕, 벽에는 배관·압력계·밸브, 화실 문 앞 2칸 비움
       const bw = b.has("sp-boiler") ? b.kitSize("sp-boiler").w : 3;
       const bxs = leftFirst ? [cx - bw - 1, cx - bw, cx - bw - 2] : [cx + 1, cx + 2, cx];
-      if (backWall("sp-boiler", bxs)) { const p = b.props[b.props.length - 1]!; b.reserve({ x: p.x, y: p.y + 3, w: bw, h: 2 }); b.propNear("sp-coal-bin", [[p.x + bw + 1, fy0 + 2], [p.x - 3, fy0 + 2]], 0, ["floor"]); b.propNear("sp-coal-heap", [[p.x + bw + 1, fy0 + 4], [p.x - 3, fy0 + 4]], 0, ["floor"]); }
+      if (backWall("sp-boiler", bxs)) {
+        const p = b.props[b.props.length - 1]!; b.reserve({ x: p.x, y: p.y + 3, w: bw, h: 2 });
+        // 석탄 통 → 바로 아래 석탄 더미 → 옆 광차: 화실까지 한 줄 연료 동선(더미가 방 가운데 떠 있었다 — QA B1)
+        if (b.propNear("sp-coal-bin", [[p.x + bw + 1, fy0 + 2], [p.x - 3, fy0 + 2]], 0, ["floor"])) {
+          const c = b.props[b.props.length - 1]!;
+          b.propNear("sp-coal-heap", [[c.x, c.y + 1], [c.x, c.y + 2]], 0, ["floor"]);
+          b.propNear("sp-minecart", [[c.x + 2, c.y + 1], [c.x - 1, c.y + 1], [c.x + 2, c.y]], 0, ["floor"]);
+        }
+      }
       backWall("sp-furnace", leftFirst ? xs(cx + 2, fx1 - 1) : xs(fx0, cx - 3).reverse(), 0);
       // 벽 배관은 두세 토막(양쪽 벽 끝과 가운데), 그 사이에 압력계·밸브 — 보일러실 벽은 배관이 주인공이다
       for (const x of leftFirst ? [fx1, fx1 - 2, cx] : [fx0, fx0 + 2, cx]) deco2("sp-pipe-wall", [x, x + 1, x - 1]);
       deco2("sp-gauge-wall", xs(fx0, fx1)); wallDeco("sp-valve-wheel", xs(fx0, fx1).reverse()); wallDeco("sp-valve-wheel", xs(fx0, fx1));
-      corner("sp-crate-in"); anywhere("sp-minecart", 1); anywhere("sp-sack", 2);
+      // 모퉁이 창고(상자·자루를 한 덩이로) + 반대 모퉁이 화부 작업대·걸상 — 아랫쪽 절반이 비었다(QA B1)
+      const storeLeft = !leftFirst;
+      cluster(b, { x: storeLeft ? fx0 : fx1 - 2, y: fy1 - 1, w: 3, h: 2 }, ["sp-crate-in", "sp-sack", "sp-sack", "sp-crate-in"], ["floor"]);
+      if (b.propNear("sp-workbench", storeLeft ? [[fx1 - 2, fy1 - 1], [fx1 - 3, fy1 - 1]] : [[fx0, fy1 - 1], [fx0 + 1, fy1 - 1]], 0, ["floor"])) {
+        const w = b.props[b.props.length - 1]!;
+        b.propNear("sp-stool", [[storeLeft ? w.x - 1 : w.x + 3, w.y + 1], [w.x + 1, w.y - 1]], 0, ["floor"]);
+      }
       break;
     }
     case "engine-room": {
