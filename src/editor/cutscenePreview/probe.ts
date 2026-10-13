@@ -33,7 +33,7 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
   const timeline = simulateCutscene(commands);
   const area = viewport.width * viewport.height;
   const sizeOf = (id: string): { width: number; height: number } => pictureSize(project, id, { width: 48, height: 48 });
-  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; last?: { x: number; y: number } }>();
+  const per = new Map<string, { resourceId: string; visible: number; maxH: number; first?: { x: number; y: number }; travel: number; cut: number; last?: { x: number; y: number } }>();
   let togetherSamples = 0, overlappedSamples = 0; let coverSamples = 0; let heroHitSamples = 0, heroSamples = 0;
   // 맵 위 주인공 자리(시작 위치) — 컷신이 주인공을 옮기지 않는다면 그 자리를 그림 배우가 가로지르면 안 된다.
   const heroBox = ((): Box | null => {
@@ -56,12 +56,13 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
       const box = pictureBox(snap, size);
       const full = (box.x1 - box.x0) * (box.y1 - box.y0) >= area * FULLSCREEN;
       if (full) { if (snap.opacity > 40 && !/white|black|fade|blank/iu.test(snap.resourceId)) coverSamples += 1; continue; } // 배경·흰 막
-      const entry = per.get(snap.pictureId) ?? { resourceId: snap.resourceId, visible: 0, maxH: 0, travel: 0 };
+      const entry = per.get(snap.pictureId) ?? { resourceId: snap.resourceId, visible: 0, maxH: 0, travel: 0, cut: 0 };
       entry.maxH = Math.max(entry.maxH, (box.y1 - box.y0) / viewport.height);
       const w = Math.max(0, Math.min(box.x1, viewport.width) - Math.max(box.x0, 0)), h = Math.max(0, Math.min(box.y1, viewport.height) - Math.max(box.y0, 0));
       const inside = (w * h) / Math.max(1, (box.x1 - box.x0) * (box.y1 - box.y0));
       if (inside >= 0.5 && snap.opacity > 40) {
         entry.visible += STEP_MS;
+        if (inside < 0.9) entry.cut += STEP_MS; // 화면 가장자리에 걸려 몸이 잘려 보이는 시간
         boxes.push(box);
         if (entry.last) entry.travel += Math.hypot(snap.x - entry.last.x, snap.y - entry.last.y);
         entry.last = { x: snap.x, y: snap.y };
@@ -99,6 +100,8 @@ export function probeCutscene(project: Project, commands: readonly Command[], vi
     if (timeline.durationMs < 6000) issues.push(`컷신이 ${(timeline.durationMs / 1000).toFixed(1)}초로 너무 짧습니다(6초 미만) — 도입은 분위기를 깔 시간이 필요합니다.`);
     for (const s of subjects) {
       if (s.visibleMs < 1500) issues.push(`그림 ${s.pictureId}(${s.resourceId})는 화면 안에 ${(s.visibleMs / 1000).toFixed(1)}초만 보입니다(1.5초 미만) — 화면 밖에서 시작하거나 밖에서 끝나 사실상 안 보입니다. 시작 좌표와 이동 목표를 화면 안으로 두세요.`);
+      const cutShare = s.visibleMs > 0 ? (per.get(s.pictureId)?.cut ?? 0) / s.visibleMs : 0;
+      if (cutShare >= 0.4) issues.push(`그림 ${s.pictureId}(${s.resourceId})가 보이는 시간의 ${Math.round(cutShare * 100)}% 동안 화면 가장자리에 걸려 몸이 잘려 보입니다 — 머리·다리가 잘린 채 서 있지 않게, 멈추는 자리는 몸 전체가 화면 안에 들어오도록 fx/fy 와 scale 을 조정하세요.`);
       if (s.maxHeightRatio > 0.55) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 큽니다 — 배우 scale(%)로 줄이세요.`);
       if (s.maxHeightRatio < 0.12 && s.visibleMs > 0) issues.push(`그림 ${s.pictureId}가 화면 높이의 ${Math.round(s.maxHeightRatio * 100)}%로 너무 작아 안 보입니다(scale 로 키우세요).`);
     }
