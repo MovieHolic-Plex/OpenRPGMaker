@@ -255,7 +255,16 @@ const scriptCutsceneStaged: ToolDefinition = {
       }
       const scale = typeof raw.scale === "number" && raw.scale > 0 && raw.scale !== 100 ? Math.max(10, Math.min(300, raw.scale)) : undefined;
       const k = (scale ?? 100) / 100;
-      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
+      // 이미 잘라 둔 캐릭터 프레임(cutscene_char_<시트>_<번호>_walk<방향><0~2>) 한 장을 resourceId 로 넘겨도 그 인물의 걷기 프레임 전체를 붙인다 —
+      // 그러지 않으면 정지 그림이 미끄러져 가기만 한다(실측: 조수가 프레임 id 를 그대로 재사용).
+      const frame = /^(cutscene_char_.+_\d+)_walk(?:Up|Down|Left|Right)[012]$/u.exec(resourceId);
+      const trio = (d: string): [string, string, string] | undefined => {
+        const ids = [0, 1, 2].map((n) => `${frame![1]}_walk${d}${n}`);
+        return ids.every((id) => draft.assets.uploaded[id]) ? (ids as [string, string, string]) : undefined;
+      };
+      const walk = frame ? { down: trio("Down"), up: trio("Up"), left: trio("Left"), right: trio("Right") } : undefined;
+      const fullWalk = walk && walk.down && walk.up && walk.left && walk.right ? { down: walk.down, up: walk.up, left: walk.left, right: walk.right } : undefined;
+      return { name, width: Math.round(size.width * k), height: Math.round(size.height * k), ...(scale ? { scale } : {}), facing: raw.facing === "right" ? "right" : "left", poses, ...(fullWalk ? { walk: fullWalk } : {}), ...(at ? { at } : {}), ...(z !== undefined ? { z } : {}) };
     });
     let backdrop: { id: string; width: number; height: number } | undefined;
     if (typeof args.backdropResourceId === "string" && args.backdropResourceId.trim()) {

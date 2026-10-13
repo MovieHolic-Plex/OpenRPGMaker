@@ -192,7 +192,7 @@ export function compileStage(input: StageInput): StageResult {
   /** 한 걸음 시퀀스 → 시각 표. 시작 시각 t0. */
   const moveEvents = (a: ActorState, to: { x: number; y: number }, ms: number, ease: keyof typeof EASE, anim: "walk" | "bob" | undefined, t0: number, order: { n: number }): TimedEvent[] => {
     const events: TimedEvent[] = [];
-    const walkFrames = anim === "walk" ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
+    const walkFrames = a.spec.walk ? a.spec.walk?.[directionOf(to.x - a.x, to.y - a.y)] : undefined;
     // bob: 걷기 프레임이 없는 그림(생성 소품·몬스터)도 발걸음 박자로 위아래가 출렁이며 나아간다.
     const bob = anim === "bob" && !walkFrames;
     const segments = walkFrames || bob ? Math.max(1, round(ms / WALK_STEP_MS)) : ease === "linear" ? 1 : 6;
@@ -205,7 +205,7 @@ export function compileStage(input: StageInput): StageResult {
         const frame = walkFrames[WALK_CYCLE[(a.walkPhase + i - 1) % WALK_CYCLE.length]!];
         const cur = topLeft(a, from.x + (to.x - from.x) * EASE[ease]((i - 1) / segments), from.y + (to.y - from.y) * EASE[ease]((i - 1) / segments));
         events.push({ t, order: order.n++, beat: { kind: "picture", action: "erase", pictureId: a.pictureId } });
-        events.push({ t, order: order.n++, beat: { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: frame, x: cur.x, y: cur.y } });
+        events.push({ t, order: order.n++, beat: { kind: "picture", action: "show", pictureId: a.pictureId, resourceId: frame, x: cur.x, y: cur.y, ...(a.spec.scale && a.spec.scale !== 100 ? { scale: a.spec.scale } : {}) } });
       }
       const dest = topLeft(a, px, py);
       const lift = bob && i % 2 === 1 ? Math.max(2, round(a.spec.height * 0.04)) : 0;
