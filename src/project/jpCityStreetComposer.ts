@@ -62,6 +62,7 @@ const ROOFS_TILE = ["roof.tile", "roof.slate", "roof.hip", "roof.hip.slate"];
 
 /** 가게 종류 → 외형 범위. 범위 안에서 씨앗이 고른다(범위 밖은 조립기가 어색하다고 거절하는 조합). */
 const LOOKS: Readonly<Record<string, ShopLook>> = {
+  tower:     { grounds: ["gr.glass.sora", "gr.shutter.sora"], floorKinds: ["ribbon", "slide", "koushi", "curtain"], floors: [7, 13], walls: ["conc", "hodo", "shiro"], roofs: ROOFS_FLAT, heads: ["roofsign.aka"], width: [6, 9] },
   konbini:   { grounds: ["gr.konbini.0", "gr.konbini.1"], floorKinds: ["curtain", "ribbon", "pairs"], floors: [2, 3], walls: ["kinari", "hodo", "shiro"], roofs: ROOFS_FLAT, width: [6, 8] },
   izakaya:   { grounds: ["gr.izakaya"], floorKinds: ["pairs", "koushi", "curtain", "balcony"], floors: [2, 4], walls: ["kinari", "conc", "hodo"], roofs: ROOFS_FLAT, heads: ["roofsign.aka", "roofsign.sora", "roofsign.kii"], width: [5, 7] },
   ramen:     { grounds: ["gr.izakaya", "gr.glass.aka"], floorKinds: ["pairs", "ribbon"], floors: [1, 3], walls: ["kinari", "shiro"], roofs: ROOFS_FLAT, heads: ["roofsign.aka"], width: [4, 6] },
@@ -81,13 +82,14 @@ const ROLE_SIGNS: Readonly<Record<string, string>> = { izakaya: "vsign.izakaya",
 
 /** 가게 종류 → 어울리는 문 종류(전부 조립기 문 사전). 첫 항목이 그 층 그림의 기본문. 문마다 모양이 달라 「죄다 같은 문」이 되지 않는다. */
 const ROLE_DOORS: Readonly<Record<string, readonly string[]>> = {
-  konbini: ["auto"], izakaya: ["noren", "lattice"], ramen: ["noren", "lattice", "cafe"], cafe: ["cafe", "lobby", "lattice"],
+  tower: ["lobby", "auto"], konbini: ["auto"], izakaya: ["noren", "lattice"], ramen: ["noren", "lattice", "cafe"], cafe: ["cafe", "lobby", "lattice"],
   shop: ["steel", "lobby", "lattice", "cafe"], office: ["lobby", "auto", "steel"], garage: ["rollup", "steel"], apartment: ["lobby", "steel", "auto", "house"],
   machiya: ["machiya", "lattice"], house: ["house", "lattice", "steel"], sento: ["lattice", "noren"], bento: ["cafe", "steel"],
 };
 
 /** 현관 앞 꾸밈: 문 양옆 보도 칸에 놓는 낮은 소품(종류별). id → [w,h]. 문 바로 앞 칸(접근칸)은 비운다. */
 const ENTRANCE_PROPS: Readonly<Record<string, readonly (readonly [string, number, number])[]>> = {
+  tower: [["jp-prop-planter", 2, 1], ["jp-prop-bollard", 1, 1]],
   house: [["jp-prop-pot", 1, 2], ["jp-prop-post-box", 1, 2], ["jp-pots", 2, 1], ["jp-prop-planter", 2, 1]],
   machiya: [["jp-prop-pot", 1, 2], ["jp-pots", 2, 1], ["jp-prop-stone-lantern", 1, 2]],
   apartment: [["jp-prop-post-box", 1, 2], ["jp-prop-bike-sora", 2, 2], ["jp-prop-bike-aka", 2, 2], ["jp-prop-planter", 2, 1]],
@@ -113,6 +115,7 @@ const PROP_SIZE: Readonly<Record<string, readonly [number, number]>> = {
   "jp-prop-bike-aka": [2, 2], "jp-prop-bike-midori": [2, 2], "jp-prop-bike-rack": [2, 1], "jp-prop-bike-sora": [2, 2], "jp-prop-bollard": [1, 1], "jp-prop-cone": [1, 1],
   "jp-prop-curve-mirror": [1, 3], "jp-prop-garbage-net": [2, 1], "jp-prop-lamp-post": [1, 4], "jp-prop-lantern-post": [1, 3], "jp-prop-planter": [2, 1], "jp-prop-post-box": [1, 2],
   "jp-prop-pot": [1, 2], "jp-prop-stone-lantern": [1, 2], "jp-prop-utility-pole2": [2, 5], "jp-prop-vending-aka": [2, 2], "jp-prop-vending-midori": [2, 2], "jp-prop-vending-sora": [2, 2],
+  "jp-prop-blade-sign-0": [1, 3], "jp-prop-blade-sign-1": [1, 3], "jp-prop-street-flag": [1, 3], "jp-prop-bike-cluster": [3, 1], "jp-prop-cat-sit": [1, 1], "jp-prop-cat-loaf": [1, 1], "jp-prop-neon-stack-0": [2, 8], "jp-prop-neon-stack-1": [2, 10], "jp-prop-neon-stack-2": [2, 6], "jp-prop-led-tower-0": [3, 8], "jp-prop-smoking-area": [2, 2], "jp-prop-vend-pair": [3, 2],
   "jp-prop-nobori-aka": [1, 2], "jp-prop-nobori-sora": [1, 2], "jp-prop-nobori-midori": [1, 2],
 };
 
@@ -154,7 +157,7 @@ function shuffle<T>(rng: () => number, list: readonly T[]): T[] {
 const pick = <T>(rng: () => number, list: readonly T[]): T => list[Math.floor(rng() * list.length)]!;
 
 /** 일체형 1층 가게 정면(문 + 1층을 한 장으로 그린 키트 jp-sf-<종류>-<폭>-<L|R>, scripts/content/jp-city/blocks/shopfront_art.py)이 있는 종류. 차고는 셔터 문이라 조립기 그림을 그대로 쓴다. */
-const SF_ROLES: ReadonlySet<string> = new Set(["konbini", "izakaya", "ramen", "cafe", "shop", "bento", "office", "apartment", "house", "machiya", "sento"]);
+const SF_ROLES: ReadonlySet<string> = new Set(["tower", "konbini", "izakaya", "ramen", "cafe", "shop", "bento", "office", "apartment", "house", "machiya", "sento"]);
 const SF_MIN_W = 3, SF_MAX_W = 9;
 /** 키트의 문 왼쪽 칸(shopfront_art.door_col 과 같다). */
 export function sfDoorCol(w: number, side: "L" | "R"): number {
@@ -162,7 +165,7 @@ export function sfDoorCol(w: number, side: "L" | "R"): number {
   return side === "L" ? 1 : w - 3;
 }
 export function sfKitId(role: string, w: number, side: "L" | "R"): string | undefined {
-  return SF_ROLES.has(role) && w >= SF_MIN_W && w <= SF_MAX_W ? `jp-sf-${role}-${w}-${side}` : undefined;
+  return SF_ROLES.has(role) && w >= SF_MIN_W && w <= SF_MAX_W ? `jp-sf-${role === "tower" ? "office" : role}-${w}-${side}` : undefined;
 }
 
 /** 건물 한 채의 조립 입력을 뽑는다. `attempt` 가 늘수록 단순한 조합(층 수 ↓, 간판 없음)으로 물러난다. */
@@ -193,6 +196,7 @@ export function randomBuildingArgs(rng: () => number, role: string, w: number, a
       args.door = { type, col: pick(rng, spots) };
     }
   }
+  if (role === "tower" && attempt < 6 && w >= 7 && rng() < 0.5) args.setback = { upper: Math.max(2, floors - 3), ins: 1 };   // 윗부분이 안으로 들어간 계단식 고층
   if (look.heads && attempt < 4 && rng() < 0.45) { args.head = pick(rng, look.heads); delete args.roof; }
   // 외벽 부착물: 가게 종류의 간판·배관·실외기·비상계단. 충돌하면 조립기가 거절하고(DECO_CLASH) 뒤 후보는 부착물을 뺀다.
   if (attempt < 6) {
@@ -245,7 +249,9 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
   const base = Math.floor(bandTotal / N);
   const heights = Array.from({ length: N }, () => base);
   heights[0] = Math.max(11, base + Math.floor(rng() * 4) - 1);
-  if (riverGap >= 0) heights[0] = Math.max(9, Math.min(heights[0]!, bandTotal - 11 * (N - 1)));
+  const skyline = H >= 52 && style === "shopping" && rng() < 0.75;                // 고층 스카이라인: 맵이 높으면 뒷줄 띠를 높여 10층 안팎 빌딩이 서게 한다
+  if (skyline) heights[0] = Math.max(heights[0]!, Math.floor(bandTotal * 0.62));
+  if (riverGap >= 0) heights[0] = Math.max(9, Math.min(heights[0]!, bandTotal - (skyline ? 9 : 11) * (N - 1)));
   for (let i = 1; i < N; i++) heights[i] = Math.max(9, Math.floor((bandTotal - heights[0]!) / (N - 1)));
   interface Gap { sw1: number; road0: number; road1: number; sw2: number; roadW: number; river?: { rail: number; wall0: number; water0: number; water1: number; slope: number; mid: number; slope2: number; prom0: number }; end: number }
   interface Band { top: number; foot: number; gap?: Gap }
@@ -489,7 +495,10 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
           packW = w - lm.w - 1; lmEnd = lx === sx ? lm.w + 1 : 0;
         }
       }
-      const rolesHere = zone === "house" ? housePool : pool.slice(poolPtr).concat(pool.slice(0, poolPtr));
+      let rolesHere = zone === "house" ? housePool : pool.slice(poolPtr).concat(pool.slice(0, poolPtr));
+      if (zone === "shop" && b.foot - b.top + 1 >= 16 && style === "shopping") {            // 키 큰 띠: 고층 빌딩을 사이사이에 섞는다(셋 건너 하나 정도)
+        rolesHere = rolesHere.flatMap((r, i) => (i % 3 === 0 ? ["tower", r] : [r]));
+      }
       const packed = packRow(rng, packW, rolesHere, true).map((p2) => ({ ...p2, x: p2.x + lmEnd }));
       if (zone === "shop") poolPtr += packed.length;
       let cur = lmEnd;
@@ -611,6 +620,26 @@ export function planJpCityStreet(opts: ComposeOptions): JpStreetPlan {
         break;
       }
     }
+  });
+  // 일본 거리 분위기 소품(2026-10-13): 간판·네온 기둥·자전거 떼·고양이·깃발. 건물 벽 바로 옆 빈 열(골목·빈터)에만 붙여 세우고(공중에 뜨지 않게), 나무·공원 칸과 겹치면 겹침 정리가 뺀다.
+  const nearWall = (b: Band, w: number, fn: (x: number, side: "L" | "R") => void, n: number) => {
+    const cands = placed.filter((pb) => pb.foot === b.foot && pb.role !== "landmark");
+    for (let t = 0, k = 0; t < 30 && k < n && cands.length; t++) {
+      const pb = cands[Math.floor(rng() * cands.length)]!;
+      const side: "L" | "R" = rng() < 0.5 ? "L" : "R";
+      const x = side === "L" ? pb.x - w : pb.x + pb.w;
+      if (x < 1 || x + w > W - 1 || inStreetAny(x) || inStreetAny(x + w - 1) || !clearCols(x, w, b.foot) || riverTrees.some((tr) => x < tr.x + 5 && x + w > tr.x - 1)) continue;
+      fn(x, side); k++;
+    }
+  };
+  bands.forEach((b) => {
+    const tall = b.foot - b.top + 1 >= 16;
+    if (style === "shopping") {
+      nearWall(b, 2, (x) => stamp(pick(rng, ["jp-prop-neon-stack-0", "jp-prop-neon-stack-1", "jp-prop-neon-stack-2"]), x, b.foot + 1 - 7), tall ? 2 : 1);
+      nearWall(b, 1, (x) => stamp(pick(rng, ["jp-prop-blade-sign-0", "jp-prop-blade-sign-1", "jp-prop-street-flag"]), x, b.foot - 1), 2);
+    }
+    nearWall(b, 3, (x) => stamp("jp-prop-bike-cluster", x, b.foot + 1), 2);
+    nearWall(b, 1, (x) => stamp(pick(rng, ["jp-prop-cat-sit", "jp-prop-cat-loaf"]), x, b.foot + 1), 1);
   });
   for (const b of placed) {
     if ((b.role === "izakaya" || b.role === "ramen") && rng() < 0.7) {
@@ -738,7 +767,7 @@ export function runJpStreetPlan(plan: JpStreetPlan, call: (tool: string, args: R
   return { built, skipped, props, buildings };
 }
 
-const ROLE_KO: Readonly<Record<string, string>> = { konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
+const ROLE_KO: Readonly<Record<string, string>> = { tower: "고층 빌딩", konbini: "편의점", izakaya: "이자카야", ramen: "라멘집", cafe: "카페", shop: "상점", office: "사무소", garage: "차고", apartment: "아파트", machiya: "마치야", house: "주택", sento: "센토(목욕탕)", bento: "도시락집" };
 
 /** 지어진 건물마다 이름 붙은 위치(로케이션)를 남긴다 — 어느 문이 어느 가게인지 조수(list_map_locations)가 읽고 실내를 맞게 잇는다. */
 export function labelStreetBuildings(map: GameMap, buildings: readonly JpStreetBuiltBuilding[]): string[] {
