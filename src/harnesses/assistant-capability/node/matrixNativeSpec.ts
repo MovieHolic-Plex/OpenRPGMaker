@@ -421,13 +421,26 @@ export function judge(id: string, input: JudgeInput): Verdict {
     });
     case 'screen-shake': return eventEdit(input, CUT, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
-      const added = now.filter((command: any) => !was.some((old: any) => isDeepStrictEqual(old, command)));
-      return added.length === 1 && added[0].kind === 'm2Command' && /shake/.test(String(added[0].commandId)) && keepsInOrder(was, now) ? pass('화면 흔들림 추가') : fail('화면 흔들림 명령 하나만 추가되지 않았다');
+      // Filling a command's default fields (m2Command fields {} -> {fade:'black'}) is not a change of meaning.
+      const same = (old: any, next: any) => isDeepStrictEqual(old, next)
+        || (old.kind === 'm2Command' && next.kind === 'm2Command' && old.commandId === next.commandId && Object.entries(old.fields ?? {}).every(([key, value]) => isDeepStrictEqual(next.fields?.[key], value)));
+      let at = 0;
+      const added: any[] = [];
+      for (const command of now) { if (at < was.length && same(was[at], command)) at++; else added.push(command); }
+      const shakes = added.filter((command: any) => command.kind === 'm2Command' && /shake/.test(String(command.commandId)));
+      // The shake may be followed by a wait so it reads on screen; anything else added is an unrequested change.
+      return at === was.length && shakes.length === 1 && added.every((command: any) => command === shakes[0] || command.kind === 'wait') ? pass('화면 흔들림 추가') : fail('화면 흔들림 명령 하나만 추가되지 않았다');
     });
     case 'dialogue-position': return eventEdit(input, CUT, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
-      const text = now.find((command: any) => command.kind === 'text');
-      return text?.position === 'bottom' && isDeepStrictEqual(kinds(now), kinds(was)) && isDeepStrictEqual(now.map((c: any) => (c.kind === 'text' ? { ...c, position: undefined } : c)), was.map((c: any) => (c.kind === 'text' ? { ...c, position: undefined } : c))) ? pass('대사 위치를 아래쪽으로') : fail(`대사 위치 ${text?.position}`);
+      const strip = (list: any[]) => list.map((c: any) => (c.kind === 'text' ? { ...c, position: undefined } : c));
+      // Two real ways to say it: the text command's own position, or a displayTextSettings command placed before the text.
+      const viaText = now.find((command: any) => command.kind === 'text')?.position === 'bottom' && isDeepStrictEqual(strip(now), strip(was));
+      const settings = now.filter((command: any) => command.kind === 'displayTextSettings');
+      const firstText = now.findIndex((command: any) => command.kind === 'text');
+      const viaSettings = settings.length === 1 && settings[0].position === 'bottom' && now.indexOf(settings[0]) < firstText
+        && isDeepStrictEqual(strip(now.filter((command: any) => command.kind !== 'displayTextSettings')), strip(was));
+      return viaText || viaSettings ? pass('대사 위치를 아래쪽으로') : fail('대사 위치가 아래쪽으로 바뀌지 않았거나 다른 명령이 바뀌었다');
     });
     case 'door-se': return eventEdit(input, DOOR, (b, a) => {
       const was = b.pages[0].commands, now = a.pages[0].commands;
