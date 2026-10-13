@@ -62,7 +62,10 @@ export async function runToolAsync(
     if (result.scope === "page") {
       const same = (left: unknown, right: unknown): boolean => JSON.stringify(left) === JSON.stringify(right);
       const lost = page.commands.filter((old) => !result.commands.some((next) => same(next, old)));
-      if (lost.length > 0 && !/지워|지우|삭제|제거|없애|빼|바꿔|바꾸|교체|수정|변경|고쳐|대신|replace|remove|delete|change/iu.test(String(normalized.prompt))) {
+      const promptText = String(normalized.prompt);
+      // 「나머지는 그대로 유지」라고 적은 요청이 기존 명령을 지웠다면, 「바꿔」가 들어 있어도 지시를 어긴 것이다.
+      const asksRemoval = /지워|지우|삭제|제거|없애|빼|바꿔|바꾸|교체|수정|변경|고쳐|대신|replace|remove|delete|change/iu.test(promptText) && !/유지|그대로|보존|남겨|keep|preserve/iu.test(promptText);
+      if (lost.length > 0 && !asksRemoval) {
         throw new ToolError(
           `이 요청은 기존 명령을 지우라는 말이 없는데 결과에서 기존 명령 ${lost.length}개가 사라져 적용하지 않았습니다. 새로 넣을 것만 mode:'append' 로 다시 요청하세요(기존 명령은 그대로 남습니다).`,
           { code: "event-assist-dropped-commands" },

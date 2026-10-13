@@ -382,7 +382,8 @@ export function judge(id: string, input: JudgeInput): Verdict {
       return added.length === 1 && added[0].kind === 'playAudio' && keepsInOrder(was, now) ? pass(`효과음 ${added[0].resourceId} 삽입`) : fail('효과음 명령 하나만 삽입되지 않았다');
     });
     case 'touch-trigger': return eventEdit(input, NPC, (b, a) =>
-      a.pages[0].trigger?.kind === 'playerTouch' && isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass('실행 조건을 플레이어 접촉으로') : fail(`트리거가 ${a.pages[0].trigger?.kind}`));
+      // 'touch' is the same trigger under its short name (transferReachability TOUCH_TRIGGERS, eventTools touch checks).
+      ['playerTouch', 'touch'].includes(a.pages[0].trigger?.kind) && isDeepStrictEqual(a.pages[0].commands, b.pages[0].commands) ? pass('실행 조건을 플레이어 접촉으로') : fail(`트리거가 ${a.pages[0].trigger?.kind}`));
     case 'rename-npc': return eventEdit(input, NPC, (b, a) =>
       a.name === '하린' || a.pages?.[0]?.name === '하린' ? (isDeepStrictEqual(a.pages[0].commands.map(speakerless), b.pages[0].commands.map(speakerless)) ? pass('이름을 하린으로(화자 표시 포함)') : fail('화자 표시 밖의 대사 명령이 바뀌었다')) : fail(`이름이 ${a.name ?? a.pages?.[0]?.name}`));
     case 'face-right': return eventEdit(input, NPC, (b, a) =>
