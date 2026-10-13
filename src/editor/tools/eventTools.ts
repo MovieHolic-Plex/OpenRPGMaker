@@ -4117,9 +4117,37 @@ const patchEventPage: ToolDefinition = {
   },
 };
 
+/**
+ * 한쪽 문의 착지 방향만 바꾸면 반대쪽 문과 어긋난다 — 「두 맵 사이 출입구 방향을 맞춰줘」에서 모델이 가는 문만 고치고
+ * 끝냈다(실측 2026-10-13, 5회 중 4회). 방향이 바뀐 transfer 가 있으면, 그 목적지 맵에서 이 맵으로 돌아오는 문을 결과에 적는다.
+ */
+function withReturnDoorNote(base: ToolDefinition): ToolDefinition {
+  return {
+    ...base,
+    run(draft, args) {
+      const mapId = String(args.mapId ?? "");
+      const eventId = String((args.event as { id?: unknown } | undefined)?.id ?? args.eventId ?? "");
+      const transfersOf = (event: GameEvent | undefined): Array<{ mapId?: string; direction?: string }> =>
+        (event?.pages ?? []).flatMap((page) => (page.commands ?? []).filter((command) => command.kind === "transfer") as Array<{ mapId?: string; direction?: string }>);
+      const before = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId)).map((entry) => ({ ...entry }));
+      const result = base.run(draft, args);
+      const changed = transfersOf(draft.maps[mapId]?.events.find((event) => event.id === eventId))
+        .filter((entry) => entry.mapId && entry.direction && !before.some((old) => old.mapId === entry.mapId && old.direction === entry.direction));
+      const notes: string[] = [];
+      for (const entry of changed) {
+        for (const door of draft.maps[entry.mapId!]?.events ?? []) {
+          const back = transfersOf(door).find((candidate) => candidate.mapId === mapId);
+          if (back) notes.push(`돌아오는 문 '${door.id}'(${draft.maps[entry.mapId!]!.name})의 착지 방향은 ${back.direction ?? "(없음)"} 입니다 — 「출입구 방향을 맞춰줘」 요청이면 그 문도 같은 축으로 맞추세요(가는 쪽 ${entry.direction} ↔ 돌아오는 쪽 반대 방향). 다른 요청이면 무시하세요.`);
+        }
+      }
+      return notes.length ? { ...result, summary: `${result.summary} ⚠ ${notes.join(" ")}` } : result;
+    },
+  };
+}
+
 export const EVENT_TOOLS: readonly ToolDefinition[] = [
-  upsertEvent,
-  patchEventPage,
+  withReturnDoorNote(upsertEvent),
+  withReturnDoorNote(patchEventPage),
   placeNpc,
   setNpcSchedule,
   makeVillager,
