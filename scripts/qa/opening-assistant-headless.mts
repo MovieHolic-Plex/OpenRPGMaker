@@ -63,7 +63,14 @@ const done = await runPiAgent(request as never, {
       if (!r.ok || !j.png) throw new Error(j.error ?? '브라우저 렌더 실패');
       return await pngShrinkBase64(Buffer.from(j.png, 'base64'), 640);
     }
-    const id = data?.resourceId as string | undefined; const url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
+    const id = data?.resourceId as string | undefined; let url = id ? p.assets.uploaded[id]?.dataUrl : undefined;
+    // 번들(내장) 리소스는 업로드 자산이 아니다 — public/ 의 실제 파일에서 읽는다(실제 앱은 URL 로 받는다).
+    if (!url && id) {
+      const { resolveAssetResourceUrl } = await import('../../src/assets/generatedAssetResourceResolver');
+      const u = resolveAssetResourceUrl(id, { project: p }); const rel = u?.startsWith('/') ? u.split('?')[0]! : undefined;
+      const file = rel ? path.join(process.cwd(), 'public', rel) : undefined;
+      if (file && fs.existsSync(file) && /\.(png|jpe?g|webp)$/iu.test(file)) return await pngShrinkBase64(fs.readFileSync(file), 512);
+    }
     if (!url?.startsWith('data:image')) throw new Error('그림 데이터를 찾을 수 없습니다: ' + id);
     return await pngShrinkBase64(Buffer.from(url.split(',')[1]!, 'base64'), 512);
   },

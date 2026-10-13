@@ -283,9 +283,18 @@ const scriptCutsceneStaged: ToolDefinition = {
     }
     // 배우가 어떤 단계에서도 등장·이동하지 않으면 화면에 안 보이거나 가만히 선 채로 끝난다(조수가 at 만 주고 단계를 비운 실측).
     const stepList = normalizeSteps(args.steps);
+    // 조수가 흔히 빠뜨리는 필드는 거절하지 않고 합리적으로 메운다 — 거절→재시도가 턴 상한을 먹는다(gen-24 실측: 10번 거절).
+    // (1) 단계에 actor 를 안 적었고 움직일 그림 배우가 하나뿐이면 그 배우로.
+    const movable = actors.filter((actor) => !actor.ghost && actor.mapTarget === undefined);
+    for (const step of stepList) {
+      if (["enter", "move", "exit", "show", "hide", "pose", "anim", "bob"].includes(String(step.do)) && !(step as Raw).actor && movable.length === 1) (step as Raw).actor = movable[0]!.name;
+    }
     for (const actor of actors) {
+      // 맵 위 주인공(ghost)·NPC 이벤트는 단계에 등장하지 않아도 이미 맵에 있다.
+      if (actor.ghost || actor.mapTarget !== undefined) continue;
       const appears = stepList.some((step) => ["enter", "move", "show"].includes(String(step.do)) && (step as Raw).actor === actor.name);
-      if (!appears) throw new ToolError(`배우 '${actor.name}' 이(가) 어떤 단계에서도 등장하지 않습니다 — {do:'enter',actor:'${actor.name}',from:'left',to:{fx:0.5,fy:0.6},ms:2400} 처럼 enter/move/show 단계를 넣으세요. 줄지어 걸을 때는 withPrevious:true 로 함께 움직이게 하고, 끝에는 exit 로 내보내세요.`, { code: "actor-never-appears" });
+      // (2) at 도 단계도 없는 그림 배우는 화면 가운데 아래에 처음부터 서 있게 한다.
+      if (!appears && !actor.at) (actor as { at?: unknown }).at = { fx: 0.5, fy: 0.6 };
     }
     let result: ReturnType<typeof compileStage>;
     try {
