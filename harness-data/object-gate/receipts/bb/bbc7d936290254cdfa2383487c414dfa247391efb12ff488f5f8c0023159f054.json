@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "bbc7d936290254cdfa2383487c414dfa247391efb12ff488f5f8c0023159f054",
+ "width": 16,
+ "height": 16,
+ "kind": "box",
+ "name": "wooden sea chest seen from above-front: large flat lid top with brass bands clearly visible",
+ "label": "sky-island/si-chest",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid is clearly visible foreshortened from rows 1 to 7 with lighter lighting and brass bands, while the south front face extends from rows 8 to 14 with a clasp and shadow under the lid rim.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4240
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid surface is prominently shown across rows 1-7 in a lighter tone with brass bands, while rows 8-14 form the front face with the latch.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2683
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the chest is clearly shown from above across rows 1-6 (6px deep) in a lighter top-lit plane, with a front lip highlight at row 7, followed by the shadowed vertical front face and latch across rows 8-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8560
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sea chest",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The chest shows a clear 3/4 perspective with a 6-row illuminated top lid surface (rows 1-6) and a 7-row south-facing front body (rows 8-14) featuring the lock clasp.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6414
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "f1774fd47229df56"
+  ],
+  "24": [
+   "0a51c5edd1d2f7d9",
+   "1fc7e2ff1950d80c",
+   "658eec5828371907",
+   "6bf7c55377c65d78",
+   "a1924a9bb6126039",
+   "a853b810c73f06c6"
+  ],
+  "32": [
+   "1c62961b51a6c36b",
+   "65221e355c3c54eb",
+   "666635eccde35797",
+   "82d60a21b34dff76",
+   "830f92bfdda642d1",
+   "a05e1d27c38d12c0"
+  ],
+  "48": [
+   "12f3431735ee3569",
+   "3090e0fc3dcd2a8c",
+   "4b511f432ac0ed81",
+   "84a1b966aa6f4e01",
+   "9bebac49c83ded03",
+   "e3130002b0393a12"
+  ]
+ }
+}

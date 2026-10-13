@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "60b6cbeb3b860ab86d1d00f07cb5cd781ce20c01c9d743bfc1a923eb5a9ac24f",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wooden planking is clearly visible from rows 0 to 10, with nails/rivets and gaps between planks, leading to a south-facing edge at rows 12-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3678
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock plank walkway with front edge beam",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the plank deck spans rows 0-10 (11 rows) seen from above with bolts and plank lines, and the south edge beam spans rows 11-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4087
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock plank walkway/deck",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wooden planks spans rows 0 to 10 (11 rows) with visible nail heads, followed by the south-facing edge of the platform in rows 11 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4613
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden sky dock plank deck",
+    "kind_matches": true,
+    "top_rows": 11,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top deck surface of wooden planks spans rows 0 to 10 (11 rows), with a vertical south edge drop on rows 11 to 14, properly showing the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5968
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "635b1664fdbb753b"
+  ],
+  "24": [
+   "06f7fa8e208a9b04",
+   "714768f55bf567ab",
+   "7d006a3992c83bc7",
+   "937fa572b696c869",
+   "b3a238fe74dcf0a8",
+   "e0a9a1d1cd881518"
+  ],
+  "32": [
+   "1a34ff65944a6761",
+   "383ebbd98d6c8a81",
+   "3f449b3e713a14c4",
+   "9c35c0f447fe3c16",
+   "cebe459922a7ba1e",
+   "cfbf4caa52099d74"
+  ],
+  "48": [
+   "5bfbfec9d81d79fe",
+   "733c6353b9a49a15",
+   "8b6d1cceb08f15fe",
+   "ae0367c2aa37609b",
+   "c9038d2b8c5f5217",
+   "c9e8d4ad9a09e6ca"
+  ]
+ }
+}

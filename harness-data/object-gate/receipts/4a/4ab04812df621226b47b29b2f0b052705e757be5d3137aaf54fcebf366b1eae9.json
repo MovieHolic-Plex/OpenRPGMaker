@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4ab04812df621226b47b29b2f0b052705e757be5d3137aaf54fcebf366b1eae9",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "plaster wall with window sill (wall_mounted)",
+ "label": "sky-island/si-wall-plaster-low-win",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wall face with plaster upper wall and wood wainscot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing interior wall face, featuring upper plaster and lower vertical wood panelling with baseboard.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7420
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wall face with wainscoting and window sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a south-facing interior wall face with plaster, lower wood wainscoting, and a window sill. As a terrain wall tile, it correctly represents a vertical wall surface without isometric distortion.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6455
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wall face tile with plaster top and wooden wainscoting below",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing a flat south-facing interior wall with wainscoting and window trim; as a wall face terrain element it correctly represents a vertical surface without needing a 3D top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4812
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wall face with wainscoting and window sill",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a south-facing interior wall face, featuring an upper plaster section with window base/sill and lower wooden wainscoting.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4936
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.560Z",
+ "cells": {
+  "16": [
+   "fa505ceac9a6ced0"
+  ],
+  "24": [
+   "17bc464f98cfd81b",
+   "8c48325b5aa7644e",
+   "8efb8509c2a56606",
+   "b0c144d4b07456af",
+   "c346939bfcaba720",
+   "cd276f7aaf49c573"
+  ],
+  "32": [
+   "1c30d12a93e219b6",
+   "4d8bf4284611677f",
+   "62fbf72a58d3a859",
+   "8e128ccf15cdb30e",
+   "a97141d33f90f2e1",
+   "f6d94a654715559b"
+  ],
+  "48": [
+   "15bb0c9547c6c5dc",
+   "69c8573546e3e8e7",
+   "97c4443ab43dfb2f",
+   "98e8f1f8b8d10d27",
+   "c7bdf53ec34189e5",
+   "f9de63fc9d42a0dd"
+  ]
+ }
+}

@@ -1,0 +1,240 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1732632af4d1d72ae9d36ea17ce78c50b2689d5c9268d07835c88e242e1cc84b",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "stone fireplace hearth with burning fire and mantel shelf",
+ "label": "sky-island/si-hearth-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace hearth and mantel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in flat front elevation. The mantel shelf top is only a 1px line (row 12) upon which flat 2D items rest, and the firebox cavity and log show no receding floor or horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4591
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace, stone brickwork, and mantel shelf are rendered in flat architectural front elevation like a side-scroller asset. The mantel shelf is only a 3px vertical strip with no top surface depth, and the brick pattern and hearth have zero 3/4 perspective foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5671
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn as a flat architectural elevation: the mantel shelf is a 3-pixel-tall horizontal bar with no foreshortened top surface, and the firebox is a flat black cutout with no visible floor or interior depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4439
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace, stone wall, and mantel shelf are rendered in flat 2D front elevation with zero top-down perspective. The mantel shelf at rows 12-14 is drawn straight-on as horizontal stripes with no foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5249
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace and chimney are drawn in pure front elevation with flat brick courses; the mantel shelf is a flat 2-3px horizontal band without an angled top surface, and the hearth opening has no visible floor depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace and mantel shelf are rendered in a completely flat front elevation with no visible depth; the mantel shelf is just a 3px horizontal band with a 1px highlight line at row 12, showing 0 rows of top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4427
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn in flat front elevation as a vertical brick wall. The mantel shelf at rows 12-14 is drawn straight-on as a 3px horizontal bar with no foreshortened top surface (at most a 1px highlight line at row 12), and there is no protruding hearth base.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5440
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and fire",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace and mantel shelf are rendered in a completely flat front elevation. The mantel shelf consists of a 3-pixel-tall horizontal bar (rows 12-14) with only a 1px highlight line on row 12 where a foreshortened top surface should be. The brickwork, hearth opening, and fire log (rows 29-30) show no depth or top-down 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5244
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.563Z",
+ "cells": {
+  "16": [
+   "106148e33b375842",
+   "411547b61a750c6c",
+   "7005078361a4489c",
+   "716edc503fe1225c"
+  ],
+  "24": [
+   "095aea73fd60940c",
+   "0a0bab9605b6556f",
+   "0c17af584dfccc14",
+   "22268dca88e3a712",
+   "25a37f5681cb531a",
+   "2c2438675617e777",
+   "2e0599c4c8134fda",
+   "3d22c6cef2e74ab5",
+   "686072fdfb6b0e52",
+   "6ba27d980bcea230",
+   "6d67474bf29a1993",
+   "86a5c71211539ee6",
+   "8ddf9fb18cf7bf76",
+   "a5d7f9589a3f6bf2",
+   "aada9e96d20f6334",
+   "b8012d81ef0b12e2",
+   "cd7a2ae74e0d43e2",
+   "d4c9ee7da54567ec",
+   "d6636ea0a348b043",
+   "e56b67028c3c2993",
+   "e8911df92c7b66af",
+   "f817da34aa43e5e4",
+   "f8ad9cd4f6630a09",
+   "ffee1dab75d844a5"
+  ],
+  "32": [
+   "5934decb5938eb4a"
+  ],
+  "48": [
+   "07d07c4735a88f4d",
+   "14a80dd9d3f633e3",
+   "1dfc8c340e875fa7",
+   "4fa23d7eda3c3865",
+   "abb084b715e5ccf2",
+   "d6b1e6dead6fad3d"
+  ]
+ }
+}

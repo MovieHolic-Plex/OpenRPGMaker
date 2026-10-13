@@ -260,40 +260,108 @@ def _(c):
     foundation(c, 3, 45, 92, 96)
 
 
+def cyl_px(u, base):
+    """원통 앞면 명암(왼쪽 위 빛): u = -1(왼 끝)…1(오른 끝)."""
+    return base + 1 if u < -0.55 else base if u < 0.1 else base - 1 if u < 0.65 else base - 2
+
+
+def cylinder(c, cx, ytop, ybot, rtop, rbot, ry, mat='stone', base=4, course=5, joint=8, stripes=()):
+    """3/4 원통(가늘어질 수 있음): 앞면 줄눈이 아래로 휜 타원 호를 따른다(위에서 본 원통). 아래 끝도 호. stripes = [(y0, y1, mat, base)]."""
+    for y in range(ytop, ybot + ry + 1):
+        v = (y - ytop) / max(1, ybot - ytop)
+        r = rtop + (rbot - rtop) * min(1, v)
+        for x in range(int(math.floor(cx - r)), int(math.ceil(cx + r)) + 1):
+            u = (x + 0.5 - cx) / r
+            if abs(u) > 1: continue
+            arc = ry * math.sqrt(max(0, 1 - u * u))
+            if y > ybot + arc: continue
+            yy = y - arc                      # 호를 편 좌표
+            m, b = mat, base
+            for (s0, s1, sm, sb) in stripes:
+                if s0 <= yy < s1: m, b = sm, sb
+            t = cyl_px(u, b)
+            if course and m == mat:
+                row = int((yy - ytop) // course); ly = (yy - ytop) % course
+                lx = int((x - cx + r + (joint // 2 if row % 2 else 0))) % joint
+                if ly >= course - 1 or lx == joint - 1: t -= 2
+                elif ly < 1: t += 1
+            c.P(x, y, m, clamp(t, 0, NT[MI[m]] - 1))
+        # 실루엣 테
+        for xe, te in ((int(math.floor(cx - r)), 1), (int(math.ceil(cx + r)), 0)):
+            g = c.get(xe, y)
+            if g: c.P(xe, y, g[0], te)
+
+
+def deck_ring(c, cx, cy, rx, ry, mat='plank', thick=3, rail=True, rail_mat='wood'):
+    """타원 마루(위에서 본 둥근 발코니): 윗면(밝은 판, 뒤 가장자리 어두운 테) + 앞 두께 + 앞 호를 따라 난간 기둥."""
+    for x in range(int(cx - rx), int(cx + rx) + 1):
+        u = (x + 0.5 - cx) / rx
+        if abs(u) > 1: continue
+        arc = ry * math.sqrt(1 - u * u)
+        for k in range(thick):
+            c.P(x, round(cy + arc) + 1 + k, 'wood', 2 if k == 0 else 1)
+    c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: (mat, (5 if dy < -0.3 else 4) if d < 0.75 else 3 if dy < 0 else 4))
+    c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: (mat, 1) if d > 0.86 and dy < 0 else None)
+    for x in range(int(cx - rx), int(cx + rx) + 1):
+        u = (x + 0.5 - cx) / rx
+        if abs(u) > 1: continue
+        c.P(x, round(cy - ry * math.sqrt(1 - u * u)) + 1, mat, 2) if (x % 3 == 0) else None
+    if rail:
+        for k in range(-6, 7):
+            u = k / 6.6
+            x = round(cx + u * rx); y = round(cy + ry * math.sqrt(1 - u * u))
+            c.R(x, y - 5, 1, 6, rail_mat, 3)
+        for x in range(int(cx - rx), int(cx + rx) + 1):
+            u = (x + 0.5 - cx) / rx
+            if abs(u) > 1: continue
+            c.P(x, round(cy + ry * math.sqrt(1 - u * u)) - 5, rail_mat, 4)
+
+
+def plinth(c, cx, cy, rx, ry, thick=4, mat='stone'):
+    """둥근 돌 받침(윗면 보이는 타원 + 앞 두께)."""
+    for x in range(int(cx - rx), int(cx + rx) + 1):
+        u = (x + 0.5 - cx) / rx
+        if abs(u) > 1: continue
+        arc = ry * math.sqrt(1 - u * u)
+        for k in range(thick):
+            c.P(x, round(cy + arc) + k, mat, 3 if k < thick - 1 else 1)
+        if x % 6 == 0:
+            for k in range(thick - 1): c.P(x, round(cy + arc) + k, mat, 2)
+    c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: (mat, 6 if (dy < -0.2 and dx < 0.2) else 5) if d < 0.82 else (mat, 4))
+
+
 def _windmill(c, f=0):
     cx = 32
-    # 탑(사다리꼴, 위가 좁다) y 30..106
-    for y in range(34, 106):
-        u = (y - 34) / 72
-        half = 14 + u * 8
-        for x in range(int(cx - half), int(cx + half) + 1):
-            v = (x - (cx - half)) / (2 * half)
-            base = 5 if v < 0.25 else 4 if v < 0.6 else 3 if v < 0.85 else 2
-            row = (y - 34) // 5; yy = (y - 34) % 5
-            xx = (x + (4 if row % 2 else 0)) % 9
-            t = base
-            if yy == 4 or xx == 8: t = base - 2
-            c.P(x, y, 'cream', clamp(t, 0, 6))
-        c.P(int(cx - half), y, 'cream', 1); c.P(int(cx + half), y, 'cream', 0)
-    # 모자 지붕(윗면 보이는 반원 돔 + 앞면)
-    c.ell(cx, 30, 17, 12, lambda x, y, dx, dy, d: ('roofr', 5 if dx < -0.3 and dy < 0 else 4 if dy < 0.1 else 3 if dx < 0.5 else 2) if y <= 34 else None)
-    c.R(cx - 17, 34, 35, 3, 'roofr', 2); c.HL(cx - 17, 36, 35, 'roofr', 1); c.HL(cx - 17, 34, 35, 'roofr', 3)
-    for y in range(17, 35):
-        for x in range(cx - 17, cx + 18):
-            g = c.get(x, y)
-            if g and g[0] == 'roofr' and ((x - cx) % 6 == 0) and y < 33: c.P(x, y, 'roofr', max(1, g[1] - 1))
-    c.R(cx - 1, 15, 3, 4, 'wood', 3); c.P(cx, 14, 'brass', 5)
-    window(c, cx - 5, 62, 10, 10, shutters=False, box=False, s=2)
-    door(c, 25, 111, 14, 28, frame='wood')
-    foundation(c, 8, 57, 106, 112)
-    # 날개(4장, 30° 단계 회전) — 중심 (cx, 46)
-    hub = (cx, 46)
+    plinth(c, cx, 102, 28, 6, 5)
+    cylinder(c, cx, 44, 98, 15, 21, 4, 'cream', 5, 5, 9)
+    window(c, cx - 5, 66, 10, 10, shutters=False, box=False, s=2)
+    door(c, 25, 104, 14, 28, frame='wood')
+    # 돌림 마루(위에서 본 발코니)
+    deck_ring(c, cx, 42, 24, 6, 'plank', 3)
+    # 모자 지붕: 마루 위 원뿔형 돔 — 처마는 아래로 휜 호, 비늘 줄도 호를 따른다
+    for y in range(12, 40):
+        v = (y - 12) / 27
+        r = 3 + 15 * math.sqrt(v)
+        for x in range(int(cx - r), int(cx + r) + 1):
+            u = (x + 0.5 - cx) / r
+            if abs(u) > 1: continue
+            arc = 3 * math.sqrt(1 - u * u)
+            if y > 37 + arc: continue
+            t = 5 if u < -0.4 else 4 if u < 0.2 else 3 if u < 0.7 else 2
+            if int(y - arc * v) % 4 == 3: t -= 1
+            c.P(x, y, 'roofr', t)
+    for x in range(cx - 18, cx + 19):
+        u = (x + 0.5 - cx) / 18
+        if abs(u) <= 1: c.P(x, round(37 + 3 * math.sqrt(1 - u * u)) + 1, 'roofr', 1)
+    c.R(cx - 1, 7, 3, 6, 'wood', 3); c.P(cx, 6, 'brass', 5)
+    # 날개(4장, 30° 단계 회전) — 축은 모자 앞
+    hub = (cx, 30)
     ang0 = f * math.pi / 6
     for k in range(4):
         a = ang0 + k * math.pi / 2
         dx, dy = math.cos(a), math.sin(a)
         px_, py_ = -dy, dx
-        for r in range(4, 30):
+        for r in range(4, 29):
             x = hub[0] + dx * r; y = hub[1] + dy * r
             c.P(round(x), round(y), 'wood', 2)
             if r > 7:
@@ -305,44 +373,41 @@ def _windmill(c, f=0):
     c.P(hub[0] - 1, hub[1] - 1, 'brass', 5)
 
 
-A('windmill', '풍차(돌 탑 + 돛 날개, 3프레임 회전)', 4, 7, 'structure', ['풍차', '방앗간', '애니메이션'], '섬 바람받이 끝, 밭 옆. 날개가 돈다. 문(가운데 왼쪽) 아래 접근칸 비움.', entrance=[1], frames=3,
-  gate_name='windmill tower with conical cap roof and sails')(_windmill)
+A('windmill', '풍차(돌림 마루 + 돛 날개, 3프레임 회전)', 4, 7, 'structure', ['풍차', '방앗간', '애니메이션'], '섬 바람받이 끝, 밭 옆. 날개가 돈다. 문(가운데 왼쪽) 아래 접근칸 비움.', entrance=[1], frames=3,
+  gate_name='round windmill tower seen from above-front: round stone plinth, circular wooden balcony deck, conical cap roof, sails')(_windmill)
 
 
 @A('lighthouse', '하늘 등대(빛 탑)', 3, 8, 'structure', ['등대', '탑', '부두'], '부두 섬 끝. 비공정 길잡이. 가운데 칸이 문.', entrance=[1])
 def _(c):
     cx = 24
-    # 몸통: 흰 원통 + 빨간 띠 둘
-    for y in range(44, 122):
-        u = (y - 44) / 78
-        half = 11 + u * 6
-        for x in range(int(cx - half), int(cx + half) + 1):
-            v = (x - (cx - half)) / (2 * half)
-            base = 6 if v < 0.2 else 5 if v < 0.55 else 4 if v < 0.82 else 3
-            mat = 'cream'
-            if 62 <= y < 72 or 92 <= y < 102: mat = 'clothr'; base = clamp(base - 2, 1, 4)
-            t = base
-            if rnd(x, y, 3) < 0.05: t -= 1
-            c.P(x, y, mat, t)
-        c.P(int(cx - half), y, 'cream', 1); c.P(int(cx + half), y, 'sumi', 2)
-    # 전망대(난간, 윗면 보이는 원판)
-    c.ell(cx, 42, 19, 5, lambda x, y, dx, dy, d: ('iron', 4 if dy < 0 else 2))
-    for x in range(cx - 18, cx + 19, 3): c.VL(x, 36, 7, 'iron', 2)
-    c.HL(cx - 18, 36, 37, 'iron', 4); c.HL(cx - 18, 37, 37, 'iron', 1)
-    # 등실(유리 + 불빛)
-    c.R(cx - 9, 18, 19, 19, 'iron', 2)
-    for y in range(19, 36):
-        for x in range(cx - 8, cx + 9):
-            d = abs(x - cx) + abs(y - 27) * 0.8
-            c.P(x, y, 'glow', 4 if d < 4 else 3 if d < 7 else 2)
-    for x in (cx - 5, cx, cx + 5): c.VL(x, 19, 17, 'iron', 2)
-    # 돔 지붕(윗면)
-    c.ell(cx, 18, 12, 9, lambda x, y, dx, dy, d: ('roofr', 5 if dx < -0.3 and dy < 0 else 4 if dy < 0.2 else 2) if y <= 19 else None)
-    c.HL(cx - 12, 18, 25, 'roofr', 1)
-    c.R(cx - 1, 5, 3, 5, 'brass', 4); c.P(cx, 4, 'brass', 6)
-    window(c, cx - 4, 76, 8, 9, shutters=False, box=False, s=4)
-    door(c, 17, 127, 14, 27)
-    foundation(c, 4, 45, 122, 128)
+    plinth(c, cx, 119, 21, 5, 5)
+    cylinder(c, cx, 52, 115, 11, 16, 4, 'cream', 5, 0, 8, stripes=[(70, 80, 'clothr', 3), (96, 106, 'clothr', 3)])
+    window(c, cx - 4, 82, 8, 9, shutters=False, box=False, s=4)
+    door(c, 17, 121, 14, 27)
+    # 전망 마루(큰 타원 — 윗면이 보인다)
+    deck_ring(c, cx, 48, 22, 7, 'stone', 3, rail_mat='iron')
+    # 등실(유리 원통 + 불빛)
+    for y in range(26, 46):
+        for x in range(cx - 9, cx + 10):
+            u = (x + 0.5 - cx) / 9.5
+            arc = 2 * math.sqrt(max(0, 1 - u * u))
+            if y > 43 + arc: continue
+            d = abs(x - cx) + abs(y - 35) * 0.8
+            c.P(x, y, 'glow', 4 if d < 4 else 3 if d < 8 else 2)
+    for x in (cx - 6, cx, cx + 6): c.VL(x, 26, 19, 'iron', 2)
+    c.VL(cx - 9, 26, 18, 'iron', 1); c.VL(cx + 9, 26, 18, 'iron', 0)
+    # 지붕: 위에서 보이는 둥근 갓(윗면 타원이 크게) + 꼭지
+    c.ell(cx, 24, 13, 6, lambda x, y, dx, dy, d: ('roofr', 2) if dy > 0.3 else None)
+    for y in range(8, 26):
+        v = (y - 8) / 17
+        r = 2 + 11 * v
+        for x in range(int(cx - r), int(cx + r) + 1):
+            u = (x + 0.5 - cx) / r
+            if abs(u) > 1: continue
+            t = 5 if u < -0.35 else 4 if u < 0.25 else 3 if u < 0.7 else 2
+            c.P(x, y, 'roofr', t)
+    c.ell(cx, 25, 13, 3, lambda x, y, dx, dy, d: ('roofr', 1) if dy > 0.2 else None)
+    c.R(cx - 1, 3, 3, 6, 'brass', 4); c.P(cx, 2, 'brass', 6)
 
 
 @A('shrine', '하늘 신전(돌 기단 + 청록 지붕)', 5, 6, 'structure', ['신전', '사당', '성소'], '광장 북쪽 끝 가운데. 계단 앞 가운데 칸이 문(어두운 입구).', entrance=[2])
@@ -393,29 +458,46 @@ def _(c):
     lantern(c, 24, 46); lantern(c, 51, 46)
 
 
-@A('observatory', '천문대(돌 원통 + 청동 돔)', 5, 6, 'structure', ['천문대', '탑'], '섬 높은 끝. 가운데 칸이 문.', entrance=[2])
+@A('observatory', '천문대(옥상 마당 + 청동 돔)', 5, 6, 'structure', ['천문대', '탑'], '섬 높은 끝. 가운데 칸이 문.', entrance=[2])
 def _(c):
     cx = 40
-    stone_wall(c, 6, 50, 74, 90, 'stone', 4, 7)
-    for y in range(50, 90):
-        c.P(6, y, 'stone', 6); c.P(7, y, 'stone', 5); c.P(73, y, 'stone', 1); c.P(72, y, 'stone', 2)
-    c.R(4, 46, 72, 5, 'stone', 5); c.HL(4, 46, 72, 'stone', 6); c.HL(4, 50, 72, 'stone', 2)
-    # 돔(청동, 윗면) + 관측 틈
-    c.ell(cx, 46, 34, 40, lambda x, y, dx, dy, d: ('roofg', 5 if (dx < -0.35 and dy < -0.3) else 4 if dx < 0.1 and dy < 0.15 else 3 if dx < 0.6 else 2) if y <= 46 else None)
-    for y in range(6, 47):
-        for x in range(cx - 4, cx + 4):
+    stone_wall(c, 6, 56, 74, 90, 'stone', 4, 7)
+    c.VL(6, 56, 34, 'stone', 5); c.VL(73, 56, 34, 'stone', 1)
+    # 옥상 마당(윗면 — 판석, 앞 난간)
+    for y in range(26, 54):
+        for x in range(4, 76):
+            gx, gy = (x - 4) // 8, (y - 26) // 6
+            t = 5 if (gx + gy) % 2 else 6
+            if (x - 4) % 8 == 7 or (y - 26) % 6 == 5: t = 4
+            c.P(x, y, 'stone', t)
+    c.HL(4, 26, 72, 'stone', 3); c.VL(4, 26, 28, 'stone', 4); c.VL(75, 26, 28, 'stone', 3)
+    c.R(4, 52, 72, 4, 'stone', 3); c.HL(4, 52, 72, 'stone', 6); c.HL(4, 55, 72, 'stone', 1)
+    for x in range(6, 75, 6): c.R(x, 48, 2, 5, 'stone', 4)
+    c.HL(4, 47, 72, 'stone', 5)
+    # 돔: 마당 뒤쪽에 앉은 반구 — 밑동 타원이 마당 위에 보인다
+    c.ell(cx, 40, 24, 6, lambda x, y, dx, dy, d: ('stone', 2))
+    for y in range(4, 41):
+        for x in range(cx - 24, cx + 25):
+            u = (x + 0.5 - cx) / 24
+            if abs(u) > 1: continue
+            top = 40 - 34 * math.sqrt(1 - u * u)
+            base = 40 + 4 * math.sqrt(1 - u * u)
+            if y < top or y > base: continue
+            w = (y - top) / max(1, base - top)
+            t = 5 if (u < -0.35 and w < 0.5) else 4 if u < 0.15 else 3 if u < 0.6 else 2
+            if int(w * 8) % 2 == 1 and w > 0.12: t -= 1 if t > 2 else 0
+            c.P(x, y, 'roofg', t)
+    for x in range(cx - 24, cx + 25):
+        u = (x + 0.5 - cx) / 24
+        if abs(u) <= 1: c.P(x, round(40 + 4 * math.sqrt(1 - u * u)), 'roofg', 1); c.P(x, round(40 - 34 * math.sqrt(1 - u * u)), 'roofg', 1)
+    for y in range(7, 43):
+        for x in range(cx - 3, cx + 3):
             g = c.get(x, y)
-            if g and g[0] == 'roofg': c.P(x, y, 'sumi', 1 if x < cx + 2 else 2)
-    for y in range(8, 46, 5):
-        for x in range(cx - 34, cx + 35):
-            g = c.get(x, y)
-            if g and g[0] == 'roofg': c.P(x, y, 'roofg', max(1, g[1] - 1))
-    c.VL(cx - 5, 6, 40, 'brass', 4); c.VL(cx + 4, 6, 40, 'brass', 2)
-    # 망원경 끝이 틈 밖으로
-    c.R(cx - 2, 8, 5, 10, 'brass', 3); c.HL(cx - 2, 8, 5, 'brass', 5); c.ell(cx, 8, 2.5, 1.2, lambda x, y, dx, dy, d: ('sumi', 1))
-    c.HL(cx - 34, 46, 69, 'roofg', 1)
-    window(c, 13, 60, 10, 10, shutters=False, box=False, s=3)
-    window(c, 57, 60, 10, 10, shutters=False, box=False, s=6)
+            if g and g[0] == 'roofg': c.P(x, y, 'sumi', 1 if x < cx + 1 else 2)
+    c.VL(cx - 4, 7, 35, 'brass', 4); c.VL(cx + 3, 7, 35, 'brass', 2)
+    c.R(cx - 2, 2, 5, 9, 'brass', 3); c.HL(cx - 2, 2, 5, 'brass', 5); c.ell(cx, 2, 2.5, 1.2, lambda x, y, dx, dy, d: ('sumi', 1))
+    window(c, 13, 64, 10, 10, shutters=False, box=False, s=3)
+    window(c, 57, 64, 10, 10, shutters=False, box=False, s=6)
     door(c, 33, 95, 14, 28)
     foundation(c, 4, 76, 90, 96)
 
@@ -441,20 +523,13 @@ def _(c):
 
 
 def _turbine(c, f=0):
-    cx, hub = 16, (16, 22)
-    # 기둥(가늘어지는 쇠 기둥)
-    for y in range(24, 76):
-        u = (y - 24) / 52
-        half = 2 + u * 2.5
-        for x in range(int(cx - half), int(cx + half) + 1):
-            v = (x - (cx - half)) / (2 * half)
-            c.P(x, y, 'cream', 6 if v < 0.3 else 5 if v < 0.6 else 4 if v < 0.85 else 2)
-    # 받침(윗면 보이는 둥근 돌판)
-    c.ell(cx, 76, 9, 3, lambda x, y, dx, dy, d: ('stone', 5 if dy < 0 else 4))
-    c.R(cx - 9, 76, 19, 3, 'stone', 3); c.HL(cx - 9, 78, 19, 'stone', 1)
-    # 나셀(윗면 보이는 통)
-    c.R(cx - 5, 16, 11, 8, 'cream', 4); c.R(cx - 5, 16, 11, 3, 'cream', 6); c.HL(cx - 5, 16, 11, 'cream', 3); c.HL(cx - 5, 23, 11, 'cream', 2)
-    # 날개 3장(40° 단계 회전 3프레임 = 120° 대칭에서 고르게)
+    cx, hub = 16, (16, 21)
+    plinth(c, cx, 71, 15, 6, 4)
+    cylinder(c, cx, 26, 68, 2.5, 4.5, 1, 'cream', 6, 0, 8)
+    # 나셀(윗면 3/4 상자 — 윗판 6행)
+    box3(c, cx - 7, 10, 15, 6, 5, 'cream', tt=6, ft=4)
+    c.R(cx + 4, 17, 3, 3, 'roofb', 3)
+    # 날개 3장(40° 단계 회전 3프레임)
     ang0 = -math.pi / 2 + f * (2 * math.pi / 9)
     for k in range(3):
         a = ang0 + k * 2 * math.pi / 3
@@ -464,12 +539,12 @@ def _turbine(c, f=0):
             for o in range(w):
                 x = hub[0] + dx * r - dy * o; y = hub[1] + dy * r + dx * o
                 c.P(round(x), round(y), 'cream', 6 if o == 0 else 4)
-            c.P(round(hub[0] + dx * r + dy), round(hub[1] + dy * r - dx), 'cream', 3)
+            c.P(round(hub[0] + dx * r + dy), round(hub[1] + dy * r - dx), 'cream', 2)
     c.ell(hub[0], hub[1], 2.5, 2.5, lambda x, y, dx, dy, d: ('crystal', 4 if dx + dy < 0 else 2))
 
 
-A('wind-turbine', '바람개비 발전탑(3프레임 회전)', 2, 5, 'structure', ['풍력', '바람', '애니메이션'], '섬 바람받이 가장자리에 1~3기, 3칸 이상 띄운다. 칸 전체 막힘.', frames=3,
-  gate_name='small wind turbine on a slim mast with round stone base')(_turbine)
+A('wind-turbine', '바람개비 발전탑', 2, 5, 'column', ['풍력', '바람'], '섬 바람받이 가장자리에 1~3기, 3칸 이상 띄운다. 칸 전체 막힘.',
+  gate_name='small wind turbine: round stone plinth seen from above, slim mast, nacelle box with visible top, three blades')(_turbine)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a4ec4e78ef58acacacdd72a582ca4186bb273357633616f58b79702e09957643",
+ "width": 16,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "washstand with ceramic basin and jug",
+ "label": "sky-island/si-basin",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "washstand table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washstand tabletop spans rows 5 to 9 (5 rows deep) displaying the basin and jug, with the front apron below at rows 10-11 and legs descending to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3568
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "washstand table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washstand top surface spans rows 5 to 9 (approx. 5 pixel rows) on which the basin and jug rest, with a front apron and legs extending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4222
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "washstand table",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washstand tabletop is clearly visible from above, spanning approximately 4-5 source pixel rows (rows 5 to 8/9), supporting the basin and jug.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4844
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "washstand table",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The washstand tabletop is clearly visible from above across rows 5-9, supporting an oval basin with visible interior water (rows 5-6) and a jug. A front apron spans rows 10-11 above two legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3878
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.566Z",
+ "cells": {
+  "16": [
+   "96f5ff4eb04c8826"
+  ],
+  "24": [
+   "21ad15ccae2d7735",
+   "4f8203dcd6452563",
+   "733ec91c77654c19",
+   "99a4c9f7ae1dc3f7",
+   "b65429a55ec86fe6",
+   "f4582efb8228184f"
+  ],
+  "32": [
+   "621e49ea43fba248",
+   "6bb2f84a010ab1ba",
+   "99e0c0a1687f5f22",
+   "c51fbbfd012a9738",
+   "eab88da7c86d802a",
+   "ff7c9ca9492dbe31"
+  ],
+  "48": [
+   "0d41e155c600a3da",
+   "35214ead97116fa7",
+   "6ce111335cfd61e4",
+   "98be3a3b62580de5",
+   "9f1a0e0d84846571",
+   "c915267a89eacc45"
+  ]
+ }
+}

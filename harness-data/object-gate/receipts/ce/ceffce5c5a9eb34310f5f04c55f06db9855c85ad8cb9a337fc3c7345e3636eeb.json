@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "ceffce5c5a9eb34310f5f04c55f06db9855c85ad8cb9a337fc3c7345e3636eeb",
+ "width": 32,
+ "height": 32,
+ "kind": "flat",
+ "name": "round woven rug on the floor (flat decal)",
+ "label": "sky-island/si-rug",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "round woven rug",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor decal viewed from above in top-down projection; the entire surface across rows 3-28 represents the rug's top face lying on the ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4797
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "round woven rug",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug is drawn as a foreshortened elliptical floor decal spanning rows 4 to 28, completely visible from above as a flat horizontal surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3041
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "round woven rug",
+    "kind_matches": true,
+    "top_rows": 25,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire object is a flat floor decal rendered as a foreshortened ellipse spanning rows 3 to 27 (25 rows tall), clearly seen from the 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3765
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "round woven rug",
+    "kind_matches": true,
+    "top_rows": 26,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rug is drawn as a foreshortened ellipse spanning rows 3 to 28, correctly representing a flat circular object on the ground in 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2908
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.563Z",
+ "cells": {
+  "16": [
+   "5bcbaa7e8f95e8ce",
+   "ade53705296e8ef4",
+   "eb2b4fb766be2328",
+   "f5d814fd14f7d626"
+  ],
+  "24": [
+   "0ea31f03e435445a",
+   "13cda8acb8602034",
+   "199f45822930b2b5",
+   "3795e2bb7eae6ec5",
+   "3f95bdcf39beefe7",
+   "4535088593e4b2de",
+   "5c665d71f63f927e",
+   "61458449fe716db7",
+   "689d0429fc6ab966",
+   "7189b185c7124f1e",
+   "800b035a0921fb02",
+   "856a909ba904b813",
+   "897b1cdde12df8e2",
+   "91d938cd17a753c6",
+   "98c81ecab7daea6f",
+   "b402a048df330a0b",
+   "b6b967b977866798",
+   "d36b375109a9da29",
+   "d85337459631d254",
+   "dc83c28f04cb6bb2",
+   "e2562b7f49f066c2",
+   "e2e2d522798720b8",
+   "e8649dd47dd4ffb2",
+   "fbdc94056ff2fcc6"
+  ],
+  "32": [
+   "ebf7a5b79cbfdf7b"
+  ],
+  "48": [
+   "17c524852e784a08",
+   "2efda128526b1a01",
+   "2ffbfb4854435472",
+   "b0d4b2733fd9e553",
+   "cdcc17a61727ed74",
+   "d9f90794e2988637"
+  ]
+ }
+}

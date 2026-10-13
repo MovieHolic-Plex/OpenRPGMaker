@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d9f113df9dc1bd8e8f19edb3ffbcb0a647081e4ade15ad3cab76d74a2487409",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-ne",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface spanning rows 2 to 15 against a sky background, with no vertical front elevation or isometric side walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4851
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a top-down grass surface spanning rows 2 to 15 against a blue background, correctly representing flat island ground.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4112
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass island terrain surface",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing a top-down grass surface spanning rows 2 to 15 with irregular perimeter edges against sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3796
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass terrain edge",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts top-down grass terrain edge against a sky background, showing the horizontal ground surface from row 2 down through row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3098
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.974Z",
+ "cells": {
+  "16": [
+   "285d78aa9010ab75"
+  ],
+  "24": [
+   "0bb7827bf574be59",
+   "486307806677fa27",
+   "60d2c544386e6498",
+   "dd9a46df02ebd36a",
+   "edf6e780f872f9f1",
+   "fddb3646672515da"
+  ],
+  "32": [
+   "56a2e3f1316574da",
+   "56c0d266b371cbdc",
+   "b58d66af286b78ea",
+   "cfcaaae003e4ad3f",
+   "ea6a0ada32609da9",
+   "eddfa120731eb9ba"
+  ],
+  "48": [
+   "18b724a1229c6328",
+   "2d063fec47c9b149",
+   "803a92a3425c9a10",
+   "8d16c8cce0e0d7aa",
+   "d12aa29d9e1739c2",
+   "efd96f7f5d80d7c7"
+  ]
+ }
+}

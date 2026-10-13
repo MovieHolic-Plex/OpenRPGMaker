@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4228a1029fedebc6dac4ada7df0b5e8110dfe6631b302911b58f4894957b3e28",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "rock cliff face end tile (terrain)",
+ "label": "sky-island/si-face-top-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rock cliff face end tile",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile depicting the side/end edge of a rock cliff face in standard RPG Maker top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7176
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "rock cliff face end tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain cliff edge tile correctly showing the top ground plateau transition at rows 0-1 and the vertical rocky cliff face below down to row 15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6196
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rock cliff face end tile",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the eastern termination of a rock cliff face, featuring cliff-top ground visible in rows 0-2 and a vertical rocky drop below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6256
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rock cliff face end tile",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the eastern edge of a rock cliff face, with brown cliff-top surface visible along rows 0-2 and vertical cliff face descending below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3993
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.975Z",
+ "cells": {
+  "16": [
+   "05716b0cb3a4c618"
+  ],
+  "24": [
+   "0368aa454f474ebb",
+   "0562654be614fb93",
+   "233c98730b36431d",
+   "2c6b8c90890b22ae",
+   "5922a20118af20ac",
+   "a178ee9262ab3043"
+  ],
+  "32": [
+   "2ee8982e2a191b65",
+   "367046e44798bbd4",
+   "3fddedcad79bdc4d",
+   "4576d05487ab946a",
+   "994440802b9ebd43",
+   "bca1980533c7dbe3"
+  ],
+  "48": [
+   "372d95d76f402ba4",
+   "a13c771b36b935b8",
+   "c31ba04b2969c7fd",
+   "e6fa5e2d22d1ae07",
+   "eea90cec735e4628",
+   "ef1f044668c076d5"
+  ]
+ }
+}

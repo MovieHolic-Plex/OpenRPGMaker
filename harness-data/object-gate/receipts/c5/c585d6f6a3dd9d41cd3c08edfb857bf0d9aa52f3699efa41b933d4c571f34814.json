@@ -1,0 +1,141 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "c585d6f6a3dd9d41cd3c08edfb857bf0d9aa52f3699efa41b933d4c571f34814",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "terracotta flower pot with flowers",
+ "label": "sky-island/si-flowerpot",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "아가리 안쪽이 안 보임",
+  "아가리 0행 < 4"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta pot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot rim is drawn as a flat 1-pixel high horizontal bar at row 8 with no elliptical opening or visible top surface/soil, showing a pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4970
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terracotta pot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The rim of the pot at row 8 is a straight 1px horizontal line with no elliptical curvature or visible opening/rim depth, drawn in flat front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 5083
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta pot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot rim at row 8 is a flat, straight 1px horizontal line with no elliptical top surface, opening, or visible soil; the pot is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4343
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terracotta pot",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The pot rim at row 8 is a 1-pixel-tall straight horizontal bar with no elliptical opening or visible top surface; it is drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "아가리 안쪽이 안 보임",
+    "아가리 0행 < 4"
+   ],
+   "ms": 4883
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.433Z",
+ "cells": {
+  "16": [
+   "87b036ac58b0d7d2"
+  ],
+  "24": [
+   "19736fb170defa68",
+   "37b7369e927ef7ed",
+   "4dd88c64fc3d9c1d",
+   "9f97954824e41606",
+   "bb3c800a643d6a1e",
+   "fa5c1aba638dbf13"
+  ],
+  "32": [
+   "4122b62f3e4a3250",
+   "592ca32224d78109",
+   "63cf934b8ce855d7",
+   "7ab6679d9d3db5fc",
+   "cf0b234f2e72ba6f",
+   "d0fa4da92e4467f2"
+  ],
+  "48": [
+   "111caa8f410de49a",
+   "26e8e28bf328fc33",
+   "2c4459914d2c67bc",
+   "a30e93e0be70cee5",
+   "d99645ffb41970e5",
+   "fda4c2815d6b9289"
+  ]
+ }
+}

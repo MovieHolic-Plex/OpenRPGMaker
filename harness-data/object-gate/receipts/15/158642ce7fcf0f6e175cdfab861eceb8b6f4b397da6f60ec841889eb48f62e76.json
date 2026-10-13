@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "158642ce7fcf0f6e175cdfab861eceb8b6f4b397da6f60ec841889eb48f62e76",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall grandfather clock seen from above-front: deep flat top surface visible, round face, pendulum",
+ "label": "sky-island/si-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall grandfather clock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the clock hood features a clearly visible horizontal top surface measuring 5 pixel rows (rows 0-4) with a highlighted front lip at row 5 before dropping down to the clock face and body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6868
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall grandfather clock",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hood/cap of the clock has a clearly depicted flat top surface extending 5 pixel rows (rows 0-4) with a defined front lip/overhang at row 5 above the clock face and pendulum body.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10702
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall grandfather clock with clock face and pendulum trunk, capped by a flat top surface",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the clock features a 5-pixel-tall flat horizontal surface (rows 0-4) with a highlighted front edge (row 5) seen from above in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8362
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grandfather clock hood and column",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top hood features a 5-row deep horizontal top surface (rows 0-4) with a front edge highlight on row 5, clearly displaying the required 3/4 view perspective from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6453
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.238Z",
+ "cells": {
+  "16": [
+   "46b9548da4d75bf1",
+   "825a65b787f02ffa"
+  ],
+  "24": [
+   "05771986cee3ca62",
+   "2b0ddfc042fd5801",
+   "937ee224303febc1",
+   "9de30f0d2a934b73",
+   "a0a002080f859543",
+   "b84c4923260d1713",
+   "be40e128311308b0",
+   "c51dfeb9a4e2c295",
+   "d7d13e7b92ef7674",
+   "d82f867e5439eb8e",
+   "ef792f772879346d",
+   "f0447be26b0f5bf3"
+  ],
+  "32": [
+   "68177a004f605721",
+   "9d806f056a2f31b8",
+   "b90478b27890da0e"
+  ],
+  "48": [
+   "045dd24f55717a9c",
+   "5cbbae32a216b807",
+   "611f9ad9d30fed44",
+   "ce4fd7fdba31d714",
+   "d66ec61cde85b79b",
+   "e0b6e24fda8686f3"
+  ]
+ }
+}

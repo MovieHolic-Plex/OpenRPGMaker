@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "00aa8185687fa5618050c793568b352300f04cbcf2df55ce23b2bafafe2b5b8c",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "stone shrine lantern seen from above-front: stacked square blocks each with a visible flat top - wide cap top, ledge under the light box, deep base top",
+ "label": "sky-island/si-lantern-floor",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone lantern cap and stacked tiers",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The stone lantern features well-defined foreshortened top surfaces, including the top face of the cap (rows 0-6, 7 rows tall) with an ornament, and a deep base top surface (rows 22-29, 8 rows tall) seen from a high 3/4 angle.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5289
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone lantern cap and stacked tiers",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cap shows a large 7-row top surface (rows 0-6) with a finial, followed by south front edges and clearly visible top ledges on the lower tiers and base (rows 22-29).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5876
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone shrine lantern",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern displays foreshortened top surfaces across its stacked sections: the wide top cap shows 7 source pixel rows of top surface (rows 0-6) above its front edge (rows 7-8), the middle ledge shows a visible top platform, and the base block shows 8 rows of top surface (rows 22-29) above its front face (rows 30-31).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6787
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone shrine lantern",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lantern cap shows a deep top surface (rows 0-6, 7px tall) with a finial on top, and the lower base similarly displays a clear top surface (rows 22-29, 8px tall) above its front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6461
+  }
+ ],
+ "decidedAt": "2026-10-13T18:57:52.006Z",
+ "cells": {
+  "16": [
+   "7b50426ffb4c695f",
+   "cb035fa1298b255b"
+  ],
+  "24": [
+   "298de23ed46e14f9",
+   "2bd2d873ded2f7e6",
+   "2e25ca30bc569d16",
+   "31894e311f568dea",
+   "3e59c8dcd33a9a5f",
+   "3fea5c539fec26c9",
+   "4848fde9e7f194fd",
+   "6a9e4dd9beb12322",
+   "9ac264d77c9aa64e",
+   "babab56600f72289",
+   "f702a6022e8d7196",
+   "fc10cb9186949994"
+  ],
+  "32": [
+   "40dd0f0644a9a841",
+   "5b149367b015d922",
+   "918587d1053902c9"
+  ],
+  "48": [
+   "2b7ac4f4f2178b49",
+   "3b2a1632e3b27f36",
+   "54241bc10e6aca60",
+   "a32930ee02a904ab",
+   "b496cec5f156b9ed",
+   "c78d94f75e9b94ce"
+  ]
+ }
+}

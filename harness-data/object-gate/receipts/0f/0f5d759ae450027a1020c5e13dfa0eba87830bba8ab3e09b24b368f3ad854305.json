@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0f5d759ae450027a1020c5e13dfa0eba87830bba8ab3e09b24b368f3ad854305",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "diagonal wooden support struts under a dock (frame)",
+ "label": "sky-island/si-pier-struts-c",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "under-dock wall frame with wooden support struts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the vertical wall face/substructure under a dock with diagonal struts against a stone/water background; as a terrain/wall-face tile rather than a freestanding object, it correctly represents a vertical surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5033
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden support struts under dock edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts the vertical face beneath a dock (support framing against water/recessed background), functioning as a wall-face terrain tile rather than a standing prop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4979
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "support struts on water/wall background under dock edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Dock underpinning structural frame tile acting as a wall-face/elevation terrain tile under the dock edge; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4667
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "diagonal wooden support struts under dock frame against wall/water background",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tile depicts a vertical dock understructure/wall face terrain element with diagonal wooden supports against a tiled wall/water background, appropriate for 3/4 view vertical terrain surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4305
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "003799d804cc1dc7"
+  ],
+  "24": [
+   "192ffca674a884d2",
+   "20874023d79ff933",
+   "3b302d94a9da11f1",
+   "79f93af229128de3",
+   "a5193efd6bba1e50",
+   "f880fd943f2395c4"
+  ],
+  "32": [
+   "0538f813046f9e57",
+   "1564bb1b83bc8477",
+   "2266e70de022d34b",
+   "4011f6b9b875295b",
+   "63e7f22d935c776c",
+   "6ffa6442ed071b3f"
+  ],
+  "48": [
+   "13717b1ca40c0017",
+   "23eae4d966ae063e",
+   "5aafa836e4efdbfb",
+   "6fac7c83b8907ab9",
+   "dd247b788cd30bbe",
+   "f93d55e24c2664f5"
+  ]
+ }
+}

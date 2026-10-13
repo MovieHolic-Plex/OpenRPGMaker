@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "732ada0b315bf09c6143e1d192d1efc52e53499552110fe1d2911f0f429b723a",
+ "width": 16,
+ "height": 16,
+ "kind": "container",
+ "name": "terracotta pot seen from above: wide round rim with dark soil visible inside and a few flowers",
+ "label": "sky-island/si-flowerpot",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "terracotta flower pot with soil and plant sprouts",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The container opening with dark soil is clearly drawn as an ellipse viewed from above (rows 3 to 7, ~5 rows tall), resting above the tapered front face of the pot (rows 8 to 14).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7175
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "terracotta flower pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot has an elliptical opening filled with dark soil and flowers spanning rows 3-7 (approx 5 rows tall), clearly seen from above, positioned over a tall front face.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5341
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "terracotta flower pot",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": true,
+    "opening_rows": 5,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top of the pot shows a clear elliptical opening spanning rows 3 to 7 (5 rows tall) filled with dark brown soil and sprouts, with the pot body extending below in south-facing 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5057
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "terracotta flower pot",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": true,
+    "opening_rows": 6,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The pot features a prominent top opening showing dark soil across rows 3-8 (6 rows tall), with flowers sprouting upward, and a foreshortened rim visible from row 2. The front face extends below from row 9 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10104
+  }
+ ],
+ "decidedAt": "2026-10-13T18:46:20.920Z",
+ "cells": {
+  "16": [
+   "9b0dab4a471e90d1"
+  ],
+  "24": [
+   "20179ee04688cf99",
+   "6f7f67b34b9fdd69",
+   "a88c63ab4e865d7c",
+   "ab4801d706b3f99d",
+   "abce0dc16a232954",
+   "ddfa09910c2aa9bc"
+  ],
+  "32": [
+   "203cba2f24a6906e",
+   "2de8e9cb35311422",
+   "38caf8f5d9238d18",
+   "5865ebf22873b846",
+   "eebb4604a5975ab5",
+   "f9d478a1898118ba"
+  ],
+  "48": [
+   "0ea0ad24e308b6b3",
+   "1087df98ed64e33a",
+   "4f3342b45489aa92",
+   "74ae7c5ca1fe293d",
+   "76df4cfa7b14b231",
+   "8860788385393006"
+  ]
+ }
+}

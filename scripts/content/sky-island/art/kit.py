@@ -10,6 +10,7 @@
 import os, json
 from PIL import Image, ImageDraw, ImageFont
 from px import C, ROOT, save
+from si_gate_kinds import GATE_KIND
 
 OUT = os.path.join(ROOT, 'tiledata', 'sky-island')
 
@@ -43,7 +44,7 @@ class Reg:
             if only and it['id'] not in only: continue
             for f, path in enumerate(s.pngs(it)):
                 c = s.render(it, f); save(c, path)
-                rows.append(dict(png=os.path.relpath(path, ROOT), kind=it['kind'], name=it.get('gate_name') or it['name'], label='sky-island/si-' + it['id'] + ('' if f == 0 else '-f%d' % f)))
+                rows.append(dict(png=os.path.basename(path), kind=GATE_KIND.get(it['id'], it['kind']), name=it.get('gate_name') or it['name'], label='sky-island/si-' + it['id'] + ('' if f == 0 else '-f%d' % f)))
         if not only:
             with open(os.path.join(d, 'items.jsonl'), 'w') as fh:
                 for r in rows: fh.write(json.dumps(r, ensure_ascii=False) + '\n')

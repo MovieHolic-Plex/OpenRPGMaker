@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9191cdf0c244399e2c34dec9048186e78bc7e89a58a2d6bda4c90b52e76145e2",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass island edge tile against sky (terrain)",
+ "label": "sky-island/si-gs-s",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "grass terrain with south cliff/dirt edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 show the flat top grass surface foreshortened from above, while rows 12-15 show the south overhang and dirt edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3086
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass terrain edge tile with top grass surface and front cliff overhang",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 show the foreshortened top surface of the grass terrain (12 rows tall), meeting the south-facing overhang and dirt wall edge along rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2765
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grass ground surface with cliff edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Rows 0-11 show the flat horizontal grass ground plane (12 pixel rows tall) ending at a south-facing dirt/overhang cliff face on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2883
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "grass ground surface with cliff edge",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing top-down grass surface spanning rows 0-11 with cliff edge overhang and dirt base on rows 12-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2562
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "77c4ee077c29b5f1"
+  ],
+  "24": [
+   "2138a77af50c0dbe",
+   "2d9f756141fe905a",
+   "476b27cf90854a49",
+   "55dec1cb61d8d622",
+   "e22220f3ee96510c",
+   "fab07cd78364559b"
+  ],
+  "32": [
+   "33f3da9a599f6857",
+   "5ee4d0e1cef1fadd",
+   "6035ac428536c22f",
+   "bd561e13146d3fff",
+   "c4c828f4b6f6dbfa",
+   "cd09a4ed8e47c973"
+  ],
+  "48": [
+   "051cec51f768ff15",
+   "6647da4a2172caa3",
+   "94adfb0f66e64709",
+   "b964fe39e1025823",
+   "f850daf259ee8c24",
+   "f87ae3d39f205e3b"
+  ]
+ }
+}

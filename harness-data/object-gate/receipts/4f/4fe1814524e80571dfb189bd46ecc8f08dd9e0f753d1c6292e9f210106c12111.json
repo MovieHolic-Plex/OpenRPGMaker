@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4fe1814524e80571dfb189bd46ecc8f08dd9e0f753d1c6292e9f210106c12111",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "wooden ladder leaning against the wall",
+ "label": "sky-island/si-ladder",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden wall ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A tileable wall-mounted ladder spanning the vertical tile. As a flat wall fixture viewed facing south, it correctly displays front-facing vertical rails and shaded rungs without requiring a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7445
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless vertical wall-mounted ladder tile spanning the full height. As a wall-mounted fixture flat against the wall, it correctly represents a climbing ladder in standard top-down JRPG perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6835
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted ladder drawn flat against the wall as appropriate for the category, spanning vertical wall tiles with shaded rungs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5153
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden ladder",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall-mounted climbing ladder extending continuously across the vertical span; as a wall-mounted fixture flat against the south wall plane, lack of a top surface is standard and correct.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10520
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "a9d2b66f268c25c4",
+   "d5cff930235cda85"
+  ],
+  "24": [
+   "2d4c579685146adb",
+   "34120685b5deb239",
+   "4bf4798b6c797e6d",
+   "5eddfb04117c3145",
+   "95b9fca4c2a76712",
+   "9e4d67440d3f952a",
+   "b455876379703bdf",
+   "c0871ed97552b12d",
+   "c20e54fad1c36b16",
+   "c9542ce65b8f3007",
+   "cf48a48ae7d8a3d7",
+   "f3c42bcc89dd5b58"
+  ],
+  "32": [
+   "16efd2589d14a7ef",
+   "1a8771d0268141ec",
+   "c68703fe68b4f27d"
+  ],
+  "48": [
+   "337f1527bac040e7",
+   "89e45fd773d9d6fc",
+   "92046da594faee39",
+   "a42bdf6fafc75c9a",
+   "bd118f895d052a0e",
+   "bf532c7dc86dda5b"
+  ]
+ }
+}

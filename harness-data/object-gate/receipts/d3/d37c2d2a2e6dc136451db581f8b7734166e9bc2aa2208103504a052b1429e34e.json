@@ -1,0 +1,124 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d37c2d2a2e6dc136451db581f8b7734166e9bc2aa2208103504a052b1429e34e",
+ "width": 16,
+ "height": 32,
+ "kind": "column",
+ "name": "street lamp post seen from above-front: wide flat square lid on top of the lantern (top surface clearly visible), glowing glass, round stone foot",
+ "label": "sky-island/si-lamppost",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lantern post lid and lantern housing",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the lantern lid is clearly rendered across rows 1-4 (4 pixel rows tall) above the south-facing overhang rim at rows 5-6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6184
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lantern head and post",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire street lamp is drawn as a flat 2D front elevation: the lantern panes, horizontal frames, cap, post, and base are viewed straight-on with zero foreshortened horizontal surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10255
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "lantern top lid and lamp post",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat top surface of the lantern cap is foreshortened and clearly visible across rows 0-4 (5 pixels tall) above the overhanging eaves, and the base also depicts a foreshortened top surface (rows 24-26).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6034
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "street lamp post",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top lid of the lantern clearly displays its top surface across rows 1–4 (4 pixel rows tall) above the front rim/overhang at rows 5–6, and the base also shows foreshortened top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5052
+  }
+ ],
+ "decidedAt": "2026-10-13T18:50:50.432Z",
+ "cells": {
+  "16": [
+   "47a4e223fd976c30",
+   "aa314261bca5e2aa"
+  ],
+  "24": [
+   "15507a5d2403fe0f",
+   "55623c3a2c83a921",
+   "6c551a352f9def4f",
+   "6c5637b18fb3c465",
+   "7783ed92223327d4",
+   "7a6edbe8d7faec7a",
+   "7e99ee7fd2264f31",
+   "808775655f5209ae",
+   "92fa226a002de5bd",
+   "bc35501e2fd8b0cc",
+   "d6f80509b431e8b9",
+   "d97bb17d8bc46051"
+  ],
+  "32": [
+   "017dfafb3945ae79",
+   "1334c8db5b991f86",
+   "be96cce77cc8283e"
+  ],
+  "48": [
+   "07b0eb55fee811e0",
+   "2e46a7f4de9e170f",
+   "4d0ea6ca1f29fdc9",
+   "542dc4686777090d",
+   "a042f5e8d2453ba5",
+   "a80db457ab936a8b"
+  ]
+ }
+}

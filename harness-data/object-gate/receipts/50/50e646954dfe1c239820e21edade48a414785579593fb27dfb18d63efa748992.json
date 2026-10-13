@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50e646954dfe1c239820e21edade48a414785579593fb27dfb18d63efa748992",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "wooden sky dock plank deck seen from above (flat walkway)",
+ "label": "sky-island/si-pier-e",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire 16x16 sprite depicts wooden floor planks and a side beam viewed from above as a flat horizontal deck surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2820
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The entire tile depicts horizontal wooden decking planks seen from above with nail holes and spacing, functioning as a flat floor surface across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2826
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal planks viewed directly from above with gap lines and bolts, functioning as a flat floor/walkway spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3054
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden dock planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Horizontal deck planks with peg details and right-hand edge trim, viewed flat from above spanning all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 27194
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.984Z",
+ "cells": {
+  "16": [
+   "80e4c6148ce0b405"
+  ],
+  "24": [
+   "0f33b69e28b6446d",
+   "20c9b57a84237ba9",
+   "22e4cb887ba69687",
+   "3bb1c103f6f70cb7",
+   "9697e7c1d3f40c8a",
+   "b6e43d128e1c39df"
+  ],
+  "32": [
+   "529babdc821e4fb0",
+   "765668b1ee12d611",
+   "862bd7b9738d4a81",
+   "c3514b4354fb7c03",
+   "c65a634e6cdc157a",
+   "f450b5eda3e8fe02"
+  ],
+  "48": [
+   "1415853ca43998b5",
+   "19195810df2dc86e",
+   "3542817559d38efa",
+   "71178ab6b77ed6a2",
+   "8fd8d6bf407430f4",
+   "befaa0ccc5b04fca"
+  ]
+ }
+}

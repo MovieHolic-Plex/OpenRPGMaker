@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "01e7e7e87fc6f8c87bbd34aa1ef8f15ef315a7fe755a755c1dcd1ec632dac1d1",
+ "width": 32,
+ "height": 16,
+ "kind": "seat",
+ "name": "wooden park bench seen from above-front",
+ "label": "sky-island/si-bench",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden bench with cushion seat and slatted backrest",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is visible from above across rows 6-9 (4 rows tall) showing four cushion pads, with the front frame and legs descending below it in rows 10-15.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4077
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden bench with cushions",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface (cushions) is clearly visible from above across rows 6-9 (4 pixels deep) above the front wooden beam (rows 10-11) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4385
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden park bench with backrest, cushioned seat, and legs",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface is clearly visible from above across rows 6-9 (4 pixels deep) between the backrest (rows 1-4) and the front apron (rows 10-11).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4494
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden bench with cushions",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The seat surface (cushions) is visible from above across rows 6–9 (4 source pixels deep) above the front wooden apron (rows 10–11) and front legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8006
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.430Z",
+ "cells": {
+  "16": [
+   "1fb7305bee45e608",
+   "593ad8c5a3f3883a"
+  ],
+  "24": [
+   "1df1e1d19ec6da60",
+   "25b62a15c3edccca",
+   "30cb127cd65977aa",
+   "497e1398d621ccb7",
+   "781b0a32e49c5401",
+   "8f1b057d0245c20e",
+   "9e396ce5a5446464",
+   "a7ee883f5444f3ac",
+   "b8620021a3e23672",
+   "c48407d112b4fc43",
+   "c701ce68c83f418a",
+   "f62ab422bfd70dc1"
+  ],
+  "32": [
+   "8c0c6419b7b1850a",
+   "ffb89f71cc5e5287"
+  ],
+  "48": [
+   "4525861616908581",
+   "61443bcd662c6830",
+   "a0de53db6aa7bbda",
+   "a1f54fe88e9558d1",
+   "be581ec85c27b9bf",
+   "d9060084df9056d6"
+  ]
+ }
+}

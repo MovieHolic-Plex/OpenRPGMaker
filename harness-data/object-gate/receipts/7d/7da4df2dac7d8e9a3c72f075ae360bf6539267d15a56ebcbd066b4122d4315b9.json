@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "7da4df2dac7d8e9a3c72f075ae360bf6539267d15a56ebcbd066b4122d4315b9",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall double-door wooden wardrobe seen from above-front: deep flat top surface with a hat box on it",
+ "label": "sky-island/si-wardrobe",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is clearly rendered across rows 1-5 (approx. 5 source pixels deep) with boxes resting on it, meeting the 3/4 top-down perspective requirement.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3798
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wardrobe",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wardrobe shows a clearly foreshortened top surface spanning rows 1 to 5 (with two boxes sitting on it) above the front door panels starting at row 6.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3714
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall double-door wooden wardrobe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wardrobe has a clearly depicted 6-row deep top surface (rows 0-5) with items resting on it, above a 25-row vertical front face showing double doors and handles.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3907
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden double-door wardrobe",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the wardrobe is visible across rows 0-5 (about 6 pixels deep) displaying small boxes on top, clearly foreshortened in 3/4 view above the front cabinet doors.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2591
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.238Z",
+ "cells": {
+  "16": [
+   "5289f43533818a0b",
+   "d13df0d94b2f3d4a",
+   "e21c6ec072115134",
+   "e61aa91a4b61ccfe"
+  ],
+  "24": [
+   "1876bc22a7069ed5",
+   "1b0e123f723a857d",
+   "1f25e88f8c524e7e",
+   "2d3ecb5a0cb63ac3",
+   "3438e8c0191405c0",
+   "3e3678b4a295b65d",
+   "4ef9688e7e5fb6ad",
+   "5eec407b9c2e4ce6",
+   "6f2ae12a28973249",
+   "719cb60a23b9b6c0",
+   "98c33f033b56f890",
+   "9d091abbebe7f054",
+   "ac1d08aa6b53fa6d",
+   "b1d9a385851a8cc0",
+   "b2ad00e8fd1ce107",
+   "b5bc33818b7e70c0",
+   "b5f8983ea6aad3af",
+   "b921c02c0ccede9d",
+   "ca34c51dff210374",
+   "cb002d9da93c3429",
+   "cbf51ea508f0ba29",
+   "ef7b1351b14d791e",
+   "fa3a92a175559f04",
+   "ff0227cef36428b5"
+  ],
+  "32": [
+   "2cfe3d50455a6396"
+  ],
+  "48": [
+   "3b9e1ca3915d73e9",
+   "63353f283a2a0ecb",
+   "7b3b500af04a5d3d",
+   "a0eb743314128101",
+   "befb55c53f97806d",
+   "e984c05bc9bd37f3"
+  ]
+ }
+}

@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f178fadacdbc876f5f1717dceb3b85a879d6a08a6c6e47bf5371ac4f87d8e92d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "cloud platform edge tile against sky (terrain)",
+ "label": "sky-island/si-cs-se",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a cloud platform boundary against the sky; depicts flat ground/platform surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3340
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain tile showing horizontal top surface (rows 0-7) with a south-facing front ledge and an eastern boundary against blue sky.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5747
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 8,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Cloud platform terrain tile showing the horizontal top surface (rows 0-7) meeting a highlighted edge and south face against the sky on the east edge.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4463
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform edge tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain tile depicting the eastern edge of a cloud platform bordered by sky on the right. As ground/terrain, it naturally displays top-down ground surface and passes.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3949
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "c5ed75fc7ef8d5f3"
+  ],
+  "24": [
+   "0404a5b232a7e723",
+   "31a7c8075ede8ef8",
+   "8096fa0376884557",
+   "aed97188e443ef27",
+   "c6e906f65da9ef92",
+   "ef1f8229116cfe1f"
+  ],
+  "32": [
+   "0ebaa76b4144e10f",
+   "4c317c2940894984",
+   "6c31c95ed1237710",
+   "93ce8c9d0f0d5b5a",
+   "c1d54c65129f73f0",
+   "dae671b9142e5df5"
+  ],
+  "48": [
+   "166876d24a9b705f",
+   "459e515b527933ed",
+   "7678c720be0e21ef",
+   "ba2055374f76d889",
+   "dfb8ec03a1f47ad4",
+   "f3caff0c7640f59f"
+  ]
+ }
+}

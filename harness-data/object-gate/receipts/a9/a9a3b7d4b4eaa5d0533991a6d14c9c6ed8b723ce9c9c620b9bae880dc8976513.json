@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "a9a3b7d4b4eaa5d0533991a6d14c9c6ed8b723ce9c9c620b9bae880dc8976513",
+ "width": 16,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall grandfather clock with pendulum",
+ "label": "sky-island/si-clock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall grandfather clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn entirely as a flat architectural front elevation. The 2px lighter strip at rows 1-2 represents a front-facing crown molding/pediment rather than a foreshortened top surface, and the clock face, pendulum case, and base are all drawn strictly straight-on with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6756
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "tall grandfather clock",
+    "kind_matches": true,
+    "top_rows": 2,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn as a flat front elevation with a circular clock face and pendulum window showing no interior depth. The top features only a 2px horizontal band/cornice highlight (rows 1-2) with no visible horizontal top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 2행 < 3"
+   ],
+   "ms": 5555
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "grandfather clock body",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn entirely in a flat front elevation: the clock face is a front-facing circle rather than a foreshortened ellipse, the pendulum chamber and base show no depth, and the top only has a 2px horizontal cornice highlight rather than a visible top surface seen from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4976
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall grandfather clock",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The clock is drawn entirely in pure front elevation with no visible top surface. The circular clock face is drawn as an unforeshortened circle rather than an ellipse, and the upper section is a flat front panel between vertical side uprights.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5060
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.566Z",
+ "cells": {
+  "16": [
+   "b4b2852bf5fbc29e",
+   "bd462a23a98ef13f"
+  ],
+  "24": [
+   "0d838529fbaa20bf",
+   "16718a040904023c",
+   "35ae799b682dce28",
+   "3be16e3b8f8893d2",
+   "44ddef82d82df542",
+   "5fd35550b4608751",
+   "7816905f7035f29e",
+   "7da2c551f40aa57e",
+   "95e7120f4f13f4dd",
+   "9e67dd3f5a95b9f9",
+   "c591808aab27a371",
+   "d11e458261dfefa3"
+  ],
+  "32": [
+   "2205a70249d279ea",
+   "32be5f9ab0004f06",
+   "4c38f24df4c6b3ab"
+  ],
+  "48": [
+   "0d3888e418a7eae3",
+   "28a4508a58c97786",
+   "37b469643c48ac61",
+   "42bc836e1466ae16",
+   "9f80891c890b9ce7",
+   "b26060b754625223"
+  ]
+ }
+}

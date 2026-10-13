@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e70511a9086891ad6a571f0283e9793587aed99db71c9208637d6e5734ce0d3b",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "grass ground tile",
+ "label": "sky-island/si-grass",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "flat ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "A standard 16x16 seamless grass terrain ground tile viewed top-down.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3655
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "grass ground surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat 16x16 grass texture representing a horizontal terrain tile viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3095
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 grass terrain ground tile shown flat from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2504
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "flat grass ground tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a full 16x16 terrain ground tile depicting grass texture seen from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2591
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.973Z",
+ "cells": {
+  "16": [
+   "3c22cc290808e369"
+  ],
+  "24": [
+   "334604cf3c90e861",
+   "8bb95bcf18f4c593",
+   "8fb2d3465978570c",
+   "bca9d875097e307a",
+   "df30323d787e3119",
+   "f52cbcd3ea763663"
+  ],
+  "32": [
+   "1ca1635df55206b3",
+   "1d7423ffba3ac8f0",
+   "23a90ebdbbb8d1ac",
+   "42fe1b758bba8395",
+   "907214268c5f504b",
+   "91f59b3969c935f8"
+  ],
+  "48": [
+   "3084f6b2f078d4f0",
+   "7ce02737da540452",
+   "aebcfaeee39d6120",
+   "b46ae9c8e0b39790",
+   "bfbc0adb4fd54f9c",
+   "edba43f986a1ccc5"
+  ]
+ }
+}

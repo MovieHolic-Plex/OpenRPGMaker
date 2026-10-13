@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "95dce672312b6900a9279c13d157c04d2682d1fffec6bc247483aa015ddb941d",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "walkable cloud floor tile",
+ "label": "sky-island/si-cloud-b",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloud floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Seamless 16x16 terrain floor tile depicting a walkable cloud surface with subtle shading and highlights.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3009
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud floor tile surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "16x16 flat cloud terrain floor tile with soft shading and highlights, correctly representing walkable ground viewed from above.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3667
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile covering the entire 16x16 surface with cloud texture shading.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2694
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile spanning all 16 rows, textured as walkable cloud surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2869
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.976Z",
+ "cells": {
+  "16": [
+   "349b2542b326a2b1"
+  ],
+  "24": [
+   "4c3f4e75bf93fad6",
+   "94aca3feff9013d3",
+   "95260a1654f6f866",
+   "ad83a195384bff04",
+   "f1326d0f208406ad",
+   "f6cf74c5b43eb52e"
+  ],
+  "32": [
+   "73fc04a386e2d5bb",
+   "823445bfdf3fe907",
+   "893d81ddda7afbcd",
+   "8c107de54bcdc4de",
+   "c40004314b90e76f",
+   "fa64773dea2bded6"
+  ],
+  "48": [
+   "0da1c71ba3301e84",
+   "52ae0dc190d18c80",
+   "5db6a1c3f0d84d3f",
+   "62e9cacf8f6408f8",
+   "72bfade9f2473a78",
+   "ea192d057a0b7124"
+  ]
+ }
+}

@@ -1,0 +1,152 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e57300225351c18ba7f3726178d42fd5942af1a2d734c527631db0daa38cfb4a",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "stone fireplace hearth with burning fire and mantel shelf",
+ "label": "sky-island/si-hearth-f1",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and hearth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace is drawn in flat 2D front elevation (side-scroller style). The mantel shelf, the items resting on it, the hearth opening, log, and brickwork all lack any 3/4 top-down perspective or visible horizontal depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6856
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and fire opening",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace and mantel shelf are drawn in pure front elevation (side-scroller style). The mantel shelf only has a 1px highlight line (row 12) instead of a foreshortened top surface, and the brickwork, firebox opening, and hearth log are completely flat with no 3/4 top-down depth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5471
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace and mantel",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire fireplace, mantel shelf, and objects placed upon it are drawn as a pure front elevation. The mantel shelf has at most a 1px edge line at row 12 with no receding horizontal top surface, and the items on it are flat rectangles.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4588
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with mantel shelf and firebox",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The fireplace is drawn entirely as a 2D front architectural elevation: the brickwork, firebox opening, mantel beam, and log are all flat frontal views with no foreshortened top surfaces visible (mantel shelf is only a 3px horizontal beam with 1px highlight line).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9116
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.563Z",
+ "cells": {
+  "16": [
+   "411547b61a750c6c",
+   "716edc503fe1225c",
+   "7a86ffc910f64c72",
+   "7c512821be7acd4c"
+  ],
+  "24": [
+   "00ad11ab6335fd71",
+   "0a0bab9605b6556f",
+   "0a9f1dd25068830c",
+   "14c029fa12019f63",
+   "21421a16d5ef1407",
+   "2c2438675617e777",
+   "3aca6f348e8da6ed",
+   "587c5d9c1ee3964a",
+   "5b13cd7cff6839aa",
+   "6251b2b284eb5381",
+   "686072fdfb6b0e52",
+   "86a5c71211539ee6",
+   "a5d7f9589a3f6bf2",
+   "aa5858e028c60547",
+   "b0b5ed9fa3dff21f",
+   "b8012d81ef0b12e2",
+   "c8c5bf881e666d70",
+   "cd7a2ae74e0d43e2",
+   "d4c9ee7da54567ec",
+   "e8911df92c7b66af",
+   "f817da34aa43e5e4",
+   "f8ad9cd4f6630a09",
+   "ffdb3e8d6f15b79b",
+   "ffee1dab75d844a5"
+  ],
+  "32": [
+   "292a9d3f094bfe11"
+  ],
+  "48": [
+   "0e6fbc95a983e365",
+   "2f97f398908f1c7b",
+   "6cb8a1bdbae3f466",
+   "965c715451bfb5e5",
+   "e24cfa5c11f1597a",
+   "eeb4c52727b745dc"
+  ]
+ }
+}

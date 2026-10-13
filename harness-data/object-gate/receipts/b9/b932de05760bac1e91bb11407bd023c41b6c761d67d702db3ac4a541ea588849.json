@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b932de05760bac1e91bb11407bd023c41b6c761d67d702db3ac4a541ea588849",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "underside billows of a cloud platform (terrain)",
+ "label": "sky-island/si-billow-r",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "underside billows of a cloud platform",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing the lower cliff/billow face of a cloud platform against a blue sky backdrop; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3866
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cloud platform underside billows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical wall/cliff terrain face representing the billowy underside of a floating cloud platform against a sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3564
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "cloud platform underside billow edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile showing the shaded lower hanging billows/vertical edge of a cloud platform against sky backdrop.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4144
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cloud platform underside face / edge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Classified as terrain; represents the south-facing vertical/underside billow edge of a floating cloud platform over sky background.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3060
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.977Z",
+ "cells": {
+  "16": [
+   "503b6176c55776ca"
+  ],
+  "24": [
+   "01b3a47d22c42af6",
+   "3221fc682ba40b01",
+   "6c504df3849aa573",
+   "90651534ba4302b1",
+   "920e189a82dfe3c6",
+   "ac6f6bd6b8d696ff"
+  ],
+  "32": [
+   "0cd0656a6a83c9d4",
+   "1ee2a9dcbad61789",
+   "2ec9613c6640987b",
+   "6fce6ca5fc2c7bbe",
+   "8f40dd0870b0bc28",
+   "d95ab00b593bd494"
+  ],
+  "48": [
+   "1763332f2aaf2b6a",
+   "1e520a601f7642b3",
+   "2a658061a524a4f7",
+   "3a75d71ff7f500d4",
+   "424dc639c2d281a2",
+   "c1ea7f276283873d"
+  ]
+ }
+}

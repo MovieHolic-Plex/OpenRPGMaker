@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "43655a947f8ad8435b37253b0d9eb8bc7fe6ed27924c30bb1de550a76d6c496c",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "wooden plank floor tile (flat)",
+ "label": "sky-island/si-floor-wood",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden plank terrain tile viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3345
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden plank floor tile",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting wooden planks viewed from above across the full 16x16 tile area.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3544
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden floor planks",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tile depicting wooden planks viewed from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3640
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden plank floor surface",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tile depicting horizontal wooden planks seen from above across all 16 rows.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3342
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.558Z",
+ "cells": {
+  "16": [
+   "2a079905047c67e0"
+  ],
+  "24": [
+   "50d4b4bcc467edb7",
+   "8393a5808a7b43f2",
+   "b14515c2b0901abc",
+   "bb1d9f47b8f9edc7",
+   "cac5c9a6189e52b5",
+   "f0e94208e317dc1e"
+  ],
+  "32": [
+   "0305ad11ff74cf2d",
+   "04e26beb40b88c78",
+   "241ac8453a7184df",
+   "6ec2862fed420385",
+   "c9b2bd89d4e9480d",
+   "f9fdf0854be8fefc"
+  ],
+  "48": [
+   "04ec941dd773670a",
+   "0be4e58b1dd29941",
+   "16d7243ae1a6c525",
+   "4614968749902d11",
+   "57316cf10abf4993",
+   "62f1b54b52e7d1b5"
+  ]
+ }
+}

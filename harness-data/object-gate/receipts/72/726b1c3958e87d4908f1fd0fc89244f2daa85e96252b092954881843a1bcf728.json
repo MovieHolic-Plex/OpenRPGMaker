@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "726b1c3958e87d4908f1fd0fc89244f2daa85e96252b092954881843a1bcf728",
+ "width": 16,
+ "height": 16,
+ "kind": "organic",
+ "name": "rows of young seedlings on farm soil (organic)",
+ "label": "sky-island/si-crop-sprout",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "seedlings and soil mounds",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seedlings and soil patches are drawn entirely as flat 2D side/front elevation sprites (flat cross-shaped plant stalks with horizontal 1-pixel soil bars beneath), showing no top-down perspective or foreshortened horizontal surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3076
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "seedlings on farm soil patches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seedlings and soil patches are drawn entirely in flat 2D front/side elevation with 1px-tall base lines for soil and flat cross-like seedling silhouettes without any top surface foreshortening.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3227
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "seedling plants in soil rows",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seedlings and soil patches are drawn entirely in flat 2D side/front elevation with vertical stems, horizontal side leaves, and 1px-tall base lines with no top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3166
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "seedlings and soil patches",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The seedlings and soil are drawn as completely flat 2D side-scroller silhouettes; the soil mounds are flat 1px-tall lines and the sprouts show straight side/front views without any top-down foreshortening or leaf surfaces visible from above.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4682
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "0411b30848df4a73"
+  ],
+  "24": [
+   "0088a759b5609931",
+   "20fdc5157a5a2b76",
+   "2878f006fbadc3c7",
+   "341b0e146552e650",
+   "612798e39ab32de0",
+   "813fa99897d6f77b"
+  ],
+  "32": [
+   "16eb556e13958e5a",
+   "931064e8ceaed460",
+   "ac37c3d5e80f2a55",
+   "b9aadd957a255618",
+   "d096b46ed14e9e90",
+   "d7c91f0897026522"
+  ],
+  "48": [
+   "4fef3295b8f506ef",
+   "7f6daa1f9d77eeb2",
+   "82512e8a62b16ed5",
+   "9efc91a9a7237852",
+   "f696955aa4d4f2f6",
+   "ffd0a9458b393a43"
+  ]
+ }
+}

@@ -1,0 +1,140 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "cb71f252df7202c41cdfd0c238900eb3f87731d0376503bbf9ea4480187aa961",
+ "width": 16,
+ "height": 32,
+ "kind": "figure",
+ "name": "brass orrery model of planets on a stand",
+ "label": "sky-island/si-orrery",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "brass orrery and stand on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire object is drawn in flat front elevation. The base plinth has only a 1px lighter line across row 26 without a foreshortened top surface, and the central brass mechanism shows flat 1px horizontal caps at rows 8 and 14 with no circular/elliptical top view visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5204
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "brass central sphere and stand on plinth",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central brass mechanism and the base plinth are drawn in pure front elevation. The top flange of the brass body (row 8) is a 1px flat horizontal line, and the plinth top (row 26) is only a 1px highlight line rather than a foreshortened top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5339
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "central brass drum and stand",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central brass cylinder and the base plinth are both rendered entirely flat from the front with 1-pixel horizontal edge highlights and no foreshortened top surfaces visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4368
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "brass central sphere/cylinder on stand with base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The central body, stand, and base are all drawn in pure front elevation; the base has only a 1px highlight line on row 26 and no foreshortened top surface, and the central mechanism has no visible top.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4571
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "095a30182bef2263",
+   "6bbdce5fdff903e2"
+  ],
+  "24": [
+   "06f721b3dc6e42cd",
+   "334b6bb420c1f137",
+   "43df150b5cea8f98",
+   "4791c03e27ff4b45",
+   "5530d169b385fd1e",
+   "99c8ac59c8146689",
+   "c5d52b07589c00c8",
+   "d11456890277ebf4",
+   "d4eebca097b2f2e3",
+   "dc535339e246818a",
+   "f2da6f4af412e7cd",
+   "f9d53b846389d409"
+  ],
+  "32": [
+   "a67dc8e806216caa",
+   "ccfe352a69a0687a",
+   "e75ef20169c2897b"
+  ],
+  "48": [
+   "165e5c0828ab665b",
+   "7ddd73b8179bb096",
+   "acbafe0cec5e9516",
+   "ca13e3aadc4b2e21",
+   "f42886a5a7e03fd0",
+   "ff507f204b1ff4fd"
+  ]
+ }
+}

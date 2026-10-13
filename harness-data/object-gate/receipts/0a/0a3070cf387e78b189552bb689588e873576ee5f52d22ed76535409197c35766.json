@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "0a3070cf387e78b189552bb689588e873576ee5f52d22ed76535409197c35766",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "plaster wall with wood beam, lower interior wall tile with baseboard (wall_mounted)",
+ "label": "sky-island/si-wall-plaster-low",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "interior plaster and wood panel wall face",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Wall face terrain tile showing plaster upper section and wood wainscoting/baseboard. As vertical terrain (wall face), it correctly spans the tile vertically without a foreshortened top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6373
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "interior wall face with wood wainscoting and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Valid terrain tile representing a vertical interior wall face with plaster and wooden lower paneling/baseboard; as a wall face terrain tile, no top surface is expected.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3348
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "interior wall face with wainscoting/wood beam and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a standard flat vertical interior wall terrain tile (plaster upper section, wooden lower section and baseboard) designed to tile as a south-facing wall surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3302
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "interior wall face with wood paneling and baseboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "This is a terrain wall-face tile, representing the vertical surface of a wall in a standard 2D JRPG tileset; as terrain rather than a standing object, it correctly depicts the vertical wall face without a top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5522
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.559Z",
+ "cells": {
+  "16": [
+   "e9e99dee19e68ee5"
+  ],
+  "24": [
+   "1688554276b77199",
+   "d0922daa2aa14dc0",
+   "daedcb158fcbe15c",
+   "e374fa19f8737b19",
+   "e466d8d58600369e",
+   "e6e8ea19a355642d"
+  ],
+  "32": [
+   "16b69ed425d948d8",
+   "19fce4b00ec05028",
+   "1b5b44c585974a08",
+   "1e987f3a78d27669",
+   "4dfc79ed4551f39c",
+   "9200970e4b6d9305"
+  ],
+  "48": [
+   "0cebb88313e539ec",
+   "3f3abc7c90f6b3ae",
+   "5c97a7751b93d231",
+   "885b8f65d4ed01fb",
+   "9d29d8b27313edb8",
+   "a42b7680f1dea81e"
+  ]
+ }
+}

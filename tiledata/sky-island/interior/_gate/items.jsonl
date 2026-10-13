@@ -1,0 +1,57 @@
+{"png": "si-floor-wood.png", "kind": "terrain", "name": "wooden plank floor tile (flat)", "label": "sky-island/si-floor-wood"}
+{"png": "si-floor-stone.png", "kind": "terrain", "name": "stone slab floor tile (flat)", "label": "sky-island/si-floor-stone"}
+{"png": "si-floor-deck.png", "kind": "terrain", "name": "ship deck plank floor tile (flat)", "label": "sky-island/si-floor-deck"}
+{"png": "si-floor-mosaic.png", "kind": "terrain", "name": "dark blue mosaic floor with gold grid and star dots (flat)", "label": "sky-island/si-floor-mosaic"}
+{"png": "si-wall-plaster.png", "kind": "terrain", "name": "plaster wall with wood beam, upper interior wall tile (wall_mounted)", "label": "sky-island/si-wall-plaster"}
+{"png": "si-wall-plaster-low.png", "kind": "terrain", "name": "plaster wall with wood beam, lower interior wall tile with baseboard (wall_mounted)", "label": "sky-island/si-wall-plaster-low"}
+{"png": "si-wall-stone.png", "kind": "terrain", "name": "stone block wall with gold trim, upper interior wall tile (wall_mounted)", "label": "sky-island/si-wall-stone"}
+{"png": "si-wall-stone-low.png", "kind": "terrain", "name": "stone block wall with gold trim, lower interior wall tile with baseboard (wall_mounted)", "label": "sky-island/si-wall-stone-low"}
+{"png": "si-wall-wood.png", "kind": "terrain", "name": "wooden plank cabin wall with brass rivets, upper interior wall tile (wall_mounted)", "label": "sky-island/si-wall-wood"}
+{"png": "si-wall-wood-low.png", "kind": "terrain", "name": "wooden plank cabin wall with brass rivets, lower interior wall tile with baseboard (wall_mounted)", "label": "sky-island/si-wall-wood-low"}
+{"png": "si-wall-star.png", "kind": "terrain", "name": "dark blue starry wall, upper interior wall tile (wall_mounted)", "label": "sky-island/si-wall-star"}
+{"png": "si-wall-star-low.png", "kind": "terrain", "name": "dark blue starry wall, lower interior wall tile with baseboard (wall_mounted)", "label": "sky-island/si-wall-star-low"}
+{"png": "si-wall-plaster-win.png", "kind": "terrain", "name": "plaster wall with a window (wall_mounted)", "label": "sky-island/si-wall-plaster-win"}
+{"png": "si-wall-plaster-low-win.png", "kind": "terrain", "name": "plaster wall with window sill (wall_mounted)", "label": "sky-island/si-wall-plaster-low-win"}
+{"png": "si-wall-wood-port.png", "kind": "terrain", "name": "cabin wall with round brass porthole (wall_mounted)", "label": "sky-island/si-wall-wood-port"}
+{"png": "si-wall-stone-arch.png", "kind": "terrain", "name": "stone wall with tall arched crystal window (wall_mounted)", "label": "sky-island/si-wall-stone-arch"}
+{"png": "si-wall-star-sky.png", "kind": "terrain", "name": "observatory wall with a night-sky window (wall_mounted)", "label": "sky-island/si-wall-star-sky"}
+{"png": "si-void.png", "kind": "terrain", "name": "dark interior void ceiling tile (flat)", "label": "sky-island/si-void"}
+{"png": "si-void-w.png", "kind": "terrain", "name": "interior wall top rim seen from above (flat)", "label": "sky-island/si-void-w"}
+{"png": "si-void-e.png", "kind": "terrain", "name": "interior wall top rim seen from above (flat)", "label": "sky-island/si-void-e"}
+{"png": "si-void-s.png", "kind": "terrain", "name": "south interior wall top rim seen from above (flat)", "label": "sky-island/si-void-s"}
+{"png": "si-void-sw.png", "kind": "terrain", "name": "interior wall corner top seen from above (flat)", "label": "sky-island/si-void-sw"}
+{"png": "si-void-se.png", "kind": "terrain", "name": "interior wall corner top seen from above (flat)", "label": "sky-island/si-void-se"}
+{"png": "si-exit-mat.png", "kind": "flat", "name": "doormat at the room exit (flat decal)", "label": "sky-island/si-exit-mat"}
+{"png": "si-bed.png", "kind": "low_furniture", "name": "wooden bed with pillow and quilt seen from above-front", "label": "sky-island/si-bed"}
+{"png": "si-table.png", "kind": "low_furniture", "name": "wooden table seen from above-front", "label": "sky-island/si-table"}
+{"png": "si-table-round.png", "kind": "low_furniture", "name": "small round wooden table", "label": "sky-island/si-table-round"}
+{"png": "si-chair.png", "kind": "seat", "name": "wooden chair with backrest", "label": "sky-island/si-chair"}
+{"png": "si-stool.png", "kind": "seat", "name": "round wooden stool seen from above-front: large oval seat top clearly visible", "label": "sky-island/si-stool"}
+{"png": "si-cupboard.png", "kind": "tall_furniture", "name": "tall wooden kitchen cupboard seen from above-front: deep flat top surface with jars on it, shelves with plates", "label": "sky-island/si-cupboard"}
+{"png": "si-bookshelf.png", "kind": "tall_furniture", "name": "tall wooden bookshelf seen from above-front: deep flat top with a book lying on it, shelves full of books", "label": "sky-island/si-bookshelf"}
+{"png": "si-hearth.png", "kind": "tall_furniture", "name": "cast-iron stove on a low brick platform seen from above-front: flat stove top plate with kettle clearly visible, brick platform top, fire window", "label": "sky-island/si-hearth"}
+{"png": "si-hearth-f1.png", "kind": "tall_furniture", "name": "cast-iron stove on a low brick platform seen from above-front: flat stove top plate with kettle clearly visible, brick platform top, fire window", "label": "sky-island/si-hearth-f1"}
+{"png": "si-hearth-f2.png", "kind": "tall_furniture", "name": "cast-iron stove on a low brick platform seen from above-front: flat stove top plate with kettle clearly visible, brick platform top, fire window", "label": "sky-island/si-hearth-f2"}
+{"png": "si-rug.png", "kind": "flat", "name": "round woven rug on the floor (flat decal)", "label": "sky-island/si-rug"}
+{"png": "si-rug-long.png", "kind": "flat", "name": "long ceremonial carpet runner (flat decal)", "label": "sky-island/si-rug-long"}
+{"png": "si-altar.png", "kind": "box", "name": "stone altar with glowing crystal on top", "label": "sky-island/si-altar"}
+{"png": "si-offering.png", "kind": "box", "name": "small wooden offering box with slotted top", "label": "sky-island/si-offering"}
+{"png": "si-lantern-floor.png", "kind": "column", "name": "stone shrine lantern seen from above-front: stacked square blocks each with a visible flat top - wide cap top, ledge under the light box, deep base top", "label": "sky-island/si-lantern-floor"}
+{"png": "si-cushion.png", "kind": "flat", "name": "square floor cushion (flat decal)", "label": "sky-island/si-cushion"}
+{"png": "si-incense.png", "kind": "container", "name": "bronze incense burner seen from above: wide round mouth with ash visible inside, three legs", "label": "sky-island/si-incense"}
+{"png": "si-helm.png", "kind": "other", "name": "ship's steering wheel on a wooden stand with a square base whose flat top is visible", "label": "sky-island/si-helm"}
+{"png": "si-chart-table.png", "kind": "low_furniture", "name": "chart table with a map and brass compass", "label": "sky-island/si-chart-table"}
+{"png": "si-hammock.png", "kind": "low_furniture", "name": "canvas hammock seen from above: wide fabric bed surface with a pillow, slung between two posts with flat tops", "label": "sky-island/si-hammock"}
+{"png": "si-chest.png", "kind": "box", "name": "wooden sea chest seen from above-front: large flat lid top with brass bands clearly visible", "label": "sky-island/si-chest"}
+{"png": "si-telescope.png", "kind": "other", "name": "large brass telescope on a round wooden platform seen from above (platform top clearly visible), tube pointing up", "label": "sky-island/si-telescope"}
+{"png": "si-orrery.png", "kind": "figure", "name": "brass orrery on a square wooden plinth whose flat top is clearly visible", "label": "sky-island/si-orrery"}
+{"png": "si-globe.png", "kind": "figure", "name": "globe on a square wooden base whose flat top is clearly visible", "label": "sky-island/si-globe"}
+{"png": "si-desk.png", "kind": "low_furniture", "name": "writing desk with star charts and candle", "label": "sky-island/si-desk"}
+{"png": "si-ladder.png", "kind": "wall_mounted", "name": "wooden ladder leaning against the wall", "label": "sky-island/si-ladder"}
+{"png": "si-lamp.png", "kind": "column", "name": "standing oil lamp seen from above-front: round base with visible top, shade with an oval top opening", "label": "sky-island/si-lamp"}
+{"png": "si-wardrobe.png", "kind": "tall_furniture", "name": "tall double-door wooden wardrobe seen from above-front: deep flat top surface with a hat box on it", "label": "sky-island/si-wardrobe"}
+{"png": "si-counter.png", "kind": "low_furniture", "name": "long wooden service counter", "label": "sky-island/si-counter"}
+{"png": "si-basin.png", "kind": "low_furniture", "name": "washstand with ceramic basin and jug", "label": "sky-island/si-basin"}
+{"png": "si-clock.png", "kind": "tall_furniture", "name": "tall grandfather clock seen from above-front: deep flat top surface visible, round face, pendulum", "label": "sky-island/si-clock"}
+{"png": "si-banner-wall.png", "kind": "wall_mounted", "name": "hanging cloth banner with star emblem (wall_mounted)", "label": "sky-island/si-banner-wall"}
+{"png": "si-plant.png", "kind": "organic", "name": "potted leafy plant", "label": "sky-island/si-plant"}

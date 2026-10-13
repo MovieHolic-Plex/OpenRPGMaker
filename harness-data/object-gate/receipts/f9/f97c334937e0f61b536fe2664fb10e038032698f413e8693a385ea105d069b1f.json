@@ -1,0 +1,232 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "f97c334937e0f61b536fe2664fb10e038032698f413e8693a385ea105d069b1f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "stone fireplace seen from above-front: flat stone top of the chimney breast visible, deep wooden mantel shelf top, burning fire",
+ "label": "sky-island/si-hearth-f2",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney breast forming the upper body (rows 0-11) is drawn in pure front elevation with no visible top surface at all (0px), terminating straight at row 0. While the wooden mantel shelf in the middle has a 4px top surface (rows 12-15), the main body above and below it is drawn flat from the front.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13614
+  },
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "stone fireplace and chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone body and chimney breast extend straight to the top of the frame with no visible top surface at all (0 rows). The firebox opening is a flat 2D black rectangle with no floor or depth foreshortening. Although the wooden mantel shelf shows a 3-row horizontal surface, the main body is drawn as a pure front architectural elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10553
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The stone chimney breast (the main body) is drawn in pure front elevation with vertical mortar lines extending directly to the top edge (rows 0-4) with no visible top surface. The only horizontal surface is the wooden mantel shelf (rows 12-14), which is an attached feature, not the top of the main body.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12659
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main body of the stone fireplace and chimney breast is drawn in pure front elevation with vertical mortar lines extending directly off the top edge (row 0) with 0 top surface rows visible. While the attached wooden mantel shelf shows a 3px top surface (rows 12-14), the main stone structure has no top view.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12888
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with wooden mantel shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden mantel shelf clearly displays a 3-4 pixel row top surface (rows 12-15) with objects resting on it above a 2-row dark front face (rows 16-17), and the upper stone chimney breast tier also shows a lighter horizontal top surface across rows 0-4.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5050
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and wooden mantel shelf",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden mantel shelf clearly displays a 4-row deep top horizontal surface (rows 11-14) with objects resting on it, bordered by an edge highlight (row 15) and front face (rows 16-17). The chimney breast above also shows a horizontal stepped top surface (rows 0-4) meeting a front highlight at row 5.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7144
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The main stone body and chimney breast are drawn as a flat architectural front elevation extending off the top of the canvas with no top surface visible (0 rows). While the wooden mantel shelf shows a 3-row surface, the main body itself lacks any top-down perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9111
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "stone fireplace with chimney breast and mantel shelf",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chimney breast extends straight off the top edge of the frame (rows 0-10) in a flat vertical front elevation with 0px of top surface visible. While the wooden mantel shelf shows a 4px top surface, the main stone chimney body above it lacks any visible top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 13466
+  }
+ ],
+ "decidedAt": "2026-10-13T18:47:30.237Z",
+ "cells": {
+  "16": [
+   "07c75d0e6437ba01",
+   "0a93be7ff0803de5",
+   "1bff0093e8f0c938",
+   "42234dc2b5080db5"
+  ],
+  "24": [
+   "0eb3146909be4690",
+   "1954d84f674e88c3",
+   "1bc18a366d9aaf0e",
+   "2ef5ddc6c7a99d8c",
+   "452606f42813d5f5",
+   "47af8d0de4b6a58a",
+   "54a82e997673b13e",
+   "66bbfdf8e1a2b9ac",
+   "6b13c36a8959d1e8",
+   "729a3bd43dc796e9",
+   "7e8dc0e294b0e3d3",
+   "805001670ca8fa41",
+   "98d0f435f3eb6267",
+   "9cee389efe28964a",
+   "aa1c4e74c6b863dc",
+   "aca3a9c6d857c97f",
+   "c44bbe40eca90245",
+   "c651ee4d9374b988",
+   "cc5ed81761769365",
+   "dd67c0adc726504e",
+   "e2a3809a49169e14",
+   "f55b701a277ffc2d",
+   "f64fa220330dc892",
+   "fabee90fcadc0662"
+  ],
+  "32": [
+   "03f83b8f8c62fc2a"
+  ],
+  "48": [
+   "1783d243b933623d",
+   "37d62d72a9472a91",
+   "50ce51d0b9b611fc",
+   "75a64a34e1a6f9d3",
+   "ad24d3605309e76f",
+   "d5421f9ddeed23e2"
+  ]
+ }
+}

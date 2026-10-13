@@ -1,0 +1,118 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e0ae97222063fc93e8fe1ea61b4803d2c855febf8ed1fc07f2929f8a80cf27fa",
+ "width": 48,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "long wooden service counter",
+ "label": "sky-island/si-counter",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The wooden counter top is clearly visible from rows 1 to 5 (about 4-5 source pixel rows deep), showing items resting on it, before dropping down into the front paneling from row 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3288
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden service counter",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter top surface spans rows 1-5 (approx 5 pixel rows) complete with placed items (paper, yellow pad), resting atop a vertical front panel spanning rows 6-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2971
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "service counter top and front paneling",
+    "kind_matches": true,
+    "top_rows": 5,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top counter surface spans rows 1-5 (approx. 5 pixel rows tall, holding a sheet of paper and a gold object), facing south with front panels spanning rows 6-14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3267
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden service counter",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The counter shows a clear top surface spanning rows 2 to 5 (4 pixel rows tall) with items resting on it, above a front-facing wooden paneled facade spanning rows 6 to 14.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3262
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.566Z",
+ "cells": {
+  "16": [
+   "489f493233c08933",
+   "7ea7d1750117061d",
+   "db54f9d51f28c3b7"
+  ],
+  "24": [
+   "060bcbcbacc16ea7",
+   "16dd89f9668a4c2a",
+   "8852649b477d96b9",
+   "eacc030ac1823235"
+  ],
+  "32": [
+   "05f9f62256256534",
+   "08c905f6bf468658",
+   "09cca9bc86cd380d",
+   "2aa4687290d20f09",
+   "5381e49e1450d22b",
+   "6eca6e742afd4c42",
+   "78a1c13ba5b40240",
+   "869be9ca3cc9edd2",
+   "9b775d9a376fea03",
+   "ae8ee63edfb79356",
+   "cb733458eac34f62",
+   "ff5c44bb0081b22d"
+  ],
+  "48": [
+   "04ae92051c772b5e",
+   "074d518a92c0419a"
+  ]
+ }
+}

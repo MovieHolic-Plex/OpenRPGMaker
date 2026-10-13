@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "20884a85aaed474c6cebc962276937493fc43cd06421a8f5975ad9f4c50498d6",
+ "width": 16,
+ "height": 16,
+ "kind": "terrain",
+ "name": "waterfall flowing over a rock cliff (terrain overlay)",
+ "label": "sky-island/si-falls-face",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain tile designed to tile seamlessly down a cliff face; correctly identified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4042
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "waterfall stream overlay",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Terrain tile representing a vertical waterfall stream running down a cliff face. It seamlessly tiles vertically as expected for terrain overlays.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4130
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "waterfall stream",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain overlay designed to tile vertically over a cliff face; correctly classified as terrain.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3527
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "waterfall strip",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Vertical waterfall terrain overlay designed to tile over a cliff face; exempt from standing object top-surface requirements.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2982
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.981Z",
+ "cells": {
+  "16": [
+   "2ee8fae5a99f40fa"
+  ],
+  "24": [
+   "4b777d6bbd0c4cc2",
+   "6101e05bc55540a4",
+   "835a81c58528268d",
+   "89176fa6fb9b88b8",
+   "bf6f78150d0ae27e",
+   "db3ab1ba1eaf4315"
+  ],
+  "32": [
+   "2db9e86792db77df",
+   "399f29a58aeea15e",
+   "5f414e7bc151bc5c",
+   "6e57e73c1485af42",
+   "9c804afef23dcba6",
+   "df6ebc242000e8ca"
+  ],
+  "48": [
+   "175a5ac5eff98926",
+   "4d192161395a851f",
+   "97c75f7dd078c8d9",
+   "aefdab878e922c42",
+   "beb114c249d735bf",
+   "de541ea579753d69"
+  ]
+ }
+}

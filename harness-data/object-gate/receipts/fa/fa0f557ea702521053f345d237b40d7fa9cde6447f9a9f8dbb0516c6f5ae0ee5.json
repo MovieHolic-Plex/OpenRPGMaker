@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "fa0f557ea702521053f345d237b40d7fa9cde6447f9a9f8dbb0516c6f5ae0ee5",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "square floor cushion (flat decal)",
+ "label": "sky-island/si-cushion",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "floor cushion / mat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat floor cushion is viewed from above across rows 3 to 11 (9 rows tall) with a shaded bottom edge on row 12, correctly depicted as a flat floor object in top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3480
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "flat square cushion/mat lying on floor",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The object is drawn flat on the ground viewed from above spanning rows 3-12 (9 rows of top surface plus a 1px front/bottom shadow edge) with corner accents and central tuft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3622
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "floor cushion/mat lying flat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cushion is depicted lying flat on the floor in top-down projection across rows 3-12, showing its full top surface with corner accents and central tuft.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2828
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "floor cushion / mat",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The flat cushion/mat is viewed top-down from row 3 to 12 (occupying ~9-10 rows of surface area) with golden corner accents and center tufting detail.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3278
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.564Z",
+ "cells": {
+  "16": [
+   "c7c0181e95d9000e"
+  ],
+  "24": [
+   "0fb54c08be5da6f6",
+   "6669dc96322b0d53",
+   "8836d520d951062c",
+   "93d08400d6000f29",
+   "9a7e887d6ba717af",
+   "f18e7d784bc3be26"
+  ],
+  "32": [
+   "2c39b23d31686e6b",
+   "4db2238cae17c055",
+   "6a33e6e531a4e278",
+   "9efea56b93b6a7b2",
+   "f208ec25122e4db0",
+   "fe16f2b0aed9e9c9"
+  ],
+  "48": [
+   "7307105b48ba7344",
+   "8bdea1c68cdc974f",
+   "9ae131f90116f689",
+   "a92e34013dfaac24",
+   "c5e8e4a13d46c10f",
+   "f29933cf63bad5b1"
+  ]
+ }
+}

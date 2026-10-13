@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "de4c03488b0ae18f0a932b8eb8af4de1d10f53c95115f656523425c72c8a89ac",
+ "width": 48,
+ "height": 32,
+ "kind": "organic",
+ "name": "fluffy cumulus cloud floating in the sky (organic)",
+ "label": "sky-island/si-cloud-puff-m",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cumulus cloud cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat cluster of overlapping circular puffs seen straight from the side, typical of a 2D side-scrolling platformer backdrop, with no top-down 3/4 perspective or foreshortened upper surfaces.",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11015
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "cumulus cloud cluster",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The cloud is rendered as a volumetric 3D cluster with back lobes visible behind and above the front lobes (rows 6-16, roughly 10 rows of top depth) rather than a flat front-elevation silhouette.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11051
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "fluffy cloud composed of overlapping rounded lobes",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat 2D side-scroller profile consisting of circular lobes stacked in a vertical plane, with no foreshortened top surface visible from a 45-degree overhead perspective (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 8193
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "cumulus cloud cluster",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The cloud is drawn as a flat front-elevation cluster of overlapping circular puffs, typical of a 2D side-scroller background rather than a top-down 3/4 perspective. There is no visible foreshortened top surface viewed from above (top_rows = 0).",
+    "verdict": "fail"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 11692
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.432Z",
+ "cells": {
+  "16": [
+   "1cb41445c8993fad",
+   "3be97c7dee641429",
+   "4de8e50c7a1f7a76",
+   "73b44e1d6282e4dc",
+   "77adcfab693bffc6",
+   "b28749db90bcfef0"
+  ],
+  "24": [
+   "1f202819a5d1ca9e",
+   "2a5cf1c9735d80d4",
+   "3abb9f159eb25151",
+   "5243be55347882ec",
+   "57e8f9ed55c4ab95",
+   "7177920abec7b442",
+   "9655a778fdcf65e4",
+   "c73f2b4238b615f9"
+  ],
+  "32": [
+   "10c40a802c7b16e2",
+   "50cfa2b497570a88",
+   "61dae7cac04be1d1",
+   "691c7b8a8cf679c4",
+   "974723fc1035ceb6",
+   "cd14460154757883"
+  ],
+  "48": [
+   "1818c1a442bfc448",
+   "588cadc765cd5a8e"
+  ]
+ }
+}

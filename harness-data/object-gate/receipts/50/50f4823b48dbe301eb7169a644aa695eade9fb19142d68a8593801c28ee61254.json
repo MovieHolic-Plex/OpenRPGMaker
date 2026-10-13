@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "50f4823b48dbe301eb7169a644aa695eade9fb19142d68a8593801c28ee61254",
+ "width": 16,
+ "height": 16,
+ "kind": "round_body",
+ "name": "iron mooring bollard with rope wound on it",
+ "label": "sky-island/si-bollard",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "iron bollard cylinder and cap",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn as a flat front elevation: the top cap has no visible ellipse, the rope bands on rows 9 and 11 are straight horizontal lines without perspective curvature, and the base sits flat horizontally.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4809
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn entirely in pure front elevation: the rope wraps are dead-flat horizontal 1px stripes without any elliptical curvature, the base and cap edges are horizontal, and no top circular surface is foreshortened or visible.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 7707
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation: the rope coils on rows 9 and 11 and the base at row 13 are completely flat horizontal lines with no curvature, and the top cap lacks any visible elliptical top surface (drawn as a front silhouette with a 1px nub at row 2).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9074
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "iron mooring bollard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The bollard is drawn in pure front elevation: the rope wraps on rows 9 and 11 are completely flat horizontal lines without elliptical curvature, the bottom base (row 13) is flat, and the mushroom cap with a central top peg is depicted straight from the side without a visible elliptical top surface.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5691
+  }
+ ],
+ "decidedAt": "2026-10-13T18:36:21.431Z",
+ "cells": {
+  "16": [
+   "9f37a60b0f7498f9"
+  ],
+  "24": [
+   "680ac914b7eda89b",
+   "6f64624681c27d8a",
+   "ade2e4d46cf5d3dc",
+   "bdb5df39ce6ee1bd",
+   "cae8ecf67798f74d",
+   "e8fefa3371ed54e1"
+  ],
+  "32": [
+   "0df3f81b5b7370cd",
+   "16f36c3fceed3dc6",
+   "4768f4101827a55d",
+   "4e9431a54869bfdf",
+   "edcd4973e4daaab1",
+   "ef95dd7de2efa92b"
+  ],
+  "48": [
+   "00f4dc5a65fb034c",
+   "1178c9a7714d22ac",
+   "17d10f70138f9bd8",
+   "56aa9400999f2df2",
+   "b63633896533be69",
+   "b70d3ed3df0e73ba"
+  ]
+ }
+}

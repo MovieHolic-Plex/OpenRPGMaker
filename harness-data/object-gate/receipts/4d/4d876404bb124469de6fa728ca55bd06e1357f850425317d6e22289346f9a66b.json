@@ -1,0 +1,139 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "4d876404bb124469de6fa728ca55bd06e1357f850425317d6e22289346f9a66b",
+ "width": 32,
+ "height": 16,
+ "kind": "low_furniture",
+ "name": "rope hammock slung between two posts",
+ "label": "sky-island/si-hammock",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "cloth/rope hammock sling",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat 2D side elevation (like a hanging banner); there is no visible interior basin or top surface where a person would lie.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 4331
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "hammock fabric",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat curved band in pure front elevation between two posts, showing no interior cavity or top surface where a person would lie.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3060
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "hammock fabric slung between posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat side elevation silhouette hanging between two posts; there is no visible interior trough, hollow, or foreshortened top surface showing where a person lies.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3206
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "hammock fabric slung between posts",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": false,
+    "opening_rows": 0,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The hammock is drawn as a flat curved band in side elevation between two vertical posts, showing no interior depression, hollow, or top surface from a 3/4 downward angle.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 3190
+  }
+ ],
+ "decidedAt": "2026-10-13T18:38:49.565Z",
+ "cells": {
+  "16": [
+   "08822f63a2cb114f",
+   "1f14115c73bc31b6"
+  ],
+  "24": [
+   "1e8bf2e825b6cedf",
+   "2af95d2a6ccb835d",
+   "30b1084f65957d7a",
+   "325155c460ff6c34",
+   "32dc706b0b138c7a",
+   "5f61ee020c7d5c17",
+   "618b597ad95681bb",
+   "7ac82eba20b69d3f",
+   "94ed9acd953db469",
+   "9796421735f36c6f",
+   "c518fab24bc74835",
+   "d1da169590c882bf"
+  ],
+  "32": [
+   "1a9afebcb10be19d",
+   "9ee008175a623044"
+  ],
+  "48": [
+   "2d29ee25f9d0e5d8",
+   "3e5b56f73e01be6e",
+   "9dfb14decc44d521",
+   "e4db92f71f4990ef",
+   "e8bb45de2d2eb546",
+   "f70294420101feb1"
+  ]
+ }
+}

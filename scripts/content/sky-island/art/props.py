@@ -209,20 +209,23 @@ def _(c):
 
 
 def fence(c, ori='h', end=None):
+    """3/4 울타리(굵은 널): 가로대 = 윗면 3행(밝음) + 앞면 2행, 말뚝 = 윗면 4행 네모 + 앞면. 남북 줄은 위에서 본 가로대 둘 + 말뚝 하나."""
+    def post(x, y0, w=5):
+        box3(c, x, y0, w, 4, 15 - y0 - 4, 'wood', tt=6, ft=3)
+        c.HL(x, 15, w, 'wood', 0)
+    def rail(x0, x1, y):
+        c.HL(x0, y, x1 - x0, 'wood', 4); c.HL(x0, y + 1, x1 - x0, 'wood', 6); c.HL(x0, y + 2, x1 - x0, 'wood', 6)
+        c.HL(x0, y + 3, x1 - x0, 'wood', 3); c.HL(x0, y + 4, x1 - x0, 'wood', 2)
     if ori == 'h':
-        xs = [1, 14] if end is None else ([7] if end else [])
-        x0 = 0 if end != 'w' else 7
-        x1 = 16 if end != 'e' else 9
-        for y in (6, 10):
-            c.HL(x0, y, x1 - x0, 'wood', 4); c.HL(x0, y + 1, x1 - x0, 'wood', 2)
-        for x in (xs if end is None else [7]):
-            c.R(x, 3, 3, 12, 'wood', 3); c.VL(x, 3, 12, 'wood', 5); c.VL(x + 2, 3, 12, 'wood', 1); c.HL(x, 3, 3, 'wood', 6); c.HL(x, 14, 3, 'wood', 0)
+        x0 = 0 if end != 'w' else 6
+        x1 = 16 if end != 'e' else 10
+        rail(x0, x1, 3); rail(x0, x1, 9)
+        if end is None: post(0, 1); post(11, 1)
+        else: post(5, 0, 6)
     else:
-        # 남북 울타리: 위에서 본 가로대 둘(왼쪽 밝음) + 말뚝 하나(윗면 보임)
-        for x, t in ((5, 5), (10, 3)):
-            c.R(x, 0, 2, 16, 'wood', t); c.VL(x + 1, 0, 16, 'wood', t - 2)
-        c.R(6, 3, 5, 3, 'wood', 6); c.HL(6, 3, 5, 'wood', 4)
-        c.R(6, 6, 5, 8, 'wood', 3); c.VL(6, 6, 8, 'wood', 4); c.VL(10, 6, 8, 'wood', 1); c.HL(6, 14, 5, 'wood', 0)
+        for x in (3, 9):
+            c.R(x, 0, 4, 16, 'wood', 6); c.VL(x, 0, 16, 'wood', 4); c.VL(x + 3, 0, 16, 'wood', 3)
+        box3(c, 4, 3, 8, 5, 7, 'wood', tt=6, ft=3); c.HL(4, 15, 8, 'wood', 0)
 
 
 A('fence-h', '나무 울타리(동서)', 1, 1, 'structure', ['울타리'], '밭·마당 둘레 동서 줄. 막힘. 문 앞·길 칸에는 놓지 않는다.', gate_name='wooden rail fence segment (east-west)')(lambda c: fence(c, 'h'))
@@ -231,40 +234,47 @@ A('fence-w', '울타리 서쪽 끝 기둥', 1, 1, 'structure', ['울타리'], '�
 A('fence-e', '울타리 동쪽 끝 기둥', 1, 1, 'structure', ['울타리'], '동서 줄 동쪽 끝.', gate_name='wooden fence end post')(lambda c: fence(c, 'h', 'e'))
 
 
-@A('lamppost', '등불 기둥', 1, 2, 'structure', ['등불', '길'], '길가·다리 머리·부두에. 아래 칸 막힘.', gate_name='iron street lantern post')
+@A('lamppost', '등불 기둥', 1, 2, 'column', ['등불', '길'], '길가·다리 머리·부두에. 아래 칸 막힘.', gate_name='street lamp post seen from above-front: wide flat square lid on top of the lantern (top surface clearly visible), glowing glass, round stone foot')
 def _(c):
-    c.R(5, 28, 7, 3, 'stone', 4); c.HL(5, 28, 7, 'stone', 6); c.HL(5, 30, 7, 'stone', 1)
-    c.R(7, 8, 3, 21, 'iron', 2); c.VL(7, 8, 21, 'iron', 4)
-    c.R(4, 1, 9, 2, 'iron', 3); c.HL(5, 0, 7, 'iron', 4)
-    c.R(4, 3, 9, 6, 'iron', 1)
-    c.R(5, 3, 7, 5, 'glow', 3); c.R(6, 4, 3, 2, 'glow', 4); c.VL(8, 3, 5, 'iron', 2)
-    c.HL(4, 8, 9, 'iron', 3); c.P(8, 9, 'brass', 4)
+    c.ell(8, 27, 7, 3.2, lambda x, y, dx, dy, d: ('stone', 6 if dy < -0.2 else 5) if d < 0.8 else ('stone', 4))
+    c.R(1, 27, 15, 3, 'stone', 3); c.HL(1, 29, 15, 'stone', 1)
+    c.ell(8, 27, 7, 3.2, lambda x, y, dx, dy, d: ('stone', 6 if dy < -0.2 else 5) if dy < 0 else None)
+    c.R(7, 13, 3, 14, 'iron', 2); c.VL(7, 13, 14, 'iron', 4)
+    box3(c, 2, 0, 13, 5, 2, 'iron', tt=5, ft=2)                  # 넓은 뚜껑(윗면 5행)
+    c.R(4, 7, 9, 6, 'iron', 1); c.R(5, 7, 7, 5, 'glow', 3); c.R(6, 8, 3, 2, 'glow', 4); c.VL(8, 7, 5, 'iron', 2)
+    c.HL(3, 13, 11, 'iron', 3)
 
 
-@A('banner', '깃발 기둥', 1, 3, 'structure', ['깃발', '광장'], '광장 모퉁이·신전 계단 양옆에 짝으로. 아래 칸 막힘.', gate_name='tall pole with hanging blue cloth banner')
+@A('banner', '깃발 기둥', 1, 3, 'column', ['깃발', '광장'], '광장 모퉁이·신전 계단 양옆에 짝으로. 아래 칸 막힘.', gate_name='banner pole seen from above-front: flat square brass cap on top (top surface visible), square stone base with flat top, hanging cloth')
 def _(c):
-    c.R(4, 44, 8, 3, 'stone', 4); c.HL(4, 44, 8, 'stone', 6); c.HL(4, 46, 8, 'stone', 1)
-    c.R(3, 2, 2, 43, 'wood', 3); c.VL(3, 2, 43, 'wood', 5)
-    c.R(2, 1, 4, 2, 'brass', 5)
-    c.HL(4, 5, 10, 'wood', 2)
-    for y in range(6, 30):
-        for x in range(5, 14):
-            t = 3 if x < 8 else 2 if x < 12 else 1
-            if y > 25 and abs(x - 9) < (y - 25): continue
-            c.P(x + (1 if (y // 6) % 2 else 0) * 0, y, 'clothb', t)
-    for y in range(10, 22): c.P(9, y, 'gold', 3 if y % 2 else 4)
-    c.HL(6, 9, 7, 'gold', 3)
+    box3(c, 1, 38, 14, 6, 3, 'stone', tt=6, ft=3)
+    c.HL(1, 47, 14, 'stone', 0)
+    c.R(3, 6, 3, 36, 'wood', 3); c.VL(3, 6, 36, 'wood', 5); c.VL(5, 6, 36, 'wood', 1)
+    flat_cap_pole(c, 0, 0, 9)
+    c.R(6, 7, 9, 2, 'wood', 4); c.HL(6, 8, 9, 'wood', 1)
+    for y in range(9, 33):
+        for x in range(6, 15):
+            t = 3 if x < 9 else 2 if x < 13 else 1
+            if y > 28 and abs(x - 10) < (y - 28): continue
+            c.P(x, y, 'clothb', t)
+    for y in range(12, 25): c.P(10, y, 'gold', 3 if y % 2 else 4)
+    c.HL(7, 11, 7, 'gold', 3)
 
 
-@A('signpost', '갈림길 표지(그림 판)', 1, 2, 'structure', ['길', '표지'], '길 갈림·다리 머리 옆. 글자 없음(화살 그림만). 아래 칸 막힘.', gate_name='wooden direction signpost with arrow boards')
+@A('signpost', '갈림길 표지(그림 판)', 1, 2, 'column', ['길', '표지'], '길 갈림·다리 머리 옆. 글자 없음(화살 그림만). 아래 칸 막힘.', gate_name='wooden signpost seen from above-front: square post with visible cut top, arrow boards with visible top edges, stone base')
 def _(c):
-    c.R(6, 6, 3, 25, 'wood', 3); c.VL(6, 6, 25, 'wood', 5); c.HL(5, 31, 5, 'wood', 0)
-    for (y, d) in ((7, 1), (14, -1)):
+    c.ell(8, 28, 6.5, 2.8, lambda x, y, dx, dy, d: ('stone', 6 if dy < 0 else 5) if d < 0.75 else ('stone', 4))
+    c.R(2, 28, 13, 3, 'stone', 3); c.HL(2, 30, 13, 'stone', 1)
+    c.ell(8, 28, 6.5, 2.8, lambda x, y, dx, dy, d: ('stone', 6 if dy < 0 else 5) if dy < 0 else None)
+    c.R(6, 4, 4, 24, 'wood', 3); c.VL(6, 4, 24, 'wood', 4); c.VL(9, 4, 24, 'wood', 1)
+    c.R(6, 1, 4, 3, 'wood', 6); c.HL(6, 1, 4, 'wood', 4)                     # 잘린 윗면
+    for (y, d) in ((7, 1), (15, -1)):
         x0 = 1 if d > 0 else 2
-        c.R(x0, y, 13, 5, 'plank', 4); c.HL(x0, y, 13, 'plank', 5); c.HL(x0, y + 4, 13, 'plank', 1)
+        c.R(x0, y, 13, 2, 'plank', 5); c.HL(x0, y, 13, 'plank', 4)            # 판 윗면
+        c.R(x0, y + 2, 13, 4, 'plank', 3); c.HL(x0, y + 5, 13, 'plank', 1)
         tip = x0 + 13 if d > 0 else x0 - 1
-        c.VL(tip, y + 1, 3, 'plank', 3); c.P(tip + d, y + 2, 'plank', 2)
-        c.HL(x0 + 3, y + 2, 7, 'wood', 1); c.P(x0 + (9 if d > 0 else 3), y + 1, 'wood', 1); c.P(x0 + (9 if d > 0 else 3), y + 3, 'wood', 1)
+        c.VL(tip, y + 1, 4, 'plank', 3); c.P(tip + d, y + 3, 'plank', 2)
+        c.HL(x0 + 3, y + 3, 7, 'wood', 1); c.P(x0 + (9 if d > 0 else 3), y + 2, 'wood', 1); c.P(x0 + (9 if d > 0 else 3), y + 4, 'wood', 1)
 
 
 @A('bench', '나무 벤치', 2, 1, 'structure', ['의자', '광장'], '광장 가장자리·섬 끝 전망 자리(가장자리 안쪽 1칸). 막힘.', gate_name='wooden park bench seen from above-front')
@@ -277,18 +287,19 @@ def _(c):
     c.VL(2, 1, 9, 'wood', 1); c.VL(29, 1, 9, 'wood', 0)
 
 
-@A('barrel', '나무 통', 1, 1, 'structure', ['통', '짐'], '집 벽 옆·부두 짐 자리에 1~3개 무리. 막힘.', gate_name='wooden barrel with iron hoops')
+@A('barrel', '나무 통', 1, 1, 'round_body', ['통', '짐'], '집 벽 옆·부두 짐 자리에 1~3개 무리. 막힘.', gate_name='wooden barrel seen from above-front: large oval lid with planks clearly visible on top, iron hoops')
 def _(c):
-    c.ell(8, 4.5, 6, 2.6, lambda x, y, dx, dy, d: ('wood', 5 if d < 0.55 else 3))
-    c.ell(8, 4.5, 6, 2.6, lambda x, y, dx, dy, d: ('wood', 2) if d > 0.75 else None)
-    for y in range(5, 15):
+    for y in range(6, 15):
         for x in range(2, 15):
             u = (x - 2) / 12
             t = 5 if u < 0.2 else 4 if u < 0.5 else 3 if u < 0.8 else 2
             if (x - 2) % 3 == 2: t -= 1
             c.P(x, y, 'wood', t)
-    for y in (6, 12): c.HL(2, y, 13, 'iron', 2); c.P(3, y, 'iron', 4)
-    c.HL(3, 15, 11, 'wood', 0); c.VL(2, 5, 10, 'wood', 1); c.VL(14, 5, 10, 'wood', 0)
+    for y in (9, 13): c.HL(2, y, 13, 'iron', 2); c.P(3, y, 'iron', 4)
+    c.HL(3, 15, 11, 'wood', 0); c.VL(2, 6, 9, 'wood', 1); c.VL(14, 6, 9, 'wood', 0)
+    c.ell(8.5, 5, 6.5, 4.2, lambda x, y, dx, dy, d: ('wood', 2) if d > 0.62 else ('plank', 5 if dy < -0.2 else 4))
+    c.ell(8.5, 5, 6.5, 4.2, lambda x, y, dx, dy, d: ('iron', 3) if d > 0.86 else None)
+    for x in (7, 10): c.VL(x, 2, 6, 'plank', 2)
 
 
 @A('crate', '나무 상자', 1, 1, 'structure', ['상자', '짐'], '부두·가게 앞. 막힘.', gate_name='wooden crate seen from above-front')
@@ -308,20 +319,17 @@ def _(c):
     c.R(23, 12, 6, 4, 'clothr', 3); c.HL(23, 12, 6, 'clothr', 4)
 
 
-@A('sacks', '곡식 자루', 1, 1, 'organic', ['자루', '짐'], '방앗간·부두. 막힘.', gate_name='pile of grain sacks')
+@A('haybale', '건초 더미', 1, 1, 'round_body', ['밭', '건초'], '밭 옆·풍차 앞. 막힘.', gate_name='upright round hay bale seen from above-front: oval top with spiral straw clearly visible')
 def _(c):
-    c.HL(1, 15, 14, 'cream', 1)
-    blob(c, [(5, 10, 4.5), (11, 10.5, 4.5)], 'cream', 3, 5, rim=1, grain=0.3)
-    blob(c, [(8, 6, 4.5)], 'cream', 4, 6, rim=1, grain=0.3)
-    c.HL(7, 2, 3, 'wood', 2); c.P(4, 6, 'wood', 2); c.P(12, 6, 'wood', 2)
-
-
-@A('haybale', '건초 더미', 1, 1, 'organic', ['밭', '건초'], '밭 옆·풍차 앞. 막힘.', gate_name='round hay bale')
-def _(c):
-    c.ell(8, 9.5, 7, 6, lambda x, y, dx, dy, d: ('gold', 4 if (dx < -0.2 and dy < 0) else 3 if dy < 0.3 else 2) if not (rnd(x, y, 3) < 0.15) else ('gold', 1))
-    c.ell(8, 9.5, 7, 6, lambda x, y, dx, dy, d: ('gold', 1) if d > 0.8 else None)
-    for x in range(2, 15, 3): c.VL(x, 5, 9, 'gold', 2)
-    c.HL(3, 15, 10, 'gold', 0)
+    for y in range(6, 15):
+        for x in range(1, 16):
+            u = (x - 1) / 14
+            t = 4 if u < 0.25 else 3 if u < 0.7 else 2
+            if rnd(x, y // 2, 3) < 0.18: t -= 1
+            c.P(x, y, 'gold', t)
+    c.HL(2, 15, 13, 'gold', 0); c.VL(1, 6, 9, 'gold', 1); c.VL(15, 6, 9, 'gold', 0)
+    c.ell(8, 5.5, 7, 4.5, lambda x, y, dx, dy, d: ('gold', 4 if (int(math.sqrt(d) * 4) % 2) else 3) if d < 0.85 else ('gold', 2))
+    c.P(8, 5, 'gold', 2); c.HL(1, 10, 15, 'roofr', 2)
 
 
 def crop(c, kind, s=1):
@@ -348,28 +356,33 @@ A('crop-cabbage', '밭 양배추', 1, 1, 'organic', ['밭', '작물'], 'field �
 A('crop-wheat', '밭 밀', 1, 1, 'organic', ['밭', '작물'], 'field 칸 위. 풍차 옆 밭.', pc='solid', gate_name='rows of ripe wheat (organic)')(lambda c: crop(c, 'wheat'))
 
 
-@A('cart', '짐수레', 2, 2, 'structure', ['수레', '짐', '부두'], '부두 길·방앗간 앞. 아래 두 칸 막힘.', gate_name='wooden hand cart with large wheels and cargo')
+@A('cart', '짐수레', 2, 2, 'structure', ['수레', '짐', '부두'], '부두 길·방앗간 앞. 아래 두 칸 막힘.', gate_name='wooden hand cart seen from above-front: open cargo bed with floor boards and crates visible from above, big wheels')
 def _(c):
-    box3(c, 3, 8, 24, 6, 7, 'plank', tt=5, ft=3)
-    for x in range(4, 27, 5): c.VL(x, 14, 7, 'plank', 2)
-    blob(c, [(10, 8, 4), (16, 7, 4.5)], 'cream', 3, 8, rim=1, grain=0.3)
-    box3(c, 19, 2, 7, 3, 5, 'plank', tt=5, ft=3)
+    # 짐칸: 테두리 윗면 + 안쪽 바닥(위에서 보임) + 앞판
+    c.R(2, 4, 26, 14, 'plank', 5)
+    for y in range(6, 16):
+        for x in range(4, 26):
+            c.P(x, y, 'plank', 3 if (y - 6) % 3 == 2 else 4)
+    c.HL(2, 4, 26, 'plank', 3); c.VL(2, 4, 14, 'plank', 5); c.VL(27, 4, 14, 'plank', 2)
+    c.R(2, 18, 26, 6, 'wood', 3); c.HL(2, 18, 26, 'wood', 5); c.HL(2, 23, 26, 'wood', 1)
+    for x in range(4, 27, 6): c.VL(x, 19, 4, 'wood', 2)
+    box3(c, 6, 5, 8, 4, 4, 'plank', tt=6, ft=3); box3(c, 16, 7, 7, 4, 4, 'plank', tt=5, ft=2)
+    blob(c, [(23, 13, 2.5)], 'cream', 4, 8, rim=1, grain=0.2)
     for wx in (7, 23):
-        c.ell(wx, 24, 5, 6, lambda x, y, dx, dy, d: ('wood', 4 if dx + dy < -0.6 else 2) if d > 0.6 else None)
-        c.ell(wx, 24, 1.5, 1.5, lambda x, y, dx, dy, d: ('iron', 3))
-        c.line(wx - 4, 24, wx + 4, 24, 'wood', 3); c.line(wx, 19, wx, 29, 'wood', 3)
-    c.line(27, 18, 31, 26, 'wood', 3); c.HL(4, 31, 24, 'wood', 0)
+        c.ell(wx, 25, 4.5, 5.5, lambda x, y, dx, dy, d: ('wood', 4 if dx + dy < -0.6 else 2) if d > 0.55 else None)
+        c.ell(wx, 25, 1.5, 1.5, lambda x, y, dx, dy, d: ('iron', 3))
+        c.line(wx - 3, 25, wx + 3, 25, 'wood', 3); c.line(wx, 21, wx, 29, 'wood', 3)
+    c.line(28, 20, 31, 27, 'wood', 3); c.HL(4, 31, 24, 'wood', 0)
 
 
 # ═══════════════════════ 부두·비공정 ═══════════════════════
-@A('bollard', '계류 말뚝', 1, 1, 'structure', ['부두', '비공정', '밧줄'], '잔교 가장자리 칸 위(위층). 비공정 옆에 2~3개. 막힘.', gate_name='iron mooring bollard with rope wound on it')
+@A('bollard', '계류 말뚝', 1, 1, 'round_body', ['부두', '비공정', '밧줄'], '잔교 가장자리 칸 위(위층). 비공정 옆에 2~3개. 막힘.', gate_name='iron mooring bollard seen from above-front: big flat oval cap top, rope wound around')
 def _(c):
-    c.ell(8, 13, 6, 2.5, lambda x, y, dx, dy, d: ('iron', 1))
-    c.R(4, 6, 9, 8, 'iron', 3); c.VL(4, 6, 8, 'iron', 4); c.VL(12, 6, 8, 'iron', 1)
-    c.ell(8.5, 5, 6, 2.5, lambda x, y, dx, dy, d: ('iron', 5 if dy < 0 else 4))
-    c.ell(8.5, 5, 3, 1.2, lambda x, y, dx, dy, d: ('iron', 3))
-    for y in (9, 11): c.HL(4, y, 9, 'gold', 3); c.P(4, y, 'gold', 4)
-    c.line(12, 10, 15, 13, 'gold', 2)
+    c.R(4, 8, 9, 7, 'iron', 3); c.VL(4, 8, 7, 'iron', 4); c.VL(12, 8, 7, 'iron', 1); c.HL(4, 15, 9, 'iron', 0)
+    for y in (10, 12): c.HL(4, y, 9, 'gold', 3); c.P(4, y, 'gold', 4)
+    c.line(12, 11, 15, 14, 'gold', 2)
+    c.ell(8.5, 5.5, 7.5, 4.5, lambda x, y, dx, dy, d: ('iron', 5 if dy < -0.15 else 4) if d < 0.7 else ('iron', 3) if dy < 0.3 else ('iron', 2))
+    c.ell(8.5, 5.5, 3, 1.6, lambda x, y, dx, dy, d: ('iron', 6) if dy < 0 else None)
 
 
 @A('ropecoil', '사리 감은 밧줄', 1, 1, 'flat', ['부두', '밧줄'], '잔교 위 덧그림(걷는다).', pc='flat', gate_name='coiled rope lying on the deck (flat decal)')
@@ -379,77 +392,87 @@ def _(c):
     c.P(8, 9, 'gold', 1); c.line(13, 10, 15, 14, 'gold', 3)
 
 
-@A('windsock', '바람 자루 기둥', 1, 2, 'structure', ['부두', '바람'], '부두 끝·비공정 정박 칸 옆. 아래 칸 막힘.', gate_name='striped windsock on a pole')
+@A('windsock', '바람 자루 기둥', 1, 2, 'column', ['부두', '바람'], '부두 끝·비공정 정박 칸 옆. 아래 칸 막힘.', gate_name='windsock pole seen from above-front: flat square iron cap on top (top surface visible), square stone base block with a deep flat top, striped sock')
 def _(c):
-    c.R(5, 28, 6, 3, 'stone', 4); c.HL(5, 28, 6, 'stone', 6); c.HL(5, 30, 6, 'stone', 1)
-    c.R(6, 3, 2, 26, 'iron', 3); c.VL(6, 3, 26, 'iron', 4); c.P(6, 2, 'brass', 5)
-    for x in range(8, 16):
-        u = (x - 8) / 7
-        top = 4 + round(u * 2); bot = 11 - round(u * 2)
+    box3(c, 1, 21, 14, 7, 3, 'stone', tt=6, ft=3); c.HL(1, 31, 14, 'stone', 0)
+    c.R(6, 23, 4, 2, 'stone', 3)
+    c.R(6, 6, 3, 18, 'iron', 3); c.VL(6, 6, 18, 'iron', 4)
+    box3(c, 2, 0, 11, 5, 2, 'iron', tt=5, ft=2)
+    for x in range(9, 16):
+        u = (x - 9) / 6
+        top = 8 + round(u * 2); bot = 15 - round(u * 2)
         for y in range(top, bot):
-            stripe = ((x - 8) // 2) % 2
-            c.P(x, y, 'clothr' if stripe == 0 else 'cream', (3 if y < 7 else 2) if stripe == 0 else (5 if y < 7 else 4))
-        c.P(x, bot, 'clothr' if ((x - 8) // 2) % 2 == 0 else 'cream', 1)
+            stripe = ((x - 9) // 2) % 2
+            c.P(x, y, 'clothr' if stripe == 0 else 'cream', (3 if y < 11 else 2) if stripe == 0 else (5 if y < 11 else 4))
+        c.P(x, bot, 'clothr' if ((x - 9) // 2) % 2 == 0 else 'cream', 1)
 
 
 def airship(c):
-    """정박한 비공정(8×6): 나무 선체(뱃전 윗면 보임) + 위 기낭(천, 이음선) + 프로펠러·꼬리 날개 + 갑판 위 돛대. 선체 아래는 투명(잔교·하늘 위에 뜸 — 계류 밧줄로 말뚝에 잇는다)."""
-    W, H = 128, 96
-    # 기낭(가로 긴 타원, 위가 밝다)
-    c.ell(62, 25, 50, 20, lambda x, y, dx, dy, d: ('cream', 6 if (dx < -0.3 and dy < -0.3) else 5 if dy < -0.05 else 4 if dy < 0.45 else 3 if d < 0.9 else 2))
-    for k in range(-4, 5):
-        x0 = 62 + k * 10
-        for y in range(6, 45):
-            dx = (x0 + 0.5 - 62) / 50; dy = (y + 0.5 - 25) / 20
-            if dx * dx + dy * dy <= 1:
-                g = c.get(x0, y)
-                if g: c.P(x0, y, 'cream', max(1, g[1] - 2))
-    c.ell(62, 25, 50, 20, lambda x, y, dx, dy, d: ('cream', 1) if d > 0.93 else None)
-    c.HL(20, 25, 84, 'clothr', 3); c.HL(20, 26, 84, 'clothr', 2)
+    """정박한 비공정(8×6) — 3/4 탑뷰: 큰 갑판 윗면(뱃머리 서쪽, 널이 길이 방향) + 그 아래 뱃전 옆면 띠 + 갑판 뒤(북쪽) 위로 뜬 기낭.
+    선체 아래는 투명(잔교·하늘 위에 뜬다 — 계류 밧줄로 말뚝에 잇는다)."""
+    # 기낭: 위가 밝은 타원체, 세로 이음선이 앞으로 휜다, 아래 테 어둡게
+    cx, cy, rx, ry = 66, 22, 46, 17
+    for y in range(cy - ry, cy + ry + 1):
+        for x in range(cx - rx, cx + rx + 1):
+            dx = (x + 0.5 - cx) / rx; dy = (y + 0.5 - cy) / ry
+            d = dx * dx + dy * dy
+            if d > 1: continue
+            l = -(dx * -0.45 + dy * -0.85) * 0.8 + math.sqrt(1 - d) * 0.5
+            t = 6 if l > 0.85 else 5 if l > 0.55 else 4 if l > 0.2 else 3 if l > -0.15 else 2
+            seam = abs(((dx * 4.5) / max(0.25, math.sqrt(1 - dy * dy))) % 1 - 0.5) > 0.46
+            if seam and abs(dx) < 0.92: t -= 1
+            c.P(x, y, 'cream', t)
+    c.ell(cx, cy, rx, ry, lambda x, y, dx, dy, d: ('cream', 1) if d > 0.92 and dy > -0.2 else None)
+    c.HL(cx - rx + 6, cy + 6, 2 * rx - 12, 'clothr', 2)
     # 꼬리 날개
-    c.poly([(108, 14), (122, 6), (124, 26), (108, 30)], lambda x, y: ('clothr', 3 if y < 18 else 2))
-    c.line(108, 14, 122, 6, 'clothr', 4)
-    # 매단 줄(기낭 → 선체)
-    for x in (34, 50, 74, 90): c.line(x, 42, x + (2 if x < 62 else -2), 56, 'wood', 2)
-    # 선체: 갑판 윗면(밝은 판, 널) + 뱃전 + 옆면(어두운 널) + 뱃머리(왼쪽 뾰족)
-    deck_top, deck_bot = 54, 66
-    for y in range(deck_top, deck_bot):
-        u = (y - deck_top) / (deck_bot - deck_top)
-        xl = 18 + int(10 * (1 - u)) if False else 14 + int(6 * abs(u - 0.5) * 2)
-        xr = 110
-        for x in range(xl, xr):
-            t = 5 if (y - deck_top) % 3 else 4
-            if (x + (y // 3) * 5) % 13 == 0: t = 3
+    c.poly([(110, 16), (124, 8), (126, 28), (110, 30)], lambda x, y: ('clothr', 4 if y < 14 else 3 if y < 22 else 2))
+    c.line(110, 16, 124, 8, 'clothr', 1)
+    # 매단 줄
+    for x in (34, 52, 80, 98): c.line(x, 36, x + (3 if x < 66 else -3), 50, 'wood', 2)
+    # 갑판 윗면(배 모양 — 뱃머리 서쪽 뾰족). 위·아래 테는 뱃전
+    top, bot = 46, 72
+    for y in range(top, bot):
+        v = (y - (top + bot) / 2) / ((bot - top) / 2)
+        bow = 6 + int(14 * abs(v) ** 1.6)
+        stern = 120 - int(5 * abs(v) ** 2)
+        for x in range(bow, stern):
+            row = (y - top) // 3
+            t = 5 if (y - top) % 3 else 4
+            if (x + row * 11) % 17 == 0: t = 3
             c.P(x, y, 'plank', t)
-    c.HL(14, deck_top - 1, 97, 'wood', 4); c.HL(14, deck_top - 2, 97, 'wood', 2)
-    # 갑판 위 물건: 키, 상자, 돛대
-    c.R(92, 50, 4, 10, 'wood', 3); c.ell(94, 50, 4, 4, lambda x, y, dx, dy, d: ('wood', 2) if d > 0.5 else None)
-    c.R(40, 56, 8, 6, 'plank', 3); c.HL(40, 56, 8, 'plank', 5)
-    c.R(54, 44, 3, 18, 'wood', 3); c.VL(54, 44, 18, 'wood', 5)
-    # 옆면(남쪽 뱃전 벽) — 뒤로 갈수록 둥글게 좁아짐
-    for y in range(deck_bot, 88):
-        u = (y - deck_bot) / 22
-        xl = 14 + int(26 * u ** 1.6); xr = 110 - int(14 * u ** 1.4)
+        c.P(bow, y, 'wood', 2); c.P(bow + 1, y, 'wood', 4); c.P(stern - 1, y, 'wood', 2); c.P(stern - 2, y, 'wood', 3)
+    for x in range(6, 120):
+        ys = [y for y in range(top, bot) if c.get(x, y) and c.get(x, y)[0] == 'plank']
+        if ys:
+            c.P(x, ys[0], 'wood', 3); c.P(x, ys[0] + 1, 'wood', 4)       # 뒤 뱃전 윗면
+            c.P(x, ys[-1], 'wood', 5); c.P(x, ys[-1] - 1, 'wood', 4)     # 앞 뱃전 윗면(밝음)
+    # 갑판 물건: 승강구, 상자, 키
+    box3(c, 44, 54, 14, 4, 3, 'wood', tt=4, ft=2); c.R(46, 55, 10, 2, 'sumi', 1)
+    box3(c, 66, 52, 8, 4, 4, 'plank', tt=6, ft=3); box3(c, 75, 55, 7, 4, 3, 'plank', tt=5, ft=2)
+    c.R(104, 52, 3, 10, 'wood', 3); c.ell(105.5, 52, 4.5, 4.5, lambda x, y, dx, dy, d: ('wood', 3) if d > 0.55 else None)
+    c.ell(105.5, 52, 1.5, 1.5, lambda x, y, dx, dy, d: ('brass', 5))
+    c.R(26, 58, 6, 6, 'gold', 3); c.HL(26, 58, 6, 'gold', 5)
+    # 뱃전 옆면(남쪽) — 갑판 앞 테 아래 띠, 아래로 좁아짐
+    for y in range(bot, bot + 14):
+        u = (y - bot) / 13
+        xl = 20 + int(22 * u ** 1.5); xr = 118 - int(16 * u ** 1.3)
         for x in range(xl, xr):
-            t = 3 if (y - deck_bot) % 4 else 2
-            if u > 0.75: t -= 1
+            t = 3 if (y - bot) % 4 else 2
+            if u > 0.7: t -= 1
             c.P(x, y, 'wood', t)
         c.P(xl, y, 'wood', 1); c.P(xr - 1, y, 'wood', 0)
-    c.HL(14, deck_bot, 96, 'brass', 4); c.HL(14, deck_bot + 1, 96, 'brass', 2)
-    # 둥근 창 3
-    for x in (40, 60, 80): c.ell(x, 74, 2.6, 2.6, lambda xx, yy, dx, dy, d: ('crystal', 4 if dy < 0 else 2) if d < 0.5 else ('brass', 3))
+    c.HL(20, bot, 98, 'brass', 4)
+    for x in (44, 64, 84): c.ell(x, bot + 5, 2.6, 2.6, lambda xx, yy, dx, dy, d: ('crystal', 4 if dy < 0 else 2) if d < 0.5 else ('brass', 3))
+    c.HL(44, bot + 14, 52, 'wood', 0)
     # 뱃머리 장식
-    c.poly([(14, 54), (4, 58), (14, 70)], lambda x, y: ('brass', 4 if y < 60 else 2))
-    # 옆 프로펠러(선체 오른쪽 뒤)
-    c.R(110, 60, 6, 6, 'iron', 2); c.HL(110, 60, 6, 'iron', 4)
-    c.ell(120, 63, 3, 11, lambda x, y, dx, dy, d: ('cream', 5 if dx < 0 else 3) if d > 0.25 else ('brass', 4))
-    c.line(118, 52, 122, 74, 'cream', 4)
-    # 용골 아래 끝선
-    c.HL(44, 88, 50, 'wood', 0)
+    c.poly([(8, 56), (0, 59), (8, 63)], lambda x, y: ('brass', 5 if y < 59 else 3))
+    # 뒤 프로펠러(옆, 남쪽 뒤)
+    c.R(116, 72, 5, 5, 'iron', 2); c.HL(116, 72, 5, 'iron', 4)
+    c.ell(124, 74, 3, 10, lambda x, y, dx, dy, d: ('cream', 5 if dx < 0 else 3) if d > 0.25 else ('brass', 4))
 
 
 A('airship', '정박한 비공정', 8, 6, 'structure', ['비공정', '부두', '배'], '잔교 남쪽 하늘에 선체가 오도록(갑판 줄이 잔교 남쪽 가장자리 바로 아래). 칸 전체 막힘. 둘레에 계류 말뚝 2~3.',
-  gate_name='docked airship: wooden hull with deck seen from above, cloth gas balloon on top, side propeller')(airship)
+  gate_name='docked airship seen from above-front: large wooden deck seen from above with hatch and crates, hull side band below, gas balloon floating above the back of the deck')(airship)
 
 
 # ═══════════════════════ 섬 밑면·하늘 장식 ═══════════════════════
@@ -466,25 +489,21 @@ def _(c):
         c.P(xx, ln, 'wood', 1)
 
 
-@A('chain-hang', '늘어진 사슬과 닻돌', 1, 3, 'structure', ['섬 밑면', '사슬'], '섬 밑면 위 덧그림 — 섬을 잡아 두는 사슬 끝에 닻돌. 막힘.', pc='solid',
-   gate_name='iron chain hanging from an island with a stone anchor weight')
+@A('chain-hang', '늘어진 사슬과 닻돌', 1, 3, 'other', ['섬 밑면', '사슬'], '섬 밑면 위 덧그림 — 섬을 잡아 두는 사슬 끝에 닻돌. 막힘.', pc='solid',
+   gate_name='iron chain hanging from an island: iron ring plate at the top and a square stone anchor weight with a visible flat top at the bottom')
 def _(c):
-    for y in range(0, 34, 4):
-        o = 1 if (y // 4) % 2 else 0
-        if o: c.R(7, y, 2, 4, 'iron', 3); c.VL(7, y, 4, 'iron', 4)
+    c.R(3, 0, 10, 4, 'iron', 4); c.HL(3, 0, 10, 'iron', 5); c.HL(3, 3, 10, 'iron', 1)
+    c.ell(8, 2, 2, 1.3, lambda x, y, dx, dy, d: ('iron', 2))
+    for y in range(4, 30, 4):
+        o = (y // 4) % 2
+        if o: c.R(7, y, 2, 4, 'iron', 3); c.VL(7, y, 4, 'iron', 5)
         else:
-            c.R(6, y, 4, 4, 'iron', 2); c.R(7, y + 1, 2, 2, None, 0) if False else None
             c.HL(6, y, 4, 'iron', 4); c.HL(6, y + 3, 4, 'iron', 1); c.VL(6, y, 4, 'iron', 3); c.VL(9, y, 4, 'iron', 1)
             c.P(7, y + 1, 'sky', 4); c.P(8, y + 1, 'sky', 4); c.P(7, y + 2, 'sky', 3); c.P(8, y + 2, 'sky', 3)
-    # 닻돌(깎은 돌, 윗면 보임)
-    c.R(2, 34, 12, 3, 'stone', 5); c.HL(2, 34, 12, 'stone', 6)
-    for y in range(37, 46):
-        u = (y - 37) / 8
-        hw = 6 - u * 3
-        for x in range(int(8 - hw), int(8 + hw)):
-            v = (x - (8 - hw)) / (2 * hw)
-            c.P(x, y, 'stone', 4 if v < 0.35 else 3 if v < 0.7 else 2)
-    c.HL(5, 46, 6, 'stone', 1); c.ell(8, 40, 1.5, 1.5, lambda x, y, dx, dy, d: ('crystal', 4))
+    box3(c, 2, 30, 12, 6, 9, 'stone', tt=6, ft=3)
+    c.ell(8, 32.5, 2, 1.2, lambda x, y, dx, dy, d: ('iron', 2))
+    c.ell(8, 41, 1.5, 1.5, lambda x, y, dx, dy, d: ('crystal', 4))
+    c.HL(2, 45, 12, 'stone', 0)
 
 
 def puff(c, clumps, s):
@@ -506,16 +525,15 @@ A('cloud-puff-l', '하늘 구름 덩이(큰)', 4, 2, 'organic', ['구름', '하�
 
 
 # ═══════════════════════ 신전·광장 기물 ═══════════════════════
-@A('statue', '날개 석상', 1, 2, 'structure', ['석상', '신전'], '신전 계단 양옆·광장 가운데. 아래 칸 막힘.', gate_name='stone statue of a winged bird on a pedestal')
+@A('statue', '날개 석상', 1, 2, 'figure', ['석상', '신전'], '신전 계단 양옆·광장 가운데. 아래 칸 막힘.', gate_name='stone statue of a winged bird standing on a wide square plinth whose flat top is clearly visible')
 def _(c):
-    box3(c, 2, 20, 12, 4, 8, 'stone', tt=6, ft=3)
-    c.HL(2, 31, 12, 'stone', 0)
-    # 새(날개 편 돌새) — 사람 아님
-    c.poly([(6, 15), (0, 7), (1, 16), (6, 20)], lambda x, y: ('stone', 5 if y < 13 else 4))
-    c.poly([(10, 15), (16, 7), (15, 16), (10, 20)], lambda x, y: ('stone', 3 if y < 13 else 2))
-    blob(c, [(8, 16, 3.5), (8, 11, 2.6)], 'stone', 4, 3, rim=2, grain=0.2)
-    c.R(6, 19, 5, 2, 'stone', 3)
-    c.P(9, 10, 'sumi', 1); c.P(10, 11, 'gold', 3)
+    box3(c, 0, 18, 16, 7, 6, 'stone', tt=6, ft=3)
+    c.HL(0, 31, 16, 'stone', 0); c.HL(0, 30, 16, 'stone', 1)
+    c.poly([(6, 12), (1, 4), (2, 13), (6, 17)], lambda x, y: ('stone', 5 if y < 10 else 4))
+    c.poly([(10, 12), (15, 4), (14, 13), (10, 17)], lambda x, y: ('stone', 3 if y < 10 else 2))
+    blob(c, [(8, 14, 3.2), (8, 8, 2.6)], 'stone', 4, 3, rim=2, grain=0.2)
+    c.R(6, 17, 5, 3, 'stone', 3); c.HL(5, 20, 7, 'stone', 4)
+    c.P(9, 7, 'sumi', 1); c.P(10, 8, 'gold', 3)
 
 
 @A('stele', '비석(문양)', 1, 2, 'structure', ['비석', '신전'], '신전 길가. 글자 없음 — 별 문양만. 아래 칸 막힘.', gate_name='carved stone stele with star emblem')
@@ -528,32 +546,36 @@ def _(c):
     for y in (20, 23): c.HL(5, y, 6, 'stone', 2)
 
 
-@A('birdbath', '새 물그릇', 1, 1, 'structure', ['광장', '정원'], '정원·집 마당. 막힘.', gate_name='small stone birdbath basin')
+@A('birdbath', '새 물그릇', 1, 1, 'container', ['광장', '정원'], '정원·집 마당. 막힘.', gate_name='stone birdbath seen from above: wide round bowl with water clearly visible inside, short pedestal')
 def _(c):
-    c.ell(8, 5, 7, 3, lambda x, y, dx, dy, d: ('stone', 6) if d > 0.45 else ('water', 4 if dy < 0 else 3))
-    c.R(2, 5, 13, 3, 'stone', 4); c.HL(2, 7, 13, 'stone', 2)
-    c.R(6, 8, 4, 5, 'stone', 3); c.VL(6, 8, 5, 'stone', 5)
-    c.R(4, 13, 8, 2, 'stone', 4); c.HL(4, 15, 8, 'stone', 1)
+    c.R(6, 10, 4, 3, 'stone', 3); c.VL(6, 10, 3, 'stone', 5)
+    c.ell(8, 14, 5, 1.8, lambda x, y, dx, dy, d: ('stone', 4 if dy < 0 else 2))
+    c.ell(8, 6, 7.5, 5, lambda x, y, dx, dy, d: ('stone', 6 if dy < 0 else 4) if d > 0.55 else ('water', 5 if dy < -0.3 else 4 if dy < 0.2 else 3))
+    c.ell(8, 6, 7.5, 5, lambda x, y, dx, dy, d: ('stone', 3) if d > 0.85 and dy > 0.3 else None)
+    c.P(6, 5, 'water', 6)
 
 
-@A('beehive', '벌통', 1, 1, 'structure', ['정원', '밭'], '꽃밭·밭 옆. 막힘.', gate_name='wooden beehive box on legs')
+@A('beehive', '벌통', 1, 1, 'box', ['정원', '밭'], '꽃밭·밭 옆. 막힘.', gate_name='wooden beehive box seen from above-front: large flat roof lid on top clearly visible, entrance slot')
 def _(c):
-    box3(c, 2, 1, 12, 3, 4, 'roofr', tt=5, ft=3)
-    box3(c, 3, 8, 10, 1, 5, 'gold', tt=4, ft=3)
-    c.HL(3, 10, 10, 'gold', 2); c.R(7, 11, 3, 1, 'sumi', 1)
+    c.R(1, 1, 14, 6, 'roofr', 5); c.HL(1, 1, 14, 'roofr', 3); c.HL(1, 6, 14, 'roofr', 6); c.VL(14, 1, 6, 'roofr', 4)
+    c.R(1, 7, 14, 2, 'roofr', 2)
+    box3(c, 3, 9, 10, 0, 5, 'gold', tt=4, ft=3, back=False)
+    c.HL(3, 11, 10, 'gold', 2); c.R(7, 12, 3, 1, 'sumi', 1)
     for x in (4, 11): c.R(x, 14, 1, 2, 'wood', 1)
 
 
-@A('flowerpot', '꽃 화분', 1, 1, 'structure', ['꽃', '집'], '문 양옆(접근칸은 비운다)·창 아래. 막힘.', gate_name='terracotta flower pot with flowers')
+@A('flowerpot', '꽃 화분', 1, 1, 'container', ['꽃', '집'], '문 양옆(접근칸은 비운다)·창 아래. 막힘.', gate_name='terracotta pot seen from above: wide round rim with dark soil visible inside and a few flowers')
 def _(c):
-    blob(c, [(6, 6, 3.5), (10, 6, 3.5), (8, 4, 3.5)], 'leaf', 3, 9, rim=0)
-    for (x, y) in ((5, 4), (9, 3), (11, 6), (7, 6)): c.P(x, y, 'flower', 4); c.P(x + 1, y, 'flower', 3)
     for y in range(8, 15):
-        hw = 5 - (y - 8) * 0.3
+        hw = 6 - (y - 8) * 0.4
         for x in range(int(8 - hw), int(8 + hw)):
             v = (x - (8 - hw)) / (2 * hw)
             c.P(x, y, 'roofr', 5 if v < 0.3 else 4 if v < 0.65 else 2)
-    c.HL(2, 8, 12, 'roofr', 6); c.HL(4, 15, 8, 'roofr', 0)
+    c.HL(4, 15, 8, 'roofr', 0)
+    c.ell(8, 6, 7, 4, lambda x, y, dx, dy, d: ('roofr', 6 if dy < 0 else 5) if d > 0.55 else ('soil', 1 if dy < 0 else 2))
+    for (x, y) in ((6, 5), (9, 6)):
+        c.VL(x, y - 3, 3, 'leaf', 4); c.P(x - 1, y - 2, 'leaf', 5)
+        c.P(x, y - 4, 'flower', 4); c.P(x - 1, y - 4, 'flower', 3); c.P(x + 1, y - 4, 'flower', 3)
 
 
 @A('pond', '작은 연못', 3, 2, 'terrain', ['연못', '물'], '풀 칸 위 덧그림(막힘). 집 마당·신전 옆에 하나.', pc='solid', gate_name='small pond with stone rim and lily pads (terrain)')
@@ -600,6 +622,10 @@ def _(c):
         m = ('gold', 'roofr', 'leaf', 'flower', 'cream', 'gold')[k]
         c.ell(x + 2, 32, 2.5, 1.8, lambda xx, yy, dx, dy, d, m=m: (m, 4 if dy < 0 else 2))
     c.HL(2, 47, 44, 'wood', 0)
+
+
+def flat_cap_pole(c, x, y, w=8, mat='brass'):
+    box3(c, x, y, w, 4, 2, mat, tt=5, ft=2)
 
 
 if __name__ == '__main__':

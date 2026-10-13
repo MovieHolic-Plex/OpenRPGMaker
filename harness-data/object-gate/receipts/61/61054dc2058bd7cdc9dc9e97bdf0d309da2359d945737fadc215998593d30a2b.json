@@ -1,0 +1,116 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "61054dc2058bd7cdc9dc9e97bdf0d309da2359d945737fadc215998593d30a2b",
+ "width": 16,
+ "height": 16,
+ "kind": "flat",
+ "name": "rope plank bridge seen from above (flat walkway)",
+ "label": "sky-island/si-bridge-v",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "rope and plank bridge walkway",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The rope bridge planks are laid out horizontally and viewed from above across the full 16-row span, showing the top surface of each plank.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3724
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "horizontal wooden planks connected by side ropes",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge planks are drawn lying flat, viewed from above as horizontal surfaces (each plank is 3 rows tall with shaded top surfaces and 1px gaps between them), fitting the flat/walkway category.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3893
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden planks and ropes of a suspension bridge",
+    "kind_matches": true,
+    "top_rows": 16,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The bridge planks and side ropes are shown lying flat from an overhead top-down perspective with top surfaces fully exposed.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3507
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "rope plank bridge walkway",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat wooden planks viewed from above, each 3px deep, connected by ropes along the sides across a vertical span.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4354
+  }
+ ],
+ "decidedAt": "2026-10-13T18:43:15.983Z",
+ "cells": {
+  "16": [
+   "6af1af6b981e04ac"
+  ],
+  "24": [
+   "12165ed9f4fd00e0",
+   "58f01f90d07b766f",
+   "91532fcca669ec5d",
+   "9a94a85c67f8c3f0",
+   "b6bf3e89cbca0ac6",
+   "bf02e23874f7e278"
+  ],
+  "32": [
+   "76f847ed9a924d15",
+   "7f302580f63f4097",
+   "8be89b4d9e370a42",
+   "9f9567a406d747d8",
+   "b851ae540cff6451",
+   "cbaf5360a6ab18ed"
+  ],
+  "48": [
+   "0e75044f5f36e15a",
+   "320686d18b8c513b",
+   "5b26b1fdac165ec5",
+   "aa17ebd5ee108467",
+   "b883a2bb11811dac",
+   "f1f02f173f1c6a1b"
+  ]
+ }
+}
