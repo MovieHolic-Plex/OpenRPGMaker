@@ -1,0 +1,49 @@
+{"png": "de-palm-date.png", "kind": "organic", "name": "대추야자(큰)", "label": "desert-east/de-palm-date"}
+{"png": "de-palm-young.png", "kind": "organic", "name": "어린 야자", "label": "desert-east/de-palm-young"}
+{"png": "de-palm-pair.png", "kind": "organic", "name": "대추야자 두 그루", "label": "desert-east/de-palm-pair"}
+{"png": "de-acacia.png", "kind": "organic", "name": "우산 아카시아", "label": "desert-east/de-acacia"}
+{"png": "de-scrub.png", "kind": "organic", "name": "사막 덤불", "label": "desert-east/de-scrub"}
+{"png": "de-tuft.png", "kind": "organic", "name": "마른 풀 포기", "label": "desert-east/de-tuft"}
+{"png": "de-reeds.png", "kind": "organic", "name": "물가 갈대", "label": "desert-east/de-reeds"}
+{"png": "de-oleander.png", "kind": "organic", "name": "꽃 핀 협죽도 덤불", "label": "desert-east/de-oleander"}
+{"png": "de-aloe.png", "kind": "organic", "name": "알로에(가시 풀)", "label": "desert-east/de-aloe"}
+{"png": "de-rock-small.png", "kind": "organic", "name": "작은 바위", "label": "desert-east/de-rock-small"}
+{"png": "de-boulder.png", "kind": "organic", "name": "큰 바위", "label": "desert-east/de-boulder"}
+{"png": "de-outcrop.png", "kind": "organic", "name": "바위 언덕(노두)", "label": "desert-east/de-outcrop"}
+{"png": "de-rubble.png", "kind": "debris", "name": "돌 부스러기", "label": "desert-east/de-rubble"}
+{"png": "de-well.png", "kind": "container", "name": "돌 우물(도르래)", "label": "desert-east/de-well"}
+{"png": "de-fountain.png", "kind": "container", "name": "청록 타일 팔각 분수", "label": "desert-east/de-fountain"}
+{"png": "de-trough.png", "kind": "container", "name": "돌 물통(구유)", "label": "desert-east/de-trough"}
+{"png": "de-stall-pottery.png", "kind": "structure", "name": "노점(도자기·붉은 차양)", "label": "desert-east/de-stall-pottery"}
+{"png": "de-stall-spice.png", "kind": "structure", "name": "노점(향신료·주황 차양)", "label": "desert-east/de-stall-spice"}
+{"png": "de-stall-carpet.png", "kind": "structure", "name": "노점(양탄자·청록 차양)", "label": "desert-east/de-stall-carpet"}
+{"png": "de-stall-fruit.png", "kind": "structure", "name": "노점(대추·석류·남보라 차양)", "label": "desert-east/de-stall-fruit"}
+{"png": "de-stall-lantern.png", "kind": "structure", "name": "노점(등잔·놋그릇)", "label": "desert-east/de-stall-lantern"}
+{"png": "de-rug-red.png", "kind": "flat", "name": "펼친 붉은 양탄자", "label": "desert-east/de-rug-red"}
+{"png": "de-rug-blue.png", "kind": "flat", "name": "펼친 청색 메달리온 양탄자", "label": "desert-east/de-rug-blue"}
+{"png": "de-carpet-rolls.png", "kind": "box", "name": "말아 쌓은 양탄자", "label": "desert-east/de-carpet-rolls"}
+{"png": "de-jar-big.png", "kind": "container", "name": "큰 물 항아리", "label": "desert-east/de-jar-big"}
+{"png": "de-jars-group.png", "kind": "container", "name": "항아리 무리", "label": "desert-east/de-jars-group"}
+{"png": "de-basket-spice.png", "kind": "container", "name": "향신료 바구니", "label": "desert-east/de-basket-spice"}
+{"png": "de-sacks.png", "kind": "box", "name": "곡식 자루 더미", "label": "desert-east/de-sacks"}
+{"png": "de-crate.png", "kind": "box", "name": "나무 궤짝", "label": "desert-east/de-crate"}
+{"png": "de-crates-stack.png", "kind": "box", "name": "궤짝 쌓음", "label": "desert-east/de-crates-stack"}
+{"png": "de-lantern-post.png", "kind": "column", "name": "등잔 기둥", "label": "desert-east/de-lantern-post"}
+{"png": "de-brazier.png", "kind": "container", "name": "놋 화로", "label": "desert-east/de-brazier"}
+{"png": "de-campfire.png", "kind": "container", "name": "돌 둘린 모닥불", "label": "desert-east/de-campfire"}
+{"png": "de-bench-stone.png", "kind": "low_furniture", "name": "돌 벤치", "label": "desert-east/de-bench-stone"}
+{"png": "de-cushion-seat.png", "kind": "seat", "name": "앉는 방석(큰)", "label": "desert-east/de-cushion-seat"}
+{"png": "de-parasol-reed.png", "kind": "structure", "name": "갈대 차양(그늘막)", "label": "desert-east/de-parasol-reed"}
+{"png": "de-camel.png", "kind": "other", "name": "낙타(안장)", "label": "desert-east/de-camel"}
+{"png": "de-cart-camel.png", "kind": "box", "name": "대상 짐수레", "label": "desert-east/de-cart-camel"}
+{"png": "de-handcart.png", "kind": "box", "name": "손수레(항아리)", "label": "desert-east/de-handcart"}
+{"png": "de-fence-wood.png", "kind": "frame", "name": "바랜 나무 울타리(가로)", "label": "desert-east/de-fence-wood"}
+{"png": "de-hitch-post.png", "kind": "frame", "name": "말뚝 고삐 기둥", "label": "desert-east/de-hitch-post"}
+{"png": "de-banner-pole.png", "kind": "column", "name": "깃대(무늬 없는 천)", "label": "desert-east/de-banner-pole"}
+{"png": "de-dye-rack.png", "kind": "frame", "name": "염색 천 건조대", "label": "desert-east/de-dye-rack"}
+{"png": "de-signpost.png", "kind": "frame", "name": "이정표(무늬 없는 판)", "label": "desert-east/de-signpost"}
+{"png": "de-column.png", "kind": "column", "name": "사암 기둥(머리돌)", "label": "desert-east/de-column"}
+{"png": "de-column-broken.png", "kind": "column", "name": "부러진 기둥", "label": "desert-east/de-column-broken"}
+{"png": "de-block-fallen.png", "kind": "box", "name": "쓰러진 돌덩이", "label": "desert-east/de-block-fallen"}
+{"png": "de-lion-statue.png", "kind": "figure", "name": "사자 석상(받침)", "label": "desert-east/de-lion-statue"}
+{"png": "de-stele.png", "kind": "column", "name": "비석(무늬 띠, 글자 없음)", "label": "desert-east/de-stele"}
