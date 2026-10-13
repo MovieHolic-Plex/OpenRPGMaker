@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.202.0 — 2026-10-13
+
+### 기능
+
+- **ai** — jp_city guidance is composer-first; route city-street requests without the word 일본 (`0e7936b`)
+- **jp-city** — rail-signal redrawn as box with visible top; passes 3/4 gate (`e30fe28`)
+- **jp-city** — bake refuses kits without a passing 3/4 gate receipt (JP_GATE=skip to bypass) (`cb2dcb6`)
+- **jp-city** — rail/bridge kits redrawn with visible top faces, gate-copy export (_gate) (`23c07dc`)
+
+### 문서
+
+- **agents** — 3/4 top-view gate is a hard rule for new pixel kits (`9e2ebef`)
+
 ## 0.201.0 — 2026-10-13
 
 ### 기능
