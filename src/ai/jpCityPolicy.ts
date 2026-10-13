@@ -21,6 +21,18 @@ const NAMES_JP_CITY_RE = /jp[_-]city|oprn-jp|일본\s*도시\s*(?:칩셋|타일�
 /** 일본 거리 풍경 요청 — jp_city 가 이 저장소에서 그 일을 하는 유일한 번들이다(상가·주택가·학교·지하철역·노면전차 거리). */
 const JP_STREET_RE = /일본(?:풍|식)?\s*(?:상가|상점가|상점\s*거리|쇼핑\s*거리|편의점|이자카야|골목|동네\s*거리|거리|주택가|(?:초등)?학교|소학교|지하철(?:역)?|전철역|역\s*앞|노면\s*전차|버스\s*정류장)/u;
 
+/**
+ * 도시 거리 풍경을 일본이라는 말 없이 부른 요청(번화가·상점가·도심·시가지·주택가·거리 등, 영어 포함).
+ * 이 낱말만으로는 jp_city 라고 단정할 수 없어서 jpCityTargetFor 가 «프로젝트에 jp_city 맵이 이미 있을 때만» 쓴다.
+ */
+const CITY_STREET_RE = /번화가|(?:현대|모던)(?:식|적|풍)?\s*(?:도시|거리|동네|상가|마을)|거리(?:를|가)?\s*(?:만들|짓|지어|꾸며|짜)|상점가|상가\s*거리|쇼핑\s*거리|쇼핑가|도심|시가지|도시\s*거리|도시\s*풍경|주택가|동네\s*거리|골목길?|(?:도시|상가|시내|큰|거리)\s*(?:거리|맵|지도)|거리\s*(?:맵|지도|풍경)|\b(?:downtown|city\s+street|shopping\s+(?:street|arcade|district)|residential\s+(?:area|street)|street\s+scene|urban)\b/iu;
+/** 미국풍·다른 도시 칩셋(modern_city)을 부른 문장 — 위 낱말이 있어도 jp_city 로 끌지 않는다. */
+const OTHER_CITY_RE = /미국|아메리칸|뉴욕|할리우드|modern[_\s-]?city|oprn-modern|american|new\s*york/iu;
+
+export function describesCityStreet(text: string | undefined): boolean {
+  return !!text && CITY_STREET_RE.test(text) && !OTHER_CITY_RE.test(text);
+}
+
 export function namesJpCityTileset(text: string | undefined): boolean {
   return !!text && NAMES_JP_CITY_RE.test(text);
 }
@@ -55,7 +67,12 @@ export function jpCityTargetFor(
   if (intent.mode !== "create" || (intent.space !== "outdoor" && intent.space !== "both" && intent.space !== "unclear")) return null;
   if (!project.tilesets[JP_CITY_TILESET_ID]) return null;
   const text = requestText ?? "";
-  return NAMES_JP_CITY_RE.test(text) || JP_STREET_RE.test(text) ? {} : null;
+  if (NAMES_JP_CITY_RE.test(text) || JP_STREET_RE.test(text)) return {};
+  // 일본이라고 안 했어도 이 프로젝트가 이미 jp_city 맵을 쓰고 있으면 도시 거리 요청은 jp_city 로 간다(보는 맵이 modern_city 계열이면 제외).
+  const viewedTileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (viewedTileset && (viewedTileset.id === "modern_city" || (viewedTileset.image.type === "bundled" && viewedTileset.image.id === "tex_modern_city"))) return null;
+  const projectUsesJpCity = scopeUsesJpCity(project, Object.keys(project.maps));
+  return projectUsesJpCity && describesCityStreet(text) ? {} : null;
 }
 
 /** 범위 맵 중 하나라도 jp_city 인가(시스템 프롬프트 상세 줄 조건). */
@@ -72,10 +89,12 @@ export const JP_CITY_EXPOSED_TOOLS: readonly string[] = [
 
 /** 시스템 프롬프트 한 줄(항상) — 칩셋이 있다는 사실과 길을 알린다. */
 export const JP_CITY_POINTER_LINE =
-  "일본 상가·상점가·골목 거리 풍경은 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다), "
-  + "거리 한 장은 compose_jp_city_street({seed, style, shops:[기획의 가게…]}) 가 씨앗마다 다르게 통째로 짠다(견본이 아니다) — 먼저 이것으로 틀을 잡고, 건물 하나는 build_jp_city_building(id 는 list_jp_city_building_parts)로 고친다. 길은 fill_region·lay_path·stamp_object(kit:jp_city/jp-road-…). author_beodeul_town 은 쓰지 않는다. "
-  + "일본 집·가게 실내(현관·화실·LDK·욕실·원룸·편의점·음식점·상점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}})(방 배치·문·예제 방 가구를 도구가 정한다, 방 하나면 plan) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
-  + "거리 건물 문으로 들어가게 하려면 link_jp_city_interior({door:{x,y}=건물 문 칸, place:<실내 장소 id> 또는 interiorMapId}) 하나로 가져오기·왕복 발판·맵 목록 정리까지 한다.";
+  "일본 풍 거리(상가·상점가·번화가·주택가·골목·도심)는 번들 칩셋 jp_city(계열 oprn-jp)로 짓는다(PAW 전용 규칙의 예외): 새 맵 create_map tilesetId:\"jp_city\"(보는 맵이 다른 계열이면 ask_tileset_change 로 견본을 보이고 묻는다). "
+  + "거리·마을·동네 한 장은 **compose_jp_city_street 가 기본**이다 — 손으로 fill_region→도로→건물을 하나씩 쌓지 않는다. 인자 style:\"shopping\"(상가·번화가·도심·역 앞)|\"residential\"(주택가), shops:[기획의 가게(konbini·izakaya·ramen·cafe·shop·office·apartment·house·machiya·garage·sento·bento)], seed(다르면 다른 거리). "
+  + "맵 크기가 구성을 정한다: 40×28 이상(권장 50×36), 높이 46↑ 이면 큰길 둘+하천·다리 후보, 높이 52↑ 상가면 고층 스카이라인 — 강·고층은 인자가 아니라 크기+seed 로 나오니 원하면 create_map/resize_map 으로 키우고 seed 를 바꿔 replace:true 로 다시 짠다. "
+  + "짠 뒤: 건물 하나만 고칠 때만 build_jp_city_building(id 는 list_jp_city_building_parts), 땅·소품 보정은 fill_region·stamp_object(kit:jp_city/…), 탈것은 set_map_transit. author_beodeul_town 은 쓰지 않는다. "
+  + "집·가게 실내(현관·LDK·편의점·음식점·목욕탕·의원)는 완성 장소(import_region_reference) 또는 build_hand_interior_room({tileset:\"jp_city\", layout:{program:\"house-1f\" 또는 rooms:[{kind:\"genkan\"},…]}}) — 부품은 list_hand_interior_parts({tileset:\"jp_city\"}). "
+  + "건물 문과 잇기는 link_jp_city_interior({door:{x,y}, place:<실내 장소 id> 또는 interiorMapId}) 하나로 한다(문 좌표·이름표는 list_map_locations).";
 
 /**
  * 칠하기 도구(fill_region·lay_path·paint_tiles)의 참고문서 게이트를 «한 번에» 통과하는 읽기 목록. 실측(2026-10-04 헤드리스 시험): 조수가 입구 용도(jp-start)를
@@ -87,18 +106,12 @@ export const JP_START_READ_LIST =
 
 /** jp_city 맵이 범위에 있을 때만 붙는 상세 순서. */
 export const JP_CITY_DETAIL_LINE =
-  "이 작업의 맵은 일본 도시 칩셋(jp_city)이다. 순서: "
-  + "① 땅 — 새 jp_city 맵은 비어 있다(검게 보임). 건물 자리 밑까지 fill_region/lay_path 로 잔디·보도 연석·생활도로를 먼저 깐다(오토타일은 몸통만 칠하면 가장자리를 도구가 맞춘다). "
-  + "칠하기 전 입구 용도를 읽는다 — " + JP_START_READ_LIST + ". "
-  + "② 도로 교차로·T자·건널목은 stamp_object({objectId:\"kit:jp_city/jp-road-lane-x\", x, y}) — x,y 는 키트 왼쪽 위 칸. 키트 id: jp-road-lane-h|v(직선 6×4, 간격 두고 반복)·-t-s|w|n|e·-x·-bend-es|sw|wn|ne·-end-w|n|e|s, jp-road-trunk-h|v|x(간선), jp-fumikiri-v|h(건널목). 없는 이름을 지어내지 않는다. "
-  + "③ 건물 — 문 앞 바닥(보도)을 먼저 깔고, 뒷줄(맵 위쪽) 건물부터 build_jp_city_building({x,y=건물 발(왼쪽 아래),w,floors,ground,roof,…}). 건물 사각형(위로 높이만큼)이 겹치지 않게 발 y 를 높이+1 이상 띄운다(도구는 겹침을 거부하지 않는다). 오류가 나면 맵은 안 바뀐다 — 코드·좌표대로 고쳐 다시 부른다. "
-  + "완성 예제 25개는 list_jp_city_building_parts({example}) 로 받아 x,y 만 더한다. "
-  + "④ 투명 덧그림(중앙선·차선 점선·횡단보도·점자블록)은 paint_tiles layer \"2\" 로만 칠한다(1·3 층 요청은 3층으로 돌려져 모양이 안 맞는다). "
-  + "⑤ 탈것 — 길을 다 깐 뒤 set_map_transit({auto:{}}) 가 맵 끝에서 끝까지 이어진 생활도로에 좌측통행 차 흐름을 깐다(게임에서 실제로 달리고 주인공 앞에서 선다). "
-  + "버스 정류장은 auto.busStops:[{x,y=버스 머리가 서는 차선 칸,name,board}], 노면전차는 2층 레일 jp-tram-rail-h 를 맵 끝까지 깔고 auto.tram:true(복선이면 양방향), 굽은 길·순환선·지하철은 routes 로 칸 경로. "
-  + "탈것 그림을 타일로 찍지 않는다. 쓰는 법·칸 규칙은 참고문서 용도 jp-transit(jp-transit-rules), 깐 뒤 inspect_map_transit 로 확인. "
-  + "학교·지하철역은 완성 장소(jp-city-school-68x48 등, import_region_reference)와 jp-school·jp-transit 문서의 예제 배열을 본뜬다. "
-  + "확인은 check_reachability·show_map_region·run_lint. 건물·소품을 낱칸 번호로 칠하지 않는다.";
+  "이 작업의 맵은 일본 도시 칩셋(jp_city)이다. 거리·마을·동네를 짓거나 새로 짜는 요청이면 ① 맵이 비어 있어도 땅부터 깔지 말고 compose_jp_city_street({seed, style, shops}) 를 먼저 한 번 부른다 — 땅·도로·횡단보도·차·건물·가로등·자판기가 한 번에 나온다(칠한 맵은 replace:true, 이벤트는 남는다). "
+  + "② 짠 뒤 show_map_region 으로 보고 list_map_locations 의 건물 이름표로 기획과 맞추며 고친다: 가게가 안 맞으면 shops·seed 를 바꿔 다시 짜거나 build_jp_city_building({x,y=발,w,floors,…}) 로 그 건물만 교체(문 앞 접근칸 유지, 사각형 겹침 주의). "
+  + "③ 세부 보정만 손으로: fill_region/lay_path(땅 — 칠하기 전 " + JP_START_READ_LIST + "), stamp_object({objectId:\"kit:jp_city/jp-road-lane-x\", x, y}) 도로 키트(jp-road-lane-h|v·-t-s|w|n|e·-x·-bend-*·-end-*, jp-road-trunk-*, jp-fumikiri-*; 없는 이름 금지), 투명 덧그림(중앙선·점선·횡단보도)은 paint_tiles layer \"2\" 만. "
+  + "④ 가게·집 안은 link_jp_city_interior 로 문마다 잇고(import_region_reference 완성 실내 또는 build_hand_interior_room({tileset:\"jp_city\"})), 이벤트는 그 뒤에 둔다. "
+  + "⑤ 차·버스·전차가 다니는 거리면 set_map_transit({auto:{}})(정류장 auto.busStops, 노면전차 2층 레일 jp-tram-rail-h + auto.tram:true), 확인은 inspect_map_transit·check_reachability·run_lint. 학교·지하철역은 완성 장소(jp-city-school-68x48 등, import_region_reference). "
+  + "처음부터 build_jp_city_building 을 여러 번 부르는 손 시공은 «건물 한두 채 추가·교체» 같은 작은 수정에만 쓴다. 건물·소품을 낱칸 번호로 칠하지 않는다.";
 
 /** 시스템 프롬프트에 붙일 줄들. */
 export function jpCityPromptLines(project: Pick<Project, "tilesets" | "maps">, mapIds: readonly string[]): string[] {
@@ -114,9 +127,9 @@ export function formatJpCityNote(target: JpCityTarget, targetMap: { id: string; 
       : "jp_city 맵이 아직 없다 → create_map({name, width:50, height:36, tilesetId:\"jp_city\"}) 로 새 맵을 만든다. 지금 보는 맵이 다른 계열이면 실행기가 거부한다 — 그때는 칠하지 말고 ask_tileset_change(toTilesetId:\"jp_city\", reason) 로 사용자에게 견본을 보이고 이 턴을 끝낸다.";
   return [
     "[일본 거리 시공 — jp_city] 이 요청의 칩셋은 번들 일본 도시(jp_city, 계열 oprn-jp)다. author_beodeul_town 은 버들항 전용이라 쓰지 않는다 — "
-      + "길과 땅은 fill_region/lay_path·stamp_object(kit:jp_city/jp-road-…), 건물은 build_jp_city_building 이 짓는다. 낱칸 번호로 건물을 칠하지 않는다.",
+      + "거리·마을·동네 한 장은 compose_jp_city_street({seed, style:\"shopping\"|\"residential\", shops}) 가 기본이다(손으로 땅→도로→건물을 쌓지 않는다). 낱칸 번호로 건물을 칠하지 않는다.",
     where,
-    "순서: 땅(보도 연석·생활도로·잔디; 먼저 " + JP_START_READ_LIST + ") → 도로 교차로 키트 stamp_object → 문 앞 보도 → 뒷줄 건물부터 build_jp_city_building(list_jp_city_building_parts 로 id·완성 예제, 사각형이 겹치지 않게 발 y 를 높이+1 이상 띄운다) → "
-      + "투명 덧그림은 paint_tiles layer \"2\" → check_reachability 로 문 앞 도달, show_map_region 으로 눈 확인 → 차·버스가 다니는 거리면 set_map_transit({auto:{}})(정류장은 auto.busStops).",
+    "순서: (새 맵이면 40×28 이상, 권장 50×36·큰 도심은 60×56) compose_jp_city_street → show_map_region·list_map_locations 로 확인 → 안 맞는 건물만 build_jp_city_building, 땅·소품은 fill_region·stamp_object(먼저 " + JP_START_READ_LIST + ") → "
+      + "문마다 link_jp_city_interior 로 실내 잇기 → check_reachability → 차·버스가 다니는 거리면 set_map_transit({auto:{}}). 건물 한두 채 수정이면 compose 없이 build_jp_city_building 만 쓴다.",
   ].join("\n");
 }
