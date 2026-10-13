@@ -76,7 +76,7 @@ export const COMPOSE_SF_STATION_MAP_TOOL: ToolDefinition = {
     return {
       summary: `${result.summary}. 구역·건물: ${labels.join(" · ")}. 출발 칸 (${result.spawn.x},${result.spawn.y}).`
         + (moved.length ? ` 막힌 칸의 이벤트를 옮겼다: ${moved.join(", ")}.` : "")
-        + " 다음: show_map_region 으로 보고, 문 앞 접근칸에 이동 이벤트·NPC 를 둔다. 기물 하나를 더할 때만 stamp_object(kit:sf_station/sf-<id>).",
+        + " 이 배치는 완성이다 — 기물을 흩뿌려 채우지 말고, 도로·횡단보도·착륙장·복도·문 통로 위에는 찍지 않는다. 다음: show_map_region 으로 보고, 문 앞 접근칸에 기획의 이동 이벤트·NPC·단서를 둔다.",
       data: { mapId, kind, seed, areas: result.areas, spawn: result.spawn, placed: result.placed.length, skipped: result.skipped },
     };
   },

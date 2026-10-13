@@ -81,7 +81,9 @@ export const SF_STATION_DETAIL_LINE =
   "이 작업의 맵은 SF 칩셋(sf_station)이다. ① 맵이 비어 있으면 땅부터 칠하지 말고 compose_sf_station_map({kind, seed}) 를 먼저 부른다(손댄 맵은 replace:true). 맵이 작다고 거절되면 resize_map 으로 권장 크기로 키운다. "
   + "② show_map_region 으로 결과를 보고 list_map_locations 의 구역·건물 이름표(문 좌표·문 앞 접근칸)를 읽어 기획과 맞춘다 — 안 맞으면 seed 를 바꿔 다시 짠다. "
   + "③ 문 앞 접근칸에 이동 이벤트·NPC·단서를 둔다(문 그림 칸이 아니라 그 아래 바닥 칸). 기물 하나를 더할 때만 stamp_object({objectId:\"kit:sf_station/sf-<id>\", x, y}) — id 는 list_tileset_references({tilesetId:\"sf_station\"}) 의 사전에서 고른다. "
-  + "④ 끝나면 check_reachability 로 출발 칸에서 문 앞 접근칸들에 닿는지 확인한다.";
+  + "④ 끝나면 check_reachability 로 출발 칸에서 문 앞 접근칸들에 닿는지 확인한다. "
+  + "⑤ 구성기 결과는 완성된 배치다 — 「비어 보인다」고 기물을 흩뿌리지 않는다. 도로·차선·횡단보도·보도 가장자리·착륙장·복도·문 통로(노란 줄무늬) 위에는 아무것도 찍지 않고, 같은 장비(흄 후드·프린터·서버 랙)를 겹으로 늘리지 않는다. "
+  + "방이 너무 비면 기물을 더하지 말고 seed 를 바꿔 다시 짠다. 사용자 기획에 필요한 것(인물·단서·이동 이벤트)을 더하는 것이 다음 일이다.";
 
 /** 시스템 프롬프트에 붙일 줄들. 칩셋이 프로젝트에 없으면 아무것도 붙이지 않는다. */
 export function sfStationPromptLines(project: Pick<Project, "tilesets" | "maps">, mapIds: readonly string[]): string[] {
@@ -101,5 +103,6 @@ export function formatSfStationNote(target: SfStationTarget, targetMap: { id: st
     where,
     KIND_GUIDE,
     "순서: create_map(권장 크기) → compose_sf_station_map → show_map_region·list_map_locations 로 확인 → 문 앞 접근칸에 이벤트 → check_reachability. 기획과 안 맞으면 seed 만 바꿔 replace:true 로 다시 짠다.",
+    "구성기 결과에 기물을 흩뿌려 채우지 않는다 — 도로·횡단보도·착륙장·복도·문 통로 위에는 찍지 않고, 같은 장비를 겹으로 늘리지 않는다. 더할 것은 기획의 인물·단서·이동 이벤트다.",
   ].join("\n");
 }
