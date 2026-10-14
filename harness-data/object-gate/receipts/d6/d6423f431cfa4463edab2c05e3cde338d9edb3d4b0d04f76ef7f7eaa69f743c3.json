@@ -1,0 +1,136 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "d6423f431cfa4463edab2c05e3cde338d9edb3d4b0d04f76ef7f7eaa69f743c3",
+ "width": 16,
+ "height": 16,
+ "kind": "other",
+ "name": "standing museum sign on a post",
+ "label": "monster-rooms/mu_sign",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "museum sign board on post and base",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board, post, and base are drawn entirely in flat front elevation with no visible top surface on the frame, board edge, or horizontal base plinth.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 10845
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board, post, and base are drawn entirely in flat front elevation with no visible top surface (0 rows). In 3/4 view, the top edge/depth of the sign board and base must be visible from above.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 8474
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board, post, and base are drawn entirely in flat front elevation with no visible top surface (only a 1px outline at row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 6893
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "sign board",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The sign board is drawn facing straight at the camera with text on its front face and no visible top surface (only a 1px outline on row 1).",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 18548
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.552Z",
+ "cells": {
+  "16": [
+   "0abd804b4d3b81d7"
+  ],
+  "24": [
+   "4a6903a301cd1da7",
+   "6729e840bf51ef6d",
+   "6e8851c836deca7f",
+   "746c739b412d37e3",
+   "8ec9fabd3f4c8094",
+   "ac4ff11d6d68b106"
+  ],
+  "32": [
+   "016fb01d7dd6a342",
+   "047982543d9de51b",
+   "45ae13ff63d9b28d",
+   "84ba89c97ff2088f",
+   "98b115ad30440970",
+   "a7b883d3c7c5dab0"
+  ],
+  "48": [
+   "217f5eb0a62ca22d",
+   "41dd1e1da657a39f",
+   "752983bfd130a0e8",
+   "90402c0a07ef0ee6",
+   "a9d086252c13ba4a",
+   "e6f2b53816dafcde"
+  ]
+ }
+}

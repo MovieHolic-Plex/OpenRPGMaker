@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "5e9c652f2109af2bfb534148f7ef59343bede2db6a16eecd5d77197c1081709f",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "aquarium tank set in the back wall",
+ "label": "monster-rooms/mu_tank",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "aquarium tank frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The tank and surrounding wall frame are drawn in pure front elevation like a flat screen or 2D side-scroller asset. There is no foreshortened top surface visible on the frame, the water surface, or the bottom sill/sand bed.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 12556
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "aquarium tank / cabinet frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire aquarium cabinet/frame is drawn in pure front elevation with 0 rows of visible top surface. The upper panel (rows 2-5) is a flat vertical hood/frame face with side-to-side shading rather than a foreshortened top plane, and the tank interior is viewed straight-on with no visible water surface or top plane.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 24548
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "aquarium tank cabinet / wall unit",
+    "kind_matches": true,
+    "top_rows": 4,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the tank cabinet/housing spans rows 2-5 (4 source pixel rows) with a bright edge highlight on row 6 before transitioning to the front face and glass enclosure.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 10412
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "aquarium tank and frame",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire unit is drawn as a flat front elevation. The upper section (rows 2-5) is the front face of the upper frame (sharing the same right-side vertical shadow column as the right post), with no foreshortened top surface visible above it.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 5531
+  }
+ ],
+ "decidedAt": "2026-10-14T05:27:39.602Z",
+ "cells": {
+  "16": [
+   "274f4e8f7b4ed8df",
+   "450abfc9473123dd",
+   "b08a611e6eb0f222",
+   "ed40e6134166a51f"
+  ],
+  "24": [
+   "1d3bdd189a5acdfd",
+   "1f53305e471cfb50",
+   "2c538fd49c7c0b82",
+   "311094d82ccb04fc",
+   "42897fe9285750af",
+   "51d79c76e7c49eea",
+   "54e8a547a4adb12d",
+   "59a4cc5d9f013219",
+   "6d3559f3bf2a1897",
+   "72770b3a92438d8d",
+   "76258fe603a5c717",
+   "7d002c7a308c9f35",
+   "7e1c36051952688d",
+   "816647449859c4af",
+   "96061e04ed8237aa",
+   "b7258e96c5e4b2a6",
+   "c0d100c5a73abd31",
+   "cc6d60d97668922d",
+   "d9e93d699b4de0f9",
+   "df4c8a006c7eb145",
+   "e6b36dad49858c52",
+   "eec9621feedc36d0",
+   "f0612fa494b89f88",
+   "f851dfdffee6ca2a"
+  ],
+  "32": [
+   "f0b7e3b7dc6fa438"
+  ],
+  "48": [
+   "21f783de0606b789",
+   "2546a419cb2b1e48",
+   "31cadaeca3e95c61",
+   "376f042e0060de95",
+   "45725e74140a35a6",
+   "fe30e1e03785e061"
+  ]
+ }
+}

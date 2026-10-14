@@ -1,0 +1,148 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1dc11acc7971b4f9db9ae97e6832887e5a85f67cd4b86305ee6f7aedf39a2bf8",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "analysis machine against the back wall",
+ "label": "monster-rooms/lab_machine",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "fail",
+ "reasons": [
+  "판정자 과반 fail",
+  "정면 입면도",
+  "윗면 0행 < 3"
+ ],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "tall analysis machine console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The entire machine is drawn in flat front elevation. The top of the upper unit (rows 0-1) has only a 1px outline with no visible top surface, and all panels, screens, and base cabinet doors face directly forward.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9944
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "analysis console workstation",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The console counter forms the main horizontal top surface (rows 10-18, ~9 rows tall), illuminated brightly from above and featuring a foreshortened elliptical control pad, keyboard, and slot, while rows 20-27 form the darker vertical front cabinets.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 12277
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "tall laboratory analysis console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The top of the unit (rows 0-1) has only a 1px outline and a 1px rim line with no visible top horizontal surface shown from above. The upper monitor housing and lower cabinet are drawn in pure front elevation.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 9925
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall analysis machine console",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The machine is drawn in pure front elevation. The top of the unit has only a 1px border/highlight (rows 0-1) rather than a foreshortened horizontal top surface. The upper display, square buttons, and lower cabinet panels all face directly forward with no 3/4 perspective.",
+    "verdict": "fail"
+   },
+   "pass": false,
+   "reasons": [
+    "판정자 과반 fail",
+    "정면 입면도",
+    "윗면 0행 < 3"
+   ],
+   "ms": 19388
+  }
+ ],
+ "decidedAt": "2026-10-14T05:23:46.922Z",
+ "cells": {
+  "16": [
+   "2650dbd2b5c7e740",
+   "2b0ece90b70f4025",
+   "8dedba13237cdbd9",
+   "d1edc499875c5b63"
+  ],
+  "24": [
+   "1049c136d678b8b2",
+   "14b7c3c1118d2c5a",
+   "1907b1ba3b83c31c",
+   "238d00ad08fbb709",
+   "305c0b5b416104b0",
+   "361c956f0bd4e977",
+   "600693fa7788267b",
+   "63e47d2154c9552e",
+   "75d3fc67b5ef8455",
+   "799af4cb47d02cba",
+   "7d2e8cde07b61de1",
+   "8306d77c88cc1544",
+   "8cd4479a3177b7ac",
+   "8fac33c14b59b919",
+   "93a466fe1b5e0e25",
+   "941cd6abf8a5174d",
+   "9ea81cdd4c665f6a",
+   "a1b5e115d76acd94",
+   "a935214fa793852a",
+   "adf2bc62b8c55cef",
+   "d40524d89a56b416",
+   "f3a5f26ed7b860b9",
+   "f93e8b01658d1891",
+   "fc8522297c379828"
+  ],
+  "32": [
+   "b6dbc5a01512c792"
+  ],
+  "48": [
+   "20642c2cea1e990d",
+   "32795aa486c58d3c",
+   "48731301ef22f302",
+   "7dccf339137cacbe",
+   "85cf4011b7bc00a6",
+   "cc4de50c30449712"
+  ]
+ }
+}

@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "41dd804e91d35007e3bb20bbfe334e360584c01b79d4e72cc41cdb4fb33cc5be",
+ "width": 32,
+ "height": 32,
+ "kind": "tall_furniture",
+ "name": "tall double-sided shop display shelf with goods",
+ "label": "monster-rooms/dp_shelf",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "shop display shelf unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display shelf is clearly visible across rows 1-7 with items resting on it in 3/4 view, above the front-facing shelves spanning rows 8-27.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6661
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display shelf with top surface and shelves below",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display shelf unit is prominently visible across rows 1-7 (7 source pixels tall) with items displayed on top.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5024
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "shop display shelf unit",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the shelf unit is clearly visible from rows 1 to 7 (7 pixels deep) displaying several boxes on top in proper top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4802
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "tall shop display shelf",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display shelf is clearly visible spanning rows 1-7 (7 rows tall) with items resting on it, leading down to the front-facing shelves below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5714
+  }
+ ],
+ "decidedAt": "2026-10-14T05:17:07.551Z",
+ "cells": {
+  "16": [
+   "7f22ff28939a620b",
+   "800a64aebd97863a",
+   "bf4a4622e2f4a650",
+   "e223573ec0a744fd"
+  ],
+  "24": [
+   "0e7905694d1b9546",
+   "13174b7095d07140",
+   "1fa0eca19dc18709",
+   "2126417efd572d78",
+   "2489366cddc0347e",
+   "25d33bd83007d270",
+   "35887f901fcd54b8",
+   "4459f2fcad7b7c18",
+   "458a19877564a888",
+   "61429c4583b0b96d",
+   "6b7b446bbb973865",
+   "76297139ca96776c",
+   "8865bb1ad02ba319",
+   "8f67112d1714bb3d",
+   "9a5c2c4f44153b3d",
+   "9b1ad468528ad63d",
+   "bf028a0b393f7f99",
+   "c3d959dd0c78ec98",
+   "d1533ff0953f9f01",
+   "dea6a614920364c7",
+   "e0656de60a0d886d",
+   "e30206e0610ed7ec",
+   "ec836b8156a1f854",
+   "ff999142ee1c5408"
+  ],
+  "32": [
+   "e63c24a98590c7d6"
+  ],
+  "48": [
+   "0629170d064d5364",
+   "8db86279389002b8",
+   "b258d6e17ee8fa4b",
+   "b946effe8bd045f4",
+   "d0fbc69f2e4f9a4e",
+   "fb372d2113c2c540"
+  ]
+ }
+}

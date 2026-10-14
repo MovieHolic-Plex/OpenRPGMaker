@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "1c50c235eca7a76e4f6afd1aa8e2c3666cffc41366b76ef051a3b78e44a53480",
+ "width": 48,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "classroom chalkboard",
+ "label": "monster-rooms/sc_board",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "framed chalkboard with chalk ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Chalkboard designed to mount flat against a north wall; pure front elevation is standard and permitted for wall_mounted objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3374
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "framed chalkboard",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted classroom chalkboard shown flat against the wall with chalk marks and a bottom tray. As a wall-mounted object, it is permitted to be flat with no top surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 7760
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "framed chalkboard mounted on a wall with chalk tray",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted chalkboard viewed directly from the front as typical for north-wall mounted decor in 3/4 top-down JRPGs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3894
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "framed chalkboard with chalk ledge",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "The chalkboard is mounted flat against the wall, permitted for wall_mounted objects. The chalk ledge at the bottom provides appropriate contextual depth.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4084
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "0860ae7e02436e2a",
+   "1c8081b5c860fa7b",
+   "7c655988610dd17d",
+   "8cfddd84e8a82820",
+   "9ec331e513301c62",
+   "d55c81ae12757552"
+  ],
+  "24": [
+   "4241580406c8a989",
+   "6d0668b72b441b52",
+   "96cba762b9d62f84",
+   "a985aa447717706b",
+   "aa3c5c02c32d8083",
+   "b825c062551b0876",
+   "cb779b55fac6aec0",
+   "e351b0f1fde5a631"
+  ],
+  "32": [
+   "093d5edc43a3ade9",
+   "2c6bf6837a7ae434",
+   "97bd5aca0c50ceba",
+   "a4d1794c95b83c6b",
+   "e5ed43d26ae51d98",
+   "f67e324e47c89a00"
+  ],
+  "48": [
+   "147026ffd02d5291",
+   "a683a26d8720743e"
+  ]
+ }
+}

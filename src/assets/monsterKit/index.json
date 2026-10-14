@@ -41,7 +41,7 @@
   "count": 2144,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "g103"
+  "run": "g1"
  },
  {
   "theme": "monster-overworld",
@@ -63,7 +63,7 @@
   "count": 1136,
   "tilesPerRow": 16,
   "tileSize": 16,
-  "run": "m4"
+  "run": "m17"
  },
  {
   "theme": "monster-wild",

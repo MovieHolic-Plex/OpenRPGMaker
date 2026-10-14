@@ -1,0 +1,122 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "aa4aabcabdbc42219f145fe227def79959f6a34fcdfa35bb0e8653ec1cee6306",
+ "width": 32,
+ "height": 48,
+ "kind": "structure",
+ "name": "wooden staircase going up against the back wall",
+ "label": "monster-rooms/h_stairs",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "wooden staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase consists of alternating visible top treads (2-3 source pixels tall each, shaded in lighter tan/cream) and south vertical risers (2-3 source pixels tall in dark brown), correctly depicting ascending stairs in top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5867
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "wooden staircase with steps and side rails",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase consists of alternating visible horizontal treads (2-3 pixel rows each, highlighted in cream/tan) and vertical risers (darker brown), correctly portraying a receding flight of stairs in standard 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4235
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "wooden staircase with treads and risers",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase is drawn in standard 3/4 top-down perspective with each step clearly showing its horizontal tread (2-3px tall) alternating with vertical risers (2-3px tall). It is not a flat front elevation, and there are no receding isometric side faces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9412
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden staircase",
+    "kind_matches": true,
+    "top_rows": 3,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The staircase consists of alternating visible horizontal treads (2-3 pixel rows each, rendered in light cream and tan) and vertical south-facing risers (2-3 pixel rows in darker brown), properly depicting a north-ascending staircase in 3/4 top-down perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5616
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.762Z",
+ "cells": {
+  "16": [
+   "8b1a634eda30ac67",
+   "a84e15b50fd641c8",
+   "b0702f72956a2108",
+   "d55d409fb284713d",
+   "e25e4eb6886e7629",
+   "f4b23bd99174d316"
+  ],
+  "24": [
+   "0e9987c7c0f83c45",
+   "1565596aa3edbab2",
+   "22e9b4bbf3ec5fc3",
+   "25af5f84542aeb24",
+   "416d2e3f52b1d222",
+   "be4e9561b4e753a3",
+   "bece217d7ba5fb20",
+   "c762b01078084e7e",
+   "ca966ff62e48e6b9",
+   "ceecafbbfa528211",
+   "da2aaf80ced4a476",
+   "f937980c82117ccb"
+  ],
+  "32": [
+   "18f67eb58b90cc10",
+   "1cbc3e1b623b4e01",
+   "69590ab061defa43",
+   "c39caf14ad18ad09"
+  ],
+  "48": [
+   "76e78b09bf19cddc",
+   "ae2d1be5699389df",
+   "d8f8d80da48cc486"
+  ]
+ }
+}

@@ -373,14 +373,46 @@ def face_dojo(P):
     return fn
 
 
+# GBA 2세대 한 칸 나무(2026-10-14): 본 시트 수관(forest.crown)처럼 잎 덩이를 뒤(위)→앞(아래)으로 얹는다.
+# (dx, dy, 반지름, 밝기 치우침) — 칸 중심 기준, 반지름 7.6 일 때. 위 덩이가 가장 밝고 아래 덩이는 한 단 어둡다.
+HEDGE_CLUMPS = ((0.0, -3.0, 4.6, +1), (-3.4, -0.2, 4.0, +1), (3.4, -0.2, 4.0, 0), (-2.3, 3.0, 3.9, 0), (2.4, 3.1, 3.9, -1))
+
+
+def _hh(x: int, y: int, k: int) -> float:
+    h = (x * 374761393 + y * 668265263 + k * 2147483647) & 0xFFFFFFFF
+    h = ((h ^ (h >> 13)) * 1274126177) & 0xFFFFFFFF
+    return ((h ^ (h >> 16)) & 0xFFFF) / 65536
+
+
+def _hedge_tone(x: int, y: int, cx0: float, cy: float, r: float):
+    """잎 덩이 수관의 톤(1~4, 덩이 밖이면 None). 덩이마다 왼쪽 위가 밝고 오른쪽 아래 테 1px 은 짙은 틈(앞 덩이와 갈린다)."""
+    s = r / 7.6
+    t = None
+    for k, (dx, dy, rad, bias) in enumerate(HEDGE_CLUMPS):
+        cx, cyy, rr = cx0 + dx * s, cy + dy * s, rad * s
+        ex, ey = x + .5 - cx, y + .5 - cyy
+        d = math.hypot(ex, ey)
+        if d > rr:
+            continue
+        lt = -(ex * .62 + ey * .78) / rr + .05 + (_hh(x // 2, y // 2, 11 + k) - .5) * .38
+        tt = 4 if lt > .62 else 3 if lt > .15 else 2 if lt > -.45 else 1
+        tt = max(1, min(4, tt + bias))
+        if d > rr - 1.2 and (ex * .6 + ey * .8) > .15 * rr:
+            tt = 1
+        t = tt
+    if t in (2, 3):
+        h = int(_hh(x, y, 29) * 19)                      # 잎 점 — 넓은 면이 판판하지 않게
+        t = 4 if (t == 3 and h == 0) else 1 if (t == 2 and h == 1) else t
+    return t
+
+
 def hedge(P, m: int, floor_im):
-    """나무 줄 칸막이(무지개시티·검방울): 같은 칸막이 모양 안에 칸마다 둥근 나무 한 그루.
-    윗면 칸 = 둥근 수관(왼쪽 위 밝음, 테는 잎의 최암 톤), 앞면 칸 = 수관 아랫부분 + 짧은 줄기 + 줄기 둘레 진한 그늘. 그루 사이 틈은 최암 톤 — 칸 수가 읽힌다."""
+    """나무 줄 칸막이(무지개시티·검방울): 같은 칸막이 모양 안에 칸마다 둥근 나무 한 그루 — 본 시트 GBA 수관과 같은 잎 덩이 결.
+    윗면 칸 = 잎 덩이 다섯을 얹은 수관(왼쪽 위 밝음, 둘레는 잎의 최암 톤), 앞면 칸 = 수관 아랫부분 + 짧은 줄기 + 줄기 둘레 진한 그늘. 그루 사이 틈은 최암 톤 — 칸 수가 읽힌다."""
     wall_, kind = g2._virtual(m)
-    lf, tr = P["gy_hedge"], P["i2_wood"]
+    lf, tr = P["gy_hedge"], P["trunk"] if "trunk" in P else P["i2_wood"]
     ol = lf[0]
     me_face = not (m & S)
-    # 세로 팔(한 칸 폭) 칸: 벽 모양 폭에 맞춘 둥근 관목 한 그루 — 수관 원이 벽 모양 양옆에 잘려 각진 녹색 상자로 보였다(I2 Y8).
     row = [wall_[T + 8][T + x] for x in range(T)]
     narrow = not (row[0] and row[T - 1]) and any(row)
     if narrow:
@@ -388,6 +420,9 @@ def hedge(P, m: int, floor_im):
         cx0, rw = (lx + rx + 1) / 2, (rx - lx + 1) / 2 - 0.2
     else:
         cx0, rw = 8.0, None
+    cy, r = (6.0, 6.8) if me_face else (8.0, 7.8)
+    if rw is not None:
+        r = min(r, rw)
     im = px.new()
     for y in range(T):
         for x in range(T):
@@ -397,23 +432,16 @@ def hedge(P, m: int, floor_im):
                 im.putpixel((x, y), _shade(c, SH) if me_face and y == T - 1 else c)
                 continue
             edge = any(not wall_[Y + dy][X + dx] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
-            cy, r = (6.0, 6.6) if me_face else (8.0, 7.6)
-            if rw is not None:
-                r = min(r, rw)
-            dx, dy = x + 0.5 - cx0, y + 0.5 - cy
-            d = math.hypot(dx, dy * (1.1 if me_face else 1.0))
             if edge:
-                c = ol
-            elif d <= r:
-                l = -(dx + dy) / r
-                c = lf[4] if (l > 0.95 and d > r * 0.35) else lf[3] if l > 0.25 else lf[2] if l > -0.6 else lf[1]
-                if d > r - 1:
-                    c = ol
-                for bx, by in ((5, cy - 2), (10, cy + 1)):        # 잎 덩이 아래 그늘 1px — 수관에 덩이 결
-                    if abs(x - bx) <= 1 and y == round(by) + 2 and c not in (ol, lf[4]):
-                        c = lf[1]
+                im.putpixel((x, y), ol)
+                continue
+            t = _hedge_tone(x, y, cx0, cy, r)
+            if t is not None:
+                ring = _hedge_tone(x + 1, y, cx0, cy, r) is None or _hedge_tone(x - 1, y, cx0, cy, r) is None or \
+                    _hedge_tone(x, y + 1, cx0, cy, r) is None or _hedge_tone(x, y - 1, cx0, cy, r) is None
+                c = ol if ring else lf[t]
             elif me_face and int(cx0) - 1 <= x <= int(cx0) and y >= cy + r - 1:
-                c = tr[0] if x == int(cx0) else tr[1]
+                c = tr[2] if x == int(cx0) - 1 else tr[1]                 # 줄기: 왼쪽 밝음 · 오른쪽 어둠
             else:
                 c = ol
             im.putpixel((x, y), c)

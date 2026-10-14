@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e6d3e5021d62de7a2655926b74944a25da8e6883bdda1a46fa024e2630a4682d",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "lab table with three blue orbs",
+ "label": "monster-rooms/lab_balltable",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "lab table with recessed vat and legs",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab table clearly displays a top surface/vat spanning rows 7 to 20 (around 13-14 rows) containing liquid and orbs, with a south-facing front apron (rows 21-22) and vertical legs beneath.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5097
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "lab table with green liquid vat",
+    "kind_matches": true,
+    "top_rows": 13,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The table top / recessed vat is clearly seen from above spanning rows 7-19 (approx 13 rows), with a south-facing front apron from rows 20-22 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4900
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "rectangular lab table with sunken liquid tank containing three blue orbs",
+    "kind_matches": true,
+    "top_rows": 14,
+    "opening_visible": true,
+    "opening_rows": 12,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The lab table clearly shows its expansive top surface containing a green tank (rows 6-19, 14 rows deep) seen foreshortened from above, along with its front rim (rows 20-22) and front legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 6822
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "lab table / vat containing green fluid and three blue orbs",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the table/vat with green liquid and orbs is clearly visible from above across rows 7-18 (approx. 12 pixel rows), with the front rim and apron visible on rows 19-22 supported by legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4440
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "3bb1336858865dcc",
+   "5c0bd2c1eb0bc285",
+   "5f9ba9e6b0fd4466",
+   "73b250f1a7e16057",
+   "7e452d88c1c15e60",
+   "e109ed85e55b4e85"
+  ],
+  "24": [
+   "08036698025137c5",
+   "2a08938c896cec0b",
+   "399919e7ccefff2e",
+   "4e8408aa7d65baf1",
+   "4ee36ff4ba20d2e1",
+   "60bdb6ad61128cd3",
+   "c92c619df11c1c1f",
+   "dc307861fc27fdcd"
+  ],
+  "32": [
+   "40cd95b298658463",
+   "4a91f0cc6b8a997b",
+   "ac23d853d57961c7",
+   "ad7cc5f7ebd7427b",
+   "d7ec48929f3b0591",
+   "d8294746d9c50e53"
+  ],
+  "48": [
+   "a6e6cb5e4eb9cfeb",
+   "b520f5ebcf158c71"
+  ]
+ }
+}

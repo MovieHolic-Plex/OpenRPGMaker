@@ -1,0 +1,127 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "37eb2ccd4578b98f85276e06b8e27aa7e6bb05be2e4564f4d2373cbf52fe28f4",
+ "width": 64,
+ "height": 48,
+ "kind": "terrain",
+ "name": "carpet room floor tiles with entry mat",
+ "label": "monster-rooms/rm_fl_carpet",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "carpet floor with entry mat",
+    "kind_matches": true,
+    "top_rows": 12,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat terrain floor tiles with a diamond-pattern carpet and a rectangular red entry mat drawn flat on the ground plane.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3906
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "carpet floor tiles with an entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts flat terrain/floor tiles featuring a diamond-patterned blue carpet with an entry mat lying flat on the surface.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3303
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "carpet floor tiles with an entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The image depicts flat terrain floor tiles with a diamond pattern and a small rectangular entry mat laid flat on the floor.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2633
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "carpet floor and entry mat",
+    "kind_matches": true,
+    "top_rows": 48,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "Flat floor terrain tiles with a red mat lying flat on the ground plane, consistent with top-down 3/4 perspective.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3487
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.767Z",
+ "cells": {
+  "16": [
+   "2e47604f20ef1d8d",
+   "9d6ea004fed93dd5",
+   "b1849513627d771a"
+  ],
+  "24": [
+   "06a4c82f2ac12d28",
+   "07a0b1d6f6e5afd5",
+   "21edd0088bd67928",
+   "3be03feac35fcb60",
+   "47fd09dcd1f20e28",
+   "50a077f92c4acfad",
+   "62b5c6ccf1e58cbf",
+   "6f5fa3759526e775",
+   "81e59b31da35ed1e",
+   "83fe2b3332e5762e",
+   "8ef0923ffb5bc5c9",
+   "966a8670c3a979e0",
+   "d2c21bfcad9533be",
+   "db9081784958f428",
+   "fdb1da798e5dc5ba"
+  ],
+  "32": [
+   "352e5d02d3ee9471",
+   "375526371154bab5",
+   "3c0f6372f13dbc1c",
+   "b25d7c8263230c89",
+   "def25241c1e733d4",
+   "e7493dba20bb866f"
+  ],
+  "48": [
+   "046233993142f990",
+   "25a60ce9701046f0",
+   "3ed47c151f690068",
+   "49cf1178226fef1c",
+   "7175f89385c51a0b",
+   "f5cefde90f9636e6"
+  ]
+ }
+}

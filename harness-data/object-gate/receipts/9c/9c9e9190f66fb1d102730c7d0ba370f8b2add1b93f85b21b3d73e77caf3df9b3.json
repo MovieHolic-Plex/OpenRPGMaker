@@ -1,0 +1,120 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "9c9e9190f66fb1d102730c7d0ba370f8b2add1b93f85b21b3d73e77caf3df9b3",
+ "width": 16,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "student desk with chair",
+ "label": "monster-rooms/sc_desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "student desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is viewed from above across rows 3-9 (7 rows tall) with a piece of paper on it, above a 3-row front apron (rows 10-12) and legs.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3815
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "student desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desktop surface is clearly visible from rows 3 to 8 (6 rows tall with paper resting on it), followed by a light edge and front apron at rows 10-12 and legs below.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3205
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is visible from rows 3 to 9 (7 rows tall) showing a book/paper, with a front face extending from rows 10 to 13, and the chair behind it also shows top surfaces.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 9696
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly foreshortened and visible from above across rows 3-8 (6 rows), showing a piece of paper on top, followed by a south-facing front face on rows 10-12.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3007
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "b89641c35d36356a",
+   "da3e24941c7169e8"
+  ],
+  "24": [
+   "4421e2cff6dd857a",
+   "5c1f4fd8f27539d0",
+   "62ab22c685307257",
+   "7ec3d7f5ac79e7e0",
+   "a0d69468c78f0e16",
+   "adf0b2b023d5872b",
+   "c6905da4877e7b73",
+   "ceb6c1e9bbf98497",
+   "d09352c1c7656831",
+   "e128e29506f82e77",
+   "f1016af37ddc209e",
+   "f7d7ae5d7d7027cb"
+  ],
+  "32": [
+   "9c23655c83b113d6",
+   "b42b603207400b27",
+   "d09af33f5b581735"
+  ],
+  "48": [
+   "1b01753a4e90e8ed",
+   "23aa45b4fddc9314",
+   "49f41b2a297fba2d",
+   "518d22a386b4135b",
+   "836b9738346bd22a",
+   "bd8c3e5ff2de18e2"
+  ]
+ }
+}

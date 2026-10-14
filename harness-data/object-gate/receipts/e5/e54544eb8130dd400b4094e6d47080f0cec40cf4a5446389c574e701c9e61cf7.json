@@ -1,0 +1,119 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "e54544eb8130dd400b4094e6d47080f0cec40cf4a5446389c574e701c9e61cf7",
+ "width": 48,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "ship model display stand",
+ "label": "monster-rooms/mu_ship",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "display stand table with ship model on top",
+    "kind_matches": true,
+    "top_rows": 9,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display stand has a clearly foreshortened top surface spanning rows 10 to 18 (9 rows) upon which the ship model rests, with the front face of the stand visible below from rows 19 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4071
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "display stand table with ship model on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display stand shows a clear top surface spanning rows 10 to 19 (10 pixels deep) upon which the ship model rests, followed by a south-facing drawer front from rows 20 to 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4120
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "display stand table",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The display stand's top surface occupies rows 10 to 19 (10 source pixel rows), and its front face extends from row 20 to 25. The horizontal surface of the stand is clearly foreshortened and visible from above in standard 3/4 view.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3891
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "display stand table with ship model on top",
+    "kind_matches": true,
+    "top_rows": 10,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The top surface of the display stand extends from row 10 to row 19 (10 pixel rows deep) upon which the ship model rests, with the front face extending from row 20 to row 25.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4154
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.764Z",
+ "cells": {
+  "16": [
+   "0fe35f2a079ca76f",
+   "3e6c5494bea086fa",
+   "40ddb193c13e1e40",
+   "4ab2e681dc40b109",
+   "a5cd52ff23589496",
+   "cca435e640b16830"
+  ],
+  "24": [
+   "192311b731e36dc3",
+   "2cf4bf62345aca5c",
+   "3d6199ba9c2d08ff",
+   "4c85fd742863229c",
+   "590361ec1b250cec",
+   "832b3b0a723822cd",
+   "a4f8210167b5d7a2",
+   "f87c8d309a148f1b"
+  ],
+  "32": [
+   "02a47455dfc2b5ae",
+   "0e2bdb80ffd8b5e2",
+   "1e7fc8fc94c57644",
+   "c6671d0ba20516a1",
+   "ceeab7b491d8f3df",
+   "d1ff392235417b8f"
+  ],
+  "48": [
+   "6c6ccc987bfee97f",
+   "aa1931858373d2be"
+  ]
+ }
+}

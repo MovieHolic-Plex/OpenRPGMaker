@@ -1,0 +1,132 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "b146b03d82e8b1c4f684efd5d6b8bb93d96d545e7a38651a24e98ff4c15ef533",
+ "width": 32,
+ "height": 32,
+ "kind": "low_furniture",
+ "name": "researcher desk with monitor and microscope",
+ "label": "monster-rooms/lab_desk",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk top surface is clearly visible from rows 15 to 21 (7 rows deep), holding the monitor, keyboard, papers, and microscope base, above a front-facing set of drawers (rows 22-28).",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4246
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 7,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk surface is clearly rendered from above across rows 15-21 (7 pixel rows), supporting the equipment, with the south drawer front face spanning rows 22-28.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 5630
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The desk tabletop surface is clearly visible from row 16 to 21 (6 pixel rows) supporting the monitor, keyboard, papers, and microscope, above a 7-row south-facing drawer front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4010
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "wooden desk",
+    "kind_matches": true,
+    "top_rows": 6,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": false,
+    "evidence": "The tabletop has a clearly visible top surface spanning rows 16 to 21 (6 rows deep) with equipment resting on it, followed by a south-facing drawer front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2774
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.763Z",
+ "cells": {
+  "16": [
+   "b9132b9ccd344978",
+   "caa0e5e368dd5d32",
+   "cd64fe8677fb81e4",
+   "e1a58661e518d907"
+  ],
+  "24": [
+   "01f10574d3f27070",
+   "07592f82100a1f73",
+   "0c890ae034705be4",
+   "145870b07912468f",
+   "1be3263c8b63d39c",
+   "24527d2ccbb0e914",
+   "2cb96158b85dbc0a",
+   "424eb070d6e9db43",
+   "6613581ebbf1625f",
+   "6ad43c6c114d8d88",
+   "6b296f9e4db2f74b",
+   "6f2ffb469ef69ac3",
+   "94755dc1d552d8d8",
+   "ab44fc66263b4130",
+   "b67a505f10f2e1f9",
+   "c85097115134c91c",
+   "d37f07835b1fe4f7",
+   "d478bb38e2132efd",
+   "d9e8c6634127915d",
+   "dc74be5746c4c440",
+   "dcf50d343a7a4f21",
+   "e0e7500a9d995e97",
+   "e6002fa74b516980",
+   "f7ea1b39ca7e1901"
+  ],
+  "32": [
+   "bad1e836479f38e0"
+  ],
+  "48": [
+   "14aeaa88a5482aaf",
+   "169c4a2355c0e0ba",
+   "19402fc4c0464309",
+   "1e3f220f88b929af",
+   "cbd21d954a53ce98",
+   "d3f0e58a42dab495"
+  ]
+ }
+}

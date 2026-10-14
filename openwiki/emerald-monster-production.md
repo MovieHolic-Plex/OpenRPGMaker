@@ -59,6 +59,10 @@ imagegen prompt. The untouched generated PNG is **1536×1024** (3:2), SHA
 The prompt requested GBA pixel composition; this asset is not falsely described
 as a native 240×160 file. The runtime fits it into the authored 480×320 stage with
 pixelated sampling. `title-provenance.json` records dimensions and generation.
+Theme variants (2026-10-14): `src/project/emeraldMonsterTitleArt.ts` picks the title art by
+`startTheme` — coast keeps the stag; meadow/default, desert and snow use 240×160 coordinate pixel art
+from `scripts/content/monster-title-art.py` (`title-<meadow|desert|snow>{.png,-asset.json}`), not generated images.
+Re-run the script to regenerate; the asset id must equal `MONSTER_TITLE_ART_IDS[theme]`.
 ## Field cast
 
 `scripts/content/emerald-field-cast.py` owns reproducible original coordinate art:

@@ -1,0 +1,114 @@
+{
+ "schema": "oprn-object-gate-receipt/1",
+ "pixelSha256": "783bf17fd9e9cb1c029d3381c41b2a8391e58502d57635d0f21a4f20ab9357ff",
+ "width": 16,
+ "height": 32,
+ "kind": "wall_mounted",
+ "name": "porthole window on the wall",
+ "label": "monster-rooms/sh_porthole",
+ "profileHash": "ca6aaa9c55194dc5",
+ "verdict": "pass",
+ "reasons": [],
+ "runs": [
+  {
+   "judge": "gemini",
+   "run": 1,
+   "answer": {
+    "main_body": "porthole frame and glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular porthole window mounted flat against a vertical wall; wall_mounted objects are appropriately drawn facing front.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 4408
+  },
+  {
+   "judge": "gemini",
+   "run": 2,
+   "answer": {
+    "main_body": "porthole window frame and glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Circular brass porthole mounted flat to the wall with glass reflection; flat front view is standard and correct for wall-mounted north-wall objects.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3889
+  },
+  {
+   "judge": "gemini",
+   "run": 3,
+   "answer": {
+    "main_body": "brass porthole window",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Flat wall-mounted circular window with a brass frame and glass reflection, appropriately rendered flat against a north-facing wall.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 3970
+  },
+  {
+   "judge": "gemini",
+   "run": 4,
+   "answer": {
+    "main_body": "porthole frame and glass",
+    "kind_matches": true,
+    "top_rows": 0,
+    "opening_visible": null,
+    "opening_rows": null,
+    "side_face_visible": false,
+    "pure_front_elevation": true,
+    "evidence": "Wall-mounted circular porthole window facing frontally; flat frontal view is standard and permitted for wall-mounted objects on north walls.",
+    "verdict": "pass"
+   },
+   "pass": true,
+   "reasons": [],
+   "ms": 2830
+  }
+ ],
+ "decidedAt": "2026-10-14T05:11:37.765Z",
+ "cells": {
+  "16": [
+   "5436f7c0ba2d6767",
+   "c677b477e4a3f438"
+  ],
+  "24": [
+   "03c3eb5904f70665",
+   "18987746ed83931e",
+   "3089d74074985fa8",
+   "33dc5782f8c1389f",
+   "4c2f0d374c329d64",
+   "73455f5f8c3945f7"
+  ],
+  "32": [
+   "7654e89c0082d36e",
+   "c6604ea24226a9bb",
+   "e11abb655a67372b"
+  ],
+  "48": [
+   "261dd14feaa4eda1",
+   "43734964f4b45164",
+   "4f10c19c36a34d9f",
+   "a572c3d834e2195a",
+   "a9e1026ace8fa9a5",
+   "e3b824a705181b3a"
+  ]
+ }
+}
