@@ -4,6 +4,8 @@
 // 좌표 규약: 배우의 위치는 «발 밑 가운데»(x = 가로 중심, y = 바닥) 픽셀. 모든 그림은 100% 배율(도트 크기를 섞지 않는다).
 // 같은 때에 겹쳐 도는 일(withPrevious)은 시각 표를 합쳐 wait 로 이어 붙인다 — parallel beat 와 달리 걷기 프레임 교체·이징도 동시에 돈다.
 
+import { SPRITE_POSES, type SpritePose } from "../../project/eventCommands/cinematicStaging";
+
 export type Side = "left" | "right" | "top" | "bottom";
 export type Facing = "left" | "right";
 
@@ -336,6 +338,11 @@ export function compileStage(input: StageInput): StageResult {
         }
         case "pose": {
           const a = actorOf(step.actor, index);
+          // 맵 위 배우는 스프라이트 자세(눕기·웅크리기·뜨기)를 그대로 쓴다 — 회전으로 눕는 척하지 않는다.
+          if (a.spec.mapTarget !== undefined && !a.spec.poses[step.pose] && (SPRITE_POSES as readonly string[]).includes(step.pose)) {
+            out.push({ kind: "look", target: a.spec.mapTarget, pose: step.pose as SpritePose });
+            break;
+          }
           if (!a.spec.poses[step.pose]) throw new StageError(`배우 '${a.spec.name}' 에 포즈 '${step.pose}' 가 없습니다(있는 포즈: ${Object.keys(a.spec.poses).join(", ")}).`, index);
           a.pose = step.pose;
           for (const beat of showBeats(a)) events.push({ t: 0, order: order.n++, beat });

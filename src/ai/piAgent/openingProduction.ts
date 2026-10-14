@@ -97,6 +97,10 @@ export class PiOpeningProduction {
       else {
         if (!/"kind":"auto"/u.test(events)) issues.push('시작 맵의 오프닝 이벤트가 자동 실행(trigger:"auto")이 아닙니다. 새 게임 직후 자동으로 재생되어야 합니다.');
         if (!/"kind":"(?:move|moveRoute|setMoveRoute|camera)|m2-[0-9]+-(?:move|scroll|camera)|moveActor|scroll/iu.test(events)) issues.push('오프닝 이벤트에 인물 이동·카메라 연출이 없습니다. 인물이 걷고 카메라가 따라가거나 훑는 연출을 넣으세요.');
+        // 다른 맵으로 옮긴 뒤 도착 맵에 이어지는 자동 연출이 없으면 장면이 거기서 끊긴다(실측: 침실→마을 전환 뒤 아무 일도 없던 오프닝).
+        const dest = [...events.matchAll(/"kind":"transfer"[^}]*?"mapId":"([^"]+)"/gu)].map(m => m[1]).find(id => id !== start.id && project.maps[id]);
+        if (dest && !/"kind":"auto"/u.test(JSON.stringify(project.maps[dest]?.events ?? []))) issues.push(`오프닝이 맵 '${dest}' 로 옮겨 가지만 그 맵에 이어지는 자동(trigger:"auto") 연출이 없어 장면이 끊깁니다. 도착 맵의 연출을 script_cutscene_staged 로 이어 쓰거나, 한 맵 안에서 끝내세요.`);
+        if (/한밤|밤(?:중|하늘|거리|길|에)|야간|달빛|\bnight(?:time)?\b|midnight|moonlit/iu.test(this.task) && !/tint/iu.test(events)) issues.push('요청에 밤 장면이 있는데 오프닝에 화면 색조(tint)가 없어 낮처럼 보입니다. script_cutscene_staged 의 tint(tintPreset night/moonlit)를 쓰세요.');
       }
       // 객관 검증 — 조수의 보고가 아니라 측정치와 독립 판정자의 판정을 근거로 삼는다(runtime 이 바로 앞에서 실행해 기록한다).
       if (this.cutsceneReview && this.cutsceneReview.fingerprint === this.cutsceneFingerprint(project)) {

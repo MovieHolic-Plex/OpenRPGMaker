@@ -1155,6 +1155,12 @@ function validateStagingBeat(beat: CutsceneBeat, path: string, errors: string[])
   if (beat.kind === "look" && beat.pose !== undefined && !(SPRITE_POSES as readonly string[]).includes(beat.pose)) {
     errors.push(`${path}.pose: 자세는 ${SPRITE_POSES.join("·")} 중 하나입니다(받은 값 '${String(beat.pose)}').`);
   }
+  if (beat.kind === "look" && typeof beat.angle === "number" && Number.isFinite(beat.angle)) {
+    const a = ((Math.abs(beat.angle) % 360) + 360) % 360;
+    if ((a >= 60 && a <= 120) || (a >= 240 && a <= 300)) {
+      errors.push(`${path}.angle: 90° 가까이 돌려 쓰러진 척하지 마세요(몸통이 통째로 회전해 어색합니다). 눕기·쓰러짐은 pose "fallen"(오른쪽)·"fallenLeft"(왼쪽), 일어나기는 pose "normal" 로 되돌립니다.`);
+    }
+  }
   if (beat.kind === "look" && beat.tint !== undefined && beat.tint !== "none" && !spriteTintHex(beat.tint)) {
     errors.push(`${path}.tint: 색은 ${Object.keys(SPRITE_TINT_NAMES).join("·")}·none 또는 #rrggbb 입니다(받은 값 '${beat.tint}').`);
   }
