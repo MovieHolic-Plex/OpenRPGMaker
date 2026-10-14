@@ -831,3 +831,356 @@ def gondola_v(c):
         _stand(c, 2, yy, 4, 4, ('red', 'amber', 'blue', 'leaf', 'plum', 'teal')[j % 6])
         _stand(c, 10, yy + 2, 4, 4, ('teal', 'white', 'red', 'amber', 'blue', 'leaf')[j % 6])
     _shelf_bay(c, 2, 37, 12, 4, s=13); _shelf_bay(c, 2, 41, 12, 4, s=14)
+
+
+# ═══════════════ 3차(관문 3회차 불합격 20점) ═══════════════
+# 통과한 이웃 칩셋(캠퍼스 자판기·배식대·사물함)과 대조한 차이: 그쪽 윗면은 «중간 밝기 + 가는 가로 결(두 행마다 한 단)» 이고
+# 윗면 위 물건은 «테두리 안에 박힌 쟁반·상자»(안쪽 그늘 1px)다. 우리 윗면은 거의 흰색 띠라 «앞 간판»으로 읽혔다.
+
+def ribtop(c, x, y, w, top, front, mat, tt, ft):
+    """결 있는 윗면(뒤 1행 어둡게 · 두 행마다 한 단 · 앞 모서리 밝은 테) + 앞면 + ink 테."""
+    n = NT[MI[mat]]
+    for j in range(top):
+        t = tt - 1 if j == 0 else (tt if j % 2 else tt - 1)
+        if j == top - 1: t = min(n - 1, tt + 1)
+        c.HL(x, y + j, w, mat, max(0, t))
+    c.R(x, y + top, w, front, mat, ft); c.HL(x, y + top, w, mat, max(0, ft - 1))
+    if front > 3: c.VL(x + 1, y + top + 1, front - 2, mat, min(n - 1, ft + 1))
+    _ol(c, x, y, w, top + front)
+    return y + top
+
+
+def inset(c, x, y, w, h, mat, t):
+    """윗면에 박힌 쟁반·물건: 안쪽 그늘(위·왼 1px ink) + 속."""
+    c.R(x, y, w, h, mat, t); c.HL(x, y, w, 'ink', 1); c.VL(x, y, h, 'ink', 1)
+    c.HL(x + 1, y + h - 1, w - 1, mat, min(NT[MI[mat]] - 1, t + 1))
+
+
+def copier(c):
+    top = ribtop(c, 0, 2, 16, 11, 17, 'grey', 3, 1)
+    inset(c, 2, 4, 8, 5, 'grey', 5); inset(c, 11, 4, 4, 3, 'blue', 3); inset(c, 2, 10, 7, 2, 'white', 2)
+    for k in range(3):
+        yy = top + 1 + k * 5
+        panel(c, 2, yy, 12, 4, 'grey', 2); c.HL(6, yy + 2, 4, 'dark', 2)
+
+
+def server_rack(c):
+    for k in range(2):
+        x = k * 16
+        top = ribtop(c, x, 0, 16, 9, 22, 'slate', 3, 0)
+        inset(c, x + 3, 2, 10, 4, 'dark', 2); c.P(x + 4, 4, 'leaf', 5)
+        for r in range(6):
+            yy = top + 1 + r * 3
+            c.HL(x + 2, yy, 12, 'dark', 3); c.HL(x + 2, yy + 1, 12, 'dark', 1)
+            for i in range(3):
+                if h32(r, i + k * 7, 41) % 3: c.P(x + 3 + i * 2, yy + 1, ('leaf', 'amber', 'blue')[h32(r, i, 42) % 3], 4)
+
+
+def gondola_v(c):
+    ribtop(c, 0, 2, 16, 34, 11, 'grey', 3, 1)
+    for j, yy in enumerate(range(4, 33, 5)):
+        inset(c, 2, yy, 5, 4, ('red', 'amber', 'blue', 'leaf', 'plum', 'teal')[j % 6], 3)
+        inset(c, 9, yy + 2, 5, 4, ('teal', 'white', 'red', 'amber', 'blue', 'leaf')[j % 6], 2 if j % 6 == 1 else 3)
+    _shelf_bay(c, 2, 37, 12, 4, s=13); _shelf_bay(c, 2, 41, 12, 4, s=14)
+
+
+def cooler(c):
+    top = ribtop(c, 0, 0, 32, 9, 22, 'slate', 3, 1)
+    inset(c, 3, 2, 10, 5, 'wood', 3); inset(c, 18, 3, 9, 4, 'beige', 3)
+    for k in range(2):
+        x = 2 + k * 15
+        c.R(x, top + 1, 13, 19, 'teal', 1)
+        for r in range(3):
+            yy = top + 1 + r * 6
+            for i in range(6):
+                m = ('red', 'amber', 'leaf', 'blue', 'teal', 'plum')[h32(i, r + k * 4, 44) % 6]
+                n = NT[MI[m]]
+                c.VL(x + 1 + i * 2, yy + 2, 2, m, n - 2); c.P(x + 1 + i * 2, yy + 1, m, n - 1)
+            c.HL(x, yy + 4, 13, 'white', 1); c.HL(x, yy + 5, 13, 'grey', 3)
+        c.VL(x + (11 if k == 0 else 1), top + 5, 8, 'grey', 5)
+        _ol(c, x - 1, top, 15, 21)
+
+
+def magazine_rack(c):
+    top = ribtop(c, 0, 6, 32, 10, 14, 'grey', 3, 1)
+    for k, m in enumerate(('blue', 'red', 'amber', 'leaf')):
+        inset(c, 2 + k * 7, 8 + (k % 2), 6, 5, m, NT[MI[m]] - 2); c.R(3 + k * 7, 10 + (k % 2), 3, 1, 'white', 2)
+    for r in range(2):
+        yy = top + 1 + r * 6
+        c.R(1, yy, 30, 5, 'dark', 1)
+        for k in range(5):
+            m = ('red', 'blue', 'amber', 'leaf', 'plum')[(k + r * 2) % 5]
+            c.R(2 + k * 6, yy + 1, 5, 3, m, NT[MI[m]] - 3); c.HL(2 + k * 6, yy + 1, 5, m, NT[MI[m]] - 1)
+
+
+def atm(c):
+    top = ribtop(c, 0, 1, 16, 9, 21, 'grey', 3, 1)
+    inset(c, 3, 3, 10, 5, 'leaf', 3)
+    c.R(2, top + 1, 12, 6, 'dark', 1); c.R(3, top + 2, 10, 4, 'blue', 4)
+    c.R(2, top + 8, 12, 5, 'grey', 3)
+    for j in range(2):
+        for i in range(4): c.P(3 + i * 2, top + 9 + j * 2, 'dark', 2)
+    c.R(4, top + 15, 8, 1, 'dark', 1)
+
+
+def pastry_case(c):
+    top = ribtop(c, 0, 2, 32, 13, 14, 'wood', 3, 1)
+    inset(c, 2, 4, 28, 9, 'teal', 3)
+    for k, (m, t) in enumerate((('white', 2), ('brick', 4), ('amber', 4))):
+        x = 4 + k * 9
+        c.R(x + 1, 6, 5, 3, m, t); c.R(x + 1, 9, 5, 2, m, max(0, t - 2)); c.P(x + 3, 6, 'red', 5); _ol(c, x, 5, 7, 7)
+    for k in range(2): panel(c, 2 + k * 15, top + 2, 13, 9, 'wood', 2)
+
+
+def _gate_body(c, x, y, w, mat='grey', pad='teal'):
+    ribtop(c, x, y, w, 11, 11, mat, 3, 1)
+    inset(c, x + 2, y + 2, w - 4, 5, pad, 3); c.P(x + w - 3, y + 8, 'leaf', 5)
+
+
+def security_gate(c):
+    _gate_body(c, 0, 5, 11); _gate_body(c, 21, 5, 11)
+    for xx in (11, 17):
+        c.R(xx, 10, 4, 3, 'teal', 4); c.R(xx, 13, 4, 6, 'teal', 2); _ol(c, xx, 9, 4, 11)
+
+
+def ticket_gate(c):
+    _gate_body(c, 0, 3, 12, 'grey', 'blue'); _gate_body(c, 20, 3, 12, 'grey', 'blue')
+    for xx in (12, 16):
+        c.R(xx, 10, 4, 3, 'red', 5); c.R(xx, 13, 4, 5, 'red', 2); _ol(c, xx, 9, 4, 10)
+
+
+def ticket_machine(c):
+    for k in range(2):
+        x = k * 16
+        top = ribtop(c, x, 0, 16, 9, 22, 'navy', 3, 1)
+        inset(c, x + 3, 2, 10, 5, 'blue', 3)
+        c.R(x + 2, top + 2, 12, 7, 'dark', 1); c.R(x + 3, top + 3, 10, 5, 'blue', 4)
+        for i in range(3): c.R(x + 4 + i * 3, top + 5, 2, 2, ('amber', 'leaf', 'red')[i], 4)
+        c.R(x + 3, top + 11, 4, 1, 'dark', 1); c.R(x + 10, top + 11, 3, 2, 'dark', 1); c.R(x + 4, top + 16, 8, 2, 'dark', 1)
+
+
+def rack(c):
+    ribtop(c, 0, 0, 48, 9, 22, 'wood', 3, 1)
+    for k in range(3): inset(c, 4 + k * 15, 2, 10, 5, 'amber', 2)
+    for r in range(2):
+        yy = 10 + r * 11
+        c.R(1, yy, 46, 10, 'dark', 0)
+        for k in range(4):
+            bx = 3 + k * 11; bw = 9 - (k % 2)
+            _stand(c, bx, yy + 2 + (k + r) % 2, bw, 7 - (k + r) % 2, 'wood', 5)
+        c.HL(1, yy + 9, 46, 'blue', 4)
+    for x in (0, 23, 45):
+        c.R(x, 9, 3, 22, 'brick', 4); c.VL(x + 2, 9, 22, 'brick', 2)
+    _ol(c, 0, 0, 48, 32)
+
+
+def partition(c):
+    top = ribtop(c, 0, 6, 32, 7, 13, 'grey', 3, 1)
+    inset(c, 3, 8, 6, 3, 'leaf', 4); inset(c, 19, 8, 8, 3, 'white', 2)
+    for y in range(top, top + 12):
+        for x in range(1, 31): c.P(x, y, 'slate', 3 if rnd(x, y // 2, 40) > 0.25 else 2)
+    c.VL(16, top, 12, 'grey', 3); _ol(c, 0, top, 32, 13)
+    for x in (2, 25):
+        ribtop(c, x, 25, 5, 3, 2, 'grey', 4, 2)
+
+
+def stanchion(c):
+    """줄 세우기 기둥: 넓은 원판(결 있는 윗면 타원) + 굵은 기둥 + 둥근 머리(윗면 타원) + 붉은 띠."""
+    c.ell(7, 26, 6.5, 3.5, lambda x, y, dx, dy, d: ('grey', 3 if int(y) % 2 else 4) if d < 0.7 else ('grey', 1))
+    c.ell(7, 26, 6.5, 3.5, lambda x, y, dx, dy, d: ('ink', 1) if d > 0.88 else None)
+    c.R(4, 9, 6, 17, 'grey', 3); c.VL(4, 9, 17, 'grey', 5); c.VL(9, 9, 17, 'grey', 1); c.VL(3, 9, 17, 'ink', 1); c.VL(10, 9, 17, 'ink', 1)
+    c.ell(7, 8, 4.5, 3, lambda x, y, dx, dy, d: ('grey', 3 if int(y) % 2 else 4) if d < 0.7 else ('grey', 5))
+    c.ell(7, 8, 4.5, 3, lambda x, y, dx, dy, d: ('ink', 1) if d > 0.8 else None)
+    for x in range(11, 16):
+        y = 13 + int(round(2 * math.sin((x - 11) / 5 * math.pi)))
+        c.P(x, y, 'red', 5); c.P(x, y + 1, 'red', 2)
+
+
+def hosp_curtain(c):
+    """병상 칸막이: 낮은 바퀴 받침대 위 천 판 셋 — 받침대 윗면(결)이 넓게 보이고 판 위 테도 윗면 3행."""
+    ribtop(c, 0, 20, 32, 6, 4, 'grey', 3, 1)
+    for k in range(3):
+        x = 1 + k * 10
+        c.R(x, 4, 10, 3, 'grey', 4); c.HL(x, 4, 10, 'grey', 3); c.HL(x, 6, 10, 'grey', 5)
+        for xx in range(x, x + 10):
+            for y in range(7, 21): c.P(xx, y, 'sage', (5, 4)[(xx // 2) % 2])
+        _ol(c, x, 3, 10, 18)
+    for x in (2, 15, 28): c.R(x - 1, 30, 2, 2, 'dark', 1)
+
+
+def drums(c):
+    """드럼통 둘: 뚜껑 타원 위 결(두 행마다 한 단)·마개 + 몸통."""
+    for (cx, m) in ((5, 'blue'), (11, 'red')):
+        n = NT[MI[m]]
+        for x in range(cx - 4, cx + 4):
+            t = n - 3 if x < cx - 1 else n - 4 if x < cx + 2 else 1
+            c.VL(x, 13, 14, m, t)
+        c.HL(cx - 4, 18, 8, m, 0); c.HL(cx - 4, 23, 8, m, 0)
+    for (cx, m) in ((5, 'blue'), (11, 'red')):
+        n = NT[MI[m]]
+        c.ell(cx, 12, 4.4, 3.8, lambda x, y, dx, dy, d: ('grey', 4) if d > 0.55 else (m, n - 2 if int(y) % 2 else n - 1))
+        c.R(cx + 1, 11, 2, 1, 'dark', 2)
+    c.outline()
+
+
+def g_espresso(c):
+    top = ribtop(c, 1, 1, 14, 7, 7, 'grey', 3, 1)
+    inset(c, 3, 2, 4, 4, 'white', 2); inset(c, 9, 3, 4, 3, 'white', 2)
+    c.R(5, top + 1, 6, 2, 'dark', 2); c.R(6, top + 4, 4, 2, 'white', 2)
+
+
+def g_cake(c):
+    """케이크 쟁반: 결 있는 나무 쟁반 윗면 + 박힌 케이크 두 조각(위에서)."""
+    top = ribtop(c, 1, 3, 14, 9, 2, 'wood', 3, 1)
+    inset(c, 3, 5, 5, 5, 'white', 2); c.HL(4, 6, 4, 'red', 5)
+    inset(c, 9, 5, 5, 5, 'brick', 3); c.HL(10, 6, 4, 'wood', 5)
+
+
+def chair_office_n(c):
+    """사무용 의자 북향: 위에서 본 큰 앉는 판(결 · 팔걸이) + 남쪽 가장자리 얇은 등받이 윗면 + 바퀴."""
+    _office_base(c)
+    ribtop(c, 2, 7, 12, 12, 2, 'navy', 3, 1)
+    c.R(0, 10, 2, 8, 'dark', 3); c.R(14, 10, 2, 8, 'dark', 2); _ol(c, 0, 9, 2, 10); _ol(c, 14, 9, 2, 10)
+    c.R(3, 17, 10, 2, 'navy', 6); c.R(3, 19, 10, 4, 'navy', 2); _ol(c, 2, 16, 12, 8)
+
+
+def chair_wood_n(c):
+    """나무 의자 북향: 결 있는 앉는 판 윗면 12행 + 남쪽 얇은 등받이 가로대 + 다리."""
+    ribtop(c, 2, 5, 12, 12, 2, 'wood', 3, 1)
+    c.R(2, 15, 12, 2, 'wood', 5); c.R(2, 17, 12, 2, 'wood', 2); _ol(c, 1, 14, 14, 6)
+    for x in (3, 12): c.VL(x, 20, 9, 'wood', 1); c.P(x, 28, 'ink', 0)
+
+
+def cafe_chair_w(c):
+    """카페 의자 서향: 결 있는 앉는 판 윗면 9행 + 동쪽 등받이(윗면 띠) + 쇠 다리."""
+    ribtop(c, 3, 13, 10, 9, 2, 'wood', 3, 1)
+    for lx in (4, 11): c.VL(lx, 25, 5, 'dark', 3); c.P(lx, 29, 'ink', 0)
+    bx = 12
+    c.R(bx, 5, 3, 18, 'dark', 2); c.VL(bx + 1, 5, 17, 'dark', 4); c.R(bx, 5, 3, 2, 'dark', 5)
+    _ol(c, bx - 1, 4, 5, 20)
+
+
+# ═══════════════ 4차(마지막 — 이번에도 떨어지면 뺀다) ═══════════════
+# 판정자: 「row 1 이 곧 세로 간판 상자」. 통과한 냉장고·옷장·책상은 윗면 위 물건이 몸체 윤곽 «위로 솟는다».
+# 그래서 몸체를 3~4px 내리고, 윗면 뒤 모서리는 양끝 1px 씩 줄여(원근) 위에 선 물건이 윤곽 밖으로 솟게 그린다.
+
+def body(c, x, y, w, top, front, mat, tt, ft):
+    """원근 윗면(뒤 두 행은 양끝 1px 안쪽) + 결 + 앞면."""
+    r = ribtop(c, x, y, w, top, front, mat, tt, ft)
+    for j in range(2):
+        c.P(x + j, y + j, None); c.P(x + w - 1 - j, y + j, None)
+    c.P(x + 1, y + 1, 'ink', 1); c.P(x + w - 2, y + 1, 'ink', 1); c.P(x + 2, y, 'ink', 1); c.P(x + w - 3, y, 'ink', 1)
+    c.P(x, y + 2, 'ink', 1); c.P(x + w - 1, y + 2, 'ink', 1)
+    return r
+
+
+def _riser(c, x, y, w, h, mat, tt=None):
+    """윗면 위에 서서 몸체 윤곽 위로 솟는 상자(윗면 2행 + 앞면) + 발밑 그늘."""
+    n = NT[MI[mat]]
+    tt = n - 1 if tt is None else tt
+    c.R(x, y, w, 2, mat, tt); c.R(x, y + 2, w, h - 2, mat, max(0, tt - 3))
+    _ol(c, x, y - 1, w, h + 1)
+    c.HL(x + 1, y + h, w, 'ink', 2)
+
+
+def copier(c):
+    top = body(c, 0, 5, 16, 9, 17, 'grey', 3, 1)
+    _riser(c, 2, 2, 9, 5, 'grey', 5)                      # 원고 자동 급지 덮개(솟음)
+    inset(c, 11, 7, 4, 3, 'blue', 3); inset(c, 2, 10, 7, 2, 'white', 2)
+    for k in range(3):
+        yy = top + 1 + k * 5
+        panel(c, 2, yy, 12, 4, 'grey', 2); c.HL(6, yy + 2, 4, 'dark', 2)
+
+
+def server_rack(c):
+    for k in range(2):
+        x = k * 16
+        top = body(c, x, 4, 16, 8, 20, 'slate', 3, 0)
+        _riser(c, x + 3, 1, 9, 5, 'dark', 4); c.P(x + 4, 3, 'leaf', 5)
+        for r in range(6):
+            yy = top + 1 + r * 3
+            c.HL(x + 2, yy, 12, 'dark', 3); c.HL(x + 2, yy + 1, 12, 'dark', 1)
+            for i in range(3):
+                if h32(r, i + k * 7, 41) % 3: c.P(x + 3 + i * 2, yy + 1, ('leaf', 'amber', 'blue')[h32(r, i, 42) % 3], 4)
+
+
+def gondola_v(c):
+    body(c, 0, 6, 16, 30, 10, 'grey', 3, 1)
+    for j, yy in enumerate(range(4, 31, 5)):
+        _riser(c, 2, yy, 5, 6, ('red', 'amber', 'blue', 'leaf', 'plum', 'teal')[j % 6])
+        _riser(c, 9, yy + 2, 5, 6, ('teal', 'white', 'red', 'amber', 'blue', 'leaf')[j % 6])
+    _shelf_bay(c, 2, 37, 12, 4, s=13); _shelf_bay(c, 2, 41, 12, 4, s=14)
+
+
+def cooler(c):
+    top = body(c, 0, 4, 32, 8, 20, 'slate', 3, 1)
+    _riser(c, 3, 1, 10, 7, 'wood', 5); _riser(c, 18, 3, 8, 5, 'beige', 5)
+    for k in range(2):
+        x = 2 + k * 15
+        c.R(x, top + 1, 13, 17, 'teal', 1)
+        for r in range(3):
+            yy = top + 1 + r * 6
+            if yy + 5 > top + 18: break
+            for i in range(6):
+                m = ('red', 'amber', 'leaf', 'blue', 'teal', 'plum')[h32(i, r + k * 4, 44) % 6]
+                n = NT[MI[m]]
+                c.VL(x + 1 + i * 2, yy + 2, 2, m, n - 2); c.P(x + 1 + i * 2, yy + 1, m, n - 1)
+            c.HL(x, yy + 4, 13, 'white', 1); c.HL(x, yy + 5, 13, 'grey', 3)
+        c.VL(x + (11 if k == 0 else 1), top + 5, 8, 'grey', 5)
+        _ol(c, x - 1, top, 15, 19)
+
+
+def magazine_rack(c):
+    top = body(c, 0, 9, 32, 8, 13, 'grey', 3, 1)
+    for k, m in enumerate(('blue', 'red', 'amber', 'leaf', 'plum')):
+        _riser(c, 1 + k * 6, 4 + (k % 2), 5, 7, m)        # 뒤 줄에 세운 잡지(솟음)
+    for r in range(2):
+        yy = top + 1 + r * 6
+        c.R(1, yy, 30, 5, 'dark', 1)
+        for k in range(5):
+            m = ('red', 'blue', 'amber', 'leaf', 'plum')[(k + r * 2) % 5]
+            c.R(2 + k * 6, yy + 1, 5, 3, m, NT[MI[m]] - 3); c.HL(2 + k * 6, yy + 1, 5, m, NT[MI[m]] - 1)
+
+
+def atm(c):
+    top = body(c, 0, 5, 16, 8, 18, 'grey', 3, 1)
+    _riser(c, 3, 1, 10, 6, 'leaf', 4)                       # 위 안내 상자(솟음)
+    c.R(2, top + 1, 12, 6, 'dark', 1); c.R(3, top + 2, 10, 4, 'blue', 4)
+    c.R(2, top + 8, 12, 5, 'grey', 3)
+    for j in range(2):
+        for i in range(4): c.P(3 + i * 2, top + 9 + j * 2, 'dark', 2)
+    c.R(4, top + 14, 8, 1, 'dark', 1)
+
+
+def pastry_case(c):
+    top = body(c, 0, 6, 32, 10, 13, 'wood', 3, 1)
+    inset(c, 2, 8, 28, 6, 'teal', 3)
+    for k, m in enumerate(('white', 'brick', 'amber')):
+        x = 4 + k * 9
+        _riser(c, x, 3 + (k % 2), 7, 7, m, 2 if m == 'white' else None); c.P(x + 3, 3 + (k % 2), 'red', 5)
+    for k in range(2): panel(c, 2 + k * 15, top + 2, 13, 8, 'wood', 2)
+
+
+def ticket_machine(c):
+    for k in range(2):
+        x = k * 16
+        top = body(c, x, 5, 16, 8, 19, 'navy', 3, 1)
+        _riser(c, x + 3, 1, 10, 6, 'blue', 4)
+        c.R(x + 2, top + 1, 12, 7, 'dark', 1); c.R(x + 3, top + 2, 10, 5, 'blue', 4)
+        for i in range(3): c.R(x + 4 + i * 3, top + 4, 2, 2, ('amber', 'leaf', 'red')[i], 4)
+        c.R(x + 3, top + 10, 4, 1, 'dark', 1); c.R(x + 10, top + 10, 3, 2, 'dark', 1); c.R(x + 4, top + 15, 8, 2, 'dark', 1)
+
+
+def rack(c):
+    body(c, 0, 5, 48, 7, 20, 'wood', 3, 1)
+    for k in range(3): _riser(c, 4 + k * 15, 1 + (k % 2), 10, 7, 'wood', 5); c.HL(5 + k * 15, 2 + (k % 2), 8, 'amber', 3)
+    for r in range(2):
+        yy = 13 + r * 9
+        c.R(1, yy, 46, 8, 'dark', 0)
+        for k in range(4):
+            bx = 3 + k * 11; bw = 9 - (k % 2)
+            _stand(c, bx, yy + 2, bw, 5, 'wood', 5)
+        c.HL(1, yy + 7, 46, 'blue', 4)
+    for x in (0, 23, 45):
+        c.R(x, 12, 3, 19, 'brick', 4); c.VL(x + 2, 12, 19, 'brick', 2)
+    _ol(c, 0, 12, 48, 20)
