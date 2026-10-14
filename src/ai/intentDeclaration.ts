@@ -174,7 +174,7 @@ Rules:
 - 「추가해줘」「하나 더」는 있는 곳에 얹는 것이라 보통 mode=modify 이고, 마을을 새로 만드는 뜻이 아니다.
 - 질문(뭐야, 몇 개야, 알려줘, 보여줘)은 mode=question, tools 는 조회 툴만.
 - 마을·도시를 짓는 요청은 tools 에 author_beodeul_town 을 적는다(버들항 블록 키트 조립). 집 한 채는 inspect_terrain·place_terrain_house. 숲마을 author_village·author_house 는 없다.
-- 던전·카타콤·지하 감옥·성 지하·동굴 층(버들항 beodeul_city 맵)을 짓는 요청은 tools 에 author_beodeul_dungeon 을 적는다(방 목록 한 번에 천장·벽·바닥·장식·계단을 코드가 깐다). 벽·소품을 stamp_object·paint_tiles 로 따로 깔지 않는다. 필드 적·상자는 그 결과의 빈 바닥 칸에 둔다.
+- 던전·카타콤·지하 감옥·성 지하·미궁·하수도·동굴·신전 유적·광산·화산 층(버들항 beodeul_city 맵)을 짓는 요청은 tools 에 author_beodeul_dungeon 을 적는다(방 목록 한 번에 천장·벽·바닥·장식·계단을 코드가 깐다). 종류는 사용자 낱말로 type 을 고른다 — 지하묘지·카타콤·감옥·던전=catacomb, 성 지하·성채=castle, 미궁·미로=labyrinth, 하수도·수로=sewer, 동굴·지하 호수=cave, 신전·사원·유적=temple, 광산·갱도=mine, 화산·용암=volcano(얼음 동굴은 그림이 없어 cave 로 지어 알린다). 벽·소품을 stamp_object·paint_tiles 로 따로 깔지 않는다. 필드 적·상자는 그 결과의 빈 바닥 칸에 둔다.
 - 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 author_beodeul_town 이 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 해리포터풍·마법 학교·호그와트풍 장소(대연회장·성채 복도·기숙사 휴게실·기숙사 침실·마법약 교실·부엉이 탑·도서관·온실·병동·퀴디치 경기장·검은 호수 보트 창고·금지된 숲 마차 승차장 등, 번들 칩셋 wizarding_world)는 손 도트 실내가 아니다 — tools 에 list_wizarding_spaces·build_wizarding_space 를 적는다.
 - 고딕 호러 장소(흉가·저택 정원·공동묘지·예배당·납골당·호러 미술관·저택 홀·서재·지하실, 번들 칩셋 gothic_manor)는 손 도트 실내·버들항 마을이 아니다 — tools 에 list_gothic_places·build_gothic_place 를 적는다. 호러·고딕·흉가 낱말이 없는 박물관·미술관 전시실, 배 안(선장실·조타실·배 주방·선원 숙소·화물칸·포 갑판), 투기장·콜로세움·검투사 방은 손 도트 실내다 — space=interior, tools 에 list_hand_interior_parts·build_hand_interior_room 을 적는다.
@@ -619,7 +619,7 @@ export function formatIntentNote(
       // 던전 층은 「실내」로 선언돼도 손 도트 실내 도구가 아니다 — 실측(2026-10-14 fe1 재시험): space=interior 노트를 따라
       // build_hand_interior_room·list_hand_interior_parts 를 찾고 참고문서를 6번 읽느라 7분을 읽기만 했다.
       lines.push(
-        "[의도] 던전 층 시공이다(버들항 beodeul_city). author_beodeul_dungeon({rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]}) 또는 방 구성을 맡기려면 author_beodeul_dungeon({size:'medium'}) 한 호출로 방·통로·천장·벽·바닥·장식·계단을 깐다 — "
+        "[의도] 던전 층 시공이다(버들항 beodeul_city). 종류는 사용자 낱말로 type 을 고른다: 하수도·수로=sewer · 광산·갱도=mine · 화산·용암=volcano · 동굴·지하 호수=cave · 신전·사원·유적=temple · 미궁·미로=labyrinth · 성 지하·성채=castle · 지하묘지·감옥·던전=catacomb(기본). sewer·temple·mine·catacomb·castle 은 author_beodeul_dungeon({type,rooms:[{kind:'entrance'},{kind:'hall'},{kind:'crypt'},{kind:'cell',from:'hall'},{kind:'boss'},{kind:'vault',from:'boss'}]}) 또는 방 구성을 맡기려면 author_beodeul_dungeon({type,size:'medium'}), cave·volcano·labyrinth 는 author_beodeul_dungeon({type,size}) 만(방 목록 없이, 호수·용암 못·갈림길은 코드가 만든다) 한 호출로 방·통로·천장·벽·바닥·장식·계단을 깐다 — "
         + "빈 시작 맵이면 mapId 에 그 id 를 준다. 좌표를 계산하지 말고, 참고문서·build_hand_interior_room·stamp_object·paint_tiles 로 벽·소품을 따로 깔지 않는다. "
         + "적·상자·NPC 는 결과 data.rooms[].spots 좌표에만, 보스는 data.anchors.boss 방, 잠긴 문은 data.anchors.gate 칸에 둔다. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
       );

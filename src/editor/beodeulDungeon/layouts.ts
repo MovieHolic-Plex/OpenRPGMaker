@@ -268,7 +268,26 @@ export function layoutBlob(spec: DungeonSpec, profile: TypeProfile): DungeonLayo
     rooms.push({ id: idOf.get(c.index)!, kind: c.kind, x: c.cx - c.rx, y: c.cy - c.ry, w: c.rx * 2 + 1, h: c.ry * 2 + 1, from, dir: null, depth: depth[c.index]! });
   }
   const corridors: PlacedCorridor[] = [{ a: "entrance", b: "cave", dir: "N", rect: { x: entX + 5, y: stubTop, w: 3, h: 4 } }];
-  return { rooms, corridors, width: W, height: H, notes: [], grid: g };
+  return cropToContent({ rooms, corridors, width: W, height: H, notes: [], grid: g });
+}
+
+/** 열린 칸 둘레로 맵을 줄인다 — 동굴은 정해진 상자 안에 흩어 놓으므로 빈 허공이 크다. 위쪽은 벽 앞면 3줄 + 천장 띠 + 여백이 남게. */
+function cropToContent(layout: DungeonLayout & { grid: Grid }): DungeonLayout & { grid: Grid } {
+  const g = layout.grid;
+  let x0 = g.W, y0 = g.H, x1 = -1, y1 = -1;
+  for (let y = 0; y < g.H; y += 1) for (let x = 0; x < g.W; x += 1) if (g.floor[g.idx(x, y)]) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  if (x1 < 0) return layout;
+  const nx0 = Math.max(0, x0 - MARGIN - 1), ny0 = y0 - (MARGIN + 4), nx1 = Math.min(g.W - 1, x1 + MARGIN + 1), ny1 = Math.min(g.H - 1, y1 + MARGIN + 1);
+  const W = nx1 - nx0 + 1, H = ny1 - ny0 + 1;
+  const out = new Grid(W, H);
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    const sx = x + nx0, sy = y + ny0;
+    if (sy < 0 || !g.inb(sx, sy)) continue;
+    const si = g.idx(sx, sy), di = out.idx(x, y);
+    out.floor[di] = g.floor[si]!; out.roomAt[di] = g.roomAt[si]!; out.liquid[di] = g.liquid[si]!; out.bridge[di] = g.bridge[si]!; out.protect[di] = g.protect[si]!;
+  }
+  const mv = <T extends Rect>(r: T): T => ({ ...r, x: r.x - nx0, y: r.y - ny0 });
+  return { ...layout, rooms: layout.rooms.map(mv), corridors: layout.corridors.map((c) => ({ ...c, rect: mv(c.rect) })), width: W, height: H, grid: out };
 }
 
 // ---------------------------------------------------------------- 하수도: 사각 방 위에 수로

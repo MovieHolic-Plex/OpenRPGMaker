@@ -28,6 +28,9 @@ export function supportSurfaceOf(ts: TilesetDef, tile: number): SupportSurface {
 const isDungeonKit = (kit: StructureKitDef): boolean => (kit.ai?.themes ?? []).some((t) => t === "dungeon" || t === "던전");
 /** 벽 앞면에 붙는 물건 — 바닥 위에 서면 허공에 걸린 것처럼 보인다. */
 const WALL_MOUNT = /torch-wall|banner|niche|chains|sconce|wall-lamp|vines|hanging-chain/;
+/** 물·용암 위에 놓여도 되는 물건(배·말뚝·유목·그물). 그 밖은 액체 칸 위에 서면 걸을 수 없는 칸에 물건이 뜬 것이다. */
+const LIQUID_OK = /boat|dock|driftwood|fish-net|bridge|lily|raft/;
+const isLiquidTile = (ts: TilesetDef, tile: number): boolean => tile >= 0 && (ts.tileMeta?.[tile]?.tags ?? []).includes("water");
 /** 벽에 뚫린 문·아치 — 그 밑 줄은 벽 앞면 위, 바로 남쪽은 걷는 바닥. */
 const WALL_DOOR = /arch-|secret-door|door-/;
 
@@ -98,6 +101,7 @@ function supportProblems(map: GameMap, ts: TilesetDef, kit: StructureKitDef, kin
     const bottom = dy === kit.height - 1;
     if (kind === "face") continue;
     if (surface === "ceiling") problems.push(`(${X},${Y}) 가 ${SURFACE_KO.ceiling} 칸이다 — 허공에는 물체를 놓지 않는다`);
+    else if (kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, X, Y)) && !LIQUID_OK.test(kit.id)) problems.push(`(${X},${Y}) 가 물·용암 칸이다 — 걸을 수 없는 칸 위에는 물체를 놓지 않는다(배·말뚝만 예외)`);
     else if (kind === "stand" && bottom && surface === "wall") problems.push(`(${X},${Y}) 밑이 벽이다 — 물체는 걷는 바닥 위에 선다`);
     else if (kind === "mount" && surface !== "wall") problems.push(`(${X},${Y}) 가 ${SURFACE_KO[surface]} 칸이다 — 벽 앞면에 거는 물건은 벽 칸에만 건다`);
   }
@@ -196,6 +200,7 @@ export function groundSupportIssues(map: GameMap, ts: TilesetDef | undefined, op
         const surface = supportSurfaceOf(ts, at(map, x, y));
         let why: string | null = null;
         if (surface === "ceiling") why = `${SURFACE_KO.ceiling} 위에 놓였다`;
+        else if (entry.kind !== "mount" && surface === "ground" && isLiquidTile(ts, at(map, x, y)) && !LIQUID_OK.test(entry.kitId)) why = "물·용암 칸 위에 놓였다(걸을 수 없는 칸)";
         else if (entry.kind === "stand" && entry.bottom && surface === "wall") why = "벽 칸 위에 서 있다";
         else if (entry.kind === "mount" && surface !== "wall") why = `${SURFACE_KO[surface]} 칸에 걸려 있다(벽 앞면에만 건다)`;
         else if (entry.kind === "door" && entry.bottom) {

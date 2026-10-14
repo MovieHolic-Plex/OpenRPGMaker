@@ -361,6 +361,11 @@ export function composeDungeon(ts: TilesetDef, spec: DungeonSpec): DungeonCompos
   const liquid = g.liquid;
   const bridge = g.bridge;
   const warnings: string[] = [...layout.notes];
+  if (layout.grid && spec.rooms?.length) warnings.push(`${profile.label} 은 방 목록(rooms)을 받지 않는다 — 방은 코드가 정한다(rooms 무시). 방 수·크기는 size·width·height 로 고른다.`);
+  if (!layout.grid) {
+    const odd = [...new Set(rooms.filter((r) => !profile.roomKinds.includes(r.kind)).map((r) => r.kind))];
+    if (odd.length) warnings.push(`방 종류 ${odd.join("·")} 은(는) ${profile.label}(${type}) 에 맞는 종류가 아니다 — 그 방은 장식이 비어 있다. ${type} 의 방 종류: ${profile.roomKinds.join(" ")}.`);
+  }
 
   // ---- 바닥 마스크: 통로 → 방(방 모양 흔들기: 모따기·감방 칸막이) ----
   const markRect = (r: Rect, roomIndex: number, v = 1) => {
